@@ -138,7 +138,10 @@ public class ResourcesUtil {
             throws ConnectorRuntimeException {
         String resourceAdapterName = raName;
         DeferredResourceConfig resConfig = null;
-        if (ConnectorConstants.RES_TYPE_JDBC.equalsIgnoreCase(resType)) {
+        //TODO V3 there should not be res-type related check, refactor deferred-ra-config
+        //TODO V3 (not to hold specific resource types)
+        if (ConnectorConstants.RES_TYPE_JDBC.equalsIgnoreCase(resType) ||
+                ConnectorConstants.RES_TYPE_JCP.equalsIgnoreCase(resType)) {
 
             JdbcConnectionPool jdbcPool = (JdbcConnectionPool) pool;
             JdbcResource jdbcResource = (JdbcResource) resource;
@@ -150,7 +153,8 @@ public class ResourcesUtil {
             ConfigBeanProxy[] resourcesToload = new ConfigBeanProxy[]{jdbcPool, jdbcResource};
             resConfig.setResourcesToLoad(resourcesToload);
 
-        } else if (ConnectorConstants.RES_TYPE_CR.equalsIgnoreCase(resType)) {
+        } else if (ConnectorConstants.RES_TYPE_CR.equalsIgnoreCase(resType) ||
+                ConnectorConstants.RES_TYPE_CCP.equalsIgnoreCase(resType)) {
             ConnectorConnectionPool connPool = (ConnectorConnectionPool) pool;
             ConnectorResource connResource = (ConnectorResource) resource;
 
@@ -161,6 +165,7 @@ public class ResourcesUtil {
             resConfig.setResourcesToLoad(resourcesToload);
 
         } else {
+            //TODO V3 can other resources be lazily loaded ?
             throw new ConnectorRuntimeException("unsupported resource type : " + resType);
         }
         return resConfig;

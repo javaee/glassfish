@@ -107,7 +107,7 @@ public class ConnectorConnectionPool implements Serializable {
     public static final String DEFAULT_VALIDATE_ATMOST_ONCE_PERIOD = "0";
     public static final String DEFAULT_LEAK_TIMEOUT = "0";
 
-    //TODO V3 temporary replacement for J2EEResourceBase super class
+    //TODO V3 temporary replacement for JavaEEResourceBase super class
     private String name;
 
 

@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
+ *
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -33,53 +33,55 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package com.sun.enterprise.resource;
 
-/*
- * @(#) ResourceDeployer.java
- *
- * Copyright 2000-2001 by iPlanet/Sun Microsystems, Inc.,
- * 901 San Antonio Road, Palo Alto, California, 94303, U.S.A.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information
- * of iPlanet/Sun Microsystems, Inc. ("Confidential Information").
- * You shall not disclose such Confidential Information and shall
- * use it only in accordance with the terms of the license
- * agreement you entered into with iPlanet/Sun Microsystems.
- */
-package com.sun.enterprise.server;
+import com.sun.enterprise.repository.ResourceProperty;
 
-/**
- * Interface to be implemented by different resource types (eg. jms-resource)
- * to deploy/undeploy a resource to the server's runtime naming context.
- * <p/>
- * The methods can potentially be called concurrently, therefore implementation
- * need to do synchronization if necessary.
- */
-public interface ResourceDeployer {
+import java.io.Serializable;
 
-    /**
-     * Deploy the resource into the server's runtime naming context
-     *
-     * @param resoure a resource object (eg. JmsResource)
-     * @throws Exception thrown if fail
-     */
-    void deployResource(Object resoure) throws Exception;
+public class ResourcePropertyImpl implements ResourceProperty,
+    Serializable {
 
-    /**
-     * Undeploy the resource from the server's runtime naming context
-     *
-     * @param resoure a resource object (eg. JmsResource)
-     * @throws Exception thrown if fail
-     */
-    void undeployResource(Object resoure) throws Exception;
-    
-    /**
-     * Redeploy the resource into the server's runtime naming context
-     *
-     * @param resource a resource object
-     * @throws Exception thrown if fail
-     */
-    void redeployResource(Object resource) throws Exception;
+    private String name_;
+    private Object value_;
 
+    public ResourcePropertyImpl(String name) {
+        name_  = name;
+        value_ = null;
+    }
+
+    public ResourcePropertyImpl(String name, Object value) {
+        name_  = name;
+        value_ = value;
+    }
+
+    public String getName() {
+        return name_;
+    }
+
+    public Object getValue() {
+        return value_;
+    }
+
+    public void setValue(Object value) {
+        value_ = value;
+    }
+
+    public int hashCode() {
+        return name_.hashCode();
+    }
+
+    public boolean equals(Object other) {
+        boolean equal = false;
+        if( other instanceof ResourceProperty ) {
+            ResourceProperty otherProp = (ResourceProperty) other;
+            equal = this.name_.equals(otherProp.getName());
+        }
+        return equal;
+    }
+
+    public String toString() {
+        return "ResourceProperty : < " + getName() + " , " + getValue() +
+            " >";
+    }
 }

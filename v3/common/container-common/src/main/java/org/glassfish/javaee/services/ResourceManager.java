@@ -35,7 +35,6 @@
  */
 package org.glassfish.javaee.services;
 
-import java.util.logging.Level;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
@@ -47,26 +46,24 @@ import org.glassfish.api.admin.config.Property;
 
 import java.beans.PropertyChangeEvent;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.util.*;
 
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
+import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import org.jvnet.hk2.config.ObservableBean;
+
 
 
 @Service
 /**
- * Resource manager to bind various allResources during startup, create/update/delete of resource/pool
+ * Resource manager to bind various resources during startup, create/update/delete of resource/pool
  * @author Jagadish Ramu
  */
 public class ResourceManager implements NamingObjectsProvider, PostConstruct, PreDestroy, ConfigListener {
 
-    @Inject
-    private JdbcResource[] jdbcResources;
-
-    @Inject
-    private JdbcConnectionPool[] jdbcPools;
 
     @Inject
     private Logger logger;
@@ -80,15 +77,27 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
     @Inject
     private Resources allResources; // Needed so as to listen to config changes.
 
+    @Inject
+    private Habitat deployerHabitat;
+    
     private ConnectorRuntime runtime;
     
     public void postConstruct() {
-        //TODO V3 need to get jdbc pools/resources from Resources
-        resourcesBinder.deployAllJdbcResourcesAndPools(jdbcResources, jdbcPools);
-        //TODO V3 handle connector system resources, pools later
-        //resourcesBinder.deployAllConnectorResourcesAndPools(connectorResources, connectorPools);
+        bindResources(allResources);
         addListenerToResources();
     }
+
+    public void bindResources(Resources allResources){
+        for(Resource resource : allResources.getResources()){
+            if(resource instanceof BindableResource){
+                BindableResource bindableResource = (BindableResource)resource;
+                resourcesBinder.deployResource(bindableResource.getJndiName(), resource);
+            }else{
+                //TODO V3 handle other resources (ra-config) later
+            }
+        }
+    }
+
 
     /**
      * The component is about to be removed from commission
@@ -96,8 +105,7 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
     public void preDestroy() {
 
         //TODO V3 : Admin need to make sure that poolnames are unique. As of V2 they are not unique.
-        //Collection pools = getAllSystemRAPools();
-        Collection resources = getAllSystemRAResourcesAndPools();
+        Collection resources = ConnectorsUtil.getAllSystemRAResourcesAndPools(allResources);
         
         //TODO V3 : even in case when there is no resource used by an application (no RAR was started),
         //TODO V3 this seems to be called ??
@@ -114,93 +122,13 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
     }
 
     /**
-     * Get all System RAR pools and resources
-     * @return Collection of system RAR pools
-     */
-    private Collection getAllSystemRAResourcesAndPools() {
-        List resources = new ArrayList();
-        for(Resource resource : allResources.getResources()){
-            if(resource instanceof JdbcConnectionPool ){
-                resources.add(resource);
-            } else if( resource instanceof ConnectorConnectionPool){
-                String raName = ((ConnectorConnectionPool)resource).getResourceAdapterName();
-                if( ConnectorsUtil.belongsToSystemRA(raName) ){
-                    resources.add(resource);
-                }
-            } else if(resource instanceof JdbcResource){
-                resources.add(resource);
-            }else if( resource instanceof ConnectorResource){
-                String poolName = ((ConnectorResource)resource).getPoolName();
-                String raName = getResourceAdapterNameOfPool(poolName);
-                if( ConnectorsUtil.belongsToSystemRA(raName) ){
-                    resources.add(resource);
-                }
-            }
-        }
-        return resources;
-    }
-
-    /**
-     * Given the poolname, retrieve the resourceadapter name
-     * @param poolName
-     * @return resource-adaapter name
-     */
-    private String getResourceAdapterNameOfPool(String poolName) {
-        String raName = ""; //TODO V3 this need not be initialized to ""
-        for(Resource resource : allResources.getResources()){
-            if(resource instanceof ConnectorConnectionPool){
-                ConnectorConnectionPool ccp = (ConnectorConnectionPool)resource;
-                String name = ccp.getName();
-                if(name.equalsIgnoreCase(poolName)){
-                    raName = ccp.getResourceAdapterName();
-                }
-            }
-        }
-        return raName;
-    }
-
-    /**
-     * get all the connection pool (jdbc/connector) names
-     * @return Collection of pool names
-     */
-    public Collection<String> getAllPoolNames(){
-        //TODO V3 unused ?
-        List<String> poolNames = new ArrayList<String>();
-        for(Resource resource : allResources.getResources()){
-            if(resource instanceof JdbcConnectionPool ){
-                poolNames.add(((JdbcConnectionPool)resource).getName());
-            }else if( resource instanceof ConnectorConnectionPool){
-                poolNames.add(((ConnectorConnectionPool)resource).getName());
-            }
-        }
-        return poolNames;
-    }
-
-    /**
-     * get all resource (jdbc/connector) names
-     * @return Collection of resource names
-     */
-    public Collection<String> getAllResourceNames(){
-        //TODO V3 unused ?
-        List<String> resourceNames = new ArrayList<String>();
-        for(Resource resource : allResources.getResources()){
-            if(resource instanceof JdbcResource){
-                resourceNames.add(((JdbcResource)resource).getJndiName());
-            }else if(resource instanceof ConnectorResource){
-                resourceNames.add(((ConnectorResource)resource).getJndiName());
-            }
-        }
-        return resourceNames;
-    }
-
-    /**
      * deploys the resources (pool/resources) of a particular resource-adapter
      * @param moduleName resource-adapter name
      */
     public void deployResourcesForModule(String moduleName){
-        Collection<ConnectorConnectionPool> connectionPools = getAllPoolsOfModule(moduleName);
-        Collection<String> poolNames = getAllPoolNames(connectionPools);
-        Collection<ConnectorResource> connectorResources = getAllResources(poolNames);
+        Collection<ConnectorConnectionPool> connectionPools = ConnectorsUtil.getAllPoolsOfModule(moduleName, allResources);
+        Collection<String> poolNames = ConnectorsUtil.getAllPoolNames(connectionPools);
+        Collection<ConnectorResource> connectorResources = ConnectorsUtil.getAllResources(poolNames, allResources);
         ConnectorConnectionPool[] pools = new ConnectorConnectionPool[connectionPools.size()];
         ConnectorResource[] resources = new ConnectorResource[connectorResources.size()];
 
@@ -213,9 +141,9 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
      * @param moduleName resource-adapter name
      */
     public void undeployResourcesForModule(String moduleName){
-        Collection<ConnectorConnectionPool> connectionPools = getAllPoolsOfModule(moduleName);
-        Collection<String> poolNames = getAllPoolNames(connectionPools);
-        Collection<ConnectorResource> connectorResources = getAllResources(poolNames);
+        Collection<ConnectorConnectionPool> connectionPools = ConnectorsUtil.getAllPoolsOfModule(moduleName, allResources);
+        Collection<String> poolNames = ConnectorsUtil.getAllPoolNames(connectionPools);
+        Collection<ConnectorResource> connectorResources = ConnectorsUtil.getAllResources(poolNames, allResources);
         List resources = new ArrayList();
         resources.addAll(connectionPools);
         resources.addAll(connectorResources);
@@ -227,52 +155,7 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
      * @param Collection of resources and pools to be destroyed
      */
     private void destroyResourcesAndPools(Collection resources) {
-        
         getConnectorRuntime().destroyResourcesAndPools(resources);
-    }
-
-    private Collection<ConnectorResource> getAllResources(Collection<String> poolNames) {
-        List<ConnectorResource> connectorResources = new ArrayList<ConnectorResource>();
-        for(Resource resource : allResources.getResources()){
-            if(resource instanceof ConnectorResource){
-                ConnectorResource connectorResource = (ConnectorResource)resource;
-                if(poolNames.contains(connectorResource.getPoolName())){
-                    connectorResources.add(connectorResource);
-                }
-            }
-        }
-        return connectorResources;
-    }
-
-    /**
-     * get the list of pool names
-     * @param connectionPools list of pools
-     * @return list of pol names
-     */
-    private Collection<String> getAllPoolNames(Collection<ConnectorConnectionPool> connectionPools) {
-        Set<String> poolNames = new HashSet<String>();
-        for(ConnectorConnectionPool pool : connectionPools){
-            poolNames.add(pool.getName());
-        }
-        return poolNames;
-    }
-
-    /**
-     * get the pools for a particular resource-adapter
-     * @param moduleName resource-adapter name
-     * @return collection of connectorConnectionPool
-     */
-    private Collection<ConnectorConnectionPool> getAllPoolsOfModule(String moduleName) {
-        List<ConnectorConnectionPool> connectorConnectionPools = new ArrayList<ConnectorConnectionPool>();
-        for(Resource resource : allResources.getResources()){
-            if(resource instanceof ConnectorConnectionPool){
-                ConnectorConnectionPool connectorConnectionPool = (ConnectorConnectionPool)resource;
-                if(connectorConnectionPool.getResourceAdapterName().equals(moduleName)){
-                    connectorConnectionPools.add(connectorConnectionPool);
-                }
-            }
-        }
-        return connectorConnectionPools;
     }
 
     /**
@@ -294,22 +177,24 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
              */
             public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> changedType, T changedInstance) {
                 NotProcessed np = null;
-                switch(type) {
-                    case ADD :
+                switch (type) {
+                    case ADD:
                         logger.fine("A new " + changedType.getName() + " was added : " + changedInstance);
                         np = handleAddEvent(changedInstance);
                         break;
 
-                    case CHANGE: logger.fine("A " + changedType.getName() + " was changed : " + changedInstance);
+                    case CHANGE:
+                        logger.fine("A " + changedType.getName() + " was changed : " + changedInstance);
                         np = handleChangeEvent(changedInstance);
                         break;
 
-                    case REMOVE : logger.fine("A " + changedType.getName() + " was removed : " + changedInstance);
+                    case REMOVE:
+                        logger.fine("A " + changedType.getName() + " was removed : " + changedInstance);
                         np = handleRemoveEvent(changedInstance);
                         break;
-                    
+
                     default:
-                        np = new NotProcessed("Unrecognized type of change: " + type );
+                        np = new NotProcessed("Unrecognized type of change: " + type);
                         break;
                 }
                 return np;
@@ -318,12 +203,26 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
             private <T extends ConfigBeanProxy> NotProcessed handleChangeEvent(T instance) {
                 NotProcessed np = null;
                 try {
-                    if(ConnectorsUtil.isValidEventType(instance)) {
-                        getConnectorRuntime().redeployResource(instance);
-                    } else if(ConnectorsUtil.isValidEventType(instance.getParent())) {
+                    if (ConnectorsUtil.isValidEventType(instance)) {
+                        String resourceType = ConnectorsUtil.getResourceType((Resource)instance);
+                        ResourceDeployer deployer = deployerHabitat.getComponent(ResourceDeployer.class, resourceType);
+                        if(deployer != null){
+                            deployer.redeployResource(instance);
+                        }else{
+                            logger.log(Level.WARNING,"no deployer found for resource type [ "+ resourceType + "]");
+                            //TODO V3 log throw Exception
+                        }
+                    } else if (ConnectorsUtil.isValidEventType(instance.getParent())) {
                         //Added in case of a property change
                         //check for validity of the property's parent and redeploy
-                        getConnectorRuntime().redeployResource(instance.getParent());
+                        String resourceType = ConnectorsUtil.getResourceType((Resource)instance);
+                        ResourceDeployer deployer = deployerHabitat.getComponent(ResourceDeployer.class, resourceType);
+                        if(deployer != null){
+                            deployer.redeployResource(instance.getParent());
+                        }else{
+                            System.out.println("no deployer found for resource type [ "+ resourceType + "]");
+                            //TODO V3 log throw Exception
+                        }
                     }
                 } catch (Exception ex) {
                     final String msg = ResourceManager.class.getName() + " : Error while handling change Event";
@@ -337,32 +236,17 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
                 NotProcessed np = null;
                 //Add listener to the changed instance object
                 ResourceManager.this.addListenerToResource(instance);
-                if (instance instanceof JdbcConnectionPool) {
-                    resourcesBinder.deployAllJdbcResourcesAndPools(new JdbcResource[]{},
-                            new JdbcConnectionPool[]{((JdbcConnectionPool)instance)});
-                }else if (instance instanceof JdbcResource){
-                    JdbcResource resource = (JdbcResource)instance;
-                    JdbcConnectionPool pool = getAssociatedJdbcConnectionPool(resource);
-                    resourcesBinder.deployAllJdbcResourcesAndPools(new JdbcResource[]{resource},
-                            new JdbcConnectionPool[]{pool});
-                }else if (instance instanceof ConnectorConnectionPool){
-                    resourcesBinder.deployAllConnectorResourcesAndPools(new ConnectorResource[]{},
-                            new ConnectorConnectionPool[]{((ConnectorConnectionPool)instance)});
-                }else if (instance instanceof ConnectorResource){
-                    ConnectorResource resource = (ConnectorResource)instance;
-                    ConnectorConnectionPool pool = getAssociatedConnectorConnectionPool(resource);
-                    resourcesBinder.deployAllConnectorResourcesAndPools(new ConnectorResource[]{resource},
-                            new ConnectorConnectionPool[]{pool});
-                }
-                else if ( instance instanceof Property )
-                {
-                    final Property prop = (Property)instance;
-                    np = new NotProcessed( "ResourceManager: a property was added: " + prop.getName() + "=" + prop.getValue() );
-                }
-                else
-                {
-                    np = new NotProcessed( "ResourceManager: configuration " +
-                                Dom.unwrap(instance).getProxyType().getName() + " was added" );
+
+                if(instance instanceof BindableResource){
+                    resourcesBinder.deployResource(((BindableResource)instance).getJndiName(), (Resource)instance);
+                }else if(instance instanceof ConnectorConnectionPool || instance instanceof JdbcConnectionPool) {
+                    //TODO V3 handle - ccp, jdbc-cp, ra-config
+                } else if (instance instanceof Property) {
+                    final Property prop = (Property) instance;
+                    np = new NotProcessed("ResourceManager: a property was added: " + prop.getName() + "=" + prop.getValue());
+                } else {
+                    np = new NotProcessed("ResourceManager: configuration " +
+                            Dom.unwrap(instance).getProxyType().getName() + " was added");
                 }
                 return np;
             }
@@ -371,15 +255,33 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
                 ArrayList instancesToDestroy = new ArrayList();
                 NotProcessed np = null;
                 try {
-                    if(ConnectorsUtil.isValidEventType(instance)) {
+                    //this check ensures that a valid resource is handled
+                    if (ConnectorsUtil.isValidEventType(instance)) {
                         instancesToDestroy.add(instance);
                         //Remove listener from the removed instance
                         ResourceManager.this.removeListenerFromResource(instance);
-                        destroyResourcesAndPools(instancesToDestroy);
-                    } else if(ConnectorsUtil.isValidEventType(instance.getParent())) {
+
+                        //get appropriate deployer and deploy resource
+                        String resourceType = ConnectorsUtil.getResourceType((Resource)instance);
+                        ResourceDeployer deployer = deployerHabitat.getComponent(ResourceDeployer.class, resourceType);
+                        if(deployer != null){
+                            deployer.deployResource(instance);
+                        }else{
+                            System.out.println("no deployer found for resource type [ "+ resourceType + "]");
+                            //TODO V3 log throw Exception
+                        }
+
+                    } else if (ConnectorsUtil.isValidEventType(instance.getParent())) {
                         //Added in case of a property remove
                         //check for validity of the property's parent and redeploy
-                        getConnectorRuntime().redeployResource(instance.getParent());
+                        String resourceType = ConnectorsUtil.getResourceType((Resource)instance);
+                        ResourceDeployer deployer = deployerHabitat.getComponent(ResourceDeployer.class, resourceType);
+                        if(deployer != null){
+                            deployer.redeployResource(instance.getParent());
+                        }else{
+                            System.out.println("no deployer found for resource type [ "+ resourceType + "]");
+                            //TODO V3 log throw Exception
+                        }
                     }
                 } catch (Exception ex) {
                     final String msg = ResourceManager.class.getName() + " : Error while handling remove Event";
@@ -392,53 +294,6 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
         return unprocessed;
     }
 
-    /**
-     * given a jdbc-resource, get associated jdbc-connection-pool
-     * @param resource jdbc-resource
-     * @return jdbc-connection-pool
-     */
-    private  JdbcConnectionPool getAssociatedJdbcConnectionPool(JdbcResource resource) {
-        //TODO V3 need to find a generic way (instead of separate methods for jdbc/connector)
-        for(Resource configuredResource : allResources.getResources()){
-            if(configuredResource instanceof JdbcConnectionPool){
-                JdbcConnectionPool pool = (JdbcConnectionPool)configuredResource;
-                if(resource.getPoolName().equalsIgnoreCase(pool.getName())){
-                    return pool;
-                }
-            }
-        }
-        return null;  //TODO V3 cannot happen ?
-    }
-
-    /**
-     * given a connector-resource, get associated connector-connection-pool
-     * @param resource connector-resource
-     * @return connector-connection-pool
-     */
-    private  ConnectorConnectionPool getAssociatedConnectorConnectionPool(ConnectorResource resource) {
-        for(Resource configuredResource : allResources.getResources()){
-            if(configuredResource instanceof ConnectorConnectionPool){
-                ConnectorConnectionPool pool = (ConnectorConnectionPool)configuredResource;
-                if(resource.getPoolName().equalsIgnoreCase(pool.getName())){
-                    return pool;
-                }
-            }
-        }
-        return null;  //TODO V3 cannot happen ?
-    }
-
-    public JdbcConnectionPool getJdbcConnectionPoolConfig(String poolName){
-        //TODO V3 need to find a generic way (instead of separate methods for jdbc/connector)
-        for(Resource configuredResource : allResources.getResources()){
-            if(configuredResource instanceof JdbcConnectionPool){
-                JdbcConnectionPool pool = (JdbcConnectionPool)configuredResource;
-                if(pool.getName().equalsIgnoreCase(poolName)){
-                    return pool;
-                }
-            }
-        }
-        return null; //TODO V3 cannot happen ?
-    }
 
     /**
      * Add listener to all resources (JDBC Connection Pool/JDBC Resource/
@@ -456,27 +311,16 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
      * Connection Pool/JDBC resource/Connector resource)
      * Used in the case of create asadmin command when listeners have to 
      * be added to the specific pool/resource
-     * @param object of the changed instance
+     * @param instance
      */
     private void addListenerToResource(Object instance) {
         ObservableBean bean = null;
-	if(instance instanceof JdbcConnectionPool){
-            JdbcConnectionPool pool = (JdbcConnectionPool) instance;
-  	    bean = (ObservableBean) ConfigSupport.getImpl(pool);
-	    bean.addListener(this);
-        } else if(instance instanceof JdbcResource){
-            JdbcResource resource = (JdbcResource) instance;
-  	    bean = (ObservableBean) ConfigSupport.getImpl(resource);
-	    bean.addListener(this);
-        } else if(instance instanceof ConnectorConnectionPool){
-            ConnectorConnectionPool pool = (ConnectorConnectionPool) instance;
-  	    bean = (ObservableBean) ConfigSupport.getImpl(pool);
-	    bean.addListener(this);
-        } else if(instance instanceof ConnectorResource){
-            ConnectorResource resource = (ConnectorResource) instance;
-  	    bean = (ObservableBean) ConfigSupport.getImpl(resource);
-	    bean.addListener(this);
-        } 
+
+        //add listener to all types of Resource
+        if(instance instanceof Resource){
+            bean = (ObservableBean) ConfigSupport.getImpl((ConfigBeanProxy)instance);
+            bean.addListener(this);
+        }
     }
 
 
@@ -484,28 +328,15 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
      * Remove listener from a generic resource (JDBC Connection Pool/Connector 
      * Connection Pool/JDBC resource/Connector resource)
      * Used in the case of delete asadmin command
-     * @param object of the deleted instance
+     * @param instance
      */
     private void removeListenerFromResource(Object instance) {
-        ObservableBean observableBean = null;
-	if(instance instanceof JdbcConnectionPool){
-            JdbcConnectionPool pool = (JdbcConnectionPool) instance;
-  	    observableBean = (ObservableBean) ConfigSupport.getImpl(pool);
-	    observableBean.removeListener(this);
-        } else if(instance instanceof JdbcResource){
-            JdbcResource resource = (JdbcResource) instance;
-  	    observableBean = (ObservableBean) ConfigSupport.getImpl(resource);
-	    observableBean.removeListener(this);
-        } else if(instance instanceof ConnectorConnectionPool){
-            ConnectorConnectionPool pool = (ConnectorConnectionPool) instance;
-  	    observableBean = (ObservableBean) ConfigSupport.getImpl(pool);
-	    observableBean.removeListener(this);
-        } else if(instance instanceof ConnectorResource){
-            ConnectorResource resource = (ConnectorResource) instance;
-  	    observableBean = (ObservableBean) ConfigSupport.getImpl(resource);
-	    observableBean.removeListener(this);
-        }
+        ObservableBean bean = null;
 
+        if(instance instanceof Resource){
+            bean = (ObservableBean) ConfigSupport.getImpl((ConfigBeanProxy)instance);
+            bean.removeListener(this);
+        }
     }
 
     /**

@@ -43,34 +43,36 @@ import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.config.serverbeans.*;
 
 /**
- * This is Security administration service. Performs funtionality of 
+ * This is Security administration service. Performs funtionality of
  * security map creation, deletion.
- * @author    Srikanth P 
+ *
+ * @author Srikanth P
  */
 
 
-public class ConnectorSecurityAdminServiceImpl extends ConnectorService  {
+public class ConnectorSecurityAdminServiceImpl extends ConnectorService {
 
     /**
      * Default constructor
      */
-     public ConnectorSecurityAdminServiceImpl() {
-         super();
-     }
+    public ConnectorSecurityAdminServiceImpl() {
+        super();
+    }
 
-     
-    /** 
-     *  Obtain the authentication service associated with rar module.
-     *  Currently only the BasicPassword authentication is supported.
-     *  @param rarName Rar module Name
-     *  @param poolName Name of the pool. Used for creation of
-     *                              BasicPasswordAuthenticationService
-     * @return AuthenticationService 
+
+    /**
+     * Obtain the authentication service associated with rar module.
+     * Currently only the BasicPassword authentication is supported.
+     *
+     * @param rarName  Rar module Name
+     * @param poolName Name of the pool. Used for creation of
+     *                 BasicPasswordAuthenticationService
+     * @return AuthenticationService
      */
     public AuthenticationService getAuthenticationService(String rarName,
-                           String poolName) {
+                                                          String poolName) {
 
-        ConnectorDescriptor cd =  _registry.getDescriptor(rarName);
+        ConnectorDescriptor cd = _registry.getDescriptor(rarName);
         OutboundResourceAdapter obra = cd.getOutboundResourceAdapter();
         Set authMechs = obra.getAuthMechanisms();
         for (Object authMech : authMechs) {

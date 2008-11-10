@@ -66,6 +66,8 @@ public class ConnectorAdminServicesFactory {
             return new ResourceAdapterAdminServiceImpl();
         } else if (type.equals(ConnectorConstants.SEC)) {
             return new ConnectorSecurityAdminServiceImpl();
+        } else if (type.equals(ConnectorConstants.AOR)) {
+            return new ConnectorAdminObjectAdminServiceImpl();
         } else {
             return null;
         }

@@ -47,6 +47,7 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.loader.EJBClassLoader;
+import com.sun.enterprise.config.serverbeans.ResourceAdapterConfig;
 
 import javax.naming.NamingException;
 import java.util.logging.Level;
@@ -72,19 +73,18 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
         super();
     }
 
-
 /*
-    */
+*/
 /**
-     * Destroys/deletes the Active resource adapter object from the connector
-     * container. Active resource adapter abstracts the rar deployed. It checks
-     * whether any resources (pools and connector resources) are still present.
-     * If they are present the deletion fails and all the objects and
-     * datastructures pertaining to to the resource adapter are left untouched.
-     *
-     * @param moduleName Name of the rarModule to destroy/delete
-     * @throws ConnectorRuntimeException if the deletion fails
-     */
+ * Destroys/deletes the Active resource adapter object from the connector
+ * container. Active resource adapter abstracts the rar deployed. It checks
+ * whether any resources (pools and connector resources) are still present.
+ * If they are present the deletion fails and all the objects and
+ * datastructures pertaining to to the resource adapter are left untouched.
+ *
+ * @param moduleName Name of the rarModule to destroy/delete
+ * @throws ConnectorRuntimeException if the deletion fails
+ */
 /* TODO V3 use later
     public void destroyActiveResourceAdapter(String moduleName)
             throws ConnectorRuntimeException {

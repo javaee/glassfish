@@ -45,7 +45,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
+import com.sun.enterprise.config.serverbeans.ResourcePool;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
 import com.sun.corba.se.spi.orbutil.threadpool.NoSuchThreadPoolException;
@@ -166,7 +166,7 @@ public interface ConnectorRuntime {
      */
     public Object lookupPMResource(String jndiName, boolean force) throws NamingException;
 
-    public JdbcConnectionPool getJdbcConnectionPoolConfig(String poolName);
+    public ResourcePool getConnectionPoolConfig(String poolName);
 
     public boolean pingConnectionPool(String poolName) throws ResourceException;
 
@@ -196,13 +196,6 @@ public interface ConnectorRuntime {
      */
     public ThreadPool getThreadPool(String threadPoolId) throws NoSuchThreadPoolException;
 
-    /**
-     * Redeploy the resource into the server's runtime naming context
-     *
-     * @param resource a resource object
-     * @throws Exception thrown if fail
-     */   
-    public void redeployResource(Object instance) throws Exception;
 
     /**
      * provides the transactionManager
@@ -223,4 +216,21 @@ public interface ConnectorRuntime {
      * @return set of resource-refs
      */
     public Set getResourceReferenceDescriptor();
+
+
+
+    /**
+     * Redeploy the resource into the server's runtime naming context
+     *
+     * @param resource a resource object
+     * @throws Exception thrown if fail
+     */
+    /*
+    public void redeployResource(Object instance) throws Exception;
+    //TODO V3 javadoc
+    //TODO V3 need to be a specific exception type (connector-runtime-exception) ?
+    public void deployResource(Resource resource) throws Exception;
+
+    public void undeployResource(Resource resource) throws Exception;
+    */
 }

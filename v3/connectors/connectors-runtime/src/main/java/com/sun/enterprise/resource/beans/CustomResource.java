@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
+ *
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -33,54 +33,56 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package com.sun.enterprise.resource.beans;
 
+import com.sun.enterprise.resource.beans.JavaEEResource;
+import com.sun.enterprise.resource.beans.JavaEEResourceBase;
 
-package com.sun.enterprise.resource.deployer;
-
-import com.sun.enterprise.config.serverbeans.ConnectorResource;
-import com.sun.enterprise.connectors.ConnectorRuntime;
-import com.sun.logging.LogDomains;
-import com.sun.appserv.connectors.internal.api.ConnectorConstants;
-import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.jvnet.hk2.annotations.Service;
+import java.io.Serializable;
 
 /**
- * @author Srikanth P
+ * Resource info for CustomResourcel.
+ * IASRI #4626188
+ *
+ * @author Sridatta Viswanath
  */
+public class CustomResource extends JavaEEResourceBase implements Serializable {
 
-@Service(name= ConnectorConstants.RES_TYPE_CR)
-public class ConnectorResourceDeployer implements ResourceDeployer {
+    private String resType_;
+    private String factoryClass_;
 
-    static Logger _logger = LogDomains.getLogger(ConnectorResourceDeployer.class, LogDomains.CORE_LOGGER);
-
-    public synchronized void deployResource(Object resource) throws Exception {
-
-        ConnectorResource domainResource =
-                (com.sun.enterprise.config.serverbeans.ConnectorResource) resource;
-        String jndiName = domainResource.getJndiName();
-        String poolName = domainResource.getPoolName();
-        ConnectorRuntime crt = ConnectorRuntime.getRuntime();
-        _logger.log(Level.FINE, "Calling backend to add connector resource", jndiName);
-
-        crt.createConnectorResource(jndiName, poolName, null);
-        _logger.log(Level.FINE, "Added connector resource in backend", jndiName);
+    public CustomResource(String name) {
+        super(name);
     }
 
-    public synchronized void undeployResource(Object resource)
-            throws Exception {
-        ConnectorResource domainResource =
-                (com.sun.enterprise.config.serverbeans.ConnectorResource) resource;
-        String jndiName = domainResource.getJndiName();
-        ConnectorRuntime crt = ConnectorRuntime.getRuntime();
-        crt.deleteConnectorResource(jndiName);
+    protected com.sun.enterprise.resource.beans.JavaEEResource doClone(String name) {
+        CustomResource clone = new CustomResource(name);
+        clone.setResType(getResType());
+        clone.setFactoryClass(getFactoryClass());
+        return clone;
     }
 
-    public void redeployResource(Object resource) throws Exception {
-        undeployResource(resource);
-        deployResource(resource);
+    public int getType() {
+        return JavaEEResource.CUSTOM_RESOURCE;
+    }
+
+    public String getResType() {
+        return resType_;
+    }
+
+    public void setResType(String resType) {
+        resType_ = resType;
+    }
+
+    public String getFactoryClass() {
+        return factoryClass_;
+    }
+
+    public void setFactoryClass(String factoryClass) {
+        factoryClass_ = factoryClass;
+    }
+
+    public String toString() {
+        return "< Custom Resource : " + getName() + " , " + getResType() + "... >";
     }
 }

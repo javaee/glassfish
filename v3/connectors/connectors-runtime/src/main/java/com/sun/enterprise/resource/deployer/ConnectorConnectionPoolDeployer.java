@@ -40,6 +40,7 @@ package com.sun.enterprise.resource.deployer;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.annotations.Service;
 import com.sun.enterprise.config.serverbeans.SecurityMap;
 import com.sun.enterprise.connectors.ConnectorConnectionPool;
 import com.sun.enterprise.connectors.ConnectorDescriptorInfo;
@@ -50,7 +51,7 @@ import com.sun.enterprise.connectors.util.SecurityMapUtils;
 import com.sun.enterprise.deployment.ConnectionDefDescriptor;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.EnvironmentProperty;
-import com.sun.enterprise.server.ResourceDeployer;
+import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
 
@@ -65,6 +66,7 @@ import java.util.logging.Logger;
  * @author Srikanth P, Sivakumar Thyagarajan
  */
 
+@Service(name= ConnectorConstants.RES_TYPE_CCP)
 public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
         implements ResourceDeployer {
 

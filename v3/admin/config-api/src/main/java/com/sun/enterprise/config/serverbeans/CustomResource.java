@@ -66,24 +66,7 @@ import org.glassfish.quality.ToDo;
 }) */
 @org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.CustomResourceConfig")
 @Configured
-public interface CustomResource extends ConfigBeanProxy, Injectable, Resource, PropertyBag {
-
-    /**
-     * Gets the value of the jndiName property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
-    @Attribute(required = true, key=true)
-    public String getJndiName();
-
-    /**
-     * Sets the value of the jndiName property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    public void setJndiName(String value) throws PropertyVetoException;
+public interface CustomResource extends ConfigBeanProxy, Injectable, Resource, PropertyBag, BindableResource {
 
     /**
      * Gets the value of the resType property.

@@ -35,18 +35,23 @@
  */
 package com.sun.appserv.connectors.internal.api;
 
-import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
-import com.sun.enterprise.config.serverbeans.ConnectorResource;
-import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
-import com.sun.enterprise.config.serverbeans.JdbcResource;
+import com.sun.enterprise.config.serverbeans.*;
+import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
+import com.sun.logging.LogDomains;
+
 import java.io.File;
-import java.util.Hashtable;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * Util class for connector related classes
  */
 public class ConnectorsUtil {
 
+        private static Logger _logger= LogDomains.getLogger(ConnectorsUtil.class, LogDomains.RSR_LOGGER);
 
     /**
      * determine whether the RAR in question is a System RAR
@@ -98,7 +103,6 @@ public class ConnectorsUtil {
         return null;
 
     }
-
     /**
      *  Return the system PM name for the JNDI name
      * @param  jndiName jndi name
@@ -160,6 +164,258 @@ public class ConnectorsUtil {
         return (instance instanceof JdbcConnectionPool || 
                 instance instanceof JdbcResource ||
                 instance instanceof ConnectorConnectionPool ||
-                instance instanceof ConnectorResource);
+                instance instanceof ConnectorResource ||
+                instance instanceof MailResource ||
+                instance instanceof ExternalJndiResource ||
+                instance instanceof CustomResource ||
+                instance instanceof PersistenceManagerFactoryResource ||
+                instance instanceof AdminObjectResource ) ;
     }
+
+    /**
+     * given a jdbc-resource, get associated jdbc-connection-pool
+     * @param resource jdbc-resource
+     * @return jdbc-connection-pool
+     */
+    public static JdbcConnectionPool getAssociatedJdbcConnectionPool(JdbcResource resource, Resources allResources) {
+        //TODO V3 need to find a generic way (instead of separate methods for jdbc/connector)
+        for(Resource configuredResource : allResources.getResources()){
+            if(configuredResource instanceof JdbcConnectionPool){
+                JdbcConnectionPool pool = (JdbcConnectionPool)configuredResource;
+                if(resource.getPoolName().equalsIgnoreCase(pool.getName())){
+                    return pool;
+                }
+            }
+        }
+        return null;  //TODO V3 cannot happen ?
+    }
+
+    /**
+     * given a connector-resource, get associated connector-connection-pool
+     * @param resource connector-resource
+     * @return connector-connection-pool
+     */
+    public static ConnectorConnectionPool getAssociatedConnectorConnectionPool(ConnectorResource resource, Resources allResources) {
+        for(Resource configuredResource : allResources.getResources()){
+            if(configuredResource instanceof ConnectorConnectionPool){
+                ConnectorConnectionPool pool = (ConnectorConnectionPool)configuredResource;
+                if(resource.getPoolName().equalsIgnoreCase(pool.getName())){
+                    return pool;
+                }
+            }
+        }
+        return null;  //TODO V3 cannot happen ?
+    }
+
+    public static ResourcePool getConnectionPoolConfig(String poolName, Resources allResources){
+        for(Resource configuredResource : allResources.getResources()){
+            if(configuredResource instanceof ResourcePool){
+                ResourcePool pool = (ResourcePool)configuredResource;
+                if(pool.getName().equalsIgnoreCase(poolName)){
+                    return pool;
+                }
+            }
+        }
+        return null; //TODO V3 cannot happen ?
+    }
+/*
+    public static JdbcConnectionPool getJdbcConnectionPoolConfig(String poolName, Resources allResources){
+        //TODO V3 need to find a generic way (instead of separate methods for jdbc/connector)
+        for(Resource configuredResource : allResources.getResources()){
+            if(configuredResource instanceof JdbcConnectionPool){
+                JdbcConnectionPool pool = (JdbcConnectionPool)configuredResource;
+                if(pool.getName().equalsIgnoreCase(poolName)){
+                    return pool;
+                }
+            }
+        }
+        return null; //TODO V3 cannot happen ?
+    }
+*/
+
+    public static Collection<ConnectorResource> getAllResources(Collection<String> poolNames, Resources allResources) {
+        List<ConnectorResource> connectorResources = new ArrayList<ConnectorResource>();
+        for(Resource resource : allResources.getResources()){
+            if(resource instanceof ConnectorResource){
+                ConnectorResource connectorResource = (ConnectorResource)resource;
+                if(poolNames.contains(connectorResource.getPoolName())){
+                    connectorResources.add(connectorResource);
+                }
+            }
+        }
+        return connectorResources;
+    }
+
+    /**
+     * get the list of pool names
+     * @param connectionPools list of pools
+     * @return list of pol names
+     */
+    public static Collection<String> getAllPoolNames(Collection<ConnectorConnectionPool> connectionPools) {
+        Set<String> poolNames = new HashSet<String>();
+        for(ConnectorConnectionPool pool : connectionPools){
+            poolNames.add(pool.getName());
+        }
+        return poolNames;
+    }
+
+    /**
+     * get the pools for a particular resource-adapter
+     * @param moduleName resource-adapter name
+     * @return collection of connectorConnectionPool
+     */
+    public static Collection<ConnectorConnectionPool> getAllPoolsOfModule(String moduleName, Resources allResources) {
+        List<ConnectorConnectionPool> connectorConnectionPools = new ArrayList<ConnectorConnectionPool>();
+        for(Resource resource : allResources.getResources()){
+            if(resource instanceof ConnectorConnectionPool){
+                ConnectorConnectionPool connectorConnectionPool = (ConnectorConnectionPool)resource;
+                if(connectorConnectionPool.getResourceAdapterName().equals(moduleName)){
+                    connectorConnectionPools.add(connectorConnectionPool);
+                }
+            }
+        }
+        return connectorConnectionPools;
+    }
+
+    /**
+     * Get all System RAR pools and resources
+     * @return Collection of system RAR pools
+     */
+    public static Collection getAllSystemRAResourcesAndPools(Resources allResources) {
+        List resources = new ArrayList();
+        for(Resource resource : allResources.getResources()){
+            if(resource instanceof JdbcConnectionPool ){
+                resources.add(resource);
+            } else if( resource instanceof ConnectorConnectionPool){
+                String raName = ((ConnectorConnectionPool)resource).getResourceAdapterName();
+                if( ConnectorsUtil.belongsToSystemRA(raName) ){
+                    resources.add(resource);
+                }
+            } else if(resource instanceof JdbcResource){
+                resources.add(resource);
+            } else if( resource instanceof ConnectorResource){
+                String poolName = ((ConnectorResource)resource).getPoolName();
+                String raName = getResourceAdapterNameOfPool(poolName, allResources);
+                if( ConnectorsUtil.belongsToSystemRA(raName) ){
+                    resources.add(resource);
+                }
+            }
+        }
+        return resources;
+    }
+
+    /**
+     * Given the poolname, retrieve the resourceadapter name
+     * @param poolName
+     * @return resource-adaapter name
+     */
+    public static String getResourceAdapterNameOfPool(String poolName, Resources allResources) {
+        String raName = ""; //TODO V3 this need not be initialized to ""
+        for(Resource resource : allResources.getResources()){
+            if(resource instanceof ConnectorConnectionPool){
+                ConnectorConnectionPool ccp = (ConnectorConnectionPool)resource;
+                String name = ccp.getName();
+                if(name.equalsIgnoreCase(poolName)){
+                    raName = ccp.getResourceAdapterName();
+                }
+            }
+        }
+        return raName;
+    }
+
+    public static String getResourceType(Resource resource){
+        if(resource instanceof JdbcResource){
+            return ConnectorConstants.RES_TYPE_JDBC;
+        } else if(resource instanceof JdbcConnectionPool){
+            return ConnectorConstants.RES_TYPE_JCP;
+        } else if (resource instanceof ConnectorResource){
+            return ConnectorConstants.RES_TYPE_CR;
+        } else if (resource instanceof ConnectorConnectionPool){
+            return ConnectorConstants.RES_TYPE_CCP;
+        } else if (resource instanceof MailResource){
+            return ConnectorConstants.RES_TYPE_MAIL;
+        } else if( resource instanceof ExternalJndiResource){
+            return ConnectorConstants.RES_TYPE_EXTERNAL_JNDI;
+        } else if (resource instanceof CustomResource){
+            return ConnectorConstants.RES_TYPE_CUSTOM;
+        } else if (resource instanceof PersistenceManagerFactoryResource){
+            return ConnectorConstants.RES_TYPE_PMF;
+        } else if (resource instanceof AdminObjectResource){
+            return ConnectorConstants.RES_TYPE_AOR;
+        } else{
+            return null;
+            //TODO V3 log and throw exception
+        }
+    }
+
+    public static ResourceDeployer getDeployer(Habitat deployerHabitat, Resource resource){
+        String resourceType = ConnectorsUtil.getResourceType(resource);
+        return deployerHabitat.getComponent(ResourceDeployer.class, resourceType);
+    }
+
+    /**
+     * load and create an object instance
+     */
+    public static Object loadObject(String className) {
+        Object obj = null;
+        Class c;
+
+        try {
+            obj = Class.forName(className).newInstance();
+        } catch (Exception cnf) {
+            try {
+                //TODO V3 not needed ?
+                // c = ClassLoader.getSystemClassLoader().loadClass(className);
+                c = Thread.currentThread().getContextClassLoader().loadClass(className);
+                obj = c.newInstance();
+            } catch (Exception ex) {
+                _logger.log(Level.SEVERE, "classloader.load_class_fail", className);
+                _logger.log(Level.SEVERE, "classloader.load_class_fail_excp", ex.getMessage());
+
+            }
+        }
+
+        return obj;
+    }
+
+
+/*
+    */
+/**
+     * get all the connection pool (jdbc/connector) names
+     * @return Collection of pool names
+     */
+/*
+    public Collection<String> getAllPoolNames(){
+        //TODO V3 unused ?
+        List<String> poolNames = new ArrayList<String>();
+        for(Resource resource : allResources.getResources()){
+            if(resource instanceof JdbcConnectionPool ){
+                poolNames.add(((JdbcConnectionPool)resource).getName());
+            }else if( resource instanceof ConnectorConnectionPool){
+                poolNames.add(((ConnectorConnectionPool)resource).getName());
+            }
+        }
+        return poolNames;
+    }
+
+    */
+/**
+     * get all resource (jdbc/connector) names
+     * @return Collection of resource names
+     */
+/*
+    public Collection<String> getAllResourceNames(){
+        //TODO V3 unused ?
+        List<String> resourceNames = new ArrayList<String>();
+        for(Resource resource : allResources.getResources()){
+            if(resource instanceof JdbcResource){
+                resourceNames.add(((JdbcResource)resource).getJndiName());
+            }else if(resource instanceof ConnectorResource){
+                resourceNames.add(((ConnectorResource)resource).getJndiName());
+            }
+        }
+        return resourceNames;
+    }
+*/
 }

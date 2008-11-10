@@ -51,11 +51,14 @@ package com.sun.enterprise.resource.deployer;
 
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
-import com.sun.enterprise.server.ResourceDeployer;
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
 
 import java.util.logging.Logger;
+
+import org.jvnet.hk2.annotations.Service;
 
 
 /**
@@ -69,6 +72,7 @@ import java.util.logging.Logger;
  * @author Nazrul Islam
  * @since JDK1.4
  */
+@Service(name= ConnectorConstants.RES_TYPE_JDBC)
 public class JdbcResourceDeployer implements ResourceDeployer {
 
     private static final StringManager localStrings =

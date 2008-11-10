@@ -38,18 +38,21 @@ package com.sun.enterprise.connectors;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import org.glassfish.api.admin.config.Property;
+import org.glassfish.api.naming.GlassfishNamingManager;
 import com.sun.enterprise.config.serverbeans.ResourceAdapterConfig;
 import com.sun.enterprise.connectors.util.ConnectorDDTransformUtils;
 import com.sun.enterprise.connectors.util.SetMethodAction;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
+import com.sun.enterprise.deployment.AdminObject;
+import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
 
 import javax.resource.ResourceException;
 import javax.resource.spi.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import javax.naming.Reference;
+import javax.naming.NamingException;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -228,4 +231,81 @@ public class ActiveInboundResourceAdapter extends ActiveOutboundResourceAdapter 
     public BootstrapContext getBootStrapContext() {
         return this.bootStrapContextImpl;
     }
+
+    /**
+     * Creates an admin object.
+     *
+     * @param appName Name of application, in case of embedded rar.
+     * @param connectorName Module name of the resource adapter.
+     * @param jndiName JNDI name to be registered.
+     * @param adminObjectType Interface name of the admin object.
+     * @param props <code>Properties</code> object containing name/value
+     *              pairs of properties.
+     */
+    public void addAdminObject (
+            String appName,
+            String connectorName,
+            String jndiName,
+            String adminObjectType,
+            Properties props)
+        throws ConnectorRuntimeException {
+        if (props == null) {
+            // empty properties
+            props = new Properties();
+        }
+
+        ConnectorRegistry registry = null;
+        try{
+            registry = ConnectorRegistry.getInstance();
+        }catch(Exception e) {
+        }
+        ConnectorDescriptor desc = registry.getDescriptor(connectorName);
+        AdminObject aoDesc =
+            desc.getAdminObjectByType(adminObjectType);
+
+        AdministeredObjectResource aor = new AdministeredObjectResource(
+                                                 jndiName);
+        aor.initialize(aoDesc);
+        aor.setResourceAdapter(connectorName);
+
+        Object[] envProps = aoDesc.getConfigProperties().toArray();
+
+        //Add default config properties to aor
+        //Override them if same config properties are provided by the user
+        for (int i = 0; i < envProps.length; i++) {
+            EnvironmentProperty envProp = (EnvironmentProperty) envProps[i];
+            String name = envProp.getName();
+            String userValue = (String)props.remove(name);
+            if (userValue != null)
+                aor.addConfigProperty(new EnvironmentProperty(
+                              name, userValue, userValue, envProp.getType()));
+            else
+                aor.addConfigProperty(envProp);
+        }
+
+        //Add non-default config properties provided by the user to aor
+        Iterator iter = props.keySet().iterator();
+        while(iter.hasNext()){
+            String name = (String) iter.next();
+            String userValue = props.getProperty(name);
+            if(userValue != null)
+                aor.addConfigProperty(new EnvironmentProperty(
+                        name, userValue, userValue));
+
+        }
+
+        // bind to JNDI namespace
+	try{
+
+            Reference ref = aor.createAdminObjectReference();
+            GlassfishNamingManager nm = ConnectorRuntime.getRuntime().getNamingManager();
+            nm.publishObject(jndiName, ref, true);
+
+        } catch (NamingException ex) {
+	    String i18nMsg = localStrings.getString(
+	        "aira.cannot_bind_admin_obj");
+            throw new ConnectorRuntimeException( i18nMsg );
+        }
+    }
+
 }

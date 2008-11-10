@@ -43,16 +43,12 @@ import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.connectors.DeferredResourceConfig;
 import com.sun.enterprise.connectors.util.ConnectorDDTransformUtils;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
-import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
-import com.sun.enterprise.config.serverbeans.ConnectorResource;
+import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import com.sun.enterprise.connectors.util.ResourcesUtil;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.resource.pool.PoolManager;
-import com.sun.enterprise.server.ResourceDeployer;
-import com.sun.enterprise.server.ResourceDeployerFactory;
-import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
-import com.sun.enterprise.config.serverbeans.JdbcResource;
-import com.sun.enterprise.config.serverbeans.Resource;
+import com.sun.enterprise.resource.deployer.ResourceDeployerFactory;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.logging.LogDomains;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 
@@ -72,6 +68,7 @@ import java.util.List;
  *
  * @author Srikanth P
  */
+//TODO V3 can this be a service ? (will help to eliminate need of resource-deployer-factory)
 public class ConnectorService implements ConnectorConstants {
     protected static final Logger _logger = LogDomains.getLogger(ConnectorService.class, LogDomains.RSR_LOGGER);
 
@@ -310,9 +307,9 @@ public class ConnectorService implements ConnectorConstants {
     }
 
     private void deleteResource(Object resource) throws ConnectorRuntimeException {
-        try{
+        try {
             factory.getResourceDeployer(resource).undeployResource(resource);
-        }catch(Exception e){
+        } catch (Exception e) {
             ConnectorRuntimeException cre = new ConnectorRuntimeException(e.getMessage());
             cre.initCause(e);
             throw cre;
@@ -354,6 +351,22 @@ public class ConnectorService implements ConnectorConstants {
         destroyConnectionPools(pools);
     }
 
+    public boolean checkAndLoadPool(String poolName) {
+        boolean status = false;
+        try {
+            ResourcesUtil resutil = ResourcesUtil.createInstance();
+            ResourcePool pool = _runtime.getConnectionPoolConfig(poolName);
+            DeferredResourceConfig defResConfig =
+                    resutil.getDeferredResourceConfig(null, pool, ConnectorsUtil.getResourceType(pool), null);
+
+            status = loadResourcesAndItsRar(defResConfig);
+        } catch (ConnectorRuntimeException cre) {
+            _logger.log(Level.WARNING, "unable to load Jdbc Connection Pool [ " + poolName + " ]", cre);
+        }
+        return status;
+    }
+
+/*
     public boolean checkAndLoadJdbcPool(String poolName) {
         boolean status = false;
         try {
@@ -368,6 +381,7 @@ public class ConnectorService implements ConnectorConstants {
         }
         return status;
     }
+*/
 
     /**
      * Redeploy the resource into the server's runtime naming context
@@ -375,20 +389,40 @@ public class ConnectorService implements ConnectorConstants {
      * @param instance a resource object
      * @throws Exception thrown if fail
      */
-    public void redeployResource(Object instance) throws Exception { 
+/*
+    public void redeployResource(Object instance) throws Exception {
         ResourceDeployer deployer = factory.getResourceDeployer(instance);
         if(deployer != null) {
             deployer.redeployResource(instance);
         }
     }
+*/
 
+    //TODO V3 change exception type ?
+/*
+    public void deployResource(Object resource) throws Exception {
+        ResourceDeployer deployer = factory.getResourceDeployer(resource);
+        if(deployer != null){
+            deployer.deployResource(resource);
+        }
+    }
+*/
+
+/*
+    public void undeployResource(Object resource) throws Exception {
+        ResourceDeployer deployer = factory.getResourceDeployer(resource);
+        if(deployer != null){
+            deployer.undeployResource(resource);
+        }
+    }
+*/
     private Collection getPools(Collection allResources) {
         List pools = new ArrayList();
-        for(Object resource : allResources) {
-            if(resource instanceof JdbcConnectionPool) {
+        for (Object resource : allResources) {
+            if (resource instanceof JdbcConnectionPool) {
                 JdbcConnectionPool pool = (JdbcConnectionPool) resource;
                 pools.add(pool);
-            } else if(resource instanceof ConnectorConnectionPool) {
+            } else if (resource instanceof ConnectorConnectionPool) {
                 ConnectorConnectionPool pool = (ConnectorConnectionPool) resource;
                 pools.add(pool);
             }
@@ -398,11 +432,11 @@ public class ConnectorService implements ConnectorConstants {
 
     private Collection getResources(Collection allResources) {
         List resources = new ArrayList();
-        for(Object resource : allResources) {
-            if(resource instanceof JdbcResource) {
+        for (Object resource : allResources) {
+            if (resource instanceof JdbcResource) {
                 JdbcResource res = (JdbcResource) resource;
                 resources.add(res);
-            } else if(resource instanceof ConnectorResource) {
+            } else if (resource instanceof ConnectorResource) {
                 ConnectorResource res = (ConnectorResource) resource;
                 resources.add(res);
             }
@@ -410,25 +444,39 @@ public class ConnectorService implements ConnectorConstants {
         return resources;
     }
 
-    /**
-     * Find if a resource is either a JDBC Connection pool or a 
-     * Connector Connection pool.
-     * @param resource
-     * @return boolean 
-     */
+    public void ifSystemRarLoad(String rarName)
+                           throws ConnectorRuntimeException {
+        if(ConnectorsUtil.belongsToSystemRA(rarName)){
+            loadDeferredResourceAdapter(rarName);
+        }
+    }
+
+
+/*
+    */
+/**
+ * Find if a resource is either a JDBC Connection pool or a
+ * Connector Connection pool.
+ * @param resource
+ * @return boolean
+ */
+/*
     private boolean isPool(Object resource) {
         return (resource instanceof JdbcConnectionPool || 
                 resource instanceof ConnectorConnectionPool);
     }
 
-    /**
-     * Find is a resource is either a JDBC Resource or a 
-     * Connector Resource.
-     * @param resource
-     * @return boolean
-     */
+    */
+/**
+ * Find is a resource is either a JDBC Resource or a
+ * Connector Resource.
+ * @param resource
+ * @return boolean
+ */
+/*
     private boolean isResource(Object resource) {
         return (resource instanceof JdbcResource || 
                 resource instanceof ConnectorResource);
     }
+*/
 }

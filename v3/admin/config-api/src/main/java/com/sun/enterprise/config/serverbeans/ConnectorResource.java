@@ -66,24 +66,8 @@ import org.glassfish.quality.ToDo;
 }) */
 @org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ConnectorResourceConfig")
 @Configured
-public interface ConnectorResource extends ConfigBeanProxy, Injectable, Resource, PropertyBag {
+public interface ConnectorResource extends ConfigBeanProxy, Injectable, Resource, PropertyBag, BindableResource {
 
-    /**
-     * Gets the value of the jndiName property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
-    @Attribute(required = true, key=true)
-    public String getJndiName();
-
-    /**
-     * Sets the value of the jndiName property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    public void setJndiName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the poolName property.

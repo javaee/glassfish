@@ -12,5 +12,6 @@
                         com.sun.enterprise.deployment.runtime.connector, \
                         com.sun.enterprise.deployment.runtime.web, \
                         com.sun.enterprise.deployment.util, \
-                        com.sun.enterprise.deployment.web
+                        com.sun.enterprise.deployment.web, \
+                        com.sun.enterprise.repository
 

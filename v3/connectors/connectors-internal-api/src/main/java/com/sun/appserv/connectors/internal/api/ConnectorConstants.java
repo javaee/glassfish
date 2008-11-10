@@ -288,6 +288,13 @@ public interface ConnectorConstants {
     public static final String SEC = "Security";
     public static final String RA = "ResourceAdapter";
 
+
+    //TODO V3 should be taken from ResourceDeployEvent
+    /**
+     * Constant to denote external jndi resource type.
+     */
+    public static final String RES_TYPE_EXTERNAL_JNDI = "external-jndi";
+
     //TODO V3 use SystemPropertyConstants later
     public static final String INSTALL_ROOT = "com.sun.aas.installRoot";
 
@@ -312,9 +319,44 @@ public interface ConnectorConstants {
     //TODO V3 should be taken from ResourceDeployEvent
     public static final String RES_TYPE_CR = "cr";
 
+    /**
+     * Constant to denote custom resource type.
+     */
+    //TODO V3 should be taken from ResourceDeployEvent
+    public static final String RES_TYPE_CUSTOM = "custom";
+
+    //TODO V3 should be taken from ResourceDeployEvent
+    /**
+     * Constant to denote persistence manager factory resource type.
+     */
+    public static final String RES_TYPE_PMF = "pmf";
+
+    //TODO V3 should be taken from ResourceDeployEvent
+    /**
+     * Constant to denote admin object resource type.
+     */
+    public static final String RES_TYPE_AOR = "aor";
+    
+/*  TODO V3 unused ?
 
     //TODO V3 should be taken from IASJ2EEResourceFactoryImpl
     public static final String JDBC_RES_TYPE = "jdbc-resource";
+*/
 
+
+
+    /**
+     * Constant to denote mail resource type.
+     */
+    //TODO V3 should be taken from ResourceDeployEvent
+    public static final String RES_TYPE_MAIL = "mail";
+
+    //TODO V3 should be taken from IASJ2EEResourceFactoryImpl
+    public static final String JMS_QUEUE = "javax.jms.Queue";
+    public static final String JMS_TOPIC = "javax.jms.Topic";
+    public static final String JMS_QUEUE_CONNECTION_FACTORY = "javax.jms.QueueConnectionFactory";
+    public static final String JMS_TOPIC_CONNECTION_FACTORY = "javax.jms.TopicConnectionFactory";
+    /** resource type residing in an external JNDI repository */
+    public static final String EXT_JNDI_RES_TYPE = "external-jndi-resource";
 
 }

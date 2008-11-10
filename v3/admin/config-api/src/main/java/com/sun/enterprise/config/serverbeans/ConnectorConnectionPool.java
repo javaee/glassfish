@@ -51,11 +51,8 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeSupport;
-import java.io.Serializable;
 import java.util.List;
 
-import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
@@ -73,31 +70,9 @@ import org.glassfish.quality.ToDo;
 }) */
 @org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ConnectorConnectionPoolConfig")
 @Configured
-public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Resource, PropertyBag {
+public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Resource, ResourcePool,
+        PropertyBag {
 
-    /**
-     * Gets the value of the name property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
-    @Attribute(required = true, key=true)
-    public String getName();
-
-    /**
-     * Sets the value of the name property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    public void setName(String value) throws PropertyVetoException;
-
-    /**
-     * Gets the value of the resourceAdapterName property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
     @Attribute(required = true)
     public String getResourceAdapterName();
 

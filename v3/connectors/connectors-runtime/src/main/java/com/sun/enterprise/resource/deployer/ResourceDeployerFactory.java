@@ -47,20 +47,14 @@
  * use it only in accordance with the terms of the license
  * agreement you entered into with iPlanet/Sun Microsystems.
  */
-package com.sun.enterprise.server;
+package com.sun.enterprise.resource.deployer;
 
 
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
-import com.sun.enterprise.resource.deployer.ConnectorConnectionPoolDeployer;
-import com.sun.enterprise.resource.deployer.ConnectorResourceDeployer;
-import com.sun.enterprise.resource.deployer.JdbcConnectionPoolDeployer;
-import com.sun.enterprise.resource.deployer.JdbcResourceDeployer;
+import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import com.sun.enterprise.util.i18n.StringManager;
-import com.sun.enterprise.config.serverbeans.JdbcResource;
-import com.sun.enterprise.config.serverbeans.ConnectorResource;
-import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
-import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.logging.LogDomains;
 
 import java.util.logging.Logger;
@@ -68,29 +62,38 @@ import java.util.logging.Logger;
 /**
  * Deployer factory for different resource types.
  */
+//TODO V3 not needed ? as deployers are found as services ?
 public class ResourceDeployerFactory {
     //TODO V3 should this be a Service ?
     /*TODO V3 can't the factory do deploy/undeploy the resource by finding the resource-type and the
     TODO V3   deployer automatically ? */
-    /**
-     * Connector Resource deployer
-     */
+
+    /** Admin object resource deployer */
+    private ResourceDeployer adminObjectResourceDeployer_ = null;
+    
+    /** Connector Resource deployer */
     private ResourceDeployer connectorResourceDeployer_ = null;
 
-    /**
-     * Connector Connection pool
-     */
-    private ResourceDeployer connectorConnectionPoolDeployer_ = null;
+    /** Connector Connection pool deployer */
+    private com.sun.appserv.connectors.internal.spi.ResourceDeployer connectorConnectionPoolDeployer_ = null;
 
-    /**
-     * jdbc resource deployer
-     */
-    private ResourceDeployer jdbcResourceDeployer_ = null;
+    /** jdbc resource deployer */
+    private com.sun.appserv.connectors.internal.spi.ResourceDeployer jdbcResourceDeployer_ = null;
 
-    /**
-     * jdbc connection pool deployer
-     */
+    /** jdbc connection pool deployer */
     private ResourceDeployer JdbcConnectionPoolDeployer_ = null;
+
+    /** java mail resource deployer */
+    private ResourceDeployer mailResourceDeployer_  = null;
+
+    /** pmf resource deployer */
+    private ResourceDeployer pmfResourceDeployer_  = null;
+
+    /** custom resource deployer */
+    private ResourceDeployer customResourceDeployer_   = null;
+
+    /** external jndi resource deployer */
+    private ResourceDeployer externalJndiResourceDeployer_  = null;
 
     /**
      * logger to log core messages
@@ -108,6 +111,11 @@ public class ResourceDeployerFactory {
         this.connectorConnectionPoolDeployer_ = new ConnectorConnectionPoolDeployer();
         this.jdbcResourceDeployer_ = new JdbcResourceDeployer();
         this.JdbcConnectionPoolDeployer_ = new JdbcConnectionPoolDeployer();
+        this.mailResourceDeployer_         = new MailResourceDeployer();
+        this.pmfResourceDeployer_          = new PersistenceManagerFactoryResourceDeployer();
+        this.customResourceDeployer_       = new CustomResourceDeployer();
+        this.externalJndiResourceDeployer_ = new ExternalJndiResourceDeployer();
+        this.adminObjectResourceDeployer_= new AdminObjectResourceDeployer();
     }
 
     /**
@@ -115,8 +123,9 @@ public class ResourceDeployerFactory {
      *
      * @param type resource type
      * @throws Exception if unknown resource type
+     * @return ResourceDeployer of appropriate type
      */
-    public ResourceDeployer getResourceDeployer(String type) throws Exception {
+    public com.sun.appserv.connectors.internal.spi.ResourceDeployer getResourceDeployer(String type) throws Exception {
 
         ResourceDeployer deployer = null;
 
@@ -128,6 +137,16 @@ public class ResourceDeployerFactory {
             deployer = this.connectorConnectionPoolDeployer_;
         } else if (type.equals(ConnectorConstants.RES_TYPE_JCP)) {
             deployer = this.JdbcConnectionPoolDeployer_;
+        } else if (type.equals(ConnectorConstants.RES_TYPE_MAIL)) {
+            deployer = this.mailResourceDeployer_;
+        } else if (type.equals(ConnectorConstants.RES_TYPE_EXTERNAL_JNDI)) {
+            deployer = this.externalJndiResourceDeployer_;
+        } else if (type.equals(ConnectorConstants.RES_TYPE_CUSTOM)) {
+            deployer = this.customResourceDeployer_;
+        } else if (type.equals(ConnectorConstants.RES_TYPE_PMF)) {
+            deployer = this.pmfResourceDeployer_;
+        } else if (type.equals(ConnectorConstants.RES_TYPE_AOR)) {
+            deployer = this.adminObjectResourceDeployer_;
         } else {
             String msg = localStrings.getString(
                     "resource.deployment.resource_type_not_implemented", type);
@@ -141,8 +160,9 @@ public class ResourceDeployerFactory {
      *
      * @param resource Object
      * @throws Exception if unknown resource type
+     * @return ResourceDeployer for the given resource
      */
-    public ResourceDeployer getResourceDeployer(Object resource) throws Exception {
+    public com.sun.appserv.connectors.internal.spi.ResourceDeployer getResourceDeployer(Object resource) throws Exception {
 
         ResourceDeployer deployer = null;
 
@@ -154,6 +174,16 @@ public class ResourceDeployerFactory {
             deployer = this.connectorConnectionPoolDeployer_;
         } else if (resource instanceof JdbcConnectionPool) {
             deployer = this.JdbcConnectionPoolDeployer_;
+        } else if (resource instanceof MailResource) {
+            deployer = this.mailResourceDeployer_;
+        } else if (resource instanceof ExternalJndiResource) {
+            deployer = this.externalJndiResourceDeployer_;
+        } else if (resource instanceof CustomResourceDeployer) {
+            deployer = this.customResourceDeployer_;
+        } else if (resource instanceof PersistenceManagerFactoryResourceDeployer) {
+            deployer = this.pmfResourceDeployer_;
+        } else if (resource instanceof AdminObjectResourceDeployer) {
+            deployer = this.adminObjectResourceDeployer_;
         } else {
             String msg = localStrings.getString(
                     "resource.deployment.resource_type_not_implemented", resource);

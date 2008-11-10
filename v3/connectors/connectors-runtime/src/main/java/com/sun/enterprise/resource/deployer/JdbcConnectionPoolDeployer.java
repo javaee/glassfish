@@ -53,6 +53,7 @@ import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 import org.glassfish.api.admin.config.Property;
+import org.jvnet.hk2.annotations.Service;
 import com.sun.enterprise.connectors.ConnectorConnectionPool;
 import com.sun.enterprise.connectors.ConnectorDescriptorInfo;
 import com.sun.enterprise.connectors.ConnectorRuntime;
@@ -61,7 +62,7 @@ import com.sun.enterprise.connectors.util.ResourcesUtil;
 import com.sun.enterprise.deployment.ConnectionDefDescriptor;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.EnvironmentProperty;
-import com.sun.enterprise.server.ResourceDeployer;
+import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
 
@@ -82,6 +83,7 @@ import java.util.logging.Logger;
 
 // This class was created to fix the bug # 4650787
 
+@Service(name= ConnectorConstants.RES_TYPE_JCP)
 public class JdbcConnectionPoolDeployer implements ResourceDeployer {
 
     static private StringManager sm = StringManager.getManager(

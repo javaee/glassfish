@@ -120,7 +120,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
     protected PoolWaitQueue waitQueue;
     protected String poolWaitQueueClass;
 
-    protected String name; //poolName
+    protected final String name; //poolName
 
     private PoolTxHandler poolTxHandler;
 
@@ -1048,9 +1048,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
 
     public ResourceHandle createResource(ResourceAllocator alloc) throws PoolingException {
         //NOTE : Pool should not call this method directly, it should be called only by pool-datastructure
-        ResourceHandle result = null;
-
-        result = createSingleResource(alloc);
+        ResourceHandle result = createSingleResource(alloc);
 
         ResourceState state = new ResourceState();
         state.setBusy(false);

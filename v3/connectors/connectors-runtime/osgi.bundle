@@ -7,8 +7,10 @@
                         com.sun.enterprise.connectors.util,\
                         com.sun.enterprise.resource,\
                         com.sun.enterprise.resource.allocator,\
+                        com.sun.enterprise.resource.beans,\
                         com.sun.enterprise.resource.deployer,\
                         com.sun.enterprise.resource.listener,\
+                        com.sun.enterprise.resource.naming,\
                         com.sun.enterprise.resource.pool,\
                         com.sun.enterprise.resource.pool.datastructure,\
                         com.sun.enterprise.resource.pool.datastructure.strategy,\

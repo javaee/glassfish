@@ -402,7 +402,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
      * @param connectionDefinitionClassName The Connection Definition Java bean class for which
      *                                      overrideable properties are required.
      * @return Map<String, Object> String represents property name
-      * and Object is the defaultValue that is a primitive type or String
+     *         and Object is the defaultValue that is a primitive type or String
      */
     public static Map<String, Object> getConnectionDefinitionPropertiesAndDefaults(String connectionDefinitionClassName) {
         return ConnectionDefinitionUtils
@@ -469,124 +469,122 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
      * 7. add a dummy ConnectionEventListener to the mc that simply handles connectionClosed
      * 8. getConnection from the ManagedConnection with above subject<br>
      *
-     * @param poolName The poolname from whose MCF to obtain the unpooled mc
-     * @param prin  The ResourcePrincipal to use for authenticating the request if not null.
-                       If null, the pool's default authentication mechanism is used
+     * @param poolName               The poolname from whose MCF to obtain the unpooled mc
+     * @param prin                   The ResourcePrincipal to use for authenticating the request if not null.
+     *                               If null, the pool's default authentication mechanism is used
      * @param returnConnectionHandle If true will return the logical connection handle
-     *                 derived from the Managed Connection, else will only return mc
-     *
+     *                               derived from the Managed Connection, else will only return mc
      * @return an unPooled connection
      * @throws ResourceException for various error conditions
      */
-    private Object getUnpooledConnection( String poolName, ResourcePrincipal prin,
-            boolean returnConnectionHandle)
-            throws ResourceException
-    {
+    private Object getUnpooledConnection(String poolName, ResourcePrincipal prin,
+                                         boolean returnConnectionHandle)
+            throws ResourceException {
         //Get the ManagedConnectionFactory for this poolName
-	ManagedConnectionFactory mcf = null;
-	boolean needToUndeployPool = false;
+        ManagedConnectionFactory mcf = null;
+        boolean needToUndeployPool = false;
         com.sun.enterprise.config.serverbeans.JdbcConnectionPool
-	    jdbcPoolToDeploy = null;
+                jdbcPoolToDeploy = null;
         com.sun.enterprise.config.serverbeans.ConnectorConnectionPool
-	    ccPoolToDeploy = null;
+                ccPoolToDeploy = null;
 
 
         try {
-	    mcf = obtainManagedConnectionFactory( poolName );
+            mcf = obtainManagedConnectionFactory(poolName);
 
-	} catch( ConnectorRuntimeException cre ) {
+        } catch (ConnectorRuntimeException cre) {
             logFine("getUnpooledConnection :: obtainManagedConnectionFactory " +
-	        "threw exception. SO doing checkAndLoadPoolResource");
-            if(checkAndLoadJdbcPool(poolName)) {
+                    "threw exception. SO doing checkAndLoadPoolResource");
+            if (checkAndLoadPool(poolName)) {
                 logFine("getUnpooledConnection:: checkAndLoadPoolResource is true");
                 try {
-    /*TODO V3 not needed for non-cluster
-		    //deploy the pool resource if not already done
-		    //The pool resource would get loaded in case we are in DAS
-		    //due to the checkAndLoadPoolResource call
-		    //but in EE, if the pool we are trying to access is in a
-		    //remote instance, the pool will not have been created
-		    if ( ! isConnectorConnectionPoolDeployed( poolName ) ) {
-                        logFine("getUnpooledConnection :: " +
-			    "isConnectorConnectionPoolDeployed is false");
-		        try {
-		            jdbcPoolToDeploy = getJdbcConnectionPoolServerBean( poolName );
-			    if ( jdbcPoolToDeploy != null ) {
-		                (new JdbcConnectionPoolDeployer()).deployResource(
-			            jdbcPoolToDeploy );
-                                logFine("getUnpooledConnection :: force deployed the " +
-			            "JdbcConnectionPool : " + poolName);
-			    } else {
-			        ccPoolToDeploy = getConnectorConnectionPoolServerBean(
-				    poolName );
-			        (new ConnectorConnectionPoolDeployer()).deployResource(
-				    ccPoolToDeploy);
-                                logFine("getUnpooledConnection :: force deployed the " +
-			            "ConnectorConnectionPool :" + poolName);
-			    }
-			    needToUndeployPool = true;
-		        } catch(Exception e ) {
-		            _logger.log( Level.SEVERE,
-		                "jdbc.could_not_do_actual_deploy for : ", poolName );
-		            throw new ResourceException( e );
-		        }
-		    }*/
+                    /*TODO V3 not needed for non-cluster
+                 //deploy the pool resource if not already done
+                 //The pool resource would get loaded in case we are in DAS
+                 //due to the checkAndLoadPoolResource call
+                 //but in EE, if the pool we are trying to access is in a
+                 //remote instance, the pool will not have been created
+                 if ( ! isConnectorConnectionPoolDeployed( poolName ) ) {
+                             logFine("getUnpooledConnection :: " +
+                     "isConnectorConnectionPoolDeployed is false");
+                     try {
+                         jdbcPoolToDeploy = getJdbcConnectionPoolServerBean( poolName );
+                     if ( jdbcPoolToDeploy != null ) {
+                             (new JdbcConnectionPoolDeployer()).deployResource(
+                             jdbcPoolToDeploy );
+                                     logFine("getUnpooledConnection :: force deployed the " +
+                             "JdbcConnectionPool : " + poolName);
+                     } else {
+                         ccPoolToDeploy = getConnectorConnectionPoolServerBean(
+                         poolName );
+                         (new ConnectorConnectionPoolDeployer()).deployResource(
+                         ccPoolToDeploy);
+                                     logFine("getUnpooledConnection :: force deployed the " +
+                             "ConnectorConnectionPool :" + poolName);
+                     }
+                     needToUndeployPool = true;
+                     } catch(Exception e ) {
+                         _logger.log( Level.SEVERE,
+                             "jdbc.could_not_do_actual_deploy for : ", poolName );
+                         throw new ResourceException( e );
+                     }
+                 }*/
                     logFine("getUnpooledConnection :: " +
-		        "Now calling obtainManagedConnectionFactory again");
-	            mcf = obtainManagedConnectionFactory( poolName );
+                            "Now calling obtainManagedConnectionFactory again");
+                    mcf = obtainManagedConnectionFactory(poolName);
                     logFine("getUnpooledConnection:: " +
-		        "done obtainManagedConnectionFactory again");
-	        } catch( ConnectorRuntimeException creAgain ) {
-		    String l10nMsg = localStrings.getString(
-		        "pingpool.cannot_obtain_mcf", poolName);
-		    _logger.log( Level.WARNING, "jdbc.pool_not_reachable",
-                        l10nMsg );
-		    ResourceException e = new ResourceException( l10nMsg );
-		    e.initCause( creAgain );
-		    throw e;
+                            "done obtainManagedConnectionFactory again");
+                } catch (ConnectorRuntimeException creAgain) {
+                    String l10nMsg = localStrings.getString(
+                            "pingpool.cannot_obtain_mcf", poolName);
+                    _logger.log(Level.WARNING, "jdbc.pool_not_reachable",
+                            l10nMsg);
+                    ResourceException e = new ResourceException(l10nMsg);
+                    e.initCause(creAgain);
+                    throw e;
                 }
             } else {
-	        _logger.log( Level.WARNING, "jdbc.pool_not_reachable",
-                         cre.getMessage() );
-		String l10nMsg = localStrings.getString(
-		        "pingpool.cannot_obtain_mcf", poolName);
-                ResourceException e = new ResourceException( l10nMsg );
-                e.initCause( cre );
+                _logger.log(Level.WARNING, "jdbc.pool_not_reachable",
+                        cre.getMessage());
+                String l10nMsg = localStrings.getString(
+                        "pingpool.cannot_obtain_mcf", poolName);
+                ResourceException e = new ResourceException(l10nMsg);
+                e.initCause(cre);
                 throw e;
 
             }
-	}
+        }
 
 
         ResourcePrincipal resourcePrincipal = null;
-	if (prin == null ) {
-	    try {
-                resourcePrincipal = getDefaultResourcePrincipal( poolName, mcf);
-            } catch( NamingException ne) {
-	        _logger.log(Level.WARNING, "jdbc.pool_not_reachable",
-                            ne.getMessage() );
+        if (prin == null) {
+            try {
+                resourcePrincipal = getDefaultResourcePrincipal(poolName, mcf);
+            } catch (NamingException ne) {
+                _logger.log(Level.WARNING, "jdbc.pool_not_reachable",
+                        ne.getMessage());
                 String l10nMsg = localStrings.getString(
-	            "pingpool.name_not_bound", poolName);
-                ResourceException e = new ResourceException( l10nMsg + poolName  );
-	        e.initCause( ne );
-	        throw e;
-	    }
-	} else {
-	    resourcePrincipal = prin;
-	}
+                        "pingpool.name_not_bound", poolName);
+                ResourceException e = new ResourceException(l10nMsg + poolName);
+                e.initCause(ne);
+                throw e;
+            }
+        } else {
+            resourcePrincipal = prin;
+        }
 
-	final Subject defaultSubject =
-            ConnectionPoolObjectsUtils.createSubject( mcf, resourcePrincipal);
+        final Subject defaultSubject =
+                ConnectionPoolObjectsUtils.createSubject(mcf, resourcePrincipal);
 
 
-	if (_logger.isLoggable(Level.FINE)) {
-	    _logger.fine("using subject: " + defaultSubject);
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine("using subject: " + defaultSubject);
 
-	}
+        }
 
-	ManagedConnection mc = null;
-	//Create the ManagedConnection
-	mc = mcf.createManagedConnection( defaultSubject, null );
+        ManagedConnection mc = null;
+        //Create the ManagedConnection
+        mc = mcf.createManagedConnection(defaultSubject, null);
 
 /*TODO V3 not needed for non-cluster
 	//We are done with the pool for now, so undeploy if we deployed
@@ -613,14 +611,13 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
         }
 */
 
-	//Add our dummy ConnectionEventListener impl.
-	//This impl only knows how to handle connectionClosed events
-	mc.addConnectionEventListener( new UnpooledConnectionEventListener() );
+        //Add our dummy ConnectionEventListener impl.
+        //This impl only knows how to handle connectionClosed events
+        mc.addConnectionEventListener(new UnpooledConnectionEventListener());
         return returnConnectionHandle ?
-	    mc.getConnection( defaultSubject, null ) :
-	    mc;
+                mc.getConnection(defaultSubject, null) :
+                mc;
     }
-
 
 
     /*
@@ -827,7 +824,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
                     boolean lazyEnlistable = connectorConnectionPool.isLazyConnectionEnlist();
                     boolean lazyAssoc = connectorConnectionPool.isLazyConnectionAssoc();
 
-                    if ( isPM || isNonTx ) {
+                    if (isPM || isNonTx) {
                         /*
                         We should not do lazyEnlistment if we are an __pm
                         resource since we won't have an InvocationContext and
@@ -888,19 +885,19 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
 
     private PoolType getPoolType(ConnectorConnectionPool connectorConnectionPool) {
         PoolType pt = PoolType.STANDARD_POOL;
-        if(connectorConnectionPool.isAssociateWithThread() ){
-            pt = PoolType.ASSOCIATE_WITH_THREAD_POOL ;
-        }else if( connectorConnectionPool.isPartitionedPool()){
+        if (connectorConnectionPool.isAssociateWithThread()) {
+            pt = PoolType.ASSOCIATE_WITH_THREAD_POOL;
+        } else if (connectorConnectionPool.isPartitionedPool()) {
             pt = PoolType.PARTITIONED_POOL;
         }
         return pt;
     }
 
-    public PoolType getPoolType(String poolName) throws ConnectorRuntimeException{
+    public PoolType getPoolType(String poolName) throws ConnectorRuntimeException {
         ConnectorConnectionPool ccp;
-        try{
-             ccp = getConnectorConnectionPool(poolName);
-        }catch(NamingException e){
+        try {
+            ccp = getConnectorConnectionPool(poolName);
+        } catch (NamingException e) {
             ConnectorRuntimeException cre = new ConnectorRuntimeException(e.getMessage());
             cre.initCause(e);
             throw cre;

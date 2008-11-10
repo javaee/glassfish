@@ -36,10 +36,8 @@
 package org.glassfish.javaee.services;
 
 import org.glassfish.api.naming.NamingObjectProxy;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 
 import javax.naming.Context;
@@ -55,15 +53,13 @@ import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
  */
 @Service
 @Scoped(PerLookup.class)
-public class ResourceAdapterProxy implements NamingObjectProxy {
+public class ResourceAdapterProxy extends ResourceProxy implements NamingObjectProxy {
 
     private Object resource;
     private Object pool;
     private String resourceType;
     private String raName;
     private String resourceName;
-    @Inject
-    Habitat connectorRuntimeHabitat;
 
     public ResourceAdapterProxy() {
     }
@@ -90,30 +86,21 @@ public class ResourceAdapterProxy implements NamingObjectProxy {
 
     /**
      * Create and return an object.
-     *
      * @return an object
      */
     public Object create(Context ic) throws NamingException {
-
-        ConnectorRuntime connectorRuntime = connectorRuntimeHabitat.getComponent
-                (ConnectorRuntime.class, null);
-
         Object result = null;
         try {
-            if(connectorRuntime.checkAndLoadResource(resource, pool, resourceType, resourceName, raName)){
+            if(getConnectorRuntime().checkAndLoadResource(resource, pool, resourceType, resourceName, raName)){
                 result = ic.lookup(resourceName);
             }else{
                 throwResourceNotFoundException(null, resourceName);
             }
         } catch (Exception e) {
+            //TODO V3, need to provide the actual exception. should not eat exception
             return throwResourceNotFoundException(e, resourceName);
         }
         return result;
     }
 
-    private Object throwResourceNotFoundException(Exception e, String resourceName) throws NamingException {
-        NamingException ne = new NamingException("Unable to lookup resource : " + resourceName);
-        ne.initCause(e);
-        throw ne;
-    }
 }

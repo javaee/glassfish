@@ -39,9 +39,9 @@ package com.sun.enterprise.connectors;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import org.glassfish.api.admin.config.Property;
-import com.sun.enterprise.config.serverbeans.SecurityMap;
-import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.connectors.service.*;
+import com.sun.enterprise.connectors.service.ConnectorService;
 import com.sun.enterprise.connectors.util.RAWriterAdapter;
 import com.sun.enterprise.connectors.authentication.AuthenticationService;
 import com.sun.enterprise.connectors.naming.ConnectorNamingEventNotifier;
@@ -49,6 +49,7 @@ import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.JndiNameEnvironment;
 import com.sun.enterprise.resource.pool.PoolManager;
 import com.sun.appserv.connectors.internal.api.WorkManagerFactory;
+import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.enterprise.module.ModulesRegistry;
@@ -59,16 +60,15 @@ import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
 import com.sun.corba.se.spi.orbutil.threadpool.ThreadPoolManager;
 import com.sun.corba.se.spi.orbutil.threadpool.NoSuchThreadPoolException;
 import com.sun.corba.se.impl.orbutil.threadpool.ThreadPoolManagerImpl;
-import com.sun.enterprise.server.ResourceDeployer;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.api.invocation.InvocationManager;
-import org.glassfish.javaee.services.ResourceManager;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.component.PreDestroy;
+import org.jvnet.hk2.component.Habitat;
 
 import javax.naming.NamingException;
 import javax.resource.spi.ConnectionManager;
@@ -110,6 +110,7 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
     private ConnectorService connectorService;
     private ResourceAdapterAdminServiceImpl resourceAdapterAdmService;
     private ConnectorSecurityAdminServiceImpl connectorSecurityAdmService;
+    private ConnectorAdminObjectAdminServiceImpl adminObjectAdminService;
 
 
     private long startTime;
@@ -133,10 +134,13 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
     private ModulesRegistry registry;
 
     @Inject
-    private ResourceManager rm;
+    private WorkManagerFactory wmf;
 
     @Inject
-    private WorkManagerFactory wmf;
+    private Resources allResources;
+
+    @Inject
+    private Habitat deployerHabitat;
 
     private final Object getTimerLock = new Object();
     private Timer timer;
@@ -179,6 +183,7 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
         this.environment = environment;
         //TODO V3
         connectorService.initialize(getEnviron());
+
     }
 
     /**
@@ -451,6 +456,8 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
                 ConnectorAdminServicesFactory.getService(ConnectorConstants.RA);
         connectorSecurityAdmService = (ConnectorSecurityAdminServiceImpl)
                 ConnectorAdminServicesFactory.getService(ConnectorConstants.SEC);
+        adminObjectAdminService = (ConnectorAdminObjectAdminServiceImpl)
+                ConnectorAdminServicesFactory.getService(ConnectorConstants.AOR);
 
         //TODO V3 class-loader (temprorarily initializing with current thread's context cl)
 
@@ -674,9 +681,16 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
         return connectorResourceAdmService.getResourceRebindEventNotifier();
     }
 
+/*
     public JdbcConnectionPool getJdbcConnectionPoolConfig(String poolName){
-        return rm.getJdbcConnectionPoolConfig(poolName);
+        return ConnectorsUtil.getJdbcConnectionPoolConfig(poolName, allResources);
     }
+*/
+
+    public ResourcePool getConnectionPoolConfig(String poolName){
+        return ConnectorsUtil.getConnectionPoolConfig(poolName, allResources);
+    }
+
 
     public boolean pingConnectionPool(String poolName) throws ResourceException {
         return ccPoolAdmService.testConnectionPool(poolName);
@@ -702,13 +716,39 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
         wmf.removeWorkManager(moduleName);        
     }
 
-    /**
+	/**
      * Redeploy the resource into the server's runtime naming context
      *
      * @param resource a resource object
      * @throws Exception thrown if fail
-     */    
+     */ /*
+
+
     public void redeployResource(Object instance) throws Exception {
         connectorService.redeployResource(instance);
-    }    
+    }
+    public void deployResource(Resource resource) throws Exception{
+        deployerHabitat.getComponent(com.sun.appserv.connectors.internal.spi.ResourceDeployer.class, 
+		ConnectorsUtil.getResourceType(resource)).deployResource(resource);
+        //connectorService.deployResource(resource);
+    }
+
+    public void undeployResource(Resource resource) throws Exception{
+        deployerHabitat.getComponent(com.sun.appserv.connectors.internal.spi.ResourceDeployer.class, 
+		ConnectorsUtil.getResourceType(resource)).undeployResource(resource);
+        //connectorService.undeployResource(resource);
+    }
+    
+*/
+
+    public void addAdminObject (String appName, String connectorName,
+            String jndiName, String adminObjectType, Properties props)
+            throws ConnectorRuntimeException {
+        adminObjectAdminService.addAdminObject(appName,connectorName,jndiName,adminObjectType,props);
+    }
+
+    public void deleteAdminObject(String jndiName) throws ConnectorRuntimeException {
+        adminObjectAdminService.deleteAdminObject(jndiName);
+
+    }
 }

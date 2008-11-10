@@ -39,17 +39,12 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.naming.GlassfishNamingManager;
-import com.sun.enterprise.config.serverbeans.JdbcResource;
-import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
-import com.sun.enterprise.config.serverbeans.ConnectorResource;
-import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 
 import javax.naming.NamingException;
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * Binds proxy objects in the jndi namespace for all the resources and pools defined in the
@@ -70,7 +65,28 @@ public class ResourceAdaptersBinder {
     @Inject
     private Habitat raProxyHabitat;
 
+    @Inject
+    private Habitat genericResourceProxy;
+
+
+    public void deployResource( String jndiName, Resource resource){
+        try{
+            bindResource(resource, jndiName);
+        }catch(NamingException ne){
+            logger.log(Level.SEVERE,"Cannot bind resource [ "  + jndiName + " ] to naming manager", ne);            
+        }
+    }
+
+    private void bindResource(Resource resource, String jndiName) throws NamingException {
+        ResourceProxy proxy = genericResourceProxy.getComponent(ResourceProxy.class);
+        proxy.setResource(resource);
+        proxy.setJndiName(jndiName);
+        manager.publishObject(jndiName, proxy, true);
+
+    }
+
     //TODO V3, if JdbcResource and ConnectorResource has a common super class, pool name can be got and mergeed.
+/*
     public void deployAllJdbcResourcesAndPools(JdbcResource[] jdbcResources, JdbcConnectionPool[] jdbcPools) {
         for (JdbcResource resource : jdbcResources) {
             try {
@@ -86,6 +102,7 @@ public class ResourceAdaptersBinder {
             }
         }
     }
+*/
 
     public void deployAllConnectorResourcesAndPools(ConnectorResource[] connectorResources,
                                                     ConnectorConnectionPool[] connectorPools) {
@@ -127,6 +144,7 @@ public class ResourceAdaptersBinder {
      * @return JdbcConnectionPool
      * @param jdbcPools JdbcConnectionPools
      */
+/*
     private JdbcConnectionPool getAssociatedJdbcPool(String poolName, JdbcConnectionPool[] jdbcPools) {
         JdbcConnectionPool result = null;
         for (JdbcConnectionPool pool : jdbcPools) {
@@ -137,6 +155,7 @@ public class ResourceAdaptersBinder {
         }
         return result;
     }
+*/
 
     /**
      * get the associated pool's name for the jdbc-resource
@@ -154,14 +173,5 @@ public class ResourceAdaptersBinder {
             }
         }
         return result;
-    }
-
-    private List<String> getAllPoolNames(JdbcConnectionPool[] pools) {
-        List<String> poolNames = new ArrayList<String>();
-        for(JdbcConnectionPool pool : pools){
-            poolNames.add(pool.getName());
-
-        }
-        return poolNames;
     }
 }

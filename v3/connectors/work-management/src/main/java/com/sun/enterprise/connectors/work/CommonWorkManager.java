@@ -57,6 +57,7 @@ import java.util.logging.Logger;
 
 public final class CommonWorkManager implements MonitorableWorkManager {
 
+    //TODO V3 need to use ee.threadpool
     private static WorkManager wm = null;
 
     private ThreadPoolManager tpm;
@@ -84,6 +85,7 @@ public final class CommonWorkManager implements MonitorableWorkManager {
             throws ConnectorRuntimeException {
 
         try {
+            //TODO V3 need to be in sync with v2 ? (default thread-pool trial)
             this.runtime = runtime;
             tp = runtime.getThreadPool(threadPoolId);
         } catch (NoSuchThreadPoolException e) {

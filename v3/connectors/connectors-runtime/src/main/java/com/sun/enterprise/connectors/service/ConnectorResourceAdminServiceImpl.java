@@ -44,7 +44,6 @@ import com.sun.enterprise.connectors.naming.ConnectorNamingEvent;
 import com.sun.enterprise.connectors.naming.ConnectorNamingEventNotifier;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
-import com.sun.enterprise.resource.ConnectorObjectFactory;
 
 import javax.naming.Context;
 import javax.naming.NameNotFoundException;
@@ -91,19 +90,19 @@ public class ConnectorResourceAdminServiceImpl extends ConnectorService {
                         (ConnectorConnectionPool) ic.lookup(jndiNameForPool);
             } catch (NamingException ne) {
                 //Probably the pool is not yet initialized (lazy-loading), try doing a lookup
-                try{
-                    checkAndLoadJdbcPool(poolName);
+                try {
+                    checkAndLoadPool(poolName);
                     connectorConnectionPool =
                             (ConnectorConnectionPool) ic.lookup(jndiNameForPool);
-                }catch(NamingException e){
-                    _logger.log(Level.SEVERE, "Unable to lookup pool [ "+ name +" ]", e);
+                } catch (NamingException e) {
+                    _logger.log(Level.SEVERE, "Unable to lookup pool [ " + name + " ]", e);
                 }
             }
 
             connectorConnectionPool = (ConnectorConnectionPool) ic.lookup(jndiNameForPool);
             ConnectorDescriptorInfo cdi = connectorConnectionPool.getConnectorDescriptorInfo();
 
-            ConnectorObjectFactory cof = new ConnectorObjectFactory(jndiName, connectorConnectionPool.getConnectorDescriptorInfo().
+            com.sun.enterprise.resource.naming.ConnectorObjectFactory cof = new com.sun.enterprise.resource.naming.ConnectorObjectFactory(jndiName, connectorConnectionPool.getConnectorDescriptorInfo().
                     getConnectionFactoryClass(), cdi.getRarName(), poolName);
 
             _runtime.getNamingManager().publishObject(jndiName, cof, true);
@@ -184,7 +183,7 @@ public class ConnectorResourceAdminServiceImpl extends ConnectorService {
             name = name.substring(0, name.lastIndexOf(suffix));
         }
         //Context ic = _runtime.getNamingManager().getInitialContext();
-		//To pass suffix that will be used by connector runtime during lookup
+        //To pass suffix that will be used by connector runtime during lookup
         Context ic = new InitialContext(ht);
         return ic.lookup(name);
     }

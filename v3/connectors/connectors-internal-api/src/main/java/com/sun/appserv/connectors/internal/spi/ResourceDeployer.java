@@ -34,53 +34,55 @@
  * holder.
  */
 
+/*
+ * @(#) ResourceDeployer.java
+ *
+ * Copyright 2000-2001 by iPlanet/Sun Microsystems, Inc.,
+ * 901 San Antonio Road, Palo Alto, California, 94303, U.S.A.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information
+ * of iPlanet/Sun Microsystems, Inc. ("Confidential Information").
+ * You shall not disclose such Confidential Information and shall
+ * use it only in accordance with the terms of the license
+ * agreement you entered into with iPlanet/Sun Microsystems.
+ */
+package com.sun.appserv.connectors.internal.spi;
 
-package com.sun.enterprise.resource.deployer;
-
-import com.sun.enterprise.config.serverbeans.ConnectorResource;
-import com.sun.enterprise.connectors.ConnectorRuntime;
-import com.sun.logging.LogDomains;
-import com.sun.appserv.connectors.internal.api.ConnectorConstants;
-import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
- * @author Srikanth P
+ * Interface to be implemented by different resource types (eg. jms-resource)
+ * to deploy/undeploy a resource to the server's runtime naming context.
+ * <p/>
+ * The methods can potentially be called concurrently, therefore implementation
+ * need to do synchronization if necessary.
  */
+@Contract
+public interface ResourceDeployer {
 
-@Service(name= ConnectorConstants.RES_TYPE_CR)
-public class ConnectorResourceDeployer implements ResourceDeployer {
+    /**
+     * Deploy the resource into the server's runtime naming context
+     *
+     * @param resoure a resource object (eg. JmsResource)
+     * @throws Exception thrown if fail
+     */
+    void deployResource(Object resoure) throws Exception;
 
-    static Logger _logger = LogDomains.getLogger(ConnectorResourceDeployer.class, LogDomains.CORE_LOGGER);
+    /**
+     * Undeploy the resource from the server's runtime naming context
+     *
+     * @param resoure a resource object (eg. JmsResource)
+     * @throws Exception thrown if fail
+     */
+    void undeployResource(Object resoure) throws Exception;
+    
+    /**
+     * Redeploy the resource into the server's runtime naming context
+     *
+     * @param resource a resource object
+     * @throws Exception thrown if fail
+     */
+    void redeployResource(Object resource) throws Exception;
 
-    public synchronized void deployResource(Object resource) throws Exception {
-
-        ConnectorResource domainResource =
-                (com.sun.enterprise.config.serverbeans.ConnectorResource) resource;
-        String jndiName = domainResource.getJndiName();
-        String poolName = domainResource.getPoolName();
-        ConnectorRuntime crt = ConnectorRuntime.getRuntime();
-        _logger.log(Level.FINE, "Calling backend to add connector resource", jndiName);
-
-        crt.createConnectorResource(jndiName, poolName, null);
-        _logger.log(Level.FINE, "Added connector resource in backend", jndiName);
-    }
-
-    public synchronized void undeployResource(Object resource)
-            throws Exception {
-        ConnectorResource domainResource =
-                (com.sun.enterprise.config.serverbeans.ConnectorResource) resource;
-        String jndiName = domainResource.getJndiName();
-        ConnectorRuntime crt = ConnectorRuntime.getRuntime();
-        crt.deleteConnectorResource(jndiName);
-    }
-
-    public void redeployResource(Object resource) throws Exception {
-        undeployResource(resource);
-        deployResource(resource);
-    }
 }

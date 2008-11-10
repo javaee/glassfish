@@ -56,8 +56,6 @@ import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 
-import org.glassfish.quality.ToDo;
-
 
 /**
  *
@@ -69,31 +67,8 @@ import org.glassfish.quality.ToDo;
 }) */
 @org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.JDBCConnectionPoolConfig")
 @Configured
-public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resource, PropertyBag {
+public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resource, ResourcePool, PropertyBag {
 
-    /**
-     * Gets the value of the name property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
-    @Attribute(required = true, key=true)
-    public String getName();
-
-    /**
-     * Sets the value of the name property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    public void setName(String value) throws PropertyVetoException;
-
-    /**
-     * Gets the value of the datasourceClassname property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
     @Attribute(required = true)
     public String getDatasourceClassname();
 
@@ -560,6 +535,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * Sets the value of the description property.
      *
      * @param value allowed object is
+     * 
      *              {@link String }
      */
     public void setDescription(String value) throws PropertyVetoException;
