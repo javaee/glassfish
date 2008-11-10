@@ -46,6 +46,7 @@ import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.AdminObject;
 import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.enterprise.util.i18n.StringManager;
+import com.sun.enterprise.resource.beans.AdministeredObjectResource;
 import com.sun.logging.LogDomains;
 
 import javax.resource.ResourceException;
