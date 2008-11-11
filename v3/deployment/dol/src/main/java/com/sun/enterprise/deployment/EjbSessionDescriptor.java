@@ -39,6 +39,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.internal.api.Globals;
 
 import java.util.*;
+import java.lang.reflect.Method;
 
 /**
     * Objects of this kind represent the deployment information describing a single 
@@ -63,6 +64,10 @@ public class EjbSessionDescriptor extends EjbDescriptor {
     // For EJB 3.0 stateful session beans with adapted homes, list of
     // business methods corresponding to Home/LocalHome create methods.
     private Set<EjbInitInfo> initMethods=new HashSet<EjbInitInfo>();
+
+    private Method afterBeginMethod = null;
+    private Method beforeCompletionMethod = null;
+    private Method afterCompletionMethod = null;
 
     /** The Session type String.*/
     public final static String TYPE = "Session";
@@ -350,6 +355,48 @@ public class EjbSessionDescriptor extends EjbDescriptor {
             }
         }
         return txAttributes;
+    }
+
+    /**
+     * Set the Method annotated @AfterBegin.
+     */
+    public void setAfterBeginMethod(Method m) {
+        afterBeginMethod = m;
+    }
+    
+    /**
+     * Returns the Method annotated @AfterBegin.
+     */
+    public Method getAfterBeginMethod() {
+        return afterBeginMethod;
+    }
+    
+    /**
+     * Set the Method annotated @BeforeCompletion.
+     */
+    public void setBeforeCompletionMethod(Method m) {
+        beforeCompletionMethod = m;
+    }
+    
+    /**
+     * Returns the Method annotated @AfterBegin.
+     */
+    public Method getBeforeCompletionMethod() {
+        return beforeCompletionMethod;
+    }
+    
+    /**
+     * Set the Method annotated @AfterCompletion.
+     */
+    public void setAfterCompletionMethod(Method m) {
+        afterCompletionMethod = m;
+    }
+    
+    /**
+     * Returns the Method annotated @AfterCompletion.
+     */
+    public Method getAfterCompletionMethod() {
+        return afterCompletionMethod;
     }
     
     
