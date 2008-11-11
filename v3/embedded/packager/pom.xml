@@ -78,6 +78,13 @@
         </configuration>
       </plugin>
     </plugins>
+    <extensions>
+           <extension>
+              <groupId>org.glassfish.build</groupId>
+              <artifactId>maven-glassfish-extension</artifactId>
+              <version>${project.version}</version>
+          </extension>
+      </extensions> 
   </build>
 
   <modules>
