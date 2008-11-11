@@ -47,6 +47,8 @@ import org.glassfish.internal.api.Globals;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -140,6 +142,8 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
 
     private MethodDescriptor timedObjectMethod;
 
+    private ConcurrentMap<Method, MethodDescriptor> allMethodDescriptors = 
+            new ConcurrentHashMap<Method, MethodDescriptor>();
 
     //
     // The set of all interceptor classes applicable to this bean.  This 
@@ -210,6 +214,7 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
         this.ejbClassName = other.ejbClassName;
         this.usesCallerIdentity = other.usesCallerIdentity;
         this.bundleDescriptor = other.bundleDescriptor;
+        this.allMethodDescriptors = new ConcurrentHashMap(other.allMethodDescriptors);
     }
 
     /**
@@ -1841,8 +1846,24 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
     protected void addAllInterfaceMethodsIn(Collection methodDescriptors, Class c, String methodIntf) {
         Method[] methods = c.getMethods();
         for (int i = 0; i < methods.length; i++) {
-            methodDescriptors.add(new MethodDescriptor(methods[i], methodIntf));
+            methodDescriptors.add(getMethodDescriptorFor(methods[i], methodIntf));
         }
+    }
+
+    /**
+     * @return the MethodDescriptor for the given Method object
+     */
+    public MethodDescriptor getMethodDescriptorFor(Method m, String methodIntf) {
+        MethodDescriptor result = allMethodDescriptors.get(m);
+        if (result == null) {
+            result = new MethodDescriptor(m, methodIntf);
+            MethodDescriptor md = allMethodDescriptors.putIfAbsent(m, result);
+            if (md != null) {
+                // Another thread already added its version
+                result = md;
+            }
+        }
+        return result;
     }
 
     /**
