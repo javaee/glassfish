@@ -2776,23 +2776,6 @@ public class Request
     }
 
 
-    /**
-     * Gets the servlet response with which this servlet request has been
-     * associated.
-     *
-     * @return the servlet response with which this servlet request has been
-     * associated
-     */
-    public ServletResponse getServletResponse() {
-        if (response != null) {
-            // Return response facade
-            return ((Response) response).getResponse();
-        } else {
-            return null;
-        }
-    }    
-
-
     // ------------------------------------------------------ Protected Methods
 
 

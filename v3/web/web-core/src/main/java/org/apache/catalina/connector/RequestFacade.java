@@ -813,18 +813,6 @@ public class RequestFacade
     }
 
 
-    /**
-     * Gets the servlet response with which this servlet request has been
-     * associated.
-     *
-     * @return the servlet response with which this servlet request has been
-     * associated
-     */
-    public ServletResponse getServletResponse() {
-        return request.getServletResponse();
-    }
-
-
     public String getContextPath() {
 
         if (request == null) {

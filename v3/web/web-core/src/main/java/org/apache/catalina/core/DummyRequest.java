@@ -440,18 +440,5 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
     public ServletContext getServletContext() {
         return null;
     }
-
-
-    /**
-     * Gets the servlet response with which this servlet request has been
-     * associated.
-     *
-     * @return the servlet response with which this servlet request has been
-     * associated
-     */
-    public ServletResponse getServletResponse() {
-        return null;
-    }    
-
 }
 
