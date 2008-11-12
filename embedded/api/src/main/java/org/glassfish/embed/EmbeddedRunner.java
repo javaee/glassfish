@@ -53,6 +53,7 @@ class EmbeddedRunner {
     void run() throws EmbeddedException {
         info.validate();
         Server server = Server.create(info);
+        server.start();
         
         for(File f : info.archives) {
             server.deploy(f);

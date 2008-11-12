@@ -113,6 +113,7 @@ import org.glassfish.embed.impl.EmbeddedModulesRegistryImpl;
  * API. This is how all the other sensible containers do it, like Tomcat and Jetty.
  *
  * @author Kohsuke Kawaguchi
+ * @author bnevins
  */
 public class Server {
     /**
