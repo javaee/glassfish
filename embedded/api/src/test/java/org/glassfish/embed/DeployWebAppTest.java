@@ -14,6 +14,7 @@ import static org.junit.Assert.*;
  *
  * @author bnevins
  */
+
 public class DeployWebAppTest {
 
     public DeployWebAppTest() {
@@ -22,8 +23,8 @@ public class DeployWebAppTest {
     @BeforeClass
     public static void setUpClass() {
         try {
-        System.out.println("Starting Server on port 9999");
-        myGF = new Server(9999);
+            System.out.println("Starting Server on port 9999");
+            myGF = Server.create(9999, null);
         }
         catch(Exception e) {
             e.printStackTrace();

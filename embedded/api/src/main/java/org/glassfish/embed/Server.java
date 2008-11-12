@@ -135,6 +135,7 @@ public class Server {
      * To navigate around {@link #domainXml}.
      */
     private final XPath xpath = XPathFactory.newInstance().newXPath();
+    private EmbeddedInfo info;
     /*pkg-private*/ URL domainXmlUrl;
     /*pkg-private*/ URL defaultWebXml;
 
@@ -149,9 +150,67 @@ public class Server {
      * TODO constructors and startup need revamping!
      */
 
+    public static Server create(EmbeddedInfo info) throws EmbeddedException {
+        Server server = new Server(info);
+        return server;
+    }
+
+    public static Server create(int httpPort, URL domainXmlUrl) throws EmbeddedException{
+        EmbeddedInfo info = new EmbeddedInfo();
+        info.setDomainXmlUrl(domainXmlUrl);
+        info.setHttpPort(httpPort);
+        return create(info);
+    }
+
+
+
+    private Server(EmbeddedInfo info) throws EmbeddedException {
+        this.info = info;
+        setShutdownHook();
+        setupDomainXml();
+
+        // force creation...
+        EmbeddedFileSystem.getInstallRoot();
+
+        try {
+            jdbcHack();
+        } catch (Exception e) {
+            throw new EmbeddedException("jdbc_hack_failure", e);
+        }
+
+        createVirtualServer(createHttpListener(info.httpPort));
+    }
+
+    private void setupDomainXml() throws EmbeddedException {
+        domainXmlUrl = info.domainXmlUrl;
+
+        // see if it is on disk in the given file system
+        if(domainXmlUrl == null)
+            domainXmlUrl = EmbeddedFileSystem.getDomainXmlUrl();
+
+        // OK - grab the hard-wired file
+        if(domainXmlUrl == null)
+            domainXmlUrl = getClass().getResource("/org/glassfish/embed/domain.xml");
+
+        // Fatal error!
+        if(domainXmlUrl == null)
+            throw new EmbeddedException("bad_domain_xml");
+
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        try {
+        // dbf.setNamespaceAware(true);  // domain.xml doesn't use namespace
+            domainXml = dbf.newDocumentBuilder().parse(domainXmlUrl.toExternalForm());
+        }
+        catch (Exception ex) {
+            // TODO ??? better string here....
+            throw new EmbeddedException("parser_error", ex);
+        }
+    }
+
+
+    @Deprecated
     private Server(URL dx, boolean start) throws EmbeddedException {
 
-        setShutdownHook();
         domainXmlUrl = dx;
 
         if(domainXmlUrl == null)
@@ -174,6 +233,7 @@ public class Server {
      * In particular, no HTTP listener is configured out of the box, so you'd have to add
      * some programatically via {@link #createHttpListener(int)} and {@link #createVirtualServer(GFHttpListener)}.
      */
+     @Deprecated
     private Server(URL domainXmlUrl) throws EmbeddedException {
         this(domainXmlUrl, true);
     }
@@ -182,7 +242,8 @@ public class Server {
      * Starts GlassFish v3 with minimalistic configuration that involves
      * single HTTP listener listening on the given port.
      */
-    public Server(int httpPort) throws EmbeddedException {
+     @Deprecated
+    private Server(int httpPort) throws EmbeddedException {
         this(null, false);
 
         // force creation...
@@ -204,7 +265,8 @@ public class Server {
         start();
     }
 
-    private Document parseDefaultDomainXml() throws ParserConfigurationException, IOException, SAXException {
+    @Deprecated
+     private Document parseDefaultDomainXml() throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 //        dbf.setNamespaceAware(true);  // domain.xml doesn't use namespace 
         //return dbf.newDocumentBuilder().parse(getClass().getResource("/org/glassfish/embed/domain.xml").toExternalForm());
@@ -633,6 +695,7 @@ public class Server {
         }
     }
 
+
         private void setShutdownHook() {
 
         //final String msg = strings.get("serverStopped", info.getType());
@@ -707,6 +770,7 @@ public class Server {
         pw.close();
         in.close();
     }
+
 }
 
 

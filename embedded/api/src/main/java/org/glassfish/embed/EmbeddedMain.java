@@ -163,7 +163,7 @@ public class EmbeddedMain {
         //new Arg("war",          "w",            false,                                       "War File"),
         new Arg("port",             "p",            "" + ServerConstants.DEFAULT_HTTP_PORT,        "HTTP Port"),
         new Arg("dir",              "d",            false,                                         "Filesystem Directory"),
-        new BoolArg("autodelete",   "x",            false,                                         "Automtically delete Filesystem"),
+        new BoolArg("autodelete",   "x",            true,                                         "Automtically delete Filesystem"),
         new BoolArg("help",         "h",            false,                                         "Help"),
     };
     

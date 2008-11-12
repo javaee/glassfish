@@ -43,6 +43,7 @@ import java.io.*;
  *
  * @author bnevins
  */
+
 class EmbeddedRunner {
 
     EmbeddedRunner(EmbeddedInfo info) throws EmbeddedException {
@@ -51,7 +52,7 @@ class EmbeddedRunner {
 
     void run() throws EmbeddedException {
         info.validate();
-        Server server = new Server(info.httpPort);
+        Server server = Server.create(info);
         
         for(File f : info.archives) {
             server.deploy(f);

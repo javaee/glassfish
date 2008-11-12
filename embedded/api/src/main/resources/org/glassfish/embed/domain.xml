@@ -6,7 +6,7 @@
             <property name="databaseName" value="${com.sun.aas.instanceRoot}/userdb" />
             <property name="connectionAttributes" value=";create=true" />
         </jdbc-connection-pool>
-        <jdbc-resource pool-name="userpool" jndi-name="jdbc/userpool" />
+        <jdbc-resource pool-name="userpool" jndi-name="jdbc/userpoolxxx" />
   </resources>
   <servers>
     <server name="server" config-ref="server-config">

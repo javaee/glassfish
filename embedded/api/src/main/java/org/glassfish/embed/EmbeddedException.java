@@ -48,10 +48,10 @@ public class EmbeddedException extends Exception {
         super(StringHelper.get(message));
     }
     public EmbeddedException(String message, Throwable cause) {
-        super(StringHelper.get(message), cause);
+        super(StringHelper.get(message) + " [" + cause.toString() + "] ", cause);
     }
     public EmbeddedException(Throwable cause) {
-        super(cause);
+        super(cause.toString(), cause);
     }
     public EmbeddedException(String s, Object... objs) {
         super(StringHelper.get(s, objs));

@@ -39,6 +39,7 @@ package org.glassfish.embed;
 
 import java.io.*;
 import java.util.*;
+import java.net.*;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import static org.glassfish.embed.ServerConstants.*;
 
@@ -47,6 +48,11 @@ import static org.glassfish.embed.ServerConstants.*;
  * @author bnevins
  */
 public class EmbeddedInfo {
+
+    public EmbeddedInfo() {
+        
+    }
+    
     public void addArchive(File f) {
         archives.add(f);
     }
@@ -63,6 +69,10 @@ public class EmbeddedInfo {
     
     public void setHttpPort(int port) {
         httpPort = port;
+    }
+
+    public void setDomainXmlUrl(URL dx) {
+        domainXmlUrl = dx;
     }
 
     public void validate() throws EmbeddedException {
@@ -94,6 +104,7 @@ public class EmbeddedInfo {
     List<File>              archives         = new LinkedList<File>(); 
     List<ReadableArchive>   readableArchives = new LinkedList<ReadableArchive>();
     List<ScatteredWar>      scatteredWars    = new LinkedList<ScatteredWar>();
+    URL                     domainXmlUrl;
 
 
     //////////////////////  all private below //////////////////////
