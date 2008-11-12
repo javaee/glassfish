@@ -49,6 +49,8 @@
     <packaging>pom</packaging>
     <name>GlassFish Deployment Related Modules</name>  
     <modules>
+        <module>dtds</module>
+        <module>schemas</module>
         <module>dol</module>
         <module>client</module>
         <module>common</module>
