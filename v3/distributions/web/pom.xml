@@ -258,15 +258,15 @@
 	   <version>${project.version}</version>
         </dependency>
         <dependency>
-           <groupId>org.glassfish.api</groupId>
+           <groupId>org.glassfish.deployment</groupId>
            <artifactId>dtds</artifactId>
-           <version>9.0.1</version>
+           <version>${project.version}</version>
             <type>distribution-fragment</type>
         </dependency>
         <dependency>
-           <groupId>org.glassfish.api</groupId>
+           <groupId>org.glassfish.deployment</groupId>
            <artifactId>schemas</artifactId>
-           <version>9.0.1</version>
+           <version>${project.version}</version>
             <type>distribution-fragment</type>
         </dependency>
          <dependency>

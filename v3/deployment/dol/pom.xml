@@ -77,6 +77,15 @@
                 <role>developer</role>
             </roles>
         </developer>
+        <developer>
+            <id>swchan2</id>
+            <name>Shing Wai Chan</name>
+            <url>http://blogs.sun.com/swchan</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
     </developers>
     <build>
         <resources>
