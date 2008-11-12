@@ -120,9 +120,8 @@ public class AverageImpl extends AbstractTreeNode implements Average {
     }
 
     public long getCurrent() {
-        double avg = getAverage();
-
-        return Long.parseLong(Double.toString(avg));
+        Double d = new Double(getAverage());
+        return d.longValue();
     }
 
     public String getUnit() {
