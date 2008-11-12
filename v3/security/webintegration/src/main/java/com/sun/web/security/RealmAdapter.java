@@ -657,6 +657,30 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         SecurityContext.setCurrent(sc);
     }
 
+    /**
+     * Used to detect when the principals in the subject correspond to the
+     * default or "ANONYMOUS" principal, and therefore a null principal 
+     * should be set in the HttpServletRequest.
+     * @param principalSet
+     * @return true whe a null principal is to be set.
+     */
+    private boolean principalSetContainsOnlyAnonymousPrincipal(Set principalSet) {
+        boolean rvalue = false;
+        Principal defaultPrincipal = SecurityContext.getDefaultCallerPrincipal();
+        if (defaultPrincipal != null && principalSet != null) {
+            rvalue = principalSet.contains(defaultPrincipal);
+        }
+        if (rvalue) {
+            Iterator<Principal> it = principalSet.iterator();
+            while (it.hasNext()) {
+                if (!it.next().equals(defaultPrincipal)) {
+                    return false;
+                }
+            }
+        }
+        return rvalue;
+    }
+  
     protected String getPassword(String username) {
         throw new IllegalStateException("Should not reach here");
     }
@@ -1300,7 +1324,9 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
             Set principalSet = subject.getPrincipals();
             // must be at least one new principal to establish 
             // non-default security context
-            if (principalSet != null && !principalSet.isEmpty()) {
+            if (principalSet != null && !principalSet.isEmpty() &&
+                !principalSetContainsOnlyAnonymousPrincipal(principalSet)) {
+
                 SecurityContext ctx = new SecurityContext(subject);
                 //XXX assuming no null principal here
                 Principal p = ctx.getCallerPrincipal();
