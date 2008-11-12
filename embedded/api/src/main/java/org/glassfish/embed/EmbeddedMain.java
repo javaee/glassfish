@@ -39,6 +39,8 @@ package org.glassfish.embed;
 
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import java.io.*;
+import java.net.*;
+import java.net.MalformedURLException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -135,7 +137,50 @@ public class EmbeddedMain {
         ////////  autodelete //////
 
         EmbeddedFileSystem.setAutoDelete(Boolean.parseBoolean(params.get("autodelete")));
+
+        ////////  domain.xml //////
+
+        fn = params.get("xml");
+
+        if(StringUtils.ok(fn)) {
+            setupDomainXmlUrl(fn, info);
+        }
+
+        ////////// done!  //////////
+        
         return info;
+    }
+
+
+
+    private static void setupDomainXmlUrl(String name, EmbeddedInfo info) throws EmbeddedException {
+        // This is either a filename or a URL.  E.g. user may have the domain.xml packaged
+        // inside their jar.  Or both - in which case the file on disk takes precedence.
+
+        try {
+            URL url = null;
+
+            // 1.  Check on disk
+            File f = new File(name);
+
+            if(f.exists())
+                url = f.toURI().toURL();
+
+            // 2. check for a Resource
+            if(url == null)
+                url = EmbeddedMain.class.getResource(name);
+
+            if(url == null)
+                throw new EmbeddedException("bad_domain_xml");
+
+            info.setDomainXmlUrl(url);
+        }
+        catch (EmbeddedException ee) {
+            throw ee;
+        }
+        catch (Exception ex) {
+            throw new EmbeddedException("bad_domain_xml", ex);
+        }
     }
 
     private static void usage()
@@ -163,7 +208,8 @@ public class EmbeddedMain {
         //new Arg("war",          "w",            false,                                       "War File"),
         new Arg("port",             "p",            "" + ServerConstants.DEFAULT_HTTP_PORT,        "HTTP Port"),
         new Arg("dir",              "d",            false,                                         "Filesystem Directory"),
-        new BoolArg("autodelete",   "x",            true,                                         "Automtically delete Filesystem"),
+        new Arg("xml",              "x",            false,                                         "domain.xml filename or URL"),
+        new BoolArg("autodelete",   "a",            true,                                         "Automtically delete Filesystem"),
         new BoolArg("help",         "h",            false,                                         "Help"),
     };
     
