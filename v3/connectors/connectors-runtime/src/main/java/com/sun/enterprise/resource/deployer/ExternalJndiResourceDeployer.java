@@ -49,15 +49,16 @@
  */
 package com.sun.enterprise.resource.deployer;
 
-import com.sun.enterprise.connectors.ConnectorRuntime;
-import com.sun.enterprise.resource.beans.JavaEEResource;
-import com.sun.enterprise.resource.ResourceConverter;
+import com.sun.appserv.connectors.internal.api.JavaEEResource;
+import com.sun.enterprise.resource.beans.ExternalJndiResource;
+import com.sun.appserv.connectors.internal.api.ResourcePropertyImpl;
 import com.sun.enterprise.resource.naming.JndiProxyObjectFactory;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.i18n.StringManager;
@@ -66,7 +67,11 @@ import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.Singleton;
 import org.glassfish.api.naming.GlassfishNamingManager;
+import org.glassfish.api.admin.config.Property;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
@@ -87,8 +92,11 @@ import javax.naming.spi.InitialContextFactory;
  * @since   JDK1.4
  */
 @Service(name= ConnectorConstants.RES_TYPE_EXTERNAL_JNDI)
+@Scoped(Singleton.class)
 public class ExternalJndiResourceDeployer implements ResourceDeployer {
 
+    @Inject
+    private GlassfishNamingManager namingMgr;
 
         //TODO V3 log strings for the entire class
     
@@ -112,8 +120,7 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
         // TODO V3 isEnabled() not available yet ?
         // if (jndiRes.isEnabled()) {
             // converts the config data to j2ee resource
-            com.sun.enterprise.resource.beans.JavaEEResource j2eeRes =
-                ResourceConverter.toExternalJndiJ2EEResource(jndiRes);
+            JavaEEResource j2eeRes = toExternalJndiJavaEEResource(jndiRes);
 
             // resource installer
             //ResourceInstaller installer =
@@ -147,8 +154,7 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
             (com.sun.enterprise.config.serverbeans.ExternalJndiResource) resource;
 
         // converts the config data to j2ee resource
-        JavaEEResource j2eeResource =
-            ResourceConverter.toExternalJndiJ2EEResource(jndiRes);
+        JavaEEResource j2eeResource = toExternalJndiJavaEEResource(jndiRes);
 
         // resource installer
         //ResourceInstaller installer = ConnectorRuntime.getRuntime().getResourceInstaller();
@@ -198,8 +204,6 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
      * @param extJndiRes external jndi resource
      */
     public void installExternalJndiResource(com.sun.enterprise.resource.beans.ExternalJndiResource extJndiRes) {
-
-        GlassfishNamingManager nm = ConnectorRuntime.getRuntime().getNamingManager();
 
         String bindName = null;
 
@@ -274,7 +278,7 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
             ref.add(new com.sun.enterprise.resource.naming.ProxyRefAddr(bindName, env));
 
             // Publish the reference
-            nm.publishObject(bindName, ref, true);
+            namingMgr.publishObject(bindName, ref, true);
 
         } catch (Exception ex) {
             _logger.log(Level.SEVERE, "customrsrc.create_ref_error", bindName);
@@ -288,7 +292,7 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
      *
      * @param resource external jndi resource
      */
-    public void uninstallExternalJndiResource(com.sun.enterprise.resource.beans.JavaEEResource resource) {
+    public void uninstallExternalJndiResource(JavaEEResource resource) {
 
         // remove from the collection
         //TODO V3 not needed ?
@@ -298,9 +302,8 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
         JndiProxyObjectFactory.removeInitialContext(resource.getName());
 
         // removes the resource from jndi naming
-        GlassfishNamingManager nm = ConnectorRuntime.getRuntime().getNamingManager();
         try {
-            nm.unpublishObject(resource.getName());
+            namingMgr.unpublishObject(resource.getName());
             /* TODO V3 handle jms later
             //START OF IASRI 4660565
             if (((ExternalJndiResource)resource).isJMSConnectionFactory()) {
@@ -314,7 +317,52 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
         }
     }
 
-    
+
+    /**
+     * Returns a new instance of j2ee external jndi resource from the given
+     * config bean.
+     *
+     * This method gets called from the external resource
+     * deployer to convert external-jndi-resource config bean into
+     * external-jndi  j2ee resource.
+     *
+     * @param    rbean    external-jndi-resource config bean
+     *
+     * @return   a new instance of j2ee external jndi resource
+     *
+     */
+    public static JavaEEResource toExternalJndiJavaEEResource(
+            com.sun.enterprise.config.serverbeans.ExternalJndiResource rbean) {
+
+        ExternalJndiResource jr = new com.sun.enterprise.resource.beans.ExternalJndiResource(rbean.getJndiName());
+
+        //jr.setDescription( rbean.getDescription() ); // FIXME: getting error
+
+        // sets the enable flag
+        //TODO V3 handle later
+        //jr.setEnabled( rbean.isEnabled() );
+
+        // sets the jndi look up name
+        jr.setJndiLookupName( rbean.getJndiLookupName() );
+
+        // sets the resource type
+        jr.setResType( rbean.getResType() );
+
+        // sets the factory class name
+        jr.setFactoryClass( rbean.getFactoryClass() );
+
+        // sets the properties
+        List<Property> properties = rbean.getProperty();
+        if (properties!= null) {
+            for(Property property : properties){
+                ResourceProperty rp =
+                    new ResourcePropertyImpl(property.getName(), property.getValue());
+                jr.addProperty(rp);
+            }
+        }
+        return jr;
+    }
+
 
     /**
 	 * Utility method to find a resource from Resources beans and converte

@@ -49,14 +49,14 @@
  */
 package com.sun.enterprise.resource.deployer;
 
-import com.sun.enterprise.resource.beans.JavaEEResource;
+import com.sun.appserv.connectors.internal.api.JavaEEResource;
 import com.sun.enterprise.resource.beans.CustomResource;
-import com.sun.enterprise.resource.ResourceConverter;
-import com.sun.enterprise.connectors.ConnectorRuntime;
+import com.sun.appserv.connectors.internal.api.ResourcePropertyImpl;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.Iterator;
+import java.util.List;
 
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.i18n.StringManager;
@@ -64,7 +64,11 @@ import com.sun.enterprise.repository.ResourceProperty;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import org.glassfish.api.naming.GlassfishNamingManager;
+import org.glassfish.api.admin.config.Property;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Singleton;
 
 import javax.naming.Reference;
 import javax.naming.StringRefAddr;
@@ -88,6 +92,7 @@ import javax.naming.StringRefAddr;
  * @since   JDK1.4
  */
 @Service(name= ConnectorConstants.RES_TYPE_CUSTOM)
+@Scoped(Singleton.class)
 public class CustomResourceDeployer implements ResourceDeployer {
 
         //TODO V3 log strings for the entire class
@@ -96,6 +101,8 @@ public class CustomResourceDeployer implements ResourceDeployer {
     private static final StringManager localStrings =
         StringManager.getManager(CustomResourceDeployer.class);
 
+    @Inject
+    private GlassfishNamingManager namingMgr;
     /** logger for this deployer */
     private static Logger _logger=LogDomains.getLogger(CustomResourceDeployer.class, LogDomains.CORE_LOGGER);
 
@@ -113,8 +120,7 @@ public class CustomResourceDeployer implements ResourceDeployer {
         //TODO V3 isEnabled() not available ?
         //if (customRes.isEnabled()) {
             // converts the config data to j2ee resource
-            JavaEEResource j2eeResource =
-                ResourceConverter.toCustomJ2EEResource(customRes);
+            JavaEEResource j2eeResource = toCustomJavaEEResource(customRes);
 
             // resource installer
 /*
@@ -146,15 +152,11 @@ public class CustomResourceDeployer implements ResourceDeployer {
 	public synchronized void undeployResource(Object resource)
             throws Exception {
 
-        // naming manager - provides jndi support
-        GlassfishNamingManager namingMgr = ConnectorRuntime.getRuntime().getNamingManager();
-
         com.sun.enterprise.config.serverbeans.CustomResource customRes =
             (com.sun.enterprise.config.serverbeans.CustomResource) resource;
 
         // converts the config data to j2ee resource
-        com.sun.enterprise.resource.beans.JavaEEResource j2eeResource =
-            ResourceConverter.toCustomJ2EEResource(customRes);
+        JavaEEResource j2eeResource = toCustomJavaEEResource(customRes);
 
         // removes the resource from jndi naming
         namingMgr.unpublishObject( j2eeResource.getName() );
@@ -211,7 +213,6 @@ public class CustomResourceDeployer implements ResourceDeployer {
      */
     public void installCustomResource(com.sun.enterprise.resource.beans.CustomResource customRes) {
 
-        GlassfishNamingManager nm = ConnectorRuntime.getRuntime().getNamingManager();
         String bindName = null;
 
         try {
@@ -238,12 +239,53 @@ public class CustomResourceDeployer implements ResourceDeployer {
             }
 
             // publish the reference
-            nm.publishObject(bindName, ref, true);
+            namingMgr.publishObject(bindName, ref, true);
         } catch (Exception ex) {
             _logger.log(Level.SEVERE, "customrsrc.create_ref_error", bindName);
             _logger.log(Level.SEVERE, "customrsrc.create_ref_error_excp", ex);
         }
     }
+
+    /**
+     * Returns a new instance of j2ee custom resource from the given
+     * config bean.
+     *
+     * This method gets called from the custom resource deployer
+     * to convert custom-resource config bean into custom j2ee resource.
+     *
+     * @param    rbean   custom-resource config bean
+     *
+     * @return   new instance of j2ee custom resource
+     */
+    public static JavaEEResource toCustomJavaEEResource(
+            com.sun.enterprise.config.serverbeans.CustomResource rbean) {
+
+        CustomResource jr = new com.sun.enterprise.resource.beans.CustomResource( rbean.getJndiName() );
+
+        //jr.setDescription(rbean.getDescription()); // FIXME: getting error
+
+        // sets the enable flag
+        //TODO V3 setEnabled() not available ?
+        // jr.setEnabled( rbean.isEnabled() );
+
+        // sets the resource type
+        jr.setResType( rbean.getResType() );
+
+        // sets the factory class name
+        jr.setFactoryClass( rbean.getFactoryClass() );
+
+        // sets the properties
+        List<Property> properties = rbean.getProperty();
+        if (properties!= null) {
+            for(Property property : properties) {
+                ResourceProperty rp =
+                    new ResourcePropertyImpl(property.getName(), property.getValue());
+                jr.addProperty(rp);
+            }
+        }
+        return jr;
+    }
+
 
 /*
 

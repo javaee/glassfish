@@ -48,16 +48,19 @@ import java.util.logging.*;
 
 import org.glassfish.api.admin.config.Property;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.Singleton;
 
 /**
   * @author    Srikanth P
   */
 
 @Service(name= ConnectorConstants.RES_TYPE_AOR)
+@Scoped(Singleton.class)
 public class AdminObjectResourceDeployer extends GlobalResourceDeployer
         implements ResourceDeployer {
 
-    static Logger _logger = LogDomains.getLogger(AdminObjectResourceDeployer.class, LogDomains.RSR_LOGGER);
+    private static Logger _logger = LogDomains.getLogger(AdminObjectResourceDeployer.class, LogDomains.RSR_LOGGER);
 
     /**
      * Deploy the resource into the server's runtime naming context

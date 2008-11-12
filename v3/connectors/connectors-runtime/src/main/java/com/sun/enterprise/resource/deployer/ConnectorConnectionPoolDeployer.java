@@ -41,6 +41,8 @@ import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import org.glassfish.api.admin.config.Property;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.Singleton;
 import com.sun.enterprise.config.serverbeans.SecurityMap;
 import com.sun.enterprise.connectors.ConnectorConnectionPool;
 import com.sun.enterprise.connectors.ConnectorDescriptorInfo;
@@ -67,6 +69,7 @@ import java.util.logging.Logger;
  */
 
 @Service(name= ConnectorConstants.RES_TYPE_CCP)
+@Scoped(Singleton.class)
 public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
         implements ResourceDeployer {
 

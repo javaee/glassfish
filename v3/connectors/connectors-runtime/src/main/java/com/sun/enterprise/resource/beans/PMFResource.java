@@ -35,8 +35,8 @@
  */
 package com.sun.enterprise.resource.beans;
 
-import com.sun.enterprise.resource.beans.JavaEEResource;
-import com.sun.enterprise.resource.beans.JavaEEResourceBase;
+import com.sun.appserv.connectors.internal.api.JavaEEResource;
+import com.sun.appserv.connectors.internal.api.JavaEEResourceBase;
 
 import java.io.Serializable;
 
@@ -63,7 +63,7 @@ public class PMFResource extends JavaEEResourceBase implements Serializable {
     }
 
     public int getType() {
-        return com.sun.enterprise.resource.beans.JavaEEResource.PMF_RESOURCE;
+        return JavaEEResource.PMF_RESOURCE;
     }
 
     public String getFactoryClass() {

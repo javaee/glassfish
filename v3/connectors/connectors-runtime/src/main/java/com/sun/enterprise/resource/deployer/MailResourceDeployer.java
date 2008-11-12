@@ -44,20 +44,25 @@
 package com.sun.enterprise.resource.deployer;
 
 import com.sun.enterprise.resource.beans.MailResource;
-import com.sun.enterprise.resource.ResourceConverter;
+import com.sun.appserv.connectors.internal.api.JavaEEResource;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.List;
 
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.i18n.StringManager;
-import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.deployment.MailConfiguration;
+import com.sun.enterprise.repository.ResourceProperty;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 
 import org.glassfish.api.naming.GlassfishNamingManager;
+import org.glassfish.api.admin.config.Property;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.Singleton;
 
 /**
  * Handles mail resource events in the server instance.
@@ -72,8 +77,13 @@ import org.jvnet.hk2.annotations.Service;
  * @since JDK1.4
  */
 @Service(name= ConnectorConstants.RES_TYPE_MAIL)
+@Scoped(Singleton.class)
 public class MailResourceDeployer extends GlobalResourceDeployer
         implements ResourceDeployer {
+
+
+    @Inject
+    private GlassfishNamingManager namingMgr;
 
         //TODO V3 log strings for the entire class
     /**
@@ -86,8 +96,6 @@ public class MailResourceDeployer extends GlobalResourceDeployer
      * logger for this deployer
      */
     private static Logger _logger = LogDomains.getLogger(MailResourceDeployer.class, LogDomains.CORE_LOGGER);
-
-    private ConnectorRuntime runtime = ConnectorRuntime.getRuntime();
 
     /**
      * Deploy the resource into the server's runtime naming context
@@ -130,8 +138,7 @@ public class MailResourceDeployer extends GlobalResourceDeployer
         // Converts the config data to j2ee resource ;
         // retieves the resource installer ; installs the resource ;
         // and adds it to a collection in the installer
-        com.sun.enterprise.resource.beans.JavaEEResource j2eeRes =
-                ResourceConverter.toMailJ2EEResource(mailResource);
+        JavaEEResource j2eeRes = toMailJavaEEResource(mailResource);
         //ResourceInstaller installer = runtime.getResourceInstaller();
         installMailResource((MailResource) j2eeRes);
         //TODO V3 not needed ?
@@ -147,15 +154,11 @@ public class MailResourceDeployer extends GlobalResourceDeployer
     public synchronized void undeployResource(Object resource)
             throws Exception {
 
-        // naming manager - provides jndi support
-        GlassfishNamingManager namingMgr = runtime.getNamingManager();
-
         com.sun.enterprise.config.serverbeans.MailResource mailRes =
                 (com.sun.enterprise.config.serverbeans.MailResource) resource;
 
         // converts the config data to j2ee resource
-        com.sun.enterprise.resource.beans.JavaEEResource javaEEResource =
-                ResourceConverter.toMailJ2EEResource(mailRes);
+        JavaEEResource javaEEResource = toMailJavaEEResource(mailRes);
 
         // removes the resource from jndi naming
         namingMgr.unpublishObject(javaEEResource.getName());
@@ -215,7 +218,6 @@ public class MailResourceDeployer extends GlobalResourceDeployer
      */
     public void installMailResource(com.sun.enterprise.resource.beans.MailResource mailRes) {
 
-        GlassfishNamingManager nm = ConnectorRuntime.getRuntime().getNamingManager();
         String bindName = null;
 
         try {
@@ -224,12 +226,52 @@ public class MailResourceDeployer extends GlobalResourceDeployer
             MailConfiguration config = new MailConfiguration(mailRes);
 
             // Publish the objet
-            nm.publishObject(bindName, config, true);
+            namingMgr.publishObject(bindName, config, true);
         } catch (Exception ex) {
             _logger.log(Level.SEVERE, "mailrsrc.create_obj_error", bindName);
             _logger.log(Level.SEVERE, "mailrsrc.create_obj_error_excp", ex);
         }
     }
+
+    /**
+     * Returns a new instance of j2ee mail resource from the given config bean.
+     *
+     * This method gets called from the mail resource deployer to convert mail
+     * config bean into mail j2ee resource.
+     *
+     * @param    rbean    mail-resource config bean
+     *
+     * @return   a new instance of j2ee mail resource
+     *
+     */
+    public static JavaEEResource toMailJavaEEResource(
+        com.sun.enterprise.config.serverbeans.MailResource rbean) {
+
+        com.sun.enterprise.resource.beans.MailResource jr = new MailResource(rbean.getJndiName());
+
+        //jr.setDescription(rbean.getDescription()); // FIXME: getting error
+        //jr.setEnabled(rbean.isEnabled());TODO V3 setEnabled is not available ?
+        jr.setStoreProtocol(rbean.getStoreProtocol());
+        jr.setStoreProtocolClass(rbean.getStoreProtocolClass());
+        jr.setTransportProtocol(rbean.getTransportProtocol());
+        jr.setTransportProtocolClass(rbean.getTransportProtocolClass());
+        jr.setMailHost(rbean.getHost());
+        jr.setUsername(rbean.getUser());
+        jr.setMailFrom(rbean.getFrom());
+        //jr.setDebug(rbean.isDebug()); TODO V3 setDebug not available ?
+
+        // sets the properties
+        List<Property> properties = rbean.getProperty();
+        if (properties != null) {
+
+            for(Property property : properties){
+                ResourceProperty rp = new com.sun.appserv.connectors.internal.api.ResourcePropertyImpl(property.getName(), property.getValue());
+                jr.addProperty(rp);
+            }
+        }
+        return jr;
+    }
+
 
 
 /*

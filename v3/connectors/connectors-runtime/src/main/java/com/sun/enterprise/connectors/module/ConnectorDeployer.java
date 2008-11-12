@@ -39,21 +39,16 @@ package com.sun.enterprise.connectors.module;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
-import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
-import com.sun.enterprise.config.serverbeans.ConnectorResource;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
-import org.glassfish.javaee.services.ResourceAdaptersBinder;
 import org.glassfish.javaee.services.ResourceManager;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -69,9 +64,10 @@ import java.util.logging.Logger;
 @Service
 public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, ConnectorApplication> implements PostConstruct {
 
+
     @Inject
     private ConnectorRuntime runtime;
-
+/*
     @Inject
     private ConnectorResource[] connectorResources;
 
@@ -80,6 +76,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
 
     @Inject
     private ResourceAdaptersBinder binder;
+*/
 
     @Inject
     private ResourceManager resourceManager;
@@ -123,6 +120,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
                 _logger.log(Level.WARNING, " unable to load the resource-adapter [ " + moduleName + " ]", cre);
             }
         }
+/*
         Map<ConnectorResource, ConnectorConnectionPool> raResourcePoolMap =
                 new HashMap<ConnectorResource, ConnectorConnectionPool>();
         Map<String, ConnectorConnectionPool> raPools = getConnectorPoolsForRA(connectorConnectionPools, moduleName);
@@ -131,7 +129,8 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
                 raResourcePoolMap.put(resource, raPools.get(resource.getPoolName()));
             }
         }
-        return new ConnectorApplication(moduleName, resourceManager, runtime);
+*/
+        return new ConnectorApplication(moduleName, resourceManager);
     }
 
     /**
@@ -140,6 +139,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
      * @param raName Resource-adapter name
      * @return connection pools of the given resource-adapter
      */
+/*
     private Map<String, ConnectorConnectionPool> getConnectorPoolsForRA(ConnectorConnectionPool[] ccp, String raName) {
         Map<String, ConnectorConnectionPool> raPools = new HashMap<String, ConnectorConnectionPool>();
         for (ConnectorConnectionPool pool : ccp) {
@@ -149,6 +149,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
         }
         return raPools;
     }
+*/
 
     /**
      * Unload or stop a previously running application identified with the

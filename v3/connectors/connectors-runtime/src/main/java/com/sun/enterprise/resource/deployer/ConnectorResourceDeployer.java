@@ -47,12 +47,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.Singleton;
 
 /**
  * @author Srikanth P
  */
 
 @Service(name= ConnectorConstants.RES_TYPE_CR)
+@Scoped(Singleton.class)
 public class ConnectorResourceDeployer implements ResourceDeployer {
 
     static Logger _logger = LogDomains.getLogger(ConnectorResourceDeployer.class, LogDomains.CORE_LOGGER);

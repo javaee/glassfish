@@ -38,8 +38,8 @@ package com.sun.enterprise.resource.beans;
 import java.io.Serializable;
 
 import com.sun.enterprise.deployment.interfaces.MailResourceIntf;
-import com.sun.enterprise.resource.beans.JavaEEResource;
-import com.sun.enterprise.resource.beans.JavaEEResourceBase;
+import com.sun.appserv.connectors.internal.api.JavaEEResourceBase;
+import com.sun.appserv.connectors.internal.api.JavaEEResource;
 
 /**
  * Resource info for MailResource.
@@ -66,7 +66,7 @@ public class MailResource extends JavaEEResourceBase
         super(name);
     }
 
-    protected com.sun.enterprise.resource.beans.JavaEEResource doClone(String name) {
+    protected JavaEEResource doClone(String name) {
         MailResource clone = new MailResource(name);
         clone.setResType(getResType());
         clone.setFactoryClass(getFactoryClass());

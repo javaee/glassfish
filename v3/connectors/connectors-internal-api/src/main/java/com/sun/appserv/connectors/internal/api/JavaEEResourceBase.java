@@ -33,11 +33,11 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.resource.beans;
+package com.sun.appserv.connectors.internal.api;
 
 import com.sun.enterprise.repository.ResourceProperty;
-import com.sun.enterprise.resource.beans.JavaEEResource;
-import com.sun.enterprise.resource.ResourcePropertyImpl;
+import com.sun.appserv.connectors.internal.api.JavaEEResource;
+import com.sun.appserv.connectors.internal.api.ResourcePropertyImpl;
 
 import java.util.*;
 import java.io.Serializable;
@@ -107,7 +107,7 @@ public abstract class JavaEEResourceBase implements JavaEEResource, Serializable
     }
 
     public JavaEEResource makeClone(String name) {
-        com.sun.enterprise.resource.beans.JavaEEResource clone = doClone(name);
+        JavaEEResource clone = doClone(name);
         Set entrySet = properties_.entrySet();
         for (Iterator iter = entrySet.iterator(); iter.hasNext();) {
             Map.Entry next = (Map.Entry) iter.next();

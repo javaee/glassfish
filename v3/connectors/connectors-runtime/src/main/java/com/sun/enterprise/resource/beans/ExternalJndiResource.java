@@ -36,8 +36,8 @@
 package com.sun.enterprise.resource.beans;
 
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
-import com.sun.enterprise.resource.beans.JavaEEResource;
-import com.sun.enterprise.resource.beans.JavaEEResourceBase;
+import com.sun.appserv.connectors.internal.api.JavaEEResource;
+import com.sun.appserv.connectors.internal.api.JavaEEResourceBase;
 
 import java.io.Serializable;
 
@@ -58,7 +58,7 @@ public class ExternalJndiResource extends JavaEEResourceBase implements Serializ
         super(name);
     }
 
-    protected com.sun.enterprise.resource.beans.JavaEEResource doClone(String name) {
+    protected JavaEEResource doClone(String name) {
         ExternalJndiResource clone = new ExternalJndiResource(name);
         clone.setJndiLookupName(getJndiLookupName());
         clone.setResType(getResType());

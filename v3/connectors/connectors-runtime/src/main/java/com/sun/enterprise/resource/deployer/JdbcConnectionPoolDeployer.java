@@ -54,6 +54,8 @@ import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 import org.glassfish.api.admin.config.Property;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.Singleton;
 import com.sun.enterprise.connectors.ConnectorConnectionPool;
 import com.sun.enterprise.connectors.ConnectorDescriptorInfo;
 import com.sun.enterprise.connectors.ConnectorRuntime;
@@ -84,6 +86,7 @@ import java.util.logging.Logger;
 // This class was created to fix the bug # 4650787
 
 @Service(name= ConnectorConstants.RES_TYPE_JCP)
+@Scoped(Singleton.class)
 public class JdbcConnectionPoolDeployer implements ResourceDeployer {
 
     static private StringManager sm = StringManager.getManager(

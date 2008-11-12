@@ -35,8 +35,8 @@
  */
 package com.sun.enterprise.resource.beans;
 
-import com.sun.enterprise.resource.beans.JavaEEResource;
-import com.sun.enterprise.resource.beans.JavaEEResourceBase;
+import com.sun.appserv.connectors.internal.api.JavaEEResource;
+import com.sun.appserv.connectors.internal.api.JavaEEResourceBase;
 
 import java.io.Serializable;
 
@@ -55,7 +55,7 @@ public class CustomResource extends JavaEEResourceBase implements Serializable {
         super(name);
     }
 
-    protected com.sun.enterprise.resource.beans.JavaEEResource doClone(String name) {
+    protected JavaEEResource doClone(String name) {
         CustomResource clone = new CustomResource(name);
         clone.setResType(getResType());
         clone.setFactoryClass(getFactoryClass());

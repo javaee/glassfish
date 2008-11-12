@@ -59,6 +59,8 @@ import com.sun.logging.LogDomains;
 import java.util.logging.Logger;
 
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.Singleton;
 
 
 /**
@@ -73,6 +75,7 @@ import org.jvnet.hk2.annotations.Service;
  * @since JDK1.4
  */
 @Service(name= ConnectorConstants.RES_TYPE_JDBC)
+@Scoped(Singleton.class)
 public class JdbcResourceDeployer implements ResourceDeployer {
 
     private static final StringManager localStrings =

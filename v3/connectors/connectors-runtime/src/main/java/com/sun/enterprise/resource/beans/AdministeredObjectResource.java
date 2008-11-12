@@ -39,11 +39,11 @@ package com.sun.enterprise.resource.beans;
 import com.sun.enterprise.deployment.AdminObject;
 import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.enterprise.resource.naming.SerializableObjectRefAddr;
-import com.sun.enterprise.resource.beans.JavaEEResourceBase;
-import com.sun.enterprise.resource.beans.JavaEEResource;
+import com.sun.appserv.connectors.internal.api.JavaEEResourceBase;
 import com.sun.enterprise.connectors.util.SetMethodAction;
 import com.sun.appserv.connectors.internal.api.PoolingException;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+import com.sun.appserv.connectors.internal.api.JavaEEResource;
 
 import java.io.Serializable;
 import java.security.AccessController;

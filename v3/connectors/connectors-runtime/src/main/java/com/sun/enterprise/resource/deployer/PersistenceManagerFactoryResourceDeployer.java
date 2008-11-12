@@ -53,13 +53,12 @@ import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import com.sun.enterprise.config.serverbeans.PersistenceManagerFactoryResource;
 
 import com.sun.enterprise.resource.beans.PMFResource;
-import com.sun.enterprise.resource.ResourceConverter;
-import com.sun.enterprise.connectors.ConnectorRuntime;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.Set;
 import java.util.Iterator;
+import java.util.List;
 import java.lang.reflect.Method;
 
 import com.sun.logging.LogDomains;
@@ -67,12 +66,17 @@ import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.repository.ResourceProperty;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
+import com.sun.appserv.connectors.internal.api.JavaEEResource;
 
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
 import org.glassfish.api.naming.GlassfishNamingManager;
+import org.glassfish.api.admin.config.Property;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.Singleton;
 
 /**
  * Handles PersistenceManagerFactory resource evnets in the server instance.
@@ -83,7 +87,11 @@ import org.jvnet.hk2.annotations.Service;
  * @author Shing Wai Chan
  */
  @Service(name= ConnectorConstants.RES_TYPE_PMF)
+ @Scoped(Singleton.class)
 public class PersistenceManagerFactoryResourceDeployer implements ResourceDeployer {
+
+    @Inject
+    private GlassfishNamingManager namingMgr;
 
     //TODO V3 log strings for the entire class
     
@@ -112,8 +120,7 @@ public class PersistenceManagerFactoryResourceDeployer implements ResourceDeploy
             // load associated jdbc resource with PMF
             loadJdbcResource(configPMFRes);
 
-            PMFResource j2eeResource = (PMFResource)
-                ResourceConverter.toPMFJ2EEResource(configPMFRes);
+            PMFResource j2eeResource = (PMFResource) toPMFJavaEEResource(configPMFRes);
 
             //ResourceInstaller installer = ConnectorRuntime.getRuntime().getResourceInstaller();
 
@@ -132,7 +139,7 @@ public class PersistenceManagerFactoryResourceDeployer implements ResourceDeploy
 
     public synchronized void undeployResource(Object resource)
             throws Exception {
-        GlassfishNamingManager namingMgr = ConnectorRuntime.getRuntime().getNamingManager();
+
         PersistenceManagerFactoryResource configPMFRes =
                 (PersistenceManagerFactoryResource)resource;
         namingMgr.unpublishObject(configPMFRes.getJndiName());
@@ -140,7 +147,7 @@ public class PersistenceManagerFactoryResourceDeployer implements ResourceDeploy
 /* TODO V3 not needed ?
         ResourceInstaller installer = Switch.getSwitch().getResourceInstaller();
         installer.removeResource(
-                IASJ2EEResourceFactoryImpl.toPMFJ2EEResource(configPMFRes));
+                toPMFJavaEEResource(configPMFRes));
 */
     }
 
@@ -251,8 +258,8 @@ public class PersistenceManagerFactoryResourceDeployer implements ResourceDeploy
                 method.invoke(pmfImpl, new Object[]{value});
             }
 
-            GlassfishNamingManager nm = ConnectorRuntime.getRuntime().getNamingManager();
-            nm.publishObject(jndiName, pmfImpl, true);
+
+            namingMgr.publishObject(jndiName, pmfImpl, true);
 
             logFine("***** After publishing PersistenceManagerResources *****");
         } catch (Exception ex) {
@@ -268,6 +275,39 @@ public class PersistenceManagerFactoryResourceDeployer implements ResourceDeploy
             _logger.fine(msg);
         }
     }
+
+    /**
+     * Returns a new instance of j2ee pmf resource from the given config bean.
+     *
+     * This method gets called from the Persistence Manager Factory Resource
+     * deployer to convert persistence-manager-resource-factory config bean into
+     * pmf j2ee resource.
+     *
+     * @param rbean persistence-manager-resource-factory config bean
+     *
+     * @return a new instance of j2ee pmf resource
+     *
+     */
+    public static JavaEEResource toPMFJavaEEResource(
+            com.sun.enterprise.config.serverbeans.PersistenceManagerFactoryResource rbean) {
+        com.sun.enterprise.resource.beans.PMFResource jr = new PMFResource(rbean.getJndiName());
+        //TODO V3 setEnabled() not available ?
+        //jr.setEnabled(rbean.isEnabled());
+        jr.setFactoryClass(rbean.getFactoryClass());
+        jr.setJdbcResourceJndiName(rbean.getJdbcResourceJndiName());
+
+        List<Property> properties = rbean.getProperty();
+        if (properties!= null) {
+            for (Property property : properties) {
+                ResourceProperty rp = new com.sun.appserv.connectors.internal.api.ResourcePropertyImpl(property.getName(), property.getValue());
+                jr.addProperty(rp);
+            }
+        }
+        //jr.setDescription(next.getDescription()); // FIXME add this
+
+        return jr;
+    }
+
 
 
 

@@ -56,12 +56,10 @@ public class ConnectorApplication implements ApplicationContainer {
     private static Logger _logger = LogDomains.getLogger(ConnectorApplication.class, LogDomains.RSR_LOGGER);
     private String moduleName = "";
     private ResourceManager resourceManager ;
-    private ConnectorRuntime runtime;
 
-    public ConnectorApplication(String moduleName, ResourceManager resourceManager, ConnectorRuntime runtime) {
+    public ConnectorApplication(String moduleName, ResourceManager resourceManager) {
         this.moduleName = moduleName;
         this.resourceManager = resourceManager;
-        this.runtime = runtime;
     }
 
     /**
