@@ -100,8 +100,10 @@
         <management-api.version>1.1-rev-1</management-api.version>
         <jms-api.version>1.1-rev-1</jms-api.version>
         <servlet-api.version>2.5</servlet-api.version>
-        <jsp-api.version>2.1</jsp-api.version>
-        <el-impl.version>1.1</el-impl.version>
+        <jsp-api.version>2.1.2</jsp-api.version>
+        <jsp-impl.version>2.1.2-SNAPSHOT</jsp-impl.version>
+        <el-api.version>2.1.2-SNAPSHOT</el-api.version>
+        <el-impl.version>2.1.2-SNAPSHOT</el-impl.version>
         <jstl-impl.version>1.2</jstl-impl.version>
         <jstl-api.version>1.2</jstl-api.version>
         <jsf-api.version>2.0.0-b05</jsf-api.version>
@@ -113,7 +115,6 @@
         <!-- A version string like 1.8.6-RC2 is treated differently by OSGi, hence
              we map it manually -->
         <grizzly.package-version>1.8.6.2</grizzly.package-version>
-        <jsp-impl.version>2.1-SNAPSHOT</jsp-impl.version>
         <jaxb-api.version>2.1</jaxb-api.version>
         <jaxws-api.version>2.1</jaxws-api.version>
         <jsr250-api.version>1.0</jsr250-api.version>

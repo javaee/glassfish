@@ -48,7 +48,7 @@
     <groupId>org.glassfish</groupId>
     <properties>
         <extension.name>javax.servlet.jsp</extension.name>
-        <spec.version>2.1</spec.version>
+        <spec.version>2.1.2</spec.version>
     </properties>
     <artifactId>${extension.name}</artifactId>
     <packaging>jar</packaging>
@@ -78,6 +78,12 @@
             <groupId>javax.servlet.jsp</groupId>
             <artifactId>jsp-api</artifactId>
             <version>${jsp-api.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>javax.el</groupId>
+            <artifactId>el-api</artifactId>
+            <version>${el-api.version}</version>
             <optional>true</optional>
         </dependency>
     </dependencies>
