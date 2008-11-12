@@ -367,10 +367,10 @@ public class Server {
         return parser;
     }
 
-    public EmbeddedVirtualServer createVirtualServer(final EmbeddedHttpListener listener) throws EmbeddedException{
+    public EmbeddedVirtualServer createVirtualServer(final EmbeddedHttpListener listener)
+            throws EmbeddedException{
         // the following live update code doesn't work yet due to the missing functionality in the webtier.
-        if (started)
-            throw new IllegalStateException();
+        mustNotBeStarted("createVirtualServer");
 
         DomBuilder db = onHttpService();
         db.element("virtual-server")
@@ -428,10 +428,10 @@ public class Server {
 //        }
     }
 
-    public EmbeddedHttpListener createHttpListener(final int listenerPort) {
+    public EmbeddedHttpListener createHttpListener(final int listenerPort) 
+            throws EmbeddedException {
         // the following live update code doesn't work yet due to the missing functionality in the webtier.
-        if (started)
-            throw new IllegalStateException();
+        mustNotBeStarted("createHttpListener");
 
         onHttpService().element("http-listener")
                 //hardcoding to http-listner-1 should not be a requirment, but the id is used to find the right Inhabitant
@@ -475,10 +475,14 @@ public class Server {
     }
 
     /**
-     * Starts the server if hasn't done so already. Necessary to work around the live HTTP listener update.
+     * Starts the server if hasn't done so already. 
+     * Necessary to work around the live HTTP listener update.
+     * It is an error to call this more than once.
      */
     public void start() throws EmbeddedException{
-        if (started) return;
+        if (started)
+            throw new EmbeddedException("already_started");
+
         started = true;
 
         try {
@@ -522,7 +526,7 @@ public class Server {
      */
     public Application deploy(File archive) throws EmbeddedException {
         try {
-            start();
+            mustBeStarted("deploy");
             ReadableArchive a = archiveFactory.openArchive(archive);
 
             if (!archive.isDirectory()) {
@@ -582,7 +586,7 @@ public class Server {
      */
     public Application deploy(ReadableArchive a, Properties params)  throws EmbeddedException {
         try {
-            start();
+            mustBeStarted("deploy");
 
             ArchiveHandler h = appLife.getArchiveHandler(a);
 
@@ -682,9 +686,8 @@ public class Server {
     /**
      * Stops the running server.
      */
-    public void stop() {
-        if (!started)
-            return;
+    public void stop() throws EmbeddedException {
+        mustBeStarted("stop");
 
         for (Inhabitant<? extends Startup> svc : habitat.getInhabitants(Startup.class)) {
             svc.release();
@@ -771,6 +774,21 @@ public class Server {
         in.close();
     }
 
+    private boolean isStarted() {
+        return started;
+    }
+
+    private void mustBeStarted(String methodName) throws EmbeddedException {
+        if(!isStarted()) {
+            throw new EmbeddedException("not_started", methodName);
+        }
+    }
+
+    private void mustNotBeStarted(String methodName) throws EmbeddedException {
+        if(isStarted()) {
+            throw new EmbeddedException("should_not_be_started", methodName);
+        }
+    }
 }
 
 

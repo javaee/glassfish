@@ -25,6 +25,7 @@ public class DeployWebAppTest {
         try {
             System.out.println("Starting Server on port 9999");
             myGF = Server.create(9999, null);
+            myGF.start();
         }
         catch(Exception e) {
             e.printStackTrace();
