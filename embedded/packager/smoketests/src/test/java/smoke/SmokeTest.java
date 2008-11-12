@@ -34,7 +34,8 @@ public class SmokeTest {
     @Test
     public void deploySimpleWar() {
         try {
-            Server myGF = new Server(9999);
+            Server myGF = Server.create(9999, null);
+            myGF.start();
             Application app = myGF.deploy(simpleWar);
             
             // TODO -- get output at port 9999
