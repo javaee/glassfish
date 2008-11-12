@@ -2,7 +2,7 @@
 setlocal
 
 set CP=target\glassfish-embedded-api-3.0-Prelude-SNAPSHOT.jar
-set CP=%CP%;C:\Documents and Settings\bnevins\.m2\repository\org\glassfish\embedded\glassfish-embedded-all\3.0-Prelude-SNAPSHOT\glassfish-embedded-all-3.0-Prelude-SNAPSHOT.jar
+set CP=%CP%;..\packager\all\target\final.jar
 
 set DEB=-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=1323
 
