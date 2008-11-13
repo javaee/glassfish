@@ -25,13 +25,13 @@ own identifying information: Portions Copyright [yyyy]
    <target name="create.package">
 	   <mkdir dir="target/stage/glassfishv3-prelude"/>
 
-	<resolveArtifact groupID="org.glassfish.api" type="distribution-fragment"
+	<resolveArtifact groupID="org.glassfish.deployment" type="distribution-fragment"
 		   artifactId="schemas" property="schemas.zip"/>
        
 	<unzip src="${schemas.zip}" dest="target/stage/glassfishv3-prelude">
 	</unzip>
 
-	<resolveArtifact groupID="org.glassfish.api" type="distribution-fragment"
+	<resolveArtifact groupID="org.glassfish.deployment" type="distribution-fragment"
 		   artifactId="dtds" property="dtds.zip"/>
        
 	   <unzip src="${dtds.zip}" dest="target/stage/glassfishv3-prelude">
