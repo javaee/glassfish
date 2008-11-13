@@ -158,7 +158,7 @@ public class WebServletHandler extends AbstractWebHandler {
 
         webCompDesc.setDescription(webServletAn.description());
 
-        webCompDesc.setSupportsAsync(webServletAn.supportsAsync());
+        webCompDesc.setAsyncSupported(webServletAn.asyncSupported());
         webCompDesc.setTimeout(webServletAn.timeout());
 
         webBundleContext.getDescriptor().addWebComponentDescriptor(webCompDesc);

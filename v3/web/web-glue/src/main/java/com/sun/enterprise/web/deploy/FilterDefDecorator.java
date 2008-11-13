@@ -101,7 +101,7 @@ public class FilterDefDecorator extends FilterDef {
         return decoree.getSmallIconUri();
     }
 
-    public boolean isSupportsAsync() {
-        return decoree.isSupportsAsync();
+    public boolean isAsyncSupported() {
+        return decoree.isAsyncSupported();
     }   
 }

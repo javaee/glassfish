@@ -63,7 +63,7 @@ public class ServletFilterDescriptor
     private Vector initParms = new Vector();
 
     /** supportsAsync */
-    private boolean supportsAsync = false;
+    private boolean asyncSupported = false;
 
     /* ----
     */
@@ -154,13 +154,13 @@ public class ServletFilterDescriptor
 	this.initParms.removeElement(ref);
     }
 
-    /* set supportsAsync */
-    public void setSupportsAsync(boolean supportsAsync) {
-        this.supportsAsync = supportsAsync;
+    /* set asyncSupported */
+    public void setAsyncSupported(boolean asyncSupported) {
+        this.asyncSupported = asyncSupported;
     }
 
-    public boolean isSupportsAsync() {
-        return supportsAsync;
+    public boolean isAsyncSupported() {
+        return asyncSupported;
     }
 
     /* ----

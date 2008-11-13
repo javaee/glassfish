@@ -70,14 +70,16 @@ public class WebBundleNode extends BundleNode<WebBundleDescriptor> {
     public final static String SYSTEM_ID_12 = "http://java.sun.com/dtd/web-app_2_2.dtd";   
     
     public final static String SCHEMA_ID_24 = "web-app_2_4.xsd";
-    public final static String SCHEMA_ID = "web-app_2_5.xsd";
-    public final static String SPEC_VERSION = "2.5";
+    public final static String SCHEMA_ID_25 = "web-app_2_5.xsd";
+    public final static String SCHEMA_ID = "web-app_3_0.xsd";
+    public final static String SPEC_VERSION = "3.0";
     private final static List<String> systemIDs = initSystemIDs();
 
     private static List<String> initSystemIDs() {
         List<String> systemIDs = new ArrayList<String>();
         systemIDs.add(SCHEMA_ID);
         systemIDs.add(SCHEMA_ID_24);
+        systemIDs.add(SCHEMA_ID_25);
         return Collections.unmodifiableList(systemIDs);
     }
     

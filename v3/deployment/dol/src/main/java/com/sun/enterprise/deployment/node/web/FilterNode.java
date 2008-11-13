@@ -71,6 +71,7 @@ public class FilterNode extends DisplayableComponentNode {
         table.put(WebTagNames.NAME, "setDisplayName");
         table.put(WebTagNames.FILTER_NAME, "setName");
         table.put(WebTagNames.FILTER_CLASS, "setClassName");
+        table.put(WebTagNames.ASYNC_SUPPORTED, "setAsyncSupported");
         return table;
     }
     
@@ -87,6 +88,7 @@ public class FilterNode extends DisplayableComponentNode {
         writeDisplayableComponentInfo(myNode, descriptor);
         appendTextChild(myNode, WebTagNames.FILTER_NAME, descriptor.getName());         
         appendTextChild(myNode, WebTagNames.FILTER_CLASS, descriptor.getClassName());     
+        appendTextChild(myNode, WebTagNames.ASYNC_SUPPORTED, String.valueOf(descriptor.isAsyncSupported()));     
         Vector initParams = descriptor.getInitializationParameters();
         if (!initParams.isEmpty()) {
             WebBundleNode.addInitParam(myNode, WebTagNames.INIT_PARAM, initParams.elements());

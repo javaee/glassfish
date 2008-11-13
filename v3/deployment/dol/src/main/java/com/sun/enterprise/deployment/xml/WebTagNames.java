@@ -67,6 +67,8 @@ public interface WebTagNames extends TagNames {
     public static final String PARAM_NAME = "param-name";
     public static final String PARAM_VALUE = "param-value";    
     public static final String CONTEXT_PARAM = "context-param";
+    public static final String ASYNC_SUPPORTED = "async-supported";
+    public static final String TIMEOUT = "timeout";
     
     public static final String SECURITY_CONSTRAINT = "security-constraint";
     public static final String WEB_RESOURCE_COLLECTION = "web-resource-collection";

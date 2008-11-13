@@ -125,6 +125,8 @@ public class ServletNode extends DisplayableComponentNode {
         table.put(WebTagNames.NAME, "setName");        
         table.put(WebTagNames.SERVLET_NAME, "setCanonicalName");
         table.put(WebTagNames.LOAD_ON_STARTUP, "setLoadOnStartUp");
+        table.put(WebTagNames.ASYNC_SUPPORTED, "setAsyncSupported");
+        table.put(WebTagNames.TIMEOUT, "setTimeout");
         return table;
     }        
 
@@ -170,6 +172,9 @@ public class ServletNode extends DisplayableComponentNode {
         if (descriptor.getLoadOnStartUp()!=-1) {
             appendTextChild(myNode, WebTagNames.LOAD_ON_STARTUP, String.valueOf(descriptor.getLoadOnStartUp()));
         }
+
+        appendTextChild(myNode, WebTagNames.ASYNC_SUPPORTED, String.valueOf(descriptor.isAsyncSupported()));
+        appendTextChild(myNode, WebTagNames.TIMEOUT, String.valueOf(descriptor.getTimeout()));
         
         // run-as
         RunAsIdentityDescriptor runAs = descriptor.getRunAsIdentity();

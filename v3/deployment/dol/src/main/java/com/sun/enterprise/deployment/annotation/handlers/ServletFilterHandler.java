@@ -172,7 +172,7 @@ public class ServletFilterHandler extends AbstractWebHandler {
         servletFilterDesc.setSmallIconUri(servletFilterAn.icon());
         servletFilterDesc.setLargeIconUri(servletFilterAn.icon());
 
-        servletFilterDesc.setSupportsAsync(servletFilterAn.supportsAsync());
+        servletFilterDesc.setAsyncSupported(servletFilterAn.asyncSupported());
 
         servletFilterMappingDesc.setName(filterName);
         String[] servletNames = servletFilterAn.servletNames();

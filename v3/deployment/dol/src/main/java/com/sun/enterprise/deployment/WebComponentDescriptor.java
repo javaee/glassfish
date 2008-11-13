@@ -88,7 +88,7 @@ public class WebComponentDescriptor extends Descriptor {
 
     private RunAsIdentityDescriptor runAs;
     private WebBundleDescriptor webBundleDescriptor = null;
-    private boolean supportsAsync = false;
+    private boolean asyncSupported = false;
     private long timeout = 0;
 
     /**
@@ -344,14 +344,14 @@ public class WebComponentDescriptor extends Descriptor {
         this.isServlet = isServlet;
     }
 
-    public boolean isSupportsAsync() {
-        return supportsAsync;
+    public void setAsyncSupported(boolean asyncSupported) {
+        this.asyncSupported = asyncSupported;
     }
 
-    public void setSupportsAsync(boolean supportsAsync) {
-        this.supportsAsync = supportsAsync;
+    public boolean isAsyncSupported() {
+        return asyncSupported;
     }
-    
+
     public long getTimeout() {
         return timeout;
     }

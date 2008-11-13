@@ -377,7 +377,7 @@
 
 	  </xsd:documentation>
 	</xsd:annotation>
-      <xsd:element name="supportsAsync"
+      <xsd:element name="async-supported"
 		   type="javaee:generic-booleanType"
 		   minOccurs="0"/>
       </xsd:element>
@@ -795,7 +795,7 @@
       <xsd:element name="enabled"
 		   type="javaee:generic-booleanType"
 		   minOccurs="0"/>
-      <xsd:element name="supportsAsync"
+      <xsd:element name="async-supported"
 		   type="javaee:generic-booleanType"
 		   minOccurs="0"/>
       <xsd:element name="timeout"
