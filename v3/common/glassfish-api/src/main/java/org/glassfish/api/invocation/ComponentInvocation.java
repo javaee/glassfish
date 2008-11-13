@@ -42,7 +42,8 @@ import org.jvnet.hk2.component.PerLookup;
 
 @Scoped(PerLookup.class)
 @Service
-public class ComponentInvocation {
+public class ComponentInvocation
+    implements Cloneable {
 
     public enum ComponentInvocationType {
         SERVLET_INVOCATION, EJB_INVOCATION,
@@ -195,5 +196,23 @@ public class ComponentInvocation {
 
     public void setAuth(boolean value) {
         auth = value;
+    }
+
+    public ComponentInvocation clone() {
+        ComponentInvocation newInv = null;
+        try {
+            newInv = (ComponentInvocation) super.clone();
+        } catch (CloneNotSupportedException cnsEx) {
+            //Shouldn't happen as we implement Cloneable
+            throw new Error(cnsEx);
+        }
+
+        newInv.auth = null;
+        newInv.preInvokeDoneStatus = false;
+        newInv.instance = null;
+        newInv.transaction = null;
+        newInv.transactionCompleting = false;
+
+        return newInv;
     }
 }
