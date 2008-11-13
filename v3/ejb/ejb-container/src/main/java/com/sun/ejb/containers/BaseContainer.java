@@ -73,6 +73,8 @@ import java.lang.reflect.*;
 import java.rmi.AccessException;
 import java.rmi.RemoteException;
 import java.util.*;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -1369,15 +1371,19 @@ public abstract class BaseContainer
             inv.transactionAttribute = inv.invocationInfo.txAttr;
             inv.container = this;
 
+
+
+            if (inv.mustInvokeAsynchronously()) {
+                return;
+            }
+
             if (inv.method != ejbTimeoutMethod) {
-               
                 if (! authorize(inv)) {
                     throw new AccessLocalException(
                         "Client not authorized for this invocation.");
                 }
-                
             }
-            
+
             // Cache value of txManager.getStatus() in invocation to avoid
             // multiple thread-local accesses of that value during pre-invoke
             // stage.
@@ -1475,12 +1481,19 @@ public abstract class BaseContainer
     }
 
     protected void postInvoke(EjbInvocation inv, boolean doTxProcessing) {
+        inv.setDoTxProcessingInPostInvoke(doTxProcessing);
+        if (inv.mustInvokeAsynchronously()) {
+            EjbAsyncInvocationManager asyncManager =
+                    ((EjbContainerUtilImpl) ejbContainerUtilImpl).getEjbAsyncInvocationManager();
+            asyncManager.submit(inv);
+            return;
+        }
 
         if (ejbMethodStatsManager.isMethodMonitorOn()) {
             ejbMethodStatsManager.postInvoke(inv.method, inv.exception);
         }
-        
-        
+
+
         if ( inv.ejb != null ) {
             // counterpart of invocationManager.preInvoke
             if (! inv.useFastPath) {
@@ -1521,7 +1534,7 @@ public abstract class BaseContainer
             
             releaseContext(inv);
         }
-        
+
         if ( inv.exception != null ) {
             
             // Unwrap the PreInvokeException if necessary
@@ -1564,13 +1577,13 @@ public abstract class BaseContainer
             // and EJB descriptor to get app info
             AppVerification.getInstrumentLogger().doInstrumentForEjb(
             ejbDescriptor, inv.method, inv.exception);
-            
+
         }
         */
     }
-    
-    
-    
+
+
+
     /**
      * Check if caller is authorized to invoke the method.
      * Only called for EJBLocalObject and EJBLocalHome methods,
@@ -2214,6 +2227,15 @@ public abstract class BaseContainer
             if (beanMethod != null) {
                 MethodDescriptor md = new MethodDescriptor(beanMethod, MethodDescriptor.EJB_BEAN);
                 info.interceptorChain = interceptorManager.getAroundInvokeChain(md, beanMethod);
+            }
+
+            boolean isOptionalView = methodIntf.equals(MethodDescriptor.EJB_OPTIONAL_LOCAL);
+            Method targetMethod = isOptionalView ? beanMethod : method;
+            MethodDescriptor cachedMD = ejbDescriptor.getMethodDescriptorFor(targetMethod, methodIntf);
+
+            if (cachedMD != null) {
+                boolean isAsync = cachedMD.isAsynchronous();
+                info.setIsAsynchronous(cachedMD.isAsynchronous());
             }
         }
         if( methodIntf.equals(MethodDescriptor.EJB_WEB_SERVICE) ) {
@@ -4256,6 +4278,22 @@ public abstract class BaseContainer
         throws Throwable
     {
         Object result = null;
+        if (inv.mustInvokeAsynchronously()) {
+            EjbAsyncInvocationManager asyncManager =
+                    ((EjbContainerUtilImpl) ejbContainerUtilImpl).getEjbAsyncInvocationManager();
+            FutureTask future = asyncManager.createFuture(inv);
+            result = inv.invocationInfo.method.getReturnType() == void.class
+                    ? null : future;
+        }  else {
+            result = __intercept(inv);
+        }
+        return result;
+    }
+
+    private Object __intercept(EjbInvocation inv)
+        throws Throwable
+    {
+        Object result = null;
         if (interceptorManager.hasInterceptors()) {
             try {
                 onEjbMethodStart();
@@ -4270,10 +4308,10 @@ public abstract class BaseContainer
             result = this.invokeTargetBeanMethod(inv.getBeanMethod(), inv, inv.ejb,
                     inv.methodParams, null);
         }
-        
+
         return result;
     }
-    
+
     /**
      * Called from Interceptor Chain to invoke the actual bean method.
      * This method must throw any exception from the bean method *as is*,

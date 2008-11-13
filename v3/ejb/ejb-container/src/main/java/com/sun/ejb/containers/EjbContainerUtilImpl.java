@@ -125,7 +125,7 @@ public class EjbContainerUtilImpl
     private EJBServerConfigLookup ejbServerConfigLookup;
 
     @Inject
-    ExecutorServiceFactory executorService;
+    private EjbAsyncInvocationManager ejbAsyncInvocationManager;
 
     private  static EjbContainerUtil _me;
 
@@ -239,8 +239,8 @@ public class EjbContainerUtilImpl
         return serverContext;
     }
 
-    public ExecutorServiceFactory getExecutorService() {
-        return executorService;
+    public EjbAsyncInvocationManager getEjbAsyncInvocationManager() {
+        return ejbAsyncInvocationManager;
     }
 
     public  ContainerSynchronization getContainerSync(Transaction jtx)

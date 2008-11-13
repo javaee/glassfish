@@ -91,9 +91,19 @@ public class InvocationInfo {
     public boolean isTxRequiredLocalCMPField = false;
 
     public MethodLockInfo methodLockInfo;
-    
+
+    private boolean asyncMethodFlag;
+
     public InvocationInfo(Method method) {
         this.method = method;
+    }
+
+    public void setIsAsynchronous(boolean val) {
+        this.asyncMethodFlag = val;
+    }
+
+    public boolean isAsynchronous() {
+        return asyncMethodFlag;
     }
 
     public String toString() {

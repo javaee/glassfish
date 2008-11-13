@@ -41,6 +41,7 @@ package com.sun.ejb;
 
 import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.ejb.containers.EJBLocalRemoteObject;
+import com.sun.ejb.containers.EjbFutureTask;
 import org.glassfish.api.invocation.ComponentInvocation;
 
 import javax.ejb.EJBContext;
@@ -54,6 +55,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * The EjbInvocation object contains state associated with an invocation
@@ -65,7 +69,7 @@ import java.util.Set;
 
 public class EjbInvocation
     extends ComponentInvocation
-    implements InvocationContext
+    implements InvocationContext, Cloneable
 {
   
     private static Map<Class, Set<Class>> compatiblePrimitiveWrapper
@@ -128,7 +132,7 @@ public class EjbInvocation
         super.container = container;
         super.setComponentInvocationType(ComponentInvocation.ComponentInvocationType.EJB_INVOCATION);
     }
-    
+
     /**
      * The EJBObject/EJBLocalObject which created this EjbInvocation object.
      * This identifies the target bean.
@@ -276,7 +280,7 @@ public class EjbInvocation
      * only for CMP2.x beans
      */
     public boolean foundInTxCache = false;
-    
+
     /**
      * Tells if a fast path can be taken for a business method
      * invocation.
@@ -284,6 +288,59 @@ public class EjbInvocation
     public boolean useFastPath = false;
   
     private java.util.concurrent.locks.Lock cmcLock;
+
+    private boolean doTxProcessingInPostInvoke;
+
+    private long invId;
+
+    private boolean yetToSubmitStatus = true;
+
+    private EjbFutureTask asyncFuture;
+
+    public EjbFutureTask getEjbFutureTask() {
+        return asyncFuture;
+    }
+
+    public void setEjbFutureTask(EjbFutureTask future) {
+        asyncFuture = future;
+    }
+
+    public long getInvId() {
+        return invId;
+    }
+
+    public void setInvId(long invId) {
+        this.invId = invId;
+    }
+
+    public boolean mustInvokeAsynchronously() {
+        return invocationInfo.isAsynchronous() && yetToSubmitStatus;
+    }
+
+    public void clearYetToSubmitStatus() {
+        yetToSubmitStatus = false;
+    }
+
+    public boolean getDoTxProcessingInPostInvoke() {
+        return doTxProcessingInPostInvoke;
+    }
+
+    public void setDoTxProcessingInPostInvoke(boolean doTxProcessingInPostInvoke) {
+        this.doTxProcessingInPostInvoke = doTxProcessingInPostInvoke;
+    }
+
+    public EjbInvocation clone() {
+        EjbInvocation newInv = (EjbInvocation) super.clone();
+
+        newInv.ejb = null;
+        newInv.exception = null;
+        newInv.exceptionFromBeanMethod = null;
+        newInv.clientTx = null;
+        newInv.preInvokeTxStatus = null;
+        newInv.originalContextClassLoader = null;
+        
+        return newInv;
+    }
 
     /**
      * Used by JACC implementation to get an enterprise bean

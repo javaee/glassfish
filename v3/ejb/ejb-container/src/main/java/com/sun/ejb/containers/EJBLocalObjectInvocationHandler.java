@@ -194,6 +194,7 @@ public final class EJBLocalObjectInvocationHandler
         } finally {
             container.postInvoke(inv);
         }
+            
         if (inv.exception != null) {
             InvocationHandlerUtil.throwLocalException
                 (inv.exception, method.getExceptionTypes());
