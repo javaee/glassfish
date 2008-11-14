@@ -84,7 +84,7 @@ import java.util.Set;
 import javax.naming.NamingException;
 import javax.naming.Binding;
 import javax.naming.directory.DirContext;
-import javax.servlet.AsyncDispatcher;
+import javax.servlet.AsyncContext;
 import javax.servlet.AsyncListener;
 import javax.servlet.FilterChain;
 import javax.servlet.RequestDispatcher;
@@ -368,17 +368,18 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
     public String getLocalName() { return null; }
     public int getLocalPort() { return -1; }
     public int getRemotePort() { return -1; }
-    public void startAsync() throws IllegalStateException {}
-    public void startAsync(Runnable runnable) throws IllegalStateException {}
-    public void disableAsyncSupport() {}
-    public void doneAsync() {}
-    public boolean isAsyncSupported() { return false; }
+    public AsyncContext startAsync() throws IllegalStateException { return null; }
+    public AsyncContext startAsync(ServletRequest servletRequest,
+                                   ServletResponse servletResponse)
+            throws IllegalStateException { return null; }
     public boolean isAsyncStarted() { return false; }
-    public AsyncDispatcher getAsyncDispatcher() { return null; }
-    public AsyncDispatcher getAsyncDispatcher(String path) { return null; }
+    public boolean isAsyncSupported() { return false; }
+    public AsyncContext getAsyncContext() { return null; }
+    public void addAsyncListener(AsyncListener listener) {};
     public void addAsyncListener(AsyncListener listener,
                                  ServletRequest servletRequest,
                                  ServletResponse servletResponse) {}
+    public void disableAsyncSupport() {}
 
 
     // START CR 6415120

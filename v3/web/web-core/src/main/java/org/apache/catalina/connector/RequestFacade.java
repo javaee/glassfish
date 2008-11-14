@@ -70,7 +70,7 @@ import java.util.Enumeration;
 import java.util.Map;
 import java.util.Locale;
 import java.net.Socket;
-import javax.servlet.AsyncDispatcher;
+import javax.servlet.AsyncContext;
 import javax.servlet.AsyncListener;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -1029,20 +1029,26 @@ public class RequestFacade
     /**
      * Starts async processing on this request.
      */
-    public void startAsync() throws IllegalStateException {
-        startAsync(null);
+    public AsyncContext startAsync() throws IllegalStateException {
+        if (request == null) {
+            throw new IllegalStateException(
+                            sm.getString("requestFacade.nullRequest"));
+        }
+        return request.startAsync();
     }
 
 
     /**
      * Starts async processing on this request.
      */
-    public void startAsync(Runnable runnable) throws IllegalStateException {
+    public AsyncContext startAsync(ServletRequest request,
+                                   ServletResponse response)
+            throws IllegalStateException {
         if (request == null) {
             throw new IllegalStateException(
                             sm.getString("requestFacade.nullRequest"));
         }
-        request.startAsync();
+        return request.startAsync(request, response);
     }
         
 
@@ -1059,15 +1065,18 @@ public class RequestFacade
 
 
     /**
-     * Completes any async processing on this request, causing the response
-     * to be committed.
+     * Disables async support for this request.
+     *
+     * Async support is disabled as soon as this request has passed a filter
+     * or servlet that does not support async (either via the designated
+     * annotation or declaratively).
      */
-    public void doneAsync() {
+    public void disableAsyncSupport() {
         if (request == null) {
             throw new IllegalStateException(
                             sm.getString("requestFacade.nullRequest"));
         }
-        request.doneAsync();
+        request.disableAsyncSupport();
     }
 
 
@@ -1084,41 +1093,41 @@ public class RequestFacade
 
 
     /**
-     * Obtains an AsyncDispatcher for the original URI to which this request
-     * was first dispatched.
+     * Gets the AsyncContext of this request.
      */
-    public AsyncDispatcher getAsyncDispatcher() {
+    public AsyncContext getAsyncContext() {
         if (request == null) {
             throw new IllegalStateException(
                             sm.getString("requestFacade.nullRequest"));
         }
-        return request.getAsyncDispatcher();
-    }
-
-
-    /**
-     * Obtains an AsyncDispatcher for the given path.
-     */
-    public AsyncDispatcher getAsyncDispatcher(String path) {
-        if (request == null) {
-            throw new IllegalStateException(
-                            sm.getString("requestFacade.nullRequest"));
-        }
-        return request.getAsyncDispatcher(path);
+        return request.getAsyncContext();
     }
 
 
     /**
      * Registers the given AsyncListener with this request.
      */
-    public void addAsyncListener(AsyncListener listener,
-                                 ServletRequest servletRequest,
-                                 ServletResponse servletResponse) {
+    public void addAsyncListener(AsyncListener listener) {
         if (request == null) {
             throw new IllegalStateException(
                             sm.getString("requestFacade.nullRequest"));
         }
-        request.addAsyncListener(listener, servletRequest, servletResponse);
+        request.addAsyncListener(listener);
+    }
+
+
+    /**
+     * Registers the given AsyncListener, ServletRequest, and 
+     * ServletResponse with this request.
+     */
+    public void addAsyncListener(AsyncListener listener,
+                                 ServletRequest request,
+                                 ServletResponse response) {
+        if (request == null) {
+            throw new IllegalStateException(
+                            sm.getString("requestFacade.nullRequest"));
+        }
+        request.addAsyncListener(listener, request, response);
     }
 
 

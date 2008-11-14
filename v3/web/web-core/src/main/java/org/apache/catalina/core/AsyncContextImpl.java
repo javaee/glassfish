@@ -36,40 +36,106 @@
 
 package org.apache.catalina.core;
 
+import java.io.IOException;
 import java.util.concurrent.*;
+import java.util.logging.*;
 import javax.servlet.*;
+import org.apache.catalina.connector.Request;
 
-class AsyncDispatcherImpl implements AsyncDispatcher {
+public class AsyncContextImpl implements AsyncContext {
+
+    private static final Logger log = Logger.getLogger(AsyncContextImpl.class.getName());
 
     // Thread pool for async dispatches
     private static final ExecutorService pool =
         Executors.newCachedThreadPool();
 
-    // RequestDispatcher delegate
-    private final ApplicationDispatcher dispatcher;
+    // The original (unwrapped) request
+    private Request request;
+
+    // The possibly wrapped request passed to ServletRequest.startAsync
+    private ServletRequest servletRequest;
+
+    // The possibly wrapped response passed to ServletRequest.startAsync    
+    private ServletResponse servletResponse;
+
 
     /**
      * Constructor
      *
-     * @param dispatcher the delegate RequestDispatcher that does the actual
-     * forward
+     * @param request the original (unwrapped) request
+     * @param servletRequest the possibly wrapped request passed to
+     * ServletRequest.startAsync
+     * @param servletResponse the possibly wrapped response passed to
+     * ServletRequest.startAsync
      */
-    public AsyncDispatcherImpl(ApplicationDispatcher dispatcher) {
-        this.dispatcher = dispatcher;
+    public AsyncContextImpl(Request request, ServletRequest servletRequest,
+                            ServletResponse servletResponse) {
+        this.request = request;
+        this.servletRequest = servletRequest;
+        this.servletResponse = servletResponse;
     }
 
-    public void forward(ServletRequest request, ServletResponse response) {
-        pool.execute(new Handler(dispatcher, request, response));
+
+    public ServletRequest getRequest() {
+        return servletRequest;
+    }
+
+
+    public ServletResponse getResponse() {
+        return servletResponse;
+    }
+
+
+    public void forward() {
+        // XXX
+    } 
+
+
+    public void forward(String path) {
+        RequestDispatcher rd = servletRequest.getRequestDispatcher(path);
+        if (rd != null) {
+            pool.execute(new Handler(rd, servletRequest, servletResponse));
+        }
+    }
+
+
+    public void forward(ServletContext context, String path) {
+        RequestDispatcher rd = context.getRequestDispatcher(path);
+        if (rd != null) {
+            pool.execute(new Handler(rd, servletRequest, servletResponse));
+        }
+    }
+
+
+    public void complete() {
+        if (!request.isAsyncStarted()) {
+            throw new IllegalStateException("startAsync not called");
+        }
+
+        // TBD
+
+        request.complete();
+    }
+
+
+    public void setTimeout(long timeout) {
+        // XXX
+    }
+
+
+    public void start(Runnable run) {
+        // XXX
     }
 
 
     static class Handler implements Runnable {
 
-        private final ApplicationDispatcher dispatcher;
+        private final RequestDispatcher dispatcher;
         private final ServletRequest request;
         private final ServletResponse response;
 
-        Handler(ApplicationDispatcher dispatcher, ServletRequest request,
+        Handler(RequestDispatcher dispatcher, ServletRequest request,
                 ServletResponse response) {
             this.dispatcher = dispatcher;
             this.request = request;
@@ -78,11 +144,11 @@ class AsyncDispatcherImpl implements AsyncDispatcher {
        
         public void run() {
             try {
-                // RD.forward without committing the response
-                dispatcher.forward(request, response, false);
+                dispatcher.forward(request, response);
             } catch (Exception e) {
                 // Log warning
             }
         }
     }
+
 }

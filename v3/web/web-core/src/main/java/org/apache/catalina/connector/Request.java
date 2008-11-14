@@ -88,7 +88,7 @@ import java.security.PrivilegedExceptionAction;
 import java.security.PrivilegedActionException;
 import javax.security.auth.Subject;
 
-import javax.servlet.AsyncDispatcher;
+import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
 import javax.servlet.AsyncListener;
 import javax.servlet.FilterChain;
@@ -134,6 +134,7 @@ import org.apache.catalina.Wrapper;
 
 import org.apache.catalina.authenticator.SingleSignOn;
 import org.apache.catalina.core.ApplicationFilterFactory;
+import org.apache.catalina.core.AsyncContextImpl;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.session.StandardSession;
@@ -537,6 +538,7 @@ public class Request
      */
     private boolean isAsyncSupported = false;
     private boolean isAsyncStarted = false;
+    private AsyncContextImpl asyncContext;
     private LinkedList<AsyncListenerHolder> asyncListenerHolders;
 
 
@@ -3741,23 +3743,32 @@ public class Request
     /**
      * Starts async processing on this request.
      */
-    public void startAsync() throws IllegalStateException {
-        startAsync(null);
+    public AsyncContext startAsync() throws IllegalStateException {
+        return startAsync(this, (Response) getResponse());
     }
 
 
     /**
      * Starts async processing on this request.
      */
-    public void startAsync(Runnable runnable) throws IllegalStateException {
+    public AsyncContext startAsync(ServletRequest request,
+                                   ServletResponse response)
+            throws IllegalStateException {
+
+        if (request == null || response == null) {
+            throw new IllegalArgumentException("Null request or response");
+        }      
         if (!isAsyncSupported()) {
             throw new IllegalStateException("Async not supported for this " +
                                             "request");
         }
 
+        asyncContext = new AsyncContextImpl(this, request, response);
         isAsyncStarted = true;
 
         // TBD
+
+        return asyncContext;
     }
         
 
@@ -3766,36 +3777,6 @@ public class Request
      */
     public boolean isAsyncStarted() {
         return isAsyncStarted;
-    }
-
-
-    /**
-     * Completes any async processing on this request, causing the response
-     * to be committed.
-     */
-    public synchronized void doneAsync() {
-        if (!isAsyncStarted) {
-            throw new IllegalStateException("startAsync not called");
-        }
-
-        isAsyncStarted = false;
-
-        // TBD
-
-        AsyncListener asyncListener = null;
-        if (asyncListenerHolders != null) {
-            for (AsyncListenerHolder asyncListenerHolder : asyncListenerHolders) {
-                asyncListener = asyncListenerHolder.getAsyncListener();
-                try {
-                    asyncListener.onDoneAsync(new AsyncEvent(
-                        asyncListenerHolder.getServletRequest(),
-                        asyncListenerHolder.getServletResponse()));
-                } catch (IOException ioe) {
-                    log.log(Level.WARNING, "Error invoking AsyncListener",
-                            ioe);
-                }
-            }
-        }
     }
 
 
@@ -3820,51 +3801,45 @@ public class Request
 
 
     /**
-     * Obtains an AsyncDispatcher for the original URI to which this request
-     * was first dispatched.
+     * Gets the AsyncContext of this request.
      */
-    public AsyncDispatcher getAsyncDispatcher() {
-        return getAsyncDispatcher(getServletPath() + getPathInfo());
-    }
-
-
-    /**
-     * Obtains an AsyncDispatcher for the given path.
-     */
-    public AsyncDispatcher getAsyncDispatcher(String path) {
-
-        if (path == null) {
-            throw new IllegalArgumentException("Missing path");
+    public AsyncContext getAsyncContext() {
+        if (!isAsyncStarted()) {
+            throw new IllegalStateException("Request not in async mode");
         }
 
-        if (servletContext == null) {
-            return null;
-        }
-
-        return servletContext.getAsyncDispatcher(path);
+        return asyncContext;
     }
 
 
     /**
      * Registers the given AsyncListener with this request.
-     *
-     * If async processing is started on this request, an AsyncEvent
-     * containing the given (possibly wrapped) ServletRequest and
-     * ServletResponse objects will be sent to the AsyncListener 
-     * when the async processing has completed or timed out.
-     * 
-     * @param listener the AsyncListener to be registered
-     * @param servletRequest the (possibly wrapped) ServletRequest object
-     * that will be passed to the AsyncListener as part of the AsyncEvent 
-     * @param servletResponse the (possibly wrapped) ServletResponse object
-     * that will be passed to the AsyncListener as part of the AsyncEvent 
+     */
+    public void addAsyncListener(AsyncListener listener) {
+        if (listener == null) {
+            throw new IllegalArgumentException("Missing listener");
+        }
+
+        synchronized(this) {
+            if (asyncListenerHolders == null) {
+                asyncListenerHolders = new LinkedList<AsyncListenerHolder>();
+            }
+
+            asyncListenerHolders.add(new AsyncListenerHolder(listener));
+        }
+    }
+
+
+    /**
+     * Registers the given AsyncListener, ServletRequest, and 
+     * ServletResponse with this request.
      */
     public void addAsyncListener(AsyncListener listener,
                                  ServletRequest request,
                                  ServletResponse response) {
         if (listener == null || request == null || response == null) {
             throw new IllegalArgumentException(
-                "Null argument in Request.addAsyncListener");
+                "Missing listener, request, or response");
         }
 
         synchronized(this) {
@@ -3873,7 +3848,25 @@ public class Request
             }
 
             asyncListenerHolders.add(new AsyncListenerHolder(
-                                            listener, request, response));
+                listener, request, response));
+        }
+    }
+
+
+    public void complete() {
+        AsyncListener asyncListener = null;
+        if (asyncListenerHolders != null) {
+            for (AsyncListenerHolder asyncListenerHolder : asyncListenerHolders) {
+                asyncListener = asyncListenerHolder.getAsyncListener();
+                try {
+                    asyncListener.onComplete(new AsyncEvent(
+                        asyncListenerHolder.getServletRequest(),
+                        asyncListenerHolder.getServletResponse()));
+                } catch (IOException ioe) {
+                    log.log(Level.WARNING, "Error invoking AsyncListener",
+                            ioe);
+                }
+            }
         }
     }
 
@@ -3987,6 +3980,10 @@ public class Request
         private AsyncListener listener;
         private ServletRequest request;
         private ServletResponse response;
+
+        public AsyncListenerHolder(AsyncListener listener) {
+            this(listener, null, null);
+        }
 
         public AsyncListenerHolder(AsyncListener listener,
                                    ServletRequest request,
