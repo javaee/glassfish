@@ -1346,7 +1346,10 @@ public class WebModule extends PwcWebModule {
 
         // START S1AS 6178005
         String stubPath = wmInfo.getStubPath();
-        if (stubPath != null) {
+        if (stubPath != null && stubPath.length() > 0) {
+            if (stubPath.charAt(0) != '/') {
+                stubPath = "/" + stubPath;
+            }
             loader.addRepository("file:" + stubPath + File.separator);
         }
         // END S1AS 6178005
