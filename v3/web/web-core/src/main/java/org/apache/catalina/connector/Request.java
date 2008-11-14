@@ -3854,14 +3854,33 @@ public class Request
 
 
     public void complete() {
+
+        if (!isAsyncStarted()) {
+            throw new IllegalStateException("Request not in async mode");
+        }
+
+        // Invoke all AsyncListeners at their onComplete method
         AsyncListener asyncListener = null;
+        ServletRequest asyncEventRequest = null;
+        ServletResponse asyncEventResponse = null;
         if (asyncListenerHolders != null) {
             for (AsyncListenerHolder asyncListenerHolder : asyncListenerHolders) {
                 asyncListener = asyncListenerHolder.getAsyncListener();
+                asyncEventRequest = asyncListenerHolder.getRequest();
+                if (asyncEventRequest == null) {
+                    // No request had been passed to addAsyncListener.
+                    // Use the one from the AsyncContext
+                    asyncEventRequest = asyncContext.getRequest();
+                }
+                asyncEventResponse = asyncListenerHolder.getResponse();
+                if (asyncEventResponse == null) {
+                    // No response had been passed to addAsyncListener.
+                    // Use the one from the AsyncContext
+                    asyncEventResponse = asyncContext.getResponse();
+                }
                 try {
-                    asyncListener.onComplete(new AsyncEvent(
-                        asyncListenerHolder.getServletRequest(),
-                        asyncListenerHolder.getServletResponse()));
+                    asyncListener.onComplete(
+                        new AsyncEvent(asyncEventRequest, asyncEventResponse));
                 } catch (IOException ioe) {
                     log.log(Level.WARNING, "Error invoking AsyncListener",
                             ioe);
@@ -3997,11 +4016,11 @@ public class Request
             return listener;
         }
 
-        public ServletRequest getServletRequest() {
+        public ServletRequest getRequest() {
             return request;
         }
 
-        public ServletResponse getServletResponse() {
+        public ServletResponse getResponse() {
             return response;
         }
     }
