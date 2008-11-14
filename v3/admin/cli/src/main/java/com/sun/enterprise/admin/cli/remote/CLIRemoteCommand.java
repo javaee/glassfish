@@ -78,7 +78,7 @@ public class CLIRemoteCommand {
      * Runs the command using the specified arguments and sending the result
      * to the caller-provided {@link OutputStream} in the requested format for processing.
      * @param args the arguments to use in building the command
-     * @param responseFormatType direction to the server as to how to format the response; usually hk2-cli or xml-cli
+     * @param responseFormatType direction to the server as to how to format the response; usually hk2-agent or xml-cli
      * @param userOut the {@link OutputStream} to which to write the command's response text
      * @throws com.sun.enterprise.cli.framework.CommandException 
      */
@@ -783,7 +783,7 @@ public class CLIRemoteCommand {
     private Map<String, String>             params;
     private List<String>                    operands;
     private String                          commandName;
-    private String                          responseFormatType = "hk2-cli";
+    private String                          responseFormatType = "hk2-agent";
     private OutputStream                    userOut;
     private boolean                         doUpload = false;
     private File                            fileParameter;

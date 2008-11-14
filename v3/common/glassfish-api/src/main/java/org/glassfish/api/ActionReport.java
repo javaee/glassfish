@@ -23,6 +23,8 @@
 
 package org.glassfish.api;
 
+import org.jvnet.hk2.annotations.Contract;
+
 import java.io.*;
 import java.util.*;
 import java.util.logging.Logger;
@@ -39,6 +41,7 @@ import java.util.logging.Level;
  *
  * @author Jerome Dochez
  */
+@Contract
 public abstract class ActionReport {
     
     public enum ExitCode { SUCCESS, WARNING, FAILURE }

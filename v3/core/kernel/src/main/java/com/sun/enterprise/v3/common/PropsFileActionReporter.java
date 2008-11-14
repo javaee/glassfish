@@ -33,6 +33,10 @@
 
 package com.sun.enterprise.v3.common;
 
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.PerLookup;
+
 import java.io.PrintWriter;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -41,14 +45,12 @@ import java.util.jar.Attributes;
 import java.util.Map;
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: Mar 2, 2007
- * Time: 9:14:06 AM
- * To change this template use File | Settings | File Templates.
+ * Action reporter to a manifest file
+ * @author Jerome Dochez
  */
+@Service(name="hk2-agent")
+@Scoped(PerLookup.class)
 public class PropsFileActionReporter extends ActionReporter {
-
 
     public void writeReport(OutputStream os) throws IOException {
 

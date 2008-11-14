@@ -22,6 +22,10 @@
  */
 package com.sun.enterprise.v3.common;
 
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.PerLookup;
+
 import java.io.*;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -31,6 +35,8 @@ import java.io.OutputStream;
  *
  * @author bnevins
  */
+@Service(name="plain")
+@Scoped(PerLookup.class)
 public class PlainTextActionReporter extends ActionReporter {
     public static final String MAGIC = "PlainTextActionReporter";
 

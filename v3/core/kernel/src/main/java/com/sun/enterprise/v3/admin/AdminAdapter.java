@@ -121,6 +121,9 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
     @Inject
     ServerContext sc;
 
+    @Inject
+    Habitat habitat;
+
     private boolean isRegistered = false;
             
     CountDownLatch latch = new CountDownLatch(1);
@@ -155,14 +158,20 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
         LogHelper.getDefaultLogger().finer("Received something on " + req.getRequestURI());
         LogHelper.getDefaultLogger().finer("QueryString = " + req.getQueryString());
 
-        // XXX Really needs to be generalized
         ActionReport report;
-        if (req.getHeader("User-Agent").startsWith("hk2")) {
-            report = new PropsFileActionReporter();
-        } else if (req.getHeader("User-Agent").startsWith("xml")) {
-            report = new XMLActionReporter();
-        } else {
-            report = new HTMLActionReporter();
+        String userAgent = req.getHeader("User-Agent");
+        report = habitat.getComponent(ActionReport.class, userAgent.substring(userAgent.indexOf('/')+1));
+        if (report==null) {
+            String accept = req.getHeader("Accept");
+            StringTokenizer st = new StringTokenizer(accept, ",");
+            while (report==null && st.hasMoreElements()) {
+                final String scheme=st.nextToken();
+                report = habitat.getComponent(ActionReport.class, scheme.substring(scheme.indexOf('/')+1));                
+            }
+        }
+        if (report==null) {
+            // get the default one.
+            report = habitat.getComponent(ActionReport.class);
         }
 
 

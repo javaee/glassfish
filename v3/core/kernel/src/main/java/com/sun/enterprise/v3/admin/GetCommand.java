@@ -86,8 +86,7 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
             PropsFileActionReporter reporter = (PropsFileActionReporter) report;
             reporter.useMainChildrenAttribute(true);
         } catch(ClassCastException e) {
-            context.logger.severe("Sort failed in get command: " + e.toString());
-            e.printStackTrace();
+            // ignore this is not a manifest output.
         }
         
         if (monitor) {

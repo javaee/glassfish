@@ -49,9 +49,8 @@ public class ListCommand extends V2DottedNameSupport implements AdminCommand {
         try {
             PropsFileActionReporter reporter = (PropsFileActionReporter) report;
             reporter.useMainChildrenAttribute(true);
-        } catch(ClassCastException e) {
-            context.logger.severe("Sort failed in list command: " + e.toString());
-            e.printStackTrace();
+        } catch(ClassCastException e) { 
+            // ignore, this is not a manifest output
         }
 
         if (monitor) {

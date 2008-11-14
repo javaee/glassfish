@@ -37,6 +37,9 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.PerLookup;
 
 /**
  * Represents the action report as XML like this:
@@ -63,6 +66,8 @@ import org.w3c.dom.Node;
  * 
  * @author tjquinn
  */
+@Service(name="xml")
+@Scoped(PerLookup.class)
 public class XMLActionReporter extends ActionReporter {
 
     public void writeReport(OutputStream os)  {
