@@ -51,6 +51,7 @@ package com.sun.enterprise.deployment.xml;
 public interface WebTagNames extends TagNames {
 
     public static final String WEB_BUNDLE = "web-app";
+    public static final String WEB_FRAGMENT = "web-fragment";
     public static final String SERVLET = "servlet";    
     public static final String SERVLET_NAME = "servlet-name";
     public static final String SERVLET_CLASS = "servlet-class";
@@ -68,7 +69,7 @@ public interface WebTagNames extends TagNames {
     public static final String PARAM_VALUE = "param-value";    
     public static final String CONTEXT_PARAM = "context-param";
     public static final String ASYNC_SUPPORTED = "async-supported";
-    public static final String TIMEOUT = "timeout";
+    public static final String ASYNC_TIMEOUT = "async-timeout";
     
     public static final String SECURITY_CONSTRAINT = "security-constraint";
     public static final String WEB_RESOURCE_COLLECTION = "web-resource-collection";

@@ -116,76 +116,112 @@ public class ServletFilterHandler extends AbstractWebHandler {
             }
         }
 
-        //XXX only support complete override in this moment
-        if (servletFilterDesc != null) {
-            return getDefaultProcessedResult();
-        }
-
-        servletFilterDesc = new ServletFilterDescriptor();
-
-        ServletFilterMapping servletFilterMappingDesc =
-                new ServletFilterMappingDescriptor();
-
-        servletFilterDesc.setName(filterName);
-        servletFilterDesc.setClassName(filterClass.getName());
-        servletFilterDesc.setDescription(servletFilterAn.description());
-        servletFilterDesc.setDisplayName(servletFilterAn.displayName());
-
-        String[] urlPatterns = servletFilterAn.urlPatterns();
-        if (urlPatterns == null || urlPatterns.length == 0) {
-            urlPatterns = servletFilterAn.value();
-        }
-
-        boolean validUrlPatterns = false;
-        if (urlPatterns != null && urlPatterns.length > 0) {
-            validUrlPatterns = true;
-            for (String up : urlPatterns) {
-                if (up == null || up.length() == 0) {
-                    validUrlPatterns = false;
-                }
-                servletFilterMappingDesc.addURLPattern(up);
+        if (servletFilterDesc == null) {
+            servletFilterDesc = new ServletFilterDescriptor();
+            servletFilterDesc.setName(filterName);
+        } else {
+            String filterImpl = servletFilterDesc.getClassName();
+            if (filterImpl != null && filterImpl.length() > 0 &&
+                    !filterImpl.equals(filterClass.getName())) {
+                log(Level.SEVERE, ainfo,
+                    localStrings.getLocalString(
+                    "enterprise.deployment.annotation.handlers.filternamedontmatch",
+                    "The filter '{0}' has implementation '{1}' in xml. It does not match with '{2}' from annotation @{3}.",
+                    new Object[] { filterName, filterImpl, filterClass.getName(),
+                    ServletFilter.class.getName() }));
+                return getDefaultFailedResult();
             }
         }
 
-        if (!validUrlPatterns) {
-            String urlPatternString =
-                (urlPatterns != null) ? Arrays.toString(urlPatterns) : "";
-
-            throw new IllegalArgumentException(localStrings.getLocalString(
-                    "enterprise.deployment.annotation.handlers.invalidUrlPatterns",
-                    "Invalid url patterns: {0}.",
-                    urlPatternString));
+        servletFilterDesc.setClassName(filterClass.getName());
+        if (servletFilterDesc.getDescription() == null) {
+            servletFilterDesc.setDescription(servletFilterAn.description());
+        }
+        if (servletFilterDesc.getDisplayName() == null) {
+            servletFilterDesc.setDisplayName(servletFilterAn.displayName());
         }
 
-
-        InitParam[] initParams = servletFilterAn.initParams();
-        if (initParams != null && initParams.length > 0) {
-            for (InitParam initParam : initParams) {
-                servletFilterDesc.addInitializationParameter(
-                    new EnvironmentProperty(
-                        initParam.name(), initParam.value(),
-                        initParam.description()));
+        if (servletFilterDesc.getInitializationParameters().size() == 0) {
+            InitParam[] initParams = servletFilterAn.initParams();
+            if (initParams != null && initParams.length > 0) {
+                for (InitParam initParam : initParams) {
+                    servletFilterDesc.addInitializationParameter(
+                        new EnvironmentProperty(
+                            initParam.name(), initParam.value(),
+                            initParam.description()));
+                }
             }
         }
 
         //XXX small vs large
-        servletFilterDesc.setSmallIconUri(servletFilterAn.icon());
-        servletFilterDesc.setLargeIconUri(servletFilterAn.icon());
+        if (servletFilterDesc.getSmallIconUri() == null) {
+            servletFilterDesc.setSmallIconUri(servletFilterAn.icon());
+        }
+        if (servletFilterDesc.getLargeIconUri() == null) {
+            servletFilterDesc.setLargeIconUri(servletFilterAn.icon());
+        }
 
-        servletFilterDesc.setAsyncSupported(servletFilterAn.asyncSupported());
+        if (servletFilterDesc.isAsyncSupported() == null) {
+            servletFilterDesc.setAsyncSupported(servletFilterAn.asyncSupported());
+        }
 
-        servletFilterMappingDesc.setName(filterName);
-        String[] servletNames = servletFilterAn.servletNames();
-        if (servletNames != null && servletNames.length > 0) {
-            for (String sn : servletNames) {
-                servletFilterMappingDesc.addServletName(sn);
+
+        ServletFilterMapping servletFilterMappingDesc = null;
+        for (ServletFilterMapping sfm : webBundleDesc.getServletFilterMappings()) {
+            if (filterName.equals(sfm.getName())) {
+                servletFilterMappingDesc = sfm;
+                break;
             }
         }
 
-        DispatcherType[] dispatcherTypes = servletFilterAn.dispatcherTypes();
-        if (dispatcherTypes != null && dispatcherTypes.length > 0) {
-            for (DispatcherType dType : dispatcherTypes) {
-                servletFilterMappingDesc.addDispatcher(dType.name());
+        if (servletFilterMappingDesc == null) {
+            servletFilterMappingDesc = new ServletFilterMappingDescriptor();
+            servletFilterMappingDesc.setName(filterName);
+        }
+
+        if (servletFilterMappingDesc.getURLPatterns().size() == 0) {
+            String[] urlPatterns = servletFilterAn.urlPatterns();
+            if (urlPatterns == null || urlPatterns.length == 0) {
+                urlPatterns = servletFilterAn.value();
+            }
+
+            boolean validUrlPatterns = false;
+            if (urlPatterns != null && urlPatterns.length > 0) {
+                validUrlPatterns = true;
+                for (String up : urlPatterns) {
+                    if (up == null || up.length() == 0) {
+                        validUrlPatterns = false;
+                    }
+                    servletFilterMappingDesc.addURLPattern(up);
+                }
+            }
+
+            if (!validUrlPatterns) {
+                String urlPatternString =
+                    (urlPatterns != null) ? Arrays.toString(urlPatterns) : "";
+
+                throw new IllegalArgumentException(localStrings.getLocalString(
+                        "enterprise.deployment.annotation.handlers.invalidUrlPatterns",
+                        "Invalid url patterns: {0}.",
+                        urlPatternString));
+            }
+        }
+
+        if (servletFilterMappingDesc.getServletNames().size() == 0) {
+            String[] servletNames = servletFilterAn.servletNames();
+            if (servletNames != null && servletNames.length > 0) {
+                for (String sn : servletNames) {
+                    servletFilterMappingDesc.addServletName(sn);
+                }
+            }
+        }
+
+        if (servletFilterMappingDesc.getDispatchers().size() == 0) {
+            DispatcherType[] dispatcherTypes = servletFilterAn.dispatcherTypes();
+                if (dispatcherTypes != null && dispatcherTypes.length > 0) {
+                for (DispatcherType dType : dispatcherTypes) {
+                    servletFilterMappingDesc.addDispatcher(dType.name());
+                }
             }
         }
 

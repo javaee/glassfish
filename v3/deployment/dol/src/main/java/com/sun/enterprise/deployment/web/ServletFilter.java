@@ -65,7 +65,7 @@ public interface ServletFilter {
     public void setSmallIconUri(String smallIconUri);
     public String getSmallIconUri();
 
-    public void setAsyncSupported(boolean asyncSupported);
-    public boolean isAsyncSupported();
+    public void setAsyncSupported(Boolean asyncSupported);
+    public Boolean isAsyncSupported();
 
 }

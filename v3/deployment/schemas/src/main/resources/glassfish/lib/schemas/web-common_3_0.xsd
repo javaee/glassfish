@@ -798,7 +798,7 @@
       <xsd:element name="async-supported"
 		   type="javaee:generic-booleanType"
 		   minOccurs="0"/>
-      <xsd:element name="timeout"
+      <xsd:element name="async-timeout"
 		   type="javaee:xsdIntegerType"
 		   minOccurs="0"/>
       <xsd:element name="run-as"

@@ -100,66 +100,90 @@ public class WebServletHandler extends AbstractWebHandler {
 
         WebComponentDescriptor webCompDesc =
             webBundleContext.getDescriptor().getWebComponentByCanonicalName(servletName);
-        //XXX only support complete override in this moment
-        if (webCompDesc != null) {
-            return getDefaultProcessedResult();
+        if (webCompDesc == null) {
+            webCompDesc = new WebComponentDescriptor();
+            webCompDesc.setName(servletName);
+            webCompDesc.setCanonicalName(servletName);
+        } else {
+            String webCompImpl = webCompDesc.getWebComponentImplementation();
+            if (webCompImpl != null && webCompImpl.length() > 0 &&
+                    !webCompImpl.equals(webCompClass.getName())) {
+                log(Level.SEVERE, ainfo,
+                    localStrings.getLocalString(
+                    "enterprise.deployment.annotation.handlers.servletimpldontmatch",
+                    "The servlet '{0}' has implementation '{1}' in xml. It does not match with '{2}' from annotation @{3}.",
+                    new Object[] { servletName, webCompImpl, webCompClass.getName(),
+                    WebServlet.class.getName() }));
+                return getDefaultFailedResult();
+            }
         } 
-
-        webCompDesc = new WebComponentDescriptor();
-        webCompDesc.setName(servletName);
-        webCompDesc.setCanonicalName(servletName);
         webCompDesc.setServlet(true);
-
         webCompDesc.setWebComponentImplementation(webCompClass.getName());
 
-        String[] urlPatterns = webServletAn.urlPatterns();
-        if (urlPatterns == null || urlPatterns.length == 0) {
-            urlPatterns = webServletAn.value();
-        }
+        if (webCompDesc.getUrlPatternsSet().size() == 0) {
+            String[] urlPatterns = webServletAn.urlPatterns();
+            if (urlPatterns == null || urlPatterns.length == 0) {
+                urlPatterns = webServletAn.value();
+            }
 
-        boolean validUrlPatterns = false;
-        if (urlPatterns != null && urlPatterns.length > 0) {
-            validUrlPatterns = true;
-            Set<String> urlPatternsSet = webCompDesc.getUrlPatternsSet();
-            for (String up : urlPatterns) {
-                if (up == null || up.length() == 0) {
-                    validUrlPatterns = false;
-                    break;
+            boolean validUrlPatterns = false;
+            if (urlPatterns != null && urlPatterns.length > 0) {
+                validUrlPatterns = true;
+                for (String up : urlPatterns) {
+                    if (up == null || up.length() == 0) {
+                        validUrlPatterns = false;
+                        break;
+                    }
+                    webCompDesc.addUrlPattern(up);
                 }
-                urlPatternsSet.add(up);
+            }
+
+            if (!validUrlPatterns) {
+                String urlPatternString =
+                    (urlPatterns != null) ? Arrays.toString(urlPatterns) : "";
+
+                throw new IllegalArgumentException(localStrings.getLocalString(
+                        "enterprise.deployment.annotation.handlers.invalidUrlPatterns",
+                        "Invalid url patterns: {0}.",
+                        urlPatternString));
             }
         }
 
-        if (!validUrlPatterns) {
-            String urlPatternString =
-                (urlPatterns != null) ? Arrays.toString(urlPatterns) : "";
-
-            throw new IllegalArgumentException(localStrings.getLocalString(
-                    "enterprise.deployment.annotation.handlers.invalidUrlPatterns",
-                    "Invalid url patterns: {0}.",
-                    urlPatternString));
+        if (webCompDesc.getLoadOnStartUp() == null) {
+            webCompDesc.setLoadOnStartUp(webServletAn.loadOnStartup());
         }
 
-        webCompDesc.setLoadOnStartUp(webServletAn.loadOnStartup());
-
-        InitParam[] initParams = webServletAn.initParams();
-        if (initParams != null && initParams.length > 0) {
-            for (InitParam initParam : initParams) {
-                webCompDesc.addInitializationParameter(
-                    new EnvironmentProperty(
-                        initParam.name(), initParam.value(),
-                        initParam.description()));
+        if (!webCompDesc.getInitializationParameters().hasMoreElements()) {
+            InitParam[] initParams = webServletAn.initParams();
+            if (initParams != null && initParams.length > 0) {
+                for (InitParam initParam : initParams) {
+                    webCompDesc.addInitializationParameter(
+                        new EnvironmentProperty(
+                            initParam.name(), initParam.value(),
+                            initParam.description()));
+                }
             }
         }
 
         //XXX small vs large
-        webCompDesc.setSmallIconUri(webServletAn.icon());
-        webCompDesc.setLargeIconUri(webServletAn.icon());
+        if (webCompDesc.getSmallIconUri() == null) {
+            webCompDesc.setSmallIconUri(webServletAn.icon());
+        }
+        if (webCompDesc.getLargeIconUri() == null) {
+            webCompDesc.setLargeIconUri(webServletAn.icon());
+        }
 
-        webCompDesc.setDescription(webServletAn.description());
+        if (webCompDesc.getDescription() == null ||
+                webCompDesc.getDescription().length() > 0) {
+            webCompDesc.setDescription(webServletAn.description());
+        }
 
-        webCompDesc.setAsyncSupported(webServletAn.asyncSupported());
-        webCompDesc.setTimeout(webServletAn.timeout());
+        if (webCompDesc.isAsyncSupported() == null) {
+            webCompDesc.setAsyncSupported(webServletAn.asyncSupported());
+        }
+        if (webCompDesc.getAsyncTimeout() == null) {
+            webCompDesc.setAsyncTimeout(webServletAn.asyncTimeout());
+        }
 
         webBundleContext.getDescriptor().addWebComponentDescriptor(webCompDesc);
         WebComponentContext webCompContext = new WebComponentContext(webCompDesc);

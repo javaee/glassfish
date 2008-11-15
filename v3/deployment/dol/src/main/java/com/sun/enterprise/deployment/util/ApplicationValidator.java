@@ -129,6 +129,17 @@ public class ApplicationValidator extends EjbBundleValidator
      * @param the web component
      */
     public void accept(WebComponentDescriptor descriptor) {
+        //set default value
+        if (descriptor.getLoadOnStartUp() == null) {
+            descriptor.setLoadOnStartUp(-1);
+        }
+        if (descriptor.isAsyncSupported() == null) {
+            descriptor.setAsyncSupported(false);
+        }
+        if (descriptor.getAsyncTimeout() == null) {
+            descriptor.setAsyncTimeout(0L);
+        }        
+
         computeRuntimeDefault(descriptor);
     }
        
@@ -136,6 +147,13 @@ public class ApplicationValidator extends EjbBundleValidator
         if (!webComp.getUsesCallerIdentity()) {
             computeRunAsPrincipalDefault(
                 webComp.getRunAsIdentity(), webComp.getApplication());
+        }
+    }
+
+    public void accept(ServletFilterDescriptor descriptor) {
+        // set default value
+        if (descriptor.isAsyncSupported() == null) {
+            descriptor.setAsyncSupported(false);
         }
     }
     

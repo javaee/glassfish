@@ -83,13 +83,13 @@ public class WebComponentDescriptor extends Descriptor {
     private Set<InitializationParameter> initializationParameters;
     private Set<String> urlPatterns;
     private String canonicalName;
-    private int loadOnStartUp = -1;
+    private Integer loadOnStartUp = null;
     private Set<SecurityRoleReference> securityRoleReferences;
 
     private RunAsIdentityDescriptor runAs;
     private WebBundleDescriptor webBundleDescriptor = null;
-    private boolean asyncSupported = false;
-    private long timeout = 0;
+    private Boolean asyncSupported = null;
+    private Long asyncTimeout = null;
 
     /**
      * The default constructor.
@@ -219,14 +219,14 @@ public class WebComponentDescriptor extends Descriptor {
     /**
      * @return the order on which this component will be loaded by the web server.
      */
-    public int getLoadOnStartUp() {
+    public Integer getLoadOnStartUp() {
         return loadOnStartUp;
     }
 
     /**
      * Sets the order on which this component will be loaded by the web server.
      */
-    public void setLoadOnStartUp(int loadOnStartUp) {
+    public void setLoadOnStartUp(Integer loadOnStartUp) {
         this.loadOnStartUp = loadOnStartUp;
     }
 
@@ -234,7 +234,7 @@ public class WebComponentDescriptor extends Descriptor {
      * Sets the order on which this component will be loaded by the web server.
      */
     public void setLoadOnStartUp(String loadOnStartUp) throws NumberFormatException {
-        this.loadOnStartUp = Integer.decode(loadOnStartUp).intValue();
+        this.loadOnStartUp = Integer.decode(loadOnStartUp);
     }
 
     Set<SecurityRoleReference> getSecurityRoleReferenceSet() {
@@ -344,20 +344,20 @@ public class WebComponentDescriptor extends Descriptor {
         this.isServlet = isServlet;
     }
 
-    public void setAsyncSupported(boolean asyncSupported) {
+    public void setAsyncSupported(Boolean asyncSupported) {
         this.asyncSupported = asyncSupported;
     }
 
-    public boolean isAsyncSupported() {
+    public Boolean isAsyncSupported() {
         return asyncSupported;
     }
 
-    public long getTimeout() {
-        return timeout;
+    public Long getAsyncTimeout() {
+        return asyncTimeout;
     }
 
-    public void setTimeout(long timeout) {
-        this.timeout = timeout;
+    public void setAsyncTimeout(Long asyncTimeout) {
+        this.asyncTimeout = asyncTimeout;
     }
 
     /* -----------
