@@ -48,23 +48,25 @@ public class JsonActionReporter extends ActionReporter {
     public void writeReport(OutputStream os) throws IOException {
         PrintWriter writer = new PrintWriter(os);
         writer.println("{");
-        writer.println(quote("command") + ":" + quote(actionDescription));
-        writer.println(quote("exit_code") + ":" + quote("" + this.exitCode));
+        writer.println(quote("command") + ":" + quote(actionDescription) +" ,");
+        writer.println(quote("exit_code") + ":" + quote("" + this.exitCode)+" ,");
+        writer.println(quote("result") + " : [");
         write(topMessage, writer);
+        writer.println("]");
         if (exception != null) {
             writer.println("Exception raised during operation : <br>");
             exception.printStackTrace(writer);
         }
         if (subActions.size() > 0) {
-            writer.println(quote("number_subactions") + ":" + quote("" + subActions.size()));
+            writer.println(quote(", number_subactions") + ":" + quote("" + subActions.size()));
         }
-        writer.print("</body></html>");
+        writer.println("}");
         writer.flush();
     }
 
     private void write(MessagePart part, PrintWriter writer) {
 
-        writer.println(quote("result") + " : [");
+
         write(part.getProps(), writer);
         boolean first = true;
         for (MessagePart child : part.getChildren()) {
@@ -76,7 +78,7 @@ public class JsonActionReporter extends ActionReporter {
             write(child, writer);
 
         }
-        writer.println("]");
+
     }
 
     private void write(Properties props, PrintWriter writer) {
