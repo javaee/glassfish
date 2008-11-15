@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.util.concurrent.*;
 import java.util.logging.*;
 import javax.servlet.*;
+import javax.servlet.http.*;
 import org.apache.catalina.connector.Request;
 
 public class AsyncContextImpl implements AsyncContext {
@@ -88,22 +89,46 @@ public class AsyncContextImpl implements AsyncContext {
 
 
     public void forward() {
-        // XXX
+        if (servletRequest instanceof HttpServletRequest) {
+            String uri = ((HttpServletRequest)servletRequest).getRequestURI();
+            RequestDispatcher rd = servletRequest.getRequestDispatcher(uri);
+            if (rd != null) {
+                pool.execute(new Handler(rd, servletRequest, servletResponse));
+            } else {
+                log.warning("Unable to acquire RequestDispatcher for " +
+                            "original request URI " + uri);
+            }
+        } else {
+            log.warning("Unable to determine original request URI");
+        }
     } 
 
 
     public void forward(String path) {
+        if (path == null) {
+            throw new IllegalArgumentException("Null path");
+        }
+
         RequestDispatcher rd = servletRequest.getRequestDispatcher(path);
         if (rd != null) {
             pool.execute(new Handler(rd, servletRequest, servletResponse));
+        } else {
+            log.warning("Unable to acquire RequestDispatcher for " + path);
         }
     }
 
 
     public void forward(ServletContext context, String path) {
+        if (path == null || context == null) {
+            throw new IllegalArgumentException("Null context or path");
+        }
+
         RequestDispatcher rd = context.getRequestDispatcher(path);
         if (rd != null) {
             pool.execute(new Handler(rd, servletRequest, servletResponse));
+        } else {
+            log.warning("Unable to acquire RequestDispatcher for " + path +
+                        "in servlet context " + context.getContextPath());
         }
     }
 
