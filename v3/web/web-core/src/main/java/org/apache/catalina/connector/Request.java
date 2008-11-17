@@ -555,6 +555,9 @@ public class Request
 
     private long asyncTimeout = -1L;
 
+    // Has AsyncContext.complete been called?
+    private boolean isAsyncComplete = false;
+
 
     /**
      * Associated context.
@@ -3900,15 +3903,22 @@ public class Request
             throw new IllegalStateException("Request not in async mode");
         }
 
+        isAsyncComplete = true;
         notifyAsyncListeners(AsyncEventType.COMPLETE);
     }
 
 
     /*
      * Invokes all AsyncListeners at their onTimeout method
+     * 
+     * If none of the onTimeout handlers call complete or forward, have
+     * the container call complete
      */
     private void asyncTimeout() {
         notifyAsyncListeners(AsyncEventType.TIMEOUT);
+        if (!isAsyncComplete) {
+            asyncComplete();
+        }
     }
 
 
