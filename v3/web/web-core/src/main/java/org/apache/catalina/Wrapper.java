@@ -384,4 +384,15 @@ public interface Wrapper extends Container {
      * designated annotation or declaratively), and false otherwise
      */
     public boolean isAsyncSupported();
+
+
+    /**
+     * Gets the timeout (in milliseconds) for any asynchronous operations
+     * initiated by the wrapped servlet.
+     *
+     * @return the timeout (in milliseconds) for any async operations 
+     * initiated by the wrapped servlet
+     */
+    public long getAsyncTimeout();
+
 }

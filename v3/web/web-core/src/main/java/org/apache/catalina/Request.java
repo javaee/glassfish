@@ -423,13 +423,11 @@ public interface Request {
 
 
     /**
-     * Checks whether this request supports async processing.
+     * Sets the timeout (in milliseconds) for any asynchronous operations
+     * initiated on this request.
      *
-     * Async support will be disabled as soon as this request has passed a
-     * filter or servlet that does not support async processing (either
-     * via the designated annotation or declaratively).
-     *
-     * @return true if this request supports async processing, false otherwise
+     * @param timeout the timeout (in milliseconds) for any async operations 
+     * initiated on this request
      */
-    public boolean isAsyncSupported();
+    public void setAsyncTimeout(long timeout);
 }

@@ -73,11 +73,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.Globals;
 import org.apache.catalina.InstanceEvent;
-import org.apache.catalina.Request;
 import static org.apache.catalina.InstanceEvent.EventType.BEFORE_FILTER_EVENT;
 import static org.apache.catalina.InstanceEvent.EventType.AFTER_FILTER_EVENT;
 import static org.apache.catalina.InstanceEvent.EventType.BEFORE_SERVICE_EVENT;
 import static org.apache.catalina.InstanceEvent.EventType.AFTER_SERVICE_EVENT;
+import org.apache.catalina.Request;
+import org.apache.catalina.Wrapper;
 import org.apache.catalina.security.SecurityUtil;
 import org.apache.catalina.util.InstanceSupport;
 import org.apache.catalina.util.StringManager;
@@ -144,15 +145,17 @@ final class ApplicationFilterChain implements FilterChain {
     private Servlet servlet = null;
 
 
-    // The request implementation object on which this FilterChain will be
-    // executed
-    private Request coyoRequest = null;
+    /**
+     * The wrapper around the servlet instance to be executed by this chain.
+     */    
+    private StandardWrapper wrapper = null;
 
 
-    /*
-     * Does the servlet at the end of the filter chain supports async?
+    /**
+     * The original request (implementation object) on which this
+     * FilterChain will be executed
      */
-    private boolean isAsyncSupportedByServlet = false;
+    private Request origRequest = null;
 
 
     /**
@@ -160,13 +163,6 @@ final class ApplicationFilterChain implements FilterChain {
      */
     private static final StringManager sm =
       StringManager.getManager(Constants.Package);
-
-
-    /**
-     * The InstanceSupport instance associated with our Wrapper (used to
-     * send "before filter" and "after filter" events.
-     */
-    private InstanceSupport support = null;
 
     
     /**
@@ -233,13 +229,23 @@ final class ApplicationFilterChain implements FilterChain {
 
     private void internalDoFilter(ServletRequest request, 
                                   ServletResponse response)
-        throws IOException, ServletException {
+            throws IOException, ServletException {
+
+        if (wrapper == null) {
+            throw new IllegalStateException("Missing wrapper");
+        }
+
+        InstanceSupport support = wrapper.getInstanceSupport();
 
         // Call the next filter if there is one
         if (pos < n) {
             ApplicationFilterConfig filterConfig = filters[pos++];
-            if (coyoRequest != null && !filterConfig.isSupportsAsync()) {
-                coyoRequest.disableAsyncSupport();
+            if (origRequest != null) {
+                if (!filterConfig.isSupportsAsync()) {
+                    origRequest.disableAsyncSupport();
+                } else {
+                    // TBD Set async-timeout from filter
+                }
             }
             Filter filter = null;
             try {
@@ -349,8 +355,7 @@ final class ApplicationFilterChain implements FilterChain {
 
         */
         // START IASRI 4665318
-        servletService(request, response, servlet, isAsyncSupportedByServlet,
-                       support, coyoRequest);
+        servletService(request, response, servlet, wrapper, origRequest);
         // END IASRI 4665318
     }
 
@@ -381,13 +386,11 @@ final class ApplicationFilterChain implements FilterChain {
      * Release references to the filters and wrapper executed by this chain.
      */
     void release() {
-
         n = 0;
         pos = 0;
         servlet = null;
-        support = null;
-        coyoRequest = null;
-        isAsyncSupportedByServlet = false;
+        wrapper = null;
+        origRequest = null;
     }
 
 
@@ -405,8 +408,8 @@ final class ApplicationFilterChain implements FilterChain {
      * @param isAsyncSupportedByServlet true if the servlet at the end of the
      * filter chain supports async, false otherwise
      */
-    void setIsAsyncSupportedByServlet(boolean isAsyncSupportedByServlet) {
-        this.isAsyncSupportedByServlet = isAsyncSupportedByServlet;
+    void setWrapper(StandardWrapper wrapper) {
+        this.wrapper = wrapper;
     }
 
 
@@ -414,21 +417,8 @@ final class ApplicationFilterChain implements FilterChain {
      * Sets the request implementation object on which this FilterChain will
      * be executed.
      */
-    void setRequest(Request coyoRequest) {
-        this.coyoRequest = coyoRequest;
-    }
-
-
-    /**
-     * Set the InstanceSupport object used for event notifications
-     * for this filter chain.
-     *
-     * @param support The InstanceSupport object for our Wrapper
-     */
-    void setSupport(InstanceSupport support) {
-
-        this.support = support;
-
+    void setRequest(Request origRequest) {
+        this.origRequest = origRequest;
     }
 
 
@@ -436,15 +426,22 @@ final class ApplicationFilterChain implements FilterChain {
 
     static void servletService(ServletRequest request, 
                                ServletResponse response,
-                               Servlet serv, boolean isAsyncSupportedByServlet,
-                               InstanceSupport supp, Request coyoRequest)
-        throws IOException, ServletException {
+                               Servlet serv, StandardWrapper wrapper,
+                               Request origRequest)
+                        throws IOException, ServletException {
+
+        InstanceSupport supp = wrapper.getInstanceSupport();
+
         try {
             supp.fireInstanceEvent(BEFORE_SERVICE_EVENT,
                                    serv, request, response);
-            if (coyoRequest != null && !isAsyncSupportedByServlet) {
-                coyoRequest.disableAsyncSupport();
-            }
+            if (origRequest != null) {
+                if (!wrapper.isAsyncSupported()) {
+                    origRequest.disableAsyncSupport();
+                } else {
+                    origRequest.setAsyncTimeout(wrapper.getAsyncTimeout());
+                }
+            } 
             if ((request instanceof HttpServletRequest) &&
                 (response instanceof HttpServletResponse)) {
                     

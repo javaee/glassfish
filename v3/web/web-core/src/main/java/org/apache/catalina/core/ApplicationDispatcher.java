@@ -225,15 +225,6 @@ final class ApplicationDispatcher
         this.pathInfo = pathInfo;
         this.queryString = queryString;
         this.name = name;
-        /* GlassFish 6386229
-        if (wrapper instanceof StandardWrapper)
-            this.support = ((StandardWrapper) wrapper).getInstanceSupport();
-        else
-            this.support = new InstanceSupport(wrapper);
-        */
-        // START GlassFish 6386229
-        this.support = ((StandardWrapper) wrapper).getInstanceSupport();
-        // END GlassFish 6386229
 
         if (log.isLoggable(Level.FINE))
             log.fine("servletPath=" + this.servletPath + ", pathInfo=" +
@@ -314,20 +305,13 @@ final class ApplicationDispatcher
 
 
     /**
-     * The InstanceSupport instance associated with our Wrapper (used to
-     * send "before dispatch" and "after dispatch" events.
-     */
-    private InstanceSupport support = null;
-
-
-    /**
      * The Wrapper associated with the resource that will be forwarded to
      * or included.
      */
     private Wrapper wrapper = null;
 
 
-     // ------------------------------------------------------------- Properties
+    // ------------------------------------------------------------- Properties
 
 
     /**
@@ -865,6 +849,8 @@ final class ApplicationDispatcher
         Request origRequest = null;
         // END OF S1AS 4703023
 
+        InstanceSupport support = ((StandardWrapper) wrapper).getInstanceSupport();
+
         // Call the service() method for the allocated servlet instance
         try {
             String jspFile = wrapper.getJspFile();
@@ -897,11 +883,12 @@ final class ApplicationDispatcher
                 // START IASRI 4665318
                 if (filterChain != null) {
                     filterChain.setRequest(origRequest);
+                    filterChain.setWrapper((StandardWrapper)wrapper);
                     filterChain.doFilter(request, response);
                 } else {
                     ApplicationFilterChain.servletService(
-                        request, response, servlet, wrapper.isAsyncSupported(),
-                        support, origRequest);
+                        request, response, servlet, (StandardWrapper)wrapper,
+                        origRequest);
                 }
                 // END IASRI 4665318
             }

@@ -458,11 +458,11 @@ final class StandardWrapperValve
             if (servlet != null) {
                 if (filterChain != null) {
                     filterChain.setRequest(request);
+                    filterChain.setWrapper(wrapper);
                     filterChain.doFilter(hreq, hres);
                 } else {
                     ApplicationFilterChain.servletService(
-                        hreq, hres, servlet, wrapper.isAsyncSupported(),
-                        wrapper.getInstanceSupport(), request);
+                        hreq, hres, servlet, wrapper, request);
 
                 }
             }

@@ -291,8 +291,11 @@ public class StandardWrapper
     private String description;
 
 
-    /** supportsAsync */
+    /**
+     * Async support
+     */
     private boolean isAsyncSupported = false;
+    private long asyncTimeout;
 
 
     /**
@@ -587,14 +590,47 @@ public class StandardWrapper
     }
 
 
-    /* set supportsAsync */
+    /**
+     * Marks the wrapped servlet as supporting async mode or not.
+     *
+     * @param isAsyncSupported true if the wrapped servlet supports async mode,
+     * false otherwise
+     */
     public void setIsAsyncSupported(boolean isAsyncSupported) {
         this.isAsyncSupported = isAsyncSupported;
     }
 
 
+    /**
+     * @return true if the wrapped servlet supports async (either via the
+     * designated annotation or declaratively), and false otherwise
+     */
     public boolean isAsyncSupported() {
         return isAsyncSupported;
+    }
+
+
+    /**
+     * Sets the timeout (in milliseconds) for any asynchronous operations
+     * initiated by the wrapped servlet.
+     *
+     * @param timeout the timeout (in milliseconds) for any async operations 
+     * initiated by the wrapped servlet
+     */
+    public void setAsyncTimeout(long timeout) {
+        asyncTimeout = timeout;
+    }
+
+
+    /**
+     * Gets the timeout (in milliseconds) for any asynchronous operations
+     * initiated by the wrapped servlet.
+     *
+     * @return the timeout (in milliseconds) for any async operations 
+     * initiated by the wrapped servlet
+     */
+    public long getAsyncTimeout() {
+        return asyncTimeout;
     }
 
 

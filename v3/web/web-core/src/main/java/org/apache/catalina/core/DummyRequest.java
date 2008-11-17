@@ -374,6 +374,7 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
             throws IllegalStateException { return null; }
     public boolean isAsyncStarted() { return false; }
     public boolean isAsyncSupported() { return false; }
+    public void setAsyncTimeout(long timeout) {}
     public AsyncContext getAsyncContext() { return null; }
     public void addAsyncListener(AsyncListener listener) {};
     public void addAsyncListener(AsyncListener listener,

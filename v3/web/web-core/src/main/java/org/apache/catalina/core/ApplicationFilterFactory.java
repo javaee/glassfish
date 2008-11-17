@@ -422,9 +422,7 @@ public final class ApplicationFilterFactory {
         }
 
         filterChain.setServlet(servlet);
-        filterChain.setIsAsyncSupportedByServlet(wrapper.isAsyncSupported());
-        filterChain.setSupport
-            (((StandardWrapper)wrapper).getInstanceSupport());
+        filterChain.setWrapper((StandardWrapper)wrapper);
 
         return filterChain;
     }

@@ -217,6 +217,11 @@ public class Request
 
     // ----------------------------------------------------- Instance Variables
 
+    /* 
+     * Event notification types for async mode
+     */
+    private enum AsyncEventType { COMPLETE, TIMEOUT }
+
 
     /**
      * The string manager for this package.
@@ -536,10 +541,19 @@ public class Request
     /**
      * Async processing
      */
-    private boolean isAsyncSupported = false;
+
+    // Async mode is supported by default for a request, unless the request
+    // is going to pass a filter or servlet that does not support async
+    // operation, in which case async operation will be disabled
+    private boolean isAsyncSupported = true;
+
     private boolean isAsyncStarted = false;
+
     private AsyncContextImpl asyncContext;
+
     private LinkedList<AsyncListenerHolder> asyncListenerHolders;
+
+    private long asyncTimeout = -1L;
 
 
     /**
@@ -3853,13 +3867,56 @@ public class Request
     }
 
 
-    public void complete() {
+    /**
+     * Sets the timeout (in milliseconds) for any asynchronous operations
+     * initiated on this request.
+     *
+     * @param timeout the timeout (in milliseconds) for any async operations 
+     * initiated on this request
+     */
+    public void setAsyncTimeout(long timeout) {
+        asyncTimeout = timeout;
+    }
+
+
+    /**
+     * Gets the timeout (in milliseconds) for any asynchronous operations
+     * initiated on this request.
+     *
+     * @return the timeout (in milliseconds) for any async operations 
+     * initiated on this request
+     */
+    public long getAsyncTimeout() {
+        return asyncTimeout;
+    }
+
+
+    /*
+     * Invokes all AsyncListeners at their onComplete method
+     */
+    public void asyncComplete() {
 
         if (!isAsyncStarted()) {
             throw new IllegalStateException("Request not in async mode");
         }
 
-        // Invoke all AsyncListeners at their onComplete method
+        notifyAsyncListeners(AsyncEventType.COMPLETE);
+    }
+
+
+    /*
+     * Invokes all AsyncListeners at their onTimeout method
+     */
+    private void asyncTimeout() {
+        notifyAsyncListeners(AsyncEventType.TIMEOUT);
+    }
+
+
+    /*
+     * Notifies all AsyncListeners of the given async event type
+     */
+    private void notifyAsyncListeners(AsyncEventType asyncEventType) {
+
         AsyncListener asyncListener = null;
         ServletRequest asyncEventRequest = null;
         ServletResponse asyncEventResponse = null;
@@ -3879,8 +3936,18 @@ public class Request
                     asyncEventResponse = asyncContext.getResponse();
                 }
                 try {
-                    asyncListener.onComplete(
-                        new AsyncEvent(asyncEventRequest, asyncEventResponse));
+                    switch (asyncEventType) {
+                    case COMPLETE:
+                        asyncListener.onComplete(
+                            new AsyncEvent(asyncEventRequest,
+                            asyncEventResponse));
+                        break;
+                    case TIMEOUT:
+                        asyncListener.onTimeout(
+                            new AsyncEvent(asyncEventRequest,
+                            asyncEventResponse));
+                        break;
+                    }
                 } catch (IOException ioe) {
                     log.log(Level.WARNING, "Error invoking AsyncListener",
                             ioe);
