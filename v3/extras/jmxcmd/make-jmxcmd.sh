@@ -18,6 +18,7 @@ initialize()
   rm -rf ${PUBLISH_DIR}
  fi
  mkdir -p ${PUBLISH_DIR}
+ mkdir -p ${PUBLISH_DIR}/jars
 }
 
 askUser()
@@ -82,7 +83,7 @@ copyScripts()
 
 cleanup()
 {
-#rm -rf ${TEMP_DIR}
+	rm -rf ${TEMP_DIR}
 }
 
 
@@ -90,14 +91,14 @@ cleanup()
 setEnv
 initialize
 #askUser
-copy
-unjarAll
-jarJmxCmd
-mv ${TEMP_DIR}/jmxcmd.jar ./publish/jmxcmd.jar
+#copy
+#unjarAll
+#jarJmxCmd
+#mv ${TEMP_DIR}/jmxcmd.jar $PUBLISH_DIR/jmxcmd.jar
+cp target/jmxcmd.jar $PUBLISH_DIR/jars
+mkdir $PUBLISH_DIR/jars
 copyScripts
 cleanup
-echo "Done."
-
-
-
+echo $PUBLISH_DIR
+ls -lR $PUBLISH_DIR
 

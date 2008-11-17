@@ -36,7 +36,7 @@ SCRIPT_DIR=$FULLPATH_RESULT
 echo SCRIPT_DIR=$SCRIPT_DIR
 
 # our jar file should be in the same directory as the script
-JMXCMD_JAR=$SCRIPT_DIR/../jars/jmxcmd.jar
+JMXCMD_JAR=$SCRIPT_DIR/jars/jmxcmd.jar
 if [ ! -f $JMXCMD_JAR ]
 then
 echo $JMXCMD_JAR " not found "
@@ -61,7 +61,7 @@ fi
 # echo "Classpath separator = " $CPS
 
 # 'D' is simply an abbreviation to keep things compact.
-D=$SCRIPT_DIR/../jars
+D=$SCRIPT_DIR/jars
 OPTIONAL_JARS=$D/jmxcmd-optional.jar
 USER_JARS=$D/appserv-ext.jar${CPS}/gf/run/lib/appserv-admin.jar{CPS}/gf/run/lib/appserv-se.jar${CPS}/gf/run/lib/appserv-deployment-client.jar
 
