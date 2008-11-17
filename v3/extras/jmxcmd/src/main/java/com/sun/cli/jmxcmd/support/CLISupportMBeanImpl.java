@@ -41,6 +41,7 @@ final class AttributeClassQuery implements ClassQuery
 {
 	final MBeanAttributeInfo []	mAttributeInfo;
 	final int					mNumInfos;
+    
 	
 		
 	AttributeClassQuery( final MBeanAttributeInfo [] attributeInfo )
@@ -76,6 +77,8 @@ final class AttributeClassQuery implements ClassQuery
 
 final class CLISupportMBeanImpl implements CLISupportMBean
 {
+    private static void debug( final Object o ) { System.out.println( SmartStringifier.toString(o) ); }
+    
 	static private final String		WILDCARD_PATTERN=",*";
 	static private final String		WILDCARD_PATTERN_NOPROPS="*";
 	
@@ -205,7 +208,7 @@ final class CLISupportMBeanImpl implements CLISupportMBean
 	ParseArrayAsType( final ParseResult pr, final Class elementType )
 		throws Exception
 	{
-		//p( "ParseArrayAsType: parsing args as " + ClassUtil.getFriendlyClassname( elementType ) );
+		//debug( "ParseArrayAsType: parsing args as " + ClassUtil.getFriendlyClassname( elementType ) );
 		
 		final ParseResult []	elems	= (ParseResult [])pr.getData();
 		
@@ -469,7 +472,35 @@ final class CLISupportMBeanImpl implements CLISupportMBean
 		return( result );
 	}
 	
-
+    
+        private static boolean
+    isJavaIdentifier( final String s )
+    {
+        boolean isJava = false;
+        
+        if ( s.length() > 0 )
+        {
+            int codePoint = Character.codePointAt(s, 0);
+            
+            if ( Character.isJavaIdentifierStart(codePoint) )
+            {
+                isJava = true;
+                
+                final int codePointCount = Character.codePointCount(s,0, s.length());
+                for( int i = 1; i < codePointCount; ++i )
+                {
+                    codePoint = Character.codePointAt(s, i);
+                    if ( ! Character.isJavaIdentifierPart(codePoint) )
+                    {
+                        isJava = false;
+                        break;
+                    }
+                }
+            }
+        }
+        
+        return isJava;
+    }
 
 		private ParseResult []
 	ParseArguments(
@@ -496,8 +527,15 @@ final class CLISupportMBeanImpl implements CLISupportMBean
 		 	The rest of the time a failed initial parse will detect any other issue.
 		 */
 		 
-		final boolean	possibleNamedInvocation	= input.indexOf( "=" ) > 0;
-		if ( possibleNamedInvocation )
+		final int idx = input.indexOf( "=" );
+        boolean namedInvocation = false;
+        if ( idx > 0 )
+        {
+            final String namePortion = input.substring(0, idx);
+            namedInvocation = isJavaIdentifier(namePortion);
+        }
+        
+		if ( namedInvocation )
 		{
 			try
 			{
@@ -910,8 +948,6 @@ final class CLISupportMBeanImpl implements CLISupportMBean
 			GetMatchingMBeanOperationInfo( requestedOperationName, operationInfos );
 		if ( candidates.length != 0 )
 		{
-			//p( "ParseOperation: num operations with matching name: " + Array.getLength( candidates ) );
-			
 			// winnow it down to only those that match
 			final boolean	namedInvocation	= parsedArgs.length != 0 &&
 									parsedArgs[ 0 ].getName() != null;
@@ -1397,7 +1433,7 @@ final class CLISupportMBeanImpl implements CLISupportMBean
 		final String []		targets )
 		throws Exception
 	{
-		// p( operationName + "(" + argList + ") on " + SmartStringifier.toString( targets ));
+		//debug( "CLISupportMBeanImpl.mbeanInvoke()" + operationName + "(" + argList + ") on " + SmartStringifier.toString( targets ));
 	
 		final ObjectName [] objectNames	= resolveTargets( targets );
 
@@ -1417,8 +1453,7 @@ final class CLISupportMBeanImpl implements CLISupportMBean
 			try
 			{
 				// parse anew for each object as data types could vary
-				data	= ParseOperation( operationName,
-							argList, mbeanInfo.getOperations() );
+				data	= ParseOperation( operationName, argList, mbeanInfo.getOperations() );
 			}
 			catch( NoSuchMethodException e )
 			{
@@ -1442,8 +1477,7 @@ final class CLISupportMBeanImpl implements CLISupportMBean
 				
 				try
 				{
-					//p( "mbeanInvoke: invoking operation: " + data.mName +
-						//"(" + ArrayStringifier.stringify( signature, ",", new ClassNameStringifier()) + ")" );
+					//debug( "mbeanInvoke: invoking operation: " + data.mName + "(" + ArrayStringifier.stringify( signature, ",", new ClassNameStringifier()) + ")" );
 					
 					results[ i ].mResult	= mConnection.invoke( objectName, data.mName, args, signature);
 				}

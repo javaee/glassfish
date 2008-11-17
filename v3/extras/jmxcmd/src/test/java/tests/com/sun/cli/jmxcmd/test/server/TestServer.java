@@ -59,7 +59,7 @@ import com.sun.cli.jcmd.util.cmd.OptionsInfoImpl;
 
 //import com.sun.jdmk.comm.HtmlAdaptorServer;
 
-
+@org.junit.Ignore
 public class TestServer
 {
 	MBeanServer		mServer;
@@ -223,7 +223,7 @@ public class TestServer
 		//registerMBean( conn, new kstatMgr( ), "kstat:name=kstat-mgr,type=kstat-mgr" );
 		
 	}
-	
+    
 		private 
 	TestServer( final int port, final boolean testInProcess ) throws Exception
 	{

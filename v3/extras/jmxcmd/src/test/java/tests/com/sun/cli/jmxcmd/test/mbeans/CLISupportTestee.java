@@ -75,6 +75,10 @@ public final class CLISupportTestee implements DynamicMBean
 	}
 	
 
+    public String testString( final String s )
+    {
+        return s;
+    }
 
 //-----------------------------------------------------------------------------
 
@@ -547,17 +551,17 @@ public final class CLISupportTestee implements DynamicMBean
     	
     	try
     	{
-    		// p( "INVOKING HELPER: " + actionName + "(" + AutoStringifier.toString( signature ) + ")");
+    		//p( "INVOKING HELPER: " + actionName + "(" + SmartStringifier.toString( params ) + ")");
     		result	= mInvokeHelper.invoke( actionName, params, signature );
     		
     		// ignore result, always return signature of invoked method
     		result	= signature;
-    		// p( "SUCCESS: " + actionName + "(" + AutoStringifier.toString( signature ) + ")");
+    		//p( "SUCCESS: " + actionName + "(" + SmartStringifier.toString( params ) + ")");
     		
     	}
     	catch( Exception e )
     	{
-    		// e.printStackTrace();
+    		e.printStackTrace();
     		throw new MBeanException( e );
     	}
     	

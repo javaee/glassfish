@@ -32,6 +32,7 @@ import com.sun.appserv.management.util.stringifier.IteratorStringifierTest;
 
 
 
+@org.junit.Ignore
 public class TestsMain
 {
     @SuppressWarnings("unchecked")

@@ -41,6 +41,8 @@ import com.sun.cli.jmxcmd.test.mbeans.CLISupportSimpleTestee;
 
 public final class CLISupportMBeanImplTest extends junit.framework.TestCase
 {
+    private static void debug( final Object o ) { System.out.println( SmartStringifier.toString(o) ); }
+    
 	MBeanServer				mServer;
 	CLISupportMBeanProxy	mProxy;
 	
@@ -122,6 +124,7 @@ public final class CLISupportMBeanImplTest extends junit.framework.TestCase
 	doStringTest( final String arg, final String expected)
 		throws Exception
 	{
+        //debug( "doStringTest: " + arg + " = " + expected );
 		final String		result	= (String)doTest( "testString", arg );
 		assertEquals( expected, result );
 	}
