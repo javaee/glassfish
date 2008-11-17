@@ -63,7 +63,7 @@ fi
 # 'D' is simply an abbreviation to keep things compact.
 D=$SCRIPT_DIR/jars
 OPTIONAL_JARS=$D/jmxcmd-optional.jar
-USER_JARS=$D/appserv-ext.jar${CPS}/gf/run/lib/appserv-admin.jar{CPS}/gf/run/lib/appserv-se.jar${CPS}/gf/run/lib/appserv-deployment-client.jar
+USER_JARS=$D/amx-api.jar${CPS}/v3/glassfish/modules/amx-api.jar
 
 echo D=$D
 #

@@ -96,7 +96,6 @@ initialize
 #jarJmxCmd
 #mv ${TEMP_DIR}/jmxcmd.jar $PUBLISH_DIR/jmxcmd.jar
 cp target/jmxcmd.jar $PUBLISH_DIR/jars
-mkdir $PUBLISH_DIR/jars
 copyScripts
 cleanup
 echo $PUBLISH_DIR

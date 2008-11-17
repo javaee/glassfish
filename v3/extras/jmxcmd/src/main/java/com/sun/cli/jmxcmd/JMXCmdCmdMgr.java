@@ -32,6 +32,7 @@ import com.sun.cli.jmxcmd.support.StringifierRegistryIniter;
 import com.sun.appserv.management.util.misc.ExceptionUtil;
 import com.sun.cli.jcmd.util.misc.ClassUtil;
 
+
 /**
  */
 public final class JMXCmdCmdMgr extends CmdMgrImpl
@@ -46,7 +47,7 @@ public final class JMXCmdCmdMgr extends CmdMgrImpl
         catch( Exception e )
         {
             mCmdOutput.println( "WARNING: javax.management.j2ee.statistics package missing; " +
-            "add javax77.jar to classpath" );
+                "add javax77.jar to classpath or jars dir" );
         }
         
         
@@ -58,7 +59,18 @@ public final class JMXCmdCmdMgr extends CmdMgrImpl
         {
             mCmdOutput.println(
                 "WARNING: javax.management.remote.generic package missing; " +
-                "add jmxremote_optional.jar to classpath" );
+                    "add jmxremote_optional.jar to classpath or jars dir" );
+        }
+        
+        try
+        {
+            Class.forName( "com.sun.appserv.management.util.stringifier.Stringifier" );
+        }
+        catch( Exception e )
+        {
+            mCmdOutput.println(
+                "ERROR: com.sun.appserv.management.util.stringifier package missing; " +
+                    "add glassfish amx-api.jar to classpath or jars dir" );
         }
     }
     
