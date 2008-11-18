@@ -156,10 +156,26 @@ final class ApplicationFilterConfig implements FilterConfig, Serializable {
 
 
     /**
-     * @return true if this filter support async dispatches, false otherwise
+     * Checks if this filter has been annotated or flagged in the deployment
+     * descriptor as being able to support asynchronous operations.
+     *
+     * @return true if this filter supports async operations, and false
+     * otherwise
      */
-    public boolean isSupportsAsync() {
-        return filterDef.isSupportsAsync();
+    public boolean isAsyncSupported() {
+        return filterDef.isAsyncSupported();
+    }
+
+
+    /**
+     * Gets the timeout (in milliseconds) for any asynchronous operations
+     * initiated by this filter.
+     *
+     * @return the timeout (in milliseconds) for any async operations 
+     * initiated by this filter
+     */
+    public long getAsyncTimeout() {
+        return filterDef.getAsyncTimeout();
     }
 
 

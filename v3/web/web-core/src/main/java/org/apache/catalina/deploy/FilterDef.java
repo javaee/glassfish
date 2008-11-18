@@ -105,8 +105,11 @@ public class FilterDef implements Serializable {
      */
     private Map parameters = new HashMap();
 
-    /** supportsAsync */
-    private boolean supportsAsync = false;
+    /**
+     * Async support
+     */
+    private boolean isAsyncSupported = false;
+    private long asyncTimeout;
 
 
     // ------------------------------------------------------------- Properties
@@ -176,14 +179,27 @@ public class FilterDef implements Serializable {
     }
 
 
-    /* set supportsAsync */
-    public void setSupportsAsync(boolean supportsAsync) {
-        this.supportsAsync = supportsAsync;
+    /**
+     * Checks if this filter has been annotated or flagged in the deployment
+     * descriptor as being able to support asynchronous operations.
+     *
+     * @return true if this filter supports async operations, and false
+     * otherwise
+     */
+    public boolean isAsyncSupported() {
+        return isAsyncSupported;
     }
 
 
-    public boolean isSupportsAsync() {
-        return supportsAsync;
+    /**
+     * Gets the timeout (in milliseconds) for any asynchronous operations
+     * initiated by this filter.
+     *
+     * @return the timeout (in milliseconds) for any async operations 
+     * initiated by this filter
+     */
+    public long getAsyncTimeout() {
+        return asyncTimeout;
     }
 
 

@@ -380,8 +380,11 @@ public interface Wrapper extends Container {
 
 
     /**
-     * @return true if the wrapped servlet supports async (either via the
-     * designated annotation or declaratively), and false otherwise
+     * Checks if the wrapped servlet has been annotated or flagged in the
+     * deployment descriptor as being able to support asynchronous operations.
+     *
+     * @return true if the wrapped servlet supports async operations, and
+     * false otherwise
      */
     public boolean isAsyncSupported();
 

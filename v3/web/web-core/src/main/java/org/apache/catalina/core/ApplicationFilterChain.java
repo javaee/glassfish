@@ -241,10 +241,10 @@ final class ApplicationFilterChain implements FilterChain {
         if (pos < n) {
             ApplicationFilterConfig filterConfig = filters[pos++];
             if (origRequest != null) {
-                if (!filterConfig.isSupportsAsync()) {
+                if (!filterConfig.isAsyncSupported()) {
                     origRequest.disableAsyncSupport();
                 } else {
-                    // TBD Set async-timeout from filter
+                    origRequest.setAsyncTimeout(filterConfig.getAsyncTimeout());
                 }
             }
             Filter filter = null;
