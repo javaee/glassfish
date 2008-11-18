@@ -158,31 +158,22 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
         LogHelper.getDefaultLogger().finer("Received something on " + req.getRequestURI());
         LogHelper.getDefaultLogger().finer("QueryString = " + req.getQueryString());
 
-        ActionReport report;
-        String userAgent = req.getHeader("User-Agent");
-        report = habitat.getComponent(ActionReport.class, userAgent.substring(userAgent.indexOf('/')+1));
-        if (report==null) {
-            String accept = req.getHeader("Accept");
-            StringTokenizer st = new StringTokenizer(accept, ",");
-            while (report==null && st.hasMoreElements()) {
-                final String scheme=st.nextToken();
-                report = habitat.getComponent(ActionReport.class, scheme.substring(scheme.indexOf('/')+1));                
-            }
+        String requestURI = req.getRequestURI();
+        ActionReport report = getClientActionReport(requestURI, req);
+        // remove the qualifier if necessary
+        if (requestURI.indexOf('.')!=-1) {
+            requestURI = requestURI.substring(0, requestURI.indexOf('.'));
         }
-        if (report==null) {
-            // get the default one.
-            report = habitat.getComponent(ActionReport.class);
-        }
-
 
         try {
             if (!latch.await(20L, TimeUnit.SECONDS)) {
+                report = this.getClientActionReport(req.getRequestURI(), req);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 report.setMessage("V3 cannot process this command at this time, please wait");            
             } else {
                 if (!authenticate(req, report, res))
                     return;
-                report = doCommand(req, report);
+                report = doCommand(requestURI, req, report);
             }
         } catch(InterruptedException e) {
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -234,9 +225,36 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
         return authenticated;
     }
 
-    private ActionReport doCommand(GrizzlyRequest req, ActionReport report) {
+    private ActionReport getClientActionReport(String requestURI, GrizzlyRequest req) {
 
-        String requestURI = req.getRequestURI();
+
+        ActionReport report;
+
+        // first we look at the command extension (ie list-applications.[json | html | mf]
+        if (requestURI.indexOf('.')!=-1) {
+            String qualifier = requestURI.substring(requestURI.indexOf('.')+1);
+            report = habitat.getComponent(ActionReport.class, qualifier);
+        } else {
+            String userAgent = req.getHeader("User-Agent");
+            report = habitat.getComponent(ActionReport.class, userAgent.substring(userAgent.indexOf('/')+1));
+            if (report==null) {
+                String accept = req.getHeader("Accept");
+                StringTokenizer st = new StringTokenizer(accept, ",");
+                while (report==null && st.hasMoreElements()) {
+                    final String scheme=st.nextToken();
+                    report = habitat.getComponent(ActionReport.class, scheme.substring(scheme.indexOf('/')+1));
+                }
+            }
+        }
+        if (report==null) {
+            // get the default one.
+            report = habitat.getComponent(ActionReport.class);
+        }
+        return report;
+    }
+
+    private ActionReport doCommand(String requestURI, GrizzlyRequest req, ActionReport report) {
+
         if (!requestURI.startsWith(PREFIX_URI)) {
             String msg = adminStrings.getLocalString("adapter.panic",
                     "Wrong request landed in AdminAdapter {0}", requestURI);
