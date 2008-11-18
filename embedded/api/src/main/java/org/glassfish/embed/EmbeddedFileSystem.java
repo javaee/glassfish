@@ -37,13 +37,12 @@
 package org.glassfish.embed;
 
 import static com.sun.enterprise.universal.glassfish.SystemPropertyConstants.*;
+import static org.glassfish.embed.ServerConstants.*;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.util.io.FileUtils;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * There are currently some ugly things we MUST do:
@@ -132,7 +131,11 @@ public final class EmbeddedFileSystem {
     private void setSystemPropsInternal() {
         System.setProperty(INSTANCE_ROOT_PROPERTY, instanceRoot.getPath());
         System.setProperty(INSTALL_ROOT_PROPERTY, installRoot.getPath());
+
+        System.setProperty(INSTANCE_ROOT_URI_PROPERTY, instanceRoot.toURI().toString());
+        System.setProperty(INSTALL_ROOT_URI_PROPERTY, installRoot.toURI().toString());
     }
+
     private static final File defaultRoots = new File("gfe");
     private static final EmbeddedFileSystem efs = new EmbeddedFileSystem();
     private File installRoot;

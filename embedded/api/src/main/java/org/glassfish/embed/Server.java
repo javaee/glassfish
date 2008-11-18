@@ -44,6 +44,7 @@ import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.impl.ClassLoaderProxy;
 import com.sun.enterprise.security.SecuritySniffer;
 import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.v3.admin.CommandRunner;
 import com.sun.enterprise.v3.admin.adapter.AdminConsoleAdapter;
 import com.sun.enterprise.v3.server.APIClassLoaderServiceImpl;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
@@ -66,6 +67,7 @@ import org.glassfish.deployment.autodeploy.AutoDeployService;
 import org.glassfish.deployment.common.DeploymentContextImpl;
 import org.glassfish.embed.impl.EmbeddedAPIClassLoaderServiceImpl;
 import org.glassfish.embed.impl.EmbeddedApplicationLifecycle;
+import org.glassfish.embed.impl.EmbeddedCommandRunner;
 import org.glassfish.embed.impl.EmbeddedDomainXml;
 import org.glassfish.embed.impl.EmbeddedServerEnvironment;
 import org.glassfish.embed.impl.EmbeddedWebDeployer;
@@ -364,6 +366,8 @@ public class Server {
 
         // override the location of cached DTDs and schemas
         parser.replace(WebEntityResolver.class, EntityResolverImpl.class);
+
+        parser.replace(CommandRunner.class, EmbeddedCommandRunner.class);
 
         return parser;
     }

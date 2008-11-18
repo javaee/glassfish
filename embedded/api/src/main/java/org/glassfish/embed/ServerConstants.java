@@ -42,6 +42,10 @@ package org.glassfish.embed;
  * @author bnevins
  */
 public class ServerConstants {
+    // Amazingly -- these 2 are not available as constants in V3 
+    //even though they are used in v3
+    public static final String			INSTALL_ROOT_URI_PROPERTY   = "com.sun.aas.installRootURI";
+    public static final String			INSTANCE_ROOT_URI_PROPERTY  = "com.sun.aas.instanceRootURI";
     public static final int             DEFAULT_HTTP_PORT           =  8888;
 	public static final String			LOGGING_RESOURCE_BUNDLE		= "org.glassfish.embed.LocalStrings";
 	public static final String			EXCEPTION_RESOURCE_BUNDLE	= "/org/glassfish/embed/LocalStrings.properties";
