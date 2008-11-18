@@ -118,6 +118,7 @@ import org.glassfish.embed.impl.EmbeddedModulesRegistryImpl;
  * @author bnevins
  */
 public class Server {
+    private static Server instance;
     /**
      * As of April 2008, several key configurations like HTTP listener
      * creation cannot be done once GFv3 starts running.
@@ -153,9 +154,12 @@ public class Server {
      * TODO constructors and startup need revamping!
      */
 
-    public static Server create(EmbeddedInfo info) throws EmbeddedException {
-        Server server = new Server(info);
-        return server;
+    public static synchronized Server create(EmbeddedInfo info) throws EmbeddedException {
+        if(instance != null)
+            throw new EmbeddedException("server_already_exists");
+        
+        instance = new Server(info);
+        return instance;
     }
 
     public static Server create(int httpPort, URL domainXmlUrl) throws EmbeddedException{
@@ -165,7 +169,16 @@ public class Server {
         return create(info);
     }
 
+    public static Server get() throws EmbeddedException {
+        if(instance == null)
+            throw new EmbeddedException("no_server");
 
+        return instance;
+    }
+
+    public Habitat getHabitat() {
+        return habitat;
+    }
 
     private Server(EmbeddedInfo info) throws EmbeddedException {
         this.info = info;

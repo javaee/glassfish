@@ -76,8 +76,11 @@ public class EmbeddedInfo {
     }
 
     public void validate() throws EmbeddedException {
-        if(!isDeployable())
+
+        /* bnevins 11-18-08, no longer require an app right away.
+         if(!isDeployable())
             throw new EmbeddedException("nothing_to_do");
+         */
 
         validateArchives();
         validatePort();

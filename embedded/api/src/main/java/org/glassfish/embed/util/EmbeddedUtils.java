@@ -14,20 +14,27 @@ import org.glassfish.api.ActionReport.ExitCode;
  */
 public class EmbeddedUtils {
     // this is too ghastly to type in all the time...
-    void succeed(ActionReport ar) {
+    public static ActionReport succeed(ActionReport ar) {
         ar.setActionExitCode(ExitCode.SUCCESS);
-    }
-    void succeed(ActionReport ar, String msg) {
-        ar.setActionExitCode(ExitCode.SUCCESS);
-        ar.setMessage(msg);
+        return ar;
     }
 
-    void fail(ActionReport ar) {
+    public static ActionReport fail(ActionReport ar) {
         ar.setActionExitCode(ExitCode.FAILURE);
+        return ar;
     }
 
-    void fail(ActionReport ar, Exception e) {
+    public static ActionReport fail(ActionReport ar, Exception e) {
         ar.setActionExitCode(ExitCode.FAILURE);
         ar.setFailureCause(e);
+        return ar;
+    }
+
+    public static ActionReport message(ActionReport ar, String msg) {
+        ar.setMessage(msg);
+        return ar;
+    }
+
+    private EmbeddedUtils() {
     }
 }

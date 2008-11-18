@@ -54,8 +54,9 @@ import org.glassfish.embed.util.StringUtils;
 public class EmbeddedMain {
     public static void main(String[] args) {
         try {
-            if(args.length == 0)
-                usage();
+
+            //if(args.length == 0)
+                //usage();
 
             // parse commandline arguments
             ArgProcessor proc = new ArgProcessor(argDescriptions, args);
