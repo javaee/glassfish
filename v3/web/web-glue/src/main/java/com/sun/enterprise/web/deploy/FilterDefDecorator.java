@@ -106,8 +106,7 @@ public class FilterDefDecorator extends FilterDef {
     }   
 
     public long getAsyncTimeout() {
-        return -1L;
-        //return decoree.getAsyncTimeout();
+        return decoree.getAsyncTimeout();
     }   
 
 }
