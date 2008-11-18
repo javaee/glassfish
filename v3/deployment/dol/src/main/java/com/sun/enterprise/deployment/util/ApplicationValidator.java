@@ -155,6 +155,9 @@ public class ApplicationValidator extends EjbBundleValidator
         if (descriptor.isAsyncSupported() == null) {
             descriptor.setAsyncSupported(false);
         }
+        if (descriptor.getAsyncTimeout() == null) {
+            descriptor.setAsyncTimeout(0L);
+        }        
     }
     
     /**

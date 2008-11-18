@@ -68,4 +68,6 @@ public interface ServletFilter {
     public void setAsyncSupported(Boolean asyncSupported);
     public Boolean isAsyncSupported();
 
+    public void setAsyncTimeout(Long timeout);
+    public Long getAsyncTimeout();
 }

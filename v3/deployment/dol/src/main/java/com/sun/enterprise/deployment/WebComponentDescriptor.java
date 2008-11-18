@@ -449,8 +449,14 @@ public class WebComponentDescriptor extends Descriptor {
         // only set these values if they are not set in the current
         // web component already
 
-        if (getLoadOnStartUp() == -1) {
+        if (getLoadOnStartUp() == null) {
             setLoadOnStartUp(other.getLoadOnStartUp());
+        }
+        if (isAsyncSupported() == null) {
+            setAsyncSupported(other.isAsyncSupported());
+        }
+        if (getAsyncTimeout() == null) {
+            setAsyncTimeout(other.getAsyncTimeout());
         }
         if (getRunAsIdentity() == null) {
             setRunAsIdentity(other.getRunAsIdentity());

@@ -62,8 +62,11 @@ public class ServletFilterDescriptor
     /** initialization parameters */
     private Vector initParms = new Vector();
 
-    /** supportsAsync */
+    /** async supported */
     private Boolean asyncSupported = null;
+
+    /** async timeout */
+    private Long asyncTimeout = null;
 
     /* ----
     */
@@ -161,6 +164,15 @@ public class ServletFilterDescriptor
 
     public Boolean isAsyncSupported() {
         return asyncSupported;
+    }
+
+    /* set asyncTimeout */
+    public void setAsyncTimeout(Long asyncTimeout) {
+        this.asyncTimeout = asyncTimeout;
+    }
+
+    public Long getAsyncTimeout() {
+        return asyncTimeout;
     }
 
     /* ----
