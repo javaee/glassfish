@@ -56,7 +56,7 @@
 	</sun:head>
          <sun:body style="background-color: #5B87A5" onLoad="hasOptions(null);">
 	    <sun:form id="propertyForm">
-                 Customizing the masthead --> 
+                 <!-- Customizing the masthead -->
                  <!afterCreate
                         getClientId(component="$this{component}" clientId=>$attribute{formId})
                         getUIComponent(clientId="#{formId}"  component=>$attribute{component})

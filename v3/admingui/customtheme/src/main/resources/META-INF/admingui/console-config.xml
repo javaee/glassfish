@@ -13,6 +13,13 @@
                 priority="100"
                 content="branding/masthead.inc" 
         />   
+        <integration-point
+                id="customtheme"
+                type="org.glassfish.admingui:favicon"
+                priority="100"
+                content="branding/favicon.inc"
+                parentId="head"
+        />
         <integration-point 
                 id="customtheme" 
                 type="org.glassfish.admingui:loginimage" 

@@ -1,0 +1,2 @@
+"<link rel="icon" href="#{request.contextPath}/resource/customTheme/images/favicon.ico" type="image/x-icon" />
+"<link rel="shortcut icon" href="#{request.contextPath}/resource/customTheme/images/favicon.ico" type="image/x-icon" />
