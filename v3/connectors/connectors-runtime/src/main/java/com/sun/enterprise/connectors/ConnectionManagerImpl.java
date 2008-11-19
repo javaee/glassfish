@@ -331,6 +331,7 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
     */
     public void initialize() throws ConnectorRuntimeException {
 
+        //TODO V3 getting mcf not needed ?
         ConnectorRuntime runtime = ConnectorRuntime.getRuntime();
         ManagedConnectionFactory mcf = runtime.obtainManagedConnectionFactory(poolName);
         ConnectorRegistry registry = ConnectorRegistry.getInstance();

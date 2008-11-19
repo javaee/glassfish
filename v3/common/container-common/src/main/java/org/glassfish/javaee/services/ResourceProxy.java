@@ -70,7 +70,6 @@ public class ResourceProxy implements NamingObjectProxy {
     public Object create(Context ic) throws NamingException {
         try{
             if(result == null){
-                //getConnectorRuntime().deployResource(resource);
                 deployerHabitat.getComponent(com.sun.appserv.connectors.internal.spi.ResourceDeployer.class,
                         ConnectorsUtil.getResourceType(resource)).deployResource(resource);
             }
