@@ -61,7 +61,7 @@ public final class MethodDescriptor extends Descriptor {
     /** Represents the bean local interface ejbClassSymbol.*/
     public static final String EJB_LOCAL = "Local";
     /** Represents the optional local interface */
-    public static final String EJB_OPTIONAL_LOCAL = "LocalBean";
+    public static final String EJB_LOCAL_BEAN = "LocalBean";
     /** Represents the web service interface ejbClassSymbol.*/
     public static final String EJB_WEB_SERVICE = "ServiceEndpoint";
     /** Represents the bean class ejbClassSymbol.*/
@@ -302,8 +302,8 @@ public final class MethodDescriptor extends Descriptor {
                     }
                 }
             }
-        else if ( ejbClassSymbol.equals(EJB_OPTIONAL_LOCAL) ) {
-            if (ejbDescriptor.isOptionalLocalBusinessViewSupported()) {
+        else if ( ejbClassSymbol.equals(EJB_LOCAL_BEAN) ) {
+            if (ejbDescriptor.isLocalBean()) {
                 try {
                     Class cl = classloader.loadClass(
                             ejbDescriptor.getEjbClassName());

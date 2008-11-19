@@ -48,6 +48,7 @@ import javax.ejb.EJBHome;
 import javax.ejb.EJBLocalHome;
 import javax.ejb.EJBObject;
 import javax.ejb.Local;
+import javax.ejb.LocalBean;
 import javax.ejb.Remote;
 
 import com.sun.enterprise.deployment.EjbDescriptor;
@@ -253,6 +254,10 @@ public class EJBHandler extends AbstractResourceHandler {
             ejbRef.setEjbInterface(beanInterface.getName());
             
             if( beanInterface.getAnnotation(Local.class) != null ) {
+                ejbRef.setLocal(true);
+            } else if( beanInterface.getAnnotation(LocalBean.class) != null ) {
+                // XXX - If it's a bean with a no-interface view, it can have
+                // other annotations defined.
                 ejbRef.setLocal(true);
             } else if( beanInterface.getAnnotation(Remote.class) 
                        != null ) {

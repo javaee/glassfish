@@ -572,7 +572,7 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
                     ejbRef.setLocal(false);
 
                 } else {
-                    if (ejbReferee.isOptionalLocalBusinessViewSupported()) {
+                    if (ejbReferee.isLocalBean()) {
                         ejbRef.setLocal(true);    
                     } else {
                         String msg = "Warning : Unable to determine local " +
@@ -732,7 +732,7 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
                 }
             }
 
-            if (next.isOptionalLocalBusinessViewSupported()) {
+            if (next.isLocalBean()) {
                 addIntfInfo(intfInfoMap, next.getEjbClassName(),
                                 EjbIntfType.NO_INTF_LOCAL_BUSINESS, next);
             }

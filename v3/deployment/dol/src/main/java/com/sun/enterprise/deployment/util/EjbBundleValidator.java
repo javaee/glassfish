@@ -560,7 +560,7 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
                     ejbRef.setLocal(false);
 
                 } else {
-                    if (ejbReferee.isOptionalLocalBusinessViewSupported()) {
+                    if (ejbReferee.isLocalBean()) {
                         ejbRef.setLocal(true);    
                     } else {
                         String msg = "Warning : Unable to determine local " +
@@ -593,7 +593,7 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
                 if( !targetBusinessIntfs.contains(intfClassName) ) {
 
                     EjbDescriptor ejbDesc = ejbRef.getEjbDescriptor();
-                    if (! ejbDesc.isOptionalLocalBusinessViewSupported()) {
+                    if (! ejbDesc.isLocalBean()) {
                         DOLUtils.getDefaultLogger().log(Level.WARNING,
                            "enterprise.deployment.backend.ejbRefTypeMismatch",
                            new Object[] {ejbRef.getName() , intfClassName, 
@@ -723,7 +723,7 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
                 }
             }
 
-            if (next.isOptionalLocalBusinessViewSupported()) {
+            if (next.isLocalBean()) {
                 addIntfInfo(intfInfoMap, next.getEjbClassName(),
                                 EjbIntfType.NO_INTF_LOCAL_BUSINESS, next);
             }

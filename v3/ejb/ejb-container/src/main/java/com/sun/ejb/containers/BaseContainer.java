@@ -572,7 +572,7 @@ public abstract class BaseContainer
                     }
                 }
 
-                if( ejbDescriptor.isOptionalLocalBusinessViewSupported() ) {
+                if( ejbDescriptor.isLocalBean() ) {
                     isLocal = true;
                     hasOptionalLocalBusinessView = true;
 
@@ -2229,7 +2229,7 @@ public abstract class BaseContainer
                 info.interceptorChain = interceptorManager.getAroundInvokeChain(md, beanMethod);
             }
 
-            boolean isOptionalView = methodIntf.equals(MethodDescriptor.EJB_OPTIONAL_LOCAL);
+            boolean isOptionalView = methodIntf.equals(MethodDescriptor.EJB_LOCAL_BEAN);
             Method targetMethod = isOptionalView ? beanMethod : method;
             MethodDescriptor cachedMD = ejbDescriptor.getMethodDescriptorFor(targetMethod, methodIntf);
 
@@ -2297,7 +2297,7 @@ public abstract class BaseContainer
             if( method.getDeclaringClass() != EJBLocalHome.class ) {
                 setHomeTargetMethodInfo(invInfo, true);
             }
-        } else if( methodIntf.equals(MethodDescriptor.EJB_OPTIONAL_LOCAL) ) {
+        } else if( methodIntf.equals(MethodDescriptor.EJB_LOCAL_BEAN) ) {
             if( method.getDeclaringClass() != EJBLocalObject.class ) {
                 setEJBObjectTargetMethodInfo(invInfo, false, originalIntf);
             }
@@ -2604,7 +2604,7 @@ public abstract class BaseContainer
                     for ( int i=0; i<methods.length; i++ ) {
                         Method method = methods[i];
                         addInvocationInfo(method,
-                                          MethodDescriptor.EJB_OPTIONAL_LOCAL,
+                                          MethodDescriptor.EJB_LOCAL_BEAN,
                                           ejbGeneratedOptionalLocalBusinessIntfClass);
                     }
 

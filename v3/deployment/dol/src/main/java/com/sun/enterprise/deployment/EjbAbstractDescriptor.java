@@ -60,6 +60,8 @@ public abstract class EjbAbstractDescriptor extends Descriptor implements NamedD
     private String jndiName = "";
     private String mappedName = "";
     
+    // Is set to true if this bean is designated as a LocalBean 
+    private boolean localBean = false;
        
 	/** 
 	* Default constructor. 
@@ -82,6 +84,7 @@ public abstract class EjbAbstractDescriptor extends Descriptor implements NamedD
             new HashSet<String>(other.localBusinessClassNames);
         this.webServiceEndpointInterfaceName = 
             other.webServiceEndpointInterfaceName;
+        this.localBean = other.localBean;
 	this.jndiName = other.jndiName;
     }
     
@@ -214,7 +217,14 @@ public abstract class EjbAbstractDescriptor extends Descriptor implements NamedD
         this.mappedName = mappedName;
 
     }
-    
+
+    /**
+     * Marks this ejb as a LocalBean.
+     */
+    public void setLocalBean(boolean localBean) {
+        this.localBean = localBean;
+    }
+
 	/**
 	* Returns a formatted String of the attributes of this object.
 	*/
@@ -225,7 +235,8 @@ public abstract class EjbAbstractDescriptor extends Descriptor implements NamedD
 	toStringBuffer.append("\n remoteBusinessIntfs ").append(remoteBusinessClassNames).append("\n");
 	toStringBuffer.append("\n localhomeClassName ").append(localHomeClassName);
 	toStringBuffer.append("\n localClassName ").append(localClassName);
-	toStringBuffer.append("\n localBusinessIntfs ").append(localBusinessClassNames).append("\n");
+	toStringBuffer.append("\n localBusinessIntfs ").append(localBusinessClassNames);
+        toStringBuffer.append("\n isLocalBean ").append(isLocalBean()).append("\n");
 	toStringBuffer.append("\n jndiName ").append(jndiName).append("\n");
     }
     
@@ -268,7 +279,11 @@ public abstract class EjbAbstractDescriptor extends Descriptor implements NamedD
     /**
      * @return true if this is an EJB provides a no interface local view.
      */
-    public boolean isOptionalLocalBusinessViewSupported() {
+    public boolean isLocalBean() {
+        if (localBean) {
+            return true;
+        }
+
         boolean result =
                 isRemoteInterfacesSupported() ||
                 isRemoteBusinessInterfacesSupported() ||

@@ -49,6 +49,7 @@ import javax.ejb.EJBHome;
 import javax.ejb.EJBLocalHome;
 import javax.ejb.Remote;
 import javax.ejb.Local;
+import javax.ejb.LocalBean;
 import javax.ejb.RemoteHome;
 import javax.ejb.LocalHome;
 import javax.ejb.Stateless;
@@ -428,6 +429,11 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
                     processAsynchronousAnnotation(c, ejbDesc);
                 }
             }
+        }
+
+        LocalBean localBeanAnn = (LocalBean) ejbClass.getAnnotation(LocalBean.class); 
+        if( localBeanAnn != null ) {
+            ejbDesc.setLocalBean(true);
         }
 
         // Do Adapted @Home / Adapted @LocalHome processing here too since

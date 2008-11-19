@@ -157,7 +157,7 @@ public class EjbReferenceDescriptor extends EnvironmentProperty implements com.s
             if (isLocal()) {
                 if (!ejbDescriptor.isLocalInterfacesSupported() &&
                     !ejbDescriptor.isLocalBusinessInterfacesSupported() &&
-                    !ejbDescriptor.isOptionalLocalBusinessViewSupported()) {
+                    !ejbDescriptor.isLocalBean()) {
                      throw new RuntimeException(localStrings.getLocalString(
                      "entreprise.deployment.invalidLocalInterfaceReference",
                      "Trying to set an ejb-local-ref on an EJB while the EJB does not define local interfaces"));

@@ -109,7 +109,7 @@ public class BeanMethodCalculatorImpl implements BeanMethodCalculator {
             }
         }
 
-        if (ejbDescriptor.isOptionalLocalBusinessViewSupported()) {
+        if (ejbDescriptor.isLocalBean()) {
             addAllInterfaceMethodsIn(methods, classLoader.loadClass(ejbDescriptor.getEjbClassName()));
         }
 
@@ -183,13 +183,13 @@ public class BeanMethodCalculatorImpl implements BeanMethodCalculator {
                 }
             }
 
-            if( ejbDescriptor.isOptionalLocalBusinessViewSupported() ) {
+            if( ejbDescriptor.isLocalBean() ) {
                 String intfName = ejbDescriptor.getEjbClassName();
                 Class businessIntf = loader.loadClass(intfName);
                 Method[] busIntfMethods = businessIntf.getMethods();
                 for (Method next : busIntfMethods ) {
                     methods.add(new MethodDescriptor
-                                (next, MethodDescriptor.EJB_OPTIONAL_LOCAL));
+                                (next, MethodDescriptor.EJB_LOCAL_BEAN));
                 }
             }
 

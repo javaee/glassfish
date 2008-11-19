@@ -1813,11 +1813,13 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
                 }
             }
 
-            if (isOptionalLocalBusinessViewSupported()) {
-                addAllInterfaceMethodsIn(methods, classLoader.loadClass(getEjbClassName()), MethodDescriptor.EJB_OPTIONAL_LOCAL);                    
+            if (isLocalBean()) {
+                addAllInterfaceMethodsIn(methods, classLoader.loadClass(getEjbClassName()), 
+                        MethodDescriptor.EJB_LOCAL_BEAN);                    
             }
         } catch (Throwable t) {
-            _logger.log(Level.SEVERE, "enterprise.deployment.backend.methodClassLoadFailure", new Object[]{"(EjbDescriptor.getBusinessMethodDescriptors())"});
+            _logger.log(Level.SEVERE, "enterprise.deployment.backend.methodClassLoadFailure", 
+                    new Object[]{"(EjbDescriptor.getBusinessMethodDescriptors())"});
 
             throw new RuntimeException(t);
         }
@@ -1896,6 +1898,27 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
 
             throw new RuntimeException(t);
         }
+    }
+
+    /**
+     * Return the set of method objects representing no-interface view
+     */
+    public Set<Method> getOptionalLocalBusinessMethods() {
+        Set<Method> methods = new HashSet<Method>();
+        try {
+            Class c = getEjbBundleDescriptor().getClassLoader().loadClass(getEjbClassName());
+            Method[] ms = c.getMethods();
+            for (Method m : ms) {
+                if (m.getDeclaringClass() != Object.class) {
+                    methods.add(m);
+                }
+            }
+        } catch (Throwable t) {
+            _logger.log(Level.SEVERE, "enterprise.deployment.backend.methodClassLoadFailure", new Object[]{"(EjbDescriptor.getMethods())"});
+            throw new RuntimeException(t);
+        }
+
+         return methods;
     }
 
     /**
