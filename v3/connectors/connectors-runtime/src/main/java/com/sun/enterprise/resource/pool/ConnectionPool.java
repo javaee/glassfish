@@ -640,23 +640,26 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
 
         ResourceHandle h;
         ArrayList<ResourceHandle> freeResources = new ArrayList<ResourceHandle>();
-        while ((h = ds.getResource()) != null) {
+        try{
+            while ((h = ds.getResource()) != null) {
 
-            if (h.hasConnectionErrorOccurred()) {
-                ds.removeResource(h);
-                continue;
+                if (h.hasConnectionErrorOccurred()) {
+                    ds.removeResource(h);
+                    continue;
+                }
+
+                if (matchConnection(h, alloc)) {
+                    result = h;
+                    break;
+                } else {
+                    freeResources.add(h);
+                }
             }
-
-            if (matchConnection(h, alloc)) {
-                result = h;
-                break;
-            } else {
-                freeResources.add(h);
+        }finally{
+            //return all unmatched, free resources
+            for (ResourceHandle freeResource : freeResources) {
+                ds.returnResource(freeResource);
             }
-        }
-
-        for (ResourceHandle freeResource : freeResources) {
-            ds.returnResource(freeResource);
         }
         freeResources.clear();
 
@@ -716,18 +719,21 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
         ResourceHandle result = null;
         ArrayList<ResourceHandle> activeResources = new ArrayList<ResourceHandle>();
 
-        while ((handle = ds.getResource()) != null) {
-            if (matchConnection(handle, alloc)) {
-                result = handle;
-                setResourceStateToBusy(result);
-                break;
-            } else {
-                activeResources.add(handle);
+        try{
+            while ((handle = ds.getResource()) != null) {
+                if (matchConnection(handle, alloc)) {
+                    result = handle;
+                    setResourceStateToBusy(result);
+                    break;
+                } else {
+                    activeResources.add(handle);
+                }
             }
-        }
-
-        for (ResourceHandle activeResource : activeResources) {
-            ds.returnResource(activeResource);
+        }finally{
+            //return unmatched resources
+            for (ResourceHandle activeResource : activeResources) {
+                ds.returnResource(activeResource);
+            }
         }
         return result;
     }

@@ -165,19 +165,22 @@ public class Resizer extends TimerTask {
         //iterate through all thre active resources to find idle-time lapsed ones.
         ResourceHandle h;
         Set<ResourceHandle> activeResources = new HashSet<ResourceHandle>();
-        while ((h = ds.getResource()) != null) {
-            state = h.getResourceState();
-            //remove all idle-time lapsed resources.
-            if (currentTime - state.getTimestamp() > pool.getIdleTimeout()) {
-                ds.removeResource(h);
-            } else {
-                activeResources.add(h);
+        try {
+            while ((h = ds.getResource()) != null) {
+                state = h.getResourceState();
+                //remove all idle-time lapsed resources.
+                if (currentTime - state.getTimestamp() > pool.getIdleTimeout()) {
+                    ds.removeResource(h);
+                } else {
+                    activeResources.add(h);
+                }
             }
-        }
+        } finally {
 
-        //return active resources.
-        for (ResourceHandle activeResource : activeResources) {
-            ds.returnResource(activeResource);
+            //return active resources.
+            for (ResourceHandle activeResource : activeResources) {
+                ds.returnResource(activeResource);
+            }
         }
 
         //we will still hold reference to active resources for connection validation.
@@ -222,16 +225,19 @@ public class Resizer extends TimerTask {
                     ManagedConnection invalidManagedConnection = (ManagedConnection) invalidConnection;
                     List<ResourceHandle> activeResources = new ArrayList<ResourceHandle>();
                     ResourceHandle handle;
-                    while ((handle = ds.getResource()) != null) {
-                        if (invalidManagedConnection.equals(handle.getResource())) {
-                            ds.removeResource(handle);
-                            handler.invalidConnectionDetected(handle);
-                        } else {
-                            activeResources.add(handle);
+                    try{
+                        while ((handle = ds.getResource()) != null) {
+                            if (invalidManagedConnection.equals(handle.getResource())) {
+                                ds.removeResource(handle);
+                                handler.invalidConnectionDetected(handle);
+                            } else {
+                                activeResources.add(handle);
+                            }
                         }
-                    }
-                    for (ResourceHandle activeResource : activeResources) {
-                        ds.returnResource(activeResource);
+                    }finally{
+                        for (ResourceHandle activeResource : activeResources) {
+                            ds.returnResource(activeResource);
+                        }
                     }
                     activeResources.clear();
                     //TODO V3 can we have a DS-Cache such that book keeping ds for iteration, returning them individually is not needed.
