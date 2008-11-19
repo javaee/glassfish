@@ -169,14 +169,14 @@
         </Command>
         <Command name="version"
               classname="com.sun.enterprise.admin.cli.VersionCommand"
-              numberofoperands="?"
+              numberofoperands="0"
               usage-text="version [--verbose (default: false)] [--terse=false] [--echo=false] [--host host (default: localhost)] [--port admin-port (default: 4848)] [--user admin-user (default: anonymous)] [--passwordfile file_name]">
+             <ValidOption name="verbose"/>
              <ValidOption name="domaindir"/>
              <ValidOption name="terse"/>
              <ValidOption name="echo"/>
              <ValidOption name="user"/>
              <ValidOption name="passwordfile"/>
-             <ValidOption name="force"/>
         </Command>        
     </Commands>
 </CommandsAndOptions>
