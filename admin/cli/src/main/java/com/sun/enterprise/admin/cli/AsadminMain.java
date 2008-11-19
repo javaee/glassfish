@@ -38,6 +38,8 @@ package com.sun.enterprise.admin.cli;
 import com.sun.enterprise.admin.cli.remote.*;
 import com.sun.enterprise.cli.framework.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import java.io.*;
+import java.util.*;
 import java.util.Map;
 import java.util.Hashtable;
 
@@ -47,6 +49,26 @@ import java.util.Hashtable;
  */
 public class AsadminMain {
     public static void main(String[] args) {
+
+        try {
+            String dumpFile = System.getenv("AS_DUMP");
+
+            if(dumpFile != null) {
+                PrintWriter pw = new PrintWriter(new FileOutputStream(dumpFile, true));
+                pw.print(new Date());
+                pw.print(":  ");
+
+                for(String arg : args) {
+                    pw.print(arg);
+                    pw.print(" ");
+                }
+                pw.println();
+                pw.close();
+            }
+        }
+        catch(Exception e) {
+        }
+
         AsadminMain main = new AsadminMain();
         int exitCode = ERROR;
 
