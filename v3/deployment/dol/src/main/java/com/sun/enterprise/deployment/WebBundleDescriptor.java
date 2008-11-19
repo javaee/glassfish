@@ -118,6 +118,10 @@ public class WebBundleDescriptor extends BundleDescriptor
         sessionTimeout = SESSION_TIMEOUT_DEFAULT;
     }
 
+    /**
+     * This method will not merge the contents of webComponents. It will take only one of them.
+     * @param webBundleDescriptor
+     */
     public void addWebBundleDescriptor(WebBundleDescriptor webBundleDescriptor) {
         super.addBundleDescriptor(webBundleDescriptor);
 
@@ -128,6 +132,36 @@ public class WebBundleDescriptor extends BundleDescriptor
             webComponentDescriptor.setWebBundleDescriptor(this);
             this.getWebComponentDescriptors().add(webComponentDescriptor);
         }
+
+        addOtherInfo(webBundleDescriptor);
+    }
+
+    /**
+     * This method will merge the contents of webComponents, too.
+     * @param webBundleDescriptor
+     */
+    public void mergeWebBundleDescriptor(WebBundleDescriptor webBundleDescriptor) {
+        super.addBundleDescriptor(webBundleDescriptor);
+
+        for (WebComponentDescriptor webComponentDesc : webBundleDescriptor.getWebComponentDescriptors()) {
+            WebComponentDescriptor webCompDesc =
+                    this.getWebComponentByCanonicalName(webComponentDesc.getCanonicalName());
+            if (webCompDesc == null) {
+                this.getWebComponentDescriptors().add(new WebComponentDescriptor(webComponentDesc));
+            } else {
+                webCompDesc.add(webComponentDesc);
+            }
+        }
+
+        addOtherInfo(webBundleDescriptor);
+    }
+
+    /**
+     * This internal method add all info of given webBundleDescriptor except
+     * webComponentDescriptors.
+     * @param webBundleDescriptor
+     */
+    private void addOtherInfo(WebBundleDescriptor webBundleDescriptor) {
 
         getMimeMappingsSet().addAll(webBundleDescriptor.getMimeMappingsSet());
         getWelcomeFilesSet().addAll(webBundleDescriptor.getWelcomeFilesSet());

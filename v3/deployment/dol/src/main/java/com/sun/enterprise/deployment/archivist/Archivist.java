@@ -131,6 +131,7 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
     protected static final String APPLICATION_EXTENSION = ".ear";
     protected static final String APPCLIENT_EXTENSION = ".jar";
     protected static final String WEB_EXTENSION = ".war";
+    protected static final String WEB_FRAGMENT_EXTENSION = ".jar";
     protected static final String EJB_EXTENSION = ".jar";
     protected static final String CONNECTOR_EXTENSION = ".rar";
     //Used to detect the uploaded files which always end in ".tmp"

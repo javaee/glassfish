@@ -44,6 +44,7 @@ import com.sun.enterprise.deployment.node.runtime.EjbBundleRuntimeNode;
 import com.sun.enterprise.deployment.node.runtime.application.ApplicationRuntimeNode;
 import com.sun.enterprise.deployment.node.runtime.web.WebBundleRuntimeNode;
 import com.sun.enterprise.deployment.node.web.WebBundleNode;
+import com.sun.enterprise.deployment.node.web.WebFragmentNode;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.xml.ApplicationTagNames;
 import com.sun.enterprise.deployment.xml.DTDRegistry;
@@ -142,6 +143,9 @@ public class SaxParserHandler extends DefaultHandler {
             
             rootNode = WebBundleNode.registerBundle(mapping);
             rootNodes.put(rootNode, WebBundleNode.class);
+
+            rootNode = WebFragmentNode.registerBundle(mapping);
+            rootNodes.put(rootNode, WebFragmentNode.class);
 
             rootNode = AppClientNode.registerBundle(mapping);
             rootNodes.put(rootNode, AppClientNode.class);

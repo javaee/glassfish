@@ -83,7 +83,7 @@ public class WebBundleNode extends BundleNode<WebBundleDescriptor> {
         return Collections.unmodifiableList(systemIDs);
     }
     
-    private WebBundleDescriptor descriptor;
+    protected WebBundleDescriptor descriptor;
     private Map servletMappings;
     private boolean isFirstWelcomeFile = true;
     private static WebBundleDescriptor defaultWbd;

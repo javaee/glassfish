@@ -96,6 +96,9 @@ public interface DescriptorConstants {
     /** The name of the deployment descriptor entry in the web jar. */
     String WEB_JAR_ENTRY = "WEB-INF/web.xml";
 
+    /** The name of the deployment descriptor entry in web fragment jar. */
+    String WEB_FRAGMENT_JAR_ENTRY = "META-INF/web-fragment.xml";
+
     /** The name of the S1AS deployment descriptor entry in web module. */
     String S1AS_WEB_DD_ENTRY = "WEB-INF" + File.separator + S1AS_PREFIX+"web.xml";
 

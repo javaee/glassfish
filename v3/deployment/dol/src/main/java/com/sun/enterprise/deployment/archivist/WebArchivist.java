@@ -45,6 +45,7 @@ import com.sun.enterprise.deployment.io.runtime.WebRuntimeDDFile;
 import com.sun.enterprise.deployment.node.web.WebBundleNode;
 import com.sun.enterprise.deployment.util.ApplicationValidator;
 import com.sun.enterprise.deployment.util.ModuleContentValidator;
+import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.util.WebBundleVisitor;
 import org.glassfish.api.deployment.archive.Archive;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -75,7 +76,7 @@ import java.util.logging.Level;
 @Scoped(PerLookup.class)
 public class WebArchivist extends Archivist<WebBundleDescriptor> 
     implements PrivateArchivist {
-    
+
     /** 
      * The DeploymentDescriptorFile handlers we are delegating for XML i/o
      */
@@ -225,6 +226,44 @@ public class WebArchivist extends Archivist<WebBundleDescriptor>
             }            
         }
         return libs;
+    }
+
+    @Override
+    protected void postStandardDDsRead(WebBundleDescriptor descriptor,
+            ReadableArchive archive) throws IOException {
+        // read the web fragment after reading the web.xml
+        readStandardFragment(descriptor, archive);
+        super.postStandardDDsRead(descriptor, archive);
+    }
+
+    protected void readStandardFragment(WebBundleDescriptor descriptor,
+            ReadableArchive archive) throws IOException {
+
+        Vector libs = getLibraries(archive);
+        if (libs != null && libs.size() > 0) {
+            for (int i = 0; i < libs.size(); i++) {
+                String lib = (String)libs.get(i);
+                Archivist wfArchivist = new WebFragmentArchivist();
+                wfArchivist.initializeContext(this);
+                wfArchivist.setRuntimeXMLValidation(this.getRuntimeXMLValidation());
+                wfArchivist.setRuntimeXMLValidationLevel(
+                        this.getRuntimeXMLValidationLevel());
+                wfArchivist.setAnnotationProcessingRequested(false);
+                ReadableArchive embeddedArchive = archive.getSubArchive(lib);
+
+                if (wfArchivist.hasStandardDeploymentDescriptor(embeddedArchive)) {
+                    WebBundleDescriptor wdesc = null;
+                    try {
+                        wdesc = (WebBundleDescriptor)wfArchivist.open(embeddedArchive);
+                    } catch(SAXParseException ex) {
+                        IOException ioex = new IOException();
+                        ioex.initCause(ex);
+                        throw ioex;
+                    }
+                    descriptor.mergeWebBundleDescriptor(wdesc);
+                }
+            }
+        }
     }
 
     @Override

@@ -74,6 +74,7 @@ public class DescriptorFactory {
 	//EJB
         register(new XMLElement(EjbTagNames.EJB_BUNDLE_TAG), EjbBundleDescriptor.class);
         register(new XMLElement(WebTagNames.WEB_BUNDLE), WebBundleDescriptor.class);
+        register(new XMLElement(WebTagNames.WEB_FRAGMENT), WebBundleDescriptor.class);
         register(new XMLElement(EjbTagNames.SESSION), EjbSessionDescriptor.class);       
         register(new XMLElement(EjbTagNames.ENTITY), EjbEntityDescriptor.class);     
         register(new XMLElement(EjbTagNames.MESSAGE_DRIVEN), EjbMessageBeanDescriptor.class);        
