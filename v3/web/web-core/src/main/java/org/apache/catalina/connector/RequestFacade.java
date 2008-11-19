@@ -1131,6 +1131,19 @@ public class RequestFacade
     }
 
 
+    /**
+     * Sets the timeout (in milliseconds) for any asynchronous operations
+     * started on this request.
+     */
+    public void setAsyncTimeout(long timeout) {
+        if (request == null) {
+            throw new IllegalStateException(
+                            sm.getString("requestFacade.nullRequest"));
+        }
+        request.setAsyncTimeout(timeout);
+    }
+
+
     //START S1AS 4703023
     /**
      * Return the original <code>CoyoteRequest</code> object.

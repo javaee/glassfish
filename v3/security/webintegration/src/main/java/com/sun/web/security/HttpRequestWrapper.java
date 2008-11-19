@@ -368,4 +368,15 @@ class HttpRequestWrapper extends HttpServletRequestWrapper
         httpRequest.setAsyncTimeout(timeout);
     }
 
+
+    /**
+     * Checks if setAsyncTimeout was called on this request. 
+     *
+     * This is used to determine if the request should inherit the 
+     * async timeout of the servlet or filter that called startAsync
+     * (if setAsyncTimeout was not called, it will).
+     */
+    public boolean isSetAsyncTimeoutCalled() {
+        return httpRequest.isSetAsyncTimeoutCalled();
+    }
 }

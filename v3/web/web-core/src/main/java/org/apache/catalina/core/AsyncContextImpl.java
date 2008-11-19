@@ -144,11 +144,6 @@ public class AsyncContextImpl implements AsyncContext {
     }
 
 
-    public void setTimeout(long timeout) {
-        // XXX
-    }
-
-
     public void start(Runnable run) {
         // XXX
     }
