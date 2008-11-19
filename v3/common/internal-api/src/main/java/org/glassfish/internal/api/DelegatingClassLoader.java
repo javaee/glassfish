@@ -177,7 +177,7 @@ public class DelegatingClassLoader extends ClassLoader {
             try {
                 Class c = null;
                 synchronized(d){
-                    //c = d.findExistingClass(name);
+                    c = d.findExistingClass(name);
                     if(c == null){
                         c = d.findClass(name);
                     }
