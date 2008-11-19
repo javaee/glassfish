@@ -10,7 +10,7 @@ public class WebTest {
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
     private static final String TEST_NAME = "web-servlet-annotation";
-    private static final String EXPECTED_RESPONSE = "Hello from Servlet 3.0. initParams: n1=v1, n2=v2, ";
+    private static final String EXPECTED_RESPONSE = "Hello from Servlet 3.0. initParams: n1=v1, n2=v2";
 
     private String host;
     private String port;

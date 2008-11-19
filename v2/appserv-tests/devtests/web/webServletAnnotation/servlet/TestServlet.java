@@ -16,13 +16,8 @@ public class TestServlet extends HttpServlet {
 
         PrintWriter writer = res.getWriter();
         writer.write("Hello from Servlet 3.0. ");
-        String msg = "";
-        Enumeration en = getInitParameterNames();
-        while (en.hasMoreElements()) {
-           String name = (String)en.nextElement();
-           String value = getInitParameter(name);
-           msg += name + "=" + value + ", ";
-        }
+        String msg = "n1=" + getInitParameter("n1") +
+            ", n2=" + getInitParameter("n2");
         writer.write("initParams: " + msg + "\n");
     }
 }
