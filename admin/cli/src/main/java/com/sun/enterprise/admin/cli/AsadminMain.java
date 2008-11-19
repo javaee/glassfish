@@ -49,26 +49,7 @@ import java.util.Hashtable;
  */
 public class AsadminMain {
     public static void main(String[] args) {
-
-        try {
-            String dumpFile = System.getenv("AS_DUMP");
-
-            if(dumpFile != null) {
-                PrintWriter pw = new PrintWriter(new FileOutputStream(dumpFile, true));
-                pw.print(new Date());
-                pw.print(":  ");
-
-                for(String arg : args) {
-                    pw.print(arg);
-                    pw.print(" ");
-                }
-                pw.println();
-                pw.close();
-            }
-        }
-        catch(Exception e) {
-        }
-
+		dumpArgs(args);
         AsadminMain main = new AsadminMain();
         int exitCode = ERROR;
 
@@ -123,6 +104,31 @@ public class AsadminMain {
         }
         System.exit(exitCode);
     }
+
+    private static void dumpArgs(String[] args) {
+        try {
+            String dumpFile = System.getenv("AS_DUMP");
+
+            if(dumpFile == null || args == null || args.length < 1) 
+				return;
+				
+			PrintWriter pw = new PrintWriter(new FileOutputStream(dumpFile, true));
+
+			// create-thingy Nov 18: create-thingy arg1 opt
+			// easy to sort by command name...
+
+			pw.printf("%s [%s] [", args[0], new Date().toString());
+
+			for(String arg : args) {
+				pw.printf("%s ", arg);
+			}
+			pw.println("]");
+			pw.close();
+        }
+        catch(Exception e) {
+        }
+	}
+
 
     private Map<String, String> getRemoteCommands() {
         try {
