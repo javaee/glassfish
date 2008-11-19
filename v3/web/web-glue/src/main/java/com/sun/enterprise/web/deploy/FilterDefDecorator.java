@@ -102,8 +102,7 @@ public class FilterDefDecorator extends FilterDef {
     }
 
     public boolean isAsyncSupported() {
-        return false;
-        //return decoree.isAsyncSupported();
+        return decoree.isAsyncSupported();
     }   
 
     public long getAsyncTimeout() {

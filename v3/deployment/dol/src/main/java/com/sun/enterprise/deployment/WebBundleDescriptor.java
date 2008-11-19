@@ -1410,6 +1410,12 @@ public class WebBundleDescriptor extends BundleDescriptor
              itr.hasNext();) {
             aVisitor.accept(itr.next());
         }
+        for (Iterator itr = getServletFilterDescriptors().iterator();
+             itr.hasNext();) {
+            ServletFilterDescriptor servletFilterDescriptor =
+                    (ServletFilterDescriptor) itr.next();
+            aVisitor.accept(servletFilterDescriptor);
+        }
     }
 
     /* ----

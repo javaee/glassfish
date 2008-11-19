@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.deployment.util;
 
+import com.sun.enterprise.deployment.ServletFilterDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
 import com.sun.enterprise.deployment.WebService;
@@ -67,5 +68,11 @@ public interface WebBundleVisitor extends ComponentVisitor {
      * @param the web component
      */
     public void accept(WebComponentDescriptor descriptor);
-        
+
+    /**
+     * visit a servlet filter descriptor
+     *
+     * @param the servlet filter
+     */
+    public void accept(ServletFilterDescriptor descriptor);
 }

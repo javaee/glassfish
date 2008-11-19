@@ -124,9 +124,6 @@ public class ServletNode extends DisplayableComponentNode {
         Map table = super.getDispatchTable();
         table.put(WebTagNames.NAME, "setName");        
         table.put(WebTagNames.SERVLET_NAME, "setCanonicalName");
-        table.put(WebTagNames.LOAD_ON_STARTUP, "setLoadOnStartUp");
-        table.put(WebTagNames.ASYNC_SUPPORTED, "setAsyncSupported");
-        table.put(WebTagNames.ASYNC_TIMEOUT, "setAsyncTimeout");
         return table;
     }        
 
@@ -143,6 +140,12 @@ public class ServletNode extends DisplayableComponentNode {
         } else if (WebTagNames.JSP_FILENAME.equals(element.getQName())) {
             descriptor.setServlet(false);
             descriptor.setWebComponentImplementation(value);
+        } else if (WebTagNames.LOAD_ON_STARTUP.equals(element.getQName())) {
+            descriptor.setLoadOnStartUp(Integer.valueOf(value));
+        } else if (WebTagNames.ASYNC_SUPPORTED.equals(element.getQName())) {
+            descriptor.setAsyncSupported(Boolean.valueOf(value));
+        } else if (WebTagNames.ASYNC_TIMEOUT.equals(element.getQName())) {
+            descriptor.setAsyncTimeout(Long.valueOf(value));
         } else {
             super.setElementValue(element, value);
         }

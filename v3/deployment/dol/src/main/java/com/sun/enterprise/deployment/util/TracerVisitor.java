@@ -248,4 +248,15 @@ public class TracerVisitor extends DefaultDOLVisitor {
         DOLUtils.getDefaultLogger().info("==================");             
         DOLUtils.getDefaultLogger().info(descriptor.toString());        
     }
+
+   /**
+     * visit a servlet filter descriptor
+     *
+     * @param the servlet filter
+     */
+    public void accept(ServletFilterDescriptor descriptor) {
+        DOLUtils.getDefaultLogger().info("==================");             
+        DOLUtils.getDefaultLogger().info(descriptor.toString());        
+    }
+
 }

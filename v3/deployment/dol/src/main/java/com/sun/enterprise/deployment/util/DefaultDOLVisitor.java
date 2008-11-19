@@ -262,7 +262,14 @@ public class DefaultDOLVisitor implements ApplicationVisitor, EjbBundleVisitor, 
      */
     public void accept(WebComponentDescriptor descriptor) {
     }
-    
+
+    /**
+     * visit a servlet filter descriptor
+     *
+     * @param the servlet filter
+     */
+    public void accept(ServletFilterDescriptor descriptor) {
+    }
 
     // we need to split the accept(InjectionCapable) into two parts:
     // one needs classloader and one doesn't. This is needed because 

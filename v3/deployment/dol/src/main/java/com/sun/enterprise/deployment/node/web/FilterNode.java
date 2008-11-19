@@ -53,6 +53,8 @@ import java.util.Vector;
  */
 public class FilterNode extends DisplayableComponentNode {
 
+    private ServletFilterDescriptor descriptor;
+
     // constructor. register sub nodes.
     public FilterNode() {
         super();        
@@ -60,6 +62,17 @@ public class FilterNode extends DisplayableComponentNode {
                                                             InitParamNode.class, "addInitializationParameter");            
     }
     
+   /**
+    * @return the descriptor instance to associate with this XMLNode
+    */
+    public Object getDescriptor() {
+
+        if (descriptor==null) {
+            descriptor = (ServletFilterDescriptor) super.getDescriptor();
+        }
+        return descriptor;
+    }
+
     /**
      * all sub-implementation of this class can use a dispatch table to map xml element to
      * method name on the descriptor class for setting the element value. 
@@ -71,9 +84,23 @@ public class FilterNode extends DisplayableComponentNode {
         table.put(WebTagNames.NAME, "setDisplayName");
         table.put(WebTagNames.FILTER_NAME, "setName");
         table.put(WebTagNames.FILTER_CLASS, "setClassName");
-        table.put(WebTagNames.ASYNC_SUPPORTED, "setAsyncSupported");
-        table.put(WebTagNames.ASYNC_TIMEOUT, "setAsyncTimeout");
         return table;
+    }
+
+    /**
+     * receives notiification of the value for a particular tag
+     * 
+     * @param element the xml element
+     * @param value it's associated value
+     */
+    public void setElementValue(XMLElement element, String value) {
+        if (WebTagNames.ASYNC_SUPPORTED.equals(element.getQName())) {
+            descriptor.setAsyncSupported(Boolean.valueOf(value));
+        } else if (WebTagNames.ASYNC_TIMEOUT.equals(element.getQName())) {
+            descriptor.setAsyncTimeout(Long.valueOf(value));
+        } else {
+            super.setElementValue(element, value);
+        }
     }
     
     /**
