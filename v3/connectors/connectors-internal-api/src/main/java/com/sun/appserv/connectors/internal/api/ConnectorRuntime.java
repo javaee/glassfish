@@ -72,9 +72,25 @@ public interface ConnectorRuntime {
      *
      * @param sourcePath  Directory where rar module is exploded.
      * @param moduleName Name of the module
+     * @param loader Classloader used to load the .rar
      * @throws ConnectorRuntimeException if creation fails.
      */
-    public void createActiveResourceAdapter(String sourcePath, String moduleName) throws ConnectorRuntimeException;
+    public void createActiveResourceAdapter(String sourcePath, String moduleName, ClassLoader loader)
+            throws ConnectorRuntimeException;
+
+    /**
+     * Creates Active resource Adapter which abstracts the rar module.
+     * During the creation of ActiveResourceAdapter, default pools and
+     * resources also are created.
+     *
+     * @param sourcePath  Directory where rar module is exploded.
+     * @param moduleName Name of the module
+     * @throws ConnectorRuntimeException if creation fails.
+     */
+/*
+    public void createActiveResourceAdapter(String sourcePath, String moduleName)
+            throws ConnectorRuntimeException;
+*/
 
     /**
      * Destroys/deletes the Active resource adapter object from the

@@ -118,5 +118,9 @@ public class AppLibClassLoaderServiceImpl {
             }
             return super.findClass(name);
         }
+
+        public Class<?> findExistingClass(String name) {
+            return super.findLoadedClass(name);
+        }
     }
 }

@@ -83,6 +83,11 @@ public class DelegatingClassLoader extends ClassLoader {
         Class<?> findClass(String name) throws ClassNotFoundException;
 
         /**
+         * @see ClassLoader#findLoadedClass(String)
+         */
+        Class<?> findExistingClass(String name);
+
+        /**
          * @see ClassLoader#findResource(String)
          */
         URL findResource(String name);
@@ -119,9 +124,7 @@ public class DelegatingClassLoader extends ClassLoader {
     }
 
     /**
-     * Adds a ClassFinder to list of delegates. This method must not be used
-     * once this classloader has beed used to load any class. If attempted to
-     * do so, this method throws IllegalStateException. To have a consistent
+     * Adds a ClassFinder to list of delegates. To have a consistent
      * class space (by consistent class space, I mean a classpace where there
      * does not exist two class with same name), this method does not allow
      * a delegate to be added that has a different parent.
@@ -172,7 +175,14 @@ public class DelegatingClassLoader extends ClassLoader {
     protected Class<?> findClass(String name) throws ClassNotFoundException {
         for (ClassFinder d : delegates) {
             try {
-                return d.findClass(name);
+                Class c = null;
+                synchronized(d){
+                    //c = d.findExistingClass(name);
+                    if(c == null){
+                        c = d.findClass(name);
+                    }
+                }
+                return c;
             } catch (ClassNotFoundException e) {
                 // Ignore, as we search next in list
             }

@@ -41,6 +41,7 @@ import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.enterprise.connectors.ActiveRAFactory;
 import com.sun.enterprise.connectors.ActiveResourceAdapter;
 import com.sun.enterprise.connectors.ConnectorRegistry;
+import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.connectors.util.ConnectorDDTransformUtils;
 import com.sun.enterprise.connectors.util.ResourcesUtil;
 import com.sun.enterprise.deployment.Application;
@@ -213,51 +214,41 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
      */
 
     public synchronized void createActiveResourceAdapter(ConnectorDescriptor connectorDescriptor,
-                                                         String moduleName, String moduleDir) throws ConnectorRuntimeException {
+                                                         String moduleName, String moduleDir, ClassLoader loader)
+            throws ConnectorRuntimeException {
 
         _logger.fine("ResourceAdapterAdminServiceImpl :: createActiveRA "
                 + moduleName + " at " + moduleDir);
 
-        ActiveResourceAdapter activeResourceAdapter =
-                _registry.getActiveResourceAdapter(moduleName);
+        ActiveResourceAdapter activeResourceAdapter = _registry.getActiveResourceAdapter(moduleName);
         if (activeResourceAdapter != null) {
-            _logger.log(
-                    Level.FINE,
-                    "rardeployment.resourceadapter.already.started",
-                    moduleName);
+            _logger.log(Level.FINE, "rardeployment.resourceadapter.already.started", moduleName);
             return;
         }
 
-        ClassLoader loader = null;
-        try {
-            loader = connectorDescriptor.getClassLoader();
-        } catch (Exception ex) {
-            _logger.log(
-                    Level.FINE,
-                    "No classloader available with connector descriptor");
-            loader = null;
+/* TODO V3 not needed in v3 ?
+        if (loader == null) {
+            try {
+                loader = connectorDescriptor.getClassLoader();
+            } catch (Exception ex) {
+                _logger.log(Level.FINE, "No classloader available with connector descriptor");
+                loader = null;
+            }
         }
+*/
         ModuleDescriptor moduleDescriptor = null;
         Application application = null;
         _logger.fine("ResourceAdapterAdminServiceImpl :: createActiveRA "
                 + moduleName + " at " + moduleDir + " loader :: " + loader);
-        if (loader == null) {
+        //class-loader can not be null for standalone rar as deployer should have provided one.
+        //class-laoder can (may) be null for system-rars as they are not actually deployed.
+        if (loader == null && ConnectorsUtil.belongsToSystemRA(moduleName)) {
             if (environment == SERVER) {
-//                com.sun.enterprise.connectors.util.ConnectorClassLoader.getInstance().addResourceAdapter(moduleName, moduleDir);
-//                loader = ConnectorClassLoader.getInstance();
-                // TODO: I don't like the fact that we are creating the
-                // class loader here by passing ApplicationLifecycle.
-                loader = createRARClassLoader(moduleName, moduleDir);
-                // TODO: If this is not a system standalone RAR, then
-                // emit an event that ApplicationLifecycle (kernel) can listen to.
-                // As part of event handling, it can either add its classloader
-                // from appropriate connector class loader.
+                loader = ConnectorRuntime.getRuntime().createConnectorClassLoader(moduleDir);
                 if (loader == null) {
                     ConnectorRuntimeException cre =
                             new ConnectorRuntimeException("Failed to obtain the class loader");
-                    _logger.log(
-                            Level.SEVERE,
-                            "rardeployment.failed_toget_classloader");
+                    _logger.log(Level.SEVERE,"rardeployment.failed_toget_classloader");
                     _logger.log(Level.SEVERE, "", cre);
                     throw cre;
                 }
@@ -271,10 +262,7 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
         }
         try {
             activeResourceAdapter =
-                    ActiveRAFactory.createActiveResourceAdapter(
-                            connectorDescriptor,
-                            moduleName,
-                            loader);
+                    ActiveRAFactory.createActiveResourceAdapter(connectorDescriptor, moduleName, loader);
             _logger.fine("ResourceAdapterAdminServiceImpl :: createActiveRA " +
                     moduleName + " at " + moduleDir +
                     " adding to registry " + activeResourceAdapter);
@@ -297,10 +285,7 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
             ConnectorRuntimeException cre =
                     new ConnectorRuntimeException("Error in creating active RAR");
             cre.initCause(npEx);
-            _logger.log(
-                    Level.SEVERE,
-                    "rardeployment.nullPointerException",
-                    moduleName);
+            _logger.log( Level.SEVERE, "rardeployment.nullPointerException", moduleName);
             _logger.log(Level.SEVERE, "", cre);
             throw cre;
         } catch (NamingException ne) {
@@ -315,42 +300,6 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
                 connectorDescriptor.setModuleDescriptor(moduleDescriptor);
                 connectorDescriptor.setApplication(application);
                 connectorDescriptor.setClassLoader(loader);
-            }
-        }
-    }
-
-    private ClassLoader createRARClassLoader(String moduleName, String moduleDir) {
-        /*
-         * This method does not belong to this file.
-         * We should really use ApplicationLifecycle to create classloader
-         * for all kinds of applications.
-         */
-        ClassLoaderHierarchy cls =
-                Globals.getDefaultHabitat().getByContract(ClassLoaderHierarchy.class);
-        ClassLoader parentCL = cls.getCommonClassLoader();
-        EJBClassLoader cl = new EJBClassLoader(parentCL);
-        File file = new File(moduleDir);
-        try {
-            cl.appendURL(file.toURI().toURL());
-            appendJars(file, cl);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-        return cl;
-    }
-
-    //TODO V3 handling "unexploded jars" for now, V2 deployment module used to explode the jars also
-    private void appendJars(File moduleDir, EJBClassLoader cl) throws MalformedURLException {
-        /*
-         * This method has been moved verbatim from ConnectorClassLoader to here.
-         */
-        if (moduleDir.isDirectory()) {
-            for (File file : moduleDir.listFiles()) {
-                if (file.getName().toUpperCase().endsWith(".JAR")) {
-                    cl.appendURL(file.toURI().toURL());
-                } else if (file.isDirectory()) {
-                    appendJars(file, cl); //recursive add
-                }
             }
         }
     }
@@ -400,8 +349,7 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
      * @param moduleName Name of the module
      * @throws ConnectorRuntimeException if creation fails.
      */
-
-    public synchronized void createActiveResourceAdapter(String moduleDir, String moduleName)
+    public synchronized void createActiveResourceAdapter(String moduleDir, String moduleName, ClassLoader loader)
             throws ConnectorRuntimeException {
 
         ActiveResourceAdapter activeResourceAdapter =
@@ -424,8 +372,9 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
             throw cre;
         }
 
-        createActiveResourceAdapter(connectorDescriptor, moduleName, moduleDir);
+        createActiveResourceAdapter(connectorDescriptor, moduleName, moduleDir, loader);
     }
+
 
 
     /**

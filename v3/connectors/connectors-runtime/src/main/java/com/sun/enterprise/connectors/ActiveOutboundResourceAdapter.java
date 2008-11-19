@@ -289,7 +289,7 @@ public class ActiveOutboundResourceAdapter implements ActiveResourceAdapter {
         try {
 
             ManagedConnectionFactory mcf = null;
-            mcf = instantiateMCF(mcfClass);
+            mcf = instantiateMCF(mcfClass, jcl);
 
             if (mcf instanceof ConfigurableTransactionSupport) {
                 TransactionSupport ts = ConnectionPoolObjectsUtils.getTransactionSupport(ccp.getTransactionSupport());
@@ -347,15 +347,16 @@ public class ActiveOutboundResourceAdapter implements ActiveResourceAdapter {
         }
     }
 
-    private ManagedConnectionFactory instantiateMCF(String mcfClass)
+    private ManagedConnectionFactory instantiateMCF(String mcfClass, ClassLoader loader)
             throws Exception {
         ManagedConnectionFactory mcf = null;
+
         if (jcl_ != null) {
-            mcf = (ManagedConnectionFactory) jcl_.loadClass(
-                    mcfClass).newInstance();
+            mcf = (ManagedConnectionFactory) jcl_.loadClass(mcfClass).newInstance();
+        } else if (loader != null) {
+            mcf = (ManagedConnectionFactory) loader.loadClass(mcfClass).newInstance();
         } else {
-            mcf = (ManagedConnectionFactory) Class.forName(
-                    mcfClass).newInstance();
+            mcf = (ManagedConnectionFactory) Class.forName(mcfClass).newInstance();
         }
         setLogWriter(mcf);
         return mcf;

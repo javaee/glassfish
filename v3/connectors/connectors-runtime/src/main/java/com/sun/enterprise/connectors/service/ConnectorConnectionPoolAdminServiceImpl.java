@@ -807,8 +807,10 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
 
                 ConnectorConnectionPool connectorConnectionPool = getConnectorConnectionPool(poolName);
                 ActiveResourceAdapter activeResourceAdapter = getResourceAdapter(connectorConnectionPool);
+                ClassLoader loader = ConnectorRuntime.getRuntime().
+                        getConnectorClassLoader(activeResourceAdapter.getModuleName());
                 ManagedConnectionFactory mcf = activeResourceAdapter.
-                        createManagedConnectionFactory(connectorConnectionPool, null);
+                        createManagedConnectionFactory(connectorConnectionPool, loader);
                 if (mcf != null) {
                     ResourcePrincipal prin =
                             getDefaultResourcePrincipal(poolName, mcf);

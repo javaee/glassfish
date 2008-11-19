@@ -55,11 +55,13 @@ import java.util.logging.Logger;
 public class ConnectorApplication implements ApplicationContainer {
     private static Logger _logger = LogDomains.getLogger(ConnectorApplication.class, LogDomains.RSR_LOGGER);
     private String moduleName = "";
-    private ResourceManager resourceManager ;
+    private ResourceManager resourceManager;
+    private ClassLoader loader;
 
-    public ConnectorApplication(String moduleName, ResourceManager resourceManager) {
+    public ConnectorApplication(String moduleName, ResourceManager resourceManager, ClassLoader loader) {
         this.moduleName = moduleName;
         this.resourceManager = resourceManager;
+        this.loader = loader;
     }
 
     /**
@@ -78,6 +80,7 @@ public class ConnectorApplication implements ApplicationContainer {
      * use their prefered Logger instance to log any issue they encounter while
      * starting. Returning false from a start mean that the container failed
      * to start
+     *
      * @param startupContext the start up context
      * @return true if the container startup was successful.
      */
@@ -93,30 +96,31 @@ public class ConnectorApplication implements ApplicationContainer {
 
     /**
      * deploy all resources/pools pertaining to this resource adapter
+     *
      * @param resourceAdapterName resource-adapter name
      */
-    private void deployResources(String resourceAdapterName){
+    private void deployResources(String resourceAdapterName) {
         resourceManager.deployResourcesForModule(resourceAdapterName);
     }
 
     /**
      * undeploy all resources/pools pertaining to this resource adapter
+     *
      * @param resourceAdapterName resource-adapter-name
      */
-    private void undeployResources(String resourceAdapterName){
+    private void undeployResources(String resourceAdapterName) {
         resourceManager.undeployResourcesForModule(resourceAdapterName);
     }
 
     /**
      * Stop the application container
      *
-     * @return true if stopping was successful.
      * @param stopContext
+     * @return true if stopping was successful.
      */
     public boolean stop(ApplicationContext stopContext) {
         boolean stopped = false;
         undeployResources(moduleName);
-        //TODO V3 temporary
         stopped = true;
         logFine("Resource Adapter [ " + moduleName + " ] stopped");
         return stopped;
@@ -148,7 +152,7 @@ public class ConnectorApplication implements ApplicationContainer {
      * @return ClassLoader for this app
      */
     public ClassLoader getClassLoader() {
-        return Thread.currentThread().getContextClassLoader(); //TODO V3 is this right behavior ?
+        return loader;
     }
 
     public void logFine(String message) {

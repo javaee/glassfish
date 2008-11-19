@@ -58,11 +58,13 @@ public class ConnectorClassLoaderServiceImpl implements PostConstruct{
     /*
     * TODO(Sahoo):
     * 1. https://glassfish.dev.java.net/issues/show_bug.cgi?id=5380
-    * 2. Listen to standalone RAR lifecycle events and add or remove
-    * corresponding classloader from this chain.
     * 3. Decide whether we can retrieve all the desired information from
     * ApplicationsRegistry by using just the name of the application. If not,
     * then revisit the signature of getConnectorClassLoader(String appName)
+    *
+    * COMPLETED
+    * 2. Listen to standalone RAR lifecycle events and add or remove
+    * corresponding classloader from this chain.
     */
 
     @Inject
@@ -80,8 +82,22 @@ public class ConnectorClassLoaderServiceImpl implements PostConstruct{
                 new DelegatingClassLoader(ccls.getCommonClassLoader());
     }
 
+    /**
+     * provides connector-class-loader for the specified application
+     * If application is null, global connector class loader will be provided
+     * @param application application-name
+     * @return class-loader
+     */
     public DelegatingClassLoader getConnectorClassLoader(String application) {
-        assert (globalConnectorCL != null);
-        return globalConnectorCL;
+         DelegatingClassLoader loader = null;
+
+        //if(application == null){
+            assert (globalConnectorCL != null);
+            loader = globalConnectorCL;
+        //}else{
+            //TODO V3   need to maintain a rar->class-finder mapping such that
+            //TODO V3   applications can refer to only required .rars
+        //}
+        return loader;
     }
 }

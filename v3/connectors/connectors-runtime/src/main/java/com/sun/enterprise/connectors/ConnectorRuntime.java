@@ -36,8 +36,6 @@
 
 package com.sun.enterprise.connectors;
 
-import com.sun.appserv.connectors.internal.api.ConnectorConstants;
-import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import org.glassfish.api.admin.config.Property;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.connectors.service.*;
@@ -48,8 +46,7 @@ import com.sun.enterprise.connectors.naming.ConnectorNamingEventNotifier;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.JndiNameEnvironment;
 import com.sun.enterprise.resource.pool.PoolManager;
-import com.sun.appserv.connectors.internal.api.WorkManagerFactory;
-import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
+import com.sun.appserv.connectors.internal.api.*;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.enterprise.module.ModulesRegistry;
@@ -62,6 +59,7 @@ import com.sun.corba.se.spi.orbutil.threadpool.NoSuchThreadPoolException;
 import com.sun.corba.se.impl.orbutil.threadpool.ThreadPoolManagerImpl;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.api.invocation.InvocationManager;
+import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -113,8 +111,6 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
     private ConnectorAdminObjectAdminServiceImpl adminObjectAdminService;
 
 
-    private long startTime;
-
     @Inject
     private GlassfishNamingManager namingManager;
 
@@ -142,6 +138,12 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
     @Inject
     private Habitat deployerHabitat;
 
+    @Inject
+    private ClassLoaderHierarchy clh;
+
+    @Inject
+    private ConnectorsClassLoaderUtil cclUtil;
+
     private final Object getTimerLock = new Object();
     private Timer timer;
 
@@ -165,7 +167,6 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
      */
     //TODO V3 made public constructor as of now.
     public ConnectorRuntime() {
-        startTime = System.currentTimeMillis();
         _runtime = this;
     }
 
@@ -304,10 +305,23 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
      * {@inheritDoc}
      */
     public void createActiveResourceAdapter(String moduleDir,
-                                            String moduleName) throws ConnectorRuntimeException {
-        resourceAdapterAdmService.createActiveResourceAdapter(
-                moduleDir, moduleName);
+                                            String moduleName,
+                                            ClassLoader loader) throws ConnectorRuntimeException {
+        resourceAdapterAdmService.createActiveResourceAdapter(moduleDir, moduleName, loader);
     }
+
+/*
+    */
+/**
+     * {@inheritDoc}
+     */
+/*
+    public void createActiveResourceAdapter(String moduleDir,
+                                            String moduleName
+    ) throws ConnectorRuntimeException {
+        resourceAdapterAdmService.createActiveResourceAdapter(moduleDir, moduleName, null);
+    }
+*/
 
     /**
      * {@inheritDoc}
@@ -372,28 +386,28 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
     }
 
     /**
-      * Gets the properties of the Java bean connection definition class that
-      * have setter methods defined and the default values as provided by the
-      * Connection Definition java bean developer.
-      * This method is used to get properties of jdbc-data-source<br>
-      * To get Connection definition properties for Connector Connection Pool,
-      * use ConnectorRuntime.getMCFConfigProperties()<br>
-      * When the connection definition class is not found, standard JDBC
-      * properties (of JDBC 3.0 Specification) will be returned.<br>
-      *
-      * @param connectionDefinitionClassName
-      *                     The Connection Definition Java bean class for which
-      *                     overrideable properties are required.
-      * @return Map<String, Object> String represents property name
-      * and Object is the defaultValue that is a primitive type or String.
-      */
+     * Gets the properties of the Java bean connection definition class that
+     * have setter methods defined and the default values as provided by the
+     * Connection Definition java bean developer.
+     * This method is used to get properties of jdbc-data-source<br>
+     * To get Connection definition properties for Connector Connection Pool,
+     * use ConnectorRuntime.getMCFConfigProperties()<br>
+     * When the connection definition class is not found, standard JDBC
+     * properties (of JDBC 3.0 Specification) will be returned.<br>
+     *
+     * @param connectionDefinitionClassName The Connection Definition Java bean class for which
+     *                                      overrideable properties are required.
+     * @return Map<String, Object> String represents property name
+     *         and Object is the defaultValue that is a primitive type or String.
+     */
     public Map<String, Object> getConnectionDefinitionPropertiesAndDefaults(String connectionDefinitionClassName) {
         return ccPoolAdmService.getConnectionDefinitionPropertiesAndDefaults(
-            connectionDefinitionClassName);
+                connectionDefinitionClassName);
     }
 
     /**
      * Provides specified ThreadPool or default ThreadPool from server
+     *
      * @param threadPoolId Thread-pool-id
      * @return ThreadPool
      * @throws NoSuchThreadPoolException when unable to get a ThreadPool
@@ -479,8 +493,6 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
         if (module != null) {
             defs.add(module.getModuleDefinition());
         }
-
-        _logger.fine("Time taken to initialize connector runtime : " + (System.currentTimeMillis() - startTime));
     }
 
     /**
@@ -607,13 +619,14 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
 
     /**
      * get resource reference descriptors from current component's jndi environment
+     *
      * @return set of resource-refs
      */
     public Set getResourceReferenceDescriptor() {
         JndiNameEnvironment jndiEnv = componentEnvManager.getCurrentJndiNameEnvironment();
-        if(jndiEnv != null){
+        if (jndiEnv != null) {
             return jndiEnv.getResourceReferenceDescriptors();
-        }else{
+        } else {
             return null;
         }
     }
@@ -687,7 +700,7 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
     }
 */
 
-    public ResourcePool getConnectionPoolConfig(String poolName){
+    public ResourcePool getConnectionPoolConfig(String poolName) {
         return ConnectorsUtil.getConnectionPoolConfig(poolName, allResources);
     }
 
@@ -702,21 +715,22 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
 
     /**
      * provides work manager proxy that is Serializable
-     * @param poolId ThreadPoolId
+     *
+     * @param poolId     ThreadPoolId
      * @param moduleName resource-adapter name
      * @return WorkManager
      * @throws ConnectorRuntimeException when unable to get work manager
      */
-    public WorkManager getWorkManagerProxy(String poolId, String moduleName) throws ConnectorRuntimeException{
+    public WorkManager getWorkManagerProxy(String poolId, String moduleName) throws ConnectorRuntimeException {
         //TODO V3 can't we make work-manager to return proxy by default ?
         return wmf.getWorkManagerProxy(poolId, moduleName);
     }
 
-    public void removeWorkManagerProxy(String moduleName){
-        wmf.removeWorkManager(moduleName);        
+    public void removeWorkManagerProxy(String moduleName) {
+        wmf.removeWorkManager(moduleName);
     }
 
-	/**
+    /**
      * Redeploy the resource into the server's runtime naming context
      *
      * @param resource a resource object
@@ -740,15 +754,22 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
     }
     
 */
-
-    public void addAdminObject (String appName, String connectorName,
-            String jndiName, String adminObjectType, Properties props)
+    public void addAdminObject(String appName, String connectorName,
+                               String jndiName, String adminObjectType, Properties props)
             throws ConnectorRuntimeException {
-        adminObjectAdminService.addAdminObject(appName,connectorName,jndiName,adminObjectType,props);
+        adminObjectAdminService.addAdminObject(appName, connectorName, jndiName, adminObjectType, props);
     }
 
     public void deleteAdminObject(String jndiName) throws ConnectorRuntimeException {
         adminObjectAdminService.deleteAdminObject(jndiName);
 
+    }
+
+    public ClassLoader getConnectorClassLoader(String rarName){
+        return clh.getConnectorClassLoader(rarName);
+    }
+
+    public ClassLoader createConnectorClassLoader(String moduleDirectory){
+        return cclUtil.createRARClassLoader(moduleDirectory);        
     }
 }

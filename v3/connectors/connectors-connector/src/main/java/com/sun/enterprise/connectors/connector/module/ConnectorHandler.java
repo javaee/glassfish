@@ -36,13 +36,13 @@
 package com.sun.enterprise.connectors.connector.module;
 
 import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
+import com.sun.appserv.connectors.internal.api.ConnectorsClassLoaderUtil;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
 
 import java.io.IOException;
-import java.io.InputStream;
-
 
 
 /**
@@ -53,20 +53,28 @@ import java.io.InputStream;
 @Service
 public class ConnectorHandler extends AbstractArchiveHandler implements ArchiveHandler {
 
+    @Inject
+    private ConnectorsClassLoaderUtil loader;
+
+    /**
+     * {@inheritDoc}
+     */
     public String getArchiveType() {
         return "rar";
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean handles(ReadableArchive archive) throws IOException {
         return archive.exists("META-INF/ra.xml");
     }
 
-    //TODO V3 should this be connector-class-loader ? Purpose of this method ? Who uses this classloader ?
-    //TODO V3 guess: purpose is for deploymentContext & Sniffer.handles() purpose only 
-
+    /**
+     * {@inheritDoc}
+     */
     public ClassLoader getClassLoader(ClassLoader parent, ReadableArchive archive) {
-        //TODO V3 temp
-        // return ConnectorClassLoader.getInstance(parent);
-        return Thread.currentThread().getContextClassLoader();
+        String moduleDir = archive.getURI().getPath();
+        return loader.createRARClassLoader(moduleDir);
     }
 }

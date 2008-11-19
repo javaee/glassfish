@@ -44,6 +44,8 @@ import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.glassfish.javaee.services.ResourceManager;
+import org.glassfish.internal.api.ClassLoaderHierarchy;
+import org.glassfish.internal.api.ConnectorClassFinder;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
@@ -52,41 +54,29 @@ import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-//TODO V3 shouldn't the Deployer be Deployer<ConnectorContainer, ConnectorApplication> ??
-
-//TODO V3 why should it be Deployer<CC,CA> ??
-
 /**
  * Deployer for a resource-adapter.
  *
  * @author Jagadish Ramu
  */
 @Service
-public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, ConnectorApplication> implements PostConstruct {
-
+public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, ConnectorApplication>
+        implements PostConstruct {
 
     @Inject
     private ConnectorRuntime runtime;
-/*
-    @Inject
-    private ConnectorResource[] connectorResources;
 
     @Inject
-    private ConnectorConnectionPool[] connectorConnectionPools;
-
-    @Inject
-    private ResourceAdaptersBinder binder;
-*/
+    private ClassLoaderHierarchy clh;
 
     @Inject
     private ResourceManager resourceManager;
 
-    //private long startTime;
-
     private static Logger _logger = LogDomains.getLogger(ConnectorDeployer.class, LogDomains.RSR_LOGGER);
 
+    private ConnectorClassFinder ccf = null;
+
     public ConnectorDeployer() {
-        //startTime = System.currentTimeMillis();
     }
 
     /**
@@ -96,7 +86,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
      */
     public <T> T loadMetaData(Class<T> type, DeploymentContext context) {
         return null;
-    }    
+    }
 
     /**
      * Loads a previously prepared application in its execution environment and
@@ -111,45 +101,24 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
         File sourceDir = context.getSourceDir();
         String sourcePath = sourceDir.getAbsolutePath();
         String moduleName = sourceDir.getName();
-        //TODO V3 this check is not needed ?
+        //this check is not needed as system-rars are never deployed, just to be safe.
         if (!ConnectorsUtil.belongsToSystemRA(moduleName)) {
             try {
-                runtime.createActiveResourceAdapter(sourcePath, moduleName);
+                //for a connector deployer, classloader will always be ConnectorClassFinder
+                ccf = (ConnectorClassFinder) context.getClassLoader();
+                runtime.createActiveResourceAdapter(sourcePath, moduleName, ccf);
+
+                //add the class-finder (class-loader) to connector-class-loader chain
+                clh.getConnectorClassLoader(null).addDelegate(ccf);
+                
             } catch (ConnectorRuntimeException cre) {
                 //TODO V3 log exception
                 _logger.log(Level.WARNING, " unable to load the resource-adapter [ " + moduleName + " ]", cre);
             }
         }
-/*
-        Map<ConnectorResource, ConnectorConnectionPool> raResourcePoolMap =
-                new HashMap<ConnectorResource, ConnectorConnectionPool>();
-        Map<String, ConnectorConnectionPool> raPools = getConnectorPoolsForRA(connectorConnectionPools, moduleName);
-        for (ConnectorResource resource : connectorResources) {
-            if (raPools.containsKey(resource.getPoolName())) {
-                raResourcePoolMap.put(resource, raPools.get(resource.getPoolName()));
-            }
-        }
-*/
-        return new ConnectorApplication(moduleName, resourceManager);
+        return new ConnectorApplication(moduleName, resourceManager, ccf);
     }
 
-    /**
-     * retrives all the connection pools of the given resource adapter.
-     * @param ccp All connector connection pools
-     * @param raName Resource-adapter name
-     * @return connection pools of the given resource-adapter
-     */
-/*
-    private Map<String, ConnectorConnectionPool> getConnectorPoolsForRA(ConnectorConnectionPool[] ccp, String raName) {
-        Map<String, ConnectorConnectionPool> raPools = new HashMap<String, ConnectorConnectionPool>();
-        for (ConnectorConnectionPool pool : ccp) {
-            if (pool.getResourceAdapterName().equalsIgnoreCase(raName)) {
-                raPools.put(pool.getName(), pool);
-            }
-        }
-        return raPools;
-    }
-*/
 
     /**
      * Unload or stop a previously running application identified with the
@@ -159,18 +128,17 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
      * @param appContainer instance to be stopped
      * @param context      of the undeployment
      */
-    //TODO V3 unload's job is to remove the app's content from class-loader or class-loader specific to this app
-    //TODO V3 application.start/stop() will take care of creating/destryingARA
-
     public void unload(ConnectorApplication appContainer, DeploymentContext context) {
         File sourceDir = context.getSourceDir();
         String moduleName = sourceDir.getName();
-
         try {
             runtime.destroyActiveResourceAdapter(moduleName, true);
         } catch (ConnectorRuntimeException e) {
             //TODO V3 log exception
             _logger.log(Level.WARNING, " unable to unload the resource-adapter [ " + moduleName + " ]", e);
+        } finally {
+            //remove the class-finder (class-loader) from connector-class-loader chain
+            clh.getConnectorClassLoader(null).removeDelegate(ccf);
         }
     }
 
@@ -197,7 +165,6 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
      * will be placed into commission by the subsystem.
      */
     public void postConstruct() {
-        //logFine("Time taken to initialize connector deployer : " + (System.currentTimeMillis() - startTime));
     }
 
     public void logFine(String message) {

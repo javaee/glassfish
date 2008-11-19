@@ -203,7 +203,7 @@ public class ConnectorService implements ConnectorConstants {
             ConnectorRuntime cr = ConnectorRuntime.getRuntime();
             //Do this only for System RA
             if (ConnectorsUtil.belongsToSystemRA(rarName)) {
-                cr.createActiveResourceAdapter(ConnectorsUtil.getSystemModuleLocation(rarName), rarName);
+                cr.createActiveResourceAdapter(ConnectorsUtil.getSystemModuleLocation(rarName), rarName, null);
             }
         } catch (Exception e) {
             ConnectorRuntimeException ce =

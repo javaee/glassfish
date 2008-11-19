@@ -64,6 +64,10 @@ public class JarHandler extends AbstractArchiveHandler implements ArchiveHandler
         if (DeploymentUtils.isWebArchive(archive)) {
             return false;
         }
+		// Do not handle (resource-adapters) rar files
+        if(DeploymentUtils.isRAR(archive)){
+            return false;
+        }
         // but I handle everything else
         return true;
     }

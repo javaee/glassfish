@@ -11,9 +11,9 @@
     <packaging>pom</packaging>
     <name>GlassFish Java EE Connector Architecture related modules</name>
     <modules>
-        <module>connectors-runtime</module>
         <module>connectors-connector</module>
         <module>connectors-internal-api</module>
+        <module>connectors-runtime</module>
         <module>work-management</module>
         <module>javax.resource</module>
   </modules>
