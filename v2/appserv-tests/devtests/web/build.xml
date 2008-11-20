@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="330"/>
+    <property name="TOTAL_EXPECTED" value="331"/>
 
     &commonSetup;
     &commonBuild;
@@ -270,6 +270,9 @@
         <ant dir="virtualServerStateDynamicReconfig" target="all"/>
         <ant dir="virtualServerAlternateDocroot" target="all"/>
         <ant dir="virtualServerAlternateDocrootDynamicReconfig" target="all"/>
+        <!-- Uncomment once fix for IT 6731 has been ported to v3
+        <ant dir="virtualServerAlternateDocrootWelcomePageRedirect" target="all"/>
+        -->
         <ant dir="virtualServerRedirectPropertyUrlPrefix" target="all"/>
         <ant dir="virtualServerSendErrorProperty" target="all"/>
         <ant dir="virtualServerUpdateHttpListenersDynamicReconfig" target="all"/>
