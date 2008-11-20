@@ -1041,12 +1041,16 @@ public class WebappClassLoader
      *
      * @param name Name of the resource to be found
      */
-    public URL findResource(final String name) {
+    public URL findResource(String name) {
 
         if (logger.isLoggable(Level.FINER))
             logger.finer("    findResource(" + name + ")");
 
         URL url = null;
+
+        if (".".equals(name)) {
+            name = "";
+        }
 
         ResourceEntry entry = (ResourceEntry) resourceEntries.get(name);
         if (entry == null) {
