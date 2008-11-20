@@ -11,7 +11,7 @@ run-all-tests
 load-jmxmp-connector --port 8344 
 load-jmxmp-connector --port 8345 test:type=connector,protocol=jmxmp
 load-html-adapter --port 7344
-load-html-adapter --port 7344 test:type=adapter,protocol=html
+load-html-adapter --port 7345 test:type=adapter,protocol=html
 
 
 # test monitoring
