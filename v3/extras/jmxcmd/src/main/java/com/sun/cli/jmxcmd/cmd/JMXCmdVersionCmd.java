@@ -35,10 +35,10 @@ public class JMXCmdVersionCmd extends VersionCmd
 	}
 	
 	public static final String VERSION_STRING	= 
-	"jmxcmd 1.0 beta 2+";
+	"jmxcmd 1.1 alpha 1";
 	
 	public static final String COPYRIGHT_STRING	= 
-	"Copyright 2003 Sun Microsystems, Inc.\n" +
+	"Copyright 2003-2008 Sun Microsystems, Inc.\n" +
 	"All rights reserved.\n" +
 	"Use is subject to license terms.";
 

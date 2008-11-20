@@ -114,8 +114,7 @@ public class TargetCmd extends JMXCmd
 		warnEmptyTargets( targets );
 		
 		getAliasMgr().deleteAlias( JMXCmdEnvKeys.TARGETS_ALIAS );
-		getAliasMgr().createAlias( JMXCmdEnvKeys.TARGETS_ALIAS,
-			ArrayStringifier.stringify( targets, " " ) );
+		getAliasMgr().createAlias( JMXCmdEnvKeys.TARGETS_ALIAS, ArrayStringifier.stringify( targets, " " ) );
 	}
 	
 		protected void
