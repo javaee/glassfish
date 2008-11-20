@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="327"/>
+    <property name="TOTAL_EXPECTED" value="329"/>
 
     &commonSetup;
     &commonBuild;
@@ -203,6 +203,8 @@
         <ant dir="webServletAnnotation" target="all"/>
         <ant dir="servletFilterAnnotation" target="all"/>
         <ant dir="webServletContextListenerAnnotation" target="all"/>
+        <ant dir="asyncSupportedTrue" target="all"/>
+        <ant dir="asyncSupportedFalse" target="all"/>
     </target>
 
     <target name="web-container">
