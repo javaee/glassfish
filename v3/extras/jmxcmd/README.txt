@@ -13,6 +13,8 @@ mvn install
 export V3=/v3/glassfish
 cp $V3/modules/amx-api.jar ./publish/jars
 
+########################### Examples
+# See  docs/index.html
 
 # Connecting to a JMX server over the RMI connector
 ./publish/jmxcmd   # start in interactive mode
