@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="329"/>
+    <property name="TOTAL_EXPECTED" value="330"/>
 
     &commonSetup;
     &commonBuild;
@@ -254,6 +254,7 @@
         <ant dir="webappDeployDashDashLibraries" target="all"/>
         <ant dir="webappLoaderIgnoreHiddenJarFiles" target="all"/>
         <ant dir="webappLoaderConsiderHiddenJarFiles" target="all"/>
+        <ant dir="webappLoaderGetResourceDot" target="all"/>
         <ant dir="webappAlternateDocroot" target="all"/>
         <ant dir="webappAlternateDocrootTagFile" target="all"/>
         <ant dir="virtualServerDefaultWebModule" target="all"/>
