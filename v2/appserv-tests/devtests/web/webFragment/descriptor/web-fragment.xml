@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-fragment>
+  <display-name>wftest</display-name>
+  <distributable></distributable>
+  <servlet>
+    <servlet-name>wftestServlet</servlet-name>
+    <init-param>
+      <param-name>mesg</param-name>
+      <param-value>hello f</param-value>
+    </init-param>
+    <init-param>
+      <param-name>mesg2</param-name>
+      <param-value>hello2 f</param-value>
+    </init-param>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>wftestServlet</servlet-name>
+    <url-pattern>/wftest</url-pattern>
+  </servlet-mapping>
+</web-fragment>
