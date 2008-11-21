@@ -28,8 +28,17 @@ import javax.xml.ws.handler.MessageContext;
 
 import org.glassfish.webservices.SOAPMessageContext;
 
+import java.util.logging.Logger;
+import java.util.ResourceBundle;
+
+import com.sun.logging.LogDomains;
+
 
 public class JAXWSEndpointImpl extends EndpointImpl {
+
+    protected Logger logger = LogDomains.getLogger(this.getClass(),LogDomains.WEBSERVICES_LOGGER);
+
+    private ResourceBundle rb = logger.getResourceBundle()   ;
         
     JAXWSEndpointImpl(String endpointSelector, EndpointType type) {
         super(endpointSelector, type);
@@ -66,7 +75,7 @@ public class JAXWSEndpointImpl extends EndpointImpl {
                 }
             }
         } catch(Exception e) {
-            wsEngine.sLogger.warning("Exception while tracing request : " + e.getMessage());
+            wsEngine.sLogger.warning(rb.getString("exception.tracing.request") + e.getMessage());
 	    throw e;
         }
         return status;
@@ -98,7 +107,7 @@ public class JAXWSEndpointImpl extends EndpointImpl {
                 }
             }
         } catch(Exception e) {
-            wsEngine.sLogger.warning("Exception while tracing response : " + e.getMessage());
+            wsEngine.sLogger.warning(rb.getString("exception.tracing.response") + e.getMessage());
 	    throw e;
         } 
     }
