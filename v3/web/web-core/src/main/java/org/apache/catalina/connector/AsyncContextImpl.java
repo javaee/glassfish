@@ -34,7 +34,7 @@
  * holder.
  */
 
-package org.apache.catalina.core;
+package org.apache.catalina.connector;
 
 import java.io.IOException;
 import java.util.concurrent.*;
@@ -93,6 +93,7 @@ public class AsyncContextImpl implements AsyncContext {
             String uri = ((HttpServletRequest)servletRequest).getRequestURI();
             RequestDispatcher rd = servletRequest.getRequestDispatcher(uri);
             if (rd != null) {
+                request.setOkToReinitializeAsync();
                 pool.execute(new Handler(rd, servletRequest, servletResponse));
             } else {
                 log.warning("Unable to acquire RequestDispatcher for " +
@@ -111,6 +112,7 @@ public class AsyncContextImpl implements AsyncContext {
 
         RequestDispatcher rd = servletRequest.getRequestDispatcher(path);
         if (rd != null) {
+            request.setOkToReinitializeAsync();
             pool.execute(new Handler(rd, servletRequest, servletResponse));
         } else {
             log.warning("Unable to acquire RequestDispatcher for " + path);
@@ -125,6 +127,7 @@ public class AsyncContextImpl implements AsyncContext {
 
         RequestDispatcher rd = context.getRequestDispatcher(path);
         if (rd != null) {
+            request.setOkToReinitializeAsync();
             pool.execute(new Handler(rd, servletRequest, servletResponse));
         } else {
             log.warning("Unable to acquire RequestDispatcher for " + path +
@@ -145,6 +148,27 @@ public class AsyncContextImpl implements AsyncContext {
 
 
     public void start(Runnable run) {
+        // XXX
+    }
+
+
+    /*
+     * Reinitializes this AsyncContext with the given request
+     */
+    void setServletRequest(ServletRequest servletRequest) {
+        this.servletRequest = servletRequest;
+    }
+
+
+    /*
+     * Reinitializes this AsyncContext with the given response
+     */
+    void setServletResponse(ServletResponse servletResponse) {
+        this.servletResponse = servletResponse;
+    }
+
+
+    void recycle() {
         // XXX
     }
 
