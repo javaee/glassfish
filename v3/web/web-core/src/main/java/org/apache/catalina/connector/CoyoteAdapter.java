@@ -281,7 +281,7 @@ public class CoyoteAdapter
         // END SJSAS 6331392
 
         if (connector.isXpoweredBy()) {
-            response.addHeader("X-Powered-By", "Servlet/2.5");
+            response.addHeader("X-Powered-By", "Servlet/3.0");
         }
 
 
