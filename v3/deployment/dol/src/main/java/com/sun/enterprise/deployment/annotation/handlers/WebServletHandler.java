@@ -42,6 +42,7 @@ import com.sun.enterprise.deployment.annotation.context.WebComponentContext;
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
+import org.glassfish.apf.ResultType;
 import org.jvnet.hk2.annotations.Service;
 
 import javax.servlet.annotation.InitParam;
@@ -74,25 +75,24 @@ public class WebServletHandler extends AbstractWebHandler {
             WebComponentContext[] webCompContexts)
             throws AnnotationProcessorException {
 
-        // web comp with the given class name exists, do nothing
-        return getDefaultProcessedResult();
+        HandlerProcessingResult result = null;
+        for (WebComponentContext webCompContext : webCompContexts) {
+            result = processAnnotation(ainfo,
+                    webCompContext.getDescriptor());
+            if (result.getOverallResult() == ResultType.FAILED) {
+                break;
+            }
+        }
+        return result;
     }
 
     protected HandlerProcessingResult processAnnotation(
             AnnotationInfo ainfo, WebBundleContext webBundleContext)
             throws AnnotationProcessorException {
 
-        Class webCompClass = (Class)ainfo.getAnnotatedElement();
-        if (!HttpServlet.class.isAssignableFrom(webCompClass)) {
-            log(Level.SEVERE, ainfo,
-                localStrings.getLocalString(
-                "enterprise.deployment.annotation.handlers.needtoextend",
-                "The Class {0} having annotation {1} need to be a derived class of {2}.",
-                new Object[] { webCompClass.getName(), WebServlet.class.getName(), HttpServlet.class.getName() }));
-            return getDefaultFailedResult();
-        }
         WebServlet webServletAn = (WebServlet)ainfo.getAnnotation();
 
+        Class webCompClass = (Class)ainfo.getAnnotatedElement();
         String servletName = webServletAn.name();
         if (servletName == null || servletName.length() == 0) {
             servletName = webCompClass.getName();
@@ -104,19 +104,47 @@ public class WebServletHandler extends AbstractWebHandler {
             webCompDesc = new WebComponentDescriptor();
             webCompDesc.setName(servletName);
             webCompDesc.setCanonicalName(servletName);
-        } else {
-            String webCompImpl = webCompDesc.getWebComponentImplementation();
-            if (webCompImpl != null && webCompImpl.length() > 0 &&
-                    !webCompImpl.equals(webCompClass.getName())) {
-                log(Level.SEVERE, ainfo,
-                    localStrings.getLocalString(
-                    "enterprise.deployment.annotation.handlers.servletimpldontmatch",
-                    "The servlet '{0}' has implementation '{1}' in xml. It does not match with '{2}' from annotation @{3}.",
-                    new Object[] { servletName, webCompImpl, webCompClass.getName(),
-                    WebServlet.class.getName() }));
-                return getDefaultFailedResult();
-            }
-        } 
+        }
+        
+        HandlerProcessingResult result = processAnnotation(ainfo, webCompDesc);
+        if (result.getOverallResult() == ResultType.PROCESSED) {
+            webBundleContext.getDescriptor().addWebComponentDescriptor(webCompDesc);
+            WebComponentContext webCompContext = new WebComponentContext(webCompDesc);
+            // we push the new context on the stack...
+            webBundleContext.getProcessingContext().pushHandler(webCompContext);
+        }
+
+        return result;
+    }
+
+    private HandlerProcessingResult processAnnotation(
+            AnnotationInfo ainfo, WebComponentDescriptor webCompDesc)
+            throws AnnotationProcessorException {
+
+        Class webCompClass = (Class)ainfo.getAnnotatedElement();
+        if (!HttpServlet.class.isAssignableFrom(webCompClass)) {
+            log(Level.SEVERE, ainfo,
+                localStrings.getLocalString(
+                "enterprise.deployment.annotation.handlers.needtoextend",
+                "The Class {0} having annotation {1} need to be a derived class of {2}.",
+                new Object[] { webCompClass.getName(), WebServlet.class.getName(), HttpServlet.class.getName() }));
+            return getDefaultFailedResult();
+        }
+
+        WebServlet webServletAn = (WebServlet)ainfo.getAnnotation();
+
+        String webCompImpl = webCompDesc.getWebComponentImplementation();
+        if (webCompImpl != null && webCompImpl.length() > 0 &&
+                !webCompImpl.equals(webCompClass.getName())) {
+            
+            log(Level.SEVERE, ainfo,
+                localStrings.getLocalString(
+                "enterprise.deployment.annotation.handlers.servletimpldontmatch",
+                "The servlet '{0}' has implementation '{1}' in xml. It does not match with '{2}' from annotation @{3}.",
+                new Object[] { webCompDesc.getName(), webCompImpl, webCompClass.getName(),
+                WebServlet.class.getName() }));
+            return getDefaultFailedResult();
+        }
         webCompDesc.setServlet(true);
         webCompDesc.setWebComponentImplementation(webCompClass.getName());
 
@@ -184,11 +212,6 @@ public class WebServletHandler extends AbstractWebHandler {
         if (webCompDesc.getAsyncTimeout() == null) {
             webCompDesc.setAsyncTimeout(webServletAn.asyncTimeout());
         }
-
-        webBundleContext.getDescriptor().addWebComponentDescriptor(webCompDesc);
-        WebComponentContext webCompContext = new WebComponentContext(webCompDesc);
-        // we push the new context on the stack...
-        webBundleContext.getProcessingContext().pushHandler(webCompContext);
 
         return getDefaultProcessedResult();
     }
