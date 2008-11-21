@@ -153,7 +153,11 @@
 
     <modules>
         <!-- Don't add any other module here. Instead add them in debug profile -->
+        <!-- To avoid JVM crash while using JDK 6, we are not
+             building this module in anonymous profile anymore.
+             See bug #6766662 for more details.
       	<module>build</module>
+        -->
     </modules>
     <profiles>
         <profile>
@@ -203,6 +207,13 @@
                 so the retry of "mvn release:prepare" now works.
             -->
             <id>release-phase1</id>
+            <modules>
+                <!-- To avoid JVM crash while using JDK 6, we are
+                     building this module in this profile only.
+                     See bug #6766662 for more details.
+                -->
+      	        <module>build</module>
+            </modules>
         </profile>
     </profiles>
     <repositories>
@@ -229,6 +240,8 @@
     <build>
         <defaultGoal>install</defaultGoal>
         <sourceDirectory>src/main/java</sourceDirectory>
+        <!-- make the target/*.jar names match the name as found in  installed modules/ -->
+        <finalName>${project.artifactId}</finalName>
 
 	<!--    Begin: Parent Plugin Management Section -->
         <pluginManagement>
