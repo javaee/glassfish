@@ -30,7 +30,8 @@ import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.util.http.mapper.Mapper;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import java.io.IOException;
-
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -74,6 +75,10 @@ public class GrizzlyProxy implements NetworkProxy {
 
 
     private int portNumber;
+
+
+    // <http-listener> 'address' attribute
+    private InetAddress address;
 
 
     private Inhabitant<Mapper> onePortMapper;
@@ -125,6 +130,12 @@ public class GrizzlyProxy implements NetworkProxy {
             logger.severe("Cannot parse port value : " + port + ", using port 8080");
         }
 
+        try {
+            address = InetAddress.getByName(httpListener.getAddress());
+        } catch (UnknownHostException ex) {
+            logger.log(Level.SEVERE, "Unknown address " + address, ex);    
+        } 
+
         configureGrizzly(httpListener.getDefaultVirtualServer());
     }
 
@@ -138,7 +149,7 @@ public class GrizzlyProxy implements NetworkProxy {
 
         GrizzlyListenerConfigurator.configure(
                 grizzlyListener, httpService, httpListener, portNumber,
-                grizzlyService.getController(), isWebProfile);
+                address, grizzlyService.getController(), isWebProfile);
         
         GrizzlyEmbeddedHttp geh = grizzlyListener.getEmbeddedHttp();
         V3Mapper mapper = new V3Mapper(logger);

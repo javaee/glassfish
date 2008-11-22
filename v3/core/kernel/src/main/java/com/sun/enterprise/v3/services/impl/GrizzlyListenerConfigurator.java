@@ -23,7 +23,7 @@
 
 package com.sun.enterprise.v3.services.impl;
 
-
+import java.net.InetAddress;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.logging.Logger;
@@ -87,7 +87,8 @@ public class GrizzlyListenerConfigurator {
     // TODO: Pending Grizzly issue 54
     public static void configure(
             GrizzlyServiceListener grizzlyListener, HttpService httpService,
-            HttpListener httpListener, int port, Controller controller,
+            HttpListener httpListener, int port, InetAddress address,
+            Controller controller,
             boolean isWebProfile){
         
         System.setProperty("product.name", "GlassFish/v3");      
@@ -95,6 +96,7 @@ public class GrizzlyListenerConfigurator {
         //TODO: Configure via domain.xml
         //grizzlyListener.setController(controller);
         grizzlyListener.setPort(port); 
+        grizzlyListener.setAddress(address); 
         
         // TODO: This is not the right way to do.
         GrizzlyEmbeddedHttp.setWebAppRootPath(

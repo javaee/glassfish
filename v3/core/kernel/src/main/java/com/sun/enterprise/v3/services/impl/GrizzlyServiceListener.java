@@ -35,6 +35,7 @@ import com.sun.enterprise.util.Result;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.net.InetAddress;
 import javax.net.ssl.SSLContext;
 
 /**
@@ -54,7 +55,7 @@ public class GrizzlyServiceListener {
     private Controller controller;
     
     private int port;
-    
+    private InetAddress address;    
     private GrizzlyService grizzlyService;
     private boolean isEmbeddedHttpSecured;
     private GrizzlyEmbeddedHttp embeddedHttp;
@@ -104,6 +105,7 @@ public class GrizzlyServiceListener {
         }
         
         embeddedHttp.setPort(port);
+        embeddedHttp.setAddress(address);
     }
     
     public void configurePortUnification() {
@@ -167,6 +169,15 @@ public class GrizzlyServiceListener {
             embeddedHttp.setPort(port);
         }
     }
+
+    public void setAddress(InetAddress address) {
+        this.address = address;
+        
+        if (embeddedHttp != null) {
+            embeddedHttp.setAddress(address);
+        }
+    }
+
 
     public String getName() {
         return name;
