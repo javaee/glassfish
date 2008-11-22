@@ -51,6 +51,7 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
+import javax.ejb.TimerConfig;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -266,14 +267,14 @@ public class TimerBean implements TimerLocal {
     public TimerState createTimer
         (String timerId, long containerId, String ownerId,
          Object timedObjectPrimaryKey, 
-         Date initialExpiration, long intervalDuration, Serializable info)
+         Date initialExpiration, long intervalDuration, TimerConfig timerConfig)
         throws CreateException {
 
         TimerState timer = null;
         try {
             timer = new TimerState (timerId, containerId, ownerId,
                     timedObjectPrimaryKey, initialExpiration, 
-                    intervalDuration, info);
+                    intervalDuration, timerConfig.getInfo());
         } catch(IOException ioe) {
             CreateException ce = new CreateException();
             ce.initCause(ioe);
@@ -284,7 +285,8 @@ public class TimerBean implements TimerLocal {
             logger.log(Level.FINE, "TimerBean.createTimer() ::timerId=" +
                        timer.getTimerId() + " ::containerId=" + timer.getContainerId() + 
                        " ::timedObjectPK=" + timedObjectPrimaryKey +
-                       " ::info=" + info +
+                       " ::info=" + timerConfig.getInfo() +
+                       " ::persistent=" + timerConfig.isPersistent() +
                        " ::initialExpiration=" + initialExpiration +
                        " ::intervalDuration=" + intervalDuration +
                        " :::state=" + timer.stateToString() + 
@@ -327,7 +329,9 @@ public class TimerBean implements TimerLocal {
             }
         }
 
-        em.persist(timer);
+        if (timerConfig.isPersistent()) {
+            em.persist(timer);
+        }
 
         return timer;
     }
@@ -853,9 +857,11 @@ public class TimerBean implements TimerLocal {
         Object timedObjectPrimaryKey = (context instanceof EntityContext) ?
                 ((EntityContext)context).getPrimaryKey() : null;
 
+        TimerConfig timerConfig = new TimerConfig();
+        timerConfig.setInfo(info);
         timerLocal.createTimer(timerId, containerId, ownerId,
                                      timedObjectPrimaryKey, initialExpiration,
-                                     intervalDuration, info);
+                                     intervalDuration, timerConfig);
         return;
     }
 

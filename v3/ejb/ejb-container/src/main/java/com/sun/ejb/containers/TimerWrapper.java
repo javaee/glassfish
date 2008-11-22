@@ -42,6 +42,7 @@ import javax.ejb.NoSuchObjectLocalException;
 import javax.ejb.EJBException;
 import javax.ejb.Timer;
 import javax.ejb.TimerHandle;
+import javax.ejb.ScheduleExpression;
 import javax.ejb.FinderException;
 
 
@@ -67,12 +68,17 @@ public class TimerWrapper
     
     private TimerPrimaryKey timerId_;
     private EJBTimerService timerService_;
+    private ScheduleExpression expression_;
 
     private static EjbContainerUtil ejbContainerUtil = EjbContainerUtilImpl.getInstance();
 
     TimerWrapper(TimerPrimaryKey timerId, EJBTimerService timerService) {
         timerId_      = timerId;
         timerService_ = timerService;   //TimerService passed in could be null
+    }
+
+    void setScheduleExpression(ScheduleExpression expression) {
+        expression_ = expression;
     }
 
     /*
@@ -147,6 +153,28 @@ public class TimerWrapper
         } 
 
         return new TimerHandleImpl(timerId_);
+    }
+
+    public ScheduleExpression getSchedule() throws java.lang.IllegalStateException, 
+            javax.ejb.NoSuchObjectLocalException, javax.ejb.EJBException {
+
+        checkCallPermission();
+        if( !timerService_.timerExists(timerId_) ) {
+            throw new NoSuchObjectLocalException("timer no longer exists");
+        } 
+
+        return expression_;
+    }
+
+    public boolean isPersistent() throws java.lang.IllegalStateException, 
+            javax.ejb.NoSuchObjectLocalException, javax.ejb.EJBException {
+
+        checkCallPermission();
+        if( !timerService_.timerExists(timerId_) ) {
+            throw new NoSuchObjectLocalException("timer no longer exists");
+        } 
+
+        return true; // TODO timerService_.isPersistent(timerId_);
     }
 
     public boolean equals(Object o) {
@@ -286,6 +314,8 @@ public class TimerWrapper
             return timer;
         }
 
+// XXX? Is it ever called from outside ???
+
         public static TimerWrapper getTimerInternal(TimerPrimaryKey timerId) 
             throws NoSuchObjectLocalException, EJBException {
 
@@ -293,6 +323,8 @@ public class TimerWrapper
             EJBTimerService timerService = ejbContainerUtil.getEJBTimerService();
 
             if( timerService != null ) {
+// TODO - replace with RuntimeTimerState timerState = getTimerState(timerId) != null 
+// and get isPersistent() from there
                 if( timerService.timerExists(timerId) ) {
                     timer = new TimerWrapper(timerId, timerService);
                 } else {

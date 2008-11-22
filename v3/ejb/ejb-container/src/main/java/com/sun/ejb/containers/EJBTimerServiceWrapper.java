@@ -46,6 +46,8 @@ import java.io.Serializable;
 import javax.ejb.EJBLocalObject;
 import javax.ejb.TimerService;
 import javax.ejb.Timer;
+import javax.ejb.TimerConfig;
+import javax.ejb.ScheduleExpression;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.CreateException;
@@ -96,23 +98,9 @@ public class EJBTimerServiceWrapper implements TimerService {
         throws IllegalArgumentException, IllegalStateException, EJBException {
 
         checkCreateTimerCallPermission();
+        checkDuration(duration);
 
-        if( duration < 0 ) {
-            throw new IllegalArgumentException("invalid duration=" + duration);
-        } 
-                             
-        TimerPrimaryKey timerId = null;
-
-        try {
-            timerId = timerService_.createTimer
-                (containerId_, getTimedObjectPrimaryKey(), duration, 0, info);
-        } catch(CreateException ce) {            
-            EJBException ejbEx = new EJBException();
-            ejbEx.initCause(ce);
-            throw ejbEx;            
-        }
-
-        return new TimerWrapper(timerId, timerService_);
+        return createTimerInternal(duration, 0, info);
     }
 
     public Timer createTimer(long initialDuration, long intervalDuration, 
@@ -120,52 +108,18 @@ public class EJBTimerServiceWrapper implements TimerService {
         throws IllegalArgumentException, IllegalStateException, EJBException {
 
         checkCreateTimerCallPermission();
+        checkInitialDuration(initialDuration);
 
-        if( initialDuration < 0 ) {
-            throw new IllegalArgumentException("invalid initial duration = " +
-                                               initialDuration);
-        } else if( intervalDuration < 0 ) {
-            throw new IllegalArgumentException("invalid interval duration = " +
-                                               intervalDuration);
-        }
-                             
-        TimerPrimaryKey timerId = null;
-
-        try {
-            timerId = timerService_.createTimer
-                (containerId_, getTimedObjectPrimaryKey(), initialDuration, 
-                 intervalDuration, info);
-        } catch(CreateException ce) {
-            EJBException ejbEx = new EJBException();
-            ejbEx.initCause(ce);
-            throw ejbEx;                       
-        }
-
-        return new TimerWrapper(timerId, timerService_);
+        return createTimerInternal(initialDuration, intervalDuration, info);
     }
 
     public Timer createTimer(Date expiration, Serializable info) 
         throws IllegalArgumentException, IllegalStateException, EJBException {
                              
         checkCreateTimerCallPermission();
+        checkExpiration(expiration);
 
-        if( expiration == null ) {
-            throw new IllegalArgumentException("null expiration");
-        } 
-
-        TimerPrimaryKey timerId = null;
-
-        try {
-            timerId = timerService_.createTimer(containerId_, 
-                                                getTimedObjectPrimaryKey(),
-                                                expiration, 0, info);
-        } catch(CreateException ce) {
-            EJBException ejbEx = new EJBException();
-            ejbEx.initCause(ce);
-            throw ejbEx;           
-        }
-
-        return new TimerWrapper(timerId, timerService_);
+        return createTimerInternal(expiration, 0, info);
     }
 
     public Timer createTimer(Date initialExpiration, long intervalDuration,
@@ -173,26 +127,69 @@ public class EJBTimerServiceWrapper implements TimerService {
         throws IllegalArgumentException, IllegalStateException, EJBException {
 
         checkCreateTimerCallPermission();
+        checkExpiration(initialExpiration);
 
-        if( initialExpiration == null ) {
-            throw new IllegalArgumentException("null expiration");
-        } else if ( intervalDuration < 0 ) {
-            throw new IllegalArgumentException("invalid interval duration = " +
-                                               intervalDuration);
-        }
+        return createTimerInternal(initialExpiration, intervalDuration, info);
+    }
 
-        TimerPrimaryKey timerId = null;
-        try {
-            timerId = timerService_.createTimer(containerId_, 
-                getTimedObjectPrimaryKey(), initialExpiration, 
-                intervalDuration, info);
-        } catch(CreateException e) {
-            EJBException ejbEx = new EJBException();
-            ejbEx.initCause(e);
-            throw ejbEx;                       
-        }
+    public Timer createTimer(long duration, TimerConfig timerConfig) throws
+                     java.lang.IllegalArgumentException, java.lang.IllegalStateException,
+                     javax.ejb.EJBException {
+        checkCreateTimerCallPermission();
+        checkDuration(duration);
 
-        return new TimerWrapper(timerId, timerService_);
+        return createTimerInternal(duration, 0, timerConfig);
+    }
+
+    public Timer createTimer(long initialDuration,
+                     long intervalDuration, TimerConfig timerConfig) throws
+                     java.lang.IllegalArgumentException, java.lang.IllegalStateException,
+                     javax.ejb.EJBException {
+        checkCreateTimerCallPermission();
+        checkInitialDuration(initialDuration);
+
+        return createTimerInternal(initialDuration, intervalDuration, timerConfig);
+    }
+
+    public Timer createTimer(Date initialExpiration,
+                     TimerConfig timerConfig) throws
+                     java.lang.IllegalArgumentException, java.lang.IllegalStateException,
+                     javax.ejb.EJBException {
+        checkCreateTimerCallPermission();
+        checkExpiration(initialExpiration);
+
+        return createTimerInternal(initialExpiration, 0, timerConfig);
+    }
+
+    public Timer createTimer(Date initialExpiration,
+                     long intervalDuration, TimerConfig timerConfig) throws
+                     java.lang.IllegalArgumentException, java.lang.IllegalStateException,
+                     javax.ejb.EJBException {
+        checkCreateTimerCallPermission();
+        checkExpiration(initialExpiration);
+
+        return createTimerInternal(initialExpiration, intervalDuration, timerConfig);
+    }
+
+    public Timer createTimer(ScheduleExpression schedule,
+                  TimerConfig timerConfig) throws
+                     java.lang.IllegalArgumentException, java.lang.IllegalStateException,
+                     javax.ejb.EJBException {
+        checkCreateTimerCallPermission();
+        checkScheduleExpression(schedule);
+
+        return null;
+        //return createTimerInternal(initialDuration, intervalDuration, timerConfig);
+    }
+
+    public Timer createTimer(ScheduleExpression schedule, Serializable info) throws
+                     java.lang.IllegalArgumentException, java.lang.IllegalStateException,
+                     javax.ejb.EJBException {
+        checkCreateTimerCallPermission();
+        checkScheduleExpression(schedule);
+
+        return null;
+        //return createTimerInternal(initialDuration, intervalDuration, timerConfig);
     }
 
     public Collection getTimers() throws IllegalStateException /** , XXX EJBException */ {
@@ -220,6 +217,7 @@ public class EJBTimerServiceWrapper implements TimerService {
 
         for(Iterator iter = timerIds.iterator(); iter.hasNext();) {
             TimerPrimaryKey next = (TimerPrimaryKey) iter.next();
+// TODO - need to set persistent or not 
             timerWrappers.add( new TimerWrapper(next, timerService_) );
         }
 
@@ -256,4 +254,100 @@ public class EJBTimerServiceWrapper implements TimerService {
         ejbContext_.checkTimerServiceMethodAccess();
     }
 
+    private Timer createTimerInternal(long initialDuration, long intervalDuration,
+                             Serializable info)
+        throws IllegalArgumentException, IllegalStateException, EJBException {
+
+        TimerConfig tc = new TimerConfig();
+        tc.setInfo(info);
+
+        return createTimerInternal(initialDuration, intervalDuration, tc);
+    }
+
+    private Timer createTimerInternal(long initialDuration, long intervalDuration,
+                             TimerConfig tc)
+        throws IllegalArgumentException, IllegalStateException, EJBException {
+
+        checkIntervalDuration(intervalDuration);
+
+        TimerPrimaryKey timerId = null;
+        try {
+            timerId = timerService_.createTimer
+                (containerId_, getTimedObjectPrimaryKey(), 
+                initialDuration, intervalDuration, tc);
+        } catch(CreateException ce) {            
+            EJBException ejbEx = new EJBException();
+            ejbEx.initCause(ce);
+            throw ejbEx;            
+        }
+
+        return new TimerWrapper(timerId, timerService_);
+    }
+
+    private Timer createTimerInternal(Date initialExpiration, long intervalDuration,
+                             Serializable info)
+        throws IllegalArgumentException, IllegalStateException, EJBException {
+
+        TimerConfig tc = new TimerConfig();
+        tc.setInfo(info);
+
+        return createTimerInternal(initialExpiration, intervalDuration, tc);
+    }
+
+    private Timer createTimerInternal(Date initialExpiration, long intervalDuration,
+                             TimerConfig tc)
+        throws IllegalArgumentException, IllegalStateException, EJBException {
+
+        checkIntervalDuration(intervalDuration);
+
+        TimerPrimaryKey timerId = null;
+        try {
+            timerId = timerService_.createTimer
+                (containerId_, getTimedObjectPrimaryKey(), 
+                initialExpiration, intervalDuration, tc);
+        } catch(CreateException ce) {            
+            EJBException ejbEx = new EJBException();
+            ejbEx.initCause(ce);
+            throw ejbEx;            
+        }
+
+        return new TimerWrapper(timerId, timerService_);
+    }
+
+    private void checkDuration(long duration) 
+            throws IllegalArgumentException {
+        if( duration < 0 ) {
+            throw new IllegalArgumentException("invalid duration=" + duration);
+        } 
+    } 
+
+    private void checkInitialDuration(long initialDuration) 
+            throws IllegalArgumentException {
+        if( initialDuration < 0 ) {
+            throw new IllegalArgumentException("invalid initial duration = " +
+                                               initialDuration);
+        }
+    }
+
+    private void checkIntervalDuration(long intervalDuration) 
+            throws IllegalArgumentException {
+        if( intervalDuration < 0 ) {
+            throw new IllegalArgumentException("invalid interval duration = " +
+                                               intervalDuration);
+        }
+    }
+                             
+    private void checkScheduleExpression(ScheduleExpression expression) 
+            throws IllegalArgumentException {
+        if( expression == null ) {
+            throw new IllegalArgumentException("null ScheduleExpression");
+        } 
+    }
+                             
+    private void checkExpiration(Date expiration) 
+            throws IllegalArgumentException {
+        if( expiration == null ) {
+            throw new IllegalArgumentException("null expiration");
+        } 
+    }
 }

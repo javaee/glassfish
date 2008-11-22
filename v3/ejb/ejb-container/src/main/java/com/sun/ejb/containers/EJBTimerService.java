@@ -62,6 +62,7 @@ import com.sun.logging.LogDomains;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.CreateException;
+import javax.ejb.TimerConfig;
 
 import com.sun.enterprise.admin.monitor.callflow.RequestType;
 import com.sun.enterprise.admin.monitor.callflow.Agent;
@@ -962,14 +963,14 @@ public class EJBTimerService
      */
     TimerPrimaryKey createTimer(long containerId, Object timedObjectPrimaryKey,
                                 long initialDuration, long intervalDuration, 
-                                Serializable info) throws CreateException {
+                                TimerConfig timerConfig) throws CreateException {
 
         Date now = new Date();
 
         Date initialExpiration = new Date(now.getTime() + initialDuration);
 
         return createTimer(containerId, timedObjectPrimaryKey, 
-                           initialExpiration, intervalDuration, info);
+                           initialExpiration, intervalDuration, timerConfig);
     }
 
     /**
@@ -978,7 +979,7 @@ public class EJBTimerService
      */
     TimerPrimaryKey createTimer(long containerId, Object timedObjectPrimaryKey,
                                 Date initialExpiration, long intervalDuration,
-                                Serializable info) throws CreateException {
+                                TimerConfig timerConfig) throws CreateException {
 
         BaseContainer container = getContainer(containerId);
         if( container == null ) {
@@ -1012,12 +1013,12 @@ public class EJBTimerService
                                        ownerIdOfThisServer_,
                                        timedObjectPrimaryKey, 
                                        initialExpiration, intervalDuration, 
-                                       info);
+                                       timerConfig);
             } catch(Exception e) {
                 logger.log(Level.SEVERE, "ejb.create_timer_failure",
                            new Object[] { new Long(containerId), 
                                           timedObjectPrimaryKey,
-                                          info });
+                                          timerConfig.getInfo() });
                 logger.log(Level.SEVERE, "", e);
                 // Since timer was never created, remove it from cache.
                 timerCache_.removeTimer(timerId);

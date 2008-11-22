@@ -42,7 +42,7 @@ import java.util.Date;
 import java.util.Set;
 
 import javax.ejb.CreateException;
-
+import javax.ejb.TimerConfig;
 import javax.ejb.Local;
 
 /**
@@ -65,7 +65,7 @@ public interface TimerLocal {
                       long containerId, String ownerId,
                       Object timedObjectPrimaryKey, 
                       Date initialExpiration, long intervalDuration, 
-                      Serializable info) throws CreateException;
+                      TimerConfig timerConfig) throws CreateException;
 
     TimerState findTimer(TimerPrimaryKey timerId);
 
