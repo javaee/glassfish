@@ -156,7 +156,9 @@ public class ActiveInboundResourceAdapter extends ActiveOutboundResourceAdapter 
      * java bean.
      */
     public void destroy() {
-        super.destroy();
+        if((connectionDefs_ != null) && (connectionDefs_.length != 0)){
+            super.destroy();
+        }
         try {
             _logger.fine("Calling Resource Adapter stop" + this.getModuleName());
             resourceadapter_.stop();
