@@ -40,7 +40,6 @@ package com.sun.enterprise.resource.deployer;
 import com.sun.enterprise.config.serverbeans.ConnectorResource;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.logging.LogDomains;
-import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 
 import java.util.logging.Level;
@@ -48,42 +47,45 @@ import java.util.logging.Logger;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Singleton;
 
 /**
  * @author Srikanth P
  */
 
-@Service(name= ConnectorConstants.RES_TYPE_CR)
+@Service
 @Scoped(Singleton.class)
 public class ConnectorResourceDeployer implements ResourceDeployer {
 
-    static Logger _logger = LogDomains.getLogger(ConnectorResourceDeployer.class, LogDomains.CORE_LOGGER);
+    @Inject
+    private ConnectorRuntime runtime;
+    private static Logger _logger = LogDomains.getLogger(ConnectorResourceDeployer.class, LogDomains.CORE_LOGGER);
 
     public synchronized void deployResource(Object resource) throws Exception {
 
-        ConnectorResource domainResource =
-                (com.sun.enterprise.config.serverbeans.ConnectorResource) resource;
+        ConnectorResource domainResource = (ConnectorResource) resource;
         String jndiName = domainResource.getJndiName();
         String poolName = domainResource.getPoolName();
-        ConnectorRuntime crt = ConnectorRuntime.getRuntime();
         _logger.log(Level.FINE, "Calling backend to add connector resource", jndiName);
 
-        crt.createConnectorResource(jndiName, poolName, null);
+        runtime.createConnectorResource(jndiName, poolName, null);
         _logger.log(Level.FINE, "Added connector resource in backend", jndiName);
     }
 
     public synchronized void undeployResource(Object resource)
             throws Exception {
-        ConnectorResource domainResource =
-                (com.sun.enterprise.config.serverbeans.ConnectorResource) resource;
+        ConnectorResource domainResource = (ConnectorResource) resource;
         String jndiName = domainResource.getJndiName();
-        ConnectorRuntime crt = ConnectorRuntime.getRuntime();
-        crt.deleteConnectorResource(jndiName);
+        runtime.deleteConnectorResource(jndiName);
     }
 
     public void redeployResource(Object resource) throws Exception {
         undeployResource(resource);
         deployResource(resource);
+    }
+
+    public boolean handles(Object resource){
+        return resource instanceof ConnectorResource;
     }
 }

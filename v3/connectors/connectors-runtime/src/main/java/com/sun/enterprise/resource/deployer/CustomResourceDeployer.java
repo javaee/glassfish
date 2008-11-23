@@ -61,7 +61,6 @@ import java.util.List;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.repository.ResourceProperty;
-import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.api.admin.config.Property;
@@ -91,7 +90,7 @@ import javax.naming.StringRefAddr;
  * @author  Nazrul Islam
  * @since   JDK1.4
  */
-@Service(name= ConnectorConstants.RES_TYPE_CUSTOM)
+@Service
 @Scoped(Singleton.class)
 public class CustomResourceDeployer implements ResourceDeployer {
 
@@ -169,6 +168,11 @@ public class CustomResourceDeployer implements ResourceDeployer {
         installer.removeResource(j2eeResource);
 */
     }
+
+    public boolean handles(Object resource){
+        return resource instanceof com.sun.enterprise.config.serverbeans.CustomResource;
+    }
+
 
     /**
      * Redeploy the resource into the server's runtime naming context

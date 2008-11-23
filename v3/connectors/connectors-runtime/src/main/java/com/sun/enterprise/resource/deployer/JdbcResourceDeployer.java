@@ -51,15 +51,16 @@ package com.sun.enterprise.resource.deployer;
 
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
-import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import com.sun.enterprise.util.i18n.StringManager;
+import com.sun.enterprise.config.serverbeans.JdbcResource;
 import com.sun.logging.LogDomains;
 
 import java.util.logging.Logger;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Singleton;
 
 
@@ -74,9 +75,12 @@ import org.jvnet.hk2.component.Singleton;
  * @author Nazrul Islam
  * @since JDK1.4
  */
-@Service(name= ConnectorConstants.RES_TYPE_JDBC)
+@Service
 @Scoped(Singleton.class)
 public class JdbcResourceDeployer implements ResourceDeployer {
+
+    @Inject
+    private ConnectorRuntime runtime;
 
     private static final StringManager localStrings =
             StringManager.getManager(JdbcResourceDeployer.class);
@@ -101,8 +105,7 @@ public class JdbcResourceDeployer implements ResourceDeployer {
         {
             String jndiName = jdbcRes.getJndiName();
             String poolName = jdbcRes.getPoolName();
-
-            ConnectorRuntime runtime = ConnectorRuntime.getRuntime();
+            
             runtime.createConnectorResource(jndiName, poolName, null);
             //In-case the resource is explicitly created with a suffix (__nontx or __PM), no need to create one
             if(ConnectorsUtil.getValidSuffix(jndiName) == null){
@@ -129,7 +132,6 @@ public class JdbcResourceDeployer implements ResourceDeployer {
 
         String jndiName = jdbcRes.getJndiName();
 
-        ConnectorRuntime runtime = ConnectorRuntime.getRuntime();
         runtime.deleteConnectorResource(jndiName);
         //In-case the resource is explicitly created with a suffix (__nontx or __PM), no need to delete one
         if(ConnectorsUtil.getValidSuffix(jndiName) == null){
@@ -149,6 +151,11 @@ public class JdbcResourceDeployer implements ResourceDeployer {
         undeployResource(resource);
         deployResource(resource);
     }
+
+    public boolean handles(Object resource){
+        return resource instanceof JdbcResource;
+    }
+
 
     /**
      * Enable the resource in the server's runtime naming context

@@ -47,6 +47,7 @@ import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.JndiNameEnvironment;
 import com.sun.enterprise.resource.pool.PoolManager;
 import com.sun.appserv.connectors.internal.api.*;
+import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.enterprise.module.ModulesRegistry;
@@ -771,5 +772,16 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
 
     public ClassLoader createConnectorClassLoader(String moduleDirectory){
         return cclUtil.createRARClassLoader(moduleDirectory);        
+    }
+
+    public ResourceDeployer getResourceDeployer(Object resource){
+        Collection<ResourceDeployer> deployers = deployerHabitat.getAllByContract(ResourceDeployer.class);
+
+        for(ResourceDeployer deployer : deployers){
+            if(deployer.handles(resource)){
+                return deployer;
+            }
+        }
+        return null;
     }
 }

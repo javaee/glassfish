@@ -39,15 +39,14 @@ package com.sun.enterprise.connectors.service;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.enterprise.connectors.ConnectorRegistry;
-import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.connectors.DeferredResourceConfig;
 import com.sun.enterprise.connectors.util.ConnectorDDTransformUtils;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
+import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.connectors.util.ResourcesUtil;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.resource.pool.PoolManager;
-import com.sun.enterprise.resource.deployer.ResourceDeployerFactory;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.logging.LogDomains;
 import org.jvnet.hk2.config.ConfigBeanProxy;
@@ -68,7 +67,7 @@ import java.util.List;
  *
  * @author Srikanth P
  */
-//TODO V3 can this be a service ? (will help to eliminate need of resource-deployer-factory)
+//TODO V3 can this be a service ?
 public class ConnectorService implements ConnectorConstants {
     protected static final Logger _logger = LogDomains.getLogger(ConnectorService.class, LogDomains.RSR_LOGGER);
 
@@ -78,7 +77,6 @@ public class ConnectorService implements ConnectorConstants {
     private boolean debug = true;
     protected static int environment = SERVER;
     protected ConnectorRuntime _runtime;
-    protected ResourceDeployerFactory factory = new ResourceDeployerFactory();
 
     /**
      * Default Constructor
@@ -96,7 +94,7 @@ public class ConnectorService implements ConnectorConstants {
      *                environment is appserv runtime else set to
      *                ConnectorConstants.CLIENT
      */
-    public static void initialize(int environ) {
+    public void initialize(int environ) {
         environment = environ;
     }
 
@@ -200,10 +198,10 @@ public class ConnectorService implements ConnectorConstants {
     public void loadDeferredResourceAdapter(String rarName)
             throws ConnectorRuntimeException {
         try {
-            ConnectorRuntime cr = ConnectorRuntime.getRuntime();
+            
             //Do this only for System RA
             if (ConnectorsUtil.belongsToSystemRA(rarName)) {
-                cr.createActiveResourceAdapter(ConnectorsUtil.getSystemModuleLocation(rarName), rarName, null);
+                _runtime.createActiveResourceAdapter(ConnectorsUtil.getSystemModuleLocation(rarName), rarName, null);
             }
         } catch (Exception e) {
             ConnectorRuntimeException ce =
@@ -227,11 +225,14 @@ public class ConnectorService implements ConnectorConstants {
                 continue;
             } else /* TODO V3 handle later once configBeans (resource.isEnabled()) is available
                     if (resourceUtil.isEnabled(resource))*/ {
-                resourceType = resourceUtil.getResourceType(resource);
-
-                deployer = factory.getResourceDeployer(resourceType);
-                if (deployer != null) {
-                    deployer.deployResource(resource);
+                //  TODO V3 not needed ?
+                //  resourceType = resourceUtil.getResourceType(resource);
+                try {
+                    _runtime.getResourceDeployer(resource).deployResource(resource);
+                } catch (Exception e) {
+                    ConnectorRuntimeException cre = new ConnectorRuntimeException(e.getMessage());
+                    cre.initCause(e);
+                    throw cre;
                 }
             }
         }
@@ -286,15 +287,15 @@ public class ConnectorService implements ConnectorConstants {
     public void switchOnMatching(String rarName, String poolName) {
         // At present it is applicable to only JDBC resource adapters
         // Later other resource adapters also become applicable.
-        if (rarName.equals(ConnectorRuntime.JDBCDATASOURCE_RA_NAME)
-                || rarName.equals(ConnectorRuntime.JDBCCONNECTIONPOOLDATASOURCE_RA_NAME) ||
-                rarName.equals(ConnectorRuntime.JDBCXA_RA_NAME)) {
+        if (rarName.equals(ConnectorConstants.JDBCDATASOURCE_RA_NAME)
+                || rarName.equals(ConnectorConstants.JDBCCONNECTIONPOOLDATASOURCE_RA_NAME) ||
+                rarName.equals(ConnectorConstants.JDBCXA_RA_NAME)) {
 
             PoolManager poolMgr = _runtime.getPoolManager();
             boolean result = poolMgr.switchOnMatching(poolName);
             if (!result) {
                 try {
-                    getRuntime().switchOnMatchingInJndi(poolName);
+                    _runtime.switchOnMatchingInJndi(poolName);
                 } catch (ConnectorRuntimeException cre) {
                     // This will never happen.
                 }
@@ -302,13 +303,10 @@ public class ConnectorService implements ConnectorConstants {
         }
     }
 
-    protected ConnectorRuntime getRuntime() {
-        return ConnectorRuntime.getRuntime();
-    }
 
     private void deleteResource(Object resource) throws ConnectorRuntimeException {
         try {
-            factory.getResourceDeployer(resource).undeployResource(resource);
+            _runtime.getResourceDeployer(resource).undeployResource(resource);
         } catch (Exception e) {
             ConnectorRuntimeException cre = new ConnectorRuntimeException(e.getMessage());
             cre.initCause(e);
@@ -450,6 +448,7 @@ public class ConnectorService implements ConnectorConstants {
             loadDeferredResourceAdapter(rarName);
         }
     }
+
 
 
 /*

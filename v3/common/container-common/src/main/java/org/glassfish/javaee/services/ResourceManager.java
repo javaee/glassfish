@@ -204,23 +204,21 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
                 NotProcessed np = null;
                 try {
                     if (ConnectorsUtil.isValidEventType(instance)) {
-                        String resourceType = ConnectorsUtil.getResourceType((Resource)instance);
-                        ResourceDeployer deployer = deployerHabitat.getComponent(ResourceDeployer.class, resourceType);
+                        ResourceDeployer deployer = getResourceDeployer(instance);
                         if(deployer != null){
                             deployer.redeployResource(instance);
                         }else{
-                            logger.log(Level.WARNING,"no deployer found for resource type [ "+ resourceType + "]");
+                            logger.log(Level.WARNING,"no deployer found for resource type [ "+ instance.getClass().getName() + "]");
                             //TODO V3 log throw Exception
                         }
                     } else if (ConnectorsUtil.isValidEventType(instance.getParent())) {
                         //Added in case of a property change
                         //check for validity of the property's parent and redeploy
-                        String resourceType = ConnectorsUtil.getResourceType((Resource)instance);
-                        ResourceDeployer deployer = deployerHabitat.getComponent(ResourceDeployer.class, resourceType);
+                        ResourceDeployer deployer = getResourceDeployer(instance);
                         if(deployer != null){
                             deployer.redeployResource(instance.getParent());
                         }else{
-                            System.out.println("no deployer found for resource type [ "+ resourceType + "]");
+                            System.out.println("no deployer found for resource type [ "+ instance.getClass().getName() + "]");
                             //TODO V3 log throw Exception
                         }
                     }
@@ -261,25 +259,23 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
                         //Remove listener from the removed instance
                         ResourceManager.this.removeListenerFromResource(instance);
 
-                        //get appropriate deployer and deploy resource
-                        String resourceType = ConnectorsUtil.getResourceType((Resource)instance);
-                        ResourceDeployer deployer = deployerHabitat.getComponent(ResourceDeployer.class, resourceType);
+                        //get appropriate deployer and unddeploy resource
+                        ResourceDeployer deployer = getResourceDeployer(instance);
                         if(deployer != null){
-                            deployer.deployResource(instance);
+                            deployer.undeployResource(instance);
                         }else{
-                            System.out.println("no deployer found for resource type [ "+ resourceType + "]");
+                            System.out.println("no deployer found for resource type [ "+ instance.getClass().getName() + "]");
                             //TODO V3 log throw Exception
                         }
 
                     } else if (ConnectorsUtil.isValidEventType(instance.getParent())) {
                         //Added in case of a property remove
                         //check for validity of the property's parent and redeploy
-                        String resourceType = ConnectorsUtil.getResourceType((Resource)instance);
-                        ResourceDeployer deployer = deployerHabitat.getComponent(ResourceDeployer.class, resourceType);
+                        ResourceDeployer deployer = getResourceDeployer(instance);
                         if(deployer != null){
                             deployer.redeployResource(instance.getParent());
                         }else{
-                            System.out.println("no deployer found for resource type [ "+ resourceType + "]");
+                            System.out.println("no deployer found for resource type [ "+ instance.getClass().getName() + "]");
                             //TODO V3 log throw Exception
                         }
                     }
@@ -348,5 +344,16 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
         for (Resource configuredResource : allResources.getResources()) {
             removeListenerFromResource(configuredResource);
         }
+    }
+
+    private ResourceDeployer getResourceDeployer(Object resource){
+        Collection<ResourceDeployer> deployers = deployerHabitat.getAllByContract(ResourceDeployer.class);
+
+        for(ResourceDeployer deployer : deployers){
+            if(deployer.handles(resource)){
+                return deployer;
+            }
+        }
+        return null;
     }
 }

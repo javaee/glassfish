@@ -64,7 +64,6 @@ import java.lang.reflect.Method;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.repository.ResourceProperty;
-import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.appserv.connectors.internal.api.JavaEEResource;
 
@@ -86,7 +85,7 @@ import org.jvnet.hk2.component.Singleton;
  *
  * @author Shing Wai Chan
  */
- @Service(name= ConnectorConstants.RES_TYPE_PMF)
+ @Service
  @Scoped(Singleton.class)
 public class PersistenceManagerFactoryResourceDeployer implements ResourceDeployer {
 
@@ -156,6 +155,11 @@ public class PersistenceManagerFactoryResourceDeployer implements ResourceDeploy
         undeployResource(resource);
         deployResource(resource);
     }
+
+    public boolean handles(Object resource){
+        return resource instanceof PersistenceManagerFactoryResource;
+    }
+
 
     public synchronized void enableResource(Object resource) throws Exception {
         deployResource(resource);

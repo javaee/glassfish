@@ -42,12 +42,13 @@ import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import org.glassfish.api.admin.config.Property;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Singleton;
 import com.sun.enterprise.config.serverbeans.SecurityMap;
-import com.sun.enterprise.connectors.ConnectorConnectionPool;
 import com.sun.enterprise.connectors.ConnectorDescriptorInfo;
 import com.sun.enterprise.connectors.ConnectorRegistry;
 import com.sun.enterprise.connectors.ConnectorRuntime;
+import com.sun.enterprise.connectors.ConnectorConnectionPool;
 import com.sun.enterprise.connectors.util.ConnectionPoolObjectsUtils;
 import com.sun.enterprise.connectors.util.SecurityMapUtils;
 import com.sun.enterprise.deployment.ConnectionDefDescriptor;
@@ -68,11 +69,13 @@ import java.util.logging.Logger;
  * @author Srikanth P, Sivakumar Thyagarajan
  */
 
-@Service(name= ConnectorConstants.RES_TYPE_CCP)
+@Service
 @Scoped(Singleton.class)
 public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
         implements ResourceDeployer {
 
+    @Inject
+    private ConnectorRuntime runtime;
 
     private static Logger _logger = LogDomains.getLogger(ConnectorConnectionPoolDeployer.class, LogDomains.CORE_LOGGER);
 
@@ -103,10 +106,10 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
 
         final ConnectorConnectionPool ccp = getConnectorConnectionPool(domainCcp);
         final String defName = domainCcp.getConnectionDefinitionName();
-        final ConnectorRuntime crt = ConnectorRuntime.getRuntime();
+
 
         _logger.log(Level.FINE, "Calling backend to add connectorConnectionPool", domainCcp.getResourceAdapterName());
-        crt.createConnectorConnectionPool(ccp, defName, domainCcp.getResourceAdapterName(),
+        runtime.createConnectorConnectionPool(ccp, defName, domainCcp.getResourceAdapterName(),
                 domainCcp.getProperty(), domainCcp.getSecurityMap());
         _logger.log(Level.FINE, "Added connectorConnectionPool in backend",
                 domainCcp.getResourceAdapterName());
@@ -125,11 +128,10 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
                 domainCcp =
                 (com.sun.enterprise.config.serverbeans.ConnectorConnectionPool) resource;
         final String poolName = domainCcp.getName();
-        final ConnectorRuntime crt = ConnectorRuntime.getRuntime();
 
         _logger.log(Level.FINE,
                 "Calling backend to delete ConnectorConnectionPool", poolName);
-        crt.deleteConnectorConnectionPool(poolName);
+        runtime.deleteConnectorConnectionPool(poolName);
         _logger.log(Level.FINE,
                 "Deleted ConnectorConnectionPool in backend", poolName);
     }
@@ -143,11 +145,11 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
                 (com.sun.enterprise.config.serverbeans.ConnectorConnectionPool) resource;
         List<SecurityMap> securityMaps = domainCcp.getSecurityMap();
         String poolName = domainCcp.getName();
-        ConnectorRuntime crt = ConnectorRuntime.getRuntime();
+
 
         //Since 8.1 PE/SE/EE, only if pool has already been deployed in this 
         //server-instance earlier, reconfig this pool
-        if (!crt.isConnectorConnectionPoolDeployed(poolName)) {
+        if (!runtime.isConnectorConnectionPoolDeployed(poolName)) {
             _logger.fine("The connector connection pool " + poolName
                     + " is either not referred or not yet created in "
                     + "this server instance and pool and hence "
@@ -165,7 +167,7 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
         boolean poolRecreateRequired = false;
         try {
             _logger.fine("Calling reconfigure pool");
-            poolRecreateRequired = crt.reconfigureConnectorConnectionPool(ccp,
+            poolRecreateRequired = runtime.reconfigureConnectorConnectionPool(ccp,
                     new HashSet());
         } catch (ConnectorRuntimeException cre) {
             cre.printStackTrace();
@@ -173,10 +175,15 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
 
         if (poolRecreateRequired) {
             _logger.fine("Pool recreation required");
-            crt.recreateConnectorConnectionPool(ccp);
+            runtime.recreateConnectorConnectionPool(ccp);
             _logger.fine("Pool recreation done");
         }
     }
+
+    public boolean handles(Object resource){
+        return resource instanceof com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;                
+    }
+
 
     public synchronized void disableResource(Object resource)
             throws Exception {

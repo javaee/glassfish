@@ -54,7 +54,7 @@ import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.deployment.MailConfiguration;
 import com.sun.enterprise.repository.ResourceProperty;
-import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+import com.sun.appserv.connectors.internal.api.ResourcePropertyImpl;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 
 import org.glassfish.api.naming.GlassfishNamingManager;
@@ -76,7 +76,7 @@ import org.jvnet.hk2.component.Singleton;
  * @author James Kong
  * @since JDK1.4
  */
-@Service(name= ConnectorConstants.RES_TYPE_MAIL)
+@Service
 @Scoped(Singleton.class)
 public class MailResourceDeployer extends GlobalResourceDeployer
         implements ResourceDeployer {
@@ -190,6 +190,11 @@ public class MailResourceDeployer extends GlobalResourceDeployer
         deployResource(resource);
     }
 
+    public boolean handles(Object resource){
+        return resource instanceof com.sun.enterprise.config.serverbeans.MailResource;
+    }
+
+
     /**
      * Enable the resource in the server's runtime naming context
      *
@@ -265,7 +270,7 @@ public class MailResourceDeployer extends GlobalResourceDeployer
         if (properties != null) {
 
             for(Property property : properties){
-                ResourceProperty rp = new com.sun.appserv.connectors.internal.api.ResourcePropertyImpl(property.getName(), property.getValue());
+                ResourceProperty rp = new ResourcePropertyImpl(property.getName(), property.getValue());
                 jr.addProperty(rp);
             }
         }

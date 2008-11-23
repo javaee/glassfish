@@ -85,4 +85,7 @@ public interface ResourceDeployer {
      */
     void redeployResource(Object resource) throws Exception;
 
+
+    boolean handles(Object resource); 
+
 }

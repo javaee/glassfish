@@ -48,7 +48,10 @@ import javax.naming.NamingException;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
+import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import com.sun.enterprise.config.serverbeans.Resource;
+
+import java.util.Collection;
 
 @Service
 @Scoped(PerLookup.class)
@@ -70,8 +73,7 @@ public class ResourceProxy implements NamingObjectProxy {
     public Object create(Context ic) throws NamingException {
         try{
             if(result == null){
-                deployerHabitat.getComponent(com.sun.appserv.connectors.internal.spi.ResourceDeployer.class,
-                        ConnectorsUtil.getResourceType(resource)).deployResource(resource);
+                getResourceDeployer(resource).deployResource(resource);
             }
             result = ic.lookup(jndiName);
         }catch(Exception e){
@@ -93,4 +95,16 @@ public class ResourceProxy implements NamingObjectProxy {
         ne.initCause(e);
         throw ne;
     }
+
+    protected ResourceDeployer getResourceDeployer(Object resource){
+        Collection<ResourceDeployer> deployers = deployerHabitat.getAllByContract(ResourceDeployer.class);
+
+        for(ResourceDeployer deployer : deployers){
+            if(deployer.handles(resource)){
+                return deployer;
+            }
+        }
+        return null;
+    }
+
 }

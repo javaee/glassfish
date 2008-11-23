@@ -63,7 +63,6 @@ import java.util.List;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.repository.ResourceProperty;
-import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import org.jvnet.hk2.annotations.Service;
@@ -91,7 +90,7 @@ import javax.naming.spi.InitialContextFactory;
  * @author  Nazrul Islam
  * @since   JDK1.4
  */
-@Service(name= ConnectorConstants.RES_TYPE_EXTERNAL_JNDI)
+@Service
 @Scoped(Singleton.class)
 public class ExternalJndiResourceDeployer implements ResourceDeployer {
 
@@ -175,6 +174,11 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
         undeployResource(resource);
         deployResource(resource);
     }
+
+    public boolean handles(Object resource){
+        return resource instanceof com.sun.enterprise.config.serverbeans.ExternalJndiResource;
+    }
+
 
     /**
      * Enable the resource in the server's runtime naming context

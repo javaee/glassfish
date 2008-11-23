@@ -55,6 +55,7 @@ import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 import org.glassfish.api.admin.config.Property;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Singleton;
 import com.sun.enterprise.connectors.ConnectorConnectionPool;
 import com.sun.enterprise.connectors.ConnectorDescriptorInfo;
@@ -85,9 +86,12 @@ import java.util.logging.Logger;
 
 // This class was created to fix the bug # 4650787
 
-@Service(name= ConnectorConstants.RES_TYPE_JCP)
+@Service
 @Scoped(Singleton.class)
 public class JdbcConnectionPoolDeployer implements ResourceDeployer {
+
+    @Inject
+    private ConnectorRuntime runtime;
 
     static private StringManager sm = StringManager.getManager(
             JdbcConnectionPoolDeployer.class);
@@ -116,12 +120,11 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
      */
     public synchronized void actualDeployResource(Object resource) {
         _logger.fine(" JdbcConnectionPoolDeployer - actualDeployResource : " + resource);
-        com.sun.enterprise.config.serverbeans.JdbcConnectionPool adminPool =
-                (com.sun.enterprise.config.serverbeans.JdbcConnectionPool) resource;
+        JdbcConnectionPool adminPool = (JdbcConnectionPool) resource;
         try {
             ConnectorConnectionPool connConnPool = createConnectorConnectionPool(adminPool);
             //now do internal book keeping
-            ConnectorRuntime.getRuntime().createConnectorConnectionPool(connConnPool);
+            runtime.createConnectorConnectionPool(connConnPool);
         } catch (ConnectorRuntimeException cre) {
             cre.printStackTrace();
         } catch (Exception e) {
@@ -135,6 +138,11 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
         actualUndeployResource(resource);
     }
 
+    public boolean handles(Object resource){
+        return resource instanceof JdbcConnectionPool;
+    }
+
+
     /**
      * Undeploy the resource from the server's runtime naming context
      *
@@ -145,11 +153,9 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
     public synchronized void actualUndeployResource(Object resource) throws Exception {
         _logger.fine(" JdbcConnectionPoolDeployer - unDeployResource : " + resource);
 
-        com.sun.enterprise.config.serverbeans.JdbcConnectionPool jdbcConnPool =
-                (com.sun.enterprise.config.serverbeans.JdbcConnectionPool) resource;
+        JdbcConnectionPool jdbcConnPool = (JdbcConnectionPool) resource;
 
         String poolName = jdbcConnPool.getName();
-        ConnectorRuntime runtime = ConnectorRuntime.getRuntime();
         runtime.deleteConnectorConnectionPool(poolName);
         if (_logger.isLoggable(Level.FINEST)) {
             _logger.finest("Pool Undeployed");
@@ -380,7 +386,7 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
         String moduleName = ResourcesUtil.createInstance().getRANameofJdbcConnectionPool(adminPool);
         int txSupport = getTxSupport(moduleName);
 
-        ConnectorDescriptor connDesc = ConnectorRuntime.getRuntime().getConnectorDescriptor(moduleName);
+        ConnectorDescriptor connDesc = runtime.getConnectorDescriptor(moduleName);
 
         //Create the connector Connection Pool object from the configbean object
         ConnectorConnectionPool conConnPool = new ConnectorConnectionPool(
@@ -429,24 +435,19 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
                 getResourceAdapterClass());
 
         connDescInfo.setConnectionDefinitionName(
-                connDesc.getOutboundResourceAdapter().
-                        getConnectionFactoryIntf());
+                connDesc.getOutboundResourceAdapter().getConnectionFactoryIntf());
 
         connDescInfo.setConnectionFactoryClass(
-                connDesc.getOutboundResourceAdapter().
-                        getConnectionFactoryImpl());
+                connDesc.getOutboundResourceAdapter().getConnectionFactoryImpl());
 
         connDescInfo.setConnectionFactoryInterface(
-                connDesc.getOutboundResourceAdapter().
-                        getConnectionFactoryIntf());
+                connDesc.getOutboundResourceAdapter().getConnectionFactoryIntf());
 
         connDescInfo.setConnectionClass(
-                connDesc.getOutboundResourceAdapter().
-                        getConnectionImpl());
+                connDesc.getOutboundResourceAdapter().getConnectionImpl());
 
         connDescInfo.setConnectionInterface(
-                connDesc.getOutboundResourceAdapter().
-                        getConnectionIntf());
+                connDesc.getOutboundResourceAdapter().getConnectionIntf());
 
         return connDescInfo;
     }
@@ -512,15 +513,12 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
      */
     public synchronized void redeployResource(Object resource) throws Exception {
          
-        com.sun.enterprise.config.serverbeans.JdbcConnectionPool adminPool
-	        = (com.sun.enterprise.config.serverbeans.JdbcConnectionPool)
-		resource;
+        JdbcConnectionPool adminPool = (JdbcConnectionPool)resource;
 
 
         //Only if pool has already been deployed in this server-instance
         //reconfig this pool
-        if (!ConnectorRuntime.getRuntime().
-                        isConnectorConnectionPoolDeployed(adminPool.getName())) {
+        if (!runtime.isConnectorConnectionPoolDeployed(adminPool.getName())) {
             
             _logger.fine("The JDBC connection pool " + adminPool.getName()
                             + " is not referred or not yet created in this server "
@@ -537,7 +535,6 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
 	}
 
 	//now do internal book keeping 
-	ConnectorRuntime runtime = ConnectorRuntime.getRuntime();
 	HashSet excludes = new HashSet();
 	//add MCF config props to the set that need to be excluded
 	//in checking for the equality of the props with old pool

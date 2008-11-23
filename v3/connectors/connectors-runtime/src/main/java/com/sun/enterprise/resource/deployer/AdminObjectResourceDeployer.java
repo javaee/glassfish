@@ -40,7 +40,6 @@ import com.sun.enterprise.config.serverbeans.AdminObjectResource;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.logging.LogDomains;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
-import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 
 import java.util.Properties;
 import java.util.List;
@@ -49,16 +48,20 @@ import java.util.logging.*;
 import org.glassfish.api.admin.config.Property;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Singleton;
 
 /**
   * @author    Srikanth P
   */
 
-@Service(name= ConnectorConstants.RES_TYPE_AOR)
+@Service
 @Scoped(Singleton.class)
 public class AdminObjectResourceDeployer extends GlobalResourceDeployer
         implements ResourceDeployer {
+
+    @Inject
+    ConnectorRuntime runtime;
 
     private static Logger _logger = LogDomains.getLogger(AdminObjectResourceDeployer.class, LogDomains.RSR_LOGGER);
 
@@ -72,7 +75,7 @@ public class AdminObjectResourceDeployer extends GlobalResourceDeployer
 
         final AdminObjectResource aor =
            (com.sun.enterprise.config.serverbeans.AdminObjectResource)resource;
-        final ConnectorRuntime crt = ConnectorRuntime.getRuntime();
+
 /* TODO V3 handle later MOM
 
         if (aor.isEnabled()) {
@@ -92,7 +95,7 @@ public class AdminObjectResourceDeployer extends GlobalResourceDeployer
 
         _logger.log(Level.FINE,
             "Calling backend to add adminObject",aor.getJndiName());
-        crt.addAdminObject(null,aor.getResAdapter(),aor.getJndiName(),
+        runtime.addAdminObject(null,aor.getResAdapter(),aor.getJndiName(),
                 aor.getResType(),transformProps(aor.getProperty()));
         _logger.log(Level.FINE,
             "Added adminObject in backend",aor.getJndiName());
@@ -106,11 +109,10 @@ public class AdminObjectResourceDeployer extends GlobalResourceDeployer
 
         final AdminObjectResource aor =
            (com.sun.enterprise.config.serverbeans.AdminObjectResource)resource;
-        final ConnectorRuntime crt = ConnectorRuntime.getRuntime();
 
         _logger.log(Level.FINE,
                    "Calling backend to delete adminObject",aor.getJndiName());
-        crt.deleteAdminObject(aor.getJndiName());
+        runtime.deleteAdminObject(aor.getJndiName());
         _logger.log(Level.FINE,
                    "Deleted adminObject in backend",aor.getJndiName());
 
@@ -121,6 +123,10 @@ public class AdminObjectResourceDeployer extends GlobalResourceDeployer
         mgr.unregisterAdminObjectResource(aor.getJndiName(), aor.getResType());
 */
 
+    }
+
+    public boolean handles(Object resource){
+        return resource instanceof AdminObjectResource;
     }
 
     public synchronized void redeployResource(Object resource)
