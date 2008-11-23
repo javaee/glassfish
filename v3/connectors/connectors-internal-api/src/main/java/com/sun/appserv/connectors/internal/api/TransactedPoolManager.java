@@ -53,6 +53,21 @@ public interface TransactedPoolManager {
      * @param res Resource that is enlisted
      * @throws IllegalStateException when unable to enlist the resource
      */
-    void resourceEnlisted(Transaction tran, com.sun.appserv.connectors.internal.api.ResourceHandle res) throws IllegalStateException;
+    void resourceEnlisted(Transaction tran, ResourceHandle res) throws IllegalStateException;
+
+
+    /**
+     * registers the provided resource with the component & enlists the resource in the transaction
+     * @param handle resource-handle
+     * @throws PoolingException when unable to register the resource
+     */
+    void registerResource(ResourceHandle handle) throws PoolingException;
+
+    /**
+     * unregisters the resource from the component and delists the resource from the transaction
+     * @param resource resource-handle
+     * @param xaresFlag
+     */
+    void unregisterResource(ResourceHandle resource, int xaresFlag);
 }
 

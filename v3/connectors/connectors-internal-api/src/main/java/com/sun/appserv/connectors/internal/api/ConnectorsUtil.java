@@ -36,6 +36,8 @@
 package com.sun.appserv.connectors.internal.api;
 
 import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
+import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import com.sun.logging.LogDomains;
 
@@ -418,4 +420,45 @@ public class ConnectorsUtil {
         return resourceNames;
     }
 */
+
+    /**
+     * Prepares the name/value pairs for ActivationSpec. <p>
+     * Rule: <p>
+     * 1. The name/value pairs are the union of activation-config on
+     * standard DD (message-driven) and runtime DD (mdb-resource-adapter)
+     * 2. If there are duplicate property settings, the value in runtime
+     * activation-config will overwrite the one in the standard
+     * activation-config.
+     */
+    public static Set getMergedActivationConfigProperties(EjbMessageBeanDescriptor msgDesc) {
+
+        Set mergedProps = new HashSet();
+        Set runtimePropNames = new HashSet();
+
+        Set runtimeProps = msgDesc.getRuntimeActivationConfigProperties();
+        if (runtimeProps != null) {
+            Iterator iter = runtimeProps.iterator();
+            while (iter.hasNext()) {
+                EnvironmentProperty entry = (EnvironmentProperty) iter.next();
+                mergedProps.add(entry);
+                String propName = (String) entry.getName();
+                runtimePropNames.add(propName);
+            }
+        }
+
+        Set standardProps = msgDesc.getActivationConfigProperties();
+        if (standardProps != null) {
+            Iterator iter = standardProps.iterator();
+            while (iter.hasNext()) {
+                EnvironmentProperty entry = (EnvironmentProperty) iter.next();
+                String propName = (String) entry.getName();
+                if (runtimePropNames.contains(propName))
+                    continue;
+                mergedProps.add(entry);
+            }
+        }
+
+        return mergedProps;
+    }
+
 }

@@ -95,11 +95,6 @@ public interface PoolManager extends TransactedPoolManager {
 
     void transactionCompleted(Transaction tran, int status);
 
-    public void registerResource(ResourceHandle resource) throws PoolingException;
-
-    public void unregisterResource(ResourceHandle resource, int xaresFlag);
-
-
     public void emptyResourcePool(ResourceSpec spec);
 
     public void killPool(String poolName);

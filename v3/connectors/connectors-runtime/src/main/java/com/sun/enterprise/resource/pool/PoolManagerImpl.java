@@ -40,8 +40,8 @@ import com.sun.appserv.connectors.internal.api.PoolingException;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
 import com.sun.enterprise.resource.ClientSecurityInfo;
-import com.sun.enterprise.resource.ResourceHandle;
 import com.sun.enterprise.resource.ResourceSpec;
+import com.sun.enterprise.resource.ResourceHandle;
 import com.sun.enterprise.resource.allocator.ResourceAllocator;
 import com.sun.enterprise.resource.rm.*;
 import com.sun.enterprise.transaction.api.JavaEETransaction;
@@ -327,14 +327,16 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
         return runtime;
     }
 
-    public void registerResource(ResourceHandle handle) throws PoolingException {
-        ResourceManager rm = getResourceManager(handle.getResourceSpec());
-        rm.registerResource(handle);
+    public void registerResource(com.sun.appserv.connectors.internal.api.ResourceHandle handle) throws PoolingException {
+        ResourceHandle h = (ResourceHandle)handle;
+        ResourceManager rm = getResourceManager(h.getResourceSpec());
+        rm.registerResource(h);
     }
 
-    public void unregisterResource(ResourceHandle resource, int xaresFlag) {
-        ResourceManager rm = getResourceManager(resource.getResourceSpec());
-        rm.unregisterResource(resource, xaresFlag);
+    public void unregisterResource(com.sun.appserv.connectors.internal.api.ResourceHandle resource, int xaresFlag) {
+        ResourceHandle h = (ResourceHandle)resource;
+        ResourceManager rm = getResourceManager(h.getResourceSpec());
+        rm.unregisterResource(h, xaresFlag);
     }
 
     public void resourceClosed(ResourceHandle resource) {
