@@ -79,6 +79,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.logging.*;
@@ -538,29 +540,24 @@ public class Request
 
 
     /**
-     * Async processing
+     * Async operation
      */
 
     // Async mode is supported by default for a request, unless the request
     // is going to pass a filter or servlet that does not support async
     // operation, in which case async operation will be disabled
     private boolean isAsyncSupported = true;
-
     private boolean isAsyncStarted = false;
-
     private AsyncContextImpl asyncContext;
-
     private LinkedList<AsyncListenerHolder> asyncListenerHolders;
-
-    private long asyncTimeout = -1L;
-
+    private long asyncTimeoutMillis = -1L;
     // Has AsyncContext.complete been called?
     private boolean isAsyncComplete = false;
-
     // Has setAsyncTimeout been called on this request?
     private boolean isSetAsyncTimeoutCalled;
-
     private boolean isOkToReinitializeAsync = false;
+    private Timer asyncTimer;    
+    private TimerTask asyncTimerTask;
 
 
     /**
@@ -657,7 +654,7 @@ public class Request
             asyncContext.recycle();
         }
         isAsyncSupported = false;
-
+        stopAsyncTimer();
     }
 
 
@@ -3805,6 +3802,8 @@ public class Request
 
         // TBD
 
+        startAsyncTimer();
+
         return asyncContext;
     }
         
@@ -3898,10 +3897,29 @@ public class Request
     /**
      * Sets the timeout (in milliseconds) for any asynchronous operations
      * started on this request.
+     *
+     * @param timeout the timeout
      */
     public void setAsyncTimeout(long timeout) {
-        asyncTimeout = timeout;
-        isSetAsyncTimeoutCalled = true;
+        setAsyncTimeout(timeout, true);
+    }
+
+
+    /**
+     * Sets the timeout (in milliseconds) for any asynchronous operations
+     * started on this request.
+     *
+     * @param timeout the timeout
+     * @param isExplicit true if setAsyncTimeout(long) is being called by
+     * application code (in which case the specified timeout overrides the
+     * async timeout configured for the servlet or filter that may initiate
+     * the async operation), false otherwise
+     */
+    public void setAsyncTimeout(long timeout, boolean isExplicit) {
+        asyncTimeoutMillis = timeout;
+        if (isExplicit) {
+            isSetAsyncTimeoutCalled = true;
+        }
     }
 
 
@@ -3913,7 +3931,7 @@ public class Request
      * initiated on this request
      */
     public long getAsyncTimeout() {
-        return asyncTimeout;
+        return asyncTimeoutMillis;
     }
 
 
@@ -3938,6 +3956,7 @@ public class Request
             throw new IllegalStateException("Request not in async mode");
         }
 
+        stopAsyncTimer();
         isAsyncComplete = true;
         notifyAsyncListeners(AsyncEventType.COMPLETE);
     }
@@ -3998,6 +4017,36 @@ public class Request
                             ioe);
                 }
             }
+        }
+    }
+
+
+    /*
+     * Starts the async timer.
+     */
+    private void startAsyncTimer() {
+        asyncTimer = new Timer("AsyncTimer", true);
+        asyncTimer.schedule(
+            asyncTimerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    try {
+                        asyncTimeout();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }, 
+            asyncTimeoutMillis);
+    }
+
+
+    /*
+     * Stops the async timer.
+     */
+    void stopAsyncTimer() {
+        if (asyncTimerTask != null) {
+            asyncTimerTask.cancel();
         }
     }
 

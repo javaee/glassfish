@@ -89,6 +89,7 @@ public class AsyncContextImpl implements AsyncContext {
 
 
     public void forward() {
+        request.stopAsyncTimer();
         if (servletRequest instanceof HttpServletRequest) {
             String uri = ((HttpServletRequest)servletRequest).getRequestURI();
             RequestDispatcher rd = servletRequest.getRequestDispatcher(uri);
@@ -109,7 +110,7 @@ public class AsyncContextImpl implements AsyncContext {
         if (path == null) {
             throw new IllegalArgumentException("Null path");
         }
-
+        request.stopAsyncTimer();
         RequestDispatcher rd = servletRequest.getRequestDispatcher(path);
         if (rd != null) {
             request.setOkToReinitializeAsync();
@@ -124,7 +125,7 @@ public class AsyncContextImpl implements AsyncContext {
         if (path == null || context == null) {
             throw new IllegalArgumentException("Null context or path");
         }
-
+        request.stopAsyncTimer();
         RequestDispatcher rd = context.getRequestDispatcher(path);
         if (rd != null) {
             request.setOkToReinitializeAsync();
@@ -140,8 +141,6 @@ public class AsyncContextImpl implements AsyncContext {
         if (!request.isAsyncStarted()) {
             throw new IllegalStateException("Request not in async mode");
         }
-
-        // TBD
 
         request.asyncComplete();
     }

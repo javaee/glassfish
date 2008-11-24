@@ -375,6 +375,7 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
     public boolean isAsyncStarted() { return false; }
     public boolean isAsyncSupported() { return false; }
     public void setAsyncTimeout(long timeout) {}
+    public void setAsyncTimeout(long timeout, boolean isExplicit) {}
     public AsyncContext getAsyncContext() { return null; }
     public void addAsyncListener(AsyncListener listener) {};
     public void addAsyncListener(AsyncListener listener,

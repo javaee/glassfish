@@ -359,13 +359,16 @@ class HttpRequestWrapper extends HttpServletRequestWrapper
 
     /**
      * Sets the timeout (in milliseconds) for any asynchronous operations
-     * initiated on this request.
+     * started on this request.
      *
-     * @param timeout the timeout (in milliseconds) for any async operations 
-     * initiated on this request
+     * @param timeout the timeout
+     * @param isExplicit true if setAsyncTimeout(long) is being called by
+     * application code (in which case the specified timeout overrides the
+     * async timeout configured for the servlet or filter that may initiate
+     * the async operation), false otherwise
      */
-    public void setAsyncTimeout(long timeout) {
-        httpRequest.setAsyncTimeout(timeout);
+    public void setAsyncTimeout(long timeout, boolean isExplicit) {
+        httpRequest.setAsyncTimeout(timeout, isExplicit);
     }
 
 
