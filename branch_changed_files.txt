@@ -5,3 +5,44 @@ Added support for starting and stopping embedded instances.
 
 
 
+November 24 **************************************************************
+
+M           23706   admin\cli\src\main\java\com\sun\enterprise\admin\cli\StartDomainCommand.java
+M           23706   admin\launcher\src\main\java\com\sun\enterprise\admin\launcher\GFLauncher.java
+M           23706   admin\launcher\src\main\java\com\sun\enterprise\admin\launcher\GFLauncherFactory.java
+M           23757   embedded\api\debug.bat
+M           23757   embedded\api\SimpleJDBC.war
+M           23757   embedded\api\src\main\java\org\glassfish\embed\EmbeddedMain.java
+M           23757   embedded\api\src\main\java\org\glassfish\embed\impl\EmbeddedDomainXml.java
+M           23757   embedded\samples\SimpleJDBC\build\web\WEB-INF\classes\JDBCServlet.class
+M           23757   embedded\samples\SimpleJDBC\dist\SimpleJDBC.war
+M           23757   embedded\samples\SimpleJDBC\src\java\JDBCServlet.java
+
+
+
+Sending        embedded\api\SimpleJDBC.war
+Sending        embedded\api\debug.bat
+Sending        embedded\api\src\main\java\org\glassfish\embed\EmbeddedMain.java
+Sending        embedded\api\src\main\java\org\glassfish\embed\impl\EmbeddedDomainXml.java
+Sending        embedded\samples\SimpleJDBC\build\web\WEB-INF\classes\JDBCServlet.class
+Sending        embedded\samples\SimpleJDBC\dist\SimpleJDBC.war
+Sending        embedded\samples\SimpleJDBC\src\java\JDBCServlet.java
+Transmitting file data .......
+Committed revision 23767.
+
+
+
+
+
+D:\embedded_v3_prelude_release\admin>svn commit
+Sending        admin\cli\src\main\java\com\sun\enterprise\admin\cli\StartDomainCommand.java
+Adding         admin\launcher\src\main\java\com\sun\enterprise\admin\launcher\GFEmbeddedLauncher.java
+Sending        admin\launcher\src\main\java\com\sun\enterprise\admin\launcher\GFLauncher.java
+Sending        admin\launcher\src\main\java\com\sun\enterprise\admin\launcher\GFLauncherFactory.java
+Transmitting file data ....
+Committed revision 23766.
+
+D:\embedded_v3_prelude_release\admin>date
+The current date is: Mon 11/24/2008
+Enter the new date: (mm-dd-yy)
+
