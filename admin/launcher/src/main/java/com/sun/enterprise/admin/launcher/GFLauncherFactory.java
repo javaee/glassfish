@@ -33,8 +33,8 @@ public class GFLauncherFactory {
      */
     public enum ServerType
     {
-        domain, nodeAgent, instance
-    }; 
+        domain, nodeAgent, instance, embedded
+    };
     /**
      * 
      * @param type The type of server to launch.
@@ -46,11 +46,14 @@ public class GFLauncherFactory {
     {
         switch(type)
         {
-            case domain:  
+            case domain:
                 return new GFDomainLauncher(
                         new GFLauncherInfo(GFLauncherFactory.ServerType.domain));
+            case embedded:
+                return new GFEmbeddedLauncher(
+                        new GFLauncherInfo(GFLauncherFactory.ServerType.embedded));
             default:
-                throw new GFLauncherException("Only domain launching is currently supported.");
+                throw new GFLauncherException("Only domain and embedded launching is currently supported.");
         }
     }
 }

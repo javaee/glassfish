@@ -38,9 +38,20 @@ public class StartDomainCommand extends AbstractCommand {
     public void runCommand() throws CommandException, CommandValidationException {
     
         try {
-            validateOptions();
-            GFLauncher launcher = GFLauncherFactory.getInstance(
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 validateOptions();
+            GFLauncher launcher = null;
+
+            // bnevins nov 23 2008
+            // Embedded is a new type of server
+			
+            if(System.getenv("AS_EMBEDDED") != null)
+                launcher = GFLauncherFactory.getInstance(
+                    GFLauncherFactory.ServerType.embedded);
+            else
+                launcher = GFLauncherFactory.getInstance(
                     GFLauncherFactory.ServerType.domain);
+
+
             info = launcher.getInfo();
 
             if (!operands.isEmpty()) {
