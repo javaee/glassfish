@@ -72,9 +72,12 @@ import com.sun.enterprise.config.serverbeans.EjbTimerService;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import org.glassfish.server.ServerEnvironmentImpl;
 
-import com.sun.ejb.containers.EjbContainerUtilImpl;
+import org.glassfish.api.invocation.ComponentInvocation;
 
 import javax.transaction.TransactionManager;
+import javax.transaction.Transaction;
+import javax.transaction.Synchronization;
+import javax.transaction.Status;
 
 /*
  * EJBTimerService is the central controller of the EJB timer service.  
@@ -529,7 +532,9 @@ public class EJBTimerService
                 RuntimeTimerState timerState = new RuntimeTimerState
                     (timerId, initialExpiration,
                      timer.getIntervalDuration(), container, 
-                     timedObjectPrimaryKey);                   
+                     timedObjectPrimaryKey, 
+                     // Don't need to store the info ref for persistent timer
+                     null, true);                   
 
                 timerCache_.addTimer(timerId, timerState);
                 
@@ -1001,7 +1006,9 @@ public class EJBTimerService
         RuntimeTimerState timerState = 
             new RuntimeTimerState(timerId, initialExpiration, 
                                   intervalDuration, container, 
-                                  timedObjectPrimaryKey);
+                                  timedObjectPrimaryKey,
+                                  timerConfig.getInfo(),
+                                  timerConfig.isPersistent());
 
         synchronized(timerState) {
             // Add timer entry before calling TimerBean.create, since 
@@ -1009,11 +1016,17 @@ public class EJBTimerService
             // need access to timer cache.
             timerCache_.addTimer(timerId, timerState);
             try {
-                timerLocal_.createTimer(timerId.getTimerId(), containerId, 
+                if (timerConfig.isPersistent()) {
+                    timerLocal_.createTimer(timerId.getTimerId(), containerId, 
                                        ownerIdOfThisServer_,
                                        timedObjectPrimaryKey, 
                                        initialExpiration, intervalDuration, 
                                        timerConfig);
+                } else {
+                    addTimerSynchronization(null, 
+                            timerId.getTimerId(), initialExpiration, 
+                            containerId, ownerIdOfThisServer_);
+                }
             } catch(Exception e) {
                 logger.log(Level.SEVERE, "ejb.create_timer_failure",
                            new Object[] { new Long(containerId), 
@@ -1144,14 +1157,27 @@ public class EJBTimerService
     void cancelTimer(TimerPrimaryKey timerId) 
             throws FinderException, Exception {
 
-        // @@@ We can't assume this server instance owns the timer
-        // so always ask the database.  Investigate possible use of
-        // timer cache for optimization.
+        // Check non-persistent timers first
+        RuntimeTimerState rt = getTimerState(timerId);
+        if (rt != null && !rt.isPersistent()) {
+            if( rt.isCancelled()) {
+                // already cancelled or removed
+                return;
+            }
 
-        // Look up timer bean from database.  Throws FinderException if
-        // timer no longer exists, which is converted by the caller into a
-        // NoSuchObjectLocalException.
-        timerLocal_.cancel(timerId);            
+            cancelTimerSynchronization(null, timerId,
+                rt.getContainerId(), ownerIdOfThisServer_);
+        } else {
+
+            // @@@ We can't assume this server instance owns the timer
+            // so always ask the database.  Investigate possible use of
+            // timer cache for optimization.
+
+            // Look up timer bean from database.  Throws FinderException if
+            // timer no longer exists, which is converted by the caller into a
+            // NoSuchObjectLocalException.
+            timerLocal_.cancel(timerId);            
+        }
         
     }
 
@@ -1168,16 +1194,28 @@ public class EJBTimerService
      */
     Date getNextTimeout(TimerPrimaryKey timerId) throws FinderException {
 
-        // @@@ We can't assume this server instance owns the timer
-        // so always ask the database.  Investigate possible use of
-        // timer cache for optimization.
+        Date initialExpiration = null;
+        long intervalDuration = 0;
 
-        TimerState timer = getTimer(timerId);
-        Date initialExpiration = timer.getInitialExpiration();
+        // Check non-persistent timers first
+        RuntimeTimerState rt = getNonPersistentTimer(timerId);
+        if (rt != null) {
+            initialExpiration = rt.getInitialExpiration();
+            intervalDuration = rt.getIntervalDuration();
+        } else {
 
-        Date nextTimeout = timer.repeats() ? 
+            // @@@ We can't assume this server instance owns the persistent timer
+            // so always ask the database.  Investigate possible use of
+            // timer cache for optimization.
+
+            TimerState timer = getPersistentTimer(timerId);
+            initialExpiration = timer.getInitialExpiration();
+            intervalDuration = timer.getIntervalDuration();
+        }
+
+        Date nextTimeout = (intervalDuration > 0) ? 
             calcNextFixedRateExpiration(initialExpiration, 
-                                        timer.getIntervalDuration()) :
+                                        intervalDuration) :
             initialExpiration;
 
         return nextTimeout;
@@ -1185,18 +1223,48 @@ public class EJBTimerService
 
     Serializable getInfo(TimerPrimaryKey timerId) throws FinderException {
         
-        // @@@ We can't assume this server instance owns the timer
+        // Check non-persistent timers first
+        RuntimeTimerState rt = getNonPersistentTimer(timerId);
+        if (rt != null) {
+            return rt.getInfo();
+        }
+
+        // @@@ We can't assume this server instance owns the persistent timer
         // so always ask the database.  Investigate possible use of
         // timer cache for optimization.
 
-        TimerState timer = getTimer(timerId);
+        TimerState timer = getPersistentTimer(timerId);
         return timer.getInfo();
+    }
+
+    boolean isPersistent(TimerPrimaryKey timerId) throws FinderException {
+        
+        // Check non-persistent timers first
+        RuntimeTimerState rt = getNonPersistentTimer(timerId);
+        if (rt != null) {
+            // Found and active
+            return false;
+        }
+
+        // @@@ We can't assume this server instance owns the persistent timer
+        // so always ask the database.  Investigate possible use of
+        // timer cache for optimization.
+
+        TimerState timer = getPersistentTimer(timerId);
+        // If we reached here, it means the timer is persistent
+        return true;
     }
     
     boolean timerExists(TimerPrimaryKey timerId) {
         boolean exists = false;
 
-        // @@@ We can't assume this server instance owns the timer
+        // Check non-persistent timers first
+        RuntimeTimerState rt = getTimerState(timerId);
+        if (rt != null && !rt.isPersistent()) {
+            exists = rt.isActive();
+        }
+
+        // @@@ We can't assume this server instance owns the persistent timer
         // so always ask the database.  Investigate possible use of
         // timer cache for optimization.
         
@@ -1219,7 +1287,8 @@ public class EJBTimerService
         }
     }
 
-    private TimerState getTimer(TimerPrimaryKey timerId) throws FinderException {
+    private TimerState getPersistentTimer(TimerPrimaryKey timerId) 
+            throws FinderException {
         TimerState timer = timerLocal_.findTimer(timerId);
         if( timer == null || timer.isCancelled() ) {
             // The timer has been cancelled within this tx.
@@ -1227,6 +1296,21 @@ public class EJBTimerService
         }
 
         return timer;
+    }
+
+    private RuntimeTimerState getNonPersistentTimer(TimerPrimaryKey timerId) 
+            throws FinderException {
+        RuntimeTimerState rt = getTimerState(timerId);
+        if (rt != null && !rt.isPersistent()) {
+            if (rt.isCancelled()) {
+                // The timer has been cancelled within this tx.
+                throw new FinderException("Non-persistent timer " + timerId 
+                        + " does not exist");
+            }
+            return rt;
+        }
+
+        return null;
     }
 
     private BaseContainer getContainer(long containerId) {
@@ -1663,6 +1747,144 @@ public class EJBTimerService
         return timerLocal_;
     }
 
+    void addTimerSynchronization(EJBContextImpl context_, String timerId, 
+            Date initialExpiration, long containerId, String ownerId) 
+            throws Exception {
+
+        TimerPrimaryKey pk = new TimerPrimaryKey(timerId);
+        // context_ is null for a non-persistent timer as it's not called 
+        // from the TimerBean
+        if (context_ == null || timerOwnedByThisServer(ownerId) ) {
+
+            // Register a synchronization object to handle the commit/rollback
+            // semantics and ejbTimeout notifications.
+            Synchronization timerSynch =
+                new TimerSynch(pk, TimerState.ACTIVE, initialExpiration,
+                               ejbContainerUtil.getContainer(containerId),
+                               this);
+
+            ContainerSynchronization containerSynch = getContainerSynch(context_, timerId);
+            containerSynch.addTimerSynchronization(pk, timerSynch);
+
+        }
+    }
+
+    void cancelTimerSynchronization(EJBContextImpl context_, 
+            TimerPrimaryKey timerId, long containerId, String ownerId) 
+            throws Exception {
+
+        // Only proceed with JDK timer task cancellation if this timer
+        // is owned by the current server instance.
+        if( context_ == null || timerOwnedByThisServer(ownerId) ) {
+
+            // Cancel existing timer task.  Save time at which task would
+            // have executed in case cancellation is rolled back.  The
+            // nextTimeout can be null if the timer is currently being
+            // delivered.
+            Date nextTimeout = cancelTask(timerId);
+
+            ContainerSynchronization containerSynch = 
+                    getContainerSynch(context_, timerId.getTimerId());
+            Synchronization timerSynch =
+                    containerSynch.getTimerSynchronization(timerId);
+
+            if( timerSynch != null ) {
+                // This timer was created and cancelled within the
+                // same transaction.  No tx synchronization actions
+                // are needed, since whether tx commits or rolls back,
+                // timer will not exist.
+                containerSynch.removeTimerSynchronization(timerId);
+                expungeTimer(timerId);
+            } else {
+                // Set tx synchronization action to handle timer cancellation.
+                timerSynch = new TimerSynch(timerId, TimerState.CANCELLED, nextTimeout,
+                                        ejbContainerUtil.getContainer(containerId),
+                                        this);
+                containerSynch.addTimerSynchronization(timerId, timerSynch);
+            }
+        }
+    }
+
+    /**
+     * Checks whether this timer is owned by the server instance in
+     * which we are running.
+     */
+    private boolean timerOwnedByThisServer(String ownerId) {
+        String ownerIdOfThisServer = getOwnerIdOfThisServer();
+        return ( (ownerIdOfThisServer != null) &&
+                 (ownerIdOfThisServer.equals(ownerId)) );
+    }
+
+    private ContainerSynchronization getContainerSynch(EJBContextImpl context_, 
+            String timerId) throws Exception {
+
+        Transaction transaction = null;
+        if (context_ == null) {
+            ComponentInvocation i = ejbContainerUtil.getCurrentInvocation();
+            transaction = (Transaction) i.getTransaction();
+        } else {
+            transaction = context_.getTransaction();
+            if( transaction == null ) {
+                ComponentInvocation i = ejbContainerUtil.getCurrentInvocation();
+                transaction = (Transaction) i.getTransaction();
+                if (transaction != null) {
+                    // Need to know when it happens
+                    logger.log(Level.WARNING, "Context transaction = null. Using " +
+                           "invocation instead.", new Throwable());
+                }
+            }
+        }
+        if( transaction == null ) {
+            throw new Exception("transaction = null in getContainerSynch " +
+                                "for timerId = " + timerId);
+        }
+
+        return ejbContainerUtil.getContainerSync(transaction);
+    }
+
+    static String txStatusToString(int txStatus) {
+        String txStatusStr = "UNMATCHED TX STATUS";
+
+        switch(txStatus) {
+            case Status.STATUS_ACTIVE :
+                txStatusStr = "TX_STATUS_ACTIVE";
+                break;
+            case Status.STATUS_COMMITTED :
+                txStatusStr = "TX_STATUS_COMMITTED";
+                break;
+            case Status.STATUS_COMMITTING :
+                txStatusStr = "TX_STATUS_COMMITTING";
+                break;
+            case Status.STATUS_MARKED_ROLLBACK :
+                txStatusStr = "TX_STATUS_MARKED_ROLLBACK";
+                break;
+            case Status.STATUS_NO_TRANSACTION :
+                txStatusStr = "TX_STATUS_NO_TRANSACTION";
+                break;
+            case Status.STATUS_PREPARED :
+                txStatusStr = "TX_STATUS_PREPARED";
+                break;
+            case Status.STATUS_PREPARING :
+                txStatusStr = "TX_STATUS_PREPARING";
+                break;
+            case Status.STATUS_ROLLEDBACK :
+                txStatusStr = "TX_STATUS_ROLLEDBACK";
+                break;
+            case Status.STATUS_ROLLING_BACK :
+                txStatusStr = "TX_STATUS_ROLLING_BACK";
+                break;
+            case Status.STATUS_UNKNOWN :
+                txStatusStr = "TX_STATUS_UNKNOWN";
+                break;
+            default :
+                txStatusStr = "UNMATCHED TX STATUS";
+                break;
+        }
+
+        return txStatusStr;
+    }
+
+
     // 
     // This is a global cache of timer data *only for timers owned by
     // this server instance*.  It is not transactionally
@@ -1896,5 +2118,64 @@ public class EJBTimerService
         } 
 
     } // TaskExpiredWork
+
+    private static class TimerSynch implements Synchronization {
+
+        private TimerPrimaryKey timerId_;
+        private int state_;
+        private Date timeout_;
+        private BaseContainer container_;
+        private EJBTimerService timerService_;
+
+        public TimerSynch(TimerPrimaryKey timerId, int state, Date timeout,
+                          BaseContainer container, EJBTimerService timerService) {
+            timerId_   = timerId;
+            state_     = state;
+            timeout_   = timeout;
+            container_ = container;
+            timerService_ = timerService;
+        }
+
+        public void afterCompletion(int status) {
+            if( logger.isLoggable(Level.FINE) ) {
+                    logger.log(Level.FINE, "TimerSynch::afterCompletion. " +
+                               "timer state = " + TimerState.stateToString(state_) +
+                               " , " + "timer id = " +
+                               timerId_ + " , JTA TX status = " +
+                               txStatusToString(status) + " , " +
+                               "timeout = " + timeout_);
+            }
+
+            switch(state_) {
+            case TimerState.ACTIVE :
+                if( status == Status.STATUS_COMMITTED ) {
+                    timerService_.scheduleTask(timerId_, timeout_);
+                    // XXX TODO XXX container_.incrementCreatedTimedObject();
+                } else {
+                    timerService_.expungeTimer(timerId_);
+                }
+                break;
+            case TimerState.CANCELLED :
+                if( status == Status.STATUS_ROLLEDBACK ) {
+                    if( timeout_ != null ) {
+                        // Timer was cancelled while in the SCHEDULED state.
+                        // Just schedule it again with the original timeout.
+                        timerService_.scheduleTask(timerId_, timeout_);
+                    } else {
+                        // Timer was cancelled from within its own ejbTimeout
+                        // and then rolledback.
+                        timerService_.restoreTaskToDelivered(timerId_);
+                    }
+                } else {
+                    timerService_.expungeTimer(timerId_);
+                    // XXX TODO XXX container_.incrementRemovedTimedObject();
+                }
+                break;
+            }
+        }
+
+        public void beforeCompletion() {}
+
+    }
 
 }

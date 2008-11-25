@@ -39,6 +39,7 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 
 import java.util.Date;
+import java.io.Serializable;
 
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.Application;
@@ -88,6 +89,8 @@ class RuntimeTimerState {
     private long intervalDuration_;
     private long containerId_;
     private Object timedObjectPrimaryKey_;
+    private boolean persistent_ = true;
+    private Serializable info_;
 
     //
     private BaseContainer container_;
@@ -105,7 +108,9 @@ class RuntimeTimerState {
     RuntimeTimerState(TimerPrimaryKey timerId,
                       Date initialExpiration, long intervalDuration, 
                       BaseContainer container, 
-                      Object timedObjectPkey) {
+                      Object timedObjectPkey,
+                      Serializable info,
+                      boolean persistent) {
 
         state_       = CREATED;
         currentTask_ = null;
@@ -114,6 +119,8 @@ class RuntimeTimerState {
         initialExpiration_ = initialExpiration;
         intervalDuration_  = intervalDuration;
         timedObjectPrimaryKey_ = timedObjectPkey;
+        persistent_        = persistent;
+        info_              = info;
         container_         = container;
 
         containerId_       = container.getContainerId();        
@@ -122,6 +129,13 @@ class RuntimeTimerState {
             logger.log(Level.FINE, "RuntimeTimerState " + timerId_ + 
                        " created");
         }
+    }
+
+    RuntimeTimerState(TimerPrimaryKey timerId,
+                      Date initialExpiration, long intervalDuration, 
+                      BaseContainer container, 
+                      Object timedObjectPkey,
+                      boolean persistent) {
     }
 
     TimerPrimaryKey getTimerId() {
@@ -210,7 +224,6 @@ class RuntimeTimerState {
     String stateToString() {
         return stateToString(state_);
     }
-
 
     private String stateToString(int state) {
         switch(state) {
@@ -307,6 +320,17 @@ class RuntimeTimerState {
      */
     boolean isPeriodic() {
         return (intervalDuration_ > 0);
+    }
+
+    /**
+     * @return true if this is a persistent timer
+     */
+    boolean isPersistent() {
+        return persistent_;
+    }
+
+    Serializable getInfo() {
+        return info_;
     }
 
     //

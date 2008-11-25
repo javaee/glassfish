@@ -163,6 +163,7 @@ public class TimerWrapper
             throw new NoSuchObjectLocalException("timer no longer exists");
         } 
 
+        // XXX ??? get from the timer instead?
         return expression_;
     }
 
@@ -170,11 +171,11 @@ public class TimerWrapper
             javax.ejb.NoSuchObjectLocalException, javax.ejb.EJBException {
 
         checkCallPermission();
-        if( !timerService_.timerExists(timerId_) ) {
-            throw new NoSuchObjectLocalException("timer no longer exists");
+        try {
+            return timerService_.isPersistent(timerId_);
+        } catch(FinderException fe) {
+            throw new NoSuchObjectLocalException("timer no longer exists", fe);
         } 
-
-        return true; // TODO timerService_.isPersistent(timerId_);
     }
 
     public boolean equals(Object o) {
@@ -323,8 +324,6 @@ public class TimerWrapper
             EJBTimerService timerService = ejbContainerUtil.getEJBTimerService();
 
             if( timerService != null ) {
-// TODO - replace with RuntimeTimerState timerState = getTimerState(timerId) != null 
-// and get isPersistent() from there
                 if( timerService.timerExists(timerId) ) {
                     timer = new TimerWrapper(timerId, timerService);
                 } else {
