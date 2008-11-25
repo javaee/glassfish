@@ -42,7 +42,7 @@ import static com.sun.enterprise.universal.glassfish.SystemPropertyConstants.*;
  * to sublass this class.  
  * @author bnevins
  */
-public abstract class GFLauncher implements GFLauncherInterface {
+public abstract class GFLauncher {
     ///////////////////////////////////////////////////////////////////////////
     //////     PUBLIC api area starts here             ////////////////////////
     ///////////////////////////////////////////////////////////////////////////
