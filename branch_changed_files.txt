@@ -1,2 +1,7 @@
-admin\cli\src\main\java\com\sun\enterprise\admin\cli\AsadminMain.java
+r23696  at the branch.  The branch itself is r23697
+
+Added AS_DUMP Support before Nov 23 2008, admin\cli\src\main\java\com\sun\enterprise\admin\cli\AsadminMain.java
+Added support for starting and stopping embedded instances.
+
+
 
