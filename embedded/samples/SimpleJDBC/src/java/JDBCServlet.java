@@ -42,6 +42,10 @@ public class JDBCServlet extends HttpServlet {
             ctx = new InitialContext();
             DataSource ds = (DataSource) ctx.lookup("jdbc/userpool");
             Connection connection = ds.getConnection();
+
+            DataSource ds2 = (DataSource) ctx.lookup("jdbc/s1qeDB");
+            Connection connection2 = ds.getConnection();
+            
             out.println("<html>");
             out.println("<head>");
             out.println("<title>Servlet JDBCServlet</title>");  

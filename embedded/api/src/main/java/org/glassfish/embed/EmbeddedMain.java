@@ -37,6 +37,7 @@
 
 package org.glassfish.embed;
 
+import com.sun.enterprise.admin.cli.AsadminMain;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import java.io.*;
 import java.net.*;
@@ -54,6 +55,9 @@ import org.glassfish.embed.util.StringUtils;
 public class EmbeddedMain {
     public static void main(String[] args) {
         try {
+
+
+            AsadminMain qqq = new AsadminMain();
 
             //if(args.length == 0)
                 //usage();

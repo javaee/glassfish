@@ -37,16 +37,20 @@
 
 package org.glassfish.embed.impl;
 
+import java.io.*;
 import java.io.IOException;
 import java.net.URL;
 import java.net.MalformedURLException;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 import org.glassfish.config.support.ConfigurationPersistence;
 import org.glassfish.embed.Server;
 import org.jvnet.hk2.config.DomDocument;
 import org.jvnet.hk2.annotations.Inject;
 import com.sun.enterprise.v3.server.DomainXml;
 import org.glassfish.server.ServerEnvironmentImpl;
+import org.jvnet.hk2.config.IndentingXMLStreamWriter;
 
 
 /**
@@ -69,5 +73,17 @@ public class EmbeddedDomainXml extends DomainXml implements ConfigurationPersist
 
     public void save(DomDocument doc) throws IOException, XMLStreamException {
         // we don't want to persist domain.xml
+
+        System.out.println("in EmbeddedDomainXml.save()");
+
+        OutputStream out = new FileOutputStream("data.xml");
+        XMLOutputFactory factory = XMLOutputFactory.newInstance();
+        IndentingXMLStreamWriter writer = new IndentingXMLStreamWriter(
+                        factory.createXMLStreamWriter(out));
+
+        doc.writeTo(writer);
+        writer.flush();
+        writer.close();
+        out.close();
     }
 }
