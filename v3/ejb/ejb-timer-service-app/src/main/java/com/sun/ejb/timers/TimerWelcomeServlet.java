@@ -44,8 +44,20 @@ public class TimerWelcomeServlet extends HttpServlet {
             out.println("<br>");
 
             // Report timers
-            Set timers = timer.findActiveTimersOwnedByThisServer();
-            out.println("There are  " + timers.size() + " active timers on this container");
+            Set persistenttimers = timer.findActiveTimersOwnedByThisServer();
+            Set nonpersistenttimers = timer.findActiveNonPersistentTimersOwnedByThisServer();
+            int persistentsize = persistenttimers.size();
+            int nonpersistentsize = nonpersistenttimers.size();
+
+            out.println("There " + ((persistentsize == 1)? "is " : "are  ") 
+                    + persistentsize
+                    + " active persistent timer" + ((persistentsize == 1)? "" : "s")
+                    + " on this container");
+            out.println("<br>");
+            out.println("There " + ((nonpersistentsize == 1)? "is " : "are  ") 
+                    + nonpersistentsize
+                    + " active non-persistent timer" + ((nonpersistentsize == 1)? "" : "s")
+                    + " on this container");
             out.println("<br>");
 
         }catch(Throwable e){

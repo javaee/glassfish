@@ -673,6 +673,7 @@ public class EJBTimerService
             // Called by EntityContainer.removeBean and will be 
             // called with the proper Tx context
 
+// TODO - non-persistent timers
             timerLocal_.cancelTimers(timers);
         } catch(Exception e) {
             logger.log(Level.WARNING, "ejb.cancel_entity_timers",
@@ -1094,12 +1095,14 @@ public class EJBTimerService
     }
 
     /**
-     * Use database query to retrieve the timer ids of all active 
+     * Use database query to retrieve persistrent timer ids of all active 
      * timers.  Results must be transactionally consistent. E.g.,  
      * a client calling getTimerIds within a transaction where a 
      * timer has been created but not committed "sees" the timer 
      * but a client in a different transaction doesn't. Called by
      * EJBTimerServiceWrapper when caller calls getTimers.
+     * 
+     * For non-persistent timers... TODO ...
      *
      * @param primaryKey can be null if not entity bean
      * @return Collection of Timer Ids.
@@ -1134,6 +1137,10 @@ public class EJBTimerService
             }
         }
 
+        // Add active non-persistent timer ids
+        timerIdsForTimedObject.addAll(
+                timerCache_.getNonPersistentActiveTimerIdsForContainer(containerId));
+
         return timerIdsForTimedObject;
     }
     
@@ -1150,6 +1157,15 @@ public class EJBTimerService
         return timerCache_.getTimerState(timerId);
     }
 
+    private RuntimeTimerState getNonPersistentTimerState(TimerPrimaryKey timerId) {
+        return timerCache_.getNonPersistentTimerState(timerId);
+    }
+
+    // Returns a Set of active non-persistent timer ids for this server
+    Set<TimerPrimaryKey> getActiveTimerIdsByThisServer() {
+        return timerCache_.getActiveTimerIdsByThisServer();
+    }
+
     //
     // Logic used by TimerWrapper for javax.ejb.Timer methods.
     //
@@ -1158,8 +1174,8 @@ public class EJBTimerService
             throws FinderException, Exception {
 
         // Check non-persistent timers first
-        RuntimeTimerState rt = getTimerState(timerId);
-        if (rt != null && !rt.isPersistent()) {
+        RuntimeTimerState rt = getNonPersistentTimerState(timerId);
+        if (rt != null) {
             if( rt.isCancelled()) {
                 // already cancelled or removed
                 return;
@@ -1259,8 +1275,8 @@ public class EJBTimerService
         boolean exists = false;
 
         // Check non-persistent timers first
-        RuntimeTimerState rt = getTimerState(timerId);
-        if (rt != null && !rt.isPersistent()) {
+        RuntimeTimerState rt = getNonPersistentTimerState(timerId);
+        if (rt != null) {
             exists = rt.isActive();
         }
 
@@ -1300,17 +1316,16 @@ public class EJBTimerService
 
     private RuntimeTimerState getNonPersistentTimer(TimerPrimaryKey timerId) 
             throws FinderException {
-        RuntimeTimerState rt = getTimerState(timerId);
-        if (rt != null && !rt.isPersistent()) {
+        RuntimeTimerState rt = getNonPersistentTimerState(timerId);
+        if (rt != null) {
             if (rt.isCancelled()) {
                 // The timer has been cancelled within this tx.
                 throw new FinderException("Non-persistent timer " + timerId 
                         + " does not exist");
             }
-            return rt;
         }
 
-        return null;
+        return rt;
     }
 
     private BaseContainer getContainer(long containerId) {
@@ -1539,14 +1554,19 @@ public class EJBTimerService
                 } else {
                     
                     try {
-                        TimerState timer = getValidTimerFromDB( timerId );
-                        if( null == timer ) {
-                            return false;
+                        TimerState timer = null;
+                        if (timerState.isPersistent()) {
+                            timer = getValidTimerFromDB( timerId );
+                            if( null == timer ) {
+                                return false;
+                            }
                         }
 
                         if( timerState.isPeriodic() ) {
                             Date now = new Date();
-                            timer.setLastExpiration(now);   
+                            if (timerState.isPersistent()) {
+                                timer.setLastExpiration(now);   
+                            }
                             
                             // Since timer was successfully delivered, update
                             // last delivery time in database if that option is
@@ -1570,7 +1590,7 @@ public class EJBTimerService
                             // Timer has expired sucessfully, so remove it.
 // XXX the original logic relied on the tx being executed on CMP if needed
 // XXX the original logic didn't need a FinderException as it assumed that it's in the same tx XXX
-                            timerLocal_.cancel(timerId); // XXX cancelTimer(timerBean);
+                            cancelTimer(timerId);
                         }
                     } catch(Exception e) {
                         
@@ -1913,11 +1933,15 @@ public class EJBTimerService
         
         private Map containerTimers_;
 
+        // Map of non-persistent timer id to timer state.
+        private Map<TimerPrimaryKey, RuntimeTimerState> nonpersistentTimers_;
+
         public TimerCache() {
             // Create unsynchronized collections.  TimerCache will 
             // provide concurrency control.
             timers_ = new HashMap();
             containerTimers_ = new HashMap();
+            nonpersistentTimers_ = new HashMap<TimerPrimaryKey, RuntimeTimerState>();
         }
 
         public synchronized void addTimer(TimerPrimaryKey timerId, 
@@ -1927,6 +1951,9 @@ public class EJBTimerService
             }
 
             timers_.put(timerId, timerState);
+            if (!timerState.isPersistent()) {
+                nonpersistentTimers_.put(timerId, timerState);
+            }
 
             Long containerId = new Long(timerState.getContainerId());
 
@@ -1969,6 +1996,9 @@ public class EJBTimerService
                 return;
             }
 
+            if (!timerState.isPersistent()) {
+                nonpersistentTimers_.remove(timerId);
+            }
             Long containerId = new Long(timerState.getContainerId());
             Object containerInfo = containerTimers_.get(containerId);
                 
@@ -2003,6 +2033,11 @@ public class EJBTimerService
             return (RuntimeTimerState) timers_.get(timerId);
         }
 
+        public synchronized RuntimeTimerState getNonPersistentTimerState(
+                              TimerPrimaryKey timerId) {
+            return (RuntimeTimerState) nonpersistentTimers_.get(timerId);
+        }
+
         // True if the given entity bean has any timers and false otherwise.
         public synchronized boolean entityBeanHasTimers(long containerId, 
                                                         Object pkey) {
@@ -2019,6 +2054,33 @@ public class EJBTimerService
 
         // Placeholder for logic to ensure timer cache consistency.
         public synchronized void validate() {
+        }
+
+        // Returns a Set of active non-persistent timer ids for this container
+        public synchronized Set<TimerPrimaryKey> getNonPersistentActiveTimerIdsForContainer(
+                                        long containerId_) {
+            Set<TimerPrimaryKey> result = new HashSet<TimerPrimaryKey>();
+            for (TimerPrimaryKey key : nonpersistentTimers_.keySet()) {
+                RuntimeTimerState rt = nonpersistentTimers_.get(key);
+                if ((rt.getContainerId() == containerId_) && rt.isActive()) {
+                    result.add(key);
+                }
+            }
+
+            return result;
+        }
+
+        // Returns a Set of active non-persistent timer ids for this server
+        public synchronized Set<TimerPrimaryKey> getActiveTimerIdsByThisServer() {
+            Set<TimerPrimaryKey> result = new HashSet<TimerPrimaryKey>();
+            for (TimerPrimaryKey key : nonpersistentTimers_.keySet()) {
+                RuntimeTimerState rt = nonpersistentTimers_.get(key);
+                if (rt.isActive()) {
+                    result.add(key);
+                }
+            }
+
+            return result;
         }
 
     } //TimerCache{}

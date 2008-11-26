@@ -192,32 +192,27 @@ public class EJBTimerServiceWrapper implements TimerService {
         //return createTimerInternal(initialDuration, intervalDuration, timerConfig);
     }
 
-    public Collection getTimers() throws IllegalStateException /** , XXX EJBException */ {
+    public Collection getTimers() throws IllegalStateException, EJBException {
         
         checkCallPermission();
         
         Collection timerIds = new HashSet();
 
         if( ejbContext_.isTimedObject() ) {        
-            timerIds = timerService_.getTimerIds
-                    (containerId_,  getTimedObjectPrimaryKey());
-/** XXX
             try {
                 timerIds = timerService_.getTimerIds
                     (containerId_,  getTimedObjectPrimaryKey());
-            } catch(FinderException fe) {
+            } catch(Exception fe) {
                 EJBException ejbEx = new EJBException();
                 ejbEx.initCause(fe);
                 throw ejbEx;                         
             }
-** XXX **/
         } 
                                                         
         Collection timerWrappers = new HashSet();
 
         for(Iterator iter = timerIds.iterator(); iter.hasNext();) {
             TimerPrimaryKey next = (TimerPrimaryKey) iter.next();
-// TODO - need to set persistent or not 
             timerWrappers.add( new TimerWrapper(next, timerService_) );
         }
 

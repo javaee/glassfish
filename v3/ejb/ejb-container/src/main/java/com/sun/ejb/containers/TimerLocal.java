@@ -144,4 +144,6 @@ public interface TimerLocal {
     // Migrate timers from one server instance to another via bulk update
     int migrateTimers(String fromOwnerId, String toOwnerId);
 
+    // Called from the TimerWelcomeServlet
+    Set findActiveNonPersistentTimersOwnedByThisServer();
 }

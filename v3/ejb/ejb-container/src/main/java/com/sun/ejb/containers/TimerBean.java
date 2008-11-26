@@ -696,4 +696,10 @@ public class TimerBean implements TimerLocal {
         return EjbContainerUtilImpl.getInstance().getContainer(containerId);
     }
 
+    // Called by TimerWelcomeServlet
+    public Set findActiveNonPersistentTimersOwnedByThisServer() {
+        EJBTimerService ejbTimerService = getEJBTimerService();
+        return ejbTimerService.getActiveTimerIdsByThisServer();
+    }
+
 }
