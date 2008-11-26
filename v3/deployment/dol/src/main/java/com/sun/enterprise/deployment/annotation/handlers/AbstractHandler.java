@@ -204,4 +204,23 @@ public abstract class AbstractHandler implements AnnotationHandler {
             return new Class[0];
         }
     }
+
+    /**
+     * This is called by getTypeDependencies().
+     * @return an array of all web and ejb types annotation
+     */
+    protected Class<? extends Annotation>[] getWebAndEjbAnnotationTypes() {
+        Class<? extends Annotation>[] weTypes = null;
+        Class<? extends Annotation>[] ejbTypes = null;
+        if (ejbProvider != null) {
+            ejbTypes = ejbProvider.getAnnotationTypes();
+            weTypes = new Class[ejbTypes.length + 1];
+            System.arraycopy(ejbTypes, 0, weTypes, 0, ejbTypes.length);
+        } else {
+            weTypes = new Class[1];
+        }
+
+        weTypes[weTypes.length - 1] = javax.servlet.annotation.WebServlet.class;
+        return weTypes;
+    }
 }

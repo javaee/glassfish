@@ -172,8 +172,8 @@ public class WebServletHandler extends AbstractWebHandler {
 
                 throw new IllegalArgumentException(localStrings.getLocalString(
                         "enterprise.deployment.annotation.handlers.invalidUrlPatterns",
-                        "Invalid url patterns: {0}.",
-                        urlPatternString));
+                        "Invalid url patterns for {0}: {1}.",
+                        new Object[] { webCompClass, urlPatternString }));
             }
         }
 
@@ -181,15 +181,13 @@ public class WebServletHandler extends AbstractWebHandler {
             webCompDesc.setLoadOnStartUp(webServletAn.loadOnStartup());
         }
 
-        if (!webCompDesc.getInitializationParameters().hasMoreElements()) {
-            InitParam[] initParams = webServletAn.initParams();
-            if (initParams != null && initParams.length > 0) {
-                for (InitParam initParam : initParams) {
-                    webCompDesc.addInitializationParameter(
+        InitParam[] initParams = webServletAn.initParams();
+        if (initParams != null && initParams.length > 0) {
+            for (InitParam initParam : initParams) {
+                webCompDesc.addInitializationParameter(
                         new EnvironmentProperty(
                             initParam.name(), initParam.value(),
                             initParam.description()));
-                }
             }
         }
 
