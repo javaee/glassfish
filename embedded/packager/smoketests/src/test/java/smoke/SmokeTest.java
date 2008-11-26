@@ -34,7 +34,15 @@ public class SmokeTest {
     @Test
     public void deploySimpleWar() {
         try {
-            Server myGF = Server.create(9999, null);
+
+	        Server myGF = Server.getServer("server");
+
+			if(myGF == null) {
+				EmbeddedInfo info = new EmbeddedInfo();
+                info.setHttpPort(9999);
+                myGF = new Server(info);
+            }
+            
             myGF.start();
             Application app = myGF.deploy(simpleWar);
             
