@@ -16,8 +16,8 @@ import java.util.Properties;
  */
 public class CommandExecutor {
 
-    public CommandExecutor() throws EmbeddedException {
-        cr = Server.get().getHabitat().getComponent(CommandRunner.class);
+    public CommandExecutor(Server server) throws EmbeddedException {
+        cr = server.getHabitat().getComponent(CommandRunner.class);
     }
 
    /**

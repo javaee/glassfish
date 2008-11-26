@@ -58,6 +58,7 @@ import com.sun.hk2.component.InhabitantsParser;
 import com.sun.web.security.RealmAdapter;
 import com.sun.web.server.DecoratorForJ2EEInstanceListener;
 import java.io.*;
+import java.util.*;
 import org.glassfish.api.Startup;
 import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.container.Sniffer;
@@ -104,6 +105,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.embed.impl.EmbeddedModulesRegistryImpl;
 
+
 /**
  * Entry point to the embedded GlassFish Server.
  * <p/>
@@ -114,11 +116,12 @@ import org.glassfish.embed.impl.EmbeddedModulesRegistryImpl;
  * and application server launcher and CLI commands should be the client of this
  * API. This is how all the other sensible containers do it, like Tomcat and Jetty.
  *
+ * November 2008.  Supporting multiple servers in one JVM
  * @author Kohsuke Kawaguchi
  * @author bnevins
  */
 public class Server {
-    private static Server instance;
+    private static Map<String,Server>servers = new HashMap<String,Server>();
     /**
      * As of April 2008, several key configurations like HTTP listener
      * creation cannot be done once GFv3 starts running.
@@ -149,39 +152,20 @@ public class Server {
     /*pkg-private*/ /*almost final*/ SnifferManager snifMan;
     /*pkg-private*/ /*almost final*/ ArchiveFactory archiveFactory;
     /*pkg-private*/ /*almost  final*/ ServerEnvironmentImpl env;
+    private String id;
 
     /**
      * TODO constructors and startup need revamping!
      */
 
-    public static synchronized Server create(EmbeddedInfo info) throws EmbeddedException {
-        if(instance != null)
-            throw new EmbeddedException("server_already_exists");
-        
-        instance = new Server(info);
-        return instance;
-    }
-
-    public static Server create(int httpPort, URL domainXmlUrl) throws EmbeddedException{
-        EmbeddedInfo info = new EmbeddedInfo();
-        info.setDomainXmlUrl(domainXmlUrl);
-        info.setHttpPort(httpPort);
-        return create(info);
-    }
-
-    public static Server get() throws EmbeddedException {
-        if(instance == null)
-            throw new EmbeddedException("no_server");
-
-        return instance;
-    }
 
     public Habitat getHabitat() {
         return habitat;
     }
 
-    private Server(EmbeddedInfo info) throws EmbeddedException {
+    public Server(EmbeddedInfo info) throws EmbeddedException {
         this.info = info;
+        //this.id = id;
         setShutdownHook();
         setupDomainXml();
 
@@ -195,6 +179,7 @@ public class Server {
         }
 
         createVirtualServer(createHttpListener(info.httpPort));
+        addServer(info.name, this);
     }
 
     private void setupDomainXml() throws EmbeddedException {
@@ -715,6 +700,20 @@ public class Server {
             svc.release();
         }
     }
+
+
+    public static Server getServer(String id) {
+        return servers.get("id");
+    }
+
+    private static void addServer(String name, Server server) {
+        servers.put(name, server);
+    }
+
+
+
+
+
 
 
         private void setShutdownHook() {

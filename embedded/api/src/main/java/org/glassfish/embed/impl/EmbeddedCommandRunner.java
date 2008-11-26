@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.embed.EmbeddedException;
+import org.glassfish.embed.EmbeddedInfo;
 import org.glassfish.embed.Server;
 import org.glassfish.embed.StringHelper;
 import org.glassfish.embed.util.EmbeddedUtils;
@@ -48,9 +49,23 @@ public class EmbeddedCommandRunner extends CommandRunner{
         }
 
         File f = uploadedFiles.get(0);
+        System.out.println(parameters);
+
+		//
+		// todo 
+		// The "server" name is probably in parameters.  So we could deploy to
+		// a server based on its name.
+		// for now we support "server"
 
         try {
-            Server.get().deploy(f);
+            Server server = Server.getServer("server");
+
+			if(server == null) {
+				EmbeddedInfo info = new EmbeddedInfo();
+				info.setServerName("server");
+				server = new Server(info);
+			}
+            server.deploy(f);
             report.setMessage(StringHelper.get("deploy_successful", f.getName()));
             return EmbeddedUtils.succeed(report);
         }

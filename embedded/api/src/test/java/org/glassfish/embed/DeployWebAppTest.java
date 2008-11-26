@@ -23,14 +23,15 @@ public class DeployWebAppTest {
     @BeforeClass
     public static void setUpClass() {
         try {
-            try {
-                myGF = Server.get();
-            } catch(EmbeddedException e) {
-                System.out.println("Starting Server on port 9999");
-                myGF = Server.create(9999, null);
-                myGF.start();
-            }
-            //myGF.start();
+            EmbeddedInfo info = new EmbeddedInfo();
+            info.setServerName("server");
+            myGF = Server.getServer(info.name);
+
+            if(myGF == null)
+                myGF = new Server(info);
+
+            myGF.start();
+
         }
         catch(Exception e) {
             e.printStackTrace();

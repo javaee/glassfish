@@ -51,5 +51,6 @@ public class ServerConstants {
 	public static final String			EXCEPTION_RESOURCE_BUNDLE	= "/org/glassfish/embed/LocalStrings.properties";
     public static final int             MIN_PORT                    = 1;
     public static final int             MAX_PORT                    = (256 * 256) - 1;
+    public static final String          DEFAULT_SERVER_NAME         = "server";
     //public static final File            DEFAULT_
 }

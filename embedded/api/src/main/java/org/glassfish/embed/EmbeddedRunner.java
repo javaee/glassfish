@@ -52,7 +52,7 @@ class EmbeddedRunner {
 
     void run() throws EmbeddedException {
         info.validate();
-        Server server = Server.create(info);
+        Server server = new Server(info);
         server.start();
         
         for(File f : info.archives) {

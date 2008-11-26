@@ -41,6 +41,7 @@ import java.io.*;
 import java.util.*;
 import java.net.*;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.embed.util.StringUtils;
 import static org.glassfish.embed.ServerConstants.*;
 
 /**
@@ -75,6 +76,12 @@ public class EmbeddedInfo {
         domainXmlUrl = dx;
     }
 
+    public void setServerName(String newName) {
+        if(StringUtils.ok(newName))
+            name = newName;
+    }
+
+
     public void validate() throws EmbeddedException {
 
         /* bnevins 11-18-08, no longer require an app right away.
@@ -103,6 +110,7 @@ public class EmbeddedInfo {
 
     //////////////////////  pkg-private  //////////////////////
     
+    String                  name             = ServerConstants.DEFAULT_SERVER_NAME;
     int                     httpPort         = ServerConstants.DEFAULT_HTTP_PORT;
     List<File>              archives         = new LinkedList<File>(); 
     List<ReadableArchive>   readableArchives = new LinkedList<ReadableArchive>();
