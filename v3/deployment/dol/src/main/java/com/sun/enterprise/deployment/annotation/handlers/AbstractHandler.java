@@ -207,9 +207,9 @@ public abstract class AbstractHandler implements AnnotationHandler {
 
     /**
      * This is called by getTypeDependencies().
-     * @return an array of all web and ejb types annotation
+     * @return an array of all ejb and web types annotation
      */
-    protected Class<? extends Annotation>[] getWebAndEjbAnnotationTypes() {
+    protected Class<? extends Annotation>[] getEjbAndWebAnnotationTypes() {
         Class<? extends Annotation>[] weTypes = null;
         Class<? extends Annotation>[] ejbTypes = null;
         if (ejbProvider != null) {

@@ -116,6 +116,6 @@ public abstract class AbstractResourceHandler extends AbstractHandler {
     }
 
     public Class<? extends Annotation>[] getTypeDependencies() {
-        return getWebAndEjbAnnotationTypes();
+        return getEjbAndWebAnnotationTypes();
     }
 }

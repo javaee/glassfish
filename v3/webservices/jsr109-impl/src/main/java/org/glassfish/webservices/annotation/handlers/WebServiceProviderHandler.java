@@ -99,7 +99,7 @@ public class WebServiceProviderHandler extends AbstractHandler implements Annota
     public Class<? extends Annotation>[] getTypeDependencies() {
         /*Class dependencies[] = { javax.ejb.Stateless.class };
         return dependencies;*/
-        return getEjbAnnotationTypes();
+        return getEjbAndWebAnnotationTypes();
     }
     
     public HandlerProcessingResult processAnnotation(AnnotationInfo annInfo) 

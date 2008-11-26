@@ -98,7 +98,7 @@ public class WebServiceRefHandler extends AbstractHandler  {
         // is used in appclients or web app since references are
         // declared at the bundle level.
         //todo BM add javax.persistence.Entity
-        return getEjbAnnotationTypes();
+        return getEjbAndWebAnnotationTypes();
     }
 
     protected HandlerProcessingResult processAWsRef(AnnotationInfo annInfo, WebServiceRef annotation)
