@@ -37,6 +37,11 @@ public class EmbeddedCommandRunner extends CommandRunner{
         if(commandName.equals("deploy"))
             return doDeploy(parameters, report, uploadedFiles);
 
+        if(commandName.equals("stop-domain")) {
+            System.out.println("Stopping Embedded Server");
+            System.exit(1);
+        }
+
         return super.doCommand(commandName, command, parameters, report, uploadedFiles);
     }
 
