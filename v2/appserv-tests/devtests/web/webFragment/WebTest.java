@@ -10,7 +10,7 @@ public class WebTest {
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
     private static final String TEST_NAME = "web-fragment";
-    private static final String EXPECTED_RESPONSE = "filterMessage=WFTestFilterMesg, mesg=hello t, mesg2=hello2 f";
+    private static final String EXPECTED_RESPONSE = "filterMessage=WFTestFilterMesg, mesg=hello t, mesg2=hello2 f, mesg3=hello3 a";
 
     private String host;
     private String port;
