@@ -60,7 +60,7 @@ public abstract class EJBHomeImpl
     implements javax.ejb.EJBHome
 {
 
-    private static final Logger _logger =
+    protected static final Logger _logger =
             EjbContainerUtilImpl.getInstance().getLogger();
     
     private BaseContainer container;

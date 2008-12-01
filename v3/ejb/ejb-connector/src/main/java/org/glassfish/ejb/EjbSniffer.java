@@ -63,7 +63,8 @@ public class EjbSniffer  extends GenericSniffer implements Sniffer {
     Habitat habitat;    
 
     private static final Class[]  ejbAnnotations = new Class[] {
-            javax.ejb.Stateless.class, javax.ejb.Stateful.class, javax.ejb.Singleton.class};
+            javax.ejb.Stateless.class, javax.ejb.Stateful.class,
+            javax.ejb.MessageDriven.class, javax.ejb.Singleton.class };
 
     public EjbSniffer() {
         this("ejb", "META-INF/ejb-jar.xml", null);

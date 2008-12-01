@@ -37,6 +37,8 @@
 package com.sun.ejb.containers;
 
 
+import java.util.logging.Logger;
+
 import javax.ejb.*;
 
 import com.sun.ejb.*;
@@ -50,6 +52,10 @@ public abstract class EJBLocalRemoteObject
 {
     protected static final boolean debug = false;
 
+
+    transient protected static final Logger _logger =
+            EjbContainerUtilImpl.getInstance().getLogger();
+    
     transient protected BaseContainer container;
     transient protected Object primaryKey;
     transient private boolean removed=false;

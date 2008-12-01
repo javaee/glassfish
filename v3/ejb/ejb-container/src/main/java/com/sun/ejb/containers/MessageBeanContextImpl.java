@@ -70,7 +70,7 @@ public final class MessageBeanContextImpl
     }
 
     //FIXME later
-    <T extends EJBObjectImpl> T getEJBObjectImpl() {
+    EJBObjectImpl getEJBObjectImpl() {
 	    throw new RuntimeException("No EJB Object for Message-driven beans");
     }
 

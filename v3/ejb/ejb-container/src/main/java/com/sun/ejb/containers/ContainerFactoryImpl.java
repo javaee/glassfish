@@ -38,11 +38,15 @@ package com.sun.ejb.containers;
 import com.sun.ejb.Container;
 import com.sun.ejb.ContainerFactory;
 import com.sun.ejb.containers.builder.StatefulContainerBuilder;
+import com.sun.enterprise.config.serverbeans.EjbContainer;
 import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.deployment.EjbEntityDescriptor;
 import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
 import com.sun.enterprise.deployment.EjbSessionDescriptor;
 import com.sun.enterprise.deployment.runtime.IASEjbExtraDescriptors;
 import com.sun.enterprise.security.SecurityContext;
+import com.sun.logging.LogDomains;
+
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.ejb.security.application.EJBSecurityManager;
 import org.glassfish.ejb.deployment.EjbSingletonDescriptor;
@@ -51,6 +55,8 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Service
 public final class ContainerFactoryImpl implements ContainerFactory {
@@ -58,6 +64,12 @@ public final class ContainerFactoryImpl implements ContainerFactory {
     @Inject
     private Habitat habitat;
 
+    @Inject
+    private EjbContainer ejbContainerDesc;
+    
+    private static final Logger _logger = 
+    	LogDomains.getLogger(ContainerFactoryImpl.class, LogDomains.EJB_LOGGER);
+    
     public Container createContainer(EjbDescriptor ejbDescriptor,
 				     ClassLoader loader, 
 				     EJBSecurityManager sm,
@@ -65,7 +77,6 @@ public final class ContainerFactoryImpl implements ContainerFactory {
 	     throws Exception 
     {
         BaseContainer container = null;
-        boolean hasHome = true;
         String appid = ejbDescriptor.getApplication().getRegistrationName();
         String archiveuri = ejbDescriptor.getEjbBundleDescriptor().
             getModuleDescriptor().getArchiveUri();
@@ -103,16 +114,52 @@ public final class ContainerFactoryImpl implements ContainerFactory {
                     container = sfsbBuilder.getContainer();
                 }
             } else if ( ejbDescriptor instanceof EjbMessageBeanDescriptor) {
-                //TODO container = new MessageBeanContainer(ejbDescriptor, loader);
-		// Message-driven beans don't have a home or remote interface.
-                hasHome = false;
+                container = new MessageBeanContainer(ejbDescriptor, loader);
+            } else {
+                    if (((EjbEntityDescriptor)ejbDescriptor).getIASEjbExtraDescriptors()
+                        .isIsReadOnlyBean()) { 
+
+                        EjbEntityDescriptor robDesc = (EjbEntityDescriptor) ejbDescriptor;                    
+                        container = new ReadOnlyBeanContainer (ejbDescriptor, loader);
+                    } else {
+                        if ((ejbDescriptor.getLocalHomeClassName() != null) &&
+                            (ejbDescriptor.getLocalHomeClassName()
+                             .equals("com.sun.ejb.containers.TimerLocalHome"))) {
+                            container = new TimerBeanContainer(ejbDescriptor, loader);
+                        } else {
+                        	String commitOption = null;
+                            iased = ((EjbEntityDescriptor)ejbDescriptor).
+                                getIASEjbExtraDescriptors();
+                            if (iased != null) {
+                                commitOption = iased.getCommitOption();    	
+                            }
+                            if (commitOption == null) {
+                                commitOption = ejbContainerDesc.getCommitOption();  
+                            }
+                            if (commitOption.equals("A")) {
+                                _logger.log(Level.WARNING, 
+                                            "ejb.commit_option_A_not_supported",
+                                            new Object []{ejbDescriptor.getName()}
+                                            );
+                                container = 
+                                    new EntityContainer(ejbDescriptor, loader);
+                            } else if (commitOption.equals("C")) {
+                                _logger.log(Level.FINE, "Using commit option C for: " 
+                                            + ejbDescriptor.getName());
+                                container = new CommitCEntityContainer(ejbDescriptor,
+                                                                       loader);
+                            } else {
+                                _logger.log(Level.FINE,"Using commit option B for: " + 
+                                            ejbDescriptor.getName());
+                                container = new EntityContainer(ejbDescriptor, loader);
+                            }
+                        }
+            	}
             }
 		
             //container.setSecurityManager(sm);
-
-            if ( hasHome ) {
-                container.initializeHome();
-            }
+            
+            container.initializeHome();
 
             return container;
         } catch ( Exception ex ) {

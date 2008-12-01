@@ -243,16 +243,22 @@ public class EjbContainerUtilImpl
         return ejbAsyncInvocationManager;
     }
 
-    public  ContainerSynchronization getContainerSync(Transaction jtx)
-        throws RollbackException, SystemException
-    {
-        JavaEETransaction tx = (JavaEETransaction) jtx;
+    private TxData getTxData(JavaEETransaction tx) {
         TxData txData = tx.getContainerData();
 
         if ( txData == null ) {
             txData = new TxData();
             tx.setContainerData(txData);
         }
+        
+        return txData;
+    }
+    
+    public  ContainerSynchronization getContainerSync(Transaction jtx)
+        throws RollbackException, SystemException
+    {
+        JavaEETransaction tx = (JavaEETransaction) jtx;
+        TxData txData = getTxData(tx);
 
         if( txData.sync == null ) {
             txData.sync = new ContainerSynchronization(tx, this);
@@ -276,12 +282,7 @@ public class EjbContainerUtilImpl
 
     public  Vector getBeans(Transaction jtx) {
         JavaEETransaction tx = (JavaEETransaction) jtx;
-        TxData txData = tx.getContainerData();
-
-        if ( txData == null ) {
-            txData = new TxData();
-            tx.setContainerData(txData);
-        }
+        TxData txData = getTxData(tx);
 
         if( txData.beans == null ) {
             txData.beans = new Vector();
@@ -291,6 +292,20 @@ public class EjbContainerUtilImpl
 
     }
 
+    public Object getActiveTxCache(Transaction jtx) {
+    	JavaEETransaction tx = (JavaEETransaction) jtx;
+        TxData txData = getTxData(tx);
+        
+        return txData.activeTxCache;
+    }
+
+    public void setActiveTxCache(Transaction jtx, Object cache) {
+    	JavaEETransaction tx = (JavaEETransaction) jtx;
+        TxData txData = getTxData(tx);
+        
+        txData.activeTxCache = cache;
+    }
+    
     public Agent getCallFlowAgent() {
         return callFlowAgent;
     }
@@ -303,6 +318,7 @@ public class EjbContainerUtilImpl
     private  class TxData {
         ContainerSynchronization sync;
         Vector beans;
+        Object activeTxCache;
     }
     
 }

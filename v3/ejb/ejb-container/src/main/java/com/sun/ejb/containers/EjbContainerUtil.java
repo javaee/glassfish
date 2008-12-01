@@ -114,6 +114,10 @@ public interface EjbContainerUtil {
     public Agent getCallFlowAgent();
     
     public Vector getBeans(Transaction jtx);
+    
+    public Object getActiveTxCache(Transaction jtx);
+    
+    public void setActiveTxCache(Transaction jtx, Object cache);
 
     public void addWork(Runnable task);
 

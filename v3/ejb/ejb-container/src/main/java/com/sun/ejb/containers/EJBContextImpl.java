@@ -41,6 +41,7 @@ import com.sun.ejb.Container;
 import com.sun.ejb.EjbInvocation;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.RoleReference;
+import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.invocation.ComponentInvocation;
 
@@ -91,15 +92,15 @@ public abstract class EJBContextImpl
     
     // the EJBObject's client-side RMI stub
     transient protected EJBObject ejbStub=null;
-    transient protected EJBObject ejbObjectImpl;
+    transient protected EJBObjectImpl ejbObjectImpl;
 
-    transient protected EJBObject ejbRemoteBusinessObjectImpl;
+    transient protected EJBObjectImpl ejbRemoteBusinessObjectImpl;
 
     transient protected EJBLocalObjectImpl ejbLocalObjectImpl;
     transient protected EJBLocalObjectImpl ejbLocalBusinessObjectImpl;
     
     transient private long lastTimeUsed;
-    transient protected EJBContextImpl.BeanState state;
+    transient protected BeanState state;
     
     // true if the bean exposes a RemoteHome/Remote view  
     // (not 3.0 business view)
@@ -148,28 +149,28 @@ public abstract class EJBContextImpl
     }
 
     
-    <T extends EJBObject> void setEJBObjectImpl(EJBObject ejbo) {
+    void setEJBObjectImpl(EJBObjectImpl ejbo) {
         this.ejbObjectImpl = ejbo;
     }
     
-    <T extends EJBObject> T getEJBObjectImpl() {
-        return (T) ejbObjectImpl;
+    EJBObjectImpl getEJBObjectImpl() {
+        return ejbObjectImpl;
     }
     
-    <T extends EJBObject> void setEJBRemoteBusinessObjectImpl(T ejbo) {
+    void setEJBRemoteBusinessObjectImpl(EJBObjectImpl ejbo) {
         this.ejbRemoteBusinessObjectImpl = ejbo;
     }
 
-    <T extends EJBObject> T getEJBRemoteBusinessObjectImpl() {
-        return (T) this.ejbRemoteBusinessObjectImpl;
+    EJBObjectImpl getEJBRemoteBusinessObjectImpl() {
+        return this.ejbRemoteBusinessObjectImpl;
     }
 
-    <T extends EJBLocalObject> T getEJBLocalObjectImpl() {
-        return (T) ejbLocalObjectImpl;
+    EJBLocalObjectImpl getEJBLocalObjectImpl() {
+        return ejbLocalObjectImpl;
     }
 
-    <T extends EJBLocalObject> T getEJBLocalBusinessObjectImpl() {
-        return (T) ejbLocalBusinessObjectImpl;
+    EJBLocalObjectImpl getEJBLocalBusinessObjectImpl() {
+        return ejbLocalBusinessObjectImpl;
     }
     
     void setContainer(BaseContainer container) {

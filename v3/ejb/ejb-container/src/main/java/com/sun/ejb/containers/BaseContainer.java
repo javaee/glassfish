@@ -68,12 +68,17 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.*;
 import javax.naming.NamingException;
+import javax.naming.Reference;
+import javax.naming.StringRefAddr;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.transaction.*;
+
+import java.io.Serializable;
 import java.lang.reflect.*;
 import java.rmi.AccessException;
 import java.rmi.RemoteException;
 import java.util.*;
-import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -92,7 +97,7 @@ public abstract class BaseContainer
     implements Container, EJBStatsProvider
 {
     public enum ContainerType {
-        STATELESS, STATEFUL, SINGLETON, MESSAGE_DRIVEN, ENTITY
+        STATELESS, STATEFUL, SINGLETON, MESSAGE_DRIVEN, ENTITY, READ_ONLY
     };
 
     protected static final Logger _logger =
@@ -457,12 +462,10 @@ public abstract class BaseContainer
                         isStatefulSession  = !isStatelessSession;
 
                         if( isStatefulSession ) {
-                            /*TODO
                             if( !Serializable.class.isAssignableFrom(ejbClass) ) {
                                 ejbClass = EJBUtils.loadGeneratedSerializableClass
                                     (loader, ejbClass.getName());
                             }
-                            */
                         }
                     }
                     if ( sd.getTransactionType().equals("Bean") ) {
@@ -472,8 +475,7 @@ public abstract class BaseContainer
                     }
 
                 }
-
-                /*TODO
+                
                 if ( ejbDescriptor.isRemoteInterfacesSupported() ) {
 
                     checkProtocolManager();
@@ -490,10 +492,10 @@ public abstract class BaseContainer
                         Long.toString(ejbDescriptor.getUniqueId()) + "_RHome";
 
                     remoteHomeRefFactory = 
-                        protocolMgr.getRemoteReferenceFactory(this, true, id);
+                        getProtocolManager().getRemoteReferenceFactory(this, true, id);
 
                 }
-
+                
                 if( ejbDescriptor.isRemoteBusinessInterfacesSupported() ) {
                     
                     checkProtocolManager();
@@ -532,7 +534,7 @@ public abstract class BaseContainer
                         String id = Long.toString(ejbDescriptor.getUniqueId()) 
                              + "_RBusiness" + "_" + genRemoteIntf.getName();
 
-                        info.referenceFactory = protocolMgr.
+                        info.referenceFactory = getProtocolManager().
                             getRemoteReferenceFactory(this, false, id);
 
                         remoteBusinessIntfInfo.put(genRemoteIntf.getName(),
@@ -542,7 +544,6 @@ public abstract class BaseContainer
                     }
 
                 }
-                */
 
                 if ( ejbDescriptor.isLocalInterfacesSupported() ) {
                     // initialize class objects for LocalHome/LocalIntf etc.
@@ -697,6 +698,10 @@ public abstract class BaseContainer
 		+ _debugDescription);
     }
 
+    protected ProtocolManager getProtocolManager() {
+    	return protocolMgr;
+    }
+    
     public ContainerType getContainerType() {
         return containerType;
     }
@@ -713,7 +718,7 @@ public abstract class BaseContainer
     }
     
     private void checkProtocolManager() {
-        if (protocolMgr == null) {
+        if (getProtocolManager() == null) {
             throw new RuntimeException("Protocol manager is null. "
                      + "Possible cause is ORB not started");
         }
@@ -925,7 +930,6 @@ public abstract class BaseContainer
     void initializeHome()
         throws Exception
     {
-        /*TODO
         if (isRemote) {
             
             if( hasRemoteHomeView ) {
@@ -953,7 +957,7 @@ public abstract class BaseContainer
                 // know at container initialization time if there is a problem.
                 //
                 checkProtocolManager();
-                protocolMgr.validateTargetObjectInterfaces(this.ejbHome);
+                getProtocolManager().validateTargetObjectInterfaces(this.ejbHome);
 
                 // Unlike the Home, each of the concrete containers are
                 // responsible for creating the EJBObjects, so just create
@@ -961,7 +965,7 @@ public abstract class BaseContainer
                 EJBObjectImpl dummyEJBObjectImpl = instantiateEJBObjectImpl();
                 EJBObject dummyEJBObject = (EJBObject)
                     dummyEJBObjectImpl.getEJBObject();
-                protocolMgr.validateTargetObjectInterfaces(dummyEJBObject);
+                getProtocolManager().validateTargetObjectInterfaces(dummyEJBObject);
 
                 // Remotereference factory needs instances of
                 // Home and Remote to get repository Ids since it doesn't have
@@ -997,7 +1001,7 @@ public abstract class BaseContainer
 
                 checkProtocolManager();
                 // RMI-IIOP validation
-                protocolMgr.validateTargetObjectInterfaces
+                getProtocolManager().validateTargetObjectInterfaces
                     (this.ejbRemoteBusinessHome);
 
                 for(RemoteBusinessIntfInfo next : 
@@ -1036,7 +1040,7 @@ public abstract class BaseContainer
                     java.rmi.Remote dummyEJBObject = dummyEJBObjectImpl.
                         getEJBObject(next.generatedRemoteIntf.getName());
                         
-                    protocolMgr.validateTargetObjectInterfaces(dummyEJBObject);
+                    getProtocolManager().validateTargetObjectInterfaces(dummyEJBObject);
 
                     next.jndiName = EJBUtils.getRemoteEjbJndiName
                         (true, next.remoteBusinessIntf.getName(), 
@@ -1071,7 +1075,6 @@ public abstract class BaseContainer
             }
             
         }
-        */
 
         if (isLocal) {
 
@@ -1255,7 +1258,6 @@ public abstract class BaseContainer
         } else {
 
             java.rmi.Remote targetObject = null;
-            /*TODO
             EJBObjectImpl ejbObjectImpl  = null;
 
 
@@ -1273,7 +1275,7 @@ public abstract class BaseContainer
                         getEJBObject(generatedRemoteBusinessIntf);
                 }
             }
-            */
+            
             return targetObject;
         }
     }
@@ -1434,7 +1436,6 @@ public abstract class BaseContainer
     }
     
     protected void enlistExtendedEntityManagers(ComponentContext ctx) {
-        /*TODO
         if (isStatefulSession && (ctx.getTransaction() != null)) {
             JavaEETransaction j2eeTx = (JavaEETransaction) ctx.getTransaction();
             SessionContextImpl sessionCtx = (SessionContextImpl) ctx;
@@ -1463,7 +1464,7 @@ public abstract class BaseContainer
                     extendedEm.joinTransaction();
                 }
             }
-        }*/
+        }
     }
     
 
@@ -1498,7 +1499,6 @@ public abstract class BaseContainer
             // counterpart of invocationManager.preInvoke
             if (! inv.useFastPath) {
                 invocationManager.postInvoke(inv);
-                /*TODO
                 if (isStatefulSession
                         && (((EJBContextImpl) inv.context).getTransaction() != null)) {
 
@@ -1515,7 +1515,7 @@ public abstract class BaseContainer
                             sessionCtx.setEmfRegisteredWithTx(emf, false);
                         }
                     }
-                }*/
+                }
             } else {
                 doTxProcessing = doTxProcessing && (inv.exception != null);
             }
@@ -1554,7 +1554,7 @@ public abstract class BaseContainer
 
                 // For remote business case, exception mapping is performed
                 // in client wrapper.  
-                //TODO inv.exception = protocolMgr.mapException(inv.exception);
+                //TODO inv.exception = getProtocolManager().mapException(inv.exception);
                     
                 // The most useful portion of the system exception is logged 
                 // above.  Only log mapped form when log level is FINE or 
@@ -1624,7 +1624,7 @@ public abstract class BaseContainer
         if ( !authorize(inv) ) {
             AccessException ex = new AccessException(
                 "Client is not authorized for this invocation.");
-            Throwable t = protocolMgr.mapException(ex);
+            Throwable t = getProtocolManager().mapException(ex);
             if ( t instanceof RuntimeException )
                 throw (RuntimeException)t;
             else if ( t instanceof RemoteException )
@@ -2734,8 +2734,7 @@ public abstract class BaseContainer
 
         return flushEnabled;
     }
-
-    /*TODO
+    
     private EJBHomeImpl instantiateEJBHomeImpl() throws Exception {
 
         EJBHomeInvocationHandler handler =
@@ -2748,7 +2747,7 @@ public abstract class BaseContainer
         Set proxyInterfacesSet = new LinkedHashSet();
 
         if( ejbDescriptor.getIASEjbExtraDescriptors().isIsReadOnlyBean() ) {
-            proxyInterfacesSet.add(ReadOnlyEJBHome.class);
+            //TODO proxyInterfacesSet.add(ReadOnlyEJBHome.class);
         }
 
         proxyInterfacesSet.add(homeIntf); 
@@ -2789,7 +2788,6 @@ public abstract class BaseContainer
         return remoteBusinessHomeImpl;
 
     }
-    */
 
     EjbInvocation createEjbInvocation() {
         return invFactory.create();
@@ -2829,7 +2827,6 @@ public abstract class BaseContainer
 
         return homeImpl;
     }
-
 
     private EJBLocalHomeImpl instantiateEJBLocalBusinessHomeImpl()
         throws Exception {
@@ -2955,8 +2952,7 @@ public abstract class BaseContainer
 
         return localBusinessObjImpl;
     }
-
-    /*TODO
+    
     protected EJBObjectImpl instantiateEJBObjectImpl() throws Exception {
         
         EJBObjectInvocationHandler handler =
@@ -3009,7 +3005,6 @@ public abstract class BaseContainer
 
         return ejbBusinessObjImpl;
     }
-    */
 
     // default implementation
     public void postCreate(EjbInvocation inv, Object primaryKey)
@@ -3693,7 +3688,6 @@ public abstract class BaseContainer
             throw new TransactionRolledbackLocalException(
                 "Client's transaction aborted");
         
-        /*TODO
         if( isStatefulSession ) {
 
             SessionContextImpl sessionCtx = (SessionContextImpl) inv.context;
@@ -3720,7 +3714,7 @@ public abstract class BaseContainer
 
             }
             
-        }*/
+        }
 
         if ( prevTx == null
         || prevStatus == Status.STATUS_NO_TRANSACTION ) {

@@ -37,6 +37,8 @@
 package com.sun.ejb;
 
 import com.sun.ejb.base.io.IOUtils;
+import com.sun.ejb.codegen.ClassGeneratorFactory;
+import com.sun.ejb.codegen.SerializableBeanGenerator;
 import com.sun.ejb.containers.BaseContainer;
 import com.sun.ejb.containers.EjbContainerUtilImpl;
 import com.sun.ejb.containers.GenericEJBLocalHome;
@@ -47,10 +49,14 @@ import javax.naming.NamingException;
 import java.io.*;
 import java.lang.reflect.*;
 import java.util.Collection;
+import java.util.Properties;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+
+import static com.sun.corba.ee.spi.orbutil.codegen.Wrapper.*;
 
 /**
  * A handy class with static utility methods.
@@ -456,7 +462,6 @@ public class EJBUtils {
             
 
         Class generatedSerializableClass = null;
-        /*TODO
         try {
             generatedSerializableClass = 
                 appClassLoader.loadClass(generatedSerializableClassName);
@@ -475,11 +480,9 @@ public class EJBUtils {
                     appClassLoader, developerClass);
 
         }
-        */
         return generatedSerializableClass;
     }
-
-    /*TODO
+    
     private static Class generateAndLoad(ClassGeneratorFactory cgf,
                                          final String actualClassName,
                                          final ClassLoader loader,
@@ -538,6 +541,7 @@ public class EJBUtils {
         return result;
     }
 
+    /*
     public static RemoteBusinessWrapperBase createRemoteBusinessObject
         (String businessInterface, java.rmi.Remote delegate) 
         throws Exception {
