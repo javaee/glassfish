@@ -2589,13 +2589,15 @@ public class StandardContext
     public void addFilter(String filterName,
                           String description,
                           String className,
-                          Map<String, String> initParameters) {
+                          Map<String, String> initParameters,
+                          boolean isAsyncSupported) {
 
         FilterDef filterDef = new FilterDef();
 
         filterDef.setFilterName(filterName);
         filterDef.setDescription(description);
         filterDef.setFilterClass(className);
+        filterDef.setIsAsyncSupported(isAsyncSupported);
 
         if (initParameters != null) {
             for (Map.Entry<String, String> e : initParameters.entrySet()) {
@@ -3158,13 +3160,15 @@ public class StandardContext
                            String description,
                            String className,
                            Map<String, String> initParameters,
-                           int loadOnStartup) {
+                           int loadOnStartup,
+                           boolean isAsyncSupported) {
 
         Wrapper wrapper = createWrapper();
 
         wrapper.setName(servletName);
         wrapper.setDescription(description);
         wrapper.setServletClass(className);
+        wrapper.setIsAsyncSupported(isAsyncSupported);
 
         if (initParameters != null) {
             for (Map.Entry<String, String> e : initParameters.entrySet()) {

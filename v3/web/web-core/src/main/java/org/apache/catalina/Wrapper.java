@@ -380,6 +380,16 @@ public interface Wrapper extends Container {
 
 
     /**
+     * Configures the wrapped servlet as either supporting or not supporting
+     * asynchronous operations.
+     *
+     * @param isAsyncSupported true if the wrapped servlet supports
+     * asynchronous operations, false otherwise
+     */
+    public void setIsAsyncSupported(boolean isAsyncSupported);
+
+
+    /**
      * Checks if the wrapped servlet has been annotated or flagged in the
      * deployment descriptor as being able to support asynchronous operations.
      *

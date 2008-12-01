@@ -1000,9 +1000,10 @@ public class ApplicationContext
                            String description,
                            String className,
                            Map<String, String> initParameters,
-                           int loadOnStartup) {
+                           int loadOnStartup,
+                           boolean isAsyncSupported) {
         context.addServlet(servletName, description, className,
-                           initParameters, loadOnStartup);
+                           initParameters, loadOnStartup, isAsyncSupported);
     }
 
 
@@ -1023,8 +1024,10 @@ public class ApplicationContext
     public void addFilter(String filterName,
                           String description,
                           String className,
-                          Map<String, String> initParameters) {
-        context.addFilter(filterName, description, className, initParameters);
+                          Map<String, String> initParameters,
+                          boolean isAsyncSupported) {
+        context.addFilter(filterName, description, className, initParameters,
+                          isAsyncSupported);
     }
     
     

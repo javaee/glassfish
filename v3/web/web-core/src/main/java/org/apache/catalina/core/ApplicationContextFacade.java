@@ -421,14 +421,17 @@ public final class ApplicationContextFacade
                            String description,
                            String className,
                            Map<String, String> initParameters,
-                           int loadOnStartup) {
+                           int loadOnStartup,
+                           boolean isAsyncSupported) {
         if (SecurityUtil.isPackageProtectionEnabled()) {
             doPrivileged("addServlet",
                          new Object[] {servletName, description, className,
-                                       initParameters, loadOnStartup});
+                                       initParameters, loadOnStartup,
+                                       isAsyncSupported});
         } else {
             context.addServlet(servletName, description, className,
-                               initParameters, loadOnStartup);
+                               initParameters, loadOnStartup,
+                               isAsyncSupported);
         }
     }
 
@@ -455,14 +458,15 @@ public final class ApplicationContextFacade
     public void addFilter(String filterName,
                           String description,
                           String className,
-                          Map<String, String> initParameters) {
+                          Map<String, String> initParameters,
+                          boolean isAsyncSupported) {
         if (SecurityUtil.isPackageProtectionEnabled()) {
             doPrivileged("addFilter",
                          new Object[] {filterName, description, className,
-                                       initParameters});
+                                       initParameters, isAsyncSupported});
         } else {
             context.addFilter(filterName, description, className,
-                              initParameters);
+                              initParameters, isAsyncSupported);
         }
     }
     

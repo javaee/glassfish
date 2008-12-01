@@ -180,6 +180,18 @@ public class FilterDef implements Serializable {
 
 
     /**
+     * Configures this filter as either supporting or not supporting
+     * asynchronous operations.
+     *
+     * @param isAsyncSupported true if this filter supports asynchronous
+     * operations, false otherwise
+     */
+    public void setIsAsyncSupported(boolean isAsyncSupported) {
+        this.isAsyncSupported = isAsyncSupported;
+    }
+
+
+    /**
      * Checks if this filter has been annotated or flagged in the deployment
      * descriptor as being able to support asynchronous operations.
      *
