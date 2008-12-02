@@ -20,6 +20,7 @@ public class CommandExecutor {
 
     public CommandExecutor(Server server) throws EmbeddedException {
         cr = server.getHabitat().getComponent(CommandRunner.class);
+        this.serverName = server.getServerName();
     }
 
    /**
@@ -47,6 +48,7 @@ public class CommandExecutor {
                     if (f.exists()) {
                         ArrayList<File> list = new ArrayList();
                         list.add(f);
+                        options.put("serverName", this.serverName);
                         cr.doCommand(commandName, options, report, list);
                     } else {
                         throw new EmbeddedException("no_such_file", f);
@@ -90,8 +92,12 @@ public class CommandExecutor {
         return msg==null ? "" : msg;
     }
 
+    public String getServerName() {
+        return serverName;
+    }
+
     private CommandRunner cr;
     private ActionReport report = new PropsFileActionReporter();
     private ActionReport.ExitCode exitCode;
-
+    private String serverName;
 }

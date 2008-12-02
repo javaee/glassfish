@@ -163,6 +163,10 @@ public class Server {
         return habitat;
     }
 
+    public String getServerName() {
+        return this.info.name;
+    }
+
     public Server(EmbeddedInfo info) throws EmbeddedException {
         this.info = info;
         //this.id = id;

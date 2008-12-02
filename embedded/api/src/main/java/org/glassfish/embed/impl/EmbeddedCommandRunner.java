@@ -63,11 +63,15 @@ public class EmbeddedCommandRunner extends CommandRunner{
 		// for now we support "server"
 
         try {
-            Server server = Server.getServer("server");
+            String serverName = parameters.getProperty("serverName");
+            if (serverName == null) {
+                serverName = "server";
+            }
+            Server server = Server.getServer(serverName);
 
 			if(server == null) {
 				EmbeddedInfo info = new EmbeddedInfo();
-				info.setServerName("server");
+				info.setServerName(serverName);
 				server = new Server(info);
 			}
             server.deploy(f);
