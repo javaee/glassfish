@@ -703,7 +703,7 @@ public class Server {
 
 
     public static Server getServer(String id) {
-        return servers.get("id");
+        return servers.get(id);
     }
 
     private static void addServer(String name, Server server) {
