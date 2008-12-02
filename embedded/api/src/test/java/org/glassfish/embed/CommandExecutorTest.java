@@ -57,7 +57,7 @@ public class CommandExecutorTest {
     public void tearDown() {
         options.clear();
     }
-
+    @Ignore
     @Test
     public void testCreateJdbcConnectionPoolSuccess() {
         options.setProperty("datasourceclassname", "org.apache.derby.jdbc.ClientDataSource");
@@ -74,7 +74,7 @@ public class CommandExecutorTest {
         }
         assertEquals(ActionReport.ExitCode.SUCCESS, ce.getExitCode());
     }
- 
+    @Ignore
     @Test
     public void testCreateJdbcResourceSuccess() {
         options.setProperty("connectionpoolid", "DerbyPool");
@@ -88,7 +88,7 @@ public class CommandExecutorTest {
         }
         assertEquals(ActionReport.ExitCode.SUCCESS, ce.getExitCode());
     }
-
+    @Ignore
     @Test
     public void testDeleteJdbcResourceSuccess() {
         options.setProperty("DEFAULT", "jdbc/__default");
@@ -101,7 +101,7 @@ public class CommandExecutorTest {
         }
         assertEquals(ActionReport.ExitCode.SUCCESS, ce.getExitCode());
     }
-
+    @Ignore
     @Test
     public void testDeleteJdbcConnectionPoolSuccess() {
         options.setProperty("DEFAULT", "DerbyPool");
@@ -114,7 +114,7 @@ public class CommandExecutorTest {
         }
         assertEquals(ActionReport.ExitCode.SUCCESS, ce.getExitCode());
     }
-
+    @Ignore
     @Test
     public void testCreateJdbcConnectionPoolFail() {
         options.setProperty("DEFAULT", "poolA");
@@ -131,7 +131,7 @@ public class CommandExecutorTest {
         }
         assertEquals(ActionReport.ExitCode.FAILURE, ce.getExitCode());
     }
-
+    @Ignore
     @Test
     public void testDeploySuccess() {
         String file = "target/test-classes/simple.war";
@@ -145,7 +145,7 @@ public class CommandExecutorTest {
         }
         assertEquals(ActionReport.ExitCode.SUCCESS, ce.getExitCode());
     }
-
+    @Ignore
     @Test
     public void testDeployFail() {
         String file = "foo";
