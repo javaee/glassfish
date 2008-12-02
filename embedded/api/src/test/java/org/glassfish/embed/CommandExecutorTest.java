@@ -132,6 +132,38 @@ public class CommandExecutorTest {
         assertEquals(ActionReport.ExitCode.FAILURE, ce.getExitCode());
     }
 
+    @Test
+    public void testDeploySuccess() {
+        String file = "target/test-classes/simple.war";
+        options.setProperty("DEFAULT", file);
+        try {
+            ce.execute("deploy", options);
+        } catch (Exception ex) {
+            LoggerHelper.severe("testDeploySuccess failed");
+            ex.printStackTrace();
+            fail();
+        }
+        assertEquals(ActionReport.ExitCode.SUCCESS, ce.getExitCode());
+    }
+
+    @Test
+    public void testDeployFail() {
+        String file = "foo";
+        options.setProperty("DEFAULT", file);
+        try {
+            ce.execute("deploy", options);
+        } catch (Exception ex) {
+            boolean isEmbEx = ex instanceof EmbeddedException;
+            assertTrue(isEmbEx);
+            if (!isEmbEx) {
+                LoggerHelper.severe("testDeployFail failed");
+                ex.printStackTrace();
+                fail();
+            }
+        }
+        assertEquals(ActionReport.ExitCode.FAILURE, ce.getExitCode());
+    }
+
     private Properties options = new Properties();
     private static CommandExecutor ce;
     private static Server myGF;
