@@ -35,7 +35,7 @@
  */
 package com.sun.ejb.codegen;
 
-import com.sun.corba.ee.spi.orbutil.generic.NullaryFunction ;
+//import com.sun.corba.ee.spi.orbutil.generic.NullaryFunction ;
 
 import com.sun.corba.ee.impl.orbutil.codegen.ClassGenerator;
 
@@ -43,7 +43,7 @@ import com.sun.corba.ee.impl.orbutil.codegen.ClassGenerator;
  * It puts the class name of the generated class in a single place.
  * It must always be the case that evaluate().name().equals( className() ).
  */
-public interface ClassGeneratorFactory extends NullaryFunction<ClassGenerator>
+public interface ClassGeneratorFactory //extends NullaryFunction<ClassGenerator>
 {
     String className() ;
 }

@@ -42,10 +42,12 @@ import java.util.logging.*;
 import com.sun.logging.*;
 
 import static java.lang.reflect.Modifier.*;
+/*TODO
 import static com.sun.corba.ee.spi.orbutil.codegen.Wrapper.*;
 import com.sun.corba.ee.spi.orbutil.codegen.Type;
 import com.sun.corba.ee.spi.orbutil.codegen.Expression;
 import com.sun.corba.ee.impl.orbutil.codegen.ClassGenerator;
+*/
 
 import javax.ejb.EnterpriseBean;
 import javax.ejb.SessionBean;
@@ -126,6 +128,7 @@ public class Remote30WrapperGenerator extends Generator
 
     }
 
+    /*TODO
     public ClassGenerator evaluate() {
 
         _clear();
@@ -159,7 +162,7 @@ public class Remote30WrapperGenerator extends Generator
 
         _end();
 
-        /*
+        
         System.out.println("Generating byte code for remote30rwappergen");
         try {
             java.util.Properties p = new java.util.Properties();
@@ -171,12 +174,12 @@ public class Remote30WrapperGenerator extends Generator
             System.out.println("Got exception when generating byte code");
             e.printStackTrace();
         }
-        */
+       
 
         return _classGenerator() ;
 
     }
-
+	*/
             
     /**
      * Generate the code to the specified output stream.
@@ -220,7 +223,7 @@ public class Remote30WrapperGenerator extends Generator
 	p.close();
     }
 
-
+    /*TODO
     private void printMethodImpl(Method m)
     {
 
@@ -343,7 +346,8 @@ public class Remote30WrapperGenerator extends Generator
 
         _end();
     }
-
+	*/
+    
     /**
      * Generate the code for a single method.
      * @param the writer.

@@ -45,9 +45,11 @@ import com.sun.ejb.EJBUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import static java.lang.reflect.Modifier.*;
+/*TODO
 import static com.sun.corba.ee.spi.orbutil.codegen.Wrapper.*;
 import com.sun.corba.ee.spi.orbutil.codegen.Type;
 import com.sun.corba.ee.impl.orbutil.codegen.ClassGenerator;
+*/
 
 /**
  * This class is used to generate a sub-interface of the
@@ -86,6 +88,7 @@ public class GenericHomeGenerator extends Generator
         loader = cl;
     }
 
+    /*TODO
     public ClassGenerator evaluate() {
 
         _clear();
@@ -109,7 +112,8 @@ public class GenericHomeGenerator extends Generator
 
         return _classGenerator() ;
     }
-
+	*/
+    
     public void generate(OutputStream out)
 	throws GeneratorException, IOException 
     {

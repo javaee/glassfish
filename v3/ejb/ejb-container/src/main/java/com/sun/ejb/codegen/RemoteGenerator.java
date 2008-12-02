@@ -43,10 +43,12 @@ import com.sun.logging.*;
 import com.sun.ejb.EJBUtils;
 
 import static java.lang.reflect.Modifier.*;
+/*TODO
 import static com.sun.corba.ee.spi.orbutil.codegen.Wrapper.*;
 import com.sun.corba.ee.spi.orbutil.codegen.Type;
 import com.sun.corba.ee.spi.orbutil.codegen.Expression;
 import com.sun.corba.ee.impl.orbutil.codegen.ClassGenerator;
+*/
 
 import javax.ejb.EnterpriseBean;
 import javax.ejb.SessionBean;
@@ -118,6 +120,7 @@ public class RemoteGenerator extends Generator
         // is only visible through the RemoteHome view.
     }
 
+    /*TODO
     public ClassGenerator evaluate() {
 
         _clear();
@@ -142,7 +145,7 @@ public class RemoteGenerator extends Generator
         return _classGenerator() ;
 
     }
-
+	*/
 
 
     /**
@@ -178,6 +181,7 @@ public class RemoteGenerator extends Generator
 	p.close();
     }
 
+    /*TODO
     private void printMethod(Method m)
     {
 
@@ -205,7 +209,7 @@ public class RemoteGenerator extends Generator
 
         _end();
     }
-
+	*/
 
     /**
      * Generate the code for a single method.

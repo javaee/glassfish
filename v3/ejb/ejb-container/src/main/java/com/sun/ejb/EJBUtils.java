@@ -56,7 +56,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-import static com.sun.corba.ee.spi.orbutil.codegen.Wrapper.*;
+//import static com.sun.corba.ee.spi.orbutil.codegen.Wrapper.*;
 
 /**
  * A handy class with static utility methods.
@@ -488,21 +488,21 @@ public class EJBUtils {
                                          final ClassLoader loader,
                                          final Class protectionDomainBase) {
 
-        cgf.evaluate();
+        //TODO cgf.evaluate();
 
         final Properties props = new Properties();
         if( _logger.isLoggable(Level.FINE) ) {
-
+/*TODO
             props.put(DUMP_AFTER_SETUP_VISITOR, "true");
             props.put(TRACE_BYTE_CODE_GENERATION, "true");
             props.put(USE_ASM_VERIFIER, "true");
-
+*/
             try {
 
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 PrintStream ps = new PrintStream(baos);
 
-                _sourceCode(ps, props);
+                //TODO _sourceCode(ps, props);
                 _logger.fine(baos.toString());
 
             } catch(Exception e) {
@@ -514,14 +514,15 @@ public class EJBUtils {
         Class result = null;
         try {
             if(System.getSecurityManager() == null) {
-                result = _generate(loader, protectionDomainBase.getProtectionDomain(), 
-                        props);
+                //TODO result = _generate(loader, protectionDomainBase.getProtectionDomain(), 
+                        //TODO props);
             } else {
                 result = (Class)  java.security.AccessController.doPrivileged
                         (new java.security.PrivilegedAction() {
                     public java.lang.Object run() {
-                        return _generate(loader, 
-                                protectionDomainBase.getProtectionDomain(), props);
+                    	return null;
+                        //TODO return _generate(loader, 
+                                //TODO protectionDomainBase.getProtectionDomain(), props);
                     }});
             }
         } catch (RuntimeException runEx) {

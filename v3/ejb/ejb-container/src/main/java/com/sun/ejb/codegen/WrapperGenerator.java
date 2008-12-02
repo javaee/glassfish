@@ -38,12 +38,6 @@ package com.sun.ejb.codegen;
 import java.lang.reflect.*;
 import java.io.*;
 import java.util.*;
-import java.util.logging.*;
-import com.sun.logging.*;
-
-import javax.ejb.EnterpriseBean;
-import javax.ejb.SessionBean;
-import javax.ejb.EntityBean;
 
 import org.glassfish.api.deployment.DeploymentContext;
 

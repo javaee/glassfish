@@ -49,10 +49,12 @@ import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import static java.lang.reflect.Modifier.*;
+/*TODO
 import static com.sun.corba.ee.spi.orbutil.codegen.Wrapper.*;
 import com.sun.corba.ee.spi.orbutil.codegen.Type;
 import com.sun.corba.ee.spi.orbutil.codegen.Expression;
 import com.sun.corba.ee.impl.orbutil.codegen.ClassGenerator;
+*/
 
 /**
  * This class is used to generate a Serializable sub-class
@@ -105,6 +107,7 @@ public class SerializableBeanGenerator extends Generator
 
     }
 
+    /*TODO
     public ClassGenerator evaluate() {
 
         _clear();
@@ -154,7 +157,8 @@ public class SerializableBeanGenerator extends Generator
 
         return _classGenerator() ;
     }
-
+	*/
+    
     /**
      * Generate the code to the specified output stream.
      * @param the output stream
