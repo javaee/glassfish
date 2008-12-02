@@ -8,6 +8,8 @@ package org.glassfish.embed;
 import com.sun.enterprise.v3.admin.CommandRunner;
 import com.sun.enterprise.v3.common.PropsFileActionReporter;
 import org.glassfish.api.ActionReport;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Properties;
 
 /**
@@ -38,7 +40,23 @@ public class CommandExecutor {
     */
     public void execute(String commandName, Properties options) throws EmbeddedException {
         try {
-            cr.doCommand(commandName, options, report);
+            if (commandName != null && commandName.equals("deploy")) {
+                Object path = options.get("DEFAULT");
+                if (path != null) {
+                    File f = new File((String)path);
+                    if (f.exists()) {
+                        ArrayList<File> list = new ArrayList();
+                        list.add(f);
+                        cr.doCommand(commandName, options, report, list);
+                    } else {
+                        throw new EmbeddedException("no_such_file", f);
+                    }
+                } else {
+                    throw new EmbeddedException("nothing_to_do");
+                }
+            } else {
+                cr.doCommand(commandName, options, report);
+            }
         } catch (Throwable t) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(t);
