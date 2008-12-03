@@ -788,6 +788,54 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
         return activeResourceAdapter;
     }
 
+    /** Returns the MCF instances.
+     *  @param poolName Name of the pool.MCF pertaining to this pool is
+     *         created/returned.
+     *  @return created/already present MCF instance
+     *  @throws ConnectorRuntimeException if creation/retrieval of MCF fails
+     */
+    public ManagedConnectionFactory[] obtainManagedConnectionFactories(
+           String poolName) throws ConnectorRuntimeException {
+	ManagedConnectionFactory[] mcfs = null;
+        try {
+		ConnectorConnectionPool conPool =
+				getConnectorConnectionPool(poolName);
+		ActiveResourceAdapter activeResourceAdapter =
+					getResourceAdapter(conPool);
+                mcfs =
+                     activeResourceAdapter.
+                        createManagedConnectionFactories
+                                (conPool, null);
+        } catch(NamingException ne) {
+            String i18nMsg = localStrings.getString(
+                "pingpool.name_not_bound", poolName);
+            ConnectorRuntimeException cre = new
+                ConnectorRuntimeException( i18nMsg);
+            cre.initCause(ne);
+            _logger.log(Level.FINE,"rardeployment.jndi_lookup_failed",
+                               poolName);
+            if (_logger.isLoggable( Level.FINE ) ) {
+                _logger.log(Level.FINE,"",cre);
+            }
+            //_logger.log(Level.SEVERE,"",cre);
+            throw cre;
+        }
+        catch(NullPointerException ne) {
+            String i18nMsg = localStrings.getString(
+                "ccp_adm.failed_to_register_mcf", poolName);
+            ConnectorRuntimeException cre = new
+                ConnectorRuntimeException( i18nMsg );
+            cre.initCause(ne);
+            _logger.log(Level.SEVERE,"mcf_add_toregistry_failed",poolName);
+            if (_logger.isLoggable( Level.FINE ) ) {
+                _logger.log(Level.FINE,"",cre);
+            }
+            //_logger.log(Level.SEVERE,"",cre);
+            throw cre;
+        }
+	return mcfs;
+    }
+
     /**
      * Returns the MCF instance. If the MCF is already created and
      * present in connectorRegistry that instance is returned. Otherwise it
