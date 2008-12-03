@@ -198,7 +198,6 @@ public class ConnectorService implements ConnectorConstants {
     public void loadDeferredResourceAdapter(String rarName)
             throws ConnectorRuntimeException {
         try {
-            
             //Do this only for System RA
             if (ConnectorsUtil.belongsToSystemRA(rarName)) {
                 _runtime.createActiveResourceAdapter(ConnectorsUtil.getSystemModuleLocation(rarName), rarName, null);
@@ -217,9 +216,6 @@ public class ConnectorService implements ConnectorConstants {
         if (resourcesToLoad == null || resourcesToLoad.length == 0) {
             return;
         }
-        String resourceType = null;
-        ResourceDeployer deployer = null;
-        ResourcesUtil resourceUtil = ResourcesUtil.createInstance();
         for (ConfigBeanProxy resource : resourcesToLoad) {
             if (resource == null) {
                 continue;
@@ -260,7 +256,6 @@ public class ConnectorService implements ConnectorConstants {
             return desc;
         }
         String moduleDir;
-        ResourcesUtil resUtil = ResourcesUtil.createInstance();
 
         if (ConnectorsUtil.belongsToSystemRA(rarName)) {
             moduleDir = ConnectorsUtil.getSystemModuleLocation(rarName);
@@ -304,6 +299,7 @@ public class ConnectorService implements ConnectorConstants {
     }
 
 
+/*
     private void deleteResource(Object resource) throws ConnectorRuntimeException {
         try {
             _runtime.getResourceDeployer(resource).undeployResource(resource);
@@ -336,11 +332,13 @@ public class ConnectorService implements ConnectorConstants {
         }
     }
 
-    /**
+    */
+/**
      * Destroy all resources and pools.
      * Delete resources followed by the pools from the list
      * @param allResources resources and pools
      */
+/*
     public void destroyResourcesAndPools(Collection allResources) {
         Collection pools = getPools(allResources);
         Collection resources = getResources(allResources);
@@ -348,6 +346,7 @@ public class ConnectorService implements ConnectorConstants {
         destroyResources(resources);
         destroyConnectionPools(pools);
     }
+*/
 
     public boolean checkAndLoadPool(String poolName) {
         boolean status = false;
@@ -414,6 +413,7 @@ public class ConnectorService implements ConnectorConstants {
         }
     }
 */
+/*
     private Collection getPools(Collection allResources) {
         List pools = new ArrayList();
         for (Object resource : allResources) {
@@ -441,6 +441,7 @@ public class ConnectorService implements ConnectorConstants {
         }
         return resources;
     }
+*/
 
     public void ifSystemRarLoad(String rarName)
                            throws ConnectorRuntimeException {

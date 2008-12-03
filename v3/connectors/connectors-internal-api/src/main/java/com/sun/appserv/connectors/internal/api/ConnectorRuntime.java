@@ -133,6 +133,7 @@ public interface ConnectorRuntime {
      *
      * @param resources list of resources and pools to be unpublished
      */
+    //TODO V3 no need to pass resources as it is taken care by ResourceManager ?
     public void shutdownAllActiveResourceAdapters(Collection<String> resources);
 
     /**
@@ -140,7 +141,7 @@ public interface ConnectorRuntime {
      *
      * @param resources list of resources and pools
      */
-    public void destroyResourcesAndPools(Collection resources);
+    //public void destroyResourcesAndPools(Collection resources);
 
     /**
      * Does lookup of non-tx-datasource. If found, it will be returned.<br><br>

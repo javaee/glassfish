@@ -64,48 +64,73 @@ import java.util.logging.Logger;
  */
 //TODO V3 not needed ? as deployers are found as services ?
 public class ResourceDeployerFactory {
+/*
     //TODO V3 should this be a Service ?
-    /*TODO V3 can't the factory do deploy/undeploy the resource by finding the resource-type and the
+    */
+/*TODO V3 can't the factory do deploy/undeploy the resource by finding the resource-type and the
     TODO V3   deployer automatically ? */
+/*
 
-    /** Admin object resource deployer */
+    */
+/** Admin object resource deployer */
+/*
     private ResourceDeployer adminObjectResourceDeployer_ = null;
     
-    /** Connector Resource deployer */
+    */
+/** Connector Resource deployer */
+/*
     private ResourceDeployer connectorResourceDeployer_ = null;
 
-    /** Connector Connection pool deployer */
+    */
+/** Connector Connection pool deployer */
+/*
     private com.sun.appserv.connectors.internal.spi.ResourceDeployer connectorConnectionPoolDeployer_ = null;
 
-    /** jdbc resource deployer */
+    */
+/** jdbc resource deployer */
+/*
     private com.sun.appserv.connectors.internal.spi.ResourceDeployer jdbcResourceDeployer_ = null;
 
-    /** jdbc connection pool deployer */
+    */
+/** jdbc connection pool deployer */
+/*
     private ResourceDeployer JdbcConnectionPoolDeployer_ = null;
 
-    /** java mail resource deployer */
+    */
+/** java mail resource deployer */
+/*
     private ResourceDeployer mailResourceDeployer_  = null;
 
-    /** pmf resource deployer */
+    */
+/** pmf resource deployer */
+/*
     private ResourceDeployer pmfResourceDeployer_  = null;
 
-    /** custom resource deployer */
+    */
+/** custom resource deployer */
+/*
     private ResourceDeployer customResourceDeployer_   = null;
 
-    /** external jndi resource deployer */
+    */
+/** external jndi resource deployer */
+/*
     private ResourceDeployer externalJndiResourceDeployer_  = null;
 
-    /**
+    */
+/**
      * logger to log core messages
      */
+/*
     static Logger _logger = LogDomains.getLogger(ResourceDeployerFactory.class, LogDomains.CORE_LOGGER);
 
     private static StringManager localStrings =
             StringManager.getManager(ResourceDeployerFactory.class);
 
-    /**
+    */
+/**
      * Initializes the resource deployers.
      */
+/*
     public ResourceDeployerFactory() {
         this.connectorResourceDeployer_ = new ConnectorResourceDeployer();
         this.connectorConnectionPoolDeployer_ = new ConnectorConnectionPoolDeployer();
@@ -118,13 +143,15 @@ public class ResourceDeployerFactory {
         this.adminObjectResourceDeployer_= new AdminObjectResourceDeployer();
     }
 
-    /**
+    */
+/**
      * Returns a resource deployer for the given resource type.
      *
      * @param type resource type
      * @throws Exception if unknown resource type
      * @return ResourceDeployer of appropriate type
      */
+/*
     public com.sun.appserv.connectors.internal.spi.ResourceDeployer getResourceDeployer(String type) throws Exception {
 
         ResourceDeployer deployer = null;
@@ -155,13 +182,15 @@ public class ResourceDeployerFactory {
         return deployer;
     }
 
-    /**
+    */
+/**
      * Returns a resource deployer for the given resource type.
      *
      * @param resource Object
      * @throws Exception if unknown resource type
      * @return ResourceDeployer for the given resource
      */
+/*
     public com.sun.appserv.connectors.internal.spi.ResourceDeployer getResourceDeployer(Object resource) throws Exception {
 
         ResourceDeployer deployer = null;
@@ -191,5 +220,6 @@ public class ResourceDeployerFactory {
         }
         return deployer;
     }
+*/
 
 }

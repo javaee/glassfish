@@ -235,8 +235,8 @@ public class ConnectorsUtil {
     }
 */
 
-    public static Collection<ConnectorResource> getAllResources(Collection<String> poolNames, Resources allResources) {
-        List<ConnectorResource> connectorResources = new ArrayList<ConnectorResource>();
+    public static Collection<Resource> getAllResources(Collection<String> poolNames, Resources allResources) {
+        List<Resource> connectorResources = new ArrayList<Resource>();
         for(Resource resource : allResources.getResources()){
             if(resource instanceof ConnectorResource){
                 ConnectorResource connectorResource = (ConnectorResource)resource;
@@ -284,14 +284,16 @@ public class ConnectorsUtil {
      * @return Collection of system RAR pools
      */
     public static Collection getAllSystemRAResourcesAndPools(Resources allResources) {
+        //Make sure that resources are added first and then pools.
         List resources = new ArrayList();
+        List pools = new ArrayList();
         for(Resource resource : allResources.getResources()){
             if(resource instanceof JdbcConnectionPool ){
-                resources.add(resource);
+                pools.add(resource);
             } else if( resource instanceof ConnectorConnectionPool){
                 String raName = ((ConnectorConnectionPool)resource).getResourceAdapterName();
                 if( ConnectorsUtil.belongsToSystemRA(raName) ){
-                    resources.add(resource);
+                    pools.add(resource);
                 }
             } else if(resource instanceof JdbcResource){
                 resources.add(resource);
@@ -303,6 +305,7 @@ public class ConnectorsUtil {
                 }
             }
         }
+        resources.add(pools);
         return resources;
     }
 
@@ -324,6 +327,7 @@ public class ConnectorsUtil {
         }
         return raName;
     }
+
 
     public static String getResourceType(Resource resource){
         if(resource instanceof JdbcResource){
@@ -350,11 +354,6 @@ public class ConnectorsUtil {
         }
     }
 
-    public static ResourceDeployer getDeployer(Habitat deployerHabitat, Resource resource){
-        String resourceType = ConnectorsUtil.getResourceType(resource);
-        return deployerHabitat.getComponent(ResourceDeployer.class, resourceType);
-    }
-
     /**
      * load and create an object instance
      */
@@ -363,11 +362,13 @@ public class ConnectorsUtil {
         Class c;
 
         try {
+            //TODO V3 correct approach ?
             obj = Class.forName(className).newInstance();
         } catch (Exception cnf) {
             try {
                 //TODO V3 not needed ?
                 // c = ClassLoader.getSystemClassLoader().loadClass(className);
+                //TODO V3 correct approach ?
                 c = Thread.currentThread().getContextClassLoader().loadClass(className);
                 obj = c.newInstance();
             } catch (Exception ex) {
@@ -376,7 +377,6 @@ public class ConnectorsUtil {
 
             }
         }
-
         return obj;
     }
 

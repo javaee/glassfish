@@ -46,7 +46,6 @@ import org.glassfish.api.admin.config.Property;
 
 import java.beans.PropertyChangeEvent;
 import java.util.logging.Logger;
-import java.util.logging.Level;
 import java.util.*;
 
 import com.sun.enterprise.config.serverbeans.*;
@@ -69,7 +68,7 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
     private Logger logger;
 
     @Inject
-    private ResourceAdaptersBinder resourcesBinder;
+    private ResourcesBinder resourcesBinder;
 
     @Inject
     private Habitat connectorRuntimeHabitat;
@@ -83,12 +82,15 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
     private ConnectorRuntime runtime;
     
     public void postConstruct() {
-        bindResources(allResources);
-        addListenerToResources();
+        deployResources(allResources.getResources());
     }
 
-    public void bindResources(Resources allResources){
-        for(Resource resource : allResources.getResources()){
+    /**
+     * deploy resources
+     * @param resources list
+     */
+    public void deployResources(Collection<Resource> resources){
+        for(Resource resource : resources){
             if(resource instanceof BindableResource){
                 BindableResource bindableResource = (BindableResource)resource;
                 resourcesBinder.deployResource(bindableResource.getJndiName(), resource);
@@ -96,6 +98,14 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
                 //TODO V3 handle other resources (ra-config) later
             }
         }
+        //TODO V3 will there be a chance of double listener registrationf or a resource ?
+        //TODO V3 eg: allresources added during startup, resources of a particular
+        //TODO V3 connector during connector startup / redeploy ?
+        addListenerToResources(resources);
+    }
+
+    public Resources getAllResources(){
+        return allResources;
     }
 
 
@@ -103,15 +113,16 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
      * The component is about to be removed from commission
      */
     public void preDestroy() {
-
         //TODO V3 : Admin need to make sure that poolnames are unique. As of V2 they are not unique.
         Collection resources = ConnectorsUtil.getAllSystemRAResourcesAndPools(allResources);
         
         //TODO V3 : even in case when there is no resource used by an application (no RAR was started),
         //TODO V3 this seems to be called ??
-        getConnectorRuntime().shutdownAllActiveResourceAdapters(resources);
+        undeployResources(resources);
+        getConnectorRuntime().shutdownAllActiveResourceAdapters(null);
         removeListenerFromResources();
     }
+
 
     private ConnectorRuntime getConnectorRuntime() {
         //TODO V3 not synchronized
@@ -121,42 +132,72 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
         return runtime;
     }
 
+
     /**
      * deploys the resources (pool/resources) of a particular resource-adapter
      * @param moduleName resource-adapter name
      */
+/*
     public void deployResourcesForModule(String moduleName){
-        Collection<ConnectorConnectionPool> connectionPools = ConnectorsUtil.getAllPoolsOfModule(moduleName, allResources);
+        //TODO V3 needed for redeploy of module, what happens to the listeners of these resources ?
+        Collection<ConnectorConnectionPool> connectionPools =
+                ConnectorsUtil.getAllPoolsOfModule(moduleName, allResources);
         Collection<String> poolNames = ConnectorsUtil.getAllPoolNames(connectionPools);
-        Collection<ConnectorResource> connectorResources = ConnectorsUtil.getAllResources(poolNames, allResources);
+        Collection<Resource> connectorResources = ConnectorsUtil.getAllResources(poolNames, allResources);
         ConnectorConnectionPool[] pools = new ConnectorConnectionPool[connectionPools.size()];
         ConnectorResource[] resources = new ConnectorResource[connectorResources.size()];
 
         resourcesBinder.deployAllConnectorResourcesAndPools(connectorResources.toArray(resources),
                 connectionPools.toArray(pools));
     }
+*/
 
     /**
      * undeploys the resources (pool/resources) of a particular resource-adapter
      * @param moduleName resource-adapter name
      */
+/*
     public void undeployResourcesForModule(String moduleName){
         Collection<ConnectorConnectionPool> connectionPools = ConnectorsUtil.getAllPoolsOfModule(moduleName, allResources);
         Collection<String> poolNames = ConnectorsUtil.getAllPoolNames(connectionPools);
-        Collection<ConnectorResource> connectorResources = ConnectorsUtil.getAllResources(poolNames, allResources);
+        Collection<Resource> connectorResources = ConnectorsUtil.getAllResources(poolNames, allResources);
         List resources = new ArrayList();
         resources.addAll(connectionPools);
         resources.addAll(connectorResources);
         destroyResourcesAndPools(resources);
+        //TODO V3 listeners of these resources ?
+    }
+*/
+
+    /**
+     * undeploy the given set of resources<br>
+     * <b>care has to be taken for the case of dependent resources<br>
+     * eg : all resources need to be undeployed <br>
+     * before undeploying the pool that they refer to</b>
+     * @param resources list of resources
+     */
+    public void undeployResources(Collection<Resource> resources){
+        for(Resource resource : resources){
+            try{
+                getResourceDeployer(resource).undeployResource(resource);
+            }catch(Exception e){
+                //TODO V3 can't Resource (config bean) have name ?
+                logger.warning("Unable to undeploy resource of type : " + resource.getClass().getName());
+            }finally{
+                removeListenerFromResource(resource);
+            }
+        }
     }
 
     /**
      * destroys a list of resource and pools (jdbc/connector)
      * @param Collection of resources and pools to be destroyed
      */
+/*
     private void destroyResourcesAndPools(Collection resources) {
         getConnectorRuntime().destroyResourcesAndPools(resources);
     }
+*/
 
     /**
      * Notification that @Configured objects that were injected have changed
@@ -202,13 +243,14 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
 
             private <T extends ConfigBeanProxy> NotProcessed handleChangeEvent(T instance) {
                 NotProcessed np = null;
+                //TODO V3 handle enabled / disabled / resource-ref / redeploy ?
                 try {
                     if (ConnectorsUtil.isValidEventType(instance)) {
                         ResourceDeployer deployer = getResourceDeployer(instance);
                         if(deployer != null){
                             deployer.redeployResource(instance);
                         }else{
-                            logger.log(Level.WARNING,"no deployer found for resource type [ "+ instance.getClass().getName() + "]");
+                            logger.warning("no deployer found for resource type [ "+ instance.getClass().getName() + "]");
                             //TODO V3 log throw Exception
                         }
                     } else if (ConnectorsUtil.isValidEventType(instance.getParent())) {
@@ -218,7 +260,7 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
                         if(deployer != null){
                             deployer.redeployResource(instance.getParent());
                         }else{
-                            System.out.println("no deployer found for resource type [ "+ instance.getClass().getName() + "]");
+                            logger.warning("no deployer found for resource type [ "+ instance.getClass().getName() + "]");
                             //TODO V3 log throw Exception
                         }
                     }
@@ -264,7 +306,7 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
                         if(deployer != null){
                             deployer.undeployResource(instance);
                         }else{
-                            System.out.println("no deployer found for resource type [ "+ instance.getClass().getName() + "]");
+                            logger.warning("no deployer found for resource type [ "+ instance.getClass().getName() + "]");
                             //TODO V3 log throw Exception
                         }
 
@@ -275,7 +317,7 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
                         if(deployer != null){
                             deployer.redeployResource(instance.getParent());
                         }else{
-                            System.out.println("no deployer found for resource type [ "+ instance.getClass().getName() + "]");
+                            logger.warning("no deployer found for resource type [ "+ instance.getClass().getName() + "]");
                             //TODO V3 log throw Exception
                         }
                     }
@@ -296,17 +338,16 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
      * Connector Connection Pool/Connector Resource.
      * Invoked from postConstruct()
      */
-    private void addListenerToResources() {
-        for (Resource configuredResource : allResources.getResources()) {
+    private void addListenerToResources(Collection<Resource> resources) {
+        for (Resource configuredResource : resources) {
             addListenerToResource(configuredResource);
         }
     }
 
     /**
-     * Add listener to a generic resource (JDBC Connection Pool/Connector 
-     * Connection Pool/JDBC resource/Connector resource)
-     * Used in the case of create asadmin command when listeners have to 
-     * be added to the specific pool/resource
+     * Add listener to a generic resource
+     * Used in the case of create asadmin command when listeners have to
+     * be added to the specific resource
      * @param instance
      */
     private void addListenerToResource(Object instance) {
