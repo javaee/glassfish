@@ -57,6 +57,7 @@ public final class BootstrapContextImpl implements BootstrapContext, Serializabl
 
     private String poolId;
     private WorkManager wm;
+    private XATerminator xa;
     private String moduleName;
     private String threadPoolId;
 
@@ -130,6 +131,16 @@ public final class BootstrapContextImpl implements BootstrapContext, Serializabl
      * Retrieves the <code>XATerminator</code> object.
      */
     public XATerminator getXATerminator() {
-        throw new UnsupportedOperationException("Transactions not supported yet");
+        initializeXATerminator();
+        return xa;
+    }
+
+    /**
+     * initializes XATerminator reference
+     */
+    private void initializeXATerminator() {
+        if (xa == null) {                                   
+            xa = ConnectorRuntime.getRuntime().getXATerminatorProxy(moduleName);
+        }
     }
 }

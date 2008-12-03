@@ -72,6 +72,7 @@ import org.jvnet.hk2.component.Habitat;
 import javax.naming.NamingException;
 import javax.resource.spi.ConnectionManager;
 import javax.resource.spi.ManagedConnectionFactory;
+import javax.resource.spi.XATerminator;
 import javax.resource.spi.work.WorkManager;
 import javax.resource.ResourceException;
 import javax.transaction.SystemException;
@@ -347,6 +348,20 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
         return ccPoolAdmService.obtainManagedConnectionFactory(poolName);
     }
 
+    /** Returns the MCF instances in scenarions where a pool has to
+     *  return multiple mcfs. Should be used only during JMS RA recovery.
+     *  @param poolName Name of the pool.MCFs pertaining to this pool is
+     *         created/returned.
+     *  @return created MCF instances
+     *  @throws ConnectorRuntimeException if creation/retrieval of MCFs fails
+     */
+
+    public ManagedConnectionFactory[]  obtainManagedConnectionFactories(
+           String poolName) throws ConnectorRuntimeException {
+        return ccPoolAdmService.obtainManagedConnectionFactories(poolName);
+    }
+
+
     /**
      * provides connection manager for a pool
      *
@@ -583,16 +598,18 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
      * {@inheritDoc}
      */
     public void shutdownAllActiveResourceAdapters(Collection<String> resources) {
-        destroyResourcesAndPools(resources);
+        //destroyResourcesAndPools(resources);
         stopAllActiveResourceAdapters();
     }
 
     /**
      * {@inheritDoc}
      */
+/*
     public void destroyResourcesAndPools(Collection resources) {
         connectorService.destroyResourcesAndPools(resources);
     }
+*/
 
     public PoolManager getPoolManager() {
         return poolManager;
@@ -726,6 +743,17 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
         //TODO V3 can't we make work-manager to return proxy by default ?
         return wmf.getWorkManagerProxy(poolId, moduleName);
     }
+
+    /**
+     * provides XATerminator proxy that is Serializable
+     * @param moduleName resource-adapter name
+     * @return XATerminator
+     */
+    public XATerminator getXATerminatorProxy(String moduleName){
+        XATerminator xat = getTransactionManager().getXATerminator();
+        return new XATerminatorProxy(xat);
+    }
+
 
     public void removeWorkManagerProxy(String moduleName) {
         wmf.removeWorkManager(moduleName);
