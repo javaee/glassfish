@@ -52,7 +52,7 @@ public class AsyncContextImpl implements AsyncContext {
         Executors.newCachedThreadPool();
 
     // The original (unwrapped) request
-    private Request request;
+    private Request origRequest;
 
     // The possibly wrapped request passed to ServletRequest.startAsync
     private ServletRequest servletRequest;
@@ -60,21 +60,29 @@ public class AsyncContextImpl implements AsyncContext {
     // The possibly wrapped response passed to ServletRequest.startAsync    
     private ServletResponse servletResponse;
 
+    private boolean hasOriginalRequestAndResponse = false;
+
 
     /**
      * Constructor
      *
-     * @param request the original (unwrapped) request
+     * @param origRequest the original (unwrapped) request
      * @param servletRequest the possibly wrapped request passed to
      * ServletRequest.startAsync
      * @param servletResponse the possibly wrapped response passed to
      * ServletRequest.startAsync
+     * @param hasOriginalRequestAndResponse XXX
      */
-    public AsyncContextImpl(Request request, ServletRequest servletRequest,
+    public AsyncContextImpl(Request origRequest,
+                            ServletRequest servletRequest,
+                            Response origResponse,
                             ServletResponse servletResponse) {
-        this.request = request;
+        this.origRequest = origRequest;
         this.servletRequest = servletRequest;
         this.servletResponse = servletResponse;
+        if (origRequest == servletRequest && origResponse == servletResponse) {
+            hasOriginalRequestAndResponse = true;
+        }
     }
 
 
@@ -88,13 +96,18 @@ public class AsyncContextImpl implements AsyncContext {
     }
 
 
+    public boolean hasOriginalRequestAndResponse() {
+        return hasOriginalRequestAndResponse;
+    }
+
+
     public void forward() {
-        request.stopAsyncTimer();
+        origRequest.stopAsyncTimer();
         if (servletRequest instanceof HttpServletRequest) {
             String uri = ((HttpServletRequest)servletRequest).getRequestURI();
             RequestDispatcher rd = servletRequest.getRequestDispatcher(uri);
             if (rd != null) {
-                request.setOkToReinitializeAsync();
+                origRequest.setOkToReinitializeAsync();
                 pool.execute(new Handler(rd, servletRequest, servletResponse));
             } else {
                 log.warning("Unable to acquire RequestDispatcher for " +
@@ -110,10 +123,10 @@ public class AsyncContextImpl implements AsyncContext {
         if (path == null) {
             throw new IllegalArgumentException("Null path");
         }
-        request.stopAsyncTimer();
+        origRequest.stopAsyncTimer();
         RequestDispatcher rd = servletRequest.getRequestDispatcher(path);
         if (rd != null) {
-            request.setOkToReinitializeAsync();
+            origRequest.setOkToReinitializeAsync();
             pool.execute(new Handler(rd, servletRequest, servletResponse));
         } else {
             log.warning("Unable to acquire RequestDispatcher for " + path);
@@ -125,10 +138,10 @@ public class AsyncContextImpl implements AsyncContext {
         if (path == null || context == null) {
             throw new IllegalArgumentException("Null context or path");
         }
-        request.stopAsyncTimer();
+        origRequest.stopAsyncTimer();
         RequestDispatcher rd = context.getRequestDispatcher(path);
         if (rd != null) {
-            request.setOkToReinitializeAsync();
+            origRequest.setOkToReinitializeAsync();
             pool.execute(new Handler(rd, servletRequest, servletResponse));
         } else {
             log.warning("Unable to acquire RequestDispatcher for " + path +
@@ -138,11 +151,11 @@ public class AsyncContextImpl implements AsyncContext {
 
 
     public void complete() {
-        if (!request.isAsyncStarted()) {
+        if (!origRequest.isAsyncStarted()) {
             throw new IllegalStateException("Request not in async mode");
         }
 
-        request.asyncComplete();
+        origRequest.asyncComplete();
     }
 
 

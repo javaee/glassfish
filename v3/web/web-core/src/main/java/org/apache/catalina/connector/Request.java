@@ -3774,11 +3774,11 @@ public class Request
     /**
      * Starts async processing on this request.
      */
-    public AsyncContext startAsync(ServletRequest request,
-                                   ServletResponse response)
+    public AsyncContext startAsync(ServletRequest servletRequest,
+                                   ServletResponse servletResponse)
             throws IllegalStateException {
 
-        if (request == null || response == null) {
+        if (servletRequest == null || servletResponse == null) {
             throw new IllegalArgumentException("Null request or response");
         }      
         if (!isAsyncSupported()) {
@@ -3792,10 +3792,11 @@ public class Request
             } 
             // Recycle and reinitialize existing AsyncContext
             asyncContext.recycle();
-            asyncContext.setServletRequest(request);
-            asyncContext.setServletResponse(response);
+            asyncContext.setServletRequest(servletRequest);
+            asyncContext.setServletResponse(servletResponse);
         } else {
-            asyncContext = new AsyncContextImpl(this, request, response);
+            asyncContext = new AsyncContextImpl(this, servletRequest,
+                (Response) getResponse(), servletResponse);
             isAsyncStarted = true;
             isOkToReinitializeAsync = false;
         }
