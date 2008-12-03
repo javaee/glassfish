@@ -9,6 +9,7 @@
 # which is user's home directory (~/.m2/repository) is used.  
 # When using -r to specify the maven-local-repo, the script checks if the directory
 # exists.  The maven repo directory is created if it does not exist.  
+# The script saves the build output in the file called gfbuild.log.t
 #
 # TO DO:
 # "gfbuild.sh package"  builds the bundle withIPS packages.
