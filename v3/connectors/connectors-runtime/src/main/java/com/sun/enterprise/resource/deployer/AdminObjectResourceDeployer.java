@@ -73,8 +73,7 @@ public class AdminObjectResourceDeployer extends GlobalResourceDeployer
      */
     public synchronized void deployResource(Object resource) throws Exception {
 
-        final AdminObjectResource aor =
-           (com.sun.enterprise.config.serverbeans.AdminObjectResource)resource;
+        final AdminObjectResource aor = (AdminObjectResource)resource;
 
 /* TODO V3 handle later MOM
 
@@ -107,8 +106,7 @@ public class AdminObjectResourceDeployer extends GlobalResourceDeployer
     public synchronized void undeployResource(Object resource)
                         throws Exception {
 
-        final AdminObjectResource aor =
-           (com.sun.enterprise.config.serverbeans.AdminObjectResource)resource;
+        final AdminObjectResource aor =  (AdminObjectResource)resource;
 
         _logger.log(Level.FINE,
                    "Calling backend to delete adminObject",aor.getJndiName());
@@ -135,7 +133,6 @@ public class AdminObjectResourceDeployer extends GlobalResourceDeployer
 
     public synchronized void disableResource(Object resource)
                         throws Exception {
-
     }
 
     public synchronized void enableResource(Object resource)

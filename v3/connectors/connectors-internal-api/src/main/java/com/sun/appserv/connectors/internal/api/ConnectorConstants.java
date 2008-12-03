@@ -50,7 +50,7 @@ import java.util.Arrays;
 
 public interface ConnectorConstants {
 
-     /** 
+     /**
      *  JAXR  system resource adapter name.
      */
 
@@ -136,7 +136,7 @@ public interface ConnectorConstants {
 
     public static final String SUN_RA_POOL = "sunRAPool";
     public static final String ADMINISTERED_OBJECT_FACTORY =
-        "com.sun.enterprise.naming.factory.AdministeredObjectFactory";
+        "com.sun.enterprise.resource.naming.AdministeredObjectFactory";
 
     /**
      * Meta char for mapping the security for connection pools

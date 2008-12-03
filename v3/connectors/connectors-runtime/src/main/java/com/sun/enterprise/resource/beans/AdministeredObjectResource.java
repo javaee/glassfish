@@ -169,7 +169,6 @@ public class AdministeredObjectResource extends JavaEEResourceBase
         } catch (Exception ex) {
             throw(PoolingException) (new PoolingException().initCause(ex));
         }
-
     }
 
     public String toString() {
