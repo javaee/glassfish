@@ -266,7 +266,7 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
             //JndiProxyObjectFactory.setInitialContext(bindName, context);
 
             Reference ref = new Reference(extJndiRes.getResType(),
-                    "com.sun.enterprise.resource.JndiProxyObjectFactory",
+                    "com.sun.enterprise.resource.naming.JndiProxyObjectFactory",
                     null);
 
             // unique JNDI name within server runtime
