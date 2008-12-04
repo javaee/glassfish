@@ -91,6 +91,7 @@ public class TimerBeanContainer
             TimerLocal timerLocal = (TimerLocal) createEJBLocalBusinessObjectImpl().
                     getClientObject("com.sun.ejb.containers.TimerLocal");
 
+            String timerResourceJndiName = "jdbc/__TimerPool";
 // XXX It's NOT possible to replace the datasource in PU XXX
 // XXX We would need to move this logic to PU creation XXXX
 /** XXX
@@ -103,7 +104,6 @@ public class TimerBeanContainer
             ResourceReferenceDescriptor cmpResource = 
                 bundle.getCMPResourceReference();
 
-            String cmpResourceJndiName = cmpResource.getJndiName();
 
             // Get the timer data source name from the domain.xml
             EjbContainer ejbc = ejbContainerUtil.getEjbContainer();
@@ -115,9 +115,9 @@ public class TimerBeanContainer
             // Override the timer datasource with the one from domain.xml 
             // if necessary.  
             if( (ejbtDatasource != null) && 
-                (!ejbtDatasource.equals(cmpResourceJndiName)) ) {
+                (!ejbtDatasource.equals(timerResourceJndiName)) ) {
 
-                cmpResourceJndiName = ejbtDatasource;               
+                timerResourceJndiName = ejbtDatasource;               
                  
                 // overwrite datasource jndi name in descriptor
                 cmpResource.setJndiName(cmpResourceJndiName);
@@ -125,7 +125,7 @@ public class TimerBeanContainer
 
             // Make sure cmp resource is available in the namespace.
             Context context = new InitialContext();
-            context.lookup(cmpResourceJndiName);
+            context.lookup(timerResourceJndiName);
             
             // Make an invocation on timer bean to ensure that app is 
             // initialized properly.  Second param determines whether 
@@ -133,7 +133,7 @@ public class TimerBeanContainer
             // consuming so they will be disabled by default.  
 // XXX This was a duplicate check as the lookup is just been done before
 // The datasource is looked up by PU creation and we don't plan to test the connection
-            boolean checkStatus = timerLocal.checkStatus(cmpResourceJndiName, false);
+            boolean checkStatus = timerLocal.checkStatus(timerResourceJndiName, false);
 
             if( checkStatus ) {
 ** XXX **/
@@ -151,7 +151,7 @@ public class TimerBeanContainer
                 ejbContainerUtil.setEJBTimerService(ejbTimerService);
 
                 _logger.log(Level.INFO, "ejb.timer_service_started",
-                            new Object[] { null /** XXX cmpResourceJndiName **/ } );
+                            new Object[] { timerResourceJndiName } );
 
 /** XXX
             } else {
