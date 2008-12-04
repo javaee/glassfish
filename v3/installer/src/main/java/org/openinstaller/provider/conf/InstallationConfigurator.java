@@ -51,8 +51,11 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.FileOutputStream;
 import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.io.BufferedInputStream;
 import java.io.FileWriter;
+import java.io.BufferedWriter;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -363,6 +366,38 @@ boolean configureGlassfish(String installDir, String adminPort, String httpPort,
     }
 
     LOGGER.log(Level.INFO, "jdkHome: " +jdkHome);
+
+    //write jdkHome value to asenv.bat on Windows platform...
+
+    if (isWindows) {
+
+        try {
+	    
+            String line;
+            StringBuffer sb = new StringBuffer();
+	    	
+            File asenvFile = new File(installDir +
+	         "\\glassfish\\config\\asenv.bat");
+
+            FileInputStream fis = new FileInputStream(asenvFile);
+	    BufferedReader reader=new BufferedReader ( new InputStreamReader(fis));
+	    while((line = reader.readLine()) != null) {
+		if (line.indexOf("AS_JAVA=") != -1) {
+	            line = "set AS_JAVA=" + jdkHome;
+		}
+		sb.append(line+"\n");
+	    }
+	    
+            reader.close();
+            BufferedWriter out=new BufferedWriter ( new FileWriter(asenvFile));
+	    out.write(sb.toString());
+	    out.close();
+	} catch (Exception ex) {
+
+            LOGGER.log(Level.INFO, "Error while updating asenv.bat file: " + ex.getMessage());
+	}
+	   
+    }
     
     //construct asadmin command
     ExecuteCommand asadminExecuteCommand = null;
