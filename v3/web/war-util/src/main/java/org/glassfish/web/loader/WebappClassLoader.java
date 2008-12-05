@@ -178,19 +178,6 @@ public class WebappClassLoader
 
 
     /**
-     * The set of trigger classes that will cause a proposed repository not
-     * to be added if this class is visible to the class loader that loaded
-     * this factory class.  Typically, trigger classes will be listed for
-     * components that have been integrated into the JDK for later versions,
-     * but where the corresponding JAR files are required to run on
-     * earlier versions.
-     */
-    private static final String[] triggers = {
-        "javax.servlet.Servlet"                     // Servlet API
-    };
-
-
-    /**
      * Set of package names which are not allowed to be loaded from a webapp
      * class loader without delegating first.
      */
@@ -742,11 +729,6 @@ public class WebappClassLoader
         } catch (NamingException e) {
             // Ignore
         }
-
-        // If the JAR currently contains invalid classes, don't actually use it
-        // for classloading
-        if (!validateJarFile(file))
-            return;
 
         JarFile[] result2 = new JarFile[jarFiles.length + 1];
         for (i = 0; i < jarFiles.length; i++) {
@@ -2516,51 +2498,6 @@ public class WebappClassLoader
             return false;
 
         return true;
-
-    }
-
-
-    /**
-     * Check the specified JAR file, and return <code>true</code> if it does
-     * not contain any of the trigger classes.
-     *
-     * @param jarfile The JAR file to be checked
-     *
-     * @exception IOException if an input/output error occurs
-     */
-    private boolean validateJarFile(File jarfile)
-        throws IOException {
-
-        if (triggers == null)
-            return (true);
-        JarFile jarFile = new JarFile(jarfile);
-        for (int i = 0; i < triggers.length; i++) {
-            Class clazz = null;
-            try {
-                if (parent != null) {
-                    clazz = parent.loadClass(triggers[i]);
-                } else {
-                    clazz = Class.forName(triggers[i]);
-                }
-            } catch (Throwable t) {
-                clazz = null;
-            }
-            if (clazz == null)
-                continue;
-            String name = triggers[i].replace('.', '/') + ".class";
-             if (logger.isLoggable(Level.FINE))
-                logger.fine(" Checking for " + name);
-            JarEntry jarEntry = jarFile.getJarEntry(name);
-            if (jarEntry != null) {
-                logger.info("validateJarFile(" + jarfile +
-                    ") - jar not loaded. See Servlet Spec 2.3, "
-                    + "section 9.7.2. Offending class: " + name);
-                jarFile.close();
-                return (false);
-            }
-        }
-        jarFile.close();
-        return (true);
 
     }
 
