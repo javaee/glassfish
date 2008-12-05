@@ -56,9 +56,6 @@ public class EmbeddedMain {
     public static void main(String[] args) {
         try {
 
-
-            AsadminMain qqq = new AsadminMain();
-
             //if(args.length == 0)
                 //usage();
 
