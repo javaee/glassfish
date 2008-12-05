@@ -49,6 +49,7 @@ import com.sun.enterprise.deployment.util.EjbBundleVisitor;
 import com.sun.enterprise.deployment.util.ModuleContentValidator;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.xml.sax.SAXParseException;
 
 import javax.enterprise.deploy.shared.ModuleType;
@@ -181,7 +182,8 @@ public class BaseEjbArchivist
             throws IOException {
         AnnotationDetector detector =
                     new AnnotationDetector(new EjbComponentAnnotationScanner());
-        return detector.hasAnnotationInArchive(abstractArchive);
+        return (!DeploymentUtils.isWebArchive(abstractArchive)) &&
+                detector.hasAnnotationInArchive(abstractArchive);
     }
 
     @Override
