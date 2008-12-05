@@ -21,11 +21,11 @@ own identifying information: Portions Copyright [yyyy]
 -->
 <project name="felix package creation" default="create.package" basedir=".">
    <target name="create.package">
-	   <mkdir dir="target/stage/glassfishv3-prelude"/>
+	   <mkdir dir="target/stage/glassfishv3-ea"/>
 
        <resolveArtifact artifactId="felix" groupId="org.glassfish.osgi-platforms" property="felix.zip"/>
 
-       <unzip src="${felix.zip}" dest="target/stage/glassfishv3-prelude"/>
+       <unzip src="${felix.zip}" dest="target/stage/glassfishv3-ea"/>
 
        <zip file="target/felix.zip" basedir="target/stage"/>
            

@@ -28,7 +28,7 @@ own identifying information: Portions Copyright [yyyy]
                 <exclude name="nucleus-base*.zip"/>
             </fileset>
         </unzip>
-        <!-- unzip dest="target/stage/glassfishv3-prelude">
+        <!-- unzip dest="target/stage/glassfishv3-ea">
             <fileset dir="target/stage">
                 <include name="nucleus-base*.zip"/>
             </fileset>
@@ -38,18 +38,18 @@ own identifying information: Portions Copyright [yyyy]
         </unzip -->
         <delete dir="target/stage" includes="*.zip"/>
 
-        <chmod file="target/stage/glassfishv3-prelude/bin/*" perm="ugo+rx"/>
-        <chmod file="target/stage/glassfishv3-prelude/glassfish/bin/*" perm="ugo+rx"/>
+        <chmod file="target/stage/glassfishv3-ea/bin/*" perm="ugo+rx"/>
+        <chmod file="target/stage/glassfishv3-ea/glassfish/bin/*" perm="ugo+rx"/>
 
         <!-- create domain -->
         <!-- ant antfile="../distributions.xml" target="create-domain">
-            <property name="exec.dir" value="${basedir}/target/stage/glassfishv3-prelude/glassfish/bin"/>
-            <property name="exec.executable" value="${basedir}/target/stage/glassfishv3-prelude/glassfish/bin/asadmin"/>
+            <property name="exec.dir" value="${basedir}/target/stage/glassfishv3-ea/glassfish/bin"/>
+            <property name="exec.executable" value="${basedir}/target/stage/glassfishv3-ea/glassfish/bin/asadmin"/>
         </ant -->
 
         <!--  create distribution zip -->
         <exec dir="target/stage" executable="zip">
-            <arg line= "-r ../scripting.zip glassfishv3-prelude"/>
+            <arg line= "-r ../scripting.zip glassfishv3-ea"/>
         </exec>
 
         <!-- deploy distribution artifact to maven repository" -->

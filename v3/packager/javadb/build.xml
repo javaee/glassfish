@@ -22,27 +22,27 @@ own identifying information: Portions Copyright [yyyy]
 <project name="javadb package creation" default="create.package" basedir=".">
 
    <target name="create.package">
-	   <mkdir dir="target/stage/glassfishv3-prelude"/>
+	   <mkdir dir="target/stage/glassfishv3-ea"/>
 
 	<resolveArtifact artifactId="javadb" groupId="org.glassfish.external" property="javadb.zip"/>
    
 
         <unzip src="${javadb.zip}"
-           dest="target/stage/glassfishv3-prelude">
+           dest="target/stage/glassfishv3-ea">
           <patternset>
 		  <exclude name="META-INF/**"/>
 	  </patternset>
        </unzip>
 
    
-       <copy todir="target/stage/glassfishv3-prelude/javadb">
-            <fileset dir="target/stage/glassfishv3-prelude/glassfish/javadb"/>
+       <copy todir="target/stage/glassfishv3-ea/javadb">
+            <fileset dir="target/stage/glassfishv3-ea/glassfish/javadb"/>
   	</copy>
 	       
        <!-- Changing file permissions of javadb scripts -->
-       <chmod file="target/stage/glassfishv3-prelude/javadb/frameworks/NetworkServer/bin/*" perm="ugo+rx"/>
-       <chmod file="target/stage/glassfishv3-prelude/javadb/frameworks/embedded/bin/*" perm="ugo+rx"/>
-       <delete dir="target/stage/glassfishv3-prelude/glassfish"/>
+       <chmod file="target/stage/glassfishv3-ea/javadb/frameworks/NetworkServer/bin/*" perm="ugo+rx"/>
+       <chmod file="target/stage/glassfishv3-ea/javadb/frameworks/embedded/bin/*" perm="ugo+rx"/>
+       <delete dir="target/stage/glassfishv3-ea/glassfish"/>
 
        <zip file="target/javadb.zip" basedir="target/stage"/>
            

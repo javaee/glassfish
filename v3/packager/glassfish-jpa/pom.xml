@@ -183,7 +183,7 @@
                         <remoteRepository>${repo.url}</remoteRepository>
                         <python>${python}</python>
                         <proto>src/main/resources/pkg_proto.py</proto>
-                        <baseDirectory>target/stage/glassfishv3-prelude/</baseDirectory>
+                        <baseDirectory>target/stage/glassfishv3-ea/</baseDirectory>
                      </configuration>
                 </plugin>
             </plugins>

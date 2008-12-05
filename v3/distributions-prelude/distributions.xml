@@ -83,26 +83,29 @@ own identifying information: Portions Copyright [yyyy]
 </target>
 
 <target name="create-distributions" description="Creating IPS Distributions">
-    <chmod file="${installer.image.dir}/glassfishv3-prelude/bin/*" perm="ugo+rx"/>
-    <chmod file="${installer.image.dir}/glassfishv3-prelude/glassfish/bin/*" perm="ugo+rx"/>
+    <chmod file="${installer.image.dir}/glassfishv3-ea/bin/*" perm="ugo+rx"/>
+    <chmod file="${installer.image.dir}/glassfishv3-ea/glassfish/bin/*" perm="ugo+rx"/>
     <!-- Delete all contents under ips-metadata download directory --> 
     <delete includeemptydirs="true">
-        <fileset dir="${installer.image.dir}/glassfishv3-prelude/.org.opensolaris,pkg/download" includes="**/*"/>
-        <fileset dir="${installer.image.dir}/glassfishv3-prelude/.org.opensolaris,pkg/pkg" includes="**/license.*"/>
+        <fileset dir="${installer.image.dir}/glassfishv3-ea/.org.opensolaris,pkg/download" includes="**/*"/>
+        <fileset dir="${installer.image.dir}/glassfishv3-ea/.org.opensolaris,pkg/pkg" includes="**/license.*"/>
     </delete>
-    <exec dir="${installer.image.dir}/glassfishv3-prelude" executable="zip">
+    <antcall target="pack-compression">
+        <param name="image.directory" value="${installer.image.dir}"/>
+    </antcall>
+    <exec dir="${installer.image.dir}/glassfishv3-ea" executable="zip">
         <arg line= "-r ../../../../target/${image.name}-ips-installer.zip ."/>
     </exec>
 
-    <chmod file="${glassfish.image.dir}/glassfishv3-prelude/bin/*" perm="ugo+rx"/>
-    <chmod file="${glassfish.image.dir}/glassfishv3-prelude/glassfish/bin/*" perm="ugo+rx"/>
+    <chmod file="${glassfish.image.dir}/glassfishv3-ea/bin/*" perm="ugo+rx"/>
+    <chmod file="${glassfish.image.dir}/glassfishv3-ea/glassfish/bin/*" perm="ugo+rx"/>
     <!-- Delete all contents under ips-metadata download directory --> 
     <delete includeemptydirs="true">
-        <fileset dir="${glassfish.image.dir}/glassfishv3-prelude/.org.opensolaris,pkg/download" includes="**/*"/>
-        <fileset dir="${glassfish.image.dir}/glassfishv3-prelude/.org.opensolaris,pkg/pkg" includes="**/license.*"/>
+        <fileset dir="${glassfish.image.dir}/glassfishv3-ea/.org.opensolaris,pkg/download" includes="**/*"/>
+        <fileset dir="${glassfish.image.dir}/glassfishv3-ea/.org.opensolaris,pkg/pkg" includes="**/license.*"/>
     </delete>
     <exec dir="${glassfish.image.dir}" executable="zip">
-        <arg line= "-r ../../../target/${image.name}-ips.zip glassfishv3-prelude"/>
+        <arg line= "-r ../../../target/${image.name}-ips.zip glassfishv3-ea"/>
     </exec>
     <!-- delete dir="${image.root}"/ -->
 </target>
@@ -286,5 +289,17 @@ origin-for-darwin-universal-sun-contrib]]>
         </fileset>
     </delete>
 </target>
-
+<!-- pack200 compression -->
+<target name="pack-compression">
+    <apply executable="pack200" dest="${image.directory}/glassfishv3-ea/glassfish/modules" parallel="false">
+        <targetfile/>
+        <srcfile/>
+        <fileset dir="${image.directory}/glassfishv3-ea/glassfish/modules" includes="**/*.jar" />
+        <mapper type="glob" from="*.jar" to="*.pack.gz"/>
+    </apply>
+    <!-- remove *.pack.gz files -->
+    <delete>
+        <fileset dir="${image.directory}/glassfishv3-ea/glassfish/modules" includes="**/*.jar"/>
+    </delete>
+</target>
 </project>

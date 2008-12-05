@@ -22,7 +22,7 @@ own identifying information: Portions Copyright [yyyy]
 <project name="glassfish AMX package creation" default="create.package" basedir=".">
     <import file="${basedir}/../common-targets.xml"/>
    <target name="create.package">
-	   <mkdir dir="target/stage/glassfishv3-prelude"/>
+	   <mkdir dir="target/stage/glassfishv3-ea"/>
        
  <!-- TODO - would be nice if we can find a way to iterate through all
 	   "dependency" packages without having to define each intermediate 
@@ -103,7 +103,7 @@ own identifying information: Portions Copyright [yyyy]
 	 </graphDef> 
 	
 
-	    <resolveAll todir="target/stage/glassfishv3-prelude/glassfish/modules" tolerateBrokenPOMs="true"
+	    <resolveAll todir="target/stage/glassfishv3-ea/glassfish/modules" tolerateBrokenPOMs="true"
                         stripVersion="true">
                 <graphRef refid="glassfish-amx-modules"/>
 	   </resolveAll>
@@ -124,7 +124,7 @@ own identifying information: Portions Copyright [yyyy]
             </visualize>
         </graphDef>
 
-	<delete dir="target/stage/glassfishv3-prelude/glassfish/modules" includes="*.zip" />   
+	<delete dir="target/stage/glassfishv3-ea/glassfish/modules" includes="*.zip" />   
 
         <if test="${compression}">
 	       <antcall target="pack.compression" />

@@ -23,11 +23,11 @@ own identifying information: Portions Copyright [yyyy]
     <import file="${basedir}/../common-targets.xml"/>
 
    <target name="create.package">
-	   <mkdir dir="target/stage/glassfishv3-prelude"/>
+	   <mkdir dir="target/stage/glassfishv3-ea"/>
 
         <resolveArtifact artifactId="nucleus-base" property="nucleus-base.zip"/>
        
-	<unzip src="${nucleus-base.zip}" dest="target/stage/glassfishv3-prelude">
+	<unzip src="${nucleus-base.zip}" dest="target/stage/glassfishv3-ea">
            <patternset>
 		   <exclude name="**/domains/**"/>
            </patternset>
@@ -35,20 +35,20 @@ own identifying information: Portions Copyright [yyyy]
 
     	<resolveArtifact artifactId="basedocs" property="docs.zip"/>
        
-	<unzip src="${docs.zip}" dest="target/stage/glassfishv3-prelude">
+	<unzip src="${docs.zip}" dest="target/stage/glassfishv3-ea">
 	</unzip>
 
 
-	<copy todir="target/stage/glassfishv3-prelude/bin">
+	<copy todir="target/stage/glassfishv3-ea/bin">
 		<fileset dir="src/main/resources/bin"/>
 	</copy>
 
-	<copy todir="target/stage/glassfishv3-prelude/glassfish/config" overwrite="true">
+	<copy todir="target/stage/glassfishv3-ea/glassfish/config" overwrite="true">
 		<fileset dir="src/main/resources/config"/>
 	</copy>
 
-	<chmod file="target/stage/glassfishv3-prelude/bin/*" perm="ugo+rx"/>
-	<chmod file="target/stage/glassfishv3-prelude/glassfish/bin/*" perm="ugo+rx"/>
+	<chmod file="target/stage/glassfishv3-ea/bin/*" perm="ugo+rx"/>
+	<chmod file="target/stage/glassfishv3-ea/glassfish/bin/*" perm="ugo+rx"/>
 
 	 <!-- TODO - would be nice if we can find a way to iterate through all
 	   "dependency" packages without having to define each intermediate 
@@ -92,7 +92,7 @@ own identifying information: Portions Copyright [yyyy]
 	 </graphDef>
             
         
-	    <resolveAll todir="target/stage/glassfishv3-prelude/glassfish/modules" tolerateBrokenPOMs="true"
+	    <resolveAll todir="target/stage/glassfishv3-ea/glassfish/modules" tolerateBrokenPOMs="true"
                         stripVersion="true">
                 <graphRef refid="glassfish-nucleus-modules"/>
 	   </resolveAll>
@@ -113,8 +113,8 @@ own identifying information: Portions Copyright [yyyy]
             </visualize>
         </graphDef>
 
-	<delete dir="target/stage/glassfishv3-prelude/glassfish/modules" includes="*.zip" /> 
-      	<delete dir="target/stage/glassfishv3-prelude/META-INF" />  	
+	<delete dir="target/stage/glassfishv3-ea/glassfish/modules" includes="*.zip" /> 
+      	<delete dir="target/stage/glassfishv3-ea/META-INF" />  	
 
         <if test="${compression}">
 	       <antcall target="pack.compression" />

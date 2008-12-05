@@ -60,7 +60,7 @@
                   <goal>copy-dependencies</goal>
                 </goals>
                <configuration>
-	       <outputDirectory>${project.build.directory}/stage/glassfishv3-prelude/glassfish/modules</outputDirectory>
+	       <outputDirectory>${project.build.directory}/stage/glassfishv3-ea/glassfish/modules</outputDirectory>
               <overWriteReleases>false</overWriteReleases>
               <overWriteSnapshots>true</overWriteSnapshots>
 	      <excludeTransitive>true</excludeTransitive>

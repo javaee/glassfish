@@ -23,14 +23,14 @@ own identifying information: Portions Copyright [yyyy]
     <import file="${basedir}/../common-targets.xml"/>
 
    <target name="create.package">
-	   <mkdir dir="target/stage/glassfishv3-prelude"/>
+	   <mkdir dir="target/stage/glassfishv3-ea"/>
 
-      	<resolveAll todir="target/stage/glassfishv3-prelude/glassfish/modules"
+      	<resolveAll todir="target/stage/glassfishv3-ea/glassfish/modules"
                     stripVersion="true">
              <scope level="compile,runtime" />
         </resolveAll>
 
-	<delete dir="target/stage/glassfishv3-prelude/glassfish/modules" includes="*.zip" />    
+	<delete dir="target/stage/glassfishv3-ea/glassfish/modules" includes="*.zip" />    
         <if test="${compression}">
 	       <antcall target="pack.compression" />
 	</if>

@@ -43,7 +43,7 @@ conf = imp.load_source("pkg_conf", "../pkg_conf.py")
 
 # use regular expression to retrieve the version and build number from the jar file 
 # and convert it to IPS versioning.
-file = glob.glob('target/stage/glassfishv3-prelude/glassfish/modules/glassfish-corba-omgapi*')
+file = glob.glob('target/stage/glassfishv3-ea/glassfish/modules/glassfish-corba-omgapi*')
 version =  re.compile('.*glassfish-corba-omgapi-(.*).jar').sub(r'\1', file[0])
 version_build = version.split('-', 2)
 version =  version_build[0]

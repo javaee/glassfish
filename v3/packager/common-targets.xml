@@ -22,29 +22,29 @@ own identifying information: Portions Copyright [yyyy]
 <project name="common-targets">
     <target name="init">
         <available property="present" 
-                   file="target/stage/glassfishv3-prelude/glassfish/modules" type="dir" />
+                   file="target/stage/glassfishv3-ea/glassfish/modules" type="dir" />
     </target> 
     <target name="pack.compression" depends="init" if="present">
 	<!-- pack200 compression -->
         <apply executable="pack200" 
-               dest="target/stage/glassfishv3-prelude/glassfish/modules" parallel="false">
+               dest="target/stage/glassfishv3-ea/glassfish/modules" parallel="false">
             <targetfile/>
             <srcfile/>
-            <fileset dir="target/stage/glassfishv3-prelude/glassfish/modules" 
+            <fileset dir="target/stage/glassfishv3-ea/glassfish/modules" 
                      includes="**/*.jar" />
             <mapper type="glob" from="*.jar" to="*.pack.gz"/>
         </apply>
         <apply executable="unpack200" 
-               dest="target/stage/glassfishv3-prelude/glassfish/modules" parallel="false">
+               dest="target/stage/glassfishv3-ea/glassfish/modules" parallel="false">
             <srcfile/>
             <targetfile/>
-            <fileset dir="target/stage/glassfishv3-prelude/glassfish/modules" 
+            <fileset dir="target/stage/glassfishv3-ea/glassfish/modules" 
                      includes="**/*.pack.gz" />
             <mapper type="glob" from="*.pack.gz" to="*.jar"/>
         </apply>
 	<!-- remove *.pack.gz files -->
         <delete>
-            <fileset dir="target/stage/glassfishv3-prelude/glassfish/modules" 
+            <fileset dir="target/stage/glassfishv3-ea/glassfish/modules" 
                      includes="**/*.pack.gz"/>
         </delete>
     </target>
