@@ -48,6 +48,7 @@ import com.sun.enterprise.v3.admin.AdminAdapter;
 import com.sun.enterprise.v3.admin.adapter.AdminConsoleAdapter;
 import com.sun.grizzly.Controller;
 import com.sun.grizzly.tcp.Adapter;
+import com.sun.hk2.component.ConstructorWomb;
 import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,6 +56,8 @@ import java.util.List;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.ObservableBean;
 
 /**
  * The Network Service is responsible for starting grizzly and register the
@@ -98,7 +101,12 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
 
     private ThreadPoolProbeProvider threadPoolProbeProvider;
 
+    private DynamicConfigListener configListener;
 
+    public GrizzlyService() {
+        futures = new ArrayList<Future<Result<Thread>>>();
+    }
+    
     /**
      * Add the new proxy to our list of proxies.
      * @param proxy new proxy to be added
@@ -109,24 +117,61 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     
     
     /**
-     * Remove the new proxy from our list of proxies.
+     * Remove the new proxy from our list of proxies by port.
      * @param port number to be removed
+     * @return <tt>true</tt>, if proxy on specified port was removed,
+     *         <tt>false</tt> if no proxy was associated with the port.
      */    
-    public void removeNetworkProxy(int port) {
+    public boolean removeNetworkProxy(int port) {
         NetworkProxy proxy = null;
         for (NetworkProxy p : proxies) {
             if (p.getPort() == port) {
                 proxy = p;
+                break;
             }
         }
         if (proxy != null) {
             proxy.stop();
             proxy.destroy();
             proxies.remove(proxy);
+            return true;
         }
+
+        return false;
     }
+
     
-    
+    /**
+     * Remove the new proxy from our list of proxies by id.
+     * @param port number to be removed
+     * @return <tt>true</tt>, if proxy on specified port was removed,
+     *         <tt>false</tt> if no proxy was associated with the port.
+     */
+    public boolean removeNetworkProxy(String id) {
+        NetworkProxy proxy = null;
+        for (NetworkProxy p : proxies) {
+            if (p instanceof GrizzlyProxy) {
+                GrizzlyProxy grizzlyProxy = (GrizzlyProxy) p;
+                if (grizzlyProxy.httpListener != null &&
+                        grizzlyProxy.httpListener.getId() != null &&
+                        grizzlyProxy.httpListener.getId().equals(id)) {
+                    proxy = p;
+                    break;
+                }
+            }
+        }
+        
+        if (proxy != null) {
+            proxy.stop();
+            proxy.destroy();
+            proxies.remove(proxy);
+            return true;
+        }
+
+        return false;
+    }
+
+
     /**
      * Returns the controller
      *
@@ -183,28 +228,28 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
      */
     public void postConstruct() {
         HttpService httpService = config.getHttpService();
+
+        ConstructorWomb<DynamicConfigListener> womb =
+                new ConstructorWomb<DynamicConfigListener>(
+                DynamicConfigListener.class,
+                habitat,
+                null);
+        configListener = womb.get(null);
+
+        ObservableBean httpServiceBean = (ObservableBean) ConfigSupport.getImpl(
+                configListener.httpService);
+        httpServiceBean.addListener(configListener);
+
+        configListener.setGrizzlyService(this);
+        configListener.setLogger(logger);
+
         try {
             createProbeProviders();
             futures = new ArrayList<Future<Result<Thread>>>();
             for (HttpListener listener : httpService.getHttpListener()) {
-                
-                // Do not create listener when mod_ajp/jk is enabled. This 
-                // should never happens one the grizzly-config configuration
-                // will be used.
-                String jkEnabled = listener.getPropertyValue("jkEnabled");
-                if (jkEnabled!=null && ConfigBeansUtilities.toBoolean(jkEnabled)) {
-                    continue;
-                }
-
-                if (!Boolean.valueOf(listener.getEnabled())) {
-                    logger.info("Network listener " + listener.getId() +
-                                " on port " + listener.getPort() +
-                                " disabled per domain.xml");
-                    continue;
-                }
-
-                futures.add(createNetworkProxy(listener, httpService));
+                createNetworkProxy(listener, httpService);
             }
+            
             registerNetworkProxy(); 
         } catch(RuntimeException e) { // So far postConstruct can not throw any other exception type
             logger.log(Level.SEVERE, "Unable to start v3. Closing all ports",e);
@@ -258,8 +303,31 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
      * @param listener HttpListener
      * @param httpService HttpService
      */
-    public synchronized Future<Result<Thread>> createNetworkProxy(HttpListener listener, 
-            HttpService httpService) {
+    public synchronized Future<Result<Thread>> createNetworkProxy(
+            HttpListener listener, HttpService httpService) {
+
+        // Do not create listener when mod_ajp/jk is enabled. This
+        // should never happens one the grizzly-config configuration
+        // will be used.
+        String jkEnabled = listener.getPropertyValue("jkEnabled");
+        if (jkEnabled != null && ConfigBeansUtilities.toBoolean(jkEnabled)) {
+            return null;
+        }
+
+        if (!Boolean.valueOf(listener.getEnabled())) {
+            logger.info("Network listener " + listener.getId() +
+                    " on port " + listener.getPort() +
+                    " disabled per domain.xml");
+            return null;
+        }
+
+        if (!Boolean.valueOf(listener.getEnabled())) {
+            logger.info("Network listener " + listener.getId() +
+                    " on port " + listener.getPort() +
+                    " has been disabled");
+            return null;
+        }
+        
         // create the proxy for the port.
         GrizzlyProxy proxy = new GrizzlyProxy(this, listener, httpService);
         proxy.setVsMapper(new VirtualHostMapper(logger, listener));
@@ -280,6 +348,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
         Future<Result<Thread>> future =  proxy.start();
         // add the new proxy to our list of proxies.
         proxies.add(proxy);
+        futures.add(future);
 
         return future;
     }
@@ -288,8 +357,15 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     /*
      * Registers all proxies
      */
-    public void registerNetworkProxy(){
-        for (org.glassfish.api.container.Adapter subAdapter : 
+    public void registerNetworkProxy() {
+        registerNetworkProxy(ALL_PORTS);
+    }
+
+    /*
+     * Registers all proxies
+     */
+    public void registerNetworkProxy(int port) {
+    for (org.glassfish.api.container.Adapter subAdapter : 
             habitat.getAllByContract(org.glassfish.api.container.Adapter.class)) {
             //@TODO change EndportRegistrationException processing if required
             try {
@@ -310,7 +386,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
                         aca.setRegistered(true);
                     }
                 } else {
-                    registerEndpoint(subAdapter.getContextRoot(), hosts, 
+                    registerEndpoint(subAdapter.getContextRoot(), port, hosts,
                         subAdapter, null);
                 }
             } catch(EndpointRegistrationException e) {

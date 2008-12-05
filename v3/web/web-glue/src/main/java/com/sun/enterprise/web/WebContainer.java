@@ -37,7 +37,6 @@
 package com.sun.enterprise.web;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -3759,9 +3758,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                                      boolean start)
                 throws LifecycleException {
 
-        grizzlyService.createNetworkProxy(httpListener, httpService);
-        grizzlyService.registerNetworkProxy();
-
         int port = Integer.parseInt(httpListener.getPort());
 
         // Add the port number of the new http-listener to its
@@ -3814,7 +3810,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             WebConnector conn = (WebConnector) connectors[i];
             if (port == conn.getPort()) {
                 _embedded.removeConnector(conn);
-                grizzlyService.removeNetworkProxy(port);
                 portMap.remove(connector.getName());
                 connectorMap.remove(connector.getName());
             }
@@ -3835,7 +3830,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             WebConnector conn = (WebConnector) connectors[i];
             if (port == conn.getPort()) {
                 _embedded.removeConnector(conn);
-                grizzlyService.removeNetworkProxy(port);
                 portMap.remove(httpListener.getId());
                 connectorMap.remove(httpListener.getId());
             }
