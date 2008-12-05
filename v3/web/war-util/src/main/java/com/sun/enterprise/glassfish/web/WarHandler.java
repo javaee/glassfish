@@ -175,6 +175,8 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
     private void configureLoaderProperties(WebappClassLoader cloader,
             SunWebXmlParser sunWebXmlParser, File base) {
 
+        cloader.setUseMyFaces(sunWebXmlParser.isUseBundledJSF());
+
         File libDir = new File(base, "WEB-INF/lib");
         if (libDir.exists()) {
             int baseFileLen = base.getPath().length();
@@ -217,6 +219,7 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
         private boolean delegate = true;
 
         private boolean ignoreHiddenJarFiles = false;
+        private boolean useBundledJSF = false;
         private String extraClassPath = null;
 
         SunWebXmlParser(String baseStr) throws XMLStreamException, FileNotFoundException {
@@ -296,6 +299,10 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
 
                         if ("ignoreHiddenJarFiles".equals(propName)) {
                             ignoreHiddenJarFiles = Boolean.valueOf(value);
+                        } else if("useMyFaces".equalsIgnoreCase(name)) {
+                            useBundledJSF = Boolean.valueOf(value);
+                        } else if("useBundledJsf".equalsIgnoreCase(name)) {
+                            useBundledJSF = Boolean.valueOf(value);
                         } else {
                             Object[] params = { propName, value };
                             if (logger.isLoggable(Level.WARNING)) {
@@ -352,6 +359,10 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
 
         String getExtraClassPath() {
             return extraClassPath;
+        }
+
+        boolean isUseBundledJSF() {
+            return useBundledJSF;
         }
     }
 }
