@@ -211,8 +211,8 @@ public class WebappClassLoader
     // START PE 4985680
     /**
      * List of packages that may always be overridden, regardless of whether
-     * they belong to a protected namespace (i.e., a namespace that may never be
-     * overridden by a webapp)
+     * they belong to a protected namespace (i.e., a namespace that may never
+     * be overridden by any webapp)
      */
     private ArrayList overridablePackages;
    // END PE 4985680
@@ -1392,8 +1392,9 @@ public class WebappClassLoader
      */
     public Class loadClass(String name) throws ClassNotFoundException {
 
-        if (logger.isLoggable(Level.FINER))
+        if (logger.isLoggable(Level.FINER)) {
             logger.finer("loadClass(" + name + ")");
+        }
 
         Class clazz = null;
 
@@ -1406,41 +1407,23 @@ public class WebappClassLoader
         // (0) Check our previously loaded local class cache
         clazz = findLoadedClass0(name);
         if (clazz != null) {
-            if (logger.isLoggable(Level.FINER))
+            if (logger.isLoggable(Level.FINER)) {
                 logger.finer("  Returning class from cache");
+            }
             return (clazz);
         }
 
         // (0.1) Check our previously loaded class cache
         clazz = findLoadedClass(name);
         if (clazz != null) {
-            if (logger.isLoggable(Level.FINER))
+            if (logger.isLoggable(Level.FINER)) {
                 logger.finer("  Returning class from cache");
+            }
             return (clazz);
         }
 
-        // START PE 4985680
-        // (0.2) Try loading the class with the system class loader, to prevent
-        //       the webapp from overriding J2SE classes
-        /*
-        try {
-            clazz = system.loadClass(name);
-            if (clazz != null) {
-                if (resolve)
-                    resolveClass(clazz);
-                return (clazz);
-            }
-        } catch (ClassNotFoundException e) {
-            // Ignore
-        }
-        */
-        // END PE 4985680
-
         // (0.5) Permission to access this class when using a SecurityManager
-        // START PE 4989455
-        //if (securityManager != null) {
         if ( securityManager != null && packageDefinitionEnabled){
-        // END PE 4989455
             int i = name.lastIndexOf('.');
             if (i >= 0) {
                 try {
@@ -1454,46 +1437,41 @@ public class WebappClassLoader
             }
         }
 
-        // START PE 4985680
-        // boolean delegateLoad = delegate ||filter(name);
         boolean delegateLoad = delegate;
-        // END PE 4985680
 
         // (1) Delegate to our parent if requested
         if (delegateLoad) {
-            if (logger.isLoggable(Level.FINER))
+            if (logger.isLoggable(Level.FINER)) {
                 logger.finer("  Delegating to parent classloader1 " + parent);
+            }
             ClassLoader loader = parent;
             if (loader == null)
                 loader = system;
-
-            // START PE 4985680
             try {
                 clazz = loader.loadClass(name);
                 if (clazz != null) {
-                if (logger.isLoggable(Level.FINER))
-                    logger.finer("  Loading class from parent");
+                    if (logger.isLoggable(Level.FINER)) {
+                        logger.finer("  Loading class from parent");
+                    }
                     return (clazz);
                 }
             } catch (ClassNotFoundException e) {
                 ;
             }
-            // END PE 4985680
         }
 
         // (2) Search local repositories
-        // START PE 4985680
         boolean filterCoreClasses = filter(name);
         if ( !filterCoreClasses ) {
-            // (2) Search local repositories
-        // END PE 4985680
-            if (logger.isLoggable(Level.FINER))
+            if (logger.isLoggable(Level.FINER)) {
                 logger.finer("  Searching local repositories");
+            }
             try {
                 clazz = findClass(name);
                 if (clazz != null) {
-                if (logger.isLoggable(Level.FINER))
-                    logger.finer("  Loading class from local repository");
+                    if (logger.isLoggable(Level.FINER)) {
+                        logger.finer("  Loading class from local repository");
+                    }
                     return (clazz);
                 }
             } catch (ClassNotFoundException e) {
@@ -1501,69 +1479,57 @@ public class WebappClassLoader
             }
         }
 
-        // START PE 4985680
-        // (3) Delegate to parent unconditionally
-        /*
-        if (!delegateLoad) {
-            if (log.isTraceEnabled())
-                log.trace("  Delegating to parent classloader at end: " + parent);
-            ClassLoader loader = parent;
-            if (loader == null)
-                loader = system;
-            try {
-                clazz = loader.loadClass(name);
-        */
-
         // (3) Delegate to system unconditionally
-        if (logger.isLoggable(Level.FINER))
-            logger.finer("  Delegating to system classloader at end: " + parent);
-
+        if (logger.isLoggable(Level.FINER)) {
+            logger.finer("  Delegating to system classloader at end: " +
+                         parent);
+        }
         try {
             clazz = system.loadClass(name);
-        // END PE 4985680
             if (clazz != null) {
-                if (logger.isLoggable(Level.FINER))
-                // START PE 4985680
-                    //log.debug("  Loading class from parent");
+                if (logger.isLoggable(Level.FINER)) {
                     logger.finer("  Loading class from system");
-                // END PE 4985680
+                }
                 return (clazz);
             }
         } catch (ClassNotFoundException e) {
             ;
         }
 
-        // START PE 4985680
         // (4) Delegate to parent finally if the class wasn't found
         try {
-            if (logger.isLoggable(Level.FINER))
+            if (logger.isLoggable(Level.FINER)) {
                 logger.finer("  Delegating to parent classloader " + parent);
+            }
             ClassLoader loader = parent;
             if (loader != null) {
-
                 clazz = parent.loadClass(name);
-                if (logger.isLoggable(Level.FINER))
-                    logger.finer("  Loading class from parent");
-                return (clazz);
+                if (clazz != null) {
+                    if (logger.isLoggable(Level.FINER)) {
+                        logger.finer("  Loading class from parent");
+                    }
+                    return (clazz);
+                }
             }
         } catch (ClassNotFoundException e) {
             ;
         }
 
-        // if filter(..) return true and if we did not find
+        // if filter(..) returned true and if we did not find
         // the class using the parent/system classloader,
         // then give a chance to this classloader.
         if ( filterCoreClasses ) {
-            if (logger.isLoggable(Level.FINER))
+            if (logger.isLoggable(Level.FINER)) {
                 logger.finer("  Searching local repositories");
+            }
             clazz = findClass(name);
             if (clazz != null) {
-                if (logger.isLoggable(Level.FINER))
+                if (logger.isLoggable(Level.FINER)) {
                     logger.finer("  Loading class from local repository");
+                }
                 return (clazz);
             }
         }
-        // END PE 4985680
 
         throw new ClassNotFoundException(name);
     }
