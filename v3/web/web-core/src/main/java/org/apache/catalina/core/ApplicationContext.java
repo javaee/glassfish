@@ -75,14 +75,7 @@ import java.security.SecurityPermission;
 import javax.naming.Binding;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
-import javax.servlet.DispatcherType;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.Servlet;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextAttributeEvent;
-import javax.servlet.ServletContextAttributeListener;
-import javax.servlet.SessionCookieConfig;
-import javax.servlet.SessionTrackingMode;
+import javax.servlet.*;
 
 import org.apache.catalina.Globals;
 import org.apache.catalina.ContainerEvent;
@@ -993,17 +986,12 @@ public class ApplicationContext
 
 
     /*
-     * Adds the servlet with the given name, description, class name,
-     * init parameters, and loadOnStartup, to this servlet context.
+     * Adds the servlet with the given name and class name to this
+     * servlet context.
      */
-    public void addServlet(String servletName,
-                           String description,
-                           String className,
-                           Map<String, String> initParameters,
-                           int loadOnStartup,
-                           boolean isAsyncSupported) {
-        context.addServlet(servletName, description, className,
-                           initParameters, loadOnStartup, isAsyncSupported);
+    public ServletRegistration addServlet(String servletName,
+                                          String className) {
+        return context.addServlet(servletName, className);
     }
 
 
@@ -1018,16 +1006,11 @@ public class ApplicationContext
 
 
     /**
-     * Adds the filter with the given name, description, and class name to
-     * this servlet context.
+     * Adds the filter with the given name and class name to this servlet
+     * context.
      */
-    public void addFilter(String filterName,
-                          String description,
-                          String className,
-                          Map<String, String> initParameters,
-                          boolean isAsyncSupported) {
-        context.addFilter(filterName, description, className, initParameters,
-                          isAsyncSupported);
+    public FilterRegistration addFilter(String filterName, String className) {
+        return context.addFilter(filterName, className);
     }
     
     

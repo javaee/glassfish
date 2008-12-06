@@ -225,9 +225,17 @@ public class FilterDef implements Serializable {
      * @param value The initialization parameter value
      */
     public void addInitParameter(String name, String value) {
-
         parameters.put(name, value);
+    }
 
+
+    /**
+     * Removes the initialization parameter with the given name.
+     *
+     * @param name the name of the initialization parameter to be removed
+     */
+    public void removeInitParameter(String name) {
+        parameters.remove(name);
     }
 
 

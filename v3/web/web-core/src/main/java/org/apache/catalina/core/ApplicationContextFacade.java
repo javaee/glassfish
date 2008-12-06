@@ -80,16 +80,8 @@ import java.util.logging.*;
 import javax.naming.NamingException;
 import javax.naming.Binding;
 import javax.naming.directory.DirContext;
-import javax.servlet.DispatcherType;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.Servlet;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletContextAttributeEvent;
-import javax.servlet.ServletContextAttributeListener;
-import javax.servlet.SessionCookieConfig;
-import javax.servlet.SessionTrackingMode;
+import javax.servlet.*;
+import javax.servlet.http.*;
 
 import org.apache.catalina.Globals;
 import org.apache.catalina.security.SecurityUtil;
@@ -414,24 +406,16 @@ public final class ApplicationContextFacade
 
 
     /*
-     * Adds the servlet with the given name, description, class name,
-     * init parameters, and loadOnStartup, to this servlet context.
+     * Adds the servlet with the given name and class name to this
+     * servlet context.
      */
-    public void addServlet(String servletName,
-                           String description,
-                           String className,
-                           Map<String, String> initParameters,
-                           int loadOnStartup,
-                           boolean isAsyncSupported) {
+    public ServletRegistration addServlet(String servletName,
+                                          String className) {
         if (SecurityUtil.isPackageProtectionEnabled()) {
-            doPrivileged("addServlet",
-                         new Object[] {servletName, description, className,
-                                       initParameters, loadOnStartup,
-                                       isAsyncSupported});
+            return (ServletRegistration) doPrivileged(
+                "addServlet", new Object[] {servletName, className});
         } else {
-            context.addServlet(servletName, description, className,
-                               initParameters, loadOnStartup,
-                               isAsyncSupported);
+            return context.addServlet(servletName, className);
         }
     }
 
@@ -452,21 +436,15 @@ public final class ApplicationContextFacade
 
 
     /**
-     * Adds the filter with the given name, description, and class name to
-     * this servlet context.
+     * Adds the filter with the given name and class name to this servlet
+     * context.
      */
-    public void addFilter(String filterName,
-                          String description,
-                          String className,
-                          Map<String, String> initParameters,
-                          boolean isAsyncSupported) {
+    public FilterRegistration addFilter(String filterName, String className) {
         if (SecurityUtil.isPackageProtectionEnabled()) {
-            doPrivileged("addFilter",
-                         new Object[] {filterName, description, className,
-                                       initParameters, isAsyncSupported});
+            return (FilterRegistration) doPrivileged(
+                "addFilter", new Object[] {filterName, className});
         } else {
-            context.addFilter(filterName, description, className,
-                              initParameters, isAsyncSupported);
+            return context.addFilter(filterName, className);
         }
     }
     

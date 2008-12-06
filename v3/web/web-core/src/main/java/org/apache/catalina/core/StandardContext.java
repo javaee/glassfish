@@ -52,9 +52,6 @@
  * limitations under the License.
  */
 
-
-
-
 package org.apache.catalina.core;
 
 import java.io.BufferedReader;
@@ -88,20 +85,8 @@ import javax.management.Notification;
 import javax.management.NotificationBroadcasterSupport;
 import javax.management.ObjectName;
 import javax.naming.directory.DirContext;
-import javax.servlet.DispatcherType;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextAttributeListener;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequestAttributeListener;
-import javax.servlet.ServletRequestListener;
-import javax.servlet.SessionCookieConfig;
-import javax.servlet.SessionTrackingMode;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpSessionAttributeListener;
-import javax.servlet.http.HttpSessionListener;
+import javax.servlet.*;
+import javax.servlet.http.*;
 
 import org.apache.catalina.Auditor;// IASRI 4823322
 import org.apache.catalina.Container;
@@ -2583,29 +2568,11 @@ public class StandardContext
 
 
     /**
-     * Adds the filter with the given name, description, and class name to
-     * this servlet context.
+     * Adds the filter with the given name and class name to this servlet
+     * context.
      */
-    public void addFilter(String filterName,
-                          String description,
-                          String className,
-                          Map<String, String> initParameters,
-                          boolean isAsyncSupported) {
-
-        FilterDef filterDef = new FilterDef();
-
-        filterDef.setFilterName(filterName);
-        filterDef.setDescription(description);
-        filterDef.setFilterClass(className);
-        filterDef.setIsAsyncSupported(isAsyncSupported);
-
-        if (initParameters != null) {
-            for (Map.Entry<String, String> e : initParameters.entrySet()) {
-                filterDef.addInitParameter(e.getKey(), e.getValue());
-            }
-        }
-
-        addFilterDef(filterDef);
+    public FilterRegistration addFilter(String filterName, String className) {
+        return new FilterRegistrationImpl(this, filterName, className);
     }
 
 
@@ -3153,32 +3120,12 @@ public class StandardContext
 
 
     /*
-     * Adds the servlet with the given name, description, class name,
-     * init parameters, and loadOnStartup, to this servlet context.
+     * Adds the servlet with the given name and class name to this servlet
+     * context.
      */
-    public void addServlet(String servletName,
-                           String description,
-                           String className,
-                           Map<String, String> initParameters,
-                           int loadOnStartup,
-                           boolean isAsyncSupported) {
-
-        Wrapper wrapper = createWrapper();
-
-        wrapper.setName(servletName);
-        wrapper.setDescription(description);
-        wrapper.setServletClass(className);
-        wrapper.setIsAsyncSupported(isAsyncSupported);
-
-        if (initParameters != null) {
-            for (Map.Entry<String, String> e : initParameters.entrySet()) {
-                wrapper.addInitParameter(e.getKey(), e.getValue());
-            }
-        }
-
-        wrapper.setLoadOnStartup(loadOnStartup);
-
-        addChild(wrapper);
+    public ServletRegistration addServlet(String servletName,
+                                          String className) {
+        return new ServletRegistrationImpl(this, servletName, className);
     }
 
 
@@ -6918,9 +6865,7 @@ public class StandardContext
      * Return the naming resources associated with this web application.
      */
     public DirContext getStaticResources() {
-
         return getResources();
-
     }
 
 
@@ -6929,9 +6874,7 @@ public class StandardContext
      * FIXME: Fooling introspection ...
      */
     public DirContext findStaticResources() {
-
         return getResources();
-
     }
 
 
@@ -6939,9 +6882,7 @@ public class StandardContext
      * Return the naming resources associated with this web application.
      */
     public String[] getWelcomeFiles() {
-
         return findWelcomeFiles();
-
     }
 
 
@@ -6959,9 +6900,7 @@ public class StandardContext
      * @param webXmlValidation true to enable xml instance validation
      */
     public void setXmlValidation(boolean webXmlValidation){
-
         this.webXmlValidation = webXmlValidation;
-
     }
 
     /**
@@ -6999,9 +6938,7 @@ public class StandardContext
      * @param tldValidation true to enable xml instance validation
      */
     public void setTldValidation(boolean tldValidation){
-
         this.tldValidation = tldValidation;
-
     }
 
     /**
@@ -7051,7 +6988,13 @@ public class StandardContext
         // 2 - STOPPING
         return 3; // STOPPED
     }
-    
+
+
+    boolean isContextInitializedCalled() {
+        return isContextInitializedCalled;
+    }
+
+
     /**
      * The J2EE Server ObjectName this module is deployed on.
      */     
