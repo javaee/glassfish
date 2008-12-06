@@ -46,6 +46,7 @@ import javax.ejb.*;
 
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.MethodDescriptor;
+import com.sun.ejb.containers.TimerSchedule;
 
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotatedElementHandler;
@@ -89,32 +90,23 @@ public class ScheduleHandler extends AbstractAttributeHandler {
 
             if (ElementType.METHOD.equals(ainfo.getElementType())) {
                 Method annMethod = (Method) ainfo.getAnnotatedElement();
-System.err.println("@@@ Found Schedule on " + annMethod);
                 if (logger.isLoggable(Level.FINE)) {
                     logger.fine("@@@ Found Schedule on " + annMethod);
                 }
-                ScheduleExpression se = new ScheduleExpression().
-                        second(sch.second()).
-                        minute(sch.minute()).
-                        hour(sch.hour()).
-                        dayOfMonth(sch.dayOfMonth()).
-                        month(sch.month()).
-                        dayOfWeek(sch.dayOfWeek()).
-                        year(sch.year());
-System.err.println("@@@ Schedule : " + se.getSecond() + " # " 
-                                     + se.getMinute() + " # " 
-                                     + se.getHour() + " # " 
-                                     + se.getDayOfMonth() + " # " 
-                                     + se.getMonth() + " # " 
-                                     + se.getDayOfWeek() + " # " 
-                                     + se.getYear());
+                TimerSchedule ts = new TimerSchedule(sch);
+
+                long now = System.currentTimeMillis();
+                long next = ts.getNextTimeMillis();
+                System.out.println("@@@ First timeout: " + ((next < now)? "NEVER" : new java.util.Date(next)));
+                System.out.println("@@@ Schedule : " + ts.getScheduleAsString());
 
                 TimerConfig tc = new TimerConfig();
                 if (sch.info() != null && !sch.info().equals("")) {
                     tc.setInfo(sch.info());
                 }
                 tc.setPersistent(sch.persistent());
-System.err.println("@@@ TimerConfig : " + tc.getInfo() + " # " + tc.isPersistent());
+
+                System.out.println("@@@ TimerConfig : " + tc.getInfo() + " # " + tc.isPersistent());
             }
         }
 
