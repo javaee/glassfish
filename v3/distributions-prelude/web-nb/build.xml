@@ -20,6 +20,7 @@ own identifying information: Portions Copyright [yyyy]
 [name of copyright owner]
 -->
 <project name="glassfish web-nb distribution creation" default="create.distribution" basedir=".">
+    <import file="../distributions.xml"/>
     <target name="create.distribution">
         <echo message="Creating distribution: web-nb"/>
         <unzip dest="target/stage">
@@ -30,18 +31,18 @@ own identifying information: Portions Copyright [yyyy]
         </unzip>
         <delete dir="target/stage" includes="*.zip"/>
 
-        <chmod file="target/stage/glassfishv3-ea/bin/*" perm="ugo+rx"/>
-        <chmod file="target/stage/glassfishv3-ea/glassfish/bin/*" perm="ugo+rx"/>
+        <chmod file="target/stage/${install.dir.name}/bin/*" perm="ugo+rx"/>
+        <chmod file="target/stage/${install.dir.name}/glassfish/bin/*" perm="ugo+rx"/>
 
         <!-- create domain -->
         <!-- ant antfile="../distributions.xml" target="create-domain">
-            <property name="exec.dir" value="${basedir}/target/stage/glassfishv3-ea/glassfish/bin"/>
-            <property name="exec.executable" value="${basedir}/target/stage/glassfishv3-ea/glassfish/bin/asadmin"/>
+            <property name="exec.dir" value="${basedir}/target/stage/${install.dir.name}/glassfish/bin"/>
+            <property name="exec.executable" value="${basedir}/target/stage/${install.dir.name}/glassfish/bin/asadmin"/>
         </ant -->
 
         <!-- create distribution zip-->
         <exec dir="target/stage" executable="zip">
-            <arg line= "-r ../web-nb.zip glassfishv3-ea"/>
+            <arg line= "-r ../web-nb.zip ${install.dir.name}"/>
         </exec>
 
         <!-- deploy distribution artifact to maven repository" -->

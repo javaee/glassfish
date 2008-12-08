@@ -53,6 +53,10 @@
     <artifactId>packages</artifactId>
     <name>Glassfish packages</name>
 
+    <properties>
+        <install.dir.name>glassfishv3</install.dir.name>
+    </properties>
+
     <modules>
 	<module>felix</module>
 	<module>pkg-java</module> 
@@ -102,6 +106,7 @@
 	     <activeByDefault>false</activeByDefault>  
 	    </activation>
             <properties>
+                <install.dir.name>glassfishv3</install.dir.name>
                 <!-- if profile is ips then set property to do pack200 compression -->
                 <do.compression>true</do.compression>
             </properties>

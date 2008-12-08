@@ -24,6 +24,7 @@ own identifying information: Portions Copyright [yyyy]
 <property name="image.root" value="target/local_image"/>
 <property name="installer.image.dir" value="${image.root}/installer"/>
 <property name="glassfish.image.dir" value="${image.root}/glassfish"/>
+<property name="install.dir.name" value="glassfishv3"/>
 <property name="repo.url" value="http://repine.sfbay.sun.com:40000"/>
 <!-- property name="repo.url" value="http://localhost:10000"/ -->
 <property name="repo.host" value="http://pkg.glassfish.org"/>
@@ -83,29 +84,29 @@ own identifying information: Portions Copyright [yyyy]
 </target>
 
 <target name="create-distributions" description="Creating IPS Distributions">
-    <chmod file="${installer.image.dir}/glassfishv3-ea/bin/*" perm="ugo+rx"/>
-    <chmod file="${installer.image.dir}/glassfishv3-ea/glassfish/bin/*" perm="ugo+rx"/>
+    <chmod file="${installer.image.dir}/${install.dir.name}/bin/*" perm="ugo+rx"/>
+    <chmod file="${installer.image.dir}/${install.dir.name}/glassfish/bin/*" perm="ugo+rx"/>
     <!-- Delete all contents under ips-metadata download directory --> 
     <delete includeemptydirs="true">
-        <fileset dir="${installer.image.dir}/glassfishv3-ea/.org.opensolaris,pkg/download" includes="**/*"/>
-        <fileset dir="${installer.image.dir}/glassfishv3-ea/.org.opensolaris,pkg/pkg" includes="**/license.*"/>
+        <fileset dir="${installer.image.dir}/${install.dir.name}/.org.opensolaris,pkg/download" includes="**/*"/>
+        <fileset dir="${installer.image.dir}/${install.dir.name}/.org.opensolaris,pkg/pkg" includes="**/license.*"/>
     </delete>
     <antcall target="pack-compression">
         <param name="image.directory" value="${installer.image.dir}"/>
     </antcall>
-    <exec dir="${installer.image.dir}/glassfishv3-ea" executable="zip">
+    <exec dir="${installer.image.dir}/${install.dir.name}" executable="zip">
         <arg line= "-r ../../../../target/${image.name}-ips-installer.zip ."/>
     </exec>
 
-    <chmod file="${glassfish.image.dir}/glassfishv3-ea/bin/*" perm="ugo+rx"/>
-    <chmod file="${glassfish.image.dir}/glassfishv3-ea/glassfish/bin/*" perm="ugo+rx"/>
+    <chmod file="${glassfish.image.dir}/${install.dir.name}/bin/*" perm="ugo+rx"/>
+    <chmod file="${glassfish.image.dir}/${install.dir.name}/glassfish/bin/*" perm="ugo+rx"/>
     <!-- Delete all contents under ips-metadata download directory --> 
     <delete includeemptydirs="true">
-        <fileset dir="${glassfish.image.dir}/glassfishv3-ea/.org.opensolaris,pkg/download" includes="**/*"/>
-        <fileset dir="${glassfish.image.dir}/glassfishv3-ea/.org.opensolaris,pkg/pkg" includes="**/license.*"/>
+        <fileset dir="${glassfish.image.dir}/${install.dir.name}/.org.opensolaris,pkg/download" includes="**/*"/>
+        <fileset dir="${glassfish.image.dir}/${install.dir.name}/.org.opensolaris,pkg/pkg" includes="**/license.*"/>
     </delete>
     <exec dir="${glassfish.image.dir}" executable="zip">
-        <arg line= "-r ../../../target/${image.name}-ips.zip glassfishv3-ea"/>
+        <arg line= "-r ../../../target/${image.name}-ips.zip ${install.dir.name}"/>
     </exec>
     <!-- delete dir="${image.root}"/ -->
 </target>
@@ -291,15 +292,15 @@ origin-for-darwin-universal-sun-contrib]]>
 </target>
 <!-- pack200 compression -->
 <target name="pack-compression">
-    <apply executable="pack200" dest="${image.directory}/glassfishv3-ea/glassfish/modules" parallel="false">
+    <apply executable="pack200" dest="${image.directory}/${install.dir.name}/glassfish/modules" parallel="false">
         <targetfile/>
         <srcfile/>
-        <fileset dir="${image.directory}/glassfishv3-ea/glassfish/modules" includes="**/*.jar" />
+        <fileset dir="${image.directory}/${install.dir.name}/glassfish/modules" includes="**/*.jar" />
         <mapper type="glob" from="*.jar" to="*.pack.gz"/>
     </apply>
     <!-- remove *.pack.gz files -->
     <delete>
-        <fileset dir="${image.directory}/glassfishv3-ea/glassfish/modules" includes="**/*.jar"/>
+        <fileset dir="${image.directory}/${install.dir.name}/glassfish/modules" includes="**/*.jar"/>
     </delete>
 </target>
 </project>

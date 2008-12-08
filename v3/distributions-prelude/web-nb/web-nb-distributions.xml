@@ -22,20 +22,20 @@ own identifying information: Portions Copyright [yyyy]
 <project name="Web-NB Distribution (ips) Creation" default="create-image" basedir=".">
 <target name="create-image" depends="create-installer-image, create-glassfish-image">
     <mkdir dir="${installer.image.dir}"/>
-    <mkdir dir="${installer.image.dir}/glassfishv3-ea"/>
+    <mkdir dir="${installer.image.dir}/${install.dir.name}"/>
     <mkdir dir="${glassfish.image.dir}"/>
 </target>
 
 
 <target name="create-installer-image" description="Creating IPS Image without Domains for Installer">
     <antcall target="create-common-image">
-        <param name="image.dir" value="${installer.image.dir}/glassfishv3-ea"/>
+        <param name="image.dir" value="${installer.image.dir}/${install.dir.name}"/>
     </antcall>
 </target>
 
 <target name="create-glassfish-image" description="Creating IPS Image with Domains">
     <antcall target="create-common-image">
-        <param name="image.dir" value="${glassfish.image.dir}/glassfishv3-ea"/>
+        <param name="image.dir" value="${glassfish.image.dir}/${install.dir.name}"/>
     </antcall>
 </target>
 
