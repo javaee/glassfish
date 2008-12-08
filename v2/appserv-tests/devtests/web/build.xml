@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="334"/>
+    <property name="TOTAL_EXPECTED" value="335"/>
 
     &commonSetup;
     &commonBuild;
@@ -299,6 +299,7 @@
         <ant dir="valveTomcatStyle" target="all"/>
         <ant dir="valveGlassFishStyleBackwardCompatible" target="all"/>
         <ant dir="webdavCopyDelete" target="all"/>
+        <ant dir="useBundledJsf" target="all"/>
     </target>
 
     <target name="security">
