@@ -94,8 +94,8 @@ public class EmbeddedInfo {
         validateFilesystem();
     }
 
-    public void setFilesystemRoot(File f) {
-
+    public void setFileSystemRoot(File f) throws EmbeddedException {
+        EmbeddedFileSystem.setRoot(f);
     }
 
     @Override
