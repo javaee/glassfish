@@ -38,8 +38,9 @@
 
 package com.sun.enterprise.v3.services.impl;
 
-import com.sun.grizzly.http.LinkedListPipeline;
-import com.sun.grizzly.util.WorkerThreadImpl;
+import com.sun.grizzly.http.StatsThreadPool;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import org.glassfish.kernel.admin.monitor.ThreadPoolProbeProvider;
 
 /**
@@ -47,7 +48,7 @@ import org.glassfish.kernel.admin.monitor.ThreadPoolProbeProvider;
  *
  * @author jluehe
  */
-public class GrizzlyProbePipeline extends LinkedListPipeline {
+public class GrizzlyProbeThreadPool extends StatsThreadPool {
         
     // The ThreadPoolProbeProvider to which to emit any probe events
     private ThreadPoolProbeProvider threadPoolProbeProvider =
@@ -59,23 +60,39 @@ public class GrizzlyProbePipeline extends LinkedListPipeline {
         this.threadPoolProbeProvider = threadPoolProbeProvider;
     }
 
-
-    @Override
-    protected void increaseWorkerThread(int increment, boolean startThread) {
-        super.increaseWorkerThread(increment, startThread);
-        threadPoolProbeProvider.newThreadsAllocatedEvent(getName(),
-                                                         increment,
-                                                         startThread);
+    public GrizzlyProbeThreadPool() {
+        super();
+        setThreadFactory(new ProbeWorkerThreadFactory());
     }
 
-
-    @Override
-    protected WorkerThreadImpl createWorkerThread(
-                String name,
-                int initialByteBufferSize) {
-
-        return new GrizzlyProbeWorkerThread(this, name, initialByteBufferSize,
-                                            threadPoolProbeProvider);
+    public GrizzlyProbeThreadPool(int corePoolSize, int maximumPoolSize,
+            int maxTasksCount, long keepAliveTime, TimeUnit unit) {
+        super(corePoolSize, maximumPoolSize, maxTasksCount, keepAliveTime, unit);
+        setThreadFactory(new ProbeWorkerThreadFactory());
     }
 
+    @Override
+    protected void beforeExecute(Thread thread, Runnable runnable) {
+        super.beforeExecute(thread, runnable);
+        threadPoolProbeProvider.threadDispatchedFromPoolEvent(name,
+                thread.getName());
+    }
+
+    @Override
+    protected void afterExecute(Runnable r, Throwable t) {
+        threadPoolProbeProvider.threadReturnedToPoolEvent(name,
+                Thread.currentThread().getName());
+        super.afterExecute(r, t);
+    }
+
+    public class ProbeWorkerThreadFactory implements ThreadFactory {
+        public Thread newThread(Runnable r) {
+            Thread thread = new GrizzlyProbeWorkerThread(
+                    GrizzlyProbeThreadPool.this, r, name,
+                    initialByteBufferSize, threadPoolProbeProvider);
+            threadPoolProbeProvider.newThreadsAllocatedEvent(name, 1, true);
+
+            return thread;
+        }
+    }
 }

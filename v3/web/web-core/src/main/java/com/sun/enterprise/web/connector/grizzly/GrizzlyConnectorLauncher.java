@@ -267,13 +267,20 @@ public class GrizzlyConnectorLauncher extends CoyoteConnectorLauncher {
     }    
 
     
+    /*
+     * API was changed. Method doesn't exist in SelectorThread 
+     */
     public int getProcessorThreadsIncrement() {
-        return selectorThread.getThreadsIncrement();
+//        return selectorThread.getThreadsIncrement();
+        return 0;
     }
 
     
+    /*
+     * API was changed. Method doesn't exist in SelectorThread
+     */
     public void setProcessorThreadsIncrement( int threadsIncrement ) {
-        selectorThread.setThreadsIncrement(threadsIncrement);
+//        selectorThread.setThreadsIncrement(threadsIncrement);
         setAttribute("threadsIncrement", "" + threadsIncrement);  
     }  
     
@@ -477,8 +484,11 @@ public class GrizzlyConnectorLauncher extends CoyoteConnectorLauncher {
     /**
      * The minimun threads created at startup.
      */ 
+    /*
+     * API was changed. Method doesn't exist in SelectorThread
+     */
     public void setMinThreads(int minThreads){
-        selectorThread.setMinThreads(minThreads);
+//        selectorThread.setMinThreads(minThreads);
     }
     
 
@@ -639,8 +649,11 @@ public class GrizzlyConnectorLauncher extends CoyoteConnectorLauncher {
      * Set the maximum pending connection this <code>Pipeline</code>
      * can handle.
      */
+    /*
+     * API was changed. Method doesn't exist in SelectorThread
+     */
     public void setQueueSizeInBytes(int maxQueueSizeInBytes){
-        selectorThread.setMaxQueueSizeInBytes(maxQueueSizeInBytes);
+//        selectorThread.setMaxQueueSizeInBytes(maxQueueSizeInBytes);
     }
     
     

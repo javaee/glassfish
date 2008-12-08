@@ -47,6 +47,7 @@ import com.sun.grizzly.arp.AsyncFilter;
 import com.sun.logging.LogDomains;
 import java.util.LinkedList;
 
+import java.util.concurrent.TimeUnit;
 import org.glassfish.internal.api.Globals;
 import org.jvnet.hk2.component.Habitat;
 
@@ -124,9 +125,10 @@ public class GrizzlyListenerConfigurator {
         
         configureKeepAlive(grizzlyEmbeddedHttp, httpService.getKeepAlive());
         configureHttpProtocol(grizzlyEmbeddedHttp, httpService.getHttpProtocol());     
-        configureRequestProcessing(grizzlyEmbeddedHttp, httpService.getRequestProcessing());
+        configureThreadPool(grizzlyEmbeddedHttp,
+                httpService.getRequestProcessing(),
+                httpService.getConnectionPool());
         configureFileCache(grizzlyEmbeddedHttp, httpService.getHttpFileCache());
-        configureConnectionPool(grizzlyEmbeddedHttp, httpService.getConnectionPool());
 
         // acceptor-threads
         String acceptorThreads = httpListener.getAcceptorThreads();
@@ -400,19 +402,33 @@ public class GrizzlyListenerConfigurator {
      * @param RequestProcessing http-service config to use
      * @param grizzlyListener the grizzlyListener used.
      */
-    protected static void configureRequestProcessing(GrizzlyEmbeddedHttp grizzlyEmbeddedHttp,
-            RequestProcessing rp) {
+    protected static void configureThreadPool(
+            GrizzlyEmbeddedHttp grizzlyEmbeddedHttp, RequestProcessing rp,
+            ConnectionPool cp) {
         if (rp == null) return;
 
         try{
-            grizzlyEmbeddedHttp.setMaxThreads(
-                    Integer.parseInt(rp.getThreadCount()));
-            grizzlyEmbeddedHttp.setMinWorkerThreads(
-                    Integer.parseInt(rp.getInitialThreadCount()));
-            grizzlyEmbeddedHttp.setThreadsIncrement(
-                    Integer.parseInt(rp.getThreadIncrement()));
+            int maxQueueSize = GrizzlyProbeThreadPool.DEFAULT_MAX_TASKS_QUEUED;
+            
+//            int minThreads = Integer.parseInt(rp.getInitialThreadCount());
+            
+            int maxThreads = Integer.parseInt(rp.getThreadCount());
+            
+            // In ThreadPoolExecutor corePoolSize doesn't mean initial pool size
+            int minThreads = maxThreads;
+
+            if (cp != null && cp.getQueueSizeInBytes() != null) {
+                maxQueueSize = Integer.parseInt(cp.getQueueSizeInBytes());
+            }
+
+            grizzlyEmbeddedHttp.setThreadPool(new GrizzlyProbeThreadPool(
+                    minThreads, maxThreads, maxQueueSize,
+                    GrizzlyProbeThreadPool.DEFAULT_IDLE_THREAD_KEEPALIVE_TIMEOUT,
+                    TimeUnit.MILLISECONDS));
+
             grizzlyEmbeddedHttp.setMaxHttpHeaderSize(
                    Integer.parseInt(rp.getHeaderBufferLengthInBytes()));
+
         } catch (NumberFormatException ex){
             logger.log(Level.WARNING, " Invalid request-processing attribute", 
                     ex);                      
@@ -564,19 +580,6 @@ public class GrizzlyListenerConfigurator {
             }
         }    
     }
-    
-
-    /**
-     * Configure connection-pool.
-     */
-    private final static void configureConnectionPool(
-            GrizzlyEmbeddedHttp grizzlyEmbeddedHttp, ConnectionPool connPool) {
-        if (connPool != null && connPool.getQueueSizeInBytes() != null) {
-            int queueSizeInBytes = Integer.parseInt(connPool.getQueueSizeInBytes());
-            grizzlyEmbeddedHttp.setMaxQueueSizeInBytes(queueSizeInBytes);
-        }
-    }
-    
     
     /**
      * Enable Comet/Poll request support.

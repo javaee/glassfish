@@ -71,19 +71,9 @@ public class GrizzlyEmbeddedHttp extends SelectorThread
     public GrizzlyEmbeddedHttp(GrizzlyService grizzlyService) {
         this.grizzlyService = grizzlyService;
         this.adapter = new ContainerMapper(grizzlyService, this);
-        this.pipelineClassName = GrizzlyProbePipeline.class.getName();
-        setClassLoader(getClass().getClassLoader()); 
+        setClassLoader(getClass().getClassLoader());
     }
     
-
-    @Override    
-    protected void initPipeline() { 
-        super.initPipeline();
-        ((GrizzlyProbePipeline)processorPipeline).setThreadPoolProbeProvider(
-            grizzlyService.getThreadPoolProbeProvider());
-    }
-
-
     /**
      * Load using reflection the <code>Algorithm</code> class.
      */
@@ -232,7 +222,7 @@ public class GrizzlyEmbeddedHttp extends SelectorThread
         if (udpSelectorHandler == null){
             udpSelectorHandler = new UDPSelectorHandler();
             udpSelectorHandler.setPort(port);
-            udpSelectorHandler.setPipeline(processorPipeline);
+            udpSelectorHandler.setThreadPool(threadPool);
         }
         return udpSelectorHandler;
     }
@@ -244,7 +234,7 @@ public class GrizzlyEmbeddedHttp extends SelectorThread
     protected void configureSelectorHandler(UDPSelectorHandler selectorHandler) {
         selectorHandler.setPort(port);
         selectorHandler.setReuseAddress(getReuseAddress());
-        selectorHandler.setPipeline(processorPipeline);
+        selectorHandler.setThreadPool(threadPool);
     }
     
     

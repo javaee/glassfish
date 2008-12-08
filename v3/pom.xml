@@ -111,10 +111,10 @@
         <deployment-api.version>1.2-rev-1</deployment-api.version>
         <jaxrpc-api.version>1.1</jaxrpc-api.version>
         <!-- When you change the following property, please change grizzly.package-version as well -->
-        <grizzly.original-version>1.8.6.2</grizzly.original-version>
+        <grizzly.original-version>1.9.0</grizzly.original-version>
         <!-- A version string like 1.8.6-RC2 is treated differently by OSGi, hence
              we map it manually -->
-        <grizzly.package-version>1.8.6.2</grizzly.package-version>
+        <grizzly.package-version>1.9.0</grizzly.package-version>
         <jaxb-api.version>2.1</jaxb-api.version>
         <jaxws-api.version>2.1</jaxws-api.version>
         <jsr250-api.version>1.0</jsr250-api.version>

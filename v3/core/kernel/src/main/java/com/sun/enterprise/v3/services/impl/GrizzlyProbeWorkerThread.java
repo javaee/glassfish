@@ -38,9 +38,8 @@
 
 package com.sun.enterprise.v3.services.impl;
 
-import java.util.concurrent.Callable;
-import com.sun.grizzly.Pipeline;
-import com.sun.grizzly.util.WorkerThreadImpl;
+import com.sun.grizzly.http.HttpWorkerThread;
+import com.sun.grizzly.http.StatsThreadPool;
 import org.glassfish.kernel.admin.monitor.ThreadPoolProbeProvider;
 
 /**
@@ -49,7 +48,7 @@ import org.glassfish.kernel.admin.monitor.ThreadPoolProbeProvider;
  *
  * @author jluehe
  */
-public class GrizzlyProbeWorkerThread extends WorkerThreadImpl {
+public class GrizzlyProbeWorkerThread extends HttpWorkerThread {
 
     private ThreadPoolProbeProvider threadPoolProbeProvider;
 
@@ -60,28 +59,13 @@ public class GrizzlyProbeWorkerThread extends WorkerThreadImpl {
      * Constructor
      */
     public GrizzlyProbeWorkerThread(
-            Pipeline<Callable> pipeline,
+            StatsThreadPool threadPool,
+            Runnable runnable,
             String name, 
             int initialByteBufferSize,
             ThreadPoolProbeProvider threadPoolProbeProvider) {
-        super(pipeline, name, initialByteBufferSize);
+        super(threadPool, name, runnable, initialByteBufferSize);
         this.threadPoolProbeProvider = threadPoolProbeProvider;
-        this.threadPoolName = pipeline.getName();
+        this.threadPoolName = threadPool.getName();
     }
-
-
-    @Override
-    protected void processTask(Callable t) throws Exception {
-        threadPoolProbeProvider.threadDispatchedFromPoolEvent(threadPoolName,
-                                                              getName());
-        super.processTask(t);
-    }
-
-
-    @Override
-    protected void reset() {
-        super.reset();
-        threadPoolProbeProvider.threadReturnedToPoolEvent(threadPoolName,
-                                                          getName());
-    } 
 }
