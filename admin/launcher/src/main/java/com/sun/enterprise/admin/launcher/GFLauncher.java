@@ -320,7 +320,7 @@ public abstract class GFLauncher {
 
     }
 
-    private void setClasspath() throws GFLauncherException {
+    void setClasspath() throws GFLauncherException {
         List<File> mainCP = getMainClasspath(); // subclass provides this
         List<File> envCP = javaConfig.getEnvClasspath();
         List<File> sysCP = javaConfig.getSystemClasspath();
@@ -421,7 +421,7 @@ public abstract class GFLauncher {
         return list;
     }
 
-    private void logCommandLine() {
+    void logCommandLine() {
         StringBuilder sb = new StringBuilder();
         for(String s : commandLine) {
             // newline before the first line...

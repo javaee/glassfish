@@ -34,23 +34,23 @@ import java.util.*;
 import java.util.logging.*;
 
 public class StartDomainCommand extends AbstractCommand {
-
     public void runCommand() throws CommandException, CommandValidationException {
-    
         try {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 validateOptions();
             GFLauncher launcher = null;
 
             // bnevins nov 23 2008
             // Embedded is a new type of server
+            // For now -- we ONLY start embedded
 			
-            if(System.getenv("AS_EMBEDDED") != null)
+            //boolean gfe = Boolean.parseBoolean(System.getenv("GFE_ENABLED"));
+            //if(gfe)
                 launcher = GFLauncherFactory.getInstance(
                     GFLauncherFactory.ServerType.embedded);
-            else
+            /*
+             else
                 launcher = GFLauncherFactory.getInstance(
                     GFLauncherFactory.ServerType.domain);
-
+            */
 
             info = launcher.getInfo();
 
@@ -93,6 +93,7 @@ public class StartDomainCommand extends AbstractCommand {
             throw new CommandException(me);
         }
     }
+
 
     // bnevins: note to me -- this String handling is EVIL.  Need to add plenty of utilities...
     
