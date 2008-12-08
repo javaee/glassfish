@@ -410,8 +410,11 @@ public final class JavaEETransactionImpl extends TimerTask implements
                         Synchronization sync = (Synchronization)syncs.elementAt(i);
                         sync.beforeCompletion();
                     } catch ( RuntimeException ex ) { 
+                        _logger.log(Level.WARNING, "enterprise_distributedtx.before_completion_excep", ex);
                         setRollbackOnly();
-                    } catch (Exception ex) { } 
+                    } catch (Exception ex) { 
+                        _logger.log(Level.WARNING, "enterprise_distributedtx.before_completion_excep", ex);
+                    } 
 
                 }
 
@@ -420,8 +423,11 @@ public final class JavaEETransactionImpl extends TimerTask implements
                         Synchronization sync = (Synchronization)interposedSyncs.elementAt(i);
                         sync.beforeCompletion();
                     } catch ( RuntimeException ex ) {
+                        _logger.log(Level.WARNING, "enterprise_distributedtx.before_completion_excep", ex);
                         setRollbackOnly();  
-                    } catch (Exception ex) { }
+                    } catch (Exception ex) { 
+                        _logger.log(Level.WARNING, "enterprise_distributedtx.before_completion_excep", ex);
+                    }
 
                 }
 
@@ -487,7 +493,9 @@ public final class JavaEETransactionImpl extends TimerTask implements
                     try { 
                         Synchronization sync = (Synchronization)interposedSyncs.elementAt(i);
                         sync.afterCompletion(localTxStatus);
-                    } catch ( Exception ex ) {}
+                    } catch ( Exception ex ) {
+                        _logger.log(Level.WARNING, "enterprise_distributedtx.after_completion_excep", ex);
+                    }
                 }
 
                 // call afterCompletions
@@ -495,7 +503,9 @@ public final class JavaEETransactionImpl extends TimerTask implements
                     try {
                         Synchronization sync = (Synchronization)syncs.elementAt(i);
                         sync.afterCompletion(localTxStatus);
-                    } catch ( Exception ex ) {}
+                    } catch ( Exception ex ) {
+                        _logger.log(Level.WARNING, "enterprise_distributedtx.after_completion_excep", ex);
+                    }
                 }
 
                 onTxCompletion(true);
@@ -537,7 +547,9 @@ public final class JavaEETransactionImpl extends TimerTask implements
                     try { 
                         Synchronization sync = (Synchronization)interposedSyncs.elementAt(i);
                         sync.afterCompletion(Status.STATUS_ROLLEDBACK);
-                    } catch ( Exception ex ) {}
+                    } catch ( Exception ex ) {
+                        _logger.log(Level.WARNING, "enterprise_distributedtx.after_completion_excep", ex);
+                    }
                 }
 
                 // call afterCompletions
@@ -545,7 +557,9 @@ public final class JavaEETransactionImpl extends TimerTask implements
                     try {
                         Synchronization sync = (Synchronization)syncs.elementAt(i);
                         sync.afterCompletion(Status.STATUS_ROLLEDBACK);
-                    } catch ( Exception ex ) {}
+                    } catch ( Exception ex ) {
+                        _logger.log(Level.WARNING, "enterprise_distributedtx.after_completion_excep", ex);
+                    }
 
                 }
 

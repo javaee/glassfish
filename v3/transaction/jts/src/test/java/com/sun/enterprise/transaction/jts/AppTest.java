@@ -381,6 +381,9 @@ public class AppTest extends TestCase {
     public void testTxCommitFailBC() {
         System.out.println("**Testing TX commit with exception in beforeCompletion ===>");
         try {
+            // Suppress warnings from beforeCompletion() logging
+            ((JavaEETransactionManagerSimplified)t).getLogger().setLevel(Level.SEVERE);
+
             System.out.println("**Starting transaction ....");
             t.begin();
             Transaction tx = t.getTransaction();
@@ -416,6 +419,9 @@ public class AppTest extends TestCase {
     public void testTxCommitRollbackBC() {
         System.out.println("**Testing TX commit with rollback in beforeCompletion ===>");
         try {
+            // Suppress warnings from beforeCompletion() logging
+            ((JavaEETransactionManagerSimplified)t).getLogger().setLevel(Level.SEVERE);
+
             System.out.println("**Starting transaction ....");
             t.begin();
             Transaction tx = t.getTransaction();
