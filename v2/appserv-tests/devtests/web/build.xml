@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="333"/>
+    <property name="TOTAL_EXPECTED" value="334"/>
 
     &commonSetup;
     &commonBuild;
@@ -281,9 +281,7 @@
         <ant dir="virtualServerUpdateHostsDynamicReconfig" target="all"/>
         <ant dir="virtualServerChangeHttpListenerWebappNoLongerAccessible" target="all"/>
         <ant dir="virtualServerModifyHttpListenerPortAccessWebapp" target="all"/>
-        <!-- Disabled for v3 prelude until Issue 6043 has been fixed
         <ant dir="virtualServerCreateUpperCaseDeployExclusive" target="all"/>
-        -->
         <ant dir="classloaderMemoryLeak" target="all"/>
         <ant dir="reconfigDefaultWebModule" target="all"/>
         <ant dir="extraClassPathRelative" target="all"/>
