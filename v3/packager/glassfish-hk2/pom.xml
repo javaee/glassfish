@@ -81,15 +81,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>com.sun.enterprise</groupId>
-            <artifactId>stax-osgi</artifactId>
-	    <version>${hk2.version}</version>
-	     <exclusions>
-               <groupId>woodstox</groupId>
-               <artifactId>wstx-asl</artifactId>
-           </exclusions>
-        </dependency>
    </dependencies>
 
     <profiles>
