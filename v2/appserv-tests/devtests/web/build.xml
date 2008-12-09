@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="335"/>
+    <property name="TOTAL_EXPECTED" value="336"/>
 
     &commonSetup;
     &commonBuild;
@@ -123,6 +123,7 @@
         <ant dir="contentlength" target="all"/>
         <ant dir="sessionDestroyed" target="all"/>
         <ant dir="cookieProperties" target="all"/>  
+        <ant dir="cookieHttpOnly" target="all"/>  
         <ant dir="defaultCharset" target="all"/>
         <ant dir="reuseSessionId" target="all"/>
         <ant dir="queryString" target="all"/>
