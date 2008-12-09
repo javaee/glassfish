@@ -167,6 +167,14 @@
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
+
+        <!-- metro package -->
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>metro</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
     </dependencies>
 </project>
 
