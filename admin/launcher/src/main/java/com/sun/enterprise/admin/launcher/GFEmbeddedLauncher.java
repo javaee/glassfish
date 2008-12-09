@@ -82,14 +82,22 @@ class GFEmbeddedLauncher extends GFLauncher{
         cmdLine.add(getClasspath());
         addDebug(cmdLine);
         cmdLine.add(getMainClass());
+        cmdLine.add("--port");
+        cmdLine.add("8080");
+        cmdLine.add("--xml");
+        cmdLine.add(domainXml.getPath() );
+        cmdLine.add("--dir");
+        cmdLine.add(installDir.getPath());
+        cmdLine.add("--autodelete");
+        cmdLine.add("false");
     }
 
     private void addDebug(List<String> cmdLine) {
-        String s = System.getenv("GFE_DEBUG");
+        String s = System.getenv("GFE_DEBUG_PORT");
 
         if(ok(s)) {
             cmdLine.add("-Xdebug");
-            cmdLine.add(s);
+            cmdLine.add("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=" + s);
         }
     }
 
@@ -121,6 +129,7 @@ class GFEmbeddedLauncher extends GFLauncher{
             throw new GFLauncherException(err);
 
         domainDir = SmartFile.sanitize(domainDir);
+        domainXml = SmartFile.sanitize(new File(domainDir, "config/domain.xml"));
     }
 
     private void setupJDK() throws GFLauncherException {
@@ -192,6 +201,7 @@ class GFEmbeddedLauncher extends GFLauncher{
     private File installDir;
     private File javaExe;
     private File domainDir;
+    private File domainXml;
     private static final String GFE_JAR          = "GFE_JAR";
     private static final String INSTALL_HOME    = "S1AS_HOME";
     private static final String JAVA_HOME        = "JAVA_HOME";
@@ -203,5 +213,5 @@ class GFEmbeddedLauncher extends GFLauncher{
             "S1AS_HOME - path to installation directory.  This can be empty or not exist yet.\n" +
             "JAVA_HOME - path to a JDK installation.  JRE installation is generally not good enough\n" +
             "GFE_DOMAIN - path to the domain dir's config dir.  I.e. this is where the domain.xml will be written.\n" +
-            "GFE_DEBUG - optional debugging options, e.g. '-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=1323'";
+            "GFE_DEBUG_PORT - optional debugging port.  It will start suspended.\n";
 }
