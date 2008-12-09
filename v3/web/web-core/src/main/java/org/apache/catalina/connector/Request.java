@@ -3805,6 +3805,8 @@ public class Request
 
         startAsyncTimer();
 
+        coyoteRequest.getResponse().suspend();
+
         return asyncContext;
     }
         
@@ -3960,6 +3962,7 @@ public class Request
         stopAsyncTimer();
         isAsyncComplete = true;
         notifyAsyncListeners(AsyncEventType.COMPLETE);
+        coyoteRequest.getResponse().resume();
     }
 
 
