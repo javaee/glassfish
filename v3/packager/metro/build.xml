@@ -28,25 +28,25 @@ own identifying information: Portions Copyright [yyyy]
 	<!-- this is temporary, scripts should be handled as
 	maven artifacts -->
 
-	<mkdir dir="target/stage/glassfishv3-prelude/glassfish/bin"/>
+	<mkdir dir="target/stage/${install.dir.name}/glassfish/bin"/>
 
-	<copy todir="target/stage/glassfishv3-prelude/glassfish/bin">
+	<copy todir="target/stage/${install.dir.name}/glassfish/bin">
 		<fileset dir="../../webservices/jsr109-impl/src/main/resources"
 		    includes="ws*,xjc*,schemagen*"/>
 	</copy>
 
 
-	<chmod file="target/stage/glassfishv3-prelude/glassfish/bin/*" perm="ugo+rx"/>
+	<chmod file="target/stage/${install.dir.name}/glassfish/bin/*" perm="ugo+rx"/>
 
 	<!-- this is temporary, jar names to be resolved during their
 	build	-->
 
-	<move file="target/stage/glassfishv3-prelude/glassfish/modules/webservices-osgi.jar"
-		tofile="target/stage/glassfishv3-prelude/glassfish/modules/webservices.jar"
+	<move file="target/stage/${install.dir.name}/glassfish/modules/webservices-osgi.jar"
+		tofile="target/stage/${install.dir.name}/glassfish/modules/webservices.jar"
 		failonerror="false"/>
 		
-	<move file="target/stage/glassfishv3-prelude/glassfish/modules/jaxb-osgi.jar"
-		tofile="target/stage/glassfishv3-prelude/glassfish/modules/jaxb.jar"
+	<move file="target/stage/${install.dir.name}/glassfish/modules/jaxb-osgi.jar"
+		tofile="target/stage/${install.dir.name}/glassfish/modules/jaxb.jar"
 	       	failonerror="false"/>
 	
 
