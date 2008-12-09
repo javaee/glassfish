@@ -1759,8 +1759,8 @@ public class Response
                             (sb, cookie.getVersion(), cookie.getName(), 
                              cookie.getValue(), cookie.getPath(), 
                              cookie.getDomain(), cookie.getComment(), 
-                             cookie.getMaxAge(), cookie.getSecure()
-                             /*, cookie.isHttpOnly()*/);
+                             cookie.getMaxAge(), cookie.getSecure(),
+                             cookie.isHttpOnly());
                         return sb.toString();
                     }
                 });
@@ -1768,7 +1768,7 @@ public class Response
             ServerCookie.appendCookieValue
                 (sb, cookie.getVersion(), cookie.getName(), cookie.getValue(),
                  cookie.getPath(), cookie.getDomain(), cookie.getComment(), 
-                 cookie.getMaxAge(), cookie.getSecure()/*, cookie.isHttpOnly()*/);
+                 cookie.getMaxAge(), cookie.getSecure(), cookie.isHttpOnly());
             cookieValue = sb.toString();
         }
 
