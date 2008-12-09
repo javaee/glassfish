@@ -253,11 +253,10 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
             parser = xmlIf.createXMLStreamReader(input);
 
             int event = 0;
-            boolean done = false;
             boolean inClassLoader = false;
             skipRoot("sun-web-app");
 
-            while (!done && parser.hasNext() && (event = parser.next()) != END_DOCUMENT) {
+            while (parser.hasNext() && (event = parser.next()) != END_DOCUMENT) {
                 if (event == START_ELEMENT) {
                     String name = parser.getLocalName();
                     if ("class-loader".equals(name)) {
@@ -299,9 +298,34 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
 
                         if ("ignoreHiddenJarFiles".equals(propName)) {
                             ignoreHiddenJarFiles = Boolean.valueOf(value);
-                        } else if("useMyFaces".equalsIgnoreCase(name)) {
+                        } else {
+                            Object[] params = { propName, value };
+                            if (logger.isLoggable(Level.WARNING)) {
+                                logger.log(Level.WARNING, "webcontainer.invalidProperty",
+                                           params);
+                            }
+                        }
+                    } else if ("property".equals(name)) {
+                        int count = parser.getAttributeCount();
+                        String propName = null;
+                        String value = null;
+                        for (int i = 0; i < count; i++) {
+                            String attrName = parser.getAttributeName(i).getLocalPart();
+                            if ("name".equals(attrName)) {
+                                propName = parser.getAttributeValue(i);
+                            } else if ("value".equals(attrName)) {
+                                value = parser.getAttributeValue(i);
+                            }
+                        }
+
+                        if (propName == null || value == null) {
+                            throw new IllegalArgumentException(
+                                rb.getString("webcontainer.nullWebProperty"));
+                        }
+
+                        if("useMyFaces".equalsIgnoreCase(propName)) {
                             useBundledJSF = Boolean.valueOf(value);
-                        } else if("useBundledJsf".equalsIgnoreCase(name)) {
+                        } else if("useBundledJsf".equalsIgnoreCase(propName)) {
                             useBundledJSF = Boolean.valueOf(value);
                         } else {
                             Object[] params = { propName, value };
@@ -316,7 +340,6 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
                 } else if (inClassLoader && event == END_ELEMENT) {
                     if ("class-loader".equals(parser.getLocalName())) {
                         inClassLoader = false;
-                        done = true;
                     }
                 }
             }
