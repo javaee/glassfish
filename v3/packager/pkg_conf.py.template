@@ -24,9 +24,9 @@ glassfish_version="3.0,0-@BUILD_ID@"
 felix_version="1.2.2,0-0"
 javadb_version="10.2.2.1,0-0"
 corba_omgapi_version="3.0.0,0-1"
-jsf_version="1.2.10,0-1"
+jsf_version="2.0.0,0-7"
 grizzly_version="1.9.0,0-0"
-metro_version="1.4,0-0"
+metro_version="1.4,0-5010"
 
 #description
 glassfish_description="GlassFish v3 Application Server"
