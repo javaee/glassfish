@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="336"/>
+    <property name="TOTAL_EXPECTED" value="337"/>
 
     &commonSetup;
     &commonBuild;
@@ -196,6 +196,7 @@
         <ant dir="servletContextGetContextPath" target="all"/>
         <ant dir="servletContextGetEmptyContextPath" target="all"/>
         <ant dir="servletEmptyLoadOnStartup" target="all"/>
+        <ant dir="servletProgrammaticRegistration" target="all"/>
         <ant dir="sessionExpired" target="all"/>
         <ant dir="servletSSLRequestAttributes" target="all"/>
         <ant dir="servletRequestURIMultipleSemicolons" target="all"/>
