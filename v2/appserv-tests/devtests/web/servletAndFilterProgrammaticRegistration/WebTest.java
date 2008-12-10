@@ -3,11 +3,12 @@ import java.net.*;
 import com.sun.ejte.ccl.reporter.*;
 
 /*
- * Unit test for programmatic registration of servlets (Servlet 3.0 feature).
+ * Unit test for programmatic registration of servlets and filters
+ * (Servlet 3.0 feature).
  */
 public class WebTest {
 
-    private static final String TEST_NAME = "servlet-programmatic-registration";
+    private static final String TEST_NAME = "servlet-and-filter-programmatic-registration";
 
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
@@ -24,7 +25,8 @@ public class WebTest {
     
     public static void main(String[] args) {
 
-        stat.addDescription("Unit test for programmatic registration of servlets");
+        stat.addDescription("Unit test for programmatic registration of " +
+                            "servlets and filters");
         WebTest webTest = new WebTest(args);
 
         try {
