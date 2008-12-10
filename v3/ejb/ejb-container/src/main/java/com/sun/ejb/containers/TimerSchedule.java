@@ -407,6 +407,10 @@ public class TimerSchedule implements Serializable {
             }
 
             result = next.getTimeInMillis();
+            if (start_ != null && result < start_.getTime()) {
+                result = start_.getTime();
+            }
+
             break;
         }
 
