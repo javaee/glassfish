@@ -1,6 +1,7 @@
 package test;
 
 import java.io.*;
+import java.util.*;
 import javax.servlet.*;
 
 public class MyListener implements ServletContextListener {
@@ -13,11 +14,21 @@ public class MyListener implements ServletContextListener {
      */
     public void contextInitialized(ServletContextEvent sce) {
         ServletContext sc = sce.getServletContext();
-        ServletRegistration regis = sc.addServlet("NewServlet",
-                                                  "test.NewServlet");
-        regis.setInitParameter("myInitName", "myInitValue");
 
+        /*
+         * Register servlet
+         */
+        ServletRegistration sr = sc.addServlet("NewServlet", "test.NewServlet");
+        sr.setInitParameter("servletInitName", "servletInitValue");
         sc.addServletMapping("NewServlet", new String[] {"/newServlet"});
+
+        /*
+         * Register filter
+         */
+        FilterRegistration fr = sc.addFilter("NewFilter", "test.NewFilter");
+        fr.setInitParameter("filterInitName", "filterInitValue");
+        sc.addFilterMappingForServletNames("NewFilter",
+            EnumSet.of(DispatcherType.REQUEST), true, "NewServlet"); 
     }
 
     /**

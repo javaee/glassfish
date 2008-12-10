@@ -9,9 +9,14 @@ public class NewServlet extends HttpServlet {
 
     public void service(ServletRequest req, ServletResponse res)
             throws IOException, ServletException {
-        if (!"myInitValue".equals(getServletConfig().getInitParameter(
-                        "myInitName"))) {
-            throw new ServletException("Missing init param");
+        if (!"servletInitValue".equals(getServletConfig().getInitParameter(
+                        "servletInitName"))) {
+            throw new ServletException("Missing servlet init param");
         }
+
+        if (!"filterInitValue".equals(req.getAttribute("filterInitName"))) {
+            throw new ServletException("Missing filter init param");
+        }
+
     }
 }
