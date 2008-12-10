@@ -3038,7 +3038,7 @@ public class StandardContext
      public void addServletMapping(ServletMap servletMap) {
          String[] patterns = servletMap.getUrlPatterns();
          String name = servletMap.getServletName();
-         for(String pattern : patterns) {
+         for (String pattern : patterns) {
              addServletMapping(pattern, name, false);
          }
      }
@@ -3113,7 +3113,7 @@ public class StandardContext
                                   String[] urlPatterns) {
         if (urlPatterns != null) {
             for (String urlPattern : urlPatterns) {
-                addServletMapping(servletName, urlPattern);
+                addServletMapping(urlPattern, servletName);
             }
         }
     }
