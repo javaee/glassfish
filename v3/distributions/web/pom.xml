@@ -284,6 +284,12 @@
             <artifactId>jdbc-admin</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.connectors</groupId>
+            <artifactId>connectors-admin</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
          <dependency>
             <groupId>org.glassfish.external</groupId>
             <artifactId>ant</artifactId>
