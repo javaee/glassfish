@@ -16,6 +16,7 @@
                         com.sun.enterprise.resource.pool.datastructure.strategy,\
                         com.sun.enterprise.resource.pool.resizer,\
                         com.sun.enterprise.resource.pool.waitqueue,\
+                        com.sun.enterprise.resource.recovery,\
                         com.sun.enterprise.resource.rm,\
                         com.sun.enterprise.server
 
