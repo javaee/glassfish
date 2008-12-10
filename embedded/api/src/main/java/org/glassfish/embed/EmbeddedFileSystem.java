@@ -102,7 +102,7 @@ public final class EmbeddedFileSystem {
     }
 
     static void cleanup() {
-        if (efs.autoDelete) {
+        if (efs.shouldCleanup()) {
             System.out.println("Cleaning up files");
             FileUtils.whack(efs.installRoot);
             FileUtils.whack(efs.instanceRoot);
@@ -124,8 +124,8 @@ public final class EmbeddedFileSystem {
 
     private EmbeddedFileSystem() {
         defaultRoots.mkdirs();
-        installRoot = SmartFile.sanitize(defaultRoots);
-        instanceRoot = SmartFile.sanitize(defaultRoots);
+        installRoot = defaultRoots;
+        instanceRoot = defaultRoots;
         setSystemPropsInternal();
     }
 
@@ -137,7 +137,19 @@ public final class EmbeddedFileSystem {
         System.setProperty(INSTALL_ROOT_URI_PROPERTY, installRoot.toURI().toString());
     }
 
-    private static final File defaultRoots = new File("gfe");
+    private boolean shouldCleanup() {
+        // don't EVER delete if the flag is false!!!
+        // don't EVER delete if they specified a directory
+
+        if(autoDelete == true &&
+                defaultRoots.equals(installRoot)    &&
+                defaultRoots.equals(instanceRoot))
+            return true;
+
+        return false;
+    }
+
+    private static final File defaultRoots = SmartFile.sanitize(new File("gfe"));
     private static final EmbeddedFileSystem efs = new EmbeddedFileSystem();
     private File installRoot;
     private File instanceRoot;
