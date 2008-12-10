@@ -52,11 +52,12 @@ public class FilterRegistrationImpl extends FilterRegistration {
     FilterRegistrationImpl(StandardContext ctx, String filterName,
                            String className) {
         this.ctx = ctx;
-        filterDef = new FilterDef();
-        ctx.addFilterDef(filterDef);
 
+        filterDef = new FilterDef();
         filterDef.setFilterName(filterName);
         filterDef.setFilterClass(className);
+
+        ctx.addFilterDef(filterDef);
     }
 
 
