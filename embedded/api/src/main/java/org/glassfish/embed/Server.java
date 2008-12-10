@@ -713,22 +713,13 @@ public class Server {
     private static void addServer(String name, Server server) {
         servers.put(name, server);
     }
-
-
-
-
-
-
-
-        private void setShutdownHook() {
-
+    private void setShutdownHook() {
         //final String msg = strings.get("serverStopped", info.getType());
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
                 // logger won't work anymore...
                 //System.out.println(msg);
                 // TODO TEMP
-                System.out.println("Cleaning up files");
                 EmbeddedFileSystem.cleanup();
             }});
     }

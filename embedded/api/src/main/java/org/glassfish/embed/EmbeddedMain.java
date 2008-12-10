@@ -55,11 +55,8 @@ import org.glassfish.embed.util.StringUtils;
 public class EmbeddedMain {
     public static void main(String[] args) {
         try {
-
-            //if(args.length == 0)
-                //usage();
-
             // parse commandline arguments
+
             ArgProcessor proc = new ArgProcessor(argDescriptions, args);
             Map<String, String> params = proc.getParams();
             List<String> operands = proc.getOperands();
@@ -95,11 +92,6 @@ public class EmbeddedMain {
         EmbeddedInfo info = new EmbeddedInfo();
         
         /*  Use operands for war filenames -- for now....
-        String warName = params.get("war");
-        
-        if(StringUtils.ok(warName)) {
-           info.addArchive(new File(warName)); 
-        }
          */
 
         for(String s : operands) {
@@ -211,8 +203,13 @@ public class EmbeddedMain {
         new Arg("port",             "p",            "" + ServerConstants.DEFAULT_HTTP_PORT,        "HTTP Port"),
         new Arg("dir",              "d",            false,                                         "Filesystem Directory"),
         new Arg("xml",              "x",            false,                                         "domain.xml filename or URL"),
-        new BoolArg("autodelete",   "a",            true,                                         "Automtically delete Filesystem"),
         new BoolArg("help",         "h",            false,                                         "Help"),
+
+        // note that --autodelete is NOT a bool arg
+        // TODO make BoolArg more sophisticated so that you can hve the default be false
+        // and allow --foo=true and --foo true and --foo
+
+        new Arg("autodelete",   "a",            "true",                                         "Automatically delete Filesystem"),
     };
     
     private LocalStringsImpl strings = new LocalStringsImpl(this.getClass());

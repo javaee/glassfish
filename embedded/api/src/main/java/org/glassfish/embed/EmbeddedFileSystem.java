@@ -103,6 +103,7 @@ public final class EmbeddedFileSystem {
 
     static void cleanup() {
         if (efs.autoDelete) {
+            System.out.println("Cleaning up files");
             FileUtils.whack(efs.installRoot);
             FileUtils.whack(efs.instanceRoot);
         }
