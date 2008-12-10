@@ -43,6 +43,7 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.*;
 import org.glassfish.api.naming.NamingObjectsProvider;
 import org.glassfish.api.admin.config.Property;
+import org.glassfish.api.Startup;
 
 import java.beans.PropertyChangeEvent;
 import java.util.logging.Logger;
@@ -61,7 +62,7 @@ import org.jvnet.hk2.config.ObservableBean;
  * Resource manager to bind various resources during startup, create/update/delete of resource/pool
  * @author Jagadish Ramu
  */
-public class ResourceManager implements NamingObjectsProvider, PostConstruct, PreDestroy, ConfigListener {
+public class ResourceManager implements Startup, PostConstruct, PreDestroy, ConfigListener {
 
 
     @Inject
@@ -396,5 +397,9 @@ public class ResourceManager implements NamingObjectsProvider, PostConstruct, Pr
             }
         }
         return null;
+    }
+
+    public Lifecycle getLifecycle() {
+        return Startup.Lifecycle.SERVER;
     }
 }

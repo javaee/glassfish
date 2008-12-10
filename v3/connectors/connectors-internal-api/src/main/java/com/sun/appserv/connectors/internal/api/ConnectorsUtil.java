@@ -283,10 +283,10 @@ public class ConnectorsUtil {
      * Get all System RAR pools and resources
      * @return Collection of system RAR pools
      */
-    public static Collection getAllSystemRAResourcesAndPools(Resources allResources) {
+    public static Collection<Resource> getAllSystemRAResourcesAndPools(Resources allResources) {
         //Make sure that resources are added first and then pools.
-        List resources = new ArrayList();
-        List pools = new ArrayList();
+        List<Resource> resources = new ArrayList<Resource>();
+        List<Resource> pools = new ArrayList<Resource>();
         for(Resource resource : allResources.getResources()){
             if(resource instanceof JdbcConnectionPool ){
                 pools.add(resource);
@@ -305,7 +305,7 @@ public class ConnectorsUtil {
                 }
             }
         }
-        resources.add(pools);
+        resources.addAll(pools);
         return resources;
     }
 

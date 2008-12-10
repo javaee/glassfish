@@ -71,6 +71,7 @@ public class ResourceProxy implements NamingObjectProxy {
     }
 
     public Object create(Context ic) throws NamingException {
+        //TODO V3 need to be synchronized ?
         try{
             if(result == null){
                 getResourceDeployer(resource).deployResource(resource);
