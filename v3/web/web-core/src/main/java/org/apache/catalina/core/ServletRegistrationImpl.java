@@ -52,7 +52,7 @@ public class ServletRegistrationImpl extends ServletRegistration {
     ServletRegistrationImpl(StandardContext ctx, String servletName,
                             String className) {
         this.ctx = ctx;
-        Wrapper wrapper = ctx.createWrapper();
+        wrapper = ctx.createWrapper();
         ctx.addChild(wrapper);
 
         wrapper.setName(servletName);
