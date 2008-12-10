@@ -91,6 +91,7 @@ class RuntimeTimerState {
     private Object timedObjectPrimaryKey_;
     private boolean persistent_ = true;
     private Serializable info_;
+    private TimerSchedule schedule_;
 
     //
     private BaseContainer container_;
@@ -109,6 +110,7 @@ class RuntimeTimerState {
                       Date initialExpiration, long intervalDuration, 
                       BaseContainer container, 
                       Object timedObjectPkey,
+                      TimerSchedule schedule,
                       Serializable info,
                       boolean persistent) {
 
@@ -122,6 +124,7 @@ class RuntimeTimerState {
         persistent_        = persistent;
         info_              = info;
         container_         = container;
+        schedule_          = schedule;
 
         containerId_       = container.getContainerId();        
 
@@ -129,13 +132,6 @@ class RuntimeTimerState {
             logger.log(Level.FINE, "RuntimeTimerState " + timerId_ + 
                        " created");
         }
-    }
-
-    RuntimeTimerState(TimerPrimaryKey timerId,
-                      Date initialExpiration, long intervalDuration, 
-                      BaseContainer container, 
-                      Object timedObjectPkey,
-                      boolean persistent) {
     }
 
     TimerPrimaryKey getTimerId() {
@@ -160,6 +156,10 @@ class RuntimeTimerState {
 
     long getIntervalDuration() {
         return intervalDuration_;
+    }
+
+    TimerSchedule getTimerSchedule() {
+        return schedule_;
     }
 
    
@@ -319,7 +319,10 @@ class RuntimeTimerState {
      * @return true if interval timer and false otherwise
      */
     boolean isPeriodic() {
-        return (intervalDuration_ > 0);
+        // XXX ??? It'd be strange if the schedule-based timer is
+        // not periodic. Otherwise need to check if schedule
+        // already expired.
+        return (schedule_ != null || intervalDuration_ > 0);
     }
 
     /**
@@ -360,6 +363,10 @@ class RuntimeTimerState {
         buffer.append("'Container ID = " + containerId_ + "' ");
         buffer.append("'" + getInitialExpiration() + "' ");
         buffer.append("'" + getIntervalDuration() + "' ");
+        TimerSchedule ts = getTimerSchedule();
+        if( ts != null ) {
+            buffer.append("'" + ts.getScheduleAsString() + "' ");
+        }
         Object pk = getTimedObjectPrimaryKey();
         if( pk != null ) {
             buffer.append("'" + pk + "' ");

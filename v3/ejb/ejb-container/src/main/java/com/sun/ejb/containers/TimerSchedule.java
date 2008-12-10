@@ -88,10 +88,13 @@ public class TimerSchedule implements Serializable {
 
     private List<String> daysOfWeekOrRangesOfDaysInMonth = new ArrayList<String>();
 
-    Pattern simpleRangePattern = Pattern.compile("[0-9]+\\s*-\\s*([0-9]+|last)");
-    Pattern positivePattern = Pattern.compile("[0-9]+");
-    Pattern negativePattern = Pattern.compile("-[1-7]");
-    Pattern orderedDayPattern = Pattern.compile("(1st|2nd|3rd|[45]th|last)\\s+[a-z][a-z][a-z]");
+    private Pattern simpleRangePattern = Pattern.compile("[0-9]+\\s*-\\s*([0-9]+|last)");
+    private Pattern positivePattern = Pattern.compile("[0-9]+");
+    private Pattern negativePattern = Pattern.compile("-[1-7]");
+    private Pattern orderedDayPattern = Pattern.compile("(1st|2nd|3rd|[45]th|last)\\s+[a-z][a-z][a-z]");
+
+    private static char rangeChar     = '-';
+    private static char incrementChar = '/';
 
     static {
         conversionTable.put("jan", 1);
@@ -337,6 +340,8 @@ public class TimerSchedule implements Serializable {
         }
 
         Calendar next = new GregorianCalendar();
+        next.add(Calendar.SECOND, 1);
+        next.set(Calendar.MILLISECOND, 0);
 
         long result = -1;
 
@@ -367,7 +372,7 @@ public class TimerSchedule implements Serializable {
             }
 
             if (dayOfWeek_.equals("*") || !dayOfMonth_.equals("*")) {
-                System.out.println("==> Processing DAY_OF_MONTH ...");
+                //System.out.println("==> Processing DAY_OF_MONTH ...");
                 if(skipToNextValue(next, daysOfMonth, Calendar.DAY_OF_MONTH, Calendar.MONTH)) {
                     next.set(Calendar.HOUR_OF_DAY, 0);
                     next.set(Calendar.MINUTE, 0);
@@ -377,7 +382,7 @@ public class TimerSchedule implements Serializable {
             }
 
             if (dayOfMonth_.equals("*") || !dayOfWeek_.equals("*")) {
-                System.out.println("==> Processing DAY_OF_WEEK ...");
+                //System.out.println("==> Processing DAY_OF_WEEK ...");
                 if(skipToNextValue(next, daysOfWeek, Calendar.DAY_OF_WEEK, Calendar.WEEK_OF_MONTH)) {
                     next.set(Calendar.HOUR_OF_DAY, 0);
                     next.set(Calendar.MINUTE, 0);
@@ -446,8 +451,8 @@ public class TimerSchedule implements Serializable {
         }
 
         // Range
-        if (s.indexOf('-') > 0) {
-            String[] arr = splitRange(s);
+        if (s.indexOf(rangeChar) > 0) {
+            String[] arr = splitBy(s, rangeChar);
             int begin = getNumericValue(arr[0], start, useCalendarValue);
             int end = getNumericValue(arr[1], start, useCalendarValue);
             setBitsRange(bits, begin, end);
@@ -455,8 +460,8 @@ public class TimerSchedule implements Serializable {
         }
 
         // Increments
-        if (s.indexOf('/') > 0) {
-            String[] arr = splitIncrement(s);
+        if (s.indexOf(incrementChar) > 0) {
+            String[] arr = splitBy(s, incrementChar);
             int begin = 0;
             if (!arr[0].equals("*")) {
                 begin = getNumericValue(arr[0], start, useCalendarValue);
@@ -499,11 +504,11 @@ public class TimerSchedule implements Serializable {
         }
 
         // Range
-        if (s.indexOf('-', 1) > 0) {
+        if (s.indexOf(rangeChar, 1) > 0) {
             if (simpleRangePattern.matcher(dayOfMonth_).matches()) {
                 // If these are positive numbers or a range from a positive
                 // number to the last day of the month - process them now
-                String[] arr = splitRange(s);
+                String[] arr = splitBy(s, rangeChar);
                 int begin = Integer.parseInt(arr[0]);
                 int end = 31;
                 if (positivePattern.matcher(arr[1]).matches()) {
@@ -536,7 +541,7 @@ public class TimerSchedule implements Serializable {
             nextvalue = bits.nextSetBit(currvalue);
             if (nextvalue == -1 || nextvalue > date.getActualMaximum(field)) {
                 nextvalue = bits.nextSetBit(0);
-                System.out.println("==> Incrementing ...");
+                //System.out.println("==> Incrementing ...");
                 date.add(highfiled, 1);
             }
 
@@ -560,17 +565,9 @@ public class TimerSchedule implements Serializable {
     /**
      * Split a String that represents a range of values.
      */
-    private String[] splitRange(String s) {
-        int i = s.indexOf('-', 1);
+    private String[] splitBy(String s, char ch) {
+        int i = s.indexOf(ch, 1);
         return new String[] {s.substring(0,i).trim(), s.substring(i+1).trim()};
-    }
-
-    /**
-     * Split a String that represents a starting point and
-     * an increment.
-     */
-    private String[] splitIncrement(String s) {
-        return s.split("\\s*/\\s*");
     }
 
     /**
@@ -717,8 +714,8 @@ public class TimerSchedule implements Serializable {
 
     private void setDaysOfWeek(BitSet bits, Calendar date, String s) {
         // Check if it's a range
-        if (s.indexOf('-', 1) > 0) {
-            String[] arr = splitRange(s);
+        if (s.indexOf(rangeChar, 1) > 0) {
+            String[] arr = splitBy(s, rangeChar);
 
             int begin = getDayForDayOfMonth(date, arr[0]);
             int end = getDayForDayOfMonth(date, arr[1]);

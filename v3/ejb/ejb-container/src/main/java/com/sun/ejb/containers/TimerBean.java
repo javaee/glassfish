@@ -262,14 +262,15 @@ public class TimerBean implements TimerLocal {
     public TimerState createTimer
         (String timerId, long containerId, String ownerId,
          Object timedObjectPrimaryKey, 
-         Date initialExpiration, long intervalDuration, TimerConfig timerConfig)
+         Date initialExpiration, long intervalDuration, 
+         TimerSchedule schedule, TimerConfig timerConfig)
         throws CreateException {
 
         TimerState timer = null;
         try {
             timer = new TimerState (timerId, containerId, ownerId,
                     timedObjectPrimaryKey, initialExpiration, 
-                    intervalDuration, timerConfig.getInfo());
+                    intervalDuration, schedule, timerConfig.getInfo());
         } catch(IOException ioe) {
             CreateException ce = new CreateException();
             ce.initCause(ioe);
@@ -281,6 +282,7 @@ public class TimerBean implements TimerLocal {
                        timer.getTimerId() + " ::containerId=" + timer.getContainerId() + 
                        " ::timedObjectPK=" + timedObjectPrimaryKey +
                        " ::info=" + timerConfig.getInfo() +
+                       " ::schedule=" + timer.getSchedule() +
                        " ::persistent=" + timerConfig.isPersistent() +
                        " ::initialExpiration=" + initialExpiration +
                        " ::intervalDuration=" + intervalDuration +
@@ -680,7 +682,7 @@ public class TimerBean implements TimerLocal {
         timerConfig.setInfo(info);
         timerLocal.createTimer(timerId, containerId, ownerId,
                                      timedObjectPrimaryKey, initialExpiration,
-                                     intervalDuration, timerConfig);
+                                     intervalDuration, null, timerConfig);
         return;
     }
 

@@ -181,6 +181,9 @@ public class TimerState implements Serializable {
     @Column(name="OWNERID")
     private String ownerId;
 
+    @Column(name="SCHEDULE")
+    private String schedule;
+
     @Lob 
     @Basic(fetch=FetchType.LAZY)
     @Column(name="BLOB")
@@ -251,6 +254,14 @@ public class TimerState implements Serializable {
         this.containerId = containerId;
     }
 
+    public String getSchedule() {
+        return schedule;
+    }
+
+    public void setSchedule(String Schedule) {
+        this.schedule = schedule;
+    }
+
     public Blob getBlob() {
         return blob;
     }
@@ -265,6 +276,10 @@ public class TimerState implements Serializable {
 
     public void setPkHashCode(int pkHash) {
         pkHashCode = pkHash;
+    }
+
+    public TimerSchedule getTimerSchedule() {
+        return timerSchedule_;
     }
 
     //
@@ -283,6 +298,7 @@ public class TimerState implements Serializable {
     private transient Date creationTime_;
     private transient Date initialExpiration_;
     private transient Date lastExpiration_;
+    private transient TimerSchedule timerSchedule_;
     
     public TimerState () {
     }
@@ -290,7 +306,7 @@ public class TimerState implements Serializable {
     public TimerState (String timerId, long containerId, String ownerId,
              Object timedObjectPrimaryKey, 
              Date initialExpiration, long intervalDuration, 
-             Serializable info) throws IOException {
+             TimerSchedule schedule, Serializable info) throws IOException {
 
         this.timerId = timerId;
         this.ownerId = ownerId;
@@ -305,6 +321,10 @@ public class TimerState implements Serializable {
         lastExpiration_ = null;
 
         this.intervalDuration = intervalDuration;
+        timerSchedule_ = schedule;
+        if (timerSchedule_ != null) {
+            this.schedule = timerSchedule_.getScheduleAsString();
+        }
 
         this.containerId = containerId;
 
@@ -360,6 +380,9 @@ public class TimerState implements Serializable {
         // Populate derived state of immutable cmp fields.
         creationTime_ = new Date(creationTimeRaw);
         initialExpiration_ = new Date(initialExpirationRaw);
+        if (schedule != null) {
+            timerSchedule_ = new TimerSchedule(schedule);
+        }
 
         // Lazily deserialize Blob state.  This makes the
         // Timer bootstrapping code easier, since some of the Timer

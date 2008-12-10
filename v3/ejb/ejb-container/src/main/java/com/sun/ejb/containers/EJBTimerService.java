@@ -533,6 +533,7 @@ public class EJBTimerService
                     (timerId, initialExpiration,
                      timer.getIntervalDuration(), container, 
                      timedObjectPrimaryKey, 
+                     timer.getTimerSchedule(),
                      // Don't need to store the info ref for persistent timer
                      null, true);                   
 
@@ -692,7 +693,7 @@ public class EJBTimerService
      * This action *can not* be rolled back.  
      */
     void destroyTimers(long containerId) {
-        Set<TimerState> timers = null;
+        Set<TimerPrimaryKey> timerIds = null;
 
         TransactionManager tm = ejbContainerUtil.getTransactionManager();
 
@@ -706,13 +707,12 @@ public class EJBTimerService
             // Get *all* timers for this ejb. Since the app is being undeployed
             // any server instance can delete all the timers for the same ejb.
             // Whichever one gets there first will actually do the delete. 
-            timers = timerLocal_.findTimersByContainer(containerId);
+            timerIds = timerLocal_.findTimerIdsByContainer(containerId);
+            timerIds.addAll(timerCache_.getNonPersistentTimerIdsForContainer(containerId));
 
-            for(TimerState nextTimer: timers) {
-                TimerPrimaryKey nextTimerId = null;
+            for(TimerPrimaryKey nextTimerId: timerIds) {
                 RuntimeTimerState nextTimerState = null;
                 try {
-                    nextTimerId = getPrimaryKey(nextTimer);
                     nextTimerState = getTimerState(nextTimerId);
                     if( nextTimerState != null ) {
                         synchronized(nextTimerState) {
@@ -723,7 +723,9 @@ public class EJBTimerService
                             } 
                         }
                     }
-                    timerLocal_.remove(nextTimerId);
+                    if (nextTimerState.isPersistent()) {
+                        timerLocal_.remove(nextTimerId);
+                    }
                 } catch(Exception e) {
                     logger.log(Level.WARNING, "ejb.destroy_timer_error",
                                new Object[] { nextTimerId });
@@ -913,6 +915,16 @@ public class EJBTimerService
                                             "not a periodic timer");
         }
 
+        TimerSchedule ts = timerState.getTimerSchedule();
+        if (ts != null) {
+            long t = ts.getNextTimeMillis();
+            if (t != -1) {
+                return new Date(t);
+            } else { // Expired
+                return null;
+            }
+        }
+
         Date initialExpiration = timerState.getInitialExpiration();
         long intervalDuration  = timerState.getIntervalDuration();
 
@@ -986,6 +998,30 @@ public class EJBTimerService
     TimerPrimaryKey createTimer(long containerId, Object timedObjectPrimaryKey,
                                 Date initialExpiration, long intervalDuration,
                                 TimerConfig timerConfig) throws CreateException {
+        return createTimer(containerId, timedObjectPrimaryKey, 
+                           initialExpiration, intervalDuration, null, timerConfig);
+    }
+
+    /**
+     * @param primaryKey can be null if timed object is not an entity bean.
+     * @return Primary key of newly created timer
+     */
+    TimerPrimaryKey createTimer(long containerId, Object timedObjectPrimaryKey,
+                                TimerSchedule schedule, TimerConfig timerConfig) 
+                                throws CreateException {
+
+        return createTimer(containerId, timedObjectPrimaryKey, 
+                           null, 0, schedule, timerConfig);
+    }
+
+    /**
+     * @param primaryKey can be null if timed object is not an entity bean.
+     * @return Primary key of newly created timer
+     */
+    private TimerPrimaryKey createTimer(long containerId, Object timedObjectPrimaryKey,
+                                Date initialExpiration, long intervalDuration,
+                                TimerSchedule schedule, TimerConfig timerConfig) 
+                                throws CreateException {
 
         BaseContainer container = getContainer(containerId);
         if( container == null ) {
@@ -1004,11 +1040,20 @@ public class EJBTimerService
 
         TimerPrimaryKey timerId = new TimerPrimaryKey(getNextTimerId());
 
+        if (schedule != null) {
+            long t = schedule.getNextTimeMillis();
+            if( t == -1 ) {
+                throw new CreateException("Schedule: " + 
+                                      schedule.getScheduleAsString() + 
+                                      " already expired");
+            }
+            initialExpiration = new Date(t);
+        }
         RuntimeTimerState timerState = 
             new RuntimeTimerState(timerId, initialExpiration, 
                                   intervalDuration, container, 
                                   timedObjectPrimaryKey,
-                                  timerConfig.getInfo(),
+                                  schedule, timerConfig.getInfo(),
                                   timerConfig.isPersistent());
 
         synchronized(timerState) {
@@ -1022,10 +1067,10 @@ public class EJBTimerService
                                        ownerIdOfThisServer_,
                                        timedObjectPrimaryKey, 
                                        initialExpiration, intervalDuration, 
-                                       timerConfig);
+                                       schedule, timerConfig);
                 } else {
                     addTimerSynchronization(null, 
-                            timerId.getTimerId(), initialExpiration, 
+                            timerId.getTimerId(), initialExpiration,
                             containerId, ownerIdOfThisServer_);
                 }
             } catch(Exception e) {
@@ -1212,12 +1257,14 @@ public class EJBTimerService
 
         Date initialExpiration = null;
         long intervalDuration = 0;
+        TimerSchedule ts = null;
 
         // Check non-persistent timers first
         RuntimeTimerState rt = getNonPersistentTimer(timerId);
         if (rt != null) {
             initialExpiration = rt.getInitialExpiration();
             intervalDuration = rt.getIntervalDuration();
+            ts = rt.getTimerSchedule();
         } else {
 
             // @@@ We can't assume this server instance owns the persistent timer
@@ -1227,12 +1274,19 @@ public class EJBTimerService
             TimerState timer = getPersistentTimer(timerId);
             initialExpiration = timer.getInitialExpiration();
             intervalDuration = timer.getIntervalDuration();
+            ts = timer.getTimerSchedule();
         }
 
-        Date nextTimeout = (intervalDuration > 0) ? 
-            calcNextFixedRateExpiration(initialExpiration, 
-                                        intervalDuration) :
-            initialExpiration;
+        Date nextTimeout = initialExpiration;
+        if (ts != null) {
+            long t = ts.getNextTimeMillis();
+            if (t != -1) {
+                nextTimeout = new Date(t);
+            }
+        } else if (intervalDuration > 0) {
+            nextTimeout = calcNextFixedRateExpiration(initialExpiration, 
+                               intervalDuration);
+        }
 
         return nextTimeout;
     }
@@ -1496,6 +1550,10 @@ public class EJBTimerService
                     // just schedule the JDK timer task for the next ejbTimeout
                     
                     Date expiration = calcNextFixedRateExpiration(timerState);
+                    if (expiration == null) {
+                        // Schedule-based timer ended.
+                        cancelTimer(timerId);
+                    }
                     scheduleTask(timerId, expiration);
                 } else {
                    
@@ -2054,6 +2112,20 @@ public class EJBTimerService
 
         // Placeholder for logic to ensure timer cache consistency.
         public synchronized void validate() {
+        }
+
+        // Returns a Set of non-persistent timer ids for this container
+        public synchronized Set<TimerPrimaryKey> getNonPersistentTimerIdsForContainer(
+                                        long containerId_) {
+            Set<TimerPrimaryKey> result = new HashSet<TimerPrimaryKey>();
+            for (TimerPrimaryKey key : nonpersistentTimers_.keySet()) {
+                RuntimeTimerState rt = nonpersistentTimers_.get(key);
+                if ((rt.getContainerId() == containerId_)) {
+                    result.add(key);
+                }
+            }
+
+            return result;
         }
 
         // Returns a Set of active non-persistent timer ids for this container

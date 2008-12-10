@@ -178,8 +178,7 @@ public class EJBTimerServiceWrapper implements TimerService {
         checkCreateTimerCallPermission();
         checkScheduleExpression(schedule);
 
-        return null;
-        //return createTimerInternal(initialDuration, intervalDuration, timerConfig);
+        return createTimerInternal(schedule, timerConfig);
     }
 
     public Timer createTimer(ScheduleExpression schedule, Serializable info) throws
@@ -188,8 +187,10 @@ public class EJBTimerServiceWrapper implements TimerService {
         checkCreateTimerCallPermission();
         checkScheduleExpression(schedule);
 
-        return null;
-        //return createTimerInternal(initialDuration, intervalDuration, timerConfig);
+        TimerConfig tc = new TimerConfig();
+        tc.setInfo(info);
+
+        return createTimerInternal(schedule, tc);
     }
 
     public Collection getTimers() throws IllegalStateException, EJBException {
@@ -300,6 +301,23 @@ public class EJBTimerServiceWrapper implements TimerService {
             timerId = timerService_.createTimer
                 (containerId_, getTimedObjectPrimaryKey(), 
                 initialExpiration, intervalDuration, tc);
+        } catch(CreateException ce) {            
+            EJBException ejbEx = new EJBException();
+            ejbEx.initCause(ce);
+            throw ejbEx;            
+        }
+
+        return new TimerWrapper(timerId, timerService_);
+    }
+
+    private Timer createTimerInternal(ScheduleExpression schedule, TimerConfig tc)
+        throws IllegalArgumentException, IllegalStateException, EJBException {
+
+        TimerPrimaryKey timerId = null;
+        try {
+            timerId = timerService_.createTimer
+                (containerId_, getTimedObjectPrimaryKey(), 
+                new TimerSchedule(schedule), tc);
         } catch(CreateException ce) {            
             EJBException ejbEx = new EJBException();
             ejbEx.initCause(ce);

@@ -65,7 +65,8 @@ public interface TimerLocal {
                       long containerId, String ownerId,
                       Object timedObjectPrimaryKey, 
                       Date initialExpiration, long intervalDuration, 
-                      TimerConfig timerConfig) throws CreateException;
+                      TimerSchedule schedule, TimerConfig timerConfig) 
+                      throws CreateException;
 
     TimerState findTimer(TimerPrimaryKey timerId);
 
