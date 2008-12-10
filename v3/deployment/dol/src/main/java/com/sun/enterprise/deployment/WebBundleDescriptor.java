@@ -41,6 +41,7 @@ import com.sun.enterprise.deployment.types.EjbReference;
 import com.sun.enterprise.deployment.types.*;
 import com.sun.enterprise.deployment.util.DescriptorVisitor;
 import com.sun.enterprise.deployment.util.WebBundleVisitor;
+import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.deployment.web.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
@@ -1482,8 +1483,8 @@ public class WebBundleDescriptor extends BundleDescriptor
     /**
      * @return the module type for this bundle descriptor
      */
-    public ModuleType getModuleType() {
-        return ModuleType.WAR;
+    public XModuleType getModuleType() {
+        return XModuleType.WAR;
     }
 
     /**

@@ -48,7 +48,6 @@ import com.sun.enterprise.deployment.archivist.ArchivistFactory;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import com.sun.enterprise.deploy.shared.FileArchive;
-import com.sun.enterprise.deployment.backend.ClientJarMaker;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;

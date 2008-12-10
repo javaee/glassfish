@@ -40,6 +40,7 @@ import com.sun.enterprise.deployment.runtime.JavaWebStartAccessDescriptor;
 import com.sun.enterprise.deployment.types.*;
 import com.sun.enterprise.deployment.util.AppClientVisitor;
 import com.sun.enterprise.deployment.util.DescriptorVisitor;
+import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import javax.enterprise.deploy.shared.ModuleType;
@@ -667,8 +668,8 @@ public class ApplicationClientDescriptor extends BundleDescriptor
     /**
      * @return the module type for this bundle descriptor
      */
-    public ModuleType getModuleType() {
-        return ModuleType.CAR;
+    public XModuleType getModuleType() {
+        return XModuleType.CAR;
     }
     
     public JavaWebStartAccessDescriptor getJavaWebStartAccessDescriptor() {

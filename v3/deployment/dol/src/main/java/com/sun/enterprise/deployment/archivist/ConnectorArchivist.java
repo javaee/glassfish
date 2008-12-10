@@ -37,6 +37,7 @@
 package com.sun.enterprise.deployment.archivist;
 
 import com.sun.enterprise.deployment.ConnectorDescriptor;
+import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.deployment.io.ConnectorDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.runtime.ConnectorRuntimeDDFile;
@@ -70,8 +71,8 @@ public class ConnectorArchivist extends Archivist<ConnectorDescriptor>
      *
      */
     @Override
-    public ModuleType getModuleType() {
-        return ModuleType.RAR;
+    public XModuleType getModuleType() {
+        return XModuleType.RAR;
     }        
           
 

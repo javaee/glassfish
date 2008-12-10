@@ -40,7 +40,6 @@ import com.sun.enterprise.deployment.DeploymentExtensionDescriptor;
 import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 
-import javax.enterprise.deploy.shared.ModuleType;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Vector;
@@ -57,7 +56,7 @@ public class ModuleDescriptor<T extends RootDeploymentDescriptor> extends Descri
     /**
      * type of the module, currently EJB, WEB...
      */
-    private ModuleType type;
+    private XModuleType type;
     
     /**
      * path for the module bundle
@@ -93,7 +92,7 @@ public class ModuleDescriptor<T extends RootDeploymentDescriptor> extends Descri
     public ModuleDescriptor() {
     }
 
-    public void setModuleType(ModuleType type) {
+    public void setModuleType(XModuleType type) {
         this.type = type;
     }
     
@@ -101,7 +100,7 @@ public class ModuleDescriptor<T extends RootDeploymentDescriptor> extends Descri
     /** 
      * @return the module type for this module
      */
-    public ModuleType getModuleType() {
+    public XModuleType getModuleType() {
         if (descriptor!=null) {
             return descriptor.getModuleType();
         } 

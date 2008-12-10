@@ -43,10 +43,7 @@ import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.io.ApplicationDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.runtime.ApplicationRuntimeDDFile;
-import com.sun.enterprise.deployment.util.ApplicationValidator;
-import com.sun.enterprise.deployment.util.ApplicationVisitor;
-import com.sun.enterprise.deployment.util.DOLUtils;
-import com.sun.enterprise.deployment.util.ModuleDescriptor;
+import com.sun.enterprise.deployment.util.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.shared.ArchivistUtils;
@@ -60,7 +57,6 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 import org.xml.sax.SAXParseException;
 
-import javax.enterprise.deploy.shared.ModuleType;
 import java.io.*;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -107,8 +103,8 @@ public class ApplicationArchivist extends Archivist<Application> {
      *
      */
     @Override
-    public ModuleType getModuleType() {
-        return ModuleType.EAR;
+    public XModuleType getModuleType() {
+        return XModuleType.EAR;
     }
     
             
@@ -223,10 +219,6 @@ public class ApplicationArchivist extends Archivist<Application> {
         Application appDesc = readStandardDeploymentDescriptor(appArchive);
         setDescriptor(appDesc);
 
-        // Now that we have parsed the standard DD, let's read all the
-        // PersistenceUnits defined in the ear level.
-        readPersistenceDeploymentDescriptors(appArchive, getDescriptor());
-
         // read the modules deployment descriptors
         if (!readModulesDescriptors(appDesc, appArchive))
             return null;
@@ -277,8 +269,11 @@ public class ApplicationArchivist extends Archivist<Application> {
 
                 descriptor = (BundleDescriptor) ddFile.read(is);
                 is.close();
-                newArchivist.readWebServicesDescriptor(embeddedArchive, descriptor);
-                newArchivist.readPersistenceDeploymentDescriptors(embeddedArchive, descriptor);
+                if (extensionsArchivists!=null) {
+                    for (ExtensionsArchivist extension : extensionsArchivists) {
+                        extension.open(newArchivist, embeddedArchive, descriptor);
+                    }
+                }
                 newArchivist.postStandardDDsRead(descriptor, embeddedArchive);
                 newArchivist.readAnnotations(embeddedArchive, descriptor);
                 newArchivist.postAnnotationProcess(descriptor, embeddedArchive);
@@ -607,95 +602,5 @@ public class ApplicationArchivist extends Archivist<Application> {
     @Override
     protected String getArchiveExtension() {
         return APPLICATION_EXTENSION;
-    }
-
-    @Override
-    public void readPersistenceDeploymentDescriptors(
-            ReadableArchive appArchive, Application descriptor) throws IOException, SAXParseException {
-        if(logger.isLoggable(Level.FINE)) {
-            logger.logp(Level.FINE, "ApplicationArchivist",
-                    "readPersistenceDeploymentDescriptors", "archive = {0}",
-                    appArchive.getURI());
-        }
-        Application application = Application.class.cast(descriptor);
-        Map<String, ReadableArchive> subArchives = new HashMap<String, ReadableArchive>();
-        try{
-            Enumeration entries = appArchive.entries();
-            while(entries.hasMoreElements()){
-                String entry = String.class.cast(entries.nextElement());
-                // at ear level only jar files can be root of PU.
-                if (entry.endsWith(".jar")) {
-                    boolean belongsToSomeModule = false;
-                    for (ModuleDescriptor md : application.getModules()) {
-                        // We need to do the following check because we don't want
-                        // to process files like foo_war/WEB-INF/lib/a.jar.
-                        // So the following check ensures that
-                        // we have found a .jar embedded in ear file which is
-                        // neither an appclient jar nor an ejb jar and nor is it
-                        // part of a rar or war.
-                        String explodedModuleURI = FileUtils.makeFriendlyFilename(
-                                md.getArchiveUri()) + "/"; // add '/' to indicate its a directory
-                        if(entry.startsWith(explodedModuleURI)){
-                            belongsToSomeModule = true;
-                            break; // no need to see if it belongs to some other module
-                        }
-                    }
-                    if(!belongsToSomeModule) {
-                        subArchives.put(entry, appArchive.getSubArchive(entry));
-                    }
-                }
-            }
-            for(Map.Entry<String, ReadableArchive> pathToArchiveEntry : subArchives.entrySet()) {
-                readPersistenceDeploymentDescriptor(pathToArchiveEntry.getValue(), pathToArchiveEntry.getKey(), descriptor);
-            }
-        }finally{
-            for(Archive subArchive : subArchives.values()) {
-                subArchive.close();
-            }
-        }
-
-    }
-
-    /**
-     * This is a helper method.
-     * This method is needed because we sometimes have to read PU descriptors
-     * from the original app exploded dir as opposed to generated dir
-     * because generated XML do not contain any information about PUs.
-     * This method also handles the case where application object is virtual,
-     * (a virtual application represents a standalone module deployment object).
-     * @param archive from where persistence descriptors will be read from.
-     * @param application the application object whose persistence units
-     * will be read. This method will read all the persistence units
-     * recurssively and register at appropriate level.
-     * @throws IOException
-     * @throws SAXParseException
-     */
-    public void readPersistenceDeploymentDescriptorsRecursively(
-            ReadableArchive archive, Application application) throws IOException,
-            SAXParseException {
-
-        
-        if(!application.isVirtual()) {
-            ApplicationArchivist appArchivist = new ApplicationArchivist();
-            appArchivist.readPersistenceDeploymentDescriptors(archive, application);
-            for(ModuleDescriptor moduleDescriptor : application.getModules()) {
-                Archivist moduleArchivist = archivistFactory.getPrivateArchivistFor(moduleDescriptor.getModuleType());
-                ReadableArchive moduleArchive = archive.getSubArchive(
-                        moduleDescriptor.getArchiveUri());
-                try{
-                    moduleArchivist.readPersistenceDeploymentDescriptors(
-                            moduleArchive, moduleDescriptor.getDescriptor());
-                } finally {
-                    moduleArchive.close();
-                }
-            }
-        } else {
-            // it's a standalone war/jar/rar etc.
-            final ModuleDescriptor module = application.getModules().iterator().next();
-            Archivist archivist =
-                    archivistFactory.getPrivateArchivistFor(module.getModuleType());
-            archivist.readPersistenceDeploymentDescriptors(
-                    archive, module.getDescriptor());
-        }
     }
 }

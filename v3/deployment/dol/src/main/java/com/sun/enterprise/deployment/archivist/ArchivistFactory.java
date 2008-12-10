@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
+ *
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -36,6 +36,7 @@
 package com.sun.enterprise.deployment.archivist;
 
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import com.sun.enterprise.deployment.util.XModuleType;
 import org.glassfish.api.ContractProvider;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Inject;
@@ -47,6 +48,8 @@ import org.jvnet.hk2.component.Singleton;
 import javax.enterprise.deploy.shared.ModuleType;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * This factory class is responsible for creating Archivists
@@ -56,11 +59,14 @@ import java.io.IOException;
 @Service
 @Scoped(Singleton.class)
 public class ArchivistFactory implements ContractProvider {
-    
+
     // TODO: right now the ApplicationArchivist is not in the list
     // to avoid circular injection
     @Inject
     PrivateArchivist[] privateArchivists;
+
+    @Inject(optional = true)
+    ExtensionsArchivist[] extensionsArchivists;
 
     @Inject
     ArchiveFactory archiveFactory;
@@ -68,7 +74,7 @@ public class ArchivistFactory implements ContractProvider {
     @Inject
     Habitat habitat;
 
-    public Archivist getArchivist(ReadableArchive archive, 
+    public Archivist getArchivist(ReadableArchive archive,
         ClassLoader cl) throws IOException {
         Archivist archivist = getPrivateArchivistFor(archive);
         if (archivist!=null) {
@@ -78,9 +84,20 @@ public class ArchivistFactory implements ContractProvider {
     }
 
 
-    public Archivist getArchivist(ModuleType moduleType)
+    public Archivist getArchivist(XModuleType moduleType)
         throws IOException {
         return getPrivateArchivistFor(moduleType);
+    }
+
+    public List<ExtensionsArchivist> getExtensionsArchists(XModuleType moduleType) {
+
+        List<ExtensionsArchivist> archivists = new ArrayList<ExtensionsArchivist>();
+        for (ExtensionsArchivist ea : extensionsArchivists) {
+            if (ea.supportsModuleType(moduleType)) {
+                archivists.add(ea);
+            }
+        }
+        return archivists;
     }
 
     /**
@@ -89,7 +106,7 @@ public class ArchivistFactory implements ContractProvider {
      * @return
      * @throws IOException
      */
-    Archivist getPrivateArchivistFor(ModuleType moduleType) 
+    Archivist getPrivateArchivistFor(XModuleType moduleType)
         throws IOException {
         for (PrivateArchivist pa : privateArchivists) {
             Archivist a = Archivist.class.cast(pa);
@@ -102,11 +119,11 @@ public class ArchivistFactory implements ContractProvider {
 
     /**
      * Only archivists should have access to this API. we'll see how it works,
-     * @param archive 
+     * @param archive
      * @return
      * @throws IOException
      */
-    Archivist getPrivateArchivistFor(ReadableArchive archive) 
+    Archivist getPrivateArchivistFor(ReadableArchive archive)
         throws IOException {
         //first, check the existence of any deployment descriptors
         for (PrivateArchivist pa : privateArchivists) {
@@ -139,7 +156,7 @@ public class ArchivistFactory implements ContractProvider {
                 return copyOf(a);
             }
         }
- 
+
         return null;
     }
 

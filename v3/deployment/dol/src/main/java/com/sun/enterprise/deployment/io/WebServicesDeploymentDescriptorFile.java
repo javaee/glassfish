@@ -39,6 +39,7 @@ package com.sun.enterprise.deployment.io;
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.node.RootXMLNode;
 import com.sun.enterprise.deployment.node.WebServicesDescriptorNode;
 
@@ -55,7 +56,7 @@ public class WebServicesDeploymentDescriptorFile extends
 
     private String descriptorPath;
 
-    public WebServicesDeploymentDescriptorFile(Descriptor desc) {
+    public WebServicesDeploymentDescriptorFile(RootDeploymentDescriptor desc) {
         descriptorPath = ( desc instanceof WebBundleDescriptor ) ?
             DescriptorConstants.WEB_WEBSERVICES_JAR_ENTRY : DescriptorConstants.EJB_WEBSERVICES_JAR_ENTRY;
     }

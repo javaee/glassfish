@@ -37,6 +37,8 @@
 package com.sun.enterprise.deployment.util;
 
 import javax.enterprise.deploy.shared.ModuleType;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Extended module types which are specific to SJSAS
@@ -44,67 +46,92 @@ import javax.enterprise.deploy.shared.ModuleType;
  * @author Sreenivas Munnangi
  */
 
-public class XModuleType extends ModuleType {
+public class XModuleType {
 
-    private static final int offset = 100;
-    public static final XModuleType LCM = new XModuleType(100);
-    public static final XModuleType CMB = new XModuleType(101);
+    private final static Map<Integer, XModuleType> ModuleTypes=new HashMap<Integer, XModuleType>();
+    
+	/**
+	 * The module is an EAR archive.
+	 */
+	public static final XModuleType EAR = create(0);
+	/**
+	 * The module is an Enterprise Java Bean archive.
+	 */
+	public static final XModuleType EJB = create(1);
+	/**
+	 * The module is an Client Application archive.
+	 */
+	public static final XModuleType CAR = create(2);
+	/**
+	 * The module is an Connector archive.
+	 */
+	public static final XModuleType RAR = create(3);
+	/**
+	 * The module is an Web Application archive.
+	 */
+	public static final XModuleType WAR = create(4);
 
-    private static final String[] stringTable = {
-        "lcm",
-        "cmb"
-    };
+    /**
+     * The module is EJB archive packaged in a War file.
+     */
+    public static final XModuleType EjbInWar = create(5);
 
-    private static final XModuleType[] enumValueTable = {
-        LCM,
-        CMB
-    };
+    public static final XModuleType WebServices = create(6);
 
-    private static final String[] moduleExtension = {
-        ".jar",
-        ".jar"
-    };
+    public static final XModuleType Persistence = create(7);
 
+	private static final String[] stringTable = {
+	"ear",
+	"ejb",
+	"car",
+	"rar",
+	"war",
+	};    
+
+    final Integer index;
     protected XModuleType(int value) {
-        super(value);
+        this.index = value;
     }
 
-    protected String[] getStringTable() {
-        return this.stringTable;
-    }
-
-    protected ModuleType[] getEnumValueTable() {
-        return this.enumValueTable;
-    }
-
-    public String getModuleExtension() {
-        if (super.getValue() >= this.getOffset()) {
-            return (this.moduleExtension[super.getValue() - this.getOffset()]);
-        } else {
-            return super.getModuleExtension();
+    public static XModuleType create(int index) {
+        synchronized(ModuleTypes) {
+            if (!ModuleTypes.containsKey(index)) {
+                ModuleTypes.put(index, new XModuleType(index));
+            }
         }
+        return ModuleTypes.get(index);
+    }     
+
+    /**
+     * {@inheritDoc}
+     * <p/>
+     * Considers only {@link #index} for equality.
+     */
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (null == o) return false;
+        if (getClass() != o.getClass()) return false;
+
+        return index == (((XModuleType) o).index);
     }
 
-    public static ModuleType getModuleType(int value) {
-        if (value >= offset) {
-            return enumValueTable[value-offset];
-        } else {
-            return ModuleType.getModuleType(value);
-        }
+    /**
+     * {@inheritDoc}
+     * <p/>
+     * Returns {@link #index} as the hash code.
+     */
+    @Override
+    public int hashCode() {
+        return index.hashCode();
     }
 
+    @Override
     public String toString() {
-        String[] strTable = this.getStringTable();
-        int index = super.getValue() - this.getOffset();
-        if (strTable != null && index >= 0 && index < strTable.length)
-            return strTable[index];
-        else
-            super.toString();
-        return null;
+    	int index = this.index;
+		if (stringTable != null && index >= 0 && index < stringTable.length)
+        	return stringTable[index];
+		else
+        	return Integer.toString (this.index);
     }
-
-    protected int getOffset() {
-        return offset; 
-    }
-
 }

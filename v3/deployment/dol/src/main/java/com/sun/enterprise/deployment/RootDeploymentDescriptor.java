@@ -37,6 +37,7 @@ package com.sun.enterprise.deployment;
 
 import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
+import com.sun.enterprise.deployment.util.XModuleType;
 
 import javax.enterprise.deploy.shared.ModuleType;
 import java.util.Collection;
@@ -153,7 +154,7 @@ public abstract class RootDeploymentDescriptor extends Descriptor {
     /**
      * @return the module type for this bundle descriptor
      */
-    public abstract ModuleType getModuleType();
+    public abstract XModuleType getModuleType();
 
     /**
      * Sets the class loader for this application
@@ -345,13 +346,13 @@ public abstract class RootDeploymentDescriptor extends Descriptor {
      *   d. appclient module and schema version earlier than 5.0.
      */
     public boolean isDDWithNoAnnotationAllowed() {
-        ModuleType mType = getModuleType();
+        XModuleType mType = getModuleType();
 
         double specVersion = Double.parseDouble(getSpecVersion());
 
         // connector DD doesn't have annotation, so always treated
         // as full DD
-        if (mType.equals(ModuleType.RAR)) {
+        if (XModuleType.RAR == mType) {
             return true;
         } else {
             // we do not process annotations for earlier versions of DD

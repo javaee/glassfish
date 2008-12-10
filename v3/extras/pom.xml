@@ -50,6 +50,7 @@
     <name>GlassFish Extras modules</name>  
     <modules>
         <module>phobos</module>
+        <module>grizzly-container</module>
         <!--module>php</module-->
     </modules>
 </project>

@@ -40,6 +40,7 @@ import com.sun.enterprise.deployment.runtime.connector.SunConnector;
 import com.sun.enterprise.deployment.util.ConnectorVisitor;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.util.DescriptorVisitor;
+import com.sun.enterprise.deployment.util.XModuleType;
 
 import javax.enterprise.deploy.shared.ModuleType;
 import java.io.IOException;
@@ -528,7 +529,7 @@ public class ConnectorDescriptor extends BundleDescriptor {
     /** 
      * visit the descriptor and all sub descriptors with a DOL visitor implementation
      * 
-     * @param a visitor to traverse the descriptors
+     * @param aVisitor visitor to traverse the descriptors
      */    
     public void visit(DescriptorVisitor aVisitor) {
         if (aVisitor instanceof ConnectorVisitor) {
@@ -541,7 +542,7 @@ public class ConnectorDescriptor extends BundleDescriptor {
     /** 
      * visit the descriptor and all sub descriptors with a 
      * DOL visitor implementation
-     * @param a visitor to traverse the descriptors
+     * @param aVisitor visitor to traverse the descriptors
      */
     public void visit(ConnectorVisitor aVisitor) {
         aVisitor.accept(this);
@@ -762,8 +763,8 @@ public class ConnectorDescriptor extends BundleDescriptor {
     /**
      * @return the module type for this bundle descriptor
      */
-    public ModuleType getModuleType() {
-        return ModuleType.RAR;
+    public XModuleType getModuleType() {
+        return XModuleType.RAR;
     }
     
     /**

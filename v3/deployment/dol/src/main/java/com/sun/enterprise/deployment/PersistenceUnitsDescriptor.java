@@ -38,6 +38,7 @@
 package com.sun.enterprise.deployment;
 
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
+import com.sun.enterprise.deployment.util.XModuleType;
 
 import javax.enterprise.deploy.shared.ModuleType;
 import java.util.ArrayList;
@@ -96,7 +97,7 @@ public class PersistenceUnitsDescriptor extends RootDeploymentDescriptor {
         throw new RuntimeException();
     }
 
-    public ModuleType getModuleType() {
+    public XModuleType getModuleType() {
         throw new RuntimeException();
     }
 

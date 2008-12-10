@@ -320,7 +320,7 @@ public class Application extends RootDeploymentDescriptor
                             uri.substring(uri.lastIndexOf('/') + 1, uri.lastIndexOf('.'));
                     ModuleDescriptor<BundleDescriptor> md = new ModuleDescriptor<BundleDescriptor>();
                     md.setArchiveUri(uri);
-                    md.setModuleType(ModuleType.WAR);
+                    md.setModuleType(XModuleType.WAR);
                     md.setContextRoot(contextRoot);
                     app.addModule(md);
                 }
@@ -331,7 +331,7 @@ public class Application extends RootDeploymentDescriptor
                                 name.endsWith(".rar")))) {
                     ModuleDescriptor<BundleDescriptor> md = new ModuleDescriptor<BundleDescriptor>();
                     md.setArchiveUri(uri);
-                    md.setModuleType(ModuleType.RAR);
+                    md.setModuleType(XModuleType.RAR);
                     app.addModule(md);
                 } else if ((!directory && name.endsWith(".jar"))
                         || (directory &&
@@ -346,7 +346,7 @@ public class Application extends RootDeploymentDescriptor
 
                             ModuleDescriptor<BundleDescriptor> md = new ModuleDescriptor<BundleDescriptor>();
                             md.setArchiveUri(uri);
-                            md.setModuleType(ModuleType.CAR);
+                            md.setModuleType(XModuleType.CAR);
                             md.setManifest(subArchive.getManifest());
                             app.addModule(md);
                             continue;
@@ -359,7 +359,7 @@ public class Application extends RootDeploymentDescriptor
 
                             ModuleDescriptor<BundleDescriptor> md = new ModuleDescriptor<BundleDescriptor>();
                             md.setArchiveUri(uri);
-                            md.setModuleType(ModuleType.EJB);
+                            md.setModuleType(XModuleType.EJB);
                             app.addModule(md);
                             continue;
                         }
@@ -394,7 +394,7 @@ public class Application extends RootDeploymentDescriptor
                         //Section EE.8.4.2.1.d.ii, alas EJB
                         ModuleDescriptor<BundleDescriptor> md = new ModuleDescriptor<BundleDescriptor>();
                         md.setArchiveUri(uri);
-                        md.setModuleType(ModuleType.EJB);
+                        md.setModuleType(XModuleType.EJB);
                         app.addModule(md);
                     }
                 } catch (IOException ex) {
@@ -1604,8 +1604,8 @@ public class Application extends RootDeploymentDescriptor
     /**
      * @return the module type for this bundle descriptor
      */
-    public ModuleType getModuleType() {
-        return ModuleType.EAR;
+    public XModuleType getModuleType() {
+        return XModuleType.EAR;
     }
 
     public void addSecurityRoleMapping(SecurityRoleMapping roleMapping) {

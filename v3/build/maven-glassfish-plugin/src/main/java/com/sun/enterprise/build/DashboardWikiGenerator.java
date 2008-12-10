@@ -226,7 +226,7 @@ public class DashboardWikiGenerator implements DistributionVisitor {
      * @param scm module's SCM
      */
     public void addSCM(Scm scm) {
-        if (scm!=null) {
+        if (scm!=null && getSCMType(scm.getConnection())!=null) {
             String scmType = getSCMType(scm.getConnection());
             if (scmType.equals("hg")) {
                 String scmSpecificPart = getSCMSpecficPart(scm.getConnection());
@@ -311,18 +311,22 @@ public class DashboardWikiGenerator implements DistributionVisitor {
 
     protected String getSCMType(String scmConnection) {
 
-        Matcher m = scmURLPattern.matcher(scmConnection);
-        if (m.matches()) {
-            return m.group(1);
+        if (scmConnection!=null) {
+            Matcher m = scmURLPattern.matcher(scmConnection);
+            if (m.matches()) {
+                return m.group(1);
+            }
         }
         return null;
     }
 
     protected String getSCMSpecficPart(String scmConnection) {
 
-        Matcher m = scmURLPattern.matcher(scmConnection);
-        if (m.matches()) {
-            return m.group(2);
+        if (scmConnection!=null) {
+            Matcher m = scmURLPattern.matcher(scmConnection);
+            if (m.matches()) {
+                return m.group(2);
+            }
         }
         return null;
     }

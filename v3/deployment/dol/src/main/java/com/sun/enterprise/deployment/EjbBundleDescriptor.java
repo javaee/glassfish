@@ -40,10 +40,7 @@ import com.sun.enterprise.deployment.node.ejb.EjbBundleNode;
 import com.sun.enterprise.deployment.runtime.IASPersistenceManagerDescriptor;
 import com.sun.enterprise.deployment.runtime.PersistenceManagerInUse;
 import com.sun.enterprise.deployment.runtime.common.SecurityRoleMapping;
-import com.sun.enterprise.deployment.util.DOLUtils;
-import com.sun.enterprise.deployment.util.DescriptorVisitor;
-import com.sun.enterprise.deployment.util.EjbBundleVisitor;
-import com.sun.enterprise.deployment.util.EjbVisitor;
+import com.sun.enterprise.deployment.util.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import javax.enterprise.deploy.shared.ModuleType;
@@ -716,8 +713,8 @@ public class EjbBundleDescriptor extends BundleDescriptor {
     /**
      * @return the module type for this bundle descriptor
      */
-    public ModuleType getModuleType() {
-        return ModuleType.EJB;
+    public XModuleType getModuleType() {
+        return XModuleType.EJB;
     }  
     
     public void setPersistenceManagerInuse(String id,String ver)

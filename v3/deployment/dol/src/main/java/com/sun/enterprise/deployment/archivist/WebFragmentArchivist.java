@@ -44,6 +44,7 @@ import com.sun.enterprise.deployment.io.WebFragmentDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.util.ApplicationValidator;
 import com.sun.enterprise.deployment.util.ModuleContentValidator;
 import com.sun.enterprise.deployment.util.WebBundleVisitor;
+import com.sun.enterprise.deployment.util.XModuleType;
 import org.glassfish.api.deployment.archive.Archive;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.xml.sax.SAXParseException;
@@ -76,7 +77,7 @@ class WebFragmentArchivist extends Archivist<WebBundleDescriptor> {
      *
      */
     @Override
-    public ModuleType getModuleType() {
+    public XModuleType getModuleType() {
         return null;
     }        
 

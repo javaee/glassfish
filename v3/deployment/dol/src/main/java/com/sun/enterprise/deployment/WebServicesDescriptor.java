@@ -36,6 +36,7 @@
 package com.sun.enterprise.deployment;
 
 import com.sun.enterprise.deployment.node.WebServicesDescriptorNode;
+import com.sun.enterprise.deployment.util.XModuleType;
 
 import javax.enterprise.deploy.shared.ModuleType;
 import java.util.Collection;
@@ -159,7 +160,7 @@ public class WebServicesDescriptor extends RootDeploymentDescriptor {
         return allEndpoints;
     }
     
-    public ModuleType getModuleType() { 
+    public XModuleType getModuleType() { 
         if (bundleDesc!=null) {
           return bundleDesc.getModuleType();  
         } 

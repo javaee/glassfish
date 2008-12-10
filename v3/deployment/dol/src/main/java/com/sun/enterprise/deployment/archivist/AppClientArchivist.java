@@ -44,6 +44,7 @@ import com.sun.enterprise.deployment.io.runtime.AppClientRuntimeDDFile;
 import com.sun.enterprise.deployment.util.ApplicationValidator;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.util.ModuleContentValidator;
+import com.sun.enterprise.deployment.util.XModuleType;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.jvnet.hk2.annotations.Scoped;
@@ -83,8 +84,8 @@ public class AppClientArchivist extends Archivist<ApplicationClientDescriptor>
      *         as defined in the application DTD
      */
     @Override
-    public ModuleType getModuleType() {
-        return ModuleType.CAR;
+    public XModuleType getModuleType() {
+        return XModuleType.CAR;
     }
 
 
@@ -227,22 +228,5 @@ public class AppClientArchivist extends Archivist<ApplicationClientDescriptor>
 
     protected String getArchiveExtension() {
         return APPCLIENT_EXTENSION;
-    }
-
-    @Override
-    public void readPersistenceDeploymentDescriptors(
-            ReadableArchive archive,
-            ApplicationClientDescriptor descriptor)
-            throws IOException, SAXParseException {
-        if (logger.isLoggable(Level.FINE)) {
-            logger.logp(Level.FINE, "AppClientArchivist",
-                    "readPersistenceDeploymentDescriptors", "archive = {0}",
-                    archive.getURI());
-        }
-        // note we pass "" as the PURootPath because META-INF/persistence.xml
-        // can only be present on the top level in an client-jar, so the root of
-        // persistence unit is always same as the root of an client-jar file.
-        // hence relative distance between them is empty.
-        readPersistenceDeploymentDescriptor(archive, "", descriptor);
     }
 }

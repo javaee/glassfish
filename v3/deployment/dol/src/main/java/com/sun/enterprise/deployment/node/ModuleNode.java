@@ -37,6 +37,7 @@
 package com.sun.enterprise.deployment.node;
 
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
+import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.deployment.xml.ApplicationTagNames;
 import org.w3c.dom.Node;
 
@@ -66,7 +67,7 @@ public class ModuleNode extends DeploymentDescriptorNode {
     }     
         
     /**
-     * receives notiification of the value for a particular tag
+     * receives notification of the value for a particular tag
      * 
      * @param element the xml element
      * @param value it's associated value
@@ -74,19 +75,19 @@ public class ModuleNode extends DeploymentDescriptorNode {
     public void setElementValue(XMLElement element, String value) {
         ModuleDescriptor descriptor = (ModuleDescriptor) getDescriptor();
          if (element.getQName().equals(ApplicationTagNames.WEB_URI)) {            
-            descriptor.setModuleType(ModuleType.WAR);
+            descriptor.setModuleType(XModuleType.WAR);
             descriptor.setArchiveUri(value);                
         } else if (element.getQName().equals(ApplicationTagNames.EJB)) {
-            descriptor.setModuleType(ModuleType.EJB);
+            descriptor.setModuleType(XModuleType.EJB);
             descriptor.setArchiveUri(value);
         } else if (element.getQName().equals(ApplicationTagNames.CONNECTOR)) {
-            descriptor.setModuleType(ModuleType.RAR);
+            descriptor.setModuleType(XModuleType.RAR);
             descriptor.setArchiveUri(value);
         } else if (element.getQName().equals(ApplicationTagNames.APPLICATION_CLIENT)) {
-            descriptor.setModuleType(ModuleType.CAR);
+            descriptor.setModuleType(XModuleType.CAR);
             descriptor.setArchiveUri(value);
         } else if (element.getQName().equals(ApplicationTagNames.WEB)) {
-            descriptor.setModuleType(ModuleType.WAR);
+            descriptor.setModuleType(XModuleType.WAR);
         } else super.setElementValue(element, value);
     }    
         

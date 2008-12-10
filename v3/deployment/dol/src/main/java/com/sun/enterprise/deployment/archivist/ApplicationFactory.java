@@ -227,26 +227,4 @@ public class ApplicationFactory implements ContractProvider {
         }
         return null;
      }
-
-    /**
-     * This is a helper method.
-     * This method is needed because we sometimes have to read PU descriptors
-     * from the original app exploded dir as opposed to generated dir
-     * because generated XML do not contain any information about PUs.
-     * This method also handles the case where application object is virtual,
-     * (a virtual application represents a standalone module deployment object).
-     * @param archive from where persistence descriptors will be read from.
-     * @param application the application object whose persistence units
-     * will be read. This method will read all the persistence units
-     * recurssively and register at appropriate level.
-     * @throws IOException
-     * @throws SAXParseException
-     */
-    public void readPersistenceDeploymentDescriptorsRecursively(
-            ReadableArchive archive, Application application) throws IOException,
-            SAXParseException {
-
-        (new ApplicationArchivist()).readPersistenceDeploymentDescriptorsRecursively(archive, application);
-    }    
-
 }

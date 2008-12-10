@@ -43,10 +43,7 @@ import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.DescriptorConstants;
 import com.sun.enterprise.deployment.io.EjbDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.runtime.EjbRuntimeDDFile;
-import com.sun.enterprise.deployment.util.AnnotationDetector;
-import com.sun.enterprise.deployment.util.EjbBundleValidator;
-import com.sun.enterprise.deployment.util.EjbBundleVisitor;
-import com.sun.enterprise.deployment.util.ModuleContentValidator;
+import com.sun.enterprise.deployment.util.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.DeploymentUtils;
@@ -82,8 +79,8 @@ public class BaseEjbArchivist
      *
      */
     @Override
-    public ModuleType getModuleType() {
-        return ModuleType.EJB;
+    public XModuleType getModuleType() {
+        return XModuleType.EJB;
     }
 
     /**
@@ -184,21 +181,5 @@ public class BaseEjbArchivist
                     new AnnotationDetector(new EjbComponentAnnotationScanner());
         return (!DeploymentUtils.isWebArchive(abstractArchive)) &&
                 detector.hasAnnotationInArchive(abstractArchive);
-    }
-
-    @Override
-    public void readPersistenceDeploymentDescriptors(
-            ReadableArchive archive, EjbBundleDescriptor descriptor)
-            throws IOException, SAXParseException {
-        if(logger.isLoggable(Level.FINE)) {
-            logger.logp(Level.FINE, "EjbArchivist",
-                    "readPersistenceDeploymentDescriptors", "archive = {0}",
-                    archive.getURI());
-        }
-        // note we pass "" as the PURootPath because META-INF/persistence.xml
-        // can only be present on the top level in an ejb-jar, so the root of
-        // persistence unit is always same as the root of an ejb-jar file.
-        // hence relative distance between them is empty.
-        readPersistenceDeploymentDescriptor(archive, "", descriptor);
     }
 }

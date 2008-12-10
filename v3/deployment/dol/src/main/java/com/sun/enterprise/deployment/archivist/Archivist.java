@@ -47,10 +47,7 @@ import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import static com.sun.enterprise.deployment.io.DescriptorConstants.PERSISTENCE_DD_ENTRY;
 import com.sun.enterprise.deployment.io.PersistenceDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.WebServicesDeploymentDescriptorFile;
-import com.sun.enterprise.deployment.util.DOLUtils;
-import com.sun.enterprise.deployment.util.DescriptorVisitor;
-import com.sun.enterprise.deployment.util.ModuleDescriptor;
-import com.sun.enterprise.deployment.util.TracerVisitor;
+import com.sun.enterprise.deployment.util.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.shared.ArchivistUtils;
@@ -153,6 +150,9 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
 
     @Inject
     ArchiveFactory archiveFactory;
+
+    @Inject(optional = true)
+    ExtensionsArchivist[] extensionsArchivists;
 
     /**
      * Creates new Archivist
@@ -307,11 +307,13 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
         ModuleDescriptor newModule = createModuleDescriptor(descriptor);
         newModule.setArchiveUri(archive.getURI().getSchemeSpecificPart());
 
-        readWebServicesDescriptor(archive, descriptor);
-
-        // Now that we have parsed the standard DD, let's read all the
-        // PersistenceUnits defined in this archive as well.
-        readPersistenceDeploymentDescriptors(archive, getDescriptor());
+        if (extensionsArchivists!=null) {
+            for (ExtensionsArchivist extension : extensionsArchivists) {
+                if (extension.supportsModuleType(getModuleType())) {
+                    extension.open(this, archive, descriptor);
+                }
+            }
+        }
 
         postStandardDDsRead(descriptor, archive);
 
@@ -365,24 +367,6 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
         } else if (DOLUtils.getDefaultLogger().isLoggable(Level.FINE)) {
             DOLUtils.getDefaultLogger().fine("Annotation is not processed for this archive.");
         }
-    }
-
-    /**
-     * This method is responsible for reading of any persistence DD defined
-     * in the SCOPE of this descriptor. Note, it only reads persistence DD
-     * defined in the current SCOPE.
-     *
-     * @param archive    is the archive that will be scanned for persistence DD
-     * @param descriptor which will be populated with information read from
-     *                   persistence DD.
-     * @throws IOException
-     * @throws SAXParseException
-     */
-    public void readPersistenceDeploymentDescriptors(
-            ReadableArchive archive, T descriptor)
-            throws IOException, SAXParseException {
-        // This is a no-op implementation as opposed to an abstract method
-        // because it gets called from ConnectorArchivist.
     }
 
     /**
@@ -623,33 +607,6 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
         }
     }
 
-    /**
-     * Read the (optional) webservices.xml descriptor in this module.
-     * Only applicable for web and ejb modules.
-     */
-    protected void readWebServicesDescriptor(ReadableArchive archive,
-                                             T descriptor)
-            throws IOException, SAXParseException {
-
-        DeploymentDescriptorFile confDD = getWebServicesDDFile(descriptor);
-        if (archive.getURI() != null) {
-            confDD.setErrorReportingString(archive.getURI().getSchemeSpecificPart());
-        }
-        InputStream is = null;
-        try {
-            is = archive.getEntry(confDD.getDeploymentDescriptorPath());
-            if (is != null) {
-                confDD.setXMLValidation(getXMLValidation());
-                confDD.setXMLValidationLevel(validationLevel);
-                confDD.read(descriptor, is);
-            }
-        } finally {
-            if (is != null) {
-                is.close();
-            }
-        }
-
-    }
 
     /*
      * write the J2EE module represented by this instance to a new 
@@ -982,11 +939,15 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
         return dependenciesSatisfied;
     }
 
+    public boolean supportsModuleType(ModuleType moduleType) {
+        return getModuleType().equals(moduleType);
+    }
+
     /**
      * @return the  module type handled by this archivist
      *         as defined in the application DTD
-     */
-    public abstract ModuleType getModuleType();
+     */              
+    public abstract XModuleType getModuleType();
 
     /**
      * @return the DeploymentDescriptorFile responsible for handling
@@ -1017,7 +978,7 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
      * @return the DeploymentDescriptorFile responsible for
      *         handling the web services deployment descriptors
      */
-    public DeploymentDescriptorFile getWebServicesDDFile(Descriptor desc) {
+    public DeploymentDescriptorFile getWebServicesDDFile(RootDeploymentDescriptor desc) {
         return new WebServicesDeploymentDescriptorFile(desc);
     }
 
@@ -1677,55 +1638,6 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
                     copyAnEntry(in, out, anEntry);
                 }
             }
-        }
-    }
-
-    protected void readPersistenceDeploymentDescriptor(
-            ReadableArchive subArchive, String puRoot, T descriptor)
-            throws IOException, SAXParseException {
-        final String subArchiveURI = subArchive.getURI().getSchemeSpecificPart();
-        if (logger.isLoggable(Level.FINE)) {
-            logger.logp(Level.FINE, "Archivist",
-                    "readPersistenceDeploymentDescriptor",
-                    "PURoot = [{0}] subArchive = {1}",
-                    new Object[]{puRoot, subArchiveURI});
-        }
-        if (descriptor.getPersistenceUnitsDescriptor(puRoot) != null) {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.logp(Level.FINE, "Archivist",
-                        "readPersistenceDeploymentDescriptor",
-                        "PU has been already read for = {0}",
-                        subArchiveURI);
-            }
-            return;
-        }
-        PersistenceDeploymentDescriptorFile persistenceDeploymentDescriptorFile
-                = new PersistenceDeploymentDescriptorFile();
-        persistenceDeploymentDescriptorFile.setErrorReportingString(
-                subArchiveURI.toString());
-        persistenceDeploymentDescriptorFile.setXMLValidation(getXMLValidation());
-        persistenceDeploymentDescriptorFile.setXMLValidationLevel(
-                getXMLValidationLevel());
-        InputStream is = subArchive.getEntry(
-                persistenceDeploymentDescriptorFile.getDeploymentDescriptorPath());
-        if (is == null) {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.logp(Level.FINE, "Archivist",
-                        "readPersistenceDeploymentDescriptor",
-                        "{0} does not contain {1}, so it is not a PU Root.",
-                        new Object[]{subArchiveURI,
-                                persistenceDeploymentDescriptorFile.getDeploymentDescriptorPath()});
-            }
-            return;
-        }
-        try {
-            PersistenceUnitsDescriptor persistenceUnitsDescriptor =
-                    PersistenceUnitsDescriptor.class.cast(
-                            persistenceDeploymentDescriptorFile.read(descriptor, is));
-            descriptor.addPersistenceUnitsDescriptor(puRoot,
-                    persistenceUnitsDescriptor);
-        } finally {
-            is.close();
         }
     }
 

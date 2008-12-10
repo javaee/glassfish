@@ -37,6 +37,7 @@ package com.sun.enterprise.deployment;
 
 import com.sun.enterprise.deployment.types.EntityManagerFactoryReference;
 import com.sun.enterprise.deployment.types.EntityManagerReference;
+import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
 
@@ -474,7 +475,7 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
     /**
      * @return the  type of this bundle descriptor
      */
-    public abstract ModuleType getModuleType();
+    public abstract XModuleType getModuleType();
 
     /**
      * @return the module ID for this module descriptor

@@ -43,6 +43,7 @@
 package org.glassfish.webservices.monitoring;
 
 import com.sun.enterprise.deployment.WebServiceEndpoint;
+import com.sun.enterprise.deployment.util.XModuleType;
 
 import com.sun.logging.LogDomains;
 import org.glassfish.webservices.SOAPMessageContext;
@@ -169,8 +170,8 @@ public final class WebServiceEngineImpl implements WebServiceEngine {
         try { 
             String endpointURL = endpoint.getEndpointAddressUri();
             EndpointType endpointType;            
-            ModuleType moduleType = endpoint.getWebService().getWebServicesDescriptor().getModuleType();
-            if (moduleType.equals(ModuleType.EJB)) {
+            XModuleType moduleType = endpoint.getWebService().getWebServicesDescriptor().getModuleType();
+            if (XModuleType.EJB == moduleType) {
                 endpointType = EndpointType.EJB_ENDPOINT;
             } else {
                 endpointType = EndpointType.SERVLET_ENDPOINT;
