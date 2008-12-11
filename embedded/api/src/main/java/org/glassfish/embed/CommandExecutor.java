@@ -19,7 +19,11 @@ import java.util.Properties;
 public class CommandExecutor {
 
     public CommandExecutor(Server server) throws EmbeddedException {
-        cr = server.getHabitat().getComponent(CommandRunner.class);
+        try {
+            cr = server.getHabitat().getComponent(CommandRunner.class);
+        } catch (NullPointerException e) {
+            throw new EmbeddedException("not_started", "CommandExecutor(Server server)");
+        }
         this.serverName = server.getServerName();
     }
 
