@@ -108,9 +108,6 @@ public class CreateConnectorConnectionPool implements AdminCommand {
     @Param(name="creationretryinterval", optional=true)
     String creationretryinterval = "10";
 
-    @Param(name="statementtimeout", optional=true)
-    String statementtimeout = "-1";
-
     @Param(name="lazyconnectionenlistment", optional=true, defaultValue="false")
     Boolean lazyconnectionenlistment;
 
