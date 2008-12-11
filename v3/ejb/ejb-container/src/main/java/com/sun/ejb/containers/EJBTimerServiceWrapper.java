@@ -362,5 +362,8 @@ public class EJBTimerServiceWrapper implements TimerService {
         if( expiration == null ) {
             throw new IllegalArgumentException("null expiration");
         } 
+        if( expiration.getTime() < 0 ) {
+            throw new IllegalArgumentException("Negative expiration");
+        } 
     }
 }

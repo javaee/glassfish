@@ -35,6 +35,7 @@
  */
 package com.sun.ejb.containers;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Collection;
 import java.util.Set;
@@ -917,10 +918,10 @@ public class EJBTimerService
 
         TimerSchedule ts = timerState.getTimerSchedule();
         if (ts != null) {
-            long t = ts.getNextTimeMillis();
-            if (t != -1) {
-                return new Date(t);
-            } else { // Expired
+            Calendar next = ts.getNextTimeout();
+            if( ts.isValid(next) ) {
+                return next.getTime();
+            } else { // Expired or no timeouts available
                 return null;
             }
         }
@@ -1040,14 +1041,17 @@ public class EJBTimerService
 
         TimerPrimaryKey timerId = new TimerPrimaryKey(getNextTimerId());
 
+        boolean expired = false;
         if (schedule != null) {
-            long t = schedule.getNextTimeMillis();
-            if( t == -1 ) {
-                throw new CreateException("Schedule: " + 
+            Calendar next = schedule.getNextTimeout();
+            if( !schedule.isValid(next) ) {
+                expired = true;
+                logger.log(Level.INFO, "Schedule: " +
                                       schedule.getScheduleAsString() + 
                                       " already expired");
             }
-            initialExpiration = new Date(t);
+
+            initialExpiration = next.getTime();
         }
         RuntimeTimerState timerState = 
             new RuntimeTimerState(timerId, initialExpiration, 
@@ -1068,7 +1072,7 @@ public class EJBTimerService
                                        timedObjectPrimaryKey, 
                                        initialExpiration, intervalDuration, 
                                        schedule, timerConfig);
-                } else {
+                } else if (!expired) {
                     addTimerSynchronization(null, 
                             timerId.getTimerId(), initialExpiration,
                             containerId, ownerIdOfThisServer_);
@@ -1279,10 +1283,7 @@ public class EJBTimerService
 
         Date nextTimeout = initialExpiration;
         if (ts != null) {
-            long t = ts.getNextTimeMillis();
-            if (t != -1) {
-                nextTimeout = new Date(t);
-            }
+            nextTimeout = ts.getNextTimeout().getTime();
         } else if (intervalDuration > 0) {
             nextTimeout = calcNextFixedRateExpiration(initialExpiration, 
                                intervalDuration);
@@ -1550,11 +1551,12 @@ public class EJBTimerService
                     // just schedule the JDK timer task for the next ejbTimeout
                     
                     Date expiration = calcNextFixedRateExpiration(timerState);
-                    if (expiration == null) {
-                        // Schedule-based timer ended.
-                        cancelTimer(timerId);
+                    if (expiration != null) {
+                        scheduleTask(timerId, expiration);
+                    } else {
+                        // Do nothing: schedule-based timer ended.
+                        // cancelTimer(timerId);
                     }
-                    scheduleTask(timerId, expiration);
                 } else {
                    
                     // Any necessary transactional operations would have
@@ -1829,10 +1831,10 @@ public class EJBTimerService
             Date initialExpiration, long containerId, String ownerId) 
             throws Exception {
 
-        TimerPrimaryKey pk = new TimerPrimaryKey(timerId);
         // context_ is null for a non-persistent timer as it's not called 
-        // from the TimerBean
-        if (context_ == null || timerOwnedByThisServer(ownerId) ) {
+        // from the TimerBean.
+        if (context_ == null || timerOwnedByThisServer(ownerId)) {
+            TimerPrimaryKey pk = new TimerPrimaryKey(timerId);
 
             // Register a synchronization object to handle the commit/rollback
             // semantics and ejbTimeout notifications.

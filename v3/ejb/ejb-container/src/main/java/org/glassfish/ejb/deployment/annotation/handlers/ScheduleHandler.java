@@ -95,9 +95,8 @@ public class ScheduleHandler extends AbstractAttributeHandler {
                 }
                 TimerSchedule ts = new TimerSchedule(sch);
 
-                long now = System.currentTimeMillis();
-                long next = ts.getNextTimeMillis();
-                System.out.println("@@@ First timeout: " + ((next < now)? "NEVER" : new java.util.Date(next)));
+                java.util.Calendar date = ts.getNextTimeout();
+                System.out.println("@@@ First timeout: " + ((ts.isValid(date))? date.getTime() : "NEVER"));
                 System.out.println("@@@ Schedule : " + ts.getScheduleAsString());
 
                 TimerConfig tc = new TimerConfig();
