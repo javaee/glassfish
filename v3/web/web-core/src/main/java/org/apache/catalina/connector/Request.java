@@ -544,21 +544,21 @@ public class Request
      */
 
     // Async mode is supported by default for a request, unless the request
-    // is going to pass a filter or servlet that does not support async
+    // has passed a filter or servlet that does not support async
     // operation, in which case async operation will be disabled
     private boolean isAsyncSupported = true;
-    private boolean isAsyncStarted = false;
+
+    private boolean isAsyncStarted;
     private AsyncContextImpl asyncContext;
     private LinkedList<AsyncListenerHolder> asyncListenerHolders;
     private long asyncTimeoutMillis = -1L;
     // Has AsyncContext.complete been called?
-    private boolean isAsyncComplete = false;
+    private boolean isAsyncComplete;
     // Has setAsyncTimeout been called on this request?
     private boolean isSetAsyncTimeoutCalled;
-    private boolean isOkToReinitializeAsync = false;
+    private boolean isOkToReinitializeAsync;
     private Timer asyncTimer;    
     private TimerTask asyncTimerTask;
-
 
     /**
      * Associated context.
@@ -650,10 +650,27 @@ public class Request
             }
         }
 
+        /*
+         * Clear and reinitialize any async related artifacts
+         */
         if (asyncContext != null) {
             asyncContext.recycle();
+            asyncContext = null;
         }
+
+        if (asyncListenerHolders != null) {
+            asyncListenerHolders.clear();
+            asyncListenerHolders = null;
+        }
+
         isAsyncSupported = true;
+        isAsyncStarted = false;
+        isAsyncComplete = false;
+        isSetAsyncTimeoutCalled = false;
+        isOkToReinitializeAsync = false;
+
+        asyncTimeoutMillis = -1L;
+
         stopAsyncTimer();
     }
 
