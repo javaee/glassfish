@@ -40,7 +40,7 @@ public class ASMain {
 
     // We add both KnopflerFish and Knopflerfish for backward compatibility
     // between tp2 and v3 trunk.
-    private enum Platform {HK2, Felix, Knopflerfish, KnopflerFish, Equinox}
+    private enum Platform {HK2, Felix, Knopflerfish, KnopflerFish, Equinox, Static}
 
     public static void main(final String args[]) {
         Platform platform = Platform.Felix; // default is Felix
@@ -75,6 +75,9 @@ public class ASMain {
                 break;
             case HK2:
                 throw new RuntimeException("GlassFish does not run on the HK2 platform anynmore");
+            case Static:
+                new ASMainStatic(logger, args).run();
+                break;
             default:
                 throw new RuntimeException("Platform not yet supported");
         }

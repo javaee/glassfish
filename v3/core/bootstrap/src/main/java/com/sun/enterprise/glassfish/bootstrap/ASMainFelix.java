@@ -88,7 +88,7 @@ public class ASMainFelix extends ASMainOSGi {
         String confFileURL = new File(fwDir, "conf/config.properties").toURI().toURL().toString();
         System.setProperty("felix.config.properties", confFileURL);
         File cacheProfileDir = new File(domainDir, "felix-cache/gf/");
-        setUpOSGiCache(cacheProfileDir);
+        setUpCache(bootstrapFile.getParentFile(), cacheProfileDir);
         System.setProperty("felix.cache.profiledir", cacheProfileDir.getCanonicalPath());
         Class mc = launcherCL.loadClass(getFWMainClassName());
         final String[] args = new String[0];
