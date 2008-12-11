@@ -321,6 +321,31 @@
         <!--    End: Parent Plugin Management Section    -->
 
         <plugins>
+
+	    <!-- Enforces maven 2.0.9 and jdk 1.6 to be used to build v3 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                    <id>enforce-versions</id>
+                    <goals>
+                        <goal>enforce</goal>
+                    </goals>
+                    <configuration>
+                        <rules>
+                            <requireMavenVersion>
+                                <version>2.0.9</version>
+                            </requireMavenVersion>
+                            <requireJavaVersion>
+                                <version> 1.6</version>
+                            </requireJavaVersion>
+                        </rules>
+                        </configuration>
+                    </execution>
+                    </executions>
+            </plugin>
+
             <!-- Configure maven-bundle-plugin to generate OSGi manifest.
                  Please note: we use the manifest goal only and not the bundle goal.
                   The bundle goal can lead to very surprising results if the
