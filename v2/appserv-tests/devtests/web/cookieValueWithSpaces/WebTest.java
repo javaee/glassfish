@@ -57,7 +57,7 @@ public class WebTest {
         URLConnection conn = url.openConnection();
         String cookie = conn.getHeaderField("Set-Cookie");
         System.out.println("Response cookie: " + cookie);
-        if (!COOKIE.equals(cookie)) {
+        if (cookie == null || !cookie.startsWith(COOKIE)) {
             throw new Exception("Missing or invalid Set-Cookie response header");
         }
     }
