@@ -49,7 +49,7 @@ import com.sun.logging.LogDomains;
  * @author Aditya Gore
  * @since SJSAS 8.1
  */
-public class UnpooledConnectionEventListener extends com.sun.enterprise.resource.listener.ConnectionEventListener {
+public class UnpooledConnectionEventListener extends ConnectionEventListener {
 
 
     private static Logger _logger = LogDomains.getLogger(UnpooledConnectionEventListener.class,LogDomains.RSR_LOGGER);
