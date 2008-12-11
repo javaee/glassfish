@@ -51,10 +51,23 @@ import java.util.logging.Logger;
  */
 public class ResourcePoolFactoryImpl {
 
+    //property to take care of switching off connection pooling in ACC
+    //since 9.1
+    private static final String SWITCH_OFF_ACC_CONNECTION_POOLING =
+ 	"com.sun.enterprise.connectors.SwitchoffACCConnectionPooling";
+    private static String switchOffACCConnectionPoolingProperty =
+            System.getProperty(SWITCH_OFF_ACC_CONNECTION_POOLING);
+
     private static Logger _logger = LogDomains.getLogger(ResourcePoolFactoryImpl.class,LogDomains.RSR_LOGGER);
 
     public static ResourcePool newInstance(String poolName, PoolType pt)
             throws PoolingException {
+
+        // TODO V3 need to know Container type
+        // if(Switch.getSwitch().getContainerType() == Switch.APPCLIENT_CONTAINER){
+            if("TRUE".equalsIgnoreCase(switchOffACCConnectionPoolingProperty))
+                return new UnpooledResource( poolName );
+        //}
 
         ResourcePool pool = null;
         if ( pt == PoolType.ASSOCIATE_WITH_THREAD_POOL ) {
