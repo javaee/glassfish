@@ -133,6 +133,8 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
         
         epd = new AdminEndpointDecider(config, logger);
         registerJavaConfigListener();
+            this.setHandleStaticResources(true);
+            this.setRootFolder(env.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/asadmindocroot/");
     }
 
     /**
@@ -159,6 +161,10 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
         LogHelper.getDefaultLogger().finer("QueryString = " + req.getQueryString());
 
         String requestURI = req.getRequestURI();
+    /*    if (requestURI.startsWith("/__asadmin/ADMINGUI")) {
+            super.service(req, res);
+
+        }*/
         ActionReport report = getClientActionReport(requestURI, req);
         // remove the qualifier if necessary
         if (requestURI.indexOf('.')!=-1) {
