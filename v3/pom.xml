@@ -42,7 +42,7 @@
     <parent>
         <groupId>org.glassfish</groupId>
         <artifactId>pom</artifactId>
-        <version>2</version>
+        <version>3-SNAPSHOT</version>
     </parent>
     
     <groupId>org.glassfish</groupId>
@@ -217,6 +217,15 @@
         </profile>
     </profiles>
     <repositories>
+        <!-- first hits nexus repo for any artifact request, then falls to the next repo in the list / order -->
+        <repository>
+            <id>glassfish-repo-archive</id>
+            <name>Nexus repository collection for Glassfish</name>
+            <url>http://maven.glassfish.org/content/groups/glassfish</url>
+            <snapshots>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+        </repository>
         <repository>
             <!-- back up glassfish maven repository in case the 'glassfish-repository' goes down -->
             <id>glassfish-repository-wsinterop</id>
@@ -230,6 +239,15 @@
             <id>glassfish-repository</id>
             <name>Java.net Repository for Glassfish</name>
             <url>http://download.java.net/maven/glassfish</url>
+            <snapshots>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+        </repository>
+        <!-- the following block is a dummy to cover a maven bug to maintain the repo  order, after checking for updates on snapshots, when local repo is empty -->
+        <repository>
+            <id>glassfish-repo-archive-dummy</id>
+            <name>Nexus repository collection for Glassfish</name>
+            <url>http://maven.glassfish.org/content/groups/glassfish</url>
             <snapshots>
                 <updatePolicy>never</updatePolicy>
             </snapshots>
