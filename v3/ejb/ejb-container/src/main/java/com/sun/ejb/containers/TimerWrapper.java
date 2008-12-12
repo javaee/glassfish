@@ -68,17 +68,12 @@ public class TimerWrapper
     
     private TimerPrimaryKey timerId_;
     private EJBTimerService timerService_;
-    private ScheduleExpression expression_;
 
     private static EjbContainerUtil ejbContainerUtil = EjbContainerUtilImpl.getInstance();
 
     TimerWrapper(TimerPrimaryKey timerId, EJBTimerService timerService) {
         timerId_      = timerId;
         timerService_ = timerService;   //TimerService passed in could be null
-    }
-
-    void setScheduleExpression(ScheduleExpression expression) {
-        expression_ = expression;
     }
 
     /*
@@ -159,12 +154,15 @@ public class TimerWrapper
             javax.ejb.NoSuchObjectLocalException, javax.ejb.EJBException {
 
         checkCallPermission();
-        if( !timerService_.timerExists(timerId_) ) {
-            throw new NoSuchObjectLocalException("timer no longer exists");
+        ScheduleExpression schedule;
+
+        try {
+            schedule = timerService_.getScheduleExpression(timerId_);
+        } catch(FinderException fe) {
+            throw new NoSuchObjectLocalException("timer no longer exists", fe);
         } 
 
-        // XXX ??? get from the timer instead?
-        return expression_;
+        return schedule;
     }
 
     public boolean isPersistent() throws java.lang.IllegalStateException, 

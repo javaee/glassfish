@@ -36,6 +36,7 @@
 package com.sun.ejb.containers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.BitSet;
 import java.util.Date;
@@ -87,6 +88,7 @@ public class TimerSchedule implements Serializable {
     private static Map<Object, Integer> conversionTable = new HashMap<Object, Integer>();
 
     private List<String> daysOfWeekOrRangesOfDaysInMonth = new ArrayList<String>();
+    private int[] years = new int[] {};
 
     private static final Pattern simpleRangePattern = Pattern.compile("[0-9]+\\s*-\\s*([0-9]+|last)");
     private static final Pattern positivePattern = Pattern.compile("[0-9]+");
@@ -144,13 +146,13 @@ public class TimerSchedule implements Serializable {
       * and can be modified by the user.
       */
     public TimerSchedule(ScheduleExpression se) {
-        second_ = se.getSecond().trim();
-        minute_ = se.getMinute().trim();
-        hour_ = se.getHour().trim();
-        dayOfMonth_ = se.getDayOfMonth().trim();
-        month_ = se.getMonth().trim();
-        dayOfWeek_ = se.getDayOfWeek().trim();
-        year_ = se.getYear().trim();
+        second(se.getSecond());
+        minute(se.getMinute());
+        hour(se.getHour());
+        dayOfMonth(se.getDayOfMonth());
+        month(se.getMonth());
+        dayOfWeek(se.getDayOfWeek());
+        year(se.getYear());
 
         // Create local copies
         start(se.getStart());
@@ -162,13 +164,13 @@ public class TimerSchedule implements Serializable {
     /** Construct TimerSchedule instance from a given Schedule annotation.
       */
     public TimerSchedule(Schedule s) {
-        second_ = s.second().trim();
-        minute_ = s.minute().trim();
-        hour_ = s.hour().trim();
-        dayOfMonth_ = s.dayOfMonth().trim();
-        month_ = s.month().trim();
-        dayOfWeek_ = s.dayOfWeek().trim();
-        year_ = s.year().trim();
+        second(s.second());
+        minute(s.minute());
+        hour(s.hour());
+        dayOfMonth(s.dayOfMonth());
+        month(s.month());
+        dayOfWeek(s.dayOfWeek());
+        year(s.year());
 
         configure();
     }
@@ -197,6 +199,7 @@ public class TimerSchedule implements Serializable {
     }
 
     public TimerSchedule second(String s) {
+        assertNotNull(s, SECOND);
         second_ = s.trim(); 
         return this;
     }
@@ -206,6 +209,7 @@ public class TimerSchedule implements Serializable {
     }
 
     public TimerSchedule minute(String m) {
+        assertNotNull(m, MINUTE);
         minute_ = m.trim();
         return this;
     }
@@ -215,6 +219,7 @@ public class TimerSchedule implements Serializable {
     }
 
     public TimerSchedule hour(String h) {
+        assertNotNull(h, HOUR);
         hour_ = h.trim();
         return this;
     }
@@ -224,6 +229,7 @@ public class TimerSchedule implements Serializable {
     }
 
     public TimerSchedule dayOfMonth(String d) {
+        assertNotNull(d, DAY_OF_MONTH);
         dayOfMonth_ = d.trim();
         return this;
     }
@@ -233,6 +239,7 @@ public class TimerSchedule implements Serializable {
     }
 
     public TimerSchedule month(String m) {
+        assertNotNull(m, MONTH);
         month_ = m.trim();
         return this;
     }
@@ -242,6 +249,7 @@ public class TimerSchedule implements Serializable {
     }
 
     public TimerSchedule dayOfWeek(String d) {
+        assertNotNull(d, DAY_OF_WEEK);
         dayOfWeek_ = d.trim();
         return this;
     }
@@ -251,6 +259,7 @@ public class TimerSchedule implements Serializable {
     }
 
     public TimerSchedule year(String y) {
+        assertNotNull(y, YEAR);
         year_ = y.trim();
         return this;
     }
@@ -342,12 +351,28 @@ public class TimerSchedule implements Serializable {
      * the schedule represented by this instance.
      */
     public boolean isValid(Calendar date) {
-        if ((end_ != null && date.getTimeInMillis() > end_.getTime()) ||
-                (!year_.equals("*") && date.get(Calendar.YEAR) > Integer.parseInt(year_))) {
+        if ((end_ != null && date.getTimeInMillis() > end_.getTime())) {
             return false;
         }
 
-        return true;
+        if (years.length == 0) {
+            return true;
+        }
+
+        Calendar now = new GregorianCalendar();
+        int currYear = now.get(Calendar.YEAR);
+
+        for(int year : years) {
+            if (year < currYear) {
+                continue;
+            }
+
+            if (date.get(Calendar.YEAR) == year) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -359,19 +384,39 @@ public class TimerSchedule implements Serializable {
         }
 
         Calendar next = new GregorianCalendar();
+        int currYear = next.get(Calendar.YEAR);
         next.add(Calendar.SECOND, 1);
         next.set(Calendar.MILLISECOND, 0);
 
-        int year = 0;
-        if (!year_.equals("*")) {
-            year = Integer.parseInt(year_);
+        if (years.length == 0) {
+            return getNextTimeout(next, 0);
+        }
+
+        for(int year : years) {
+            if (year < currYear) {
+                continue;
+            }
+
             if (next.get(Calendar.YEAR) < year) {
                 // set to the beginning of the year
                 next.set(year, 0, 1, 0, 0, 0);
                 System.out.println("==> Year reset " + next.getTime()); 
+                next = getNextTimeout(next, year);
+                if (next.get(Calendar.YEAR) == year) {
+                    break;
+                }
             }
         }
 
+        return next;
+    }
+
+
+    /**
+     * Returns the Date of the next possible timeout for a specific
+     * year value and starting date. If year is 0, any year will be correct.
+     */
+    public Calendar getNextTimeout(Calendar next, int year) {
         while (end_ == null || !next.getTime().after(end_)) {
 
             if (year != 0 && next.get(Calendar.YEAR) > year) {
@@ -439,12 +484,14 @@ public class TimerSchedule implements Serializable {
      */
     private void configure() {
         // XXX Can it ever be called by different threads?
+
         parseNumbersOrNames(second_, seconds, 0, 60, false, SECOND);
         parseNumbersOrNames(minute_, minutes, 0, 60, false, MINUTE);
         parseNumbersOrNames(hour_, hours, 0, 24, false, HOUR);
         parseNumbersOrNames(dayOfWeek_, daysOfWeek, 0, 7, true, DAY_OF_WEEK);
         parseNumbersOrNames(month_, months, 1, 12, false, MONTH);
         parseDaysOfMonth();
+        parseYears();
 
         configured = true;
     }
@@ -457,7 +504,13 @@ public class TimerSchedule implements Serializable {
             int start, int size, boolean useCalendarValue, String field) {
         // All
         if (s.equals("*")) {
-            bits.set(0, size);
+            if (!useCalendarValue) {
+                bits.set(0, size);
+            } else {
+                for (int i = start; i <= size; i++) {
+                    bits.set(conversionTable.get(i));
+                }
+            }
             return;
         }
 
@@ -475,7 +528,16 @@ public class TimerSchedule implements Serializable {
             String[] arr = splitBy(s, rangeChar);
             int begin = getNumericValue(arr[0], start, size, useCalendarValue, field);
             int end = getNumericValue(arr[1], start, size, useCalendarValue, field);
-            setBitsRange(bits, begin, end);
+            if (!useCalendarValue && (begin < 0 || end < begin)) {
+                throw new IllegalArgumentException("Invalid " + field + " range: " + s);
+            }
+
+            if (useCalendarValue && end == Calendar.SUNDAY) {
+                bits.set(end);
+                end = conversionTable.get(size-1);
+            }
+
+            setBitsRange(bits, begin, end); // start, size
             return;
         }
 
@@ -506,16 +568,14 @@ public class TimerSchedule implements Serializable {
      * or a case insensitive abbreviated name.
      */
     private void parseDaysOfMonth() {
-        String s = dayOfMonth_.trim();
-
         // All
-        if (s.equals("*")) {
+        if (dayOfMonth_.equals("*")) {
             daysOfMonth.set(1, 32);
             return;
         }
 
         // List
-        if (s.indexOf(',') > 0) {
+        if (dayOfMonth_.indexOf(',') > 0) {
             String[] arr = splitList(dayOfMonth_);
             for (String s0 : arr) {
                 processDayOfMonth(s0);
@@ -524,19 +584,19 @@ public class TimerSchedule implements Serializable {
         }
 
         // Range
-        if (s.indexOf(rangeChar, 1) > 0) {
+        if (dayOfMonth_.indexOf(rangeChar, 1) > 0) {
             if (simpleRangePattern.matcher(dayOfMonth_).matches()) {
                 // If these are positive numbers or a range from a positive
                 // number to the last day of the month - process them now
-                String[] arr = splitBy(s, rangeChar);
-                int begin = Integer.parseInt(arr[0]);
+                String[] arr = splitBy(dayOfMonth_, rangeChar);
+                int begin = parseInt(arr[0], DAY_OF_MONTH);
                 int end = 31;
                 if (positivePattern.matcher(arr[1]).matches()) {
-                    end = Integer.parseInt(arr[1]);
+                    end = parseInt(arr[1], DAY_OF_MONTH);
                 }
 
-                if (begin < 0 || end < begin) {
-                    throw new IllegalArgumentException("Invalid dayOfMonth value: " + s);
+                if (begin < 1 || end < begin || end > 31) {
+                    throw new IllegalArgumentException("Invalid dayOfMonth range: " + dayOfMonth_);
                 }
 
                 setBitsRange(daysOfMonth, begin, end);
@@ -551,6 +611,48 @@ public class TimerSchedule implements Serializable {
 
         // Single value
         processDayOfMonth(dayOfMonth_);
+    }
+
+    /**
+     * Preprocess data that represents years.
+     * Input data can be one or more positive number, or a range of them.
+     */
+    private void parseYears() {
+        // All
+        if (year_.equals("*")) {
+            return;
+        }
+
+        // List
+        if (year_.indexOf(',') > 0) {
+            String[] arr = splitList(year_);
+            years = new int[arr.length];
+            for (int i = 0; i < arr.length; i++) {
+                years[i] = verifyYear(parseInt(arr[i], YEAR));
+            }
+
+            Arrays.sort(years);
+            return;
+        }
+
+        // Range
+        if (year_.indexOf(rangeChar, 1) > 0) {
+            String[] arr = splitBy(year_, rangeChar);
+            int begin = parseInt(arr[0], YEAR);
+            int end = parseInt(arr[1], YEAR);
+            if (begin > end) {
+                throw new IllegalArgumentException("Invalid year range: " + year_);
+            }
+
+            years = new int[end - begin + 1];
+            for (int i = begin; i <= end; i++) {
+                years[i - begin] = verifyYear(i);
+            }
+
+            return;
+        }
+
+        years = new int[] {verifyYear(parseInt(year_, YEAR))};
     }
 
     private boolean skipToNextValue(Calendar date, BitSet bits, int field, int highfiled) {
@@ -570,7 +672,7 @@ public class TimerSchedule implements Serializable {
             }
 
             if (nextvalue == -1) 
-                throw new IllegalStateException("Should not happen - no value found");
+                throw new IllegalArgumentException("Should not happen - no value found");
 
             date.set(field, nextvalue);
             changed = true;
@@ -607,8 +709,8 @@ public class TimerSchedule implements Serializable {
 
         int i = start;
         if (positivePattern.matcher(s).matches()) {
-            i = Integer.parseInt(s);
-            if (i < start || i > (start + size -1)) {
+            i = parseInt(s, field);
+            if (!useCalendarValue && (i < start || i > (start + size -1))) {
                 throw new IllegalArgumentException("Invalid " + field + " value: " + s);
             }
         } else {
@@ -619,7 +721,15 @@ public class TimerSchedule implements Serializable {
             i = val.intValue();
         }
 
-        return (useCalendarValue)? conversionTable.get(i) : i - start;
+        int result = i - start;
+        if (useCalendarValue) {
+            Integer val = conversionTable.get(i);
+            if (val == null) {
+                throw new IllegalArgumentException("Invalid " + field + " value: " + i);
+            }
+            result = val.intValue();
+        }
+        return result;
     }
 
     /**
@@ -631,14 +741,19 @@ public class TimerSchedule implements Serializable {
         String s0 = s.toLowerCase();
 
         if (positivePattern.matcher(s0).matches()) {
-             daysOfMonth.set(Integer.parseInt(s0));
+            int i = parseInt(s0, DAY_OF_MONTH);
+            if (i < 1 || i > 31) {
+                throw new IllegalArgumentException("Invalid dayOfMonth value: " + s0);
+            }
+
+            daysOfMonth.set(i);
         } else if (negativePattern.matcher(s0).matches()) {
-             dayBeforeEndOfMonth = Integer.parseInt(s0.substring(1));
+            dayBeforeEndOfMonth = parseInt(s0.substring(1), DAY_OF_MONTH);
         } else if (s0.equals("last")) {
-             lastDayOfMonth = true;
+            lastDayOfMonth = true;
         } else {
-             // Just remember - we'll process it later
-             daysOfWeekOrRangesOfDaysInMonth.add(s0);
+            // Just remember - we'll process it later
+            daysOfWeekOrRangesOfDaysInMonth.add(s0);
         }
     }
 
@@ -675,7 +790,7 @@ public class TimerSchedule implements Serializable {
      */
     private int getDayForDayOfMonth(Calendar date, String s) {
         if (positivePattern.matcher(s).matches()) {
-             return Integer.parseInt(s);
+             return parseInt(s, DAY_OF_MONTH);
         }
 
         Calendar testdate = (Calendar)date.clone();
@@ -685,20 +800,24 @@ public class TimerSchedule implements Serializable {
             return lastday;
 
         } else if (negativePattern.matcher(s).matches()) {
-             return lastday - Integer.parseInt(s.substring(1));
+            return lastday - parseInt(s.substring(1), DAY_OF_MONTH);
 
         } else if (orderedDayPattern.matcher(s).matches()) {
-             String arr[] = s.split("\\s");
-             int num = -1;
-             if (!arr[0].equals("last")) {
-                 num = Integer.parseInt(arr[0].substring(0, 1));
-             }
+            String arr[] = s.split("\\s");
+            int num = -1;
+            if (!arr[0].equals("last")) {
+                num = parseInt(arr[0].substring(0, 1), DAY_OF_MONTH);
+            }
 
-             // Convert name of the day to a number, then number to the
-             // Calendar's value for that day.
-             int day = conversionTable.get(conversionTable.get(arr[1]));
-
-             return getDayForDayOfWeek(testdate, lastday, day, num);
+            // Convert name of the day to a number, then number to the
+            // Calendar's value for that day.
+            Integer weekday = conversionTable.get(arr[1]);
+            if (weekday == null) {
+                throw new IllegalArgumentException("Invalid dayOfMonth value: " + s);
+            }
+             
+            int day = conversionTable.get(weekday);
+            return getDayForDayOfWeek(testdate, lastday, day, num);
         }
 
         throw new IllegalArgumentException("Invalid dayOfMonth value: " + s);
@@ -752,7 +871,7 @@ public class TimerSchedule implements Serializable {
 
             int begin = getDayForDayOfMonth(date, arr[0]);
             int end = getDayForDayOfMonth(date, arr[1]);
-            setBitsRange(bits, begin, end);
+            setBitsRange(bits, begin, end); // 1, getAc...
 
         } else {
             bits.set(getDayForDayOfMonth(date, s));
@@ -763,8 +882,51 @@ public class TimerSchedule implements Serializable {
      * Set bits on for all values between begin and end (inclusive).
      */
     private void setBitsRange(BitSet bits, int begin, int end) {
-        for (int i = begin; i <= end; i++) {
-            bits.set(i);
+        if (begin <= end) {
+            for (int i = begin; i <= end; i++) {
+                bits.set(i);
+            }
+/**
+        } else {
+            int last = bits.length();
+            for (int i = begin; i <= end; i++) {
+                bits.set(i);
+            }
+            for (int i = begin; i <= end; i++) {
+                bits.set(i);
+            }
+**/
+        }
+    }
+
+    /** 
+     * Convert a String to an int. Throws IllegalArgumentException instead of
+     * the NumberFormatException.
+     */
+    private int parseInt(String s, String field) {
+        try {
+            return Integer.parseInt(s);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid " + field + " value: " + s);
+        }
+    }
+
+    /**
+     * A valid year value is 4 digits after 1969
+     */
+    private int verifyYear(int y) {
+        if (y < 1970 || y > 9999) {
+            throw new IllegalArgumentException("Invalid year value: " + y);
+        }
+
+        return y;
+    }
+
+    /** Checks that a value is not null.
+     */
+    private void assertNotNull(String s, String field) {
+        if (s == null || s.length() == 0) {
+            throw new IllegalArgumentException("Invalid " + field + " value: " + s);
         }
     }
 }

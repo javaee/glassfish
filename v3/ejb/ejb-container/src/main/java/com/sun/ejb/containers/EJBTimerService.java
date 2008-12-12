@@ -64,6 +64,7 @@ import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.CreateException;
 import javax.ejb.TimerConfig;
+import javax.ejb.ScheduleExpression;
 
 import com.sun.enterprise.admin.monitor.callflow.RequestType;
 import com.sun.enterprise.admin.monitor.callflow.Agent;
@@ -1306,6 +1307,28 @@ public class EJBTimerService
 
         TimerState timer = getPersistentTimer(timerId);
         return timer.getInfo();
+    }
+
+    ScheduleExpression getScheduleExpression(TimerPrimaryKey timerId) throws FinderException {
+        
+        // Check non-persistent timers first
+        TimerSchedule ts = null;
+
+        RuntimeTimerState rt = getNonPersistentTimer(timerId);
+        if (rt != null) {
+            ts = rt.getTimerSchedule();
+        } else {
+
+            // @@@ We can't assume this server instance owns the persistent timer
+            // so always ask the database.  Investigate possible use of
+            // timer cache for optimization.
+
+            TimerState timer = getPersistentTimer(timerId);
+            ts = timer.getTimerSchedule();
+        }
+
+        return ts.getScheduleExpression();
+        
     }
 
     boolean isPersistent(TimerPrimaryKey timerId) throws FinderException {
