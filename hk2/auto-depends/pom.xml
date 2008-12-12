@@ -40,6 +40,13 @@
             </plugin>
         </plugins>
     </build>
+    <dependencies>
+   		<dependency>
+        	<groupId>com.sun.enterprise</groupId>
+            <artifactId>tiger-types-osgi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
     <profiles>
         <profile>
             <id>jdk5</id>
