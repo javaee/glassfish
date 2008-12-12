@@ -321,13 +321,6 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
             return null;
         }
 
-        if (!Boolean.valueOf(listener.getEnabled())) {
-            logger.info("Network listener " + listener.getId() +
-                    " on port " + listener.getPort() +
-                    " has been disabled");
-            return null;
-        }
-        
         // create the proxy for the port.
         GrizzlyProxy proxy = new GrizzlyProxy(this, listener, httpService);
         proxy.setVsMapper(new VirtualHostMapper(logger, listener));
