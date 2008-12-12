@@ -48,7 +48,9 @@ import org.jvnet.hk2.annotations.Lead;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Array;
+import java.lang.reflect.Type;
 import java.util.Collection;
+import org.jvnet.tiger_types.Types;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -116,6 +118,14 @@ public abstract class AbstractWombImpl<T> extends AbstractInhabitantImpl<T> impl
                     else
                         instances = habitat.getAllByType(ct);
                     return instances.toArray((Object[]) Array.newInstance(ct, instances.size()));
+                } else if (Types.isSubClassOf(type, Holder.class)){
+                    Type t = Types.getTypeArgument(((java.lang.reflect.Field) target).getGenericType(), 0);
+                    Class finalType = Types.erasure(t);
+                    if (habitat.isContract(finalType)) {
+                        return habitat.getInhabitants(finalType, target.getAnnotation(Inject.class).name());
+                    }
+                    return habitat.getInhabitantByType(finalType);
+
                 } else {
                     if(habitat.isContract(type))
                         // service lookup injection
