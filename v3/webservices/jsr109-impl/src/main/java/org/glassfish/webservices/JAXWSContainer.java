@@ -41,6 +41,7 @@ import com.sun.xml.ws.api.server.ResourceInjector;
 import com.sun.xml.ws.api.server.WSEndpoint;
 import javax.servlet.ServletContext;
 import com.sun.xml.ws.transport.http.servlet.ServletModule;
+import com.sun.xml.ws.transport.http.servlet.ServletAdapter;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import org.glassfish.internal.api.Globals;
 import org.jvnet.hk2.component.Habitat;
@@ -65,11 +66,11 @@ public class JAXWSContainer extends Container {
        
     }
     
-    public void addEndpoint(WSEndpoint wsEndpoint) {
+    public void addEndpoint( ServletAdapter adapter) {
   
         if (module != null) {
             module.addEndpoint(endpoint.getEndpointAddressUri(), 
-                                   wsEndpoint);
+                                    adapter);
         }
 
     }

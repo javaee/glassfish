@@ -10,6 +10,7 @@ import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.api.server.ResourceInjector;
 import javax.servlet.ServletContext;
 import com.sun.xml.ws.transport.http.servlet.ServletModule;
+import com.sun.xml.ws.transport.http.servlet.ServletAdapter;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.server.BoundEndpoint;
@@ -62,8 +63,8 @@ public class JAXWSServletModule extends ServletModule {
             this.contextPath = contextPath;
     }
   
-    public void addEndpoint(String uri, WSEndpoint endpoint) {
-        endpoints.put(uri, new JAXWSBoundEndpoint(uri, endpoint));
+    public void addEndpoint(String uri, ServletAdapter adapter) {
+        endpoints.put(uri, adapter);
     }
     
     public @NotNull List<BoundEndpoint> getBoundEndpoints() {
@@ -74,38 +75,5 @@ public class JAXWSServletModule extends ServletModule {
         return contextPath;
     }
     
-    private static class JAXWSBoundEndpoint 
-            implements BoundEndpoint {
-        
-        private final String address;
-        private final WSEndpoint endpoint;
-        
-        public JAXWSBoundEndpoint(String address,
-                WSEndpoint endpoint){
-            this.address = address;
-            this.endpoint = endpoint;
-        }
-        
-        @NotNull public WSEndpoint getEndpoint() {
-            return endpoint;
-        }
-        @NotNull public URI getAddress() {
-            return stringToURI(address);
-        }
-        @NotNull public URI getAddress(String baseAddress) {
-            //this seems strange
-            return stringToURI(address);
-        }
-         
-        /**
-         * Helper class that deals with the awkward URISyntaxException
-         */
-        private final URI stringToURI(String s) {
-            try {
-                return new URI(s);
-            } catch (URISyntaxException e) {
-                return null;
-            }
-        }
-    }
+   
 }
