@@ -83,12 +83,13 @@ public class DynamicConfigListener implements ConfigListener {
                         // Restart GrizzlyProxy on the port
                         // Port number or id could be changed - so try to find
                         // corresponding proxy both ways
-                        if (grizzlyService.removeNetworkProxy(listenerPort) ||
-                                grizzlyService.removeNetworkProxy(listener.getId())) {
-                            grizzlyService.createNetworkProxy(listener,
-                                    httpService);
-                            grizzlyService.registerNetworkProxy(listenerPort);
-                        }
+                        boolean isRemovedOld =
+                                grizzlyService.removeNetworkProxy(listenerPort) ||
+                                grizzlyService.removeNetworkProxy(listener.getId());
+
+                        grizzlyService.createNetworkProxy(listener,
+                                httpService);
+                        grizzlyService.registerNetworkProxy(listenerPort);
                     }
                     return null;
                 }
