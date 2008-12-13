@@ -64,6 +64,12 @@ public class EmbeddedMain {
             if(Boolean.parseBoolean(params.get("help")))
                 usage();
 
+            if(Boolean.parseBoolean(params.get("log"))) {
+                LoggerHelper.info("log_msg");
+                LoggerHelper.stopConsoleLogging();
+                LoggerHelper.startFileLogging();
+            }
+
             LoggerHelper.fine("params size = " + params.size());
             Set<Map.Entry<String,String>> set = params.entrySet();
             
@@ -203,6 +209,7 @@ public class EmbeddedMain {
         new Arg("port",             "p",            "" + ServerConstants.DEFAULT_HTTP_PORT,        "HTTP Port"),
         new Arg("dir",              "d",            false,                                         "Filesystem Directory"),
         new Arg("xml",              "x",            false,                                         "domain.xml filename or URL"),
+        new BoolArg("log",          "l",            false,                                         "Send logging to gfe.log"),
         new BoolArg("help",         "h",            false,                                         "Help"),
 
         // note that --autodelete is NOT a bool arg

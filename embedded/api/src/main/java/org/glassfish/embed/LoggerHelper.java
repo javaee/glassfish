@@ -44,6 +44,8 @@
  */
 package org.glassfish.embed;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.logging.*;
 
 // Resource Bundle:
@@ -134,5 +136,54 @@ class LoggerHelper {
             }
         }
     }
+
+    ///////////////////////////////////////////////////////////////////////////
+
+    final static void startFileLogging() {
+        setLogFile(getGfeLogPath());
+    }
+
+    final static void stopConsoleLogging() {
+        for (Handler h  : rootLogger.getHandlers()) {
+            if (h instanceof ConsoleHandler) {
+                rootLogger.removeHandler(h);
+            }
+        }
+
+    }
+
+    final static void setRootLoggerLevel(Level level) {
+        // This will log records from all loggers including GFv3 loggers
+        // to a log file gfe/gfe.log. By default
+        rootLogger.setLevel(level);
+    }
+
+    final static void setLogFile(String logFile) {
+        FileHandler fh = null;
+        try {
+            fh = new FileHandler(logFile);
+        } catch (IOException ex) {
+            Logger.getLogger(LoggerHelper.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SecurityException ex) {
+            Logger.getLogger(LoggerHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if (fh != null) {
+            fh.setFormatter(new SimpleFormatter());
+            rootLogger.addHandler(fh);
+        }
+    }
+
+    public static String getGfeLogPath() {
+        try {
+            return EmbeddedFileSystem.getInstallRoot().getCanonicalPath() +
+                    File.separator + GFE_LOG;
+        } catch (IOException ex) {
+            Logger.getLogger(LoggerHelper.class.getName()).log(Level.SEVERE, null, ex);
+            return GFE_LOG;
+        }
+    }
+
+    private static Logger rootLogger = Logger.getLogger("");
+    public static final String GFE_LOG = "gfe.log";
 }
 
