@@ -16,6 +16,7 @@ import org.glassfish.embed.EmbeddedException;
 import org.glassfish.embed.EmbeddedInfo;
 import org.glassfish.embed.Server;
 import org.glassfish.embed.StringHelper;
+import org.glassfish.embed.LoggerHelper;
 import org.glassfish.embed.util.EmbeddedUtils;
 
 /**
@@ -39,7 +40,8 @@ public class EmbeddedCommandRunner extends CommandRunner{
 
         if(commandName.equals("stop-domain")) {
             System.out.println("Stopping Embedded Server");
-            System.exit(1);
+            LoggerHelper.info("TEST -- stop-domain did not SysExit out!!!!");
+            //System.exit(1);
         }
 
         return super.doCommand(commandName, command, parameters, report, uploadedFiles);

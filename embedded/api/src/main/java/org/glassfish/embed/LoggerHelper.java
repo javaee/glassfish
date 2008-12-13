@@ -50,19 +50,19 @@ import java.util.logging.*;
 
 // Resource Bundle:
 // com/sun/logging/enterprise/system/tools/deployment/backend/LogStrings.properties
-class LoggerHelper {
+public class LoggerHelper {
 
     private LoggerHelper() {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    final static Logger get() {
+    public final static Logger get() {
         // the final should cause this to be inlined...
         return logger;
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    final static void setLevel(Level newLevel) {
+    public final static void setLevel(Level newLevel) {
         // the final should cause this to be inlined...
         logger.setLevel(newLevel);
     }
@@ -70,51 +70,51 @@ class LoggerHelper {
     ///////////////////////////////////////////////////////////////////////////
     ////////         Convenience methods        ///////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
-    final static void finest(String s) {
+    public final static void finest(String s) {
         logger.finest(s);
     }
 
-    final static void finest(String s, Object o) {
+    public final static void finest(String s, Object o) {
         logger.log(Level.FINEST, s, new Object[]{o});
     }
 
-    final static void finer(String s) {
+    public final static void finer(String s) {
         logger.finer(s);
     }
 
-    final static void finer(String s, Object o) {
+    public final static void finer(String s, Object o) {
         logger.log(Level.FINER, s, new Object[]{o});
     }
 
-    final static void fine(String s) {
+    public final static void fine(String s) {
         logger.fine(s);
     }
 
-    final static void fine(String s, Object o) {
+    public final static void fine(String s, Object o) {
         logger.log(Level.FINE, s, new Object[]{o});
     }
 
-    final static void info(String s) {
+    public final static void info(String s) {
         logger.info(s);
     }
 
-    final static void info(String s, Object o) {
+    public final static void info(String s, Object o) {
         logger.log(Level.INFO, s, new Object[]{o});
     }
 
-    final static void warning(String s) {
+    public final static void warning(String s) {
         logger.warning(s);
     }
 
-    final static void warning(String s, Object o) {
+    public final static void warning(String s, Object o) {
         logger.log(Level.WARNING, s, new Object[]{o});
     }
 
-    final static void severe(String s) {
+    public final static void severe(String s) {
         logger.severe(s);
     }
 
-    final static void severe(String s, Object o) {
+    public final static void severe(String s, Object o) {
         logger.log(Level.SEVERE, s, new Object[]{o});
     }
     
@@ -139,11 +139,11 @@ class LoggerHelper {
 
     ///////////////////////////////////////////////////////////////////////////
 
-    final static void startFileLogging() {
+    public final static void startFileLogging() {
         setLogFile(getGfeLogPath());
     }
 
-    final static void stopConsoleLogging() {
+    public final static void stopConsoleLogging() {
         for (Handler h  : rootLogger.getHandlers()) {
             if (h instanceof ConsoleHandler) {
                 rootLogger.removeHandler(h);
@@ -152,13 +152,13 @@ class LoggerHelper {
 
     }
 
-    final static void setRootLoggerLevel(Level level) {
+    public final static void setRootLoggerLevel(Level level) {
         // This will log records from all loggers including GFv3 loggers
         // to a log file gfe/gfe.log. By default
         rootLogger.setLevel(level);
     }
 
-    final static void setLogFile(String logFile) {
+    public final static void setLogFile(String logFile) {
         FileHandler fh = null;
         try {
             fh = new FileHandler(logFile);
