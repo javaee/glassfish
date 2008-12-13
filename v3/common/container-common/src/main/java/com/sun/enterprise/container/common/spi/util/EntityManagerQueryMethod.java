@@ -121,5 +121,11 @@ public enum EntityManagerQueryMethod {
         public String toString() {
             return "setFlushMode(FlushModeType flushMode)";
         }
+    },
+
+    SET_LOCK_MODE {
+        public String toString() {
+            return "setLock(LockModeType lockMode)";
+        }
     }
 }

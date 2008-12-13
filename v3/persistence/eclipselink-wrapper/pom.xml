@@ -101,16 +101,4 @@
             <scope>compile</scope>
         </dependency>
     </dependencies>
-    <repositories>
-        <repository>
-            <id>glassfish-repo-archive</id>
-            <name>Nexus repository collection for Glassfish</name>
-            <url>http://maven.glassfish.org/content/groups/glassfish</url>
-        </repository>
-        <repository>
-           <id>EclipseLink Repo</id>
-           <!-- <url>http://www.eclipse.org/downloads/download.php?r=1&amp;nf=1&amp;file=/technology/eclipselink/maven.repo</url> -->
-           <url>http://download.eclipse.org/rt/eclipselink/maven.repo</url>
-        </repository>
-    </repositories>
 </project>

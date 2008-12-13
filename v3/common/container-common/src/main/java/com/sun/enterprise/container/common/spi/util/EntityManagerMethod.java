@@ -69,6 +69,18 @@ public enum EntityManagerMethod {
         }
     },
 
+    FIND_CLASS_OBJECT_LOCKMODETYPE {
+        public String toString() {
+            return "find(Class<T> entityClass, Object primaryKey, LockModeType lockMode)";
+        }
+    },
+
+    FIND_CLASS_OBJECT_LOCKMODETYPE_PROPERTIES {
+        public String toString() {
+            return "find(Class<T> entityClass, Object primaryKey, LockModeType lockMode, Map properties)";
+        }
+    },
+
     GET_REFERENCE {
         public String toString() {
             return "getReference(Class<T> entityClass, Object primaryKey)";
@@ -99,12 +111,30 @@ public enum EntityManagerMethod {
         }
     },
 
+    LOCK_LOCKMODETYPE_MAP {
+        public String toString() {
+            return "Object entity, LockModeType lockMode, Map properties";
+        }
+    },
+
     REFRESH {
         public String toString() {
             return "refresh(Object entity)";
         }
     },
-    
+
+    REFRESH_OBJECT_LOCKMODETYPE {
+        public String toString() {
+            return "refresh(Object entity, LockModeType lockMode)";
+        }
+    },
+
+    REFRESH_OBJECT_LOCKMODETYPE_MAP {
+        public String toString() {
+            return "refresh(Object entity, LockModeType lockMode, Map properties)";
+        }
+    },
+
     CLEAR {
         public String toString() {
             return "clear()";

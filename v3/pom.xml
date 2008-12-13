@@ -148,6 +148,7 @@
 	<ucbootstrap.version>0.0.0.15</ucbootstrap.version>
         <webservices.version>1.4-SNAPSHOT</webservices.version>
         <jaxb.version>2.1.9-SNAPSHOT</jaxb.version>
+        <javax-persistence-api.version>1.1.0-M5</javax-persistence-api.version>
     </properties>
 
 
@@ -239,6 +240,16 @@
             <id>glassfish-repository</id>
             <name>Java.net Repository for Glassfish</name>
             <url>http://download.java.net/maven/glassfish</url>
+            <snapshots>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+        </repository>
+        <repository>
+            <!-- EclipseLink repository used to pull in javax.persistence and EclipseLink jars -->
+            <id>EclipseLink Repo</id>
+            <name>EclipseLink maven repo</name>
+            <!-- <url>http://www.eclipse.org/downloads/download.php?r=1&amp;nf=1&amp;file=/technology/eclipselink/maven.repo</url> -->
+             <url>http://download.eclipse.org/rt/eclipselink/maven.repo</url>
             <snapshots>
                 <updatePolicy>never</updatePolicy>
             </snapshots>

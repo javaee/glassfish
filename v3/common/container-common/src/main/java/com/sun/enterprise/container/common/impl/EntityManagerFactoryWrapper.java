@@ -45,6 +45,7 @@ import org.glassfish.api.invocation.InvocationManager;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Cache;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
@@ -108,6 +109,10 @@ public class EntityManagerFactoryWrapper
 
     public boolean isOpen() {
         return getDelegate().isOpen();
+    }
+
+    public Cache getCache() {
+        return getDelegate().getCache();
     }
 
 

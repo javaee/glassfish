@@ -436,6 +436,39 @@ public class QueryWrapper implements Query {
         return this;
     }
 
+    public Query setLockMode(LockModeType lockModeType) {
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.SET_LOCK_MODE);
+            }
+            Query delegate = getQueryDelegate();
+            delegate.setLockMode(lockModeType);
+
+            SetterData setterData = SetterData.createLockMode(lockModeType);
+            setterInvocations.add(setterData);
+        } finally {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryEnd();
+            }
+        }
+
+        return this;
+    }
+
+    public LockModeType getLockMode() {
+        LockModeType lockMode = null;
+        if(queryDelegate != null) {
+            lockMode = queryDelegate.getLockMode();
+        } else {
+            for (SetterData setterInvocation : setterInvocations) {
+                if(setterInvocation.type == SetterType.LOCK_MODE)
+                    // do not break. Let the last setterInvocation win
+                    lockMode = setterInvocation.lockMode;
+            }
+        }
+        return lockMode;
+    }
+
     private void clearDelegates() {
 
         queryDelegate = null;
@@ -521,7 +554,8 @@ public class QueryWrapper implements Query {
         PARAM_POSITION_OBJECT,
         PARAM_POSITION_DATE_TEMPORAL,
         PARAM_POSITION_CAL_TEMPORAL,
-        FLUSH_MODE
+        FLUSH_MODE,
+        LOCK_MODE
 
     }
 
@@ -538,6 +572,8 @@ public class QueryWrapper implements Query {
         TemporalType temporalType;
 
         FlushModeType flushMode;
+
+        LockModeType lockMode;
 
         static SetterData createMaxResults(int maxResults) {
             SetterData data = new SetterData();
@@ -630,6 +666,15 @@ public class QueryWrapper implements Query {
 
         }
         
+        static SetterData createLockMode(LockModeType lockMode) {
+
+            SetterData data = new SetterData();
+            data.type = SetterType.LOCK_MODE;
+            data.lockMode = lockMode;
+            return data;
+
+        }
+
         void apply(Query query) {
 
             switch(type) {
@@ -683,6 +728,11 @@ public class QueryWrapper implements Query {
                 
                 query.setFlushMode(flushMode);
                 break;
+
+            case LOCK_MODE :
+
+                    query.setLockMode(lockMode);
+                    break;
 
             }
         }

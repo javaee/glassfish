@@ -39,7 +39,6 @@ import com.sun.enterprise.container.common.spi.JavaEEContainer;
 import com.sun.enterprise.container.common.spi.util.CallFlowAgent;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.container.common.spi.util.EntityManagerMethod;
-import com.sun.enterprise.deployment.types.EntityManagerReference;
 import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.invocation.ComponentInvocation;
@@ -318,6 +317,44 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
         return returnValue;
     }
 
+    public <T> T find(Class<T> entityClass, Object primaryKey, LockModeType lockMode) {
+        T returnValue = null;
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodStart(EntityManagerMethod.FIND_CLASS_OBJECT_LOCKMODETYPE);
+            }
+            returnValue = _getDelegate().find(entityClass, primaryKey, lockMode);
+        } finally {
+            if( nonTxEntityManager != null ) {
+                cleanupNonTxEntityManager();
+            }
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodEnd();
+            }
+        }
+        return returnValue;
+    }
+
+    public <T> T find(Class<T> entityClass, Object primaryKey, LockModeType lockMode, Map properties) {
+        T returnValue = null;
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodStart(EntityManagerMethod.FIND_CLASS_OBJECT_LOCKMODETYPE_PROPERTIES);
+            }
+            returnValue = _getDelegate().find(entityClass, primaryKey, lockMode, properties);
+        } finally {
+            if( nonTxEntityManager != null ) {
+                cleanupNonTxEntityManager();
+            }
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodEnd();
+            }
+        }
+        return returnValue;
+    }
+
     public <T> T getReference(Class<T> entityClass, Object primaryKey) {
         T returnValue = null;
 
@@ -520,7 +557,7 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
 
     public void refresh(Object entity) {
         doTransactionScopedTxCheck();
-        
+
 
         try {
             if(callFlowAgent.isEnabled()) {
@@ -533,6 +570,40 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
             }
         }
         
+        // tx is required so there's no need to do any non-tx cleanup
+    }
+
+    public void refresh(Object entity, LockModeType lockMode) {
+        doTransactionScopedTxCheck();
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodStart(EntityManagerMethod.REFRESH_OBJECT_LOCKMODETYPE);
+            }
+            _getDelegate().refresh(entity, lockMode);
+        } finally {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodEnd();
+            }
+        }
+
+        // tx is required so there's no need to do any non-tx cleanup
+    }
+
+    public void refresh(Object entity, LockModeType lockMode, Map properties) {
+        doTransactionScopedTxCheck();
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodStart(EntityManagerMethod.REFRESH_OBJECT_LOCKMODETYPE_MAP);
+            }
+            _getDelegate().refresh(entity, lockMode, properties);
+        } finally {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodEnd();
+            }
+        }
+
         // tx is required so there's no need to do any non-tx cleanup
     }
 
@@ -598,6 +669,23 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
                 callFlowAgent.entityManagerMethodStart(EntityManagerMethod.LOCK);
             }
             _getDelegate().lock(entity, lockMode);
+        } finally {
+            if( nonTxEntityManager != null ) {
+                cleanupNonTxEntityManager();
+            }
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodEnd();
+            }
+        }
+    }
+
+    public void lock(Object entity, LockModeType lockMode, Map properties) {
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodStart(EntityManagerMethod.LOCK_LOCKMODETYPE_MAP);
+            }
+            _getDelegate().lock(entity, lockMode, properties);
         } finally {
             if( nonTxEntityManager != null ) {
                 cleanupNonTxEntityManager();

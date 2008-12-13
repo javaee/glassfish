@@ -51,7 +51,6 @@
     <modules>
         <module>jpa-connector</module>
         <module>eclipselink-wrapper</module>
-        <module>javax.persistence</module>
     </modules>
     <repositories>
         <repository>
