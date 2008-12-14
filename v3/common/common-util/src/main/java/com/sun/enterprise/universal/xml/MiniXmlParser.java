@@ -142,30 +142,19 @@ public class MiniXmlParser {
         try {
             // this will fail if config is above servers in domain.xml!
             getConfig(); // might throw
-            findDomainName();
-            findDomainEnd();
+            findDomainNameAndEnd();
             return;
         }
         catch (EndDocumentException ex) {
             createParser();
             skipRoot("domain");
             getConfig();
-            findDomainName();
-            findDomainEnd();
+            findDomainNameAndEnd();
             Logger.getLogger(MiniXmlParser.class.getName()).log(
                     Level.WARNING, strings.get("secondpass"));
         }
     }
 
-    private void findDomainEnd() {
-        // make sure that </domain> is present
-        try {
-            skipToEnd("domain");
-        }
-        catch(Exception e) {
-            throw new RuntimeException(strings.get("noDomainEnd"));
-        }
-    }
     private void createParser() throws FileNotFoundException, XMLStreamException {
         domainXmlstream = new FileInputStream(domainXml);
         // In JDK 1.6, StAX is part of JRE, so we use no argument variant of
@@ -526,15 +515,21 @@ public class MiniXmlParser {
         System.out.println(sb.toString());
     }
 
-    private void findDomainName() throws XMLStreamException {
+    private void findDomainNameAndEnd() {
         try {
-            while(domainName == null) {
-                skipTo("property");
-                parseDomainName(); // maybe it is the domain name?
+            // find the domain name, if it is there
+            // If we bump into the domain end tag first -- no sweat
+            while (skipToButNotPast("domain", "property")) {
+                parseDomainName(); // property found -- maybe it is the domain name?
+            }
+            if(domainName == null) {
+                Logger.getLogger(MiniXmlParser.class.getName()).log(
+                    Level.INFO, strings.get("noDomainName"));
+
             }
         }
-        catch(EndDocumentException e) {
-            // not fatal -- I guess the domain name isn't in here
+        catch(Exception e) {
+            throw new RuntimeException(strings.get("noDomainEnd"));
         }
     }
 
