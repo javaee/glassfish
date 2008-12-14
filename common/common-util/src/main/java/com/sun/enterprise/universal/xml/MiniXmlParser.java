@@ -668,7 +668,6 @@ public class MiniXmlParser {
     private Map<String, String> sysProps = new HashMap<String, String>();
     private Map<String, String> profilerSysProps = new HashMap<String, String>();
     private boolean valid = false;
-    private boolean domainEndTagFound = false;
     private Set<Integer> adminPorts = new HashSet<Integer>();
     private String domainName;
     private String logFilename;
