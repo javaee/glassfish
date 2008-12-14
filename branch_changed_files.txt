@@ -46,3 +46,13 @@ D:\embedded_v3_prelude_release\admin>date
 The current date is: Mon 11/24/2008
 Enter the new date: (mm-dd-yy)
 
+
+
+==================================
+
+Made some changes tody in common/common-util (.../universal/xml).  
+rev 23851 --> 23920
+ALL CHANGES WERE MERGED INTO TRUNK!!!!
+
+===================================
+
