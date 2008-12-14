@@ -24,7 +24,6 @@ import static org.junit.Assert.*;
  * @author bnevins
  */
 public class MiniXmlParserTest {
-
     public MiniXmlParserTest() {
     }
 
@@ -46,10 +45,13 @@ public class MiniXmlParserTest {
            MiniXmlParserTest.class.getClassLoader().getResource("rightordernoclosedomain.xml").getPath());
         noCloseWrongOrder = new File(
            MiniXmlParserTest.class.getClassLoader().getResource("wrongordernoclosedomain.xml").getPath());
+        noDomainName = new File(
+           MiniXmlParserTest.class.getClassLoader().getResource("nodomainname.xml").getPath());
         assertTrue(wrongOrder.exists());
         assertTrue(rightOrder.exists());
         assertTrue(noconfig.exists());
         assertTrue(hasProfiler.exists());
+        assertTrue(noDomainName.exists());
     }
 
     @AfterClass
@@ -268,16 +270,26 @@ public class MiniXmlParserTest {
     
     /**
      * Test that the correct Exception is thrown for a "wrong-order"
-     * xml that has no /domain  element in it 
+     * xml that has no /domain  element in it
      * @throws com.sun.enterprise.universal.xml.MiniXmlParserException
      */
     @Test( expected=MiniXmlParserException.class)
     public void testNoClosingDomainWrongOrder() throws MiniXmlParserException {
             MiniXmlParser instance = new MiniXmlParser(noCloseWrongOrder, "server");
-        
+
     }
-    
-    
+
+
+    /**
+     * Test that not having a domain-name is not fatal
+     * @throws com.sun.enterprise.universal.xml.MiniXmlParserException
+     */
+    @Test
+    public void testNoDomainName() throws MiniXmlParserException {
+        MiniXmlParser instance = new MiniXmlParser(noDomainName, "server");
+    }
+
+
     
     private static File hasProfiler;
     private static File wrongOrder;
@@ -287,5 +299,6 @@ public class MiniXmlParserTest {
     private static File adminport2;
     private static File noCloseRightOrder;
     private static File noCloseWrongOrder;
+    private static File noDomainName;
 }
 
