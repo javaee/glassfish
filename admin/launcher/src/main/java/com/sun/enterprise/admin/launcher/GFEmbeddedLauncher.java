@@ -207,11 +207,14 @@ class GFEmbeddedLauncher extends GFLauncher{
     private static final String JAVA_HOME        = "JAVA_HOME";
     private static final String DOMAIN_DIR       = "GFE_DOMAIN";
     private static final String GENERAL_MESSAGE =
+            " *********  GENERAL MESSAGE ********\n" +
             "You must setup four different environmental variables to run embedded" +
             " with asadmin.  They are\n" +
             "GFE_JAR - path to the embedded jar\n" +
             "S1AS_HOME - path to installation directory.  This can be empty or not exist yet.\n" +
             "JAVA_HOME - path to a JDK installation.  JRE installation is generally not good enough\n" +
             "GFE_DOMAIN - path to the domain dir's config dir.  I.e. this is where the domain.xml will be written.\n" +
-            "GFE_DEBUG_PORT - optional debugging port.  It will start suspended.\n";
+            "GFE_DEBUG_PORT - optional debugging port.  It will start suspended.\n" +
+            "\n*********  SPECIFIC MESSAGE ********\n";
+
 }

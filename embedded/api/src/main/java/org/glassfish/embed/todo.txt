@@ -1,4 +1,14 @@
 TODO -- add the asadmin virt. server in code so that it will always be present even if user supplies an external domain.xml
 
+TODO
+package com.sun.enterprise.universal.glassfish;
+
+public class SystemPropertyConstants {
+public static final String DOMAINS_ROOT_PROPERTY =
+            "com.sun.aas.domainsRoot";
+
+
+-- need to set this up.  Need to put domain.xml in such a hierarchy.
+
 
 
