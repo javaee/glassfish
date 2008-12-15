@@ -6,6 +6,7 @@
 package org.glassfish.embed;
 
 import org.glassfish.api.ActionReport;
+import java.io.File;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,6 +34,10 @@ public class CommandExecutorTest {
         if(myGF == null) {
             EmbeddedInfo ei = new EmbeddedInfo();
             ei.setServerName("server");
+            EmbeddedFileSystem efs = new EmbeddedFileSystem();
+            efs.setRoot(new File("cetest"));
+            efs.setAutoDelete(true);
+            ei.setFileSystem(efs);
             myGF = new Server(ei);
         }
         try {

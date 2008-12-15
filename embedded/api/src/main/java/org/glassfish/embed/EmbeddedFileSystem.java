@@ -142,6 +142,8 @@ public final class EmbeddedFileSystem {
 
             if(!instanceRoot.equals(installRoot))
                 FileUtils.whack(instanceRoot);
+
+            defaultsAreInUse = false;
         }
     }
 
