@@ -303,7 +303,7 @@ public class Server {
      * Tweaks the 'recipe' --- for embedded use, we'd like GFv3 to behave a little bit
      * differently from normal stand-alone use.
      */
-    /*pkg-private*/ InhabitantsParser decorateInhabitantsParser(InhabitantsParser parser) {
+     protected InhabitantsParser decorateInhabitantsParser(InhabitantsParser parser) {
         // registering the server using the base class and not the current instance class
         // (GlassFish server may be extended by the user)
         parser.habitat.add(new ExistingSingletonInhabitant<Server>(Server.class, this));
