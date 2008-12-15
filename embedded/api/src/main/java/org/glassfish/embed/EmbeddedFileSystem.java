@@ -37,11 +37,11 @@
 package org.glassfish.embed;
 
 import static com.sun.enterprise.universal.glassfish.SystemPropertyConstants.*;
+import java.net.MalformedURLException;
 import static org.glassfish.embed.ServerConstants.*;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.util.io.FileUtils;
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -55,61 +55,98 @@ import java.net.URL;
  * @author bnevins
  */
 public final class EmbeddedFileSystem {
-
-    public static void setSystemProps() {
-        efs.setSystemPropsInternal();
+    public EmbeddedFileSystem() {
+        //defaultRoots.mkdirs();
+        //installRoot = defaultRoots;
+        //instanceRoot = defaultRoots;
+        //setSystemPropsInternal();
     }
 
-    public static File getInstallRoot() {
-        return efs.installRoot;
-    }
+    // ****************************************************
+    // *************    public setters
+    // ****************************************************
 
-    public static File getInstanceRoot() {
-        return efs.instanceRoot;
-    }
-
-    public static void setRoot(File f) throws EmbeddedException {
+    public void setRoot(File f) throws EmbeddedException {
         setInstallRoot(f);
         setInstanceRoot(f);
     }
     
-    public static void setInstallRoot(File f) throws EmbeddedException {
-        efs.installRoot = SmartFile.sanitize(f);
-
+    public void setInstallRoot(File f) throws EmbeddedException {
+        mustNotBeInitialized("setInstallRoot");
+        installRoot = SmartFile.sanitize(f);
         f.mkdirs();
 
         if (!f.isDirectory()) {
             throw new EmbeddedException("bad_install_root", f);
         }
-
-        efs.setSystemPropsInternal();
     }
 
-    public static void setInstanceRoot(File f) throws EmbeddedException {
-        efs.instanceRoot = SmartFile.sanitize(f);
-
+    public void setInstanceRoot(File f) throws EmbeddedException {
+        mustNotBeInitialized("setInstanceRoot");
+        instanceRoot = SmartFile.sanitize(f);
         f.mkdirs();
 
         if (!f.isDirectory()) {
             throw new EmbeddedException("bad_instance_root", f);
         }
-
-        efs.setSystemPropsInternal();
     }
 
-    public static void setAutoDelete(boolean b) {
-        efs.autoDelete = b;
+    public void setDomainXmlFile(File f) throws EmbeddedException {
+        mustNotBeInitialized("setDomainXmlFile");
+        domainXmlFile = SmartFile.sanitize(f);
     }
 
-    static void cleanup() {
-        if (efs.shouldCleanup()) {
+    public void setDomainXmlUrl(URL url) throws EmbeddedException {
+        mustNotBeInitialized("setDomainXmlUrl");
+        domainXmlUrl = url;
+    }
+
+    public void setAutoDelete(boolean b) throws EmbeddedException {
+        mustNotBeInitialized("setAutoDelete");
+        autoDelete = b;
+    }
+    // ****************************************************
+    // *************    public getters
+    // ****************************************************
+
+
+    public File getInstallRoot() throws EmbeddedException {
+        mustBeInitialized("getInstallRoot");
+        return installRoot;
+    }
+
+    public File getInstanceRoot() throws EmbeddedException {
+        mustBeInitialized("getInstanceRoot");
+        return instanceRoot;
+    }
+
+    public File getDomainXmlFile() throws EmbeddedException{
+        mustBeInitialized("getDomainXmlFile");
+        return domainXmlFile;
+    }
+
+    public URL getDomainXmlUrl() throws EmbeddedException{
+        mustBeInitialized("getDomainXmlUrl");
+        return domainXmlUrl;
+    }
+    // ****************************************************
+    // *************    package private. Think long and hard before making public!
+    // ****************************************************
+
+    void cleanup() throws EmbeddedException {
+        mustBeInitialized("cleanup");
+        if (shouldCleanup()) {
+            // note that Logger will not work now because the JVM has shut it down
             System.out.println("Cleaning up files");
-            FileUtils.whack(efs.installRoot);
-            FileUtils.whack(efs.instanceRoot);
+            FileUtils.whack(installRoot);
+
+            if(!instanceRoot.equals(installRoot))
+                FileUtils.whack(instanceRoot);
         }
     }
 
-    static URL getDomainXmlUrl() {
+    /*
+    URL getDomainXmlUrl() {
         File dom = new File(getInstanceRoot(), "domain.xml");
 
         if(!dom.exists())
@@ -121,37 +158,121 @@ public final class EmbeddedFileSystem {
             return null;
         }
     }
+    void validate() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+*/
 
-    private EmbeddedFileSystem() {
-        defaultRoots.mkdirs();
-        installRoot = defaultRoots;
-        instanceRoot = defaultRoots;
-        setSystemPropsInternal();
+    /* do NOT make this public!
+     * if user set their own stuff - just validate.  If not then setup defaults
+     * calling this method shuts the window on ALL setters so we don't have to
+     * worry about getting into a weird inconsistent state later.
+     */
+
+    void initialize() throws EmbeddedException {
+        if(instanceRoot == null || installRoot == null ) {
+            if(defaultsAreInUse)
+                throw new EmbeddedException("EFS_defaults_in_use");
+            defaultsAreInUse = true;
+        }
+
+        if(installRoot == null)
+            setInstallRoot(defaultInstallRoot);
+
+        if(instanceRoot == null)
+            setInstanceRoot(new File(installRoot, DEFAULT_PATH_TO_INSTANCE));
+
+        initializeDomainXml(); // very complicated!!
+        setSystemProps();
+
+        initialized = true;
     }
 
-    private void setSystemPropsInternal() {
+    // ****************************************************
+    // *************    private
+    // ****************************************************
+
+
+    /**
+     * The idea here is that the Url ALWAYS points at the source of data.
+     * the File always points t where on disk the data will be written to (and
+     * maybe is the source of data)
+     * @throws org.glassfish.embed.EmbeddedException
+     */
+    private void initializeDomainXml() throws EmbeddedException {
+        if(domainXmlFile != null) {
+            try {
+                // File yes, url yes
+                if (domainXmlUrl != null)
+                    throw new EmbeddedException("EFS_two_domain");
+
+                // File yes, url no
+                if (!ok(domainXmlFile))
+                    throw new EmbeddedException("EFS_bad_domain_xml_file", domainXmlFile);
+
+                domainXmlUrl = domainXmlFile.toURI().toURL();
+            }
+            catch(MalformedURLException ex) {
+                throw new EmbeddedException("EFS_error_making_URL", domainXmlFile, ex.toString());
+            }
+        }
+        else {
+            domainXmlFile = new File(instanceRoot, DEFAULT_PATH_TO_DOMAIN_XML);
+
+            if(domainXmlUrl == null) {
+                domainXmlUrl = DEFAULT_DOMAIN_XML_URL;
+            }
+        }
+        File parent = new File(domainXmlFile, "..");
+        parent.mkdirs();
+    }
+
+    private void setSystemProps() {
         System.setProperty(INSTANCE_ROOT_PROPERTY, instanceRoot.getPath());
         System.setProperty(INSTALL_ROOT_PROPERTY, installRoot.getPath());
 
         System.setProperty(INSTANCE_ROOT_URI_PROPERTY, instanceRoot.toURI().toString());
         System.setProperty(INSTALL_ROOT_URI_PROPERTY, installRoot.toURI().toString());
+
+        // Surprisingly this is the most reliable way to get parent with JDK!
+        File domainsDir = SmartFile.sanitize(new File(instanceRoot, ".."));
+        
+        System.setProperty(DOMAINS_ROOT_PROPERTY, domainsDir.getPath());
     }
 
     private boolean shouldCleanup() {
         // don't EVER delete if the flag is false!!!
-        // don't EVER delete if they specified a directory
+        // don't EVER delete if they specified either directory
 
         if(autoDelete == true &&
-                defaultRoots.equals(installRoot)    &&
-                defaultRoots.equals(instanceRoot))
+                defaultInstallRoot.equals(installRoot)    &&
+                defaultInstanceRoot.equals(instanceRoot))
             return true;
 
         return false;
     }
 
-    private static final File defaultRoots = SmartFile.sanitize(new File("gfe"));
-    private static final EmbeddedFileSystem efs = new EmbeddedFileSystem();
-    private File installRoot;
-    private File instanceRoot;
-    private boolean autoDelete = true;
+    private void mustBeInitialized(String name) throws EmbeddedException {
+        if(!initialized)
+            throw new EmbeddedException("must_be_initialized", name);
+    }
+
+    private void mustNotBeInitialized(String name) throws EmbeddedException {
+        if(initialized)
+            throw new EmbeddedException("must_not_be_initialized", name);
+    }
+
+    private boolean ok(File f) {
+        return f.length() > 0L;
+    }
+
+    private static final File   defaultInstallRoot     = SmartFile.sanitize(new File(DEFAULT_GFE_DIR));
+    private static final File   defaultInstanceRoot    = SmartFile.sanitize(new File(defaultInstallRoot, "domains/domain1"));
+    private static boolean      defaultsAreInUse        = false;
+    private File                installRoot;
+    private File                instanceRoot;
+    private File                domainXmlFile;
+    private URL                 domainXmlUrl;
+    private boolean             autoDelete      = true;
+    private boolean             initialized     = false;
 }

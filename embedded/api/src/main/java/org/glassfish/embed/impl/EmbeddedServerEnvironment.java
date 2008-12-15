@@ -46,8 +46,12 @@ import org.glassfish.embed.EmbeddedFileSystem;
  * @author Kohsuke Kawaguchi
  */
 public class EmbeddedServerEnvironment extends ServerEnvironmentImpl {
+    public static void setInstallRoot(File theInstallRoot) {
+        installRoot = theInstallRoot;
+    }
     public EmbeddedServerEnvironment() {
         // TODO: we really don't want to have domainRoot, so it should be eventually just null or something
-        super(EmbeddedFileSystem.getInstallRoot());
+        super(installRoot);
     }
+    private static File installRoot;
 }

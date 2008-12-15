@@ -49,11 +49,18 @@ import static org.glassfish.embed.ServerConstants.*;
  * @author bnevins
  */
 public class EmbeddedInfo {
-
     public EmbeddedInfo() {
         
     }
-    
+
+    public void setFileSystem(EmbeddedFileSystem efs) {
+        this.efs = efs;
+    }
+
+    public EmbeddedFileSystem getFileSystem() {
+        return efs;
+    }
+
     public void addArchive(File f) {
         archives.add(f);
     }
@@ -72,10 +79,6 @@ public class EmbeddedInfo {
         httpPort = port;
     }
 
-    public void setDomainXmlUrl(URL dx) {
-        domainXmlUrl = dx;
-    }
-
     public void setServerName(String newName) {
         if(StringUtils.ok(newName))
             name = newName;
@@ -83,19 +86,9 @@ public class EmbeddedInfo {
 
 
     public void validate() throws EmbeddedException {
-
-        /* bnevins 11-18-08, no longer require an app right away.
-         if(!isDeployable())
-            throw new EmbeddedException("nothing_to_do");
-         */
-
         validateArchives();
         validatePort();
         validateFilesystem();
-    }
-
-    public void setFileSystemRoot(File f) throws EmbeddedException {
-        EmbeddedFileSystem.setRoot(f);
     }
 
     @Override
@@ -115,8 +108,7 @@ public class EmbeddedInfo {
     List<File>              archives         = new LinkedList<File>(); 
     List<ReadableArchive>   readableArchives = new LinkedList<ReadableArchive>();
     List<ScatteredWar>      scatteredWars    = new LinkedList<ScatteredWar>();
-    URL                     domainXmlUrl;
-
+    EmbeddedFileSystem      efs;
 
     //////////////////////  all private below //////////////////////
 
@@ -128,8 +120,11 @@ public class EmbeddedInfo {
         }
     }
 
-    private void validateFilesystem() {
-        //throw new UnsupportedOperationException("Not yet implemented");
+    private void validateFilesystem() throws EmbeddedException {
+        if(efs == null) {
+            efs = new EmbeddedFileSystem();
+        }
+        efs.initialize();
     }
     
     private void validatePort() throws EmbeddedException {

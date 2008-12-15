@@ -41,10 +41,13 @@ import java.io.*;
 import java.io.IOException;
 import java.net.URL;
 import java.net.MalformedURLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import org.glassfish.config.support.ConfigurationPersistence;
+import org.glassfish.embed.EmbeddedException;
 import org.glassfish.embed.Server;
 import org.jvnet.hk2.config.DomDocument;
 import org.jvnet.hk2.annotations.Inject;
@@ -67,8 +70,13 @@ public class EmbeddedDomainXml extends DomainXml implements ConfigurationPersist
 
     @Override
     protected URL getDomainXml(ServerEnvironmentImpl env) {
+        try {
 //        return getClass().getResource("/org/glassfish/embed/domain.xml");
-        return server.getDomainXml();
+            return server.getDomainXmlUrl();
+        }
+        catch (EmbeddedException ex) {
+            return null;
+        }
     }
 
     public void save(DomDocument doc) throws IOException, XMLStreamException {

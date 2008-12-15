@@ -173,14 +173,9 @@ public class LoggerHelper {
         }
     }
 
+
     public static String getGfeLogPath() {
-        try {
-            return EmbeddedFileSystem.getInstallRoot().getCanonicalPath() +
-                    File.separator + GFE_LOG;
-        } catch (IOException ex) {
-            Logger.getLogger(LoggerHelper.class.getName()).log(Level.SEVERE, null, ex);
             return GFE_LOG;
-        }
     }
 
     private static Logger rootLogger = Logger.getLogger("");

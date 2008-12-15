@@ -37,6 +37,8 @@
 
 package org.glassfish.embed;
 
+import java.net.*;
+
 /**
  *
  * @author bnevins
@@ -52,5 +54,10 @@ public class ServerConstants {
     public static final int             MIN_PORT                    = 1;
     public static final int             MAX_PORT                    = (256 * 256) - 1;
     public static final String          DEFAULT_SERVER_NAME         = "server";
+    public static final String          DEFAULT_GFE_DIR             = "gfe";
+    public static final String          DEFAULT_PATH_TO_INSTANCE    = "domains/domain1";
+    public static final String          DEFAULT_PATH_TO_DOMAIN_XML  = "config/domain.xml";
+    public static final URL             DEFAULT_DOMAIN_XML_URL      = ServerConstants.class.getResource("/org/glassfish/embed/domain.xml");
+
     //public static final File            DEFAULT_
 }

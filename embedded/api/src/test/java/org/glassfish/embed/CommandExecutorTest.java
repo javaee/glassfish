@@ -29,18 +29,19 @@ public class CommandExecutorTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        try {
-            myGF = Server.getServer("server");
-            if(myGF == null) {
-                EmbeddedInfo ei = new EmbeddedInfo();
-                ei.setServerName("server");
-                myGF = new Server(ei);
-            }
-            myGF.start();
-            ce = new CommandExecutor(myGF);
-        } catch(Exception e) {
-            e.printStackTrace();
+        myGF = Server.getServer("server");
+        if(myGF == null) {
+            EmbeddedInfo ei = new EmbeddedInfo();
+            ei.setServerName("server");
+            myGF = new Server(ei);
         }
+        try {
+            myGF.start();
+        }
+        catch(Exception e) {
+            // expected...
+        }
+        ce = new CommandExecutor(myGF);
     }
 
     @AfterClass

@@ -96,7 +96,9 @@ public class EmbeddedMain {
      */
     private static EmbeddedInfo paramsToInfo(Map<String, String> params, List<String> operands) throws EmbeddedException {
         EmbeddedInfo info = new EmbeddedInfo();
-        
+        EmbeddedFileSystem efs = new EmbeddedFileSystem();
+        info.setFileSystem(efs);
+
         /*  Use operands for war filenames -- for now....
          */
 
@@ -120,27 +122,27 @@ public class EmbeddedMain {
             throw new EmbeddedException("port_not_int", port);
         }
 
-        ///////   dir   /////////
-        String fn = params.get("dir");
+        ///////   dirs   /////////
 
-        if(StringUtils.ok(fn)) {
-            File f = new File(fn);
-            f.mkdirs(); // it is acceptable for it to not exist yet.
+        String install = params.get("installDir");
 
-            if(!f.isDirectory())
-                throw new EmbeddedException("bad_dir", f);
+        if(StringUtils.ok(install)) {
+            efs.setInstallRoot(new File(install));
+        }
 
-            EmbeddedFileSystem.setInstallRoot(f);
-            EmbeddedFileSystem.setInstanceRoot(f);
+        String instance = params.get("instanceDir");
+
+        if(StringUtils.ok(instance)) {
+            efs.setInstanceRoot(new File(instance));
         }
 
         ////////  autodelete //////
 
-        EmbeddedFileSystem.setAutoDelete(Boolean.parseBoolean(params.get("autodelete")));
+        efs.setAutoDelete(Boolean.parseBoolean(params.get("autodelete")));
 
         ////////  domain.xml //////
 
-        fn = params.get("xml");
+        String fn = params.get("xml");
 
         if(StringUtils.ok(fn)) {
             setupDomainXmlUrl(fn, info);
@@ -157,24 +159,26 @@ public class EmbeddedMain {
         // This is either a filename or a URL.  E.g. user may have the domain.xml packaged
         // inside their jar.  Or both - in which case the file on disk takes precedence.
 
-        try {
-            URL url = null;
+        EmbeddedFileSystem efs = info.getFileSystem();
 
+        try {
             // 1.  Check on disk
             File f = new File(name);
 
-            if(f.exists())
-                url = f.toURI().toURL();
+            if(f.exists()) {
+                efs.setDomainXmlFile(f);
+                return;
+            }
 
-            // 2. check for a Resource
-            if(url == null)
-                url = EmbeddedMain.class.getResource(name);
+            
+            URL url = EmbeddedMain.class.getResource(name);
 
             if(url == null)
                 throw new EmbeddedException("bad_domain_xml");
 
-            info.setDomainXmlUrl(url);
+            efs.setDomainXmlUrl(url);
         }
+
         catch (EmbeddedException ee) {
             throw ee;
         }
@@ -207,7 +211,8 @@ public class EmbeddedMain {
         //       longname       shortname   default or req                                     description
         //new Arg("war",          "w",            false,                                       "War File"),
         new Arg("port",             "p",            "" + ServerConstants.DEFAULT_HTTP_PORT,        "HTTP Port"),
-        new Arg("dir",              "d",            false,                                         "Filesystem Directory"),
+        new Arg("installDir",       "d",            false,                                         "Filesystem Installation Directory"),
+        new Arg("instanceDir",      "i",            false,                                         "Filesystem Instance Directory"),
         new Arg("xml",              "x",            false,                                         "domain.xml filename or URL"),
         new BoolArg("log",          "l",            false,                                         "Send logging to gfe.log"),
         new BoolArg("help",         "h",            false,                                         "Help"),

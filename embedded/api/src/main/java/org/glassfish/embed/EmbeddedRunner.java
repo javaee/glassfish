@@ -51,7 +51,6 @@ class EmbeddedRunner {
     }
 
     void run() throws EmbeddedException {
-        info.validate();
         Server server = new Server(info);
         server.start();
         

@@ -136,14 +136,14 @@ public class Server {
     /**
      * Work around until the live HTTP listener support comes back.
      */
-    private Document domainXml;
+    private Document domainXmlDocument;
 
     /**
      * To navigate around {@link #domainXml}.
      */
     private final XPath xpath = XPathFactory.newInstance().newXPath();
     private EmbeddedInfo info;
-    /*pkg-private*/ URL domainXmlUrl;
+    //URL domainXmlUrl;
     /*pkg-private*/ URL defaultWebXml;
 
     // key components inside GlassFish. We access them all the time,
@@ -169,12 +169,9 @@ public class Server {
 
     public Server(EmbeddedInfo info) throws EmbeddedException {
         this.info = info;
-        //this.id = id;
+        info.validate();
         setShutdownHook();
         setupDomainXml();
-
-        // force creation...
-        EmbeddedFileSystem.getInstallRoot();
 
         try {
             jdbcHack();
@@ -186,25 +183,17 @@ public class Server {
         addServer(info.name, this);
     }
 
+
     private void setupDomainXml() throws EmbeddedException {
-        domainXmlUrl = info.domainXmlUrl;
+        URL domainXmlUrl = info.getFileSystem().getDomainXmlUrl();
 
-        // see if it is on disk in the given file system
-        if(domainXmlUrl == null)
-            domainXmlUrl = EmbeddedFileSystem.getDomainXmlUrl();
-
-        // OK - grab the hard-wired file
-        if(domainXmlUrl == null)
-            domainXmlUrl = getClass().getResource("/org/glassfish/embed/domain.xml");
-
-        // Fatal error!
         if(domainXmlUrl == null)
             throw new EmbeddedException("bad_domain_xml");
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         try {
         // dbf.setNamespaceAware(true);  // domain.xml doesn't use namespace
-            domainXml = dbf.newDocumentBuilder().parse(domainXmlUrl.toExternalForm());
+            domainXmlDocument = dbf.newDocumentBuilder().parse(domainXmlUrl.toExternalForm());
         }
         catch (Exception ex) {
             // TODO ??? better string here....
@@ -212,7 +201,7 @@ public class Server {
         }
     }
 
-
+/*
     @Deprecated
     private Server(URL dx, boolean start) throws EmbeddedException {
 
@@ -230,23 +219,23 @@ public class Server {
         if (start)
             start();
     }
-
+*/
     /**
      * Starts an empty do-nothing GlassFish v3.
      * <p/>
      * <p/>
      * In particular, no HTTP listener is configured out of the box, so you'd have to add
      * some programatically via {@link #createHttpListener(int)} and {@link #createVirtualServer(GFHttpListener)}.
-     */
+     *
      @Deprecated
     private Server(URL domainXmlUrl) throws EmbeddedException {
         this(domainXmlUrl, true);
     }
-
+*/
     /**
      * Starts GlassFish v3 with minimalistic configuration that involves
      * single HTTP listener listening on the given port.
-     */
+     *
      @Deprecated
     private Server(int httpPort) throws EmbeddedException {
         this(null, false);
@@ -278,11 +267,15 @@ public class Server {
         return dbf.newDocumentBuilder().parse(domainXmlUrl.toExternalForm());
 
     }
+   */
+
     /**
      * @return the domainXml URL.
      */
-    public URL getDomainXml() {
-        return domainXmlUrl;
+
+    public URL getDomainXmlUrl() throws EmbeddedException {
+        return info.getFileSystem().getDomainXmlUrl();
+
     }
 
     public void setDefaultWebXml(URL url) {
@@ -293,9 +286,11 @@ public class Server {
         return defaultWebXml;
     }
 
-    /*pkg-private*/ URL getDomainXML() {
+    /*
+    URL getDomainXML() {
         return domainXmlUrl;
     }
+     */
 
     /**
      * Sets the overall logging level for the Server.
@@ -342,8 +337,14 @@ public class Server {
 
         // ... and we don't persist it either. 
         parser.replace(DomainXmlPersistence.class, EmbeddedDomainXml.class);
+        try {
+            // we provide our own ServerEnvironment
+            EmbeddedServerEnvironment.setInstallRoot(info.getFileSystem().getInstallRoot());
+        }
+        catch (EmbeddedException ex) {
+            //TODO ????
+        }
 
-        // we provide our own ServerEnvironment
         parser.replace(ServerEnvironmentImpl.class, EmbeddedServerEnvironment.class);
 
         {// adjustment for webtier only bundle
@@ -392,13 +393,12 @@ public class Server {
          * Write domain.xml to a temporary file. UGLY UGLY UGLY.
          */
         try {
-            File dir = EmbeddedFileSystem.getInstanceRoot();
-            File domainFile = new File(dir, "domain.xml");
+            File domainFile = info.getFileSystem().getDomainXmlFile();
 
             if(!domainFile.exists()) {
                 Transformer t = TransformerFactory.newInstance().newTransformer();
-                t.transform(new DOMSource(this.domainXml), new StreamResult(domainFile));
-                domainXmlUrl = domainFile.toURI().toURL();
+                t.transform(new DOMSource(domainXmlDocument), new StreamResult(domainFile));
+                //domainXmlUrl = domainFile.toURI().toURL();
             }
         } 
         catch (Exception e) {
@@ -475,7 +475,7 @@ public class Server {
 
     private DomBuilder onHttpService() {
         try {
-            return new DomBuilder((Element) xpath.evaluate("//http-service", domainXml, XPathConstants.NODE));
+            return new DomBuilder((Element) xpath.evaluate("//http-service", domainXmlDocument, XPathConstants.NODE));
         } catch (XPathExpressionException e) {
             throw new AssertionError(e);    // impossible
         }
@@ -495,7 +495,7 @@ public class Server {
         try {
             
             EmbeddedModulesRegistryImpl reg = new EmbeddedModulesRegistryImpl();
-            StartupContext startupContext = new StartupContext(EmbeddedFileSystem.getInstallRoot(), new String[0]);
+            StartupContext startupContext = new StartupContext(info.getFileSystem().getInstallRoot(), new String[0]);
 
 
             // !!!!!!!!!!!!!!!!!!!!!!!!!
@@ -512,7 +512,6 @@ public class Server {
 
 
             habitat = main.launch(reg, startupContext);
-            EmbeddedFileSystem.setSystemProps();
             appLife = habitat.getComponent(ApplicationLifecycle.class);
             snifMan = habitat.getComponent(SnifferManager.class);
             archiveFactory = habitat.getComponent(ArchiveFactory.class);
@@ -540,7 +539,8 @@ public class Server {
 
                 ArchiveHandler h = appLife.getArchiveHandler(a);
 
-                File tmpDir = new File(EmbeddedFileSystem.getInstanceRoot(), a.getName());
+                // TODO needs to be written in V3 location...
+                File tmpDir = new File(info.getFileSystem().getInstanceRoot(), a.getName());
                 FileUtils.whack(tmpDir);
                 tmpDir.mkdirs();
                 h.expand(a, archiveFactory.createArchive(tmpDir));
@@ -717,10 +717,16 @@ public class Server {
         //final String msg = strings.get("serverStopped", info.getType());
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
-                // logger won't work anymore...
-                //System.out.println(msg);
-                // TODO TEMP
-                EmbeddedFileSystem.cleanup();
+                try {
+                    // logger won't work anymore...
+                    //System.out.println(msg);
+                    // TODO TEMP
+                    info.getFileSystem().cleanup();
+                }
+                catch (EmbeddedException ex) {
+                    System.out.println("Could not cleanup files.");
+                    // we can't do anyhting!
+                }
             }});
     }
 

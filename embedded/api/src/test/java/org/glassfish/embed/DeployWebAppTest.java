@@ -21,21 +21,15 @@ public class DeployWebAppTest {
     }
 
     @BeforeClass
-    public static void setUpClass() {
-        try {
-            EmbeddedInfo info = new EmbeddedInfo();
-            info.setServerName("server");
-            myGF = Server.getServer(info.name);
+    public static void setUpClass() throws Exception{
+        EmbeddedInfo info = new EmbeddedInfo();
+        info.setServerName("server");
+        myGF = Server.getServer(info.name);
 
-            if(myGF == null)
-                myGF = new Server(info);
+        if(myGF == null)
+            myGF = new Server(info);
 
-            myGF.start();
-
-        }
-        catch(Exception e) {
-            e.printStackTrace();
-        }
+        myGF.start();
     }
 
     @AfterClass
