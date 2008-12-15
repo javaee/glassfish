@@ -37,11 +37,14 @@
 package com.sun.enterprise.deployment.archivist;
 
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
+import com.sun.enterprise.deployment.RootDeploymentDescriptor;
+import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.deployment.annotation.impl.EjbInWarScanner;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.DescriptorConstants;
 import com.sun.enterprise.deployment.io.EjbDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.runtime.EjbRuntimeDDFile;
+import com.sun.hk2.component.Holder;
 import org.glassfish.apf.Scanner;
 import org.glassfish.api.deployment.archive.Archive;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -66,10 +69,10 @@ import java.util.logging.Level;
 @Service
 @Scoped(PerLookup.class)
 public class EjbInWarArchivist
-        extends BaseEjbArchivist {
+        extends ExtensionsArchivist {
 
     @Inject
-    Habitat habitat;
+    Holder<EjbInWarScanner> scanner;
 
     
     /**
@@ -77,7 +80,7 @@ public class EjbInWarArchivist
      *         standard deployment descriptor
      */
     @Override                                                  
-    public DeploymentDescriptorFile getStandardDDFile() {
+    public DeploymentDescriptorFile getStandardDDFile(RootDeploymentDescriptor descriptor) {
         return new EjbDeploymentDescriptorFile() {
             public String getDeploymentDescriptorPath() {
                 return "WEB-INF/ejb-jar.xml";  //TODO Add this to DescriptorConstants.class
@@ -86,16 +89,12 @@ public class EjbInWarArchivist
     }
 
     @Override
-    public DeploymentDescriptorFile getConfigurationDDFile() {
+    public DeploymentDescriptorFile getConfigurationDDFile(RootDeploymentDescriptor descriptor) {
         return new EjbRuntimeDDFile() {
             public String getDeploymentDescriptorPath() {
                 return "WEB-INF/" + "sun-" + "ejb-jar.xml"; //TODO Add this to DescriptorConstants.class
             }
         };
-    }
-    @Override
-    protected String getArchiveExtension() {
-        return WEB_EXTENSION;
     }
 
     /**
@@ -104,14 +103,25 @@ public class EjbInWarArchivist
      * different version
      *
      */
+    @Override
     public Scanner getScanner() {
-        return habitat.getComponent(EjbInWarScanner.class);
+        return scanner.get();
     }
 
 
     @Override
-    public boolean supportsModuleType(ModuleType moduleType) {
-        return ModuleType.WAR.equals(moduleType);
+    public boolean supportsModuleType(XModuleType moduleType) {
+        return XModuleType.WAR ==moduleType;
+    }
+
+    @Override
+    public XModuleType getModuleType() {
+        return XModuleType.EjbInWar;
+    }
+
+    @Override
+    public Object open(Archivist main, ReadableArchive archive, RootDeploymentDescriptor descriptor) throws IOException, SAXParseException {
+        return super.open(main, archive, new EjbBundleDescriptor());
     }
 }
 

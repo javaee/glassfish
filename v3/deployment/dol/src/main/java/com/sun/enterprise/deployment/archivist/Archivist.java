@@ -52,7 +52,9 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.shared.ArchivistUtils;
 import org.glassfish.apf.*;
+import org.glassfish.apf.Scanner;
 import org.glassfish.apf.impl.DefaultErrorHandler;
+import org.glassfish.apf.impl.ProcessingResultImpl;
 import org.glassfish.api.deployment.archive.Archive;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
@@ -64,8 +66,7 @@ import org.xml.sax.SAXParseException;
 
 import javax.enterprise.deploy.shared.ModuleType;
 import java.io.*;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
@@ -298,26 +299,30 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
      *
      * @return the initialized descriptor
      */
-    public T readDeploymentDescriptors(ReadableArchive archive)
+    private T readDeploymentDescriptors(ReadableArchive archive)
             throws IOException, SAXParseException {
 
-        // read the standard deployment descriptors 
+        // read the standard deployment descriptors
         T descriptor = readStandardDeploymentDescriptor(archive);
 
         ModuleDescriptor newModule = createModuleDescriptor(descriptor);
         newModule.setArchiveUri(archive.getURI().getSchemeSpecificPart());
 
+        Map<ExtensionsArchivist, RootDeploymentDescriptor> extensions = new HashMap<ExtensionsArchivist, RootDeploymentDescriptor>();
         if (extensionsArchivists!=null) {
             for (ExtensionsArchivist extension : extensionsArchivists) {
                 if (extension.supportsModuleType(getModuleType())) {
-                    extension.open(this, archive, descriptor);
+                    Object o = extension.open(this, archive, descriptor);
+                    if (o instanceof RootDeploymentDescriptor) {
+                        extensions.put(extension, (RootDeploymentDescriptor) o);
+                    }
                 }
             }
         }
 
         postStandardDDsRead(descriptor, archive);
 
-        readAnnotations(archive, descriptor);
+        readAnnotations(archive, descriptor, extensions);
         postAnnotationProcess(descriptor, archive);
 
         // now read the runtime deployment descriptors
@@ -327,7 +332,10 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
         return descriptor;
     }
 
-    protected void readAnnotations(ReadableArchive archive, T descriptor) throws IOException {
+    protected void readAnnotations(ReadableArchive archive, T descriptor,
+                                 Map<ExtensionsArchivist, RootDeploymentDescriptor> extensions)
+            throws IOException {
+        
         // if the system property is set to process annotation for pre-JavaEE5
         // DD, the semantics of isFull flag is: full attribute is set to 
         // true in DD. Otherwise the semantics is full attribute set to 
@@ -346,6 +354,18 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
                 && classLoader != null) {
             try {
                 ProcessingResult result = processAnnotations(descriptor, archive);
+
+                // process extensions annotations if any
+                for (Map.Entry<ExtensionsArchivist, RootDeploymentDescriptor> extension : extensions.entrySet()) {
+                    try {
+                        processAnnotations(extension.getValue(), extension.getKey().getScanner(), archive);
+                    } catch (AnnotationProcessorException ex) {
+                        DOLUtils.getDefaultLogger().severe(ex.getMessage());
+                        DOLUtils.getDefaultLogger().log(Level.FINE, ex.getMessage(), ex);
+                        throw new IllegalStateException(ex);
+                    }
+                }
+
                 if (result != null &&
                         ResultType.FAILED.equals(result.getOverallResult())) {
                     DOLUtils.getDefaultLogger().severe(localStrings.getLocalString(
@@ -389,12 +409,25 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
         }
         return scanner;
     }
-    
+
     /**
      * Process annotations in a bundle descriptor, the annoation processing
      * is dependent on the type of descriptor being passed.
      */
     public ProcessingResult processAnnotations(T bundleDesc,
+                                               Archive archive)
+            throws AnnotationProcessorException, IOException {
+        
+        return processAnnotations(bundleDesc, getScanner(), archive);
+
+    }
+    
+    /**
+     * Process annotations in a bundle descriptor, the annoation processing
+     * is dependent on the type of descriptor being passed.
+     */
+    private ProcessingResult processAnnotations(RootDeploymentDescriptor bundleDesc,
+                                               Scanner scanner,
                                                Archive archive)
             throws AnnotationProcessorException, IOException {
 
@@ -406,7 +439,6 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
             return null;
         }
 
-        Scanner scanner = getScanner();
         if(archive.getURI().getScheme().equals("file")) {
             // TODO: KK: this shows the abstraction issue of the getURI method.
             // the contract doesn't require that that is a file, and so this
@@ -417,7 +449,7 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
 
         if (!scanner.getElements().isEmpty()) {
             if (bundleDesc.isDDWithNoAnnotationAllowed()) {
-                // if we come into this block, it means an old version 
+                // if we come into this block, it means an old version
                 // of deployment descriptor has annotation which is not correct
                 // throw exception in this case
                 String ddName =
@@ -461,8 +493,6 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
                     bundleDesc.setClassLoader(null);
                 }
             }
-        } else {
-            bundleDesc.setFullFlag(true);
         }
         return null;
     }

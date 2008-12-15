@@ -5,6 +5,7 @@ import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.apf.Scanner;
 import org.xml.sax.SAXParseException;
 import org.jvnet.hk2.annotations.Contract;
 
@@ -35,6 +36,10 @@ public abstract class ExtensionsArchivist  {
     public abstract XModuleType getModuleType();
 
     public abstract boolean supportsModuleType(XModuleType moduleType);
+
+    public Scanner getScanner() {
+        return null;
+    }
 
     public Object open(Archivist main, ReadableArchive archive, RootDeploymentDescriptor descriptor)
             throws IOException, SAXParseException {

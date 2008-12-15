@@ -28,16 +28,12 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
-import com.sun.enterprise.deployment.archivist.Archivist;
-import com.sun.enterprise.deployment.archivist.EjbInWarArchivist;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
-import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
-import org.glassfish.deployment.common.DeploymentProperties;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
@@ -123,41 +119,6 @@ public class EjbDeployer
         } catch (Exception e) {
             dc.getLogger().log(Level.SEVERE, e.getMessage(), e);
             throw new RuntimeException(e.getMessage(), e);
-        }
-    }
-
-    @Override
-    protected Application parseModuleMetaData(DeploymentContext dc)
-        throws Exception {
-
-        ReadableArchive sourceArchive = dc.getSource();
-        boolean isWar = sourceArchive.exists("WEB-INF");
-        if (isWar) {
-            ClassLoader cl = dc.getClassLoader();
-            Properties props = dc.getCommandParameters();
-            String name = props.getProperty(DeploymentProperties.NAME);
-
-            Archivist archivist = habitat.getComponent(EjbInWarArchivist.class);
-            archivist.setClassLoader(cl);
-            archivist.setAnnotationProcessingRequested(true);
-            archivist.setXMLValidation(false);
-            archivist.setRuntimeXMLValidation(false);
-
-            archivist.setDefaultBundleDescriptor(
-                    new EjbBundleDescriptor());
-
-            Application application = applicationFactory.openArchive(
-                    name, archivist, sourceArchive, true);
-
-            // this may not be the best location for this but it will suffice.
-            if (deploymentVisitor!=null) {
-                deploymentVisitor.accept(application);
-            }
-
-
-            return application;
-        } else {
-            return super.parseModuleMetaData(dc);
         }
     }
 

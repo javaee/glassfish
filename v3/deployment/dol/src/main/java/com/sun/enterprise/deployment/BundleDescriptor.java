@@ -630,8 +630,7 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
         // step #1: see if we have only one PU in the local scope.
         PersistenceUnitDescriptor pu = null;
         int totalNumberOfPUInBundle = 0;
-        for (PersistenceUnitsDescriptor nextPUs :
-                getPersistenceUnitsDescriptors()) {
+        for (PersistenceUnitsDescriptor nextPUs : getExtensionsDescriptors(PersistenceUnitsDescriptor.class)) {
             for (PersistenceUnitDescriptor nextPU :
                     nextPUs.getPersistenceUnitDescriptors()) {
                 pu = nextPU;
@@ -644,7 +643,7 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
             // step #2: see if we have only one PU in the ear.
             int totalNumberOfPUInEar = 0;
             for (PersistenceUnitsDescriptor nextPUs :
-                    getApplication().getPersistenceUnitsDescriptors()) {
+                    getApplication().getExtensionsDescriptors(PersistenceUnitsDescriptor.class)) {
                 for (PersistenceUnitDescriptor nextPU :
                         nextPUs.getPersistenceUnitDescriptors()) {
                     pu = nextPU;
@@ -679,7 +678,7 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
             // converting ././b to canonical forms.
             String puRoot = getTargetUri(this, path);
             final PersistenceUnitsDescriptor pus =
-                    getApplication().getPersistenceUnitsDescriptor(puRoot);
+                    getApplication().getExtensionsDescriptors(PersistenceUnitsDescriptor.class, puRoot);
             if (pus != null) {
                 for (PersistenceUnitDescriptor pu :
                         pus.getPersistenceUnitDescriptors()) {
@@ -735,7 +734,7 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
 
         // local scoped PUs
         for (PersistenceUnitsDescriptor pus :
-                getPersistenceUnitsDescriptors()) {
+                getExtensionsDescriptors(PersistenceUnitsDescriptor.class)) {
             for (PersistenceUnitDescriptor pu :
                     pus.getPersistenceUnitDescriptors()) {
                 // for local PUs, use unqualified name.
@@ -747,7 +746,7 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
         final Application application = getApplication();
         if (application != null) {
             for (PersistenceUnitsDescriptor pus :
-                    application.getPersistenceUnitsDescriptors()) {
+                    application.getExtensionsDescriptors(PersistenceUnitsDescriptor.class)) {
                 for (PersistenceUnitDescriptor pu :
                         pus.getPersistenceUnitDescriptors()) {
                     // use fully qualified name for ear scoped PU

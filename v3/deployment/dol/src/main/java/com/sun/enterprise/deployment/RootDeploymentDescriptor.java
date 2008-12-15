@@ -40,10 +40,7 @@ import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.util.XModuleType;
 
 import javax.enterprise.deploy.shared.ModuleType;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 
 /**
@@ -69,6 +66,12 @@ public abstract class RootDeploymentDescriptor extends Descriptor {
      * version of the specification loaded by this descriptor
      */
     private String specVersion;
+
+    /**
+     * optional index string to disambiguate when serveral extensions are
+     * part of the same module
+     */
+    private String index=null;
     
     /**
      * class loader associated to this module to load classes 
@@ -77,10 +80,10 @@ public abstract class RootDeploymentDescriptor extends Descriptor {
     protected transient ClassLoader classLoader = null;
 
     /**
-     * key is the URI representing PURoot.
+     * Extensions for this module descriptor, keyed by type, indexed using the instance's index
      */
-    protected Map<String, PersistenceUnitsDescriptor> persistenceUnitsDescriptors
-            = new HashMap<String, PersistenceUnitsDescriptor>();
+    protected Map<Class<? extends RootDeploymentDescriptor>, List<RootDeploymentDescriptor>> extensions =
+            new HashMap<Class<? extends RootDeploymentDescriptor>, List<RootDeploymentDescriptor>>();
 
         /**
      * contains the information for this module (like it's module name)
@@ -88,7 +91,8 @@ public abstract class RootDeploymentDescriptor extends Descriptor {
     protected ModuleDescriptor moduleDescriptor;
 
     private boolean fullFlag = false;
-    private boolean fullAttribute = false;    
+    private boolean fullAttribute = false;
+    private final static List<?> emptyList = new ArrayList();
 
     /**
      * Construct a new RootDeploymentDescriptor 
@@ -252,44 +256,62 @@ public abstract class RootDeploymentDescriptor extends Descriptor {
     }
 
     /**
-     * This method returns PersistenceUnitDescriptor objects in the
-     * scope of this RootDeploymentDescriptor.
-     * @return it returns an unmodifiable collection.
-     * returns an empty collection if there is no PersistenceUnitDescriptor.
+     * This method returns all the extensions deployment descriptors in the scope
+     * @return an unmodifiable collection of extensions or empty collection if none.
      */
-    public Collection<PersistenceUnitsDescriptor> getPersistenceUnitsDescriptors() {
-        return Collections.unmodifiableCollection(persistenceUnitsDescriptors.values());
+    public Collection<RootDeploymentDescriptor> getExtensionsDescriptors() {
+        ArrayList<RootDeploymentDescriptor> flattened = new ArrayList<RootDeploymentDescriptor>();
+        for (List<? extends RootDeploymentDescriptor> extensionsByType : extensions.values()) {
+            flattened.addAll(extensionsByType);
+        }
+        return Collections.unmodifiableCollection(flattened);
     }
 
     /**
-     * This method returns PersistenceUnitDescriptor object with matching
-     * PURoot in the scope of this RootDeploymentDescriptor.
-     * @param puRoot used for lookup
-     * @return return the PersisteneUnitsDescriptor for the given PURoot.
-     * It returns null if not found.
+     * This method returns all extensions of the passed type in the scope
+     * @param type requested extension type
+     * @return an unmodifiable collection of extensions or empty collection if none.
      */
-    public PersistenceUnitsDescriptor getPersistenceUnitsDescriptor(
-            String puRoot) {
-        return persistenceUnitsDescriptors.get(puRoot);
+    public <T extends RootDeploymentDescriptor> Collection<T> getExtensionsDescriptors(Class<T> type) {
+        if (extensions.containsKey(type)) {
+            return Collections.unmodifiableCollection((Collection<T>) extensions.get(type));
+        } else {
+            return (Collection<T>) emptyList;
+        }
     }
 
     /**
-     * Add deplyoment information about all the persistence units
-     * defined in a persistence.xml to this RootDeploymentDescriptor.
-     * All the persistence units  defined inside the same persistence.xml
-     * will be added with same PURoot. This method also sets the parent
-     * reference in PersistenceUnitsDescriptor.
-     * @param puRoot root of the persistence unit (its a relative path)
-     * @param persistenceUnitsDescriptor is the descriptor object
-     * representing the persistence unit.
+     * This method returns one extension of the passed type in the scope with the right index
+     * @param type requested extension type
+     * @param index is the instance index
+     * @return an unmodifiable collection of extensions or empty collection if none.
      */
-    public void addPersistenceUnitsDescriptor(String puRoot, PersistenceUnitsDescriptor persistenceUnitsDescriptor) {
-        // We don't expect the parent to be already set
-        // because that indicates transfer of ownership.
-        assert(persistenceUnitsDescriptor.getParent() == null);
-        persistenceUnitsDescriptor.setParent(this);
-        persistenceUnitsDescriptor.setPuRoot(puRoot);
-        persistenceUnitsDescriptors.put(puRoot, persistenceUnitsDescriptor);
+    public <T extends RootDeploymentDescriptor>  T getExtensionsDescriptors(Class<T> type, String index) {
+        for (T extension : (Collection<T>) getExtensionsDescriptors(type)) {
+            if (index==null) {
+                if (extension.index==null) {
+                    return extension;
+                }
+            } else {
+                if (index.equals(extension.index)) {
+                    return extension;
+                }
+            }
+        }
+        return null;    
+    }
+
+    public synchronized <T extends RootDeploymentDescriptor> void addExtensionDescriptor(Class<T> type, T instance, String index) {
+        List<RootDeploymentDescriptor> values;
+        if (extensions.containsKey(type)) {
+            values = extensions.get(type);
+        } else {
+            values = new ArrayList<RootDeploymentDescriptor>();
+            extensions.put(type, values);
+        }
+        instance.index = index;
+        values.add(instance);
+
     }
 
     /**

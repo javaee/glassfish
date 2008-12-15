@@ -269,13 +269,23 @@ public class ApplicationArchivist extends Archivist<Application> {
 
                 descriptor = (BundleDescriptor) ddFile.read(is);
                 is.close();
+
+                // TODO : JD need to be revisited for EAR files with Alternative descriptors, what does
+                // it mean for sub components.
+                Map<ExtensionsArchivist, RootDeploymentDescriptor> extensions =
+                    new HashMap<ExtensionsArchivist, RootDeploymentDescriptor>();
+                
                 if (extensionsArchivists!=null) {
                     for (ExtensionsArchivist extension : extensionsArchivists) {
-                        extension.open(newArchivist, embeddedArchive, descriptor);
+                        Object rdd = extension.open(newArchivist, embeddedArchive, descriptor);
+                        if (rdd instanceof RootDeploymentDescriptor) {
+                            extensions.put(extension, (RootDeploymentDescriptor) rdd);
+                        }
+
                     }
                 }
                 newArchivist.postStandardDDsRead(descriptor, embeddedArchive);
-                newArchivist.readAnnotations(embeddedArchive, descriptor);
+                newArchivist.readAnnotations(embeddedArchive, descriptor, extensions);
                 newArchivist.postAnnotationProcess(descriptor, embeddedArchive);
                 newArchivist.postOpen(descriptor, embeddedArchive);
                 // now reads the runtime deployment descriptor...

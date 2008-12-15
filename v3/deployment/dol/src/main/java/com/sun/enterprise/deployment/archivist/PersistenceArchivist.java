@@ -63,7 +63,7 @@ public class PersistenceArchivist extends ExtensionsArchivist {
                     "PURoot = [{0}] subArchive = {1}",
                     new Object[]{puRoot, subArchiveURI});
         }
-        if (descriptor.getPersistenceUnitsDescriptor(puRoot) != null) {
+        if (descriptor.getExtensionsDescriptors(PersistenceUnitsDescriptor.class, puRoot) != null) {
             if (logger.isLoggable(Level.FINE)) {
                 logger.logp(Level.FINE, "Archivist",
                         "readPersistenceDeploymentDescriptor",
@@ -76,8 +76,10 @@ public class PersistenceArchivist extends ExtensionsArchivist {
                     PersistenceUnitsDescriptor.class.cast(super.open(main, subArchive, descriptor));
 
         if (persistenceUnitsDescriptor!=null) {
-            descriptor.addPersistenceUnitsDescriptor(puRoot,
-                    persistenceUnitsDescriptor);
+
+            persistenceUnitsDescriptor.setParent(descriptor);
+            persistenceUnitsDescriptor.setPuRoot(puRoot);            
+            descriptor.addExtensionDescriptor(PersistenceUnitsDescriptor.class,persistenceUnitsDescriptor, puRoot);
         }
 
         return persistenceUnitsDescriptor;
