@@ -58,7 +58,7 @@ public class CommandExecutorTest {
     public void tearDown() {
         options.clear();
     }
-    @Ignore
+    //@Ignore
     @Test
     public void testCreateJdbcConnectionPoolSuccess() {
         options.setProperty("datasourceclassname", "org.apache.derby.jdbc.ClientDataSource");
@@ -75,7 +75,7 @@ public class CommandExecutorTest {
         }
         assertEquals(ActionReport.ExitCode.SUCCESS, ce.getExitCode());
     }
-    @Ignore
+    //@Ignore
     @Test
     public void testCreateJdbcResourceSuccess() {
         options.setProperty("connectionpoolid", "DerbyPool");
@@ -89,7 +89,7 @@ public class CommandExecutorTest {
         }
         assertEquals(ActionReport.ExitCode.SUCCESS, ce.getExitCode());
     }
-    @Ignore
+    //@Ignore
     @Test
     public void testDeleteJdbcResourceSuccess() {
         options.setProperty("DEFAULT", "jdbc/__default");
@@ -102,7 +102,7 @@ public class CommandExecutorTest {
         }
         assertEquals(ActionReport.ExitCode.SUCCESS, ce.getExitCode());
     }
-    @Ignore
+    //@Ignore
     @Test
     public void testDeleteJdbcConnectionPoolSuccess() {
         options.setProperty("DEFAULT", "DerbyPool");
@@ -115,7 +115,7 @@ public class CommandExecutorTest {
         }
         assertEquals(ActionReport.ExitCode.SUCCESS, ce.getExitCode());
     }
-    @Ignore
+    //@Ignore
     @Test
     public void testCreateJdbcConnectionPoolFail() {
         options.setProperty("DEFAULT", "poolA");
@@ -135,7 +135,7 @@ public class CommandExecutorTest {
     @Ignore
     @Test
     public void testDeploySuccess() {
-        String file = "target/test-classes/simple.war";
+        String file = "api/target/test-classes/simple.war";
         options.setProperty("DEFAULT", file);
         try {
             ce.execute("deploy", options);
@@ -163,6 +163,24 @@ public class CommandExecutorTest {
             }
         }
         assertEquals(ActionReport.ExitCode.FAILURE, ce.getExitCode());
+    }
+    //@Ignore
+    @Test
+    public void testCreateSystemPropertiesSuccess() {
+        options.setProperty("DEFAULT", "HTTP_LISTENER_PORT=38080:HTTP_SSL_LISTENER_PORT=38181");
+        try {
+            ce.execute("create-system-properties", options);
+            assertEquals(ActionReport.ExitCode.SUCCESS, ce.getExitCode());
+            options.clear();
+            ce.execute("list-system-properties", options);
+            //java.util.List<ActionReport.MessagePart> l = ce.getReport().getTopMessagePart().getChildren();
+            //assertEquals("HTTP_LISTENER_PORT=38080",l.get(0).getMessage());
+        } catch (Exception ex) {
+            LoggerHelper.severe("testCreateSystemPropertiesSuccess failed");
+            ex.printStackTrace();
+            fail();
+        }
+        assertEquals(ActionReport.ExitCode.SUCCESS, ce.getExitCode());
     }
 
     private Properties options = new Properties();

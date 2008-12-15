@@ -29,7 +29,12 @@ public class DeployWebAppTest {
         if(myGF == null)
             myGF = new Server(info);
 
-        myGF.start();
+        try {
+            myGF.start();
+        } catch (EmbeddedException e) {
+            // already started by CommandExecutorTest
+        }
+
     }
 
     @AfterClass
