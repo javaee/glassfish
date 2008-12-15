@@ -152,7 +152,7 @@ public class ModulesRegistryImpl extends AbstractModulesRegistryImpl {
         }
         ClassLoaderProxy cl = new ClassLoaderProxy(new URL[0], parent);
         for (ModuleDefinition def : defs) {
-            ModuleImpl module = ModuleImpl.class.cast(this.makeModuleFor(def.getName(), def.getVersion()));
+            Module module = this.makeModuleFor(def.getName(), def.getVersion());
             cl.addDelegate(module.getClassLoader());
         }
         
