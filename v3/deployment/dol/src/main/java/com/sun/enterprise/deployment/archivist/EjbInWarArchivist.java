@@ -121,7 +121,12 @@ public class EjbInWarArchivist
 
     @Override
     public Object open(Archivist main, ReadableArchive archive, RootDeploymentDescriptor descriptor) throws IOException, SAXParseException {
-        return super.open(main, archive, new EjbBundleDescriptor());
+        EjbBundleDescriptor ebd = (EjbBundleDescriptor) super.open(main, archive, new EjbBundleDescriptor());
+        if (ebd!=null) {
+            ebd.setModuleDescriptor(descriptor.getModuleDescriptor());
+            descriptor.addExtensionDescriptor(EjbBundleDescriptor.class, ebd, null);
+        }
+        return ebd;
     }
 }
 

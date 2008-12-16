@@ -87,7 +87,7 @@ public class ModuleDescriptor<T extends RootDeploymentDescriptor> extends Descri
      * is it a standalone module, or part of a J2EE Application
      */
     private boolean standalone=false;
-    
+
     /** Creates new ModuleDescriptor */
     public ModuleDescriptor() {
     }
@@ -202,7 +202,7 @@ public class ModuleDescriptor<T extends RootDeploymentDescriptor> extends Descri
     public void setStandalone(boolean standalone) {
         this.standalone = standalone;
     }
-    
+
     /**
      * Add a new deployment-extension for this descriptor
      * @param de deployment-extension descriptor to add
@@ -215,7 +215,7 @@ public class ModuleDescriptor<T extends RootDeploymentDescriptor> extends Descri
         }
         extensions.add(de);
     }
-    
+
     /**
      * @return an iterator on the deployment-extension
      */
@@ -223,9 +223,9 @@ public class ModuleDescriptor<T extends RootDeploymentDescriptor> extends Descri
         Vector extensions = (Vector) getExtraAttribute("web-deployment-extension");
         if (extensions!=null) {
             return extensions.iterator();
-        } 
+        }
         return null;
-    }    
+    }
     
     
     /** 

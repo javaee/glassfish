@@ -1091,12 +1091,13 @@ public class Application extends RootDeploymentDescriptor
         for (ModuleDescriptor aModule : getModules()) {
             try {
                 T descriptor = type.cast(aModule.getDescriptor());
-                // any children ?
                 bundleSet.add(descriptor);
-                bundleSet.addAll(aModule.getDescriptor().getExtensionsDescriptors(type));                
             } catch(ClassCastException e) {
                 // ignore
             }
+            // any children, this need to happen outside of the casting as the parent
+            // type has nothing to do with the children extensions.
+            bundleSet.addAll(aModule.getDescriptor().getExtensionsDescriptors(type));
         }
         return bundleSet;
     }

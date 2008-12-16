@@ -377,8 +377,7 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
                         // logic will always check the current ejb-jar
                         // first so there won't be any ambiguity.  
                         String ejbLinkName = target.getName();
-                        if ( (sourceModule != targetModule) && (! app.isPackagedAsSingleModule()) ) {
-
+                        if (sourceModule.isPackagedAsSingleModule(targetModule)) {
                             // Since there are at least two modules, we
                             // must be within an application.
                             String relativeUri = getApplication().

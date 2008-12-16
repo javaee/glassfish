@@ -152,6 +152,7 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
      * @param type type of metadata that this deployer has declared providing.
      * @param dc deployment context
      */
+    //TODO dochez, does this need to go ?
     public <V> V loadMetaData(Class<V> type, DeploymentContext dc) {
         try {
             return (V) parseModuleMetaData(dc);

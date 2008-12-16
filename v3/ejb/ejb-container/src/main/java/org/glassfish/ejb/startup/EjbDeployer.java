@@ -88,40 +88,6 @@ public class EjbDeployer
                 new Class[] {EjbBundleDescriptor.class}, new Class[] {Application.class});
     }
 
-    /**
-     * Loads the meta date associated with the application.
-     *
-     * @param type type of metadata that this deployer has declared providing.
-     * @param dc deployment context
-     */
-    public <V> V loadMetaData(Class<V> type, DeploymentContext dc) {
-        try {
-            Application app = this.parseModuleMetaData(dc);
-            Set<EjbBundleDescriptor> ejbBD = app.getEjbBundleDescriptors();
-
-            EjbBundleDescriptor dummy = null;
-
-            Application dcApp = dc.getModuleMetaData(Application.class);
-            if (dcApp != null) {
-                dcApp.setVirtual(false);
-                for (EjbBundleDescriptor desc : ejbBD) {
-                    dummy = desc;
-                    dcApp.addBundleDescriptor(desc);
-                }
-            } else {
-                dc.addModuleMetaData(app);
-                dcApp = app;
-            }
-            
-            //FIXME: Need to revist for .ear
-            dcApp.setPackagedAsSingleModule(true);
-            return (V) dummy;
-        } catch (Exception e) {
-            dc.getLogger().log(Level.SEVERE, e.getMessage(), e);
-            throw new RuntimeException(e.getMessage(), e);
-        }
-    }
-
     public EjbApplication load(EjbContainerStarter containerStarter, DeploymentContext dc) {
 
         Application app = dc.getModuleMetaData(Application.class);

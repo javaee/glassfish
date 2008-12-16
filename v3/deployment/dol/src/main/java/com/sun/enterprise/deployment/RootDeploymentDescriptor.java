@@ -167,7 +167,7 @@ public abstract class RootDeploymentDescriptor extends Descriptor {
         this.classLoader = classLoader;
     }
     
-    /**
+    /**               
      * @return the class loader associated with this module
      */
     public abstract ClassLoader getClassLoader();
@@ -298,7 +298,7 @@ public abstract class RootDeploymentDescriptor extends Descriptor {
                 }
             }
         }
-        return null;    
+        return null;
     }
 
     public synchronized <T extends RootDeploymentDescriptor> void addExtensionDescriptor(Class<T> type, T instance, String index) {

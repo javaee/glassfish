@@ -427,7 +427,9 @@ public class ApplicationLifecycle {
                         deployer.loadMetaData(null, context);
                     } else {
                         for (Class<?> provide : metadata.provides()) {
-                            context.addModuleMetaData(deployer.loadMetaData(provide, context));
+                            if (context.getModuleMetaData(provide)==null) {
+                                context.addModuleMetaData(deployer.loadMetaData(provide, context));
+                            }
                         }
                     }
                 } else {

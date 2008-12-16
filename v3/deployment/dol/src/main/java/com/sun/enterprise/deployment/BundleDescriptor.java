@@ -102,10 +102,26 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
      */
     public void setApplication(Application a) {
         application = a;
+        for (List<? extends RootDeploymentDescriptor> extensionsByType : extensions.values()) {
+            for (RootDeploymentDescriptor extension : extensionsByType) {
+                if (extension instanceof BundleDescriptor) {
+                    ((BundleDescriptor) extension).setApplication(a);
+                }
+            }
+        }
     }
 
     void addBundleDescriptor(BundleDescriptor bundleDescriptor) {
         getRoles().addAll(bundleDescriptor.getRoles());
+    }
+
+    /**
+     * Return true if the other bundle descriptor comes from the same module
+     * @param other the other bundle descriptor
+     * @return true if co-packaged in the same module
+     */
+    public boolean isPackagedAsSingleModule(BundleDescriptor other) {
+        return getModuleDescriptor().equals(other.getModuleDescriptor());
     }
 
     /**
