@@ -226,7 +226,12 @@ public final class EmbeddedFileSystem {
             }
         }
         File parent = new File(domainXmlFile, "..");
+        
         parent.mkdirs();
+
+        if(!parent.isDirectory()) {
+            throw new EmbeddedException("cant_create_parent_dir_domain_xml", parent);
+        }
     }
 
     private void setSystemProps() {

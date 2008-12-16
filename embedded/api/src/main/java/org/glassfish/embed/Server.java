@@ -396,7 +396,7 @@ public class Server {
             File domainFile = info.getFileSystem().getDomainXmlFile();
 
             if(!domainFile.exists()) {
-                domainFile.createNewFile();
+                //domainFile.createNewFile();
                 Transformer t = TransformerFactory.newInstance().newTransformer();
                 t.transform(new DOMSource(domainXmlDocument), new StreamResult(domainFile));
                 //domainXmlUrl = domainFile.toURI().toURL();
