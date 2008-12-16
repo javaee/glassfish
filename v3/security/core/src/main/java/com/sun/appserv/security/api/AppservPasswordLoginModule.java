@@ -77,7 +77,6 @@ public  class AppservPasswordLoginModule implements AppservPasswordLoginModuleIn
     protected Subject _subject;
     protected Map _sharedState;
     protected Map _options;
-    
     protected String _username;
     protected String _password;
     protected Realm _currentRealm;
@@ -136,66 +135,18 @@ public  class AppservPasswordLoginModule implements AppservPasswordLoginModuleIn
      */
     final public boolean login() throws LoginException
     {
-        if (_subject==null) {
-            String msg = sm.getString("pwdlm.noinfo");
-            _logger.log(Level.SEVERE, msg);
-            throw new LoginException(msg);
-        }
-
-        PasswordCredential pwdCred = null;
-
-        try {
-            Iterator i = _subject.getPrivateCredentials().iterator();
-            while (i.hasNext() && pwdCred==null) {
-                Object privCred = i.next();
-                if (privCred instanceof PasswordCredential) {
-                    pwdCred = (PasswordCredential)privCred;
-                }
-            }
-        } catch (Exception e) {
-            _logger.log(Level.WARNING, "passwordlm.nocreds", e.toString());
-        }
-
-        if (pwdCred==null) {
-            _logger.log(Level.SEVERE, "passwordlm.nopwdcred");
-            String msg = sm.getString("pwdlm.nocreds");            
-            throw new LoginException(msg);
-        }
-
-        // Need to obtain the requested realm to get parameters.
-
-        String realm = null;
-        try {
-            realm = pwdCred.getRealm();
-            _currentRealm = Realm.getInstance(realm);
-
-        } catch (Exception e) {
-            String msg = sm.getString("pwdlm.norealm", realm);
-            _logger.log(Level.SEVERE, msg);
-            throw new LoginException(msg);
-        }
-
-        if (_currentRealm == null) {
-            String msg = sm.getString("pwdlm.norealmavail", realm);
-            _logger.log(Level.SEVERE, msg);
-            throw new LoginException(msg);
-        }
-
-        // Get username and password data from credential (ignore callback)
-
-        _username = pwdCred.getUser();
-        _password = pwdCred.getPassword();
-
+        //Extract the username and password
+        extractCredentials();
+        
         // Delegate the actual authentication to subclass.
-
         authenticateUser();
         if(_logger.isLoggable(Level.FINE)){
             _logger.log(Level.FINE, "JAAS login complete.");
         }
         return true;
     }
-
     
+
     /**
      * Commit the authentication.
      *
@@ -216,7 +167,7 @@ public  class AppservPasswordLoginModule implements AppservPasswordLoginModuleIn
         // Assume the user we authenticated is the PrincipalImpl [RI]
         String realm_name = _currentRealm.getName();
         _userPrincipal = 
-            PrincipalGroupFactory.getPrincipalInstance(_username, realm_name);
+            PrincipalGroupFactory.getPrincipalInstance(getUsername(),realm_name);
         Set principalSet = _subject.getPrincipals();
         if (!principalSet.contains(_userPrincipal)){
             principalSet.add(_userPrincipal);
@@ -239,8 +190,8 @@ public  class AppservPasswordLoginModule implements AppservPasswordLoginModuleIn
         
         // In any case, clean out state.
         _groupsList = null;
-        _username = null;
-        _password = null;
+        setUsername(null);
+        setPassword(null);
         _commitSucceeded = true;
         if(_logger.isLoggable(Level.FINE)){
             _logger.log(Level.FINE,"JAAS authentication committed.");
@@ -264,8 +215,8 @@ public  class AppservPasswordLoginModule implements AppservPasswordLoginModuleIn
         } else if (_succeeded == true && _commitSucceeded == false) {
             // login succeeded but overall authentication failed
             _succeeded = false;
-            _username = null;
-            _password = null;
+            setUsername(null);
+            setPassword(null);
             _userPrincipal = null;
             for(int i = 0; i < _groupsList.length; i++){
                 _groupsList[i] = null;
@@ -296,8 +247,8 @@ public  class AppservPasswordLoginModule implements AppservPasswordLoginModuleIn
         
         _succeeded = false;
         _commitSucceeded = false;
-        _username = null;
-        _password = null;
+        setUsername(null);
+        setPassword(null);
         _userPrincipal = null;
         if(_groupsList != null){
             for (int i = 0; i < _groupsList.length; i++){
@@ -343,6 +294,64 @@ public  class AppservPasswordLoginModule implements AppservPasswordLoginModuleIn
     }
     
     /**
+     * Method to extract container-provided username and password
+     * @throws javax.security.auth.login.LoginException
+     */
+    final public void extractCredentials() throws LoginException {
+
+        if (_subject == null) {
+            String msg = sm.getString("pwdlm.noinfo");
+            _logger.log(Level.SEVERE, msg);
+            throw new LoginException(msg);
+        }
+
+        PasswordCredential pwdCred = null;
+
+        try {
+            Iterator i = _subject.getPrivateCredentials().iterator();
+            while (i.hasNext() && pwdCred == null) {
+                Object privCred = i.next();
+                if (privCred instanceof PasswordCredential) {
+                    pwdCred = (PasswordCredential) privCred;
+                }
+            }
+        } catch (Exception e) {
+            _logger.log(Level.WARNING, "passwordlm.nocreds", e.toString());
+        }
+
+        if (pwdCred == null) {
+            _logger.log(Level.SEVERE, "passwordlm.nopwdcred");
+            String msg = sm.getString("pwdlm.nocreds");
+            throw new LoginException(msg);
+        }
+
+        // Need to obtain the requested realm to get parameters.
+
+        String realm = null;
+        try {
+            realm = pwdCred.getRealm();
+            _currentRealm = Realm.getInstance(realm);
+
+        } catch (Exception e) {
+            String msg = sm.getString("pwdlm.norealm", realm);
+            _logger.log(Level.SEVERE, msg);
+            throw new LoginException(msg);
+        }
+
+        if (_currentRealm == null) {
+            String msg = sm.getString("pwdlm.norealmavail", realm);
+            _logger.log(Level.SEVERE, msg);
+            throw new LoginException(msg);
+        }
+
+        // Get username and password data from credential (ignore callback)
+
+        setUsername(pwdCred.getUser());
+        setPassword(pwdCred.getPassword());
+    }
+
+    
+    /**
      * Perform authentication decision.
      *
      * Method returns silently on success and returns a LoginException
@@ -354,13 +363,89 @@ public  class AppservPasswordLoginModule implements AppservPasswordLoginModuleIn
         if (userDefinedLoginModule instanceof com.sun.appserv.security.AppservPasswordLoginModule) {
             com.sun.appserv.security.AppservPasswordLoginModule m = 
                     (com.sun.appserv.security.AppservPasswordLoginModule)userDefinedLoginModule;
+            
             m.authenticateUser();
             return;
         }
         throw new UnsupportedOperationException("Internal Error: Should not come here");
     }
-
+    
     public void setLoginModuleForAuthentication(LoginModule userDefinedLoginModule) {
         this.userDefinedLoginModule = userDefinedLoginModule;
+    }
+
+    /**
+     * @return the username sent by container - is made available to the custom 
+     * login module using the protected _username field.
+     * Use Case: A custom login module could use the username to validate against
+     * a realm of users
+     */
+    
+    public String getUsername() {
+        return _username;
+    }
+
+   /**
+    * Used for setting the username obtained from the container internally, to 
+    * be made available to the custom login module implementation
+    * @param username
+    */ 
+    private void setUsername(String username) {
+        this._username = username;
+    }
+
+    
+    /**
+     * @return the password sent by container - is made available to the custom 
+     * login module using the protected _password field.
+     * Use Case: A custom login module could use the password to validate against
+     * a custom realm of usernames and passwords
+     */
+    public String getPassword() {
+        return _password;
+    }
+
+   /**
+    * Used for setting the password obtained from the container internally, to 
+    * be made available to the custom login module implementation
+    * @param username
+    */ 
+    private void setPassword(String password) {
+        this._password = password;
+    }
+    
+    /**
+     * @return the currentRealm - for backward compatability
+     */
+    public Realm getCurrentRealm() {
+        return _currentRealm;
+    }
+    
+    /**
+     * @return the succeeded state - for backward compatability
+     */
+    public boolean isSucceeded() {
+        return _succeeded;
+    }
+    
+    /**
+     * @return the commitsucceeded state - for backward compatability
+     */
+    public boolean isCommitSucceeded() {
+        return _commitSucceeded;
+    }
+    
+    /**
+     * @return the UserPrincipal - for backward compatability
+     */
+    public PrincipalImpl getUserPrincipal() {
+        return _userPrincipal;
+    }
+    
+     /**
+     * @return the groupList - for backward compatability
+     */
+    public String[] getGroupsList() {
+        return _groupsList;
     }
 }

@@ -37,7 +37,9 @@
 package com.sun.enterprise.security.common;
 
 import javax.security.auth.Subject;
+import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
+import org.glassfish.security.common.PrincipalImpl;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -82,4 +84,55 @@ public interface AppservPasswordLoginModuleInterface extends LoginModule {
      * @param userDefinedLoginModule the userdefined login module
      */
     public void setLoginModuleForAuthentication(LoginModule userDefinedLoginModule);
+    
+
+    /**
+     * Meant for extracting the container provided username and password
+     * This method is called from the LoginModule before the actual call to login
+     * so that the username and password are available during Custom login module's
+     * call to authenticateUser()
+     */
+    public void extractCredentials() throws LoginException;
+    
+        /**
+     * @return the username sent by container - is made available to the custom 
+     * login module using the protected _username field.
+     * Use Case: A custom login module could use the username to validate against
+     * a realm of users
+     */
+    public String getUsername();
+    
+    /**
+     * @return the password sent by container - is made available to the custom 
+     * login module using the protected _password field.
+     * Use Case: A custom login module could use the password to validate against
+     * a custom realm of usernames and passwords
+     */
+    public String getPassword();
+    
+    /**
+     * @return the currentRealm - for backward compatability
+     */
+    public Object getCurrentRealm();
+    
+    /**
+     * @return the succeeded state - for backward compatability
+     */
+    public boolean isSucceeded();
+    
+    /**
+     * @return the commitsucceeded state - for backward compatability
+     */
+    public boolean isCommitSucceeded();
+    
+    
+    /**
+     * @return the UserPrincipal - for backward compatability
+     */
+    public PrincipalImpl getUserPrincipal();
+    
+    /**
+     * @return the groupList - for backward compatability
+     */
+    public String[] getGroupsList();
 }

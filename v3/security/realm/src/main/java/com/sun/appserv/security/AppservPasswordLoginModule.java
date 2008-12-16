@@ -36,6 +36,7 @@
 
 package com.sun.appserv.security;
 
+import com.sun.enterprise.security.auth.realm.Realm;
 import java.util.Map;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
@@ -43,6 +44,7 @@ import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 import com.sun.enterprise.security.common.AppservPasswordLoginModuleInterface;
 import com.sun.enterprise.security.common.Util;
+import org.glassfish.security.common.PrincipalImpl;
 import org.jvnet.hk2.component.Habitat;
 
 /**
@@ -52,6 +54,21 @@ import org.jvnet.hk2.component.Habitat;
 public abstract class AppservPasswordLoginModule implements LoginModule {
 
     private AppservPasswordLoginModuleInterface delegate = null;
+    
+    //For Backward compatability with v2 - protected members made available to
+    //the custom login module
+
+    protected String _username;
+    protected String _password;
+    protected Subject _subject;
+    protected Map _sharedState;
+    protected Map _options;
+    protected Realm _currentRealm;
+    protected boolean _succeeded = false;
+    protected boolean _commitSucceeded = false;
+    protected PrincipalImpl _userPrincipal;
+    protected String[] _groupsList = null;
+    
     
     public AppservPasswordLoginModule() {
         Habitat habitat = Util.getDefaultHabitat();
@@ -71,6 +88,9 @@ public abstract class AppservPasswordLoginModule implements LoginModule {
      *
      */
     public void initialize(Subject subject, CallbackHandler callbackHandler, Map<String, ?> sharedState, Map<String, ?> options) {
+        this._subject = subject;
+        this._sharedState = sharedState;
+        this._options = options;
         delegate.initialize(subject, callbackHandler, sharedState, options);
     }
 
@@ -89,7 +109,19 @@ public abstract class AppservPasswordLoginModule implements LoginModule {
      *
      */
     public boolean login() throws LoginException {
-        return delegate.login();
+        //Extract the container provided username and password
+        delegate.extractCredentials();
+        
+        //Setting the username and password and currentRealm obtained from the container
+        //to be made avilable to the realm
+        
+        setUsername(delegate.getUsername());
+        setPassword(delegate.getPassword());
+        setCurrentRealm((Realm)delegate.getCurrentRealm());
+        
+        authenticateUser();
+        return true;
+        
     }
 
     /**
@@ -103,7 +135,19 @@ public abstract class AppservPasswordLoginModule implements LoginModule {
      *
      */
     public boolean commit() throws LoginException {
-        return delegate.commit();
+        boolean delegateResponse = delegate.commit();
+        
+        //Unset the username/password 
+        setUsername(delegate.getUsername());
+        setPassword(delegate.getPassword());
+        
+        //Synchronize the protected member variables with those of delegate's
+        //For backward compatiblity
+        setCurrentRealm((Realm)delegate.getCurrentRealm());
+        setCommitSucceeded(delegate.isCommitSucceeded());
+        setGroupsList(delegate.getGroupsList());
+        
+        return delegateResponse;
     }
 
     /**
@@ -111,7 +155,21 @@ public abstract class AppservPasswordLoginModule implements LoginModule {
      *
      */
     public boolean abort() throws LoginException {
-        return delegate.abort();
+        boolean delegateResponse = delegate.abort();
+        
+        //Unset the username/password 
+        setUsername(delegate.getUsername());
+        setPassword(delegate.getPassword());
+        
+        //Synchronize the protected member variables with those of delegate's
+        //For backward compatiblity
+        
+        setCurrentRealm((Realm)delegate.getCurrentRealm());
+        setSucceeded(delegate.isSucceeded());
+        setUserPrincipal(delegate.getUserPrincipal());
+        setGroupsList(delegate.getGroupsList());
+        
+        return delegateResponse;
     }
 
     /**
@@ -119,7 +177,22 @@ public abstract class AppservPasswordLoginModule implements LoginModule {
      *
      */
     public boolean logout() throws LoginException {
-        return delegate.logout();
+        boolean delegateResponse = delegate.logout();
+        
+        //Unset the username/password 
+        setUsername(delegate.getUsername());
+        setPassword(delegate.getPassword());
+        
+        //Synchronize the protected member variables with those of delegate's
+        //For backward compatiblity
+        
+        setCurrentRealm((Realm)delegate.getCurrentRealm());
+        setSucceeded(delegate.isSucceeded());
+        setCommitSucceeded(delegate.isCommitSucceeded());
+        setUserPrincipal(delegate.getUserPrincipal());
+        setGroupsList(delegate.getGroupsList());
+        
+        return delegateResponse;
     }
 
      /**
@@ -136,6 +209,10 @@ public abstract class AppservPasswordLoginModule implements LoginModule {
      */
     public  void commitUserAuthentication (final String[] groups) {
         delegate.commitUserAuthentication(groups);
+        
+        //Synchronize the protected member variables with those of delegate's
+        //For backward compatiblity
+        setSucceeded(delegate.isSucceeded());
     }
     /**
      * @return the subject being authenticated.
@@ -159,4 +236,71 @@ public abstract class AppservPasswordLoginModule implements LoginModule {
      *
      */
     public abstract void authenticateUser() throws LoginException;
+    
+    
+    /**
+     * @return the currentRealm - for backward compatability
+     */
+    public Realm getCurrentRealm() {
+        return _currentRealm;
+    }
+    
+    /**
+     * @return the succeeded state - for backward compatability
+     */
+    public boolean isSucceeded() {
+        return _succeeded;
+    }
+    
+    /**
+     * @return the commitsucceeded state - for backward compatability
+     */
+    public boolean isCommitSucceeded() {
+        return _commitSucceeded;
+    }
+    
+    /**
+     * @return the UserPrincipal - for backward compatability
+     */
+    public PrincipalImpl getUserPrincipal() {
+        return _userPrincipal;
+    }
+    
+     /**
+     * @return the groupList - for backward compatability
+     */
+    public String[] getGroupsList() {
+        return _groupsList;
+    }
+  
+    //Private setters to be used internally
+    
+    private void setUsername(String username) {
+        this._username = username;
+    }
+
+    private void setPassword(String password) {
+        this._password = password;
+    }
+
+    private void setCurrentRealm(Realm currentRealm) {
+        this._currentRealm = currentRealm;
+    }
+
+    private void setSucceeded(boolean succeeded) {
+        this._succeeded = succeeded;
+    }
+
+    private void setCommitSucceeded(boolean commitSucceeded) {
+        this._commitSucceeded = commitSucceeded;
+    }
+
+
+    private void setUserPrincipal(PrincipalImpl userPrincipal) {
+        this._userPrincipal = userPrincipal;
+    }
+
+    private void setGroupsList(String[] groupsList) {
+        this._groupsList = groupsList;
+    }
 }
