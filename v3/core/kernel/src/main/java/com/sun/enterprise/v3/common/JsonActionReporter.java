@@ -41,18 +41,21 @@ import java.util.Properties;
 @Scoped(PerLookup.class)
 public class JsonActionReporter extends ActionReporter {
 
+    /*
+    top is true only for the first toplevel message to emit more data like
+     * command name and exit_code of the command
+     *
+     */
+    private boolean top = true;
+
     /** Creates a new instance of JsonActionReporter */
     public JsonActionReporter() {
     }
 
     public void writeReport(OutputStream os) throws IOException {
         PrintWriter writer = new PrintWriter(os);
-        writer.println("{");
-        writer.println(quote("command") + ":" + quote(actionDescription) +" ,");
-        writer.println(quote("exit_code") + ":" + quote("" + this.exitCode)+" ,");
-        writer.println(quote("result") + " : [");
+
         write(topMessage, writer);
-        writer.println("]");
         if (exception != null) {
             writer.println("Exception raised during operation : <br>");
             exception.printStackTrace(writer);
@@ -60,17 +63,24 @@ public class JsonActionReporter extends ActionReporter {
         if (subActions.size() > 0) {
             writer.println(quote(", number_subactions") + ":" + quote("" + subActions.size()));
         }
-        writer.println("}");
         writer.flush();
     }
 
     private void write(MessagePart part, PrintWriter writer) {
 
 
-        write(part.getProps(), writer);
+        writer.println("{ " + quote("name") + ":" + quote(part.getMessage()));
+        if (top) {
+            writer.println(", " + quote("command") + ":" + quote(actionDescription));
+            writer.println(", " + quote("exit_code") + ":" + quote("" + this.exitCode));
+            top = false;
+        }
+        writeProperties(part.getProps(), writer);
         boolean first = true;
         for (MessagePart child : part.getChildren()) {
-            if (first == false) {
+            if (first == true) {
+                writer.println(", " + quote("result") + " : [");
+            } else {
                 writer.println(",");
 
             }
@@ -78,13 +88,20 @@ public class JsonActionReporter extends ActionReporter {
             write(child, writer);
 
         }
+        if (first == false) { //close the array
+
+            writer.println("]");
+        }
+
+        writer.println("}");
 
     }
 
-    private void write(Properties props, PrintWriter writer) {
+    private void writeProperties(Properties props, PrintWriter writer) {
         if (props == null || props.size() == 0) {
             return;
         }
+        writer.println("," + quote("properties") + " : ");
         boolean needComma = false;
         writer.println("{");
         for (Map.Entry entry : props.entrySet()) {
@@ -103,7 +120,7 @@ public class JsonActionReporter extends ActionReporter {
      * Produce a string in double quotes with backslash sequences in all the
      * right places. 
      */
-    private  String quote(String string) {
+    private String quote(String string) {
         if (string == null || string.length() == 0) {
             return "\"\"";
         }
