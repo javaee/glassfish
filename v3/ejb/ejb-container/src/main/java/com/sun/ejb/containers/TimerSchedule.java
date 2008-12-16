@@ -433,7 +433,9 @@ public class TimerSchedule implements Serializable {
                 continue;
             }
 
-            if (dayOfWeek_.equals("*") || !dayOfMonth_.equals("*")) {
+            if (dayOfWeek_.equals("*")) {
+                // Either dayOfMonth_ is specified, and we'll use it or 
+                // neither is specified and any one can be used.
                 //System.out.println("==> Processing DAY_OF_MONTH ...");
                 if(skipToNextValue(next, daysOfMonth, Calendar.DAY_OF_MONTH, Calendar.MONTH)) {
                     next.set(Calendar.HOUR_OF_DAY, 0);
@@ -441,14 +443,40 @@ public class TimerSchedule implements Serializable {
                     next.set(Calendar.SECOND, 0);
                     continue;
                 }
-            }
-
-            if (dayOfMonth_.equals("*") || !dayOfWeek_.equals("*")) {
+            } else if (dayOfMonth_.equals("*")) {
+                // dayOfWeek_ is specified and dayOfMonth_ is not
                 //System.out.println("==> Processing DAY_OF_WEEK ...");
                 if(skipToNextValue(next, daysOfWeek, Calendar.DAY_OF_WEEK, Calendar.WEEK_OF_MONTH)) {
                     next.set(Calendar.HOUR_OF_DAY, 0);
                     next.set(Calendar.MINUTE, 0);
                     next.set(Calendar.SECOND, 0);
+                    continue;
+                }
+
+            } else {
+                // Both are specified - pick the closest date:
+                Calendar date1 = (Calendar)next.clone();
+                Calendar date2 = (Calendar)next.clone();
+                boolean changed = false;
+
+                //System.out.println("==> Processing DAY_OF_MONTH ...");
+                if(skipToNextValue(date1, daysOfMonth, Calendar.DAY_OF_MONTH, Calendar.MONTH)) {
+                    date1.set(Calendar.HOUR_OF_DAY, 0);
+                    date1.set(Calendar.MINUTE, 0);
+                    date1.set(Calendar.SECOND, 0);
+                }
+
+                //System.out.println("==> Processing DAY_OF_WEEK ...");
+                if(skipToNextValue(date2, daysOfWeek, Calendar.DAY_OF_WEEK, Calendar.WEEK_OF_MONTH)) {
+                    date2.set(Calendar.HOUR_OF_DAY, 0);
+                    date2.set(Calendar.MINUTE, 0);
+                    date2.set(Calendar.SECOND, 0);
+
+                }
+
+                Calendar date0 = (date1.before(date2))? date1 : date2;
+                if (!next.equals(date0)) {
+                    next = date0;
                     continue;
                 }
             }
@@ -666,9 +694,13 @@ public class TimerSchedule implements Serializable {
         if (!bits.get(currvalue)) {
             nextvalue = bits.nextSetBit(currvalue);
             if (nextvalue == -1 || nextvalue > date.getActualMaximum(field)) {
-                nextvalue = bits.nextSetBit(0);
                 //System.out.println("==> Incrementing ...");
                 date.add(highfiled, 1);
+                if (field == Calendar.DAY_OF_MONTH) {
+                    // Recalculate bits for the next month
+                    bits = populateCurrentMonthBits(date);
+                }
+                nextvalue = bits.nextSetBit(0);
             }
 
             if (nextvalue == -1) 
@@ -874,6 +906,7 @@ public class TimerSchedule implements Serializable {
             setBitsRange(bits, begin, end); // 1, getAc...
 
         } else {
+            //System.out.println("++++++++ getDayForDayOfMonth(" + date.getTime() + " - " + s + " ) "  + getDayForDayOfMonth(date, s));
             bits.set(getDayForDayOfMonth(date, s));
         } 
     }
