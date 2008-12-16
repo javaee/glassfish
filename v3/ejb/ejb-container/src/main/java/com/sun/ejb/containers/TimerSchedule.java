@@ -803,7 +803,7 @@ public class TimerSchedule implements Serializable {
             return lastday - parseInt(s.substring(1), DAY_OF_MONTH);
 
         } else if (orderedDayPattern.matcher(s).matches()) {
-            String arr[] = s.split("\\s");
+            String arr[] = splitBy(s, ' ');
             int num = -1;
             if (!arr[0].equals("last")) {
                 num = parseInt(arr[0].substring(0, 1), DAY_OF_MONTH);
