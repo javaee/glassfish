@@ -36,23 +36,31 @@
 
 package com.sun.enterprise.transaction.jts;
 
-import com.sun.enterprise.config.serverbeans.TransactionService;
-import com.sun.enterprise.util.i18n.StringManager;
-import com.sun.enterprise.transaction.api.JavaEETransactionManager;
-import com.sun.logging.LogDomains;
-import com.sun.enterprise.transaction.spi.RecoveryResourceListener;
-import com.sun.enterprise.transaction.spi.RecoveryResourceHandler;
-import com.sun.enterprise.transaction.JavaEETransactionManagerSimplified;
-import com.sun.jts.CosTransactions.DelegatedRecoveryManager;
-import com.sun.jts.CosTransactions.RecoveryManager;
-
-import javax.transaction.xa.XAResource;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.transaction.xa.XAResource;
+
+import org.glassfish.api.Async;
+import org.glassfish.api.Startup;
+import com.sun.enterprise.config.serverbeans.TransactionService;
+import com.sun.enterprise.util.i18n.StringManager;
+import com.sun.logging.LogDomains;
+
+import com.sun.enterprise.transaction.api.JavaEETransactionManager;
+import com.sun.enterprise.transaction.api.ResourceRecoveryManager;
+import com.sun.enterprise.transaction.api.RecoveryResourceRegistry;
+import com.sun.enterprise.transaction.spi.RecoveryResourceListener;
+import com.sun.enterprise.transaction.spi.RecoveryResourceHandler;
+import com.sun.enterprise.transaction.JavaEETransactionManagerSimplified;
+
+import com.sun.jts.CosTransactions.DelegatedRecoveryManager;
+import com.sun.jts.CosTransactions.RecoveryManager;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PostConstruct;
 
 /**
  * Resource recovery manager to recover transactions.
@@ -60,31 +68,40 @@ import org.jvnet.hk2.annotations.Inject;
  * @author Jagadish Ramu
  */
 @Service
-public class ResourceRecoveryManagerImpl implements com.sun.enterprise.transaction.api.ResourceRecoveryManager {
+@Async
+public class ResourceRecoveryManagerImpl implements Startup, PostConstruct, ResourceRecoveryManager {
 
     @Inject
     private TransactionService txnService;
 
-/*  Not needed for PE
-    @Inject
-    private TransactionRecovery txnRecoveryService;
-*/
+    @Inject 
+    private Habitat habitat;
 
-    @Inject
     private JavaEETransactionManager txMgr;
 
-    @Inject
-    private RecoveryResourceHandler[] recoveryResourceHandlers;
+    private Collection<RecoveryResourceHandler> recoveryResourceHandlers;
 
-    @Inject
-    private com.sun.enterprise.transaction.api.RecoveryResourceRegistry recoveryListenersRegistry;
+    private RecoveryResourceRegistry recoveryListenersRegistry;
 
-    private static Logger _logger = LogDomains.getLogger(JavaEETransactionManagerSimplified.class,
+    private static Logger _logger = 
+            LogDomains.getLogger(JavaEETransactionManagerSimplified.class,
             LogDomains.JTA_LOGGER);
-    private static StringManager localStrings = StringManager.getManager(JavaEETransactionManagerSimplified.class);
+    private static StringManager localStrings = 
+            StringManager.getManager(JavaEETransactionManagerSimplified.class);
 
     private volatile boolean lazyRecovery = false;
+    private volatile boolean configured = false;
 
+
+    public Lifecycle getLifecycle() {
+        // This service stays running for the life of the app server, hence SERVER.
+        return Lifecycle.SERVER;
+    }
+
+    public void postConstruct() {
+        // Recover XA resources if the auto-recovery flag in tx service is set to true
+        recoverXAResources();
+    }
 
     /**
      * recover incomplete transactions
@@ -101,6 +118,7 @@ public class ResourceRecoveryManagerImpl implements com.sun.enterprise.transacti
                 _logger.log(Level.FINE, "Performing recovery of incomplete Tx...");
             }
 
+            configure();
             Vector xaresList = new Vector();
 
             //TODO V3 will handle ThirdPartyXAResources also (v2 is not so). Is this fine ?
@@ -173,12 +191,6 @@ public class ResourceRecoveryManagerImpl implements com.sun.enterprise.transacti
     public void recoverXAResources(boolean force) {
         if (force) {
             try {
-                // (unused from v2 ?)
-                // transactionRecoveryService.start(context) ;
-
-                // Not needed for PE
-                // RecoveryManager.registerTransactionRecoveryService(txnRecoveryService);
-                
                 //TODO V3, v2 has txnService.isAutomaticRecovery
                 if (!Boolean.valueOf(txnService.getAutomaticRecovery())) {
                     return;
@@ -188,6 +200,13 @@ public class ResourceRecoveryManagerImpl implements com.sun.enterprise.transacti
                             "Perform recovery of XAResources...");
                 }
 
+                configure();
+
+                /** TBD - Not needed for PE. When used when does it need to register?
+                RecoveryManager.registerTransactionRecoveryService(
+                        habitat.getByContract(TransactionRecovery.class));
+                **/
+                
                 Vector xaresList = new Vector();
                 Map<RecoveryResourceHandler, Vector> resourcesToHandler = getAllRecoverableResources(xaresList);
 
@@ -252,5 +271,18 @@ public class ResourceRecoveryManagerImpl implements com.sun.enterprise.transacti
      */
     public void recoverXAResources() {
         recoverXAResources(!lazyRecovery);
+    }
+
+    private void configure() {
+        if (configured) {
+            return;
+        }
+
+        recoveryResourceHandlers = habitat.getAllByContract(RecoveryResourceHandler.class);
+        txMgr = habitat.getByContract(JavaEETransactionManager.class);
+        recoveryListenersRegistry = habitat.getComponent(RecoveryResourceRegistry.class);
+        if (recoveryListenersRegistry == null) throw new IllegalStateException();
+
+        configured = true;
     }
 }
