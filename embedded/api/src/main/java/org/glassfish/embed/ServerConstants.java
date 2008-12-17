@@ -58,6 +58,7 @@ public class ServerConstants {
     public static final String          DEFAULT_PATH_TO_INSTANCE    = "domains/domain1";
     public static final String          DEFAULT_PATH_TO_DOMAIN_XML  = "config/domain.xml";
     public static final URL             DEFAULT_DOMAIN_XML_URL      = ServerConstants.class.getResource("/org/glassfish/embed/domain.xml");
+    public static final String          APPLICATIONS_DIR            = "applications";
 
     //public static final File            DEFAULT_
 }

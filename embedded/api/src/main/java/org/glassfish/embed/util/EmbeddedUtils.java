@@ -5,8 +5,10 @@
 
 package org.glassfish.embed.util;
 
+import java.io.*;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
+import org.glassfish.embed.EmbeddedException;
 
 /**
  *
@@ -33,6 +35,22 @@ public class EmbeddedUtils {
     public static ActionReport message(ActionReport ar, String msg) {
         ar.setMessage(msg);
         return ar;
+    }
+
+    /*
+     * java.io.File.mkdirs returns true if it created the dir but returns false
+     * if it can't create it OR if it already exists
+     * We need slightly different behavior.
+     * return true if the dir now exists.  return false if it can not be created.
+     */
+
+    public static boolean mkdirsIfNotExist(File f) {
+        if(f == null)
+            return false;
+
+        f.mkdirs();
+
+        return f.isDirectory();
     }
 
     private EmbeddedUtils() {

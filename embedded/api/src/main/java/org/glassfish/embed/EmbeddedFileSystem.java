@@ -43,6 +43,7 @@ import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.util.io.FileUtils;
 import java.io.File;
 import java.net.URL;
+import org.glassfish.embed.util.EmbeddedUtils;
 
 /**
  * There are currently some ugly things we MUST do:
@@ -74,9 +75,8 @@ public final class EmbeddedFileSystem {
     public void setInstallRoot(File f) throws EmbeddedException {
         mustNotBeInitialized("setInstallRoot");
         installRoot = SmartFile.sanitize(f);
-        f.mkdirs();
 
-        if (!f.isDirectory()) {
+        if (!EmbeddedUtils.mkdirsIfNotExist(f)) {
             throw new EmbeddedException("bad_install_root", f);
         }
     }
@@ -84,9 +84,8 @@ public final class EmbeddedFileSystem {
     public void setInstanceRoot(File f) throws EmbeddedException {
         mustNotBeInitialized("setInstanceRoot");
         instanceRoot = SmartFile.sanitize(f);
-        f.mkdirs();
 
-        if (!f.isDirectory()) {
+        if (!EmbeddedUtils.mkdirsIfNotExist(f)) {
             throw new EmbeddedException("bad_instance_root", f);
         }
     }
@@ -129,6 +128,11 @@ public final class EmbeddedFileSystem {
         mustBeInitialized("getDomainXmlUrl");
         return domainXmlUrl;
     }
+
+    public File getAppsDir() {
+        return appsDir;
+    }
+
     // ****************************************************
     // *************    package private. Think long and hard before making public!
     // ****************************************************
@@ -185,6 +189,7 @@ public final class EmbeddedFileSystem {
             setInstanceRoot(new File(installRoot, DEFAULT_PATH_TO_INSTANCE));
 
         initializeDomainXml(); // very complicated!!
+        initializeApplicationsDirectory();
         setSystemProps();
 
         initialized = true;
@@ -225,12 +230,20 @@ public final class EmbeddedFileSystem {
                 domainXmlUrl = DEFAULT_DOMAIN_XML_URL;
             }
         }
-        File parent = new File(domainXmlFile, "..");
-        
-        parent.mkdirs();
 
-        if(!parent.isDirectory()) {
+        File parent = new File(domainXmlFile, "..");
+
+        if (!EmbeddedUtils.mkdirsIfNotExist(parent)) {
+            parent = SmartFile.sanitize(parent); // get rid of the trailing ".."
             throw new EmbeddedException("cant_create_parent_dir_domain_xml", parent);
+        }
+    }
+
+    private void initializeApplicationsDirectory() throws EmbeddedException {
+        appsDir = new File(instanceRoot, APPLICATIONS_DIR);
+
+        if (!EmbeddedUtils.mkdirsIfNotExist(appsDir)) {
+            throw new EmbeddedException("cant_create_apps_dir", appsDir);
         }
     }
 
@@ -279,6 +292,7 @@ public final class EmbeddedFileSystem {
     private File                installRoot;
     private File                instanceRoot;
     private File                domainXmlFile;
+    private File                appsDir;
     private URL                 domainXmlUrl;
     private boolean             autoDelete      = true;
     private boolean             initialized     = false;
