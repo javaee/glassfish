@@ -58,6 +58,7 @@ import com.sun.hk2.component.InhabitantsParser;
 import com.sun.web.security.RealmAdapter;
 import com.sun.web.server.DecoratorForJ2EEInstanceListener;
 import java.io.*;
+import java.net.MalformedURLException;
 import java.util.*;
 import org.glassfish.api.Startup;
 import org.glassfish.api.admin.ParameterNames;
@@ -121,22 +122,6 @@ import org.glassfish.embed.impl.EmbeddedModulesRegistryImpl;
  * @author bnevins
  */
 public class Server {
-
-    // todo todo todo
-    // todo todo todo
-URL domainXmlUrlInternal;
-    // todo todo todo
-    // todo todo todo
-    // todo todo todo
-    // todo todo todo
-    // todo todo todo
-    // todo todo todo
-
-
-
-
-
-    private static Map<String,Server>servers = new HashMap<String,Server>();
     /**
      * As of April 2008, several key configurations like HTTP listener
      * creation cannot be done once GFv3 starts running.
@@ -149,15 +134,9 @@ URL domainXmlUrlInternal;
     /*pkg-private*/ /*almost final*/ Habitat habitat;
 
     /**
-     * Work around until the live HTTP listener support comes back.
-     */
-    private Document domainXmlDocument;
-
-    /**
      * To navigate around {@link #domainXml}.
      */
     private final XPath xpath = XPathFactory.newInstance().newXPath();
-    private EmbeddedInfo info;
     //URL domainXmlUrl;
     /*pkg-private*/ URL defaultWebXml;
 
@@ -185,8 +164,9 @@ URL domainXmlUrlInternal;
     public Server(EmbeddedInfo info) throws EmbeddedException {
         this.info = info;
         info.validate();
+        efs = info.getFileSystem();
         setShutdownHook();
-        setupDomainXml();
+        readDomainXmlSource();
 
         try {
             jdbcHack();
@@ -199,128 +179,19 @@ URL domainXmlUrlInternal;
     }
 
 
-    private void setupDomainXml() throws EmbeddedException {
-        URL domainXmlUrl = info.getFileSystem().getDomainXmlUrl();
-
-        if(domainXmlUrl == null)
-            throw new EmbeddedException("bad_domain_xml");
-
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        try {
-        // dbf.setNamespaceAware(true);  // domain.xml doesn't use namespace
-            domainXmlDocument = dbf.newDocumentBuilder().parse(domainXmlUrl.toExternalForm());
-        }
-        catch (Exception ex) {
-            // TODO ??? better string here....
-            throw new EmbeddedException("parser_error", ex);
-        }
-    }
-
-/*
-    @Deprecated
-    private Server(URL dx, boolean start) throws EmbeddedException {
-
-        domainXmlUrl = dx;
-
-        if(domainXmlUrl == null)
-            domainXmlUrl = EmbeddedFileSystem.getDomainXmlUrl();
-
-        if(domainXmlUrl == null)
-            domainXmlUrl = getClass().getResource("/org/glassfish/embed/domain.xml");
-
-        if(domainXmlUrl == null)
-            throw new EmbeddedException("bad_domain_xml");
-
-        if (start)
-            start();
-    }
-*/
-    /**
-     * Starts an empty do-nothing GlassFish v3.
-     * <p/>
-     * <p/>
-     * In particular, no HTTP listener is configured out of the box, so you'd have to add
-     * some programatically via {@link #createHttpListener(int)} and {@link #createVirtualServer(GFHttpListener)}.
-     *
-     @Deprecated
-    private Server(URL domainXmlUrl) throws EmbeddedException {
-        this(domainXmlUrl, true);
-    }
-*/
-    /**
-     * Starts GlassFish v3 with minimalistic configuration that involves
-     * single HTTP listener listening on the given port.
-     *
-     @Deprecated
-    private Server(int httpPort) throws EmbeddedException {
-        this(null, false);
-
-        // force creation...
-        EmbeddedFileSystem.getInstallRoot();
-
-        try {
-            domainXml = parseDefaultDomainXml();
-        } catch (Exception e) {
-            throw new EmbeddedException(e);
-        }
-
-        try {
-            jdbcHack();
-        } catch (Exception e) {
-            throw new EmbeddedException("jdbc_hack_failure", e);
-        }
-
-        createVirtualServer(createHttpListener(httpPort));
-        start();
-    }
-
-    @Deprecated
-     private Document parseDefaultDomainXml() throws ParserConfigurationException, IOException, SAXException {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-//        dbf.setNamespaceAware(true);  // domain.xml doesn't use namespace 
-        //return dbf.newDocumentBuilder().parse(getClass().getResource("/org/glassfish/embed/domain.xml").toExternalForm());
-        return dbf.newDocumentBuilder().parse(domainXmlUrl.toExternalForm());
-
-    }
-   */
-
     /**
      * @return the domainXml URL.
      */
 
     public URL getDomainXmlUrl() throws EmbeddedException {
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
-        //return info.getFileSystem().getDomainXmlUrl();
-        return domainXmlUrlInternal;
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
+        File f = efs.getTargetDomainXml();
 
+        try {
+            return f.toURI().toURL();
+        }
+        catch (Exception ex) {
+            throw new EmbeddedException("bad_file", f);
+        }
     }
 
     public void setDefaultWebXml(URL url) {
@@ -384,7 +255,7 @@ URL domainXmlUrlInternal;
         parser.replace(DomainXmlPersistence.class, EmbeddedDomainXml.class);
         try {
             // we provide our own ServerEnvironment
-            EmbeddedServerEnvironment.setInstallRoot(info.getFileSystem().getInstallRoot());
+            EmbeddedServerEnvironment.setInstallRoot(efs.getInstallRoot());
         }
         catch (EmbeddedException ex) {
             //TODO ????
@@ -435,31 +306,13 @@ URL domainXmlUrlInternal;
                 .attribute("name", "docroot")
                 .attribute("value", ".");
         /**
-         * Write domain.xml to a temporary file. UGLY UGLY UGLY.
+         * Write domain.xml to target
          */
-        try {
-            File domainFile = info.getFileSystem().getDomainXmlFile();
 
-            //if(!domainFile.exists()) {
-            {
-                //domainFile.createNewFile();
-                Transformer t = TransformerFactory.newInstance().newTransformer();
-                t.transform(new DOMSource(domainXmlDocument), new StreamResult(domainFile));
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
-                domainXmlUrlInternal = domainFile.toURI().toURL();
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
-                // todo todo todo
-            }
+        try {
+            File domainFile = efs.getTargetDomainXml();
+            Transformer t = TransformerFactory.newInstance().newTransformer();
+            t.transform(new DOMSource(domainXmlDocument), new StreamResult(domainFile));
         } 
         catch (Exception e) {
             throw new EmbeddedException("Failed to write domain XML", e);
@@ -555,7 +408,7 @@ URL domainXmlUrlInternal;
         try {
             
             EmbeddedModulesRegistryImpl reg = new EmbeddedModulesRegistryImpl();
-            StartupContext startupContext = new StartupContext(info.getFileSystem().getInstallRoot(), new String[0]);
+            StartupContext startupContext = new StartupContext(efs.getInstallRoot(), new String[0]);
 
 
             // !!!!!!!!!!!!!!!!!!!!!!!!!
@@ -598,7 +451,7 @@ URL domainXmlUrlInternal;
             if (!archive.isDirectory()) {
 
                 ArchiveHandler h = appLife.getArchiveHandler(a);
-                File appDir = new File(info.getFileSystem().getAppsDir(), a.getName());
+                File appDir = new File(efs.getAppsDir(), a.getName());
                 FileUtils.whack(appDir);
                 appDir.mkdirs();
                 h.expand(a, archiveFactory.createArchive(appDir));
@@ -767,10 +620,30 @@ URL domainXmlUrlInternal;
     public static Server getServer(String id) {
         return servers.get(id);
     }
+    ////////////////////////////////////////////////////////
+    /////////////   private methods   //////////////////////
+    ////////////////////////////////////////////////////////
+
+    private void readDomainXmlSource() throws EmbeddedException {
+        URL sourceUrl = efs.getSourceDomainXml();
+
+        if(sourceUrl == null)
+            throw new EmbeddedException("bad_domain_xml");
+
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        try {
+            domainXmlDocument = dbf.newDocumentBuilder().parse(sourceUrl.toExternalForm());
+        }
+        catch (Exception ex) {
+            // TODO ??? better string here....
+            throw new EmbeddedException("parser_error", ex);
+        }
+    }
 
     private static void addServer(String name, Server server) {
         servers.put(name, server);
     }
+
     private void setShutdownHook() {
         //final String msg = strings.get("serverStopped", info.getType());
         Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -779,7 +652,7 @@ URL domainXmlUrlInternal;
                     // logger won't work anymore...
                     //System.out.println(msg);
                     // TODO TEMP
-                    info.getFileSystem().cleanup();
+                    efs.cleanup();
                 }
                 catch (EmbeddedException ex) {
                     System.out.println("Could not cleanup files.");
@@ -865,7 +738,16 @@ URL domainXmlUrlInternal;
             throw new EmbeddedException("should_not_be_started", methodName);
         }
     }
+
+    ////////////////////////////////////////////////////////
+    /////////////   private variables //////////////////////
+    ////////////////////////////////////////////////////////
+
+    /**
+     * Work around until the live HTTP listener support comes back.
+     */
+    private Document                    domainXmlDocument;
+    private EmbeddedFileSystem          efs;
+    private EmbeddedInfo                info;
+    private static Map<String,Server>   servers = new HashMap<String,Server>();
 }
-
-
-

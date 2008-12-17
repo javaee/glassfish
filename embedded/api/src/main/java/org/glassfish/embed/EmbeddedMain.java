@@ -166,7 +166,7 @@ public class EmbeddedMain {
             File f = new File(name);
 
             if(f.exists()) {
-                efs.setDomainXmlFile(f);
+                efs.setDomainXmlSource(f);
                 return;
             }
 
@@ -176,7 +176,7 @@ public class EmbeddedMain {
             if(url == null)
                 throw new EmbeddedException("bad_domain_xml");
 
-            efs.setDomainXmlUrl(url);
+            efs.setDomainXmlSource(url);
         }
 
         catch (EmbeddedException ee) {
