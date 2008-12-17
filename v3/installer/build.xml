@@ -232,6 +232,32 @@
            <fileset dir="${basedir}/target" includes="installer_distro.jar"/>
         </concat>
 
+        <!-- do all of that once more after replacing the glassfish payload with
+	the one for "full" GF distribution to get installers for full GF -->
+
+         <echo message="Copying Glassfish full distro zip file"/>
+ 
+         <copy tofile="${stage.dir}/Product/Packages/glassfish.zip"
+		 file="${gf.zip.dir}/glassfish-ips-installer.zip" 
+		 overwrite="true" />
+
+
+	 <zip destfile="${basedir}/target/installer_glassfish_distro.zip"
+		 basedir="${stage.dir}" />
+
+         <copy tofile="${basedir}/target/setup-windows-glassfish" file="${resources.dir}/wrappers/setup.exe" overwrite="true"/>
+
+         <concat append="true" encoding="ISO-8859-1" destfile="${basedir}/target/setup-windows-glassfish">
+            <fileset dir="${basedir}/target" includes="installer_glassfish_distro.zip"/>
+        </concat>
+        <jar jarfile="${basedir}/target/installer_glassfish_distro.jar"
+            basedir="${stage.dir}">            
+        </jar>
+        <copy tofile="${basedir}/target/setup-unix-glassfish" file="${resources.dir}/wrappers/wrapper.sh" overwrite="true"/>
+        <concat append="true" encoding="ISO-8859-1" destfile="${basedir}/target/setup-unix-glassfish">
+           <fileset dir="${basedir}/target" includes="installer_glassfish_distro.jar"/>
+        </concat>
+
 	<!-- prepare installer zip artifact for consumption in Sun branded build -->
 
 
