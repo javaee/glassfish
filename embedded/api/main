@@ -1,0 +1,3 @@
+export CP=target/glassfish-embedded-api-3.0-Prelude-SNAPSHOT.jar
+export CP=$CP:../packager/all/target/final.jar
+java -cp $CP org.glassfish.embed.EmbeddedMain $*
