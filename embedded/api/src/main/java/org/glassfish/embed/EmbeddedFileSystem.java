@@ -214,9 +214,9 @@ public final class EmbeddedFileSystem {
         }
 
         File parent = new File(domainXmlTarget, "..");
+        parent = SmartFile.sanitize(parent); // get rid of the trailing ".."
 
         if (!EmbeddedUtils.mkdirsIfNotExist(parent)) {
-            parent = SmartFile.sanitize(parent); // get rid of the trailing ".."
             throw new EmbeddedException("cant_create_parent_dir_domain_xml", parent);
         }
     }
