@@ -36,10 +36,7 @@
 
 package com.sun.enterprise.deployment.node;
 
-import com.sun.enterprise.deployment.BundleDescriptor;
-import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.enterprise.deployment.MessageDestinationDescriptor;
-import com.sun.enterprise.deployment.RootDeploymentDescriptor;
+import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.xml.TagNames;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

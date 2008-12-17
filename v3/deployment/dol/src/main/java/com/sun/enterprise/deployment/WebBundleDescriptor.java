@@ -700,6 +700,11 @@ public class WebBundleDescriptor extends BundleDescriptor
                 new HashSet<PersistenceUnitDescriptor>(
                         findReferencedPUsViaPURefs(this));
         pus.addAll(findReferencedPUsViaPCRefs(this));
+        if (extensions.containsKey(EjbBundleDescriptor.class)) {
+            for (RootDeploymentDescriptor extension : extensions.get(EjbBundleDescriptor.class)) {
+                pus.addAll(((EjbBundleDescriptor) extension).findReferencedPUs());
+            }
+        }
         return pus;
     }
 

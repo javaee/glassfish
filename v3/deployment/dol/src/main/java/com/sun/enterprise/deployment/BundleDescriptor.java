@@ -646,7 +646,8 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
         // step #1: see if we have only one PU in the local scope.
         PersistenceUnitDescriptor pu = null;
         int totalNumberOfPUInBundle = 0;
-        for (PersistenceUnitsDescriptor nextPUs : getExtensionsDescriptors(PersistenceUnitsDescriptor.class)) {
+        for (PersistenceUnitsDescriptor nextPUs :
+                getModuleDescriptor().getDescriptor().getExtensionsDescriptors(PersistenceUnitsDescriptor.class)) {
             for (PersistenceUnitDescriptor nextPU :
                     nextPUs.getPersistenceUnitDescriptors()) {
                 pu = nextPU;
@@ -750,7 +751,7 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
 
         // local scoped PUs
         for (PersistenceUnitsDescriptor pus :
-                getExtensionsDescriptors(PersistenceUnitsDescriptor.class)) {
+                getModuleDescriptor().getDescriptor().getExtensionsDescriptors(PersistenceUnitsDescriptor.class)) {
             for (PersistenceUnitDescriptor pu :
                     pus.getPersistenceUnitDescriptors()) {
                 // for local PUs, use unqualified name.
