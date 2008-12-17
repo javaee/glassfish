@@ -121,6 +121,21 @@ import org.glassfish.embed.impl.EmbeddedModulesRegistryImpl;
  * @author bnevins
  */
 public class Server {
+
+    // todo todo todo
+    // todo todo todo
+URL domainXmlUrlInternal;
+    // todo todo todo
+    // todo todo todo
+    // todo todo todo
+    // todo todo todo
+    // todo todo todo
+    // todo todo todo
+
+
+
+
+
     private static Map<String,Server>servers = new HashMap<String,Server>();
     /**
      * As of April 2008, several key configurations like HTTP listener
@@ -274,7 +289,37 @@ public class Server {
      */
 
     public URL getDomainXmlUrl() throws EmbeddedException {
-        return info.getFileSystem().getDomainXmlUrl();
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
+        //return info.getFileSystem().getDomainXmlUrl();
+        return domainXmlUrlInternal;
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
 
     }
 
@@ -395,11 +440,25 @@ public class Server {
         try {
             File domainFile = info.getFileSystem().getDomainXmlFile();
 
-            if(!domainFile.exists()) {
+            //if(!domainFile.exists()) {
+            {
                 //domainFile.createNewFile();
                 Transformer t = TransformerFactory.newInstance().newTransformer();
                 t.transform(new DOMSource(domainXmlDocument), new StreamResult(domainFile));
-                //domainXmlUrl = domainFile.toURI().toURL();
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
+                domainXmlUrlInternal = domainFile.toURI().toURL();
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
+                // todo todo todo
             }
         } 
         catch (Exception e) {
@@ -539,14 +598,12 @@ public class Server {
             if (!archive.isDirectory()) {
 
                 ArchiveHandler h = appLife.getArchiveHandler(a);
-
-                // TODO needs to be written in V3 location...
-                File tmpDir = new File(info.getFileSystem().getInstanceRoot(), a.getName());
-                FileUtils.whack(tmpDir);
-                tmpDir.mkdirs();
-                h.expand(a, archiveFactory.createArchive(tmpDir));
+                File appDir = new File(info.getFileSystem().getAppsDir(), a.getName());
+                FileUtils.whack(appDir);
+                appDir.mkdirs();
+                h.expand(a, archiveFactory.createArchive(appDir));
                 a.close();
-                a = archiveFactory.openArchive(tmpDir);
+                a = archiveFactory.openArchive(appDir);
             }
             return deploy(a);
         }
