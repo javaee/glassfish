@@ -1,16 +1,22 @@
--classpath 'c:/kohsuke/Sun/glassfish/v3/hk2/hk2/auto-depends/target/classes' -protected
+-classpath
+'/Users/dochez/websites/hk2/hk2/auto-depends/target/classes:/Users/dochez/.m2/repository/com/sun/enterprise/tiger-types-osgi/0.3.37-SNAPSHOT/tiger-types-osgi-0.3.37-SNAPSHOT.jar'
+-encoding
+'MacRoman'
+-protected
 -sourcepath
-'c:/kohsuke/Sun/glassfish/v3/hk2/hk2/auto-depends/src/java'
+'/Users/dochez/websites/hk2/hk2/auto-depends/src/java'
 -author
 -bottom
-'Copyright &copy; 2007. All Rights Reserved.'
+'Copyright &#169; 2008 <a href="http://www.sun.com">Sun Microsystems, Inc.</a>. All Rights Reserved.'
 -charset
-'ISO-8859-1'
+'UTF-8'
 -d
-'c:/kohsuke/Sun/glassfish/v3/hk2/hk2/auto-depends/target/site/apidocs'
+'/Users/dochez/websites/hk2/hk2/auto-depends/target/site/apidocs'
+-docencoding
+'UTF-8'
 -doctitle
-'Inversion of Control / Autodependency mechanism 0.1-SNAPSHOT API'
+'Inversion of Control / Autodependency mechanism 0.3.37-SNAPSHOT API'
 -use
 -version
 -windowtitle
-'Inversion of Control / Autodependency mechanism 0.1-SNAPSHOT API'
+'Inversion of Control / Autodependency mechanism 0.3.37-SNAPSHOT API'

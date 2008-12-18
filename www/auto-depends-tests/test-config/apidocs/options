@@ -1,16 +1,22 @@
--classpath 'c:/kohsuke/Sun/glassfish/v3/hk2/hk2/auto-depends-tests/test-config/target/classes;c:/kohsuke/unixHome/.m2/repository/stax/stax-api/1.0.1/stax-api-1.0.1.jar;c:/kohsuke/unixHome/.m2/repository/com/envoisolutions/sxc/sxc-runtime/0.6/sxc-runtime-0.6.jar;c:/kohsuke/unixHome/.m2/repository/javax/xml/stream/stax-api/1.0/stax-api-1.0.jar;c:/kohsuke/unixHome/.m2/repository/com/sun/xml/stream/sjsxp/1.0/sjsxp-1.0.jar;c:/kohsuke/unixHome/.m2/repository/com/sun/enterprise/hk2/0.1-SNAPSHOT/hk2-0.1-SNAPSHOT.jar;c:/kohsuke/unixHome/.m2/repository/com/sun/enterprise/config/0.1-SNAPSHOT/config-0.1-SNAPSHOT.jar;c:/kohsuke/unixHome/.m2/repository/com/sun/enterprise/auto-depends/0.1-SNAPSHOT/auto-depends-0.1-SNAPSHOT.jar;c:/kohsuke/unixHome/.m2/repository/junit/junit/4.3.1/junit-4.3.1.jar' -protected
+-classpath
+'/Users/dochez/websites/hk2/hk2/auto-depends-tests/test-config/target/classes:/Users/dochez/.m2/repository/xml-apis/xml-apis/1.0.b2/xml-apis-1.0.b2.jar:/Users/dochez/.m2/repository/jaxen/jaxen/1.1.1/jaxen-1.1.1.jar:/Users/dochez/.m2/repository/junit/junit/4.3.1/junit-4.3.1.jar:/Users/dochez/.m2/repository/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar:/Users/dochez/.m2/repository/com/sun/enterprise/config/0.3.37-SNAPSHOT/config-0.3.37-SNAPSHOT.jar:/Users/dochez/.m2/repository/com/sun/enterprise/tiger-types-osgi/0.3.37-SNAPSHOT/tiger-types-osgi-0.3.37-SNAPSHOT.jar:/Users/dochez/.m2/repository/xerces/xercesImpl/2.6.2/xercesImpl-2.6.2.jar:/Users/dochez/.m2/repository/xom/xom/1.0/xom-1.0.jar:/Users/dochez/.m2/repository/com/sun/enterprise/hk2-core/0.3.37-SNAPSHOT/hk2-core-0.3.37-SNAPSHOT.jar:/Users/dochez/.m2/repository/xerces/xmlParserAPIs/2.6.2/xmlParserAPIs-2.6.2.jar:/Users/dochez/.m2/repository/com/ibm/icu/icu4j/2.6.1/icu4j-2.6.1.jar:/Users/dochez/.m2/repository/jdom/jdom/1.0/jdom-1.0.jar:/Users/dochez/.m2/repository/com/sun/enterprise/hk2/0.3.37-SNAPSHOT/hk2-0.3.37-SNAPSHOT.jar:/Users/dochez/.m2/repository/xalan/xalan/2.6.0/xalan-2.6.0.jar:/Users/dochez/.m2/repository/com/sun/enterprise/auto-depends/0.3.37-SNAPSHOT/auto-depends-0.3.37-SNAPSHOT.jar'
+-encoding
+'MacRoman'
+-protected
 -sourcepath
-'c:/kohsuke/Sun/glassfish/v3/hk2/hk2/auto-depends-tests/test-config/src/main/java'
+'/Users/dochez/websites/hk2/hk2/auto-depends-tests/test-config/src/main/java:/Users/dochez/websites/hk2/hk2/auto-depends-tests/test-config/target/apt-generated-sources'
 -author
 -bottom
-'Copyright &copy; 2007. All Rights Reserved.'
+'Copyright &#169; 2008 <a href="http://www.sun.com">Sun Microsystems, Inc.</a>. All Rights Reserved.'
 -charset
-'ISO-8859-1'
+'UTF-8'
 -d
-'c:/kohsuke/Sun/glassfish/v3/hk2/hk2/auto-depends-tests/test-config/target/site/apidocs'
+'/Users/dochez/websites/hk2/hk2/auto-depends-tests/test-config/target/site/apidocs'
+-docencoding
+'UTF-8'
 -doctitle
-'HK2 config test 0.1-SNAPSHOT API'
+'HK2 config test 0.3.37-SNAPSHOT API'
 -use
 -version
 -windowtitle
-'HK2 config test 0.1-SNAPSHOT API'
+'HK2 config test 0.3.37-SNAPSHOT API'
