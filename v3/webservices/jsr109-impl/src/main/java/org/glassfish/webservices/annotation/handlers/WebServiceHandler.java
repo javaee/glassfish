@@ -67,6 +67,7 @@ import com.sun.enterprise.deployment.annotation.context.EjbContext;
 import com.sun.enterprise.deployment.annotation.context.EjbBundleContext;
 
 import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.deployment.annotation.handlers.AbstractHandler;
 import com.sun.logging.LogDomains;
 
@@ -320,8 +321,7 @@ public class WebServiceHandler extends AbstractHandler {
                 endpoint.setEndpointName(((Class) annElem).getName());
             }
             newWS.addEndpoint(endpoint);
-            wsDesc.setSpecVersion
-(com.sun.enterprise.deployment.node.WebServicesDescriptorNode.SPEC_VERSION);
+            wsDesc.setSpecVersion (com.sun.enterprise.deployment.node.WebServicesDescriptorNode.SPEC_VERSION);
         } else {
             newWS = endpoint.getWebService();
         }
@@ -389,7 +389,7 @@ public class WebServiceHandler extends AbstractHandler {
         // at this point the SIB has to be used no matter what @WebService was used.
         annElem = annInfo.getAnnotatedElement();
 
-        if (ModuleType.WAR.equals(bundleDesc.getModuleType())) {
+        if (XModuleType.WAR.equals(bundleDesc.getModuleType())) {
             if(endpoint.getServletImplClass() == null) {
                 // Set servlet impl class here
                 endpoint.setServletImplClass(((Class)annElem).getName());
@@ -417,14 +417,25 @@ public class WebServiceHandler extends AbstractHandler {
                 endpoint.setWebComponentImpl(webComponent);
             }
         } else {
-            if(endpoint.getEjbLink() == null) {
-                javax.ejb.Stateless stateless = annElem.getAnnotation(javax.ejb.Stateless.class);
+
+               if(endpoint.getEjbLink() == null) {
+                  //TODO BM handle stateless
+              /*  Class <? extends Annotation> stateless = null;
+                try {
+                    stateless = provider.getType("javax.ejb.Stateless");
+                } catch (ClassNotFoundException e) {
+                    //This can happen in the web.zip installation where there is no ejb
+                    //Just logging the error
+                    logger.fine(rb.getString("exception.thrown") + e.getMessage() );
+                }*/
                 String name;
-                if (stateless.name()==null || stateless.name().length()>0) {
+
+                //TODO BM FIX ME FOR EJB case
+                /*if ((stateless).name()==null || stateless.name().length()>0) {
                     name = stateless.name();
-                } else {
+                } else {*/
                     name = ((Class) annElem).getSimpleName();
-                }
+                //}
                 EjbDescriptor ejb = ((EjbBundleDescriptor) bundleDesc).getEjbByName(name);
                 endpoint.setEjbComponentImpl(ejb);
                 ejb.setWebServiceEndpointInterfaceName(endpoint.getServiceEndpointInterface());
