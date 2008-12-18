@@ -7,9 +7,11 @@ package com.sun.enterprise.admin.launcher;
 
 import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
 import com.sun.enterprise.universal.io.SmartFile;
+import com.sun.enterprise.universal.xml.MiniXmlParser;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import java.io.*;
 import java.io.File;
+import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,6 +61,12 @@ class GFEmbeddedLauncher extends GFLauncher{
     @Override
     public synchronized void setup() throws GFLauncherException, MiniXmlParserException {
         // remember -- this is designed exclusively for SQE usage
+        // don't do it mmore than once -- that would be silly!
+
+        if(setup)
+            return;
+        else
+            setup = true;
 
         try {
             setupFromEnv();
@@ -70,7 +78,37 @@ class GFEmbeddedLauncher extends GFLauncher{
 
         setClasspath(gfeJar.getPath());
         setCommandLine();
-        logCommandLine();
+
+        /* it is NOT an error for there to be no domain.xml (yet).
+         * so eat exceptions.  Also just set the default to 4848 if we don't find
+         * the port...
+         */
+
+        GFLauncherInfo info = getInfo();
+
+        try {
+            MiniXmlParser parser = new MiniXmlParser(info.getConfigFile(), info.getInstanceName());
+            info.setAdminPorts(parser.getAdminPorts());
+        }
+        catch(Exception e) {
+            // handled below...
+        }
+
+        Set<Integer> adminPorts = info.getAdminPorts();
+
+        if(adminPorts == null || adminPorts.isEmpty()) {
+            adminPorts = new HashSet<Integer>();
+            adminPorts.add(4848);
+            info.setAdminPorts(adminPorts);
+        }
+        
+        /*
+        String domainName = parser.getDomainName();
+        if(GFLauncherUtils.ok(domainName)) {
+            info.setDomainName(domainName);
+        }
+        */
+
     }
     
     @Override
@@ -197,6 +235,7 @@ class GFEmbeddedLauncher extends GFLauncher{
         return s != null && s.length() > 0;
     }
 
+    private boolean setup = false;
     private File gfeJar;
     private File installDir;
     private File javaExe;

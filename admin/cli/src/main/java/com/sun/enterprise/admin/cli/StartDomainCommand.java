@@ -169,6 +169,8 @@ public class StartDomainCommand extends AbstractCommand {
             }
             msg = getLocalizedString("DomainAdminPort", new String[]{"" + ap});
             lg.printMessage(msg);
+        } catch(Exception e) {
+            lg.printMessage("Server started");
         } finally {
             lg.popAndUnlockLevel();
         }
