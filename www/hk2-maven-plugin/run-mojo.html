@@ -11,8 +11,7 @@
 
 <html>
   <head>
-    <title>hk2 - 
-    hk2-maven-plugin - hk2:run</title>
+    <title>hk2 - hk2-maven-plugin - hk2:run</title>
     <style type="text/css" media="all">
       @import url("./css/maven-base.css");
       @import url("./css/maven-theme.css");
@@ -27,120 +26,96 @@
     -->
     <div id="bodyColumn">
       <div id="contentBox">
-        
-  
-  
-    <a name="hk2:run"></a><div class="section"><h2>hk2:run</h2>
-      <p>Launches the module system by using all the dependencies as modules.
+        <div class="section"><h2><a name="hk2:run"></a>
+hk2:run</h2>
+<p><strong>Full name</strong>:</p>
+<p>com.sun.enterprise:hk2-maven-plugin:0.3.37-SNAPSHOT:run</p>
+<p><strong>Description</strong>:</p>
+<p>Launches the module system by using all the dependencies as
+modules. 
 
-<p>
-Not specifying &quot;@execute phase=compile&quot; so that it runs
-quickly even with a large project.
-</p></p>
-      <p><b>Mojo Attributes</b>:<ul>
-          <li>Requires a Maven 2.0 project to execute.</li>
-          <li>Requires dependency resolution of artifacts in scope: <code>runtime</code></li>
-          <li>Automatically executes within the lifecycle phase: <code>compile</code></li>
-          </ul>
-        
-      <a name="Optional Parameters"></a><div class="section"><h3>Optional Parameters</h3>
-        <table class="bodyTable">
-          <tr class="a">
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-            </tr>
-          <tr class="b">
-            <td><b><a href="#args">args</a></b></td>
-            <td><code>String[]</code></td>
-            <td>Command-line options to be passed to {@link StartupContext}.</td>
-            </tr>
-          <tr class="a">
-            <td><b><a href="#artifactFactory">artifactFactory</a></b></td>
-            <td><code>ArtifactFactory</code></td>
-            <td>No description.</td>
-            </tr>
-          <tr class="b">
-            <td><b><a href="#artifactResolver">artifactResolver</a></b></td>
-            <td><code>ArtifactResolver</code></td>
-            <td>No description.</td>
-            </tr>
-          <tr class="a">
-            <td><b><a href="#localRepository">localRepository</a></b></td>
-            <td><code>ArtifactRepository</code></td>
-            <td>No description.</td>
-            </tr>
-          <tr class="b">
-            <td><b><a href="#mainModule">mainModule</a></b></td>
-            <td><code>String</code></td>
-            <td>groupId:artifactId of the module that includes {@link ModuleStartup}.
-If omitted, the module list is searched to find one.</td>
-            </tr>
-          <tr class="a">
-            <td><b><a href="#rootDir">rootDir</a></b></td>
-            <td><code>File</code></td>
-            <td>The root directory of the launched module system. Default value is <code>${project.baseDir}</code>.</td>
-            </tr>
-          <tr class="b">
-            <td><b><a href="#skipId">skipId</a></b></td>
-            <td><code>String</code></td>
-            <td>groupId:artifactId of the module which the hk2:run mojo just skips executing.
+<p>Not specifying &quot;@execute phase=compile&quot; so that it runs quickly
+even with a large project.</p>
+</p>
+<p><strong>Attributes</strong>:</p>
+<ul><li>Requires a Maven 2.0 project to be executed.</li>
+<li>Requires dependency resolution of artifacts in scope: <code>runtime</code>.</li>
+<li>Binds by default to the lifecycle phase: <code>compile</code>.</li>
+<li>Invokes the execution of the lifecycle phase <code>compile</code> prior to executing itself.</li>
+</ul>
+<div class="section"><h3><a name="Optional_Parameters"></a>
+Optional Parameters</h3>
+<table class="bodyTable"><tr class="a"><th>Name</th>
+<th>Type</th>
+<th>Since</th>
+<th>Description</th>
+</tr>
+<tr class="b"><td><strong><a href="#args">args</a>
+</strong></td>
+<td><code>String[]</code></td>
+<td><code>-</code></td>
+<td>Command-line options to be passed to <code>StartupContext</code>. </td>
+</tr>
+<tr class="a"><td><strong><a href="#localRepository">localRepository</a>
+</strong></td>
+<td><code>ArtifactRepository</code></td>
+<td><code>-</code></td>
+<td>(no description) </td>
+</tr>
+<tr class="b"><td><strong><a href="#mainModule">mainModule</a>
+</strong></td>
+<td><code>String</code></td>
+<td><code>-</code></td>
+<td>groupId:artifactId of the module that includes
+<code>ModuleStartup</code>. If omitted, the module list is searched
+to find one. </td>
+</tr>
+<tr class="a"><td><strong><a href="#rootDir">rootDir</a>
+</strong></td>
+<td><code>File</code></td>
+<td><code>-</code></td>
+<td>The root directory of the launched module system. Default value is: <code>${project.baseDir}</code>.</td>
+</tr>
+</table>
+</div>
+<div class="section"><h3><a name="Parameter_Details"></a>
+Parameter Details</h3>
+<p><strong><a name="args">args</a>
+:</strong></p>
+<p>Command-line options to be passed to <code>StartupContext</code>.</p>
+<ul><li><strong>Type</strong>: <code>java.lang.String[]</code></li>
+<li><strong>Required</strong>: <code>No</code></li>
+</ul>
+<hr />
+<p><strong><a name="localRepository">localRepository</a>
+:</strong></p>
+<p>(no description)</p>
+<ul><li><strong>Type</strong>: <code>org.apache.maven.artifact.repository.ArtifactRepository</code></li>
+<li><strong>Required</strong>: <code>No</code></li>
+<li><strong>Expression</strong>: <code>${localRepository}</code></li>
+</ul>
+<hr />
+<p><strong><a name="mainModule">mainModule</a>
+:</strong></p>
+<p>groupId:artifactId of the module that includes
+<code>ModuleStartup</code>. If omitted, the module list is searched
+to find one.</p>
+<ul><li><strong>Type</strong>: <code>java.lang.String</code></li>
+<li><strong>Required</strong>: <code>No</code></li>
+<li><strong>Expression</strong>: <code>${mainModule}</code></li>
+</ul>
+<hr />
+<p><strong><a name="rootDir">rootDir</a>
+:</strong></p>
+<p>The root directory of the launched module system.</p>
+<ul><li><strong>Type</strong>: <code>java.io.File</code></li>
+<li><strong>Required</strong>: <code>No</code></li>
+<li><strong>Expression</strong>: <code>${rootDir}</code></li>
+<li><strong>Default</strong>: <code>${project.baseDir}</code></li>
+</ul>
+</div>
+</div>
 
-This hack is used to specify the &quot;hk2:run&quot; for a test phase execution
-in the parent POM for all the child modules (except the parent module itself.)</td>
-            </tr>
-          </table>
-        </div>
-      <a name="Parameter Details"></a><div class="section"><h3>Parameter Details</h3>
-        <b><a name="args">args</a></b>
-        Command-line options to be passed to {@link StartupContext}.
-        <ul>
-          <li><b>Type</b>: <code>java.lang.String[]</code></li>
-          <li><b>Required</b>: <code>No</code></li>
-          </ul><hr></hr><b><a name="artifactFactory">artifactFactory</a></b>
-        No Description.
-        <ul>
-          <li><b>Type</b>: <code>org.apache.maven.artifact.factory.ArtifactFactory</code></li>
-          <li><b>Required</b>: <code>No</code></li>
-          </ul><hr></hr><b><a name="artifactResolver">artifactResolver</a></b>
-        No Description.
-        <ul>
-          <li><b>Type</b>: <code>org.apache.maven.artifact.resolver.ArtifactResolver</code></li>
-          <li><b>Required</b>: <code>No</code></li>
-          </ul><hr></hr><b><a name="localRepository">localRepository</a></b>
-        No Description.
-        <ul>
-          <li><b>Type</b>: <code>org.apache.maven.artifact.repository.ArtifactRepository</code></li>
-          <li><b>Required</b>: <code>No</code></li>
-          <li><b>Expression</b>: <code>${localRepository}</code></li>
-          </ul><hr></hr><b><a name="mainModule">mainModule</a></b>
-        groupId:artifactId of the module that includes {@link ModuleStartup}.
-If omitted, the module list is searched to find one.
-        <ul>
-          <li><b>Type</b>: <code>java.lang.String</code></li>
-          <li><b>Required</b>: <code>No</code></li>
-          <li><b>Expression</b>: <code>${mainModule}</code></li>
-          </ul><hr></hr><b><a name="rootDir">rootDir</a></b>
-        The root directory of the launched module system.
-        <ul>
-          <li><b>Type</b>: <code>java.io.File</code></li>
-          <li><b>Required</b>: <code>No</code></li>
-          <li><b>Expression</b>: <code>${rootDir}</code></li>
-          <li><b>Default</b>: <code>${project.baseDir}</code></li>
-          </ul><hr></hr><b><a name="skipId">skipId</a></b>
-        groupId:artifactId of the module which the hk2:run mojo just skips executing.
-
-This hack is used to specify the &quot;hk2:run&quot; for a test phase execution
-in the parent POM for all the child modules (except the parent module itself.)
-        <ul>
-          <li><b>Type</b>: <code>java.lang.String</code></li>
-          <li><b>Required</b>: <code>No</code></li>
-          <li><b>Expression</b>: <code>${skipId}</code></li>
-          </ul>
-        </div>
-      </div>
-    
-  
       </div>
     </div>
     <div class="clear">
@@ -148,15 +123,16 @@ in the parent POM for all the child modules (except the parent module itself.)
     </div>
     <div id="footer">
       <div class="xright">&#169;  
-          2007
+          2008
     
+          Sun Microsystems, Inc.
           
   
 
   
   
-  &nbsp;| Last Published: 07/16/2007
-  &nbsp;| Version: 0.1-SNAPSHOT
+  &nbsp;| Last Published: 12/18/2008
+  &nbsp;| Version: 0.3.37-SNAPSHOT
 </div>
       <div class="clear">
         <hr/>

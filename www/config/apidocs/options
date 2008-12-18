@@ -1,16 +1,22 @@
--classpath 'c:/kohsuke/Sun/glassfish/v3/hk2/hk2/config/target/classes;c:/kohsuke/unixHome/.m2/repository/stax/stax-api/1.0.1/stax-api-1.0.1.jar;c:/kohsuke/unixHome/.m2/repository/com/envoisolutions/sxc/sxc-runtime/0.6/sxc-runtime-0.6.jar;c:/kohsuke/unixHome/.m2/repository/javax/xml/stream/stax-api/1.0-2/stax-api-1.0-2.jar;c:/kohsuke/unixHome/.m2/repository/com/sun/enterprise/hk2/0.1-SNAPSHOT/hk2-0.1-SNAPSHOT.jar;c:/kohsuke/unixHome/.m2/repository/com/sun/enterprise/auto-depends/0.1-SNAPSHOT/auto-depends-0.1-SNAPSHOT.jar' -protected
+-classpath
+'/Users/dochez/websites/hk2/hk2/config/target/classes:/Users/dochez/.m2/repository/com/sun/enterprise/tiger-types-osgi/0.3.37-SNAPSHOT/tiger-types-osgi-0.3.37-SNAPSHOT.jar:/Users/dochez/.m2/repository/com/sun/enterprise/auto-depends/0.3.37-SNAPSHOT/auto-depends-0.3.37-SNAPSHOT.jar'
+-encoding
+'MacRoman'
+-protected
 -sourcepath
-'c:/kohsuke/Sun/glassfish/v3/hk2/hk2/config/src/java'
+'/Users/dochez/websites/hk2/hk2/config/src/java'
 -author
 -bottom
-'Copyright &copy; 2007. All Rights Reserved.'
+'Copyright &#169; 2008 <a href="http://www.sun.com">Sun Microsystems, Inc.</a>. All Rights Reserved.'
 -charset
-'ISO-8859-1'
+'UTF-8'
 -d
-'c:/kohsuke/Sun/glassfish/v3/hk2/hk2/config/target/site/apidocs'
+'/Users/dochez/websites/hk2/hk2/config/target/site/apidocs'
+-docencoding
+'UTF-8'
 -doctitle
-'HK2 configuration module 0.1-SNAPSHOT API'
+'HK2 configuration module 0.3.37-SNAPSHOT API'
 -use
 -version
 -windowtitle
-'HK2 configuration module 0.1-SNAPSHOT API'
+'HK2 configuration module 0.3.37-SNAPSHOT API'

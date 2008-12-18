@@ -11,8 +11,7 @@
 
 <html>
   <head>
-    <title>hk2 - 
-    hk2-maven-plugin - hk2:hk2-compile</title>
+    <title>hk2 - hk2-maven-plugin - hk2:hk2-compile</title>
     <style type="text/css" media="all">
       @import url("./css/maven-base.css");
       @import url("./css/maven-theme.css");
@@ -27,303 +26,390 @@
     -->
     <div id="bodyColumn">
       <div id="contentBox">
-        
-  
-  
-    <a name="hk2:hk2-compile"></a><div class="section"><h2>hk2:hk2-compile</h2>
-      <p></p>
-      <p><b>Mojo Attributes</b>:<ul>
-          <li>Requires a Maven 2.0 project to execute.</li>
-          <li>Requires dependency resolution of artifacts in scope: <code>compile</code></li>
-          <li>Automatically executes within the lifecycle phase: <code>compile</code></li>
-          </ul>
-        
-      <a name="Optional Parameters"></a><div class="section"><h3>Optional Parameters</h3>
-        <table class="bodyTable">
-          <tr class="a">
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-            </tr>
-          <tr class="b">
-            <td><b><a href="#compilerArgument">compilerArgument</a></b></td>
-            <td><code>String</code></td>
-            <td>
-Sets the unformatted argument string to be passed to the compiler if fork is set to true.
-
-
-This is because the list of valid arguments passed to a Java compiler
-varies based on the compiler version.
+        <div class="section"><h2><a name="hk2:hk2-compile"></a>
+hk2:hk2-compile</h2>
+<p><strong>Full name</strong>:</p>
+<p>com.sun.enterprise:hk2-maven-plugin:0.3.37-SNAPSHOT:hk2-compile</p>
+<p><strong>Description</strong>:</p>
+<p>Replacement of the default javac mojo that uses APT, so that we can
+not only compile source code but also generate HK2 related metadata
+at the same time.</p>
+<p><strong>Attributes</strong>:</p>
+<ul><li>Requires a Maven 2.0 project to be executed.</li>
+<li>Requires dependency resolution of artifacts in scope: <code>compile</code>.</li>
+<li>Binds by default to the lifecycle phase: <code>compile</code>.</li>
+</ul>
+<div class="section"><h3><a name="Required_Parameters"></a>
+Required Parameters</h3>
+<table class="bodyTable"><tr class="a"><th>Name</th>
+<th>Type</th>
+<th>Since</th>
+<th>Description</th>
+</tr>
+<tr class="b"><td><strong><a href="#localRepository">localRepository</a>
+</strong></td>
+<td><code>ArtifactRepository</code></td>
+<td><code>-</code></td>
+<td>(no description) </td>
+</tr>
+</table>
+</div>
+<div class="section"><h3><a name="Optional_Parameters"></a>
+Optional Parameters</h3>
+<table class="bodyTable"><tr class="a"><th>Name</th>
+<th>Type</th>
+<th>Since</th>
+<th>Description</th>
+</tr>
+<tr class="b"><td><strong><a href="#compilerArgument">compilerArgument</a>
+</strong></td>
+<td><code>String</code></td>
+<td><code>-</code></td>
+<td><p>Sets the unformatted argument string to be passed to the
+compiler if fork is set to true.</p>
+<p>This is because the list of valid arguments passed to a Java
+compiler varies based on the compiler version.</p>
 </td>
-            </tr>
-          <tr class="a">
-            <td><b><a href="#compilerArguments">compilerArguments</a></b></td>
-            <td><code>Map</code></td>
-            <td><p>
-Sets the arguments to be passed to the compiler (prepending a dash) if fork is set to true.
+</tr>
+<tr class="a"><td><strong><a href="#compilerArguments">compilerArguments</a>
+</strong></td>
+<td><code>Map</code></td>
+<td><code>-</code></td>
+<td><p>Sets the arguments to be passed to the compiler (prepending a
+dash) if fork is set to true.</p>
+<p>This is because the list of valid arguments passed to a Java
+compiler varies based on the compiler version.</p>
+</td>
+</tr>
+<tr class="b"><td><strong><a href="#compilerId">compilerId</a>
+</strong></td>
+<td><code>String</code></td>
+<td><code>-</code></td>
+<td>The compiler id of the compiler to use. See this <a href="non-javac-compilers.html">guide</a>
+ for more information. Default value is: <code>javac</code>.</td>
+</tr>
+<tr class="a"><td><strong><a href="#compilerVersion">compilerVersion</a>
+</strong></td>
+<td><code>String</code></td>
+<td><code>-</code></td>
+<td>Version of the compiler to use, ex. &quot;1.3&quot;, &quot;1.5&quot;, if fork is set to
+true. </td>
+</tr>
+<tr class="b"><td><strong><a href="#debug">debug</a>
+</strong></td>
+<td><code>boolean</code></td>
+<td><code>-</code></td>
+<td>Set to true to include debugging information in the compiled class
+files. The default value is true. Default value is: <code>true</code>.</td>
+</tr>
+<tr class="a"><td><strong><a href="#encoding">encoding</a>
+</strong></td>
+<td><code>String</code></td>
+<td><code>-</code></td>
+<td>The -encoding argument for the Java compiler. </td>
+</tr>
+<tr class="b"><td><strong><a href="#excludes">excludes</a>
+</strong></td>
+<td><code>Set</code></td>
+<td><code>-</code></td>
+<td>A list of exclusion filters for the compiler. </td>
+</tr>
+<tr class="a"><td><strong><a href="#executable">executable</a>
+</strong></td>
+<td><code>String</code></td>
+<td><code>-</code></td>
+<td>Sets the executable of the compiler to use when fork is true. </td>
+</tr>
+<tr class="b"><td><strong><a href="#fork">fork</a>
+</strong></td>
+<td><code>boolean</code></td>
+<td><code>-</code></td>
+<td>Allows running the compiler in a separate process. If &quot;false&quot; it
+uses the built in compiler, while if &quot;true&quot; it will use an
+executable. Default value is: <code>false</code>.</td>
+</tr>
+<tr class="a"><td><strong><a href="#includes">includes</a>
+</strong></td>
+<td><code>Set</code></td>
+<td><code>-</code></td>
+<td>A list of inclusion filters for the compiler. </td>
+</tr>
+<tr class="b"><td><strong><a href="#maxmem">maxmem</a>
+</strong></td>
+<td><code>String</code></td>
+<td><code>-</code></td>
+<td>Sets the maximum size, in megabytes, of the memory allocation pool,
+ex. &quot;128&quot;, &quot;128m&quot; if fork is set to true. </td>
+</tr>
+<tr class="a"><td><strong><a href="#meminitial">meminitial</a>
+</strong></td>
+<td><code>String</code></td>
+<td><code>-</code></td>
+<td>Initial size, in megabytes, of the memory allocation pool, ex.
+&quot;64&quot;, &quot;64m&quot; if fork is set to true. </td>
+</tr>
+<tr class="b"><td><strong><a href="#optimize">optimize</a>
+</strong></td>
+<td><code>boolean</code></td>
+<td><code>-</code></td>
+<td>Set to true to optimize the compiled code using the compiler's
+optimization methods. Default value is: <code>false</code>.</td>
+</tr>
+<tr class="a"><td><strong><a href="#outputFileName">outputFileName</a>
+</strong></td>
+<td><code>String</code></td>
+<td><code>-</code></td>
+<td>Sets the name of the output file when compiling a set of sources to
+a single file. </td>
+</tr>
+<tr class="b"><td><strong><a href="#processors">processors</a>
+</strong></td>
+<td><code>Processor[]</code></td>
+<td><code>-</code></td>
+<td>Additional jars that contain annotation processors. </td>
+</tr>
+<tr class="a"><td><strong><a href="#showDeprecation">showDeprecation</a>
+</strong></td>
+<td><code>boolean</code></td>
+<td><code>-</code></td>
+<td>Sets whether to show source locations where deprecated APIs are
+used. Default value is: <code>false</code>.</td>
+</tr>
+<tr class="b"><td><strong><a href="#showWarnings">showWarnings</a>
+</strong></td>
+<td><code>boolean</code></td>
+<td><code>-</code></td>
+<td>Set to true to show compilation warnings. Default value is: <code>false</code>.</td>
+</tr>
+<tr class="a"><td><strong><a href="#source">source</a>
+</strong></td>
+<td><code>String</code></td>
+<td><code>-</code></td>
+<td>The -source argument for the Java compiler. </td>
+</tr>
+<tr class="b"><td><strong><a href="#staleMillis">staleMillis</a>
+</strong></td>
+<td><code>int</code></td>
+<td><code>-</code></td>
+<td>Sets the granularity in milliseconds of the last modification date
+for testing whether a source needs recompilation. Default value is: <code>0</code>.</td>
+</tr>
+<tr class="a"><td><strong><a href="#target">target</a>
+</strong></td>
+<td><code>String</code></td>
+<td><code>-</code></td>
+<td>The -target argument for the Java compiler. </td>
+</tr>
+<tr class="b"><td><strong><a href="#verbose">verbose</a>
+</strong></td>
+<td><code>boolean</code></td>
+<td><code>-</code></td>
+<td>Set to true to show messages about what the compiler is doing. Default value is: <code>false</code>.</td>
+</tr>
+</table>
+</div>
+<div class="section"><h3><a name="Parameter_Details"></a>
+Parameter Details</h3>
+<p><strong><a name="compilerArgument">compilerArgument</a>
+:</strong></p>
+<p><p>Sets the unformatted argument string to be passed to the
+compiler if fork is set to true.</p>
+<p>This is because the list of valid arguments passed to a Java
+compiler varies based on the compiler version.</p>
 </p>
-<p>
-This is because the list of valid arguments passed to a Java compiler
-varies based on the compiler version.
-</p></td>
-            </tr>
-          <tr class="b">
-            <td><b><a href="#compilerId">compilerId</a></b></td>
-            <td><code>String</code></td>
-            <td>The compiler id of the compiler to use. See this
-<a href="non-javac-compilers.html">guide</a> for more information. Default value is <code>javac</code>.</td>
-            </tr>
-          <tr class="a">
-            <td><b><a href="#compilerManager">compilerManager</a></b></td>
-            <td><code>CompilerManager</code></td>
-            <td>Plexus compiler manager.</td>
-            </tr>
-          <tr class="b">
-            <td><b><a href="#compilerVersion">compilerVersion</a></b></td>
-            <td><code>String</code></td>
-            <td>Version of the compiler to use, ex. &quot;1.3&quot;, &quot;1.5&quot;, if fork is set to true.</td>
-            </tr>
-          <tr class="a">
-            <td><b><a href="#debug">debug</a></b></td>
-            <td><code>boolean</code></td>
-            <td>Set to true to include debugging information in the compiled class files.
-The default value is true. Default value is <code>true</code>.</td>
-            </tr>
-          <tr class="b">
-            <td><b><a href="#encoding">encoding</a></b></td>
-            <td><code>String</code></td>
-            <td>The -encoding argument for the Java compiler.</td>
-            </tr>
-          <tr class="a">
-            <td><b><a href="#excludes">excludes</a></b></td>
-            <td><code>Set</code></td>
-            <td>A list of exclusion filters for the compiler.</td>
-            </tr>
-          <tr class="b">
-            <td><b><a href="#executable">executable</a></b></td>
-            <td><code>String</code></td>
-            <td>Sets the executable of the compiler to use when fork is true.</td>
-            </tr>
-          <tr class="a">
-            <td><b><a href="#fork">fork</a></b></td>
-            <td><code>boolean</code></td>
-            <td>Allows running the compiler in a separate process.
-If &quot;false&quot; it uses the built in compiler, while if &quot;true&quot; it will use an executable. Default value is <code>false</code>.</td>
-            </tr>
-          <tr class="b">
-            <td><b><a href="#includes">includes</a></b></td>
-            <td><code>Set</code></td>
-            <td>A list of inclusion filters for the compiler.</td>
-            </tr>
-          <tr class="a">
-            <td><b><a href="#maxmem">maxmem</a></b></td>
-            <td><code>String</code></td>
-            <td>Sets the maximum size, in megabytes, of the memory allocation pool, ex. &quot;128&quot;, &quot;128m&quot;
-if fork is set to true.</td>
-            </tr>
-          <tr class="b">
-            <td><b><a href="#meminitial">meminitial</a></b></td>
-            <td><code>String</code></td>
-            <td>Initial size, in megabytes, of the memory allocation pool, ex. &quot;64&quot;, &quot;64m&quot;
-if fork is set to true.</td>
-            </tr>
-          <tr class="a">
-            <td><b><a href="#optimize">optimize</a></b></td>
-            <td><code>boolean</code></td>
-            <td>Set to true to optimize the compiled code using the compiler's optimization methods. Default value is <code>false</code>.</td>
-            </tr>
-          <tr class="b">
-            <td><b><a href="#outputFileName">outputFileName</a></b></td>
-            <td><code>String</code></td>
-            <td>Sets the name of the output file when compiling a set of
-sources to a single file.</td>
-            </tr>
-          <tr class="a">
-            <td><b><a href="#showDeprecation">showDeprecation</a></b></td>
-            <td><code>boolean</code></td>
-            <td>Sets whether to show source locations where deprecated APIs are used. Default value is <code>false</code>.</td>
-            </tr>
-          <tr class="b">
-            <td><b><a href="#showWarnings">showWarnings</a></b></td>
-            <td><code>boolean</code></td>
-            <td>Set to true to show compilation warnings. Default value is <code>false</code>.</td>
-            </tr>
-          <tr class="a">
-            <td><b><a href="#source">source</a></b></td>
-            <td><code>String</code></td>
-            <td>The -source argument for the Java compiler.</td>
-            </tr>
-          <tr class="b">
-            <td><b><a href="#staleMillis">staleMillis</a></b></td>
-            <td><code>int</code></td>
-            <td>Sets the granularity in milliseconds of the last modification
-date for testing whether a source needs recompilation. Default value is <code>0</code>.</td>
-            </tr>
-          <tr class="a">
-            <td><b><a href="#target">target</a></b></td>
-            <td><code>String</code></td>
-            <td>The -target argument for the Java compiler.</td>
-            </tr>
-          <tr class="b">
-            <td><b><a href="#verbose">verbose</a></b></td>
-            <td><code>boolean</code></td>
-            <td>Set to true to show messages about what the compiler is doing. Default value is <code>false</code>.</td>
-            </tr>
-          </table>
-        </div>
-      <a name="Parameter Details"></a><div class="section"><h3>Parameter Details</h3>
-        <p><b><a name="compilerArgument">compilerArgument</a></b></p>
-        <p><p>
-Sets the unformatted argument string to be passed to the compiler if fork is set to true.
+<ul><li><strong>Type</strong>: <code>java.lang.String</code></li>
+<li><strong>Required</strong>: <code>No</code></li>
+<li><strong>Expression</strong>: <code>${maven.compiler.argument}</code></li>
+</ul>
+<hr />
+<p><strong><a name="compilerArguments">compilerArguments</a>
+:</strong></p>
+<p><p>Sets the arguments to be passed to the compiler (prepending a
+dash) if fork is set to true.</p>
+<p>This is because the list of valid arguments passed to a Java
+compiler varies based on the compiler version.</p>
 </p>
-<p>
-This is because the list of valid arguments passed to a Java compiler
-varies based on the compiler version.
-</p></p>
-        <ul>
-          <li><b>Type</b>: <code>java.lang.String</code></li>
-          <li><b>Required</b>: <code>No</code></li>
-          </ul><hr></hr><b><a name="compilerArguments">compilerArguments</a></b>
-        
-Sets the arguments to be passed to the compiler (prepending a dash) if fork is set to true.
+<ul><li><strong>Type</strong>: <code>java.util.Map</code></li>
+<li><strong>Required</strong>: <code>No</code></li>
+</ul>
+<hr />
+<p><strong><a name="compilerId">compilerId</a>
+:</strong></p>
+<p>The compiler id of the compiler to use. See this <a href="non-javac-compilers.html">guide</a>
+ for more information.</p>
+<ul><li><strong>Type</strong>: <code>java.lang.String</code></li>
+<li><strong>Required</strong>: <code>No</code></li>
+<li><strong>Expression</strong>: <code>${maven.compiler.compilerId}</code></li>
+<li><strong>Default</strong>: <code>javac</code></li>
+</ul>
+<hr />
+<p><strong><a name="compilerVersion">compilerVersion</a>
+:</strong></p>
+<p>Version of the compiler to use, ex. &quot;1.3&quot;, &quot;1.5&quot;, if fork is set to
+true.</p>
+<ul><li><strong>Type</strong>: <code>java.lang.String</code></li>
+<li><strong>Required</strong>: <code>No</code></li>
+<li><strong>Expression</strong>: <code>${maven.compiler.compilerVersion}</code></li>
+</ul>
+<hr />
+<p><strong><a name="debug">debug</a>
+:</strong></p>
+<p>Set to true to include debugging information in the compiled class
+files. The default value is true.</p>
+<ul><li><strong>Type</strong>: <code>boolean</code></li>
+<li><strong>Required</strong>: <code>No</code></li>
+<li><strong>Expression</strong>: <code>${maven.compiler.debug}</code></li>
+<li><strong>Default</strong>: <code>true</code></li>
+</ul>
+<hr />
+<p><strong><a name="encoding">encoding</a>
+:</strong></p>
+<p>The -encoding argument for the Java compiler.</p>
+<ul><li><strong>Type</strong>: <code>java.lang.String</code></li>
+<li><strong>Required</strong>: <code>No</code></li>
+<li><strong>Expression</strong>: <code>${maven.compiler.encoding}</code></li>
+</ul>
+<hr />
+<p><strong><a name="excludes">excludes</a>
+:</strong></p>
+<p>A list of exclusion filters for the compiler.</p>
+<ul><li><strong>Type</strong>: <code>java.util.Set</code></li>
+<li><strong>Required</strong>: <code>No</code></li>
+</ul>
+<hr />
+<p><strong><a name="executable">executable</a>
+:</strong></p>
+<p>Sets the executable of the compiler to use when fork is true.</p>
+<ul><li><strong>Type</strong>: <code>java.lang.String</code></li>
+<li><strong>Required</strong>: <code>No</code></li>
+<li><strong>Expression</strong>: <code>${maven.compiler.executable}</code></li>
+</ul>
+<hr />
+<p><strong><a name="fork">fork</a>
+:</strong></p>
+<p>Allows running the compiler in a separate process. If &quot;false&quot; it
+uses the built in compiler, while if &quot;true&quot; it will use an
+executable.</p>
+<ul><li><strong>Type</strong>: <code>boolean</code></li>
+<li><strong>Required</strong>: <code>No</code></li>
+<li><strong>Default</strong>: <code>false</code></li>
+</ul>
+<hr />
+<p><strong><a name="includes">includes</a>
+:</strong></p>
+<p>A list of inclusion filters for the compiler.</p>
+<ul><li><strong>Type</strong>: <code>java.util.Set</code></li>
+<li><strong>Required</strong>: <code>No</code></li>
+</ul>
+<hr />
+<p><strong><a name="localRepository">localRepository</a>
+:</strong></p>
+<p>(no description)</p>
+<ul><li><strong>Type</strong>: <code>org.apache.maven.artifact.repository.ArtifactRepository</code></li>
+<li><strong>Required</strong>: <code>Yes</code></li>
+<li><strong>Expression</strong>: <code>${localRepository}</code></li>
+</ul>
+<hr />
+<p><strong><a name="maxmem">maxmem</a>
+:</strong></p>
+<p>Sets the maximum size, in megabytes, of the memory allocation pool,
+ex. &quot;128&quot;, &quot;128m&quot; if fork is set to true.</p>
+<ul><li><strong>Type</strong>: <code>java.lang.String</code></li>
+<li><strong>Required</strong>: <code>No</code></li>
+<li><strong>Expression</strong>: <code>${maven.compiler.maxmem}</code></li>
+</ul>
+<hr />
+<p><strong><a name="meminitial">meminitial</a>
+:</strong></p>
+<p>Initial size, in megabytes, of the memory allocation pool, ex.
+&quot;64&quot;, &quot;64m&quot; if fork is set to true.</p>
+<ul><li><strong>Type</strong>: <code>java.lang.String</code></li>
+<li><strong>Required</strong>: <code>No</code></li>
+<li><strong>Expression</strong>: <code>${maven.compiler.meminitial}</code></li>
+</ul>
+<hr />
+<p><strong><a name="optimize">optimize</a>
+:</strong></p>
+<p>Set to true to optimize the compiled code using the compiler's
+optimization methods.</p>
+<ul><li><strong>Type</strong>: <code>boolean</code></li>
+<li><strong>Required</strong>: <code>No</code></li>
+<li><strong>Expression</strong>: <code>${maven.compiler.optimize}</code></li>
+<li><strong>Default</strong>: <code>false</code></li>
+</ul>
+<hr />
+<p><strong><a name="outputFileName">outputFileName</a>
+:</strong></p>
+<p>Sets the name of the output file when compiling a set of sources to
+a single file.</p>
+<ul><li><strong>Type</strong>: <code>java.lang.String</code></li>
+<li><strong>Required</strong>: <code>No</code></li>
+<li><strong>Expression</strong>: <code>${project.build.finalName}</code></li>
+</ul>
+<hr />
+<p><strong><a name="processors">processors</a>
+:</strong></p>
+<p>Additional jars that contain annotation processors.</p>
+<ul><li><strong>Type</strong>: <code>com.sun.enterprise.module.maven.Processor[]</code></li>
+<li><strong>Required</strong>: <code>No</code></li>
+</ul>
+<hr />
+<p><strong><a name="showDeprecation">showDeprecation</a>
+:</strong></p>
+<p>Sets whether to show source locations where deprecated APIs are
+used.</p>
+<ul><li><strong>Type</strong>: <code>boolean</code></li>
+<li><strong>Required</strong>: <code>No</code></li>
+<li><strong>Expression</strong>: <code>${maven.compiler.showDeprecation}</code></li>
+<li><strong>Default</strong>: <code>false</code></li>
+</ul>
+<hr />
+<p><strong><a name="showWarnings">showWarnings</a>
+:</strong></p>
+<p>Set to true to show compilation warnings.</p>
+<ul><li><strong>Type</strong>: <code>boolean</code></li>
+<li><strong>Required</strong>: <code>No</code></li>
+<li><strong>Expression</strong>: <code>${maven.compiler.showWarnings}</code></li>
+<li><strong>Default</strong>: <code>false</code></li>
+</ul>
+<hr />
+<p><strong><a name="source">source</a>
+:</strong></p>
+<p>The -source argument for the Java compiler.</p>
+<ul><li><strong>Type</strong>: <code>java.lang.String</code></li>
+<li><strong>Required</strong>: <code>No</code></li>
+<li><strong>Expression</strong>: <code>${maven.compiler.source}</code></li>
+</ul>
+<hr />
+<p><strong><a name="staleMillis">staleMillis</a>
+:</strong></p>
+<p>Sets the granularity in milliseconds of the last modification date
+for testing whether a source needs recompilation.</p>
+<ul><li><strong>Type</strong>: <code>int</code></li>
+<li><strong>Required</strong>: <code>No</code></li>
+<li><strong>Expression</strong>: <code>${lastModGranularityMs}</code></li>
+<li><strong>Default</strong>: <code>0</code></li>
+</ul>
+<hr />
+<p><strong><a name="target">target</a>
+:</strong></p>
+<p>The -target argument for the Java compiler.</p>
+<ul><li><strong>Type</strong>: <code>java.lang.String</code></li>
+<li><strong>Required</strong>: <code>No</code></li>
+<li><strong>Expression</strong>: <code>${maven.compiler.target}</code></li>
+</ul>
+<hr />
+<p><strong><a name="verbose">verbose</a>
+:</strong></p>
+<p>Set to true to show messages about what the compiler is doing.</p>
+<ul><li><strong>Type</strong>: <code>boolean</code></li>
+<li><strong>Required</strong>: <code>No</code></li>
+<li><strong>Expression</strong>: <code>${maven.compiler.verbose}</code></li>
+<li><strong>Default</strong>: <code>false</code></li>
+</ul>
+</div>
+</div>
 
-<p>
-This is because the list of valid arguments passed to a Java compiler
-varies based on the compiler version.
-</p></p>
-        <ul>
-          <li><b>Type</b>: <code>java.util.Map</code></li>
-          <li><b>Required</b>: <code>No</code></li>
-          </ul><hr></hr><b><a name="compilerId">compilerId</a></b>
-        The compiler id of the compiler to use. See this
-<a href="non-javac-compilers.html">guide</a> for more information.
-        <ul>
-          <li><b>Type</b>: <code>java.lang.String</code></li>
-          <li><b>Required</b>: <code>No</code></li>
-          <li><b>Expression</b>: <code>${maven.compiler.compilerId}</code></li>
-          <li><b>Default</b>: <code>javac</code></li>
-          </ul><hr></hr><b><a name="compilerManager">compilerManager</a></b>
-        Plexus compiler manager.
-        <ul>
-          <li><b>Type</b>: <code>org.codehaus.plexus.compiler.manager.CompilerManager</code></li>
-          <li><b>Required</b>: <code>No</code></li>
-          </ul><hr></hr><b><a name="compilerVersion">compilerVersion</a></b>
-        Version of the compiler to use, ex. &quot;1.3&quot;, &quot;1.5&quot;, if fork is set to true.
-        <ul>
-          <li><b>Type</b>: <code>java.lang.String</code></li>
-          <li><b>Required</b>: <code>No</code></li>
-          <li><b>Expression</b>: <code>${maven.compiler.compilerVersion}</code></li>
-          </ul><hr></hr><b><a name="debug">debug</a></b>
-        Set to true to include debugging information in the compiled class files.
-The default value is true.
-        <ul>
-          <li><b>Type</b>: <code>boolean</code></li>
-          <li><b>Required</b>: <code>No</code></li>
-          <li><b>Expression</b>: <code>${maven.compiler.debug}</code></li>
-          <li><b>Default</b>: <code>true</code></li>
-          </ul><hr></hr><b><a name="encoding">encoding</a></b>
-        The -encoding argument for the Java compiler.
-        <ul>
-          <li><b>Type</b>: <code>java.lang.String</code></li>
-          <li><b>Required</b>: <code>No</code></li>
-          <li><b>Expression</b>: <code>${maven.compiler.encoding}</code></li>
-          </ul><hr></hr><b><a name="excludes">excludes</a></b>
-        A list of exclusion filters for the compiler.
-        <ul>
-          <li><b>Type</b>: <code>java.util.Set</code></li>
-          <li><b>Required</b>: <code>No</code></li>
-          </ul><hr></hr><b><a name="executable">executable</a></b>
-        Sets the executable of the compiler to use when fork is true.
-        <ul>
-          <li><b>Type</b>: <code>java.lang.String</code></li>
-          <li><b>Required</b>: <code>No</code></li>
-          <li><b>Expression</b>: <code>${maven.compiler.executable}</code></li>
-          </ul><hr></hr><b><a name="fork">fork</a></b>
-        Allows running the compiler in a separate process.
-If &quot;false&quot; it uses the built in compiler, while if &quot;true&quot; it will use an executable.
-        <ul>
-          <li><b>Type</b>: <code>boolean</code></li>
-          <li><b>Required</b>: <code>No</code></li>
-          <li><b>Default</b>: <code>false</code></li>
-          </ul><hr></hr><b><a name="includes">includes</a></b>
-        A list of inclusion filters for the compiler.
-        <ul>
-          <li><b>Type</b>: <code>java.util.Set</code></li>
-          <li><b>Required</b>: <code>No</code></li>
-          </ul><hr></hr><b><a name="maxmem">maxmem</a></b>
-        Sets the maximum size, in megabytes, of the memory allocation pool, ex. &quot;128&quot;, &quot;128m&quot;
-if fork is set to true.
-        <ul>
-          <li><b>Type</b>: <code>java.lang.String</code></li>
-          <li><b>Required</b>: <code>No</code></li>
-          <li><b>Expression</b>: <code>${maven.compiler.maxmem}</code></li>
-          </ul><hr></hr><b><a name="meminitial">meminitial</a></b>
-        Initial size, in megabytes, of the memory allocation pool, ex. &quot;64&quot;, &quot;64m&quot;
-if fork is set to true.
-        <ul>
-          <li><b>Type</b>: <code>java.lang.String</code></li>
-          <li><b>Required</b>: <code>No</code></li>
-          <li><b>Expression</b>: <code>${maven.compiler.meminitial}</code></li>
-          </ul><hr></hr><b><a name="optimize">optimize</a></b>
-        Set to true to optimize the compiled code using the compiler's optimization methods.
-        <ul>
-          <li><b>Type</b>: <code>boolean</code></li>
-          <li><b>Required</b>: <code>No</code></li>
-          <li><b>Expression</b>: <code>${maven.compiler.optimize}</code></li>
-          <li><b>Default</b>: <code>false</code></li>
-          </ul><hr></hr><b><a name="outputFileName">outputFileName</a></b>
-        Sets the name of the output file when compiling a set of
-sources to a single file.
-        <ul>
-          <li><b>Type</b>: <code>java.lang.String</code></li>
-          <li><b>Required</b>: <code>No</code></li>
-          <li><b>Expression</b>: <code>${project.build.finalName}</code></li>
-          </ul><hr></hr><b><a name="showDeprecation">showDeprecation</a></b>
-        Sets whether to show source locations where deprecated APIs are used.
-        <ul>
-          <li><b>Type</b>: <code>boolean</code></li>
-          <li><b>Required</b>: <code>No</code></li>
-          <li><b>Expression</b>: <code>${maven.compiler.showDeprecation}</code></li>
-          <li><b>Default</b>: <code>false</code></li>
-          </ul><hr></hr><b><a name="showWarnings">showWarnings</a></b>
-        Set to true to show compilation warnings.
-        <ul>
-          <li><b>Type</b>: <code>boolean</code></li>
-          <li><b>Required</b>: <code>No</code></li>
-          <li><b>Expression</b>: <code>${maven.compiler.showWarnings}</code></li>
-          <li><b>Default</b>: <code>false</code></li>
-          </ul><hr></hr><b><a name="source">source</a></b>
-        The -source argument for the Java compiler.
-        <ul>
-          <li><b>Type</b>: <code>java.lang.String</code></li>
-          <li><b>Required</b>: <code>No</code></li>
-          <li><b>Expression</b>: <code>${maven.compiler.source}</code></li>
-          </ul><hr></hr><b><a name="staleMillis">staleMillis</a></b>
-        Sets the granularity in milliseconds of the last modification
-date for testing whether a source needs recompilation.
-        <ul>
-          <li><b>Type</b>: <code>int</code></li>
-          <li><b>Required</b>: <code>No</code></li>
-          <li><b>Expression</b>: <code>${lastModGranularityMs}</code></li>
-          <li><b>Default</b>: <code>0</code></li>
-          </ul><hr></hr><b><a name="target">target</a></b>
-        The -target argument for the Java compiler.
-        <ul>
-          <li><b>Type</b>: <code>java.lang.String</code></li>
-          <li><b>Required</b>: <code>No</code></li>
-          <li><b>Expression</b>: <code>${maven.compiler.target}</code></li>
-          </ul><hr></hr><b><a name="verbose">verbose</a></b>
-        Set to true to show messages about what the compiler is doing.
-        <ul>
-          <li><b>Type</b>: <code>boolean</code></li>
-          <li><b>Required</b>: <code>No</code></li>
-          <li><b>Expression</b>: <code>${maven.compiler.verbose}</code></li>
-          <li><b>Default</b>: <code>false</code></li>
-          </ul>
-        </div>
-      </div>
-    
-  
       </div>
     </div>
     <div class="clear">
@@ -331,15 +417,16 @@ date for testing whether a source needs recompilation.
     </div>
     <div id="footer">
       <div class="xright">&#169;  
-          2007
+          2008
     
+          Sun Microsystems, Inc.
           
   
 
   
   
-  &nbsp;| Last Published: 07/16/2007
-  &nbsp;| Version: 0.1-SNAPSHOT
+  &nbsp;| Last Published: 12/18/2008
+  &nbsp;| Version: 0.3.37-SNAPSHOT
 </div>
       <div class="clear">
         <hr/>
