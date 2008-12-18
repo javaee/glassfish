@@ -58,6 +58,9 @@ import org.glassfish.embed.util.EmbeddedUtils;
  * @author bnevins
  */
 public final class EmbeddedFileSystem {
+    /**
+     *
+     */
     public EmbeddedFileSystem() {
     }
 
@@ -65,11 +68,23 @@ public final class EmbeddedFileSystem {
     // *************    public setters
     // ****************************************************
 
+    /**
+     * Sets install root and instance root to the specified directory
+     * @param f
+     * @throws org.glassfish.embed.EmbeddedException
+     */
     public void setRoot(File f) throws EmbeddedException {
         setInstallRoot(f);
         setInstanceRoot(f);
     }
     
+    /**
+     * Set the root directory for the Embedded GlassFish file system.
+     * The directory specified must exist.
+     *
+     * @param f install root directory
+     * @throws org.glassfish.embed.EmbeddedException
+     */
     public void setInstallRoot(File f) throws EmbeddedException {
         mustNotBeInitialized("setInstallRoot");
         installRoot = SmartFile.sanitize(f);
@@ -79,6 +94,13 @@ public final class EmbeddedFileSystem {
         }
     }
 
+    /**
+     * Set the directory for the server instance
+     * The directory specified must exist.
+     *
+     * @param f instance root directory
+     * @throws org.glassfish.embed.EmbeddedException
+     */
     public void setInstanceRoot(File f) throws EmbeddedException {
         mustNotBeInitialized("setInstanceRoot");
         instanceRoot = SmartFile.sanitize(f);
@@ -88,16 +110,37 @@ public final class EmbeddedFileSystem {
         }
     }
 
+    /**
+     * Use the specified file as the target domain.xml.
+     * The target domain.xml is the output of the in-memory domain.xml
+     *
+     * @param f target domain.xml file
+     * @throws org.glassfish.embed.EmbeddedException
+     */
     public void setDomainXmlTarget(File f) throws EmbeddedException {
         mustNotBeInitialized("setDomainXmlTarget");
         domainXmlTarget = SmartFile.sanitize(f);
     }
 
+    /**
+     * Use the specified URL as the source domain.xml.
+     * The source domain.xml is the input to the in-memory domain.xml
+     *
+     * @param url
+     * @throws org.glassfish.embed.EmbeddedException
+     */
     public void setDomainXmlSource(URL url) throws EmbeddedException {
         mustNotBeInitialized("setDomainXmlSource(URL)");
         domainXmlSource = url;
     }
 
+    /**
+     * Use the specified file as the source domain.xml.
+     * The source domain.xml is the input to the in-memory domain.xml.
+     *
+     * @param f domain.xml file to be used as a source
+     * @throws org.glassfish.embed.EmbeddedException
+     */
     public void setDomainXmlSource(File f) throws EmbeddedException {
         mustNotBeInitialized("setDomainXmlSource(File)");
         setDomainXmlTarget(f);
@@ -110,6 +153,16 @@ public final class EmbeddedFileSystem {
         }
     }
 
+    /**
+     * Specifies whether to delete the Embedded file system after stopping Embedded
+     * GlassFish process.  If set to <code>true</code>, and default install root, "gfe",
+     * and default instance root, "domains/domain1", were used, then the install root
+     * and all directories and files under it will be deleted upon exit.
+     *
+     * @param b true - delete default install root, "gfe" upon exit
+     *          false - keep default install root, "gfe" upon exit
+     * @throws org.glassfish.embed.EmbeddedException
+     */
     public void setAutoDelete(boolean b) throws EmbeddedException {
         mustNotBeInitialized("setAutoDelete");
         autoDelete = b;
@@ -119,26 +172,50 @@ public final class EmbeddedFileSystem {
     // ****************************************************
 
 
+    /**
+     *
+     * @return install root directory
+     * @throws org.glassfish.embed.EmbeddedException
+     */
     public File getInstallRoot() throws EmbeddedException {
         mustBeInitialized("getInstallRoot");
         return installRoot;
     }
 
+    /**
+     *
+     * @return instance root directory
+     * @throws org.glassfish.embed.EmbeddedException
+     */
     public File getInstanceRoot() throws EmbeddedException {
         mustBeInitialized("getInstanceRoot");
         return instanceRoot;
     }
 
+    /**
+     *
+     * @return target domain.xml file
+     * @throws org.glassfish.embed.EmbeddedException
+     */
     public File getTargetDomainXml() throws EmbeddedException{
         mustBeInitialized("getTargetDomainXml");
         return domainXmlTarget;
     }
 
+    /**
+     *
+     * @return source domain.xml URL
+     * @throws org.glassfish.embed.EmbeddedException
+     */
     public URL getSourceDomainXml() throws EmbeddedException{
         mustBeInitialized("getSourceDomainXml");
         return domainXmlSource;
     }
 
+    /**
+     *
+     * @return applications directory
+     */
     public File getAppsDir() {
         return appsDir;
     }

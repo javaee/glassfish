@@ -111,6 +111,22 @@ import org.glassfish.embed.impl.EmbeddedModulesRegistryImpl;
  * Entry point to the embedded GlassFish Server.
  * <p/>
  * <p/>
+ * A <code>Server</code> object is constructed using an <code>EmbeddedInfo</code>
+ * object.  Information about the server such as server name or HTTP port may be
+ * set on {@link EmbeddedInfo}.  If no information is set, defaults are used.
+ * The default server name is "server".  The default HTTP port is "8888".
+ * <p/>
+ * <p/>
+ * After the <code>Server</code> has been created, the <code>Server</code> can
+ * be started.
+ * <xmp>
+ * EmbeddedInfo info = new EmbeddedInfo();
+ * info.setServerName("server");
+ * info.setHttpPort("8080");
+ * Server server = new Server(info);
+ * server.start();
+ * </xmp>
+ * <p/>
  * TODO: the way this is done today is that the embedded API wraps the ugliness
  * of the underlying GFv3 internal abstractions, but ideally, it should be the
  * other way around &mdash; this should be the native interface inside GlassFish,
@@ -153,14 +169,25 @@ public class Server {
      */
 
 
-    public Habitat getHabitat() {
+    Habitat getHabitat() {
         return habitat;
     }
 
+    /**
+     *
+     * @return the name of this server
+     */
     public String getServerName() {
         return this.info.name;
     }
 
+    /**
+     * Creates a Server object with the given EmbeddedInfo object.
+     *
+     * @param info EmbeddedInfo object which specifies information like server
+     *             name and HTTP port
+     * @throws org.glassfish.embed.EmbeddedException
+     */
     public Server(EmbeddedInfo info) throws EmbeddedException {
         this.info = info;
         info.validate();
@@ -181,6 +208,7 @@ public class Server {
 
     /**
      * @return the domainXml URL.
+     * @throws EmbeddedException
      */
 
     public URL getDomainXmlUrl() throws EmbeddedException {
@@ -194,10 +222,18 @@ public class Server {
         }
     }
 
+    /**
+     *
+     * @param url
+     */
     public void setDefaultWebXml(URL url) {
         this.defaultWebXml = url;
     }
 
+    /**
+     *
+     * @return
+     */
     public URL getDefaultWebXml() {
         return defaultWebXml;
     }
@@ -210,6 +246,7 @@ public class Server {
 
     /**
      * Sets the overall logging level for the Server.
+     * @param level
      */
     public static void setLogLevel(Level level) {
         Logger.getLogger("javax.enterprise").setLevel(level);
@@ -218,6 +255,8 @@ public class Server {
     /**
      * Tweaks the 'recipe' --- for embedded use, we'd like GFv3 to behave a little bit
      * differently from normal stand-alone use.
+     * @param parser 
+     * @return
      */
      protected InhabitantsParser decorateInhabitantsParser(InhabitantsParser parser) {
         // registering the server using the base class and not the current instance class
@@ -291,7 +330,13 @@ public class Server {
         return parser;
     }
 
-    public EmbeddedVirtualServer createVirtualServer(final EmbeddedHttpListener listener)
+     /**
+      *
+      * @param listener
+      * @return
+      * @throws org.glassfish.embed.EmbeddedException
+      */
+     public EmbeddedVirtualServer createVirtualServer(final EmbeddedHttpListener listener)
             throws EmbeddedException{
         // the following live update code doesn't work yet due to the missing functionality in the webtier.
         mustNotBeStarted("createVirtualServer");
@@ -348,7 +393,13 @@ public class Server {
 //        }
     }
 
-    public EmbeddedHttpListener createHttpListener(final int listenerPort) 
+     /**
+      *
+      * @param listenerPort
+      * @return
+      * @throws org.glassfish.embed.EmbeddedException
+      */
+     public EmbeddedHttpListener createHttpListener(final int listenerPort)
             throws EmbeddedException {
         // the following live update code doesn't work yet due to the missing functionality in the webtier.
         mustNotBeStarted("createHttpListener");
@@ -398,6 +449,7 @@ public class Server {
      * Starts the server if hasn't done so already. 
      * Necessary to work around the live HTTP listener update.
      * It is an error to call this more than once.
+     * @throws EmbeddedException
      */
     public void start() throws EmbeddedException{
         if (started)
@@ -438,10 +490,9 @@ public class Server {
     /**
      * Deploys WAR/EAR/RAR/etc to this Server.
      *
+     * @param archive
      * @return always non-null. Represents the deployed application.
-     * @throws GFException General error that represents a deployment failure.
-     * @throws IOException If the given archive reports {@link IOException} from one of its methods,
-     *                     that exception will be passed through.
+     * @throws EmbeddedException
      */
     public Application deploy(File archive) throws EmbeddedException {
         try {
@@ -480,11 +531,10 @@ public class Server {
      * The deployment uses the {@link ReadableArchive#getName() archive name}
      * as the context path.
      *
+     * @param a
      * @return The object that represents a deployed application.
      *         Never null.
-     * @throws GFException General error that represents a deployment failure.
-     * @throws IOException If the given archive reports {@link IOException} from one of its methods,
-     *                     that exception will be passed through.
+     * @throws EmbeddedException
      */
     public Application deploy(ReadableArchive a) throws EmbeddedException {
         return deploy(a, null);
@@ -500,7 +550,7 @@ public class Server {
      * @param a
      * @param params
      * @return
-     * @throws IOException
+     * @throws EmbeddedException
      */
     public Application deploy(ReadableArchive a, Properties params)  throws EmbeddedException {
         try {
@@ -567,6 +617,8 @@ public class Server {
      * @param war           the scattered war
      * @param contextRoot   the context root to use
      * @param virtualServer the virtual server ID
+     * @return
+     * @throws EmbeddedException
      */
     public Application deployWar(ScatteredWar war, String contextRoot, String virtualServer) throws EmbeddedException {
         Properties params = new Properties();
@@ -585,7 +637,8 @@ public class Server {
      *
      * @param war         the archive
      * @param contextRoot the context root to use
-     * @throws IOException
+     * @return 
+     * @throws EmbeddedException
      */
     public Application deployWar(ScatteredWar war, String contextRoot) throws EmbeddedException {
         return deployWar(war, contextRoot, null);
@@ -596,6 +649,8 @@ public class Server {
      * (as defined by the embedded domain.xml) and using the root "/" context.
      *
      * @param war the scattered war
+     * @return
+     * @throws EmbeddedException
      */
     public Application deployWar(ScatteredWar war) throws EmbeddedException {
         return deployWar(war, null, null);
@@ -603,6 +658,7 @@ public class Server {
 
     /**
      * Stops the running server.
+     * @throws EmbeddedException
      */
     public void stop() throws EmbeddedException {
         mustBeStarted("stop");
@@ -617,6 +673,13 @@ public class Server {
     }
 
 
+    /**
+     * Returns the <code>Server</code> object specified by the id.
+     * Returns null if the server does not exist.
+     *
+     * @param id  name of the server
+     * @return    the server specified by id, null if it doesn't exist
+     */
     public static Server getServer(String id) {
         return servers.get(id);
     }

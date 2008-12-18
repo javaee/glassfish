@@ -45,46 +45,94 @@ import org.glassfish.embed.util.StringUtils;
 import static org.glassfish.embed.ServerConstants.*;
 
 /**
+ * <code>EmbeddedInfo</code> holds all the {@link Server} details:
+ * <ul>
+ * <li>{@link EmbeddedFileSystem}</li>
+ * <li>HTTP port</li>
+ * <li>server name</li>
+ * <li>archives</li>
+ * </ul>
  * 
  * @author bnevins
  */
 public class EmbeddedInfo {
+    /**
+     * Default constructor sets server name to "server" and HTTP port to "8888"
+     * by default.
+     */
     public EmbeddedInfo() {
         
     }
 
+    /**
+     * Sets an {@link EmbeddedFileSystem} on this <code>EmbeddedInfo</EmbeddedInfo> object
+     *
+     * @param efs
+     * @see EmbeddedFileSystem
+     */
     public void setFileSystem(EmbeddedFileSystem efs) {
         this.efs = efs;
     }
 
+    /**
+     *
+     * @return the {@link EmbeddedFileSystem} used by this <code>EmbeddedInfo</object>
+     */
     public EmbeddedFileSystem getFileSystem() {
         return efs;
     }
 
+    /**
+     *
+     * @param f
+     */
     public void addArchive(File f) {
         archives.add(f);
     }
 
+    /**
+     *
+     * @param sw
+     */
     public void addScatteredWar(ScatteredWar sw) {
         throw new UnsupportedOperationException("Not yet implemented");
         //scatteredWars.add(sw);
     }
     
+    /**
+     *
+     * @param ra
+     */
     public void addReadableArchive(ReadableArchive ra) {
         throw new UnsupportedOperationException("Not yet implemented");
         //readableArchives.add(ra);
     }
     
+    /**
+     * Set the HTTP port
+     * @param port
+     */
     public void setHttpPort(int port) {
         httpPort = port;
     }
 
+    /**
+     * Set the server name
+     * @param newName
+     */
     public void setServerName(String newName) {
         if(StringUtils.ok(newName))
             name = newName;
     }
 
 
+    /**
+     * Checks that archives exist.  Checks that the HTTP port is a valid port number.
+     * Checks if an {@link EmbeddedFileSystem} has been set.
+     * If none has been set, a default <code>EmbeddedFileSystem</code>
+     * is created.
+     * @throws org.glassfish.embed.EmbeddedException
+     */
     public void validate() throws EmbeddedException {
         validateArchives();
         validatePort();
