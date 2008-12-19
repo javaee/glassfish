@@ -30,6 +30,8 @@ import com.sun.enterprise.admin.launcher.GFLauncherFactory;
 import com.sun.enterprise.admin.launcher.GFLauncherInfo;
 import com.sun.enterprise.cli.framework.*;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
+import java.io.BufferedReader;
+import java.net.*;
 import java.util.*;
 import java.util.logging.*;
 
@@ -73,7 +75,7 @@ public class StartDomainCommand extends AbstractCommand {
 
 
             if(isServerAlive(4848)) {
-                String msg = getLocalizedString("ServerRunning", new String[]{info.getDomainName(), "4848"});
+                String msg = getLocalizedString("ServerRunning2");
                 throw new CommandException(msg);
             }
             
@@ -138,6 +140,18 @@ public class StartDomainCommand extends AbstractCommand {
     }
     
     private boolean isServerAlive(int port) {
+        try {
+            // world's simplest test
+            Socket socket = new Socket("localhost", port);
+            return true;
+        }
+        catch(Exception e) {
+            return false;
+        }
+    }
+
+    /*
+     private boolean isServerAlive(int port) {
         CommandInvoker invoker = new CommandInvoker(CLIRemoteCommand.RELIABLE_COMMAND); // version
         invoker.put(PORT, ""+port);
         invoker.put(USER, getOption(USER));
@@ -145,6 +159,7 @@ public class StartDomainCommand extends AbstractCommand {
         //what about --secure, that's next!
         return (CLIRemoteCommand.pingDASQuietly(invoker));
     }
+     */
     
     private boolean isServerAlive(Set<Integer> ports) {
         if (ports == null || ports.size() == 0)

@@ -81,7 +81,7 @@ public class StopDomainCommand extends AbstractCommand {
         int adminPort = ports[0];
 
         // Verify that the DAS is running and reachable
-        if(!isServerAlive(adminPort))
+        if(!pingPort(adminPort))
             throw new CommandException(strings.get("StopDomain.dasNotRunning"));
 
         try {
@@ -247,14 +247,6 @@ public class StopDomainCommand extends AbstractCommand {
         return s != null && s.length() > 0;
     }
     
-    private boolean isServerAlive(int port) {
-        CommandInvoker invoker = new CommandInvoker(CLIRemoteCommand.RELIABLE_COMMAND);
-        invoker.put(PORT, ""+port);
-        invoker.put(USER, getOption(USER));
-        invoker.put(PASSWORDFILE, getOption(PASSWORDFILE));
-        //what about --secure, that's next!
-        return (CLIRemoteCommand.pingDASQuietly(invoker));
-    }
     private File domainsDir;
     private File domainRootDir;
     private String domainName;
