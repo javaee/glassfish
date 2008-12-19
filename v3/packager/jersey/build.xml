@@ -25,11 +25,10 @@ own identifying information: Portions Copyright [yyyy]
 	<target name="create.package">
 		<echo message="Staging files"/>
 	
-	<unzip src="target/stage/${install.dir.name}/jersey.zip"
+	<unzip src="target/tmp/jersey.zip"
            dest="target/stage/${install.dir.name}">
        </unzip>
 
-       <delete dir="target/stage/${install.dir.name}" includes="*.zip" />
 
         <if test="${compression}">
 	       <antcall target="pack.compression" />

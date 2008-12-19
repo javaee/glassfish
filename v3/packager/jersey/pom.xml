@@ -72,7 +72,7 @@
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
-				<outputDirectory>${project.build.directory}/stage/${install.dir.name}</outputDirectory>
+				<outputDirectory>${project.build.directory}/tmp/</outputDirectory>
                             <overWriteReleases>false</overWriteReleases>
                             <overWriteSnapshots>true</overWriteSnapshots>
                             <excludeTransitive>true</excludeTransitive>
