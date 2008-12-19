@@ -68,12 +68,12 @@ public class StartDomainCommand extends AbstractCommand {
             info.setVerbose(verbose);
             info.setDebug(getBooleanOption("debug"));
             launcher.setup();
-            // CLI calls this method only to ensure that domain.xml is parsed
-            // once. This is a performance optimization.
-            // km@dev.java.net (Aug 2008)
-            if(isServerAlive(info.getAdminPorts())) {
-                String port = info.getAdminPorts().toArray(new Integer[0])[0] + "";
-                String msg = getLocalizedString("ServerRunning", new String[]{info.getDomainName(), port});
+
+
+
+
+            if(isServerAlive(4848)) {
+                String msg = getLocalizedString("ServerRunning", new String[]{info.getDomainName(), "4848"});
                 throw new CommandException(msg);
             }
             
@@ -81,10 +81,10 @@ public class StartDomainCommand extends AbstractCommand {
             
             // if we are in verbose mode, we definitely do NOT want to wait for DAS --
             // since it already ran and is now dead!!
-            if(!verbose) {
+            //if(!verbose) {
                 waitForDAS(info.getAdminPorts());
                 report(info);
-            }
+            //}
         }
         catch(GFLauncherException gfle) {
             throw new CommandException(gfle.getMessage());
