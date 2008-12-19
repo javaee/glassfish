@@ -192,7 +192,7 @@ public class WebServiceHandler extends AbstractHandler {
                 bundleDesc.setSpecVersion("2.5");
             }
         }catch (Exception e) {
-            throw new AnnotationProcessorException(rb.getString("webservice.annotation.exception"+ e.getMessage()));
+            throw new AnnotationProcessorException(rb.getString("webservice.annotation.exception")+ e.getMessage());
         }
         //WebService.name in the impl class identifies port-component-name
         // If this is specified in impl class, then that takes precedence
