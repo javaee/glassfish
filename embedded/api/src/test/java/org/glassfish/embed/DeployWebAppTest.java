@@ -7,6 +7,7 @@ package org.glassfish.embed;
 
 import com.sun.enterprise.universal.io.SmartFile;
 import java.io.*;
+import java.net.Socket;
 import org.junit.*;
 import static org.junit.Assert.*;
 
@@ -80,6 +81,18 @@ public class DeployWebAppTest {
             System.out.println("Unexpected Exception: " + e);
             fail("Failure deploying SimpleWar");
         }
+        
+        try {
+            Socket socket = new Socket("localhost", 4848);
+            Socket socket2 = new Socket("localhost", 8888);
+            assertTrue(socket.isConnected());
+            assertTrue(socket2.isConnected());
+            socket.close();
+            socket2.close();
+        } catch(Exception e) {
+            fail(e.getLocalizedMessage());
+        }
+
         app.undeploy();
         System.out.println("Simple War deployed and undeployed OK...");
     }
