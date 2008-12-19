@@ -55,7 +55,7 @@ public class JAXWSAdapterRegistry {
     private Map store;
     private static final StringManager localStrings =
         StringManager.getManager(JAXWSAdapterRegistry.class);
-    final Logger logger = LogDomains.getLogger(JAXWSAdapterRegistry.class,LogDomains.WEB_LOGGER);
+    final Logger logger = LogDomains.getLogger(JAXWSAdapterRegistry.class,LogDomains.WEBSERVICES_LOGGER);
     
     /** Creates a new instance of JAXWSServletUtil */
     private JAXWSAdapterRegistry() {

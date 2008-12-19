@@ -81,7 +81,7 @@ import com.sun.enterprise.module.*;
 public class WebServiceTesterServlet extends HttpServlet implements MessageListener {
 
     private WebServiceEndpoint svcEP;
-    private static Logger logger = LogDomains.getLogger(WebServiceTesterServlet.class,LogDomains.WEB_LOGGER);
+    private static Logger logger = LogDomains.getLogger(WebServiceTesterServlet.class,LogDomains.WEBSERVICES_LOGGER);
 
     private static Hashtable<String, Class> gsiClasses = new Hashtable<String, Class>();
     private static Hashtable<String, Object> ports = new Hashtable<String, Object>();

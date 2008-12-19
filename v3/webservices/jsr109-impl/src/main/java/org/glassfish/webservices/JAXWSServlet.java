@@ -74,7 +74,7 @@ import java.util.logging.Logger;
  */
 public class JAXWSServlet extends HttpServlet {
 
-    private static Logger logger = LogDomains.getLogger(JAXWSServlet.class,LogDomains.WEB_LOGGER);
+    private static Logger logger = LogDomains.getLogger(JAXWSServlet.class,LogDomains.WEBSERVICES_LOGGER);
     private WebServiceEndpoint endpoint;
     private String urlPattern;
     private String contextRoot;

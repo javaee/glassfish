@@ -111,7 +111,7 @@ public class WsUtil {
     private static final String SECURITY_POLICY_NAMESPACE_URI = 
             "http://schemas.xmlsoap.org/ws/2005/07/securitypolicy";*/
 
-    private static Logger logger = LogDomains.getLogger(WsUtil.class,LogDomains.WEB_LOGGER);
+    private static Logger logger = LogDomains.getLogger(WsUtil.class,LogDomains.WEBSERVICES_LOGGER);
 
 
     //private JaxRpcObjectFactory rpcFactory;
