@@ -122,10 +122,12 @@ class GFEmbeddedLauncher extends GFLauncher{
         cmdLine.add(getMainClass());
         cmdLine.add("--port");
         cmdLine.add("8080");
-        cmdLine.add("--xml");
-        cmdLine.add(domainXml.getPath() );
-        cmdLine.add("--dir");
+        //cmdLine.add("--xml");
+        //cmdLine.add(domainXml.getPath() );
+        cmdLine.add("--installDir");
         cmdLine.add(installDir.getPath());
+        cmdLine.add("--instanceDir");
+        cmdLine.add(domainDir.getPath());
         cmdLine.add("--autodelete");
         cmdLine.add("false");
     }
