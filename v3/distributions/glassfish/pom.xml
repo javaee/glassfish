@@ -100,6 +100,24 @@
             <artifactId>jts</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.webservices</groupId>
+            <artifactId>jsr109-impl</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>webservices</artifactId>
+            <version>${webservices.version}</version>
+            <classifier>osgi</classifier>
+        </dependency>
+        <dependency>
+           <groupId>com.sun.xml.bind</groupId>
+           <artifactId>jaxb</artifactId>
+           <version>${jaxb.version}</version>
+           <classifier>osgi</classifier>
+        </dependency>
 
     </dependencies>
 </project>
