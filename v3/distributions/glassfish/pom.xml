@@ -100,7 +100,7 @@
             <artifactId>jts</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>org.glassfish.webservices</groupId>
             <artifactId>jsr109-impl</artifactId>
             <version>${project.version}</version>
@@ -117,7 +117,7 @@
            <artifactId>jaxb</artifactId>
            <version>${jaxb.version}</version>
            <classifier>osgi</classifier>
-        </dependency>
+        </dependency>-->
 
     </dependencies>
 </project>
