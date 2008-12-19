@@ -100,7 +100,7 @@ public class CommandExecutor {
             LoggerHelper.info("command_successful", commandName);
             if (msg!=null) LoggerHelper.info(msg);
         } else if (exitCode.equals(exitCode.FAILURE)) {
-            LoggerHelper.severe("command_failure", commandName);
+            LoggerHelper.severe("command_failed", commandName);
             if (msg!=null) LoggerHelper.severe(msg);
             throw new EmbeddedException("command_failure", commandName, t);
         }

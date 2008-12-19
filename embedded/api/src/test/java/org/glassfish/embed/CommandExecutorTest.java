@@ -5,8 +5,10 @@
 
 package org.glassfish.embed;
 
+import com.sun.enterprise.universal.io.SmartFile;
 import org.glassfish.api.ActionReport;
 import java.io.File;
+import java.net.Socket;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -63,7 +65,7 @@ public class CommandExecutorTest {
     public void tearDown() {
         options.clear();
     }
-    //@Ignore
+
     @Test
     public void testCreateJdbcConnectionPoolSuccess() {
         options.setProperty("datasourceclassname", "org.apache.derby.jdbc.ClientDataSource");
@@ -80,7 +82,7 @@ public class CommandExecutorTest {
         }
         assertEquals(ActionReport.ExitCode.SUCCESS, ce.getExitCode());
     }
-    //@Ignore
+
     @Test
     public void testCreateJdbcResourceSuccess() {
         options.setProperty("connectionpoolid", "DerbyPool");
@@ -94,7 +96,7 @@ public class CommandExecutorTest {
         }
         assertEquals(ActionReport.ExitCode.SUCCESS, ce.getExitCode());
     }
-    //@Ignore
+
     @Test
     public void testDeleteJdbcResourceSuccess() {
         options.setProperty("DEFAULT", "jdbc/__default");
@@ -107,7 +109,7 @@ public class CommandExecutorTest {
         }
         assertEquals(ActionReport.ExitCode.SUCCESS, ce.getExitCode());
     }
-    //@Ignore
+
     @Test
     public void testDeleteJdbcConnectionPoolSuccess() {
         options.setProperty("DEFAULT", "DerbyPool");
@@ -120,7 +122,7 @@ public class CommandExecutorTest {
         }
         assertEquals(ActionReport.ExitCode.SUCCESS, ce.getExitCode());
     }
-    //@Ignore
+
     @Test
     public void testCreateJdbcConnectionPoolFail() {
         options.setProperty("DEFAULT", "poolA");
@@ -137,39 +139,53 @@ public class CommandExecutorTest {
         }
         assertEquals(ActionReport.ExitCode.FAILURE, ce.getExitCode());
     }
-    @Ignore
+
     @Test
     public void testDeploySuccess() {
-        String file = "api/target/test-classes/simple.war";
-        options.setProperty("DEFAULT", file);
+        File file = SmartFile.sanitize(new File("target/test-classes/simple.war"));
         try {
+            options.setProperty("DEFAULT", file.getCanonicalPath());
             ce.execute("deploy", options);
+//            options.clear();
+//            options.setProperty("DEFAULT", "simple");
+//            ce.execute("undeploy", options);
         } catch (Exception ex) {
             LoggerHelper.severe("testDeploySuccess failed");
             ex.printStackTrace();
             fail();
         }
         assertEquals(ActionReport.ExitCode.SUCCESS, ce.getExitCode());
+
+        try {
+            Socket socket = new Socket("localhost", 4848);
+            Socket socket2 = new Socket("localhost", 8888);
+            assertTrue(socket.isConnected());
+            assertTrue(socket2.isConnected());
+            socket.close();
+            socket2.close();
+        } catch(Exception e) {
+            fail(e.getLocalizedMessage());
+        }
+
     }
-    @Ignore
-    @Test
-    public void testDeployFail() {
+
+    @Test(expected=EmbeddedException.class)
+    public void testDeployFail() throws EmbeddedException {
         String file = "foo";
         options.setProperty("DEFAULT", file);
         try {
             ce.execute("deploy", options);
+        } catch (EmbeddedException ee) {
+            System.out.println(ee.getLocalizedMessage());
+            throw ee;
         } catch (Exception ex) {
-            boolean isEmbEx = ex instanceof EmbeddedException;
-            assertTrue(isEmbEx);
-            if (!isEmbEx) {
-                LoggerHelper.severe("testDeployFail failed");
-                ex.printStackTrace();
-                fail();
-            }
+            LoggerHelper.severe("testDeployFail failed");
+            ex.printStackTrace();
+            fail();
         }
         assertEquals(ActionReport.ExitCode.FAILURE, ce.getExitCode());
     }
-    //@Ignore
+
     @Test
     public void testCreateSystemPropertiesSuccess() {
         options.setProperty("DEFAULT", "HTTP_LISTENER_PORT=38080:HTTP_SSL_LISTENER_PORT=38181");
