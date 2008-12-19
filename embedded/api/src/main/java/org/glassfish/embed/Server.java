@@ -238,6 +238,10 @@ public class Server {
         return defaultWebXml;
     }
 
+    public EmbeddedFileSystem getFileSystem() {
+        return efs;
+    }
+    
     /*
     URL getDomainXML() {
         return domainXmlUrl;
