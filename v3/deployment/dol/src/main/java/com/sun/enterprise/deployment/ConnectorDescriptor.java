@@ -791,7 +791,12 @@ public class ConnectorDescriptor extends BundleDescriptor {
     public boolean isMessageListenerSupported(String type) {
         throw new UnsupportedOperationException();
     }
-    
+
+
+    public boolean isEmpty() {
+        return false;
+    }
+
     /***********************************************************************************************
      * START
      * Deployment Consolidation to Suppport Multiple Deployment API Clients

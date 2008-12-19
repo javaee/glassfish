@@ -83,6 +83,10 @@ public class WebServicesDescriptor extends RootDeploymentDescriptor {
         return !(webServices.isEmpty());
     }
 
+    public boolean isEmpty() {
+        return webServices.isEmpty();
+    }
+
     public WebService getWebServiceByName(String webServiceName) {
         for (WebService webService : webServices) {
             if( webService.getName().equals(webServiceName) ) {

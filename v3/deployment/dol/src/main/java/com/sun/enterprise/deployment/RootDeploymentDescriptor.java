@@ -127,6 +127,12 @@ public abstract class RootDeploymentDescriptor extends Descriptor {
      */
     public abstract String getDefaultSpecVersion();
 
+    /**
+     * Return true if this root deployment descriptor does not describe anything
+     * @return true if this root descriptor is empty
+     */
+    public abstract boolean isEmpty();
+
         
     /**
      * @return the specification version of the deployment descriptor
@@ -286,7 +292,7 @@ public abstract class RootDeploymentDescriptor extends Descriptor {
      * @param index is the instance index
      * @return an unmodifiable collection of extensions or empty collection if none.
      */
-    public <T extends RootDeploymentDescriptor>  T getExtensionsDescriptors(Class<T> type, String index) {
+    public <T extends RootDeploymentDescriptor>  T getExtensionsDescriptors(Class<? extends RootDeploymentDescriptor> type, String index) {
         for (T extension : (Collection<T>) getExtensionsDescriptors(type)) {
             if (index==null) {
                 if (extension.index==null) {
@@ -301,7 +307,7 @@ public abstract class RootDeploymentDescriptor extends Descriptor {
         return null;
     }
 
-    public synchronized <T extends RootDeploymentDescriptor> void addExtensionDescriptor(Class<T> type, T instance, String index) {
+    public synchronized <T extends RootDeploymentDescriptor> void addExtensionDescriptor(Class<? extends RootDeploymentDescriptor> type, T instance, String index) {
         List<RootDeploymentDescriptor> values;
         if (extensions.containsKey(type)) {
             values = extensions.get(type);

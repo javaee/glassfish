@@ -74,7 +74,7 @@ public class ApplicationClientDescriptor extends BundleDescriptor
         new HashSet<LifecycleCallbackDescriptor>();
     private Set<LifecycleCallbackDescriptor> preDestroyDescs =
         new HashSet<LifecycleCallbackDescriptor>();
-    private String mainClassName;
+    private String mainClassName=null;
     private static LocalStringManagerImpl localStrings =
 	    new LocalStringManagerImpl(ApplicationClientDescriptor.class);
     private String callbackHandler = null;
@@ -101,7 +101,11 @@ public class ApplicationClientDescriptor extends BundleDescriptor
     public String getDefaultSpecVersion() {
         return AppClientNode.SPEC_VERSION;
     }
-    
+
+    public boolean isEmpty() {
+        return mainClassName==null;
+    }
+
     /**
     * Return the fq Java clasname of this application client [{0}].
     */

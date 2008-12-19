@@ -83,5 +83,9 @@ public class PersistenceArchivist extends ExtensionsArchivist {
         }
 
         return persistenceUnitsDescriptor;
-    }    
+    }
+
+    public RootDeploymentDescriptor getDefaultDescriptor() {
+        return null;
+    }
 }

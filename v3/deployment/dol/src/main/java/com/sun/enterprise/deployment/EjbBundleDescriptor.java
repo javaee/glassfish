@@ -135,7 +135,11 @@ public class EjbBundleDescriptor extends BundleDescriptor {
 	}
 	return this.ejbClientJarUri;
     }
-    
+
+    public boolean isEmpty() {
+        return ejbs.isEmpty();
+    }
+
     /**
     * Sets the ejb client JAR entry name.
     */

@@ -157,6 +157,10 @@ public class WebBundleDescriptor extends BundleDescriptor
         addOtherInfo(webBundleDescriptor);
     }
 
+    public boolean isEmpty() {
+        return webComponentDescriptors.isEmpty();
+    }
+
     /**
      * This internal method add all info of given webBundleDescriptor except
      * webComponentDescriptors.

@@ -37,8 +37,15 @@ public abstract class ExtensionsArchivist  {
 
     public abstract boolean supportsModuleType(XModuleType moduleType);
 
+    public abstract <T extends RootDeploymentDescriptor> T getDefaultDescriptor();
+
     public Scanner getScanner() {
         return null;
+    }
+
+    public <T extends RootDeploymentDescriptor> void addExtension(RootDeploymentDescriptor root, RootDeploymentDescriptor extension) {
+        root.addExtensionDescriptor(extension.getClass(), extension, null);
+        extension.setModuleDescriptor(root.getModuleDescriptor());
     }
 
     public Object open(Archivist main, ReadableArchive archive, RootDeploymentDescriptor descriptor)
