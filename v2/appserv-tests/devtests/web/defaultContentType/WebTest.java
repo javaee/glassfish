@@ -9,7 +9,7 @@ public class WebTest {
 
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
-    private static final String TEST_NAME = "defaultResponseType";
+    private static final String TEST_NAME = "defaultContentType";
 
     private String host;
     private String port;
@@ -22,7 +22,7 @@ public class WebTest {
     }
     
     public static void main(String[] args) {
-        stat.addDescription("defaultResponseType");
+        stat.addDescription("defaultContentType");
         WebTest webTest = new WebTest(args);
         webTest.doTest();
         stat.printSummary(TEST_NAME);
