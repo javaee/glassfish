@@ -42,7 +42,6 @@ import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.DescriptorConstants;
 import com.sun.enterprise.deployment.io.WebDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.runtime.WebRuntimeDDFile;
-import com.sun.enterprise.deployment.node.web.WebBundleNode;
 import com.sun.enterprise.deployment.util.*;
 import org.glassfish.api.deployment.archive.Archive;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -149,7 +148,6 @@ public class WebArchivist extends Archivist<WebBundleDescriptor>
     @Override
     public void setDefaultBundleDescriptor(WebBundleDescriptor defaultWbd) {
         defaultBundleDescriptor = defaultWbd;
-        WebBundleNode.setDefaultBundleDescriptor(defaultBundleDescriptor);
     }
 
     /**
@@ -183,7 +181,7 @@ public class WebArchivist extends Archivist<WebBundleDescriptor>
             return;
         }
         descriptor.setClassLoader(cl);
-        descriptor.visit((WebBundleVisitor) new ApplicationValidator());        
+        descriptor.visit((WebBundleVisitor) new ApplicationValidator());
     }            
 
     /**
@@ -231,6 +229,8 @@ public class WebArchivist extends Archivist<WebBundleDescriptor>
         // read the web fragment after reading the web.xml
         readStandardFragment(descriptor, archive);
         super.postStandardDDsRead(descriptor, archive);
+        // apply default from default-web.xml
+        descriptor.addWebBundleDescriptor(defaultBundleDescriptor, true);
     }
 
     protected void readStandardFragment(WebBundleDescriptor descriptor,
@@ -238,6 +238,7 @@ public class WebArchivist extends Archivist<WebBundleDescriptor>
 
         Vector libs = getLibraries(archive);
         if (libs != null && libs.size() > 0) {
+            WebBundleDescriptor mergedWebFragment = null;
             for (int i = 0; i < libs.size(); i++) {
                 String lib = (String)libs.get(i);
                 Archivist wfArchivist = new WebFragmentArchivist();
@@ -257,8 +258,17 @@ public class WebArchivist extends Archivist<WebBundleDescriptor>
                         ioex.initCause(ex);
                         throw ioex;
                     }
-                    descriptor.mergeWebBundleDescriptor(wdesc);
+
+                    if (mergedWebFragment != null) {
+                        mergedWebFragment.addWebBundleDescriptor(wdesc);
+                    } else {
+                        mergedWebFragment = wdesc;
+                    }
                 }
+            }
+
+            if (mergedWebFragment != null) {
+                descriptor.addWebBundleDescriptor(mergedWebFragment);
             }
         }
     }

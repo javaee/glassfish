@@ -120,10 +120,23 @@ public class WebBundleDescriptor extends BundleDescriptor
     }
 
     /**
-     * This method will not merge the contents of webComponents. It will take only one of them.
+     * This method will merge the contents of webComponents.
      * @param webBundleDescriptor
      */
     public void addWebBundleDescriptor(WebBundleDescriptor webBundleDescriptor) {
+        addWebBundleDescriptor(webBundleDescriptor, false);
+    }
+
+    /**
+     * This method will merge the contents of webComponents.
+     * The parameter asDefault indicates whether the given WebBundleDescriptor is regarded
+     * as default during the merging process. This has a different meaning, for instance,
+     * in welcome-file-list. One will not combine with default-web.xml if it is already
+     * defined in web.xml.
+     * @param webBundleDescriptor
+     * @param asDefault the added WebBundleDescriptor as default value
+     */
+    public void addWebBundleDescriptor(WebBundleDescriptor webBundleDescriptor, boolean asDefault) {
         super.addBundleDescriptor(webBundleDescriptor);
 
         for (WebComponentDescriptor webComponentDesc :webBundleDescriptor.getWebComponentDescriptors())
@@ -131,47 +144,23 @@ public class WebBundleDescriptor extends BundleDescriptor
             WebComponentDescriptor webComponentDescriptor =
                 new WebComponentDescriptor(webComponentDesc);
             webComponentDescriptor.setWebBundleDescriptor(this);
-            this.getWebComponentDescriptors().add(webComponentDescriptor);
+            addWebComponentDescriptor(webComponentDescriptor);
         }
 
-        addOtherInfo(webBundleDescriptor);
-    }
-
-    /**
-     * This method will merge the contents of webComponents, too.
-     * @param webBundleDescriptor
-     */
-    public void mergeWebBundleDescriptor(WebBundleDescriptor webBundleDescriptor) {
-        super.addBundleDescriptor(webBundleDescriptor);
-
-        for (WebComponentDescriptor webComponentDesc : webBundleDescriptor.getWebComponentDescriptors()) {
-            WebComponentDescriptor webCompDesc =
-                    this.getWebComponentByCanonicalName(webComponentDesc.getCanonicalName());
-            if (webCompDesc == null) {
-                this.getWebComponentDescriptors().add(new WebComponentDescriptor(webComponentDesc));
-            } else {
-                webCompDesc.add(webComponentDesc);
-            }
+        // do not call getMimeMappingsSet().addAll() as there is special overriding rule
+        for (MimeMapping mimeMap : webBundleDescriptor.getMimeMappingsSet()) {
+            addMimeMapping(mimeMap);
+        }
+        if (!asDefault || (asDefault && getWelcomeFilesSet().size() == 0)) {
+            getWelcomeFilesSet().addAll(webBundleDescriptor.getWelcomeFilesSet());
         }
 
-        addOtherInfo(webBundleDescriptor);
-    }
-
-    public boolean isEmpty() {
-        return webComponentDescriptors.isEmpty();
-    }
-
-    /**
-     * This internal method add all info of given webBundleDescriptor except
-     * webComponentDescriptors.
-     * @param webBundleDescriptor
-     */
-    private void addOtherInfo(WebBundleDescriptor webBundleDescriptor) {
-
-        getMimeMappingsSet().addAll(webBundleDescriptor.getMimeMappingsSet());
-        getWelcomeFilesSet().addAll(webBundleDescriptor.getWelcomeFilesSet());
-        getErrorPageDescriptorsSet().addAll(webBundleDescriptor.getErrorPageDescriptorsSet());
+        // do not call getErrorPageDescriptorsSet.addAll() as there is special overriding rule
+        for (ErrorPageDescriptor errPageDesc : webBundleDescriptor.getErrorPageDescriptorsSet()) {
+            addErrorPageDescriptor(errPageDesc);
+        }
         getAppListeners().addAll(webBundleDescriptor.getAppListeners());
+        // ok as EnvironmentProperty.equals() only compare name
         getContextParametersSet().addAll(webBundleDescriptor.getContextParametersSet());
         getEjbReferenceDescriptors().addAll(webBundleDescriptor.getEjbReferenceDescriptors());
         getResourceReferenceDescriptors().addAll(webBundleDescriptor.getResourceReferenceDescriptors());
@@ -181,10 +170,17 @@ public class WebBundleDescriptor extends BundleDescriptor
         getSecurityConstraintsSet().addAll(webBundleDescriptor.getSecurityConstraintsSet());
 
         // ServletFilters
-        getServletFilters().addAll(webBundleDescriptor.getServletFilters());
+        // do not call getServletFilters.addAll() as there is special overriding rule
+        for (ServletFilter servletFilter : webBundleDescriptor.getServletFilters()) {
+            addServletFilter(servletFilter);
+        }
         getServletFilterMappings().addAll(webBundleDescriptor.getServletFilterMappings());
-        setLocaleEncodingMappingListDescriptor(webBundleDescriptor.getLocaleEncodingMappingListDescriptor());
-        setJspConfigDescriptor(webBundleDescriptor.getJspConfigDescriptor());
+        if (getLocaleEncodingMappingListDescriptor() == null) {
+            setLocaleEncodingMappingListDescriptor(webBundleDescriptor.getLocaleEncodingMappingListDescriptor());
+        }
+        if (getJspConfigDescriptor() == null) {
+            setJspConfigDescriptor(webBundleDescriptor.getJspConfigDescriptor());
+        }
 
         // WebServices
         WebServicesDescriptor thisWebServices = this.getWebServices();
@@ -193,6 +189,10 @@ public class WebBundleDescriptor extends BundleDescriptor
             thisWebServices.addWebService(new WebService(ws));
         }
 
+    }
+
+    public boolean isEmpty() {
+        return webComponentDescriptors.isEmpty();
     }
 
     /**
@@ -255,20 +255,16 @@ public class WebBundleDescriptor extends BundleDescriptor
      */
 
     public void addWebComponentDescriptor(WebComponentDescriptor webComponentDescriptor) {
-
         webComponentDescriptor.setWebBundleDescriptor(this);
-        for (WebComponentDescriptor wbd : getWebComponentDescriptors()) {
-            if (wbd.getCanonicalName().equals(
-                    webComponentDescriptor.getCanonicalName())) {
-                // combine the contents of the two
-                webComponentDescriptor.add(wbd);
-                // remove the original one from the set
-                // so we can add the new one
-                getWebComponentDescriptors().remove(wbd);
-                break;
-            }
+        WebComponentDescriptor webCompDesc =
+            getWebComponentByCanonicalName(webComponentDescriptor.getCanonicalName());
+
+        if (webCompDesc != null) {
+            // combine the contents of the given one to this one
+            webCompDesc.add(webComponentDescriptor);
+        } else {
+            this.getWebComponentDescriptors().add(webComponentDescriptor);
         }
-        this.getWebComponentDescriptors().add(webComponentDescriptor);
     }
 
     /**
@@ -403,17 +399,19 @@ public class WebBundleDescriptor extends BundleDescriptor
      * @add the given mime mapping to my list.
      */
     public void addMimeMapping(MimeMapping mimeMapping) {
-        // always override
-        // Since Set.add API doesn't replace
-        // remove the element first if it's already contained
+        // there should be at most one mapping per extension
+        boolean found = false;
         for (Iterator<MimeMapping> itr = getMimeMappingsSet().iterator(); itr.hasNext();) {
             MimeMapping mm = itr.next();
             if (mm.getExtension().equals(mimeMapping.getExtension())) {
-                getMimeMappingsSet().remove(mm);
+                found = true;
                 break;
             }
         }
-        getMimeMappingsSet().add(mimeMapping);
+        
+        if (!found) {
+            getMimeMappingsSet().add(mimeMapping);
+        }
     }
 
     /**
@@ -495,7 +493,13 @@ public class WebBundleDescriptor extends BundleDescriptor
      * Adds a new error page to my list.
      */
     public void addErrorPageDescriptor(ErrorPageDescriptor errorPageDescriptor) {
-        getErrorPageDescriptorsSet().add(errorPageDescriptor);
+        String errorSignifier = errorPageDescriptor.getErrorSignifierAsString();
+        ErrorPageDescriptor errPageDesc =
+            getErrorPageDescriptorBySignifier(errorSignifier);
+
+        if (errPageDesc == null) {
+            getErrorPageDescriptorsSet().add(errorPageDescriptor);
+        }
     }
 
     /**
@@ -1184,7 +1188,16 @@ public class WebBundleDescriptor extends BundleDescriptor
      * Adds a servlet filter to this web component.
      */
     public void addServletFilter(ServletFilter ref) {
-        if (!getServletFilters().contains(ref)) {
+        String name = ref.getName();
+        boolean found = false;
+        for (ServletFilter servletFilter : getServletFilters()) {
+            if (name.equals(servletFilter.getName())) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
             getServletFilters().addElement(ref);
         }
     }
