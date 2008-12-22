@@ -96,10 +96,16 @@
 		<!-- Placeholder while waiting for ejb to become available...-->
         <dependency>
             <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-common</artifactId>
+            <artifactId>glassfish-ejb</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
-        </dependency>  
+        </dependency>
+        <!--<dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-ejb-management</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>-->
     </dependencies>
   
   <developers>
