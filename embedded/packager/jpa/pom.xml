@@ -97,7 +97,13 @@
             <artifactId>glassfish-jpa</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
-        </dependency>  
+        </dependency>
+        <!--<dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-jpa-management</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>-->
     </dependencies>
   
   <developers>
