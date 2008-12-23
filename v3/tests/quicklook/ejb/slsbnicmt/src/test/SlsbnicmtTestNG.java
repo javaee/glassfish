@@ -53,7 +53,7 @@ public class SlsbnicmtTestNG {
            
 
     @Test(groups = { "init" })
-    public void test1() throws Exception{
+    public void EJBInject() throws Exception{
         boolean result=false;       
         try{
             result = test("EJBInject");
@@ -64,9 +64,8 @@ public class SlsbnicmtTestNG {
         }
     }
 
-
     @Test(dependsOnGroups = { "init.*" })
-    public void test2() throws Exception{
+    public void JpaPersist() throws Exception{
         boolean result = false;
         try{
             result = test("JpaPersist");
@@ -77,9 +76,8 @@ public class SlsbnicmtTestNG {
         }
     }
 
-    /*
-    @Test(dependsOnGroups = { "init.*" })
-    public void test3() throws Exception{
+    @Test(dependsOnMethods = { "JpaPersist" })
+    public void JpaRemove() throws Exception{
         boolean result=false;
         try{
             result = test("JpaRemove");
@@ -90,8 +88,8 @@ public class SlsbnicmtTestNG {
         }
     }
 
-    @Test(dependsOnGroups = { "init.*" })
-    public void test4() throws Exception{
+    @Test(dependsOnMethods = { "JpaRemove" })
+    public void JpaVerify() throws Exception{
         boolean result=false;
         try{
             result = test("JpaVerify");
@@ -101,14 +99,14 @@ public class SlsbnicmtTestNG {
             throw new Exception(e);
         }
     }
-    */
+
     private boolean test(String c) throws Exception {
         String EXPECTED_RESPONSE = "Test:Pass";
         String TEST_CASE = TEST_NAME + ":" + c;
         boolean result=false;
         String url = "http://" + host + ":" + port + strContextRoot + 
                      "/test?tc=" + c;
-        System.out.println("url="+url);
+        //System.out.println("url="+url);
 
         HttpURLConnection conn = (HttpURLConnection)
             (new URL(url)).openConnection();
