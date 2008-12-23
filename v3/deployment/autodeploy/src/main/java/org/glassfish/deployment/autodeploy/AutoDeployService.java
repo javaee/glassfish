@@ -97,7 +97,7 @@ public class AutoDeployService implements Startup, PostConstruct, PreDestroy, Co
     }
 
     public void postConstruct() {
-        logger = LogDomains.getLogger(AutoDeployService.class, LogDomains.DPL_LOGGER);
+        logger = LogDomains.getLogger(AutoDeployService.class, "org.glassfish.deployment.autodeploy");
         
         /* Create the auto-deployer right away, even if its use is disabled 
          * currently.  This way any initialization errors will appear early 

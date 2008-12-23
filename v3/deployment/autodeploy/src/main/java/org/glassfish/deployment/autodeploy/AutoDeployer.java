@@ -73,7 +73,7 @@ public class AutoDeployer {
     private String virtualServer = null;
     
     private String target=null;
-    private static final Logger sLogger=LogDomains.getLogger(AutoDeployer.class, LogDomains.DPL_LOGGER);
+    private static final Logger sLogger=LogDomains.getLogger(AutoDeployer.class, "org.glassfish.deployment.autodeploy");
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(AutoDeployer.class);
     private DirectoryScanner directoryScanner=null;
     

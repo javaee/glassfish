@@ -154,6 +154,9 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
      */
     //TODO dochez, does this need to go ?
     public <V> V loadMetaData(Class<V> type, DeploymentContext dc) {
+        if (dc.getModuleMetaData(type)!=null) {
+            return dc.getModuleMetaData(type);
+        }
         try {
             return (V) parseModuleMetaData(dc);
         } catch (Exception e) {

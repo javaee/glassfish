@@ -241,6 +241,14 @@ public abstract class RootDeploymentDescriptor extends Descriptor {
      */
     public void setModuleDescriptor(ModuleDescriptor descriptor) {
         moduleDescriptor = descriptor;
+        for (List<RootDeploymentDescriptor> extByType : this.extensions.values()) {
+            if (extByType!=null) {
+                for (RootDeploymentDescriptor ext : extByType) {
+                    ext.setModuleDescriptor(descriptor);
+                }
+            }
+
+        }
     }    
     
     /**

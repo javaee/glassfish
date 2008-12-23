@@ -88,6 +88,20 @@ public class EjbDeployer
                 new Class[] {EjbBundleDescriptor.class}, new Class[] {Application.class});
     }
 
+    @Override
+    public <V> V loadMetaData(Class<V> type, DeploymentContext dc) {
+        if (type==EjbBundleDescriptor.class) {
+            Application app = dc.getModuleMetaData(Application.class);
+            if (app!=null) {
+                Set<EjbBundleDescriptor> bundles = app.getEjbBundleDescriptors();
+                if (bundles!=null && !bundles.isEmpty()) {
+                    return type.cast(bundles.iterator().next());
+                }
+            }
+        }
+        return super.loadMetaData(type, dc);
+    }
+
     public EjbApplication load(EjbContainerStarter containerStarter, DeploymentContext dc) {
 
         Application app = dc.getModuleMetaData(Application.class);
