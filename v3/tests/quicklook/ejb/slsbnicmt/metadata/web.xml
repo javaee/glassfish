@@ -45,7 +45,7 @@
 
   <servlet-mapping>
     <servlet-name>AnnotatedServlet</servlet-name>
-    <url-pattern>/annotated/*</url-pattern>
+    <url-pattern>/test/*</url-pattern>
   </servlet-mapping>
 </web-app>
 
