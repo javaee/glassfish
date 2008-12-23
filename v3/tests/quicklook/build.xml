@@ -55,6 +55,7 @@
 	<!-- move file="test-output" tofile="test-output-web" failonerror="false" overwrite="true"/ -->
         <antcall target="testng-summary"/>
         <antcall target="quicklook-summary"/>
+	<copy file="test-output/emailable-report.html" tofile="test-output/QL-WD-report.html"/>
         <record name="allrun.output" action="stop"/>
     </target>
 
@@ -73,6 +74,7 @@
         <antcall target="stop-server"/>
         <antcall target="stop-derby"/>
         <antcall target="testng-summary"/>
+	<copy file="test-output/emailable-report.html" tofile="test-output/QL-GD-report.html"/>
         <record name="allrun.output" action="stop"/>
     </target>
 
