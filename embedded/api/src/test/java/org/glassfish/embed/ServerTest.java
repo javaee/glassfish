@@ -116,8 +116,6 @@ public class ServerTest {
             System.out.println("Unxpected Exception: " + e);
             fail("test failed: testDeploy_File_Fail");
         }
-
-        server.stop();
     }
 
     @Test
@@ -198,6 +196,10 @@ public class ServerTest {
     public void testCreateVirtualServer_Success() throws Exception {
         EmbeddedInfo info = new EmbeddedInfo();
         info.setServerName("server2");
+        EmbeddedFileSystem efs = new EmbeddedFileSystem();
+        efs.setRoot(new File("servertest2"));
+        efs.setAutoDelete(true);
+        info.setFileSystem(efs);
         Server server = new Server(info);
         try {
             server.createVirtualServer(server.createHttpListener(3333));
