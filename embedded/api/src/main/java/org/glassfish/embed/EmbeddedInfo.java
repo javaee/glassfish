@@ -137,8 +137,13 @@ public class EmbeddedInfo {
         validateArchives();
         validatePort();
         validateFilesystem();
+        validateLogging();
     }
 
+    public void setLogging(boolean b) {
+        logging = b;
+    }
+    
     @Override
     public String toString() {
         // TODO Finish it...
@@ -157,6 +162,8 @@ public class EmbeddedInfo {
     List<ReadableArchive>   readableArchives = new LinkedList<ReadableArchive>();
     List<ScatteredWar>      scatteredWars    = new LinkedList<ScatteredWar>();
     EmbeddedFileSystem      efs;
+    boolean                 logging         = false;
+
 
     //////////////////////  all private below //////////////////////
 
@@ -173,6 +180,14 @@ public class EmbeddedInfo {
             efs = new EmbeddedFileSystem();
         }
         efs.initialize();
+    }
+
+    private void validateLogging() throws EmbeddedException {
+        if(logging) {
+            LoggerHelper.info("log_msg");
+            LoggerHelper.stopConsoleLogging();
+            LoggerHelper.setLogFile(efs.getLogFile().getPath());
+        }
     }
     
     private void validatePort() throws EmbeddedException {

@@ -214,6 +214,17 @@ public final class EmbeddedFileSystem {
 
     /**
      *
+     *
+     * @return logfile
+     * @throws org.glassfish.embed.EmbeddedException
+     */
+    public File getLogFile() throws EmbeddedException{
+        mustBeInitialized("getLogFile");
+        return logFile;
+    }
+
+    /**
+     *
      * @return applications directory
      */
     public File getAppsDir() {
@@ -260,7 +271,7 @@ public final class EmbeddedFileSystem {
         initializeDomainXml(); // very complicated!!
         initializeApplicationsDirectory();
         setSystemProps();
-
+        initializeLogFile();
         initialized = true;
     }
 
@@ -278,6 +289,15 @@ public final class EmbeddedFileSystem {
     private void initializeDomainXml() throws EmbeddedException {
         initializeTargetDomainXml();
         initializeSourceDomainXml();
+    }
+
+    private void initializeLogFile() throws EmbeddedException {
+        File logDir = new File(instanceRoot, LOG_FILE_DIR);
+
+        if(!EmbeddedUtils.mkdirsIfNotExist(logDir))
+            throw new EmbeddedException("cant_make_log_dir", logDir);
+
+        logFile = new File(logDir, LOG_FILE);
     }
 
     private void initializeTargetDomainXml() throws EmbeddedException {
@@ -369,6 +389,7 @@ public final class EmbeddedFileSystem {
     private File                instanceRoot;
     private File                domainXmlTarget;
     private File                appsDir;
+    private File                logFile;
     private URL                 domainXmlSource;
     private boolean             autoDelete      = true;
     private boolean             initialized     = false;

@@ -64,11 +64,13 @@ public class EmbeddedMain {
             if(Boolean.parseBoolean(params.get("help")))
                 usage();
 
+            /*
             if(Boolean.parseBoolean(params.get("log"))) {
                 LoggerHelper.info("log_msg");
                 LoggerHelper.stopConsoleLogging();
                 LoggerHelper.startFileLogging();
             }
+             */
 
             LoggerHelper.fine("params size = " + params.size());
             Set<Map.Entry<String,String>> set = params.entrySet();
@@ -148,6 +150,11 @@ public class EmbeddedMain {
             setupDomainXmlUrl(fn, info);
         }
 
+        ////////// logging  //////////
+
+        if(Boolean.parseBoolean(params.get("log")))
+                info.setLogging(true);
+
         ////////// done!  //////////
         
         return info;
@@ -214,13 +221,14 @@ public class EmbeddedMain {
         new Arg("installDir",       "d",            false,                                         "Filesystem Installation Directory"),
         new Arg("instanceDir",      "i",            false,                                         "Filesystem Instance Directory"),
         new Arg("xml",              "x",            false,                                         "domain.xml filename or URL"),
-        new BoolArg("log",          "l",            false,                                         "Send logging to gfe.log"),
         new BoolArg("help",         "h",            false,                                         "Help"),
 
-        // note that --autodelete is NOT a bool arg
+        // note that --autodelete and --log are NOT BoolArg's
         // TODO make BoolArg more sophisticated so that you can hve the default be false
         // and allow --foo=true and --foo true and --foo
+        // BoolArg work kind of weird -- if you use one -- test VERY thoroughly!
 
+        new Arg("log",              "l",            true,                                          "Send logging to instance-root/logs/server.log"),
         new Arg("autodelete",   "a",            "true",                                         "Automatically delete Filesystem"),
     };
     
