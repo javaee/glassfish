@@ -674,6 +674,8 @@ public class Server {
         for (Inhabitant<? extends Init> svc : habitat.getInhabitants(Init.class)) {
             svc.release();
         }
+
+        started = false;
     }
 
 
