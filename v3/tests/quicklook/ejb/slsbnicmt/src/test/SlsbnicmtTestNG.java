@@ -64,12 +64,12 @@ public class SlsbnicmtTestNG {
         }
     }
 
-    /*
+
     @Test(dependsOnGroups = { "init.*" })
     public void test2() throws Exception{
         boolean result = false;
         try{
-            result = test("InjectLookup");
+            result = test("JpaPersist");
             Assert.assertEquals(result, true,"Unexpected Results");
         }catch(Exception e){
             e.printStackTrace();
@@ -77,6 +77,7 @@ public class SlsbnicmtTestNG {
         }
     }
 
+    /*
     @Test(dependsOnGroups = { "init.*" })
     public void test3() throws Exception{
         boolean result=false;
