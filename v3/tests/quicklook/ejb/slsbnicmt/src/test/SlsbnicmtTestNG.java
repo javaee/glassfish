@@ -64,6 +64,7 @@ public class SlsbnicmtTestNG {
         }
     }
 
+    /*
     @Test(dependsOnGroups = { "init.*" })
     public void test2() throws Exception{
         boolean result = false;
@@ -99,14 +100,14 @@ public class SlsbnicmtTestNG {
             throw new Exception(e);
         }
     }
-
+    */
     private boolean test(String c) throws Exception {
         String EXPECTED_RESPONSE = "Test:Pass";
         String TEST_CASE = TEST_NAME + ":" + c;
         boolean result=false;
         String url = "http://" + host + ":" + port + strContextRoot + 
                      "/test?tc=" + c;
-        //System.out.println("url="+url);
+        System.out.println("url="+url);
 
         HttpURLConnection conn = (HttpURLConnection)
             (new URL(url)).openConnection();
