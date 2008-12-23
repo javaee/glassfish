@@ -230,7 +230,9 @@ public class WebArchivist extends Archivist<WebBundleDescriptor>
         readStandardFragment(descriptor, archive);
         super.postStandardDDsRead(descriptor, archive);
         // apply default from default-web.xml
-        descriptor.addWebBundleDescriptor(defaultBundleDescriptor, true);
+        if (defaultBundleDescriptor != null) {
+            descriptor.addWebBundleDescriptor(defaultBundleDescriptor, true);
+        }
     }
 
     protected void readStandardFragment(WebBundleDescriptor descriptor,
