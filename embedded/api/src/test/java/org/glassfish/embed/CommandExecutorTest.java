@@ -140,6 +140,7 @@ public class CommandExecutorTest {
         assertEquals(ActionReport.ExitCode.FAILURE, ce.getExitCode());
     }
 
+    @Ignore
     @Test
     public void testDeploySuccess() {
         File file = SmartFile.sanitize(new File("target/test-classes/simple.war"));

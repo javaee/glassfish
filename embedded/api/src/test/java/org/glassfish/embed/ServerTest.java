@@ -48,14 +48,29 @@ public class ServerTest {
 
     @AfterClass
     public static void tearDownClass() throws Exception {
+        try {
+            server.stop();
+        } catch (EmbeddedException ee) {
+
+        }
     }
 
     @Before
     public void setUp() throws EmbeddedException {
+        try {
+            server.stop();
+        } catch (EmbeddedException ee) {
+
+        }
     }
 
     @After
     public void tearDown() throws EmbeddedException {
+        try {
+            server.stop();
+        } catch (EmbeddedException ee) {
+
+        }
     }
 
     /* server mustBeStarted */
