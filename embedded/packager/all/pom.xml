@@ -78,124 +78,113 @@
     <dependencies>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-api</artifactId>
-            <version>3.0-Prelude-SNAPSHOT</version>
+            <artifactId>glassfish-amx</artifactId>
+            <version>${project.version}</version>
             <type>zip</type>
-            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-api</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-common</artifactId>
-            <version>3.0-Prelude-SNAPSHOT</version>
+            <version>${project.version}</version>
             <type>zip</type>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-hk2</artifactId>
-            <version>3.0-Prelude-SNAPSHOT</version>
+            <version>${project.version}</version>
             <type>zip</type>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-grizzly</artifactId>
-            <version>3.0-Prelude-SNAPSHOT</version>
+            <version>${project.version}</version>
             <type>zip</type>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-jca</artifactId>
-            <version>3.0-Prelude-SNAPSHOT</version>
+            <version>${project.version}</version>
             <type>zip</type>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-jdbc</artifactId>
-            <version>3.0-Prelude-SNAPSHOT</version>
+            <version>${project.version}</version>
             <type>zip</type>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-jdbc-management</artifactId>
-            <version>3.0-Prelude-SNAPSHOT</version>
+            <version>${project.version}</version>
             <type>zip</type>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-jpa</artifactId>
-            <version>3.0-Prelude-SNAPSHOT</version>
+            <version>${project.version}</version>
             <type>zip</type>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-jsf</artifactId>
-            <version>3.0-Prelude-SNAPSHOT</version>
+            <version>${project.version}</version>
             <type>zip</type>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-jta</artifactId>
-            <version>3.0-Prelude-SNAPSHOT</version>
+            <version>${project.version}</version>
             <type>zip</type>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-management</artifactId>
-            <version>3.0-Prelude-SNAPSHOT</version>
+            <version>${project.version}</version>
             <type>zip</type>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-nucleus</artifactId>
-            <version>3.0-Prelude-SNAPSHOT</version>
+            <version>${project.version}</version>
             <type>zip</type>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-scripting</artifactId>
-            <version>3.0-Prelude-SNAPSHOT</version>
+            <version>${project.version}</version>
             <type>zip</type>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-web</artifactId>
-            <version>3.0-Prelude-SNAPSHOT</version>
+            <version>${project.version}</version>
             <type>zip</type>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-web-management</artifactId>
-            <version>3.0-Prelude-SNAPSHOT</version>
+            <version>${project.version}</version>
             <type>zip</type>
-            <optional>true</optional>
         </dependency>
         <!--<dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>javadb</artifactId>
-            <version>3.0-Prelude-SNAPSHOT</version>
+            <version>${project.version}</version>
             <type>zip</type>
-            <optional>true</optional>
         </dependency>-->
 
 
         <dependency>
             <groupId>org.glassfish.embedded</groupId>
             <artifactId>glassfish-embedded-api</artifactId>
-            <version>3.0-Prelude-SNAPSHOT</version>
+            <version>${project.version}</version>
             <type>jar</type>
-            <optional>true</optional>
         </dependency>
     </dependencies>
 </project>
