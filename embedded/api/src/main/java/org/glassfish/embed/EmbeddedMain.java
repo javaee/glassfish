@@ -228,7 +228,7 @@ public class EmbeddedMain {
         // and allow --foo=true and --foo true and --foo
         // BoolArg work kind of weird -- if you use one -- test VERY thoroughly!
 
-        new Arg("log",              "l",            true,                                          "Send logging to instance-root/logs/server.log"),
+        new Arg("log",              "l",            "true",                                          "Send logging to instance-root/logs/server.log"),
         new Arg("autodelete",   "a",            "true",                                         "Automatically delete Filesystem"),
     };
     
