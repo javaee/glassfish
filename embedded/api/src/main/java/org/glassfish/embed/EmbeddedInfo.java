@@ -127,6 +127,16 @@ public class EmbeddedInfo {
 
 
     /**
+     * Set the http listener name.
+     * @param newName
+     */
+    public void setHttpListenerName(String newName) {
+        if(StringUtils.ok(newName))
+            httpListenerName = newName;
+    }
+
+
+    /**
      * Checks that archives exist.  Checks that the HTTP port is a valid port number.
      * Checks if an {@link EmbeddedFileSystem} has been set.
      * If none has been set, a default <code>EmbeddedFileSystem</code>
@@ -161,12 +171,13 @@ public class EmbeddedInfo {
     // to the long-lived object here.  In that case all encapsulation is gone anyway
     // so I went with this simpler cleaner route...
 
-    String                  name             = ServerConstants.DEFAULT_SERVER_NAME;
-    int                     httpPort         = ServerConstants.DEFAULT_HTTP_PORT;
+    String                  name             = DEFAULT_SERVER_NAME;
+    int                     httpPort         = DEFAULT_HTTP_PORT;
     List<File>              archives         = new LinkedList<File>(); 
     List<ReadableArchive>   readableArchives = new LinkedList<ReadableArchive>();
     List<ScatteredWar>      scatteredWars    = new LinkedList<ScatteredWar>();
     EmbeddedFileSystem      efs;
+    String                  httpListenerName = DEFAULT_HTTP_LISTENER_NAME;
     boolean                 logging         = false;
 
 

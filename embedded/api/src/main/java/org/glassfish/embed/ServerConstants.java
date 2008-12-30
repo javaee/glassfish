@@ -49,6 +49,7 @@ public class ServerConstants {
     public static final String			INSTALL_ROOT_URI_PROPERTY   = "com.sun.aas.installRootURI";
     public static final String			INSTANCE_ROOT_URI_PROPERTY  = "com.sun.aas.instanceRootURI";
     public static final int             DEFAULT_HTTP_PORT           =  8888;
+    public static final String          DEFAULT_HTTP_LISTENER_NAME  = "http-listener-1";
 	public static final String			LOGGING_RESOURCE_BUNDLE		= "org.glassfish.embed.LocalStrings";
 	public static final String			EXCEPTION_RESOURCE_BUNDLE	= "/org/glassfish/embed/LocalStrings.properties";
     public static final int             MIN_PORT                    = 1;
@@ -61,7 +62,7 @@ public class ServerConstants {
     public static final String          APPLICATIONS_DIR            = "applications";
     public static final String          LOG_FILE_DIR                = "logs";
     public static final String          LOG_FILE                    = "server.log";
-    public static final String          DEFAULT_HTTP_LISTENER_NAME  ="http-listener-1";
+    public static final String          DEFAULT_DOCROOT             = ".";
 
     //public static final File            DEFAULT_
 }
