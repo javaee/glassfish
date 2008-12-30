@@ -51,20 +51,20 @@
 
     <build>
         <defaultGoal>install</defaultGoal>
-		<resources>
-			<resource>
-				<directory>src/main/java</directory>
-				<includes>
-				<include>**/*.properties</include>
-				</includes>
-			</resource>
-			<resource>
-				<directory>src/main/resources</directory>
-				<includes>
-				<include>**/*.*</include>
-				</includes>
-			</resource>
-		</resources>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -79,7 +79,23 @@
                 <artifactId>hk2-maven-plugin</artifactId>
                 <extensions>true</extensions>
             </plugin>
+
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
+
         <extensions>
             <extension>
                 <groupId>org.glassfish.build</groupId>
@@ -88,7 +104,13 @@
             </extension>
         </extensions>
     </build>
-    
+
+
+
+
+
+
+
     <dependencies>
         <dependency>
             <groupId>org.glassfish.distributions</groupId>

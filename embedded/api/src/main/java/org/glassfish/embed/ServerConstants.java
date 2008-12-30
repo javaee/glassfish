@@ -50,6 +50,9 @@ public class ServerConstants {
     public static final String			INSTANCE_ROOT_URI_PROPERTY  = "com.sun.aas.instanceRootURI";
     public static final int             DEFAULT_HTTP_PORT           =  8888;
     public static final String          DEFAULT_HTTP_LISTENER_NAME  = "http-listener-1";
+    public static final String          DEFAULT_ADMIN_HTTP_LISTENER_NAME = "admin-listener";
+    public static final int             DEFAULT_ADMIN_HTTP_PORT     =  4848;
+    public static final String          DEFAULT_ADMIN_VIRTUAL_SERVER_ID   = "__asadmin";
 	public static final String			LOGGING_RESOURCE_BUNDLE		= "org.glassfish.embed.LocalStrings";
 	public static final String			EXCEPTION_RESOURCE_BUNDLE	= "/org/glassfish/embed/LocalStrings.properties";
     public static final int             MIN_PORT                    = 1;

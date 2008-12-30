@@ -202,9 +202,12 @@ public class Server {
             throw new EmbeddedException("jdbc_hack_failure", e);
         }
 
-        //createVirtualServer(createHttpListener(info.httpPort));
-        createVirtualServer(createHttpListener());
+        createHttpListener();
+        createVirtualServer();
+        createAdminHttpListener();
+        createAdminVirtualServer();
         addServer(info.name, this);
+        writeXml();
     }
 
 
@@ -337,13 +340,23 @@ public class Server {
     }
 
      /**
-      *
+      * @deprecated
       * @param listener
       * @return
       * @throws org.glassfish.embed.EmbeddedException
       */
+     @Deprecated
      public EmbeddedVirtualServer createVirtualServer(final EmbeddedHttpListener listener)
             throws EmbeddedException{
+        return createVirtualServer();
+     }
+
+     /**
+      *
+      * @return
+      * @throws org.glassfish.embed.EmbeddedException
+      */
+     public EmbeddedVirtualServer createVirtualServer() throws EmbeddedException {
         // the following live update code doesn't work yet due to the missing functionality in the webtier.
         mustNotBeStarted("createVirtualServer");
 
@@ -356,18 +369,6 @@ public class Server {
                 .element("property")
                 .attribute("name", "docroot")
                 .attribute("value", ".");
-        /**
-         * Write domain.xml to target
-         */
-
-        try {
-            File domainFile = efs.getTargetDomainXml();
-            Transformer t = TransformerFactory.newInstance().newTransformer();
-            t.transform(new DOMSource(domainXmlDocument), new StreamResult(domainFile));
-        } 
-        catch (Exception e) {
-            throw new EmbeddedException("Failed to write domain XML", e);
-        }
 
         return new EmbeddedVirtualServer(null);
 
@@ -398,6 +399,26 @@ public class Server {
 //            throw new GFException(e);
 //        }
     }
+     /**
+      *
+      * @return
+      * @throws org.glassfish.embed.EmbeddedException
+      */
+     public EmbeddedVirtualServer createAdminVirtualServer() throws EmbeddedException {
+        mustNotBeStarted("createAdminVirtualServer");
+
+        DomBuilder db = onHttpService();
+        db.element("virtual-server")
+                .attribute("id", info.adminVSName)
+                .attribute("http-listeners", info.adminHttpListenerName)
+                .attribute("hosts", "${com.sun.aas.hostName}")   // ???
+                .attribute("log-file", "")
+                .element("property")
+                .attribute("name", "docroot")
+                .attribute("value", ".");
+
+        return new EmbeddedVirtualServer(null);
+     }
 
      /**
       * @deprecated  Use the no-arg version which uses "info"
@@ -409,6 +430,21 @@ public class Server {
      public EmbeddedHttpListener createHttpListener(final int listenerPort) throws EmbeddedException {
          return createHttpListener();
      }
+
+     public EmbeddedHttpListener createAdminHttpListener() throws EmbeddedException {
+        mustNotBeStarted("createAdminHttpListener");
+
+        onHttpService().element("http-listener")
+                .attribute("id", info.adminHttpListenerName)
+                .attribute("address", "0.0.0.0")
+                .attribute("port", info.adminHttpPort)
+                .attribute("default-virtual-server", info.adminHttpListenerName)
+                .attribute("server-name", "")
+                .attribute("enabled", true);
+
+        return new EmbeddedHttpListener(String.valueOf(info.adminHttpPort), null);
+    }
+
 
      public EmbeddedHttpListener createHttpListener() throws EmbeddedException {
         // the following live update code doesn't work yet due to the missing functionality in the webtier.
@@ -811,6 +847,18 @@ public class Server {
     private void mustNotBeStarted(String methodName) throws EmbeddedException {
         if(isStarted()) {
             throw new EmbeddedException("should_not_be_started", methodName);
+        }
+    }
+
+    private void writeXml() throws EmbeddedException {
+         // Write domain.xml to target
+        try {
+            File domainFile = efs.getTargetDomainXml();
+            Transformer t = TransformerFactory.newInstance().newTransformer();
+            t.transform(new DOMSource(domainXmlDocument), new StreamResult(domainFile));
+        }
+        catch (Exception e) {
+            throw new EmbeddedException("Failed to write domain XML", e);
         }
     }
 

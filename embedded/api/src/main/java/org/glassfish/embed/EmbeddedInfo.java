@@ -107,13 +107,22 @@ public class EmbeddedInfo {
         throw new UnsupportedOperationException("Not yet implemented");
         //readableArchives.add(ra);
     }
-    
+
     /**
      * Set the HTTP port
      * @param port
      */
     public void setHttpPort(int port) {
         httpPort = port;
+    }
+
+
+    /**
+     * Set the Admin HTTP port
+     * @param port
+     */
+    public void setAdminHttpPort(int port) {
+        adminHttpPort = port;
     }
 
     /**
@@ -145,7 +154,7 @@ public class EmbeddedInfo {
      */
     public void validate() throws EmbeddedException {
         validateArchives();
-        validatePort();
+        validatePorts();
         validateFilesystem();
         validateLogging();
     }
@@ -171,14 +180,17 @@ public class EmbeddedInfo {
     // to the long-lived object here.  In that case all encapsulation is gone anyway
     // so I went with this simpler cleaner route...
 
-    String                  name             = DEFAULT_SERVER_NAME;
-    int                     httpPort         = DEFAULT_HTTP_PORT;
-    List<File>              archives         = new LinkedList<File>(); 
-    List<ReadableArchive>   readableArchives = new LinkedList<ReadableArchive>();
-    List<ScatteredWar>      scatteredWars    = new LinkedList<ScatteredWar>();
+    String                  name                    = DEFAULT_SERVER_NAME;
+    int                     httpPort                = DEFAULT_HTTP_PORT;
+    int                     adminHttpPort           = DEFAULT_ADMIN_HTTP_PORT;
+    List<File>              archives                = new LinkedList<File>();
+    List<ReadableArchive>   readableArchives        = new LinkedList<ReadableArchive>();
+    List<ScatteredWar>      scatteredWars           = new LinkedList<ScatteredWar>();
     EmbeddedFileSystem      efs;
-    String                  httpListenerName = DEFAULT_HTTP_LISTENER_NAME;
-    boolean                 logging         = false;
+    String                  httpListenerName        = DEFAULT_HTTP_LISTENER_NAME;
+    String                  adminHttpListenerName   = DEFAULT_ADMIN_HTTP_LISTENER_NAME;
+    String                  adminVSName             = DEFAULT_ADMIN_VIRTUAL_SERVER_ID;
+    boolean                 logging                 = false;
 
 
     //////////////////////  all private below //////////////////////
@@ -206,8 +218,9 @@ public class EmbeddedInfo {
         }
     }
     
-    private void validatePort() throws EmbeddedException {
-        if(httpPort < MIN_PORT || httpPort > MAX_PORT)
+    private void validatePorts() throws EmbeddedException {
+        if(httpPort < MIN_PORT || httpPort > MAX_PORT
+                || adminHttpPort < MIN_PORT || adminHttpPort > MAX_PORT)
             throw new EmbeddedException("bad_port", MIN_PORT, MAX_PORT, httpPort);
         // todo TODO
         // todo TODO
