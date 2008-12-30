@@ -75,12 +75,14 @@ public class DefaultPoolWaitQueue implements PoolWaitQueue {
         list.remove(o);
     }
 
+/*
     public synchronized Object removeFirst() {
         return list.removeFirst();
     }
+*/
 
     public synchronized Object remove() {
-        return removeFirst();
+        return list.removeFirst();
     }
 
     public Object peek() {
