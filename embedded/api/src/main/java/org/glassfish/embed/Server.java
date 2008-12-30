@@ -105,6 +105,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.embed.impl.EmbeddedModulesRegistryImpl;
+import static org.glassfish.embed.ServerConstants.*;
 
 
 /**
@@ -348,7 +349,7 @@ public class Server {
         DomBuilder db = onHttpService();
         db.element("virtual-server")
                 .attribute("id", "server")
-                .attribute("http-listeners", "http-listener-1")
+                .attribute("http-listeners", DEFAULT_HTTP_LISTENER_NAME)
                 .attribute("hosts", "${com.sun.aas.hostName}")   // ???
                 .attribute("log-file", "")
                 .element("property")
@@ -410,7 +411,7 @@ public class Server {
 
         onHttpService().element("http-listener")
                 //hardcoding to http-listner-1 should not be a requirment, but the id is used to find the right Inhabitant
-                .attribute("id", "http-listener-1")
+                .attribute("id", DEFAULT_HTTP_LISTENER_NAME)
                 .attribute("address", "0.0.0.0")
                 .attribute("port", listenerPort)
                 .attribute("default-virtual-server", "server")

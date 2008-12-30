@@ -61,6 +61,7 @@ public class ServerConstants {
     public static final String          APPLICATIONS_DIR            = "applications";
     public static final String          LOG_FILE_DIR                = "logs";
     public static final String          LOG_FILE                    = "server.log";
+    public static final String          DEFAULT_HTTP_LISTENER_NAME  ="http-listener-1";
 
     //public static final File            DEFAULT_
 }

@@ -155,7 +155,12 @@ public class EmbeddedInfo {
     }
 
     //////////////////////  pkg-private  //////////////////////
-    
+    // bnevins
+    // This class is really just a buffer for storing a bunch of data
+    // That means that if we wrote getters they would have to return a reference
+    // to the long-lived object here.  In that case all encapsulation is gone anyway
+    // so I went with this simpler cleaner route...
+
     String                  name             = ServerConstants.DEFAULT_SERVER_NAME;
     int                     httpPort         = ServerConstants.DEFAULT_HTTP_PORT;
     List<File>              archives         = new LinkedList<File>(); 
@@ -193,6 +198,11 @@ public class EmbeddedInfo {
     private void validatePort() throws EmbeddedException {
         if(httpPort < MIN_PORT || httpPort > MAX_PORT)
             throw new EmbeddedException("bad_port", MIN_PORT, MAX_PORT, httpPort);
+        // todo TODO
+        // todo TODO
+        // TODO todo Here is where we can see if the port is in use and assign another
+        // todo TODO
+        // todo TODO
     }
 
     private boolean isDeployable() {
