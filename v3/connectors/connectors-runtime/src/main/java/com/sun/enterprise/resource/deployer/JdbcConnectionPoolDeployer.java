@@ -99,6 +99,9 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
 
     static private Logger _logger = LogDomains.getLogger(JdbcConnectionPoolDeployer.class,LogDomains.RSR_LOGGER);
 
+    /**
+     * {@inheritDoc}
+     */
     public synchronized void deployResource(Object resource) throws Exception {
         //intentional no-op
         //From 8.1 PE/SE/EE, JDBC connection pools are no more resources and 
@@ -132,12 +135,18 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public synchronized void undeployResource(Object resource) throws Exception {
         _logger.fine(" JdbcConnectionPoolDeployer - unDeployResource : " +
                 "calling actualUndeploy of " + resource);
         actualUndeployResource(resource);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean handles(Object resource){
         return resource instanceof JdbcConnectionPool;
     }
@@ -506,60 +515,79 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
     }
     
     /**
-     * Redeploy the resource into the server's runtime naming context
-     *
-     * @param resource a resource object
-     * @throws Exception thrown if fail 
+     * {@inheritDoc}
      */
     public synchronized void redeployResource(Object resource) throws Exception {
-         
-        JdbcConnectionPool adminPool = (JdbcConnectionPool)resource;
+
+        JdbcConnectionPool adminPool = (JdbcConnectionPool) resource;
 
 
         //Only if pool has already been deployed in this server-instance
         //reconfig this pool
         if (!runtime.isConnectorConnectionPoolDeployed(adminPool.getName())) {
-            
+
             _logger.fine("The JDBC connection pool " + adminPool.getName()
-                            + " is not referred or not yet created in this server "
-                            + "instance and hence pool redeployment is ignored");
+                    + " is not referred or not yet created in this server "
+                    + "instance and hence pool redeployment is ignored");
             return;
         }
-        
-	ConnectorConnectionPool connConnPool = createConnectorConnectionPool( 
-	        adminPool);		
+
+        ConnectorConnectionPool connConnPool = createConnectorConnectionPool(
+                adminPool);
 
         if (connConnPool == null) {
-	    throw new ConnectorRuntimeException("Unable to create ConnectorConnectionPool"+
-	            "from JDBC connection pool");
-	}
+            throw new ConnectorRuntimeException("Unable to create ConnectorConnectionPool" +
+                    "from JDBC connection pool");
+        }
 
-	//now do internal book keeping 
-	HashSet excludes = new HashSet();
-	//add MCF config props to the set that need to be excluded
-	//in checking for the equality of the props with old pool
-	excludes.add( "TransactionIsolation");
-	excludes.add( "GuaranteeIsolationLevel");
-	excludes.add( "ValidationTableName");
-	excludes.add( "ConnectionValidationRequired");
-	excludes.add( "ValidationMethod");
-	excludes.add( "StatementWrapping");
-	excludes.add( "StatementTimeout");
+        //now do internal book keeping
+        HashSet excludes = new HashSet();
+        //add MCF config props to the set that need to be excluded
+        //in checking for the equality of the props with old pool
+        excludes.add("TransactionIsolation");
+        excludes.add("GuaranteeIsolationLevel");
+        excludes.add("ValidationTableName");
+        excludes.add("ConnectionValidationRequired");
+        excludes.add("ValidationMethod");
+        excludes.add("StatementWrapping");
+        excludes.add("StatementTimeout");
 
 
-    try {
-	    _logger.finest("Calling reconfigure pool");
-	    boolean poolRecreateRequired = 
-	        runtime.reconfigureConnectorConnectionPool(connConnPool,
-		        excludes);
-	    if ( poolRecreateRequired ) {
-	       _logger.finest("Pool recreation required");    
-	       runtime.recreateConnectorConnectionPool( connConnPool ); 
-	       _logger.finest("Pool recreation done");    
-	    }
-	} catch( ConnectorRuntimeException cre ) {
-	    cre.printStackTrace();
-        throw cre;
-	}
-    }    
+        try {
+            _logger.finest("Calling reconfigure pool");
+            boolean poolRecreateRequired =
+                    runtime.reconfigureConnectorConnectionPool(connConnPool,
+                            excludes);
+            if (poolRecreateRequired) {
+                _logger.finest("Pool recreation required");
+                runtime.recreateConnectorConnectionPool(connConnPool);
+                _logger.finest("Pool recreation done");
+            }
+        } catch (ConnectorRuntimeException cre) {
+            cre.printStackTrace();
+            throw cre;
+        }
+    }
+
+    /**
+     * Enable the resource in the server's runtime naming context
+     *
+     * @param resource a resource object
+     * @exception UnsupportedOperationException Currently we are not supporting this method.
+     *
+     */
+	public synchronized void enableResource(Object resource) throws Exception {
+        throw new UnsupportedOperationException(msg);
+    }
+
+    /**
+     * Disable the resource in the server's runtime naming context
+     *
+     * @param resource a resource object
+     * @exception UnsupportedOperationException Currently we are not supporting this method.
+     *
+     */
+	public synchronized void disableResource(Object resource) throws Exception {
+        throw new UnsupportedOperationException(msg);
+    }
 }

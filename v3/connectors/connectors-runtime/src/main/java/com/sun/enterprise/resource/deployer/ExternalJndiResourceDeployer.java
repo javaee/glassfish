@@ -106,10 +106,7 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
     private static Logger _logger=LogDomains.getLogger(ExternalJndiResourceDeployer.class, LogDomains.CORE_LOGGER);
 
     /**
-     * Deploy the resource into the server's runtime naming context
-     *
-     * @param resource a resource object (eg. JmsResource)
-     * @exception Exception thrown if fail
+     * {@inheritDoc}
      */
 	public synchronized void deployResource(Object resource) throws Exception {
 
@@ -141,10 +138,7 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
     }
 
     /**
-     * Undeploy the resource from the server's runtime naming context
-     *
-     * @param resource a resource object (eg. JmsResource)
-     * @exception Exception thrown if fail
+     * {@inheritDoc}
      */
 	public synchronized void undeployResource(Object resource)
             throws Exception {
@@ -163,10 +157,7 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
     }
 
     /**
-     * Redeploy the resource into the server's runtime naming context
-     *
-     * @param resource a resource object (eg. JmsResource)
-     * @exception Exception thrown if fail
+     * {@inheritDoc}
      */
 	public synchronized void redeployResource(Object resource)
             throws Exception {
@@ -175,26 +166,23 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
         deployResource(resource);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean handles(Object resource){
         return resource instanceof com.sun.enterprise.config.serverbeans.ExternalJndiResource;
     }
 
 
     /**
-     * Enable the resource in the server's runtime naming context
-     *
-     * @param resource a resource object (eg. JmsResource)
-     * @exception Exception thrown if fail
+     * {@inheritDoc}
      */
 	public synchronized void enableResource(Object resource) throws Exception {
         deployResource(resource);
     }
 
     /**
-     * Disable the resource in the server's runtime naming context
-     *
-     * @param resource a resource object (eg. JmsResource)
-     * @exception Exception thrown if fail
+     * {@inheritDoc}
      */
 	public synchronized void disableResource(Object resource) throws Exception {
         undeployResource(resource);

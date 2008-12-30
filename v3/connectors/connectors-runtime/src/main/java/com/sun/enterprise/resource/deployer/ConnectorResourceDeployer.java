@@ -62,6 +62,9 @@ public class ConnectorResourceDeployer implements ResourceDeployer {
     private ConnectorRuntime runtime;
     private static Logger _logger = LogDomains.getLogger(ConnectorResourceDeployer.class, LogDomains.CORE_LOGGER);
 
+    /**
+     * {@inheritDoc}
+     */
     public synchronized void deployResource(Object resource) throws Exception {
 
         ConnectorResource domainResource = (ConnectorResource) resource;
@@ -73,6 +76,9 @@ public class ConnectorResourceDeployer implements ResourceDeployer {
         _logger.log(Level.FINE, "Added connector resource in backend", jndiName);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public synchronized void undeployResource(Object resource)
             throws Exception {
         ConnectorResource domainResource = (ConnectorResource) resource;
@@ -80,11 +86,32 @@ public class ConnectorResourceDeployer implements ResourceDeployer {
         runtime.deleteConnectorResource(jndiName);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void redeployResource(Object resource) throws Exception {
         undeployResource(resource);
         deployResource(resource);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public synchronized void disableResource(Object resource)
+                  throws Exception {
+        undeployResource(resource);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public synchronized void enableResource(Object resource) throws Exception {
+        deployResource(resource);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public boolean handles(Object resource){
         return resource instanceof ConnectorResource;
     }

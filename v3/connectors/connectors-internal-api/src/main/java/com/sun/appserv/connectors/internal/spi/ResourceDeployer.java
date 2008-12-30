@@ -85,7 +85,29 @@ public interface ResourceDeployer {
      */
     void redeployResource(Object resource) throws Exception;
 
+    /**
+     * Enable the resource in the server's runtime naming context
+     *
+     * @param resoure a resource object (eg. JmsResource)
+     * @exception Exception thrown if fail
+     */
+	void enableResource(Object resoure) throws Exception;
 
+    /**
+     * Disable the resource in the server's runtime naming context
+     *
+     * @param resoure a resource object (eg. JmsResource)
+     * @exception Exception thrown if fail
+     */
+	void disableResource(Object resoure) throws Exception;
+
+
+    /**
+     * Indicates whether a particular resource deployer can handle the
+     * resource in question
+     * @param resource resource that need to be handled
+     * @return boolean
+     */
     boolean handles(Object resource); 
 
 }

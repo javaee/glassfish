@@ -86,22 +86,15 @@ public class MailResourceDeployer extends GlobalResourceDeployer
     private GlassfishNamingManager namingMgr;
 
         //TODO V3 log strings for the entire class
-    /**
-     * StringManager for this deployer
-     */
+    // StringManager for this deployer
     private static final StringManager localStrings =
             StringManager.getManager(com.sun.enterprise.resource.deployer.MailResourceDeployer.class);
 
-    /**
-     * logger for this deployer
-     */
+    // logger for this deployer
     private static Logger _logger = LogDomains.getLogger(MailResourceDeployer.class, LogDomains.CORE_LOGGER);
 
     /**
-     * Deploy the resource into the server's runtime naming context
-     *
-     * @param resource a resource object (eg. MailResource)
-     * @throws Exception thrown if fail
+     * {@inheritDoc}
      */
     public synchronized void deployResource(Object resource) throws Exception {
 
@@ -146,10 +139,7 @@ public class MailResourceDeployer extends GlobalResourceDeployer
     }
 
     /**
-     * Undeploy the resource from the server's runtime naming context
-     *
-     * @param resource a resource object (eg. MailResource)
-     * @throws Exception thrown if fail
+     * {@inheritDoc}
      */
     public synchronized void undeployResource(Object resource)
             throws Exception {
@@ -178,10 +168,7 @@ public class MailResourceDeployer extends GlobalResourceDeployer
     }
 
     /**
-     * Redeploy the resource into the server's runtime naming context
-     *
-     * @param resource a resource object (eg. MailResource)
-     * @throws Exception thrown if fail
+     * {@inheritDoc}
      */
     public synchronized void redeployResource(Object resource)
             throws Exception {
@@ -190,26 +177,23 @@ public class MailResourceDeployer extends GlobalResourceDeployer
         deployResource(resource);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean handles(Object resource){
         return resource instanceof com.sun.enterprise.config.serverbeans.MailResource;
     }
 
 
     /**
-     * Enable the resource in the server's runtime naming context
-     *
-     * @param resource a resource object (eg. MailResource)
-     * @throws Exception thrown if fail
+     * {@inheritDoc}
      */
     public synchronized void enableResource(Object resource) throws Exception {
         deployResource(resource);
     }
 
     /**
-     * Disable the resource in the server's runtime naming context
-     *
-     * @param resource a resource object (eg. MailResource)
-     * @throws Exception thrown if fail
+     * {@inheritDoc}
      */
     public synchronized void disableResource(Object resource) throws Exception {
         undeployResource(resource);
@@ -276,8 +260,6 @@ public class MailResourceDeployer extends GlobalResourceDeployer
         }
         return jr;
     }
-
-
 
 /*
     */

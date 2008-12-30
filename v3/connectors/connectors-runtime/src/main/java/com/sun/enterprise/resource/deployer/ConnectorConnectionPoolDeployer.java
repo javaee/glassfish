@@ -83,11 +83,7 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
             StringManager.getManager(ConnectorConnectionPoolDeployer.class);
 
     /**
-     * ResourceManager callback to indicate resource-deployment
-     * Since 8.1 PE/SE/EE, this is a no-op
-     *
-     * @param resource The resource to be undeployed.
-     * @throws Exception if there is an error undeploying the resource.
+     * {@inheritDoc}
      */
     public synchronized void deployResource(Object resource) throws Exception {
         _logger.fine("ConnectorConnectionPoolDeployer : deployResource ");
@@ -116,10 +112,7 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
     }
 
     /**
-     * Undeploys the connector connection pool resource.
-     *
-     * @param resource The resource to be undeployed.
-     * @throws Exception if there is an error undeploying the resource.
+     * {@inheritDoc}
      */
     public synchronized void undeployResource(Object resource)
             throws Exception {
@@ -136,6 +129,9 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
                 "Deleted ConnectorConnectionPool in backend", poolName);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public synchronized void redeployResource(Object resource)
             throws Exception {
         //Connector connection pool reconfiguration or
@@ -180,15 +176,23 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean handles(Object resource){
         return resource instanceof com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;                
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     public synchronized void disableResource(Object resource)
             throws Exception {
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public synchronized void enableResource(Object resource)
             throws Exception {
     }

@@ -110,6 +110,10 @@ public class PersistenceManagerFactoryResourceDeployer implements ResourceDeploy
     
     //---- begin implements ResourceDeployer ----
 
+
+    /**
+     * {@inheritDoc}
+     */
     public synchronized void deployResource(Object resource) throws Exception {
         PersistenceManagerFactoryResource configPMFRes =
                 (PersistenceManagerFactoryResource)resource;
@@ -136,6 +140,9 @@ public class PersistenceManagerFactoryResourceDeployer implements ResourceDeploy
 */
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public synchronized void undeployResource(Object resource)
             throws Exception {
 
@@ -150,21 +157,33 @@ public class PersistenceManagerFactoryResourceDeployer implements ResourceDeploy
 */
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public synchronized void redeployResource(Object resource)
             throws Exception {
         undeployResource(resource);
         deployResource(resource);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean handles(Object resource){
         return resource instanceof PersistenceManagerFactoryResource;
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     public synchronized void enableResource(Object resource) throws Exception {
         deployResource(resource);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public synchronized void disableResource(Object resource) throws Exception {
         undeployResource(resource);
     }
@@ -288,9 +307,7 @@ public class PersistenceManagerFactoryResourceDeployer implements ResourceDeploy
      * pmf j2ee resource.
      *
      * @param rbean persistence-manager-resource-factory config bean
-     *
      * @return a new instance of j2ee pmf resource
-     *
      */
     public static JavaEEResource toPMFJavaEEResource(
             com.sun.enterprise.config.serverbeans.PersistenceManagerFactoryResource rbean) {
@@ -311,9 +328,5 @@ public class PersistenceManagerFactoryResourceDeployer implements ResourceDeploy
 
         return jr;
     }
-
-
-
-
     //---- end implements ResourceDeployer ----
 }
