@@ -46,9 +46,7 @@ import java.io.Serializable;
  *
  * @author Srikanth P
  */
-
 public class EisBackendPrincipal implements Serializable {
-
 
     private String userName;
     private String password;
@@ -56,9 +54,7 @@ public class EisBackendPrincipal implements Serializable {
     /**
      * Default constructor
      */
-
     public EisBackendPrincipal() {
-
     }
 
     /**
@@ -66,9 +62,7 @@ public class EisBackendPrincipal implements Serializable {
      *
      * @param userName UserName
      * @param password Password
-     * @credential Credential
      */
-
     public EisBackendPrincipal(String userName, String password) {
         this.userName = userName;
         this.password = password;
@@ -76,40 +70,32 @@ public class EisBackendPrincipal implements Serializable {
 
     /**
      * Setter method for UserName property
-     *
      * @param userName UserName
      */
-
     public void setUserName(String userName) {
         this.userName = userName;
     }
 
     /**
      * Setter method for password property
-     *
      * @param password Password
      */
-
     public void setPassword(String password) {
         this.password = password;
     }
 
     /**
      * Getter method for UserName property
-     *
      * @return UserName
      */
-
     public String getUserName() {
         return userName;
     }
 
     /**
      * Getter method for Password property
-     *
      * @return Password
      */
-
     public String getPassword() {
         return password;
     }
@@ -117,13 +103,10 @@ public class EisBackendPrincipal implements Serializable {
     /**
      * Overloaded method from "Object" class
      * Checks the equality.
-     *
      * @param backendPrincipal Backend principal against which equality has to
-     *                         be tested.
      * @return true if they are equal
      *         false if hey are not equal.
      */
-
     public boolean equals(Object backendPrincipal) {
 
         if (backendPrincipal == null ||
@@ -145,12 +128,10 @@ public class EisBackendPrincipal implements Serializable {
     /**
      * Checks whether two strings are equal including the null string
      * cases.
-     *
      * @param first  first String
      * @param second second String
      * @return boolean equality status
      */
-
     private boolean isEqual(String first, String second) {
         if (first == null && second == null) {
             return true;
@@ -164,7 +145,6 @@ public class EisBackendPrincipal implements Serializable {
     /**
      * Overloaded method from "Object" class
      * Generates the hashcode
-     *
      * @return a hash code value for this object
      */
     public int hashCode() {

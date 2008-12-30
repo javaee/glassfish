@@ -34,15 +34,12 @@
  * holder.
  */
 
-/*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
 
 package com.sun.enterprise.connectors.authentication;
 
 import com.sun.enterprise.connectors.*;
 import com.sun.logging.LogDomains;
+
 import java.security.Principal;
 import java.util.logging.*;
 import java.util.*;
@@ -56,70 +53,69 @@ import org.glassfish.internal.api.Globals;
 
 
 /**
-  * This class does the functionality of security mapping of the 
-  * principal and userGroup to the backendPrincipal. 
-  * @author    Srikanth P
+ * This class does the functionality of security mapping of the
+ * principal and userGroup to the backendPrincipal.
+ *
+ * @author Srikanth P
  */
-
-
-public class BasicPasswordAuthenticationService 
-              implements AuthenticationService {
+public class BasicPasswordAuthenticationService
+        implements AuthenticationService {
 
     private String rarName_;
     private String poolName_;
     ConnectorRegistry connectorRegistry_ = ConnectorRegistry.getInstance();
-    static Logger _logger = LogDomains.getLogger(BasicPasswordAuthenticationService.class,LogDomains.RSR_LOGGER);
+    static Logger _logger = LogDomains.getLogger(BasicPasswordAuthenticationService.class, LogDomains.RSR_LOGGER);
     private Object containerContext = null;
-    
-    /** 
-     * Constructor 
-     * @param rarName Name of the rar
+
+    /**
+     * Constructor
+     *
+     * @param rarName  Name of the rar
      * @param poolName Name of the pool.
      */
-
-    public BasicPasswordAuthenticationService(String rarName,String poolName) {
-        rarName_  = rarName;
-	poolName_ = poolName;
-        _logger.log(Level.FINE,"Contructor:BasicPasswordAuthenticationService");
+    public BasicPasswordAuthenticationService(String rarName, String poolName) {
+        rarName_ = rarName;
+        poolName_ = poolName;
+        _logger.log(Level.FINE, "Contructor:BasicPasswordAuthenticationService");
     }
 
     /**
      * Maps the principal to the backendPrincipal
+     *
      * @param callerPrincipal Name of the principal to be mapped.
-     * @return Mapped Backendprincipal 
+     * @return Mapped Backendprincipal
      */
-
     public Principal mapPrincipal(Principal callerPrincipal, Set principalSet) {
-    	
-    	// If no security maps are associated with this pool, return empty
-        RuntimeSecurityMap runtimeSecurityMap = 
-            connectorRegistry_.getRuntimeSecurityMap(poolName_);
-        if(runtimeSecurityMap == null) {
+
+        // If no security maps are associated with this pool, return empty
+        RuntimeSecurityMap runtimeSecurityMap =
+                connectorRegistry_.getRuntimeSecurityMap(poolName_);
+        if (runtimeSecurityMap == null) {
             return null;
         }
-        
-    	String principalName = callerPrincipal.getName();
-      	
-    	// Create a list of Group Names from group Set
-      	List<String> groupNames = new ArrayList<String>();
-      	Iterator iter = principalSet.iterator();
-      	while (iter.hasNext()){
-      		Principal p = (Principal)iter.next();
-      		// remove the caller principal (calling user) from the Set. 
-      		if (p.equals(callerPrincipal)){
-      			continue;
-      		}
-      		String groupName = p.getName();
-     		groupNames.add(groupName);      		
-      	}     	
-      	
+
+        String principalName = callerPrincipal.getName();
+
+        // Create a list of Group Names from group Set
+        List<String> groupNames = new ArrayList<String>();
+        Iterator iter = principalSet.iterator();
+        while (iter.hasNext()) {
+            Principal p = (Principal) iter.next();
+            // remove the caller principal (calling user) from the Set.
+            if (p.equals(callerPrincipal)) {
+                continue;
+            }
+            String groupName = p.getName();
+            groupNames.add(groupName);
+        }
+
         // if webmodule get roles from WebBundle Descriptor
-    	if (isContainerContextAWebModuleObject()){
-    	    String roleName = getRoleName(callerPrincipal);
-    	    return doMap(principalName, groupNames, roleName, runtimeSecurityMap);   
-    	} else {
-    	    return doMap(principalName, groupNames, null, runtimeSecurityMap);
-    	}
+        if (isContainerContextAWebModuleObject()) {
+            String roleName = getRoleName(callerPrincipal);
+            return doMap(principalName, groupNames, roleName, runtimeSecurityMap);
+        } else {
+            return doMap(principalName, groupNames, null, runtimeSecurityMap);
+        }
     }
 
     /**
@@ -128,31 +124,30 @@ public class BasicPasswordAuthenticationService
      * existing mapping. If a map is found the backendPrincipal is
      * returned else null is returned .
      */
-
-    private Principal doMap(String principalName, List groupNames, 
-    		String roleName, RuntimeSecurityMap runtimeSecurityMap) {
+    private Principal doMap(String principalName, List groupNames,
+                            String roleName, RuntimeSecurityMap runtimeSecurityMap) {
 
         // Policy: 
         // user_1, user_2, ... user_n
-    	// group_1/role_1, group_2/role_2, ... group_n/role_n
+        // group_1/role_1, group_2/role_2, ... group_n/role_n
         // user contains * 
-    	// role/group contains *
-        
-        HashMap userNameSecurityMap = (HashMap)runtimeSecurityMap.getUserMap();
-        HashMap groupNameSecurityMap = (HashMap)runtimeSecurityMap.getGroupMap();
-              
-       	// Check if caller's user-name is preset in the User Map
-        if (userNameSecurityMap.containsKey(principalName)){
-        	return (Principal)userNameSecurityMap.get(principalName);
+        // role/group contains *
+
+        HashMap userNameSecurityMap = (HashMap) runtimeSecurityMap.getUserMap();
+        HashMap groupNameSecurityMap = (HashMap) runtimeSecurityMap.getGroupMap();
+
+        // Check if caller's user-name is preset in the User Map
+        if (userNameSecurityMap.containsKey(principalName)) {
+            return (Principal) userNameSecurityMap.get(principalName);
         }
-        
+
         // Check if caller's role is present in the Group Map
-        if (isContainerContextAWebModuleObject() && roleName != null ){
-        	if (groupNameSecurityMap.containsKey(roleName)){
-        		return (Principal)groupNameSecurityMap.get(roleName);
-        	}
+        if (isContainerContextAWebModuleObject() && roleName != null) {
+            if (groupNameSecurityMap.containsKey(roleName)) {
+                return (Principal) groupNameSecurityMap.get(roleName);
+            }
         }
-        
+
         // If ejb, use isCallerInRole  
 /*      TODO V3 handle EJBContext later
         if (isContainerContextAContainerObject() && roleName == null) {
@@ -174,71 +169,70 @@ public class BasicPasswordAuthenticationService
           		}
         	}
         }*/
-        
+
         // Check if caller's group(s) is/are present in the Group Map
-        for (int j=0; j<groupNames.size(); j++){
-      		String groupName = (String)groupNames.get(j);
-      		if (groupNameSecurityMap.containsKey(groupName)){
-      			return (Principal)groupNameSecurityMap.get(groupName);
-      		}
+        for (int j = 0; j < groupNames.size(); j++) {
+            String groupName = (String) groupNames.get(j);
+            if (groupNameSecurityMap.containsKey(groupName)) {
+                return (Principal) groupNameSecurityMap.get(groupName);
+            }
         }
 
         // Check if user name is * in Security Map
-        if (userNameSecurityMap.containsKey(ConnectorConstants.SECURITYMAPMETACHAR)){
-        	return (Principal)userNameSecurityMap.get(ConnectorConstants.SECURITYMAPMETACHAR);
+        if (userNameSecurityMap.containsKey(ConnectorConstants.SECURITYMAPMETACHAR)) {
+            return (Principal) userNameSecurityMap.get(ConnectorConstants.SECURITYMAPMETACHAR);
         }
 
         // Check if role/group name is * in Security Map
-        if (groupNameSecurityMap.containsKey(ConnectorConstants.SECURITYMAPMETACHAR)){
-        	return (Principal)groupNameSecurityMap.get(ConnectorConstants.SECURITYMAPMETACHAR);
+        if (groupNameSecurityMap.containsKey(ConnectorConstants.SECURITYMAPMETACHAR)) {
+            return (Principal) groupNameSecurityMap.get(ConnectorConstants.SECURITYMAPMETACHAR);
         }
 
         return null;
     }
-    
-    private String getRoleName(Principal callerPrincipal){
-    
-    	String roleName = null;
+
+    private String getRoleName(Principal callerPrincipal) {
+
+        String roleName = null;
         String componentId = getCurrentComponentId();
-        
+
         SecurityRoleMapperFactory securityRoleMapperFactory = Globals.get(SecurityRoleMapperFactory.class);
-        SecurityRoleMapper securityRoleMapper= 
-            securityRoleMapperFactory.getRoleMapper(componentId);
-               
+        SecurityRoleMapper securityRoleMapper =
+                securityRoleMapperFactory.getRoleMapper(componentId);
+
         Map<String, Subject> map = securityRoleMapper.getRoleToSubjectMapping();
         Set<String> roleSet = map.keySet();
         Iterator iter = roleSet.iterator();
-        while (iter.hasNext()){
-        	roleName = (String)iter.next();
-        	Subject subject = (Subject)map.get(roleName);
-        	Set principalSet = subject.getPrincipals();
-        	if (principalSet.contains(callerPrincipal)){
-        		return roleName;
-        	}        
+        while (iter.hasNext()) {
+            roleName = (String) iter.next();
+            Subject subject = (Subject) map.get(roleName);
+            Set principalSet = subject.getPrincipals();
+            if (principalSet.contains(callerPrincipal)) {
+                return roleName;
+            }
         }
         return "";
     }
-    
 
-    private ComponentInvocation getCurrentComponentInvocation(){
+    private ComponentInvocation getCurrentComponentInvocation() {
         return ConnectorRuntime.getRuntime().getInvocationManager().getCurrentInvocation();
 
     }
-    private String getCurrentComponentId(){
-          return  getCurrentComponentInvocation().getComponentId();
+
+    private String getCurrentComponentId() {
+        return getCurrentComponentInvocation().getComponentId();
     }
 
-    private ComponentInvocation.ComponentInvocationType getCurrentComponentType(){
+    private ComponentInvocation.ComponentInvocationType getCurrentComponentType() {
         return getCurrentComponentInvocation().getInvocationType();
     }
 
-    private boolean isContainerContextAWebModuleObject(){
+    private boolean isContainerContextAWebModuleObject() {
         return ComponentInvocation.ComponentInvocationType.SERVLET_INVOCATION.equals(getCurrentComponentType());
     }
 
     //TODO V3 use this instead of isContainerContextAContainerObject
-    private boolean isContainerContextAEJBContainerObject(){
+    private boolean isContainerContextAEJBContainerObject() {
         return ComponentInvocation.ComponentInvocationType.EJB_INVOCATION.equals(getCurrentComponentType());
     }
-
 }

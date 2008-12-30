@@ -36,10 +36,10 @@
 
 package com.sun.enterprise.connectors.module;
 
-import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
+import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
@@ -82,7 +82,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
     /**
      * Loads the meta date associated with the application.
      *
-     * @parameters type type of metadata that this deployer has declared providing.
+     * @param type type of metadata that this deployer has declared providing.
      */
     public <T> T loadMetaData(Class<T> type, DeploymentContext context) {
         return null;
@@ -116,7 +116,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
                 _logger.log(Level.WARNING, " unable to load the resource-adapter [ " + moduleName + " ]", cre);
             }
         }
-        return new ConnectorApplication(moduleName, resourceManager, ccf);
+        return new ConnectorApplication(moduleName, resourceManager, ccf, runtime);
     }
 
 

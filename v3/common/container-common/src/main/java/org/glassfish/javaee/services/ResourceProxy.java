@@ -47,12 +47,19 @@ import javax.naming.Context;
 import javax.naming.NamingException;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
-import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import com.sun.enterprise.config.serverbeans.Resource;
 
 import java.util.Collection;
 
+
+/**
+ * Represents the proxy object for a resource. Proxy will be bound in jndi
+ * during startup and the actual <i>resource</i> will be deployed during
+ * first lookup
+ *
+ * @author Jagadish Ramu
+ */
 @Service
 @Scoped(PerLookup.class)
 public class ResourceProxy implements NamingObjectProxy {
@@ -65,10 +72,6 @@ public class ResourceProxy implements NamingObjectProxy {
     private Resource resource = null;
     private Object result = null;
     private String jndiName = null;
-
-    public void setResource(Resource resource){
-        this.resource = resource;
-    }
 
     public Object create(Context ic) throws NamingException {
         //TODO V3 need to be synchronized ?
@@ -87,6 +90,19 @@ public class ResourceProxy implements NamingObjectProxy {
         return connectorRuntimeHabitat.getComponent(ConnectorRuntime.class, null);
     }
 
+    /**
+     * Set the resource config bean instance
+     * @param resource config bean
+     */
+    public void setResource(Resource resource){
+        this.resource = resource;
+    }
+
+
+    /**
+     * Name by which the proxy (or the resource) will be bound in JNDI
+     * @param jndiName jndi-name
+     */
     public void setJndiName(String jndiName) {
         this.jndiName = jndiName;
     }
@@ -97,6 +113,12 @@ public class ResourceProxy implements NamingObjectProxy {
         throw ne;
     }
 
+    /**
+     * Given a <i>resource</i> instance, appropriate deployer will be provided
+     *
+     * @param resource resource instance
+     * @return ResourceDeployer
+     */
     protected ResourceDeployer getResourceDeployer(Object resource){
         Collection<ResourceDeployer> deployers = deployerHabitat.getAllByContract(ResourceDeployer.class);
 
@@ -107,5 +129,4 @@ public class ResourceProxy implements NamingObjectProxy {
         }
         return null;
     }
-
 }

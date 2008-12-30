@@ -42,21 +42,16 @@ import com.sun.enterprise.connectors.ActiveRAFactory;
 import com.sun.enterprise.connectors.ActiveResourceAdapter;
 import com.sun.enterprise.connectors.ConnectorRegistry;
 import com.sun.enterprise.connectors.ConnectorRuntime;
+import com.sun.enterprise.connectors.module.ConnectorApplication;
 import com.sun.enterprise.connectors.util.ConnectorDDTransformUtils;
 import com.sun.enterprise.connectors.util.ResourcesUtil;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
-import com.sun.enterprise.loader.EJBClassLoader;
 import com.sun.enterprise.config.serverbeans.ResourceAdapterConfig;
 
 import javax.naming.NamingException;
 import java.util.logging.Level;
-import java.io.File;
-import java.net.MalformedURLException;
-
-import org.glassfish.internal.api.Globals;
-import org.glassfish.internal.api.ClassLoaderHierarchy;
 
 
 /**
@@ -385,7 +380,6 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
      * @return true it is successful stop and removal of ActiveResourceAdapter
      *         false it stop and removal fails.
      */
-
     private boolean stopAndRemoveActiveResourceAdapter(String moduleName) {
 
         ActiveResourceAdapter acr = null;
@@ -406,7 +400,6 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
      * @param moduleName Rarmodule name
      * @return true if it is already deployed. false if it is not deployed.
      */
-
     public boolean isRarDeployed(String moduleName) {
 
         ActiveResourceAdapter activeResourceAdapter =
@@ -431,6 +424,11 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
         }
     }
 
+    /**
+     * stop the active resource adapter (runtime)
+     * @param raName resource-adapter name
+     * @param cascade if cascade is true, remove all the resources, pools
+     */
     public void stopActiveResourceAdapter(String raName, boolean cascade) {
         _logger.log(Level.FINE, "Stopping RA : ", raName);
         try {
@@ -438,6 +436,64 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
         } catch (ConnectorRuntimeException cre) {
             _logger.log(Level.WARNING, "unable to stop resource adapter [ " + raName + " ]", cre.getMessage());
             _logger.log(Level.FINE, "unable to stop resource adapter [ " + raName + " ]", cre);
+        }
+    }
+
+    /**
+     * add the resource-adapter-config
+     * @param rarName resource-adapter name
+     * @param raConfig resource-adapter-config
+     * @throws ConnectorRuntimeException
+     */
+    public void addResourceAdapterConfig(String rarName, ResourceAdapterConfig raConfig)
+        throws ConnectorRuntimeException {
+        if (rarName != null && raConfig != null) {
+            _registry.addResourceAdapterConfig(rarName, raConfig);
+            reCreateActiveResourceAdapter(rarName);
+        }
+    }
+
+    /**
+	 * Delete the resource adapter configuration to the connector registry
+	 *
+	 * @param rarName
+	 */
+    public void deleteResourceAdapterConfig(String rarName) {
+        if (rarName != null) {
+            _registry.removeResourceAdapterConfig(rarName);
+        }
+    }
+
+    /**
+	 * The ActiveResourceAdapter object which abstract the rar module is
+	 * recreated in the connector container/registry. All the pools and
+	 * resources are killed. But the infrastructure to create the pools and and
+	 * resources is untouched. Only the actual pool is killed.
+	 *
+	 * @param moduleName
+	 *                     rar module Name.
+	 * @throws ConnectorRuntimeException
+	 *                      if recreation fails.
+	 */
+
+    public void reCreateActiveResourceAdapter(String moduleName)
+        throws ConnectorRuntimeException {
+        String moduleDir= null;
+        //TODO V3 is there a case where RAR is not deployed ?
+        if (isRarDeployed(moduleName)) {
+            ConnectorApplication app = _registry.getConnectorApplication(moduleName);
+            app.undeployResources();
+            stopAndRemoveActiveResourceAdapter(moduleName);
+            moduleDir= ConnectorsUtil.getLocation(moduleName);
+            createActiveResourceAdapter(moduleDir, moduleName, app.getClassLoader());
+            _registry.getConnectorApplication(moduleName).deployResources();
+        } else {
+            moduleDir= ConnectorsUtil.getLocation(moduleName);
+            if (moduleDir != null) {
+                ConnectorApplication app = _registry.getConnectorApplication(moduleName);
+                createActiveResourceAdapter(moduleDir, moduleName, app.getClassLoader());
+                _registry.getConnectorApplication(moduleName).deployResources();
+            }
         }
     }
 }
