@@ -336,7 +336,13 @@ public interface ConnectorConstants {
      * Constant to denote admin object resource type.
      */
     public static final String RES_TYPE_AOR = "aor";
-    
+
+    //TODO V3 should be taken from ResourceDeployEvent
+    /**
+     * Constant to denote resource adapter config type.
+     */
+    public static final String RES_TYPE_RAC = "rac";
+
 /*  TODO V3 unused ?
 
     //TODO V3 should be taken from IASJ2EEResourceFactoryImpl

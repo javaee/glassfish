@@ -88,6 +88,7 @@ public class ConnectorsUtil {
     }
 
     public static String getLocation(String moduleName) {
+        return ConfigBeansUtilities.getLocation(moduleName);
         /* TODO V3
 
             if(moduleName == null) {
@@ -102,7 +103,7 @@ public class ConnectorsUtil {
             }
             return location;
         */
-        return null;
+
 
     }
     /**
@@ -171,7 +172,8 @@ public class ConnectorsUtil {
                 instance instanceof ExternalJndiResource ||
                 instance instanceof CustomResource ||
                 instance instanceof PersistenceManagerFactoryResource ||
-                instance instanceof AdminObjectResource ) ;
+                instance instanceof AdminObjectResource ||
+                instance instanceof ResourceAdapterConfig ) ;
     }
 
     /**
@@ -220,20 +222,6 @@ public class ConnectorsUtil {
         }
         return null; //TODO V3 cannot happen ?
     }
-/*
-    public static JdbcConnectionPool getJdbcConnectionPoolConfig(String poolName, Resources allResources){
-        //TODO V3 need to find a generic way (instead of separate methods for jdbc/connector)
-        for(Resource configuredResource : allResources.getResources()){
-            if(configuredResource instanceof JdbcConnectionPool){
-                JdbcConnectionPool pool = (JdbcConnectionPool)configuredResource;
-                if(pool.getName().equalsIgnoreCase(poolName)){
-                    return pool;
-                }
-            }
-        }
-        return null; //TODO V3 cannot happen ?
-    }
-*/
 
     public static Collection<Resource> getAllResources(Collection<String> poolNames, Resources allResources) {
         List<Resource> connectorResources = new ArrayList<Resource>();
@@ -348,7 +336,9 @@ public class ConnectorsUtil {
             return ConnectorConstants.RES_TYPE_PMF;
         } else if (resource instanceof AdminObjectResource){
             return ConnectorConstants.RES_TYPE_AOR;
-        } else{
+        } else if (resource instanceof ResourceAdapterConfig){
+            return ConnectorConstants.RES_TYPE_RAC;
+        } else {
             return null;
             //TODO V3 log and throw exception
         }
@@ -379,47 +369,6 @@ public class ConnectorsUtil {
         }
         return obj;
     }
-
-
-/*
-    */
-/**
-     * get all the connection pool (jdbc/connector) names
-     * @return Collection of pool names
-     */
-/*
-    public Collection<String> getAllPoolNames(){
-        //TODO V3 unused ?
-        List<String> poolNames = new ArrayList<String>();
-        for(Resource resource : allResources.getResources()){
-            if(resource instanceof JdbcConnectionPool ){
-                poolNames.add(((JdbcConnectionPool)resource).getName());
-            }else if( resource instanceof ConnectorConnectionPool){
-                poolNames.add(((ConnectorConnectionPool)resource).getName());
-            }
-        }
-        return poolNames;
-    }
-
-    */
-/**
-     * get all resource (jdbc/connector) names
-     * @return Collection of resource names
-     */
-/*
-    public Collection<String> getAllResourceNames(){
-        //TODO V3 unused ?
-        List<String> resourceNames = new ArrayList<String>();
-        for(Resource resource : allResources.getResources()){
-            if(resource instanceof JdbcResource){
-                resourceNames.add(((JdbcResource)resource).getJndiName());
-            }else if(resource instanceof ConnectorResource){
-                resourceNames.add(((ConnectorResource)resource).getJndiName());
-            }
-        }
-        return resourceNames;
-    }
-*/
 
     /**
      * Prepares the name/value pairs for ActivationSpec. <p>
@@ -460,5 +409,4 @@ public class ConnectorsUtil {
 
         return mergedProps;
     }
-
 }
