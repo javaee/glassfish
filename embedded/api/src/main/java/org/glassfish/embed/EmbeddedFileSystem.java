@@ -275,6 +275,10 @@ public final class EmbeddedFileSystem {
         initialized = true;
     }
 
+    public boolean isOurDomainXml() {
+        return  domainXmlSource == DEFAULT_DOMAIN_XML_URL;
+
+    }
     // ****************************************************
     // *************    private
     // ****************************************************
@@ -321,6 +325,7 @@ public final class EmbeddedFileSystem {
     private void initializeSourceDomainXml() throws EmbeddedException {
         if(domainXmlSource == null) {
             domainXmlSource = DEFAULT_DOMAIN_XML_URL;
+
         }
         else {
             // they specified it -- insist that it be bonafide.

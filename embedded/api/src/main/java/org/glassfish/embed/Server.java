@@ -202,10 +202,18 @@ public class Server {
             throw new EmbeddedException("jdbc_hack_failure", e);
         }
 
-        createHttpListener();
-        createVirtualServer();
-        createAdminHttpListener();
-        createAdminVirtualServer();
+        // only add listeners and virtual-servers when using *our* built-in
+        // domain.xml.
+
+        if(efs.isOurDomainXml()) {
+            createHttpListener();
+            createVirtualServer();
+            createAdminHttpListener();
+            createAdminVirtualServer();
+        }
+
+        // todo TODO
+        //else check & make sure therir xml has a listener(??)
         addServer(info.name, this);
         writeXml();
     }
