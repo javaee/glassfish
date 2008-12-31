@@ -488,14 +488,15 @@ public class EJBClassLoader
                         new Object[] { name, doneSnapshot });
             return null;
         }
+        List<URL> resourcesList = new ArrayList<URL>();
 
         // resource is in the not found list
         String nf = (String) notFoundResources.get(name);
         if (nf != null && nf.equals(name) ) {
-            return null;
+            return (new Vector(resourcesList)).elements();
         }
 
-        List<URL> resourcesList = new ArrayList<URL>();
+
 
         for (Iterator iter = this.urlSet.iterator(); iter.hasNext();) {
                         URLEntry urlEntry = (URLEntry) iter.next();
