@@ -14,6 +14,7 @@
         <module>connectors-connector</module>
         <module>connectors-internal-api</module>
         <module>connectors-runtime</module>
+        <module>connectors-inbound-runtime</module>
         <module>work-management</module>
         <module>javax.resource</module>
         <module>admin</module>

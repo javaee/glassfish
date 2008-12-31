@@ -257,7 +257,8 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
         }
         try {
             activeResourceAdapter =
-                    ActiveRAFactory.createActiveResourceAdapter(connectorDescriptor, moduleName, loader);
+                    ConnectorRuntime.getRuntime().getActiveRAFactory().
+                            createActiveResourceAdapter(connectorDescriptor, moduleName, loader);
             _logger.fine("ResourceAdapterAdminServiceImpl :: createActiveRA " +
                     moduleName + " at " + moduleDir +
                     " adding to registry " + activeResourceAdapter);

@@ -40,6 +40,9 @@ import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 
 import javax.resource.spi.ManagedConnectionFactory;
+import javax.resource.spi.ResourceAdapter;
+
+import org.jvnet.hk2.annotations.Contract;
 
 
 /**
@@ -50,8 +53,11 @@ import javax.resource.spi.ManagedConnectionFactory;
  * @author Srikanth P and Binod PG
  */
 
-
+@Contract
 public interface ActiveResourceAdapter {
+
+    public void init(ResourceAdapter ra, ConnectorDescriptor cd, String moduleName, ClassLoader loader)
+            throws ConnectorRuntimeException;
 
     /**
      * It initializes the resource adapter.
@@ -75,6 +81,8 @@ public interface ActiveResourceAdapter {
      */
 
     public ConnectorDescriptor getDescriptor();
+
+    public boolean handles(ConnectorDescriptor desc);
 
     public ManagedConnectionFactory[] createManagedConnectionFactories
             (ConnectorConnectionPool cpr, ClassLoader loader);

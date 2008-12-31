@@ -36,440 +36,320 @@
 
 package com.sun.enterprise.connectors;
 
-import com.sun.appserv.connectors.spi.*;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
-import com.sun.appserv.connectors.internal.api.ConnectorConstants;
-import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
-import com.sun.enterprise.connectors.util.*;
-import com.sun.enterprise.deployment.ConnectionDefDescriptor;
+import org.glassfish.api.admin.config.Property;
+import org.glassfish.api.naming.GlassfishNamingManager;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.PerLookup;
+import com.sun.enterprise.config.serverbeans.ResourceAdapterConfig;
+import com.sun.enterprise.connectors.util.ConnectorDDTransformUtils;
+import com.sun.enterprise.connectors.util.SetMethodAction;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.enterprise.deployment.runtime.connector.ResourceAdapter;
+import com.sun.enterprise.deployment.AdminObject;
+import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.enterprise.util.i18n.StringManager;
+import com.sun.enterprise.resource.beans.AdministeredObjectResource;
 import com.sun.logging.LogDomains;
 
-import javax.resource.spi.ManagedConnectionFactory;
-import java.security.PrivilegedActionException;
+import javax.resource.ResourceException;
+import javax.resource.spi.*;
+import javax.naming.Reference;
+import javax.naming.NamingException;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 /**
- * This class represents the abstraction of a 1.0 complient rar.
- * It holds the ra.xml (connector decriptor) values, class loader used to
- * to load the Resource adapter class and managed connection factory and
- * module name (rar) to which it belongs.
- * It is also the base class for ActiveInboundResourceAdapter(a 1.5 complient
- * rar).
+ * This class represents a live inbound resource adapter, i.e.
+ * <p/>
+ * A resource adapter is considered active after start()
+ * and before stop() is called.
  *
- * @author :    Srikanth P and Binod PG
+ * @author Binod P G, Sivakumar Thyagarajan
  */
+@Service
+@Scoped(PerLookup.class)
+public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
 
-public class ActiveOutboundResourceAdapter implements ActiveResourceAdapter {
+    protected ResourceAdapter resourceadapter_; //runtime instance
 
-    protected ConnectorDescriptor desc_;
     protected String moduleName_;
-    protected ClassLoader jcl_;
-    protected ConnectionDefDescriptor[] connectionDefs_;
-    protected ConnectorRuntime connectorRuntime_ = null;
 
-    private static Logger _logger = LogDomains.getLogger(ActiveOutboundResourceAdapter.class, LogDomains.RSR_LOGGER);
+    protected static Logger _logger = LogDomains.getLogger(ActiveOutboundResourceAdapter.class,LogDomains.RSR_LOGGER);
+
     private StringManager localStrings =
             StringManager.getManager(ActiveOutboundResourceAdapter.class);
 
+    private BootstrapContext bootStrapContextImpl;
+
+    public ActiveOutboundResourceAdapter(){
+    }
+
     /**
-     * Constructor.
+     * Creates an active inbound resource adapter. Sets all RA java bean
+     * properties and issues a start.
      *
-     * @param desc       Connector Descriptor. Holds the all ra.xml values
-     * @param moduleName Name of the module i.e rar Name. Incase of
-     *                   embedded resource adapters its name will be appName#rarName
-     * @param jcl        Classloader used to load the ResourceAdapter and managed
-     *                   connection factory class.
-     *                   values to domain.xml.
+     * @param ra         <code>ResourceAdapter<code> java bean.
+     * @param desc       <code>ConnectorDescriptor</code> object.
+     * @param moduleName Resource adapter module name.
+     * @param jcl        <code>ClassLoader</code> instance.
+     * @throws ConnectorRuntimeException If there is a failure in loading
+     *                                   or starting the resource adapter.
      */
-    public ActiveOutboundResourceAdapter(ConnectorDescriptor desc,
-                                         String moduleName, ClassLoader jcl) {
+    public void init(
+            ResourceAdapter ra, ConnectorDescriptor desc, String moduleName,
+            ClassLoader jcl) throws ConnectorRuntimeException {
+        super.init(ra, desc, moduleName, jcl);
+        this.resourceadapter_ = ra;
+        this.moduleName_ = moduleName;
+        if (resourceadapter_ != null) {
+            try {
+                loadRAConfiguration();
+                ConnectorRegistry registry = ConnectorRegistry.getInstance();
+                String poolId = null;
+                ResourceAdapterConfig raConfig = registry.getResourceAdapterConfig(moduleName_);
+                if (raConfig != null) {
+                    poolId = raConfig.getThreadPoolIds();
+                }
+                this.bootStrapContextImpl = new BootstrapContextImpl(poolId, moduleName_);
 
-        this.desc_ = desc;
-        moduleName_ = moduleName;
-        jcl_ = jcl;
-        connectorRuntime_ = ConnectorRuntime.getRuntime();
-        connectionDefs_ = ConnectorDDTransformUtils.getConnectionDefs(desc_);
+                //TODO V3 handle jms-ra
+                resourceadapter_.start(bootStrapContextImpl);
+
+                //TODO V3 setup monitoring
+
+            } catch (ResourceAdapterInternalException ex) {
+                _logger.log(Level.SEVERE, "rardeployment.start_failed", ex);
+                String i18nMsg = localStrings.getString("rardeployment.start_failed", ex.getMessage());
+                ConnectorRuntimeException cre = new ConnectorRuntimeException(i18nMsg);
+                cre.initCause(ex);
+                throw cre;
+            } catch (Throwable t) {
+                _logger.log(Level.SEVERE, "rardeployment.start_failed", t);
+                t.printStackTrace();
+                String i18nMsg = localStrings.getString("rardeployment.start_failed", t.getMessage());
+                ConnectorRuntimeException cre = new ConnectorRuntimeException(i18nMsg);
+                if (t.getCause() != null) {
+                    cre.initCause(t.getCause());
+                } else {
+                    cre.initCause(t);
+                }
+                throw cre;
+            }
+        }
+    }
+
+    public boolean handles(ConnectorDescriptor cd) {
+        return !cd.getInBoundDefined() && cd.getOutBoundDefined() && !("".equals(cd.getResourceAdapterClass()));
     }
 
 
-    public String getModuleName() {
-        return moduleName_;
+    /**
+     * Retrieves the resource adapter java bean.
+     *
+     * @return <code>ResourceAdapter</code>
+     */
+    public ResourceAdapter getResourceAdapter() {
+        return this.resourceadapter_;
     }
 
     /**
-     * It initializes the resource adapter. It also creates the default pools
-     * and resources of all the connection definitions.
+     * Does the necessary initial setup. Creates the default pool and
+     * resource.
      *
-     * @throws ConnectorRuntimeException This exception is thrown if the
-     *                                   ra.xml is invalid or the default pools and resources couldn't
-     *                                   be created
+     * @throws ConnectorRuntimeException If there is a failure
      */
     public void setup() throws ConnectorRuntimeException {
-        //TODO V3 COMMENT AOBUT RAR 1.0
-        if (connectionDefs_ == null || connectionDefs_.length != 1) {
-            _logger.log(Level.SEVERE, "rardeployment.invalid_connector_desc", moduleName_);
-            String i18nMsg = localStrings.getString("ccp_adm.invalid_connector_desc", moduleName_);
-            throw new ConnectorRuntimeException(i18nMsg);
+        //TODO V3 need for this check ?
+        if (connectionDefs_ == null || connectionDefs_.length == 0) {
+            return;
         }
-        if (isServer() && !isSystemRar(moduleName_)) {
-            createAllConnectorResources();
-        }
-        _logger.log(Level.FINE, "Completed Active Resource adapter setup", moduleName_);
+        super.setup();
     }
 
     /**
-     * Check if the execution environment is appserver runtime or application
-     * client container.
-     *
-     * @return boolean if the environment is appserver runtime
-     */
-    protected boolean isServer() {
-        if (connectorRuntime_.getEnviron() == ConnectorConstants.SERVER) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Creates both the default connector connection pools and resources
-     *
-     * @throws ConnectorRuntimeException when unable to create resources
-     */
-    protected void createAllConnectorResources() throws ConnectorRuntimeException {
-        try {
-
-            if (desc_.getSunDescriptor() != null && desc_.getSunDescriptor().getResourceAdapter() != null) {
-
-                // sun-ra.xml exists
-                String jndiName = (String) desc_.getSunDescriptor().
-                        getResourceAdapter().getValue(ResourceAdapter.JNDI_NAME);
-
-                if (jndiName == null || jndiName.equals("")) {
-                    // jndiName is empty, do not create duplicate pools, use setting in sun-ra.xml
-                    createDefaultConnectorConnectionPools(true);
-                } else {
-                    // jndiName is not empty, so create duplicate pools, both default and sun-ra.xml
-                    createSunRAConnectionPool();
-                    createDefaultConnectorConnectionPools(false);
-                }
-            } else {
-                // sun-ra.xml doesn't exist, so create default pools
-                createDefaultConnectorConnectionPools(false);
-            }
-
-            // always create default connector resources
-            createDefaultConnectorResources();
-        } catch (ConnectorRuntimeException cre) {
-            //Connector deployment should _not_ fail if default connector
-            //connector pool and resource creation fails.
-            _logger.log(Level.SEVERE, "rardeployment.defaultpoolresourcecreation.failed", cre);
-            _logger.log(Level.FINE, "Error while trying to create the default connector" +
-                    "connection pool and resource", cre);
-        }
-    }
-
-    /**
-     * Deletes both the default connector connection pools and resources
-     */
-    protected void destroyAllConnectorResources() {
-        if (!(isSystemRar(moduleName_))) {
-            deleteDefaultConnectorResources();
-            deleteDefaultConnectorConnectionPools();
-
-            // Added to ensure clean-up of the Sun RA connection pool
-            if (desc_.getSunDescriptor() != null &&
-                    desc_.getSunDescriptor().getResourceAdapter() != null) {
-
-                // sun-ra.xml exists
-                String jndiName = (String) desc_.getSunDescriptor().
-                        getResourceAdapter().getValue(ResourceAdapter.JNDI_NAME);
-
-                if (jndiName == null || jndiName.equals("")) {
-                    // jndiName is empty, sunRA pool not created, so don't need to delete
-
-                } else {
-                    // jndiName is not empty, need to delete pool
-                    deleteSunRAConnectionPool();
-                }
-            }
-        }
-    }
-
-    protected boolean isSystemRar(String moduleName) {
-        return ConnectorsUtil.belongsToSystemRA(moduleName);
-    }
-
-    /**
-     * Deletes the default connector connection pools.
-     */
-    protected void deleteDefaultConnectorConnectionPools() {
-        for (ConnectionDefDescriptor aConnectionDefs_ : connectionDefs_) {
-            String connectionDefName = aConnectionDefs_.getConnectionFactoryIntf();
-            String resourceJndiName = connectorRuntime_.getDefaultPoolName(moduleName_, connectionDefName);
-            try {
-                connectorRuntime_.deleteConnectorConnectionPool(resourceJndiName);
-            } catch (ConnectorRuntimeException cre) {
-                _logger.log(Level.WARNING, "rar.undeployment.default_pool_delete_fail", resourceJndiName);
-            }
-        }
-    }
-
-    /**
-     * Deletes the default connector resources.
-     */
-    protected void deleteDefaultConnectorResources() {
-        for (ConnectionDefDescriptor aConnectionDefs_ : connectionDefs_) {
-            String connectionDefName = aConnectionDefs_.getConnectionFactoryIntf();
-            String resourceJndiName = connectorRuntime_.getDefaultResourceName(moduleName_, connectionDefName);
-            try {
-                connectorRuntime_.deleteConnectorResource(resourceJndiName);
-            } catch (ConnectorRuntimeException cre) {
-                _logger.log(Level.WARNING, "rar.undeployment.default_resource_delete_fail", resourceJndiName);
-                _logger.log(Level.FINE, "Error while trying to delete the default connector resource", cre);
-            }
-        }
-    }
-
-    /**
-     * uninitializes the resource adapter. It also destroys the default pools
-     * and resources
+     * Destroys default pools and resources. Stops the Resource adapter
+     * java bean.
      */
     public void destroy() {
-        if (isServer()) {
-            destroyAllConnectorResources();
+		//it is possible that a 1.5 ra may not have connection-definition at all
+        if((connectionDefs_ != null) && (connectionDefs_.length != 0)){
+            super.destroy();
+        }
+        stopResourceAdapter();
+    }
+
+    private void stopResourceAdapter() {
+        if (resourceadapter_ != null) {
+            try {
+                _logger.fine("Calling Resource Adapter stop" + this.getModuleName());
+                resourceadapter_.stop();
+                _logger.fine("Resource Adapter stop call of " + this.getModuleName() + "returned successfully");
+                _logger.log(Level.FINE, "rar_stop_call_successful");
+            } catch (Throwable t) {
+                _logger.log(Level.SEVERE, "rardeployment.stop_warning", t);
+            } finally {
+                //not needed when there is no ResourceAdapter instance (implementation)
+                removeProxiesFromRegistry(moduleName_);
+            }
         }
     }
 
-    /**
-     * Returns the Connector descriptor which represents/holds ra.xml
-     *
-     * @return ConnectorDescriptor Representation of ra.xml.
-     */
-    public ConnectorDescriptor getDescriptor() {
-        return desc_;
-    }
 
     /**
-     * Creates managed Connection factories corresponding to one pool.
-     * This should be implemented in the ActiveJmsResourceAdapter, for
-     * jms resources, has been implemented to perform xa resource recovery
-     * in mq clusters, not supported for any other code path.
-     *
-     * @param ccp Connector connection pool which contains the pool properties
-     *            and ra.xml values pertaining to managed connection factory
-     *            class. These values are used in MCF creation.
-     * @param jcl Classloader used to managed connection factory class.
-     * @return ManagedConnectionFactory created managed connection factories
+     * Remove all the proxy objects (Work-Manager) from connector registry
+     * @param moduleName_ resource-adapter name
      */
-    public ManagedConnectionFactory[] createManagedConnectionFactories(
-            ConnectorConnectionPool ccp, ClassLoader jcl) {
-        throw new UnsupportedOperationException("This operation is not supported");
+    private void removeProxiesFromRegistry(String moduleName_) {
+        ConnectorRuntime.getRuntime().removeWorkManagerProxy(moduleName_);
     }
 
 
     /**
-     * Creates managed Connection factory instance.
+     * Creates an instance of <code>ManagedConnectionFactory</code>
+     * object using the connection pool properties. Also set the
+     * <code>ResourceAdapterAssociation</code>
      *
-     * @param ccp Connector connection pool which contains the pool properties
-     *            and ra.xml values pertaining to managed connection factory
-     *            class. These values are used in MCF creation.
-     * @param jcl Classloader used to managed connection factory class.
-     * @return ManagedConnectionFactory created managed connection factory
-     *         instance
+     * @param pool <code>ConnectorConnectionPool</code> properties.
+     * @param jcl  <code>ClassLoader</code>
      */
     public ManagedConnectionFactory createManagedConnectionFactory(
-            ConnectorConnectionPool ccp, ClassLoader jcl) {
-        final String mcfClass = ccp.getConnectorDescriptorInfo().getManagedConnectionFactoryClass();
-        try {
+            ConnectorConnectionPool pool, ClassLoader jcl) {
+        ManagedConnectionFactory mcf;
+        mcf = super.createManagedConnectionFactory(pool, jcl);
 
-            ManagedConnectionFactory mcf = null;
-            mcf = instantiateMCF(mcfClass, jcl);
-
-            if (mcf instanceof ConfigurableTransactionSupport) {
-                TransactionSupport ts = ConnectionPoolObjectsUtils.getTransactionSupport(ccp.getTransactionSupport());
-                if(!TransactionSupport.XA_TRANSACTION.equals(ts) ){
-                    ((ConfigurableTransactionSupport) mcf).setTransactionSupport(ts);
-                }else{
-                    //TODO V3 handle XA transaction support later
-                    throw new UnsupportedOperationException("XA Transaction is not supported");
-                }
+        if (mcf instanceof ResourceAdapterAssociation) {
+            try {
+                ((ResourceAdapterAssociation) mcf).setResourceAdapter(this.resourceadapter_);
+            } catch (ResourceException ex) {
+                _logger.log(Level.SEVERE, "rardeployment.assoc_failed", ex);
             }
-
-            SetMethodAction setMethodAction = new SetMethodAction
-                    (mcf, ccp.getConnectorDescriptorInfo().getMCFConfigProperties());
-            setMethodAction.run();
-            _logger.log(Level.FINE, "Created MCF object : ", mcfClass);
-            return mcf;
-        } catch (PrivilegedActionException ex) {
-            _logger.log(Level.SEVERE, "rardeployment.privilegedaction_error",
-                    new Object[]{mcfClass, ex.getException().getMessage()});
-            _logger.log(Level.FINE, "rardeployment.privilegedaction_error", ex.getException());
-            return null;
-        } catch (ClassNotFoundException Ex) {
-            _logger.log(Level.SEVERE, "rardeployment.class_not_found", new Object[]{mcfClass, Ex.getMessage()});
-            _logger.log(Level.FINE, "rardeployment.class_not_found", Ex);
-            return null;
-        } catch (InstantiationException Ex) {
-            _logger.log(Level.SEVERE, "rardeployment.class_instantiation_error", new Object[]{mcfClass, Ex.getMessage()});
-            _logger.log(Level.FINE, "rardeployment.class_instantiation_error", Ex);
-            return null;
-        } catch (IllegalAccessException Ex) {
-            _logger.log(Level.SEVERE, "rardeployment.illegalaccess_error", new Object[]{mcfClass, Ex.getMessage()});
-            _logger.log(Level.FINE, "rardeployment.illegalaccess_error", Ex);
-            return null;
-        } catch (Exception Ex) {
-            _logger.log(Level.SEVERE, "rardeployment.mcfcreation_error", new Object[]{mcfClass, Ex.getMessage()});
-            _logger.log(Level.FINE, "rardeployment.mcfcreation_error", Ex);
-            return null;
         }
-    }
-
-    /**
-     * sets the logWriter for the MCF being instantiated.<br>
-     * Resource Adapter implementer can make use of this logWriter<br>
-     *
-     * @param mcf ManagedConnectionFactory
-     */
-    private void setLogWriter(ManagedConnectionFactory mcf) {
-        PrintWriterAdapter adapter = new PrintWriterAdapter(ConnectorRuntime.getRuntime().getResourceAdapterLogWriter());
-        try {
-            mcf.setLogWriter(adapter);
-        } catch (Exception e) {
-            Object[] params = new Object[]{mcf.getClass().getName(), e.getMessage()};
-            _logger.log(Level.WARNING, "rardeployment.logwriter_error", params);
-            _logger.log(Level.FINE, "Unable to set LogWriter for ManagedConnectionFactory : " + mcf.getClass().getName(), e);
-        }
-    }
-
-    private ManagedConnectionFactory instantiateMCF(String mcfClass, ClassLoader loader)
-            throws Exception {
-        ManagedConnectionFactory mcf = null;
-
-        if (jcl_ != null) {
-            mcf = (ManagedConnectionFactory) jcl_.loadClass(mcfClass).newInstance();
-        } else if (loader != null) {
-            mcf = (ManagedConnectionFactory) loader.loadClass(mcfClass).newInstance();
-        } else {
-            mcf = (ManagedConnectionFactory) Class.forName(mcfClass).newInstance();
-        }
-        setLogWriter(mcf);
         return mcf;
     }
 
-
     /**
-     * Creates default connector resource
+     * Loads RA javabean. This method is protected, so that any system
+     * resource adapter can have specific configuration done during the
+     * loading.
      *
-     * @throws ConnectorRuntimeException when unable to create connector resources
+     * @throws ConnectorRuntimeException if there is a failure.
      */
-    protected void createDefaultConnectorResources()
-            throws ConnectorRuntimeException {
-        for (ConnectionDefDescriptor descriptor : connectionDefs_) {
-
-            String connectionDefName = descriptor.getConnectionFactoryIntf();
-            String resourceName = connectorRuntime_.getDefaultResourceName(moduleName_, connectionDefName);
-            String poolName = connectorRuntime_.getDefaultPoolName(moduleName_, connectionDefName);
-
-            connectorRuntime_.createConnectorResource(resourceName, poolName, null);
-
-            _logger.log(Level.FINE, "Created default connector resource : ", resourceName);
-        }
-    }
-
-    /**
-     * Creates default connector connection pool
-     *
-     * @param useSunRA whether to use default pool settings or settings in sun-ra.xml
-     * @throws ConnectorRuntimeException when unable to create connector connection pools
-     */
-    protected void createDefaultConnectorConnectionPools(boolean useSunRA)
-            throws ConnectorRuntimeException {
-
-        for (ConnectionDefDescriptor descriptor : connectionDefs_) {
-            String poolName = connectorRuntime_.getDefaultPoolName(moduleName_, descriptor.getConnectionFactoryIntf());
-
-            ConnectorDescriptorInfo connectorDescriptorInfo =
-                    ConnectorDDTransformUtils.getConnectorDescriptorInfo(descriptor);
-            connectorDescriptorInfo.setRarName(moduleName_);
-            connectorDescriptorInfo.setResourceAdapterClassName(desc_.getResourceAdapterClass());
-            ConnectorConnectionPool connectorPoolObj;
-
-            // if useSunRA is true, then create connectorPoolObject using settings
-            // from sunRAXML
-            if (useSunRA) {
-                connectorPoolObj =
-                        ConnectionPoolObjectsUtils.createSunRaConnectorPoolObject(poolName, desc_, moduleName_);
-            } else {
-                connectorPoolObj =
-                        ConnectionPoolObjectsUtils.createDefaultConnectorPoolObject(poolName, moduleName_);
-            }
-
-            connectorPoolObj.setConnectorDescriptorInfo(connectorDescriptorInfo);
-            connectorRuntime_.createConnectorConnectionPool(connectorPoolObj);
-            _logger.log(Level.FINE, "Created default connection pool : ", poolName);
-        }
-    }
-
-    /**
-     * Creates connector connection pool pertaining to sun-ra.xml. This is
-     * only for 1.0 complient rars.
-     *
-     * @throws ConnectorRuntimeException Thrown when pool creation fails.
-     */
-    private void createSunRAConnectionPool() throws ConnectorRuntimeException {
-
-        String defaultPoolName = connectorRuntime_.getDefaultPoolName(
-                moduleName_, connectionDefs_[0].getConnectionFactoryIntf());
-
-        String sunRAPoolName = defaultPoolName + ConnectorConstants.SUN_RA_POOL;
-
-        ConnectorDescriptorInfo connectorDescriptorInfo =
-                ConnectorDDTransformUtils.getConnectorDescriptorInfo(connectionDefs_[0]);
-        connectorDescriptorInfo.setRarName(moduleName_);
-        connectorDescriptorInfo.setResourceAdapterClassName(desc_.getResourceAdapterClass());
-        ConnectorConnectionPool connectorPoolObj =
-                ConnectionPoolObjectsUtils.createSunRaConnectorPoolObject(sunRAPoolName, desc_, moduleName_);
-
-        connectorPoolObj.setConnectorDescriptorInfo(connectorDescriptorInfo);
-        connectorRuntime_.createConnectorConnectionPool(connectorPoolObj);
-        _logger.log(Level.FINE, "Created SUN-RA connection pool:", sunRAPoolName);
-
-        String jndiName = (String) desc_.getSunDescriptor().
-                getResourceAdapter().getValue(ResourceAdapter.JNDI_NAME);
-        connectorRuntime_.createConnectorResource(jndiName, sunRAPoolName, null);
-        _logger.log(Level.FINE, "Created SUN-RA connector resource : ", jndiName);
-
-    }
-
-    /**
-     * Added to clean up the connector connection pool pertaining to sun-ra.xml. This is
-     * only for 1.0 complient rars.
-     */
-    private void deleteSunRAConnectionPool() {
-
-        String defaultPoolName = connectorRuntime_.getDefaultPoolName(
-                moduleName_, connectionDefs_[0].getConnectionFactoryIntf());
-
-        String sunRAPoolName = defaultPoolName + ConnectorConstants.SUN_RA_POOL;
+    protected void loadRAConfiguration() throws ConnectorRuntimeException {
         try {
-            connectorRuntime_.deleteConnectorConnectionPool(sunRAPoolName);
-        } catch (ConnectorRuntimeException cre) {
-            _logger.log(Level.WARNING, "rar.undeployment.sun_ra_pool_delete_fail", sunRAPoolName);
+            Set mergedProps;
+            ConnectorRegistry registry = ConnectorRegistry.getInstance();
+            ResourceAdapterConfig raConfig = registry.getResourceAdapterConfig(moduleName_);
+            List<Property> raConfigProps = new ArrayList<Property>();
+            if (raConfig != null) {
+                raConfigProps = raConfig.getProperty();
+            }
+            //TODO V3 handle JMS RA Hack
+            mergedProps = ConnectorDDTransformUtils.mergeProps(raConfigProps, getDescriptor().getConfigProperties());
+            logMergedProperties(mergedProps);
+
+            SetMethodAction setMethodAction = new SetMethodAction(this.resourceadapter_, mergedProps);
+            setMethodAction.run();
+        } catch (Exception e) {
+            String i18nMsg = localStrings.getString("ccp_adm.wrong_params_for_create", e.getMessage());
+            ConnectorRuntimeException cre = new ConnectorRuntimeException(i18nMsg);
+            cre.initCause(e);
+            throw cre;
         }
     }
 
-    /**
-     * Returns the class loader that is used to load the RAR.
-     *
-     * @return <code>ClassLoader</code> object.
-     */
-    public ClassLoader getClassLoader() {
-        return jcl_;
+    private void logMergedProperties(Set mergedProps) {
+         if (_logger.isLoggable(Level.FINE)) {
+             _logger.fine("Passing in the following properties " +
+                     "before calling RA.start of " + this.moduleName_);
+             StringBuffer b = new StringBuffer();
+
+             for (Iterator iter = mergedProps.iterator(); iter.hasNext();) {
+                 EnvironmentProperty element = (EnvironmentProperty) iter.next();
+                 b.append("\nName: " + element.getName()
+                         + " Value: " + element.getValue());
+             }
+             _logger.fine(b.toString());
+         }
+     }
+
+    public BootstrapContext getBootStrapContext() {
+        return this.bootStrapContextImpl;
     }
+
+    /**
+     * Creates an admin object.
+     *
+     * @param appName Name of application, in case of embedded rar.
+     * @param connectorName Module name of the resource adapter.
+     * @param jndiName JNDI name to be registered.
+     * @param adminObjectType Interface name of the admin object.
+     * @param props <code>Properties</code> object containing name/value
+     *              pairs of properties.
+     */
+    public void addAdminObject (
+            String appName,
+            String connectorName,
+            String jndiName,
+            String adminObjectType,
+            Properties props)
+        throws ConnectorRuntimeException {
+        if (props == null) {
+            // empty properties
+            props = new Properties();
+        }
+
+        ConnectorRegistry registry = ConnectorRegistry.getInstance();
+
+        ConnectorDescriptor desc = registry.getDescriptor(connectorName);
+        AdminObject aoDesc =
+            desc.getAdminObjectByType(adminObjectType);
+
+        AdministeredObjectResource aor = new AdministeredObjectResource(jndiName);
+        aor.initialize(aoDesc);
+        aor.setResourceAdapter(connectorName);
+
+        Object[] envProps = aoDesc.getConfigProperties().toArray();
+
+        //Add default config properties to aor
+        //Override them if same config properties are provided by the user
+        for (int i = 0; i < envProps.length; i++) {
+            EnvironmentProperty envProp = (EnvironmentProperty) envProps[i];
+            String name = envProp.getName();
+            String userValue = (String)props.remove(name);
+            if (userValue != null)
+                aor.addConfigProperty(new EnvironmentProperty(
+                              name, userValue, userValue, envProp.getType()));
+            else
+                aor.addConfigProperty(envProp);
+        }
+
+        //Add non-default config properties provided by the user to aor
+        Iterator iter = props.keySet().iterator();
+        while(iter.hasNext()){
+            String name = (String) iter.next();
+            String userValue = props.getProperty(name);
+            if(userValue != null)
+                aor.addConfigProperty(new EnvironmentProperty(
+                        name, userValue, userValue));
+
+        }
+
+        // bind to JNDI namespace
+	try{
+
+            Reference ref = aor.createAdminObjectReference();
+            GlassfishNamingManager nm = ConnectorRuntime.getRuntime().getNamingManager();
+            nm.publishObject(jndiName, ref, true);
+
+        } catch (NamingException ex) {
+	    String i18nMsg = localStrings.getString(
+	        "aira.cannot_bind_admin_obj");
+            throw new ConnectorRuntimeException( i18nMsg );
+        }
+    }
+
+
+
 }

@@ -148,6 +148,9 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
     @Inject
     private ConnectorsClassLoaderUtil cclUtil;
 
+    @Inject
+    private ActiveRAFactory activeRAFactory;
+
     private final Object getTimerLock = new Object();
     private Timer timer;
 
@@ -830,4 +833,8 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
         ConnectorApplication app = connectorRegistry.getConnectorApplication(rarName);
         app.deployResources();
     }
+    public ActiveRAFactory getActiveRAFactory(){
+        return activeRAFactory;
+    }
+
 }
