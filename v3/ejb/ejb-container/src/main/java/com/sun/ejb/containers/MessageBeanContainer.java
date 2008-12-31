@@ -109,7 +109,7 @@ public final class MessageBeanContainer extends BaseContainer implements
 	// message delivery.
 	private static final String MESSAGE_BEAN_CLIENT_FACTORY_PROP = "com.sun.enterprise.MessageBeanClientFactory";
 
-	private static final String DEFAULT_MESSAGE_BEAN_CLIENT_FACTORY = "com.sun.enterprise.connectors.inflow.ConnectorMessageBeanClientFactory";
+	private static final String DEFAULT_MESSAGE_BEAN_CLIENT_FACTORY = "com.sun.enterprise.connectors.inbound.ConnectorMessageBeanClientFactory";
 
 	private static final int DEFAULT_RESIZE_QUANTITY = 1;
 	private static final int DEFAULT_STEADY_SIZE = 10;
