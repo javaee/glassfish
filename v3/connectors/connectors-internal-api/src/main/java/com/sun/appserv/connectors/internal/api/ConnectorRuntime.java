@@ -41,6 +41,7 @@ import org.glassfish.api.invocation.InvocationManager;
 
 import javax.naming.NamingException;
 import javax.resource.ResourceException;
+import javax.resource.spi.ManagedConnectionFactory;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -77,20 +78,6 @@ public interface ConnectorRuntime {
      */
     public void createActiveResourceAdapter(String sourcePath, String moduleName, ClassLoader loader)
             throws ConnectorRuntimeException;
-
-    /**
-     * Creates Active resource Adapter which abstracts the rar module.
-     * During the creation of ActiveResourceAdapter, default pools and
-     * resources also are created.
-     *
-     * @param sourcePath  Directory where rar module is exploded.
-     * @param moduleName Name of the module
-     * @throws ConnectorRuntimeException if creation fails.
-     */
-/*
-    public void createActiveResourceAdapter(String sourcePath, String moduleName)
-            throws ConnectorRuntimeException;
-*/
 
     /**
      * Destroys/deletes the Active resource adapter object from the
@@ -136,12 +123,6 @@ public interface ConnectorRuntime {
     //TODO V3 no need to pass resources as it is taken care by ResourceManager ?
     public void shutdownAllActiveResourceAdapters(Collection<String> resources);
 
-    /**
-     * Destroys/unpublishes the given list of pools and resources
-     *
-     * @param resources list of resources and pools
-     */
-    //public void destroyResourcesAndPools(Collection resources);
 
     /**
      * Does lookup of non-tx-datasource. If found, it will be returned.<br><br>
@@ -183,8 +164,19 @@ public interface ConnectorRuntime {
      */
     public Object lookupPMResource(String jndiName, boolean force) throws NamingException;
 
+    /**
+     * Provide the configuration of the pool
+     * @param poolName connection pool name
+     * @return ResourcePool connection pool configuration
+     */
     public ResourcePool getConnectionPoolConfig(String poolName);
 
+    /**
+     * Tests whether the configuration for the pool is valid by making a connection.
+     * @param poolName connection pool name
+     * @return boolean indicating ping status
+     * @throws ResourceException when unable to ping
+     */
     public boolean pingConnectionPool(String poolName) throws ResourceException;
 
     /**
@@ -235,19 +227,12 @@ public interface ConnectorRuntime {
     public Set getResourceReferenceDescriptor();
 
 
-
     /**
-     * Redeploy the resource into the server's runtime naming context
-     *
-     * @param resource a resource object
-     * @throws Exception thrown if fail
+     * provide the MCF of the pool (either retrieve or create)
+     * @param poolName connection pool name
+     * @return ManagedConnectionFactory mcf of the pool
+     * @throws ConnectorRuntimeException when unable to provide the MCF
      */
-    /*
-    public void redeployResource(Object instance) throws Exception;
-    //TODO V3 javadoc
-    //TODO V3 need to be a specific exception type (connector-runtime-exception) ?
-    public void deployResource(Resource resource) throws Exception;
-
-    public void undeployResource(Resource resource) throws Exception;
-    */
+    public ManagedConnectionFactory obtainManagedConnectionFactory(String poolName)
+            throws ConnectorRuntimeException;
 }
