@@ -48,7 +48,7 @@ import org.jvnet.hk2.annotations.Contract;
 /**
  * Interface class for different types (1.0 and 1.5 complient) resource
  * adapter abstraction classes.
- * Containes methods for setup(initialization), destroy and creation of MCF.
+ * Contains methods for setup(initialization), destroy and creation of MCF.
  *
  * @author Srikanth P and Binod PG
  */
@@ -56,22 +56,28 @@ import org.jvnet.hk2.annotations.Contract;
 @Contract
 public interface ActiveResourceAdapter {
 
+    /**
+     * initializes the active (runtime) RAR
+     * @param ra resource-adapter bean
+     * @param cd connector-descriptor
+     * @param moduleName rar-name
+     * @param loader classloader for the RAR
+     * @throws ConnectorRuntimeException when unable to initialize the runtime RA
+     */
     public void init(ResourceAdapter ra, ConnectorDescriptor cd, String moduleName, ClassLoader loader)
             throws ConnectorRuntimeException;
 
     /**
-     * It initializes the resource adapter.
+     * initializes the resource adapter bean and the resources, pools
      *
      * @throws ConnectorRuntimeException This exception is thrown if the
      *                                   setup/initialization fails.
      */
-
     public void setup() throws ConnectorRuntimeException;
 
     /**
      * uninitializes the resource adapter.
      */
-
     public void destroy();
 
     /**
@@ -79,13 +85,29 @@ public interface ActiveResourceAdapter {
      *
      * @return ConnectorDescriptor Representation of ra.xml.
      */
-
     public ConnectorDescriptor getDescriptor();
 
+    /**
+     * Indicates whether a particular implementation of ActiveRA can handle the RAR in question.
+     * @param desc ConnectorDescriptor
+     * @return boolean indiating whether a ActiveRA can handle the RAR
+     */
     public boolean handles(ConnectorDescriptor desc);
 
+    /**
+     * Creates managed Connection factories corresponding to one pool.
+     * This should be implemented in the ActiveJmsResourceAdapter, for
+     * jms resources, has been implemented to perform xa resource recovery
+     * in mq clusters, not supported for any other code path.
+     *
+     * @param ccp Connector connection pool which contains the pool properties
+     *            and ra.xml values pertaining to managed connection factory
+     *            class. These values are used in MCF creation.
+     * @param loader Classloader used to managed connection factory class.
+     * @return ManagedConnectionFactory created managed connection factories
+     */
     public ManagedConnectionFactory[] createManagedConnectionFactories
-            (ConnectorConnectionPool cpr, ClassLoader loader);
+            (ConnectorConnectionPool ccp, ClassLoader loader);
 
     /**
      * Creates managed Connection factory instance.
@@ -97,7 +119,6 @@ public interface ActiveResourceAdapter {
      * @return ManagedConnectionFactory created managed connection factory
      *         instance
      */
-
     public ManagedConnectionFactory createManagedConnectionFactory
             (ConnectorConnectionPool ccp, ClassLoader loader);
 

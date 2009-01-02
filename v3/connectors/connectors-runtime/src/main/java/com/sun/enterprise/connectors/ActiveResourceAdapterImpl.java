@@ -62,10 +62,10 @@ import org.jvnet.hk2.component.PerLookup;
  * It holds the ra.xml (connector decriptor) values, class loader used to
  * to load the Resource adapter class and managed connection factory and
  * module name (rar) to which it belongs.
- * It is also the base class for ActiveOutboundResourceAdapter(a 1.5 complient
- * rar).
+ * It is also the base class for ActiveOutboundResourceAdapter(a 1.5 compliant
+ * outbound rar).
  *
- * @author :    Srikanth P and Binod PG
+ * @author  Srikanth P, Binod PG
  */
 
 @Service
@@ -105,6 +105,9 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     public String getModuleName() {
         return moduleName_;
     }
@@ -263,21 +266,15 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
         return desc_;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean handles(ConnectorDescriptor cd) {
         return "".equals(cd.getResourceAdapterClass());
     }
 
     /**
-     * Creates managed Connection factories corresponding to one pool.
-     * This should be implemented in the ActiveJmsResourceAdapter, for
-     * jms resources, has been implemented to perform xa resource recovery
-     * in mq clusters, not supported for any other code path.
-     *
-     * @param ccp Connector connection pool which contains the pool properties
-     *            and ra.xml values pertaining to managed connection factory
-     *            class. These values are used in MCF creation.
-     * @param jcl Classloader used to managed connection factory class.
-     * @return ManagedConnectionFactory created managed connection factories
+     * {@inheritDoc}
      */
     public ManagedConnectionFactory[] createManagedConnectionFactories(
             ConnectorConnectionPool ccp, ClassLoader jcl) {
