@@ -51,6 +51,9 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 
+/**
+ * Represents the active (runtime) inbound resource-adapter
+ */
 @Service
 @Scoped(PerLookup.class)
 public class ActiveInboundResourceAdapter extends ActiveOutboundResourceAdapter {
@@ -72,7 +75,8 @@ public class ActiveInboundResourceAdapter extends ActiveOutboundResourceAdapter 
      *          If there is a failure in loading
      *          or starting the resource adapter.
      */
-    public void init(ResourceAdapter ra, ConnectorDescriptor desc, String moduleName, ClassLoader jcl) throws ConnectorRuntimeException {
+    public void init(ResourceAdapter ra, ConnectorDescriptor desc, String moduleName, ClassLoader jcl)
+            throws ConnectorRuntimeException {
         super.init(ra, desc, moduleName, jcl);
         this.factories_ = new Hashtable<String, MessageEndpointFactoryInfo>();
     }
@@ -140,6 +144,9 @@ public class ActiveInboundResourceAdapter extends ActiveOutboundResourceAdapter 
         return infos.entrySet();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean handles(ConnectorDescriptor cd) {
         //TODO V3 right assumption ?
         return cd.getInBoundDefined();
