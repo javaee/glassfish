@@ -36,7 +36,6 @@
 
 package com.sun.enterprise.resource.recovery;
 
-import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.config.serverbeans.TransactionService;
 import com.sun.enterprise.config.serverbeans.JdbcResource;
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
@@ -45,6 +44,7 @@ import com.sun.enterprise.deployment.ResourcePrincipal;
 import com.sun.enterprise.transaction.api.XAResourceWrapper;
 import com.sun.enterprise.transaction.spi.RecoveryResourceHandler;
 import com.sun.logging.LogDomains;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -62,6 +62,7 @@ import java.security.Principal;
 import org.glassfish.api.admin.config.Property;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * Recovery Handler for Jdbc Resources
@@ -76,6 +77,9 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
 
     @Inject
     private ResourcesHelper resourcesHelper;
+
+    @Inject
+    private Habitat connectorRuntimeHabitat;
 
     private static Logger _logger = LogDomains.getLogger(JdbcRecoveryResourceHandler.class, LogDomains.RSR_LOGGER);
 
@@ -142,6 +146,9 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
             }
         }
 
+        //TODO V3 done so as to initialize connectors-runtime before loading jdbc-resources. need a better way ?
+        ConnectorRuntime crt = connectorRuntimeHabitat.getComponent(ConnectorRuntime.class, null);
+
         loadAllJdbcResources();
         // Read from the transaction-service , if the replacement of
         // Vendor XAResource class with our version required.
@@ -151,7 +158,7 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
         //TODO V3 wrapper classes available from ?
         xaresourcewrappers.put(
                 "oracle.jdbc.xa.client.OracleXADataSource",
-                "com.sun.enterprise.transaction.OracleXAResource");
+                "com.sun.enterprise.transaction.jts.OracleXAResource");
 
         List<Property> properties = txService.getProperty();
 
@@ -168,13 +175,11 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
                     if (value.equals("true")) {
                         xaresourcewrappers.put(
                                 "com.sybase.jdbc2.jdbc.SybXADataSource",
-                                "com.sun.enterprise.transaction.SybaseXAResource");
+                                "com.sun.enterprise.transaction.jts.SybaseXAResource");
                     }
                 }
             }
         }
-
-        ConnectorRuntime crt = ConnectorRuntime.getRuntime();
 
         for(JdbcConnectionPool jdbcConnectionPool : jdbcPools){
             if (jdbcConnectionPool.getResType() == null
