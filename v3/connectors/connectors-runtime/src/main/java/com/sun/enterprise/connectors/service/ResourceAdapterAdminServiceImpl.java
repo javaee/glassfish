@@ -38,7 +38,6 @@ package com.sun.enterprise.connectors.service;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
-import com.sun.enterprise.connectors.ActiveRAFactory;
 import com.sun.enterprise.connectors.ActiveResourceAdapter;
 import com.sun.enterprise.connectors.ConnectorRegistry;
 import com.sun.enterprise.connectors.ConnectorRuntime;

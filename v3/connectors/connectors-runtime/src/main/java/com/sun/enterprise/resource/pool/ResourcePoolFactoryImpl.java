@@ -72,12 +72,8 @@ public class ResourcePoolFactoryImpl {
         ResourcePool pool = null;
         if ( pt == PoolType.ASSOCIATE_WITH_THREAD_POOL ) {
             pool = new AssocWithThreadResourcePool( poolName );
-        }/* else if(pt == PoolType.PARTITIONED_POOL){
-            pool = new PartitionedPool(poolName);
-
-        }*/ else {
+        } else {
             pool = new ConnectionPool( poolName );
-            //pool = new SJSASResourcePool( poolName );
         }
 
         if (_logger.isLoggable(Level.FINE)) {
