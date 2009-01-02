@@ -46,8 +46,8 @@ import com.sun.enterprise.config.serverbeans.ResourceAdapterConfig;
 import com.sun.enterprise.connectors.util.ConnectorDDTransformUtils;
 import com.sun.enterprise.connectors.util.SetMethodAction;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.enterprise.deployment.AdminObject;
 import com.sun.enterprise.deployment.EnvironmentProperty;
+import com.sun.enterprise.deployment.AdminObject;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.resource.beans.AdministeredObjectResource;
 import com.sun.logging.LogDomains;
@@ -61,7 +61,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * This class represents a live inbound resource adapter, i.e.
+ * This class represents a live outbound resource adapter (1.5 compliant) i.e.
  * <p/>
  * A resource adapter is considered active after start()
  * and before stop() is called.
@@ -72,18 +72,19 @@ import java.util.logging.Logger;
 @Scoped(PerLookup.class)
 public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
 
+    //TODO V3 need to expose 1.5 related lifecycle methods via a contract so that ActiveJMSRA can utilize them
     protected ResourceAdapter resourceadapter_; //runtime instance
 
     protected String moduleName_;
 
-    protected static Logger _logger = LogDomains.getLogger(ActiveOutboundResourceAdapter.class,LogDomains.RSR_LOGGER);
+    protected static Logger _logger = LogDomains.getLogger(ActiveOutboundResourceAdapter.class, LogDomains.RSR_LOGGER);
 
     private StringManager localStrings =
             StringManager.getManager(ActiveOutboundResourceAdapter.class);
 
-    private BootstrapContext bootStrapContextImpl;
+    protected BootstrapContext bootStrapContextImpl;
 
-    public ActiveOutboundResourceAdapter(){
+    public ActiveOutboundResourceAdapter() {
     }
 
     /**
@@ -114,8 +115,7 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
                 }
                 this.bootStrapContextImpl = new BootstrapContextImpl(poolId, moduleName_);
 
-                //TODO V3 handle jms-ra
-                resourceadapter_.start(bootStrapContextImpl);
+                startResourceAdapter(bootStrapContextImpl);
 
                 //TODO V3 setup monitoring
 
@@ -140,8 +140,23 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
         }
     }
 
+    //TODO V3 let ActiveJMSRA override
+    protected void startResourceAdapter(BootstrapContext bootstrapContext) throws ResourceAdapterInternalException {
+        resourceadapter_.start(bootstrapContext);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public boolean handles(ConnectorDescriptor cd) {
-        return !cd.getInBoundDefined() && cd.getOutBoundDefined() && !("".equals(cd.getResourceAdapterClass()));
+        boolean adminObjectsDefined = false;
+        Set adminObjects = cd.getAdminObjects();
+        if (adminObjects != null && adminObjects.size() > 0) {
+            adminObjectsDefined = true;
+        }
+
+        return !cd.getInBoundDefined() && (cd.getOutBoundDefined() || adminObjectsDefined) &&
+                !("".equals(cd.getResourceAdapterClass()));
     }
 
 
@@ -173,8 +188,8 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
      * java bean.
      */
     public void destroy() {
-		//it is possible that a 1.5 ra may not have connection-definition at all
-        if((connectionDefs_ != null) && (connectionDefs_.length != 0)){
+        //it is possible that a 1.5 ra may not have connection-definition at all
+        if ((connectionDefs_ != null) && (connectionDefs_.length != 0)) {
             super.destroy();
         }
         stopResourceAdapter();
@@ -199,6 +214,7 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
 
     /**
      * Remove all the proxy objects (Work-Manager) from connector registry
+     *
      * @param moduleName_ resource-adapter name
      */
     private void removeProxiesFromRegistry(String moduleName_) {
@@ -242,11 +258,7 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
             ConnectorRegistry registry = ConnectorRegistry.getInstance();
             ResourceAdapterConfig raConfig = registry.getResourceAdapterConfig(moduleName_);
             List<Property> raConfigProps = new ArrayList<Property>();
-            if (raConfig != null) {
-                raConfigProps = raConfig.getProperty();
-            }
-            //TODO V3 handle JMS RA Hack
-            mergedProps = ConnectorDDTransformUtils.mergeProps(raConfigProps, getDescriptor().getConfigProperties());
+            mergedProps = mergeRAConfiguration(raConfig, raConfigProps);
             logMergedProperties(mergedProps);
 
             SetMethodAction setMethodAction = new SetMethodAction(this.resourceadapter_, mergedProps);
@@ -259,20 +271,30 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
         }
     }
 
-    private void logMergedProperties(Set mergedProps) {
-         if (_logger.isLoggable(Level.FINE)) {
-             _logger.fine("Passing in the following properties " +
-                     "before calling RA.start of " + this.moduleName_);
-             StringBuffer b = new StringBuffer();
+    protected Set mergeRAConfiguration(ResourceAdapterConfig raConfig, List<Property> raConfigProps) {
+        Set mergedProps;
+        if (raConfig != null) {
+            raConfigProps = raConfig.getProperty();
+        }
+        //TODO V3 handle JMS RA Hack
+        mergedProps = ConnectorDDTransformUtils.mergeProps(raConfigProps, getDescriptor().getConfigProperties());
+        return mergedProps;
+    }
 
-             for (Iterator iter = mergedProps.iterator(); iter.hasNext();) {
-                 EnvironmentProperty element = (EnvironmentProperty) iter.next();
-                 b.append("\nName: " + element.getName()
-                         + " Value: " + element.getValue());
-             }
-             _logger.fine(b.toString());
-         }
-     }
+    private void logMergedProperties(Set mergedProps) {
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine("Passing in the following properties " +
+                    "before calling RA.start of " + this.moduleName_);
+            StringBuffer b = new StringBuffer();
+
+            for (Iterator iter = mergedProps.iterator(); iter.hasNext();) {
+                EnvironmentProperty element = (EnvironmentProperty) iter.next();
+                b.append("\nName: " + element.getName()
+                        + " Value: " + element.getValue());
+            }
+            _logger.fine(b.toString());
+        }
+    }
 
     public BootstrapContext getBootStrapContext() {
         return this.bootStrapContextImpl;
@@ -281,20 +303,20 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
     /**
      * Creates an admin object.
      *
-     * @param appName Name of application, in case of embedded rar.
-     * @param connectorName Module name of the resource adapter.
-     * @param jndiName JNDI name to be registered.
+     * @param appName         Name of application, in case of embedded rar.
+     * @param connectorName   Module name of the resource adapter.
+     * @param jndiName        JNDI name to be registered.
      * @param adminObjectType Interface name of the admin object.
-     * @param props <code>Properties</code> object containing name/value
-     *              pairs of properties.
+     * @param props           <code>Properties</code> object containing name/value
+     *                        pairs of properties.
      */
-    public void addAdminObject (
+    public void addAdminObject(
             String appName,
             String connectorName,
             String jndiName,
             String adminObjectType,
             Properties props)
-        throws ConnectorRuntimeException {
+            throws ConnectorRuntimeException {
         if (props == null) {
             // empty properties
             props = new Properties();
@@ -304,7 +326,7 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
 
         ConnectorDescriptor desc = registry.getDescriptor(connectorName);
         AdminObject aoDesc =
-            desc.getAdminObjectByType(adminObjectType);
+                desc.getAdminObjectByType(adminObjectType);
 
         AdministeredObjectResource aor = new AdministeredObjectResource(jndiName);
         aor.initialize(aoDesc);
@@ -317,39 +339,37 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
         for (int i = 0; i < envProps.length; i++) {
             EnvironmentProperty envProp = (EnvironmentProperty) envProps[i];
             String name = envProp.getName();
-            String userValue = (String)props.remove(name);
+            String userValue = (String) props.remove(name);
             if (userValue != null)
                 aor.addConfigProperty(new EnvironmentProperty(
-                              name, userValue, userValue, envProp.getType()));
+                        name, userValue, userValue, envProp.getType()));
             else
                 aor.addConfigProperty(envProp);
         }
 
         //Add non-default config properties provided by the user to aor
         Iterator iter = props.keySet().iterator();
-        while(iter.hasNext()){
+        while (iter.hasNext()) {
             String name = (String) iter.next();
             String userValue = props.getProperty(name);
-            if(userValue != null)
+            if (userValue != null)
                 aor.addConfigProperty(new EnvironmentProperty(
                         name, userValue, userValue));
 
         }
 
         // bind to JNDI namespace
-	try{
+        try {
 
             Reference ref = aor.createAdminObjectReference();
             GlassfishNamingManager nm = ConnectorRuntime.getRuntime().getNamingManager();
             nm.publishObject(jndiName, ref, true);
 
         } catch (NamingException ex) {
-	    String i18nMsg = localStrings.getString(
-	        "aira.cannot_bind_admin_obj");
-            throw new ConnectorRuntimeException( i18nMsg );
+            String i18nMsg = localStrings.getString(
+                    "aira.cannot_bind_admin_obj");
+            throw new ConnectorRuntimeException(i18nMsg);
         }
     }
-
-
 
 }
