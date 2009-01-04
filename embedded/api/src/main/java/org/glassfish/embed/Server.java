@@ -447,7 +447,7 @@ public class Server {
                 .attribute("id", info.adminHttpListenerName)
                 .attribute("address", "0.0.0.0")
                 .attribute("port", info.adminHttpPort)
-                .attribute("default-virtual-server", info.adminHttpListenerName)
+                .attribute("default-virtual-server", info.adminVSName)
                 .attribute("server-name", "")
                 .attribute("enabled", true);
 
