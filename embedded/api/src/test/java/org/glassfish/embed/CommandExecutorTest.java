@@ -170,6 +170,7 @@ public class CommandExecutorTest {
 
     }
 
+    @Ignore
     @Test(expected=EmbeddedException.class)
     public void testDeployFail() throws EmbeddedException {
         String file = "foo";
@@ -205,7 +206,7 @@ public class CommandExecutorTest {
         assertEquals(ActionReport.ExitCode.SUCCESS, ce.getExitCode());
     }
 
-    private Properties options = new Properties();
+     private Properties options = new Properties();
     private static CommandExecutor ce;
     private static Server myGF;
 }

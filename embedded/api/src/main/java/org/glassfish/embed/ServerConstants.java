@@ -67,6 +67,6 @@ public class ServerConstants {
     public static final String          LOG_FILE_DIR                = "logs";
     public static final String          LOG_FILE                    = "server.log";
     public static final String          DEFAULT_DOCROOT             = ".";
-
+    public static final int             DEFAULT_JMX_CONNECTOR_PORT  = 8686;
     //public static final File            DEFAULT_
 }

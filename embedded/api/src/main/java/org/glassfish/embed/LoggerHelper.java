@@ -129,7 +129,7 @@ public class LoggerHelper {
         catch (Throwable t) {
             try {
                 logger = Logger.getLogger("embedded");
-                logger.warning("Couldn't create Backup Logger with a resource bundle.  Created a Logger without a Resource Bundle.");
+                logger.warning("Couldn't create Logger with a resource bundle.  Created a Logger without a Resource Bundle.");
             }
             catch (Throwable t2) {
             // now what?
@@ -139,10 +139,12 @@ public class LoggerHelper {
 
     ///////////////////////////////////////////////////////////////////////////
 
+    /*
     public final static void startFileLogging() {
         setLogFile(getGfeLogPath());
     }
-
+    */
+    
     public final static void stopConsoleLogging() {
         for (Handler h  : rootLogger.getHandlers()) {
             if (h instanceof ConsoleHandler) {
@@ -174,11 +176,13 @@ public class LoggerHelper {
     }
 
 
+    /*
     public static String getGfeLogPath() {
             return GFE_LOG;
     }
-
+*/
     private static Logger rootLogger = Logger.getLogger("");
-    public static final String GFE_LOG = "gfe.log";
+    private File logfile;
+    //public static final String GFE_LOG = "gfe.log";
 }
 

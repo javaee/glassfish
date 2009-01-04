@@ -36,6 +36,7 @@
  */
 package org.glassfish.embed;
 
+import com.sun.enterprise.util.diagnostics.ObjectAnalyzer;
 import static com.sun.enterprise.universal.glassfish.SystemPropertyConstants.*;
 import java.net.MalformedURLException;
 import java.util.logging.Level;
@@ -69,10 +70,12 @@ public final class EmbeddedFileSystem {
     // *************    public setters
     // ****************************************************
     /**
+     * @deprecated
      * Sets install root and instance root to the specified directory
      * @param f
      * @throws org.glassfish.embed.EmbeddedException
      */
+    @Deprecated
     public void setRoot(File f) throws EmbeddedException {
         setInstallRoot(f);
         setInstanceRoot(f);
@@ -229,6 +232,18 @@ public final class EmbeddedFileSystem {
         return appsDir;
     }
 
+    /*
+     * Return a String representation.
+     */
+    
+    @Override
+
+    public String toString() {
+        return ObjectAnalyzer.toString(this);
+    }
+
+
+
     // ****************************************************
     // *************    package private. Think long and hard before making public!
     // ****************************************************
@@ -253,21 +268,7 @@ public final class EmbeddedFileSystem {
      * worry about getting into a weird inconsistent state later.
      */
     void initialize() throws EmbeddedException {
-        if (instanceRoot == null || installRoot == null) {
-            if (defaultsAreInUse) {
-                throw new EmbeddedException("EFS_defaults_in_use");
-            }
-            defaultsAreInUse = true;
-        }
-
-        if (installRoot == null) {
-            setInstallRoot(defaultInstallRoot);
-        }
-
-        if (instanceRoot == null) {
-            setInstanceRoot(new File(installRoot, DEFAULT_PATH_TO_INSTANCE));
-        }
-
+        initializeInstanceAndInstallDirs();
         initializeDomainXml(); // very complicated!!
         initializeApplicationsDirectory();
         setSystemProps();
@@ -292,6 +293,48 @@ public final class EmbeddedFileSystem {
     private void initializeDomainXml() throws EmbeddedException {
         initializeTargetDomainXml();
         initializeSourceDomainXml();
+    }
+
+
+    private synchronized void initializeInstanceAndInstallDirs() throws EmbeddedException {
+        // booleans for readability...
+        boolean hasInstance = instanceRoot != null;
+        boolean hasInstall = installRoot != null;
+
+        /*
+         * both are set to something, just return
+         */
+        if(hasInstance && hasInstall) {
+            return;
+        }
+
+        if (defaultsAreInUse) {
+            throw new EmbeddedException("EFS_defaults_in_use");
+        }
+
+        defaultsAreInUse = true;
+
+        /*
+         * both are null -- use all defaults
+         */
+        if(!hasInstance && !hasInstall) {
+            setInstallRoot(defaultInstallRoot);
+            setInstanceRoot(new File(installRoot, DEFAULT_PATH_TO_INSTANCE));
+        }
+
+        /*
+         * instance but no install.
+         */
+        else if(hasInstance && !hasInstall) {
+            setInstallRoot(defaultInstallRoot);
+        }
+
+        /*
+         * install but no instance.
+         */
+        else { // if(hasInstall && !hasInstance)
+            setInstanceRoot(new File(installRoot, DEFAULT_PATH_TO_INSTANCE));
+        }
     }
 
     private void initializeLogFile() throws EmbeddedException {
@@ -334,16 +377,6 @@ public final class EmbeddedFileSystem {
 
             if (dx.isFile() && !dx.equals(our_generated_dx)) {
                 try {
-                    
-                    
-                    // todo TODO
-                    
-                    
-                    System.out.println("TEMP TEMP TEMP dx.isfile: " + dx);
-
-
-
-
                     domainXmlSource = dx.toURI().toURL();
                 } catch (MalformedURLException ex) {
                     throw new EmbeddedException(ex);
@@ -408,15 +441,15 @@ public final class EmbeddedFileSystem {
         // TODO -- what else besides not null?
         return url != null;
     }
-    private static final File defaultInstallRoot = SmartFile.sanitize(new File(DEFAULT_GFE_DIR));
-    private static final File defaultInstanceRoot = SmartFile.sanitize(new File(defaultInstallRoot, "domains/domain1"));
-    private static boolean defaultsAreInUse = false;
-    private File installRoot;
-    private File instanceRoot;
-    private File domainXmlTarget;
-    private File appsDir;
-    private File logFile;
-    private URL domainXmlSource;
-    private boolean autoDelete = true;
-    private boolean initialized = false;
+    private static final File   defaultInstallRoot  = SmartFile.sanitize(new File(DEFAULT_GFE_DIR));
+    private static final File   defaultInstanceRoot = SmartFile.sanitize(new File(defaultInstallRoot, "domains/domain1"));
+    private static boolean      defaultsAreInUse    = false;
+    private File                installRoot;
+    private File                instanceRoot;
+    private File                domainXmlTarget;
+    private File                appsDir;
+    private File                logFile;
+    private URL                 domainXmlSource;
+    private boolean             autoDelete          = true;
+    private boolean             initialized         = false;
 }

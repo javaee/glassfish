@@ -37,6 +37,7 @@
 
 package org.glassfish.embed;
 
+import com.sun.enterprise.util.diagnostics.ObjectAnalyzer;
 import java.io.*;
 import java.util.*;
 import java.net.*;
@@ -126,6 +127,14 @@ public class EmbeddedInfo {
     }
 
     /**
+     * Set the system JMX Connector port
+     * @param port
+     */
+    public void setJmxConnectorPort(int port) {
+        jmxConnectorPort = port;
+    }
+
+    /**
      * Set the server name
      * @param newName
      */
@@ -144,7 +153,15 @@ public class EmbeddedInfo {
             httpListenerName = newName;
     }
 
-
+    /**
+     * Set verbose -- if verbose is true then log messages go to the console.
+     *
+     * @param b
+     */
+    public void setVerbose(boolean b) {
+        verbose = b;
+    }
+    
     /**
      * Checks that archives exist.  Checks that the HTTP port is a valid port number.
      * Checks if an {@link EmbeddedFileSystem} has been set.
@@ -165,12 +182,7 @@ public class EmbeddedInfo {
     
     @Override
     public String toString() {
-        // TODO Finish it...
-        StringBuilder sb = new StringBuilder("Dump of " + getClass().getName());
-        sb.append('\n');
-        sb.append("httpPort=").append(httpPort).append('\n');
-        
-        return sb.toString();
+        return ObjectAnalyzer.toString(this);
     }
 
     //////////////////////  pkg-private  //////////////////////
@@ -183,6 +195,7 @@ public class EmbeddedInfo {
     String                  name                    = DEFAULT_SERVER_NAME;
     int                     httpPort                = DEFAULT_HTTP_PORT;
     int                     adminHttpPort           = DEFAULT_ADMIN_HTTP_PORT;
+    int                     jmxConnectorPort        = DEFAULT_JMX_CONNECTOR_PORT;
     List<File>              archives                = new LinkedList<File>();
     List<ReadableArchive>   readableArchives        = new LinkedList<ReadableArchive>();
     List<ScatteredWar>      scatteredWars           = new LinkedList<ScatteredWar>();
@@ -191,6 +204,16 @@ public class EmbeddedInfo {
     String                  adminHttpListenerName   = DEFAULT_ADMIN_HTTP_LISTENER_NAME;
     String                  adminVSName             = DEFAULT_ADMIN_VIRTUAL_SERVER_ID;
     boolean                 logging                 = false;
+    boolean                 verbose                 = false;
+    boolean                 createOnly              = false;
+
+    public void setCreateOnly(boolean b) {
+        createOnly = b;
+    }
+
+    public boolean getCreateOnly() {
+        return createOnly;
+    }
 
 
     //////////////////////  all private below //////////////////////
@@ -212,10 +235,16 @@ public class EmbeddedInfo {
 
     private void validateLogging() throws EmbeddedException {
         if(logging) {
-            LoggerHelper.info("log_msg");
-            LoggerHelper.stopConsoleLogging();
-            LoggerHelper.setLogFile(efs.getLogFile().getPath());
+            File logFile = efs.getLogFile();
+            LoggerHelper.info("log_msg", logFile);
+            
+            if(!verbose)
+                LoggerHelper.stopConsoleLogging();
+
+            LoggerHelper.setLogFile(logFile.getPath());
         }
+
+        LoggerHelper.info(toString());
     }
     
     private void validatePorts() throws EmbeddedException {

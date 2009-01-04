@@ -210,6 +210,7 @@ public class Server {
             createVirtualServer();
             createAdminHttpListener();
             createAdminVirtualServer();
+            createJMXConnector();
         }
 
         // todo TODO
@@ -491,9 +492,53 @@ public class Server {
 //        }
     }
 
+
+     /*
+      *         <admin-service system-jmx-connector-name="system" type="das-and-server">
+     <!-- The JSR 160 "system-jmx-connector" -->
+                <!--
+                <jmx-connector
+      accept-all="false"
+      address="0.0.0.0"
+      auth-realm-name="admin-realm"
+      enabled="true"
+      name="system"
+      port="8686"
+      protocol="rmi_jrmp"
+      security-enabled="false"
+      />
+                -->
+     <!-- The JSR 160 "system-jmx-connector" -->
+      */
+
+
+
+
+    private void createJMXConnector() throws EmbeddedException {
+        mustNotBeStarted("createJMXConnector");
+
+        onAdminService().element("jmx-connector")
+                .attribute("accept-all", false)
+                .attribute("address", "0.0.0.0")
+                .attribute("auth-realm-name", "admin-realm")
+                .attribute("enabled", true)
+                .attribute("name", "system")
+                .attribute("port", info.jmxConnectorPort)
+                .attribute("protocol", "rmi_jrmp")
+                .attribute("security-enabled", false);
+    }
+
     private DomBuilder onHttpService() {
         try {
             return new DomBuilder((Element) xpath.evaluate("//http-service", domainXmlDocument, XPathConstants.NODE));
+        } catch (XPathExpressionException e) {
+            throw new AssertionError(e);    // impossible
+        }
+    }
+
+    private DomBuilder onAdminService() {
+        try {
+            return new DomBuilder((Element) xpath.evaluate("//admin-service", domainXmlDocument, XPathConstants.NODE));
         } catch (XPathExpressionException e) {
             throw new AssertionError(e);    // impossible
         }

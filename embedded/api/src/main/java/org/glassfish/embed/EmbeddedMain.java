@@ -81,7 +81,6 @@ public class EmbeddedMain {
             
             // create an Info object based on the commandline args
             EmbeddedInfo info = paramsToInfo(params, operands);
-            LoggerHelper.finer(info.toString());
             EmbeddedRunner runner = new EmbeddedRunner(info);
             runner.run();
         }
@@ -112,17 +111,37 @@ public class EmbeddedMain {
 
 
         //////   port  //////
+        { // for scope only
         String port = params.get("port");
-        
-        if(!StringUtils.ok(port)) 
+
+        if(!StringUtils.ok(port))
             throw new EmbeddedException("internal", StringHelper.get("no_default_http_port"));
-        
+
         try {
             info.setHttpPort(Integer.parseInt(port));
         }
         catch(NumberFormatException nfe) {
             throw new EmbeddedException("port_not_int", port);
         }
+        } // end scope
+        //////   adminport  //////
+        // TODO this is a direct copy of the block above.
+        //
+
+        { // for scope only
+
+        String adminPort = params.get("adminport");
+
+        if(!StringUtils.ok(adminPort))
+            throw new EmbeddedException("internal", StringHelper.get("no_default_admin_http_port"));
+
+        try {
+            info.setAdminHttpPort(Integer.parseInt(adminPort));
+        }
+        catch(NumberFormatException nfe) {
+            throw new EmbeddedException("port_not_int", adminPort);
+        }
+        } //endscope
 
         ///////   dirs   /////////
 
@@ -150,10 +169,37 @@ public class EmbeddedMain {
             setupDomainXmlUrl(fn, info);
         }
 
+        ////////// jmx port  //////////
+
+        { // scoping
+
+        String jmxPortString = params.get("jmxport");
+        try {
+            info.setJmxConnectorPort(Integer.parseInt(jmxPortString));
+        }
+        catch(Exception e) {
+            // should never happen
+            info.setJmxConnectorPort(8686);
+        }
+        }
+        //scoping
+
         ////////// logging  //////////
 
         if(Boolean.parseBoolean(params.get("log")))
                 info.setLogging(true);
+
+        ////////// verbose  //////////
+
+        if(Boolean.parseBoolean(params.get("verbose")))
+                info.setVerbose(true);
+
+        ///////// create-only ///////////////
+
+        if(Boolean.parseBoolean(params.get("create"))) {
+            efs.setAutoDelete(true);
+            info.setCreateOnly(true);
+        }
 
         ////////// done!  //////////
         
@@ -215,19 +261,26 @@ public class EmbeddedMain {
 
     private final static Arg[] argDescriptions = new Arg[]
     {
+        // EmbeddedMain is meant for quick and fast experiments.
+        // So the highest level of verboseness is the default
+
         //       longname       shortname   default or req                                     description
         //new Arg("war",          "w",            false,                                       "War File"),
         new Arg("port",             "p",            "" + ServerConstants.DEFAULT_HTTP_PORT,        "HTTP Port"),
         new Arg("installDir",       "d",            false,                                         "Filesystem Installation Directory"),
         new Arg("instanceDir",      "i",            false,                                         "Filesystem Instance Directory"),
         new Arg("xml",              "x",            false,                                         "domain.xml filename or URL"),
+        new Arg("adminport",        "q",           "" + ServerConstants.DEFAULT_ADMIN_HTTP_PORT,   "Admin HTTP"),
+        new Arg("jmxport",          "j",           "" + ServerConstants.DEFAULT_JMX_CONNECTOR_PORT,"JMX System Connector Port"),
         new BoolArg("help",         "h",            false,                                         "Help"),
+        new BoolArg("create",       "c",            false,                                         "Create the server and then exit."),
 
         // note that --autodelete and --log are NOT BoolArg's
         // TODO make BoolArg more sophisticated so that you can hve the default be false
         // and allow --foo=true and --foo true and --foo
         // BoolArg work kind of weird -- if you use one -- test VERY thoroughly!
 
+        new Arg("verbose",          "v",            "true",                                          "Verbose Mode"),
         new Arg("log",              "l",            "true",                                          "Send logging to instance-root/logs/server.log"),
         new Arg("autodelete",   "a",            "true",                                         "Automatically delete Filesystem"),
     };

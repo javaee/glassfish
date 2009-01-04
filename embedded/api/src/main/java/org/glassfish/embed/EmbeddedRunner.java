@@ -52,6 +52,10 @@ class EmbeddedRunner {
 
     void run() throws EmbeddedException {
         Server server = new Server(info);
+
+        if(info.getCreateOnly())
+            return; // we are all done!
+
         server.start();
         
         for(File f : info.archives) {
