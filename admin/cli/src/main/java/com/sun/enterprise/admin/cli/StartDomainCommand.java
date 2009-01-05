@@ -44,20 +44,17 @@ public class StartDomainCommand extends AbstractCommand {
             // Embedded is a new type of server
             // For now -- we ONLY start embedded
 			
-            //boolean gfe = Boolean.parseBoolean(System.getenv("GFE_ENABLED"));
-            //if(gfe)
                 launcher = GFLauncherFactory.getInstance(
                     GFLauncherFactory.ServerType.embedded);
-            /*
-             else
-                launcher = GFLauncherFactory.getInstance(
-                    GFLauncherFactory.ServerType.domain);
-            */
 
             info = launcher.getInfo();
-
-            if (!operands.isEmpty()) {
+            
+            if(!operands.isEmpty()) {
                 info.setDomainName((String) operands.firstElement());
+            }
+
+            else {
+                info.setDomainName("domain1");
             }
 
             String parent = getOption("domaindir");
@@ -65,26 +62,28 @@ public class StartDomainCommand extends AbstractCommand {
             if (parent != null) {
                 info.setDomainParentDir(parent);
             }
+            else
+                info.setDomainParentDir(System.getenv("S1AS_HOME") + "/domains"); // TODO
 
             boolean verbose = getBooleanOption("verbose");
             info.setVerbose(verbose);
             info.setDebug(getBooleanOption("debug"));
             launcher.setup();
 
+            // now admin ports are set.
+            Set<Integer> ports = info.getAdminPorts();
 
-
-
-            if(isServerAlive(4848)) {
-                String msg = getLocalizedString("ServerRunning2");
-                throw new CommandException(msg);
+            if(isServerAlive(ports)) {
+                // todo add the port number to the message
+                throw new CommandException("The Admin port is already taken: ");
             }
-            
+
             launcher.launch();
             
             // if we are in verbose mode, we definitely do NOT want to wait for DAS --
             // since it already ran and is now dead!!
             //if(!verbose) {
-                waitForDAS(info.getAdminPorts());
+                waitForDAS(ports);
                 report(info);
             //}
         }

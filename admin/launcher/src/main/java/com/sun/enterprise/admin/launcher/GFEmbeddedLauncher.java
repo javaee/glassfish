@@ -41,7 +41,7 @@ class GFEmbeddedLauncher extends GFLauncher{
     List<File> getMainClasspath() throws GFLauncherException {
         List<File> list = new ArrayList<File>(1);
 
-        String gfeJar = System.getenv("GFE_JAR");
+        String gfeJar = System.getenv(GFE_JAR);
         
         if(GFLauncherUtils.ok(gfeJar)) {
             File f = new File(gfeJar);
@@ -87,11 +87,24 @@ class GFEmbeddedLauncher extends GFLauncher{
         GFLauncherInfo info = getInfo();
 
         try {
-            MiniXmlParser parser = new MiniXmlParser(info.getConfigFile(), info.getInstanceName());
+            File parent = info.getDomainParentDir();
+            String domainName = info.getDomainName();
+            String instanceName = info.getInstanceName();
+
+            if(instanceName == null)
+                instanceName = "server";
+
+            File dom = new File(parent, domainName);
+            File dx = new File(dom, "config/domain.xml");
+
+
+            MiniXmlParser parser = new MiniXmlParser(dx, instanceName);
             info.setAdminPorts(parser.getAdminPorts());
+
         }
         catch(Exception e) {
-            // handled below...
+            // temp todo
+            e.printStackTrace();
         }
 
         Set<Integer> adminPorts = info.getAdminPorts();
@@ -120,8 +133,8 @@ class GFEmbeddedLauncher extends GFLauncher{
         cmdLine.add(getClasspath());
         addDebug(cmdLine);
         cmdLine.add(getMainClass());
-        cmdLine.add("--port");
-        cmdLine.add("8080");
+        //cmdLine.add("--port");
+        //cmdLine.add("8080");
         //cmdLine.add("--xml");
         //cmdLine.add(domainXml.getPath() );
         cmdLine.add("--installDir");
@@ -152,21 +165,15 @@ class GFEmbeddedLauncher extends GFLauncher{
     }
 
     private void setupDomainDir() throws GFLauncherException {
-        String err = "You must set the environmental variable GFE_DOMAIN to point " +
-                "at an existing GlassFish domain or at an empty directory or at a " +
-                "location where an empty directory can be created.";
-
-        String domainDirName = System.getenv(DOMAIN_DIR);
-        if(!ok(domainDirName))
-            throw new GFLauncherException(err);
-
-        domainDir = new File(domainDirName);
+        String domainDirName = getInfo().getDomainName();
+        domainDir = getInfo().getDomainParentDir();
+        domainDir = new File(domainDir, domainDirName);
 
         if(!domainDir.isDirectory())
             domainDir.mkdirs();
 
         if(!domainDir.isDirectory())
-            throw new GFLauncherException(err);
+            throw new GFLauncherException("Can not create directory: " + domainDir);
 
         domainDir = SmartFile.sanitize(domainDir);
         domainXml = SmartFile.sanitize(new File(domainDir, "config/domain.xml"));
@@ -246,7 +253,7 @@ class GFEmbeddedLauncher extends GFLauncher{
     private static final String GFE_JAR          = "GFE_JAR";
     private static final String INSTALL_HOME    = "S1AS_HOME";
     private static final String JAVA_HOME        = "JAVA_HOME";
-    private static final String DOMAIN_DIR       = "GFE_DOMAIN";
+    //private static final String DOMAIN_DIR       = "GFE_DOMAIN";
     private static final String GENERAL_MESSAGE =
             " *********  GENERAL MESSAGE ********\n" +
             "You must setup four different environmental variables to run embedded" +

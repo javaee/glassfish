@@ -201,6 +201,10 @@ public class GFLauncherInfo {
         this.type = type;
     }
 
+    File getDomainParentDir() {
+        return domainParentDir;
+    }
+
     void setAdminPorts(Set<Integer> adminPorts) {
         this.adminPorts = adminPorts;
     }

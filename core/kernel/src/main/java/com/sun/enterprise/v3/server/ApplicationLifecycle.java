@@ -352,7 +352,12 @@ public class ApplicationLifecycle {
                 final MetaData metadata = deployer.getMetaData();
                 Class[] requires = (metadata==null?null:metadata.requires());
                 Class[] provides = (metadata==null?null:metadata.provides());
-                if( (requires == null || requires.length == 0) && (provides == null || provides.length == 0) ) {
+
+
+
+
+
+                if( (requires == null || requires.length == 0) && (provides == null || provides.length <= 1) ) {
                     // the deployer neither requires not provides any metadata. Put it in sortedModuleinfo
                     // they would effectively end up being in the middle of the list (see the sorting below)
                     sortedContainerInfos.add(containerInfo);

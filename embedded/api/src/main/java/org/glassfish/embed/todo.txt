@@ -11,4 +11,23 @@ public static final String DOMAINS_ROOT_PROPERTY =
 -- need to set this up.  Need to put domain.xml in such a hierarchy.
 
 
+===================== Jennifer ========================================
+I made 1 change to ApplicationLifecycle.setupContainerInfos(...) in core/kernel to allow the deploy to go through.  This is probably not the right change because I don't understand the strategy behind the logic in this method.  We'll need some deployment experts to help us. Jerome? Hong?
 
+https://svn.dev.java.net/svn/glassfish-svn/trunk/v3/core/kernel/src/main/java/com/sun/enterprise/v3/server/ApplicationLifecycle.java
+
+I added the following condition in blue to allow the containerInfo to be added to sortedContainerInfos list.  Otherwise, setupContainerInfos(..) returns an empty list of ContainerInfos and ApplicationLifecycle fails with "There is no installed container capable of handling this application"
+
+               final MetaData metadata = deployer.getMetaData();
+                Class[] requires = (metadata==null?null:metadata.requires());
+                Class[] provides = (metadata==null?null:metadata.provides());
+                if((requires == null || requires.length == 0) && (provides == null || provides.length == 0))
+                         || (requires == null || requires.length == 0) && (provides.length == 1)) {
+                    // the deployer neither requires not provides any metadata. Put it in sortedModuleinfo
+                    // they would effectively end up being in the middle of the list (see the sorting below)
+                    sortedContainerInfos.add(containerInfo);
+                } else {
+
+I'm not exactly sure of this, but when deploying in v3 regular, there are 2 deployers: WebDeployer and SecurityDeployer.  The WebDeployer is provider of Application and I think SecurityDeployer requires Application.  I'm not sure what that means but that satisfies some conditions in the setupContainerInfos(...) that allows it to return a non-empty list of ContainerInfos - I think with 2 items - 1 for WebContainer and 1 for Security?
+
+When deploying in v3 embedded, there is 1 deployer:  EmbeddedWebDeployer which provides Applic
