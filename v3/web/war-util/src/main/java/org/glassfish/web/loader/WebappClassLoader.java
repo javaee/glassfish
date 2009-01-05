@@ -188,8 +188,6 @@ public class WebappClassLoader
         // END PE 4985680
         "org.xml.sax",                               // SAX 1 & 2
         "org.w3c.dom",                               // DOM 1 & 2
-        "org.apache.xerces",                         // Xerces 1 & 2
-        "org.apache.xalan",                          // Xalan
         "org.apache.taglibs.standard",               // JSTL (Java EE 5)
         "com.sun.faces",                             // JSF (Java EE 5)
         "org.apache.commons.logging"                 // Commons logging
