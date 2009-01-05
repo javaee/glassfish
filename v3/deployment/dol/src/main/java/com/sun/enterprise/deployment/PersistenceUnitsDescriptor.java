@@ -151,4 +151,8 @@ public class PersistenceUnitsDescriptor extends RootDeploymentDescriptor {
         }
     }
 
+
+    public boolean isEmpty() {
+        return persistenceUnitDescriptors.isEmpty();
+    }
 }

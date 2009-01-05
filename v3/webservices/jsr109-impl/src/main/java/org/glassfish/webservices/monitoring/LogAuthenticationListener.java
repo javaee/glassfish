@@ -55,7 +55,7 @@ public class LogAuthenticationListener implements AuthenticationListener {
     private static Logger ejbLogger
         = LogDomains.getLogger(LogAuthenticationListener.class,LogDomains.EJB_LOGGER);
     private static Logger webLogger
-        = LogDomains.getLogger(LogAuthenticationListener.class,LogDomains.WEB_LOGGER);
+        = LogDomains.getLogger(LogAuthenticationListener.class,LogDomains.WEBSERVICES_LOGGER);
     
     
     /** Creates a new instance of LogAuthenticationListener */

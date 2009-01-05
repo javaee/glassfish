@@ -85,8 +85,6 @@ public class WebBundleNode extends BundleNode<WebBundleDescriptor> {
     
     protected WebBundleDescriptor descriptor;
     private Map servletMappings;
-    private boolean isFirstWelcomeFile = true;
-    private static WebBundleDescriptor defaultWbd;
 
    /**
     * register this node as a root node capable of loading entire DD files
@@ -153,24 +151,11 @@ public class WebBundleNode extends BundleNode<WebBundleDescriptor> {
     */
     public WebBundleDescriptor getDescriptor() {
         if (descriptor==null) {
-            descriptor = (WebBundleDescriptor)getDefaultBundleDescriptor();
-        }
-
-        // if that's not there, create one from the factory
-        if (descriptor==null) {
             descriptor = (WebBundleDescriptor) DescriptorFactory.getDescriptor(getXMLPath());
         }
         return descriptor;
     }  
 
-    public static void setDefaultBundleDescriptor(WebBundleDescriptor wbd) {
-        defaultWbd = wbd;
-    }
-  
-    public static WebBundleDescriptor getDefaultBundleDescriptor() {
-        return defaultWbd;
-    }
-    
     /**
      * Adds  a new DOL descriptor instance to the descriptor instance associated with 
      * this XMLNode
@@ -237,12 +222,6 @@ public class WebBundleNode extends BundleNode<WebBundleDescriptor> {
             } 
             descriptor.setSessionTimeout((Integer.valueOf(value.trim())).intValue());
         } else if (WebTagNames.WELCOME_FILE.equals(element.getQName())) {
-            if (isFirstWelcomeFile) {
-                // start with an empty list (remove the ones from 
-                // default-web.xml
-                descriptor.getWelcomeFilesSet().clear();
-                isFirstWelcomeFile = false;
-            }
             descriptor.addWelcomeFile(value);
         } else {
             super.setElementValue(element, value);

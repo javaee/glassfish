@@ -314,7 +314,10 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
                 if (extension.supportsModuleType(getModuleType())) {
                     Object o = extension.open(this, archive, descriptor);
                     if (o instanceof RootDeploymentDescriptor) {
+                        extension.addExtension(descriptor, (RootDeploymentDescriptor) o);
                         extensions.put(extension, (RootDeploymentDescriptor) o);
+                    } else {
+                        extensions.put(extension, null); // maybe annotation processing will yield results
                     }
                 }
             }
@@ -358,7 +361,15 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
                 // process extensions annotations if any
                 for (Map.Entry<ExtensionsArchivist, RootDeploymentDescriptor> extension : extensions.entrySet()) {
                     try {
-                        processAnnotations(extension.getValue(), extension.getKey().getScanner(), archive);
+                        if (extension.getValue()==null) {
+                            RootDeploymentDescriptor o = extension.getKey().getDefaultDescriptor();
+                            processAnnotations(o, extension.getKey().getScanner(), archive);
+                            if (o!=null && !o.isEmpty()) {
+                                extension.getKey().addExtension(descriptor, o);
+                            }
+                        } else {
+                            processAnnotations(extension.getValue(), extension.getKey().getScanner(), archive);
+                        }
                     } catch (AnnotationProcessorException ex) {
                         DOLUtils.getDefaultLogger().severe(ex.getMessage());
                         DOLUtils.getDefaultLogger().log(Level.FINE, ex.getMessage(), ex);

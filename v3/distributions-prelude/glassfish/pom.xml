@@ -175,6 +175,15 @@
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
-    </dependencies>
+
+        <!-- jersey package -->
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+	    <artifactId>jersey</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+</dependencies>
+
 </project>
 

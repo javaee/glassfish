@@ -24,11 +24,22 @@
 package org.glassfish.internal.data;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.api.deployment.ApplicationContext;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.container.Container;
+import org.glassfish.api.container.RequestDispatcher;
+import org.glassfish.api.ActionReport;
+import org.jvnet.hk2.component.PreDestroy;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import com.sun.logging.LogDomains;
 
 /**
  * Information about a running application. Applications are composed of modules.
@@ -37,7 +48,10 @@ import java.util.ArrayList;
  * @author Jerome Dochez
  */
 public class ApplicationInfo {
-    
+
+    final static private Logger logger = LogDomains.getLogger(ApplicationInfo.class, LogDomains.CORE_LOGGER);
+
+
     final private ModuleInfo[] modules;
     final private String name;
     final private ReadableArchive source;
@@ -121,5 +135,102 @@ public class ApplicationInfo {
         return null;
     }
 
+
+    public void start(
+        DeploymentContext context,
+        ActionReport report, ProgressTracker tracker) throws Exception {
+
+        // registers all deployed items.
+        for (ModuleInfo module : getModuleInfos()) {
+
+            try {
+                if (!module.start( context, tracker)) {
+                    report.failure(logger, "Module not started " +  module.getApplicationContainer().toString());
+                    throw new Exception( "Module not started " +  module.getApplicationContainer().toString());
+                }
+            } catch(Exception e) {
+                report.failure(logger, "Exception while invoking " + module.getApplicationContainer().getClass() + " start method", e);
+                throw e;
+            }
+        }
+    }
+
+    private void unload(ModuleInfo[] modules, ApplicationInfo info,  DeploymentContext context, ActionReport report) {
+
+        Set<ClassLoader> classLoaders = new HashSet<ClassLoader>();
+        for (ModuleInfo module : modules) {
+            if (module.getApplicationContainer()!=null && module.getApplicationContainer().getClassLoader()!=null) {
+                classLoaders.add(module.getApplicationContainer().getClassLoader());
+            }
+            try {
+                module.unload(info, context, report);
+            } catch(Throwable e) {
+                logger.log(Level.SEVERE, "Failed to unload from container type : " +
+                        module.getContainerInfo().getSniffer().getModuleType(), e);
+            }
+        }
+        // all modules have been unloaded, clean the class loaders...
+        for (ClassLoader cloader : classLoaders) {
+            try {
+                PreDestroy.class.cast(cloader).preDestroy();
+            } catch (Exception e) {
+                // ignore, the class loader does not need to be explicitely stopped.
+            }
+        }
+    }
+
+    public void stop(ApplicationContext context, Logger logger) {
+
+        for (ModuleInfo module : getModuleInfos()) {
+            try {
+                module.stop(context, logger);
+            } catch(Exception e) {
+                logger.log(Level.SEVERE, "Cannot stop module " +
+                        module.getContainerInfo().getSniffer().getModuleType(),e );
+            }
+        }
+    }
+
+    public void unload(DeploymentContext context, ActionReport report) {
+
+        stop(context, logger);
+
+        unload(getModuleInfos(), this, context, report);
+
+    }
+
+    public boolean suspend(Logger logger) {
+
+        boolean isSuccess = true;
+
+        for (ModuleInfo module : modules) {
+            try {
+                module.getApplicationContainer().suspend();
+            } catch(Exception e) {
+                isSuccess = false;
+                logger.log(Level.SEVERE, "Error suspending module " +
+                           module.getContainerInfo().getSniffer().getModuleType(),e );
+            }
+        }
+
+        return isSuccess;
+    }
+
+    public boolean resume(Logger logger) {
+
+        boolean isSuccess = true;
+
+        for (ModuleInfo module : modules) {
+            try {
+                module.getApplicationContainer().resume();
+            } catch(Exception e) {
+                isSuccess = false;
+                logger.log(Level.SEVERE, "Error resuming module " +
+                           module.getContainerInfo().getSniffer().getModuleType(),e );
+            }
+        }
+
+        return isSuccess;
+    }
     
 }

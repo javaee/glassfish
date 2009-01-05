@@ -135,11 +135,14 @@ import com.sun.ejb.EJBUtils;
     @NamedQuery(
         name="countTimersByContainerAndOwnerAndState",
         query="SELECT COUNT(t) FROM Timer t WHERE t.containerId = ?1 AND t.ownerId=?2 AND t.state=?3"
-    ),
+    )
+/**
+    ,
     @NamedQuery(
         name="updateTimersFromOwnerToNewOwner",
         query="UPDATE Timer t SET t.ownerId = :toOwner WHERE t.ownerId = :fromOwner"
     )
+**/
 })
 @Table(name="EJB__TIMER__TBL")
 @IdClass(com.sun.ejb.containers.TimerPrimaryKey.class)

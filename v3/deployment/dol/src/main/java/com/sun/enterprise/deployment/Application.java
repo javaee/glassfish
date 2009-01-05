@@ -180,6 +180,10 @@ public class Application extends RootDeploymentDescriptor
         return ApplicationNode.SPEC_VERSION;
     }
 
+    public boolean isEmpty() {
+        return modules.isEmpty();
+    }
+
     /**
      * Creates a new application to hold a standalone module
      *

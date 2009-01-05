@@ -38,6 +38,16 @@ package org.glassfish.internal.data;
 
 import org.glassfish.internal.data.ContainerInfo;
 import org.glassfish.api.deployment.ApplicationContainer;
+import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.api.deployment.Deployer;
+import org.glassfish.api.deployment.ApplicationContext;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.container.Adapter;
+import org.glassfish.api.container.EndpointRegistrationException;
+import org.glassfish.api.container.RequestDispatcher;
+
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * Information about a module in a container. There is a one to one mapping
@@ -46,13 +56,16 @@ import org.glassfish.api.deployment.ApplicationContainer;
  *
  * @author Jerome Dochez
  */
-public class ModuleInfo<T> {
+public class ModuleInfo {
 
     final private ContainerInfo ctrInfo;
+    final RequestDispatcher requestDispatcher;
+
     private ApplicationContainer appCtr;
 
-    public ModuleInfo(ContainerInfo container, ApplicationContainer appCtr) {
+    public ModuleInfo(ContainerInfo container, RequestDispatcher requestDispatcher, ApplicationContainer appCtr) {
         this.ctrInfo = container;
+        this.requestDispatcher = requestDispatcher;
         this.appCtr = appCtr;
     }
 
@@ -67,7 +80,7 @@ public class ModuleInfo<T> {
 
     /**
      * Set the contaier associated with this application
-     * @param the container for this application
+     * @param appCtr the container for this application
      */
     public void setApplicationContainer(ApplicationContainer appCtr) {
         this.appCtr = appCtr;
@@ -79,5 +92,73 @@ public class ModuleInfo<T> {
      */
     public ApplicationContainer getApplicationContainer() {
         return appCtr;
+    }
+
+    public boolean start(ApplicationContext context, ProgressTracker tracker)
+        throws Exception {
+
+        if (!appCtr.start(context)) {
+            return false;
+        }
+
+        tracker.add("started", ModuleInfo.class, this);
+
+        // add the endpoint
+        try {
+            Adapter appAdapter = Adapter.class.cast(appCtr);
+            requestDispatcher.registerEndpoint(appAdapter.getContextRoot(), appAdapter,appCtr);
+        } catch (ClassCastException e) {
+            // ignore the application may not publish endpoints.
+        }
+        return true;
+    }
+
+    /**
+     * unloads the module from its container.
+     *
+     * @param info
+     * @param context
+     * @param report
+     * @return
+     */
+    public boolean unload(ApplicationInfo info, DeploymentContext context, ActionReport report) {
+
+        // then remove the application from the container
+        Deployer deployer = ctrInfo.getDeployer();
+        try {
+            deployer.unload(appCtr, context);
+        } catch(Exception e) {
+            report.failure(context.getLogger(), "Exception while shutting down application container", e);
+            return false;
+        }
+        if (info!=null) {
+            ctrInfo.remove(info);
+        }
+        return true;
+    }
+
+    /**
+     * Stops a module, meaning that components implemented by this module should not be accessed
+     * by external modules
+     *
+     * @param context
+     * @param logger
+     * @return
+     */
+    public boolean stop(ApplicationContext context,  Logger logger) {
+        // remove any endpoints if exists.
+        //@TODO change EndportRegistrationException processing if required
+        try {
+            final Adapter appAdapter = Adapter.class.cast(appCtr);
+            requestDispatcher.unregisterEndpoint(appAdapter.getContextRoot(), appCtr);
+        } catch (EndpointRegistrationException e) {
+            logger.log(Level.WARNING, "Exception during unloading module '" +
+                    this + "'", e);
+        } catch(ClassCastException e) {
+            // do nothing the application did not have an adapter
+        }
+
+       return appCtr.stop(context);
     }    
+
 }

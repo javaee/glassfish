@@ -60,7 +60,7 @@ public class PortCreationCallbackImpl extends ServiceInterceptor {
 
     private ServiceReferenceDescriptor ref;
 
-    private static Logger logger = LogDomains.getLogger(WsUtil.class,LogDomains.WEB_LOGGER);
+    private static Logger logger = LogDomains.getLogger(PortCreationCallbackImpl.class,LogDomains.WEBSERVICES_LOGGER);
     
     public PortCreationCallbackImpl(ServiceReferenceDescriptor svcRef) {
         ref = svcRef;
