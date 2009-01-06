@@ -261,6 +261,11 @@ public class WebArchivist extends Archivist<WebBundleDescriptor>
                         throw ioex;
                     }
 
+                    if (wdesc.isFullFlag()) {
+                        descriptor.addMetadataCompleteWebFragment(
+                                lib.substring(lib.lastIndexOf('/') + 1));
+                    }
+
                     if (mergedWebFragment != null) {
                         mergedWebFragment.addWebBundleDescriptor(wdesc);
                     } else {
