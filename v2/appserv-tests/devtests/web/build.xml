@@ -207,7 +207,7 @@
         <ant dir="webServletContextListenerAnnotation" target="all"/>
         <ant dir="xmlOverrideAnnotation" target="all"/>
         <ant dir="webFragment" target="all"/>
-        <ant dir="multiWebFragment" target="all"/>
+        <ant dir="multiWebFragments" target="all"/>
         <ant dir="asyncListenerOnComplete" target="all"/>
         <ant dir="asyncListenerOnTimeout" target="all"/>
         <ant dir="asyncSupportedTrue" target="all"/>
