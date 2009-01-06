@@ -39,6 +39,7 @@ package com.sun.enterprise.deployment.util;
 import com.sun.logging.LogDomains;
 
 import java.util.logging.Logger;
+import org.glassfish.deployment.common.DeploymentUtils;
 
 /**
  * Utility class for convenienve methods
@@ -60,7 +61,7 @@ public class DOLUtils {
      */
     public static Logger getDefaultLogger() {
         if (logger==null) {
-            logger = LogDomains.getLogger(DOLUtils.class, LogDomains.DPL_LOGGER);
+            logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
         }
         return logger;
     }
