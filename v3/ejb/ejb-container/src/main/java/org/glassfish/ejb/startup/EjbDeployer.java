@@ -102,8 +102,9 @@ public class EjbDeployer
         return super.loadMetaData(type, dc);
     }
 
+    @Override
     public EjbApplication load(EjbContainerStarter containerStarter, DeploymentContext dc) {
-
+        super.load(containerStarter, dc);
         Application app = dc.getModuleMetaData(Application.class);
         if (app == null) {
             app = tldApp.get();

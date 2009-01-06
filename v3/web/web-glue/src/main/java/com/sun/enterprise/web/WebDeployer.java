@@ -197,8 +197,9 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
     }
 
          
+    @Override
     public WebApplication load(WebContainer container, DeploymentContext dc) {
-        
+        super.load(container, dc);
         WebModuleConfig wmInfo = loadWebModuleConfig(dc);
         WebApplication webApp = new WebApplication(container, wmInfo,
             (Boolean.parseBoolean(dc.getProps().getProperty(DeploymentProperties.KEEP_SESSIONS))?

@@ -199,6 +199,24 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
         }
     }
 
+   /**
+     * Loads a previously prepared application in its execution environment and
+     * return a ContractProvider instance that will identify this environment in
+     * future communications with the application's container runtime.
+     * @param container in which the application will reside
+     * @param context of the deployment
+     * @return an ApplicationContainer instance identifying the running application
+     */
+    public U load(T container, DeploymentContext context) {
+        // reset classloader on DOL object before loading so we have a 
+        // valid classloader set on DOL
+        Application app = context.getModuleMetaData(Application.class);
+        if (app != null) {
+            app.setClassLoader(context.getClassLoader()); 
+        }    
+        return null;
+    }
+
     protected void validateApplication(DeploymentContext dc) {
         Application app = dc.getModuleMetaData(Application.class);
         // we only validate the application once

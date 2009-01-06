@@ -97,7 +97,9 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
      * @param context   of the deployment
      * @return an ApplicationContainer instance identifying the running application
      */
+    @Override
     public ConnectorApplication load(ConnectorContainer container, DeploymentContext context) {
+        super.load(container, context);
         File sourceDir = context.getSourceDir();
         String sourcePath = sourceDir.getAbsolutePath();
         String moduleName = sourceDir.getName();
