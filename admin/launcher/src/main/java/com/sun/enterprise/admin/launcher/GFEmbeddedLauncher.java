@@ -146,12 +146,19 @@ class GFEmbeddedLauncher extends GFLauncher{
     }
 
     private void addDebug(List<String> cmdLine) {
-        String s = System.getenv("GFE_DEBUG_PORT");
+        String suspend;
+        String debugPort = System.getenv("GFE_DEBUG_PORT");
 
-        if(ok(s)) {
-            cmdLine.add("-Xdebug");
-            cmdLine.add("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=" + s);
+        if(ok(debugPort)) {
+            suspend = "y";
         }
+        else {
+            debugPort = "12345";
+            suspend = "n";
+        }
+
+        cmdLine.add("-Xdebug");
+        cmdLine.add("-Xrunjdwp:transport=dt_socket,server=y,suspend=" + suspend + ",address=" + debugPort);
     }
 
 
