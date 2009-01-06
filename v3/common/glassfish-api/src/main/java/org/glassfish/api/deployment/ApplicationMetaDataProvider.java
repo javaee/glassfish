@@ -10,14 +10,8 @@ import java.io.IOException;
  * @author Jerome Dochez
  */
 @Contract
-public interface ApplicationMetaDataProvider<T> {
+public interface ApplicationMetaDataProvider<T> extends MetaDataProvider {
 
-    /**
-     * Returns the deployment metadata associated with this application metadata provider
-     *
-     * @return the metadata associated with this implementation
-     */
-    MetaData getMetaData();
 
     /**
      * Load the metadata associated with the deployment event

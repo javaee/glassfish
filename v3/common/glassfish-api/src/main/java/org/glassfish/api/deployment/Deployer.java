@@ -39,15 +39,7 @@ import org.glassfish.api.container.Container;
  * @param U is the ApplicationContainer implementation for this deployer
  * @author Jerome Dochez
  */
-public interface Deployer<T extends Container, U extends ApplicationContainer> {
-
-
-    /**
-     * Returns the meta data assocated with this Deployer
-     *
-     * @return the meta data for this Deployer
-     */
-    public MetaData getMetaData();
+public interface Deployer<T extends Container, U extends ApplicationContainer> extends MetaDataProvider {
 
     /**
      * Loads the meta date associated with the application.

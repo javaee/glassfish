@@ -387,7 +387,7 @@ public class ApplicationLifecycle {
                     sortedContainerInfos.add(containerInfosByDeployers.get(requester));
                 }
 
-            } else {
+            } {
                 report.failure(logger, "Deployer " + metaDataRequired.get(entry.getKey()) + " requires " + entry.getKey() + " but no other deployer provides it", null);
                 return null;
             }
@@ -401,12 +401,6 @@ public class ApplicationLifecycle {
         LinkedList<ContainerInfo> sortedContainerInfos,
         DeploymentContextImpl context, ActionReport report,
         ProgressTracker tracker) throws Exception {
-
-        List<Deployer> deployers = new ArrayList<Deployer>();
-        for (ContainerInfo containerInfo : sortedContainerInfos) {
-            Deployer deployer = containerInfo.getDeployer();
-            deployers.add(deployer);
-        }
 
         ArchiveHandler handler = getArchiveHandler(context.getSource());
         context.createClassLoaders(clh, handler);
