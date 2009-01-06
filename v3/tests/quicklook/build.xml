@@ -67,9 +67,11 @@
         <antcall target="build-deploy"/>
         <ant dir="admincli" target="build-deploy"/>
         <ant dir="ejb/singleton" target="build-deploy"/>
+        <ant dir="ejb/slsbnicmt" target="build-deploy"/>
         <antcall target="runtest">
         <param name="testng.xml" value="testng_gd.xml"/> </antcall>
         <ant dir="ejb/singleton" target="undeploy"/>
+        <ant dir="ejb/slsbnicmt" target="undeploy"/>
         <antcall target="undeploy"/>
         <antcall target="stop-server"/>
         <antcall target="stop-derby"/>
