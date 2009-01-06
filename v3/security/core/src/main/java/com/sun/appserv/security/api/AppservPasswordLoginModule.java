@@ -360,13 +360,7 @@ public  class AppservPasswordLoginModule implements AppservPasswordLoginModuleIn
      *
      */
     protected void authenticateUser() throws LoginException {
-        if (userDefinedLoginModule instanceof com.sun.appserv.security.AppservPasswordLoginModule) {
-            com.sun.appserv.security.AppservPasswordLoginModule m = 
-                    (com.sun.appserv.security.AppservPasswordLoginModule)userDefinedLoginModule;
-            
-            m.authenticateUser();
-            return;
-        }
+
         throw new UnsupportedOperationException("Internal Error: Should not come here");
     }
     
