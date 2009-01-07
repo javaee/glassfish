@@ -96,7 +96,7 @@ public class DataStructureFactory {
         Object[] constructorParameters = new Object[]{parameters, maxPoolSize, handler, strategyClass};
 
         Class class1 = Class.forName(className);
-        Constructor constructor = class1.getConstructor(class1, String.class, Integer.class, ResourceHandler.class, String.class);
+        Constructor constructor = class1.getConstructor(String.class, int.class, ResourceHandler.class, String.class);
         ds = (DataStructure) constructor.newInstance(constructorParameters);
         return ds;
     }
