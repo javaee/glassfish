@@ -155,7 +155,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
     @Param(optional=true)
     String description;
 
-    @Param(optional=true)
+    @Param(optional=true, name="property")
     Properties properties;
 
     private List<ApplicationConfig> appConfigList; 
