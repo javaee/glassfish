@@ -53,13 +53,13 @@ import java.util.*;
  * Transaction helper for the pool to check various states of a resource that is taking part in the transaction.
  * @author Jagadish Ramu
  */
-public class PoolTxHandler {
+public class PoolTxHelper {
 
     private String poolName;
 
-    protected final static Logger _logger = LogDomains.getLogger(PoolTxHandler.class, LogDomains.RSR_LOGGER);
+    protected final static Logger _logger = LogDomains.getLogger(PoolTxHelper.class, LogDomains.RSR_LOGGER);
 
-    public PoolTxHandler(String poolName){
+    public PoolTxHelper(String poolName){
         this.poolName = poolName;
     }
 

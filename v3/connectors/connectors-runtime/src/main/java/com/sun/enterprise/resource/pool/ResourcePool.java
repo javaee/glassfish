@@ -39,6 +39,7 @@ package com.sun.enterprise.resource.pool;
 import com.sun.enterprise.connectors.ConnectorConnectionPool;
 import com.sun.enterprise.resource.ResourceHandle;
 import com.sun.enterprise.resource.ResourceSpec;
+import com.sun.enterprise.resource.listener.PoolLifeCycleListener;
 import com.sun.enterprise.resource.allocator.ResourceAllocator;
 import com.sun.appserv.connectors.internal.api.PoolingException;
 
@@ -141,8 +142,15 @@ public interface ResourcePool {
      */
     public void setSelfManaged(boolean selfManaged);
 
+    /**
+     * set pool life cycle listener
+     * @param listener
+     */
     public void setPoolLifeCycleListener(PoolLifeCycleListener listener);
 
+    /**
+     * remove pool life cycle listener
+     */
     public void removePoolLifeCycleListener();
 }
 

@@ -41,6 +41,7 @@ import com.sun.enterprise.connectors.service.ConnectorAdminServiceUtils;
 import com.sun.enterprise.resource.ResourceHandle;
 import com.sun.enterprise.resource.ResourceSpec;
 import com.sun.enterprise.resource.ResourceState;
+import com.sun.enterprise.resource.listener.PoolLifeCycleListener;
 import com.sun.enterprise.resource.allocator.ResourceAllocator;
 import com.sun.enterprise.resource.pool.datastructure.DataStructure;
 import com.sun.enterprise.resource.pool.datastructure.DataStructureFactory;
@@ -89,7 +90,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
     protected Resizer resizerTask;
 
 
-    protected boolean poolInitialized = false;
+    protected volatile boolean poolInitialized = false;
     protected Timer timer;
 
     //advanced pool config properties
@@ -105,6 +106,8 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
     private boolean validateAtmostEveryIdleSecs = false;
 
     protected String resourceSelectionStrategyClass;
+
+    //TODO V3 need to have a registry so as to delegate listener calls to *multiple* listeners.
     protected PoolLifeCycleListener poolLifeCycleListener;
 
     //Gateway used to control the concurrency within the round-trip of resource access.
@@ -122,7 +125,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
 
     protected final String name; //poolName
 
-    private PoolTxHandler poolTxHandler;
+    private PoolTxHelper poolTxHelper;
 
     // adding resourceSpec and allocator
     protected ResourceSpec resourceSpec;
@@ -139,7 +142,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
         initializePoolDataStructure();
         initializeResourceSelectionStragegy();
         initializePoolWaitQueue();
-        poolTxHandler = new PoolTxHandler(name);
+        poolTxHelper = new PoolTxHelper(name);
         gateway = ResourceGateway.getInstance(resourceGatewayClass);
         _logger.log(Level.FINE, "Connection Pool : " + poolName);
     }
@@ -460,7 +463,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
             //comment-1: sharing is possible only if caller is marked
             //shareable, so abort right here if that's not the case
             if (tran != null && alloc.shareableWithinComponent()) {
-                //TODO V3 should be handled by PoolTxHandler
+                //TODO V3 should be handled by PoolTxHelper
                 JavaEETransaction j2eetran = (JavaEETransaction) tran;
                 // case 1. look for free and enlisted in same tx
                 Set set = j2eetran.getResources(name);
@@ -486,7 +489,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
                          * 4. The credentials of the resources match
                          */
                         if (h.getResourceAllocator().shareableWithinComponent()) {
-                            if (spec.isXA() || poolTxHandler.isNonXAResourceAndFree(j2eetran, h)) {
+                            if (spec.isXA() || poolTxHelper.isNonXAResourceAndFree(j2eetran, h)) {
                                 if (matchConnections) {
                                     if (!alloc.matchConnection(h)) {
                                         if (poolLifeCycleListener != null) {
@@ -537,27 +540,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
      */
     protected ResourceHandle getUnenlistedResource(ResourceSpec spec, ResourceAllocator alloc,
                                                    Transaction tran) throws PoolingException {
-        ResourceHandle resource;
-        while ((resource = getResourceFromPool(alloc)) != null) {
-            boolean isValid = isConnectionValid(resource, alloc);
-
-            if (resource.hasConnectionErrorOccurred() || !isValid) {
-                {
-                    if (failAllConnections) {
-                        resource = createSingleResourceAndAdjustPool(alloc, spec);
-                        //no need to match since the resource is created with the allocator of caller.
-                        break;
-                    } else {
-                        ds.removeResource(resource);
-                        //resource is invalid, continue iteration.
-                        continue;
-                    }
-                }
-            }
-            // got a matched, valid resource
-            break;
-        }
-        return resource;
+        return getResourceFromPool(alloc, spec);
     }
 
     /**
@@ -628,7 +611,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
      * @return ResourceHandle resource from pool
      * @throws PoolingException if unable to create a new resource
      */
-    protected ResourceHandle getResourceFromPool(ResourceAllocator alloc)
+    protected ResourceHandle getResourceFromPool(ResourceAllocator alloc, ResourceSpec spec)
             throws PoolingException {
 
         // the order of serving a resource request
@@ -649,6 +632,20 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
                 }
 
                 if (matchConnection(h, alloc)) {
+
+                    boolean isValid = isConnectionValid(h, alloc);
+                    if (h.hasConnectionErrorOccurred() || !isValid) {
+                        if (failAllConnections) {
+                            h = createSingleResourceAndAdjustPool(alloc, spec);
+                            //no need to match since the resource is created with the allocator of caller.
+                            break;
+                        } else {
+                            ds.removeResource(h);
+                            //resource is invalid, continue iteration.
+                            continue;
+                        }
+                    }
+                    // got a matched, valid resource
                     result = h;
                     break;
                 } else {
@@ -660,8 +657,8 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
             for (ResourceHandle freeResource : freeResources) {
                 ds.returnResource(freeResource);
             }
+            freeResources.clear();
         }
-        freeResources.clear();
 
         if (result != null) {
             // set correct state
@@ -727,13 +724,14 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
                     break;
                 } else {
                     activeResources.add(handle);
-                }
             }
+        }
         }finally{
             //return unmatched resources
             for (ResourceHandle activeResource : activeResources) {
                 ds.returnResource(activeResource);
             }
+            activeResources.clear();
         }
         return result;
     }
@@ -844,11 +842,11 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
     }
 
 
-    public synchronized void setPoolLifeCycleListener(PoolLifeCycleListener listener) {
+    public void setPoolLifeCycleListener(PoolLifeCycleListener listener) {
         this.poolLifeCycleListener = listener;
     }
 
-    public synchronized void removePoolLifeCycleListener() {
+    public void removePoolLifeCycleListener() {
         poolLifeCycleListener = null;
     }
 
@@ -901,8 +899,8 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
         setResourceStateToFree(h);  // mark as not busy
         state.touchTimestamp();
 
-        if (state.isUnenlisted() || (poolTxHandler.isNonXAResource(h)
-                && poolTxHandler.isLocalResourceEligibleForReuse(h))) {
+        if (state.isUnenlisted() || (poolTxHelper.isNonXAResource(h)
+                && poolTxHelper.isLocalResourceEligibleForReuse(h))) {
             freeUnenlistedResource(h);
         }
 
@@ -1028,7 +1026,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
      */
     public void resourceEnlisted(Transaction tran, ResourceHandle resource)
             throws IllegalStateException {
-            poolTxHandler.resourceEnlisted(tran, resource);
+            poolTxHelper.resourceEnlisted(tran, resource);
     }
 
     /**
@@ -1038,7 +1036,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
      * @param status status of transaction
      */
     public void transactionCompleted(Transaction tran, int status) throws IllegalStateException {
-        List<ResourceHandle> delistedResources = poolTxHandler.transactionCompleted(tran, status, name);
+        List<ResourceHandle> delistedResources = poolTxHelper.transactionCompleted(tran, status, name);
         for (ResourceHandle resource : delistedResources) {
             // Application might not have closed the connection.
             if (isResourceUnused(resource)) {
