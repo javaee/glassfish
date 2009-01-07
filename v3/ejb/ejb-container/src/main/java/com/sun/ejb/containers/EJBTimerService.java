@@ -1327,7 +1327,7 @@ public class EJBTimerService
             ts = timer.getTimerSchedule();
         }
 
-        return ts.getScheduleExpression();
+        return (ts == null)? null : ts.getScheduleExpression();
         
     }
 

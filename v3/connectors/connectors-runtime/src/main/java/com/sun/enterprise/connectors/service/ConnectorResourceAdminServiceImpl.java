@@ -42,6 +42,7 @@ import com.sun.enterprise.connectors.ConnectorDescriptorInfo;
 import com.sun.enterprise.connectors.naming.ConnectorResourceNamingEventNotifier;
 import com.sun.enterprise.connectors.naming.ConnectorNamingEvent;
 import com.sun.enterprise.connectors.naming.ConnectorNamingEventNotifier;
+import com.sun.enterprise.resource.naming.ConnectorObjectFactory;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 
@@ -81,28 +82,28 @@ public class ConnectorResourceAdminServiceImpl extends ConnectorService {
         String errMsg = "rardeployment.jndi_lookup_failed";
         String name = poolName;
         try {
-            ConnectorConnectionPool connectorConnectionPool = null;
+            ConnectorConnectionPool ccp = null;
             String jndiNameForPool = ConnectorAdminServiceUtils.
                     getReservePrefixedJNDINameForPool(poolName);
             Context ic = _runtime.getNamingManager().getInitialContext();
             try {
-                connectorConnectionPool =
+                ccp =
                         (ConnectorConnectionPool) ic.lookup(jndiNameForPool);
             } catch (NamingException ne) {
                 //Probably the pool is not yet initialized (lazy-loading), try doing a lookup
                 try {
                     checkAndLoadPool(poolName);
-                    connectorConnectionPool =
+                    ccp =
                             (ConnectorConnectionPool) ic.lookup(jndiNameForPool);
                 } catch (NamingException e) {
                     _logger.log(Level.SEVERE, "Unable to lookup pool [ " + name + " ]", e);
                 }
             }
 
-            connectorConnectionPool = (ConnectorConnectionPool) ic.lookup(jndiNameForPool);
-            ConnectorDescriptorInfo cdi = connectorConnectionPool.getConnectorDescriptorInfo();
+            ccp = (ConnectorConnectionPool) ic.lookup(jndiNameForPool);
+            ConnectorDescriptorInfo cdi = ccp.getConnectorDescriptorInfo();
 
-            com.sun.enterprise.resource.naming.ConnectorObjectFactory cof = new com.sun.enterprise.resource.naming.ConnectorObjectFactory(jndiName, connectorConnectionPool.getConnectorDescriptorInfo().
+            ConnectorObjectFactory cof = new ConnectorObjectFactory(jndiName, ccp.getConnectorDescriptorInfo().
                     getConnectionFactoryClass(), cdi.getRarName(), poolName);
 
             _runtime.getNamingManager().publishObject(jndiName, cof, true);

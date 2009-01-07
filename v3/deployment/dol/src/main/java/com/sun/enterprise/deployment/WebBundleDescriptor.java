@@ -104,6 +104,9 @@ public class WebBundleDescriptor extends BundleDescriptor
     private Vector<ServletFilter> servletFilters = null;
     private Vector<ServletFilterMapping> servletFilterMappings = null;
 
+    // name of metadata complete web fragment jars resided in WEB-INF/lib
+    private Set<String> metadataCompleteWebFragments = new HashSet<String>();
+
     public static final int SESSION_TIMEOUT_DEFAULT = 30;
     private final static String DEPLOYMENT_DESCRIPTOR_DIR = "WEB-INF";
 
@@ -1300,6 +1303,14 @@ public class WebBundleDescriptor extends BundleDescriptor
     public void moveAppListenerDescriptor(AppListenerDescriptor ref,
                                           int relPos) {
         this.moveVectorItem(this.getAppListeners(), ref, relPos);
+    }
+
+    public void addMetadataCompleteWebFragment(String path) {
+        metadataCompleteWebFragments.add(path);
+    }
+
+    public Set<String> getMetadataCompleteWebFragments() {
+        return metadataCompleteWebFragments;
     }
 
     /**

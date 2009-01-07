@@ -40,6 +40,7 @@ import com.sun.enterprise.config.serverbeans.ResourceAdapterConfig;
 import com.sun.enterprise.config.serverbeans.SecurityMap;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.connectors.authentication.RuntimeSecurityMap;
+import com.sun.enterprise.connectors.module.ConnectorApplication;
 import com.sun.logging.LogDomains;
 
 import javax.resource.spi.ManagedConnectionFactory;
@@ -77,6 +78,7 @@ public class ConnectorRegistry {
 
     protected final Map<String, PoolMetaData> factories;
     protected final Map<String, ResourceAdapterConfig> resourceAdapterConfig;
+    protected final Map<String, ConnectorApplication> rarModules;
 
     /**
      * Return the ConnectorRegistry instance
@@ -97,6 +99,7 @@ public class ConnectorRegistry {
         resourceAdapters = Collections.synchronizedMap(new HashMap<String, ActiveResourceAdapter>());
         factories = Collections.synchronizedMap(new HashMap<String, PoolMetaData>());
         resourceAdapterConfig = Collections.synchronizedMap(new HashMap<String, ResourceAdapterConfig>());
+        rarModules = Collections.synchronizedMap(new HashMap<String, ConnectorApplication>());
         _logger.log(Level.FINE, "initialized the connector registry");
     }
 
@@ -236,7 +239,6 @@ public class ConnectorRegistry {
         return null;
     }
 
-
     /**
      * Checks whether the rar is already deployed i.e registered with
      * connector registry
@@ -365,5 +367,30 @@ public class ConnectorRegistry {
 
     public PoolMetaData getPoolMetaData(String poolName) {
         return factories.get(poolName);
+    }
+
+    /**
+     * register a connector application (rarModule) with the registry
+     * @param rarModule resource-adapter module
+     */
+    public void addConnectorApplication(ConnectorApplication rarModule){
+        rarModules.put(rarModule.getModuleName(), rarModule);
+    }
+
+    /**
+     * retrieve a connector application (rarModule) from the registry
+     * @param rarName resource-adapter name
+     * @return ConnectorApplication app
+     */
+    public ConnectorApplication getConnectorApplication(String rarName){
+        return rarModules.get(rarName);
+    }
+
+    /**
+     * remove a connector application (rarModule) from the registry
+     * @param rarName resource-adapter module
+     */
+    public void removeConnectorApplication(String rarName){
+        rarModules.remove(rarName);
     }
 }

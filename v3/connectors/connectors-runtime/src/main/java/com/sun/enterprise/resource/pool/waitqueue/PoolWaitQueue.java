@@ -57,22 +57,24 @@ public interface PoolWaitQueue {
     Object addToQueue();
 
     /**
-     * removes the object (resource request) from the queue
+     * removes the specified object (resource request) from the queue
      */
     void removeFromQueue(Object o);
 
     /**
      * removes the first object (resource request) from the queue
      */
+    /*
     Object removeFirst();
+    */
 
     /**
-     * removes the object (resource request) from the queue
+     * removes the first object (resource request) from the queue
      */
     Object remove();
 
     /**
-     * returns the first object (resource request) from the queue
+     * returns (does not remove) the first object (resource request) from the queue
      */
     Object peek();
 }

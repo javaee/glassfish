@@ -50,6 +50,7 @@ import java.util.HashSet;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import com.sun.logging.LogDomains;
+import org.glassfish.deployment.common.DeploymentUtils;
 
 /**
  * Implementation of Directory scanner for autodeployment  </br>
@@ -62,8 +63,7 @@ import com.sun.logging.LogDomains;
  */
 public class AutoDeployDirectoryScanner implements DirectoryScanner{
     
-    
-    private static final Logger sLogger=LogDomains.getLogger(AutoDeployDirectoryScanner.class, LogDomains.DPL_LOGGER);
+    private static final Logger sLogger=LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
     private static final LocalStringManagerImpl localStrings = new LocalStringManagerImpl(AutoDeployDirectoryScanner.class);
     
     public AutoDeployDirectoryScanner() {

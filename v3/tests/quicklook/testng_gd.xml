@@ -126,6 +126,11 @@
 	<class name="test.ejb.singleton.SingletonTestNG" />
     </classes>
   </test> 
+  <test name="ejb3_slsbnicmt">
+    <classes>
+	<class name="test.ejb.slsbnicmt.SlsbnicmtTestNG" />
+    </classes>
+  </test> 
   <test name="asadmin_tests">
     <classes>
       <class name="test.admin.JvmOptionTests"/>

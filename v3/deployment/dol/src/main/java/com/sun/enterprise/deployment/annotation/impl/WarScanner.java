@@ -48,6 +48,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.Vector;
 import java.util.logging.Level;
 
@@ -90,10 +91,19 @@ public class WarScanner extends ModuleScanner<WebBundleDescriptor> {
         }
         File lib = new File(webinf, "lib");
         if (lib.exists()) {
+            final Set<String> metadataCompleteWebFragments =
+                    webBundleDesc.getMetadataCompleteWebFragments();
             File[] jarFiles = lib.listFiles(new FileFilter() {
                  public boolean accept(File pathname) {
-                     return (pathname.isFile() &&
-                            pathname.getAbsolutePath().endsWith(".jar"));
+                     boolean result = false;
+                     if (pathname.isFile()) {
+                         String name = pathname.getName();
+                         if (name.endsWith(".jar")) {
+                             // this will include non web fragment jars
+                             result = !metadataCompleteWebFragments.contains(name);
+                         }
+                     }
+                     return result;
                  }
             });
 

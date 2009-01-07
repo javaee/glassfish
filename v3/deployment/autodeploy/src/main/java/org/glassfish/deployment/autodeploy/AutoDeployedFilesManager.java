@@ -50,6 +50,7 @@ import java.net.URI;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import org.glassfish.deployment.common.DeploymentUtils;
 
 /**
  *  Contains the status of list of files that have been autodeployed. 
@@ -59,7 +60,7 @@ import java.util.logging.Level;
 
 public class AutoDeployedFilesManager {
     
-    private static final Logger sLogger= LogDomains.getLogger(AutoDeployedFilesManager.class, LogDomains.DPL_LOGGER);
+    private static final Logger sLogger=LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
     static final String STATUS_DIR_NAME = ".autodeploystatus";
 
     /*

@@ -36,9 +36,7 @@
 
 package com.sun.enterprise.connectors.authentication;
 
-import com.sun.logging.LogDomains;
 import java.security.Principal;
-import java.util.logging.*;
 import java.util.Set;
 
 
@@ -47,16 +45,14 @@ import java.util.Set;
   * For a given principal/userGrooup, a mapping is done to a backendPrincipal
   * which is actually used to authenticate/get connection to the backend.
   * @author    Srikanth P
- */
-
-
+  */
 public interface AuthenticationService {
 
     /** Maps the principal name to the backendPrincipal.
-     *  @param principalName Name of the principal
+     *  @param principal Name of the principal
+     *  @param principalSet principalSet
      *  @return mapped backendPrincipal.
      */
-
     public Principal mapPrincipal(Principal principal, Set principalSet);
 
 }

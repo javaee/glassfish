@@ -84,16 +84,11 @@ public class JdbcResourceDeployer implements ResourceDeployer {
 
     private static final StringManager localStrings =
             StringManager.getManager(JdbcResourceDeployer.class);
-    /**
-     * logger for this deployer
-     */
+    // logger for this deployer
     private static Logger _logger = LogDomains.getLogger(JdbcResourceDeployer.class, LogDomains.CORE_LOGGER);
 
     /**
-     * Deploy the resource into the server's runtime naming context
-     *
-     * @param resource a resource object (eg. JmsResource)
-     * @throws Exception thrown if fail
+     * {@inheritDoc}
      */
     public synchronized void deployResource(Object resource) throws Exception {
 
@@ -119,10 +114,7 @@ public class JdbcResourceDeployer implements ResourceDeployer {
     }
 
     /**
-     * Undeploy the resource from the server's runtime naming context
-     *
-     * @param resource a resource object (eg. JmsResource)
-     * @throws Exception thrown if fail
+     * {@inheritDoc}
      */
     public synchronized void undeployResource(Object resource)
             throws Exception {
@@ -140,10 +132,7 @@ public class JdbcResourceDeployer implements ResourceDeployer {
     }
 
     /**
-     * Redeploy the resource into the server's runtime naming context
-     *
-     * @param resource a resource object (eg. JmsResource)
-     * @throws Exception thrown if fail
+     * {@inheritDoc}
      */
     public synchronized void redeployResource(Object resource)
             throws Exception {
@@ -152,26 +141,23 @@ public class JdbcResourceDeployer implements ResourceDeployer {
         deployResource(resource);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean handles(Object resource){
         return resource instanceof JdbcResource;
     }
 
 
     /**
-     * Enable the resource in the server's runtime naming context
-     *
-     * @param resource a resource object (eg. JmsResource)
-     * @throws Exception thrown if fail
+     * {@inheritDoc}
      */
     public synchronized void enableResource(Object resource) throws Exception {
         deployResource(resource);
     }
 
     /**
-     * Disable the resource in the server's runtime naming context
-     *
-     * @param resource a resource object (eg. JmsResource)
-     * @throws Exception thrown if fail
+     * {@inheritDoc}
      */
     public synchronized void disableResource(Object resource) throws Exception {
         undeployResource(resource);

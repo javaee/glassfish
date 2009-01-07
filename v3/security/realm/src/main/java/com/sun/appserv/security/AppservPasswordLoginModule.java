@@ -235,7 +235,7 @@ public abstract class AppservPasswordLoginModule implements LoginModule {
      * @throws LoginException on authentication failure.
      *
      */
-    public abstract void authenticateUser() throws LoginException;
+    protected abstract void authenticateUser() throws LoginException;
     
     
     /**

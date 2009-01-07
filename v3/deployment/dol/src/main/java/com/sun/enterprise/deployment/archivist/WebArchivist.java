@@ -67,20 +67,20 @@ import java.net.URL;
  * archive files (war).
  *
  * @author  Jerome Dochez
- * @version 
+ * @version
  */
 @Service
 @Scoped(PerLookup.class)
-public class WebArchivist extends Archivist<WebBundleDescriptor> 
+public class WebArchivist extends Archivist<WebBundleDescriptor>
     implements PrivateArchivist {
 
 
     private static final String DEFAULT_WEB_XML = "default-web.xml";
 
     @Inject
-    ServerEnvironment env;    
+    ServerEnvironment env;
 
-    /** 
+    /**
      * The DeploymentDescriptorFile handlers we are delegating for XML i/o
      */
     DeploymentDescriptorFile standardDD = new WebDeploymentDescriptorFile();
@@ -95,8 +95,8 @@ public class WebArchivist extends Archivist<WebBundleDescriptor>
     @Override
     public XModuleType getModuleType() {
         return XModuleType.WAR;
-    }        
-    
+    }
+
     /**
      * Archivist read XML deployment descriptors and keep the
      * parsed result in the DOL descriptor instances. Sets the descriptor
@@ -111,18 +111,18 @@ public class WebArchivist extends Archivist<WebBundleDescriptor>
             else
                 this.descriptor=null;
         }
-    }  
-    
-    /** 
-     * @return the location of the web services related deployment 
+    }
+
+    /**
+     * @return the location of the web services related deployment
      * descriptor file inside this archive or null if this archive
      * does not support webservices implementation.
      */
     @Override
     public String getWebServicesDeploymentDescriptorPath() {
         return DescriptorConstants.WEB_WEBSERVICES_JAR_ENTRY;
-    }    
-    
+    }
+
     /**
      * @return the DeploymentDescriptorFile responsible for handling
      * standard deployment descriptor
@@ -131,7 +131,7 @@ public class WebArchivist extends Archivist<WebBundleDescriptor>
     public DeploymentDescriptorFile getStandardDDFile() {
         return standardDD;
     }
-    
+
     /**
      * @return if exists the DeploymentDescriptorFile responsible for
      * handling the configuration deployment descriptors
@@ -139,14 +139,14 @@ public class WebArchivist extends Archivist<WebBundleDescriptor>
     @Override
     public DeploymentDescriptorFile getConfigurationDDFile() {
         return new WebRuntimeDDFile();
-    }      
-    
+    }
+
     /**
      * @return a default BundleDescriptor for this archivist
      */
     @Override
     public synchronized WebBundleDescriptor getDefaultBundleDescriptor() {
-        
+
         if (defaultBundleDescriptor==null) {
 
             defaultBundleDescriptor = new WebBundleDescriptor();
@@ -227,11 +227,11 @@ public class WebArchivist extends Archivist<WebBundleDescriptor>
         }
         descriptor.setClassLoader(cl);
         descriptor.visit((WebBundleVisitor) new ApplicationValidator());
-    }            
+    }
 
     /**
-     * In the case of web archive, the super handles() method should be able 
-     * to make a unique identification.  If not, then the archive is definitely 
+     * In the case of web archive, the super handles() method should be able
+     * to make a unique identification.  If not, then the archive is definitely
      * not a war.
      */
     @Override
@@ -244,26 +244,26 @@ public class WebArchivist extends Archivist<WebBundleDescriptor>
     protected String getArchiveExtension() {
         return WEB_EXTENSION;
     }
-    
+
     /**
      * @return a list of libraries included in the archivist
      */
     public Vector getLibraries(Archive archive) {
-        
+
         Enumeration<String> entries = archive.entries();
         if (entries==null)
             return null;
-        
-        Vector libs = new Vector();        
+
+        Vector libs = new Vector();
         while (entries.hasMoreElements()) {
-            
+
             String entryName = entries.nextElement();
             if (!entryName.startsWith("WEB-INF/lib")) {
                 continue; // not in WEB-INF...
             }
             if (entryName.endsWith(".jar")) {
                 libs.add(entryName);
-            }            
+            }
         }
         return libs;
     }
@@ -304,6 +304,11 @@ public class WebArchivist extends Archivist<WebBundleDescriptor>
                         IOException ioex = new IOException();
                         ioex.initCause(ex);
                         throw ioex;
+                    }
+
+                    if (wdesc.isFullFlag()) {
+                        descriptor.addMetadataCompleteWebFragment(
+                                lib.substring(lib.lastIndexOf('/') + 1));
                     }
 
                     if (mergedWebFragment != null) {

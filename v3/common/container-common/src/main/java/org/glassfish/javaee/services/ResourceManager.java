@@ -41,12 +41,12 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.*;
-import org.glassfish.api.naming.NamingObjectsProvider;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.Startup;
 
 import java.beans.PropertyChangeEvent;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.util.*;
 
 import com.sun.enterprise.config.serverbeans.*;
@@ -95,8 +95,16 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
             if(resource instanceof BindableResource){
                 BindableResource bindableResource = (BindableResource)resource;
                 resourcesBinder.deployResource(bindableResource.getJndiName(), resource);
-            }else{
-                //TODO V3 handle other resources (ra-config) later
+            } else if (resource instanceof ResourcePool) {
+                //TODO V3 handle other resources later (con-pools)
+            } else{
+                // only other resource left is RAC
+                try{
+                    getResourceDeployer(resource).deployResource(resource);
+                }catch(Exception e){
+                    //TODO V3 log exception
+                    logger.log(Level.WARNING, "unable to deploy resource : ", e);
+                }
             }
         }
         //TODO V3 will there be a chance of double listener registrationf or a resource ?
@@ -118,7 +126,7 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
         Collection resources = ConnectorsUtil.getAllSystemRAResourcesAndPools(allResources);
         
         //TODO V3 : even in case when there is no resource used by an application (no RAR was started),
-        //TODO V3 this seems to be called ??
+        //TODO V3 not undeploying resources other than jdbc, connector pool/resource ?
         undeployResources(resources);
         getConnectorRuntime().shutdownAllActiveResourceAdapters(null);
         removeListenerFromResources();
@@ -133,43 +141,6 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
         return runtime;
     }
 
-
-    /**
-     * deploys the resources (pool/resources) of a particular resource-adapter
-     * @param moduleName resource-adapter name
-     */
-/*
-    public void deployResourcesForModule(String moduleName){
-        //TODO V3 needed for redeploy of module, what happens to the listeners of these resources ?
-        Collection<ConnectorConnectionPool> connectionPools =
-                ConnectorsUtil.getAllPoolsOfModule(moduleName, allResources);
-        Collection<String> poolNames = ConnectorsUtil.getAllPoolNames(connectionPools);
-        Collection<Resource> connectorResources = ConnectorsUtil.getAllResources(poolNames, allResources);
-        ConnectorConnectionPool[] pools = new ConnectorConnectionPool[connectionPools.size()];
-        ConnectorResource[] resources = new ConnectorResource[connectorResources.size()];
-
-        resourcesBinder.deployAllConnectorResourcesAndPools(connectorResources.toArray(resources),
-                connectionPools.toArray(pools));
-    }
-*/
-
-    /**
-     * undeploys the resources (pool/resources) of a particular resource-adapter
-     * @param moduleName resource-adapter name
-     */
-/*
-    public void undeployResourcesForModule(String moduleName){
-        Collection<ConnectorConnectionPool> connectionPools = ConnectorsUtil.getAllPoolsOfModule(moduleName, allResources);
-        Collection<String> poolNames = ConnectorsUtil.getAllPoolNames(connectionPools);
-        Collection<Resource> connectorResources = ConnectorsUtil.getAllResources(poolNames, allResources);
-        List resources = new ArrayList();
-        resources.addAll(connectionPools);
-        resources.addAll(connectorResources);
-        destroyResourcesAndPools(resources);
-        //TODO V3 listeners of these resources ?
-    }
-*/
-
     /**
      * undeploy the given set of resources<br>
      * <b>care has to be taken for the case of dependent resources<br>
@@ -180,6 +151,8 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
     public void undeployResources(Collection<Resource> resources){
         for(Resource resource : resources){
             try{
+                //TODO V3 no need to check bindableResource ? (similar to deployResources())
+                //TODO V3 handle Resource-Adapter-Config ?
                 getResourceDeployer(resource).undeployResource(resource);
             }catch(Exception e){
                 //TODO V3 can't Resource (config bean) have name ?
@@ -191,22 +164,11 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
     }
 
     /**
-     * destroys a list of resource and pools (jdbc/connector)
-     * @param Collection of resources and pools to be destroyed
-     */
-/*
-    private void destroyResourcesAndPools(Collection resources) {
-        getConnectorRuntime().destroyResourcesAndPools(resources);
-    }
-*/
-
-    /**
      * Notification that @Configured objects that were injected have changed
      *
      * @param events list of changes
      */
     public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
-        // I am not so interested with the list of events, just sort who got added or removed for me.
         final UnprocessedChangeEvents unprocessed = ConfigSupport.sortAndDispatch(events, new Changed() {
             /**
              * Notification of a change on a configuration object
@@ -280,8 +242,15 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
 
                 if(instance instanceof BindableResource){
                     resourcesBinder.deployResource(((BindableResource)instance).getJndiName(), (Resource)instance);
-                }else if(instance instanceof ConnectorConnectionPool || instance instanceof JdbcConnectionPool) {
-                    //TODO V3 handle - ccp, jdbc-cp, ra-config
+                } else if(instance instanceof ResourcePool) {
+                    //TODO V3 handle - ccp, jdbc-cp
+                } else if( instance instanceof Resource) {
+                    //only resource type left is RAC
+                    try{
+                        getResourceDeployer(instance).deployResource(instance);
+                    }catch(Exception e){
+                        logger.log(Level.WARNING, "unable deploy resource : ", e);
+                    }
                 } else if (instance instanceof Property) {
                     final Property prop = (Property) instance;
                     np = new NotProcessed("ResourceManager: a property was added: " + prop.getName() + "=" + prop.getValue());
@@ -308,7 +277,7 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
                             deployer.undeployResource(instance);
                         }else{
                             logger.warning("no deployer found for resource type [ "+ instance.getClass().getName() + "]");
-                            //TODO V3 log throw Exception
+                            //TODO V3 log & throw Exception
                         }
 
                     } else if (ConnectorsUtil.isValidEventType(instance.getParent())) {
@@ -319,7 +288,7 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
                             deployer.redeployResource(instance.getParent());
                         }else{
                             logger.warning("no deployer found for resource type [ "+ instance.getClass().getName() + "]");
-                            //TODO V3 log throw Exception
+                            //TODO V3 log & throw Exception
                         }
                     }
                 } catch (Exception ex) {
@@ -338,6 +307,7 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
      * Add listener to all resources (JDBC Connection Pool/JDBC Resource/
      * Connector Connection Pool/Connector Resource.
      * Invoked from postConstruct()
+     * @param resources list of resources for which listeners will be registered.
      */
     private void addListenerToResources(Collection<Resource> resources) {
         for (Resource configuredResource : resources) {
@@ -349,7 +319,7 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
      * Add listener to a generic resource
      * Used in the case of create asadmin command when listeners have to
      * be added to the specific resource
-     * @param instance
+     * @param instance instance to which listener will be registered
      */
     private void addListenerToResource(Object instance) {
         ObservableBean bean = null;
@@ -366,7 +336,7 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
      * Remove listener from a generic resource (JDBC Connection Pool/Connector 
      * Connection Pool/JDBC resource/Connector resource)
      * Used in the case of delete asadmin command
-     * @param instance
+     * @param instance remove the resource from listening to resource events
      */
     private void removeListenerFromResource(Object instance) {
         ObservableBean bean = null;
@@ -388,6 +358,12 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
         }
     }
 
+    /**
+     * Given a <i>resource</i> instance, appropriate deployer will be provided
+     *
+     * @param resource resource instance
+     * @return ResourceDeployer
+     */
     private ResourceDeployer getResourceDeployer(Object resource){
         Collection<ResourceDeployer> deployers = deployerHabitat.getAllByContract(ResourceDeployer.class);
 
@@ -399,6 +375,9 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Lifecycle getLifecycle() {
         return Startup.Lifecycle.SERVER;
     }

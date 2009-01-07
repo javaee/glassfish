@@ -71,7 +71,7 @@ public class EjbDeployer
     public EjbDeployer() {
 
     }
-    
+
 
     protected String getModuleType () {
         return "ejb";
@@ -97,8 +97,9 @@ public class EjbDeployer
         return null;
     }
 
+    @Override
     public EjbApplication load(EjbContainerStarter containerStarter, DeploymentContext dc) {
-
+        super.load(containerStarter, dc);
         Application app = dc.getModuleMetaData(Application.class);
         if (app == null) {
             app = tldApp.get();

@@ -93,8 +93,10 @@ public class TomcatDeployer extends JavaEEDeployer<TomcatContainer, TomcatApplic
         return "web";
     }
 
+    @Override
     public TomcatApplication load(TomcatContainer container, DeploymentContext dc) {
 
+        super.load(container, dc);
         WebBundleDescriptor wbd = (WebBundleDescriptor)dc.getModuleMetaData(
             Application.class).getStandaloneBundleDescriptor();
 

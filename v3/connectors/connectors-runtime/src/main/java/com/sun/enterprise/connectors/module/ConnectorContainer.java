@@ -38,6 +38,7 @@ package com.sun.enterprise.connectors.module;
 
 import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.Deployer;
+import org.glassfish.api.container.Container;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
@@ -52,7 +53,7 @@ import java.util.logging.Logger;
  * @author Jagadish Ramu
  */
 @Service(name = "com.sun.enterprise.connectors.module.ConnectorContainer")
-public class ConnectorContainer implements org.glassfish.api.container.Container, PostConstruct, PreDestroy {
+public class ConnectorContainer implements Container, PostConstruct, PreDestroy {
 
     private static Logger _logger = LogDomains.getLogger(ConnectorContainer.class, LogDomains.RSR_LOGGER);
 

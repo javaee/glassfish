@@ -53,17 +53,18 @@ import java.util.logging.Level;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.glassfish.api.ActionReport;
 import org.jvnet.hk2.component.Habitat;
+import org.glassfish.deployment.common.DeploymentUtils;
 
 /**
  * Handles the logic of deploying the module/app to the required destination.</br>
- * The destination is specified on the constructor and can be modified by 
- * calling setTarget().  The specific directory scanner can be set using 
+ * The destination is specified on the constructor and can be modified by
+ * calling setTarget().  The specific directory scanner can be set using
  * setDirectoryScanner, default is AutoDeployDirectoryScanner
  * @author vikas
  * @author tjquinn
  */
 public class AutoDeployer {
-    
+
     private Boolean verify=null;
     private Boolean forceDeploy=null;
     private Boolean enabled=null;
@@ -71,9 +72,9 @@ public class AutoDeployer {
     private boolean renameOnSuccess = true;
     private File directory = null;
     private String virtualServer = null;
-    
+
     private String target=null;
-    private static final Logger sLogger=LogDomains.getLogger(AutoDeployer.class, "org.glassfish.deployment.autodeploy");
+    private static final Logger sLogger=LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(AutoDeployer.class);
     private DirectoryScanner directoryScanner=null;
     

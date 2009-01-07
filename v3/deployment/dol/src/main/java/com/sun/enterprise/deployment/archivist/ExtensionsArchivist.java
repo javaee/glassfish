@@ -5,6 +5,7 @@ import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.apf.Scanner;
 import org.xml.sax.SAXParseException;
 import org.jvnet.hk2.annotations.Contract;
@@ -27,7 +28,7 @@ import java.util.logging.Level;
 @Contract
 public abstract class ExtensionsArchivist  {
 
-    protected final Logger logger = LogDomains.getLogger(PersistenceArchivist.class, LogDomains.DPL_LOGGER);
+    protected final Logger logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
 
     public abstract DeploymentDescriptorFile getStandardDDFile(RootDeploymentDescriptor descriptor);
 

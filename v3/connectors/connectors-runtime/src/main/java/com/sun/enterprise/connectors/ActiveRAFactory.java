@@ -43,6 +43,13 @@ import com.sun.logging.LogDomains;
 import javax.resource.spi.ResourceAdapter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Collection;
+
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.component.Habitat;
 
 
 /**
@@ -50,9 +57,13 @@ import java.util.logging.Logger;
  *
  * @author Binod P.G
  */
+@Service
+@Scoped(Singleton.class)
 public class ActiveRAFactory {
     private static Logger _logger = LogDomains.getLogger(ActiveRAFactory.class,LogDomains.RSR_LOGGER);
 
+    @Inject
+    private Habitat activeRAHabitat;
     /**
      * Creates an active resource adapter.
      *
@@ -62,7 +73,7 @@ public class ActiveRAFactory {
      * @return An instance of <code> ActiveResourceAdapter </code> object.
      * @throws ConnectorRuntimeException when unable to create the runtime for RA
      */
-    public static ActiveResourceAdapter createActiveResourceAdapter(
+    public ActiveResourceAdapter createActiveResourceAdapter(
             ConnectorDescriptor cd, String moduleName, ClassLoader loader)
             throws ConnectorRuntimeException {
 
@@ -85,13 +96,7 @@ public class ActiveRAFactory {
                 }
             }
 
-            if (raClass.equals("")) {
-                activeResourceAdapter = new ActiveOutboundResourceAdapter(
-                        cd, moduleName, loader);
-            } else {
-                activeResourceAdapter = new ActiveInboundResourceAdapter(
-                        ra, cd, moduleName, loader);
-            }
+            activeResourceAdapter = instantiateActiveResourceAdapter(cd, moduleName, loader, ra);
 
         } catch (ClassNotFoundException Ex) {
             ConnectorRuntimeException cre = new ConnectorRuntimeException(
@@ -114,5 +119,28 @@ public class ActiveRAFactory {
             throw cre;
         }
         return activeResourceAdapter;
+    }
+
+    private  ActiveResourceAdapter instantiateActiveResourceAdapter(ConnectorDescriptor cd,
+                                                                    String moduleName, ClassLoader loader,
+                                                                    ResourceAdapter ra) throws ConnectorRuntimeException {
+        ActiveResourceAdapter activeResourceAdapter = getActiveRA(cd);
+
+        if(activeResourceAdapter != null){
+            activeResourceAdapter.init(ra, cd, moduleName, loader);            
+        }
+        return activeResourceAdapter;
+    }
+
+    private ActiveResourceAdapter getActiveRA(ConnectorDescriptor cd){
+        Collection<ActiveResourceAdapter> activeRAs =  activeRAHabitat.getAllByContract(ActiveResourceAdapter.class);
+        for(ActiveResourceAdapter activeRA : activeRAs){
+            if(activeRA.handles(cd)){
+                //TODO V3 fine log indicating which ARA class is returned
+                return activeRA;
+            }
+        }
+        //could not fine any impl.
+        return null;
     }
 }

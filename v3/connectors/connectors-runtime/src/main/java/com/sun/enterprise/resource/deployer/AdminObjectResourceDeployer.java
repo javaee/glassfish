@@ -52,8 +52,8 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Singleton;
 
 /**
-  * @author    Srikanth P
-  */
+ * @author Srikanth P
+ */
 
 @Service
 @Scoped(Singleton.class)
@@ -66,14 +66,11 @@ public class AdminObjectResourceDeployer extends GlobalResourceDeployer
     private static Logger _logger = LogDomains.getLogger(AdminObjectResourceDeployer.class, LogDomains.RSR_LOGGER);
 
     /**
-     * Deploy the resource into the server's runtime naming context
-     *
-     * @param resource a resource object (eg. AdminObjectResource)
-     * @exception Exception thrown if fail
+     * {@inheritDoc}
      */
     public synchronized void deployResource(Object resource) throws Exception {
 
-        final AdminObjectResource aor = (AdminObjectResource)resource;
+        final AdminObjectResource aor = (AdminObjectResource) resource;
 
 /* TODO V3 handle later MOM
 
@@ -93,26 +90,26 @@ public class AdminObjectResourceDeployer extends GlobalResourceDeployer
 */
 
         _logger.log(Level.FINE,
-            "Calling backend to add adminObject",aor.getJndiName());
-        runtime.addAdminObject(null,aor.getResAdapter(),aor.getJndiName(),
-                aor.getResType(),transformProps(aor.getProperty()));
+                "Calling backend to add adminObject", aor.getJndiName());
+        runtime.addAdminObject(null, aor.getResAdapter(), aor.getJndiName(),
+                aor.getResType(), transformProps(aor.getProperty()));
         _logger.log(Level.FINE,
-            "Added adminObject in backend",aor.getJndiName());
+                "Added adminObject in backend", aor.getJndiName());
     }
 
     /**
-     *d
+     * {@inheritDoc}
      */
     public synchronized void undeployResource(Object resource)
-                        throws Exception {
+            throws Exception {
 
-        final AdminObjectResource aor =  (AdminObjectResource)resource;
+        final AdminObjectResource aor = (AdminObjectResource) resource;
 
         _logger.log(Level.FINE,
-                   "Calling backend to delete adminObject",aor.getJndiName());
+                "Calling backend to delete adminObject", aor.getJndiName());
         runtime.deleteAdminObject(aor.getJndiName());
         _logger.log(Level.FINE,
-                   "Deleted adminObject in backend",aor.getJndiName());
+                "Deleted adminObject in backend", aor.getJndiName());
 
         //unregister the managed object
 /* TODO V3 handle once MOM is available ?
@@ -123,20 +120,32 @@ public class AdminObjectResourceDeployer extends GlobalResourceDeployer
 
     }
 
-    public boolean handles(Object resource){
+    /**
+     * {@inheritDoc}
+     */
+    public boolean handles(Object resource) {
         return resource instanceof AdminObjectResource;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public synchronized void redeployResource(Object resource)
-                        throws Exception {
+            throws Exception {
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public synchronized void disableResource(Object resource)
-                        throws Exception {
+            throws Exception {
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public synchronized void enableResource(Object resource)
-                        throws Exception {
+            throws Exception {
     }
 
 /* TODO V3 not needed ?

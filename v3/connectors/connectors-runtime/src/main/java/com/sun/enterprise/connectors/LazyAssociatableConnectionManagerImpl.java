@@ -37,6 +37,7 @@ package com.sun.enterprise.connectors;
 
 import javax.resource.ResourceException;
 import javax.resource.spi.LazyAssociatableConnectionManager;
+import javax.resource.spi.ManagedConnectionFactory;
 
 /**
  * @author Aditya Gore
@@ -54,5 +55,9 @@ public class LazyAssociatableConnectionManagerImpl extends ConnectionManagerImpl
         //the following call will also take care of associating "connection"
         //with a new ManagedConnection instance
         allocateConnection(mcf, info, jndiName, connection);
+    }
+
+    public void inactiveConnectionClosed(Object connection, ManagedConnectionFactory mcf) {
+        //TODO V3
     }
 }

@@ -43,6 +43,7 @@ import com.sun.enterprise.connectors.service.ConnectorService;
 import com.sun.enterprise.connectors.util.RAWriterAdapter;
 import com.sun.enterprise.connectors.authentication.AuthenticationService;
 import com.sun.enterprise.connectors.naming.ConnectorNamingEventNotifier;
+import com.sun.enterprise.connectors.module.ConnectorApplication;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.JndiNameEnvironment;
 import com.sun.enterprise.resource.pool.PoolManager;
@@ -111,6 +112,7 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
     private ResourceAdapterAdminServiceImpl resourceAdapterAdmService;
     private ConnectorSecurityAdminServiceImpl connectorSecurityAdmService;
     private ConnectorAdminObjectAdminServiceImpl adminObjectAdminService;
+    private ConnectorRegistry connectorRegistry = ConnectorRegistry.getInstance();
 
 
     @Inject
@@ -145,6 +147,9 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
 
     @Inject
     private ConnectorsClassLoaderUtil cclUtil;
+
+    @Inject
+    private ActiveRAFactory activeRAFactory;
 
     private final Object getTimerLock = new Object();
     private Timer timer;
@@ -515,8 +520,8 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
      * Checks if a conncetor connection pool has been deployed to this server
      * instance
      *
-     * @param poolName
-     * @return
+     * @param poolName connection pool name
+     * @return boolean indicating whether the resource is deployed or not
      */
     public boolean isConnectorConnectionPoolDeployed(String poolName) {
         return ccPoolAdmService.isConnectorConnectionPoolDeployed(poolName);
@@ -535,7 +540,7 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
      *                      to be excluded in the comparison check while
      *                      comparing MCF properties
      * @return true - if a pool restart is required, false otherwise
-     * @throws ConnectorRuntimeException
+     * @throws ConnectorRuntimeException when unable to reconfigure ccp
      */
     public boolean reconfigureConnectorConnectionPool(ConnectorConnectionPool
             ccp, Set excludedProps) throws ConnectorRuntimeException {
@@ -551,6 +556,7 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
      * 3. Create an MCF for this pool and register with the connector registry<br>
      *
      * @param ccp - the ConnectorConnectionPool to publish
+     * @throws ConnectorRuntimeException when unable to recreate ccp
      */
     public void recreateConnectorConnectionPool(ConnectorConnectionPool ccp)
             throws ConnectorRuntimeException {
@@ -601,15 +607,6 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
         //destroyResourcesAndPools(resources);
         stopAllActiveResourceAdapters();
     }
-
-    /**
-     * {@inheritDoc}
-     */
-/*
-    public void destroyResourcesAndPools(Collection resources) {
-        connectorService.destroyResourcesAndPools(resources);
-    }
-*/
 
     public PoolManager getPoolManager() {
         return poolManager;
@@ -675,7 +672,6 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
 
     /**
      * Checks whether the executing environment is application server
-     *
      * @return true if execution environment is server
      *         false if it is client
      */
@@ -686,7 +682,6 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
 
     /**
      * provides the current transaction
-     *
      * @return Transaction
      * @throws SystemException when unable to get the transaction
      */
@@ -696,7 +691,6 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
 
     /**
      * provides the transactionManager
-     *
      * @return TransactionManager
      */
     public JavaEETransactionManager getTransactionManager() {
@@ -754,35 +748,10 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
         return new XATerminatorProxy(xat);
     }
 
-
     public void removeWorkManagerProxy(String moduleName) {
         wmf.removeWorkManager(moduleName);
     }
 
-    /**
-     * Redeploy the resource into the server's runtime naming context
-     *
-     * @param resource a resource object
-     * @throws Exception thrown if fail
-     */ /*
-
-
-    public void redeployResource(Object instance) throws Exception {
-        connectorService.redeployResource(instance);
-    }
-    public void deployResource(Resource resource) throws Exception{
-        deployerHabitat.getComponent(com.sun.appserv.connectors.internal.spi.ResourceDeployer.class, 
-		ConnectorsUtil.getResourceType(resource)).deployResource(resource);
-        //connectorService.deployResource(resource);
-    }
-
-    public void undeployResource(Resource resource) throws Exception{
-        deployerHabitat.getComponent(com.sun.appserv.connectors.internal.spi.ResourceDeployer.class, 
-		ConnectorsUtil.getResourceType(resource)).undeployResource(resource);
-        //connectorService.undeployResource(resource);
-    }
-    
-*/
     public void addAdminObject(String appName, String connectorName,
                                String jndiName, String adminObjectType, Properties props)
             throws ConnectorRuntimeException {
@@ -791,7 +760,6 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
 
     public void deleteAdminObject(String jndiName) throws ConnectorRuntimeException {
         adminObjectAdminService.deleteAdminObject(jndiName);
-
     }
 
     public ClassLoader getConnectorClassLoader(String rarName){
@@ -812,4 +780,61 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
         }
         return null;
     }
+
+    /** Add the resource adapter configuration to the connector registry
+     *  @param rarName rarmodule
+     *  @param raConfig Resource Adapter configuration object
+     *  @throws ConnectorRuntimeException if the addition fails.
+     */
+
+    public void addResourceAdapterConfig(String rarName,
+           ResourceAdapterConfig raConfig) throws ConnectorRuntimeException {
+        resourceAdapterAdmService.addResourceAdapterConfig(rarName,raConfig);
+    }
+
+    /** Delete the resource adapter configuration to the connector registry
+     *  @param rarName rarmodule
+     */
+
+    public void deleteResourceAdapterConfig(String rarName) {
+        resourceAdapterAdmService.deleteResourceAdapterConfig(rarName);
+    }
+
+    /**
+     * register the connector application with registry
+     * @param rarModule resource-adapter module
+     */
+    public void registerConnectorApplication(ConnectorApplication rarModule){
+        connectorRegistry.addConnectorApplication(rarModule);
+    }
+
+    /**
+     * unregister the connector application from registry
+     * @param rarName resource-adapter name
+     */
+    public void unregisterConnectorApplication(String rarName){
+        connectorRegistry.removeConnectorApplication(rarName);
+    }
+
+    /**
+     * undeploy resources of the module
+     * @param rarName resource-adapter name
+     */
+    public void undeployResourcesOfModule(String rarName){
+        ConnectorApplication app = connectorRegistry.getConnectorApplication(rarName);
+        app.undeployResources();
+    }
+
+    /**
+     * deploy resources of the module
+     * @param rarName resource-adapter name
+     */
+    public void deployResourcesOfModule(String rarName){
+        ConnectorApplication app = connectorRegistry.getConnectorApplication(rarName);
+        app.deployResources();
+    }
+    public ActiveRAFactory getActiveRAFactory(){
+        return activeRAFactory;
+    }
+
 }

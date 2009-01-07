@@ -170,7 +170,7 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
     public boolean prepare(DeploymentContext dc) {
         try {
             validateApplication(dc);
-            
+
             prepareScratchDirs(dc);
             String objectType = getObjectType(dc);
             if (objectType != null) {
@@ -190,6 +190,24 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
         }
     }
 
+   /**
+     * Loads a previously prepared application in its execution environment and
+     * return a ContractProvider instance that will identify this environment in
+     * future communications with the application's container runtime.
+     * @param container in which the application will reside
+     * @param context of the deployment
+     * @return an ApplicationContainer instance identifying the running application
+     */
+    public U load(T container, DeploymentContext context) {
+        // reset classloader on DOL object before loading so we have a
+        // valid classloader set on DOL
+        Application app = context.getModuleMetaData(Application.class);
+        if (app != null) {
+            app.setClassLoader(context.getClassLoader());
+        }
+        return null;
+    }
+
     protected void validateApplication(DeploymentContext dc) {
         Application app = dc.getModuleMetaData(Application.class);
         // we only validate the application once
@@ -199,7 +217,7 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
         }
     }
 
-    protected void generateArtifacts(DeploymentContext dc) 
+    protected void generateArtifacts(DeploymentContext dc)
         throws DeploymentException {
     }
 
@@ -207,11 +225,11 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
         throws DeploymentException {
     }
 
-    protected final void createClientJar(DeploymentContext dc, 
+    protected final void createClientJar(DeploymentContext dc,
         ZipItem[] clientStubs) throws DeploymentException {
         Properties props = dc.getCommandParameters();
         String name = props.getProperty(DeploymentProperties.NAME);
-        String clientJarRequested = 
+        String clientJarRequested =
             props.getProperty(DeploymentProperties.CLIENTJARREQUESTED);
 
         // destination file for the client jar file
@@ -219,13 +237,13 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
 
         // upgrade scenario
         if (!FileUtils.safeIsDirectory(dc.getScratchDir("xml"))) {
-            appDirectory = dc.getSourceDir(); 
+            appDirectory = dc.getSourceDir();
         }
 
         File clientJar = new File(appDirectory, name
             + DeploymentImplConstants.ClientJarSuffix);
 
-        //XXX: do we need to worry about upgrade scenario where the jar 
+        //XXX: do we need to worry about upgrade scenario where the jar
         // will be stored in source dir
 
         // now we look if the client jar file is being requested by the client
@@ -235,12 +253,12 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
 
             // the client jar file is requested upon deployment,
             // we need to build synchronously
-            ClientJarMakerThread.createClientJar(dc, 
+            ClientJarMakerThread.createClientJar(dc,
                 clientJar, clientStubs, CLIENT_JAR_MAKER_CHOICE);
 
         } else {
             // the client jar file is not requested, we build it asynchronously.
-            Thread clientJarThread = new ClientJarMakerThread(dc, 
+            Thread clientJarThread = new ClientJarMakerThread(dc,
                 clientJar, clientStubs, CLIENT_JAR_MAKER_CHOICE);
             clientJarThread.start();
         }
@@ -264,10 +282,10 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
             }
         }
     }
-        
-    protected void saveAppDescriptor(DeploymentContext context) 
+
+    protected void saveAppDescriptor(DeploymentContext context)
         throws IOException {
-        Application application = 
+        Application application =
             context.getModuleMetaData(Application.class);
         ReadableArchive archive = archiveFactory.openArchive(
             context.getSourceDir());
@@ -279,15 +297,15 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
         applicationArchivist.copyExtraElements(archive, archive2);
     }
 
-    protected void prepareScratchDirs(DeploymentContext context) 
+    protected void prepareScratchDirs(DeploymentContext context)
         throws IOException {
         context.getScratchDir("ejb").mkdirs();
         context.getScratchDir("xml").mkdirs();
         context.getScratchDir("jsp").mkdirs();
     }
 
-    // get the object type from the application manifest file if 
-    // it is present. Application can be user application or system 
+    // get the object type from the application manifest file if
+    // it is present. Application can be user application or system
     // appliction.
     protected String getObjectType(DeploymentContext context) {
         try{
@@ -300,7 +318,7 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
             return null;
         }
     }
- 
+
     protected Application getApplicationFromApplicationInfo(
         String appName) {
         ApplicationInfo appInfo = appRegistry.get(appName);
@@ -318,7 +336,7 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
         return null;
     }
 
-    protected void handleDeploymentPlan(String deploymentPlan, 
+    protected void handleDeploymentPlan(String deploymentPlan,
         Archivist archivist, ReadableArchive sourceArchive) throws IOException {
         //Note in copying of deployment plan to the portable archive,
         //we should make sure the manifest in the deployment plan jar
@@ -330,7 +348,7 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
             WritableArchive targetArchive = archiveFactory.createArchive(
                 sourceArchive.getURI());
             archivist.copyInto(dpa, targetArchive, false);
-        } 
+        }
     }
 
     abstract protected String getModuleType();

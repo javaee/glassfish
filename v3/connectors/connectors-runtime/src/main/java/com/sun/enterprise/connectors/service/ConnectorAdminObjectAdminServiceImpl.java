@@ -36,15 +36,13 @@
 
 package com.sun.enterprise.connectors.service;
 
-import com.sun.enterprise.connectors.util.ResourcesUtil;
 import com.sun.enterprise.connectors.ActiveResourceAdapter;
-import com.sun.enterprise.connectors.ActiveInboundResourceAdapter;
+import com.sun.enterprise.connectors.ActiveOutboundResourceAdapter;
 
 import java.util.*;
 import java.util.logging.*;
 import javax.naming.*;
 
-import com.sun.enterprise.server.*;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 
 /**
@@ -76,9 +74,9 @@ public class ConnectorAdminObjectAdminServiceImpl extends
             ifSystemRarLoad(connectorName);
             ar = _registry.getActiveResourceAdapter(connectorName);
         }
-        if (ar instanceof ActiveInboundResourceAdapter) {
-            ActiveInboundResourceAdapter air =
-                    (ActiveInboundResourceAdapter) ar;
+        if (ar instanceof ActiveOutboundResourceAdapter) {
+            ActiveOutboundResourceAdapter air =
+                    (ActiveOutboundResourceAdapter) ar;
             air.addAdminObject(appName, connectorName, jndiName,
                     adminObjectType, props);
         } else {

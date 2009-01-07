@@ -33,74 +33,45 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.javaee.services;
 
-import org.glassfish.api.naming.NamingObjectProxy;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.PerLookup;
+package com.sun.enterprise.connectors.inbound;
 
-import javax.naming.Context;
-import javax.naming.NamingException;
-
-import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
+import javax.resource.spi.ActivationSpec;
+import javax.resource.spi.endpoint.MessageEndpointFactory;
 
 /**
- * Holder for a resource adapter configuration that gets registered in the naming manager.
- * NamingManager will call the create() method when the resource adapter is looked up.
+ * An instance of this class keeps <code> ActivationSpec <code>
+ * and <code>MessageEndPointFactory</code> related to a endpoint
+ * activation.
  *
- * @author Jerome Dochez, Jagadish Ramu
+ * @author Qingqing Ouyang
  */
-@Service
-@Scoped(PerLookup.class)
-public class ResourceAdapterProxy extends ResourceProxy implements NamingObjectProxy {
+public final class MessageEndpointFactoryInfo {
+    //@@@ should we include name of the MDB here?
 
-    private Object resource;
-    private Object pool;
-    private String resourceType;
-    private String raName;
-    private String resourceName;
+    private final MessageEndpointFactory factory_;
+    private final ActivationSpec as_;
 
-    public ResourceAdapterProxy() {
-    }
-
-    public void setResource(Object resource) {
-        this.resource = resource;
-    }
-
-    public void setConnectionPool(Object pool) {
-        this.pool = pool;
-    }
-
-    public void setResourceType(String resourceType){
-        this.resourceType = resourceType;
-    }
-
-    public void setRAName(String raName){
-        this.raName = raName;
-    }
-
-    public void setResourceName(String resourceName){
-        this.resourceName = resourceName;
+    /**
+     * @param fac <code>MessageEndpointFactory</code>
+     * @param as  <code>ActivationSpec</code>
+     */
+    MessageEndpointFactoryInfo(MessageEndpointFactory fac, ActivationSpec as) {
+        factory_ = fac;
+        as_ = as;
     }
 
     /**
-     * Create and return an object.
-     * @return an object
+     * @return <code> MessageEndpointFactory</code> object.
      */
-    public Object create(Context ic) throws NamingException {
-        Object result = null;
-        try {
-            if(getConnectorRuntime().checkAndLoadResource(resource, pool, resourceType, resourceName, raName)){
-                result = ic.lookup(resourceName);
-            }else{
-                throwResourceNotFoundException(null, resourceName);
-            }
-        } catch (Exception e) {
-            //TODO V3, need to provide the actual exception. should not eat exception
-            return throwResourceNotFoundException(e, resourceName);
-        }
-        return result;
+    public MessageEndpointFactory getEndpointFactory() {
+        return this.factory_;
     }
 
+    /**
+     * @return <code>ActivationSpec</code> object.
+     */
+    public ActivationSpec getActivationSpec() {
+        return this.as_;
+    }
 }

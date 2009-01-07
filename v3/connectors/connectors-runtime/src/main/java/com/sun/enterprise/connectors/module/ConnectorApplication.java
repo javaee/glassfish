@@ -41,6 +41,7 @@ import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Resource;
+import com.sun.enterprise.connectors.ConnectorRuntime;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.ApplicationContext;
 import org.glassfish.javaee.services.ResourceManager;
@@ -63,11 +64,14 @@ public class ConnectorApplication implements ApplicationContainer {
     private String moduleName = "";
     private ResourceManager resourceManager;
     private ClassLoader loader;
+    private ConnectorRuntime runtime;
 
-    public ConnectorApplication(String moduleName, ResourceManager resourceManager, ClassLoader loader) {
-        this.moduleName = moduleName;
+    public ConnectorApplication(String moduleName, ResourceManager resourceManager, ClassLoader loader,
+                                ConnectorRuntime runtime) {
+        this.setModuleName(moduleName);
         this.resourceManager = resourceManager;
         this.loader = loader;
+        this.runtime = runtime;
     }
 
     /**
@@ -93,59 +97,40 @@ public class ConnectorApplication implements ApplicationContainer {
     public boolean start(ApplicationContext startupContext) {
         boolean started = false;
 
-        deployResources(moduleName);
+        deployResources();
+        runtime.registerConnectorApplication(this);
 
         started = true; // TODO V3 temporary
-        logFine("Resource Adapter [ " + moduleName + " ] started");
+        logFine("Resource Adapter [ " + getModuleName() + " ] started");
         return started;
     }
 
     /**
      * deploy all resources/pools pertaining to this resource adapter
-     *
-     * @param resourceAdapterName resource-adapter name
      */
-    private void deployResources(String resourceAdapterName) {
-        deployResourcesForModule(resourceAdapterName, resourceManager.getAllResources());
-    }
-
-    private void deployResourcesForModule(String moduleName, Resources allResources){
+    public void deployResources() {
+        Resources allResources = resourceManager.getAllResources();
         //TODO V3 needed for redeploy of module, what happens to the listeners of these resources ?
-        Collection<ConnectorConnectionPool> connectionPools = ConnectorsUtil.getAllPoolsOfModule(moduleName, allResources);
+        Collection<ConnectorConnectionPool> connectionPools =
+                ConnectorsUtil.getAllPoolsOfModule(moduleName, allResources);
         Collection<String> poolNames = ConnectorsUtil.getAllPoolNames(connectionPools);
         Collection<Resource> connectorResources = ConnectorsUtil.getAllResources(poolNames, allResources);
-        //ConnectorConnectionPool[] pools = new ConnectorConnectionPool[connectionPools.size()];
-        //ConnectorResource[] resources = new ConnectorResource[connectorResources.size()];
         resourceManager.deployResources(connectorResources);
-/*
-        resourcesBinder.deployAllConnectorResourcesAndPools(connectorResources.toArray(resources),
-                connectionPools.toArray(pools));
-*/
     }
-
 
     /**
      * undeploy all resources/pools pertaining to this resource adapter
-     *
-     * @param resourceAdapterName resource-adapter-name
      */
-    private void undeployResources(String resourceAdapterName) {
-        undeployResources(resourceAdapterName, resourceManager.getAllResources());
-    }
-
-    private void undeployResources(String resourceAdapterName, Resources allResources){
+    public void undeployResources() {
+        Resources allResources = resourceManager.getAllResources();
         Collection<ConnectorConnectionPool> connectionPools =
-                ConnectorsUtil.getAllPoolsOfModule(resourceAdapterName, allResources);
+                ConnectorsUtil.getAllPoolsOfModule(moduleName, allResources);
         Collection<String> poolNames = ConnectorsUtil.getAllPoolNames(connectionPools);
         Collection<Resource> connectorResources = ConnectorsUtil.getAllResources(poolNames, allResources);
         List<Resource> resources = new ArrayList<Resource>();
         resources.addAll(connectorResources);
         resources.addAll(connectionPools);
         resourceManager.undeployResources(resources);
-
-        //destroyResourcesAndPools(resources);
-        //TODO V3 listeners of these resources ?
-
     }
 
     /**
@@ -156,9 +141,10 @@ public class ConnectorApplication implements ApplicationContainer {
      */
     public boolean stop(ApplicationContext stopContext) {
         boolean stopped = false;
-        undeployResources(moduleName);
+        undeployResources();
+        runtime.unregisterConnectorApplication(getModuleName());
         stopped = true;
-        logFine("Resource Adapter [ " + moduleName + " ] stopped");
+        logFine("Resource Adapter [ " + getModuleName() + " ] stopped");
         return stopped;
     }
 
@@ -193,5 +179,21 @@ public class ConnectorApplication implements ApplicationContainer {
 
     public void logFine(String message) {
         _logger.log(Level.FINE, message);
+    }
+
+    /**
+     * returns the module name
+     * @return module-name
+     */
+    public String getModuleName() {
+        return moduleName;
+    }
+
+    /**
+     * set the module name of the application
+     * @param moduleName module-name
+     */
+    public void setModuleName(String moduleName) {
+        this.moduleName = moduleName;
     }
 }

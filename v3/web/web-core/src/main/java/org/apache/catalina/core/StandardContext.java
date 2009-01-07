@@ -5177,10 +5177,6 @@ public class StandardContext
             if(loadOnStartup < 0) {
                 continue;
             }
-            if(loadOnStartup == 0)     // Arbitrarily put them last
-            {
-                loadOnStartup = Integer.MAX_VALUE;
-            }
             Integer key = loadOnStartup;
             List<Wrapper> list = map.get(key);
             if(list == null) {
