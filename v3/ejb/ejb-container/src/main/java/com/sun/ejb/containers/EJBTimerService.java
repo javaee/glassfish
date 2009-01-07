@@ -1932,8 +1932,8 @@ public class EJBTimerService
                 transaction = (Transaction) i.getTransaction();
                 if (transaction != null) {
                     // Need to know when it happens
-                    logger.log(Level.WARNING, "Context transaction = null. Using " +
-                           "invocation instead.", new Throwable());
+                    logger.log(Level.WARNING, "Context transaction in TimerBean = null. Using " +
+                           "invocation instead."); // , new Throwable());
                 }
             }
         }
