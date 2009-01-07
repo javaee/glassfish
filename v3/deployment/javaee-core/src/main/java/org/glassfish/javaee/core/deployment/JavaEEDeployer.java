@@ -152,17 +152,8 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
      * @param type type of metadata that this deployer has declared providing.
      * @param dc deployment context
      */
-    //TODO dochez, does this need to go ?
     public <V> V loadMetaData(Class<V> type, DeploymentContext dc) {
-        if (dc.getModuleMetaData(type)!=null) {
-            return dc.getModuleMetaData(type);
-        }
-        try {
-            return (V) parseModuleMetaData(dc);
-        } catch (Exception e) {
-            dc.getLogger().log(Level.SEVERE, e.getMessage(), e);
-            throw new RuntimeException(e.getMessage(), e);
-        }
+        return null;
     }
 
     /**
@@ -206,41 +197,6 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
             app.setClassLoader(dc.getClassLoader());
             app.visit((ApplicationVisitor) new ApplicationValidator());
         }
-    }
-
-    protected Application parseModuleMetaData(DeploymentContext dc)
-        throws Exception {
-
-        ReadableArchive sourceArchive = dc.getSource();
-        ClassLoader cl = dc.getClassLoader();
-        Properties props = dc.getCommandParameters();
-        String name = props.getProperty(DeploymentProperties.NAME);
-
-        Archivist archivist = archivistFactory.getArchivist(
-                sourceArchive, cl);
-        archivist.setAnnotationProcessingRequested(true);
-        archivist.setXMLValidation(false);
-        archivist.setRuntimeXMLValidation(false);
-
-        archivist.setDefaultBundleDescriptor(
-                getDefaultBundleDescriptor());
-
-        // we only expand deployment plan once in the first deployer
-        if (dc.getModuleMetaData(Application.class) == null) {
-            String deploymentPlan = props.getProperty(
-                DeploymentProperties.DEPLOYMENT_PLAN);
-            handleDeploymentPlan(deploymentPlan, archivist, sourceArchive);
-        }
-
-        Application application = applicationFactory.openArchive(
-                name, archivist, sourceArchive, true);
-
-        // this may not be the best location for this but it will suffice.
-        if (deploymentVisitor!=null) {
-            deploymentVisitor.accept(application);
-        }
-
-        return application;
     }
 
     protected void generateArtifacts(DeploymentContext dc) 
@@ -377,6 +333,5 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
         } 
     }
 
-    abstract protected RootDeploymentDescriptor getDefaultBundleDescriptor();
     abstract protected String getModuleType();
 }

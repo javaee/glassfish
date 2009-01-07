@@ -86,6 +86,7 @@ import com.sun.enterprise.config.serverbeans.SessionProperties;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.container.common.spi.util.JavaEEObjectStreamFactory;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.archivist.WebArchivist;
 import com.sun.enterprise.deployment.runtime.web.ManagerProperties;
 import com.sun.enterprise.deployment.runtime.web.SessionManager;
 import com.sun.enterprise.deployment.runtime.web.StoreProperties;
@@ -1658,7 +1659,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
                     WebModuleConfig wmInfo = vs.getDefaultWebModule(domain,
                             habitat.getComponent(
-                            WebDeployer.class) );
+                            WebArchivist.class) );
                     if (wmInfo != null) {
                         defaultPath = wmInfo.getContextPath();
                         // Virtual server declares default-web-module
@@ -1680,7 +1681,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                         // server's docroot if necessary
                         wmInfo = vs.createSystemDefaultWebModuleIfNecessary(
                                 habitat.getComponent(
-                                WebDeployer.class));
+                                WebArchivist.class));
                         if (wmInfo != null) {
                             defaultPath = wmInfo.getContextPath();
                             loadStandaloneWebModule(vs, wmInfo);
@@ -2462,7 +2463,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                             WebModuleConfig wmInfo =
                                 host.createSystemDefaultWebModuleIfNecessary(
                                     habitat.getComponent(
-                                        WebDeployer.class));
+                                        WebArchivist.class));
                             if(wmInfo != null) {
                                 loadStandaloneWebModule(host, wmInfo);
                             }
@@ -3475,7 +3476,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         // Add the new default web module
         WebModuleConfig wmInfo = virtualServer.getDefaultWebModule(domain,
-                            habitat.getComponent(WebDeployer.class) );
+                            habitat.getComponent(WebArchivist.class) );
         
         if ( (wmInfo!=null) && (wmInfo.getContextPath()!=null)) {
             // Remove dummy context that was created off of docroot, if such
@@ -3487,7 +3488,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         } else {
             WebModuleConfig wmc = 
                 virtualServer.createSystemDefaultWebModuleIfNecessary(
-                    habitat.getComponent(WebDeployer.class));
+                    habitat.getComponent(WebArchivist.class));
             if ( wmc != null) {
                 loadStandaloneWebModule(virtualServer,wmc);
             }
@@ -3867,7 +3868,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             removeDummyModule(vs);
             WebModuleConfig wmInfo = 
                 vs.createSystemDefaultWebModuleIfNecessary(
-                    habitat.getComponent(WebDeployer.class));
+                    habitat.getComponent(WebArchivist.class));
             if (wmInfo != null) {
                 loadStandaloneWebModule(vs, wmInfo);
             }
@@ -3882,7 +3883,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         removeDummyModule(vs);
         WebModuleConfig wmInfo = 
             vs.createSystemDefaultWebModuleIfNecessary(
-                    habitat.getComponent(WebDeployer.class));
+                    habitat.getComponent(WebArchivist.class));
         if (wmInfo != null) {
             loadStandaloneWebModule(vs, wmInfo);
         }

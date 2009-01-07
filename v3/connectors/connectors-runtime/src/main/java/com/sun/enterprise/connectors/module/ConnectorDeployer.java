@@ -39,7 +39,6 @@ package com.sun.enterprise.connectors.module;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
-import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
@@ -149,11 +148,6 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
      * @param context deployment context
      */
     public void clean(DeploymentContext context) {
-    }
-
-    protected RootDeploymentDescriptor getDefaultBundleDescriptor() {
-        //TODO V3
-        return null;
     }
 
     protected String getModuleType() {

@@ -49,6 +49,7 @@ import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.WebModule;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.archivist.WebArchivist;
 import com.sun.enterprise.security.web.SingleSignOn;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
@@ -553,7 +554,7 @@ public class VirtualServer extends StandardHost {
     
     
     protected WebModuleConfig getDefaultWebModule(Domain domain, 
-            WebDeployer webDeployer) {
+            WebArchivist webArchivist) {
 
         String contextRoot = null;
         WebModuleConfig wmInfo = null;
@@ -569,7 +570,7 @@ public class VirtualServer extends StandardHost {
                 String location = ConfigBeansUtilities.getLocation(wmID);
                 if ((contextRoot!=null) && (location != null)) {
                     File docroot = new File(location);
-                    WebBundleDescriptor wbd = webDeployer.getDefaultWebXMLBundleDescriptor();
+                    WebBundleDescriptor wbd = webArchivist.getDefaultBundleDescriptor();
                     wmInfo = new WebModuleConfig();
                     wbd.setName(Constants.DEFAULT_WEB_MODULE_NAME);
                     wbd.setContextRoot(contextRoot);
@@ -602,7 +603,7 @@ public class VirtualServer extends StandardHost {
      * this virtual server's list of modules (only then will one know whether
      * the user has already configured a default web module or not).
      */
-    protected WebModuleConfig createSystemDefaultWebModuleIfNecessary(WebDeployer webDeployer) {
+    protected WebModuleConfig createSystemDefaultWebModuleIfNecessary(WebArchivist webArchivist) {
 
         WebModuleConfig wmInfo = null;
         
@@ -613,7 +614,7 @@ public class VirtualServer extends StandardHost {
         if (getDefaultWebModuleID() == null && (findChild("") == null)
                 && (docroot != null)) {
             
-            WebBundleDescriptor wbd = webDeployer.getDefaultWebXMLBundleDescriptor();
+            WebBundleDescriptor wbd = webArchivist.getDefaultBundleDescriptor();
             wmInfo = new WebModuleConfig();
             wbd.setModuleID(Constants.DEFAULT_WEB_MODULE_NAME);
             wbd.setContextRoot("");

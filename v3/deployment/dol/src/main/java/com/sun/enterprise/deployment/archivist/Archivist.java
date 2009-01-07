@@ -37,10 +37,7 @@
 package com.sun.enterprise.deployment.archivist;
 
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
-import com.sun.enterprise.deployment.BundleDescriptor;
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.PersistenceUnitsDescriptor;
-import com.sun.enterprise.deployment.RootDeploymentDescriptor;
+import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.annotation.factory.AnnotatedElementHandlerFactory;
 import com.sun.enterprise.deployment.annotation.factory.SJSASFactory;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
@@ -1006,12 +1003,6 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
      * @return a default BundleDescriptor for this archivist
      */
     public abstract T getDefaultBundleDescriptor();
-
-    /**
-     * set a default BundleDescriptor for this archivist
-     */
-    public void setDefaultBundleDescriptor(T defaultBD) {
-    }
 
 
     /**
