@@ -14,7 +14,11 @@
 
     <target name="all" depends="create-http-listener,build,deploy,run,delete-http-listener,undeploy"/>
 
-    <target name="create-http-listener" depends="init-common">
+    <target name="local-init">
+        <property name="another.port" value="1${http.port}"/>
+    </target>
+
+    <target name="create-http-listener" depends="init-common, local-init">
         <exec executable="${ASADMIN}">
             <arg line="create-http-listener"/>
             <arg line="-u ${admin.user}"/>
@@ -22,7 +26,7 @@
             <arg line="--host ${admin.host}"/>
             <arg line="--port ${admin.port}"/>
             <arg line="--listeneraddress 0.0.0.0" />
-            <arg line="--listenerport 1${http.port}" />
+            <arg line="--listenerport ${another.port}" />
             <arg line="--defaultvs server" />
             <arg line="--servername localhost.localdomain" />
             <arg line="--acceptorthreads 1" />
@@ -72,10 +76,10 @@
         <antcall target="deploy-war-common"/>
     </target>
     
-    <target name="run" depends="init-common,prepare-truststore-common">
+    <target name="run" depends="init-common,prepare-truststore-common, local-init">
         <java classname="WebTest">
           <arg value="${http.host}"/>
-          <arg value="1${http.port}"/>
+          <arg value="${another.port}"/>
           <arg value="${contextroot}"/>
           <arg value="${truststore.db.file}"/>
           <classpath>
