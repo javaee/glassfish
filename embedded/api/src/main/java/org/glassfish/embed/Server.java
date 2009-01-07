@@ -312,7 +312,7 @@ public class Server {
         parser.replace(DomainXmlPersistence.class, EmbeddedDomainXml.class);
         try {
             // we provide our own ServerEnvironment
-            EmbeddedServerEnvironment.setInstallRoot(efs.getInstallRoot());
+            EmbeddedServerEnvironment.setInstanceRoot(efs.getInstanceRoot());
         }
         catch (EmbeddedException ex) {
             //TODO ????
