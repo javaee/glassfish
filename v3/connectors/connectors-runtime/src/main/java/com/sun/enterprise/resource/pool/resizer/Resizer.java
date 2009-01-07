@@ -164,31 +164,21 @@ public class Resizer extends TimerTask {
 
         //iterate through all thre active resources to find idle-time lapsed ones.
         ResourceHandle h;
-        Set<ResourceHandle> activeResources = new HashSet<ResourceHandle>();
-        try {
-            while ((h = ds.getResource()) != null) {
-                state = h.getResourceState();
-                //remove all idle-time lapsed resources.
-                if (currentTime - state.getTimestamp() > pool.getIdleTimeout()) {
-                    ds.removeResource(h);
-                } else {
-                    activeResources.add(h);
-                }
-            }
-        } finally {
-
-            //return active resources.
-            for (ResourceHandle activeResource : activeResources) {
-                ds.returnResource(activeResource);
+        Set<String> activeResources = new HashSet<String>();
+        while ((h = ds.getResource()) != null ) {
+            state = h.getResourceState();
+            //remove all idle-time lapsed resources.
+            if (currentTime - state.getTimestamp() > pool.getIdleTimeout()) {
+                ds.removeResource(h);
+            } else {
+                ds.returnResource(h);
+                activeResources.add(h.toString());
             }
         }
 
-        //we will still hold reference to active resources for connection validation.
-
-        //This behavior will work fine as long as resizer locks the pool throughout its operations.
-        //Else, it may happen that pool will give out the resource to application,
-        //validation below on this resource will fail and may not be able to remove it as it will
-        //not be in the pool
+        //remove invalid resources from the free (active) resources list.
+        //Since the whole pool is not locked, it may happen that some of these resources may be
+        //given to applications.
         removeInvalidResources(activeResources);
 
         //These statistic computations will work fine as long as resizer locks the pool throughout its operations.
@@ -205,46 +195,48 @@ public class Resizer extends TimerTask {
      * Uses the Connector 1.5 spec 6.5.3.4 optional RA feature to obtain
      * invalid ManagedConnections
      *
-     * @param freeConnections Set of free connections
+     * @param freeConnectionsToValidate Set of free connections
      */
-    private void removeInvalidResources(Set freeConnections) {
+    private void removeInvalidResources(Set<String> freeConnectionsToValidate) {
         try {
             debug("Sending a set of free connections to RA, " +
-                    "of size : " + freeConnections.size());
-
-            //get Invalid ManagedConnections from the resource-adapter
-            Set invalidConnections = handler.getInvalidConnections(freeConnections);
-
-            //Find the appropriate ResourceHandle for a returned invalid
-            //ManagedConnection and destroy the Resourcehandle and references to
-            //it in resources and free list.
-            if (invalidConnections != null) {
-                debug("No. of invalid connections received from RA : " + invalidConnections.size());
-
-                for (Object invalidConnection : invalidConnections) {
-                    ManagedConnection invalidManagedConnection = (ManagedConnection) invalidConnection;
-                    List<ResourceHandle> activeResources = new ArrayList<ResourceHandle>();
-                    ResourceHandle handle;
-                    try{
-                        while ((handle = ds.getResource()) != null) {
-                            if (invalidManagedConnection.equals(handle.getResource())) {
-                                ds.removeResource(handle);
-                                handler.invalidConnectionDetected(handle);
-                            } else {
-                                activeResources.add(handle);
+                    "of size : " + freeConnectionsToValidate.size());
+            int invalidConnectionsCount = 0;
+            ResourceHandle handle;
+            Set<ResourceHandle> validResources = new HashSet<ResourceHandle>();
+            try {
+                while ((handle = ds.getResource()) != null ) {
+                    //validate if the connection is one in the freeConnectionsToValidate
+                    if (freeConnectionsToValidate.contains(handle.toString())) {
+                        Set connectionsToTest = new HashSet();
+                        connectionsToTest.add(handle.getResource());
+                        Set invalidConnections = handler.getInvalidConnections(connectionsToTest);
+                        if (invalidConnections != null && invalidConnections.size() > 0) {
+                            for (Object o : invalidConnections) {
+                                ManagedConnection invalidConnection = (ManagedConnection)o;
+                                if(invalidConnection.equals(handle.getResource())){
+                                    ds.removeResource(handle);
+                                    handler.invalidConnectionDetected(handle);
+                                    invalidConnectionsCount++;
+                                }else{
+                                    //TODO V3 log fine - cannot happen
+                                }
                             }
+                        } else {
+                            //valid resource, return to pool
+                            validResources.add(handle);
                         }
-                    }finally{
-                        for (ResourceHandle activeResource : activeResources) {
-                            ds.returnResource(activeResource);
-                        }
+                    } else {
+                        //valid resource, return to pool
+                        validResources.add(handle);
                     }
-                    activeResources.clear();
-                    //TODO V3 can we have a DS-Cache such that book keeping ds for iteration, returning them individually is not needed.
-                    //TODO V3 dsCache.returnAll(set), dsCache.returnResource(r), dsCache.removeResource(r) etc.,
                 }
-            } else {
-                debug("RA does not support ValidatingManagedConnectionFactory");
+            } finally {
+                for(ResourceHandle resourceHandle : validResources){
+                    ds.returnResource(resourceHandle);
+                }
+                validResources.clear();
+                debug("No. of invalid connections received from RA : " + invalidConnectionsCount);
             }
         } catch (ResourceException re) {
             _logger.log(Level.FINE, "ResourceException while trying to get invalid connections from MCF", re);
