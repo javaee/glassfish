@@ -324,7 +324,14 @@ public class WebServicesDeployer extends WebDeployer {
         }
     }
 
-    
+    /**
+     * Loads the meta date associated with the application.
+     *
+     * @parameters type type of metadata that this deployer has declared providing.
+     */
+    public <V> V loadMetaData(Class<V> type, DeploymentContext context) {
+        return null;
+    }
 
     /**
      * Returns the meta data assocated with this Deployer
@@ -333,7 +340,7 @@ public class WebServicesDeployer extends WebDeployer {
      */
     @Override
     public MetaData getMetaData() {
-        return new MetaData(false, null, null );
+        return new MetaData(false, null, new Class[] {Application.class});
     }
     private void downloadWsdlsAndSchemas( URL httpUrl, File wsdlDir) throws Exception {
         // First make required directories and download this wsdl file
