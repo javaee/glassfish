@@ -384,7 +384,6 @@ public class TimerSchedule implements Serializable {
         }
 
         Calendar next = new GregorianCalendar();
-        int currYear = next.get(Calendar.YEAR);
         next.add(Calendar.SECOND, 1);
         next.set(Calendar.MILLISECOND, 0);
 
@@ -392,9 +391,15 @@ public class TimerSchedule implements Serializable {
             return getNextTimeout(next, 0);
         }
 
+        int currYear = next.get(Calendar.YEAR);
         for(int year : years) {
             if (year < currYear) {
                 continue;
+            }
+
+            if (next.get(Calendar.YEAR) == year) {
+                next = getNextTimeout(next, year);
+                break;
             }
 
             if (next.get(Calendar.YEAR) < year) {
@@ -408,6 +413,7 @@ public class TimerSchedule implements Serializable {
             }
         }
 
+        //System.out.println("... returning ... " + next.getTime() + " <> " + next.getTimeInMillis());
         return next;
     }
 
@@ -416,14 +422,13 @@ public class TimerSchedule implements Serializable {
      * Returns the Date of the next possible timeout for a specific
      * year value and starting date. If year is 0, any year will be correct.
      */
-    public Calendar getNextTimeout(Calendar next, int year) {
+    private Calendar getNextTimeout(Calendar next, int year) {
         while (end_ == null || !next.getTime().after(end_)) {
 
             if (year != 0 && next.get(Calendar.YEAR) > year) {
                 break;
             }
 
-            int currvalue = next.get(Calendar.MONTH);
             if(skipToNextValue(next, months, Calendar.MONTH, Calendar.YEAR)) {
                 next.set(Calendar.DAY_OF_MONTH, 1);
                 next.set(Calendar.HOUR_OF_DAY, 0);
@@ -459,14 +464,14 @@ public class TimerSchedule implements Serializable {
                 Calendar date2 = (Calendar)next.clone();
                 boolean changed = false;
 
-                //System.out.println("==> Processing DAY_OF_MONTH ...");
+                //System.out.println("==> Processing 1 DAY_OF_MONTH ...");
                 if(skipToNextValue(date1, daysOfMonth, Calendar.DAY_OF_MONTH, Calendar.MONTH)) {
                     date1.set(Calendar.HOUR_OF_DAY, 0);
                     date1.set(Calendar.MINUTE, 0);
                     date1.set(Calendar.SECOND, 0);
                 }
 
-                //System.out.println("==> Processing DAY_OF_WEEK ...");
+                //System.out.println("==> Processing 2 DAY_OF_WEEK ...");
                 if(skipToNextValue(date2, daysOfWeek, Calendar.DAY_OF_WEEK, Calendar.WEEK_OF_MONTH)) {
                     date2.set(Calendar.HOUR_OF_DAY, 0);
                     date2.set(Calendar.MINUTE, 0);
@@ -706,6 +711,7 @@ public class TimerSchedule implements Serializable {
             if (nextvalue == -1) 
                 throw new IllegalArgumentException("Should not happen - no value found");
 
+            //System.out.println(".... seting " + field + " ... to ... " + nextvalue);
             date.set(field, nextvalue);
             changed = true;
         }
