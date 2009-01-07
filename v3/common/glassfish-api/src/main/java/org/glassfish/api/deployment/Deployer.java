@@ -41,13 +41,12 @@ import org.glassfish.api.container.Container;
  */
 public interface Deployer<T extends Container, U extends ApplicationContainer> {
 
-
     /**
      * Returns the meta data assocated with this Deployer
      *
      * @return the meta data for this Deployer
      */
-    public MetaData getMetaData();
+    public MetaData getMetaData();    
 
     /**
      * Loads the meta date associated with the application.

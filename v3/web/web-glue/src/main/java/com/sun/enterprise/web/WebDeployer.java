@@ -75,10 +75,6 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
     @Inject
     RequestDispatcher dispatcher;
 
-    private static final String DEFAULT_WEB_XML = "default-web.xml";
-
-    private static WebBundleDescriptor defaultWebXMLWbd = null;
-
     /**
      * Constructor
      */
@@ -97,17 +93,13 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
      */
     public MetaData getMetaData() {
 
-        return new MetaData(false,
-                new Class[] { Application.class }, null);
-    }    
-
-    protected WebBundleDescriptor getDefaultBundleDescriptor() {
-        return getDefaultWebXMLBundleDescriptor();
+        return new MetaData(false, null,
+                new Class[] { Application.class });
     }
 
-    @Override
-    protected Application parseModuleMetaData(DeploymentContext dc) throws Exception {
-        Application app = super.parseModuleMetaData(dc);
+    public <V> V loadMetaData(Class<V> type, DeploymentContext dc) {
+        
+        Application app = dc.getModuleMetaData(Application.class);
 
         WebBundleDescriptor wbd = null;
 
@@ -150,7 +142,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
         // will be persisted in domain.xml
         dc.getProps().setProperty(ServerTags.CONTEXT_ROOT, contextRoot);
 
-        return app;
+        return null;
     }
 
     private WebModuleConfig loadWebModuleConfig(DeploymentContext dc) {
@@ -226,78 +218,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
             }
         }
     }
-    
-    
-    /**
-     * @return a copy of default WebBundleDescriptor populated from
-     * default-web.xml
-     */
-    public WebBundleDescriptor getDefaultWebXMLBundleDescriptor() {
-        initDefaultWebXMLBundleDescriptor();
-
-        // when default-web.xml exists, add the default bundle descriptor
-        // as the base web bundle descriptor
-        WebBundleDescriptor defaultWebBundleDesc =
-            new WebBundleDescriptor();
-        if (defaultWebXMLWbd != null) {
-            defaultWebBundleDesc.addWebBundleDescriptor(defaultWebXMLWbd);
-        }
-        return defaultWebBundleDesc;
-    }
-
-
-    /**
-     * initialize the default WebBundleDescriptor from
-     * default-web.xml
-     */
-    private synchronized void initDefaultWebXMLBundleDescriptor() {
-
-        if (defaultWebXMLWbd != null) {
-            return;
-        }
-
-        InputStream fis = null;
-
-        try {
-            // parse default-web.xml contents 
-            URL defaultWebXml = getDefaultWebXML();
-            if (defaultWebXml!=null)  {
-                fis = defaultWebXml.openStream();
-                WebDeploymentDescriptorFile wddf =
-                    new WebDeploymentDescriptorFile();
-                wddf.setXMLValidation(false);
-                defaultWebXMLWbd = wddf.read(fis);
-            }
-        } catch (Exception e) {
-            LogDomains.getLogger(WebDeployer.class, LogDomains.WEB_LOGGER).
-                warning("Error in parsing default-web.xml");
-        } finally {
-            try {
-                if (fis != null) {
-                    fis.close();
-                }
-            } catch (IOException ioe) {
-                // do nothing
-            }
-        }
-    }
-
-    /**
-     * Obtains the location of <tt>default-web.xml</tt>.
-     * This allows subclasses to load the file from elsewhere.
-     *
-     * @return
-     *      null if not found, in which case the default web.xml will not be read
-     *      and <tt>web.xml</tt> in the applications need to have everything.
-     */
-    protected URL getDefaultWebXML() throws IOException {
-        File file = new File(env.getConfigDirPath(),DEFAULT_WEB_XML);
-        if (file.exists())
-            return file.toURI().toURL();
-        else
-            return null;
-    }
-
+        
     /**
      * This method setups the in/outDir and classpath and invoke
      * JSPCompiler.

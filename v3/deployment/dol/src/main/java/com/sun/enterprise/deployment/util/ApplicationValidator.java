@@ -42,6 +42,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import org.jvnet.hk2.annotations.Service;
+
 /**
  * This class is responsible for validating the loaded DOL classes and 
  * transform some of the raw XML information into refined values used 
@@ -49,6 +51,7 @@ import java.util.Iterator;
  *
  * @author Jerome Dochez
  */
+@Service(name="application_deploy")
 public class ApplicationValidator extends EjbBundleValidator 
     implements ApplicationVisitor, EjbBundleVisitor, EjbVisitor {
     
@@ -57,7 +60,7 @@ public class ApplicationValidator extends EjbBundleValidator
     
     /**
      * visit an application object
-     * @param the application descriptor
+     * @param application the application descriptor
      */
     public void accept(Application application) {
         this.application = application;
@@ -65,7 +68,7 @@ public class ApplicationValidator extends EjbBundleValidator
             
     /**
      * visits an ejb bundle descriptor
-     * @param an ejb bundle descriptor
+     * @param bundleDescriptor an ejb bundle descriptor
      */
     public void accept(EjbBundleDescriptor bundleDescriptor) {
         
@@ -97,14 +100,14 @@ public class ApplicationValidator extends EjbBundleValidator
     /**
      * visit a web bundle descriptor
      *
-     * @param the web bundle descriptor
+     * @param descriptor the web bundle descriptor
      */
     public void accept(WebBundleDescriptor descriptor) {
     }   
     
     /**
      * visits a appclient descriptor
-     * @param appclientdescriptor
+     * @param appclientdescriptor the application client descriptor
      */
     public void accept(ApplicationClientDescriptor appclientdescriptor) {
         bundleDescriptor = appclientdescriptor;        
@@ -126,7 +129,7 @@ public class ApplicationValidator extends EjbBundleValidator
     /**
      * visit a web component descriptor
      *
-     * @param the web component
+     * @param descriptor the web component
      */
     public void accept(WebComponentDescriptor descriptor) {
         //set default value

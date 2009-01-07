@@ -222,7 +222,9 @@ public class DeploymentContextImpl implements DeploymentContext {
     }
 
     public void addModuleMetaData(Object metaData) {
-        modulesMetaData.put(metaData.getClass().getName(), metaData);
+        if (metaData!=null) {
+            modulesMetaData.put(metaData.getClass().getName(), metaData);
+        }
     }
 
     public <T> T getModuleMetaData(Class<T> metadataType) {

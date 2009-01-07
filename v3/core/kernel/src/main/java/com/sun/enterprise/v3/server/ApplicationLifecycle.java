@@ -37,26 +37,19 @@ import com.sun.enterprise.v3.admin.AdminAdapter;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.ParameterNames;
-import org.glassfish.api.container.Adapter;
 import org.glassfish.api.container.Container;
-import org.glassfish.api.container.EndpointRegistrationException;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.*;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.DeploymentProperties;
-import org.glassfish.internal.data.ApplicationInfo;
-import org.glassfish.internal.data.ApplicationRegistry;
-import org.glassfish.internal.data.ContainerInfo;
-import org.glassfish.internal.data.ContainerRegistry;
-import org.glassfish.internal.data.ModuleInfo;
+import org.glassfish.internal.data.*;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigCode;
 import org.jvnet.hk2.config.ConfigSupport;
@@ -74,11 +67,6 @@ import java.util.logging.Logger;
 /**
  * Application Loader is providing utitily methods to load applications
  *
- * <p>
- * TODO: this class has a "feature-envy" problem. For better encapsulation and
- * API navigability, much of these methods should be moved to ApplicationInfo/
- * ContainerInfo/ModuleInfo. For example the {@link #start} method
- * clearly belongs to {@link ApplicationInfo} - KK.
  *
  * <p>
  * Having admin commands extend from this is also not a very good idea
@@ -139,6 +127,7 @@ public class ApplicationLifecycle {
      *
      * @param archive the archive to find the handler for
      * @return the archive handler or null if not found.
+     * @throws IOException when an error occur
      */
     public ArchiveHandler getArchiveHandler(ReadableArchive archive) throws IOException {
         for (ArchiveHandler handler : habitat.getAllByContract(ArchiveHandler.class)) {
@@ -155,8 +144,12 @@ public class ApplicationLifecycle {
 
         ProgressTracker tracker = new ProgressTracker() {
             public void actOn(Logger logger) {
-                myself.stop(get("started", ModuleInfo.class).toArray(new ModuleInfo[0]), context, logger);
-                myself.unload(get(ModuleInfo.class).toArray(new ModuleInfo[0]), null, context, report);
+                for (ModuleInfo module : get("started", ModuleInfo.class)) {
+                    module.stop(context, logger);
+                }
+                for (ModuleInfo module : get(ModuleInfo.class)) {
+                    module.unload(null, context, report);
+                }
                 myself.clean(get(Deployer.class).toArray(new Deployer[0]), context);
                 stopContainers(get(ContainerInfo.class).toArray(new ContainerInfo[0]), logger);
             }
@@ -164,6 +157,9 @@ public class ApplicationLifecycle {
 
         context.setPhase(DeploymentContextImpl.Phase.PREPARE);
         try {
+            ArchiveHandler handler = getArchiveHandler(context.getSource());
+            context.createClassLoaders(clh, handler);
+
             LinkedList<ContainerInfo> sortedContainerInfos =
                 setupContainerInfos(sniffers, context, report, tracker);
             if (sortedContainerInfos==null || sortedContainerInfos.isEmpty()) {
@@ -187,9 +183,7 @@ public class ApplicationLifecycle {
             // we start the application
             if (Boolean.valueOf(context.getCommandParameters().getProperty(
                 ParameterNames.ENABLED))) {
-                if (start(appInfo, context, report, tracker)==null) {
-                    return null;
-                }
+                appInfo.start(context, report, tracker);
             }
 
             return appInfo;
@@ -203,8 +197,6 @@ public class ApplicationLifecycle {
 
     public ApplicationInfo enable(String appName, final DeploymentContextImpl context, final ActionReport report) {
 
-        final ApplicationLifecycle myself = this;
-
         final ApplicationInfo appInfo = appRegistry.get(appName);
 
         final Collection<Sniffer> sniffers = snifferManager.getSniffers(context.getSource(),
@@ -214,7 +206,9 @@ public class ApplicationLifecycle {
             // this is an enable after deploy without server restart
             ProgressTracker tracker = new ProgressTracker() {
                 public void actOn(Logger logger) {
-                    myself.unload(get("started", ModuleInfo.class).toArray(new ModuleInfo[0]), appInfo, context, report);
+                    for (ModuleInfo module : get("started", ModuleInfo.class)) {
+                        module.unload(appInfo, context, report);
+                    }
                 }
             };
 
@@ -235,7 +229,9 @@ public class ApplicationLifecycle {
                 }
 
                 load(containerInfos, appInfo, context, report, tracker);
-                return start(appInfo, context, report, tracker);
+                appInfo.start(context, report, tracker); 
+                return appInfo;
+
             } catch (Exception e) {
                 report.failure(logger, "Exception while enabling the app", e);
                 tracker.actOn(logger);
@@ -256,14 +252,15 @@ public class ApplicationLifecycle {
     /**
      * Suspends this application.
      *
+     * @param appName the registration application ID
      * @return true if suspending was successful, false otherwise.
      */
-    public boolean suspend(String appName, ActionReport report) {
+    public boolean suspend(String appName) {
         boolean isSuccess = true;
 
         ApplicationInfo appInfo = appRegistry.get(appName);
         if (appInfo != null) {
-            isSuccess = suspend(appInfo.getModuleInfos(), logger);
+            isSuccess = appInfo.suspend(logger);
         }
 
         return isSuccess;
@@ -272,15 +269,15 @@ public class ApplicationLifecycle {
     /**
      * Resumes this application.
      *
+     * @param appName the registration application ID
      * @return true if resumption was successful, false otherwise.
      */
-    public boolean resume(String appName, ActionReport report) {
+    public boolean resume(String appName) {
         boolean isSuccess = true;
 
         ApplicationInfo appInfo = appRegistry.get(appName);
         if (appInfo != null) {
-            isSuccess = resumeModules(Arrays.asList(appInfo.getModuleInfos()),
-                                      logger);
+            isSuccess = appInfo.resume(logger);
         }
 
         return isSuccess;
@@ -291,7 +288,8 @@ public class ApplicationLifecycle {
             Iterable<Sniffer> sniffers, DeploymentContextImpl context,
             ActionReport report, ProgressTracker tracker) throws Exception {
 
-        //List<ContainerInfo> startedContainers = new ArrayList<ContainerInfo>();
+        Map<Deployer, ContainerInfo> containerInfosByDeployers = new HashMap<Deployer, ContainerInfo>();
+
         for (Sniffer sniffer : sniffers) {
             if (sniffer.getContainersNames() == null || sniffer.getContainersNames().length == 0) {
                 report.failure(logger, "no container associated with application of type : " + sniffer.getModuleType(), null);
@@ -303,122 +301,105 @@ public class ApplicationLifecycle {
                 report.failure(logger, "cannot find container module from service implementation " + sniffer.getClass(), null);
                 return null;
             }
+            final String containerName = sniffer.getContainersNames()[0];
 
             // start all the containers associated with sniffers.
-            ContainerInfo containerInfo = containerRegistry.getContainer(sniffer.getContainersNames()[0]);
+            ContainerInfo containerInfo = containerRegistry.getContainer(containerName);
             if (containerInfo == null) {
                 // need to synchronize on the registry to not end up starting the same container from
                 // different threads.
+                Collection<ContainerInfo> containersInfo=null;
                 synchronized (containerRegistry) {
-                    if (containerRegistry.getContainer(sniffer.getContainersNames()[0]) == null) {
-                        Collection<ContainerInfo> containersInfo = setupContainer(sniffer, snifferModule, logger, report);
+                    if (containerRegistry.getContainer(containerName) == null) {
+                        containersInfo = setupContainer(sniffer, snifferModule, logger, report);
                         if (containersInfo == null || containersInfo.size() == 0) {
                             String msg = "Cannot start container(s) associated to application of type : " + sniffer.getModuleType();
                             report.failure(logger, msg, null);
                             throw new Exception(msg);
                         }
-                        tracker.addAll(ContainerInfo.class, containersInfo);
                     }
                 }
+
+                // now start all containers, by now, they should be all setup...
+                if (!startContainers(containersInfo, logger, report)) {
+                    final String msg = "Aborting, Failed to start container " + containerName;
+                    report.failure(logger, msg, null);
+                    throw new Exception(msg);
+                }
+                tracker.addAll(ContainerInfo.class, containersInfo);
             }
-
-        }
-
-        // now start all containers, by now, they should be all setup...
-        if (!startContainers(tracker.get(ContainerInfo.class), logger, report)) {
-            String msg = "Failed to start containers";
-            report.failure(logger, msg, null);
-            throw new Exception(msg);
+            containerInfo = containerRegistry.getContainer(sniffer.getContainersNames()[0]);
+            if (containerInfo==null) {
+                final String msg = "Aborting, Failed to start container " + containerName;
+                report.failure(logger, msg, null);
+                throw new Exception(msg);
+            }
+            Deployer deployer = getDeployer(containerInfo);
+            if (deployer==null) {
+                report.failure(logger, "Got a null deployer out of the " + containerInfo.getContainer().getClass() + " container");
+                return null;
+            }
+            containerInfosByDeployers.put(deployer, containerInfo);
         }
 
         // all containers that have recognized parts of the application being deployed
         // have now been successfully started. Start the deployment process.
 
-        // sort deployers based on medata required and provided by them
+        List<ApplicationMetaDataProvider> providers = new LinkedList<ApplicationMetaDataProvider>();
+        providers.addAll(habitat.getAllByContract(ApplicationMetaDataProvider.class));
 
-        // first spearate them in buckets...
         LinkedList<ContainerInfo> sortedContainerInfos = new LinkedList<ContainerInfo>();
-        Map<Class, Deployer> metaDataProvided = new HashMap<Class, Deployer>();
-        Map<Class, List<Deployer>> metaDataRequired = new HashMap<Class, List<Deployer>>();
-        Map<Deployer, ContainerInfo> containerInfosByDeployers = new HashMap<Deployer, ContainerInfo>();
-        for (Sniffer sniffer : sniffers) {
-            for (String containerName : sniffer.getContainersNames()) {
-                ContainerInfo<?, ?> containerInfo = containerRegistry.getContainer(containerName);
-                Deployer deployer = getDeployer(containerInfo);
-                if (deployer==null) {
-                    report.failure(logger, "Got a null deployer out of the " + containerInfo.getContainer().getClass() + " container");
-                    return null;
+
+        Map<Class, ApplicationMetaDataProvider> typeByProvider = new HashMap<Class, ApplicationMetaDataProvider>();
+        for (ApplicationMetaDataProvider provider : habitat.getAllByContract(ApplicationMetaDataProvider.class)) {
+            if (provider.getMetaData()!=null) {
+                for (Class provided : provider.getMetaData().provides()) {
+                     typeByProvider.put(provided, provider);
                 }
-                containerInfosByDeployers.put(deployer, containerInfo);
-                final MetaData metadata = deployer.getMetaData();
-                Class[] requires = (metadata==null?null:metadata.requires());
-                Class[] provides = (metadata==null?null:metadata.provides());
-                if( (requires == null || requires.length == 0) && (provides == null || provides.length == 0) ) {
-                    // the deployer neither requires not provides any metadata. Put it in sortedModuleinfo
-                    // they would effectively end up being in the middle of the list (see the sorting below)
-                    sortedContainerInfos.add(containerInfo);
-                } else {
-                    for (Class metadataType : metadata.requires()) {
-                        List<Deployer> requesters = metaDataRequired.get(metadataType);
-                        if (requesters == null) {
-                            //first requester deployer of this metadataType. Initialize the list
-                            requesters = new LinkedList<Deployer>();
-                            metaDataRequired.put(metadataType, requesters);
-                        }
-                        requesters.add(deployer);
-                    }
+            }
+        }
+
+        // check if everything is provided.
+        for (ApplicationMetaDataProvider provider : habitat.getAllByContract(ApplicationMetaDataProvider.class)) {
+            if (provider.getMetaData()!=null) {
+                 for (Class dependency : provider.getMetaData().requires()) {
+                     if (!typeByProvider.containsKey(dependency)) {
+                         report.failure(logger, "ApplicationMetaDataProvider " + provider + " requires "
+                                 + dependency + " but no other ApplicationMetaDataProvider provides it", null);
+                         return null;
+                     }
+                 }
+            }
+        }
+
+        Map<Class, Deployer> typeByDeployer = new HashMap<Class, Deployer>();
+        for (Deployer deployer : containerInfosByDeployers.keySet()) {
+            if (deployer.getMetaData()!=null) {
+                for (Class provided : deployer.getMetaData().provides()) {
+                    typeByDeployer.put(provided, deployer);
                 }
-                if (metadata!=null) {
-                    for (Class metadataType : metadata.provides()) {
-                        Deployer currentProvidindDeployer = metaDataProvided.get(metadataType);
-                        if (currentProvidindDeployer != null) {
-                            report.failure(logger, "More than one deployer [" + currentProvidindDeployer + ", " + deployer
-                                    + "] provide same metadata : " + metadataType, null);
-                        }
-                        metaDataProvided.put(metadataType, deployer);
+            }
+        }
+
+        for (Deployer deployer : containerInfosByDeployers.keySet()) {
+            if (deployer.getMetaData()!=null) {
+                for (Class dependency : deployer.getMetaData().requires()) {
+                    if (!typeByDeployer.containsKey(dependency) && !typeByProvider.containsKey(dependency)) {
+                        report.failure(logger, "Deployer " + dependency + " requires " + deployer + " but no other deployer provides it", null);
+                        return null;
                     }
                 }
             }
         }
 
-        // now sort...
-        for (Map.Entry<Class, List<Deployer>> entry  : metaDataRequired.entrySet()) {
-            if (metaDataProvided.containsKey(entry.getKey())) {
-                Deployer provider = metaDataProvided.get(entry.getKey());
-                // TODO : better sorting job.
-                sortedContainerInfos.addFirst(containerInfosByDeployers.get(provider));
-                for (Deployer requester : entry.getValue()) {
-                    sortedContainerInfos.add(containerInfosByDeployers.get(requester));
-                }
-
-            } else {
-                report.failure(logger, "Deployer " + metaDataRequired.get(entry.getKey()) + " requires " + entry.getKey() + " but no other deployer provides it", null);
-                return null;
-            }
+        // ok everything is satisfied, just a matter of running things in order
+        LinkedList<Deployer> orderedDeployers = new LinkedList<Deployer>();
+        for (Deployer deployer : containerInfosByDeployers.keySet()) {
+            loadDeployer(orderedDeployers, deployer, typeByDeployer, typeByProvider, context);
         }
 
-        return sortedContainerInfos;
-    }
-
-    // prepare phase of the deployment
-    public ApplicationInfo prepare(
-        LinkedList<ContainerInfo> sortedContainerInfos,
-        DeploymentContextImpl context, ActionReport report,
-        ProgressTracker tracker) throws Exception {
-
-        List<Deployer> deployers = new ArrayList<Deployer>();
-        for (ContainerInfo containerInfo : sortedContainerInfos) {
-            Deployer deployer = containerInfo.getDeployer();
-            deployers.add(deployer);
-        }
-
-        ArchiveHandler handler = getArchiveHandler(context.getSource());
-        context.createClassLoaders(clh, handler);
-
-        for (ContainerInfo containerInfo : sortedContainerInfos) {
-
-            // get the deployer
-            Deployer<?,?> deployer = containerInfo.getDeployer();
+        // now load metadata from deployers.
+        for (Deployer deployer : orderedDeployers) {
 
             final MetaData metadata = deployer.getMetaData();
             try {
@@ -439,8 +420,58 @@ public class ApplicationLifecycle {
                 report.failure(logger, "Exception while invoking " + deployer.getClass() + " prepare method", e);
                 throw e;
             }
+            
+            sortedContainerInfos.add(containerInfosByDeployers.get(deployer));
         }
 
+        return sortedContainerInfos;
+    }
+
+    private void loadDeployer(LinkedList<Deployer> results, Deployer deployer, Map<Class, Deployer> typeByDeployer,  Map<Class, ApplicationMetaDataProvider> typeByProvider, DeploymentContext dc)
+        throws IOException {
+
+        if (results.contains(deployer)) {
+            return;
+        }
+        results.addFirst(deployer);
+        if (deployer.getMetaData()!=null) {
+            for (Class required : deployer.getMetaData().requires()) {
+                if (typeByDeployer.containsKey(required)) {
+                    loadDeployer(results,typeByDeployer.get(required), typeByDeployer, typeByProvider, dc);
+                } else {
+                    ApplicationMetaDataProvider provider = typeByProvider.get(required);
+                    if (provider==null) {
+                        logger.severe("I don't get it, file a bug, no-one is providing " + required + " yet it passed validation");
+                    } else {
+                        LinkedList<ApplicationMetaDataProvider> providers = new LinkedList<ApplicationMetaDataProvider>();
+
+                        addRecursively(providers, typeByProvider, provider);
+                        for (ApplicationMetaDataProvider p : providers) {
+                            dc.addModuleMetaData(p.load(dc));
+                        }
+                    }
+                }
+            }
+        }                
+    }
+
+    private void addRecursively(LinkedList<ApplicationMetaDataProvider> results, Map<Class, ApplicationMetaDataProvider> providers, ApplicationMetaDataProvider provider) {
+
+        results.addFirst(provider);
+        for (Class type : provider.getMetaData().requires()) {
+            if (providers.containsKey(type)) {
+                addRecursively(results, providers, providers.get(type));
+            }
+        }
+
+    }
+
+    // prepare phase of the deployment
+    public ApplicationInfo prepare(
+        LinkedList<ContainerInfo> sortedContainerInfos,
+        DeploymentContextImpl context, ActionReport report,
+        ProgressTracker tracker) throws Exception {
+        
         for (ContainerInfo containerInfo : sortedContainerInfos) {
 
             // get the deployer
@@ -451,7 +482,7 @@ public class ApplicationLifecycle {
 
                 // construct an incomplete ModuleInfo which will be later
                 // filled in at loading time
-                ModuleInfo moduleInfo = new ModuleInfo(containerInfo, null);
+                ModuleInfo moduleInfo = new ModuleInfo(containerInfo, adapter, null);
                 tracker.add(ModuleInfo.class, moduleInfo);
 
                 tracker.add(Deployer.class, deployer);
@@ -509,8 +540,7 @@ public class ApplicationLifecycle {
                 if (moduleInfos.length==0)  {
                     // if ModuleInfos have not been partially
                     // populated before
-                    ModuleInfo moduleInfo = new ModuleInfo(containerInfo,
-                        appCtr);
+                    ModuleInfo moduleInfo = new ModuleInfo(containerInfo, adapter, appCtr);
                     tracker.add(ModuleInfo.class, moduleInfo);
                 } else {
                     // fill in the previously partial populated ModuleInfo
@@ -539,130 +569,6 @@ public class ApplicationLifecycle {
         return appInfo;
     }
 
-    public ApplicationInfo start(
-        ApplicationInfo appInfo, DeploymentContextImpl context,
-        ActionReport report, ProgressTracker tracker) throws Exception {
-
-        // registers all deployed items.
-        for (ModuleInfo module : appInfo.getModuleInfos()) {
-
-            try {
-                start(module, context, report, tracker);
-            } catch(Exception e) {
-                report.failure(logger, "Exception while invoking " + module.getApplicationContainer().getClass() + " start method", e);
-                throw e;
-            }
-        }
-
-        return appInfo;
-    }
-
-    protected void start(ModuleInfo module, ApplicationContext context, ActionReport report, ProgressTracker tracker)
-        throws Exception{
-
-        if (!module.getApplicationContainer().start(context)) {
-            report.failure(logger, "Cannot start the container, check server.log for more information");
-            return;
-        }
-        tracker.add("started", ModuleInfo.class, module);
-
-        // add the endpoint
-        try {
-            Adapter appAdapter = Adapter.class.cast(module.getApplicationContainer());
-            adapter.registerEndpoint(appAdapter.getContextRoot(), appAdapter, module.getApplicationContainer());
-        } catch (ClassCastException e) {
-            // ignore the application may not publish endpoints.
-        }
-    }
-
-    protected void stop(ModuleInfo[] modules, ApplicationContext context, Logger logger) {
-
-        for (ModuleInfo module : modules) {
-            try {
-                stop(module, context, logger);
-            } catch(Exception e) {
-                logger.log(Level.SEVERE, "Cannot stop module " +
-                        module.getContainerInfo().getSniffer().getModuleType(),e );
-            }
-        }
-    }
-
-    public boolean stop(ModuleInfo module, ApplicationContext context,  Logger logger) {
-        // remove any endpoints if exists.
-        //@TODO change EndportRegistrationException processing if required
-        try {
-            final Adapter appAdapter = Adapter.class.cast(module.getApplicationContainer());
-            adapter.unregisterEndpoint(appAdapter.getContextRoot(), module.getApplicationContainer());
-        } catch (EndpointRegistrationException e) {
-            logger.log(Level.WARNING, "Exception during unloading module '" +
-                    module + "'", e);
-        } catch(ClassCastException e) {
-            // do nothing the application did not have an adapter
-        }
-
-       return module.getApplicationContainer().stop(context);
-    }
-
-    protected boolean suspend(ModuleInfo[] modules,
-                                     Logger logger) {
-
-        boolean isSuccess = true;
-
-        for (ModuleInfo module : modules) {
-            try {
-                module.getApplicationContainer().suspend();
-            } catch(Exception e) {
-                isSuccess = false;
-                logger.log(Level.SEVERE, "Error suspending module " +
-                           module.getContainerInfo().getSniffer().getModuleType(),e );
-            }
-        }
-
-        return isSuccess;
-    }
-
-    protected boolean resumeModules(Iterable<ModuleInfo> modules,
-                                    Logger logger) {
-
-        boolean isSuccess = true;
-
-        for (ModuleInfo module : modules) {
-            try {
-                module.getApplicationContainer().resume();
-            } catch(Exception e) {
-                isSuccess = false;
-                logger.log(Level.SEVERE, "Error resuming module " +
-                           module.getContainerInfo().getSniffer().getModuleType(),e );
-            }
-        }
-
-        return isSuccess;
-    }
-
-    protected void unload(ModuleInfo[] modules, ApplicationInfo info,  DeploymentContext context, ActionReport report) {
-
-        Set<ClassLoader> classLoaders = new HashSet<ClassLoader>();
-        for (ModuleInfo module : modules) {
-            if (module.getApplicationContainer()!=null && module.getApplicationContainer().getClassLoader()!=null) {
-                classLoaders.add(module.getApplicationContainer().getClassLoader());
-            }
-            try {
-                unload(module, info, context, report);
-            } catch(Throwable e) {
-                logger.log(Level.SEVERE, "Failed to unload from container type : " +
-                        module.getContainerInfo().getSniffer().getModuleType(), e);
-            }
-        }
-        // all modules have been unloaded, clean the class loaders...
-        for (ClassLoader cloader : classLoaders) {
-            try {
-                PreDestroy.class.cast(cloader).preDestroy();
-            } catch (Exception e) {
-                // ignore, the class loader does not need to be explicitely stopped.
-            }
-        }
-    }
-
     protected void clean(Deployer[] deployers, DeploymentContext context) {
         for (Deployer deployer : deployers) {
             try {
@@ -683,7 +589,7 @@ public class ApplicationLifecycle {
         return containersInfo;
     }
 
-    protected boolean startContainers(List<ContainerInfo> containersInfo, Logger logger, ActionReport report) {
+    protected boolean startContainers(Collection<ContainerInfo> containersInfo, Logger logger, ActionReport report) {
         for (ContainerInfo containerInfo : containersInfo) {
             Container container;
             try {
@@ -751,11 +657,7 @@ public class ApplicationLifecycle {
             return null;
 
         }
-
-        stop(info.getModuleInfos(), context, logger);
-
-        unload(info.getModuleInfos(), info, context, report);
-
+        info.unload(context, report);
         return info;
 
     }
@@ -779,25 +681,6 @@ public class ApplicationLifecycle {
             }
         }
         appRegistry.remove(appName);
-    }
-
-    protected boolean unload(ModuleInfo module,
-                                     ApplicationInfo info,
-                                     DeploymentContext context,
-                                     ActionReport report) {
-
-        // then remove the application from the container
-        Deployer deployer = module.getContainerInfo().getDeployer();
-        try {
-            deployer.unload(module.getApplicationContainer(), context);
-        } catch(Exception e) {
-            report.failure(context.getLogger(), "Exception while shutting down application container", e);
-            return false;
-        }
-        if (info!=null) {
-            module.getContainerInfo().remove(info);
-        }
-        return true;
     }
 
     // register application information in domain.xml

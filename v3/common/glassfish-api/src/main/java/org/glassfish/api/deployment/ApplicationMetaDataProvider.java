@@ -13,11 +13,11 @@ import java.io.IOException;
 public interface ApplicationMetaDataProvider<T> {
 
     /**
-     * Returns the deployment metadata associated with this application metadata provider
+     * Returns the meta data assocated with this Deployer
      *
-     * @return the metadata associated with this implementation
+     * @return the meta data for this Deployer
      */
-    MetaData getMetaData();
+    public MetaData getMetaData();    
 
     /**
      * Load the metadata associated with the deployment event
@@ -25,5 +25,5 @@ public interface ApplicationMetaDataProvider<T> {
      * @return the loaded metadata
      * @throws IOException when the underlying archive cannot be processed correctly
      */
-    T load(DeploymentContext dc, Object defaultValue) throws IOException;
+    public T load(DeploymentContext dc) throws IOException;
 }

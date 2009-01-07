@@ -43,22 +43,23 @@ import com.sun.enterprise.deployment.io.DescriptorConstants;
 import com.sun.enterprise.deployment.io.WebDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.runtime.WebRuntimeDDFile;
 import com.sun.enterprise.deployment.util.*;
+import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.archive.Archive;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import org.xml.sax.SAXParseException;
 
-import javax.enterprise.deploy.shared.ModuleType;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.File;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Vector;
-import java.util.logging.Level;
+import java.net.URL;
 
 
 /**
@@ -66,14 +67,20 @@ import java.util.logging.Level;
  * archive files (war).
  *
  * @author  Jerome Dochez
- * @version 
+ * @version
  */
 @Service
 @Scoped(PerLookup.class)
-public class WebArchivist extends Archivist<WebBundleDescriptor> 
+public class WebArchivist extends Archivist<WebBundleDescriptor>
     implements PrivateArchivist {
 
-    /** 
+
+    private static final String DEFAULT_WEB_XML = "default-web.xml";
+
+    @Inject
+    ServerEnvironment env;
+
+    /**
      * The DeploymentDescriptorFile handlers we are delegating for XML i/o
      */
     DeploymentDescriptorFile standardDD = new WebDeploymentDescriptorFile();
@@ -88,8 +95,8 @@ public class WebArchivist extends Archivist<WebBundleDescriptor>
     @Override
     public XModuleType getModuleType() {
         return XModuleType.WAR;
-    }        
-    
+    }
+
     /**
      * Archivist read XML deployment descriptors and keep the
      * parsed result in the DOL descriptor instances. Sets the descriptor
@@ -104,18 +111,18 @@ public class WebArchivist extends Archivist<WebBundleDescriptor>
             else
                 this.descriptor=null;
         }
-    }  
-    
-    /** 
-     * @return the location of the web services related deployment 
+    }
+
+    /**
+     * @return the location of the web services related deployment
      * descriptor file inside this archive or null if this archive
      * does not support webservices implementation.
      */
     @Override
     public String getWebServicesDeploymentDescriptorPath() {
         return DescriptorConstants.WEB_WEBSERVICES_JAR_ENTRY;
-    }    
-    
+    }
+
     /**
      * @return the DeploymentDescriptorFile responsible for handling
      * standard deployment descriptor
@@ -124,7 +131,7 @@ public class WebArchivist extends Archivist<WebBundleDescriptor>
     public DeploymentDescriptorFile getStandardDDFile() {
         return standardDD;
     }
-    
+
     /**
      * @return if exists the DeploymentDescriptorFile responsible for
      * handling the configuration deployment descriptors
@@ -132,23 +139,61 @@ public class WebArchivist extends Archivist<WebBundleDescriptor>
     @Override
     public DeploymentDescriptorFile getConfigurationDDFile() {
         return new WebRuntimeDDFile();
-    }      
-    
+    }
+
     /**
      * @return a default BundleDescriptor for this archivist
      */
     @Override
-    public WebBundleDescriptor getDefaultBundleDescriptor() {
+    public synchronized WebBundleDescriptor getDefaultBundleDescriptor() {
+
+        if (defaultBundleDescriptor==null) {
+
+            defaultBundleDescriptor = new WebBundleDescriptor();
+            InputStream fis = null;
+
+            try {
+                // parse default-web.xml contents
+                URL defaultWebXml = getDefaultWebXML();
+                if (defaultWebXml!=null)  {
+                    fis = defaultWebXml.openStream();
+                    WebDeploymentDescriptorFile wddf =
+                        new WebDeploymentDescriptorFile();
+                    wddf.setXMLValidation(false);
+                    defaultBundleDescriptor.addWebBundleDescriptor(wddf.read(fis));
+                }
+            } catch (Exception e) {
+                LogDomains.getLogger(WebArchivist.class, LogDomains.WEB_LOGGER).
+                    warning("Error in parsing default-web.xml");
+            } finally {
+                try {
+                    if (fis != null) {
+                        fis.close();
+                    }
+                } catch (IOException ioe) {
+                    // do nothing
+                }
+            }
+        }
         return defaultBundleDescriptor;
     }
 
     /**
-     * set a default BundleDescriptor for this archivist
+     * Obtains the location of <tt>default-web.xml</tt>.
+     * This allows subclasses to load the file from elsewhere.
+     *
+     * @return
+     *      null if not found, in which case the default web.xml will not be read
+     *      and <tt>web.xml</tt> in the applications need to have everything.
      */
-    @Override
-    public void setDefaultBundleDescriptor(WebBundleDescriptor defaultWbd) {
-        defaultBundleDescriptor = defaultWbd;
+    protected URL getDefaultWebXML() throws IOException {
+        File file = new File(env.getConfigDirPath(),DEFAULT_WEB_XML);
+        if (file.exists())
+            return file.toURI().toURL();
+        else
+            return null;
     }
+
 
     /**
      * perform any post deployment descriptor reading action
@@ -182,11 +227,11 @@ public class WebArchivist extends Archivist<WebBundleDescriptor>
         }
         descriptor.setClassLoader(cl);
         descriptor.visit((WebBundleVisitor) new ApplicationValidator());
-    }            
+    }
 
     /**
-     * In the case of web archive, the super handles() method should be able 
-     * to make a unique identification.  If not, then the archive is definitely 
+     * In the case of web archive, the super handles() method should be able
+     * to make a unique identification.  If not, then the archive is definitely
      * not a war.
      */
     @Override
@@ -199,26 +244,26 @@ public class WebArchivist extends Archivist<WebBundleDescriptor>
     protected String getArchiveExtension() {
         return WEB_EXTENSION;
     }
-    
+
     /**
      * @return a list of libraries included in the archivist
      */
     public Vector getLibraries(Archive archive) {
-        
+
         Enumeration<String> entries = archive.entries();
         if (entries==null)
             return null;
-        
-        Vector libs = new Vector();        
+
+        Vector libs = new Vector();
         while (entries.hasMoreElements()) {
-            
+
             String entryName = entries.nextElement();
             if (!entryName.startsWith("WEB-INF/lib")) {
                 continue; // not in WEB-INF...
             }
             if (entryName.endsWith(".jar")) {
                 libs.add(entryName);
-            }            
+            }
         }
         return libs;
     }
@@ -230,7 +275,7 @@ public class WebArchivist extends Archivist<WebBundleDescriptor>
         readStandardFragment(descriptor, archive);
         super.postStandardDDsRead(descriptor, archive);
         // apply default from default-web.xml
-        if (defaultBundleDescriptor != null) {
+        if (getDefaultBundleDescriptor() != null) {
             descriptor.addWebBundleDescriptor(defaultBundleDescriptor, true);
         }
     }

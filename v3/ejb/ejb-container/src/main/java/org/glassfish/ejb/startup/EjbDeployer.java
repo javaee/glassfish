@@ -27,7 +27,6 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -72,34 +71,16 @@ public class EjbDeployer
     public EjbDeployer() {
 
     }
-    
+
 
     protected String getModuleType () {
         return "ejb";
-    }
-
-    protected RootDeploymentDescriptor getDefaultBundleDescriptor() {
-        return null;
     }
 
     @Override
     public MetaData getMetaData() {
         return new MetaData(false,
                 new Class[] {EjbBundleDescriptor.class}, new Class[] {Application.class});
-    }
-
-    @Override
-    public <V> V loadMetaData(Class<V> type, DeploymentContext dc) {
-        if (type==EjbBundleDescriptor.class) {
-            Application app = dc.getModuleMetaData(Application.class);
-            if (app!=null) {
-                Set<EjbBundleDescriptor> bundles = app.getEjbBundleDescriptors();
-                if (bundles!=null && !bundles.isEmpty()) {
-                    return type.cast(bundles.iterator().next());
-                }
-            }
-        }
-        return super.loadMetaData(type, dc);
     }
 
     @Override

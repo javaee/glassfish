@@ -77,11 +77,8 @@ public class TomcatDeployer extends JavaEEDeployer<TomcatContainer, TomcatApplic
     
     private static final String ADMIN_VS = "__asadmin";
 
-    private static final String DEFAULT_WEB_XML = "default-web.xml";
-
     private TomcatModuleListener webModuleListener;
 
-    private static WebBundleDescriptor defaultWebXMLWbd = null;
 
     /**
      * Constructor
@@ -90,14 +87,10 @@ public class TomcatDeployer extends JavaEEDeployer<TomcatContainer, TomcatApplic
 
         webModuleListener = new TomcatModuleListener();
     }
-    
+
 
     protected String getModuleType () {
         return "web";
-    }
-
-    protected WebBundleDescriptor getDefaultBundleDescriptor() {
-        return getDefaultWebXMLBundleDescriptor();
     }
 
     @Override
@@ -221,7 +214,7 @@ public class TomcatDeployer extends JavaEEDeployer<TomcatContainer, TomcatApplic
     /*
      * @return true if the list of target virtual server names matches an
      * alias name of the given virtual server, and false otherwise
-     */ 
+     */
     private boolean isAliasMatched(List targets, StandardHost vs){
 
         String[] aliasNames = vs.getAliases();
@@ -233,61 +226,4 @@ public class TomcatDeployer extends JavaEEDeployer<TomcatContainer, TomcatApplic
 
         return false;
     }
-
-    /**
-     * @return a copy of default WebBundleDescriptor populated from
-     * default-web.xml
-     */                                                                
-    public WebBundleDescriptor getDefaultWebXMLBundleDescriptor() {
-        initDefaultWebXMLBundleDescriptor();
-
-        // when default-web.xml exists, add the default bundle descriptor
-        // as the base web bundle descriptor
-        WebBundleDescriptor defaultWebBundleDesc =
-            new WebBundleDescriptor();
-        if (defaultWebXMLWbd != null) {
-            defaultWebBundleDesc.addWebBundleDescriptor(defaultWebXMLWbd);
-        }
-        return defaultWebBundleDesc;
-    }
-
-
-    /**
-     * initialize the default WebBundleDescriptor from
-     * default-web.xml
-     */
-    private synchronized void initDefaultWebXMLBundleDescriptor() {
-
-        if (defaultWebXMLWbd != null) {
-            return;
-        }
-
-        FileInputStream fis = null;
-
-        try {
-            // parse default-web.xml contents 
-            String defaultWebXMLPath = env.getConfigDirPath() +
-                File.separator + DEFAULT_WEB_XML;
-            File file = new File(defaultWebXMLPath);
-            if (file.exists()) {
-                fis = new FileInputStream(file);
-                WebDeploymentDescriptorFile wddf =
-                    new WebDeploymentDescriptorFile();
-                wddf.setXMLValidation(false);
-                defaultWebXMLWbd = (WebBundleDescriptor) wddf.read(fis);
-            }
-        } catch (Exception e) {
-            LogDomains.getLogger(TomcatDeployer.class,LogDomains.WEB_LOGGER).
-                warning("Error in parsing default-web.xml");
-        } finally {
-            try {
-                if (fis != null) {
-                    fis.close();
-                }
-            } catch (IOException ioe) {
-                // do nothing
-            }
-        }
-    }
-
 }

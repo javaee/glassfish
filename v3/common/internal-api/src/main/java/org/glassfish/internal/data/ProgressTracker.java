@@ -34,17 +34,15 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.v3.server;
+package org.glassfish.internal.data;
 
 import java.util.*;
 import java.util.logging.Logger;
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: Feb 13, 2008
- * Time: 4:49:42 PM
- * To change this template use File | Settings | File Templates.
+ * Simple tracker objects to remember what operations were performed
+ *
+ * @author Jerome Dochez
  */
 public abstract class ProgressTracker {
 

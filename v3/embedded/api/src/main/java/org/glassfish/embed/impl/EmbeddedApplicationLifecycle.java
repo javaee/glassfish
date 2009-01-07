@@ -49,11 +49,11 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.internal.data.ContainerInfo;
 import org.glassfish.internal.data.ContainerRegistry;
+import org.glassfish.internal.data.ProgressTracker;
 import org.jvnet.hk2.annotations.Inject;
 
 import org.glassfish.deployment.common.DeploymentContextImpl;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
-import com.sun.enterprise.v3.server.ProgressTracker;
 
 /**
  *

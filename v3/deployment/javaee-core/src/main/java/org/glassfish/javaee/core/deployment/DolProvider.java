@@ -10,7 +10,6 @@ import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.deployment.common.DeploymentProperties;
 import org.xml.sax.SAXParseException;
 import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.util.ApplicationVisitor;
 import com.sun.enterprise.deployment.deploy.shared.DeploymentPlanArchive;
 import com.sun.enterprise.deployment.archivist.Archivist;
@@ -41,10 +40,10 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
     protected ArchiveFactory archiveFactory;
 
     public MetaData getMetaData() {
-        return null;
+        return new MetaData(false, new Class[] { Application.class }, null);
     }
 
-    public Application load(DeploymentContext dc, Object defaultValue) throws IOException {
+    public Application load(DeploymentContext dc) throws IOException {
 
         ReadableArchive sourceArchive = dc.getSource();
         ClassLoader cl = dc.getClassLoader();
@@ -56,8 +55,6 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
         archivist.setAnnotationProcessingRequested(true);
         archivist.setXMLValidation(false);
         archivist.setRuntimeXMLValidation(false);
-
-        archivist.setDefaultBundleDescriptor(RootDeploymentDescriptor.class.cast(defaultValue));
 
         // we only expand deployment plan once in the first deployer
         if (dc.getModuleMetaData(Application.class) == null) {
