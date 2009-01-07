@@ -97,6 +97,25 @@ public class ServerPipeCreator extends org.glassfish.webservices.ServerPipeCreat
         return new CommonServerSecurityPipe(props, tail, isHttpBinding);
     }    
     
+//    @Override
+//    public @NotNull
+//    Tube createSecurityTube(ServerTubelineAssemblyContext ctxt) {
+//        HashMap props = new HashMap();
+//
+//        /*TODO V3 enable
+//	props.put(PipeConstants.POLICY,map);
+//	props.put(PipeConstants.SEI_MODEL,sei);
+//	props.put(PipeConstants.WSDL_MODEL,port);
+//	props.put(PipeConstants.ENDPOINT,owner);
+//	props.put(PipeConstants.SERVICE_ENDPOINT,endpoint);
+//	props.put(PipeConstants.NEXT_PIPE,tail);
+//        props.put(PipeConstants.CONTAINER, owner.getContainer());
+//        if (isSecurityEnabled(map, port)) {
+//		endpoint.setSecurePipeline();
+//        }*/
+//
+//        return new CommonServerSecurityTube(props, ctxt.getTubelineHead(), isHttpBinding);
+//    }
     /**
      * Checks to see whether WS-Security is enabled or not.
      *

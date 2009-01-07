@@ -40,11 +40,14 @@ import java.util.HashMap;
 
 import com.sun.xml.ws.api.pipe.Pipe;
 import com.sun.xml.ws.assembler.ClientPipelineHook;
+//import com.sun.xml.ws.assembler.ClientTubelineAssemblyContext;
 import com.sun.xml.ws.api.pipe.ClientPipeAssemblerContext;
 import com.sun.xml.ws.policy.PolicyMap;
 
 import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
 import com.sun.enterprise.security.jmac.config.ConfigHelper.AuthConfigRegistrationWrapper;
+import com.sun.istack.NotNull;
+import com.sun.xml.ws.api.pipe.Tube;
 
 /**
  * This is used by WSClientContainer to return proper 196 security pipe
@@ -88,4 +91,38 @@ public class ClientPipeCreator extends ClientPipelineHook {
   
         return ret;
     }
+    
+//    @Override
+//    public @NotNull
+//    Tube createSecurityTube(ClientTubelineAssemblyContext ctxt) {
+//       
+//        
+//        HashMap propBag = new HashMap();
+//        /*TODO V3 enable
+//        propBag.put(PipeConstants.POLICY, map);
+//        propBag.put(PipeConstants.WSDL_MODEL, ctxt.getWsdlModel());
+//        propBag.put(PipeConstants.SERVICE, ctxt.getService());
+//        propBag.put(PipeConstants.BINDING, ctxt.getBinding());
+//        propBag.put(PipeConstants.ENDPOINT_ADDRESS, ctxt.getAddress());
+//        propBag.put(PipeConstants.SERVICE_REF, svcRef);
+//	propBag.put(PipeConstants.NEXT_PIPE,tail);
+//        propBag.put(PipeConstants.CONTAINER,ctxt.getContainer());
+//         */
+//        ClientSecurityTube ret = new ClientSecurityTube(propBag, ctxt.getTubelineHead());
+//        AuthConfigRegistrationWrapper listenerWrapper = ClientPipeCloser.getInstance().lookupListenerWrapper(svcRef);
+//        //there is a 1-1 mapping between Service_Ref and a ListenerWrapper
+//        if (listenerWrapper != null) {
+//            //override the listener that was created by the ConfigHelper CTOR :if one was already registered
+//            listenerWrapper.incrementReference();
+//            ret.getPipeHelper().setRegistrationWrapper(listenerWrapper);
+//        } else {
+//            //register a new listener
+//            ClientPipeCloser.getInstance().registerListenerWrapper(
+//                    svcRef, ret.getPipeHelper().getRegistrationWrapper());
+//        }
+//  
+//        return ret;
+//        
+//    }
+    
 }
