@@ -84,6 +84,7 @@ public class ConnectorsClassLoaderUtil {
 
     //TODO V3 handling "unexploded jars" for now, V2 deployment module used to explode the jars also
     private void appendJars(File moduleDir, EJBClassLoader cl) throws MalformedURLException {
+        //TODO V3 for embedded rars - manifest classpath
         if (moduleDir.isDirectory()) {
             for (File file : moduleDir.listFiles()) {
                 if (file.getName().toUpperCase().endsWith(".JAR")) {
