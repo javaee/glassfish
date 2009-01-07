@@ -73,6 +73,7 @@ public class ResourceHandle implements
     private int shareCount;   // sharing within a component (XA only)
     private boolean supportsXAResource = false;
 
+    private volatile boolean busy;
 
     private Subject subject = null;
 
@@ -355,5 +356,13 @@ public class ResourceHandle implements
 
     public void enlistedInTransaction(Transaction tran) throws IllegalStateException {
         ConnectorRuntime.getRuntime().getPoolManager().resourceEnlisted(tran, this);
+    }
+
+    public void setBusy(boolean isBusy){
+        busy = isBusy;
+    }
+
+    public boolean isBusy(){
+        return busy;
     }
 }
