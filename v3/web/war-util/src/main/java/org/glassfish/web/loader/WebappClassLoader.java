@@ -1384,7 +1384,7 @@ public class WebappClassLoader
             throw new ThreadDeath();
         }
 
-        // (0) Check our previously loaded local class cache
+        // Check our previously loaded local class cache
         clazz = findLoadedClass0(name);
         if (clazz != null) {
             if (logger.isLoggable(Level.FINER)) {
@@ -1393,7 +1393,7 @@ public class WebappClassLoader
             return (clazz);
         }
 
-        // (0.1) Check our previously loaded class cache
+        // Check our previously loaded class cache
         clazz = findLoadedClass(name);
         if (clazz != null) {
             if (logger.isLoggable(Level.FINER)) {
@@ -1402,7 +1402,7 @@ public class WebappClassLoader
             return (clazz);
         }
 
-        // (0.5) Permission to access this class when using a SecurityManager
+        // Permission to access this class when using a SecurityManager
         if ( securityManager != null && packageDefinitionEnabled){
             int i = name.lastIndexOf('.');
             if (i >= 0) {
@@ -1417,32 +1417,47 @@ public class WebappClassLoader
             }
         }
 
-        boolean delegateLoad = delegate;
+        ClassLoader delegateLoader = parent;
+        if (delegateLoader == null) {
+            delegateLoader = system;
+        }
 
-        // (1) Delegate to our parent if requested
-        if (delegateLoad) {
+        if (delegate) {
+            // Check delegate first
             if (logger.isLoggable(Level.FINER)) {
-                logger.finer("  Delegating to parent classloader1 " + parent);
+                logger.finer("  Delegating to classloader1 " + delegateLoader);
             }
-            ClassLoader loader = parent;
-            if (loader == null)
-                loader = system;
             try {
-                clazz = loader.loadClass(name);
+                clazz = delegateLoader.loadClass(name);
                 if (clazz != null) {
                     if (logger.isLoggable(Level.FINER)) {
-                        logger.finer("  Loading class from parent");
+                        logger.finer("  Loading class from delegate");
                     }
-                    return (clazz);
+                    return clazz;
                 }
             } catch (ClassNotFoundException e) {
                 ;
             }
+
+            // Check local repositories next
+            if (logger.isLoggable(Level.FINER)) {
+                logger.finer("  Searching local repositories");
+            }
+            clazz = findClass(name);
+            if (clazz != null) {
+                if (logger.isLoggable(Level.FINER)) {
+                    logger.finer("  Loading class from local repository");
+                }
+                return clazz;
+            }
+        
+            throw new ClassNotFoundException(name);
         }
 
-        // (2) Search local repositories
+
+        // Search local repositories first (if permitted)
         boolean filterCoreClasses = filter(name);
-        if ( !filterCoreClasses ) {
+        if (!filterCoreClasses) {
             if (logger.isLoggable(Level.FINER)) {
                 logger.finer("  Searching local repositories");
             }
@@ -1452,53 +1467,36 @@ public class WebappClassLoader
                     if (logger.isLoggable(Level.FINER)) {
                         logger.finer("  Loading class from local repository");
                     }
-                    return (clazz);
+                    return clazz;
                 }
             } catch (ClassNotFoundException e) {
                 ;
             }
         }
 
-        // (3) Delegate to system unconditionally
+        // Delegate if class was not found locally, or was not permitted to
+        // be looked up locally
         if (logger.isLoggable(Level.FINER)) {
-            logger.finer("  Delegating to system classloader at end: " +
-                         parent);
+            logger.finer("  Delegating to classloader " + delegateLoader);
         }
         try {
-            clazz = system.loadClass(name);
+            clazz = delegateLoader.loadClass(name);
             if (clazz != null) {
                 if (logger.isLoggable(Level.FINER)) {
-                    logger.finer("  Loading class from system");
+                    logger.finer("  Loading class from delegate");
                 }
-                return (clazz);
+                return clazz;
             }
         } catch (ClassNotFoundException e) {
             ;
         }
 
-        // (4) Delegate to parent finally if the class wasn't found
-        try {
-            if (logger.isLoggable(Level.FINER)) {
-                logger.finer("  Delegating to parent classloader " + parent);
-            }
-            ClassLoader loader = parent;
-            if (loader != null) {
-                clazz = parent.loadClass(name);
-                if (clazz != null) {
-                    if (logger.isLoggable(Level.FINER)) {
-                        logger.finer("  Loading class from parent");
-                    }
-                    return (clazz);
-                }
-            }
-        } catch (ClassNotFoundException e) {
-            ;
-        }
-
-        // if filter(..) returned true and if we did not find
-        // the class using the parent/system classloader,
-        // then give a chance to this classloader.
-        if ( filterCoreClasses ) {
+        /*
+         * If filter() returned true and we did not find the class 
+         * using the delegate classloader, see if we can find the class
+         * locally.
+         */
+        if (filterCoreClasses) {
             if (logger.isLoggable(Level.FINER)) {
                 logger.finer("  Searching local repositories");
             }
@@ -1507,7 +1505,7 @@ public class WebappClassLoader
                 if (logger.isLoggable(Level.FINER)) {
                     logger.finer("  Loading class from local repository");
                 }
-                return (clazz);
+                return clazz;
             }
         }
 
