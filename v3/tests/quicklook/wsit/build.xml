@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+ Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+
+ The contents of this file are subject to the terms of either the GNU
+ General Public License Version 2 only ("GPL") or the Common Development
+ and Distribution License("CDDL") (collectively, the "License").  You
+ may not use this file except in compliance with the License. You can obtain
+ a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ language governing permissions and limitations under the License.
+
+ When distributing the software, include this License Header Notice in each
+ file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ Sun designates this particular file as subject to the "Classpath" exception
+ as provided by Sun in the GPL Version 2 section of the License file that
+ accompanied this code.  If applicable, add the following below the License
+ Header, with the fields enclosed by brackets [] replaced by your own
+ identifying information: "Portions Copyrighted [year]
+ [name of copyright owner]"
+
+ Contributor(s):
+
+ If you wish your version of this file to be governed by only the CDDL or
+ only the GPL Version 2, indicate your decision by adding "[Contributor]
+ elects to include this software in this distribution under the [CDDL or GPL
+ Version 2] license."  If you don't indicate a single choice of license, a
+ recipient has the option to distribute your version of this file under
+ either the CDDL, the GPL Version 2 or to extend the choice of license to
+ its licensees as provided above.  However, if you add GPL Version 2 code
+ and therefore, elected the GPL Version 2 license, then the option applies
+ only if the new code is made subject to such option by the copyright
+ holder.
+-->
+
+<project name="GlassFish-V3-wsit-QuickLook" default="all" basedir=".">
+    
+    <description>Builds, tests, and runs the project V3 WSIT, JAX-WS Quicklook</description>
+
+    <property file="build.properties"/>
+    <property file="${ws.root}/build.properties"/>
+    <property name="dist.dir" value="${ws.root}/dist/${testsuite.name}"/>
+
+    <import file="path-property-definitions.xml"/>
+    <import file="${tests.root}/gfproject/build-impl.xml"/>
+    <import file="${tests.root}/gfproject/v3-targets.xml"/>
+
+    <target name="all" depends="clean">
+        <record name="allrun.output" action="start"/>
+        <antcall target="restart-server"/>
+    	<antcall target="build-deploy"/>
+        <antcall target="runtests">
+            <param name="testng.xml" value="testng.xml"/>
+        </antcall>
+        <antcall target="undeploy"/>
+        <antcall target="stop-server"/>
+        <antcall target="testng-summary"/>
+        <antcall target="quicklook-summary"/>
+        <record name="allrun.output" action="stop"/>
+    </target>
+
+    <target name="restart-server">
+        <antcall target="stop-server"/>
+        <antcall target="start-server"/>
+    </target>
+  
+    <target name="build-deploy">
+        <record name="build.output" action="start"/>
+        <echo message="ANT PROJECT ${ant.project.name}"/>
+        <ant dir="wsitEnabledFromJava" target="server"/>
+        <ant dir="wsitEnabledFromJava" target="client"/>
+        <ant dir="wsitEnabledFromWsdl" target="server"/>
+        <ant dir="wsitEnabledFromWsdl" target="client"/>
+        <ant dir="wsitJaxWsFromJava" target="server"/>
+        <ant dir="wsitJaxWsFromJava" target="client"/>
+        <ant dir="wsitJaxWsFromWsdl" target="server"/>
+        <ant dir="wsitJaxWsFromWsdl" target="client"/>
+        <record name="build.output" action="stop"/>
+    </target>
+
+    <target name="runtests" depends="initprops">
+        <record name="runtestng.output" action="start"/>
+        <echo message="=============Starting TestNG functional tests from ${testng.xml} ============"/>
+        <property name="hasTestNGXML" value="true"/>
+
+        <mkdir dir="${test.report}"/>
+        <testng outputdir="${test.report}"
+                classpathref="wsit.classpath" classpath="${classes.dir}">
+            <jvmarg value="-Djava.compiler=NONE"/>
+            <jvmarg value="-Dhttp.host=${glassfish.http.host}"/>
+            <jvmarg value="-Dhttp.port=${glassfish.http.port}"/>
+            <sysproperty key="basedir" value="${basedir}"/>
+            <xmlfileset dir="." includes="${testng.xml}"/>
+        </testng>
+        <record name="runtestng.output" action="stop"/>
+    </target>
+
+
+
+    <target name="initprops">
+        <property name="build.class.dir" value="${basedir}/classes/test"/>
+        <!-- property name="test.report" value="${basedir}/test-output"/ -->
+        <property name="test.report" value="${tests.root}/test-output"/>
+        <mkdir dir="${test.report}"/>
+        <path id="run.testng.classpath">
+            <fileset dir="${glassfish.home}/modules">
+               <include name="**/*.jar"/>
+            </fileset>
+	    <pathelement path="${plugin_classpath}"/>
+            <pathelement location="${build.class.dir}"/>
+        </path>
+    </target>
+    
+    <target name="undeploy">
+        <record name="undeploy.output" action="start"/>
+        <ant dir="wsitEnabledFromJava" target="undeploy"/>
+        <ant dir="wsitEnabledFromWsdl" target="undeploy"/>
+        <ant dir="wsitJaxWsFromJava" target="undeploy"/>
+        <ant dir="wsitJaxWsFromWsdl" target="undeploy"/>
+        <record name="undeploy.output" action="stop"/>
+    </target>
+
+    
+    <target name="testng-summary">
+	<loadfile srcfile="runtestng.output" property="testng_output">
+	   <filterchain>
+	      <tailfilter lines="6"/>
+	   </filterchain>
+	</loadfile>
+        <echo message="${testng_output}"/>
+    </target>
+
+    <target name="quicklook-summary">
+        <tstamp>
+           <format property="end.timestamp" pattern="EE MM/dd/yyyy HH:mm:ss zz" />
+        </tstamp>
+        <echo file="quicklook_summary.txt" message="   ${end.timestamp} ${line.separator}" />
+        <loadfile srcfile="runtestng.output" property="testng_output">
+           <filterchain>
+              <tailfilter lines="4" skip="1"/>
+           </filterchain>
+        </loadfile>
+        <echo file="quicklook_summary.txt" append="true" message="${testng_output}"/>
+    </target>
+   
+</project>

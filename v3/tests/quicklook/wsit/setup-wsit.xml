@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+ Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+
+ The contents of this file are subject to the terms of either the GNU
+ General Public License Version 2 only ("GPL") or the Common Development
+ and Distribution License("CDDL") (collectively, the "License").  You
+ may not use this file except in compliance with the License. You can obtain
+ a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ language governing permissions and limitations under the License.
+
+ When distributing the software, include this License Header Notice in each
+ file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ Sun designates this particular file as subject to the "Classpath" exception
+ as provided by Sun in the GPL Version 2 section of the License file that
+ accompanied this code.  If applicable, add the following below the License
+ Header, with the fields enclosed by brackets [] replaced by your own
+ identifying information: "Portions Copyrighted [year]
+ [name of copyright owner]"
+
+ Contributor(s):
+
+ If you wish your version of this file to be governed by only the CDDL or
+ only the GPL Version 2, indicate your decision by adding "[Contributor]
+ elects to include this software in this distribution under the [CDDL or GPL
+ Version 2] license."  If you don't indicate a single choice of license, a
+ recipient has the option to distribute your version of this file under
+ either the CDDL, the GPL Version 2 or to extend the choice of license to
+ its licensees as provided above.  However, if you add GPL Version 2 code
+ and therefore, elected the GPL Version 2 license, then the option applies
+ only if the new code is made subject to such option by the copyright
+ holder.
+-->
+
+
+
+<project basedir="." default="install-wsit" name="setup-wsit">
+
+    <property name="glassfish.home" value="${glassfish.home}" />
+
+    <!-- download the wsit jars -->
+
+    <condition property="webservices.jar.version" value="2.0-SNAPSHOT">
+        <not>
+            <isset property="webservices.jar.version"/>
+        </not>
+    </condition>
+
+    <condition property="jaxb.jar.version" value="2.1.10-SNAPSHOT">
+        <not>
+            <isset property="jaxb.jar.version"/>
+        </not>
+    </condition>
+
+    <condition property="install.webservices.jar" value="true">
+        <not>
+            <available file="${glassfish.home}/modules/webservices.jar"/>
+        </not>
+    </condition>
+
+    <condition property="install.jaxb.jar" value="true">
+        <not>
+            <available file="${glassfish.home}/modules/jaxb.jar"/>
+        </not>
+    </condition>
+
+    <target name="install-wsit-jar" if="install.webservices.jar">
+        <!-- http://download.java.net/maven/2/com/sun/xml/ws/webservices/2.0-SNAPSHOT/webservices-2.0-SNAPSHOT-osgi.jar -->
+        <property name="webservices.url" value="http://download.java.net/maven/2/com/sun/xml/ws/webservices/${webservices.jar.version}/webservices-${webservices.jar.version}-osgi.jar"/>
+        <echo>Downloading webservices.jar from ${webservices.url}...</echo>
+        <get src="${webservices.url}" dest="${glassfish.home}/modules/webservices.jar"/>
+    </target>
+
+    <target name="install-jaxb-jar" if="install.jaxb.jar">
+        <!-- http://download.java.net/maven/2/com/sun/xml/bind/jaxb/2.1.10-SNAPSHOT/jaxb-2.1.10-SNAPSHOT-osgi.jar -->
+        <property name="jaxb.url" value="http://download.java.net/maven/2/com/sun/xml/bind/jaxb/${jaxb.jar.version}/jaxb-${jaxb.jar.version}-osgi.jar"/>
+        <echo>Downloading jaxb.jar from ${jaxb.url}...</echo>
+        <get src="${jaxb.url}" dest="${glassfish.home}/modules/jaxb.jar"/>
+    </target>
+
+    <target name="install-wsit" depends="install-wsit-jar, install-jaxb-jar">
+        <echo>install.webservices.jar = ${install.webservices.jar}</echo>
+        <echo>install.jaxb.jar = ${install.jaxb.jar}</echo>
+    </target>
+
+</project>
