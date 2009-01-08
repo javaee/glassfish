@@ -99,7 +99,7 @@
             <groupId>org.glassfish.connectors</groupId>
             <artifactId>connectors-inbound-runtime</artifactId>
             <version>${project.version}</version>
-            <optional>true</optional>
+            <!--<optional>true</optional>-->
         </dependency>
 
         <dependency>
