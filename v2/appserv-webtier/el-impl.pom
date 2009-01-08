@@ -1,7 +1,0 @@
-<project>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>el-impl</groupId>
-  <artifactId>el-impl</artifactId>
-  <version>@VERSION@</version>
-  <name>Expression Language Implementation</name>
-</project>

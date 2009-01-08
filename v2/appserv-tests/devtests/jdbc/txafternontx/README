@@ -1,4 +1,0 @@
-Test for testing fix for bug 5037126.
-
-If we do a getnonTxConnection few times and then do a simple getConnection,
-we should get a transactional connection (autocommit = false)

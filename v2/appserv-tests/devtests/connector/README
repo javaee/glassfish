@@ -1,7 +1,0 @@
-unit tests on connector
-
-To let the connector devtests to run against Oracle: [properties at config/oracle.properties]
-- copy oracle jars to domains/domain1/lib/ext
-- restart domain
-- asant pe-all -Doracle=true
-

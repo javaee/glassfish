@@ -1,2 +1,0 @@
-Manifest-Version: 1.0
-Class-Path: appserv-rt_ja.jar appserv-rt_zh_CN.jar appserv-rt_zh_TW.jar appserv-rt_ko.jar appserv-rt_fr.jar appserv-rt_de.jar appserv-rt_es.jar
