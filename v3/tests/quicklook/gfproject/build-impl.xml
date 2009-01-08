@@ -314,4 +314,37 @@
     </testng>
 </target>
 
+
+<!-- the following targets are for running the wsit tests -->
+    <target name="runwsittest-impl">
+        <antcall target="runwsittest-impl-class"/>
+        <antcall target="runwsittest-impl-xml"/>
+    </target>
+
+    <target name="runwsittest-impl-class" depends="checkTestNGXML" unless="testng.xml.present">
+        <echo message="=============Starting TestNG test at ${test.class.output}  ============"/>
+        <mkdir dir="${result.output}"/>
+        <testng outputdir="${result.output}" verbose="2"
+        suitename="${testsuite.name}"
+        testname="${testng.test.name}"
+                classpathref="wsit.classpath" classpath="${build.classes.home}:${basedir}/etc">
+            <classfileset dir="${build.classes.home}" includes="**/${testng.testclient}.class"/>
+            <jvmarg value="-Dhttp.host=${glassfish.http.host}" />
+            <jvmarg value="-Dhttp.port=${glassfish.http.port}" />
+        </testng>
+    </target>
+
+    <target name="runwsittest-impl-xml" depends="checkTestNGXML" if="testng.xml.present">
+        <echo message="=============Starting TestNG test at ${test.class.output} from testng.xml  ============"/>
+        <mkdir dir="${result.output}"/>
+        <testng outputdir="${result.output}"
+        suitename="${testsuite.name}"
+        testname="${testng.test.name}"
+                classpathref="wsit.classpath" classpath="${build.classes.home}:${basedir}/etc">
+            <xmlfileset dir="." includes="testng.xml"/>
+            <jvmarg value="-Dhttp.host=${glassfish.http.host}" />
+            <jvmarg value="-Dhttp.port=${glassfish.http.port}" />
+        </testng>
+    </target>
+
 </project>
