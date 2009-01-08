@@ -93,7 +93,7 @@ public class WebModuleContextConfig extends ContextConfig {
     private static final Logger logger = LogDomains.getLogger(
         WebModuleContextConfig.class, LogDomains.WEB_LOGGER);
     
-    protected static final ResourceBundle rb = Constants.WEB_RESOURCE_BUNDLE;
+    protected static final ResourceBundle rb = logger.getResourceBundle();
 
     public final static int CHILDREN = 0;
     public final static int SERVLET_MAPPINGS = 1;

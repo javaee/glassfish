@@ -117,7 +117,7 @@ public class WebModule extends PwcWebModule {
     // ----------------------------------------------------- Class Variables
 
     private static final Logger logger = LogDomains.getLogger(WebModule.class, LogDomains.WEB_LOGGER);
-    protected static final ResourceBundle rb = Constants.WEB_RESOURCE_BUNDLE;
+    protected static final ResourceBundle rb = logger.getResourceBundle();
 
     private static final String ALTERNATE_FROM = "from=";
     private static final String ALTERNATE_DOCBASE = "dir=";

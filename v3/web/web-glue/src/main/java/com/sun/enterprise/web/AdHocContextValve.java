@@ -67,7 +67,7 @@ public class AdHocContextValve implements GlassFishValve {
     private static final Logger LOGGER =
         LogDomains.getLogger(AdHocContextValve.class,LogDomains.WEB_LOGGER);
 
-    private static final ResourceBundle rb = Constants.WEB_RESOURCE_BUNDLE;
+    private static final ResourceBundle rb = LOGGER.getResourceBundle();
 
     private static final String VALVE_INFO =
         "com.sun.enterprise.web.AdHocContextValve";

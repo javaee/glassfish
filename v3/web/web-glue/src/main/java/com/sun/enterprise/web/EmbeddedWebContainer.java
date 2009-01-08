@@ -67,16 +67,10 @@ import com.sun.web.server.WebContainerListener;
  */
 public final class EmbeddedWebContainer extends Embedded {
 
-    /**
-     * The logger to use for logging ALL web container related messages.
-     */
     protected static final Logger _logger
         = LogDomains.getLogger(EmbeddedWebContainer.class, LogDomains.WEB_LOGGER);
 
-    /**
-     * The resource bundle containing the message strings for _logger.
-     */
-    protected static final ResourceBundle rb = Constants.WEB_RESOURCE_BUNDLE;
+    protected static final ResourceBundle rb = _logger.getResourceBundle();
 
     private WebContainerFeatureFactory webContainerFeatureFactory;
 

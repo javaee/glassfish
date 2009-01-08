@@ -116,7 +116,4 @@ public final class Constants {
 
     // habitat attribute in ServletContext
     public static final String HABITAT_ATTRIBUTE = "org.glassfish.servlet.habitat";
-
-    public static final ResourceBundle WEB_RESOURCE_BUNDLE =
-        ResourceBundle.getBundle("com.sun.enterprise.web.LocalStrings");
 }

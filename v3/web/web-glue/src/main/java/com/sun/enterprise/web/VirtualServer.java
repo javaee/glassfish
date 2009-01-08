@@ -147,7 +147,7 @@ public class VirtualServer extends StandardHost {
     /**
      * The resource bundle containing the message strings for _logger.
      */
-    protected static final ResourceBundle rb = Constants.WEB_RESOURCE_BUNDLE;
+    protected static final ResourceBundle rb = _logger.getResourceBundle();
 
     /**
      * Indicates whether the logger level is set to any one of 

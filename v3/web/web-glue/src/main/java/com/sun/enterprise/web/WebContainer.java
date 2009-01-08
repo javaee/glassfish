@@ -217,6 +217,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     protected static final Logger _logger = LogDomains.getLogger(
             WebContainer.class, LogDomains.WEB_LOGGER);
 
+    protected static final ResourceBundle rb = _logger.getResourceBundle();
+
     /**
      * The current <code>WebContainer</code> instance used (single).
      */
@@ -306,11 +308,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     private Server _serverBean = null;
 
-
-    /**
-     * The resource bundle containing the message strings for _logger.
-     */
-    protected static final ResourceBundle rb = Constants.WEB_RESOURCE_BUNDLE;
 
     /*
      * The current web container monitoring level
