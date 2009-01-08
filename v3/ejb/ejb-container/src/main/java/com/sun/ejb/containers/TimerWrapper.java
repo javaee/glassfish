@@ -98,6 +98,9 @@ public class TimerWrapper
         throws IllegalStateException, NoSuchObjectLocalException {
 
         Date nextTimeout = getNextTimeout();
+        if (nextTimeout == null) {
+            return -1;
+        }
 
         Date now = new Date();
 

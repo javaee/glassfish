@@ -554,6 +554,7 @@ public class EJBTimerService
                     // tracking last expiration or an expiration hasn't
                     // occurred yet for this timer.
                     Date lastExpiration = timer.getLastExpiration();
+                    TimerSchedule ts = timer.getTimerSchedule();
 
                     // @@@ need to handle case where last expiration time
                     // is not stored in database.  This will be the case
@@ -579,8 +580,13 @@ public class EJBTimerService
                         // that the timer will return to fixed rate expiration.
                                                 
                     } else if ( (lastExpiration != null) &&
-                                ( (now.getTime() - lastExpiration.getTime()
+                            ((ts != null && ts.getNextTimeout().getTimeInMillis() >
+                                lastExpiration.getTime() && 
+                                ts.getNextTimeout().getTimeInMillis() < now.getTime()) 
+                            || ((ts == null) && now.getTime() - lastExpiration.getTime()
                                    > timer.getIntervalDuration()) ) ) {
+
+                        // Schedule-based timer is periodic
                         
                         logger.log(Level.INFO, 
                                    "Rescheduling missed expiration for " +
@@ -616,7 +622,15 @@ public class EJBTimerService
                     }
                 }
 
-                timersToRestore.put(timerState, expirationTime);
+                if (expirationTime == null) {
+                    // Schedule-based timer will never expire again - remove it.
+                    logger.log(Level.INFO,
+                            "Removing schedule-based timer " + timerState +
+                                   " that will never expire again");
+                    timerIdsToRemove.add(timerId);
+                } else {
+                    timersToRestore.put(timerState, expirationTime);
+                }
 
             } else {
                 // Timed object's container no longer exists - remember its id.
@@ -919,12 +933,7 @@ public class EJBTimerService
 
         TimerSchedule ts = timerState.getTimerSchedule();
         if (ts != null) {
-            Calendar next = ts.getNextTimeout();
-            if( ts.isValid(next) ) {
-                return next.getTime();
-            } else { // Expired or no timeouts available
-                return null;
-            }
+            return getNextScheduledTimeout(ts);
         }
 
         Date initialExpiration = timerState.getInitialExpiration();
@@ -1044,16 +1053,20 @@ public class EJBTimerService
 
         boolean expired = false;
         if (schedule != null) {
-            Calendar next = schedule.getNextTimeout();
-            if( !schedule.isValid(next) ) {
-                expired = true;
+            initialExpiration = getNextScheduledTimeout(schedule);
+
+            if( initialExpiration == null) {
                 logger.log(Level.INFO, "Schedule: " +
                                       schedule.getScheduleAsString() + 
                                       " already expired");
-            }
+                // schedule-based timer will never expire.
+                expired = true; 
 
-            initialExpiration = next.getTime();
+                // XXX Should it be created and removed on restart or never created?
+                return null;
+            }
         }
+
         RuntimeTimerState timerState = 
             new RuntimeTimerState(timerId, initialExpiration, 
                                   intervalDuration, container, 
@@ -1073,7 +1086,7 @@ public class EJBTimerService
                                        timedObjectPrimaryKey, 
                                        initialExpiration, intervalDuration, 
                                        schedule, timerConfig);
-                } else if (!expired) {
+                } else { // ??? if (!expired) {
                     addTimerSynchronization(null, 
                             timerId.getTimerId(), initialExpiration,
                             containerId, ownerIdOfThisServer_);
@@ -1284,7 +1297,9 @@ public class EJBTimerService
 
         Date nextTimeout = initialExpiration;
         if (ts != null) {
-            nextTimeout = ts.getNextTimeout().getTime();
+            nextTimeout = getNextScheduledTimeout(ts);
+            // The caller is responsible to return 0 or -1 for the time remaining....
+            
         } else if (intervalDuration > 0) {
             nextTimeout = calcNextFixedRateExpiration(initialExpiration, 
                                intervalDuration);
@@ -1577,8 +1592,8 @@ public class EJBTimerService
                     if (expiration != null) {
                         scheduleTask(timerId, expiration);
                     } else {
-                        // Do nothing: schedule-based timer ended.
-                        // cancelTimer(timerId);
+                        // schedule-based timer ended.
+                        cancelTimer(timerId);
                     }
                 } else {
                    
@@ -1916,6 +1931,19 @@ public class EJBTimerService
         String ownerIdOfThisServer = getOwnerIdOfThisServer();
         return ( (ownerIdOfThisServer != null) &&
                  (ownerIdOfThisServer.equals(ownerId)) );
+    }
+
+    /** 
+     * Returns next schedule-based timeout or null if such schedule will
+     * not expire again.
+     */
+    private Date getNextScheduledTimeout(TimerSchedule ts) {
+        Calendar next = ts.getNextTimeout();
+        if( ts.isValid(next) ) {
+            return next.getTime();
+        } else { // Expired or no timeouts available
+            return null;
+        }
     }
 
     private ContainerSynchronization getContainerSynch(EJBContextImpl context_, 
