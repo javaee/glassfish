@@ -1037,7 +1037,7 @@ public final class PEAccessLogValve
         // Validate and update our current component state
         if (started) {
             throw new LifecycleException
-                (_rb.getString("accessLogValve.alreadyStarted"));
+                (_rb.getString("peaccesslogvalve.alreadyStarted"));
         }
 
         lifecycle.fireLifecycleEvent(START_EVENT, null);
@@ -1103,7 +1103,7 @@ public final class PEAccessLogValve
         // Validate and update our current component state
         if (!started)
             throw new LifecycleException
-                (_rb.getString("accessLogValve.notStarted"));
+                (_rb.getString("peaccesslogvalve.notStarted"));
         lifecycle.fireLifecycleEvent(STOP_EVENT, null);
         started = false;
         
