@@ -10,6 +10,8 @@ import com.sun.ejte.ccl.reporter.*;
  * valve is added in between the two Tomcat-style valves, causing it to be
  * wrapped (by the container) inside a TomcatValveAdapter.
  * 
+ * Each of the valves adds an attribute to the request.
+ *
  * When the test accesses the webapp's servlet, it checks for the presence
  * of these attributes in the request, and will cause the test to fail if
  * any of them are missing.
