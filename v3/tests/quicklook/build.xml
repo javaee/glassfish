@@ -76,6 +76,7 @@
         <antcall target="stop-server"/>
         <antcall target="stop-derby"/>
         <antcall target="testng-summary"/>
+        <antcall target="quicklook-summary"/>
 	<copy file="test-output/emailable-report.html" tofile="test-output/QL-GP-report.html"/>
         <record name="allrun.output" action="stop"/>
     </target>
@@ -247,6 +248,7 @@
            </filterchain>
         </loadfile>
         <echo file="quicklook_summary.txt" append="true" message="${testng_output}"/>
+	<replace file="test-output/emailable-report.html" token="&lt;body&gt;" value="&lt;body&gt; &lt;H1&gt; GF QuickLook Test Results &lt;/H1&gt; Test Completed at: ${end.timestamp} &lt;p&gt; &lt;HR&gt; &lt;p&gt;"/>
     </target>
 
     <target name="archive" depends="initprops,clean">
