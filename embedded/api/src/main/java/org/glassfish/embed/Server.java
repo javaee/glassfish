@@ -52,6 +52,7 @@ import com.sun.enterprise.v3.server.DomainXml;
 import com.sun.enterprise.v3.server.DomainXmlPersistence;
 import com.sun.enterprise.v3.server.SnifferManager;
 import com.sun.enterprise.v3.services.impl.LogManagerService;
+import com.sun.enterprise.web.WebContainer;
 import com.sun.enterprise.web.WebDeployer;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.hk2.component.InhabitantsParser;
@@ -60,6 +61,7 @@ import com.sun.web.server.DecoratorForJ2EEInstanceListener;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.util.*;
+import org.apache.catalina.Engine;
 import org.glassfish.api.Startup;
 import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.container.Sniffer;
@@ -165,6 +167,8 @@ public class Server {
     /*pkg-private*/ /*almost  final*/ ServerEnvironmentImpl env;
     private String id;
 
+    private WebContainer wc;
+
     /**
      * TODO constructors and startup need revamping!
      */
@@ -250,6 +254,19 @@ public class Server {
      */
     public URL getDefaultWebXml() {
         return defaultWebXml;
+    }
+
+    /**
+     * Returns an array of <code>org.apache.catalina.Engine</code> objects
+     * associated with this <code>Server</code> object.  Server must
+     * be started before calling getEngines().  If it is not started EmbeddedException
+     * is thrown.
+     * @return Engine[]
+     * @throws org.glassfish.embed.EmbeddedException
+     */
+    public Engine[] getEngines() throws EmbeddedException {
+       mustBeStarted("getEngines");
+       return wc.getEngines();
     }
 
     public EmbeddedFileSystem getFileSystem() {
@@ -580,6 +597,7 @@ public class Server {
             snifMan = habitat.getComponent(SnifferManager.class);
             archiveFactory = habitat.getComponent(ArchiveFactory.class);
             env = habitat.getComponent(ServerEnvironmentImpl.class);
+            wc = habitat.getComponent(WebContainer.class);
         } catch (Exception e) {
             throw new EmbeddedException(e);
         }

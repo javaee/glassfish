@@ -15,6 +15,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Properties;
 import java.util.logging.Level;
+import org.apache.catalina.Engine;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -186,7 +187,34 @@ public class ServerTest {
             throw ee;
         } catch (Exception e) {
             System.out.println("Unxpected Exception: " + e);
-            fail("failed test: testStop_Success");
+            fail("failed test: testStop_Fail");
+        }
+    }
+
+    @Test
+    public void testGetEngines_Success() throws Exception {
+        System.out.println("getEngines Success");
+        String expResult = "com.sun.appserv";
+        String result = null;
+        server.start();
+        Engine[] engines = server.getEngines();
+        for (Engine e : engines) {
+            result = e.getName();
+        }
+        assertEquals(expResult, result);
+    }
+
+    @Test(expected=EmbeddedException.class)
+    public void testGetEngines_Fail() throws Exception {
+        System.out.println("getEngines Fail");
+        try {
+            server.getEngines();
+        } catch(EmbeddedException ee) {
+            System.out.println("Expected Exception: " + ee);
+            throw ee;
+        } catch (Exception e) {
+            System.out.println("Unxpected Exception: " + e);
+            fail("failed test: testGetEgines_Fail");
         }
     }
 
