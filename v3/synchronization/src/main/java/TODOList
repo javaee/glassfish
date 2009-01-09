@@ -1,4 +1,4 @@
-- Clean up code (priority high)
+
 - manifest generator updates *creating manifest with excludes* (priority low)
 - fix admin server to deal with multiple manifests
 - fix load balancer

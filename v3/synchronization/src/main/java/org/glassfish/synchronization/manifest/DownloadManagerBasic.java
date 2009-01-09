@@ -38,7 +38,7 @@ package org.glassfish.synchronization.manifest;
 import java.util.BitSet;
 
 /**
- * Class is responsible for  out which files to download next
+ * Class is responsible for which files to download next
  * 
  * @author Behrooz Khorashadi
  * 

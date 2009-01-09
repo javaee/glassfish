@@ -316,6 +316,6 @@ public class LimitBalancer implements LoadBalancerInterface {
 	 * number because if there is no redirect option then SyncAgent will be
 	 * served
 	 */
-	public final int MAX_SERVICE_NUM = 100;
+	public final int MAX_SERVICE_NUM = Integer.MAX_VALUE;
 
 }
