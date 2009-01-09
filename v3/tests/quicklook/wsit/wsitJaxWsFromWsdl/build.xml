@@ -131,6 +131,10 @@
 
     <target name="deploy">
         <copy file="${war.file}" todir="${deploy.dir}"/>
+        <!-- wait till the app gets deployed -->
+        <waitfor maxwait="3" maxwaitunit="minute" checkevery="500">
+             <http url="http://localhost:8080/wsitJaxWsFromWsdl/addnumbers?wsdl"/>
+        </waitfor>
     </target>
 
     <target name="help">
@@ -149,7 +153,7 @@
     <target  name="runtest">
         <antcall target="runwsittest-impl">
            <param name="testng.test.name" value="${testng.test.name}"/>
-           <param name="testng.testclient" value="WsitEnabledFromJavaTestNG"/>
+           <param name="testng.testclient" value="WsitJaxwsFromWsdlTestNG"/>
         </antcall>
     </target>
 

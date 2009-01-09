@@ -40,12 +40,12 @@
     <description>Builds, tests, and runs the project V3 WSIT, JAX-WS Quicklook</description>
 
     <property file="build.properties"/>
-    <property file="${ws.root}/build.properties"/>
+    <property file="${tests.root}/build.properties"/>
     <property name="dist.dir" value="${ws.root}/dist/${testsuite.name}"/>
 
-    <import file="path-property-definitions.xml"/>
     <import file="${tests.root}/gfproject/build-impl.xml"/>
     <import file="${tests.root}/gfproject/v3-targets.xml"/>
+    <import file="path-property-definitions.xml"/>
 
     <target name="all" depends="clean">
         <record name="allrun.output" action="start"/>

@@ -137,6 +137,10 @@
 
     <target name="deploy">
         <copy file="${war.file}" todir="${deploy.dir}"/>
+        <!-- wait till the app gets deployed -->
+        <waitfor maxwait="3" maxwaitunit="minute" checkevery="500">
+             <http url="http://localhost:8080/wsitEnabledFromWsdl/addnumbers?wsdl"/>
+        </waitfor>
     </target>
 
     <target name="help">
