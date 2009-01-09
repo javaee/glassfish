@@ -72,6 +72,7 @@ import java.util.Locale;
 import java.net.Socket;
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncListener;
+import javax.servlet.DispatcherType;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
@@ -1023,6 +1024,15 @@ public class RequestFacade
         }
 
         return request.getRemotePort();
+    }
+
+
+    public DispatcherType getDispatcherType() {
+        if (request == null) {
+            throw new IllegalStateException(
+                            sm.getString("requestFacade.nullRequest"));
+        }
+        return request.getDispatcherType();
     }
 
 

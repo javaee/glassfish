@@ -66,6 +66,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -120,13 +121,17 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
      * Construct a new wrapped request around the specified servlet request.
      *
      * @param request The servlet request being wrapped
+     * @param isFowardDispatch true if this wrapper is being created for a 
+     * RD.forward, false otherwise
      */
-    public ApplicationHttpRequest(HttpServletRequest request, Context context,
-                                  boolean crossContext) {
-
+    public ApplicationHttpRequest(HttpServletRequest request,
+                                  Context context,
+                                  boolean crossContext,
+                                  boolean isForwardDispatch) {
         super(request);
         this.context = context;
         this.crossContext = crossContext;
+        this.isForwardDispatch = isForwardDispatch;
         setRequest(request);
 
         if (context.getManager() != null) {
@@ -245,11 +250,11 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
     private HashMap specialAttributes = null;
 
 
-    /**
-     * true if this wrapper has been created for an include dispatch, false
-     * otherwise
+    /*
+     * true if this is a wrapper for RD.forward, false if otherwise (i.e.,
+     * this is a wrapper for RD.include)
      */
-    private boolean isIncludeDispatch = false;
+    private boolean isForwardDispatch = false;
 
 
     // ------------------------------------------------- ServletRequest Methods
@@ -390,6 +395,15 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
 
         return (context.getServletContext().getRequestDispatcher(relative));
 
+    }
+
+
+    public DispatcherType getDispatcherType() {
+        if (isForwardDispatch) {
+            return DispatcherType.FORWARD;
+        } else {
+            return DispatcherType.INCLUDE;
+        }
     }
 
 
@@ -863,26 +877,21 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
     /**
      * Initializes the special attributes of this request wrapper.
      *
-     * @param isIncludeDispatch true if the given attributes are for an
-     * include dispatch, false if they are for a forward dispatch
      * @param requestUri The request URI
      * @param contextPath The context path
      * @param servletPath The servlet path
      * @param pathInfo The path info
      * @param queryString The query string
      */
-    void initSpecialAttributes(boolean isIncludeDispatch,
-                               String requestUri,
+    void initSpecialAttributes(String requestUri,
                                String contextPath,
                                String servletPath,
                                String pathInfo,
                                String queryString) {
 
-        this.isIncludeDispatch = isIncludeDispatch;
-
         specialAttributes = new HashMap(5);
 
-        if (isIncludeDispatch) {        
+        if (!isForwardDispatch) {        
             specialAttributes.put(Globals.INCLUDE_REQUEST_URI_ATTR,
                                   requestUri);
             specialAttributes.put(Globals.INCLUDE_CONTEXT_PATH_ATTR,
@@ -1034,7 +1043,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
             while ((result == null) && (parentEnumeration.hasMoreElements())) {
                 String current = (String) parentEnumeration.nextElement();
                 if (!ApplicationRequest.isSpecial(current)
-                        || (isIncludeDispatch
+                        || (!isForwardDispatch
                             && current.startsWith("javax.servlet.forward")
                             && getAttribute(current) != null)) {
                     result = current;

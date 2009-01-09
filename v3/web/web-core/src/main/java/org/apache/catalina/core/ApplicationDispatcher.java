@@ -435,7 +435,7 @@ final class ApplicationDispatcher
                 log.fine(" Named Dispatcher Forward");
 
             ApplicationHttpRequest wrequest =
-                (ApplicationHttpRequest) wrapRequest(state);
+                (ApplicationHttpRequest) wrapRequest(state, true);
             wrequest.setRequestURI(hrequest.getRequestURI());
             wrequest.setContextPath(hrequest.getContextPath());
             wrequest.setServletPath(hrequest.getServletPath());
@@ -455,12 +455,11 @@ final class ApplicationDispatcher
                 log.fine(" Path Based Forward");
 
             ApplicationHttpRequest wrequest =
-                (ApplicationHttpRequest) wrapRequest(state);
+                (ApplicationHttpRequest) wrapRequest(state, true);
             String contextPath = context.getPath();
 
             if (hrequest.getAttribute(Globals.FORWARD_REQUEST_URI_ATTR) == null) { 
-                wrequest.initSpecialAttributes(false,
-                                               hrequest.getRequestURI(),
+                wrequest.initSpecialAttributes(hrequest.getRequestURI(),
                                                hrequest.getContextPath(),
                                                hrequest.getServletPath(),
                                                hrequest.getPathInfo(),
@@ -642,7 +641,7 @@ final class ApplicationDispatcher
                 log.fine("Named Dispatcher Include");
 
             ApplicationHttpRequest wrequest =
-                (ApplicationHttpRequest) wrapRequest(state);
+                (ApplicationHttpRequest) wrapRequest(state, false);
             wrequest.setAttribute(Globals.NAMED_DISPATCHER_ATTR, name);
             if (servletPath != null)
                 wrequest.setServletPath(servletPath);
@@ -669,9 +668,8 @@ final class ApplicationDispatcher
                 log.fine("Path Based Include");
 
             ApplicationHttpRequest wrequest =
-                (ApplicationHttpRequest) wrapRequest(state);
-            wrequest.initSpecialAttributes(true, 
-                                           requestURI,
+                (ApplicationHttpRequest) wrapRequest(state, false);
+            wrequest.initSpecialAttributes(requestURI,
                                            context.getPath(),
                                            servletPath,
                                            pathInfo,
@@ -1093,7 +1091,7 @@ final class ApplicationDispatcher
      * Create and return a request wrapper that has been inserted in the
      * appropriate spot in the request chain.
      */
-    private ServletRequest wrapRequest(State state) {
+    private ServletRequest wrapRequest(State state, boolean isForward) {
 
         // Locate the request we should insert in front of
         ServletRequest previous = null;
@@ -1127,9 +1125,9 @@ final class ApplicationDispatcher
             crossContextFlag = Boolean.valueOf(crossContext);
             //END OF 6364900
             wrapper = new ApplicationHttpRequest
-                (hcurrent, context, crossContext);
+                (hcurrent, context, crossContext, isForward);
         } else {
-            wrapper = new ApplicationRequest(current);
+            wrapper = new ApplicationRequest(current, isForward);
         }
         if (previous == null)
             state.outerRequest = wrapper;

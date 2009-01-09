@@ -86,6 +86,7 @@ import javax.naming.Binding;
 import javax.naming.directory.DirContext;
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncListener;
+import javax.servlet.DispatcherType;
 import javax.servlet.FilterChain;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
@@ -368,6 +369,7 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
     public String getLocalName() { return null; }
     public int getLocalPort() { return -1; }
     public int getRemotePort() { return -1; }
+    public DispatcherType getDispatcherType() { return null; }
     public AsyncContext startAsync() throws IllegalStateException { return null; }
     public AsyncContext startAsync(ServletRequest servletRequest,
                                    ServletResponse servletResponse)
