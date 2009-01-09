@@ -28,6 +28,7 @@ public class WebTest {
         try {
             webTest.doForward();
             webTest.doInclude();
+            webTest.doError();
             stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             stat.addStatus(TEST_NAME, stat.FAIL);
@@ -56,6 +57,21 @@ public class WebTest {
 
         URL url = new URL("http://" + host  + ":" + port
                           + contextRoot + "/From?mode=include");
+        System.out.println("Connecting to: " + url.toString());
+
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.connect();
+        int responseCode = conn.getResponseCode();
+
+        if (responseCode != 200) {
+            throw new Exception("Unexpected return code: " + responseCode);
+        }
+    }
+
+    public void doError() throws Exception {
+
+        URL url = new URL("http://" + host  + ":" + port
+                          + contextRoot + "/From?mode=error");
         System.out.println("Connecting to: " + url.toString());
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();

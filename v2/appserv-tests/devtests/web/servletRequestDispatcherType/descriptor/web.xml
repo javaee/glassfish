@@ -20,6 +20,11 @@
         <servlet-class>IncludeTarget</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>ErrorTarget</servlet-name>
+        <servlet-class>ErrorTarget</servlet-class>
+    </servlet>
+
     <servlet-mapping>
         <servlet-name>From</servlet-name>
         <url-pattern>/From</url-pattern>
@@ -34,6 +39,16 @@
         <servlet-name>IncludeTarget</servlet-name>
         <url-pattern>/IncludeTarget</url-pattern>
     </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ErrorTarget</servlet-name>
+        <url-pattern>/ErrorTarget</url-pattern>
+    </servlet-mapping>
+
+    <error-page>
+        <error-code>555</error-code>
+        <location>/ErrorTarget</location>
+    </error-page>
 
 </web-app>
 
