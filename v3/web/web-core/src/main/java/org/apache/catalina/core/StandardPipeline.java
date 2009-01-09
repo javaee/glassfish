@@ -60,6 +60,7 @@ package org.apache.catalina.core;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.logging.*;
 
 import javax.management.ObjectName;
@@ -872,10 +873,9 @@ public class StandardPipeline
      * GlassFish releases prior to V3), which has since been renamed
      * to org.glassfish.web.valve.GlassFishValve (in V3).
      *
-     * The check is done by reflectively calling the valve's invoke method
-     * that returns an int. If this throws an AbstractMethodError, we
-     * know that the given valve is Tomcat-based, since the invoke method
-     * in the original Valve interface from Tomcat is declared to be void.
+     * The check is done by checking that it is not an abstract method with
+     * return type int. Note that invoke method in the original Tomcat-based
+     * Valve interface is declared to be void.
      *
      * @param valve the valve to check
      *
@@ -888,18 +888,8 @@ public class StandardPipeline
                         "invoke",
                         org.apache.catalina.Request.class,
                         org.apache.catalina.Response.class);
-            if (m != null && int.class.equals(m.getReturnType())) {
-                try {
-                    m.invoke(valve, null, null);
-                    return true;
-                } catch (AbstractMethodError ame) {
-                    return false;
-                } catch (Exception e) {
-                    return true;
-                }
-            } else {
-                return false;
-            }
+            return (m != null && int.class.equals(m.getReturnType())
+                    && (!Modifier.isAbstract(m.getModifiers())));
         } catch (Exception e) {
             return false;
         }
