@@ -54,7 +54,7 @@ public class ApplicationRegistry {
 
     public synchronized void add(String name, ApplicationInfo info) {
         apps.put(name, info);
-        for (ModuleInfo module : info.getModuleInfos()) {
+        for (EngineRef module : info.getModuleInfos()) {
             module.getContainerInfo().add(info);    
         }
     }
@@ -66,7 +66,7 @@ public class ApplicationRegistry {
     public synchronized void remove(String name) {
 
         ApplicationInfo oldApp = apps.remove(name);
-        for (ModuleInfo module : oldApp.getModuleInfos()) {
+        for (EngineRef module : oldApp.getModuleInfos()) {
             module.getContainerInfo().remove(name);
         }
 

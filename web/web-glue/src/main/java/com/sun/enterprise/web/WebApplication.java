@@ -38,6 +38,8 @@ package com.sun.enterprise.web;
 
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ApplicationConfig;
+import com.sun.enterprise.config.serverbeans.Module;
+import com.sun.enterprise.config.serverbeans.Engine;
 import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.web.EnvironmentEntry;
@@ -196,27 +198,33 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
          * Fetch the WebModuleConfig object, if any was stored in the startup parameters
          * so we could retrieve it here.
          */
-        Object configList = startupParams.get(DeploymentProperties.APP_CONFIG);
-        if (configList != null) {
+        Application application = (Application) startupParams.get("APPLICATION_CONFIG");
+        if (application==null) {
+            return;
+        }
+        WebBundleDescriptor descriptor = wmInfo.getDescriptor();
+
+        Module module = application.getModule(descriptor.getModuleDescriptor().getName());
+        if (module!=null) {
             try {
-                List<ApplicationConfig> configs = (List<ApplicationConfig>) configList;
-                org.glassfish.web.plugin.common.WebModuleConfig c =
-                        Application.Duck.getApplicationConfig(configs,
-                        org.glassfish.web.plugin.common.WebModuleConfig.class);
-                if (c != null) {
-                    WebBundleDescriptor descriptor = wmInfo.getDescriptor();
+                Engine engine = module.getEngine("org.glassfish.web.sniffer.WebSniffer");
+                if (engine!=null) {
+                    org.glassfish.web.plugin.common.WebModuleConfig c =
+                            (org.glassfish.web.plugin.common.WebModuleConfig) engine.getConfig();
+                    if (c != null) {
 
-                    EnvEntryCustomizer envEntryCustomizer =
-                            new EnvEntryCustomizer(
-                                descriptor.getEnvironmentEntrySet(),
-                                c.getEnvEntry());
-                    ContextParamCustomizer contextParamCustomizer =
-                            new ContextParamCustomizer(
-                                descriptor.getContextParametersSet(),
-                                c.getContextParam());
+                        EnvEntryCustomizer envEntryCustomizer =
+                                new EnvEntryCustomizer(
+                                    descriptor.getEnvironmentEntrySet(),
+                                    c.getEnvEntry());
+                        ContextParamCustomizer contextParamCustomizer =
+                                new ContextParamCustomizer(
+                                    descriptor.getContextParametersSet(),
+                                    c.getContextParam());
 
-                    envEntryCustomizer.applyCustomizations();
-                    contextParamCustomizer.applyCustomizations();
+                        envEntryCustomizer.applyCustomizations();
+                        contextParamCustomizer.applyCustomizations();
+                    }
                 }
             } catch (ClassCastException ex) {
                 /*

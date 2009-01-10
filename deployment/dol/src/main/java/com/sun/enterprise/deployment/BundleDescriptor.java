@@ -41,7 +41,6 @@ import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
 
-import javax.enterprise.deploy.shared.ModuleType;
 import javax.persistence.EntityManagerFactory;
 import java.net.URI;
 import java.net.URISyntaxException;

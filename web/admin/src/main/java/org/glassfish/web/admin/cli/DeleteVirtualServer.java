@@ -37,6 +37,7 @@ package org.glassfish.web.admin.cli;
 
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
@@ -71,7 +72,7 @@ public class DeleteVirtualServer implements AdminCommand {
     @Inject
     HttpService httpService;
 
-    @Inject
+    @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Server server;
 
     //xxx

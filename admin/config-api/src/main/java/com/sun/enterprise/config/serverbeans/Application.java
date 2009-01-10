@@ -50,10 +50,7 @@ import java.beans.VetoableChangeSupport;
 import java.io.Serializable;
 import java.util.List;
 
-import org.glassfish.api.admin.config.PropertyDesc;
-import org.glassfish.api.admin.config.PropertiesDesc;
-import org.glassfish.api.admin.config.Property;
-import org.glassfish.api.admin.config.PropertyBag;
+import org.glassfish.api.admin.config.*;
 
 import org.glassfish.quality.ToDo;
 
@@ -69,24 +66,7 @@ import org.glassfish.quality.ToDo;
 }) */
 @org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ApplicationConfig")
 @Configured
-public interface Application extends ConfigBeanProxy, Injectable, Module, PropertyBag {
-
-    /**
-     * Gets the value of the name property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
-    @Attribute(required = true, key=true)
-    public String getName();
-
-    /**
-     * Sets the value of the name property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    public void setName(String value) throws PropertyVetoException;
+public interface Application extends ConfigBeanProxy, Injectable, Named, PropertyBag {
 
     /**
      * Gets the value of the contextRoot property.
@@ -224,6 +204,10 @@ public interface Application extends ConfigBeanProxy, Injectable, Module, Proper
      */
     public void setDescription(String value) throws PropertyVetoException;
 
+
+    @Element("*")
+    public List<Module> getModule();
+    
     /**
      * Gets the value of the engine property.
      * <p/>
@@ -302,6 +286,9 @@ public interface Application extends ConfigBeanProxy, Injectable, Module, Proper
     @DuckTyped
     public <T extends ApplicationConfig> T getApplicationConfig(Class<T> type);
 
+    @DuckTyped
+    public Module getModule(String moduleName);
+
     public class Duck {
         public static <T extends ApplicationConfig> T getApplicationConfig(Application me, Class<T> type) {
             return getApplicationConfig(me.getApplicationConfigs(), type);
@@ -313,6 +300,15 @@ public interface Application extends ConfigBeanProxy, Injectable, Module, Proper
             for (ApplicationConfig ac : candidates) {
                 if (type.isInstance(ac)) {
                     return (T) ac;
+                }
+            }
+            return null;
+        }
+
+        public static Module getModule(Application instance, String name) {
+            for (Module module : instance.getModule()) {
+                if (module.getName().equals(name)) {
+                    return module;
                 }
             }
             return null;

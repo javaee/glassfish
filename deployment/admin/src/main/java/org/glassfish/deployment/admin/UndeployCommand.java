@@ -30,16 +30,15 @@ import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.internal.data.ApplicationInfo;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import org.glassfish.server.ServerEnvironmentImpl;
-import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
-import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ParameterNames;
+import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
@@ -93,7 +92,7 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
 
         ApplicationInfo info = appRegistry.get(name);
 
-        Module module = ConfigBeansUtilities.getModule(name);
+        Named module = ConfigBeansUtilities.getModule(name);
         Application application = null;
         if (module instanceof Application) {
             application = (Application) module;

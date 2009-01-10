@@ -34,18 +34,16 @@
 package org.glassfish.deployment.admin;
 
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.Param;
 import org.glassfish.api.I18n;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
-import com.sun.enterprise.v3.admin.CommandRunner;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.Application;
+import com.sun.enterprise.config.serverbeans.Module;
 
 /**
  *
@@ -66,19 +64,26 @@ public class ListApplicationsCommand extends ListComponentsCommand {
 
         ActionReport.MessagePart part = report.getTopMessagePart();        
         int numOfApplications = 0;
-        for (Module module : applications.getModules()) {
+        for (Named module : applications.getModules()) {
             if (module instanceof Application) {
                 final Application app = (Application)module;
                 if (app.getObjectType().equals("user")) {
                     if (type==null || isApplicationOfThisType(app, type)) {
                         ActionReport.MessagePart childPart = part.addChild();
                         childPart.setMessage(app.getName() + " " +
-                                             getSnifferEngines(app, true));
+                                             getSnifferEngines(app.getModule().get(0), true));
                             //this is a kludge so that NB Plugin can get these information
                             //the "nb-" prefix indicates that it's a kludge for NB plugin
                         childPart.addProperty("nb-name", app.getName());
                         childPart.addProperty("nb-location", app.getLocation());
-                        childPart.addProperty("nb-engine", getSnifferEngines(app, false));
+                        if (app.getModule().size()>1) {
+                            for (Module bundle : app.getModule()) {
+                                ActionReport.MessagePart modulePart = childPart.addChild();
+                                modulePart.setMessage(bundle.getName());
+                                modulePart.addProperty("nb-engine", getSnifferEngines(bundle, false));
+                            }
+                        }
+                        childPart.addProperty("nb-engine", getSnifferEngines(app.getModule().get(0), false));
                         childPart.addProperty("nb-enabled", app.getEnabled());
                         childPart.addProperty("nb-directory-deployed", app.getDirectoryDeployed());
                         childPart.addProperty("nb-context-root", (app.getContextRoot()==null)?"":

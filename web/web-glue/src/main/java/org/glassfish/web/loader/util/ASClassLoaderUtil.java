@@ -45,9 +45,8 @@ import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.internal.data.ApplicationInfo;
-import org.glassfish.internal.data.ModuleInfo;
+import org.glassfish.internal.data.EngineRef;
 import org.glassfish.api.container.Container;
-import org.glassfish.api.deployment.DeploymentContext;
 import org.jvnet.hk2.component.Habitat;
 
 import java.io.File;
@@ -128,7 +127,7 @@ public class ASClassLoaderUtil {
             // this might be an internal web container app, like _default_web_app, ignore.
             return null;
         }
-        ModuleInfo module = app.getModuleInfo(type);
+        EngineRef module = app.getModuleInfo(type);
         if (module!=null) {
             WebApplication webApp = (WebApplication) module.getApplicationContainer();
             return webApp.getLibraries();

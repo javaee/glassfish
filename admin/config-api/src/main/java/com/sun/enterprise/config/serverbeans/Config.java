@@ -87,8 +87,19 @@ import org.glassfish.quality.ToDo;
 }) */
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ConfigConfig" )
 @Configured
-public interface Config extends ConfigBeanProxy, Injectable, PropertyBag, SystemPropertyBag, Named {
+public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag, SystemPropertyBag {
 
+    /**
+     *  Name of the configured object
+     *
+     * @return name of the configured object
+     FIXME: should set 'key=true'.  See bugs 6039, 6040
+     */                                                                                                          
+    @Attribute(required=true)
+    String getName();
+
+    public void setName(String value) throws PropertyVetoException;
+    
     /**
      * Gets the value of the dynamicReconfigurationEnabled property.
      *

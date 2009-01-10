@@ -42,8 +42,9 @@ import static org.junit.Assert.*;
 import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
+import org.glassfish.api.admin.config.Named;
 import com.sun.enterprise.config.serverbeans.Applications;
-import com.sun.enterprise.config.serverbeans.Module;
+import com.sun.enterprise.config.serverbeans.EjbModule;
 
 import java.util.List;
 import java.beans.PropertyVetoException;
@@ -75,8 +76,8 @@ public class CollectionsAccessTest extends ConfigApiTest  {
         ConfigSupport.apply(new SingleConfigCode<Applications>() {
             public Object run(Applications param) throws PropertyVetoException, TransactionFailure {
                 // this is the bug, we should not get the list from apps but from param.
-                List<Module> modules = apps.getModules();
-                Module m = ConfigSupport.createChildOf(param, Module.class);
+                List<Named> modules = apps.getModules();
+                EjbModule m = ConfigSupport.createChildOf(param, EjbModule.class);
                 modules.add(m); // should throw an exception
                 return m;
             }
@@ -89,8 +90,8 @@ public class CollectionsAccessTest extends ConfigApiTest  {
         assertTrue(apps!=null);
         ConfigSupport.apply(new SingleConfigCode<Applications>() {
             public Object run(Applications param) throws PropertyVetoException, TransactionFailure {
-                List<Module> modules = param.getModules();
-                Module m = ConfigSupport.createChildOf(param, Module.class);
+                List<Named> modules = param.getModules();
+                EjbModule m = ConfigSupport.createChildOf(param, EjbModule.class);
                 modules.add(m);
                 modules.remove(m);
                 return m;

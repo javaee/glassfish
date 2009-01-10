@@ -33,7 +33,7 @@ import org.glassfish.api.container.Container;
 import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.internal.data.ApplicationInfo;
-import org.glassfish.internal.data.ModuleInfo;
+import org.glassfish.internal.data.EngineRef;
 import org.glassfish.internal.data.ApplicationRegistry;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.zip.ZipItem;
@@ -41,7 +41,6 @@ import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.deploy.shared.DeploymentPlanArchive;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.BundleDescriptor;
-import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.util.ApplicationVisitor;
 import com.sun.enterprise.deployment.util.ApplicationValidator;
 import com.sun.enterprise.deployment.archivist.ApplicationFactory;
@@ -53,14 +52,12 @@ import org.glassfish.deployment.common.DeploymentProperties;
 import com.sun.enterprise.deployment.backend.DeploymentImplConstants;
 import com.sun.enterprise.deployment.backend.ClientJarMakerThread;
 import org.glassfish.deployment.common.DeploymentException;
-import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import org.jvnet.hk2.annotations.Inject;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.logging.Level;
 import java.util.jar.Manifest;
 import java.util.jar.Attributes;
 
@@ -326,8 +323,8 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
             return null;
         }
 
-        for (ModuleInfo moduleInfo: appInfo.getModuleInfos()) {
-            ApplicationContainer appCtr = moduleInfo.getApplicationContainer();
+        for (EngineRef engineRef : appInfo.getModuleInfos()) {
+            ApplicationContainer appCtr = engineRef.getApplicationContainer();
             Object descriptor = appCtr.getDescriptor();
             if (descriptor instanceof BundleDescriptor) {
                 return ((BundleDescriptor)descriptor).getApplication();

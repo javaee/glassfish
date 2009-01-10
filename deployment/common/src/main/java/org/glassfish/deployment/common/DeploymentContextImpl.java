@@ -30,6 +30,7 @@ import org.glassfish.api.deployment.InstrumentableClassLoader;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.admin.ParameterNames;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 
 import java.util.*;
@@ -41,9 +42,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.MalformedURLException;
 
-import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.component.PreDestroy;
-import com.sun.enterprise.module.ModuleDefinition;
 
 /**
  *
@@ -56,7 +55,7 @@ public class DeploymentContextImpl implements DeploymentContext {
     final ReadableArchive source;
     final Properties parameters;
     final Logger logger;
-    final ServerEnvironmentImpl env;
+    final ServerEnvironment env;
     ClassLoader cloader;
     Properties props;
     Map<String, Object> modulesMetaData = new HashMap<String, Object>();
@@ -67,7 +66,7 @@ public class DeploymentContextImpl implements DeploymentContext {
     ClassLoader sharableTemp = null;
 
     /** Creates a new instance of DeploymentContext */
-    public DeploymentContextImpl(Logger logger, ReadableArchive source, Properties params, ServerEnvironmentImpl env) {
+    public DeploymentContextImpl(Logger logger, ReadableArchive source, Properties params, ServerEnvironment env) {
         this.source = source;
         this.logger = logger;
         this.parameters = params;

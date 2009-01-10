@@ -38,12 +38,12 @@ package com.sun.enterprise.configapi.tests;
 
 import com.sun.enterprise.config.serverbeans.HttpListener;
 import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.Applications;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 import org.jvnet.hk2.component.Inhabitant;
+import org.glassfish.api.admin.config.Named;
 
 import java.util.List;
 import java.util.Collection;
@@ -58,7 +58,7 @@ public class ModulesTest extends ConfigApiTest {
         return "DomainTest";
     }
 
-    Collection<? extends Module> modules = null;
+    Collection<? extends Named> modules = null;
 
     @Before
     public void setup() {
@@ -71,7 +71,7 @@ public class ModulesTest extends ConfigApiTest {
 
     @Test
     public void modulesTest() {
-        for (Module module : modules) {
+        for (Named module : modules) {
             logger.fine("Found module " + module.getName());
             assertTrue(module.getName()!=null);
         }

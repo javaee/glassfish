@@ -799,7 +799,7 @@ public class VirtualServer extends StandardHost {
                 
                 if (appInfo != null) {
                     Application appDesc = null;
-                    for (ModuleInfo info : appInfo.getModuleInfos()) {
+                    for (EngineRef info : appInfo.getModuleInfos()) {
                         if (info.getContainerInfo().getSniffer().getModuleType().equals("web")) {
                             appDesc = (Application) info.getDescriptor();
                         }

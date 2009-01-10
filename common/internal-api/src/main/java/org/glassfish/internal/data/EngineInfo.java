@@ -44,7 +44,7 @@ import java.lang.reflect.InvocationTargetException;
  *
  * @author Jerome Dochez 
  */
-public class ContainerInfo<T extends Container, U extends ApplicationContainer> {
+public class EngineInfo<T extends Container, U extends ApplicationContainer> {
 
     final Inhabitant<T> container;
     final Sniffer sniffer;
@@ -61,7 +61,7 @@ public class ContainerInfo<T extends Container, U extends ApplicationContainer> 
      * @param container instance of the container
      * @param sniffer sniffer associated with that container
      */
-    public ContainerInfo(Inhabitant<T> container, Sniffer sniffer, ClassLoader cloader) {
+    public EngineInfo(Inhabitant<T> container, Sniffer sniffer, ClassLoader cloader) {
         this.container = container;
         this.sniffer = sniffer;
         this.mainClassLoader = cloader;

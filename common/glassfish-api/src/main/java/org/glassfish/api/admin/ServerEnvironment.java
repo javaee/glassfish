@@ -17,7 +17,8 @@ import java.io.File;
 public interface ServerEnvironment {
 
     /** folder where the compiled JSP pages reside */
-    public static final String kCompileJspDirName = "jsp";    
+    public static final String kCompileJspDirName = "jsp";
+    String DEFAULT_INSTANCE_NAME = "default-instance-name";
 
     public File getDomainRoot();    
 

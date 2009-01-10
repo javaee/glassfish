@@ -28,21 +28,17 @@ import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ParameterNames;
+import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.deployment.archive.Archive;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
-import org.glassfish.internal.data.ApplicationInfo;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.Application;
-import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.ParameterNames;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -112,7 +108,7 @@ public class EnableCommand extends ApplicationLifecycle implements AdminCommand 
             String path = null;
             Application app = null; 
             ApplicationRef appRef = null;
-            for (Module module : applications.getModules()) {
+            for (Named module : applications.getModules()) {
                 if (module.getName().equals(component)) {  
                     app = (Application)module;
                     break;

@@ -28,7 +28,6 @@ import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.ApplicationContext;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.container.Container;
-import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.api.ActionReport;
 import org.jvnet.hk2.component.PreDestroy;
 
@@ -40,6 +39,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.sun.logging.LogDomains;
+import com.sun.enterprise.config.serverbeans.Application;
 
 /**
  * Information about a running application. Applications are composed of modules.
@@ -52,7 +52,7 @@ public class ApplicationInfo {
     final static private Logger logger = LogDomains.getLogger(ApplicationInfo.class, LogDomains.CORE_LOGGER);
 
 
-    final private ModuleInfo[] modules;
+    final private EngineRef[] modules;
     final private String name;
     final private ReadableArchive source;
 
@@ -65,7 +65,7 @@ public class ApplicationInfo {
      * @param modules the modules that are forming the application
      */
     public ApplicationInfo(ReadableArchive source,
-                           String name, ModuleInfo... modules) {
+                           String name, EngineRef... modules) {
         this.name = name;
         this.source = source;
         this.modules = modules;
@@ -96,7 +96,7 @@ public class ApplicationInfo {
      * Returns the modules of this application
      * @return the modules of this application
      */
-    public ModuleInfo[] getModuleInfos() {
+    public EngineRef[] getModuleInfos() {
         return modules;
     }
 
@@ -108,20 +108,20 @@ public class ApplicationInfo {
      */
     public Iterable<Sniffer> getSniffers() {
         List<Sniffer> sniffers = new ArrayList<Sniffer>();
-        for (ModuleInfo module : modules) {
+        for (EngineRef module : modules) {
             sniffers.add(module.getContainerInfo().getSniffer());
         }
         return sniffers;
     }
 
     /*
-     * Returns the ModuleInfo for a particular container type
+     * Returns the EngineRef for a particular container type
      * @param type the container type
      * @return the module info is this application as a module implemented with
      * the passed container type
      */
-    public <T extends Container> ModuleInfo getModuleInfo(Class<T> type) {
-        for (ModuleInfo info : modules) {
+    public <T extends Container> EngineRef getModuleInfo(Class<T> type) {
+        for (EngineRef info : modules) {
             T container = null;
             try {
                 container = type.cast(info.getContainerInfo().getContainer());
@@ -141,7 +141,7 @@ public class ApplicationInfo {
         ActionReport report, ProgressTracker tracker) throws Exception {
 
         // registers all deployed items.
-        for (ModuleInfo module : getModuleInfos()) {
+        for (EngineRef module : getModuleInfos()) {
 
             try {
                 if (!module.start( context, tracker)) {
@@ -155,10 +155,10 @@ public class ApplicationInfo {
         }
     }
 
-    private void unload(ModuleInfo[] modules, ApplicationInfo info,  DeploymentContext context, ActionReport report) {
+    private void unload(EngineRef[] modules, ApplicationInfo info,  DeploymentContext context, ActionReport report) {
 
         Set<ClassLoader> classLoaders = new HashSet<ClassLoader>();
-        for (ModuleInfo module : modules) {
+        for (EngineRef module : modules) {
             if (module.getApplicationContainer()!=null && module.getApplicationContainer().getClassLoader()!=null) {
                 classLoaders.add(module.getApplicationContainer().getClassLoader());
             }
@@ -181,7 +181,7 @@ public class ApplicationInfo {
 
     public void stop(ApplicationContext context, Logger logger) {
 
-        for (ModuleInfo module : getModuleInfos()) {
+        for (EngineRef module : getModuleInfos()) {
             try {
                 module.stop(context, logger);
             } catch(Exception e) {
@@ -203,7 +203,7 @@ public class ApplicationInfo {
 
         boolean isSuccess = true;
 
-        for (ModuleInfo module : modules) {
+        for (EngineRef module : modules) {
             try {
                 module.getApplicationContainer().suspend();
             } catch(Exception e) {
@@ -220,7 +220,7 @@ public class ApplicationInfo {
 
         boolean isSuccess = true;
 
-        for (ModuleInfo module : modules) {
+        for (EngineRef module : modules) {
             try {
                 module.getApplicationContainer().resume();
             } catch(Exception e) {
@@ -231,6 +231,17 @@ public class ApplicationInfo {
         }
 
         return isSuccess;
+    }
+
+    /**
+     * Saves its state to the configuration. this method must be called within a transaction
+     * to the configured Application instance.
+     *
+     * @param app the application being persisted
+     */
+    public void save(Application app) {
+
+        
     }
     
 }

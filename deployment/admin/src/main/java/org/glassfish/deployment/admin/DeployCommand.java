@@ -322,10 +322,6 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                     moduleProps.setProperty(ServerTags.DESCRIPTION, description);
                 }
 
-                if (appConfigList != null) {
-                    addApplicationConfigToProps(moduleProps, appConfigList);
-                }
-
                 ApplicationInfo appInfo = deploy(appSniffers, deploymentContext, report);
                 if (report.getActionExitCode()==ActionReport.ExitCode.SUCCESS) {
                     // register application information in domain.xml
@@ -453,10 +449,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             // also save the application config data
             final Application app = apps.getModule(Application.class, name);
             if (app != null) {
-                appConfigList = app.getApplicationConfigs();
-                if (appConfigList != null) {
-                    addApplicationConfigToProps(parameters, appConfigList);
-                }
+                parameters.put("APPLICATION_CONFIG", app);
             }
 
         }

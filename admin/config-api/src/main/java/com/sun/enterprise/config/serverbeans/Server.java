@@ -66,7 +66,18 @@ import org.glassfish.quality.ToDo;
 }) */
 @org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.StandaloneServerConfig")
 @Configured
-public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, SystemPropertyBag, Named, ReferenceContainer {
+public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer {
+
+    /**
+     *  Name of the configured object
+     *
+     * @return name of the configured object
+     FIXME: should set 'key=true'.  See bugs 6039, 6040
+     */
+    @Attribute(required=true)
+    String getName();
+
+    public void setName(String value) throws PropertyVetoException;    
 
     /**
      * Gets the value of the configRef property.

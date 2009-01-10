@@ -24,9 +24,8 @@ package com.sun.enterprise.v3.server;
 
 import com.sun.enterprise.v3.common.HTMLActionReporter;
 import org.glassfish.internal.data.ApplicationInfo;
-import org.glassfish.internal.data.ContainerInfo;
+import org.glassfish.internal.data.EngineInfo;
 import org.glassfish.deployment.common.DeploymentContextImpl;
-import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.Engine;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
@@ -35,6 +34,7 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.Startup;
 import org.glassfish.api.event.*;
 import org.glassfish.api.admin.ParameterNames;
+import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.container.Container;
 import org.glassfish.api.deployment.ApplicationContainer;
@@ -85,7 +85,7 @@ public class ApplicationLoaderService extends ApplicationLifecycle
     public void foo() {
 */
         assert env!=null;
-        for (Module m : applications.getModules()) {
+        for (Named m : applications.getModules()) {
             if (m instanceof Application) {
                 Application module = (Application) m;
                 for (ApplicationRef appRef : server.getApplicationRef()) {
@@ -284,8 +284,8 @@ public class ApplicationLoaderService extends ApplicationLifecycle
     }
 
     @Override
-    protected <T extends Container, U extends ApplicationContainer> Deployer getDeployer(ContainerInfo<T, U> containerInfo) {
-        final Deployer<T, U> deployer = containerInfo.getDeployer();
+    protected <T extends Container, U extends ApplicationContainer> Deployer getDeployer(EngineInfo<T, U> engineInfo) {
+        final Deployer<T, U> deployer = engineInfo.getDeployer();
         assert deployer!=null;
 
         return new Deployer<T,U>() {
@@ -367,12 +367,12 @@ public class ApplicationLoaderService extends ApplicationLifecycle
 
         final Properties props = new Properties();
         final ActionReport dummy = new HTMLActionReporter();
-        for (ContainerInfo containerInfo : containerRegistry.getContainers()) {
-            final Deployer deployer = getDeployer(containerInfo);
+        for (EngineInfo engineInfo : containerRegistry.getContainers()) {
+            final Deployer deployer = getDeployer(engineInfo);
             if (deployer==null) {
                 continue;
             }
-            Iterable<ApplicationInfo> apps = containerInfo.getApplications();
+            Iterable<ApplicationInfo> apps = engineInfo.getApplications();
             for (ApplicationInfo appInfo : apps) {
                 props.put(ParameterNames.NAME, appInfo.getName());
 
@@ -380,7 +380,7 @@ public class ApplicationLoaderService extends ApplicationLifecycle
                     logger,appInfo.getSource() , props, env);
                 super.unload(appInfo.getName(), depContext, dummy);
             }
-            stopContainer(logger, containerInfo);
+            stopContainer(logger, engineInfo);
         }
     }
 }

@@ -30,6 +30,7 @@ import java.net.URISyntaxException;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+import org.glassfish.api.admin.config.Named;
 
 /**
  * Bunch of utility methods for the new serverbeans config api based on jaxb
@@ -165,7 +166,7 @@ public final class ConfigBeansUtilities {
         List<Application> allSysApps = new ArrayList<Application>();
         SystemApplications sa = domain.getSystemApplications();
         if (sa != null) {
-            for (Module m : sa.getModules()) {
+            for (Named m : sa.getModules()) {
                 if (m instanceof Application)
                     allSysApps.add((Application)m);
             }
@@ -196,8 +197,8 @@ public final class ConfigBeansUtilities {
         return ( aref );
     }
 
-    public static Module getModule(String moduleID) {
-        for (Module module : apps.getModules()) {
+    public static Named getModule(String moduleID) {
+        for (Named module : apps.getModules()) {
             if (module.getName().equals(moduleID)) {
                 return module;
             }
@@ -223,17 +224,8 @@ public final class ConfigBeansUtilities {
         }
     }
 
-    public static String getName(String moduleID) {
-        Module module = getModule(moduleID);
-        if (module != null) {
-            return module.getName();
-        } else {
-            return null;
-        }
-    }
-
    public static String getContextRoot(String moduleID) {
-        Module module = getModule(moduleID);
+        Named module = getModule(moduleID);
         if (module == null) {
             return null;
         }
@@ -248,7 +240,7 @@ public final class ConfigBeansUtilities {
     }
 
     public static String getLibraries(String moduleID) {
-        Module module = getModule(moduleID);
+        Named module = getModule(moduleID);
         if (module == null) {
             return null;
         }
@@ -267,7 +259,7 @@ public final class ConfigBeansUtilities {
     }
 
     public static String getLocation(String moduleID) {
-        Module module = getModule(moduleID);
+        Named module = getModule(moduleID);
         if (module == null) {
             return null;
         } 
@@ -299,7 +291,7 @@ public final class ConfigBeansUtilities {
     }
 
     public static String getDirectoryDeployed(String moduleID) {
-        Module module = getModule(moduleID);
+        Named module = getModule(moduleID);
         if (module == null) {
             return null;
         } 

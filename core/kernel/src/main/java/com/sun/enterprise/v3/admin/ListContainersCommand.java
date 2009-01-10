@@ -25,7 +25,7 @@ package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.internal.data.ApplicationInfo;
-import org.glassfish.internal.data.ContainerInfo;
+import org.glassfish.internal.data.EngineInfo;
 import org.glassfish.internal.data.ContainerRegistry;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
@@ -77,19 +77,19 @@ public class ListContainersCommand implements AdminCommand {
                 container.setMessage(sniffer.getModuleType());
                 container.addProperty(localStrings.getLocalString("contractprovider", "ContractProvider"),
                         sniffer.getModuleType());
-                ContainerInfo containerInfo = containerRegistry.getContainer(sniffer.getModuleType());
+                EngineInfo engineInfo = containerRegistry.getContainer(sniffer.getModuleType());
 
-                if (containerInfo != null) {
+                if (engineInfo != null) {
                     container.addProperty(
                             localStrings.getLocalString("status", "Status"),
                             localStrings.getLocalString("started", "Started"));
-                    Module connectorModule = modulesRegistry.find(containerInfo.getSniffer().getClass());
+                    Module connectorModule = modulesRegistry.find(engineInfo.getSniffer().getClass());
                     container.addProperty(localStrings.getLocalString("connector", "Connector"),
                             connectorModule.getModuleDefinition().getName() +
                             ":" + connectorModule.getModuleDefinition().getVersion());
                     container.addProperty(localStrings.getLocalString("implementation", "Implementation"),
-                            containerInfo.getContainer().getClass().toString());
-                    Iterable<ApplicationInfo> apps = containerInfo.getApplications();
+                            engineInfo.getContainer().getClass().toString());
+                    Iterable<ApplicationInfo> apps = engineInfo.getApplications();
                     if (apps.iterator().hasNext()) {
 
                         container.setChildrenType(localStrings.getLocalString("list.containers.listapps",
