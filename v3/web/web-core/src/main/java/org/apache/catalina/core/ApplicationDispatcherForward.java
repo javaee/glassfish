@@ -262,7 +262,7 @@ class ApplicationDispatcherForward {
                                                   String errorMessage) {
         request.setAttribute(
             ApplicationFilterFactory.DISPATCHER_TYPE_ATTR,
-            Integer.valueOf(ApplicationFilterFactory.ERROR));
+            DispatcherType.ERROR);
 
         request.setAttribute(
             Globals.EXCEPTION_PAGE_ATTR,

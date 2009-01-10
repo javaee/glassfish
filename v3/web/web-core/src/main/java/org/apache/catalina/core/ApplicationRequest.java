@@ -247,11 +247,12 @@ public class ApplicationRequest extends ServletRequestWrapper {
 
 
     public DispatcherType getDispatcherType() {
-        if (isForwardDispatch) {
-            return DispatcherType.FORWARD;
-        } else {
-            return DispatcherType.INCLUDE;
+        DispatcherType dispatcher = (DispatcherType) getAttribute(
+            ApplicationFilterFactory.DISPATCHER_TYPE_ATTR);
+        if (dispatcher == null) {
+            dispatcher = DispatcherType.REQUEST;
         }
+        return dispatcher;
     }
 
 

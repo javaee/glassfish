@@ -63,11 +63,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.*;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.UnavailableException;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -431,10 +427,10 @@ final class StandardWrapperValve
         }
         hreq.setAttribute
             (ApplicationFilterFactory.DISPATCHER_TYPE_ATTR,
-             ApplicationFilterFactory.REQUEST_INTEGER);
+            DispatcherType.REQUEST);
         hreq.setAttribute
             (ApplicationFilterFactory.DISPATCHER_REQUEST_PATH_ATTR,
-             requestPathMB);
+            requestPathMB);
         // Create the filter chain for this request
         ApplicationFilterFactory factory =
             ApplicationFilterFactory.getInstance();

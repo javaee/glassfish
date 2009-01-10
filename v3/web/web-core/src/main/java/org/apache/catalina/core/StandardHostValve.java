@@ -71,11 +71,7 @@ import javax.servlet.ServletOutputStream;
 
 import java.util.logging.*;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 // START GlassFish Issue 1057
@@ -299,7 +295,7 @@ final class StandardHostValve
                 (ApplicationFilterFactory.DISPATCHER_REQUEST_PATH_ATTR,
                  errorPage.getLocation());
             sreq.setAttribute(ApplicationFilterFactory.DISPATCHER_TYPE_ATTR,
-                              Integer.valueOf(ApplicationFilterFactory.ERROR));
+                              DispatcherType.ERROR);
             sreq.setAttribute
                 (Globals.STATUS_CODE_ATTR,
                  Integer.valueOf(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
@@ -411,8 +407,7 @@ final class StandardHostValve
                 (ApplicationFilterFactory.DISPATCHER_REQUEST_PATH_ATTR,
                  errorPage.getLocation());
             sreq.setAttribute(ApplicationFilterFactory.DISPATCHER_TYPE_ATTR,
-                              Integer.valueOf(ApplicationFilterFactory.ERROR));
-            
+                              DispatcherType.ERROR);
              
             Wrapper wrapper = request.getWrapper();
             if (wrapper != null)

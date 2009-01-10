@@ -58,13 +58,7 @@
 package org.apache.catalina.core;
 
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.catalina.deploy.FilterDef;
 import org.apache.catalina.deploy.FilterMap;
@@ -88,15 +82,6 @@ public final class ApplicationFilterFactory {
 
     // -------------------------------------------------------------- Constants
 
-
-    public static final int ERROR = 1;
-    public static final Integer ERROR_INTEGER = Integer.valueOf(ERROR);
-    public static final int FORWARD = 2;
-    public static final Integer FORWARD_INTEGER = Integer.valueOf(FORWARD);
-    public static final int INCLUDE = 4;
-    public static final Integer INCLUDE_INTEGER = Integer.valueOf(INCLUDE);
-    public static final int REQUEST = 8;
-    public static final Integer REQUEST_INTEGER = Integer.valueOf(REQUEST);
 
     public static final String DISPATCHER_TYPE_ATTR = 
         Globals.DISPATCHER_TYPE_ATTR;
@@ -172,12 +157,7 @@ public final class ApplicationFilterFactory {
             return (filterChain);
 
         // get the dispatcher type
-        int dispatcher = -1; 
-        if (request.getAttribute(DISPATCHER_TYPE_ATTR) != null) {
-            Integer dispatcherInt = 
-                (Integer) request.getAttribute(DISPATCHER_TYPE_ATTR);
-            dispatcher = dispatcherInt.intValue();
-        }
+        DispatcherType dispatcher = (DispatcherType) request.getAttribute(DISPATCHER_TYPE_ATTR);
         String requestPath = null;
         Object attribute = request.getAttribute(DISPATCHER_REQUEST_PATH_ATTR);
         if (attribute != null){
@@ -347,9 +327,10 @@ public final class ApplicationFilterFactory {
      * Convienience method which returns true if  the dispatcher type
      * matches the dispatcher types specified in the FilterMap
      */
-    private boolean matchDispatcher(FilterMap filterMap, int dispatcher) {
+    private boolean matchDispatcher(FilterMap filterMap,
+                                    DispatcherType dispatcher) {
         switch (dispatcher) {
-            case FORWARD : {
+            case FORWARD: {
                 if (filterMap.getDispatcherMapping() == FilterMap.FORWARD ||
                     filterMap.getDispatcherMapping() == FilterMap.FORWARD_ERROR ||
                     filterMap.getDispatcherMapping() == FilterMap.INCLUDE_FORWARD ||
@@ -362,7 +343,7 @@ public final class ApplicationFilterFactory {
                 }
                 break;
             }
-            case INCLUDE : {
+            case INCLUDE: {
                 if (filterMap.getDispatcherMapping() == FilterMap.INCLUDE ||
                     filterMap.getDispatcherMapping() == FilterMap.INCLUDE_ERROR ||
                     filterMap.getDispatcherMapping() == FilterMap.INCLUDE_FORWARD ||
@@ -375,7 +356,7 @@ public final class ApplicationFilterFactory {
                 }
                 break;
             }
-            case REQUEST : {
+            case REQUEST: {
                 if (filterMap.getDispatcherMapping() == FilterMap.REQUEST ||
                     filterMap.getDispatcherMapping() == FilterMap.REQUEST_ERROR ||
                     filterMap.getDispatcherMapping() == FilterMap.REQUEST_INCLUDE ||
@@ -388,7 +369,7 @@ public final class ApplicationFilterFactory {
                 }
                 break;
             }
-            case ERROR : {
+            case ERROR: {
                 if (filterMap.getDispatcherMapping() == FilterMap.ERROR ||
                     filterMap.getDispatcherMapping() == FilterMap.FORWARD_ERROR || 
                     filterMap.getDispatcherMapping() == FilterMap.INCLUDE_ERROR || 
