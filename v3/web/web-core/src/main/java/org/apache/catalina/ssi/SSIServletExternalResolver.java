@@ -126,9 +126,9 @@ public class SSIServletExternalResolver implements SSIExternalResolver {
                 variableNames.add(variableName);
             }
         }
-        Enumeration e = req.getAttributeNames();
+        Enumeration<String> e = req.getAttributeNames();
         while (e.hasMoreElements()) {
-            String name = (String)e.nextElement();
+            String name = e.nextElement();
             if (!isNameReserved(name)) {
                 variableNames.add(name);
             }
@@ -141,9 +141,9 @@ public class SSIServletExternalResolver implements SSIExternalResolver {
         if (!isNameReserved(targetName)) {
             object = req.getAttribute(targetName);
             if (object == null) {
-                Enumeration e = req.getAttributeNames();
+                Enumeration<String> e = req.getAttributeNames();
                 while (e.hasMoreElements()) {
-                    String name = (String)e.nextElement();
+                    String name = e.nextElement();
                     if (targetName.equalsIgnoreCase(name)
                             && !isNameReserved(name)) {
                         object = req.getAttribute(name);
@@ -228,14 +228,14 @@ public class SSIServletExternalResolver implements SSIExternalResolver {
                     accept = "Accept-Language";
                 }
                 if (accept != null) {
-                    Enumeration acceptHeaders = req.getHeaders(accept);
+                    Enumeration<String> acceptHeaders = req.getHeaders(accept);
                     if (acceptHeaders != null)
                         if (acceptHeaders.hasMoreElements()) {
                             StringBuffer rv = new StringBuffer(
-                                    (String) acceptHeaders.nextElement());
+                                    acceptHeaders.nextElement());
                             while (acceptHeaders.hasMoreElements()) {
                                 rv.append(", ");
-                                rv.append((String) acceptHeaders.nextElement());
+                                rv.append(acceptHeaders.nextElement());
                             }
                         retVal = rv.toString();
                     }
@@ -389,14 +389,12 @@ public class SSIServletExternalResolver implements SSIExternalResolver {
     }
 
 
-    protected String getPathWithoutContext(String servletPath) {
-        String retVal = null;
-        int secondSlash = servletPath.indexOf('/', 1);
-        if (secondSlash >= 0) {
-            //cut off context
-            retVal = servletPath.substring(secondSlash);
+    protected String getPathWithoutContext(final String contextPath,
+            final String servletPath) {
+        if (servletPath.startsWith(contextPath)) {
+            return servletPath.substring(contextPath.length());
         }
-        return retVal;
+        return servletPath;
     }
 
 
@@ -455,7 +453,8 @@ public class SSIServletExternalResolver implements SSIExternalResolver {
                 // ie:
                 // '/file1.shtml' vs '/appName1/file1.shtml'
                 if (!isRootContext(normContext)) {
-                    String noContext = getPathWithoutContext(normalized);
+                    String noContext = getPathWithoutContext(
+                            normContext.getContextPath(), normalized);
                     if (noContext == null) {
                         throw new IOException(
                                 "Couldn't remove context from path: "
