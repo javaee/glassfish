@@ -66,13 +66,11 @@
         <antcall target="start-server-felix"/>
         <antcall target="build-deploy"/>
         <ant dir="admincli" target="build-deploy"/>
-        <ant dir="ejb/singleton" target="build-deploy"/>
-        <ant dir="ejb/slsbnicmt" target="build-deploy"/>
+        <antcall target="build-deploy-gd"/>
         <antcall target="runtest">
         <param name="testng.xml" value="testng_gd.xml"/> </antcall>
-        <ant dir="ejb/singleton" target="undeploy"/>
-        <ant dir="ejb/slsbnicmt" target="undeploy"/>
         <antcall target="undeploy"/>
+        <antcall target="undeploy-gd"/>
         <antcall target="stop-server"/>
         <antcall target="stop-derby"/>
         <antcall target="testng-summary"/>
@@ -114,6 +112,13 @@
         <ant dir="adminweb/basic" target="build"/>-->
         <record name="build.output" action="stop"/>
     </target>
+
+    <target name="build-deploy-gd">
+        <echo message="Glassfish Distribution Build Deploy"/>
+        <ant dir="ejb/singleton" target="build-deploy"/>
+        <ant dir="ejb/slsbnicmt" target="build-deploy"/>
+        <ant dir="wsit" target="build-deploy"/>
+    </target>
     
     <target name="undeploy">
         <record name="undeploy.output" action="start"/>
@@ -131,6 +136,12 @@
         <record name="undeploy.output" action="stop"/>
     </target>
 
+    <target name="undeploy-gd">
+        <ant dir="ejb/singleton" target="undeploy"/>
+        <ant dir="ejb/slsbnicmt" target="undeploy"/>
+        <ant dir="wsit" target="undeploy"/>
+    </target>
+    
     <!-- Target is re-definted here as didn't want to specify ws.root property -->
     <target name="clean">
         <delete dir="${basedir}/classes"/>
