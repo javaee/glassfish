@@ -571,10 +571,10 @@ public class WebdavServlet
                 Vector currentLockNullResources =
                     (Vector) lockNullResources.get(parentPath);
                 if (currentLockNullResources != null) {
-                    Enumeration lockNullResourcesList =
+                    Enumeration<String> lockNullResourcesList =
                         currentLockNullResources.elements();
                     while (lockNullResourcesList.hasMoreElements()) {
-                        String lockNullPath = (String)
+                        String lockNullPath =
                             lockNullResourcesList.nextElement();
                         if (lockNullPath.equals(path)) {
                             resp.setStatus(WebdavStatus.SC_MULTI_STATUS);
@@ -630,7 +630,7 @@ public class WebdavServlet
 
             while ((!stack.isEmpty()) && (depth >= 0)) {
 
-                String currentPath = (String) stack.pop();
+                String currentPath = stack.pop();
                 parseProperties(req, generatedXML, currentPath,
                                 type, properties);
 
@@ -643,10 +643,10 @@ public class WebdavServlet
                 if ((object instanceof DirContext) && (depth > 0)) {
 
                     try {
-                        NamingEnumeration enumeration = resources.list(currentPath);
+                        NamingEnumeration<NameClassPair> enumeration =
+                            resources.list(currentPath);
                         while (enumeration.hasMoreElements()) {
-                            NameClassPair ncPair =
-                                (NameClassPair) enumeration.nextElement();
+                            NameClassPair ncPair = enumeration.nextElement();
                             String newPath = currentPath;
                             if (!(newPath.endsWith("/")))
                                 newPath += "/";
@@ -669,10 +669,10 @@ public class WebdavServlet
                     Vector currentLockNullResources =
                         (Vector) lockNullResources.get(lockPath);
                     if (currentLockNullResources != null) {
-                        Enumeration lockNullResourcesList =
+                        Enumeration<String> lockNullResourcesList =
                             currentLockNullResources.elements();
                         while (lockNullResourcesList.hasMoreElements()) {
-                            String lockNullPath = (String)
+                            String lockNullPath =
                                 lockNullResourcesList.nextElement();
                             parseLockNullProperties
                                 (req, generatedXML, lockNullPath, type,
@@ -1115,7 +1115,7 @@ public class WebdavServlet
             exists = false;
         }
 
-        Enumeration locksList = null;
+        Enumeration<LockInfo> locksList = null;
 
         if (lockRequestType == LOCK_CREATION) {
 
@@ -1138,7 +1138,7 @@ public class WebdavServlet
                 Vector<String> lockPaths = new Vector<String>();
                 locksList = collectionLocks.elements();
                 while (locksList.hasMoreElements()) {
-                    LockInfo currentLock = (LockInfo) locksList.nextElement();
+                    LockInfo currentLock = locksList.nextElement();
                     if (currentLock.hasExpired()) {
                         resourceLocks.remove(currentLock.path);
                         continue;
@@ -1152,7 +1152,7 @@ public class WebdavServlet
                 }
                 locksList = resourceLocks.elements();
                 while (locksList.hasMoreElements()) {
-                    LockInfo currentLock = (LockInfo) locksList.nextElement();
+                    LockInfo currentLock = locksList.nextElement();
                     if (currentLock.hasExpired()) {
                         resourceLocks.remove(currentLock.path);
                         continue;
@@ -1170,7 +1170,7 @@ public class WebdavServlet
                     // One of the child paths was locked
                     // We generate a multistatus error report
 
-                    Enumeration lockPathsList = lockPaths.elements();
+                    Enumeration<String> lockPathsList = lockPaths.elements();
 
                     resp.setStatus(WebdavStatus.SC_CONFLICT);
 
@@ -1187,7 +1187,7 @@ public class WebdavServlet
                         generatedXML.writeElement(null, "href",
                                                   XMLWriter.OPENING);
                         generatedXML
-                            .writeText((String) lockPathsList.nextElement());
+                            .writeText(lockPathsList.nextElement());
                         generatedXML.writeElement(null, "href",
                                                   XMLWriter.CLOSING);
                         generatedXML.writeElement(null, "status",
@@ -1220,7 +1220,7 @@ public class WebdavServlet
                 locksList = collectionLocks.elements();
                 while (locksList.hasMoreElements()) {
 
-                    LockInfo currentLock = (LockInfo) locksList.nextElement();
+                    LockInfo currentLock = locksList.nextElement();
                     if (currentLock.path.equals(lock.path)) {
 
                         if (currentLock.isExclusive()) {
@@ -1251,7 +1251,7 @@ public class WebdavServlet
                 // Locking a single resource
 
                 // Retrieving an already existing lock on that resource
-                LockInfo presentLock = (LockInfo) resourceLocks.get(lock.path);
+                LockInfo presentLock = resourceLocks.get(lock.path);
                 if (presentLock != null) {
 
                     if ((presentLock.isExclusive()) || (lock.isExclusive())) {
@@ -1310,15 +1310,15 @@ public class WebdavServlet
 
             // Checking resource locks
 
-            LockInfo toRenew = (LockInfo) resourceLocks.get(path);
-            Enumeration tokenList = null;
+            LockInfo toRenew = resourceLocks.get(path);
+            Enumeration<String> tokenList = null;
             if (lock != null) {
 
                 // At least one of the tokens of the locks must have been given
 
                 tokenList = toRenew.tokens.elements();
                 while (tokenList.hasMoreElements()) {
-                    String token = (String) tokenList.nextElement();
+                    String token = tokenList.nextElement();
                     if (ifHeader.indexOf(token) != -1) {
                         toRenew.expiresAt = lock.expiresAt;
                         lock = toRenew;
@@ -1329,14 +1329,15 @@ public class WebdavServlet
 
             // Checking inheritable collection locks
 
-            Enumeration collectionLocksList = collectionLocks.elements();
+            Enumeration<LockInfo> collectionLocksList =
+                collectionLocks.elements();
             while (collectionLocksList.hasMoreElements()) {
-                toRenew = (LockInfo) collectionLocksList.nextElement();
+                toRenew = collectionLocksList.nextElement();
                 if (path.equals(toRenew.path)) {
 
                     tokenList = toRenew.tokens.elements();
                     while (tokenList.hasMoreElements()) {
-                        String token = (String) tokenList.nextElement();
+                        String token = tokenList.nextElement();
                         if (ifHeader.indexOf(token) != -1) {
                             toRenew.expiresAt = lock.expiresAt;
                             lock = toRenew;
@@ -1399,15 +1400,15 @@ public class WebdavServlet
 
         // Checking resource locks
 
-        LockInfo lock = (LockInfo) resourceLocks.get(path);
-        Enumeration tokenList = null;
+        LockInfo lock = resourceLocks.get(path);
+        Enumeration<String> tokenList = null;
         if (lock != null) {
 
             // At least one of the tokens of the locks must have been given
 
             tokenList = lock.tokens.elements();
             while (tokenList.hasMoreElements()) {
-                String token = (String) tokenList.nextElement();
+                String token = tokenList.nextElement();
                 if (lockTokenHeader.indexOf(token) != -1) {
                     lock.tokens.removeElement(token);
                 }
@@ -1423,14 +1424,14 @@ public class WebdavServlet
 
         // Checking inheritable collection locks
 
-        Enumeration collectionLocksList = collectionLocks.elements();
+        Enumeration<LockInfo> collectionLocksList = collectionLocks.elements();
         while (collectionLocksList.hasMoreElements()) {
-            lock = (LockInfo) collectionLocksList.nextElement();
+            lock = collectionLocksList.nextElement();
             if (path.equals(lock.path)) {
 
                 tokenList = lock.tokens.elements();
                 while (tokenList.hasMoreElements()) {
-                    String token = (String) tokenList.nextElement();
+                    String token = tokenList.nextElement();
                     if (lockTokenHeader.indexOf(token) != -1) {
                         lock.tokens.removeElement(token);
                         break;
@@ -1466,9 +1467,6 @@ public class WebdavServlet
 
         // Create a place for the normalized path
         String normalized = path;
-
-        if (normalized == null)
-            return (null);
 
         if (normalized.equals("/."))
             return "/";
@@ -1565,8 +1563,8 @@ public class WebdavServlet
 
         // Checking resource locks
 
-        LockInfo lock = (LockInfo) resourceLocks.get(path);
-        Enumeration tokenList = null;
+        LockInfo lock = resourceLocks.get(path);
+        Enumeration<String> tokenList = null;
         if ((lock != null) && (lock.hasExpired())) {
             resourceLocks.remove(path);
         } else if (lock != null) {
@@ -1576,7 +1574,7 @@ public class WebdavServlet
             tokenList = lock.tokens.elements();
             boolean tokenMatch = false;
             while (tokenList.hasMoreElements()) {
-                String token = (String) tokenList.nextElement();
+                String token = tokenList.nextElement();
                 if (ifHeader.indexOf(token) != -1)
                     tokenMatch = true;
             }
@@ -1587,9 +1585,9 @@ public class WebdavServlet
 
         // Checking inheritable collection locks
 
-        Enumeration collectionLocksList = collectionLocks.elements();
+        Enumeration<LockInfo> collectionLocksList = collectionLocks.elements();
         while (collectionLocksList.hasMoreElements()) {
-            lock = (LockInfo) collectionLocksList.nextElement();
+            lock = collectionLocksList.nextElement();
             if (lock.hasExpired()) {
                 collectionLocks.removeElement(lock);
             } else if (path.startsWith(lock.path)) {
@@ -1597,7 +1595,7 @@ public class WebdavServlet
                 tokenList = lock.tokens.elements();
                 boolean tokenMatch = false;
                 while (tokenList.hasMoreElements()) {
-                    String token = (String) tokenList.nextElement();
+                    String token = tokenList.nextElement();
                     if (ifHeader.indexOf(token) != -1)
                         tokenMatch = true;
                 }
@@ -1797,6 +1795,7 @@ public class WebdavServlet
         try {
             object = resources.lookup(source);
         } catch (NamingException e) {
+            // Ignore
         }
 
         if (object instanceof DirContext) {
@@ -1810,9 +1809,9 @@ public class WebdavServlet
             }
 
             try {
-                NamingEnumeration enumeration = resources.list(source);
+                NamingEnumeration<NameClassPair> enumeration = resources.list(source);
                 while (enumeration.hasMoreElements()) {
-                    NameClassPair ncPair = (NameClassPair) enumeration.nextElement();
+                    NameClassPair ncPair = enumeration.nextElement();
                     String childDest = dest;
                     if (!childDest.equals("/"))
                         childDest += "/";
@@ -1984,7 +1983,7 @@ public class WebdavServlet
         if (lockTokenHeader == null)
             lockTokenHeader = "";
 
-        Enumeration enumeration = null;
+        Enumeration<NameClassPair> enumeration = null;
         try {
             enumeration = resources.list(path);
         } catch (NamingException e) {
@@ -1994,7 +1993,7 @@ public class WebdavServlet
         }
 
         while (enumeration.hasMoreElements()) {
-            NameClassPair ncPair = (NameClassPair) enumeration.nextElement();
+            NameClassPair ncPair = enumeration.nextElement();
             String childName = path;
             if (!childName.equals("/"))
                 childName += "/";
@@ -2044,7 +2043,7 @@ public class WebdavServlet
      * @param errorList List of error to be displayed
      */
     private void sendReport(HttpServletRequest req, HttpServletResponse resp,
-                            Hashtable errorList)
+                            Hashtable<String,Integer> errorList)
         throws ServletException, IOException {
 
         resp.setStatus(WebdavStatus.SC_MULTI_STATUS);
@@ -2059,11 +2058,11 @@ public class WebdavServlet
                                   + generateNamespaceDeclarations(),
                                   XMLWriter.OPENING);
 
-        Enumeration pathList = errorList.keys();
+        Enumeration<String> pathList = errorList.keys();
         while (pathList.hasMoreElements()) {
 
-            String errorPath = (String) pathList.nextElement();
-            int errorCode = ((Integer) errorList.get(errorPath)).intValue();
+            String errorPath = pathList.nextElement();
+            int errorCode = errorList.get(errorPath).intValue();
 
             generatedXML.writeElement(null, "response", XMLWriter.OPENING);
 
@@ -2167,7 +2166,7 @@ public class WebdavServlet
                                                contentType);
                 }
                 generatedXML.writeProperty(null, "getetag",
-                                           getETag(cacheEntry.attributes));
+                                           cacheEntry.attributes.getETag());
                 generatedXML.writeElement(null, "resourcetype",
                                           XMLWriter.NO_CONTENT);
             } else {
@@ -2252,7 +2251,7 @@ public class WebdavServlet
 
             while (properties.hasMoreElements()) {
 
-                String property = (String) properties.nextElement();
+                String property = properties.nextElement();
 
                 if (property.equals("creationdate")) {
                     generatedXML.writeProperty
@@ -2293,7 +2292,7 @@ public class WebdavServlet
                         propertiesNotFound.addElement(property);
                     } else {
                         generatedXML.writeProperty
-                            (null, "getetag", getETag(cacheEntry.attributes));
+                            (null, "getetag", cacheEntry.attributes.getETag());
                     }
                 } else if (property.equals("getlastmodified")) {
                     if (cacheEntry.context != null) {
@@ -2345,7 +2344,7 @@ public class WebdavServlet
             generatedXML.writeElement(null, "status", XMLWriter.CLOSING);
             generatedXML.writeElement(null, "propstat", XMLWriter.CLOSING);
 
-            Enumeration propertiesNotFoundList = propertiesNotFound.elements();
+            Enumeration<String> propertiesNotFoundList = propertiesNotFound.elements();
 
             if (propertiesNotFoundList.hasMoreElements()) {
 
@@ -2357,7 +2356,7 @@ public class WebdavServlet
 
                 while (propertiesNotFoundList.hasMoreElements()) {
                     generatedXML.writeElement
-                        (null, (String) propertiesNotFoundList.nextElement(),
+                        (null, propertiesNotFoundList.nextElement(),
                          XMLWriter.NO_CONTENT);
                 }
 
@@ -2400,7 +2399,7 @@ public class WebdavServlet
             return;
 
         // Retrieving the lock associated with the lock-null resource
-        LockInfo lock = (LockInfo) resourceLocks.get(path);
+        LockInfo lock = resourceLocks.get(path);
 
         if (lock == null)
             return;
@@ -2523,11 +2522,11 @@ public class WebdavServlet
             generatedXML.writeElement(null, "propstat", XMLWriter.OPENING);
             generatedXML.writeElement(null, "prop", XMLWriter.OPENING);
 
-            Enumeration properties = propertiesVector.elements();
+            Enumeration<String> properties = propertiesVector.elements();
 
             while (properties.hasMoreElements()) {
 
-                String property = (String) properties.nextElement();
+                String property = properties.nextElement();
 
                 if (property.equals("creationdate")) {
                     generatedXML.writeProperty
@@ -2592,7 +2591,7 @@ public class WebdavServlet
             generatedXML.writeElement(null, "status", XMLWriter.CLOSING);
             generatedXML.writeElement(null, "propstat", XMLWriter.CLOSING);
 
-            Enumeration propertiesNotFoundList = propertiesNotFound.elements();
+            Enumeration<String> propertiesNotFoundList = propertiesNotFound.elements();
 
             if (propertiesNotFoundList.hasMoreElements()) {
 
@@ -2604,7 +2603,7 @@ public class WebdavServlet
 
                 while (propertiesNotFoundList.hasMoreElements()) {
                     generatedXML.writeElement
-                        (null, (String) propertiesNotFoundList.nextElement(),
+                        (null, propertiesNotFoundList.nextElement(),
                          XMLWriter.NO_CONTENT);
                 }
 
@@ -2635,8 +2634,8 @@ public class WebdavServlet
     private boolean generateLockDiscovery
         (String path, XMLWriter generatedXML) {
 
-        LockInfo resourceLock = (LockInfo) resourceLocks.get(path);
-        Enumeration collectionLocksList = collectionLocks.elements();
+        LockInfo resourceLock = resourceLocks.get(path);
+        Enumeration<LockInfo> collectionLocksList = collectionLocks.elements();
 
         boolean wroteStart = false;
 
@@ -2648,8 +2647,7 @@ public class WebdavServlet
         }
 
         while (collectionLocksList.hasMoreElements()) {
-            LockInfo currentLock =
-                (LockInfo) collectionLocksList.nextElement();
+            LockInfo currentLock = collectionLocksList.nextElement();
             if (path.startsWith(currentLock.path)) {
                 if (!wroteStart) {
                     wroteStart = true;
@@ -2752,7 +2750,7 @@ public class WebdavServlet
          * Constructor.
          */
         public LockInfo() {
-
+            // Ignore
         }
 
 
@@ -2783,7 +2781,7 @@ public class WebdavServlet
             result += "Owner:" + owner + "\n";
             result += "Expiration:"
                 + FastHttpDateFormat.formatDate(expiresAt, null) + "\n";
-            Enumeration tokensList = tokens.elements();
+            Enumeration<String> tokensList = tokens.elements();
             while (tokensList.hasMoreElements()) {
                 result += "Token:" + tokensList.nextElement() + "\n";
             }
@@ -2844,7 +2842,7 @@ public class WebdavServlet
             generatedXML.writeElement(null, "timeout", XMLWriter.CLOSING);
 
             generatedXML.writeElement(null, "locktoken", XMLWriter.OPENING);
-            Enumeration tokensList = tokens.elements();
+            Enumeration<String> tokensList = tokens.elements();
             while (tokensList.hasMoreElements()) {
                 generatedXML.writeElement(null, "href", XMLWriter.OPENING);
                 generatedXML.writeText("opaquelocktoken:"
@@ -2881,7 +2879,7 @@ public class WebdavServlet
                     new StringReader("Ignored external entity"));
         }
     }
-};
+}
 
 
 // --------------------------------------------------------  WebdavStatus Class
@@ -3182,7 +3180,7 @@ class WebdavStatus {
         if (!mapStatusCodes.containsKey(intKey)) {
             return "";
         } else {
-            return (String) mapStatusCodes.get(intKey);
+            return mapStatusCodes.get(intKey);
         }
     }
 
@@ -3201,6 +3199,6 @@ class WebdavStatus {
         mapStatusCodes.put(new Integer(nKey), strVal);
     }
 
-};
+}
 
 
