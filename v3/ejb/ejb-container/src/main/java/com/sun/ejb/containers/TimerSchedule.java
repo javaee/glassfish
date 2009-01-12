@@ -713,7 +713,8 @@ int i = 0;
         String[] arr = splitBy(s, rangeChar);
         int begin = parseInt(arr[0], field);
         int end = parseInt(arr[1], field);
-        if (begin > end || !pattern.matcher(s).matches()) {
+        if (begin > end || !pattern.matcher(arr[0]).matches() || 
+                !pattern.matcher(arr[1]).matches()) {
             throw new IllegalArgumentException("Invalid " + field + " range: " + s);
         }
 
