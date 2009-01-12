@@ -1053,18 +1053,16 @@ public class EJBTimerService
 
         boolean expired = false;
         if (schedule != null) {
-            initialExpiration = getNextScheduledTimeout(schedule);
-
-            if( initialExpiration == null) {
+            Calendar next = schedule.getNextTimeout();
+            if( !schedule.isValid(next) ) {
                 logger.log(Level.INFO, "Schedule: " +
                                       schedule.getScheduleAsString() + 
                                       " already expired");
                 // schedule-based timer will never expire.
+                // we'll create it now, and remove on server restart
                 expired = true; 
-
-                // XXX Should it be created and removed on restart or never created?
-                return null;
             }
+            initialExpiration = next.getTime();
         }
 
         RuntimeTimerState timerState = 
@@ -1086,7 +1084,7 @@ public class EJBTimerService
                                        timedObjectPrimaryKey, 
                                        initialExpiration, intervalDuration, 
                                        schedule, timerConfig);
-                } else { // ??? if (!expired) {
+                } else if (!expired) {
                     addTimerSynchronization(null, 
                             timerId.getTimerId(), initialExpiration,
                             containerId, ownerIdOfThisServer_);
