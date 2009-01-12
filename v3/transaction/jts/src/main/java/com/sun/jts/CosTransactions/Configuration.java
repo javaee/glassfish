@@ -76,6 +76,8 @@ import java.util.logging.Level;
 import com.sun.logging.LogDomains;
 import com.sun.jts.utils.LogFormatter;
 
+import com.sun.enterprise.transaction.api.TransactionConstants;
+
 /**Provides interaction with the execution environment.
  *
  * @version 0.01
@@ -109,9 +111,7 @@ public class Configuration extends Object {
     private static Hashtable logPathToFiletable = new Hashtable();
 
     private static int retries = -1;
-    // LAO_PREPARE_OK is a magic number. Assimung no valid XAResource.prepare returns
-    // 123456 as a return value. LAO resource'd prepare method returns this value
-    public static final int LAO_PREPARE_OK = 123456;
+    public static final int LAO_PREPARE_OK = TransactionConstants.LAO_PREPARE_OK;
     public final static long COMMIT_RETRY_WAIT = 60000;
     private static boolean isAppClient = true;
 

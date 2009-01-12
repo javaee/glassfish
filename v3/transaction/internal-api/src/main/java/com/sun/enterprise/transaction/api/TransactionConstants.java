@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
+ * 
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- *
+ * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- *
+ * 
  * Contributor(s):
- *
+ * 
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -35,38 +35,12 @@
  */
 package com.sun.enterprise.transaction.api;
 
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.Singleton;
-
-import java.util.*;
-
-import com.sun.enterprise.transaction.spi.RecoveryResourceListener;
-
-
 /**
- * This is a registry class that keep the recoveryresource listeners.
- * A lifecycle module will be able to use this singleton to register
- * its recoveryresourcelisteners.
- *
- * @author Binod PG
- * @since 9.1
+ * Transaction constants that can be referenced by other components.
  */
-@Service
-@Scoped(Singleton.class)
-public class RecoveryResourceRegistry  {
+public interface TransactionConstants {
+    // LAO_PREPARE_OK is a magic number. Assimung no valid XAResource.prepare returns
+    // 123456 as a return value. LAO resource'd prepare method returns this value
+    public static final int LAO_PREPARE_OK = 123456;
 
-    private final static Set<RecoveryResourceListener> listeners = 
-            new HashSet<RecoveryResourceListener>();
-
-    public RecoveryResourceRegistry() {
-    }
-
-    public void addListener(RecoveryResourceListener rrl) {
-        listeners.add(rrl);
-    }
-
-    public Set<RecoveryResourceListener> getListeners() {
-        return listeners;
-    }
 }
