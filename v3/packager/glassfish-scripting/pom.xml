@@ -76,7 +76,7 @@
                             <overWriteReleases>false</overWriteReleases>
                             <overWriteSnapshots>true</overWriteSnapshots>
                             <excludeTransitive>false</excludeTransitive>
-                            <excludeArtifactIds>grizzly-module,glassfish-api,stax-api,wstx-asl</excludeArtifactIds>
+                            <excludeArtifactIds>glassfish-api,stax-api,wstx-asl</excludeArtifactIds>
                             <excludeTypes>pom</excludeTypes>
                             <excludeGroupIds>com.sun.enterprise</excludeGroupIds>
                             <includeScope>compile</includeScope>

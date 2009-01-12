@@ -140,8 +140,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.external</groupId>
-            <artifactId>grizzly-module</artifactId>
+            <groupId>com.sun.grizzly</groupId>
+            <artifactId>grizzly-utils</artifactId>
+            <version>${grizzly.original-version}</version>
         </dependency>
     </dependencies>
 </project>

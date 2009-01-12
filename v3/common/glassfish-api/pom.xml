@@ -67,7 +67,7 @@
         </dependency>
         <dependency>
             <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-http-utils</artifactId>
+            <artifactId>grizzly-utils</artifactId>
             <version>${grizzly.original-version}</version>
             <scope>provided</scope>
         </dependency>

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -76,15 +76,20 @@
                 <artifactId>glassfish-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <dependency>
-               <groupId>org.glassfish.external</groupId>
-               <artifactId>grizzly-module</artifactId>
-               <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.common</groupId>
-                <artifactId>amx-impl</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+        <dependency>
+            <groupId>com.sun.grizzly</groupId>
+            <artifactId>grizzly-utils</artifactId>
+            <version>${grizzly.original-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.grizzly</groupId>
+            <artifactId>grizzly-http</artifactId>
+            <version>${grizzly.original-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>amx-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
    </dependencies>
 </project>

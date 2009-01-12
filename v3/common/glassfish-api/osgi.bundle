@@ -16,5 +16,4 @@ _exportcontents: \
                         org.glassfish.api.naming, \
                         org.glassfish.api.web, \
                         org.glassfish.api.branding
-Import-Package: com.sun.grizzly.*; version=${grizzly.package-version}, *
 

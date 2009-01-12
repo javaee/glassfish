@@ -188,18 +188,18 @@
 
     <!-- all in one launch -->
 
-		<dependency>
-		  <groupId>org.glassfish.distributions</groupId>
-		  <artifactId>web</artifactId>
-      	   	  <version>${project.version}</version>
-		  <type>zip</type>
-		  <exclusions>
-			<exclusion>
-			  <groupId>org.glassfish.common</groupId>
-			  <artifactId>amx-impl</artifactId>
-			</exclusion>
-		  </exclusions>
-		</dependency>
+        <dependency>
+            <groupId>org.glassfish.distributions</groupId>
+            <artifactId>web</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.glassfish.common</groupId>
+                    <artifactId>amx-impl</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
     
     
     
@@ -210,11 +210,26 @@
       <scope>provided</scope>
     </dependency-->
 
-    <dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.1</version>
-			<scope>test</scope>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.grizzly</groupId>
+            <artifactId>grizzly-utils</artifactId>
+            <version>${grizzly.original-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.grizzly</groupId>
+            <artifactId>grizzly-framework</artifactId>
+            <version>${grizzly.original-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.grizzly</groupId>
+            <artifactId>grizzly-http</artifactId>
+            <version>${grizzly.original-version}</version>
         </dependency>
   </dependencies>
 

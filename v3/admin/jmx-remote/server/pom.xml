@@ -35,144 +35,141 @@
 * only if the new code is made subject to such option by the copyright 
 * holder. 
 */ 
---> 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+-->
+    <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 
 
 
 
-    <parent>
-
-        <groupId>org.glassfish.admin.jmx-remote</groupId>
-
-        <artifactId>jmx-remote</artifactId>
-
-        <version>3.0-SNAPSHOT</version>
-
-    </parent>
-
-    <modelVersion>4.0.0</modelVersion>
-
-    <artifactId>jmx-remote-server</artifactId>
-
-    <packaging>hk2-jar</packaging>
-
-    <name>JMX Remote Service Server</name>
-
-    <description>HTTP JMX connector server infrastructure in GF V3</description>
-
-    
-
-    <developers>
-
-        <developer>
-
-            <id>ne110415</id>
-
-            <name>Nandini Ektare</name>
-
-            <url>http://blogs.sun.com/nektare</url>
-
-            <organization>Sun Microsystems, Inc.</organization>
-
-            <roles>
-
-                <role>lead</role>
-
-                <role>developer</role>
-
-            </roles>
-
-        </developer>
-
-    </developers>
-
-    <build>
-
-	<resources>
-
-            <resource>
-
-                <directory>src/main/java</directory>
-
-                <includes>
-
-                    <include>**/*.properties</include>
-
-                </includes>
-
-            </resource>
-
-        </resources>
-
-    </build>
-
-    <dependencies>
-
-	<dependency>
+        <parent>
 
             <groupId>org.glassfish.admin.jmx-remote</groupId>
 
-            <artifactId>jmx-remote-common</artifactId>
+            <artifactId>jmx-remote</artifactId>
 
-            <version>${project.version}</version>
+            <version>3.0-SNAPSHOT</version>
 
-        </dependency>         
+        </parent>
 
-	<dependency>
+        <modelVersion>4.0.0</modelVersion>
 
-            <groupId>org.glassfish.external</groupId>
+        <artifactId>jmx-remote-server</artifactId>
 
-            <artifactId>jmxremote_optional-repackaged</artifactId>
+        <packaging>hk2-jar</packaging>
 
-            <version>${project.version}</version>
+        <name>JMX Remote Service Server</name>
 
-        </dependency>         
+        <description>HTTP JMX connector server infrastructure in GF V3</description>
 
-        <dependency>
+    
 
-            <groupId>org.glassfish</groupId>
+        <developers>
 
-            <artifactId>javax.servlet</artifactId>
+            <developer>
 
-            <version>${project.version}</version>
+                <id>ne110415</id>
 
-        </dependency>
+                <name>Nandini Ektare</name>
 
-        <dependency>
+                <url>http://blogs.sun.com/nektare</url>
 
-            <groupId>org.glassfish.common</groupId>
+                <organization>Sun Microsystems, Inc.</organization>
 
-            <artifactId>glassfish-api</artifactId>
+                <roles>
+
+                    <role>lead</role>
+
+                    <role>developer</role>
+
+                </roles>
+
+            </developer>
+
+        </developers>
+
+        <build>
+
+            <resources>
+
+                <resource>
+
+                    <directory>src/main/java</directory>
+
+                    <includes>
+
+                        <include>**/*.properties</include>
+
+                    </includes>
+
+                </resource>
+
+            </resources>
+
+        </build>
+
+        <dependencies>
+
+            <dependency>
+
+                <groupId>org.glassfish.admin.jmx-remote</groupId>
+
+                <artifactId>jmx-remote-common</artifactId>
+
+                <version>${project.version}</version>
+
+            </dependency>
+
+            <dependency>
+
+                <groupId>org.glassfish.external</groupId>
+
+                <artifactId>jmxremote_optional-repackaged</artifactId>
+
+                <version>${project.version}</version>
+
+            </dependency>
+
+            <dependency>
+
+                <groupId>org.glassfish</groupId>
+
+                <artifactId>javax.servlet</artifactId>
+
+                <version>${project.version}</version>
+
+            </dependency>
+
+            <dependency>
+
+                <groupId>org.glassfish.common</groupId>
+
+                <artifactId>glassfish-api</artifactId>
 
 
-        </dependency>
+            </dependency>
 
-        <dependency>
+            <dependency>
 
-            <groupId>org.glassfish.external</groupId>
+                <groupId>org.glassfish.core</groupId>
 
-            <artifactId>grizzly-module</artifactId>
+                <artifactId>kernel</artifactId>
 
-        </dependency>
+                <version>${project.version}</version>
 
-        <dependency>
+            </dependency>
 
-            <groupId>org.glassfish.core</groupId>
+            <dependency>
+                <groupId>org.glassfish.external</groupId>
+                <artifactId>apache-commons</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.grizzly</groupId>
+                <artifactId>grizzly-utils</artifactId>
+                <version>${grizzly.original-version}</version>
+            </dependency>
+        </dependencies>
 
-            <artifactId>kernel</artifactId>
-
-            <version>${project.version}</version>
-
-        </dependency>
-
-        <dependency>
-            <groupId>org.glassfish.external</groupId>
-            <artifactId>apache-commons</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
-
-</project>
+    </project>
 

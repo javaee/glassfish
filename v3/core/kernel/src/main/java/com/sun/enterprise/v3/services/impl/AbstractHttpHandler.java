@@ -25,7 +25,7 @@ package com.sun.enterprise.v3.services.impl;
 
 import com.sun.grizzly.Context;
 import com.sun.grizzly.ProtocolFilter;
-import com.sun.grizzly.http.HtmlHelper;
+import com.sun.grizzly.util.http.HtmlHelper;
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.util.OutputWriter;
 import java.io.IOException;
@@ -90,7 +90,7 @@ public abstract class AbstractHttpHandler {
                 //TODO: Some Application might not have Adapter. Might want to
                 //add a dummy one instead of sending a 404.
                 try {
-                    ByteBuffer bb = HtmlHelper.getErrorPage("Not Found", "HTTP/1.1 404 Not Found\n");
+                    ByteBuffer bb = HtmlHelper.getErrorPage("Not Found", "HTTP/1.1 404 Not Found\n", "Glassfish/v3");
                     OutputWriter.flushChannel
                             (selectionKey.channel(),bb);
                 } catch (IOException ex){

@@ -153,14 +153,6 @@
 
         <dependency>
 
-            <groupId>org.glassfish.external</groupId>
-
-            <artifactId>grizzly-module</artifactId>
-
-        </dependency>
-
-        <dependency>
-
             <groupId>org.glassfish.core</groupId>
 
             <artifactId>kernel</artifactId>
