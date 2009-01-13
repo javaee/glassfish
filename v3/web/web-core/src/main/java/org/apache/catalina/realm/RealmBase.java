@@ -979,10 +979,14 @@ public abstract class RealmBase
 
 
             for (int j = 0; j < roles.length; j++) {
-                if (hasRole(principal, roles[j]))
+                if (hasRole(principal, roles[j])) {
+                    if (log.isLoggable(Level.FINE))
+                        log.fine("Role found:  " + roles[j]);
                     return (true);
-                if (log.isLoggable(Level.FINE))
-                    log.fine("No role found:  " + roles[j]);
+                } else {
+                    if (log.isLoggable(Level.FINE))
+                        log.fine("No role found:  " + roles[j]);
+                }
             }
         }
         // Return a "Forbidden" message denying access to this resource
@@ -1542,7 +1546,7 @@ public abstract class RealmBase
 
 
     /**
-     * Digest password using the algorithm especificied and
+     * Digest password using the algorithm specified and
      * convert the result to a corresponding hex string.
      * If exception, the plain credentials string is returned
      *
@@ -1578,7 +1582,7 @@ public abstract class RealmBase
 
 
     /**
-     * Digest password using the algorithm especificied and
+     * Digest password using the algorithm specified and
      * convert the result to a corresponding hex string.
      * If exception, the plain credentials string is returned
      */
