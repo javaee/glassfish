@@ -91,14 +91,16 @@
   </build>
 
   <modules>
-    <module>nucleus</module>
     <module>web</module>
+    <module>all</module>
+    <module>smoketests</module>
+	<!-- turn them off for now...
+    <module>nucleus</module>
     <module>ejb</module>
     <module>jdbc</module>
     <module>scripting</module>
     <module>jpa</module>
-    <module>all</module>
-    <module>smoketests</module>
+  -->
   </modules>
 
 
