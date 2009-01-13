@@ -264,7 +264,7 @@ final class ApplicationFilterChain implements FilterChain {
                     filterType[1] = res;
                     filterType[2] = this;
                     SecurityUtil.doAsPrivilege
-                        ("doFilter", filter, classType, filterType);
+                        ("doFilter", filter, classType, filterType, principal);
 
                     filterType = null;
                 } else {  
