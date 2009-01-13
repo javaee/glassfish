@@ -53,11 +53,24 @@ own identifying information: Portions Copyright [yyyy]
             <zipgroupfileset dir="${jardir}" includes="**/modules/*.jar"/>
             <zipgroupfileset dir="${jardir}" includes="*.jar" />
          -->
+        <!-- There is probably a much better way to do this.  Feel free to improve
+             the performance -->
+
+        <echo message="Jarring DTDs so that the next step will 'see' them."/>
+		<jar
+			destfile="${jardir}/dtds.jar"
+			basedir="${jardir}/glassfishv3-prelude/glassfish/lib"
+			includes="dtds/*.dtd"
+         />
 
         <echo message="rejarring and processing metadata..."/>
         <taskdef name="rejar" classname="org.jvnet.maven.plugin.antrun.RejarTask" />
          <rejar destfile="${finaljar}">
             <zipgroupfileset dir="${jardir}" includes="**/*.jar"/>
+            <fileset dir="${jardir}/">
+                <include name="**/lib/dtds/*.dtd"/>
+            </fileset>
+
             <manifest>
                  <attribute name="Main-Class" value="org.glassfish.embed.EmbeddedMain"/>
              </manifest>
