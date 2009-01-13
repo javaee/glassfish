@@ -52,7 +52,7 @@ public class WsitEnabledFromWsdlTestNG {
 
             //System.out.printf ("Invoking addNumbers(%d, %d)\n", number1, number2);
             int result = port.addNumbers (number1, number2);
-            System.out.printf ("The result of adding %d and %d is %d.\n\n", number1, number2, result);
+            //System.out.printf ("The result of adding %d and %d is %d.\n\n", number1, number2, result);
             Assert.assertEquals(result, 30, "10 + 20 doesn't give the expected result 30");
 
             ((Closeable)port).close();
@@ -68,10 +68,10 @@ public class WsitEnabledFromWsdlTestNG {
             int number2 = 20;
             //System.out.printf ("Invoking addNumbers(%d, %d)\n", number1, number2);
             int result = port.addNumbers (number1, number2);
-            System.out.printf ("The result of adding %d and %d is %d.\n", number1, number2, result);
-            Assert.assertTrue(false, "Expected falt is not thrown");
+            //System.out.printf ("The result of adding %d and %d is %d.\n", number1, number2, result);
+            Assert.assertTrue(false, "Expected fault is not thrown");
         } catch (AddNumbersFault_Exception ex) {
-            System.out.printf ("Caught AddNumbersFault_Exception: %s\n", ex.getFaultInfo().getFaultInfo());
+            //System.out.printf ("Caught AddNumbersFault_Exception: %s\n", ex.getFaultInfo().getFaultInfo());
             Assert.assertTrue(true, "Expected fault is not thrown");
         } finally {
             ((Closeable)port).close();

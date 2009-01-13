@@ -51,9 +51,9 @@ public class WsitJaxwsFromJavaTestNG {
         int number1 = 10;
         int number2 = 20;
 
-        System.out.printf ("Invoking addNumbers(%d, %d)\n", number1, number2);
+        //System.out.printf ("Invoking addNumbers(%d, %d)\n", number1, number2);
         int result = port.addNumbers (number1, number2);
-        System.out.printf ("The result of adding %d and %d is %d.\n\n", number1, number2, result);
+        //System.out.printf ("The result of adding %d and %d is %d.\n\n", number1, number2, result);
         Assert.assertEquals(result, 30, "10 + 20 doesn't give the expected result 30");
 
         ((Closeable)port).close();
@@ -67,12 +67,12 @@ public class WsitJaxwsFromJavaTestNG {
 
             int number1 = -10;
             int number2 = 20;
-            System.out.printf ("Invoking addNumbers(%d, %d)\n", number1, number2);
+            //System.out.printf ("Invoking addNumbers(%d, %d)\n", number1, number2);
             int result = port.addNumbers (number1, number2);
-            System.out.printf ("The result of adding %d and %d is %d.\n", number1, number2, result);
+            //System.out.printf ("The result of adding %d and %d is %d.\n", number1, number2, result);
             Assert.assertTrue(false, "Expected exception is not thrown");
         } catch (AddNumbersException_Exception ex) {
-            System.out.printf ("Caught AddNumbersException_Exception: %s\n", ex.getFaultInfo ().getDetail ());
+            //System.out.printf ("Caught AddNumbersException_Exception: %s\n", ex.getFaultInfo ().getDetail ());
             Assert.assertTrue(true, "Expected exception is not thrown");
         } finally {
             ((Closeable)port).close();
