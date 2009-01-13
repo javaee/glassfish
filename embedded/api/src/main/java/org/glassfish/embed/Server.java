@@ -52,8 +52,10 @@ import com.sun.enterprise.v3.server.DomainXml;
 import com.sun.enterprise.v3.server.DomainXmlPersistence;
 import com.sun.enterprise.v3.server.SnifferManager;
 import com.sun.enterprise.v3.services.impl.LogManagerService;
+import com.sun.enterprise.web.VirtualServer;
 import com.sun.enterprise.web.WebContainer;
 import com.sun.enterprise.web.WebDeployer;
+import com.sun.enterprise.web.WebModule;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.hk2.component.InhabitantsParser;
 import com.sun.web.security.RealmAdapter;
@@ -61,8 +63,10 @@ import com.sun.web.server.DecoratorForJ2EEInstanceListener;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.util.*;
+import javax.servlet.ServletException;
 import org.apache.catalina.Container;
 import org.apache.catalina.Engine;
+import org.apache.catalina.Wrapper;
 import org.glassfish.api.Startup;
 import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.container.Sniffer;
@@ -107,6 +111,7 @@ import java.util.Collection;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.catalina.servlets.DefaultServlet;
 import org.glassfish.embed.impl.EmbeddedModulesRegistryImpl;
 import static org.glassfish.embed.ServerConstants.*;
 
@@ -287,6 +292,8 @@ public class Server {
     public Engine getEngine() throws EmbeddedException {
        return getEngines()[0];
     }
+
+
 
 
     public EmbeddedFileSystem getFileSystem() {
@@ -824,7 +831,25 @@ public class Server {
     }
 
     public void setListings(boolean b) throws EmbeddedException {
+        Container[] vss = getVirtualServers();
+
+        for(Container vs : vss) {
+            Container[] wms = getWebModules(vs);
+
+            for(Container wm : wms) {
+                try {
+                    Wrapper wrapper = getDefaultServletWrapper(wm);
+                    DefaultServlet ds = (DefaultServlet) wrapper.allocate();
+                    ds.setListings(true);
+                    wrapper.deallocate(ds);
+                }
+                catch (ServletException e) {
+                    throw new EmbeddedException(e);
+                }
+            }
+        }
     }
+
     ////////////////////////////////////////////////////////c
     /////////////   private methods   //////////////////////
     ////////////////////////////////////////////////////////
@@ -954,6 +979,46 @@ public class Server {
         catch (Exception e) {
             throw new EmbeddedException("Failed to write domain XML", e);
         }
+    }
+
+    public Container[] getVirtualServers() throws EmbeddedException {
+        Container[] vss = getEngine().findChildren();
+
+        if(vss == null || vss.length <= 0)
+            throw new EmbeddedException("bad_virtual_servers");
+
+        return vss;
+    }
+
+
+    private Container[] getWebModules(Container vs) throws EmbeddedException {
+        if(vs == null) {
+            throw new EmbeddedException("bad_virtual_server", "null");
+        }
+        // Virtual Servers may have no Web Modules, but the array can not be null
+        Container[] wm = vs.findChildren();
+
+        if(wm == null)
+            throw new EmbeddedException("bad_virtual_server", vs.getName());
+
+        return wm;
+    }
+
+    private Wrapper getDefaultServletWrapper(Container wm) throws EmbeddedException {
+        if(wm == null) {
+            throw new EmbeddedException("bad_web_module", "null");
+        }
+        // note that all web modules have a default server
+        Container[] servletWrappers = wm.findChildren();
+
+        if(servletWrappers == null || servletWrappers.length <= 0)
+            throw new EmbeddedException("bad_web_module", "No Servlets");
+
+        for(Container servletWrapper : servletWrappers)
+            if ("default".equals(servletWrapper.getName()))
+                return (Wrapper)servletWrapper;
+
+        throw new EmbeddedException("bad_web_module", "No Default Servlet");
     }
 
     ////////////////////////////////////////////////////////
