@@ -56,7 +56,6 @@ import java.util.logging.Logger;
 import javax.servlet.jsp.JspFactory;
 
 import com.sun.appserv.server.util.Version;
-import com.sun.enterprise.admin.monitor.registry.MonitoringLevel;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Config;
@@ -71,8 +70,6 @@ import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.J2eeApplication;
 import com.sun.enterprise.config.serverbeans.KeepAlive;
 import com.sun.enterprise.config.serverbeans.LogService;
-import com.sun.enterprise.config.serverbeans.ModuleMonitoringLevels;
-import com.sun.enterprise.config.serverbeans.MonitoringService;
 import com.sun.enterprise.config.serverbeans.RequestProcessing;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.Server;
@@ -295,11 +292,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     private Server _serverBean = null;
 
 
-    /*
-     * The current web container monitoring level
-     */
-    protected static MonitoringLevel monitoringLevel;
-
     /**
      * Controls the verbosity of the web container subsystem's debug messages.
      *
@@ -474,7 +466,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         serverConfigLookup = new ServerConfigLookup(cfg, clh);
         configureDynamicReloadingSettings();
         setDebugLevel();
-        initMonitoringLevel(cfg.getMonitoringService());
 
         String maxDepth = null;
         if(cfg.getWebContainer()!=null)
@@ -543,7 +534,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         //HERCULES:mod
         /*
         registerAdminEvents();
-        registerMonitoringLevelEvents();
         initHealthChecker();
         if(isNativeReplicationEnabled()) {
             initReplicationReceiver();
@@ -615,9 +605,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                                "Unable to start web container", le);
             return;
         }
-
-        // TODO not yet
-        //enableVirtualServerMonitoring();
 
         /*
         if (_reloadingEnabled) {
@@ -1521,7 +1508,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         //ejbWebServiceRegistryListener.unregister(habitat);
 
         //HERCULES:mod
-        //unregisterMonitoringLevelEvents();
         stopHealthChecker();
         WebContainerStartStopOperation startStopOperation =
                 this.getWebContainerStartStopOperation();
@@ -1580,54 +1566,48 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     protected void loadDefaultWebModules() {
 
-        Engine[] engines =  _embedded.getEngines();
         String defaultPath = null;
 
-        for (int j=0; j<engines.length; j++) {
-            Container[] vsArray = engines[j].findChildren();
-            for (int i = 0; i < vsArray.length; i++) {
-                if (vsArray[i] instanceof VirtualServer) {
+        Container[] vsArray = getEngine().findChildren();
+        for (int i = 0; i < vsArray.length; i++) {
+            if (vsArray[i] instanceof VirtualServer) {
 
-                    VirtualServer vs = (VirtualServer) vsArray[i];
+                VirtualServer vs = (VirtualServer) vsArray[i];
 
-                    /*
-                     * Let AdminConsoleAdapter handle any requests for
-                     * the root context of the '__asadmin' virtual-server, see
-                     * https://glassfish.dev.java.net/issues/show_bug.cgi?id=5664
-                     */
-                    if (VirtualServer.ADMIN_VS.equals(vs.getName())) {
-                        continue;
+                /*
+                 * Let AdminConsoleAdapter handle any requests for
+                 * the root context of the '__asadmin' virtual-server, see
+                 * https://glassfish.dev.java.net/issues/show_bug.cgi?id=5664
+                 */
+                if (VirtualServer.ADMIN_VS.equals(vs.getName())) {
+                    continue;
+                }
+
+                WebModuleConfig wmInfo = vs.getDefaultWebModule(domain,
+                        habitat.getComponent(
+                        WebArchivist.class) );
+                if (wmInfo != null) {
+                    defaultPath = wmInfo.getContextPath();
+                    // Virtual server declares default-web-module
+                    try {
+                        updateDefaultWebModule(vs, vs.getPorts(), wmInfo);
+                    } catch (LifecycleException le) {
+                        String msg = rb.getString(
+                            "webcontainer.defaultWebModuleError");
+                        msg = MessageFormat.format(msg, defaultPath,
+                                                   vs.getName());
+                        _logger.log(Level.SEVERE, msg, le);
                     }
 
-                    WebModuleConfig wmInfo = vs.getDefaultWebModule(domain,
+                } else {
+                    // Create default web module off of virtual
+                    // server's docroot if necessary
+                    wmInfo = vs.createSystemDefaultWebModuleIfNecessary(
                             habitat.getComponent(
-                            WebArchivist.class) );
+                            WebArchivist.class));
                     if (wmInfo != null) {
                         defaultPath = wmInfo.getContextPath();
-                        // Virtual server declares default-web-module
-                        try {
-                            updateDefaultWebModule(vs, vs.getPorts(),
-                                    wmInfo);
-                        } catch (LifecycleException le) {
-                            String msg = rb.getString(
-                                "webcontainer.defaultWebModuleError");
-                            msg = MessageFormat.format(
-                                    msg,
-                                    defaultPath,
-                                    vs.getName());
-                            _logger.log(Level.SEVERE, msg, le);
-                        }
-
-                    } else {
-                        // Create default web module off of virtual
-                        // server's docroot if necessary
-                        wmInfo = vs.createSystemDefaultWebModuleIfNecessary(
-                                habitat.getComponent(
-                                WebArchivist.class));
-                        if (wmInfo != null) {
-                            defaultPath = wmInfo.getContextPath();
-                            loadStandaloneWebModule(vs, wmInfo);
-                        }
+                        loadStandaloneWebModule(vs, wmInfo);
                     }
                 }
             }
@@ -1801,39 +1781,34 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         List vsList = StringUtils.parseStringList(vsIDs, " ,");
         boolean loadToAll = (vsList == null) || (vsList.size() == 0);
 
-        Engine[] engines =  _embedded.getEngines();
-
         List<Result<WebModule>> results = new ArrayList<Result<WebModule>>();
-        for (int j=0; j<engines.length; j++) {
-            Container[] vsArray = engines[j].findChildren();
-            for (int i = 0; i < vsArray.length; i++) {
-                if (vsArray[i] instanceof VirtualServer) {
-                    VirtualServer vs = (VirtualServer) vsArray[i];
+        Container[] vsArray = getEngine().findChildren();
+        for (int i = 0; i < vsArray.length; i++) {
+            if (vsArray[i] instanceof VirtualServer) {
+                VirtualServer vs = (VirtualServer) vsArray[i];
 
-                    /*
-                     * Fix for bug# 4913636:
-                     * If the vsList is null and the virtual server is
-                     * __asadmin, continue with next iteration
-                     * because we don't want to load user apps on __asadmin
-                     */
-                    if (vs.getID().equals(VirtualServer.ADMIN_VS) && loadToAll) {
-                        continue;
-                    }
+                /*
+                 * Fix for bug# 4913636:
+                 * If the vsList is null and the virtual server is
+                 * __asadmin, continue with next iteration
+                 * because we don't want to load user apps on __asadmin
+                 */
+                if (vs.getID().equals(VirtualServer.ADMIN_VS) && loadToAll) {
+                    continue;
+                }
 
-                    if ( loadToAll
-                            || vsList.contains(vs.getID())
-                            || verifyAlias(vsList,vs)){
+                if (loadToAll || vsList.contains(vs.getID())
+                        || verifyAlias(vsList,vs)){
 
-                        WebModule ctx = null;
-                        try {
-                            ctx = loadWebModule(vs, wmInfo, j2eeApplication, deploymentProperties);
-                            results.add(new Result(ctx));
-                        } catch (Throwable t) {
-                            if (ctx != null) {
-                                ctx.setAvailable(false);
-                            }
-                            results.add(new Result(t));
+                    WebModule ctx = null;
+                    try {
+                        ctx = loadWebModule(vs, wmInfo, j2eeApplication, deploymentProperties);
+                        results.add(new Result(ctx));
+                    } catch (Throwable t) {
+                        if (ctx != null) {
+                            ctx.setAvailable(false);
                         }
+                        results.add(new Result(t));
                     }
                 }
             }
@@ -2337,84 +2312,79 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             contextRoot = "";
         }
 
-        Engine[] engines = _embedded.getEngines();
         List hostList = StringUtils.parseStringList(virtualServers, " ,");
         boolean unloadFromAll = (hostList == null) || (hostList.isEmpty());
         boolean hasBeenUndeployed = false;
         VirtualServer host = null;
         WebModule context = null;
-        for(Engine engine : engines) {
-            Container[] hostArray = engine.findChildren();
-            for(Container aHostArray : hostArray) {
-                host = (VirtualServer)aHostArray;
-                /**
-                 * Related to Bug: 4904290
-                 * Do not unloadload module on ADMIN_VS
-                 */
-                if(unloadFromAll && host.getName().equalsIgnoreCase(
+        Container[] hostArray = getEngine().findChildren();
+        for(Container aHostArray : hostArray) {
+            host = (VirtualServer)aHostArray;
+            /**
+             * Related to Bug: 4904290
+             * Do not unloadload module on ADMIN_VS
+             */
+            if (unloadFromAll && host.getName().equalsIgnoreCase(
                     VirtualServer.ADMIN_VS)) {
-                    continue;
-                }
-                if(unloadFromAll
-                    || hostList.contains(host.getName())
+                continue;
+            }
+            if (unloadFromAll || hostList.contains(host.getName())
                     || verifyAlias(hostList, host)) {
-                    context = (WebModule)host.findChild(contextRoot);
-                    if(context != null) {
-                        context.saveSessions(props);
-                        host.removeChild(context);
-                        try {
-                            /*
-                             * If the webapp is being undeployed as part of a
-                             * domain shutdown, we don't want to destroy it,
-                             * as that would remove any sessions persisted to
-                             * file. Any active sessions need to survive the
-                             * domain shutdown, so that they may be resumed
-                             * after the domain has been restarted.
-                             */
-                            if(!isShutdown) {
-                                context.destroy();
-                            }
-                        } catch(Exception ex) {
-                            _logger.log(Level.WARNING,
-                                "[WebContainer] Context " + contextRoot
-                                    + " threw exception in destroy()", ex);
-                        }
-                        if(_logger.isLoggable(Level.FINEST)) {
-                            _logger.log(Level.FINEST,
-                                "[WebContainer] Context " + contextRoot
-                                    + " undeployed from " + host);
-                        }
-                        hasBeenUndeployed = true;
-                        host.fireContainerEvent(
-                            Deployer.REMOVE_EVENT, context);
+                context = (WebModule)host.findChild(contextRoot);
+                if(context != null) {
+                    context.saveSessions(props);
+                    host.removeChild(context);
+                    try {
                         /*
-                         * If the web module that has been unloaded
-                         * contained any mappings for ad-hoc paths,
-                         * those mappings must be preserved by registering an
-                         * ad-hoc web module at the same context root
+                         * If the webapp is being undeployed as part of a
+                         * domain shutdown, we don't want to destroy it,
+                         * as that would remove any sessions persisted to
+                         * file. Any active sessions need to survive the
+                         * domain shutdown, so that they may be resumed
+                         * after the domain has been restarted.
                          */
-                        if(context.hasAdHocPaths()
+                        if(!isShutdown) {
+                            context.destroy();
+                        }
+                    } catch(Exception ex) {
+                        _logger.log(Level.WARNING,
+                            "[WebContainer] Context " + contextRoot
+                                + " threw exception in destroy()", ex);
+                    }
+                    if(_logger.isLoggable(Level.FINEST)) {
+                        _logger.log(Level.FINEST,
+                            "[WebContainer] Context " + contextRoot
+                                + " undeployed from " + host);
+                    }
+                    hasBeenUndeployed = true;
+                    host.fireContainerEvent(Deployer.REMOVE_EVENT, context);
+                    /*
+                     * If the web module that has been unloaded
+                     * contained any mappings for ad-hoc paths,
+                     * those mappings must be preserved by registering an
+                     * ad-hoc web module at the same context root
+                     */
+                    if(context.hasAdHocPaths()
                             || context.hasAdHocSubtrees()) {
-                            WebModule wm = createAdHocWebModule(
-                                context.getID(),
-                                host,
-                                contextRoot,
-                                context.getJ2EEApplication());
+                        WebModule wm = createAdHocWebModule(
+                            context.getID(),
+                            host,
+                            contextRoot,
+                            context.getJ2EEApplication());
                             wm.addAdHocPaths(context.getAdHocPaths());
                             wm.addAdHocSubtrees(context.getAdHocSubtrees());
-                        }
-                        // START GlassFish 141
-                        if(!dummy) {
-                            WebModuleConfig wmInfo =
-                                host.createSystemDefaultWebModuleIfNecessary(
-                                    habitat.getComponent(
-                                        WebArchivist.class));
-                            if(wmInfo != null) {
-                                loadStandaloneWebModule(host, wmInfo);
-                            }
-                        }
-                        // END GlassFish 141
                     }
+                    // START GlassFish 141
+                    if(!dummy) {
+                        WebModuleConfig wmInfo =
+                            host.createSystemDefaultWebModuleIfNecessary(
+                                habitat.getComponent(
+                                    WebArchivist.class));
+                        if(wmInfo != null) {
+                            loadStandaloneWebModule(host, wmInfo);
+                        }
+                    }
+                    // END GlassFish 141
                 }
             }
         }
@@ -2447,31 +2417,28 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         boolean hasBeenSuspended = false;
         VirtualServer host = null;
         Context context = null;
-        for (Engine engine1 : _embedded.getEngines()) {
-            for (Container aHostArray : engine1.findChildren()) {
-                host = (VirtualServer)aHostArray;
-                /**
-                 * Related to Bug: 4904290
-                 * Do not unloadload module on ADMIN_VS
-                 */
-                if (suspendOnAll
+        for (Container aHostArray : getEngine().findChildren()) {
+            host = (VirtualServer)aHostArray;
+            /**
+             * Related to Bug: 4904290
+             * Do not unloadload module on ADMIN_VS
+             */
+            if (suspendOnAll
                     && host.getName().equalsIgnoreCase(VirtualServer.ADMIN_VS)) {
-                    continue;
-                }
-                if (suspendOnAll
-                    || hostList.contains(host.getName())
+                continue;
+            }
+            if (suspendOnAll || hostList.contains(host.getName())
                     || verifyAlias(hostList, host)) {
-                    context = (Context)host.findChild(contextRoot);
-                    if (context != null) {
-                        context.setAvailable(false);
-                        if (_logger.isLoggable(Level.FINEST)) {
-                            _logger.log(Level.FINEST,
-                                "[WebContainer] Context "
-                                    + contextRoot + " disabled from "
-                                    + host);
-                        }
-                        hasBeenSuspended = true;
+                context = (Context)host.findChild(contextRoot);
+                if (context != null) {
+                    context.setAvailable(false);
+                    if (_logger.isLoggable(Level.FINEST)) {
+                        _logger.log(Level.FINEST,
+                             "[WebContainer] Context "
+                                + contextRoot + " disabled from "
+                                + host);
                     }
+                    hasBeenSuspended = true;
                 }
             }
         }
@@ -2519,27 +2486,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             _debug = 5;
         else
             _debug = 0;
-    }
-
-
-   /*
-    * Initializes the web container monitoring level from the domain.xml.
-    *
-    * @param monitoringBean The monitoring service bean from which to retrieve
-    *        the web container monitoring level
-    */
-    private void initMonitoringLevel(MonitoringService monitoringBean) {
-
-        monitoringLevel = MonitoringLevel.OFF; // default per DTD
-
-        if (monitoringBean != null) {
-            ModuleMonitoringLevels levels =
-                    monitoringBean.getModuleMonitoringLevels();
-            if (levels != null) {
-                monitoringLevel = MonitoringLevel.instance(
-                        levels.getWebContainer());
-            }
-        }
     }
 
 
@@ -2607,7 +2553,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 while (iter.hasNext()) {
                     if (httpListenerId.equals(iter.next())) {
                         VirtualServer match = (VirtualServer)
-                            getEngines()[0].findChild(vs.getId());
+                            getEngine().findChild(vs.getId());
                         if (match != null) {
                             result.add(match);
                         }
@@ -2708,8 +2654,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * Return the parent/top-level container in _embedded for virtual
      * servers.
      */
-    public Engine[] getEngines() {
-        return _embedded.getEngines();
+    public Engine getEngine() {
+        return _embedded.getEngines()[0];
     }
 
 
@@ -2756,24 +2702,20 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         WebModule wm = null;
 
-        Engine[] engines =  _embedded.getEngines();
-        for (int j=0; j<engines.length; j++) {
+        Container[] vsList = getEngine().findChildren();
+        for (int i = 0; i < vsList.length; i++) {
 
-            Container[] vsList = engines[j].findChildren();
-            for (int i = 0; i < vsList.length; i++) {
-
-                VirtualServer vs = (VirtualServer)vsList[i];
-                if (vs.getName().equalsIgnoreCase(VirtualServer.ADMIN_VS)) {
-                    // Do not deploy on admin vs
-                    continue;
-                }
-
-                wm = (WebModule) vs.findChild(ctxtRoot);
-                if (wm == null) {
-                    wm = createAdHocWebModule(id, vs, ctxtRoot, appName);
-                }
-                wm.addAdHocPathAndSubtree(path, subtree, servletInfo);
+            VirtualServer vs = (VirtualServer)vsList[i];
+            if (vs.getName().equalsIgnoreCase(VirtualServer.ADMIN_VS)) {
+                // Do not deploy on admin vs
+                continue;
             }
+
+            wm = (WebModule) vs.findChild(ctxtRoot);
+            if (wm == null) {
+                wm = createAdHocWebModule(id, vs, ctxtRoot, appName);
+            }
+            wm.addAdHocPathAndSubtree(path, subtree, servletInfo);
         }
     }
 
@@ -2803,43 +2745,38 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         WebModule wm = null;
 
-        Engine[] engines =  _embedded.getEngines();
-        for (int j=0; j<engines.length; j++) {
+        Container[] vsList = getEngine().findChildren();
+        for (int i = 0; i < vsList.length; i++) {
 
-            Container[] vsList = engines[j].findChildren();
-            for (int i = 0; i < vsList.length; i++) {
+            VirtualServer vs = (VirtualServer) vsList[i];
+            if (vs.getName().equalsIgnoreCase(VirtualServer.ADMIN_VS)) {
+                // Do not undeploy from admin vs, because we never
+                // deployed onto it
+                continue;
+            }
 
-                VirtualServer vs = (VirtualServer) vsList[i];
-                if (vs.getName().equalsIgnoreCase(VirtualServer.ADMIN_VS)) {
-                    // Do not undeploy from admin vs, because we never
-                    // deployed onto it
-                    continue;
-                }
+            wm = (WebModule) vs.findChild(ctxtRoot);
+            if (wm == null) {
+                continue;
+            }
 
-                wm = (WebModule) vs.findChild(ctxtRoot);
-                if (wm == null) {
-                    continue;
-                }
-
-                /*
-                 * If the web module was created by the container for the
-                 * sole purpose of mapping ad-hoc paths and subtrees,
-                 * and does no longer contain any ad-hoc paths or subtrees,
-                 * remove the web module.
-                 */
-                wm.removeAdHocPath(path);
-                wm.removeAdHocSubtree(subtree);
-                if ((wm instanceof AdHocWebModule)
-                && !wm.hasAdHocPaths()
-                && !wm.hasAdHocSubtrees()) {
-                    vs.removeChild(wm);
-                    try {
-                        wm.destroy();
-                    } catch (Exception ex) {
-                        _logger.log(Level.WARNING,
+            /*
+             * If the web module was created by the container for the
+             * sole purpose of mapping ad-hoc paths and subtrees,
+             * and does no longer contain any ad-hoc paths or subtrees,
+             * remove the web module.
+             */
+            wm.removeAdHocPath(path);
+            wm.removeAdHocSubtree(subtree);
+            if ((wm instanceof AdHocWebModule) && !wm.hasAdHocPaths()
+                    && !wm.hasAdHocSubtrees()) {
+                vs.removeChild(wm);
+                try {
+                    wm.destroy();
+                } catch (Exception ex) {
+                    _logger.log(Level.WARNING,
                                 "[WebContainer] Context " + wm.getPath()
                                 + " threw exception in destroy()", ex);
-                    }
                 }
             }
         }
@@ -2965,13 +2902,13 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     public void deleteHost(HttpService httpService) throws LifecycleException{
     
-        Engine[] engines = _embedded.getEngines();
         VirtualServer virtualServer;
+
         // First we need to find which virtual-server was deleted. In
         // reconfig/VirtualServerReconfig, it is impossible to lookup
         // the vsBean because the element is removed from domain.xml
         // before handleDelete is invoked.
-        Container[] virtualServers = engines[0].findChildren();
+        Container[] virtualServers = getEngine().findChildren();
         for (int i=0;i < virtualServers.length; i++){
             for (com.sun.enterprise.config.serverbeans.VirtualServer vse : httpService.getVirtualServer()) {
                 if ( virtualServers[i].getName().equals(vse.getId())){
@@ -3023,9 +2960,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             return;
         }
 
-        Engine[] engines = _embedded.getEngines();
-        VirtualServer virtualServer = 
-            (VirtualServer)engines[0].findChild(vsBean.getId());
+        VirtualServer virtualServer = (VirtualServer)
+            getEngine().findChild(vsBean.getId());
 
         if (virtualServer==null) {
             _logger.log(Level.WARNING, "Virtual server " + vsBean.getId() +
@@ -3195,8 +3131,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     HttpService httpService,
                     SecurityService securityService) {
                         
-        Engine[] engines = _embedded.getEngines();
-        VirtualServer vs = (VirtualServer)engines[0].findChild(vsBean.getId());
+        VirtualServer vs = (VirtualServer)
+            getEngine().findChild(vsBean.getId());
         if (vs==null) {
             return;
         }
@@ -3457,7 +3393,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         // Mapper
         String virtualServerName = httpListener.getDefaultVirtualServer();
         VirtualServer vs = (VirtualServer)
-            _embedded.getEngines()[0].findChild(virtualServerName);
+            getEngine().findChild(virtualServerName);
         int[] oldPorts = vs.getPorts();
         int[] newPorts = new int[oldPorts.length+1];
         System.arraycopy(oldPorts, 0, newPorts, 0, oldPorts.length);
@@ -3533,7 +3469,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * updated attributes of the <access-log> element from domain.xml.
      */
     public void updateAccessLog(HttpService httpService) {
-        Container[] virtualServers = _embedded.getEngines()[0].findChildren();
+        Container[] virtualServers = getEngine().findChildren();
         for (int i=0; i<virtualServers.length; i++) {
             ((VirtualServer) virtualServers[i]).reconfigureAccessLog(
                 httpService, webContainerFeatureFactory);
