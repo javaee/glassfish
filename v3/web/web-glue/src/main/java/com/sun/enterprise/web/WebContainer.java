@@ -57,11 +57,6 @@ import javax.servlet.jsp.JspFactory;
 
 import com.sun.appserv.server.util.Version;
 import com.sun.enterprise.admin.monitor.registry.MonitoringLevel;
-import com.sun.enterprise.admin.monitor.registry.MonitoringLevelListener;
-import com.sun.enterprise.admin.monitor.registry.MonitoringRegistrationException;
-import com.sun.enterprise.admin.monitor.registry.MonitoringRegistry;
-import com.sun.enterprise.admin.monitor.stats.ServletStats;
-import com.sun.enterprise.admin.monitor.stats.WebModuleStats;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Config;
@@ -100,16 +95,8 @@ import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
 import com.sun.enterprise.web.logger.IASLogger;
-import com.sun.enterprise.web.monitor.PwcServletStats;
-import com.sun.enterprise.web.monitor.impl.PwcServletStatsImpl;
-import com.sun.enterprise.web.monitor.impl.PwcWebModuleStatsImpl;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 import com.sun.enterprise.web.reconfig.HttpServiceConfigListener;
-import com.sun.enterprise.web.stats.HTTPListenerStatsImpl;
-import com.sun.enterprise.web.stats.PWCRequestStatsImpl;
-import com.sun.enterprise.web.stats.PWCVirtualServerStatsImpl;
-import com.sun.enterprise.web.stats.ServletStatsImpl;
-import com.sun.enterprise.web.stats.WebModuleStatsImpl;
 import com.sun.grizzly.util.http.mapper.Mapper;
 import com.sun.hk2.component.ConstructorWomb;
 import com.sun.logging.LogDomains;
@@ -161,7 +148,6 @@ import org.xml.sax.EntityResolver;
  */
 @Service(name="com.sun.enterprise.web.WebContainer")
 public class WebContainer implements org.glassfish.api.container.Container, PostConstruct, PreDestroy, EventListener {
-        //MonitoringLevelListener {
 
     // -------------------------------------------------- Constants & Statics
 
@@ -1129,6 +1115,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         return vs;
     }
 
+
     /**
      * Validate the docroot properties of a virtual-server.
      */
@@ -1204,6 +1191,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         vs.configureAuthRealm(securityService);
     }
 
+
     /**
      * Configures the given virtual server with the port numbers of its
      * associated http listeners.
@@ -1262,53 +1250,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
     }
 
-    /*
-     * Enables monitoring of all virtual servers.
-     */
-    private void enableVirtualServerMonitoring() {
-        Engine[] engines = _embedded.getEngines();
-        for (int j = 0; j < engines.length; j++) {
-            Container[] hostArray = engines[j].findChildren();
-            for (int i = 0; i < hostArray.length; i++) {
-                VirtualServer vs = (VirtualServer) hostArray[i];
-                enableVirtualServerMonitoring(vs);
-            }
-        }
-    }
-
-    /*
-     * Enables monitoring of all virtual servers.
-     */
-    private void enableVirtualServerMonitoring(VirtualServer vs){
-        ServerContext sc = getServerContext();
-        MonitoringRegistry monitoringRegistry = sc.getDefaultHabitat().getComponent(MonitoringRegistry.class);
-
-
-        PWCVirtualServerStatsImpl vsStats = new PWCVirtualServerStatsImpl(vs);
-        try {
-            monitoringRegistry.registerPWCVirtualServerStats(vsStats,
-                                                             vs.getID(),
-                                                             null);
-        } catch (Exception e) {
-            _logger.log(Level.WARNING,
-                        "Unable to register PWCVirtualServerStats for "
-                        + vs.getID(), e);
-        }
-
-        PWCRequestStatsImpl pwcRequestStatsImpl =
-                new PWCRequestStatsImpl(sc.getDefaultDomainName());
-        vs.setPWCRequestStatsImpl(pwcRequestStatsImpl);
-
-        try {
-            monitoringRegistry.registerPWCRequestStats(pwcRequestStatsImpl,
-                        vs.getID(),
-                        null);
-        } catch (MonitoringRegistrationException mre) {
-            String msg = rb.getString("web.monitoringRegistrationError");
-            msg = MessageFormat.format(msg, "PWCRequestStats");
-            _logger.log(Level.WARNING, msg, mre);
-        }
-    }
 
     /**
      * Configures the keep-alive properties on all HTTP connectors
@@ -1326,6 +1267,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
     }
 
+
     /**
      * Configures all HTTP connectors with connection-pool related info.
      *
@@ -1340,6 +1282,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             ((PECoyoteConnector)connectors[i]).configureConnectionPool(cp);
         }
     }
+
 
     /**
      * Configures all HTTP connectors with http-protocol related info.
@@ -1357,6 +1300,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
     }
 
+
     /**
      * Configures the Grizzly FileCache mechanism on all HTTP connectors
      *
@@ -1372,6 +1316,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 httpFileCache);
         }
     }
+
 
     /**
      * Configures all HTTP connector with the given request-processing
@@ -1556,6 +1501,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
     }
 
+
     /**
      * Gracefully terminate the active use of the public methods of this
      * component.  This method should be the last one called on a given
@@ -1632,7 +1578,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * a default context for the virtual server, based on the virtual server's
      * docroot.
      */
-
     protected void loadDefaultWebModules() {
 
         Engine[] engines =  _embedded.getEngines();
@@ -1734,6 +1679,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
     }
 
+
     /**
      * Loads all the web modules that are configured for the specified
      * j2ee-application.
@@ -1795,6 +1741,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
         **/
     }
+
 
     /**
      * Whether or not a component (either an application or a module) should be
@@ -1907,6 +1854,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
         return false;
     }
+
 
     /**
      * Creates and configures a web module and adds it to the specified
@@ -2637,28 +2585,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
  */
     }
 
-    /**
-     * Virtual servers are maintained in the reference contained
-     * in Server element. First, we need to find the server
-     * and then get the virtual server from the correct reference
-     *
-     * @param appName Name of the app to get vs
-     * @param configCtx config context to use to obtain virtual servers. If
-     *     this parameter is null, config context cached at startup time will
-     *     be used.
-     *
-     * @return virtual servers as a string (separated by space or comma)
-     */
-    /*private String getVirtualServers(String appName, ConfigContext configCtx) {
-
-        Server server = habitat.getComponent(Server.class);
-        for (ApplicationRef ref : server.getApplicationRef()) {
-            if (ref.getRef().equals(appName)) {
-                return ref.getVirtualServers();          }
-        }
-        return null;
-    }*/
-
 
     /**
      * Gets all the virtual servers whose http-listeners attribute value
@@ -2776,237 +2702,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         return false;
     }
     // End EE: 4927099 load only associated applications
-
-
-    /*
-     * Creates a ServletStats instance for the servlet with the given
-     * <code>servletName</code> and registers it with the monitoring registry.
-     *
-     * @param j2eeApplication String representing the J2EE Application to which
-     *        the web module belongs, or null if the web module is stand-alone
-     * @param j2eeServer The server instance name
-     * @param webModuleName The name of the web module to which the servlet
-     *        belongs
-     * @param vsId The id of the virtual server on which the web module has
-     *        been deployed
-     * @param contextRoot Context root at which web module has been deployed
-     * @param servletName The servlet name
-     * @param listener The listener for monitoring level changes
-     */
-    private void registerServletStats(String j2eeApplication,
-            String j2eeServer,
-            String webModuleName,
-            String vsId,
-            String contextRoot,
-            String servletName,
-            MonitoringLevelListener listener) {
-
-        PwcServletStats pwcServletStats = new PwcServletStatsImpl(
-                _serverContext.getDefaultDomainName(),
-                vsId, contextRoot, servletName,
-                j2eeApplication, j2eeServer);
-        ServletStats servletStats = new ServletStatsImpl(pwcServletStats);
-
-
-        MonitoringRegistry monitoringRegistry = habitat.getComponent(
-                MonitoringRegistry.class);
-
-        /*
-         * Standalone webmodules are loaded with the application name set to
-         * the string "null"
-         */
-        String app = ("null".equalsIgnoreCase(j2eeApplication) ?
-            null : j2eeApplication);
-        try {
-            monitoringRegistry.registerServletStats(servletStats,
-                    app,
-                    webModuleName,
-                    contextRoot,
-                    vsId,
-                    servletName,
-                    listener);
-        } catch(Exception e) {
-            _logger.log(Level.WARNING,
-                    "Exception during registration of servletstats",
-                    e);
-        }
-    }
-
-
-    /*
-     * Removes the ServletStats instance associated with the servlet with the
-     * given <code>servletName</code> from the monitoring registry.
-     *
-     * @param j2eeApplication String representing the J2EE Application to which
-     *        the web module belongs, or null if the web module is stand-alone
-     * @param webModuleName The name of the web module to which the servlet
-     *        belongs
-     * @param contextRoot Context root at which web module has been deployed
-     * @param vsId The id of the virtual server on which the web module has
-     *        been deployed
-     * @param servletName The servlet name
-     */
-    private void unregisterServletStats(String j2eeApplication,
-            String webModuleName,
-            String contextRoot,
-            String vsId,
-            String servletName) {
-
-        MonitoringRegistry monitoringRegistry = habitat.getComponent(
-            MonitoringRegistry.class);
-
-        try {
-            monitoringRegistry.unregisterServletStats(j2eeApplication,
-                    webModuleName,
-                    contextRoot,
-                    vsId,
-                    servletName);
-        } catch (Exception e) {
-            _logger.log(Level.WARNING,
-                    "Exception during unregistration of servletstats",
-                    e);
-        }
-    }
-
-
-    /*
-     * Creates a WebModuleStats instance for the given web module and
-     * registers it with the monitoring registry.
-     *
-     * @param j2eeApplication String representing the J2EE Application to which
-     *        the web module belongs, or null if the web module is stand-alone
-     * @param j2eeServer The server instance name
-     * @param vsId The id of the virtual server on which the web module has
-     *        been deployed
-     * @param ctx The web module
-     * @param listener The listener for monitoring level changes
-     *
-     * @return The WebModuleStats that was registered with the monitoring
-     * registry
-     */
-    private WebModuleStats registerWebModuleStats(
-            String j2eeApplication,
-            String j2eeServer,
-            String vsId,
-            WebModule ctx,
-            MonitoringLevelListener listener) {
-
-        WebModuleStatsImpl webStats = (WebModuleStatsImpl)
-                webContainerFeatureFactory.getWebModuleStats();
-        PwcWebModuleStatsImpl pwcWebStats = new PwcWebModuleStatsImpl(
-                ctx.getObjectName(),
-                ctx.getEncodedPath(),
-                _serverContext.getDefaultDomainName(),
-                vsId,
-                j2eeApplication,
-                j2eeServer);
-        webStats.setPwcWebModuleStats(pwcWebStats);
-        webStats.setSessionManager(ctx.getManager());
-
-        MonitoringRegistry monitoringRegistry =
-                habitat.getComponent(MonitoringRegistry.class);
-
-
-        /*
-         * Standalone webmodules are loaded with the application name set to
-         * the string "null"
-         */
-        String app = ("null".equalsIgnoreCase(j2eeApplication) ?
-            null : j2eeApplication);
-        try {
-            monitoringRegistry.registerWebModuleStats(webStats,
-                    app,
-                    ctx.getModuleName(),
-                    ctx.getEncodedPath(),
-                    vsId,
-                    listener);
-        } catch (Exception e) {
-            _logger.log(Level.WARNING,
-                    "Fail to register WebModuleStats for "
-                    + ctx.getModuleName() + " deployed on " + vsId, e);
-        }
-        return webStats;
-    }
-
-
-    /*
-     * Removes the WebModuleStats instance associated with the web module with
-     * the given <code>webModuleName</code> from the monitoring registry.
-     *
-     * @param j2eeApplication String representing the J2EE Application to which
-     *        the web module belongs, or null if the web module is stand-alone
-     * @param webModuleName The web module name
-     * @param contextRoot Context root at which web module has been deployed
-     * @param vsId The id of the virtual server on which the web module has
-     *        been deployed
-     */
-    private void unregisterWebModuleStats(String j2eeApplication,
-            String webModuleName,
-            String contextRoot,
-            String vsId) {
-
-        MonitoringRegistry monitoringRegistry = habitat.getComponent(
-            MonitoringRegistry.class);
-
-        try {
-            monitoringRegistry.unregisterWebModuleStats(j2eeApplication,
-                    webModuleName,
-                    contextRoot,
-                    vsId);
-        } catch (Exception e) {
-            _logger.log(Level.WARNING,
-                    "Fail to unregister WebModuleStats for "
-                    + webModuleName + " deployed on " + vsId, e);
-        }
-    }
-
-    /**
-     * Invoked when a  reference is created from a
-     * server instance (or cluster) to a particular module.
-     *
-     * @throws AdminEventListenerException when the listener is unable to
-     *         process the event.
-     *
-     * public void moduleReferenceAdded(ModuleDeployEvent event)
-     * { //    throws AdminEventListenerException {
-     *
-     * }*/
-
-    /**
-     * Invoked when a reference is removed from a
-     * server instance (or cluster) to a particular module.
-     *
-     * @throws AdminEventListenerException when the listener is unable to
-     *         process the event.
-     *
-     * public void moduleReferenceRemoved(ModuleDeployEvent event)
-     * { //     throws AdminEventListenerException {
-     *
-     * }*/
-
-
-    /**
-     * Invoked when an application reference is created from a
-     * server instance (or cluster) to a particular application.
-     *
-     * @throws AdminEventListenerException when the listener is unable to
-     *         process the event.
-     *
-     * public void applicationReferenceAdded(ApplicationDeployEvent event)
-     * {//       throws AdminEventListenerException {
-     *
-     * }*/
-
-    /**
-     * Invoked when a reference is removed from a
-     * server instance (or cluster) to a particular application.
-     *
-     * @throws AdminEventListenerException when the listener is unable to
-     *         process the event.
-     *
-     * public void applicationReferenceRemoved(ApplicationDeployEvent event)
-     * { // throws AdminEventListenerException {
-     * }*/
 
 
     /**
@@ -3263,6 +2958,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
     }
     
+
     /** 
      * Delete virtual-server.
      * @param httpService element which contains the configuration info.
@@ -3449,10 +3145,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     if (newPorts[i] == conn.getPort()) {
                         if (!conn.isAvailable()){
                             conn.start();
-                            enableHttpListenerMonitoring(
-                                virtualServer,
-                                conn.getPort(),
-                                conn.getName());
                         }
                         try {
                             conn.getMapperListener().registerHost(
@@ -3887,43 +3579,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     }
 
         
-    /**
-     * Register http-listener monitoring statistics.
-     */
-    protected void enableHttpListenerMonitoring(VirtualServer virtualServer,
-            int port, String httpListenerId){
-            
-        PWCRequestStatsImpl pwcRequestStatsImpl = 
-                virtualServer.getPWCRequestStatsImpl();
-        
-        if ( pwcRequestStatsImpl == null ){
-            pwcRequestStatsImpl = new PWCRequestStatsImpl(
-                    getServerContext().getDefaultDomainName());
-            virtualServer.setPWCRequestStatsImpl(pwcRequestStatsImpl);
-        }
- 
-        HTTPListenerStatsImpl httpStats;
-        MonitoringRegistry mReg = getServerContext().getDefaultHabitat().getComponent(MonitoringRegistry.class);
-        String vsId = virtualServer.getID();
-        
-        if (isTomcatUsingDefaultDomain()) {
-            httpStats = new HTTPListenerStatsImpl(
-                    getServerContext().getDefaultDomainName(),port);
-        } else {
-            httpStats = new HTTPListenerStatsImpl(vsId,port);
-        }
-
-        try {
-            mReg.registerHttpListenerStats(httpStats, httpListenerId, vsId, null);
-            pwcRequestStatsImpl.addHttpListenerStats(httpStats);
-        } catch (MonitoringRegistrationException mre) {
-            String msg = rb.getString("web.monitoringRegistrationError");
-            msg = MessageFormat.format(msg, new Object[] { "HTTPListenerStats" });
-            _logger.log(Level.WARNING, msg, mre);
-        }        
-    }
-    
-    
     /**
      * is Tomcat using default domain name as its domain
      */
