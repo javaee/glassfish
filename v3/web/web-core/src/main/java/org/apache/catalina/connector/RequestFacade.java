@@ -1051,14 +1051,14 @@ public class RequestFacade
     /**
      * Starts async processing on this request.
      */
-    public AsyncContext startAsync(ServletRequest request,
-                                   ServletResponse response)
+    public AsyncContext startAsync(ServletRequest sreq,
+                                   ServletResponse sresp)
             throws IllegalStateException {
         if (request == null) {
             throw new IllegalStateException(
                             sm.getString("requestFacade.nullRequest"));
         }
-        return request.startAsync(request, response);
+        return request.startAsync(sreq, sresp);
     }
         
 
