@@ -55,7 +55,7 @@ import javax.ejb.EJBLocalObject;
 import javax.ejb.EJBContext;
 import javax.ejb.EntityContext;
 
-import com.sun.jts.jta.*;
+//import com.sun.jts.jta.*;
 
 import com.sun.appserv.jdbc.DataSource;
 
@@ -63,14 +63,14 @@ import com.sun.jdo.api.persistence.support.JDOFatalInternalException;
 import com.sun.jdo.api.persistence.support.PersistenceManagerFactory;
 import com.sun.jdo.spi.persistence.utility.I18NHelper;
 
-import com.sun.enterprise.connectors.ConnectorNamingEvent;
-import com.sun.enterprise.connectors.ConnectorNamingEventListener;
+import com.sun.enterprise.connectors.naming.ConnectorNamingEvent;
+import com.sun.enterprise.connectors.naming.ConnectorNamingEventListener;
 import com.sun.enterprise.connectors.ConnectorRuntime;
-import com.sun.enterprise.resource.ResourceInstaller;
-import com.sun.enterprise.server.event.ApplicationEvent;
-import com.sun.enterprise.server.event.ApplicationLoaderEventListener;
-import com.sun.enterprise.server.event.ApplicationLoaderEventNotifier;
-import com.sun.enterprise.server.event.EjbContainerEvent;
+//import com.sun.enterprise.resource.ResourceInstaller;
+//import com.sun.enterprise.server.event.ApplicationEvent;
+//import com.sun.enterprise.server.event.ApplicationLoaderEventListener;
+//import com.sun.enterprise.server.event.ApplicationLoaderEventNotifier;
+//import com.sun.enterprise.server.event.EjbContainerEvent;
 
 /** Sun specific implementation for TransactionHelper interface.
 * Though this class does not have special implementation for 
@@ -79,8 +79,8 @@ import com.sun.enterprise.server.event.EjbContainerEvent;
 * any bean's beforeCompletion method.
 */
 public class SunTransactionHelper extends TransactionHelperImpl  
-        implements ApplicationLoaderEventListener,
-                   ConnectorNamingEventListener
+//        implements ApplicationLoaderEventListener,
+//                   ConnectorNamingEventListener
     {
 
     /** I18N message handler */
@@ -105,8 +105,8 @@ public class SunTransactionHelper extends TransactionHelperImpl
         EJBHelper.registerTransactionHelper (helper);
         // Register with ApplicationLoaderEventNotifier to receive Sun
         // Application Server specific lifecycle events.
-        ApplicationLoaderEventNotifier.getInstance().addListener(helper);
-        ConnectorRuntime.getRuntime().getResourceRebindEventNotifier().addListener(helper);
+//        ApplicationLoaderEventNotifier.getInstance().addListener(helper);
+//        ConnectorRuntime.getRuntime().getResourceRebindEventNotifier().addListener(helper);
         pmf_list = new ArrayList();
     }
  
@@ -243,40 +243,40 @@ public class SunTransactionHelper extends TransactionHelperImpl
         }
     }
     
-    //-------------------ApplicationLifeCycleEventListener Methods --------------//
-
-    /**
-     * @inheritDoc
-     */ 
-    public void handleApplicationEvent(ApplicationEvent event) {
-            // Change to switch-case if handling more than one events.
-            if(ApplicationEvent.AFTER_APPLICATION_UNLOAD == event.getEventType() ) {
-                ClassLoader classLoader = event.getClassLoader();
-                for (Iterator iterator = applicationLifeCycleEventListeners.iterator(); 
-                     iterator.hasNext();) {
-                    ApplicationLifeCycleEventListener applicationLifeCycleEventListener = 
-                            (ApplicationLifeCycleEventListener) iterator.next();
-                    applicationLifeCycleEventListener.notifyApplicationUnloaded(classLoader);
-            }
-        }
-    }
-
-    /**
-     * @inheritDoc
-     */ 
-    public void handleEjbContainerEvent(EjbContainerEvent event) {
-        //Ignore EjbContainerEvents
-    }
-    
-    /** 
-     * @inheritDoc
-     */
-    public void connectorNamingEventPerformed(ConnectorNamingEvent event){
-        if(event.getEventType() == ConnectorNamingEvent.EVENT_OBJECT_REBIND){
-            String dsName = ResourceInstaller.getPMJndiName(event.getJndiName());
-            cleanUpResources(dsName);
-        } // Ignore all other events.
-    }
+//    //-------------------ApplicationLifeCycleEventListener Methods --------------//
+//
+//    /**
+//     * @inheritDoc
+//     */
+//    public void handleApplicationEvent(ApplicationEvent event) {
+//            // Change to switch-case if handling more than one events.
+//            if(ApplicationEvent.AFTER_APPLICATION_UNLOAD == event.getEventType() ) {
+//                ClassLoader classLoader = event.getClassLoader();
+//                for (Iterator iterator = applicationLifeCycleEventListeners.iterator();
+//                     iterator.hasNext();) {
+//                    ApplicationLifeCycleEventListener applicationLifeCycleEventListener =
+//                            (ApplicationLifeCycleEventListener) iterator.next();
+//                    applicationLifeCycleEventListener.notifyApplicationUnloaded(classLoader);
+//            }
+//        }
+//    }
+//
+//    /**
+//     * @inheritDoc
+//     */
+//    public void handleEjbContainerEvent(EjbContainerEvent event) {
+//        //Ignore EjbContainerEvents
+//    }
+//
+//    /**
+//     * @inheritDoc
+//     */
+//    public void connectorNamingEventPerformed(ConnectorNamingEvent event){
+//        if(event.getEventType() == ConnectorNamingEvent.EVENT_OBJECT_REBIND){
+//            String dsName = ResourceInstaller.getPMJndiName(event.getJndiName());
+//            cleanUpResources(dsName);
+//        } // Ignore all other events.
+//    }
 
     /** 
      * Removes all entries that correspond to the same connection factory name.

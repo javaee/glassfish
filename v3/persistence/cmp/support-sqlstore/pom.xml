@@ -35,19 +35,20 @@
 * only if the new code is made subject to such option by the copyright 
 * holder. 
 */ 
---> 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-	<groupId>org.glassfish.persistence.cmp</groupId>
-    	<artifactId>cmp</artifactId>
+        <groupId>org.glassfish.persistence.cmp</groupId>
+        <artifactId>cmp</artifactId>
         <version>3.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>support-sqlstore</artifactId>
     <packaging>jar</packaging>
     <name>support-sqlstore module for cmp</name>
-    
+
     <developers>
         <developer>
             <id>mm110999</id>
@@ -55,62 +56,87 @@
             <organization>Sun Microsystems, Inc.</organization>
             <roles>
                 <role>developer</role>
-		        <role>lead</role>
+                <role>lead</role>
             </roles>
         </developer>
     </developers>
     <build>
-     <resources>
-        <resource>
-          <directory>src/main/java</directory>
-         </resource>
-      </resources>
-      <plugins>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>antlr-maven-plugin</artifactId>
-          <configuration>
-             <!-- <grammars>JQL.g, Semantic.g, Optimizer.g, CodeGeneration.g</grammars> -->
-              <grammars>JQL.g, Semantic.g, Optimizer.g, CodeGeneration.g</grammars>
-<!--
-              <diagnostic>true</diagnostic>
-             <debug>true</debug>
-             <trace>true</trace>
-   <traceLexer>true</traceLexer>
-   <traceParser>true</traceParser>
-   <traceTreeParser>true</traceTreeParser>
--->   
-          </configuration>
-          <executions>
-            <execution>
-              <goals>
-                <goal>generate</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-      </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>antlr-maven-plugin</artifactId>
+                <configuration>
+                    <!-- <grammars>JQL.g, Semantic.g, Optimizer.g, CodeGeneration.g</grammars> -->
+                    <grammars>JQL.g, Semantic.g, Optimizer.g, CodeGeneration.g</grammars>
+                    <!--
+                                  <diagnostic>true</diagnostic>
+                                 <debug>true</debug>
+                                 <trace>true</trace>
+                       <traceLexer>true</traceLexer>
+                       <traceParser>true</traceParser>
+                       <traceTreeParser>true</traceTreeParser>
+                    -->
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
     <dependencies>
-      <dependency>
+        <dependency>
             <groupId>org.glassfish.persistence.cmp</groupId>
             <artifactId>model</artifactId>
             <version>${project.version}</version>
         </dependency>
-      <dependency>
+        <dependency>
             <groupId>antlr</groupId>
             <artifactId>antlr</artifactId>
             <version>${antlr.version}</version>
-      </dependency>
-      <dependency>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.transaction</artifactId>
             <version>${project.version}</version>
-      </dependency>
-      <dependency>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.ejb</artifactId>
             <version>${project.version}</version>
-      </dependency>
-      </dependencies>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.deployment</groupId>
+            <artifactId>dol</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.glassfish.transaction</groupId>-->
+            <!--<artifactId>jts</artifactId>-->
+            <!--<version>${project.version}</version>-->
+        <!--</dependency>-->
+        <dependency>
+            <groupId>org.glassfish.connectors</groupId>
+            <artifactId>connectors-runtime</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.glassfish.connectors</groupId>-->
+            <!--<artifactId>connectors-internal-api</artifactId>-->
+            <!--<version>${project.version}</version>-->
+        <!--</dependency>-->
+        <dependency>
+            <groupId>org.glassfish.ejb</groupId>
+            <artifactId>ejb-container</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

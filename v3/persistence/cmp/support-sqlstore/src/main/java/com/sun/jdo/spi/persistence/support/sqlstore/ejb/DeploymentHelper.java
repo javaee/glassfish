@@ -170,7 +170,8 @@ public class DeploymentHelper
         if (logger.isLoggable(logger.FINE)) {
             logger.fine("ejb.DeploymentHelper.getconnection", name); //NOI18N
         }
-        return ConnectorRuntime.getRuntime().getConnection(name);
+        //return ConnectorRuntime.getRuntime().getConnection(name);
+        return null;
     }    
 
     /** Create a RuntimeException for unexpected instance returned

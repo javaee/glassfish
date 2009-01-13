@@ -169,7 +169,7 @@ public class OracleSpecialDBOperation extends BaseSpecialDBOperation {
         // Since the PreparedStatement obtained is directly through
         // con, there is no need to unwrap it.
         PreparedStatement testPs = con.prepareStatement(TEST_STATEMENT);
-
+/*
         if (oracle817ClassesAvailable &&
             testPs instanceof oracle.jdbc.OraclePreparedStatement) {
             // This DataSource uses a driver version 8.1.7 or higher.
@@ -195,7 +195,7 @@ public class OracleSpecialDBOperation extends BaseSpecialDBOperation {
                     return new Oracle816Handler(ps);
                 }
             };
-        } else {
+        } else */{
             // This DataSource uses a non oracle driver.
             dBDriverHandlerFactory = new DBDriverHandlerFactory() {
                 public DBDriverHandler createDBDriverHandler(PreparedStatement ps) {
@@ -299,51 +299,51 @@ public class OracleSpecialDBOperation extends BaseSpecialDBOperation {
             throws SQLException;
     }
 
-    private static class Oracle817Handler implements DBDriverHandler {
-        oracle.jdbc.OraclePreparedStatement oraclePreparedStatement;
-
-        public Oracle817Handler(Statement ps) {
-            oraclePreparedStatement = (oracle.jdbc.OraclePreparedStatement)
-                                        EJBHelper.unwrapStatement(ps);
-        }
-        public void defineColumnType(int index, int type) throws SQLException {
-            oraclePreparedStatement.defineColumnType(index, type);
-        }
-        public void defineColumnType( int index, int type,int length)
-            throws SQLException {
-            oraclePreparedStatement.defineColumnType(index, type, length);
-        }
-        public void clearDefines() throws SQLException {
-            oraclePreparedStatement.clearDefines();
-        }
-        public void bindFixedCharColumn(int index, String strVal, int length)
-            throws SQLException {
-            oraclePreparedStatement.setFixedCHAR(index, strVal);
-        }
-    }
-
-    private static class Oracle816Handler implements DBDriverHandler {
-        oracle.jdbc.driver.OraclePreparedStatement oraclePreparedStatement;
-
-        public Oracle816Handler(Statement ps) {
-            oraclePreparedStatement = (oracle.jdbc.driver.OraclePreparedStatement)
-                                        EJBHelper.unwrapStatement(ps);
-        }
-        public void defineColumnType(int index, int type) throws SQLException {
-            oraclePreparedStatement.defineColumnType(index, type);
-        }
-        public void defineColumnType( int index, int type,int length)
-            throws SQLException {
-            oraclePreparedStatement.defineColumnType(index, type, length);
-        }
-        public void clearDefines() throws SQLException {
-            oraclePreparedStatement.clearDefines();
-        }
-        public void bindFixedCharColumn(int index, String strVal, int length)
-            throws SQLException {
-            oraclePreparedStatement.setFixedCHAR(index, strVal);
-        }
-    }
+//    private static class Oracle817Handler implements DBDriverHandler {
+//        oracle.jdbc.OraclePreparedStatement oraclePreparedStatement;
+//
+//        public Oracle817Handler(Statement ps) {
+//            oraclePreparedStatement = (oracle.jdbc.OraclePreparedStatement)
+//                                        EJBHelper.unwrapStatement(ps);
+//        }
+//        public void defineColumnType(int index, int type) throws SQLException {
+//            oraclePreparedStatement.defineColumnType(index, type);
+//        }
+//        public void defineColumnType( int index, int type,int length)
+//            throws SQLException {
+//            oraclePreparedStatement.defineColumnType(index, type, length);
+//        }
+//        public void clearDefines() throws SQLException {
+//            oraclePreparedStatement.clearDefines();
+//        }
+//        public void bindFixedCharColumn(int index, String strVal, int length)
+//            throws SQLException {
+//            oraclePreparedStatement.setFixedCHAR(index, strVal);
+//        }
+//    }
+//
+//    private static class Oracle816Handler implements DBDriverHandler {
+//        oracle.jdbc.driver.OraclePreparedStatement oraclePreparedStatement;
+//
+//        public Oracle816Handler(Statement ps) {
+//            oraclePreparedStatement = (oracle.jdbc.driver.OraclePreparedStatement)
+//                                        EJBHelper.unwrapStatement(ps);
+//        }
+//        public void defineColumnType(int index, int type) throws SQLException {
+//            oraclePreparedStatement.defineColumnType(index, type);
+//        }
+//        public void defineColumnType( int index, int type,int length)
+//            throws SQLException {
+//            oraclePreparedStatement.defineColumnType(index, type, length);
+//        }
+//        public void clearDefines() throws SQLException {
+//            oraclePreparedStatement.clearDefines();
+//        }
+//        public void bindFixedCharColumn(int index, String strVal, int length)
+//            throws SQLException {
+//            oraclePreparedStatement.setFixedCHAR(index, strVal);
+//        }
+//    }
 
     private static class NonOracleHandler implements DBDriverHandler {
 

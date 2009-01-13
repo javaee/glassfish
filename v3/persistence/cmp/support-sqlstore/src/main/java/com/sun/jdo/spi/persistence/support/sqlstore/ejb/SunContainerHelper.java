@@ -58,8 +58,8 @@ import javax.sql.DataSource;
 
 import com.sun.enterprise.*;
 import com.sun.enterprise.deployment.*;
-import com.sun.enterprise.resource.ResourceInstaller;
-import com.sun.enterprise.server.ApplicationRegistry;
+import com.sun.appserv.connectors.internal.api.ConnectorsUtil; //TODO Dependency on connector-internal-api needs to be removed
+//import com.sun.enterprise.server.ApplicationRegistry;
 
 import com.sun.ejb.Container;
 
@@ -82,7 +82,7 @@ import com.sun.jdo.spi.persistence.utility.I18NHelper;
 * TransactionHelper implementation must be done in the SunTransactionHelper.
 *
 */
-public class SunContainerHelper extends SunTransactionHelper implements ContainerHelper
+public class SunContainerHelper extends SunTransactionHelper //implements ContainerHelper
     {
 
     /** I18N message handler */
@@ -97,39 +97,39 @@ public class SunContainerHelper extends SunTransactionHelper implements Containe
      * Registers itself during initial load
      */  
     static {
-        CMPHelper.registerContainerHelper (new SunContainerHelper());
+//        CMPHelper.registerContainerHelper (new SunContainerHelper());
     }
 
     /** Default constructor should not be public */
     SunContainerHelper() { }
 
-    /** Get a Container helper instance that will be passed unchanged to the
-     * required methods.
-     * This is SunContainerHelper specific code.
-     *   
-     * The info argument is an Object array that consistes of a class to use
-     * for the class loader and concreteImpl bean class name.
-     * @see getEJBObject(Object, Object)
-     * @see getEJBLocalObject(Object, Object)
-     * @see getEJBLocalObject(Object, Object, EJBObject)
-     * @see removeByEJBLocalObject(EJBLocalObject, Object)
-     * @see removeByPK(Object, Object)
-     * @param info Object with the request information that is application server
-     * specific.
-     * @return a Container helper instance as an Object.
-     */  
-    public Object getContainer(Object info) {
-
-        Object[] params = (Object[])info;
-        Class cls = (Class)params[0];
-
-        ApplicationRegistry reg = ApplicationRegistry.getInstance();
-        Application app = reg.getApplication(cls.getClassLoader());
-        EjbCMPEntityDescriptor desc = app.getCMPDescriptorFor((String)params[1]);
-
-        return reg.getContainer(desc);
-    }
-
+//    /** Get a Container helper instance that will be passed unchanged to the
+//     * required methods.
+//     * This is SunContainerHelper specific code.
+//     *
+//     * The info argument is an Object array that consistes of a class to use
+//     * for the class loader and concreteImpl bean class name.
+//     * @see getEJBObject(Object, Object)
+//     * @see getEJBLocalObject(Object, Object)
+//     * @see getEJBLocalObject(Object, Object, EJBObject)
+//     * @see removeByEJBLocalObject(EJBLocalObject, Object)
+//     * @see removeByPK(Object, Object)
+//     * @param info Object with the request information that is application server
+//     * specific.
+//     * @return a Container helper instance as an Object.
+//     */
+//    public Object getContainer(Object info) {
+//
+//        Object[] params = (Object[])info;
+//        Class cls = (Class)params[0];
+//
+//        ApplicationRegistry reg = ApplicationRegistry.getInstance();
+//        Application app = reg.getApplication(cls.getClassLoader());
+//        EjbCMPEntityDescriptor desc = app.getCMPDescriptorFor((String)params[1]);
+//
+//        return reg.getContainer(desc);
+//    }
+//
     /** Get an EJBObject reference for this primary key and Container helper.
      * The Container instance is acquired via #getContainer(Object).
      * This is SunContainerHelper specific code.
@@ -191,11 +191,11 @@ public class SunContainerHelper extends SunTransactionHelper implements Containe
     /** Remove a bean for a given EJBLocalObject and Container helper.
      * The Container instance is acquired via #getContainer(Object).
      * This is SunContainerHelper specific code.
-     *   
+     *
      * @see getContainer(Object)
      * @param ejb the EJBLocalObject for the bean to be removed.
      * @param container a Container instance for the request.
-     */  
+     */
     public void removeByEJBLocalObject(EJBLocalObject ejb, Object container) {
         try {
             ((Container)container).removeBeanUnchecked(ejb);
@@ -207,18 +207,18 @@ public class SunContainerHelper extends SunTransactionHelper implements Containe
     /** Remove a bean for a given primary key and Container helper.
      * The Container instance is acquired via #getContainer(Object).
      * This is SunContainerHelper specific code.
-     *   
+     *
      * @see getContainer(Object)
      * @param pk the primary key for the bean to be removed.
      * @param container a Container instance for the request.
-     */  
+     */
     public void removeByPK(Object pk, Object container) {
         try {
             ((Container)container).removeBeanUnchecked(pk);
         } catch (Exception ex) {
             processContainerException(ex);
         }
-    }    
+    }
 
     /** Verify that this instance is of a valid local interface type for
      * a given Container helper.
@@ -250,25 +250,25 @@ public class SunContainerHelper extends SunTransactionHelper implements Containe
      * operation for a given EntityContext.
      * Called by the generated ejbRemove method before calling ejbRemove of the
      * related beans (via removeByEJBLocalObject) that are to be cascade-deleted.
-     *   
+     *
      * This is SunContainerHelper specific code.
-     *   
+     *
      * @param context the EntityContext of the bean beeing removed.
-     */  
+     */
     public void setCascadeDeleteAfterSuperEJBRemove(EntityContext context) {
         try {
             ((com.sun.ejb.containers.EntityContextImpl)context).setCascadeDeleteAfterSuperEJBRemove(true);
         } catch (Exception ex) {
             processContainerException(ex);
         }
-    }    
+    }
 
-    /** Called in a CMP supported environment. Notifies the container that 
+    /** Called in a CMP supported environment. Notifies the container that
      * ejbSelect had been called.
      * The Container instance is acquired via #getContainer(Object).
      *
      * This is SunContainerHelper specific code.
-     *   
+     *
      * @see getContainer(Object)
      * @param container a Container instance for the request.
      */
@@ -279,12 +279,12 @@ public class SunContainerHelper extends SunTransactionHelper implements Containe
     /** Called in a CMP environment to lookup PersistenceManagerFactory
      * referenced by this Container instance as the CMP resource.
      * The Container instance is acquired via #getContainer(Object).
-     *   
+     *
      * This is SunContainerHelper specific code.
-     *   
+     *
      * @see getContainer(Object)
      * @param container a Container instance for the request.
-     */ 
+     */
     public PersistenceManagerFactory getPersistenceManagerFactory(Object container) {
         Object rc = null;
         PersistenceManagerFactoryImpl pmf = null;
@@ -303,7 +303,7 @@ public class SunContainerHelper extends SunTransactionHelper implements Containe
 
             } else if (rc instanceof javax.sql.DataSource) {
                 pmf = new PersistenceManagerFactoryImpl();
-                pmf.setConnectionFactoryName(ResourceInstaller.getPMJndiName(name));
+                pmf.setConnectionFactoryName(ConnectorsUtil.getPMJndiName(name));
 
                 Iterator it = cmpResource.getProperties();
                 if (it != null) {
@@ -321,7 +321,7 @@ public class SunContainerHelper extends SunTransactionHelper implements Containe
             } else {
                 RuntimeException e = new JDOFatalUserException(I18NHelper.getMessage(
                     messages, "ejb.jndi.unexpectedinstance", //NOI18N
-                    name, rc.getClass().getName())); 
+                    name, rc.getClass().getName()));
                 logger.severe(e.toString());
 
                 throw e;

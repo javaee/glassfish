@@ -44,7 +44,7 @@
 
 package com.sun.jdo.spi.persistence.support.sqlstore.ejb;
 
-import com.sun.appserv.server.ServerLifecycleImpl;
+//import com.sun.appserv.server.ServerLifecycleImpl;
 import com.sun.jdo.spi.persistence.utility.logging.LogHelper;
 
 
@@ -55,7 +55,7 @@ import com.sun.jdo.spi.persistence.utility.logging.LogHelper;
  * This class does not need to do any processing for the Server Lifecycle events 
  * other than load the necessary class.
  */
-public class PersistenceManagerServiceImpl extends ServerLifecycleImpl {
+public class PersistenceManagerServiceImpl/* extends ServerLifecycleImpl */{
 
     // Initialize the appserver loggers.
     static {

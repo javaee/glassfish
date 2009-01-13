@@ -36,15 +36,12 @@
 
 package com.sun.jdo.spi.persistence.support.sqlstore.ejb;
 
-import java.util.logging.Level;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
 import com.sun.jdo.spi.persistence.utility.logging.LoggerFactoryJDK14;
 import com.sun.jdo.spi.persistence.utility.logging.LoggerJDK14;
 
-import com.sun.enterprise.server.logging.ServerLogManager;
-import com.sun.logging.LogDomains;
 
 /**
  *
