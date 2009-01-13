@@ -61,6 +61,7 @@ import com.sun.web.server.DecoratorForJ2EEInstanceListener;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.util.*;
+import org.apache.catalina.Container;
 import org.apache.catalina.Engine;
 import org.glassfish.api.Startup;
 import org.glassfish.api.admin.ParameterNames;
@@ -266,8 +267,27 @@ public class Server {
      */
     public Engine[] getEngines() throws EmbeddedException {
        mustBeStarted("getEngines");
-       return wc.getEngines();
+       Engine[] engines = wc.getEngines();
+
+       if(engines == null || engines.length <= 0) {
+            throw new EmbeddedException("bad_engines");
+        }
+       
+       return engines;
     }
+
+    /**
+     * Returns the  <code>org.apache.catalina.Engine</code> object
+     * associated with this <code>Server</code> object.  Server must
+     * be started before calling getEngine().  If it is not started EmbeddedException
+     * is thrown.
+     * @return Engine[]
+     * @throws org.glassfish.embed.EmbeddedException
+     */
+    public Engine getEngine() throws EmbeddedException {
+       return getEngines()[0];
+    }
+
 
     public EmbeddedFileSystem getFileSystem() {
         return efs;
@@ -802,7 +822,10 @@ public class Server {
     public static Server getServer(String id) {
         return servers.get(id);
     }
-    ////////////////////////////////////////////////////////
+
+    public void setListings(boolean b) throws EmbeddedException {
+    }
+    ////////////////////////////////////////////////////////c
     /////////////   private methods   //////////////////////
     ////////////////////////////////////////////////////////
 

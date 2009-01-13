@@ -95,6 +95,9 @@ public class DeployWebAppTest {
 
         app.undeploy();
         System.out.println("Simple War deployed and undeployed OK...");
+
+        myGF.setListings(true);
+
     }
     
     private static Server myGF;
