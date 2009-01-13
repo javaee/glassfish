@@ -346,6 +346,16 @@ public class DefaultServlet
         }
 
     }
+    /**
+     * Enables or disables directory listings for this DefaultServlet.
+     *
+     * @param listings true if directory listings are to be enabled, false
+     * otherwise
+     */
+    public void setListings(boolean listings) {
+        this.listings = listings;
+    }
+
 
 
     // ------------------------------------------------------ Protected Methods
