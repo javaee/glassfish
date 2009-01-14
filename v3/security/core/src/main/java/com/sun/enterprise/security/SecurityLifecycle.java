@@ -64,7 +64,9 @@ import org.glassfish.api.Startup.Lifecycle;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.config.ConfigListener;
 
 /**
  * This class extends default implementation of ServerLifecycle interface.
@@ -93,6 +95,9 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
     @Inject
     private SecurityConfigListener configListener;
     
+    @Inject(name="MessageSecurityConfigListener", optional=true)
+    private ConfigListener msgSecurityConfigListener;
+        
     private static final LocalStringManagerImpl _localStrings =
 	new LocalStringManagerImpl(SecurityLifecycle.class);
  
