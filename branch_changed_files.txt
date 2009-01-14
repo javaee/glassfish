@@ -56,3 +56,19 @@ ALL CHANGES WERE MERGED INTO TRUNK!!!!
 
 ===================================
 
+January 14 2009
+Adding Jan's changes from the trunk:
+- Removed obsolete monitoring code
+- Simplified getEngines() to getEngine(), since the WebContainer uses a
+  single Engine only
+
+C:\embedded-glassfish_0106\embedded_v3_prelude_release\web\web-glue>svn commit
+Sending        web-glue\src\main\java\com\sun\enterprise\web\WebContainer.java
+Transmitting file data .
+Committed revision 24303.
+
+C:\embedded-glassfish_0106\embedded_v3_prelude_release\embedded\api>svn commit
+Sending        api\src\main\java\org\glassfish\embed\Server.java
+Sending        api\src\test\java\org\glassfish\embed\ServerTest.java
+Transmitting file data ..
+Committed revision 24304.
