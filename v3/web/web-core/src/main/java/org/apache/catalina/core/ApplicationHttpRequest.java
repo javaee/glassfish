@@ -284,15 +284,24 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
             if (specialAttributes != null) {
                 value = specialAttributes.get(name);
             }
-            if (value == null && specialAttributes != null
-                    && name.startsWith("javax.servlet.forward")) {
-                // If it's a forward special attribute, and null, it means this
-                // is an include, so we check the wrapped request since 
-                // the request could have been forwarded before the include
-                return getRequest().getAttribute(name);
-            } else {
-                return value;
+            if (value == null && name.startsWith("javax.servlet.forward")) {
+                /*
+                 * If it's a forward special attribute, and null, delegate
+                 * to the wrapped request. This will allow access to the
+                 * forward special attributes from a request that was first
+                 * forwarded and then included, or forwarded multiple times
+                 * in a row.
+                 * Notice that forward special attributes are set only on
+                 * the wrapper that was created for the initial forward
+                 * (i.e., the top-most wrapper for a request that was
+                 * forwarded multiple times in a row, and never included,
+                 * will not contain any specialAttributes!).
+                 * This is different from an include, where the special
+                 * include attributes are set on every include wrapper.
+                 */
+                value = getRequest().getAttribute(name);
             }
+            return value;
         }
 
     }
