@@ -153,12 +153,11 @@ public class ServletFilterHandler extends AbstractWebHandler {
             }
         }
 
-        //XXX small vs large
         if (servletFilterDesc.getSmallIconUri() == null) {
-            servletFilterDesc.setSmallIconUri(servletFilterAn.icon());
+            servletFilterDesc.setSmallIconUri(servletFilterAn.smallIcon());
         }
         if (servletFilterDesc.getLargeIconUri() == null) {
-            servletFilterDesc.setLargeIconUri(servletFilterAn.icon());
+            servletFilterDesc.setLargeIconUri(servletFilterAn.largeIcon());
         }
 
         if (servletFilterDesc.isAsyncSupported() == null) {

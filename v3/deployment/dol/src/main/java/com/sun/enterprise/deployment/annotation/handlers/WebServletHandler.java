@@ -191,12 +191,11 @@ public class WebServletHandler extends AbstractWebHandler {
             }
         }
 
-        //XXX small vs large
         if (webCompDesc.getSmallIconUri() == null) {
-            webCompDesc.setSmallIconUri(webServletAn.icon());
+            webCompDesc.setSmallIconUri(webServletAn.smallIcon());
         }
         if (webCompDesc.getLargeIconUri() == null) {
-            webCompDesc.setLargeIconUri(webServletAn.icon());
+            webCompDesc.setLargeIconUri(webServletAn.largeIcon());
         }
 
         if (webCompDesc.getDescription() == null ||
