@@ -3784,7 +3784,6 @@ public class Request
     public DispatcherType getDispatcherType() {
         DispatcherType dispatcher = (DispatcherType) getAttribute(
             ApplicationFilterFactory.DISPATCHER_TYPE_ATTR);
-System.out.println("XXX DISP=" + dispatcher);
         if (dispatcher == null) {
             dispatcher = DispatcherType.REQUEST;
         }

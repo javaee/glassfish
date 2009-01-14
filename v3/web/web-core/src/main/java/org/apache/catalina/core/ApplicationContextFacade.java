@@ -425,7 +425,7 @@ public final class ApplicationContextFacade
      * with the given servlet name to this servlet context.
      */
     public void addServletMapping(String servletName,
-                                  String[] urlPatterns) {
+                                  String... urlPatterns) {
         if (SecurityUtil.isPackageProtectionEnabled()) {
             doPrivileged("addServletMapping",
                          new Object[] {servletName, urlPatterns});

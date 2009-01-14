@@ -3110,11 +3110,13 @@ public class StandardContext
      * with the given servlet name to this servlet context.
      */
     public void addServletMapping(String servletName,
-                                  String[] urlPatterns) {
-        if (urlPatterns != null) {
-            for (String urlPattern : urlPatterns) {
-                addServletMapping(urlPattern, servletName);
-            }
+                                  String... urlPatterns) {
+        if (urlPatterns==null || urlPatterns.length == 0) {
+            throw new IllegalArgumentException
+                    (sm.getString("standardContext.servletMapping.missingUrlPattern", servletName));
+        }
+        for (String urlPattern : urlPatterns) {
+            addServletMapping(urlPattern, servletName);
         }
     }
 
