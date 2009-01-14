@@ -52,6 +52,7 @@ import com.sun.enterprise.v3.server.DomainXml;
 import com.sun.enterprise.v3.server.DomainXmlPersistence;
 import com.sun.enterprise.v3.server.SnifferManager;
 import com.sun.enterprise.v3.services.impl.LogManagerService;
+import com.sun.enterprise.web.EmbeddedWebContainer;
 import com.sun.enterprise.web.VirtualServer;
 import com.sun.enterprise.web.WebContainer;
 import com.sun.enterprise.web.WebDeployer;
@@ -174,6 +175,7 @@ public class Server {
     private String id;
 
     private WebContainer wc;
+    private EmbeddedWebContainer ewc;
 
     /**
      * TODO constructors and startup need revamping!
@@ -279,6 +281,24 @@ public class Server {
         }
        
        return engine;
+    }
+
+     /**
+     * Returns a <code>com.sun.enterprise.web.EmbeddedWebContainer</code> object
+     * associated with this <code>Server</code> object.  Server must
+     * be started before calling getEmbeddedWebContainer().  If it is not started
+     * EmbeddedException is thrown.
+     * @return EmbeddedWebContainer
+     * @throws org.glassfish.embed.EmbeddedException
+     */
+    public EmbeddedWebContainer getEmbeddedWebContainer() throws EmbeddedException {
+       mustBeStarted("getEmbeddedWebContainer");
+
+       if(ewc == null) {
+            throw new EmbeddedException("bad_embedded_web_container");
+        }
+
+       return ewc;
     }
 
     public EmbeddedFileSystem getFileSystem() {
@@ -610,6 +630,7 @@ public class Server {
             archiveFactory = habitat.getComponent(ArchiveFactory.class);
             env = habitat.getComponent(ServerEnvironmentImpl.class);
             wc = habitat.getComponent(WebContainer.class);
+            ewc = habitat.getComponent(EmbeddedWebContainer.class);
         } catch (Exception e) {
             throw new EmbeddedException(e);
         }
