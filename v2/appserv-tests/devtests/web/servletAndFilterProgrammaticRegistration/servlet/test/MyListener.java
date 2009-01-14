@@ -20,7 +20,7 @@ public class MyListener implements ServletContextListener {
          */
         ServletRegistration sr = sc.addServlet("NewServlet", "test.NewServlet");
         sr.setInitParameter("servletInitName", "servletInitValue");
-        sc.addServletMapping("NewServlet", new String[] {"/newServlet"});
+        sc.addServletMapping("NewServlet", "/newServlet");
 
         /*
          * Register filter
