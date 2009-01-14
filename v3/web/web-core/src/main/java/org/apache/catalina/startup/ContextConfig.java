@@ -895,6 +895,109 @@ public class ContextConfig
     }
     // END GlassFish 2439
 
+        
+    /**
+     * Adjust docBase.
+     */
+    protected void fixDocBase()
+        throws IOException {
+        
+        Host host = (Host) context.getParent();
+        String appBase = host.getAppBase();
+
+        boolean unpackWARs = true;
+        if (host instanceof StandardHost) {
+            unpackWARs = ((StandardHost) host).isUnpackWARs() 
+                && ((StandardContext) context).getUnpackWAR();
+        }
+
+        File canonicalAppBase = new File(appBase);
+        if (canonicalAppBase.isAbsolute()) {
+            canonicalAppBase = canonicalAppBase.getCanonicalFile();
+        } else {
+            canonicalAppBase = 
+                new File(System.getProperty("catalina.base"), appBase)
+                .getCanonicalFile();
+        }
+
+        String docBase = context.getDocBase();
+        if (docBase == null) {
+            // Trying to guess the docBase according to the path
+            String path = context.getPath();
+            if (path == null) {
+                return;
+            }
+            if (path.equals("")) {
+                docBase = "ROOT";
+            } else {
+                if (path.startsWith("/")) {
+                    docBase = path.substring(1).replace('/', '#');
+                } else {
+                    docBase = path.replace('/', '#');
+                }
+            }
+        }
+
+        File file = new File(docBase);
+        if (!file.isAbsolute()) {
+            docBase = (new File(canonicalAppBase, docBase)).getPath();
+        } else {
+            docBase = file.getCanonicalPath();
+        }
+        file = new File(docBase);
+        String origDocBase = docBase;
+        
+        String contextPath = context.getPath();
+        if (contextPath.equals("")) {
+            contextPath = "ROOT";
+        } else {
+            if (contextPath.lastIndexOf('/') > 0) {
+                contextPath = "/" + contextPath.substring(1).replace('/','#');
+            }
+        }
+        if (docBase.toLowerCase().endsWith(".war") && !file.isDirectory() && unpackWARs) {
+            URL war = new URL("jar:" + (new File(docBase)).toURI().toURL() + "!/");
+            docBase = ExpandWar.expand(host, war, contextPath);
+            file = new File(docBase);
+            docBase = file.getCanonicalPath();
+            if (context instanceof StandardContext) {
+                ((StandardContext) context).setOriginalDocBase(origDocBase);
+            }
+        } else {
+            File docDir = new File(docBase);
+            if (!docDir.exists()) {
+                File warFile = new File(docBase + ".war");
+                if (warFile.exists()) {
+                    if (unpackWARs) {
+                        URL war =
+                            new URL("jar:" + warFile.toURI().toURL() + "!/");
+                        docBase = ExpandWar.expand(host, war, contextPath);
+                        file = new File(docBase);
+                        docBase = file.getCanonicalPath();
+                    } else {
+                        docBase = warFile.getCanonicalPath();
+                    }
+                }
+                if (context instanceof StandardContext) {
+                    ((StandardContext) context).setOriginalDocBase(origDocBase);
+                }
+            }
+        }
+
+        if (docBase.startsWith(canonicalAppBase.getPath())) {
+            docBase = docBase.substring(canonicalAppBase.getPath().length());
+            docBase = docBase.replace(File.separatorChar, '/');
+            if (docBase.startsWith("/")) {
+                docBase = docBase.substring(1);
+            }
+        } else {
+            docBase = docBase.replace(File.separatorChar, '/');
+        }
+
+        context.setDocBase(docBase);
+
+    }
+
 
     /**
      * Log a message on the Logger associated with our Context (if any)
@@ -957,6 +1060,13 @@ public class ContextConfig
         ok = true;
 
         contextConfig();
+        
+        try {
+            fixDocBase();
+        } catch (IOException e) {
+            log.log(Level.SEVERE, sm.getString("contextConfig.fixDocBase"), e);
+        }
+
 
     }
     // END GlassFish 2439

@@ -467,6 +467,12 @@ public class StandardContext
      */
     private boolean override = false;
 
+       
+    /**
+     * The original document root for this web application.
+     */
+    private String originalDocBase = null;
+
 
     /**
      * The privileged flag for this web application.
@@ -1635,7 +1641,31 @@ public class StandardContext
 
     }
 
+    
+    /**
+     * Return the original document root for this Context.  This can be an absolute
+     * pathname, a relative pathname, or a URL.
+     * Is only set as deployment has change docRoot!
+     */
+    public String getOriginalDocBase() {
 
+        return (this.originalDocBase);
+
+    }
+
+    
+    /**
+     * Set the original document root for this Context.  This can be an absolute
+     * pathname, a relative pathname, or a URL.
+     *
+     * @param docBase The orginal document root
+     */
+    public void setOriginalDocBase(String docBase) {
+
+        this.originalDocBase = docBase;
+    }
+
+    
     /**
      * Return the privileged flag for this web application.
      */
