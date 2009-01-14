@@ -70,7 +70,7 @@ public class RestartDomainTests {
 */
 
     @BeforeTest
-    @Test
+    @Test(groups = { "init" })
     public void createJdbcPoolTest() throws Exception {
 	outPutFile = "admincli-restart.output";
 	expectedOutPut = "create-jdbc-connection-pool executed successfully";
@@ -78,7 +78,7 @@ public class RestartDomainTests {
 	parseTestResults(outPutFile, expectedOutPut, testErr);    
     }
 
-    @Test
+    @Test(dependsOnGroups = { "init.*" })
     public void pingJdbcPoolBefore() throws Exception {
 	outPutFile = "admincli-restart.output";
         expectedOutPut = "ping-connection-pool executed successfully";
@@ -86,16 +86,13 @@ public class RestartDomainTests {
         parseTestResults(outPutFile, expectedOutPut, testErr);
     }
 
-/*
-    @Test
+    @Test(dependsOnMethods = { "pingJdbcPoolBefore" })
     public void pingJdbcPoolAfter() throws Exception {
 	outPutFile = "admincli-ping-jdbc.output";
 	expectedOutPut = "ping-connection-pool executed successfully";
 	testErr = "Ping-jdbc failed.";
 	parseTestResults(outPutFile, expectedOutPut, testErr);    
     }
-*/
-
 
     public void parseTestResults(String outPutFile, String expectedOutPut, String testErr) throws Exception {
        boolean result=false;
