@@ -78,7 +78,7 @@ import java.util.EmptyStackException;
  * @see java.util.Stack
  * @since Digester 1.6 (from Commons Collections 1.0)
  */
-public class ArrayStack extends ArrayList {
+public class ArrayStack<E> extends ArrayList<E> {
 
     /** Ensure serialization compatibility */    
     private static final long serialVersionUID = 2130079159931574599L;
@@ -120,7 +120,7 @@ public class ArrayStack extends ArrayList {
      * @return the top item on the stack
      * @throws EmptyStackException  if the stack is empty
      */
-    public Object peek() throws EmptyStackException {
+    public E peek() throws EmptyStackException {
         int n = size();
         if (n <= 0) {
             throw new EmptyStackException();
@@ -138,7 +138,7 @@ public class ArrayStack extends ArrayList {
      * @throws EmptyStackException  if there are not enough items on the
      *  stack to satisfy this request
      */
-    public Object peek(int n) throws EmptyStackException {
+    public E peek(int n) throws EmptyStackException {
         int m = (size() - n) - 1;
         if (m < 0) {
             throw new EmptyStackException();
@@ -153,7 +153,7 @@ public class ArrayStack extends ArrayList {
      * @return the top item on the stack
      * @throws EmptyStackException  if the stack is empty
      */
-    public Object pop() throws EmptyStackException {
+    public E pop() throws EmptyStackException {
         int n = size();
         if (n <= 0) {
             throw new EmptyStackException();
@@ -169,7 +169,7 @@ public class ArrayStack extends ArrayList {
      * @param item  the item to be added
      * @return the item just pushed
      */
-    public Object push(Object item) {
+    public E push(E item) {
         add(item);
         return item;
     }
@@ -186,7 +186,7 @@ public class ArrayStack extends ArrayList {
      * @param object  the object to be searched for
      * @return the 1-based depth into the stack of the object, or -1 if not found
      */
-    public int search(Object object) {
+    public int search(E object) {
         int i = size() - 1;        // Current index
         int n = 1;                 // Current distance
         while (i >= 0) {

@@ -199,7 +199,7 @@ public class MbeansSource extends ModelerSource implements MbeansSourceMBean
                 firstMbeanN=descriptorsN;
             }
 
-            MBeanServer server=(MBeanServer)Registry.getServer();
+            MBeanServer server= Registry.getServer();
 
             // XXX Not very clean...  Just a workaround
             if( ! loaderLoaded ) {
