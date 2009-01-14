@@ -149,6 +149,9 @@
         <ant dir="requestDispatcherForwardSetStatusCommitResponse" target="all"/>
         <ant dir="requestDispatcherIncludeTargetNotFound" target="all"/>
         <ant dir="requestDispatcherForwardHEADRequest" target="all"/>
+        <!-- Enable once IT 7034 fixed
+        <ant dir="requestDispatcherMultipleForward" target="all"/>
+        -->
         <ant dir="multibyteValue" target="all"/>
         <ant dir="multiByteGETQueryParamSetCharEncoding" target="all"/>
         <ant dir="multiByteGETQueryParamDefaultCharset" target="all"/>
