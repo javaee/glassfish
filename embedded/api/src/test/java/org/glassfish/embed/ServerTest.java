@@ -192,15 +192,13 @@ public class ServerTest {
     }
 
     @Test
-    public void testGetEngines_Success() throws Exception {
-        System.out.println("getEngines Success");
+    public void testGetEngine_Success() throws Exception {
+        System.out.println("getEngine Success");
         String expResult = "com.sun.appserv";
         String result = null;
         server.start();
-        Engine[] engines = server.getEngines();
-        for (Engine e : engines) {
-            result = e.getName();
-        }
+        Engine engine = server.getEngine();
+        result = engine.getName();
         assertEquals(expResult, result);
     }
 
@@ -208,13 +206,13 @@ public class ServerTest {
     public void testGetEngines_Fail() throws Exception {
         System.out.println("getEngines Fail");
         try {
-            server.getEngines();
+            server.getEngine();
         } catch(EmbeddedException ee) {
             System.out.println("Expected Exception: " + ee);
             throw ee;
         } catch (Exception e) {
             System.out.println("Unxpected Exception: " + e);
-            fail("failed test: testGetEgines_Fail");
+            fail("failed test: testGetEngines_Fail");
         }
     }
 

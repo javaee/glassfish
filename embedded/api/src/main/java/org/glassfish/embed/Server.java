@@ -263,38 +263,23 @@ public class Server {
     }
 
     /**
-     * Returns an array of <code>org.apache.catalina.Engine</code> objects
-     * associated with this <code>Server</code> object.  Server must
-     * be started before calling getEngines().  If it is not started EmbeddedException
-     * is thrown.
-     * @return Engine[]
-     * @throws org.glassfish.embed.EmbeddedException
-     */
-    public Engine[] getEngines() throws EmbeddedException {
-       mustBeStarted("getEngines");
-       Engine[] engines = wc.getEngines();
-
-       if(engines == null || engines.length <= 0) {
-            throw new EmbeddedException("bad_engines");
-        }
-       
-       return engines;
-    }
-
-    /**
-     * Returns the  <code>org.apache.catalina.Engine</code> object
+     * Returns an <code>org.apache.catalina.Engine</code> object
      * associated with this <code>Server</code> object.  Server must
      * be started before calling getEngine().  If it is not started EmbeddedException
      * is thrown.
-     * @return Engine[]
+     * @return Engine
      * @throws org.glassfish.embed.EmbeddedException
      */
     public Engine getEngine() throws EmbeddedException {
-       return getEngines()[0];
+       mustBeStarted("getEngine");
+       Engine engine = wc.getEngine();
+
+       if(engine == null) {
+            throw new EmbeddedException("bad_engines");
+        }
+       
+       return engine;
     }
-
-
-
 
     public EmbeddedFileSystem getFileSystem() {
         return efs;
