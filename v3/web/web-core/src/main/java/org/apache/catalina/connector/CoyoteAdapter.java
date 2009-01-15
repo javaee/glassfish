@@ -328,7 +328,21 @@ public class CoyoteAdapter
                     container.hasCustomPipeline()) {
                 container.getPipeline().invoke(request, response);
             } else {
-                container.getPipeline().getBasic().invoke(request, response);
+                // Invoke host directly
+                Host host = request.getHost();
+                if (host == null) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+                    response.setDetailMessage(sm.getString(
+                            "standardEngine.noHost",
+                            request.getRequest().getServerName()));
+                    return;
+                }
+                if (host.getPipeline().hasNonBasicValves() ||
+                        host.hasCustomPipeline()) {
+                    host.getPipeline().invoke(request, response);
+                } else {
+                    host.getPipeline().getBasic().invoke(request, response);
+                }
             }
         }
 
