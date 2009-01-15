@@ -26,7 +26,9 @@ package org.glassfish.internal.data;
 import org.glassfish.api.container.Sniffer;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.component.Habitat;
 
 import java.util.*;
 
@@ -39,7 +41,11 @@ import java.util.*;
 @Scoped(Singleton.class)
 public class ContainerRegistry {
 
+    @Inject
+    Habitat habitat;
+    
     Map<String, EngineInfo> containers = new HashMap<String, EngineInfo>();
+
 
     public synchronized void addContainer(String name, EngineInfo info) {
         containers.put(name, info);

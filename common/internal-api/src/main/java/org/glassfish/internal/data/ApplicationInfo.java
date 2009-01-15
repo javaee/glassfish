@@ -24,22 +24,26 @@
 package org.glassfish.internal.data;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.deployment.DeploymentContext;
-import org.glassfish.api.deployment.ApplicationContext;
+import org.glassfish.api.deployment.*;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.container.Container;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.ParameterNames;
+import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.jvnet.hk2.component.PreDestroy;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.TransactionFailure;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.lang.instrument.ClassFileTransformer;
+import java.beans.PropertyVetoException;
 
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.config.serverbeans.Application;
+import com.sun.enterprise.config.serverbeans.Engine;
+import com.sun.enterprise.config.serverbeans.Module;
 
 /**
  * Information about a running application. Applications are composed of modules.
@@ -52,7 +56,8 @@ public class ApplicationInfo {
     final static private Logger logger = LogDomains.getLogger(ApplicationInfo.class, LogDomains.CORE_LOGGER);
 
 
-    final private EngineRef[] modules;
+
+    final private ModuleInfo[] modules;
     final private String name;
     final private ReadableArchive source;
 
@@ -65,7 +70,7 @@ public class ApplicationInfo {
      * @param modules the modules that are forming the application
      */
     public ApplicationInfo(ReadableArchive source,
-                           String name, EngineRef... modules) {
+                           String name, ModuleInfo... modules) {
         this.name = name;
         this.source = source;
         this.modules = modules;
@@ -96,7 +101,7 @@ public class ApplicationInfo {
      * Returns the modules of this application
      * @return the modules of this application
      */
-    public EngineRef[] getModuleInfos() {
+    public ModuleInfo[] getModuleInfos() {
         return modules;
     }
 
@@ -106,10 +111,10 @@ public class ApplicationInfo {
      *
      * @return array of sniffer that loaded the application's module
      */
-    public Iterable<Sniffer> getSniffers() {
+    public Collection<Sniffer> getSniffers() {
         List<Sniffer> sniffers = new ArrayList<Sniffer>();
-        for (EngineRef module : modules) {
-            sniffers.add(module.getContainerInfo().getSniffer());
+        for (ModuleInfo module : modules) {
+            sniffers.addAll(module.getSniffers());
         }
         return sniffers;
     }
@@ -120,19 +125,29 @@ public class ApplicationInfo {
      * @return the module info is this application as a module implemented with
      * the passed container type
      */
-    public <T extends Container> EngineRef getModuleInfo(Class<T> type) {
-        for (EngineRef info : modules) {
-            T container = null;
+    public <T extends Container> Collection<EngineRef> getEngineRefsForContainer(Class<T> type) {
+        Set<EngineRef> refs = new LinkedHashSet<EngineRef>();
+        for (ModuleInfo info : modules) {
+            EngineRef ref = null;
             try {
-                container = type.cast(info.getContainerInfo().getContainer());
+                ref = info.getEngineRefForContainer(type);
             } catch (Exception e) {
                 // ignore, wrong container
             }
-            if (container!=null) {
-                return info;
+            if (ref!=null) {
+                refs.add(ref);
             }
         }
-        return null;
+        return refs;
+    }
+
+    public void load(ExtendedDeploymentContext context, ActionReport report, ProgressTracker tracker)
+            throws Exception {
+
+        context.setPhase(ExtendedDeploymentContext.Phase.LOAD);
+        for (ModuleInfo module : modules) {
+            module.load(context, report, tracker);
+        }
     }
 
 
@@ -141,61 +156,26 @@ public class ApplicationInfo {
         ActionReport report, ProgressTracker tracker) throws Exception {
 
         // registers all deployed items.
-        for (EngineRef module : getModuleInfos()) {
-
-            try {
-                if (!module.start( context, tracker)) {
-                    report.failure(logger, "Module not started " +  module.getApplicationContainer().toString());
-                    throw new Exception( "Module not started " +  module.getApplicationContainer().toString());
-                }
-            } catch(Exception e) {
-                report.failure(logger, "Exception while invoking " + module.getApplicationContainer().getClass() + " start method", e);
-                throw e;
-            }
-        }
-    }
-
-    private void unload(EngineRef[] modules, ApplicationInfo info,  DeploymentContext context, ActionReport report) {
-
-        Set<ClassLoader> classLoaders = new HashSet<ClassLoader>();
-        for (EngineRef module : modules) {
-            if (module.getApplicationContainer()!=null && module.getApplicationContainer().getClassLoader()!=null) {
-                classLoaders.add(module.getApplicationContainer().getClassLoader());
-            }
-            try {
-                module.unload(info, context, report);
-            } catch(Throwable e) {
-                logger.log(Level.SEVERE, "Failed to unload from container type : " +
-                        module.getContainerInfo().getSniffer().getModuleType(), e);
-            }
-        }
-        // all modules have been unloaded, clean the class loaders...
-        for (ClassLoader cloader : classLoaders) {
-            try {
-                PreDestroy.class.cast(cloader).preDestroy();
-            } catch (Exception e) {
-                // ignore, the class loader does not need to be explicitely stopped.
-            }
+        for (ModuleInfo module : getModuleInfos()) {
+            module.start(context, report, tracker);
         }
     }
 
     public void stop(ApplicationContext context, Logger logger) {
-
-        for (EngineRef module : getModuleInfos()) {
-            try {
-                module.stop(context, logger);
-            } catch(Exception e) {
-                logger.log(Level.SEVERE, "Cannot stop module " +
-                        module.getContainerInfo().getSniffer().getModuleType(),e );
-            }
+        
+        for (ModuleInfo module : getModuleInfos()) {
+            module.stop(context, logger);
         }
+        
     }
 
-    public void unload(DeploymentContext context, ActionReport report) {
+    public void unload(ExtendedDeploymentContext context, ActionReport report) {
 
         stop(context, logger);
 
-        unload(getModuleInfos(), this, context, report);
+        for (ModuleInfo module : getModuleInfos()) {
+            module.unload(context, report);
+        }
 
     }
 
@@ -203,16 +183,11 @@ public class ApplicationInfo {
 
         boolean isSuccess = true;
 
-        for (EngineRef module : modules) {
-            try {
-                module.getApplicationContainer().suspend();
-            } catch(Exception e) {
+        for (ModuleInfo module : modules) {
+            if (!module.suspend(logger)) {
                 isSuccess = false;
-                logger.log(Level.SEVERE, "Error suspending module " +
-                           module.getContainerInfo().getSniffer().getModuleType(),e );
             }
         }
-
         return isSuccess;
     }
 
@@ -220,18 +195,21 @@ public class ApplicationInfo {
 
         boolean isSuccess = true;
 
-        for (EngineRef module : modules) {
-            try {
-                module.getApplicationContainer().resume();
-            } catch(Exception e) {
-                isSuccess = false;
-                logger.log(Level.SEVERE, "Error resuming module " +
-                           module.getContainerInfo().getSniffer().getModuleType(),e );
+        for (ModuleInfo module : modules) {
+            if (!module.resume(logger)) {
+                isSuccess=false;
             }
         }
 
         return isSuccess;
     }
+
+    public void clean(ExtendedDeploymentContext context) throws Exception {
+        for (ModuleInfo info : modules) {
+            info.clean(context);
+        }
+    }
+    
 
     /**
      * Saves its state to the configuration. this method must be called within a transaction
@@ -239,9 +217,14 @@ public class ApplicationInfo {
      *
      * @param app the application being persisted
      */
-    public void save(Application app) {
+    public void save(Application app) throws TransactionFailure, PropertyVetoException {
 
-        
+        for (ModuleInfo module : modules) {
+            Module modConfig = app.createChild(Module.class);
+            app.getModule().add(modConfig);
+            module.save(modConfig);
+
+        }        
     }
-    
+
 }

@@ -38,7 +38,7 @@
 package org.glassfish.embed;
 
 import org.glassfish.internal.data.ApplicationInfo;
-import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.embed.impl.SilentActionReport;
 
 /**
@@ -49,9 +49,9 @@ import org.glassfish.embed.impl.SilentActionReport;
 public final class App {
     private final AppServer owner;
     private final ApplicationInfo app;
-    private final DeploymentContext deploymentContext;
+    private final ExtendedDeploymentContext deploymentContext;
 
-    public App(AppServer owner, ApplicationInfo app, DeploymentContext deploymentContext) {
+    public App(AppServer owner, ApplicationInfo app, ExtendedDeploymentContext deploymentContext) {
         this.owner = owner;
         this.app = app;
         this.deploymentContext = deploymentContext;

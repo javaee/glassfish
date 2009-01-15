@@ -35,6 +35,7 @@ import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.EngineRef;
 import org.glassfish.internal.data.ApplicationRegistry;
+import org.glassfish.internal.data.ModuleInfo;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.zip.ZipItem;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
@@ -323,11 +324,13 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
             return null;
         }
 
-        for (EngineRef engineRef : appInfo.getModuleInfos()) {
-            ApplicationContainer appCtr = engineRef.getApplicationContainer();
-            Object descriptor = appCtr.getDescriptor();
-            if (descriptor instanceof BundleDescriptor) {
-                return ((BundleDescriptor)descriptor).getApplication();
+        for (ModuleInfo module : appInfo.getModuleInfos()) {
+            for (EngineRef ref : module.getEngineRefs()) {
+                ApplicationContainer appCtr = ref.getApplicationContainer();
+                Object descriptor = appCtr.getDescriptor();
+                if (descriptor instanceof BundleDescriptor) {
+                    return ((BundleDescriptor)descriptor).getApplication();
+                }
             }
         }
         return null;

@@ -42,9 +42,11 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.container.Sniffer;
 import org.jvnet.hk2.annotations.Service;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
+import com.sun.enterprise.v3.server.SnifferManager;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import java.util.List;
 
@@ -54,10 +56,16 @@ import java.util.List;
 @Service(name="list-components")
 @I18n("list.components")
 @Scoped(PerLookup.class)
-public class ListComponentsCommand extends ApplicationLifecycle implements AdminCommand {
+public class ListComponentsCommand  implements AdminCommand {
 
     @Param(optional=true)
     String type = null;
+
+    @Inject
+    Applications applications;
+
+    @Inject
+    SnifferManager snifferManager;
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListComponentsCommand.class);    
 

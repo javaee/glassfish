@@ -41,6 +41,7 @@ import org.junit.Test;
 import org.junit.Before;
 import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.TransactionFailure;
 
 import org.glassfish.deployment.admin.ListComponentsCommand;
 import com.sun.enterprise.config.serverbeans.*;
@@ -48,6 +49,7 @@ import org.glassfish.api.admin.config.Property;
 import java.beans.PropertyVetoException;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Properties;
 
 
 /**
@@ -92,7 +94,7 @@ public class ListComponentsCommandTest {
             engines.add(eng2);
             
             ApplicationTest app = new ApplicationTest();
-            List<Module> modules = new ArrayList<Module>();
+            List<Module> modules = new ArrayList<Module>();              
             ModuleTest aModule = new ModuleTest();
             aModule.setEngines(engines);
             modules.add(aModule);
@@ -139,6 +141,11 @@ public class ListComponentsCommandTest {
         @DuckTyped
         public String getPropertyValue(String name, String defaultValue) {
             // TODO
+            throw new UnsupportedOperationException();
+        }
+
+        @DuckTyped
+        public <T extends ConfigBeanProxy> T createChild(Class<T> type) throws TransactionFailure {
             throw new UnsupportedOperationException();
         }
 
@@ -206,6 +213,13 @@ public class ListComponentsCommandTest {
         this.modules = modules;
         }
 
+            public Properties getDeployProperties() {
+                return new Properties();
+            }
+
+            public Properties getDeployParameters(ApplicationRef appRef) {
+                return new Properties();
+            }
         }
 
             //mock-up Engine object

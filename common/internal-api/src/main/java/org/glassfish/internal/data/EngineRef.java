@@ -37,6 +37,7 @@
 package org.glassfish.internal.data;
 
 import org.glassfish.internal.data.EngineInfo;
+import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.Deployer;
@@ -45,9 +46,14 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.container.Adapter;
 import org.glassfish.api.container.EndpointRegistrationException;
 import org.glassfish.api.container.RequestDispatcher;
+import org.jvnet.hk2.config.TransactionFailure;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.beans.PropertyVetoException;
+
+import com.sun.enterprise.config.serverbeans.Module;
+import com.sun.enterprise.config.serverbeans.Engine;
 
 /**
  * When a module is attached to a LoadedEngine, it creates an Engine reference. Each module
@@ -94,6 +100,10 @@ public class EngineRef {
         return appCtr;
     }
 
+    public void load(ExtendedDeploymentContext context) {
+        getContainerInfo().load(context);
+    }
+
     public boolean start(ApplicationContext context, ProgressTracker tracker)
         throws Exception {
 
@@ -116,23 +126,20 @@ public class EngineRef {
     /**
      * unloads the module from its container.
      *
-     * @param info
      * @param context
      * @param report
      * @return
      */
-    public boolean unload(ApplicationInfo info, DeploymentContext context, ActionReport report) {
+    public boolean unload(ExtendedDeploymentContext context, ActionReport report) {
 
         // then remove the application from the container
         Deployer deployer = ctrInfo.getDeployer();
         try {
             deployer.unload(appCtr, context);
+            ctrInfo.unload(context);
         } catch(Exception e) {
             report.failure(context.getLogger(), "Exception while shutting down application container", e);
             return false;
-        }
-        if (info!=null) {
-            ctrInfo.remove(info);
         }
         return true;
     }
@@ -159,6 +166,25 @@ public class EngineRef {
         }
 
        return appCtr.stop(context);
-    }    
+    }
+
+    public void clean(ExtendedDeploymentContext context, Logger logger) {
+
+        try {
+            getContainerInfo().clean(context);            
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Exception while cleaning module '" + this + "'" + e);
+        }
+    }
+
+    /**
+     * Saves its state to the configuration. this method must be called within a transaction
+     * to the configured engine instance.
+     *
+     * @param engine the engine configuration being persisted
+     */
+    public void save(Engine engine) throws TransactionFailure, PropertyVetoException {
+        engine.setSniffer(getContainerInfo().getSniffer().getModuleType());
+    }
 
 }

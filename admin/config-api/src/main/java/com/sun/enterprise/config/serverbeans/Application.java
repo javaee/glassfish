@@ -49,8 +49,10 @@ import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeSupport;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Properties;
 
 import org.glassfish.api.admin.config.*;
+import org.glassfish.api.admin.ParameterNames;
 
 import org.glassfish.quality.ToDo;
 
@@ -289,6 +291,12 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
     @DuckTyped
     public Module getModule(String moduleName);
 
+    @DuckTyped
+    public Properties getDeployProperties();
+
+    @DuckTyped
+    public Properties getDeployParameters(ApplicationRef appRef);    
+
     public class Duck {
         public static <T extends ApplicationConfig> T getApplicationConfig(Application me, Class<T> type) {
             return getApplicationConfig(me.getApplicationConfigs(), type);
@@ -312,6 +320,46 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
                 }
             }
             return null;
+        }
+
+        public static Properties getDeployProperties(Application instance) {
+            Properties deploymentProps = new Properties();
+            for (Property prop : instance.getProperty()) {
+                deploymentProps.put(prop.getName(), prop.getValue());
+            }
+            deploymentProps.setProperty(ServerTags.OBJECT_TYPE,
+                instance.getObjectType());
+            return deploymentProps;            
+        }
+
+        public static Properties getDeployParameters(Application app, ApplicationRef appRef) {
+
+            Properties deploymentParams = new Properties();
+            if (appRef==null) {
+                return deploymentParams;
+            }
+            deploymentParams.setProperty(ParameterNames.NAME, app.getName());
+            deploymentParams.setProperty(ParameterNames.LOCATION, app.getLocation());
+            deploymentParams.setProperty(ParameterNames.ENABLED, app.getEnabled());
+            if (app.getContextRoot() != null) {
+                deploymentParams.setProperty(ParameterNames.CONTEXT_ROOT,
+                    app.getContextRoot());
+            }
+            if (app.getLibraries() != null) {
+                deploymentParams.setProperty(ParameterNames.LIBRARIES,
+                    app.getLibraries());
+            }
+            deploymentParams.setProperty(ParameterNames.DIRECTORY_DEPLOYED,
+                app.getDirectoryDeployed());
+
+            if (appRef.getVirtualServers() != null) {
+                deploymentParams.setProperty(ParameterNames.VIRTUAL_SERVERS,
+                    appRef.getVirtualServers());
+            }
+
+            deploymentParams.put("APPLICATION_CONFIG", app);
+
+            return deploymentParams;
         }
     }
     

@@ -32,6 +32,8 @@ import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
+import org.glassfish.internal.deployment.ExtendedDeploymentContext;
+import org.glassfish.internal.data.ApplicationInfo;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -43,14 +45,14 @@ import java.net.URL;
 import java.net.MalformedURLException;
 
 import org.jvnet.hk2.component.PreDestroy;
+import com.sun.enterprise.util.io.FileUtils;
 
 /**
  *
  * @author dochez
  */
-public class DeploymentContextImpl implements DeploymentContext {
+public class DeploymentContextImpl implements ExtendedDeploymentContext {
 
-    public enum Phase { UNKNOWN, PREPARE, LOAD, START, STOP, UNLOAD, CLEAN };
 
     final ReadableArchive source;
     final Properties parameters;
@@ -334,5 +336,35 @@ public class DeploymentContextImpl implements DeploymentContext {
             }
         }
         return urls;
-    }    
+    }
+
+    ApplicationInfo appInfo = null;
+
+    public void setApplicationInfo(ApplicationInfo appInfo) {
+        this.appInfo = appInfo;
+    }
+
+    public ApplicationInfo getApplicationInfo() {
+        return appInfo;
+    }
+
+    public void clean() {
+        // need to remove the generated directories...
+        // need to remove generated/xml, generated/ejb, generated/jsp
+
+        // remove generated/xml
+        File generatedXmlRoot = getScratchDir("xml");
+        FileUtils.whack(generatedXmlRoot);
+
+        // remove generated/ejb
+        File generatedEjbRoot = getScratchDir("ejb");
+        // recursively delete...
+        FileUtils.whack(generatedEjbRoot);
+
+        // remove generated/jsp
+        File generatedJspRoot = getScratchDir("jsp");
+        // recursively delete...
+        FileUtils.whack(generatedJspRoot);
+
+    }
 }

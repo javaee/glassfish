@@ -28,6 +28,7 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
+import org.glassfish.internal.deployment.Deployment;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.v3.admin.CommandRunner;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
@@ -50,10 +51,13 @@ import java.util.Properties;
 @Scoped(PerLookup.class)
 @I18n("redeploy.command")
 
-public class ReDeployCommand extends ApplicationLifecycle implements AdminCommand {
+public class ReDeployCommand implements AdminCommand {
 
     @Inject
     CommandRunner commandRunner;
+
+    @Inject
+    Deployment deployment;
     
     @Param(optional=false)
     String name;
@@ -107,7 +111,7 @@ public class ReDeployCommand extends ApplicationLifecycle implements AdminComman
          * @returns true if validation successfully else return false.
          */
     boolean validateParameters(final String name, final ActionReport report) {
-        if (!isRegistered(name)) {
+        if (!deployment.isRegistered(name)) {
             report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", name));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return false;

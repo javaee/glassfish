@@ -31,7 +31,9 @@ import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.v3.admin.CommandRunner;
 import java.net.URI;
 import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.internal.deployment.Deployment;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
+import com.sun.enterprise.v3.server.SnifferManager;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.config.serverbeans.Domain;
@@ -71,7 +73,7 @@ import org.glassfish.deployment.common.DeploymentContextImpl;
 @Service(name="deploy")
 @I18n("deploy.command")
 @Scoped(PerLookup.class)
-public class DeployCommand extends ApplicationLifecycle implements AdminCommand {
+public class DeployCommand implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeployCommand.class);
 
@@ -85,6 +87,15 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
 
     @Inject
     CommandRunner commandRunner;
+
+    @Inject
+    Deployment deployment;
+
+    @Inject
+    SnifferManager snifferManager;
+
+    @Inject
+    ArchiveFactory archiveFactory;
 
     @Param(name = ParameterNames.NAME, optional=true)
     String name = null;
@@ -170,6 +181,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
 
         final Properties parameters = context.getCommandParameters();
         final ActionReport report = context.getActionReport();
+        final Logger logger = context.getLogger();
 
         File file = choosePathFile(context);
         if (!file.exists()) {
@@ -201,7 +213,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
         File expansionDir=null;
         try {
 
-            ArchiveHandler archiveHandler = getArchiveHandler(archive);
+            ArchiveHandler archiveHandler = deployment.getArchiveHandler(archive);
             if (archiveHandler==null) {
                 report.failure(logger,localStrings.getLocalString("deploy.unknownarchivetype","Archive type of {0} was not recognized",file.getName()));
                 return;
@@ -272,64 +284,48 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                 deploymentContext.getProps().putAll(properties);
             }
 
-            // create the classloaders used for deployment and load-time
-            deploymentContext.createClassLoaders(clh, archiveHandler);
-            final ClassLoader cloader = deploymentContext.getClassLoader();
+            // clean up any generated files
+            deploymentContext.clean();
 
-            final ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
-            try {
-                Thread.currentThread().setContextClassLoader(cloader);
-                final Collection<Sniffer> appSniffers = snifferManager.getSniffers(archive, cloader);
-                if (appSniffers.size()==0) {
-                    report.failure(logger,localStrings.getLocalString("deploy.unknownmoduletpe","Module type not recognized"));
-                    return;
-                }
+            Properties moduleProps = deploymentContext.getProps();
+            moduleProps.setProperty(ServerTags.NAME, name);
+            /*
+             * If the app's location is within the domain's directory then
+             * express it in the config as ${com.sun.aas.instanceRootURI}/rest-of-path
+             * so users can relocate the entire installation without having
+             * to modify the app locations.  Leave the location alone if
+             * it does not fall within the domain directory.
+             */
+            URI instanceRootURI = new URI(System.getProperty(INSTANCE_ROOT_URI_PROPERTY_NAME));
+            URI appURI = instanceRootURI.relativize(deploymentContext.getSource().getURI());
+            String appLocation = (appURI.isAbsolute()) ?
+                appURI.toString() :
+                "${" + INSTANCE_ROOT_URI_PROPERTY_NAME + "}/" + appURI.toString();
+            moduleProps.setProperty(ServerTags.LOCATION, appLocation);
+            // set to default "user", deployers can override it
+            // during processing
+            moduleProps.setProperty(ServerTags.OBJECT_TYPE, "user");
+            if (contextRoot!=null) {
+                moduleProps.setProperty(ServerTags.CONTEXT_ROOT, contextRoot);
+            }
+            if (libraries!=null) {
+                moduleProps.setProperty(ServerTags.LIBRARIES, libraries);
+            }
+            moduleProps.setProperty(ServerTags.ENABLED, enabled.toString());
+            moduleProps.setProperty(ServerTags.DIRECTORY_DEPLOYED, String.valueOf(isDirectoryDeployed));
+            if (virtualservers != null) {
+                moduleProps.setProperty(ServerTags.VIRTUAL_SERVERS,
+                    virtualservers);
+            }
+            if (description != null) {
+                moduleProps.setProperty(ServerTags.DESCRIPTION, description);
+            }
 
-                // clean up any generated files
-                deleteContainerMetaInfo(deploymentContext);
+            ApplicationInfo appInfo = deployment.deploy(deploymentContext, report);
+            if (report.getActionExitCode()==ActionReport.ExitCode.SUCCESS) {
+                // register application information in domain.xml
+                deployment.registerAppInDomainXML(appInfo, deploymentContext);
 
-                Properties moduleProps = deploymentContext.getProps();
-                moduleProps.setProperty(ServerTags.NAME, name);
-                /*
-                 * If the app's location is within the domain's directory then
-                 * express it in the config as ${com.sun.aas.instanceRootURI}/rest-of-path
-                 * so users can relocate the entire installation without having
-                 * to modify the app locations.  Leave the location alone if
-                 * it does not fall within the domain directory.
-                 */
-                URI instanceRootURI = new URI(System.getProperty(INSTANCE_ROOT_URI_PROPERTY_NAME));
-                URI appURI = instanceRootURI.relativize(deploymentContext.getSource().getURI());
-                String appLocation = (appURI.isAbsolute()) ?
-                    appURI.toString() :
-                    "${" + INSTANCE_ROOT_URI_PROPERTY_NAME + "}/" + appURI.toString();
-                moduleProps.setProperty(ServerTags.LOCATION, appLocation);
-                // set to default "user", deployers can override it
-                // during processing
-                moduleProps.setProperty(ServerTags.OBJECT_TYPE, "user");
-                if (contextRoot!=null) {
-                    moduleProps.setProperty(ServerTags.CONTEXT_ROOT, contextRoot);
-                }
-                if (libraries!=null) {
-                    moduleProps.setProperty(ServerTags.LIBRARIES, libraries);
-                }
-                moduleProps.setProperty(ServerTags.ENABLED, enabled.toString());
-                moduleProps.setProperty(ServerTags.DIRECTORY_DEPLOYED, String.valueOf(isDirectoryDeployed));
-                if (virtualservers != null) {
-                    moduleProps.setProperty(ServerTags.VIRTUAL_SERVERS,
-                        virtualservers);
-                }
-                if (description != null) {
-                    moduleProps.setProperty(ServerTags.DESCRIPTION, description);
-                }
-
-                ApplicationInfo appInfo = deploy(appSniffers, deploymentContext, report);
-                if (report.getActionExitCode()==ActionReport.ExitCode.SUCCESS) {
-                    // register application information in domain.xml
-                    registerAppInDomainXML(appInfo, deploymentContext);
-
-                }
-            } finally {
-                Thread.currentThread().setContextClassLoader(currentCL);
             }
         } catch(Exception e) {
             report.failure(logger,"Error during deployment : "+e.getMessage(),e);
@@ -386,7 +382,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
     private Properties handleRedeploy(final String name, final ActionReport report,
                                 Properties parameters) 
         throws Exception {
-        boolean isRegistered = isRegistered(name);
+        boolean isRegistered = deployment.isRegistered(name);
         if (isRegistered && !force) {
             String msg = localStrings.getLocalString(
                 "application.alreadyreg.redeploy",

@@ -20,7 +20,7 @@ import com.sun.hk2.component.ExistingSingletonInhabitant;
  * Date: Apr 14, 2008
  * Time: 3:49:36 PM
  */
-@Service
+//@Service
 public class ApplicationLoaderInjector implements Startup, PostConstruct, PreDestroy {
 
     @Inject
@@ -42,7 +42,7 @@ public class ApplicationLoaderInjector implements Startup, PostConstruct, PreDes
      * will be placed into commission by the subsystem.
      */
     public void postConstruct() {
-        service = new ApplicationLoaderService();
+/*        service = new ApplicationLoaderService();
         service.server = habitat.getComponent(Server.class);
         service.applications = habitat.getComponent(Applications.class);
         service.archiveFactory = habitat.getComponent(ArchiveFactory.class);
@@ -62,7 +62,8 @@ public class ApplicationLoaderInjector implements Startup, PostConstruct, PreDes
         } catch(RuntimeException e) {
             grizzly.release();
             throw e;
-        }            
+        }
+                    */
     }
 
     public void preDestroy() {

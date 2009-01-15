@@ -48,11 +48,14 @@ import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.internal.data.*;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.deployment.Deployment;
+import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigCode;
 import org.jvnet.hk2.config.ConfigSupport;
@@ -81,7 +84,9 @@ import java.util.logging.Logger;
  * @author Jerome Dochez
  */
 @Service
+@Scoped(Singleton.class)
 public class ApplicationLifecycle implements Deployment {
+        
 
     @Inject
     protected SnifferManager snifferManager;
@@ -141,119 +146,109 @@ public class ApplicationLifecycle implements Deployment {
         return null;
     }
 
-    public ApplicationInfo deploy(Iterable<Sniffer> sniffers, final DeploymentContext dc, final ActionReport report) {
+    public ApplicationInfo deploy(final ExtendedDeploymentContext context, final ActionReport report) {
+        return deploy(null, context, report);
+    }
 
-        final ApplicationLifecycle myself = this;
-        
-        // Todo. dochez, find a better solution
-        final DeploymentContextImpl context = DeploymentContextImpl.class.cast(dc);
+    public ApplicationInfo deploy(Collection<Sniffer> sniffers, final ExtendedDeploymentContext context, final ActionReport report) {
 
         ProgressTracker tracker = new ProgressTracker() {
             public void actOn(Logger logger) {
                 for (EngineRef module : get("started", EngineRef.class)) {
                     module.stop(context, logger);
                 }
-                for (EngineRef module : get(EngineRef.class)) {
-                    module.unload(null, context, report);
+                for (EngineRef module : get("loaded", EngineRef.class)) {
+                    module.unload(context, report);
                 }
-                myself.clean(get(Deployer.class).toArray(new Deployer[0]), context);
+                for (EngineRef module : get("prepared", EngineRef.class)) {
+                    module.unload(context, report);
+                }
+                for (EngineRef module : get("prepared", EngineRef.class)) {
+                    module.clean(context, logger);
+                }
             }
         };
 
         context.setPhase(DeploymentContextImpl.Phase.PREPARE);
         try {
             ArchiveHandler handler = getArchiveHandler(context.getSource());
+            if (handler==null) {
+                report.setMessage(localStrings.getLocalString("unknownarchivetype","Archive type of {0} was not recognized",context.getSource()));
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return null;                
+            }
             context.createClassLoaders(clh, handler);
 
-            // containers that are started are not stopped even if the deployment fail, the main reason
-            // is that some container do not support to be restarted.
-            LinkedList<EngineInfo> sortedEngineInfos =
-                setupContainerInfos(sniffers, context, report);
-            if (sortedEngineInfos ==null || sortedEngineInfos.isEmpty()) {
-                report.failure(logger, "There is no installed container capable of handling this application", null);
-                tracker.actOn(logger);
-                return null;
+            final ClassLoader cloader = context.getClassLoader();
+            final ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
+            try {
+                Thread.currentThread().setContextClassLoader(cloader);
+                if (sniffers==null) {
+                    sniffers = snifferManager.getSniffers(context.getSource(), cloader);
+                }
+                if (sniffers.size()==0) {
+                    report.failure(logger,localStrings.getLocalString("deploy.unknownmoduletpe","Module type not recognized"));
+                    return null;
+                }
+
+                // containers that are started are not stopped even if the deployment fail, the main reason
+                // is that some container do not support to be restarted.
+                LinkedList<EngineInfo> sortedEngineInfos =
+                    setupContainerInfos(sniffers, context, report);
+                if (sortedEngineInfos ==null || sortedEngineInfos.isEmpty()) {
+                    report.failure(logger, "There is no installed container capable of handling this application", null);
+                    tracker.actOn(logger);
+                    return null;
+                }
+
+                final String appName = context.getCommandParameters().getProperty(
+                    ParameterNames.NAME);
+
+                ApplicationInfo appInfo = appRegistry.get(appName);
+                if (appInfo==null) {
+                    // this is a first time deployment as opposed as load following an unload event,
+                    // we need to create the application info
+                    ModuleInfo moduleInfo = null;
+                    try {
+                        moduleInfo = prepareModule(sortedEngineInfos, appName, context, report, tracker);
+                    } catch(Exception prepareException) {
+                        report.failure(logger, "Exception while preparing the app");
+                        tracker.actOn(logger);
+                        return null;
+                    }
+
+
+                    appInfo = new ApplicationInfo(context.getSource(), appName, moduleInfo);
+                    appRegistry.add(appName, appInfo);
+                }
+
+                // now were falling back into the mainstream loading/starting sequence, at this
+                // time the containers are set up, all the modules have been prepared in their
+                // associated engines and the application info is created and registered
+                try {
+                    appInfo.load(context, report, tracker);
+                } catch(Exception loadException) {
+                    report.failure(logger, "Exception while loading the app", loadException);
+                    tracker.actOn(logger);
+                    return null;
+                }
+
+                // if enable attribute is set to true
+                // we start the application
+                if (Boolean.valueOf(context.getCommandParameters().getProperty(
+                    ParameterNames.ENABLED))) {
+                    appInfo.start(context, report, tracker);
+                }
+                return appInfo;
+            } finally {
+                Thread.currentThread().setContextClassLoader(currentCL);
             }
-            ApplicationInfo appInfo = prepare(sortedEngineInfos,
-                context, report, tracker);
-
-            appInfo = load(sortedEngineInfos, appInfo,
-                context, report, tracker);
-
-            if (appInfo == null) {
-                report.failure(logger, "Exception while loading the app", null);
-                tracker.actOn(logger);
-                return null;
-            }
-
-            // if enable attribute is set to true
-            // we start the application
-            if (Boolean.valueOf(context.getCommandParameters().getProperty(
-                ParameterNames.ENABLED))) {
-                appInfo.start(context, report, tracker);
-            }
-
-            return appInfo;
 
         } catch (Exception e) {
             report.failure(logger, "Exception while deploying the app", e);
             tracker.actOn(logger);
             return null;
         }
-    }
-
-    public ApplicationInfo enable(String appName, final DeploymentContextImpl context, final ActionReport report) {
-
-        final ApplicationInfo appInfo = appRegistry.get(appName);
-
-        final Collection<Sniffer> sniffers = snifferManager.getSniffers(context.getSource(),
-                context.getClassLoader());
-
-        if (appInfo != null) {
-            // this is an enable after deploy without server restart
-            ProgressTracker tracker = new ProgressTracker() {
-                public void actOn(Logger logger) {
-                    for (EngineRef module : get("started", EngineRef.class)) {
-                        module.unload(appInfo, context, report);
-                    }
-                }
-            };
-
-
-            try {
-                // construct application classloader and store in the context                 
-                ArchiveHandler handler = getArchiveHandler(context.getSource());
-                context.createClassLoaders(clh, handler);
-
-                List<EngineInfo> engineInfos = new ArrayList<EngineInfo>();
-                for (Sniffer sniffer : sniffers) {
-                    engineInfos.add(containerRegistry.getContainer(sniffer.getContainersNames()[0]));
-                }
-                if (sniffers.size()==0) {
-                    report.setMessage(localStrings.getLocalString("unknownmoduletpe","Module type not recognized"));
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    return null;
-                }
-
-                load(engineInfos, appInfo, context, report, tracker);
-                appInfo.start(context, report, tracker); 
-                return appInfo;
-
-            } catch (Exception e) {
-                report.failure(logger, "Exception while enabling the app", e);
-                tracker.actOn(logger);
-                return null;
-            }
-        }  else {
-            // this is an enable after server restart
-            // so we need to do all the steps
-            return deploy(sniffers, context, report);
-        }
-    }
-
-    public void disable(String appName, DeploymentContext context, ActionReport report) {
-
-        unload(appName, context, report);
     }
 
     /**
@@ -472,12 +467,11 @@ public class ApplicationLifecycle implements Deployment {
 
     }
 
-    // prepare phase of the deployment
-    public ApplicationInfo prepare(
-        LinkedList<EngineInfo> sortedEngineInfos,
-        DeploymentContextImpl context, ActionReport report,
+    public ModuleInfo prepareModule(
+        LinkedList<EngineInfo> sortedEngineInfos, String moduleName,
+        DeploymentContext context, ActionReport report,
         ProgressTracker tracker) throws Exception {
-        
+
         for (EngineInfo engineInfo : sortedEngineInfos) {
 
             // get the deployer
@@ -489,7 +483,7 @@ public class ApplicationLifecycle implements Deployment {
                 // construct an incomplete EngineRef which will be later
                 // filled in at loading time
                 EngineRef engineRef = new EngineRef(engineInfo, adapter, null);
-                tracker.add(EngineRef.class, engineRef);
+                tracker.add("prepared", EngineRef.class, engineRef);
 
                 tracker.add(Deployer.class, deployer);
             } catch(Exception e) {
@@ -497,92 +491,7 @@ public class ApplicationLifecycle implements Deployment {
                 throw e;
             }
         }
-
-        final String appName = context.getCommandParameters().getProperty(
-            ParameterNames.NAME);
-
-        ApplicationInfo appInfo = new ApplicationInfo(context.getSource(),
-            appName, tracker.get(EngineRef.class).toArray(new EngineRef[0]));
-
-        appRegistry.add(appName, appInfo);
-
-        return appInfo;
-    }
-
-    public ApplicationInfo load(List<EngineInfo> sortedEngineInfos,
-        ApplicationInfo appInfo, DeploymentContextImpl context,
-        ActionReport report, ProgressTracker tracker) throws Exception {
-
-        context.setPhase(DeploymentContextImpl.Phase.LOAD);
-        EngineRef[] engineRefs = tracker.get(EngineRef.class).toArray(new EngineRef[0]);
-
-        if (!context.getTransformers().isEmpty()) {
-            // add the class file transformers to the new class loader
-            try {
-                InstrumentableClassLoader icl = InstrumentableClassLoader.class.cast(context.getFinalClassLoader());
-                for (ClassFileTransformer transformer : context.getTransformers()) {
-                    icl.addTransformer(transformer);
-                }
-            } catch (Exception e) {
-                report.failure(logger, "Class loader used for loading application cannot handle bytecode enhancer", e);
-                throw e;
-            }
-        }
-        for (EngineInfo engineInfo : sortedEngineInfos) {
-
-            // get the container.
-            Deployer deployer = engineInfo.getDeployer();
-
-            ClassLoader currentClassLoader  = Thread.currentThread().getContextClassLoader();
-            try {
-                Thread.currentThread().setContextClassLoader(context.getClassLoader());
-                ApplicationContainer appCtr = deployer.load(engineInfo.getContainer(), context);
-                if (appCtr==null) {
-                    String msg = "Cannot load application in " + engineInfo.getContainer().getName() + " container";
-                    report.failure(logger, msg, null);
-                    throw new Exception(msg);
-                }
-
-                if (engineRefs.length==0)  {
-                    // if ModuleInfos have not been partially
-                    // populated before
-                    EngineRef engineRef = new EngineRef(engineInfo, adapter, appCtr);
-                    tracker.add(EngineRef.class, engineRef);
-                } else {
-                    // fill in the previously partial populated EngineRef
-                    for (EngineRef engineRef : engineRefs) {
-                        if (engineRef.getContainerInfo().getContainer().getName().equals(engineInfo.getContainer().getName())) {
-                            engineRef.setApplicationContainer(appCtr);
-                            break;
-                        }
-                    }
-                }
-            } catch(Exception e) {
-                report.failure(logger, "Exception while invoking " + deployer.getClass() + " prepare method", e);
-                throw e;
-            } finally {
-                Thread.currentThread().setContextClassLoader(currentClassLoader);
-            }
-        }
-
-        if (appInfo == null) {
-            String appName = context.getCommandParameters().getProperty(
-                ParameterNames.NAME);
-            appInfo = new ApplicationInfo(context.getSource(),
-                appName, tracker.get(EngineRef.class).toArray(new EngineRef[0]));
-        }
-
-        return appInfo;
-    }
-
-    protected void clean(Deployer[] deployers, DeploymentContext context) {
-        for (Deployer deployer : deployers) {
-            try {
-                deployer.clean(context);
-            } catch(Throwable e) {
-                context.getLogger().log(Level.INFO, "Deployer.clean failed for " + deployer, e);
-            }
-        }
+        return new ModuleInfo(moduleName, tracker.get("prepared",EngineRef.class));
     }
 
     protected Collection<EngineInfo> setupContainer(Sniffer sniffer, Module snifferModule,  Logger logger, ActionReport report) {
@@ -611,10 +520,10 @@ public class ApplicationLifecycle implements Deployment {
                     engineInfo.setDeployer(deployer);
             } catch (ComponentException e) {
                 report.failure(logger, "Cannot instantiate or inject "+deployerClass, e);
-                stopContainer(logger, engineInfo);
+                engineInfo.stop(logger);
                 return false;
             } catch (ClassCastException e) {
-                stopContainer(logger, engineInfo);
+                engineInfo.stop(logger);
                 report.failure(logger, deployerClass+" does not implement " +
                                     " the org.jvnet.glassfish.api.deployment.Deployer interface", e);
                 return false;
@@ -626,7 +535,7 @@ public class ApplicationLifecycle implements Deployment {
     protected void stopContainers(EngineInfo[] ctrInfos, Logger logger) {
         for (EngineInfo ctrInfo : ctrInfos) {
             try {
-                stopContainer(logger, ctrInfo);
+                ctrInfo.stop(logger);
             } catch(Exception e) {
                 // this is not a failure per se but we need to document it.
                 logger.log(Level.INFO,"Cannot release container " + ctrInfo.getSniffer().getModuleType(), e);
@@ -634,28 +543,7 @@ public class ApplicationLifecycle implements Deployment {
         }
     }
 
-    // Todo : take care of Deployer when unloading...
-    protected void stopContainer(Logger logger, EngineInfo info)
-    {
-        if (info.getDeployer()!=null) {
-            Inhabitant i = habitat.getInhabitantByType(info.getDeployer().getClass());
-            if (i!=null) {
-                i.release();
-            }
-        }
-        if (info.getContainer()!=null) {
-            Inhabitant i = habitat.getInhabitantByType(info.getContainer().getClass());
-            if (i!=null) {
-                i.release();
-            }
-        }
-        containerRegistry.removeContainer(info);
-        if (logger.isLoggable(Level.FINE)) {
-            logger.fine("Container " + info.getContainer().getName() + " stopped");
-        }
-    }
-
-    protected ApplicationInfo unload(String appName, DeploymentContext context, ActionReport report) {
+    protected ApplicationInfo unload(String appName, ExtendedDeploymentContext context, ActionReport report) {
 
         ApplicationInfo info = appRegistry.get(appName);
         if (info==null) {
@@ -668,147 +556,132 @@ public class ApplicationLifecycle implements Deployment {
 
     }
 
-    public void undeploy(String appName, DeploymentContext context, ActionReport report) {
+    public void undeploy(String appName, ExtendedDeploymentContext context, ActionReport report) {
 
         if (report.getExtraProperties()!=null) {
             context.getProps().put("ActionReportProperties", report.getExtraProperties());
         }
         
         ApplicationInfo info = unload(appName, context, report);
-
-        if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
-            for (EngineRef engineRef : info.getModuleInfos()) {
-                try {
-                    engineRef.getContainerInfo().getDeployer().clean(context);
-                } catch(Exception e) {
-                    report.failure(context.getLogger(), "Exception while cleaning application artifacts", e);
-                    return;
-                }
-            }
+        try {
+            info.clean(context);
+        } catch(Exception e) {
+            report.failure(context.getLogger(), "Exception while cleaning application artifacts", e);
+            return;
         }
         appRegistry.remove(appName);
     }
 
     // register application information in domain.xml
-    protected void registerAppInDomainXML(final ApplicationInfo
+    public void registerAppInDomainXML(final ApplicationInfo
         applicationInfo, final DeploymentContext context)
         throws TransactionFailure {
         final Properties moduleProps = context.getProps();
         ConfigSupport.apply(new ConfigCode() {
             public Object run(ConfigBeanProxy... params) throws PropertyVetoException, TransactionFailure {
 
-                    Applications apps = (Applications) params[0];
-                    Server servr = (Server) params[1];
+                Applications apps = (Applications) params[0];
+                Server servr = (Server) params[1];
 
-                    // adding the application element
-                    Application app = ConfigSupport.createChildOf(params[0], Application.class);
+                // adding the application element
+                Application app = params[0].createChild(Application.class);
 
-                    // various attributes
-                    app.setName(moduleProps.getProperty(ServerTags.NAME));
-                    app.setLocation(moduleProps.getProperty(
-                        ServerTags.LOCATION));
-                    app.setObjectType(moduleProps.getProperty(
-                        ServerTags.OBJECT_TYPE));
-                    // always set the enable attribute of application to true
-        		    app.setEnabled(String.valueOf(true));
-                    if (moduleProps.getProperty(ServerTags.CONTEXT_ROOT) !=
-                        null) {
-		            app.setContextRoot(moduleProps.getProperty(
-                                ServerTags.CONTEXT_ROOT));
-                    }
-                    if (moduleProps.getProperty(ServerTags.LIBRARIES) !=
-                        null) {
-		            app.setLibraries(moduleProps.getProperty(
-                                ServerTags.LIBRARIES));
-                    }
-                    app.setDirectoryDeployed(moduleProps.getProperty(
-                        ServerTags.DIRECTORY_DEPLOYED));
-
-                    if (moduleProps.getProperty(ServerTags.DESCRIPTION) !=null) {
-                        app.setDescription(moduleProps.getProperty(
-                                ServerTags.DESCRIPTION));
-                    }
-                    apps.getModules().add(app);
-
-                    // engine element
-                    for (EngineRef engineRef :
-                        applicationInfo.getModuleInfos()) {
-                        applicationInfo.save(app);
-                        Engine engine = ConfigSupport.createChildOf(app,
-                        Engine.class);
-                        app.getEngine().add(engine);
-                        engine.setSniffer(engineRef.getContainerInfo(
-                            ).getSniffer().getModuleType());
-                    }
-
-                    // property element
-                    // trim the properties that have been written as attributes
-                    // the rest properties will be written as property element
-                    for (Iterator itr = moduleProps.keySet().iterator();
-                        itr.hasNext();) {
-                        String propName = (String) itr.next();
-                        if (!propName.equals(ServerTags.NAME) &&
-                            !propName.equals(ServerTags.LOCATION) &&
-                            !propName.equals(ServerTags.ENABLED) &&
-                            !propName.equals(ServerTags.CONTEXT_ROOT) &&
-                            !propName.equals(ServerTags.LIBRARIES) &&
-                            !propName.equals(ServerTags.OBJECT_TYPE) &&
-                            !propName.equals(ServerTags.VIRTUAL_SERVERS) &&
-                            !propName.equals(ServerTags.DIRECTORY_DEPLOYED) &&
-                            !propName.startsWith(
-                                DeploymentProperties.APP_CONFIG))
-                        {
-                            Property prop = ConfigSupport.createChildOf(app,
-                                Property.class);
-                            app.getProperty().add(prop);
-                            prop.setName(propName);
-                            prop.setValue(moduleProps.getProperty(propName));
-                        }
-                    }
-
-                    // adding the application-ref element
-                    ApplicationRef appRef = ConfigSupport.createChildOf(
-                            params[1], ApplicationRef.class);
-                    appRef.setRef(moduleProps.getProperty(ServerTags.NAME));
-                    if (moduleProps.getProperty(
-                        ServerTags.VIRTUAL_SERVERS) != null) {
-                        appRef.setVirtualServers(moduleProps.getProperty(
-                            ServerTags.VIRTUAL_SERVERS));
-                    } else {
-                        // deploy to all virtual-servers, we need to get the list.
-                        HttpService httpService = habitat.getComponent(HttpService.class);
-                        StringBuilder sb = new StringBuilder();
-                        for (VirtualServer s : httpService.getVirtualServer()) {
-                            if (s.getId().equals(AdminAdapter.VS_NAME)) {
-                                continue;
-                            }
-                            if (sb.length()>0) {
-                                sb.append(',');
-                            }
-                            sb.append(s.getId());
-                        }
-                        appRef.setVirtualServers(sb.toString());
-                    }
-                    appRef.setEnabled(moduleProps.getProperty(
-                        ServerTags.ENABLED));
-
-                    List<ApplicationConfig> savedAppConfigs =
-                            (List<ApplicationConfig>) moduleProps.get(DeploymentProperties.APP_CONFIG);
-                    if (savedAppConfigs != null) {
-                        for (ApplicationConfig ac : savedAppConfigs) {
-                            app.getApplicationConfigs().add(ac);
-                        }
-                    }
-
-                    servr.getApplicationRef().add(appRef);
-                    
-                    return Boolean.TRUE;
+                // various attributes
+                app.setName(moduleProps.getProperty(ServerTags.NAME));
+                app.setLocation(moduleProps.getProperty(
+                    ServerTags.LOCATION));
+                app.setObjectType(moduleProps.getProperty(
+                    ServerTags.OBJECT_TYPE));
+                // always set the enable attribute of application to true
+                app.setEnabled(String.valueOf(true));
+                if (moduleProps.getProperty(ServerTags.CONTEXT_ROOT) !=
+                    null) {
+                app.setContextRoot(moduleProps.getProperty(
+                            ServerTags.CONTEXT_ROOT));
                 }
+                if (moduleProps.getProperty(ServerTags.LIBRARIES) !=
+                    null) {
+                app.setLibraries(moduleProps.getProperty(
+                            ServerTags.LIBRARIES));
+                }
+                app.setDirectoryDeployed(moduleProps.getProperty(
+                    ServerTags.DIRECTORY_DEPLOYED));
+
+                if (moduleProps.getProperty(ServerTags.DESCRIPTION) !=null) {
+                    app.setDescription(moduleProps.getProperty(
+                            ServerTags.DESCRIPTION));
+                }
+                apps.getModules().add(app);
+                applicationInfo.save(app);
+
+                // property element
+                // trim the properties that have been written as attributes
+                // the rest properties will be written as property element
+                for (Iterator itr = moduleProps.keySet().iterator();
+                    itr.hasNext();) {
+                    String propName = (String) itr.next();
+                    if (!propName.equals(ServerTags.NAME) &&
+                        !propName.equals(ServerTags.LOCATION) &&
+                        !propName.equals(ServerTags.ENABLED) &&
+                        !propName.equals(ServerTags.CONTEXT_ROOT) &&
+                        !propName.equals(ServerTags.LIBRARIES) &&
+                        !propName.equals(ServerTags.OBJECT_TYPE) &&
+                        !propName.equals(ServerTags.VIRTUAL_SERVERS) &&
+                        !propName.equals(ServerTags.DIRECTORY_DEPLOYED) &&
+                        !propName.startsWith(
+                            DeploymentProperties.APP_CONFIG))
+                    {
+                        Property prop = ConfigSupport.createChildOf(app,
+                            Property.class);
+                        app.getProperty().add(prop);
+                        prop.setName(propName);
+                        prop.setValue(moduleProps.getProperty(propName));
+                    }
+                }
+
+                // adding the application-ref element
+                ApplicationRef appRef = ConfigSupport.createChildOf(
+                        params[1], ApplicationRef.class);
+                appRef.setRef(moduleProps.getProperty(ServerTags.NAME));
+                if (moduleProps.getProperty(
+                    ServerTags.VIRTUAL_SERVERS) != null) {
+                    appRef.setVirtualServers(moduleProps.getProperty(
+                        ServerTags.VIRTUAL_SERVERS));
+                } else {
+                    // deploy to all virtual-servers, we need to get the list.
+                    HttpService httpService = habitat.getComponent(HttpService.class);
+                    StringBuilder sb = new StringBuilder();
+                    for (VirtualServer s : httpService.getVirtualServer()) {
+                        if (s.getId().equals(AdminAdapter.VS_NAME)) {
+                            continue;
+                        }
+                        if (sb.length()>0) {
+                            sb.append(',');
+                        }
+                        sb.append(s.getId());
+                    }
+                    appRef.setVirtualServers(sb.toString());
+                }
+                appRef.setEnabled(moduleProps.getProperty(
+                    ServerTags.ENABLED));
+
+                List<ApplicationConfig> savedAppConfigs =
+                        (List<ApplicationConfig>) moduleProps.get(DeploymentProperties.APP_CONFIG);
+                if (savedAppConfigs != null) {
+                    for (ApplicationConfig ac : savedAppConfigs) {
+                        app.getApplicationConfigs().add(ac);
+                    }
+                }
+
+                servr.getApplicationRef().add(appRef);
+
+                return Boolean.TRUE;
+            }
 
         }, applications, server);
     }
 
-    protected void unregisterAppFromDomainXML(final String appName)
+    public void unregisterAppFromDomainXML(final String appName)
         throws TransactionFailure {
         ConfigSupport.apply(new ConfigCode() {
             public Object run(ConfigBeanProxy... params) throws PropertyVetoException, TransactionFailure {
@@ -834,112 +707,14 @@ public class ApplicationLifecycle implements Deployment {
         }, applications, server);
     }
 
-    // this is to update the enable attribute in domain.xml with the new value
-    protected void setEnableAttributeInDomainXML(final String appName,
-        final boolean newEnabledValue) throws Exception {
-
-        // the enable attribute of the application element is always
-        // set to true
-        // we use the enable attribute of the application-ref to control
-        // whether the application should be enabled or not
-        ApplicationRef applicationRef = null;
-
-        for (ApplicationRef appRef : server.getApplicationRef()) {
-            if (appRef.getRef().equals(appName)) {
-                applicationRef = appRef;
-                if (Boolean.valueOf(appRef.getEnabled()) == newEnabledValue) {
-                    // no need to set again, return
-                    return;
-                }
-                break;
-            }
-        }
-
-        if (applicationRef == null) {
-            throw new Exception("Application Ref not found for " + appName +
-                " in configuration");
-        }
-
-        ConfigSupport.apply(new SingleConfigCode<ApplicationRef>() {
-            public Object run(ApplicationRef param) throws
-                PropertyVetoException, TransactionFailure {
-                param.setEnabled(String.valueOf(newEnabledValue));
-                return null;
-            }
-        }, applicationRef);
-    }
-
-    // set the neccessary information in DeploymentContext params from
-    // domain.xml
-    protected Properties populateDeployParamsFromDomainXML(Application app, ApplicationRef appRef) {
-        if (app == null || appRef == null) {
-            return new Properties();
-        }
-        Properties deploymentParams = new Properties();
-        deploymentParams.setProperty(ParameterNames.NAME, app.getName());
-        deploymentParams.setProperty(ParameterNames.LOCATION, app.getLocation());
-        deploymentParams.setProperty(ParameterNames.ENABLED, app.getEnabled());
-        if (app.getContextRoot() != null) {
-            deploymentParams.setProperty(ParameterNames.CONTEXT_ROOT,
-                app.getContextRoot());
-        }
-        if (app.getLibraries() != null) {
-            deploymentParams.setProperty(ParameterNames.LIBRARIES,
-                app.getLibraries());
-        }
-        deploymentParams.setProperty(ParameterNames.DIRECTORY_DEPLOYED,
-            app.getDirectoryDeployed());
-
-        if (appRef.getVirtualServers() != null) {
-            deploymentParams.setProperty(ParameterNames.VIRTUAL_SERVERS,
-                appRef.getVirtualServers());
-        }
-
-        deploymentParams.put("APPLICATION_CONFIG", app);
-
-        return deploymentParams;
-    }
-
-    // set the neccessary information in DeploymentContext props from
-    // domain.xml
-    protected Properties populateDeployPropsFromDomainXML(Application app) {
-        if (app == null) {
-            return new Properties();
-        }
-        Properties deploymentProps = new Properties();
-        for (Property prop : app.getProperty()) {
-            deploymentProps.put(prop.getName(), prop.getValue());
-        }
-        deploymentProps.setProperty(ServerTags.OBJECT_TYPE,
-            app.getObjectType());
-        return deploymentProps;
-    }
 
     // check if the application is registered in domain.xml
-    protected boolean isRegistered(String appName) {
+    public boolean isRegistered(String appName) {
         return ConfigBeansUtilities.getModule(appName)!=null;
     }
 
-    // clean up generated files
-    public void deleteContainerMetaInfo(DeploymentContext context) {
-
-        // need to remove the generated directories...
-        // need to remove generated/xml, generated/ejb, generated/jsp
-
-        // remove generated/xml
-        File generatedXmlRoot = context.getScratchDir("xml");
-        FileUtils.whack(generatedXmlRoot);
-
-        // remove generated/ejb
-        File generatedEjbRoot = context.getScratchDir("ejb");
-        // recursively delete...
-        FileUtils.whack(generatedEjbRoot);
-
-        // remove generated/jsp
-        File generatedJspRoot = context.getScratchDir("jsp");
-        // recursively delete...
-        FileUtils.whack(generatedJspRoot);
+    public ApplicationInfo get(String appName) {
+        return appRegistry.get(appName);
     }
-
 }
 
