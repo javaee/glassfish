@@ -8,8 +8,6 @@ package org.glassfish.embed;
 import com.sun.enterprise.v3.admin.CommandRunner;
 import com.sun.enterprise.v3.common.PropsFileActionReporter;
 import org.glassfish.api.ActionReport;
-import java.io.File;
-import java.util.ArrayList;
 import java.util.Properties;
 
 /**
@@ -42,7 +40,6 @@ public class CommandExecutor {
         } catch (NullPointerException e) {
             throw new EmbeddedException("not_started", "CommandExecutor(Server server)");
         }
-        this.serverName = server.getServerName();
     }
 
    /**
@@ -68,24 +65,7 @@ public class CommandExecutor {
     public void execute(String commandName, Properties options) throws EmbeddedException {
         report = new PropsFileActionReporter();
         try {
-            if (commandName != null && commandName.equals("deploy")) {
-                Object path = options.get("DEFAULT");
-                if (path != null) {
-                    File f = new File((String)path);
-                    if (f.exists()) {
-                        ArrayList<File> list = new ArrayList();
-                        list.add(f);
-                        options.put("serverName", this.serverName);
-                        cr.doCommand(commandName, options, report, list);
-                    } else {
-                        throw new EmbeddedException("no_such_file", f);
-                    }
-                } else {
-                    throw new EmbeddedException("nothing_to_do");
-                }
-            } else {
-                cr.doCommand(commandName, options, report);
-            }
+             cr.doCommand(commandName, options, report);
         } catch (Throwable t) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(t);
@@ -102,7 +82,7 @@ public class CommandExecutor {
         } else if (exitCode.equals(exitCode.FAILURE)) {
             LoggerHelper.severe("command_failed", commandName);
             if (msg!=null) LoggerHelper.severe(msg);
-            throw new EmbeddedException("command_failure", commandName, t);
+            throw new EmbeddedException("command_failed", commandName, t);
         }
     }
 
@@ -138,16 +118,7 @@ public class CommandExecutor {
         return msg==null ? "" : msg;
     }
 
-    /**
-     *
-     * @return the name of the server commands are being executed on
-     */
-    public String getServerName() {
-        return serverName;
-    }
-
     private CommandRunner cr;
     private ActionReport report;
     private ActionReport.ExitCode exitCode;
-    private String serverName;
 }
