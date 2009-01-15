@@ -40,8 +40,10 @@ own identifying information: Portions Copyright [yyyy]
   	</copy>
 	       
        <!-- Changing file permissions of javadb scripts -->
-       <chmod file="target/stage/${install.dir.name}/javadb/frameworks/NetworkServer/bin/*" perm="ugo+rx"/>
-       <chmod file="target/stage/${install.dir.name}/javadb/frameworks/embedded/bin/*" perm="ugo+rx"/>
+       <chmod dir="target/stage/${install.dir.name}/javadb/frameworks/NetworkServer/bin" perm="ugo+rx"/>
+       <chmod dir="target/stage/${install.dir.name}/javadb/frameworks/embedded/bin" perm="ugo+rx"/>
+       <chmod dir="target/stage/${install.dir.name}/javadb/bin" perm="ugo+rx"/>
+
        <delete dir="target/stage/${install.dir.name}/glassfish"/>
 
        <zip file="target/javadb.zip" basedir="target/stage"/>
