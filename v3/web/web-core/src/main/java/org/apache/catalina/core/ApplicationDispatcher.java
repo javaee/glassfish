@@ -450,7 +450,7 @@ final class ApplicationDispatcher
                 (ApplicationHttpRequest) wrapRequest(state, true);
             String contextPath = context.getPath();
 
-            if (hrequest.getAttribute(Globals.FORWARD_REQUEST_URI_ATTR) == null) { 
+            if (hrequest.getAttribute(RequestDispatcher.FORWARD_REQUEST_URI) == null) { 
                 wrequest.initSpecialAttributes(hrequest.getRequestURI(),
                                                hrequest.getContextPath(),
                                                hrequest.getServletPath(),

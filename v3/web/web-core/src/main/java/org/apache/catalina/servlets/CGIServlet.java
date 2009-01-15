@@ -74,16 +74,8 @@ import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.UnavailableException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import javax.servlet.*;
+import javax.servlet.http.*;
 
 import org.apache.catalina.Globals;
 import org.apache.catalina.util.IOTools;
@@ -779,16 +771,16 @@ public final class CGIServlet extends HttpServlet {
             boolean isIncluded = false;
 
             // Look to see if this request is an include
-            if (req.getAttribute(Globals.INCLUDE_REQUEST_URI_ATTR) != null) {
+            if (req.getAttribute(RequestDispatcher.INCLUDE_REQUEST_URI) != null) {
                 isIncluded = true;
             }
             if (isIncluded) {
                 this.contextPath = (String)req.getAttribute(
-                        Globals.INCLUDE_CONTEXT_PATH_ATTR);
+                    RequestDispatcher.INCLUDE_CONTEXT_PATH);
                 this.servletPath = (String)req.getAttribute(
-                        Globals.INCLUDE_SERVLET_PATH_ATTR);
+                    RequestDispatcher.INCLUDE_SERVLET_PATH);
                 this.pathInfo = (String)req.getAttribute(
-                        Globals.INCLUDE_PATH_INFO_ATTR);
+                    RequestDispatcher.INCLUDE_PATH_INFO);
             } else {
                 this.contextPath = req.getContextPath();
                 this.servletPath = req.getServletPath();
@@ -810,7 +802,7 @@ public final class CGIServlet extends HttpServlet {
                 String qs;
                 if (isIncluded) {
                     qs = (String)req.getAttribute(
-                            Globals.INCLUDE_QUERY_STRING_ATTR);
+                            RequestDispatcher.INCLUDE_QUERY_STRING);
                 } else {
                     qs = req.getQueryString();
                 }

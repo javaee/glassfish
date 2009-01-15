@@ -1655,7 +1655,8 @@ public class Request
             return (servletContext.getRequestDispatcher(path));
 
         // Convert a request-relative path to a context-relative one
-        String servletPath = (String) getAttribute(Globals.INCLUDE_SERVLET_PATH_ATTR);
+        String servletPath = (String) getAttribute(
+            RequestDispatcher.INCLUDE_SERVLET_PATH);
         if (servletPath == null)
             servletPath = getServletPath();
 

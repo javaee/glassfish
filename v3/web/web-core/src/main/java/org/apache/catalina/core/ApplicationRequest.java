@@ -63,9 +63,9 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import javax.servlet.DispatcherType;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletRequestWrapper;
-import org.apache.catalina.Globals;
 import org.apache.catalina.Request;
 import org.apache.catalina.util.Enumerator;
 import org.apache.catalina.util.StringManager;
@@ -100,16 +100,16 @@ public class ApplicationRequest extends ServletRequestWrapper {
 
 
     static {
-        specials.add(Globals.INCLUDE_REQUEST_URI_ATTR);
-        specials.add(Globals.INCLUDE_CONTEXT_PATH_ATTR);
-        specials.add(Globals.INCLUDE_SERVLET_PATH_ATTR);
-        specials.add(Globals.INCLUDE_PATH_INFO_ATTR);
-        specials.add(Globals.INCLUDE_QUERY_STRING_ATTR);
-        specials.add(Globals.FORWARD_REQUEST_URI_ATTR);
-        specials.add(Globals.FORWARD_CONTEXT_PATH_ATTR);
-        specials.add(Globals.FORWARD_SERVLET_PATH_ATTR);
-        specials.add(Globals.FORWARD_PATH_INFO_ATTR);
-        specials.add(Globals.FORWARD_QUERY_STRING_ATTR);
+        specials.add(RequestDispatcher.INCLUDE_REQUEST_URI);
+        specials.add(RequestDispatcher.INCLUDE_CONTEXT_PATH);
+        specials.add(RequestDispatcher.INCLUDE_SERVLET_PATH);
+        specials.add(RequestDispatcher.INCLUDE_PATH_INFO);
+        specials.add(RequestDispatcher.INCLUDE_QUERY_STRING);
+        specials.add(RequestDispatcher.FORWARD_REQUEST_URI);
+        specials.add(RequestDispatcher.FORWARD_CONTEXT_PATH);
+        specials.add(RequestDispatcher.FORWARD_SERVLET_PATH);
+        specials.add(RequestDispatcher.FORWARD_PATH_INFO);
+        specials.add(RequestDispatcher.FORWARD_QUERY_STRING);
     }
 
 

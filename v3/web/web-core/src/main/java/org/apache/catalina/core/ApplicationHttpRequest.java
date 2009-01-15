@@ -379,7 +379,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
 
         // Convert a request-relative path to a context-relative one
         String servletPath = 
-            (String) getAttribute(Globals.INCLUDE_SERVLET_PATH_ATTR);
+            (String) getAttribute(RequestDispatcher.INCLUDE_SERVLET_PATH);
         if (servletPath == null)
             servletPath = getServletPath();
 
@@ -898,26 +898,26 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
         specialAttributes = new HashMap(5);
 
         if (!isForwardDispatch) {        
-            specialAttributes.put(Globals.INCLUDE_REQUEST_URI_ATTR,
+            specialAttributes.put(RequestDispatcher.INCLUDE_REQUEST_URI,
                                   requestUri);
-            specialAttributes.put(Globals.INCLUDE_CONTEXT_PATH_ATTR,
+            specialAttributes.put(RequestDispatcher.INCLUDE_CONTEXT_PATH,
                                   contextPath);
-            specialAttributes.put(Globals.INCLUDE_SERVLET_PATH_ATTR,
+            specialAttributes.put(RequestDispatcher.INCLUDE_SERVLET_PATH,
                                   servletPath);
-            specialAttributes.put(Globals.INCLUDE_PATH_INFO_ATTR,
+            specialAttributes.put(RequestDispatcher.INCLUDE_PATH_INFO,
                                   pathInfo);
-            specialAttributes.put(Globals.INCLUDE_QUERY_STRING_ATTR,
+            specialAttributes.put(RequestDispatcher.INCLUDE_QUERY_STRING,
                                   queryString);
         } else {
-            specialAttributes.put(Globals.FORWARD_REQUEST_URI_ATTR,
+            specialAttributes.put(RequestDispatcher.FORWARD_REQUEST_URI,
                                   requestUri);
-            specialAttributes.put(Globals.FORWARD_CONTEXT_PATH_ATTR,
+            specialAttributes.put(RequestDispatcher.FORWARD_CONTEXT_PATH,
                                   contextPath);
-            specialAttributes.put(Globals.FORWARD_SERVLET_PATH_ATTR,
+            specialAttributes.put(RequestDispatcher.FORWARD_SERVLET_PATH,
                                   servletPath);
-            specialAttributes.put(Globals.FORWARD_PATH_INFO_ATTR,
+            specialAttributes.put(RequestDispatcher.FORWARD_PATH_INFO,
                                   pathInfo);
-            specialAttributes.put(Globals.FORWARD_QUERY_STRING_ATTR,
+            specialAttributes.put(RequestDispatcher.FORWARD_QUERY_STRING,
                                   queryString);
         }
     }
