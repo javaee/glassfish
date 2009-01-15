@@ -79,6 +79,17 @@ public interface ConfigBeanProxy {
     @DuckTyped
     public <T extends ConfigBeanProxy> T getParent(Class<T> type);
 
+    /**
+     * Creates a child element of this configuration element
+     *
+     * @param type the child element type
+     * @return the newly created child instance
+     * @throws TransactionFailure when called outside the boundaries of a transaction 
+     */
+    @DuckTyped
+    public <T extends ConfigBeanProxy> T createChild(Class<T> type) throws TransactionFailure;
+
+
     public class Duck {
 
         public static ConfigBeanProxy getParent(ConfigBeanProxy self) {
@@ -89,6 +100,12 @@ public interface ConfigBeanProxy {
         public static <T extends ConfigBeanProxy> T getParent(ConfigBeanProxy self, Class<T> c) {
              Dom dom = Dom.unwrap(self);
             return dom.parent().createProxy(c);
+        }
+
+        public static <T extends ConfigBeanProxy> T createChild(ConfigBeanProxy self, Class<T> c)
+            throws TransactionFailure {
+            
+            return ConfigSupport.createChildOf(self, c);
         }
 
     }
