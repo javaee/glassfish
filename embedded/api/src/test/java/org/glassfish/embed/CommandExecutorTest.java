@@ -140,16 +140,18 @@ public class CommandExecutorTest {
         assertEquals(ActionReport.ExitCode.FAILURE, ce.getExitCode());
     }
 
-    @Ignore
     @Test
     public void testDeploySuccess() {
+        System.out.println("CommandExecutorTest testDeploySuccess()");
         File file = SmartFile.sanitize(new File("target/test-classes/simple.war"));
+        assertTrue(file.exists());
         try {
             options.setProperty("DEFAULT", file.getCanonicalPath());
+            options.setProperty("force", "true");
             ce.execute("deploy", options);
-//            options.clear();
-//            options.setProperty("DEFAULT", "simple");
-//            ce.execute("undeploy", options);
+            options.clear();
+            options.setProperty("DEFAULT", "simple");
+            ce.execute("undeploy", options);
         } catch (Exception ex) {
             LoggerHelper.severe("testDeploySuccess failed");
             ex.printStackTrace();
@@ -170,7 +172,6 @@ public class CommandExecutorTest {
 
     }
 
-    @Ignore
     @Test(expected=EmbeddedException.class)
     public void testDeployFail() throws EmbeddedException {
         String file = "foo";
@@ -206,7 +207,7 @@ public class CommandExecutorTest {
         assertEquals(ActionReport.ExitCode.SUCCESS, ce.getExitCode());
     }
 
-     private Properties options = new Properties();
+    private Properties options = new Properties();
     private static CommandExecutor ce;
     private static Server myGF;
 }
