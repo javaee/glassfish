@@ -102,7 +102,7 @@ public class BaseAttributeFilter implements NotificationFilter {
      * The set of attribute names that are accepted by this filter.  If this
      * list is empty, all attribute names are accepted.
      */
-    private HashSet names = new HashSet();
+    private HashSet<String> names = new HashSet<String>();
 
 
     // --------------------------------------------------------- Public Methods
@@ -143,7 +143,7 @@ public class BaseAttributeFilter implements NotificationFilter {
     public String[] getNames() {
 
         synchronized (names) {
-            return ((String[]) names.toArray(new String[names.size()]));
+            return names.toArray(new String[names.size()]);
         }
 
     }

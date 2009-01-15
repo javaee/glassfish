@@ -330,7 +330,7 @@ public class BaseModelMBean implements ModelMBean, MBeanRegistration {
 
         Object result = null;
         try {
-            Class declaring=m.getDeclaringClass();
+            Class<?> declaring=m.getDeclaringClass();
             // workaround for catalina weird mbeans - the declaring class is BaseModelMBean.
             // but this is the catalina class.
             if( declaring.isAssignableFrom(this.getClass()) ) {
@@ -522,7 +522,7 @@ public class BaseModelMBean implements ModelMBean, MBeanRegistration {
 
     }
 
-    private Class getAttributeClass(String signature)
+    private Class<?> getAttributeClass(String signature)
         throws ReflectionException
     {
         if (signature.equals(Boolean.TYPE.getName()))
@@ -715,7 +715,7 @@ public class BaseModelMBean implements ModelMBean, MBeanRegistration {
         // Prepare and return our response, eating all exceptions
         String names[] = new String[attributes.size()];
         int n = 0;
-        Iterator items = attributes.iterator();
+        Iterator<?> items = attributes.iterator();
         while (items.hasNext()) {
             Attribute item = (Attribute) items.next();
             names[n++] = item.getName();

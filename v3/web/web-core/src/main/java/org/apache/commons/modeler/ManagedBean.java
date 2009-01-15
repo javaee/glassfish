@@ -386,7 +386,7 @@ public class ManagedBean implements java.io.Serializable
         MBeanException, RuntimeOperationsException {
 
         // Load the ModelMBean implementation class
-        Class clazz = null;
+        Class<?> clazz = null;
         Exception ex = null;
         try {
             clazz = Class.forName(getClassName());

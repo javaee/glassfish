@@ -97,10 +97,11 @@ public class MbeansSource extends ModelerSource implements MbeansSourceMBean
 
     // true if we are during the original loading
     boolean loading=true;
-    List mbeans=new ArrayList();
+    List<ObjectName> mbeans = new ArrayList<ObjectName>();
     static boolean loaderLoaded=false;
     private Document document;
-    private HashMap object2Node = new HashMap();
+    private HashMap<ObjectName,Node> object2Node = 
+            new HashMap<ObjectName,Node>();
 
     long lastUpdate;
     long updateInterval=10000; // 10s
@@ -136,14 +137,13 @@ public class MbeansSource extends ModelerSource implements MbeansSourceMBean
     /** Return the list of mbeans created by this source.
      *  It can be used to implement runtime services.
      */
-    public List getMBeans() {
+    public List<ObjectName> getMBeans() {
         return mbeans;
     }
 
-    public List loadDescriptors( Registry registry, String location,
-                                 String type, Object source)
-            throws Exception
-    {
+    public List<ObjectName> loadDescriptors(Registry registry, String location,
+            String type, Object source) throws Exception {
+
         setRegistry(registry);
         setLocation(location);
         setType(type);
@@ -199,7 +199,7 @@ public class MbeansSource extends ModelerSource implements MbeansSourceMBean
                 firstMbeanN=descriptorsN;
             }
 
-            MBeanServer server= Registry.getServer();
+            MBeanServer server = Registry.getServer();
 
             // XXX Not very clean...  Just a workaround
             if( ! loaderLoaded ) {
@@ -311,7 +311,7 @@ public class MbeansSource extends ModelerSource implements MbeansSourceMBean
         if( loading ) return;
         // nothing by default
         //log.log(Level.INFO, "XXX UpdateField " + oname + " " + name + " " + value);
-        Node n=(Node)object2Node.get( oname );
+        Node n = object2Node.get( oname );
         if( n == null ) {
             log.log(Level.INFO, "Node not found " + oname );
             return;

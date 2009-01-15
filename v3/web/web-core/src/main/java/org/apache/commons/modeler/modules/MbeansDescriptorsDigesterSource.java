@@ -52,28 +52,175 @@
  * limitations under the License.
  */
 
-
 package org.apache.commons.modeler.modules;
+
 
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.*;
 
+import javax.management.ObjectName;
+
 import org.apache.commons.digester.Digester;
+import org.apache.commons.modeler.ManagedBean;
 import org.apache.commons.modeler.Registry;
+
 
 public class MbeansDescriptorsDigesterSource extends ModelerSource
 {
-    private static Logger log = Logger.getLogger(MbeansDescriptorsDigesterSource.class.getName());
+    private static Logger log = 
+            Logger.getLogger(MbeansDescriptorsDigesterSource.class.getName());
 
     Registry registry;
     String location;
     String type;
     Object source;
-    List mbeans=new ArrayList();
+    List<ObjectName> mbeans = new ArrayList<ObjectName>();
+    protected static Digester digester = null;
+    
+    protected static Digester createDigester(Registry registry) {
 
+        Digester digester = new Digester();
+        digester.setNamespaceAware(false);
+        digester.setValidating(false);
+        URL url = Registry.getRegistry(null, null).getClass().getResource
+            ("/org/apache/tomcat/util/modeler/mbeans-descriptors.dtd");
+        digester.register
+            ("-//Apache Software Foundation//DTD Model MBeans Configuration File",
+                url.toString());
+        
+        // Configure the parsing rules
+        digester.addObjectCreate
+            ("mbeans-descriptors/mbean",
+            "org.apache.tomcat.util.modeler.ManagedBean");
+        digester.addSetProperties
+            ("mbeans-descriptors/mbean");
+        digester.addSetNext
+            ("mbeans-descriptors/mbean",
+                "add",
+            "java.lang.Object");
+        
+        digester.addObjectCreate
+            ("mbeans-descriptors/mbean/attribute",
+            "org.apache.tomcat.util.modeler.AttributeInfo");
+        digester.addSetProperties
+            ("mbeans-descriptors/mbean/attribute");
+        digester.addSetNext
+            ("mbeans-descriptors/mbean/attribute",
+                "addAttribute",
+            "org.apache.tomcat.util.modeler.AttributeInfo");
+        
+        /*digester.addObjectCreate
+            ("mbeans-descriptors/mbean/attribute/descriptor/field",
+            "org.apache.tomcat.util.modeler.FieldInfo");
+        digester.addSetProperties
+            ("mbeans-descriptors/mbean/attribute/descriptor/field");
+        digester.addSetNext
+            ("mbeans-descriptors/mbean/attribute/descriptor/field",
+                "addField",
+            "org.apache.tomcat.util.modeler.FieldInfo");
+        
+        digester.addObjectCreate
+            ("mbeans-descriptors/mbean/constructor",
+            "org.apache.tomcat.util.modeler.ConstructorInfo");
+        digester.addSetProperties
+            ("mbeans-descriptors/mbean/constructor");
+        digester.addSetNext
+            ("mbeans-descriptors/mbean/constructor",
+                "addConstructor",
+            "org.apache.tomcat.util.modeler.ConstructorInfo");
+        
+        digester.addObjectCreate
+            ("mbeans-descriptors/mbean/constructor/descriptor/field",
+            "org.apache.tomcat.util.modeler.FieldInfo");
+        digester.addSetProperties
+            ("mbeans-descriptors/mbean/constructor/descriptor/field");
+        digester.addSetNext
+            ("mbeans-descriptors/mbean/constructor/descriptor/field",
+                "addField",
+            "org.apache.tomcat.util.modeler.FieldInfo");
+        
+        digester.addObjectCreate
+            ("mbeans-descriptors/mbean/constructor/parameter",
+            "org.apache.tomcat.util.modeler.ParameterInfo");
+        digester.addSetProperties
+            ("mbeans-descriptors/mbean/constructor/parameter");
+        digester.addSetNext
+            ("mbeans-descriptors/mbean/constructor/parameter",
+                "addParameter",
+            "org.apache.tomcat.util.modeler.ParameterInfo");
+        
+        digester.addObjectCreate
+            ("mbeans-descriptors/mbean/descriptor/field",
+            "org.apache.tomcat.util.modeler.FieldInfo");
+        digester.addSetProperties
+            ("mbeans-descriptors/mbean/descriptor/field");
+        digester.addSetNext
+            ("mbeans-descriptors/mbean/descriptor/field",
+                "addField",
+            "org.apache.tomcat.util.modeler.FieldInfo");
+        */
+        digester.addObjectCreate
+            ("mbeans-descriptors/mbean/notification",
+            "org.apache.tomcat.util.modeler.NotificationInfo");
+        digester.addSetProperties
+            ("mbeans-descriptors/mbean/notification");
+        digester.addSetNext
+            ("mbeans-descriptors/mbean/notification",
+                "addNotification",
+            "org.apache.tomcat.util.modeler.NotificationInfo");
+        
+        digester.addObjectCreate
+            ("mbeans-descriptors/mbean/notification/descriptor/field",
+            "org.apache.tomcat.util.modeler.FieldInfo");
+        digester.addSetProperties
+            ("mbeans-descriptors/mbean/notification/descriptor/field");
+        digester.addSetNext
+            ("mbeans-descriptors/mbean/notification/descriptor/field",
+                "addField",
+            "org.apache.tomcat.util.modeler.FieldInfo");
+        
+        digester.addCallMethod
+            ("mbeans-descriptors/mbean/notification/notification-type",
+                "addNotifType", 0);
+        
+        digester.addObjectCreate
+            ("mbeans-descriptors/mbean/operation",
+            "org.apache.tomcat.util.modeler.OperationInfo");
+        digester.addSetProperties
+            ("mbeans-descriptors/mbean/operation");
+        digester.addSetNext
+            ("mbeans-descriptors/mbean/operation",
+                "addOperation",
+            "org.apache.tomcat.util.modeler.OperationInfo");
+        
+        digester.addObjectCreate
+            ("mbeans-descriptors/mbean/operation/descriptor/field",
+            "org.apache.tomcat.util.modeler.FieldInfo");
+        digester.addSetProperties
+            ("mbeans-descriptors/mbean/operation/descriptor/field");
+        digester.addSetNext
+            ("mbeans-descriptors/mbean/operation/descriptor/field",
+                "addField",
+            "org.apache.tomcat.util.modeler.FieldInfo");
+        
+        digester.addObjectCreate
+            ("mbeans-descriptors/mbean/operation/parameter",
+            "org.apache.tomcat.util.modeler.ParameterInfo");
+        digester.addSetProperties
+            ("mbeans-descriptors/mbean/operation/parameter");
+        digester.addSetNext
+            ("mbeans-descriptors/mbean/operation/parameter",
+                "addParameter",
+            "org.apache.tomcat.util.modeler.ParameterInfo");
+        
+        return digester;
+        
+    }
+    
     public void setRegistry(Registry reg) {
         this.registry=reg;
     }
@@ -94,10 +241,8 @@ public class MbeansDescriptorsDigesterSource extends ModelerSource
         this.source=source;
     }
 
-    public List loadDescriptors( Registry registry, String location,
-                                 String type, Object source)
-            throws Exception
-    {
+    public List<ObjectName> loadDescriptors( Registry registry, String location,
+            String type, Object source) throws Exception {
         setRegistry(registry);
         setLocation(location);
         setType(type);
@@ -107,158 +252,35 @@ public class MbeansDescriptorsDigesterSource extends ModelerSource
     }
 
     public void execute() throws Exception {
-        if( registry==null ) registry=Registry.getRegistry();
-
-        InputStream stream=(InputStream)source;
-
-        long t1=System.currentTimeMillis();
-
-        Digester digester = new Digester();
-        digester.setNamespaceAware(false);
-        digester.setValidating(false);
-        URL url = registry.getClass().getResource
-                ("/org/apache/commons/modeler/mbeans-descriptors.dtd");
-        digester.register
-                ("-//Apache Software Foundation//DTD Model MBeans Configuration File",
-                        url.toString());
-
-        // Push our registry object onto the stack
-        digester.push(mbeans);
-
-        // Configure the parsing rules
-        digester.addObjectCreate
-                ("mbeans-descriptors/mbean",
-                        "org.apache.commons.modeler.ManagedBean");
-        digester.addSetProperties
-                ("mbeans-descriptors/mbean");
-        digester.addSetNext
-                ("mbeans-descriptors/mbean",
-                        "add",
-                        "java.lang.Object");
-
-        digester.addObjectCreate
-                ("mbeans-descriptors/mbean/attribute",
-                        "org.apache.commons.modeler.AttributeInfo");
-        digester.addSetProperties
-                ("mbeans-descriptors/mbean/attribute");
-        digester.addSetNext
-                ("mbeans-descriptors/mbean/attribute",
-                        "addAttribute",
-                        "org.apache.commons.modeler.AttributeInfo");
-
-        digester.addObjectCreate
-            ("mbeans-descriptors/mbean/attribute/descriptor/field",
-             "org.apache.commons.modeler.FieldInfo");
-        digester.addSetProperties
-            ("mbeans-descriptors/mbean/attribute/descriptor/field");
-        digester.addSetNext
-            ("mbeans-descriptors/mbean/attribute/descriptor/field",
-             "addField",
-             "org.apache.commons.modeler.FieldInfo");
-
-        digester.addObjectCreate
-                ("mbeans-descriptors/mbean/constructor",
-                        "org.apache.commons.modeler.ConstructorInfo");
-        digester.addSetProperties
-                ("mbeans-descriptors/mbean/constructor");
-        digester.addSetNext
-                ("mbeans-descriptors/mbean/constructor",
-                        "addConstructor",
-                        "org.apache.commons.modeler.ConstructorInfo");
-
-        digester.addObjectCreate
-            ("mbeans-descriptors/mbean/constructor/descriptor/field",
-             "org.apache.commons.modeler.FieldInfo");
-        digester.addSetProperties
-            ("mbeans-descriptors/mbean/constructor/descriptor/field");
-        digester.addSetNext
-            ("mbeans-descriptors/mbean/constructor/descriptor/field",
-             "addField",
-             "org.apache.commons.modeler.FieldInfo");
-
-        digester.addObjectCreate
-                ("mbeans-descriptors/mbean/constructor/parameter",
-                        "org.apache.commons.modeler.ParameterInfo");
-        digester.addSetProperties
-                ("mbeans-descriptors/mbean/constructor/parameter");
-        digester.addSetNext
-                ("mbeans-descriptors/mbean/constructor/parameter",
-                        "addParameter",
-                        "org.apache.commons.modeler.ParameterInfo");
-
-        digester.addObjectCreate
-            ("mbeans-descriptors/mbean/descriptor/field",
-             "org.apache.commons.modeler.FieldInfo");
-        digester.addSetProperties
-            ("mbeans-descriptors/mbean/descriptor/field");
-        digester.addSetNext
-            ("mbeans-descriptors/mbean/descriptor/field",
-             "addField",
-             "org.apache.commons.modeler.FieldInfo");
-
-        digester.addObjectCreate
-                ("mbeans-descriptors/mbean/notification",
-                        "org.apache.commons.modeler.NotificationInfo");
-        digester.addSetProperties
-                ("mbeans-descriptors/mbean/notification");
-        digester.addSetNext
-                ("mbeans-descriptors/mbean/notification",
-                        "addNotification",
-                        "org.apache.commons.modeler.NotificationInfo");
-
-        digester.addObjectCreate
-            ("mbeans-descriptors/mbean/notification/descriptor/field",
-             "org.apache.commons.modeler.FieldInfo");
-        digester.addSetProperties
-            ("mbeans-descriptors/mbean/notification/descriptor/field");
-        digester.addSetNext
-            ("mbeans-descriptors/mbean/notification/descriptor/field",
-             "addField",
-             "org.apache.commons.modeler.FieldInfo");
-
-        digester.addCallMethod
-                ("mbeans-descriptors/mbean/notification/notification-type",
-                        "addNotifType", 0);
-
-        digester.addObjectCreate
-                ("mbeans-descriptors/mbean/operation",
-                        "org.apache.commons.modeler.OperationInfo");
-        digester.addSetProperties
-                ("mbeans-descriptors/mbean/operation");
-        digester.addSetNext
-                ("mbeans-descriptors/mbean/operation",
-                        "addOperation",
-                        "org.apache.commons.modeler.OperationInfo");
-
-        digester.addObjectCreate
-            ("mbeans-descriptors/mbean/operation/descriptor/field",
-             "org.apache.commons.modeler.FieldInfo");
-        digester.addSetProperties
-            ("mbeans-descriptors/mbean/operation/descriptor/field");
-        digester.addSetNext
-            ("mbeans-descriptors/mbean/operation/descriptor/field",
-             "addField",
-             "org.apache.commons.modeler.FieldInfo");
-
-        digester.addObjectCreate
-                ("mbeans-descriptors/mbean/operation/parameter",
-                        "org.apache.commons.modeler.ParameterInfo");
-        digester.addSetProperties
-                ("mbeans-descriptors/mbean/operation/parameter");
-        digester.addSetNext
-                ("mbeans-descriptors/mbean/operation/parameter",
-                        "addParameter",
-                        "org.apache.commons.modeler.ParameterInfo");
-
-        // Process the input file to configure our registry
-        try {
-            digester.parse(stream);
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Error digesting Registry data", e);
-            throw e;
+        if (registry == null) {
+            registry = Registry.getRegistry(null, null);
         }
-        long t2=System.currentTimeMillis();
-//        if( t2-t1 > 500 )
-        log.log(Level.INFO, "Loaded registry information (digester) " + ( t2 - t1 ) + " ms");
+
+        InputStream stream = (InputStream) source;
+
+        if (digester == null) {
+            digester = createDigester(registry);
+        }
+        ArrayList<ManagedBean> loadedMbeans = new ArrayList<ManagedBean>();
+        
+        synchronized (digester) {
+            
+            // Process the input file to configure our registry
+            try {
+                // Push our registry object onto the stack
+                digester.push(loadedMbeans);
+                digester.parse(stream);
+            } catch (Exception e) {
+                log.log(Level.SEVERE, "Error digesting Registry data", e);
+                throw e;
+            } finally {
+                digester.reset();
+            }
+        
+        }
+        Iterator<ManagedBean> iter = loadedMbeans.iterator();
+        while (iter.hasNext()) {
+            registry.addManagedBean(iter.next());
+        }
     }
 }
