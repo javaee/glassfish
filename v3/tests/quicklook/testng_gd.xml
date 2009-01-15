@@ -121,13 +121,9 @@
        <class name="test.security.basicauth.BasicAuthTestNG" />
     </classes>
   </test>
-  <test name="ejb3_singleton">
+  <test name="ejb_tests">
     <classes>
 	<class name="test.ejb.singleton.SingletonTestNG" />
-    </classes>
-  </test> 
-  <test name="ejb3_slsbnicmt">
-    <classes>
 	<class name="test.ejb.slsbnicmt.SlsbnicmtTestNG" />
     </classes>
   </test> 

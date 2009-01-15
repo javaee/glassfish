@@ -57,7 +57,7 @@ public class SingletonTestNG {
            
 
     @Test(groups = { "init" })
-    public void test1() throws Exception{
+    public void singletonStartup() throws Exception{
         boolean result=false;       
 
         try{
@@ -74,7 +74,7 @@ public class SingletonTestNG {
     }
 
     @Test(dependsOnGroups = { "init.*" })
-    public void test2() throws Exception{
+    public void singletonInjectLookup() throws Exception{
         boolean result=false;        
 
         try{
