@@ -1,8 +1,7 @@
 /*
- * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -34,40 +33,27 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.config.serverbeans;
+package com.sun.appserv.management.config;
 
-import org.jvnet.hk2.config.*;
-import org.jvnet.hk2.component.Injectable;
-import org.glassfish.api.admin.config.Named;
-
-import java.beans.PropertyVetoException;
-import java.util.List;
+import com.sun.appserv.management.base.AMX;
 
 /**
- * Tag Interface for any module
- *
- * @author Jerome Dochez
+	Functionality that all modules share.  
  */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ModuleConfig")
-@Configured
-public interface Module extends Named, ConfigBeanProxy {
-
-    @Element("*")
-    List<Engine> getEngines();
-
-    @DuckTyped
-    Engine getEngine(String snifferType);
-
-    public class Duck {
-
-        public static Engine getEngine(Module instance, String snifferName) {
-            for (Engine engine : instance.getEngines()) {
-                if (engine.getSniffer().equals(snifferName)) {
-                    return engine;
-                }
-            }
-            return null;
-        }
-    }    
-
+public interface AbstractModuleConfig
+	extends AMX, Enabled, Description, ObjectType, NamedConfigElement,
+	DeployedItemRefConfigReferent, PropertiesAccess
+{
+	/**
+	    The file system path to this module, typically something like
+	    <code>${com.sun.aas.instanceRoot}/applications/...</code>
+	 */
+	public String	getLocation();
+	
+	/**
+		Indicates whether the application has been     
+        deployed to a directory or not.              
+	 */
+    @ResolveTo(Boolean.class)
+	public boolean	getDirectoryDeployed();
 }

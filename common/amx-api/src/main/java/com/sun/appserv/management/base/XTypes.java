@@ -466,6 +466,12 @@ public final class XTypes
 
 
     /**
+            ID for {@link com.sun.appserv.management.config.ModuleConfig}
+     */
+    public final static String      MODULE_CONFIG                       =  P + "ModuleConfig";
+
+
+    /**
             ID for {@link com.sun.appserv.management.config.EngineConfig}
      */
     public final static String      ENGINE_CONFIG                       =  P + "EngineConfig";

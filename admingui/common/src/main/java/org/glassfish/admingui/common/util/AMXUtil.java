@@ -40,10 +40,7 @@
  */
 package org.glassfish.admingui.common.util;
 
-import com.sun.appserv.management.config.ApplicationConfig;
-import com.sun.appserv.management.config.EngineConfig;
-import com.sun.appserv.management.config.PropertiesAccess;
-import com.sun.appserv.management.config.PropertyConfig;
+import com.sun.appserv.management.config.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -201,11 +198,13 @@ public class AMXUtil {
     }
     
     public static boolean isAppType(ApplicationConfig testApp, String type){
-        Map<String, EngineConfig> engineConfigMap = testApp.getEngineConfigMap();
-        for(EngineConfig eConfig : engineConfigMap.values() ){
-            String sniffer = eConfig.getSniffer();
-            if (sniffer.equals(type))
-                return true;
+        Map<String, ModuleConfig> moduleConfigMap = testApp.getModuleConfigMap();
+        for (ModuleConfig module : moduleConfigMap.values()) {
+            for(EngineConfig eConfig : module.getEngineConfigMap().values()){
+                String sniffer = eConfig.getSniffer();
+                if (sniffer.equals(type))
+                    return true;
+            }
         }
         return false;
     }

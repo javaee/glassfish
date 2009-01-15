@@ -61,7 +61,7 @@ import java.util.Map;
 */
 
 public interface ApplicationConfig
-    extends ModuleConfig, Libraries, Container, WebServiceEndpointConfigCR, ConfigCreator, ConfigRemover
+    extends AbstractModuleConfig, Libraries, Container, WebServiceEndpointConfigCR, ConfigCreator, ConfigRemover
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.APPLICATION_CONFIG;
@@ -113,7 +113,7 @@ public interface ApplicationConfig
 	
     public Map<String,WebServiceEndpointConfig> getWebServiceEndpointConfigMap();
     
-    public Map<String,EngineConfig> getEngineConfigMap();
+    public Map<String,ModuleConfig> getModuleConfigMap();
 }
 
 
