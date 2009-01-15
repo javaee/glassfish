@@ -840,9 +840,15 @@ public class Server {
         Container[] vss = getVirtualServers();
 
         for(Container vs : vss) {
+            if(! (vs instanceof VirtualServer))
+                continue;   // should not happen
+
             Container[] wms = getWebModules(vs);
 
             for(Container wm : wms) {
+                if(! (wm instanceof WebModule))
+                    continue;   // should not happen
+
                 try {
                     Wrapper wrapper = getDefaultServletWrapper(wm);
                     DefaultServlet ds = (DefaultServlet) wrapper.allocate();
