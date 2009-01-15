@@ -56,9 +56,9 @@ public class EjbApplication
     private Collection<Container> containers = new ArrayList();
     private ClassLoader ejbAppClassLoader;
     private DeploymentContext dc;
-
+    
     private Habitat habitat;
-
+    @Inject
     private EJBSecurityManagerFactory ejbSMF;
 
     private ContainerFactory ejbContainerFactory;
@@ -108,7 +108,7 @@ public class EjbApplication
             desc.setUniqueId(getUniqueId(desc)); // XXX appUniqueID + (counter++));
 
             try {
-                EJBSecurityManager ejbSM = null;//ejbSMF.createSecurityManager(desc);
+                EJBSecurityManager ejbSM = null;//ejbSMF.createManager(desc,true);
                 Container container = ejbContainerFactory.createContainer(desc, ejbAppClassLoader,
                         ejbSM, dc);
                 containers.add(container);

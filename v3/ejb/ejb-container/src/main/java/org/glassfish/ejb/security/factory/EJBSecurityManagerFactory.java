@@ -42,27 +42,23 @@
 
 package org.glassfish.ejb.security.factory;
 
-import com.sun.enterprise.security.SecurityManager;
-import com.sun.enterprise.deployment.Descriptor;
+import com.sun.enterprise.security.factory.SecurityManagerFactory;
 import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.logging.LogDomains;
 import org.glassfish.ejb.security.application.EJBSecurityManager;
 //TODOL : this class needs to go, after prelude
-import org.glassfish.ejb.security.factory.AbstractSecurityManagerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 
+import java.util.logging.Logger;
+import org.glassfish.api.invocation.InvocationManager;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Singleton;
-import org.jvnet.hk2.component.Habitat;
-import org.glassfish.api.invocation.InvocationManager;
 
 /**
  * EJB Security Manager Factory Implementation
@@ -71,16 +67,23 @@ import org.glassfish.api.invocation.InvocationManager;
  */
 @Service
 @Scoped(Singleton.class)
-public final class EJBSecurityManagerFactory
-        extends AbstractSecurityManagerFactory {
+public final class EJBSecurityManagerFactory extends SecurityManagerFactory {
 
+    private static Logger _logger = null;
+
+    static {
+        _logger = LogDomains.getLogger(EJBSecurityManagerFactory.class, LogDomains.SECURITY_LOGGER);
+    }
+   
+    /*
     private Map CONTEXT_ID = new HashMap();
 
     @Inject
     private Habitat habitat;
-
+    */
     @Inject
     InvocationManager invMgr;
+     
 
     /**
      * Creates a new instance of EJBSecurityManagerFactory
@@ -88,6 +91,7 @@ public final class EJBSecurityManagerFactory
     public EJBSecurityManagerFactory() {
     }
 
+    /*
     public SecurityManager getSecurityManager(String contextId) {
         if (_poolHas(contextId)) {
             return (SecurityManager) _poolGet(contextId);
@@ -151,5 +155,56 @@ public final class EJBSecurityManagerFactory
             CONTEXT_ID.remove(appName);
             return rvalue;
         }
+    }*/
+     // stores the context ids to appnames for apps
+    private Map<String, ArrayList<String>> CONTEXT_IDS =
+            new HashMap<String, ArrayList<String>>();
+    private Map<String, Map<String, EJBSecurityManager>> SECURITY_MANAGERS =
+            new HashMap<String, Map<String, EJBSecurityManager>>();
+
+    public <T> EJBSecurityManager getManager(String ctxId, String name, boolean remove) {
+        return getManager(SECURITY_MANAGERS, ctxId, name, remove);
+    }
+
+    public  <T> ArrayList<EJBSecurityManager> 
+            getManagers(String ctxId, boolean remove) {
+        return getManagers(SECURITY_MANAGERS, ctxId, remove);
+    }
+
+    public  <T> ArrayList<EJBSecurityManager> 
+            getManagersForApp(String appName, boolean remove) {
+        return getManagersForApp(SECURITY_MANAGERS, CONTEXT_IDS, appName, remove);
+    }
+
+    public <T> String[] getContextsForApp(String appName, boolean remove) {
+        return getContextsForApp(CONTEXT_IDS, appName, remove);
+    }
+
+    public <T> void addManagerToApp(String ctxId, String name,
+            String appName, EJBSecurityManager manager) {
+        addManagerToApp(SECURITY_MANAGERS, CONTEXT_IDS, ctxId, name, appName, manager);
+    }
+
+    public EJBSecurityManager createManager(EjbDescriptor ejbDesc,
+            boolean register) {
+        String ctxId = EJBSecurityManager.getContextID(ejbDesc);
+        String ejbName = ejbDesc.getName();
+        EJBSecurityManager manager = null;
+        if (register) {
+            manager = getManager(ctxId, ejbName, false);
+        }
+        if (manager == null || !register) {
+            try {
+                manager = new EJBSecurityManager(ejbDesc, this.invMgr, this);
+                if (register) {
+                    String appName = ejbDesc.getApplication().getRegistrationName();
+                    addManagerToApp(ctxId, ejbName, appName, manager);
+                }
+            } catch (Exception ex) {
+                _logger.log(Level.FINE, "[EJB-Security] FATAL Exception. Unable to create EJBSecurityManager: " + ex.getMessage());
+                throw new RuntimeException(ex);
+            }
+        }
+        return manager;
     }
 }
