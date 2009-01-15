@@ -380,13 +380,36 @@ public class TimerSchedule implements Serializable {
      * Returns the Date of the next possible timeout.
      */
     public Calendar getNextTimeout() {
+
+        return getNextTimeout(new GregorianCalendar());
+    }
+
+   /**
+     * Returns the Date of the next possible timeout after the specific date.
+     */
+    public Calendar getNextTimeout(Date date) {
+        Calendar next = new GregorianCalendar();
+        next.setTime(date);
+
+        return getNextTimeout(next);
+    }
+
+   /**
+     * Returns the Date of the next possible timeout after the specific Calendar date
+     */
+    private Calendar getNextTimeout(Calendar next) {
         if (!configured) {
             configure();
         }
 
-        Calendar next = new GregorianCalendar();
-        next.add(Calendar.SECOND, 1);
-        next.set(Calendar.MILLISECOND, 0);
+        if (start_ != null && next.getTimeInMillis() < start_.getTime()) {
+            next.setTime(start_);
+        } else {
+            next.add(Calendar.SECOND, 1);
+            next.set(Calendar.MILLISECOND, 0);
+        }
+
+        //System.out.println("... starting with ... " + next.getTime() );
 
         if (years.size() == 0) {
             return getNextTimeout(next, 0);
@@ -394,23 +417,23 @@ public class TimerSchedule implements Serializable {
 
         int currYear = next.get(Calendar.YEAR);
         for(int year : years) {
+            //System.out.println("... testing year ... " + year);
             if (year < currYear) {
                 continue;
             }
 
             if (next.get(Calendar.YEAR) == year) {
                 next = getNextTimeout(next, year);
-                break;
-            }
 
-            if (next.get(Calendar.YEAR) < year) {
+            } else if (next.get(Calendar.YEAR) < year) {
                 // set to the beginning of the year
                 next.set(year, 0, 1, 0, 0, 0);
                 System.out.println("==> Year reset " + next.getTime()); 
                 next = getNextTimeout(next, year);
-                if (next.get(Calendar.YEAR) == year) {
-                    break;
-                }
+            }
+
+            if (next.get(Calendar.YEAR) == year) {
+                break;
             }
         }
 
@@ -424,7 +447,6 @@ public class TimerSchedule implements Serializable {
      * year value and starting date. If year is 0, any year will be correct.
      */
     private Calendar getNextTimeout(Calendar next, int year) {
-int i = 0;
         while (end_ == null || !next.getTime().after(end_)) {
 
             if (year != 0 && next.get(Calendar.YEAR) > year) {
@@ -504,10 +526,6 @@ int i = 0;
             }
 
             break;
-        }
-
-        if (start_ != null && next.getTimeInMillis() < start_.getTime()) {
-            next.setTime(start_);
         }
 
         return next;

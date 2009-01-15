@@ -580,9 +580,8 @@ public class EJBTimerService
                         // that the timer will return to fixed rate expiration.
                                                 
                     } else if ( (lastExpiration != null) &&
-                            ((ts != null && ts.getNextTimeout().getTimeInMillis() >
-                                lastExpiration.getTime() && 
-                                ts.getNextTimeout().getTimeInMillis() < now.getTime()) 
+                            ((ts != null && ts.getNextTimeout(lastExpiration).getTimeInMillis() 
+                                   < now.getTime()) 
                             || ((ts == null) && now.getTime() - lastExpiration.getTime()
                                    > timer.getIntervalDuration()) ) ) {
 
