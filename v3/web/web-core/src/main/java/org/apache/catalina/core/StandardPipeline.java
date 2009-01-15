@@ -371,53 +371,6 @@ public class StandardPipeline
 
     }
 
-    /** CR 6411114 (MBean registration/deregistration moved to ValveBase)
-    private void registerValve(Valve valve) {
-
-        if( valve instanceof ValveBase &&
-                ((ValveBase)valve).getObjectName()==null ) {
-            try {
-                
-                String domain=((ContainerBase)container).getDomain();
-                if( container instanceof StandardContext ) {
-                    domain=((StandardContext)container).getEngineName();
-                }
-                if( container instanceof StandardWrapper) {
-                    Container ctx=((StandardWrapper)container).getParent();
-                    domain=((StandardContext)ctx).getEngineName();
-                }
-                ObjectName vname=((ValveBase)valve).createObjectName(
-                        domain,
-                        ((ContainerBase)container).getJmxName());
-                if( vname != null ) {
-                    ((ValveBase)valve).setObjectName(vname);
-                    Registry.getRegistry().registerComponent(valve, vname, valve.getClass().getName());
-                    ((ValveBase)valve).setController(((ContainerBase)container).getJmxName());
-                }
-            } catch( Throwable t ) {
-                log.info( "Can't register valve " + valve , t );
-            }
-        }
-    }
-    
-    private void unregisterValve(Valve valve) {
-        if( valve instanceof ValveBase ) {
-            try {
-                ValveBase vb=(ValveBase)valve;
-                if( vb.getController()!=null &&
-                        vb.getController() == 
-                        ((ContainerBase)container).getJmxName() ) {
-                    
-                    ObjectName vname=vb.getObjectName();
-                    Registry.getRegistry().getMBeanServer().unregisterMBean(vname);
-                    ((ValveBase)valve).setObjectName(null);
-                }
-            } catch( Throwable t ) {
-                log.info( "Can't unregister valve " + valve , t );
-            }
-        }
-    }    
-    */
 
     // ------------------------------------------------------- Pipeline Methods
 
@@ -449,8 +402,9 @@ public class StandardPipeline
 
         // Change components if necessary
         GlassFishValve oldBasic = this.basic;
-        if (oldBasic == valve)
+        if (oldBasic == valve) {
             return;
+        }
 
         // Stop the old component if necessary
         if (oldBasic != null) {
@@ -472,8 +426,9 @@ public class StandardPipeline
         }
 
         // Start the new component if necessary
-        if (valve == null)
+        if (valve == null) {
             return;
+        }
         if (valve instanceof Contained) {
             ((Contained) valve).setContainer(this.container);
         }
@@ -491,6 +446,7 @@ public class StandardPipeline
                 return;
             }
         }
+
         this.basic = valve;
 
     }
@@ -621,6 +577,16 @@ public class StandardPipeline
 
     }
 
+
+    /**
+     * @return true if this pipeline has any non basic valves, false
+     * otherwise
+     */
+    public boolean hasNonBasicValves() {
+        return (valves != null && valves.length > 0);
+    }
+
+
     public ObjectName[] getValveObjectNames() {
         ObjectName oname[]=new ObjectName[valves.length + 1];
         for( int i=0; i<valves.length; i++ ) {
@@ -647,25 +613,7 @@ public class StandardPipeline
      * @exception ServletException if a servlet exception is thrown
      */
     public void invoke(Request request, Response response)
-        throws IOException, ServletException {
-
-        doInvoke(request, response);
-    }
-
-    protected void doInvoke(Request request, Response response)
-        throws IOException, ServletException {
-
-        doInvoke(request, response, false);
-    }
-
-    protected void doChainInvoke(Request request, Response response)
-        throws IOException, ServletException {
-
-        doInvoke(request, response, true);
-    }
-
-    private void doInvoke(Request request, Response response,
-        boolean chaining) throws IOException, ServletException {
+            throws IOException, ServletException {
 
         if ((valves.length > 0) || (basic != null)) {
             // Set the status so that if there are no valves (other than the
@@ -679,13 +627,7 @@ public class StandardPipeline
             // that the pipeline should proceed.
             int i;
             for (i = 0; i < valves.length; i++) {
-                Request req = request;
-                Response resp = response;
-                if (chaining) {
-                    req = getRequest(request);
-                    resp = getResponse(request, response);
-                }
-                status = valves[i].invoke(req, resp);
+                status = valves[i].invoke(request, response);
                 if (status != GlassFishValve.INVOKE_NEXT)
                     break;
             }
@@ -711,27 +653,15 @@ public class StandardPipeline
                         (org.apache.catalina.connector.Request) request,
                         (org.apache.catalina.connector.Response) response);
                 } else if (basic != null) {
-                    Request req = request;
-                    Response resp = response;
-                    if (chaining) {
-                        req = getRequest(request);
-                        resp = getResponse(request, response);
-                    }
-                    basic.invoke(req, resp);
-                    basic.postInvoke(req, resp);
+                    basic.invoke(request, response);
+                    basic.postInvoke(request, response);
                 }
             }
 
             // Invoke the post-request processing logic only on those valves
             // that returned a status of INVOKE_NEXT
             for (int j = i - 1; j >= 0; j--) {
-                Request req = request;
-                Response resp = response;
-                if (chaining) {
-                    req = getRequest(request);
-                    resp = getResponse(request, response);
-                }
-                savedValves[j].postInvoke(req, resp);
+                savedValves[j].postInvoke(request, response);
             }
 
             savedValves = null;
@@ -849,23 +779,7 @@ public class StandardPipeline
     }
 
     // ------------------------------------------------------ Private Methods
-    private Request getRequest(Request request) {
-	Request r = (Request) 
-	    request.getNote(Globals.WRAPPED_REQUEST); 
-	if (r == null) {
-	    r = request;
-	}
-	return r;
-    }
 
-    private Response getResponse(Request request, Response response) {
-	Response r = (Response) 
-	    request.getNote(Globals.WRAPPED_RESPONSE); 
-	if (r == null) {
-	    r = response;
-	}
-	return r;
-    }
 
     /*
      * Checks if the give valve is a GlassFish-style valve that was compiled

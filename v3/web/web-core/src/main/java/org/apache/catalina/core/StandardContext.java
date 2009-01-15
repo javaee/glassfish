@@ -190,6 +190,7 @@ public class StandardContext
     public void restrictedSetPipeline(Pipeline pl) {
         pl.setBasic(new StandardContextValve());
         pipeline = pl;
+        hasCustomPipeline = true;
     }
 
 

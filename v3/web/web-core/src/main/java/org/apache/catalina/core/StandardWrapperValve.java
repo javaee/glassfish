@@ -132,160 +132,6 @@ final class StandardWrapperValve
     public int invoke(Request request, Response response)
             throws IOException, ServletException {
 
-        preInvoke(request, response);
-
-        return END_PIPELINE;
-    }
-
-
-    /**
-     * Tomcat style invocation.
-     */
-    @Override
-    public void invoke(org.apache.catalina.connector.Request request,
-                       org.apache.catalina.connector.Response response)
-            throws IOException, ServletException {
-
-        preInvoke(request, response);
-
-        return;
-    }
-
-
-    // -------------------------------------------------------- Private Methods
-
-
-    /**
-     * Log a message on the Logger associated with our Container (if any)
-     *
-     * @param message Message to be logged
-     */
-    private void log(String message) {
-
-        org.apache.catalina.Logger logger = null;
-        if (container != null)
-            logger = container.getLogger();
-        if (logger != null)
-            logger.log("StandardWrapperValve[" + container.getName() + "]: "
-                       + message);
-        else {
-            String containerName = null;
-            if (container != null)
-                containerName = container.getName();
-            System.out.println("StandardWrapperValve[" + containerName
-                               + "]: " + message);
-        }
-
-    }
-
-
-    /**
-     * Log a message on the Logger associated with our Container (if any)
-     *
-     * @param message Message to be logged
-     * @param throwable Associated exception
-     */
-    private void log(String message, Throwable throwable) {
-
-        org.apache.catalina.Logger logger = null;
-        if (container != null)
-            logger = container.getLogger();
-        if (logger != null)
-            logger.log("StandardWrapperValve[" + container.getName() + "]: "
-                       + message, throwable);
-        else {
-            String containerName = null;
-            if (container != null)
-                containerName = container.getName();
-            System.out.println("StandardWrapperValve[" + containerName
-                               + "]: " + message);
-            System.out.println("" + throwable);
-            throwable.printStackTrace(System.out);
-        }
-
-    }
-
-
-    /**
-     * Handle the specified ServletException encountered while processing
-     * the specified Request to produce the specified Response.  Any
-     * exceptions that occur during generation of the exception report are
-     * logged and swallowed.
-     *
-     * @param request The request being processed
-     * @param response The response being generated
-     * @param exception The exception that occurred (which possibly wraps
-     *  a root cause exception
-     */
-    private void exception(Request request, Response response,
-                           Throwable exception) {
-        ServletRequest sreq = request.getRequest();
-        sreq.setAttribute(Globals.EXCEPTION_ATTR, exception);
-
-        ServletResponse sresponse = response.getResponse();
-        
-        /* GlassFish 6386229
-        if (sresponse instanceof HttpServletResponse)
-            ((HttpServletResponse) sresponse).setStatus
-                (HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        */
-        // START GlassFish 6386229
-        ((HttpServletResponse) sresponse).setStatus
-            (HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        // END GlassFish 6386229
-    }
-
-    public long getProcessingTimeMillis() {
-        return processingTimeMillis;
-    }
-
-    public void setProcessingTimeMillis(long processingTimeMillis) {
-        this.processingTimeMillis = processingTimeMillis;
-    }
-
-    public long getMaxTimeMillis() {
-        return maxTimeMillis;
-    }
-
-    public void setMaxTimeMillis(long maxTimeMillis) {
-        this.maxTimeMillis = maxTimeMillis;
-    }
-
-    public long getMinTimeMillis() {
-        return minTimeMillis;
-    }
-
-    public void setMinTimeMillis(long minTimeMillis) {
-        this.minTimeMillis = minTimeMillis;
-    }
-
-    public int getRequestCount() {
-        return requestCount.get();
-    }
-
-    public void setRequestCount(int count) {
-        this.requestCount.set(count);
-    }
-
-    public int getErrorCount() {
-        return errorCount;
-    }
-
-    public void setErrorCount(int errorCount) {
-        this.errorCount = errorCount;
-    }
-
-    // Don't register in JMX
-
-    public ObjectName createObjectName(String domain, ObjectName parent)
-            throws MalformedObjectNameException {
-        return null;
-    }
-
-
-    private void preInvoke(Request request, Response response) 
-            throws IOException, ServletException {
-
         // Initialize local variables we may need
         boolean unavailable = false;
         Throwable throwable = null;
@@ -569,5 +415,152 @@ final class StandardWrapperValve
         processingTimeMillis += time;
         if( time > maxTimeMillis) maxTimeMillis = time;
         if( time < minTimeMillis) minTimeMillis = time;
+
+        return END_PIPELINE;
+    }
+
+
+    /**
+     * Tomcat style invocation.
+     */
+    @Override
+    public void invoke(org.apache.catalina.connector.Request request,
+                       org.apache.catalina.connector.Response response)
+            throws IOException, ServletException {
+
+        invoke((Request) request, (Response) response);
+
+        return;
+    }
+
+
+    // -------------------------------------------------------- Private Methods
+
+
+    /**
+     * Log a message on the Logger associated with our Container (if any)
+     *
+     * @param message Message to be logged
+     */
+    private void log(String message) {
+
+        org.apache.catalina.Logger logger = null;
+        if (container != null)
+            logger = container.getLogger();
+        if (logger != null)
+            logger.log("StandardWrapperValve[" + container.getName() + "]: "
+                       + message);
+        else {
+            String containerName = null;
+            if (container != null)
+                containerName = container.getName();
+            System.out.println("StandardWrapperValve[" + containerName
+                               + "]: " + message);
+        }
+
+    }
+
+
+    /**
+     * Log a message on the Logger associated with our Container (if any)
+     *
+     * @param message Message to be logged
+     * @param throwable Associated exception
+     */
+    private void log(String message, Throwable throwable) {
+
+        org.apache.catalina.Logger logger = null;
+        if (container != null)
+            logger = container.getLogger();
+        if (logger != null)
+            logger.log("StandardWrapperValve[" + container.getName() + "]: "
+                       + message, throwable);
+        else {
+            String containerName = null;
+            if (container != null)
+                containerName = container.getName();
+            System.out.println("StandardWrapperValve[" + containerName
+                               + "]: " + message);
+            System.out.println("" + throwable);
+            throwable.printStackTrace(System.out);
+        }
+
+    }
+
+
+    /**
+     * Handle the specified ServletException encountered while processing
+     * the specified Request to produce the specified Response.  Any
+     * exceptions that occur during generation of the exception report are
+     * logged and swallowed.
+     *
+     * @param request The request being processed
+     * @param response The response being generated
+     * @param exception The exception that occurred (which possibly wraps
+     *  a root cause exception
+     */
+    private void exception(Request request, Response response,
+                           Throwable exception) {
+        ServletRequest sreq = request.getRequest();
+        sreq.setAttribute(Globals.EXCEPTION_ATTR, exception);
+
+        ServletResponse sresponse = response.getResponse();
+        
+        /* GlassFish 6386229
+        if (sresponse instanceof HttpServletResponse)
+            ((HttpServletResponse) sresponse).setStatus
+                (HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        */
+        // START GlassFish 6386229
+        ((HttpServletResponse) sresponse).setStatus
+            (HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        // END GlassFish 6386229
+    }
+
+    public long getProcessingTimeMillis() {
+        return processingTimeMillis;
+    }
+
+    public void setProcessingTimeMillis(long processingTimeMillis) {
+        this.processingTimeMillis = processingTimeMillis;
+    }
+
+    public long getMaxTimeMillis() {
+        return maxTimeMillis;
+    }
+
+    public void setMaxTimeMillis(long maxTimeMillis) {
+        this.maxTimeMillis = maxTimeMillis;
+    }
+
+    public long getMinTimeMillis() {
+        return minTimeMillis;
+    }
+
+    public void setMinTimeMillis(long minTimeMillis) {
+        this.minTimeMillis = minTimeMillis;
+    }
+
+    public int getRequestCount() {
+        return requestCount.get();
+    }
+
+    public void setRequestCount(int count) {
+        this.requestCount.set(count);
+    }
+
+    public int getErrorCount() {
+        return errorCount;
+    }
+
+    public void setErrorCount(int errorCount) {
+        this.errorCount = errorCount;
+    }
+
+    // Don't register in JMX
+
+    public ObjectName createObjectName(String domain, ObjectName parent)
+            throws MalformedObjectNameException {
+        return null;
     }
 }

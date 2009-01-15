@@ -63,6 +63,7 @@ import java.security.cert.CertificateException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.Globals;
 import org.apache.catalina.Host;
@@ -321,8 +322,14 @@ public class CoyoteAdapter
             
             response.addHeader("Server",serverName);
                 
-            // Calling the container
-            connector.getContainer().invoke(request, response);
+            // Invoke the web container.
+            Container container = connector.getContainer();
+            if (container.getPipeline().hasNonBasicValves() ||
+                    container.hasCustomPipeline()) {
+                container.getPipeline().invoke(request, response);
+            } else {
+                container.getPipeline().getBasic().invoke(request, response);
+            }
         }
 
         /* GlassFish Issue 798

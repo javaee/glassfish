@@ -129,7 +129,7 @@ public class VirtualServerPipeline extends StandardPipeline {
                 redirect = redirectIfNecessary(request, response);
             }
             if (!redirect) {
-                doInvoke(request, response);
+                super.invoke(request, response);
             }
         }
     }

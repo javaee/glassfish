@@ -90,13 +90,35 @@ public class WebPipeline extends StandardPipeline {
             RealmAdapter realmAdapter = (RealmAdapter)webModule.getRealm();
             if (realmAdapter != null &&
                     realmAdapter.isSecurityExtensionEnabled()){
-                doChainInvoke(request, response);
+                super.invoke(getRequest(request),
+                             getResponse(request, response));
             } else {
             */
-                doInvoke(request, response);
+                super.invoke(request, response);
             /*
             }
             */
         }
-    }    
+    }
+
+
+    private Request getRequest(Request request) {
+	Request r = (Request) 
+	    request.getNote(Globals.WRAPPED_REQUEST); 
+	if (r == null) {
+	    r = request;
+	}
+	return r;
+    }
+
+
+    private Response getResponse(Request request, Response response) {
+	Response r = (Response) 
+	    request.getNote(Globals.WRAPPED_RESPONSE); 
+	if (r == null) {
+	    r = response;
+	}
+	return r;
+    }
+
 }

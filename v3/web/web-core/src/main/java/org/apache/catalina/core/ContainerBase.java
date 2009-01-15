@@ -278,6 +278,9 @@ public abstract class ContainerBase
     protected Pipeline pipeline = new StandardPipeline(this);
 
 
+    protected boolean hasCustomPipeline = false;
+
+
     /**
      * The Realm with which this Container is associated.
      */
@@ -720,8 +723,16 @@ public abstract class ContainerBase
      * this Container.
      */
     public Pipeline getPipeline() {
-
         return (this.pipeline);
+    }
+
+
+    /**
+     * @return true if this container was configured with a custom pipeline,
+     * false otherwise
+     */
+    public boolean hasCustomPipeline() {
+        return hasCustomPipeline;
     }
 
 
@@ -1412,9 +1423,7 @@ public abstract class ContainerBase
      * Valve for this Pipeline (if any).
      */
     public GlassFishValve getBasic() {
-
         return (pipeline.getBasic());
-
     }
 
 
@@ -1424,9 +1433,16 @@ public abstract class ContainerBase
      * such Valves, a zero-length array is returned.
      */
     public GlassFishValve[] getValves() {
-
         return (pipeline.getValves());
+    }
 
+
+    /**
+     * @return true if this pipeline has any non basic valves, false
+     * otherwise
+     */
+    public boolean hasNonBasicValves() {
+        return pipeline.hasNonBasicValves();
     }
 
 

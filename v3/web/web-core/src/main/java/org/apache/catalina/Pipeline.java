@@ -110,6 +110,13 @@ public interface Pipeline {
     public void setBasic(GlassFishValve valve);
 
 
+    /**
+     * @return true if this pipeline has any non basic valves, false
+     * otherwise
+     */
+    public boolean hasNonBasicValves();
+
+
     // --------------------------------------------------------- Public Methods
 
 

@@ -237,6 +237,13 @@ public interface Container {
 
 
     /**
+     * @return true if this container was configured with a custom pipeline,
+     * false otherwise
+     */
+    boolean hasCustomPipeline();
+
+
+    /**
      * Get the delay between the invocation of the backgroundProcess method on
      * this container and its children. Child containers will not be invoked
      * if their delay value is not negative (which would mean they are using 

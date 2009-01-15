@@ -180,7 +180,12 @@ final class StandardHostValve
         }
 
         // Ask this Context to process this request
-        context.getPipeline().invoke(request, response);
+        if (context.getPipeline().hasNonBasicValves() ||
+                context.hasCustomPipeline()) {
+            context.getPipeline().invoke(request, response);
+        } else {
+            context.getPipeline().getBasic().invoke(request, response);
+        }
 
         return END_PIPELINE;
     }
@@ -200,7 +205,12 @@ final class StandardHostValve
         }
 
         // Ask this Context to process this request
-        context.getPipeline().invoke(request, response);
+        if (context.getPipeline().hasNonBasicValves() ||
+                context.hasCustomPipeline()) {
+            context.getPipeline().invoke(request, response);
+        } else {
+            context.getPipeline().getBasic().invoke(request, response);
+        }
 
         postInvoke(request, response);
     }
