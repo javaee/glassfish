@@ -125,7 +125,7 @@
             <include name="webservices-api.jar"/>
         </fileset>
         <fileset dir="${lib.glassfishv3}">
-            <include name="jaxb.jar"/>
+            <include name="jaxb*.jar"/>
             <include name="webservices*.jar"/>
             <include name="javax.activation*.jar"/>
         </fileset>
