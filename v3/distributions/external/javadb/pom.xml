@@ -60,18 +60,13 @@
                         <phase>process-classes</phase>
                         <configuration>
                             <tasks>
-                                <!-- this is a jar that contains a zip. Insane. -->
-                                <resolveArtifact artifactId="javadb" property="javadb.jar"/>
-                                <unjar src="${javadb.jar}" dest="target"/>
+                                <resolveArtifact artifactId="javadb" property="javadb.zip"/>
 
                                 <mkdir dir="target/classes/glassfish"/>
-                                <unzip dest="target/classes/glassfish">
-                                    <fileset dir="target">
-                                        <include name="*javadb*.zip"/>
-                                    </fileset>
+				<unzip src="${javadb.zip}"
+				        dest="target/classes/glassfish">
                                     <patternset>
                                         <exclude name="javadb/demo/**"/>
-                                        <exclude name="javadb/bin/**"/>
                                         <exclude name="javadb/3RDPARTY.zip"/>
                                     </patternset>
                                 </unzip>
@@ -104,7 +99,8 @@
         <dependency>
             <groupId>javadb</groupId>
             <artifactId>javadb</artifactId>
-            <version>10.2.2.1-20070823</version>
+	    <version>10.4.2.1-20081020</version>
+	    <type>zip</type>
         </dependency>
     </dependencies>
 </project>
