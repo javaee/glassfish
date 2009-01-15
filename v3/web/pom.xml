@@ -58,7 +58,6 @@
         <module>gui-plugin-common</module>
         <module>web-glue</module>
         <module>webtier-all</module>
-        <module>tomcat-connector</module>
         <module>admin</module>
         <module>gf-web-connector</module>
         <module>javax.servlet</module>
