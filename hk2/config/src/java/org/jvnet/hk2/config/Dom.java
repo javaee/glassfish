@@ -774,7 +774,7 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
      * Invoke the user defined static method in the nested "Duck" class so that
      * the user can define convenience methods on the config beans.
      */
-    private Object invokeDuckMethod(Method method, Object proxy, Object[] args) throws Exception {
+    Object invokeDuckMethod(Method method, Object proxy, Object[] args) throws Exception {
         Method duckMethod = model.getDuckMethod(method);
 
         Object[] duckArgs;
