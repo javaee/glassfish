@@ -8,9 +8,9 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.annotation.ServletFilter;
+import javax.servlet.annotation.WebFilter;
 
-@ServletFilter("/mytest")
+@WebFilter("/mytest")
 public class TestFilter implements Filter {
     String mesg = null;
     public void init(FilterConfig filterConfig) throws ServletException {
