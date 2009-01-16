@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--
+The contents of this file are subject to the terms
+of the Common Development and Distribution License
+(the "License").  You may not use this file except
+in compliance with the License.
+
+You can obtain a copy of the license at
+glassfish/bootstrap/legal/CDDLv1.0.txt or
+https://glassfish.dev.java.net/public/CDDLv1.0.html.
+See the License for the specific language governing
+permissions and limitations under the License.
+
+When distributing Covered Code, include this CDDL
+HEADER in each file and include the License file at
+glassfish/bootstrap/legal/CDDLv1.0.txt.  If applicable,
+add the following below this CDDL HEADER, with the
+fields enclosed by brackets "[]" replaced with your
+own identifying information: Portions Copyright [yyyy]
+[name of copyright owner]
+-->
+<project name="Nucleus Distribution (ips) Creation" default="create-image" basedir=".">
+<property name="image.name" value="nucleus"/>
+
+<target name="init">
+    <condition property="windows">
+        <os family="windows" />
+    </condition>
+    <condition property="unix">
+        <os family="unix" />
+    </condition>
+</target>
+
+<target name="create-image" depends="create-installer-image, create-glassfish-image">
+    <mkdir dir="${installer.image.dir}"/>
+    <mkdir dir="${installer.image.dir}/${install.dir.name}"/>
+    <mkdir dir="${glassfish.image.dir}"/>
+</target>
+
+
+<target name="create-installer-image" description="Creating IPS Image without Domains for Installer">
+    <antcall target="create-common-image">
+        <param name="image.dir" value="${installer.image.dir}/${install.dir.name}"/>
+    </antcall>
+</target>
+
+<target name="create-glassfish-image" description="Creating IPS Image with Domains">
+    <antcall target="create-common-image">
+        <param name="image.dir" value="${glassfish.image.dir}/${install.dir.name}"/>
+    </antcall>
+
+    <!-- copy domains -->
+    <!-- unzip dest="${image.dir}" -->
+    <!-- unzip dest="target/local_image/glassfish/${install.dir.name}">
+        <fileset dir="../target">
+            <include name="nucleus-base*.zip"/>
+        </fileset>
+        <patternset>
+            <include name="**/domains/**"/>
+        </patternset>
+    </unzip -->
+
+
+    <!-- get modules required to create default domain -->
+    <ant antfile="../distributions.xml" target="fetch-domain-creation-artifacts">
+        <property name="modules.dir" value="${basedir}/target/local_image/glassfish/${install.dir.name}/glassfish/modules"/>
+    </ant>
+
+    <!-- create domain -->
+    <echo message="image.dir: ${image.dir}"/>
+    <echo message="user.dir: ${user.dir}"/>
+    <echo message="basedir: ${basedir}"/>
+    <antcall target="create-domain"/>
+
+    <!-- delete modules required to create default domain; these are not bundled as part of nucleus -->
+    <ant antfile="../distributions.xml" target="delete-domain-creation-artifacts">
+        <property name="modules.dir" value="${basedir}/target/local_image/glassfish/${install.dir.name}/glassfish/modules"/>
+    </ant>
+
+    <!-- delete dir="target" includes="*.zip"/ -->
+</target>
+
+<target name="create-domain" depends="create-domain-on-windows, create-domain-on-unix"/>
+
+<target name="create-domain-on-windows" depends="init" if="windows">
+    <ant antfile="../distributions.xml" target="create-domain">
+        <property name="exec.dir" value="${basedir}/target/local_image/glassfish/${install.dir.name}/glassfish/bin"/>
+        <property name="exec.executable" value="${basedir}/target/local_image/glassfish/${install.dir.name}/glassfish/bin/asadmin.bat"/>
+    </ant>
+</target>
+
+<target name="create-domain-on-unix" depends="init" if="unix">
+    <ant antfile="../distributions.xml" target="create-domain">
+        <property name="exec.dir" value="${basedir}/target/local_image/glassfish/${install.dir.name}/glassfish/bin"/>
+        <property name="exec.executable" value="${basedir}/target/local_image/glassfish/${install.dir.name}/glassfish/bin/asadmin"/>
+    </ant>
+</target>
+
+<target name="create-common-image" description="Creating IPS Image">
+    <ant antfile="../distributions.xml" target="create-local-image">
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="update-cfg-cache">
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="felix"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-hk2"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml"  target="install-package">
+        <property name="package.name" value="glassfish-grizzly"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-api"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-nucleus"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="pkg-java"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+
+    <delete
+        file="${image.dir}/.org.opensolaris,pkg/catalog/glassfish.org/pkg_names.pkl"/>
+
+    <copy file="${image.dir}/pkg/lib/pkg-bootstub.sh" tofile="${image.dir}/bin/updatetool"/>
+    <copy file="${image.dir}/pkg/lib/pkg-bootstub.bat" tofile="${image.dir}/bin/updatetool.bat"/>
+    <copy file="${image.dir}/pkg/lib/pkg-bootstub.sh" tofile="${image.dir}/bin/pkg"/>
+    <copy file="${image.dir}/pkg/lib/pkg-bootstub.bat" tofile="${image.dir}/bin/pkg.bat"/>
+</target>
+</project>
