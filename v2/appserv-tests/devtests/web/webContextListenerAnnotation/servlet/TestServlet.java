@@ -2,24 +2,23 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Enumeration;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebInitParam;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet(name="mytest",
-        urlPatterns={"/myurl"},
-        initParams={ @WebInitParam(name="n1", value="v1"), @WebInitParam(name="n2", value="v2") } )
+@WebServlet("/mytest")
 public class TestServlet extends HttpServlet {
+    private String aword = null;
+    public void init(ServletConfig config) throws ServletException {
+        aword = (String)config.getServletContext().getAttribute("myattr");
+    }
+
     public void service(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
-        PrintWriter writer = res.getWriter();
-        writer.write("Hello from Servlet 3.0. ");
-        String msg = "n1=" + getInitParameter("n1") +
-            ", n2=" + getInitParameter("n2");
-        writer.write("initParams: " + msg + "\n");
+        res.getWriter().write(aword);
     }
 }

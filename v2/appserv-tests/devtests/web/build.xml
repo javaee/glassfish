@@ -204,8 +204,8 @@
         <ant dir="sessionSetAttributeJavaxNamingContext" target="all"/>
         <ant dir="sessionCookieConfig" target="all"/>
         <ant dir="webServletAnnotation" target="all"/>
-        <ant dir="servletFilterAnnotation" target="all"/>
-        <ant dir="webServletContextListenerAnnotation" target="all"/>
+        <ant dir="webFilterAnnotation" target="all"/>
+        <ant dir="webContextListenerAnnotation" target="all"/>
         <ant dir="xmlOverrideAnnotation" target="all"/>
         <ant dir="webFragment" target="all"/>
         <ant dir="multiWebFragments" target="all"/>

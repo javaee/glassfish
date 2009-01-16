@@ -3,7 +3,7 @@ import java.net.*;
 import com.sun.ejte.ccl.reporter.*;
 
 /*
- * Unit test for @ServletFilter
+ * Unit test for @WebFilter
  */
 public class WebTest {
 
@@ -23,7 +23,7 @@ public class WebTest {
     }
     
     public static void main(String[] args) {
-        stat.addDescription("Unit test for @ServletFilter");
+        stat.addDescription("Unit test for @WebFilter");
         WebTest webTest = new WebTest(args);
         webTest.doTest();
         stat.printSummary(TEST_NAME);
