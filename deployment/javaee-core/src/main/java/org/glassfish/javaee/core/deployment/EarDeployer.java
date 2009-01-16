@@ -9,8 +9,13 @@ import org.glassfish.api.container.Container;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.internal.deployment.Deployment;
+import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.internal.data.EngineInfo;
+import org.glassfish.internal.data.ModuleInfo;
+import org.glassfish.internal.data.ApplicationRegistry;
+import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.deployment.common.DeploymentContextImpl;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
@@ -45,6 +50,9 @@ public class EarDeployer implements Deployer {
     @Inject
     ServerEnvironment env;
 
+    @Inject
+    ApplicationRegistry appRegistry;
+
     Collection<Sniffer> sniffers;
 
     final static Logger logger = LogDomains.getLogger(EarDeployer.class, LogDomains.DPL_LOGGER);
@@ -61,28 +69,38 @@ public class EarDeployer implements Deployer {
 
         Application application = context.getModuleMetaData(Application.class);
 
-        final Map<ModuleDescriptor, DeploymentContext> contextPerModules =
+        final Map<ModuleDescriptor, ExtendedDeploymentContext> contextPerModules =
                 this.initSubContext(application, context);
 
         final Map<BundleDescriptor, Collection<EngineInfo>> containersPerBundle =
                 new HashMap<BundleDescriptor, Collection<EngineInfo>>();
 
         context.getProps().put("SUB_CONTEXTS", contextPerModules);
-        
-        doOnAllBundles(application, new BundleBlock<Collection<EngineInfo>>() {
-            public Collection<EngineInfo> doBundle(BundleDescriptor bundle) {
-                containersPerBundle.put(bundle,
-                        prepareBundle(bundle, contextPerModules.get(bundle.getModuleDescriptor())));
-                return null;
-            }
-        });
 
+        final LinkedList<ModuleInfo> modules = new LinkedList<ModuleInfo>();
+        try {
+            doOnAllBundles(application, new BundleBlock<ModuleInfo>() {
+                public ModuleInfo doBundle(BundleDescriptor bundle) throws Exception {
+                    ModuleInfo info = prepareBundle(bundle, contextPerModules.get(bundle.getModuleDescriptor()));
+                    modules.add(info);
+                    return info;
+                }
+
+            });
+        } catch(Exception e) {
+
+        }
+        final String appName = context.getCommandParameters().getProperty(
+                    ParameterNames.NAME);
+        final ApplicationInfo appInfo = new ApplicationInfo(context.getSource(), appName, modules);
+
+        appRegistry.add(appName, appInfo);
         context.getProps().put("CONTAINERS_PER_BUNDLE", containersPerBundle);
 
         return true;
     }
 
-    private void doOnAllBundles(Application application, BundleBlock runnable) {
+    private void doOnAllBundles(Application application, BundleBlock runnable) throws Exception {
 
         Collection<BundleDescriptor> bundles = new HashSet<BundleDescriptor>();
         bundles.addAll(application.getBundleDescriptors());
@@ -112,27 +130,43 @@ public class EarDeployer implements Deployer {
         
     }
 
-    private Collection<EngineInfo> prepareBundle(final BundleDescriptor bundle, final DeploymentContext bundleContext) {
+    private ModuleInfo prepareBundle(final BundleDescriptor bundle, final ExtendedDeploymentContext bundleContext)
+        throws Exception {
 
-        HashSet<EngineInfo> orderedContainers = new HashSet<EngineInfo>();
+        LinkedList<EngineInfo> orderedContainers = null;
 
         ActionReport report = habitat.getComponent(ActionReport.class, "hk2-agent");
 
         try {
             // let's get the list of containers interested in this module
-            orderedContainers.addAll(deployment.setupContainerInfos(sniffers, bundleContext, report));
+            orderedContainers = deployment.setupContainerInfos(sniffers, bundleContext, report);
         } catch(Exception e) {
             e.printStackTrace();
         }
-
-        for (EngineInfo engineInfo : orderedContainers) {
-            Deployer deployer = engineInfo.getDeployer();
-            deployer.prepare(bundleContext);
-        }
-        return orderedContainers;
+        return deployment.prepareModule(orderedContainers, bundle.getName(), bundleContext, report, null);
     }
 
     public ApplicationContainer load(Container container, DeploymentContext context) {
+
+        Application application = context.getModuleMetaData(Application.class);
+        
+        final Map<ModuleDescriptor, ExtendedDeploymentContext> contextPerModules =
+                (Map<ModuleDescriptor, ExtendedDeploymentContext>)
+                    context.getProps().get("SUB_CONTEXTS");
+
+        final Map<BundleDescriptor, Collection<EngineInfo>> containersPerBundle =
+                (Map<BundleDescriptor, Collection<EngineInfo>>)
+                    context.getProps().get("CONTAINERS_PER_BUNDLE");
+
+       /* doOnAllBundles(application, new BundleBlock<Collection<EngineInfo>>() {
+            public Collection<EngineInfo> doBundle(BundleDescriptor bundle) {
+                containersPerBundle.put(bundle,
+                        loadBundle(bundle, contextPerModules.get(bundle.getModuleDescriptor())));
+                return null;
+            }
+        });        
+
+         */
         return null;
     }
 
@@ -146,13 +180,13 @@ public class EarDeployer implements Deployer {
 
     private interface BundleBlock<T> {
 
-        public T doBundle(BundleDescriptor bundle);
+        public T doBundle(BundleDescriptor bundle) throws Exception;
     }
 
-    public Map<ModuleDescriptor, DeploymentContext> initSubContext(final Application application, final DeploymentContext context) {
+    public Map<ModuleDescriptor, ExtendedDeploymentContext> initSubContext(final Application application, final DeploymentContext context) {
 
-        Map<ModuleDescriptor, DeploymentContext> results = new HashMap<ModuleDescriptor, DeploymentContext>();
-        for (BundleDescriptor bd : application.getBundleDescriptors()) {
+        Map<ModuleDescriptor, ExtendedDeploymentContext> results = new HashMap<ModuleDescriptor, ExtendedDeploymentContext>();
+        for (final BundleDescriptor bd : application.getBundleDescriptors()) {
             if (!results.containsKey(bd.getModuleDescriptor())) {
                 final ReadableArchive subArchive;
                 try {
@@ -161,7 +195,7 @@ public class EarDeployer implements Deployer {
                     ioe.printStackTrace();
                     return null;
                 }
-                DeploymentContext subContext = new DeploymentContextImpl(logger, context.getSource(), context.getCommandParameters(), env) {
+                ExtendedDeploymentContext subContext = new DeploymentContextImpl(logger, context.getSource(), context.getCommandParameters(), env) {
 
                     @Override
                     public ClassLoader getClassLoader() {
@@ -176,6 +210,15 @@ public class EarDeployer implements Deployer {
                     @Override
                     public ReadableArchive getSource() {
                         return subArchive;
+                    }
+
+                    @Override
+                    public <T> T getModuleMetaData(Class<T> metadataType) {
+                        try {
+                            return metadataType.cast(bd);
+                        } catch (Exception e) {
+                            return context.getModuleMetaData(metadataType);
+                        }
                     }
                 };
                 results.put(bd.getModuleDescriptor(), subContext);

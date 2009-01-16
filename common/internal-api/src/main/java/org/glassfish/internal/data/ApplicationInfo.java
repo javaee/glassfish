@@ -57,7 +57,7 @@ public class ApplicationInfo {
 
 
 
-    final private ModuleInfo[] modules;
+    final private Collection<ModuleInfo> modules;
     final private String name;
     final private ReadableArchive source;
 
@@ -70,7 +70,7 @@ public class ApplicationInfo {
      * @param modules the modules that are forming the application
      */
     public ApplicationInfo(ReadableArchive source,
-                           String name, ModuleInfo... modules) {
+                           String name, Collection<ModuleInfo> modules) {
         this.name = name;
         this.source = source;
         this.modules = modules;
@@ -101,7 +101,7 @@ public class ApplicationInfo {
      * Returns the modules of this application
      * @return the modules of this application
      */
-    public ModuleInfo[] getModuleInfos() {
+    public Collection<ModuleInfo> getModuleInfos() {
         return modules;
     }
 

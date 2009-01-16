@@ -161,9 +161,6 @@ public class ApplicationLifecycle implements Deployment {
                     module.unload(context, report);
                 }
                 for (EngineRef module : get("prepared", EngineRef.class)) {
-                    module.unload(context, report);
-                }
-                for (EngineRef module : get("prepared", EngineRef.class)) {
                     module.clean(context, logger);
                 }
             }
@@ -218,7 +215,9 @@ public class ApplicationLifecycle implements Deployment {
                     }
 
 
-                    appInfo = new ApplicationInfo(context.getSource(), appName, moduleInfo);
+                    Collection<ModuleInfo> infos = new ArrayList<ModuleInfo>();
+                    infos.add(moduleInfo);
+                    appInfo = new ApplicationInfo(context.getSource(), appName, infos);
                     appRegistry.add(appName, appInfo);
                 }
 
@@ -491,6 +490,8 @@ public class ApplicationLifecycle implements Deployment {
                 throw e;
             }
         }
+        // I need to create the application info here from the context, or something like this.
+        // and return the application info from this method for automatic registration in the caller.
         return new ModuleInfo(moduleName, tracker.get("prepared",EngineRef.class));
     }
 

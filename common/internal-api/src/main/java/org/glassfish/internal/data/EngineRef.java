@@ -107,6 +107,10 @@ public class EngineRef {
     public boolean start(ApplicationContext context, ProgressTracker tracker)
         throws Exception {
 
+        if (appCtr==null) {
+            // the container does not care to be started or stopped
+            return true;
+        }
         if (!appCtr.start(context)) {
             return false;
         }
@@ -141,6 +145,7 @@ public class EngineRef {
             report.failure(context.getLogger(), "Exception while shutting down application container", e);
             return false;
         }
+        appCtr=null;
         return true;
     }
 

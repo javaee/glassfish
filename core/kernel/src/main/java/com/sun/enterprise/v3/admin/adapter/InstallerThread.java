@@ -236,7 +236,7 @@ final class InstallerThread extends Thread {
                 singleModule.getEngines().add(sece);
                 Server s = (Server) proxies[1];
                 List<ApplicationRef> arefs = s.getApplicationRef();
-                ApplicationRef aref = ConfigSupport.createChildOf(s, ApplicationRef.class);
+                ApplicationRef aref = s.createChild(ApplicationRef.class);
                 aref.setRef(app.getName());
                 aref.setEnabled(Boolean.TRUE.toString());
                 aref.setVirtualServers(getVirtualServerList()); //TODO

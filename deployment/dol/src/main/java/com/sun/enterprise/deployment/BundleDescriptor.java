@@ -131,6 +131,13 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
     }
 
     /**
+     * @return true if this module is a standalone deployment unit
+     */
+    public boolean isStandalone() {
+        return application.isVirtual();
+    }
+
+    /**
      * The application to which I belong, or none if I am standalone.
      */
     public Application getApplication() {

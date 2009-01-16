@@ -10,6 +10,7 @@ import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.deployment.common.DeploymentProperties;
 import org.xml.sax.SAXParseException;
 import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.util.ApplicationVisitor;
 import com.sun.enterprise.deployment.deploy.shared.DeploymentPlanArchive;
 import com.sun.enterprise.deployment.archivist.Archivist;
@@ -40,7 +41,7 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
     protected ArchiveFactory archiveFactory;
 
     public MetaData getMetaData() {
-        return new MetaData(false, new Class[] { Application.class }, null);
+        return new MetaData(false, new Class[] { Application.class, WebBundleDescriptor.class }, null);
     }
 
     public Application load(DeploymentContext dc) throws IOException {
@@ -73,6 +74,10 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
         // this may not be the best location for this but it will suffice.
         if (deploymentVisitor!=null) {
             deploymentVisitor.accept(application);
+        }
+
+        if (application.isVirtual()) {
+            dc.addModuleMetaData(application.getStandaloneBundleDescriptor());
         }
 
         return application;
