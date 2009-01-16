@@ -70,6 +70,7 @@ import org.apache.catalina.Host;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.core.ContainerBase;
 import org.apache.catalina.util.StringManager;
+import org.glassfish.web.valve.GlassFishValve;
 import com.sun.grizzly.tcp.ActionCode;
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.util.buf.ByteChunk;
@@ -341,7 +342,10 @@ public class CoyoteAdapter
                         host.hasCustomPipeline()) {
                     host.getPipeline().invoke(request, response);
                 } else {
-                    host.getPipeline().getBasic().invoke(request, response);
+                    GlassFishValve hostValve = host.getPipeline().getBasic();
+                    hostValve.invoke(request, response);
+                    // Error handling
+                    hostValve.postInvoke(request, response); 
                 }
             }
         }
