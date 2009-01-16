@@ -613,19 +613,16 @@ public class TimerSchedule implements Serializable {
     private void processRange(String s, BitSet bits,
             int start, int size, boolean useCalendarValue, String field) {
 
+        //System.out.println("==> IN RANGE: " + s);
         String[] arr = splitBy(s, rangeChar);
         int begin = getNumericValue(arr[0], start, size, useCalendarValue, field);
         int end = getNumericValue(arr[1], start, size, useCalendarValue, field);
         if (begin < 0) {
             throw new IllegalArgumentException("Negative range start for " + field + " : " + s);
         }
+        //System.out.println("== IN RANGE from: " + begin + " to " + end);
 
-        if (useCalendarValue && end == Calendar.SUNDAY) {
-            bits.set(end);
-            end = conversionTable.get(size-1);
-        }
-
-        setBitsRange(bits, begin, end, start, size);
+        setBitsRange(bits, begin, end, 0, size, useCalendarValue);
     }
 
     /**
@@ -682,7 +679,7 @@ public class TimerSchedule implements Serializable {
                 throw new IllegalArgumentException("Invalid dayOfMonth range: " + s);
             }
 
-            setBitsRange(daysOfMonth, begin, end, 1, 32);
+            setBitsRange(daysOfMonth, begin, end, 1, 32, false);
 
          } else {
              // Otherwise just remember - we'll process it later
@@ -957,7 +954,7 @@ public class TimerSchedule implements Serializable {
 
             int begin = getDayForDayOfMonth(date, arr[0]);
             int end = getDayForDayOfMonth(date, arr[1]);
-            setBitsRange(bits, begin, end, 1, date.getActualMaximum(Calendar.DAY_OF_MONTH) + 1);
+            setBitsRange(bits, begin, end, 1, date.getActualMaximum(Calendar.DAY_OF_MONTH) + 1, false);
 
         } else {
             //System.out.println("++++++++ getDayForDayOfMonth(" + date.getTime() + " - " + s + " ) "  + getDayForDayOfMonth(date, s));
@@ -968,12 +965,28 @@ public class TimerSchedule implements Serializable {
     /**
      * Set bits on for all values between begin and end (inclusive).
      */
-    private void setBitsRange(BitSet bits, int begin, int end, int start, int size) {
+    private void setBitsRange(BitSet bits, int begin, int end, 
+            int start, int size, boolean useCalendarValue) {
         if (begin <= end) {
-            bits.set(begin, end + 1);
+            if (!useCalendarValue) {
+                bits.set(begin, end + 1);
+            } else {
+                for (int i = begin; i <= end; i++) {
+                    bits.set(conversionTable.get(i));
+                }
+            }
         } else {
-            bits.set(begin, size);
-            bits.set(start, end + 1);
+            if (!useCalendarValue) {
+                bits.set(begin, size);
+                bits.set(start, end + 1);
+            } else {
+                for (int i = begin; i < size; i++) {
+                    bits.set(conversionTable.get(i));
+                }
+                for (int i = start; i <= end; i++) {
+                    bits.set(conversionTable.get(i));
+                }
+            }
         }
     }
 
