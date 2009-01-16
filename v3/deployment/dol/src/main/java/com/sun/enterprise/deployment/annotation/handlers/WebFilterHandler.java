@@ -41,6 +41,7 @@ import com.sun.enterprise.deployment.ServletFilterMappingDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.annotation.context.WebBundleContext;
 import com.sun.enterprise.deployment.annotation.context.WebComponentContext;
+import com.sun.enterprise.deployment.web.ServletFilter;
 import com.sun.enterprise.deployment.web.ServletFilterMapping;
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
@@ -48,28 +49,28 @@ import org.glassfish.apf.HandlerProcessingResult;
 import org.jvnet.hk2.annotations.Service;
 
 import javax.servlet.DispatcherType;
-import javax.servlet.annotation.InitParam;
-import javax.servlet.annotation.ServletFilter;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.annotation.WebInitParam;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.logging.Level;
 
 /**
  * This handler is responsible in handling
- * javax.servlet.annotation.ServletFilter.
+ * javax.servlet.annotation.WebFilter.
  *
  * @author Shing Wai Chan
  */
 @Service
-public class ServletFilterHandler extends AbstractWebHandler {
-    public ServletFilterHandler() {
+public class WebFilterHandler extends AbstractWebHandler {
+    public WebFilterHandler() {
     }
 
     /**
      * @return the annotation type this annotation handler is handling
      */
     public Class<? extends Annotation> getAnnotationType() {
-        return ServletFilter.class;
+        return WebFilter.class;
     }
 
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
@@ -97,19 +98,18 @@ public class ServletFilterHandler extends AbstractWebHandler {
                 localStrings.getLocalString(
                 "enterprise.deployment.annotation.handlers.needtoimpl",
                 "The Class {0} having annotation {1} need to implement the interface {2}.",
-                new Object[] { filterClass.getName(), ServletFilter.class.getName(), javax.servlet.Filter.class.getName() }));
+                new Object[] { filterClass.getName(), WebFilter.class.getName(), javax.servlet.Filter.class.getName() }));
             return getDefaultFailedResult();
         }
 
-        ServletFilter servletFilterAn = (ServletFilter)ainfo.getAnnotation();
-        String filterName = servletFilterAn.filterName();
+        WebFilter webFilterAn = (WebFilter)ainfo.getAnnotation();
+        String filterName = webFilterAn.filterName();
         if (filterName == null || filterName.length() == 0) {
             filterName = filterClass.getName();
         }
 
-        com.sun.enterprise.deployment.web.ServletFilter servletFilterDesc = null;
-        for (com.sun.enterprise.deployment.web.ServletFilter sfDesc :
-                webBundleDesc.getServletFilters()) {
+        ServletFilter servletFilterDesc = null;
+        for (ServletFilter sfDesc : webBundleDesc.getServletFilters()) {
             if (filterName.equals(sfDesc.getName())) {
                 servletFilterDesc = sfDesc;
                 break;
@@ -128,23 +128,23 @@ public class ServletFilterHandler extends AbstractWebHandler {
                     "enterprise.deployment.annotation.handlers.filternamedontmatch",
                     "The filter '{0}' has implementation '{1}' in xml. It does not match with '{2}' from annotation @{3}.",
                     new Object[] { filterName, filterImpl, filterClass.getName(),
-                    ServletFilter.class.getName() }));
+                    WebFilter.class.getName() }));
                 return getDefaultFailedResult();
             }
         }
 
         servletFilterDesc.setClassName(filterClass.getName());
         if (servletFilterDesc.getDescription() == null) {
-            servletFilterDesc.setDescription(servletFilterAn.description());
+            servletFilterDesc.setDescription(webFilterAn.description());
         }
         if (servletFilterDesc.getDisplayName() == null) {
-            servletFilterDesc.setDisplayName(servletFilterAn.displayName());
+            servletFilterDesc.setDisplayName(webFilterAn.displayName());
         }
 
         if (servletFilterDesc.getInitializationParameters().size() == 0) {
-            InitParam[] initParams = servletFilterAn.initParams();
+            WebInitParam[] initParams = webFilterAn.initParams();
             if (initParams != null && initParams.length > 0) {
-                for (InitParam initParam : initParams) {
+                for (WebInitParam initParam : initParams) {
                     servletFilterDesc.addInitializationParameter(
                         new EnvironmentProperty(
                             initParam.name(), initParam.value(),
@@ -154,17 +154,17 @@ public class ServletFilterHandler extends AbstractWebHandler {
         }
 
         if (servletFilterDesc.getSmallIconUri() == null) {
-            servletFilterDesc.setSmallIconUri(servletFilterAn.smallIcon());
+            servletFilterDesc.setSmallIconUri(webFilterAn.smallIcon());
         }
         if (servletFilterDesc.getLargeIconUri() == null) {
-            servletFilterDesc.setLargeIconUri(servletFilterAn.largeIcon());
+            servletFilterDesc.setLargeIconUri(webFilterAn.largeIcon());
         }
 
         if (servletFilterDesc.isAsyncSupported() == null) {
-            servletFilterDesc.setAsyncSupported(servletFilterAn.asyncSupported());
+            servletFilterDesc.setAsyncSupported(webFilterAn.asyncSupported());
         }
         if (servletFilterDesc.getAsyncTimeout() == null) {
-            servletFilterDesc.setAsyncTimeout(servletFilterAn.asyncTimeout());
+            servletFilterDesc.setAsyncTimeout(webFilterAn.asyncTimeout());
         }
 
         ServletFilterMapping servletFilterMappingDesc = null;
@@ -181,9 +181,9 @@ public class ServletFilterHandler extends AbstractWebHandler {
         }
 
         if (servletFilterMappingDesc.getURLPatterns().size() == 0) {
-            String[] urlPatterns = servletFilterAn.urlPatterns();
+            String[] urlPatterns = webFilterAn.urlPatterns();
             if (urlPatterns == null || urlPatterns.length == 0) {
-                urlPatterns = servletFilterAn.value();
+                urlPatterns = webFilterAn.value();
             }
 
             boolean validUrlPatterns = false;
@@ -209,7 +209,7 @@ public class ServletFilterHandler extends AbstractWebHandler {
         }
 
         if (servletFilterMappingDesc.getServletNames().size() == 0) {
-            String[] servletNames = servletFilterAn.servletNames();
+            String[] servletNames = webFilterAn.servletNames();
             if (servletNames != null && servletNames.length > 0) {
                 for (String sn : servletNames) {
                     servletFilterMappingDesc.addServletName(sn);
@@ -218,7 +218,7 @@ public class ServletFilterHandler extends AbstractWebHandler {
         }
 
         if (servletFilterMappingDesc.getDispatchers().size() == 0) {
-            DispatcherType[] dispatcherTypes = servletFilterAn.dispatcherTypes();
+            DispatcherType[] dispatcherTypes = webFilterAn.dispatcherTypes();
                 if (dispatcherTypes != null && dispatcherTypes.length > 0) {
                 for (DispatcherType dType : dispatcherTypes) {
                     servletFilterMappingDesc.addDispatcher(dType.name());

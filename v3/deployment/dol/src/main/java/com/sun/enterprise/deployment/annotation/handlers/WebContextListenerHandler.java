@@ -45,26 +45,26 @@ import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
 import org.jvnet.hk2.annotations.Service;
 
-import javax.servlet.annotation.WebServletContextListener;
+import javax.servlet.annotation.WebContextListener;
 import java.lang.annotation.Annotation;
 import java.util.logging.Level;
 
 /**
  * This handler is responsible in handling
- * javax.servlet.annotation.WebServletContextListener.
+ * javax.servlet.annotation.WebContextListener.
  *
  * @author Shing Wai Chan
  */
 @Service
-public class WebServletContextListenerHandler extends AbstractWebHandler {
-    public WebServletContextListenerHandler() {
+public class WebContextListenerHandler extends AbstractWebHandler {
+    public WebContextListenerHandler() {
     }
 
     /**
      * @return the annotation type this annotation handler is handling
      */
     public Class<? extends Annotation> getAnnotationType() {
-        return WebServletContextListener.class;
+        return WebContextListener.class;
     }
 
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
@@ -92,14 +92,14 @@ public class WebServletContextListenerHandler extends AbstractWebHandler {
                 localStrings.getLocalString(
                 "enterprise.deployment.annotation.handlers.needtoimpl",
                 "The Class {0} having annotation {1} need to implement the interface {2}.",
-                new Object[] { listenerClass.getName(), WebServletContextListener.class.getName(), javax.servlet.ServletContextListener.class.getName() }));
+                new Object[] { listenerClass.getName(), WebContextListener.class.getName(), javax.servlet.ServletContextListener.class.getName() }));
             return getDefaultFailedResult();
         }
 
-        WebServletContextListener wsclAn = (WebServletContextListener)ainfo.getAnnotation();
+        WebContextListener wclAn = (WebContextListener)ainfo.getAnnotation();
         AppListenerDescriptor appListener =
             new AppListenerDescriptorImpl(listenerClass.getName());
-        appListener.setDescription(wsclAn.description());
+        appListener.setDescription(wclAn.description());
         webBundleDesc.addAppListenerDescriptor(appListener);
         return getDefaultProcessedResult();
     }

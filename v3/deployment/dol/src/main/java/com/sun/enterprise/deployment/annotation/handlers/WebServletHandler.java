@@ -45,7 +45,7 @@ import org.glassfish.apf.HandlerProcessingResult;
 import org.glassfish.apf.ResultType;
 import org.jvnet.hk2.annotations.Service;
 
-import javax.servlet.annotation.InitParam;
+import javax.servlet.annotation.WebInitParam;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import java.lang.annotation.Annotation;
@@ -181,9 +181,9 @@ public class WebServletHandler extends AbstractWebHandler {
             webCompDesc.setLoadOnStartUp(webServletAn.loadOnStartup());
         }
 
-        InitParam[] initParams = webServletAn.initParams();
+        WebInitParam[] initParams = webServletAn.initParams();
         if (initParams != null && initParams.length > 0) {
-            for (InitParam initParam : initParams) {
+            for (WebInitParam initParam : initParams) {
                 webCompDesc.addInitializationParameter(
                         new EnvironmentProperty(
                             initParam.name(), initParam.value(),
