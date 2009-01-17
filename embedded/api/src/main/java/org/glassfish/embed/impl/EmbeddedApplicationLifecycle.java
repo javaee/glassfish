@@ -44,6 +44,7 @@
 package org.glassfish.embed.impl;
 
 import java.util.LinkedList;
+import java.util.Collection;
 
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.container.Sniffer;
@@ -83,7 +84,7 @@ public class EmbeddedApplicationLifecycle extends ApplicationLifecycle {
 
     @Override
     public LinkedList<EngineInfo> setupContainerInfos(
-            Iterable<Sniffer> sniffers, DeploymentContext context,
+            Collection<Sniffer> sniffers, DeploymentContext context,
             ActionReport report) throws Exception {
             
         LinkedList<EngineInfo> result = super.setupContainerInfos(sniffers, context, report);

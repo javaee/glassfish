@@ -867,6 +867,27 @@ public class Application extends RootDeploymentDescriptor
         return null;
     }
 
+
+    /**
+     * Lookup module by uri.
+     *
+     * @param uri the module path in the application archive
+     * @return a bundle descriptor in this application identified by uri
+     *         or null if not found.
+     */
+    public Collection<ModuleDescriptor<BundleDescriptor>> getModuleDescriptorsByType(XModuleType type) {
+        if (type==null) {
+            throw new IllegalArgumentException("type cannot be null");
+        }
+        LinkedList<ModuleDescriptor<BundleDescriptor>> results = new LinkedList<ModuleDescriptor<BundleDescriptor>>();
+        for (ModuleDescriptor<BundleDescriptor> aModule : getModules()) {
+            if (type.equals(aModule.getModuleType())) {
+                results.add(aModule);
+            }
+        }
+        return results;
+    }
+
     /**
      * Lookup module by uri.
      *

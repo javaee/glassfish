@@ -1,3 +1,38 @@
+/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License. You can obtain
+ * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * Sun designates this particular file as subject to the "Classpath" exception
+ * as provided by Sun in the GPL Version 2 section of the License file that
+ * accompanied this code.  If applicable, add the following below the License
+ * Header, with the fields enclosed by brackets [] replaced by your own
+ * identifying information: "Portions Copyrighted [year]
+ * [name of copyright owner]"
+ *
+ * Contributor(s):
+ *
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
 package org.glassfish.javaee.core.deployment;
 
 import org.glassfish.api.deployment.Deployer;
@@ -12,10 +47,7 @@ import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
-import org.glassfish.internal.data.EngineInfo;
-import org.glassfish.internal.data.ModuleInfo;
-import org.glassfish.internal.data.ApplicationRegistry;
-import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.internal.data.*;
 import org.glassfish.deployment.common.DeploymentContextImpl;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
@@ -24,6 +56,7 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
+import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.logging.LogDomains;
 
 import java.util.*;
@@ -53,7 +86,6 @@ public class EarDeployer implements Deployer {
     @Inject
     ApplicationRegistry appRegistry;
 
-    Collection<Sniffer> sniffers;
 
     final static Logger logger = LogDomains.getLogger(EarDeployer.class, LogDomains.DPL_LOGGER);
     
@@ -69,20 +101,21 @@ public class EarDeployer implements Deployer {
 
         Application application = context.getModuleMetaData(Application.class);
 
+        final String appName = context.getCommandParameters().getProperty(
+            ParameterNames.NAME);
+        
+        final ApplicationInfo appInfo = new CompositeApplicationInfo(context.getSource(), appName);
+
         final Map<ModuleDescriptor, ExtendedDeploymentContext> contextPerModules =
                 this.initSubContext(application, context);
 
-        final Map<BundleDescriptor, Collection<EngineInfo>> containersPerBundle =
-                new HashMap<BundleDescriptor, Collection<EngineInfo>>();
-
         context.getProps().put("SUB_CONTEXTS", contextPerModules);
 
-        final LinkedList<ModuleInfo> modules = new LinkedList<ModuleInfo>();
         try {
             doOnAllBundles(application, new BundleBlock<ModuleInfo>() {
-                public ModuleInfo doBundle(BundleDescriptor bundle) throws Exception {
-                    ModuleInfo info = prepareBundle(bundle, contextPerModules.get(bundle.getModuleDescriptor()));
-                    modules.add(info);
+                public ModuleInfo doBundle(ModuleDescriptor bundle) throws Exception {
+                    ModuleInfo info = prepareBundle(bundle, contextPerModules.get(bundle));
+                    appInfo.addModule(info);
                     return info;
                 }
 
@@ -90,47 +123,79 @@ public class EarDeployer implements Deployer {
         } catch(Exception e) {
 
         }
-        final String appName = context.getCommandParameters().getProperty(
-                    ParameterNames.NAME);
-        final ApplicationInfo appInfo = new ApplicationInfo(context.getSource(), appName, modules);
 
-        appRegistry.add(appName, appInfo);
-        context.getProps().put("CONTAINERS_PER_BUNDLE", containersPerBundle);
+
 
         return true;
     }
 
+
+    private class CompositeApplicationInfo extends ApplicationInfo {
+        private CompositeApplicationInfo(ReadableArchive source, String name) {
+            super(source, name);            
+        }
+
+        @Override
+        public void load(ExtendedDeploymentContext context, ActionReport report, ProgressTracker tracker) throws Exception {
+
+            Application application = context.getModuleMetaData(Application.class);
+            final Map<ModuleDescriptor, ExtendedDeploymentContext> contextPerModules =
+                    initSubContext(application, context);
+            
+            for (ModuleInfo module : super.getModuleInfos()) {
+                final ModuleDescriptor md = application.getModuleDescriptorByUri(module.getName());
+                module.load(contextPerModules.get(md), report, tracker);
+            }
+        }
+
+        @Override
+        public void start(DeploymentContext context, ActionReport report, ProgressTracker tracker) throws Exception {
+
+            Application application = context.getModuleMetaData(Application.class);
+            final Map<ModuleDescriptor, ExtendedDeploymentContext> contextPerModules =
+                    initSubContext(application, context);
+
+            for (ModuleInfo module : super.getModuleInfos()) {
+                final ModuleDescriptor md = application.getModuleDescriptorByUri(module.getName());
+                module.start(contextPerModules.get(md), report, tracker);
+            }
+        }
+    }
+
+    
+    private Collection<ModuleDescriptor<BundleDescriptor>>
+                doOnAllTypedBundles(Application application, XModuleType type, BundleBlock runnable)
+                    throws Exception {
+
+        final Collection<ModuleDescriptor<BundleDescriptor>> typedBundles = application.getModuleDescriptorsByType(type);
+        for (ModuleDescriptor module : typedBundles) {
+            runnable.doBundle(module);
+        }
+        return typedBundles;
+    }
+
     private void doOnAllBundles(Application application, BundleBlock runnable) throws Exception {
 
-        Collection<BundleDescriptor> bundles = new HashSet<BundleDescriptor>();
-        bundles.addAll(application.getBundleDescriptors());
-        
+        Collection<ModuleDescriptor> bundles = new HashSet<ModuleDescriptor>();
+        bundles.addAll(application.getModules());
+
         // first we take care of the connectors
-        for (ConnectorDescriptor connector : application.getBundleDescriptors(ConnectorDescriptor.class)) {
-            bundles.remove(connector);
-            runnable.doBundle(connector);
-        }
+        bundles.removeAll(doOnAllTypedBundles(application, XModuleType.RAR, runnable));
 
         // now the EJBs
-        for (EjbBundleDescriptor ejbBundle : application.getBundleDescriptors(EjbBundleDescriptor.class)) {
-            bundles.remove(ejbBundle);
-            runnable.doBundle(ejbBundle);
-        }
+        bundles.removeAll(doOnAllTypedBundles(application, XModuleType.EJB, runnable));
 
         // finally the war files.
-        for (final WebBundleDescriptor webBundle : application.getBundleDescriptors(WebBundleDescriptor.class)) {
-            bundles.remove(webBundle);
-            runnable.doBundle(webBundle);
-        }
+        bundles.removeAll(doOnAllTypedBundles(application, XModuleType.WAR, runnable));
 
         // now ther remaining bundles
-        for (final BundleDescriptor bundle : bundles) {
+        for (final ModuleDescriptor bundle : bundles) {
             runnable.doBundle(bundle);
         }
         
     }
 
-    private ModuleInfo prepareBundle(final BundleDescriptor bundle, final ExtendedDeploymentContext bundleContext)
+    private ModuleInfo prepareBundle(final ModuleDescriptor md, final ExtendedDeploymentContext bundleContext)
         throws Exception {
 
         LinkedList<EngineInfo> orderedContainers = null;
@@ -139,34 +204,16 @@ public class EarDeployer implements Deployer {
 
         try {
             // let's get the list of containers interested in this module
-            orderedContainers = deployment.setupContainerInfos(sniffers, bundleContext, report);
+            orderedContainers = deployment.setupContainerInfos(bundleContext, report);
         } catch(Exception e) {
             e.printStackTrace();
         }
-        return deployment.prepareModule(orderedContainers, bundle.getName(), bundleContext, report, null);
+        return deployment.prepareModule(orderedContainers, md.getName(), bundleContext, report, null);
     }
 
     public ApplicationContainer load(Container container, DeploymentContext context) {
 
-        Application application = context.getModuleMetaData(Application.class);
-        
-        final Map<ModuleDescriptor, ExtendedDeploymentContext> contextPerModules =
-                (Map<ModuleDescriptor, ExtendedDeploymentContext>)
-                    context.getProps().get("SUB_CONTEXTS");
-
-        final Map<BundleDescriptor, Collection<EngineInfo>> containersPerBundle =
-                (Map<BundleDescriptor, Collection<EngineInfo>>)
-                    context.getProps().get("CONTAINERS_PER_BUNDLE");
-
-       /* doOnAllBundles(application, new BundleBlock<Collection<EngineInfo>>() {
-            public Collection<EngineInfo> doBundle(BundleDescriptor bundle) {
-                containersPerBundle.put(bundle,
-                        loadBundle(bundle, contextPerModules.get(bundle.getModuleDescriptor())));
-                return null;
-            }
-        });        
-
-         */
+        // this will never be called.
         return null;
     }
 
@@ -180,7 +227,7 @@ public class EarDeployer implements Deployer {
 
     private interface BundleBlock<T> {
 
-        public T doBundle(BundleDescriptor bundle) throws Exception;
+        public T doBundle(ModuleDescriptor bundle) throws Exception;
     }
 
     public Map<ModuleDescriptor, ExtendedDeploymentContext> initSubContext(final Application application, final DeploymentContext context) {

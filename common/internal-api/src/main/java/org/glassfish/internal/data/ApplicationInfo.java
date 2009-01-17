@@ -27,12 +27,14 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.*;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.container.Container;
+import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.annotations.Service;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -51,13 +53,12 @@ import com.sun.enterprise.config.serverbeans.Module;
  *
  * @author Jerome Dochez
  */
+@Service
 public class ApplicationInfo {
 
     final static private Logger logger = LogDomains.getLogger(ApplicationInfo.class, LogDomains.CORE_LOGGER);
 
-
-
-    final private Collection<ModuleInfo> modules;
+    final private Collection<ModuleInfo> modules = new LinkedList<ModuleInfo>();
     final private String name;
     final private ReadableArchive source;
 
@@ -67,13 +68,11 @@ public class ApplicationInfo {
      *
      * @param source the archive for this application
      * @param name name of the application
-     * @param modules the modules that are forming the application
      */
     public ApplicationInfo(ReadableArchive source,
-                           String name, Collection<ModuleInfo> modules) {
+                           String name) {
         this.name = name;
         this.source = source;
-        this.modules = modules;
     }
     
 
@@ -227,4 +226,7 @@ public class ApplicationInfo {
         }        
     }
 
+    public void addModule(ModuleInfo info) {
+        modules.add(info);
+    }
 }

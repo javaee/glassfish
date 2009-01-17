@@ -33,61 +33,34 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.internal.deployment;
 
-import org.glassfish.api.deployment.DeploymentContext;
+package org.glassfish.javaee.core.deployment;
+
 import org.glassfish.api.deployment.archive.ArchiveHandler;
-import org.glassfish.internal.api.ClassLoaderHierarchy;
-import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.deployment.common.DeploymentUtils;
+import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
 
-import java.lang.instrument.ClassFileTransformer;
-import java.util.List;
-import java.net.URISyntaxException;
-import java.net.MalformedURLException;
+import java.io.IOException;
 
 /**
- * semi-private interface to the deployment context
- *
- * @author Jerome Dochez
+ * Created by IntelliJ IDEA.
+ * User: dochez
+ * Date: Jan 16, 2009
+ * Time: 3:33:40 PM
+ * To change this template use File | Settings | File Templates.
  */
-public interface ExtendedDeploymentContext extends DeploymentContext {
-    
-    public enum Phase { UNKNOWN, PREPARE, LOAD, START, STOP, UNLOAD, CLEAN };
+public class EarHandler extends AbstractArchiveHandler implements ArchiveHandler {
 
+    public String getArchiveType() {
+        return "ear";
+    }
 
-    /**
-     * Sets the phase of the deployment activity.
-     * 
-     * @param newPhase
-     */
-    public void setPhase(Phase newPhase);
+    public boolean handles(ReadableArchive archive) throws IOException {
+        return DeploymentUtils.isEAR(archive);
+    }
 
-    /**
-     * Returns the final class loader that will be used to load the application
-     * bits in their associated runtime container.
-     *
-     * @return final class loader
-     */
-    public ClassLoader getFinalClassLoader();
-
-    /**
-     * Returns the list of transformers registered to this context.
-     *
-     * @return the transformers list
-     */
-    public List<ClassFileTransformer> getTransformers();
-
-    /**
-     * Create the class loaders for the application pointed by the getSource()
-     *
-     * @param clh the hierarchy of class loader for the parent
-     * @param handler the archive handler for the source archive
-     */
-    public void createClassLoaders(ClassLoaderHierarchy clh, ArchiveHandler handler)
-            throws URISyntaxException, MalformedURLException;
-
-    public void setApplicationInfo(ApplicationInfo appInfo);
-    public ApplicationInfo getApplicationInfo();
-
-    public void clean();
+    public ClassLoader getClassLoader(ClassLoader parent, ReadableArchive archive) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

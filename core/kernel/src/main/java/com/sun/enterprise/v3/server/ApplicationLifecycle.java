@@ -180,14 +180,7 @@ public class ApplicationLifecycle implements Deployment {
             final ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
             try {
                 Thread.currentThread().setContextClassLoader(cloader);
-                if (sniffers==null) {
-                    sniffers = snifferManager.getSniffers(context.getSource(), cloader);
-                }
-                if (sniffers.size()==0) {
-                    report.failure(logger,localStrings.getLocalString("deploy.unknownmoduletpe","Module type not recognized"));
-                    return null;
-                }
-
+                
                 // containers that are started are not stopped even if the deployment fail, the main reason
                 // is that some container do not support to be restarted.
                 LinkedList<EngineInfo> sortedEngineInfos =
@@ -203,6 +196,7 @@ public class ApplicationLifecycle implements Deployment {
 
                 ApplicationInfo appInfo = appRegistry.get(appName);
                 if (appInfo==null) {
+
                     // this is a first time deployment as opposed as load following an unload event,
                     // we need to create the application info
                     ModuleInfo moduleInfo = null;
@@ -214,11 +208,17 @@ public class ApplicationLifecycle implements Deployment {
                         return null;
                     }
 
+                    // the deployer did not take care of populating the application info, this
+                    // is not a composite module.
+                    appInfo=context.getModuleMetaData(ApplicationInfo.class);
+                    if (appInfo==null) {
+                        appInfo = new ApplicationInfo(context.getSource(), appName);
+                        appInfo.addModule(moduleInfo);
+                    }
 
-                    Collection<ModuleInfo> infos = new ArrayList<ModuleInfo>();
-                    infos.add(moduleInfo);
-                    appInfo = new ApplicationInfo(context.getSource(), appName, infos);
                     appRegistry.add(appName, appInfo);
+                } else {
+                    context.addModuleMetaData(appInfo);                    
                 }
 
                 // now were falling back into the mainstream loading/starting sequence, at this
@@ -284,10 +284,25 @@ public class ApplicationLifecycle implements Deployment {
         return isSuccess;
     }
 
+    public LinkedList<EngineInfo> setupContainerInfos(DeploymentContext context, ActionReport report)
+        throws Exception {
+
+        return setupContainerInfos(null, context, report);
+    }
+
     // set up containers and prepare the sorted ModuleInfos
     public LinkedList<EngineInfo> setupContainerInfos(
-            Iterable<Sniffer> sniffers, DeploymentContext context,
+            Collection<Sniffer> sniffers, DeploymentContext context,
             ActionReport report) throws Exception {
+
+        if (sniffers==null) {
+            sniffers = snifferManager.getSniffers(context.getSource(), context.getClassLoader());
+            if (sniffers.size()==0) {
+                report.failure(logger,localStrings.getLocalString("deploy.unknownmoduletpe","Module type not recognized"));
+                return null;
+            }
+
+        }
 
         Map<Deployer, EngineInfo> containerInfosByDeployers = new HashMap<Deployer, EngineInfo>();
 
