@@ -43,7 +43,7 @@
        <relativePath>../pom.xml</relativePath>
        <groupId>org.glassfish.distributions</groupId>
        <artifactId>distributions</artifactId>
-       <version>3.0-Prelude-SNAPSHOT</version>
+       <version>3.0-Prelude-Embedded-SNAPSHOT</version>
    </parent>
 
    <artifactId>nucleus</artifactId>

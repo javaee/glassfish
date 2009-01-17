@@ -50,7 +50,7 @@
         <dependency>
             <groupId>org.glassfish.embedded</groupId>
             <artifactId>glassfish-embedded-all</artifactId>
-            <version>3.0-Prelude-SNAPSHOT</version>
+            <version>3.0-Prelude-Embedded-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

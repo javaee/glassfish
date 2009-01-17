@@ -41,7 +41,7 @@
     <parent>
         <groupId>org.glassfish.packager</groupId>
         <artifactId>packages</artifactId>
-        <version>3.0-Prelude-SNAPSHOT</version>
+        <version>3.0-Prelude-Embedded-SNAPSHOT</version>
     </parent>
     <artifactId>glassfish-grizzly</artifactId>
     <name>Glassfish Grizzly Package</name>

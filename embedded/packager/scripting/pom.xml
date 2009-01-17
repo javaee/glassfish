@@ -40,12 +40,12 @@
   <parent>
     <groupId>org.glassfish.embedded</groupId>
     <artifactId>embedded-packager</artifactId>
-    <version>3.0-Prelude-SNAPSHOT</version>
+    <version>3.0-Prelude-Embedded-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>glassfish-embedded-scripting</artifactId>
-  <version>3.0-Prelude-SNAPSHOT</version>
+  <version>3.0-Prelude-Embedded-SNAPSHOT</version>
   <name>Embedded GlassFish Scripting</name>
       <packaging>jar</packaging>
 

@@ -48,7 +48,7 @@
     <groupId>org.glassfish</groupId>
     <artifactId>glassfish-parent</artifactId>
     <packaging>pom</packaging>
-    <version>3.0-Prelude-SNAPSHOT</version>
+    <version>3.0-Prelude-Embedded-SNAPSHOT</version>
     <name>GlassFish Parent Project</name>
     <scm>
         <connection>https://svn.dev.java.net/svn/glassfish-svn/branches/v3_prelude_release</connection>
