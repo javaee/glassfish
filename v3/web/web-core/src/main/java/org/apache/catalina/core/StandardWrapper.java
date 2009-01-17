@@ -313,6 +313,19 @@ public class StandardWrapper
                                                          ServletRequest.class,
                                                          ServletResponse.class};
 
+    /*
+     * true if this wrapper was initialized with a servlet instance
+     * (as opposed to a servlet class), false otherwise
+     */
+    private boolean isSetServletCalled = false;
+
+    /*
+     * true if this wrapper was initialized with a servlet class
+     * (as opposed to a servlet instance), false otherwise
+     */
+    private boolean isSetServletClassCalled = false;
+
+
     // ------------------------------------------------------------- Properties
 
 
@@ -368,9 +381,7 @@ public class StandardWrapper
      * Return the debugging detail level for this component.
      */
     public int getDebug() {
-
         return (this.debug);
-
     }
 
 
@@ -380,12 +391,10 @@ public class StandardWrapper
      * @param debug The new debugging detail level
      */
     public void setDebug(int debug) {
-
         int oldDebug = this.debug;
         this.debug = debug;
         support.firePropertyChange("debug", oldDebug,
                 (long) this.debug);
-
     }
 
 
@@ -400,9 +409,7 @@ public class StandardWrapper
      * <code>&lt;description&gt;/&lt;version&gt;</code>.
      */
     public String getInfo() {
-
         return (info);
-
     }
 
 
@@ -410,9 +417,7 @@ public class StandardWrapper
      * Return the InstanceSupport object for this Wrapper instance.
      */
     public InstanceSupport getInstanceSupport() {
-
         return (this.instanceSupport);
-
     }
 
 
@@ -420,9 +425,7 @@ public class StandardWrapper
      * Return the context-relative URI of the JSP file for this servlet.
      */
     public String getJspFile() {
-
         return (this.jspFile);
-
     }
 
 
@@ -524,9 +527,7 @@ public class StandardWrapper
      * thread model servlet is used.
      */
     public int getMaxInstances() {
-
         return (this.maxInstances);
-
     }
 
 
@@ -537,12 +538,10 @@ public class StandardWrapper
      * @param maxInstances New value of maxInstances
      */
     public void setMaxInstances(int maxInstances) {
-
         int oldMaxInstances = this.maxInstances;
         this.maxInstances = maxInstances;
         support.firePropertyChange("maxInstances", oldMaxInstances,
                                    this.maxInstances);
-
     }
 
 
@@ -552,7 +551,6 @@ public class StandardWrapper
      * @param container Proposed parent Container
      */
     public void setParent(Container container) {
-
         if ((container != null) &&
             !(container instanceof Context))
             throw new IllegalArgumentException
@@ -562,7 +560,6 @@ public class StandardWrapper
                 ((StandardContext)container).isNotifyContainerListeners();
         }
         super.setParent(container);
-
     }
 
 
@@ -570,9 +567,7 @@ public class StandardWrapper
      * Return the run-as identity for this servlet.
      */
     public String getRunAs() {
-
         return (this.runAs);
-
     }
 
 
@@ -582,11 +577,9 @@ public class StandardWrapper
      * @param runAs New run-as identity value
      */
     public void setRunAs(String runAs) {
-
         String oldRunAs = this.runAs;
         this.runAs = runAs;
         support.firePropertyChange("runAs", oldRunAs, this.runAs);
-
     }
 
 
@@ -641,9 +634,7 @@ public class StandardWrapper
      * Return the fully qualified servlet class name for this servlet.
      */
     public String getServletClass() {
-
         return (this.servletClass);
-
     }
 
 
@@ -653,7 +644,11 @@ public class StandardWrapper
      * @param servletClass Servlet class name
      */
     public void setServletClass(String servletClass) {
-
+        if (isSetServletCalled) {
+            throw new IllegalStateException(
+                "Wrapper already initialized with servlet instance");
+        }
+        isSetServletClassCalled = true;
         String oldServletClass = this.servletClass;
         this.servletClass = servletClass;
         support.firePropertyChange("servletClass", oldServletClass,
@@ -663,6 +658,27 @@ public class StandardWrapper
         }
     }
 
+
+    /**
+     * Sets and initializes the servlet instance for this wrapper.
+     *
+     * @param instance the servlet instance
+     *
+     * @throws ServletException if the servlet fails to be initialized
+     */
+    public void setServlet(Servlet instance) throws ServletException {
+        if (instance == null) {
+            throw new IllegalArgumentException("Null servlet instance");
+        }
+        if (isSetServletClassCalled) {
+            throw new IllegalStateException(
+                "Wrapper already initialized with servlet class");
+        }
+        isSetServletCalled = true;
+        this.instance = instance;
+        servletClass = instance.getClass().getName();
+        instance.init(facade);
+    }
 
 
     /**
@@ -674,9 +690,7 @@ public class StandardWrapper
      * @param name The new name of this servlet
      */
     public void setServletName(String name) {
-
         setName(name);
-
     }
 
 
@@ -685,14 +699,12 @@ public class StandardWrapper
      * component implements the <code>SingleThreadModel</code> interface.
      */
     public boolean isSingleThreadModel() {
-
         try {
             loadServlet();
         } catch (Throwable t) {
             ;
         }
         return (singleThreadModel);
-
     }
 
 
@@ -700,7 +712,6 @@ public class StandardWrapper
      * Is this servlet currently unavailable?
      */
     public boolean isUnavailable() {
-
         if (available == 0L)
             return (false);
         else if (available <= System.currentTimeMillis()) {
@@ -752,7 +763,6 @@ public class StandardWrapper
 
         String[] methodNames = new String[allow.size()];
         return allow.toArray(methodNames);
-
     }
 
 

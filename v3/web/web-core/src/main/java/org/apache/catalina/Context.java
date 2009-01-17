@@ -58,7 +58,7 @@
 package org.apache.catalina;
 
 
-import javax.servlet.ServletContext;
+import javax.servlet.*;
 
 import com.sun.grizzly.util.http.mapper.Mapper;
 
@@ -694,6 +694,18 @@ public interface Context extends Container {
      * will have been called, but no properties will have been set.
      */
     Wrapper createWrapper();
+
+
+    /**
+     * Adds the given servlet instance with the given name to this servlet
+     * context and initializes it.
+     *
+     * @param servletName the servlet name
+     * @param servlet the servlet instance
+     *
+     * @throws ServletException if the servlet fails to be initialized
+     */
+    public void addServlet(String servletName, Servlet instance) throws ServletException;
 
 
     /**

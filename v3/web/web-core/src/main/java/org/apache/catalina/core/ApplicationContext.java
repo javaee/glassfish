@@ -1001,7 +1001,7 @@ public class ApplicationContext
      */
     public void addServletMapping(String servletName,
                                   String... urlPatterns) {
-        context.addServletMapping(servletName, urlPatterns);
+        context.addServletMappings(servletName, urlPatterns);
     }
 
 
