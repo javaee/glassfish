@@ -87,7 +87,6 @@
     </mailingLists>
 
     <properties>
-    	<maven.repo.local>${basedir}/.m2/repository</maven.repo.local>
         <ant.version>1.7.0</ant.version>
         <javaee-api.version>6.0-alpha-1</javaee-api.version>
         <activation-api.version>1.1.1</activation-api.version>
@@ -216,6 +215,82 @@
       	        <module>build</module>
             </modules>
         </profile>
+
+        <profile>
+            <!--
+	        RE profile for release purposes.
+            -->
+            <id>release-phase2</id>
+            <modules>
+                <module>javaee-api</module>
+              	<module>common</module>
+              	<module>deployment</module>
+              	<module>admin</module>
+              	<module>core</module>
+              	<module>transaction</module>
+              	<module>web</module>
+                <module>ejb</module>
+              	<module>connectors</module>
+              	<module>jdbc</module>
+              	<module>persistence</module>
+              	<module>extras</module>
+                <module>admingui</module>
+              	<module>distributions</module>
+                <module>security</module>
+                <module>registration</module>
+                <module>tests</module>
+                <module>osgi-platforms</module>
+                <module>flashlight</module>
+                <module>embedded</module>
+                <module>webservices</module>
+                <module>packager</module>
+                <module>distributions-ips</module>
+                <module>installer</module>
+		<module>sun-glassfish</module>
+		<module>sun-glassfish/packager</module>
+		<module>sun-glassfish/distributions</module>
+                <module>sun-glassfish/installer</module>
+            </modules>
+       </profile>
+
+       <profile>
+            <!--
+	        RE profile for release purposes.
+            -->
+            <id>release-phase-all</id>
+            <modules>
+	        <module>build</module>
+                <module>javaee-api</module>
+              	<module>common</module>
+              	<module>deployment</module>
+              	<module>admin</module>
+              	<module>core</module>
+              	<module>transaction</module>
+              	<module>web</module>
+                <module>ejb</module>
+              	<module>connectors</module>
+              	<module>jdbc</module>
+              	<module>persistence</module>
+              	<module>extras</module>
+                <module>admingui</module>
+              	<module>distributions</module>
+                <module>security</module>
+                <module>registration</module>
+                <module>tests</module>
+                <module>osgi-platforms</module>
+                <module>flashlight</module>
+                <module>embedded</module>
+                <module>webservices</module>
+                <module>packager</module>
+                <module>distributions-ips</module>
+                <module>installer</module>
+		<module>sun-glassfish</module>
+		<module>sun-glassfish/packager</module>
+		<module>sun-glassfish/distributions</module>
+		<module>sun-glassfish/installer</module>
+            </modules>
+        </profile>
+
     </profiles>
     <repositories>
         <!-- first hits nexus repo for any artifact request, then falls to the next repo in the list / order -->
@@ -285,6 +360,15 @@
                     <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
                     <artifactId>maven-antrun-extended-plugin</artifactId>
                     <version> 1.36 </version>
+		    <dependencies>
+        	        <dependency>
+                 	    <groupId>sun.jdk</groupId>
+                 	    <artifactId>tools</artifactId>
+                 	    <version>1.6</version>
+                 	    <scope>system</scope>
+                 	    <systemPath>${java.home}/../lib/tools.jar</systemPath>
+             	        </dependency>
+		    </dependencies>
                 </plugin>
 
                  <plugin>
@@ -345,6 +429,18 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version> 2.4.3 </version>
                 </plugin>
+
+		<!-- 
+		     Get the latest version of release plugin.
+		     There is a bug in 2.0-beta-7 where the releaseVersion
+		     and developmentVersion properties are noop.
+		-->
+                <plugin>
+                   <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>RELEASE</version>
+                </plugin>
+
              </plugins>
         </pluginManagement>
         <!--    End: Parent Plugin Management Section    -->

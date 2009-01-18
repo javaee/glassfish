@@ -70,7 +70,7 @@
     </developers>
 
     <packaging>pom</packaging>
-    <groupId>org.glassfish.distributions</groupId>
+    <groupId>org.glassfish.distributions-ips</groupId>
     <artifactId>distributions</artifactId>
     <name>Glassfish distributions</name>
 

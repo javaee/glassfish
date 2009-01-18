@@ -24,7 +24,7 @@
     <property name="uc.stage.dir" value="${basedir}/target/uc" />
     <property name="tmp.dir" value="${basedir}/target/tmp" />
     <property name="resources.dir" value="${basedir}/src/main/resources" />
-    <property name="gf.zip.dir" value="${basedir}/../distributions-prelude/glassfish/target" />
+    <property name="gf.zip.dir" value="${basedir}/../distributions-ips/glassfish/target" />
     <property name="javaresources.dir" value="${basedir}/src/main/java/org/openinstaller/resource" />
       
     <!-- all -->
