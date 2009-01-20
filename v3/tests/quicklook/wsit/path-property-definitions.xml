@@ -39,34 +39,6 @@
         </or>
     </condition>
 
-    <!--
-        Verify that one of the two supported containers is identified
-        for use.  If these are not set correctly lib.home and deploy.dir
-        will not be correct and all elements that use them will not be correct.
-    -->
-    <fail message="Web container not identified. Require AS_HOME or CATALINA_HOME be set" >
-        <condition >
-            <and>
-                <not>
-                    <isset property="as.home"/>
-                </not>
-                <not>
-                    <isset property="catalina.home"/>
-                </not>
-            </and>
-        </condition>
-    </fail>
-    <fail message="Two Web containers identified. Only one allowed AS_HOME or CATALINA_HOME" >
-        <condition>
-            <and>
-                <isset property="as.home"/>
-                <isset property="catalina.home"/>
-                <not>
-                    <isset property="use.tomcat"/>
-                </not>
-            </and>
-        </condition>
-    </fail>
 
     <condition property="lib.home" value="${catalina.home}/shared/lib" else="${as.home}/lib">
         <isset property="bld.for.tomcat"/>
@@ -113,34 +85,21 @@
 
     <path id="wsit.classpath">
         <pathelement location="${java.home}/../lib/tools.jar"/>
-        <fileset dir="${lib.home}">
-            <include name="webservices-rt.jar"/>
-            <include name="webservices-tools.jar"/>
-            <include name="webservices-extra.jar"/>
-            <include name="webservices-extra-api.jar"/>
-            <include name="javaee.jar"/>
-            <include name="activation.jar"/>
-        </fileset>
-        <fileset dir="${lib.endorsed}">
-            <include name="webservices-api.jar"/>
-        </fileset>
-        <fileset dir="${lib.glassfishv3}">
-            <include name="jaxb*.jar"/>
-            <include name="webservices*.jar"/>
-            <include name="javax.activation*.jar"/>
-        </fileset>
     </path>
 
     <taskdef name="apt" classname="com.sun.tools.ws.ant.Apt">
-        <classpath refid="wsit.classpath"/>
+         <classpath refid="class.path"/> 
+         <classpath refid="wsit.classpath"/>
     </taskdef>
 
     <taskdef name="wsimport" classname="com.sun.tools.ws.ant.WsImport">
-        <classpath refid="wsit.classpath"/>
+         <classpath refid="class.path"/> 
+         <classpath refid="wsit.classpath"/>
     </taskdef>
 
     <taskdef name="wsimport" classname="com.sun.tools.ws.ant.WsImport">
-        <classpath refid="wsit.classpath"/>
+         <classpath refid="class.path"/> 
+         <classpath refid="wsit.classpath"/>
     </taskdef>
 
 </project>
