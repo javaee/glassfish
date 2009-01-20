@@ -64,9 +64,11 @@
 
                                 <echo message="compile classpath: ${compile_classpath}"/>
                                 <echo message="plugin classpath:  ${plugin_classpath}"/>
+<!--
                                 <ant dir="." antfile="setup-wsit.xml">
                                     <property name="glassfish.home" value="${glassfish.home}"/>
                                 </ant>
+-->
                                 <ant dir="." antfile="build.xml">
                                     <property name="glassfish.home" value="${glassfish.home}"/>
                                 </ant>
