@@ -357,7 +357,7 @@ public class ApplicationLifecycle {
 
 
 
-                if( (requires == null || requires.length == 0) && (provides == null || provides.length <= 1) ) {
+                if( (requires == null || requires.length == 0) && (provides == null || provides.length <= 0) ) {
                     // the deployer neither requires not provides any metadata. Put it in sortedModuleinfo
                     // they would effectively end up being in the middle of the list (see the sorting below)
                     sortedContainerInfos.add(containerInfo);
@@ -400,7 +400,14 @@ public class ApplicationLifecycle {
                 return null;
             }
         }
-
+        // it's possible that Deployer's are providing metadata that are required by no one.
+        // we need to add those now...
+        for (Deployer deployer : metaDataProvided.values()) {
+            ContainerInfo cInfo = containerInfosByDeployers.get(deployer);
+            if (!sortedContainerInfos.contains(cInfo)) {
+                sortedContainerInfos.addLast(cInfo);
+            }
+        }
         return sortedContainerInfos;
     }
 
