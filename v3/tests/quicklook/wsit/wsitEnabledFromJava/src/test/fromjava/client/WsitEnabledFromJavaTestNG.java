@@ -43,28 +43,38 @@ import java.io.*;
 public class WsitEnabledFromJavaTestNG {
 
     @Test(groups ={ "functional"} ) // test method
-    public void testAddNumbers() throws Exception{
+    public void testAddNumbers_EnabledFromJava() throws Exception{
 
-        AddNumbersImpl port = null;
-            port = new AddNumbersImplService().getAddNumbersImplPort();
+      AddNumbersImpl port = null;
+      try {
+	port = new AddNumbersImplService().getAddNumbersImplPort();
 
-            int number1 = 10;
-            int number2 = 20;
+	int number1 = 10;
+	int number2 = 20;
 
-            //System.out.printf ("Invoking addNumbers(%d, %d)\n", number1, number2);
-            int result = port.addNumbers (number1, number2);
-            //System.out.printf ("The result of adding %d and %d is %d.\n\n", number1, number2, result);
-            Assert.assertEquals(result, 30, "10 + 20 doesn't give the expected result 30");
+	//System.out.printf ("Invoking addNumbers(%d, %d)\n", number1, number2);
+	int result = port.addNumbers (number1, number2);
+	//System.out.printf ("The result of adding %d and %d is %d.\n\n", number1, number2, result);
+	Assert.assertEquals(result, 30, "10 + 20 doesn't give the expected result 30");
+     
+      } catch (Exception ex) {
+        // TODO handle custom exceptions here
+	Assert.assertTrue(false, "Unexpected exception is thrown");
+	ex.printStackTrace();
+	throw new Exception(ex);
+      } finally {
+	((Closeable)port).close();
+      }
 
-            ((Closeable)port).close();
     }
 
     @Test(groups ={ "functional"} ) // test method
-    public void testAddNumbersException() throws Exception{
+    public void testAddNumbersException_EnabledFromJava() throws Exception{
+
         AddNumbersImpl port = null;
         try {
-            port = new AddNumbersImplService().getAddNumbersImplPort();
 
+            port = new AddNumbersImplService().getAddNumbersImplPort();
             int number1 = -10;
             int number2 = 20;
             //System.out.printf ("Invoking addNumbers(%d, %d)\n", number1, number2);

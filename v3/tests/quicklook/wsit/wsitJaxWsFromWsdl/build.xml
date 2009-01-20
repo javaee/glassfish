@@ -101,6 +101,7 @@
         <wsimport
             debug="${debug}"
             verbose="${verbose}"
+            failonerror="false"
             keep="${keep}"
             extension="${extension}"
             destdir="${build.classes.home}"
