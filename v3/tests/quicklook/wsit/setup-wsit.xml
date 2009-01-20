@@ -57,15 +57,25 @@
     </condition>
 
     <condition property="install.webservices.jar" value="true">
-        <not>
+        <and>
+          <not>
             <available file="${glassfish.home}/modules/webservices.jar"/>
-        </not>
+          </not>
+          <not>
+            <available file="${glassfish.home}/modules/webservices-osgi.jar"/>
+          </not>
+        </and>
     </condition>
 
     <condition property="install.jaxb.jar" value="true">
-        <not>
+        <and> 
+          <not>
             <available file="${glassfish.home}/modules/jaxb.jar"/>
-        </not>
+          </not>
+          <not>
+            <available file="${glassfish.home}/modules/jaxb-osgi.jar"/>
+          </not>
+        </and>
     </condition>
 
     <target name="install-wsit-jar" if="install.webservices.jar">
