@@ -72,3 +72,26 @@ Sending        api\src\main\java\org\glassfish\embed\Server.java
 Sending        api\src\test\java\org\glassfish\embed\ServerTest.java
 Transmitting file data ..
 Committed revision 24304.
+
+
+
+
++Changes in trunk were fed back into our branch:
++
++--- trunk/v3/web/web-core/src/main/java/org/apache/catalina/servlets/DefaultServlet.java       (original)
+++++ trunk/v3/web/web-core/src/main/java/org/apache/catalina/servlets/DefaultServlet.java       2009-01-13 02:10:5
++@@ -339,6 +339,17 @@
++     }
++
++
+++    /**
+++     * Enables or disables directory listings for this DefaultServlet.
+++     *
+++     * @param listings true if directory listings are to be enabled, false
+++     * otherwise
+++     */
+++    public void setListings(boolean listings) {
+++        this.listings = listings;
+++    }
+++
+++
