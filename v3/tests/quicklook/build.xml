@@ -36,9 +36,6 @@
 -->
 
 <project name="GlassFish-V3-QuickLook" default="all" basedir=".">
-<property environment="env"/>
-<property name="env.HOST" value="${env.COMPUTERNAME}"/>
-<property name="hostname" value="${env.HOST}"/>
 
     <property file="build.properties"/>
      <property file="${basedir}/gfproject/derby.properties"/>
@@ -273,11 +270,11 @@
               <headfilter lines="1"/>
            </filterchain>
         </loadfile>
+	<exec executable="hostname" outputproperty="host.name"/>
 	<property name="titleTime" value="&lt;H1&gt; GF QuickLook Test Results &lt;/H1&gt; &lt;HR&gt; Build Info: ${build_version} &lt;p&gt; Test Completed at: ${end.timestamp}"/>
 	<property name="confRow1" value="&lt;TABLE class=param&gt; &lt;TR&gt; &lt;TD&gt;OS arch&lt;/TD&gt; &lt;TD&gt;Java version &lt;/TD&gt; &lt;TD&gt;Machine Name &lt;/TD&gt; &lt;/TR&gt;"/>
-	<property name="confRow2" value="&lt;TR&gt; &lt;TD&gt;${os.name}-${os.arch}&lt;/TD&gt; &lt;TD&gt;${java.version}&lt;/TD&gt; &lt;TD&gt;${hostname}&lt;/TD&gt; &lt;/TR&gt; &lt;/TABLE&gt;"/>
+	<property name="confRow2" value="&lt;TR&gt; &lt;TD&gt;${os.name}-${os.arch}&lt;/TD&gt; &lt;TD&gt;${java.version}&lt;/TD&gt; &lt;TD&gt;${host.name}&lt;/TD&gt; &lt;/TR&gt; &lt;/TABLE&gt;"/>
 	<replace file="test-output/emailable-report.html" token="&lt;body&gt;" value="&lt;body&gt; ${titleTime} ${confRow1} ${confRow2} &lt;HR&gt; &lt;p&gt;"/>
-    <!-- echo message="${build_version}"/ -->
     </target>
 
     <target name="archive" depends="initprops,clean">
