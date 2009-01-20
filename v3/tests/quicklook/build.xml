@@ -36,6 +36,10 @@
 -->
 
 <project name="GlassFish-V3-QuickLook" default="all" basedir=".">
+<property environment="env"/>
+<property name="env.HOST" value="${env.COMPUTERNAME}"/>
+<property name="hostname" value="${env.HOST}"/>
+
     <property file="build.properties"/>
      <property file="${basedir}/gfproject/derby.properties"/>
      <import file="${basedir}/gfproject/db-targets.xml"/>
@@ -50,11 +54,10 @@
         <antcall target="runtest">
         <param name="testng.xml" value="testng.xml"/> </antcall>
         <antcall target="undeploy"/>
+        <antcall target="quicklook-summary"/>
         <antcall target="stop-server"/>
         <antcall target="stop-derby"/>
-	<!-- move file="test-output" tofile="test-output-web" failonerror="false" overwrite="true"/ -->
         <antcall target="testng-summary"/>
-        <antcall target="quicklook-summary"/>
 	<copy file="test-output/emailable-report.html" tofile="test-output/QL-WP-report.html"/>
         <record name="allrun.output" action="stop"/>
     </target>
@@ -71,10 +74,10 @@
         <param name="testng.xml" value="testng_gd.xml"/> </antcall>
         <antcall target="undeploy"/>
         <antcall target="undeploy-gd"/>
+        <antcall target="quicklook-summary"/>
         <antcall target="stop-server"/>
         <antcall target="stop-derby"/>
         <antcall target="testng-summary"/>
-        <antcall target="quicklook-summary"/>
 	<copy file="test-output/emailable-report.html" tofile="test-output/QL-GP-report.html"/>
         <record name="allrun.output" action="stop"/>
     </target>
@@ -259,7 +262,22 @@
            </filterchain>
         </loadfile>
         <echo file="quicklook_summary.txt" append="true" message="${testng_output}"/>
-	<replace file="test-output/emailable-report.html" token="&lt;body&gt;" value="&lt;body&gt; &lt;H1&gt; GF QuickLook Test Results &lt;/H1&gt; Test Completed at: ${end.timestamp} &lt;p&gt; &lt;HR&gt; &lt;p&gt;"/>
+        <antcall target="build-version"/>
+    	<antcall target="quicklook-report"/>
+	<delete file="version.output"/>
+    </target>
+
+    <target name="quicklook-report">
+        <loadfile srcfile="version.output" property="build_version">
+           <filterchain>
+              <headfilter lines="1"/>
+           </filterchain>
+        </loadfile>
+	<property name="titleTime" value="&lt;H1&gt; GF QuickLook Test Results &lt;/H1&gt; &lt;HR&gt; Build Info: ${build_version} &lt;p&gt; Test Completed at: ${end.timestamp}"/>
+	<property name="confRow1" value="&lt;TABLE class=param&gt; &lt;TR&gt; &lt;TD&gt;OS arch&lt;/TD&gt; &lt;TD&gt;Java version &lt;/TD&gt; &lt;TD&gt;Machine Name &lt;/TD&gt; &lt;/TR&gt;"/>
+	<property name="confRow2" value="&lt;TR&gt; &lt;TD&gt;${os.name}-${os.arch}&lt;/TD&gt; &lt;TD&gt;${java.version}&lt;/TD&gt; &lt;TD&gt;${hostname}&lt;/TD&gt; &lt;/TR&gt; &lt;/TABLE&gt;"/>
+	<replace file="test-output/emailable-report.html" token="&lt;body&gt;" value="&lt;body&gt; ${titleTime} ${confRow1} ${confRow2} &lt;HR&gt; &lt;p&gt;"/>
+    <!-- echo message="${build_version}"/ -->
     </target>
 
     <target name="archive" depends="initprops,clean">
@@ -356,6 +374,25 @@
     <exec executable="${glassfish.home}/bin/asadmin">
         <env key="GlassFish_Platform" value="Felix"/>
         <arg value="start-domain"/>
+    </exec>
+</target>
+
+<target name="build-version" depends="setOSConditions">
+    <antcall target="build-version-unix"/>
+    <antcall target="build-version-windows"/>
+</target>
+
+<target name="build-version-unix" if="isUnix">
+    <exec executable="${glassfish.home}/bin/asadmin" output="version.output"> 
+	<arg value="version"/>
+    </exec>
+</target>
+
+<target name="build-version-windows" if="isWindows">
+    <exec executable="cmd" spawn="true">
+        <arg value="/c"/>
+        <arg value="${glassfish.home}\bin\asadmin.bat"/>
+        <arg value="version"/>
     </exec>
 </target>
 
