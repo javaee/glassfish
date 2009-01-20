@@ -129,7 +129,7 @@ public class XMLActionReporter extends ActionReporter {
             p.setAttribute("name", prop.getKey().toString());
             p.setAttribute("value", prop.getValue().toString());
         }
-        
+        messagePart.setAttribute("message", part.getMessage());
         for (MessagePart subPart : part.getChildren()) {
             writePart(messagePart, subPart, subPart.getChildrenType());
         }

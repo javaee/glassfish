@@ -125,7 +125,7 @@ public class RemoteDeploymentFacility extends AbstractDeploymentFacility impleme
                     commandOptions, 
                     operands
                     );
-                CLIRemoteCommand rc = new CLIRemoteCommand(commandArgs, "xml-cli", baos);
+                CLIRemoteCommand rc = new CLIRemoteCommand(commandArgs, "/xml", baos);
                 rc.runCommand();
                 DFDeploymentStatus status = CommandXMLResultParser.parse(new ByteArrayInputStream(baos.toByteArray()));
                 return status;

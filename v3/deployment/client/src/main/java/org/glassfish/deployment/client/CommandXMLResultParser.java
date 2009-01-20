@@ -101,9 +101,10 @@ public class CommandXMLResultParser {
                      * This is a nested action-report, so add it as a sub-stage
                      * to the current level DFDeploymentStatus.
                      */
-                    DFDeploymentStatus newLevel = new DFDeploymentStatus();
-                    currentLevel.addSubStage(newLevel);
-                    currentLevel = newLevel;
+                    addLevel();
+//                    DFDeploymentStatus newLevel = new DFDeploymentStatus();
+//                    currentLevel.addSubStage(newLevel);
+//                    currentLevel = newLevel;
                 }
                 currentLevel.setStageStatus(exitCodeToStatus(attrToText(attributes, "exit-code")));
                 currentLevel.setStageDescription(attrToText(attributes, "description"));
@@ -115,9 +116,11 @@ public class CommandXMLResultParser {
                 /*
                  * The "message" attribute may not be present if the operation succeeded.
                  */
+                addLevel();
                 String msg = attrToText(attributes, "message");
                 if (msg != null) {
-                    msg = currentLevel.getStageStatusMessage() + " " + msg;
+                    String origMsg = currentLevel.getStageStatusMessage();
+                    msg = currentLevel.getStageStatusMessage() + (origMsg != null && origMsg.length() > 0 ? " " : "") + msg;
                     currentLevel.setStageStatusMessage(msg);
                 }
             } else if (qName.equals("property")) {
@@ -128,8 +131,20 @@ public class CommandXMLResultParser {
         @Override
         public void endElement(String uri, String localName, String qName) throws SAXException {
             if (qName.equals("action-report")) {
-                currentLevel = currentLevel.getParent();
+                popLevel();
+            } else if (qName.equals("message-part")) {
+                popLevel();
             }
+        }
+
+        private void addLevel() {
+            DFDeploymentStatus newLevel = new DFDeploymentStatus();
+            currentLevel.addSubStage(newLevel);
+            currentLevel = newLevel;
+        }
+
+        private void popLevel() {
+            currentLevel = currentLevel.getParent();
         }
     }
 }

@@ -38,16 +38,24 @@ package org.glassfish.deployment.client;
 
 import com.sun.enterprise.cli.framework.CommandException;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.logging.LogDomains;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.enterprise.deploy.spi.Target;
 import javax.enterprise.deploy.spi.TargetModuleID;
 import javax.enterprise.deploy.spi.status.ClientConfiguration;
 import org.glassfish.deployapi.ProgressObjectImpl;
 import org.glassfish.deployapi.TargetImpl;
 import org.glassfish.deployapi.TargetModuleIDImpl;
+//import org.glassfish.deployment.common.DeploymentUtils;
 
 /**
  * Provides common behavior for the local and remote deployment facilities.
@@ -55,15 +63,16 @@ import org.glassfish.deployapi.TargetModuleIDImpl;
  * Code that needs an instance of a remote deployment facility use the
  * {@link DeploymentFacilityFactory}.
  * <p>
- * Note that for GlassFish v3 prelude there is only a single target, the
- * default server, so the target arguments are not typically used.  This will
- * change after the prelude release.
+ * Note that GlassFish v3 only supports a single target.
  *
  * @author tjquinn
  */
 public abstract class AbstractDeploymentFacility implements DeploymentFacility, TargetOwner {
     private static final String DEFAULT_SERVER_NAME = "server";
     protected static final LocalStringManagerImpl localStrings = new LocalStringManagerImpl(RemoteDeploymentFacility.class);
+//    protected Logger logger = LogDomains.getLogger(DeploymentUtils.class,
+//        LogDomains.DPL_LOGGER);
+
     private boolean connected;
     private TargetImpl domain;
     private ServerConnectionIdentifier targetDAS;
@@ -113,9 +122,12 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
     protected DFProgressObject changeState(Target[] targets, String moduleID, String commandName, String successStatusKey, String successStatusDefaultMessage, String failureStatusKey, String failureStatusDefaultMessage) {
         ensureConnected();
         targets = prepareTargets(targets);
+        String targetsParam = createTargetsParam(targets);
+        Map commandParams = new HashMap();
+        commandParams.put("target", targetsParam);
         ProgressObjectImpl po = new ProgressObjectImpl(targets);
         try {
-            DFCommandRunner commandRunner = getDFCommandRunner(commandName, null, new String[]{moduleID});
+            DFCommandRunner commandRunner = getDFCommandRunner(commandName, commandParams, new String[]{moduleID});
             DFDeploymentStatus ds = commandRunner.run();
             DFDeploymentStatus mainStatus = ds.getMainStatus();
             if (mainStatus.getStatus() != DFDeploymentStatus.Status.FAILURE) {
@@ -181,6 +193,9 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
     }
 
     public Target[] createTargets(String[] targets) {
+        if (targets == null) {
+            targets = new String[0];
+        } 
         TargetImpl[] result = new TargetImpl[targets.length];
         int i = 0;
         for (String name : targets) {
@@ -189,8 +204,19 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
         return result;
     }
 
+    protected String createTargetsParam(Target[] targets) {
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < targets.length; i++) {
+            sb.append(targets[i].getName());
+            if (i != targets.length-1) {
+                sb.append(",");
+            }
+        }
+        return sb.toString();
+    }
+
     public DFProgressObject deleteAppRef(Target[] targets, String moduleID, Map options) {
-        throw new UnsupportedOperationException("Not supported in v3 prelude");
+        throw new UnsupportedOperationException("Not supported in v3");
     }
 
     /**
@@ -205,6 +231,8 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
     public DFProgressObject deploy(Target[] targets, URI source, URI deploymentPlan, Map deploymentOptions) {
         ensureConnected();
         targets = prepareTargets(targets);
+        String targetsParam = createTargetsParam(targets);
+        deploymentOptions.put("target", targetsParam);
         ProgressObjectImpl po = new ProgressObjectImpl(targets);
         //Make sure the file permission is correct when deploying a file
         if (source == null) {
@@ -271,7 +299,7 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
     }
 
     public String downloadFile(File location, String moduleID, String moduleURI) throws IOException {
-        throw new UnsupportedOperationException("Not supported in v3 prelude");
+        throw new UnsupportedOperationException("Not supported in v3");
     }
 
     /**
@@ -303,12 +331,92 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
     }
 
     public TargetModuleID[] listAppRefs(String[] targets) throws IOException {
-        throw new UnsupportedOperationException("Not supported in v3 prelude");
+        ensureConnected();
+        String commandName = "list-app-refs";
+        Target[] targetImpls = prepareTargets(createTargets(targets));
+        String targetsParam = createTargetsParam(targetImpls);
+        Map commandParams = new HashMap();
+        commandParams.put("target", targetsParam);
+        DFDeploymentStatus mainStatus = null;
+        Throwable commandExecutionException = null;
+        try {
+            DFCommandRunner commandRunner = getDFCommandRunner(commandName, commandParams, null);
+            DFDeploymentStatus ds = commandRunner.run();
+            mainStatus = ds.getMainStatus();
+            List<TargetModuleIDImpl> targetModuleIDList =
+                new ArrayList<TargetModuleIDImpl>();
+
+            if (mainStatus.getStatus() != DFDeploymentStatus.Status.FAILURE) {
+                /*
+                 * There will be one substage for each target.  And within each
+                 * of those will be a substage for each module assigned to
+                 * that target
+                 */
+                for (Iterator targetIter = ds.getSubStages() ; targetIter.hasNext();) {
+                    DFDeploymentStatus targetSubStage =
+                        (DFDeploymentStatus) targetIter.next();
+                    String targetName = targetSubStage.getStageStatusMessage();
+
+                    /*
+                     * Look for the caller-supplied target that matches this result.
+                     */
+                    for (Target targetImpl: targetImpls) {
+                        if (targetImpl.getName().equals(targetName)) {
+                            /*
+                             * Each substage below the target substage is for
+                             * a module deployed to that target.
+                             */
+                            for (Iterator appRefIter = targetSubStage.getSubStages(); appRefIter.hasNext();) {
+                                DFDeploymentStatus appRefSubStage = (DFDeploymentStatus) appRefIter.next();
+                                String moduleID = appRefSubStage.getStageStatusMessage();
+                                if (targetImpl instanceof TargetImpl) {
+                                    TargetModuleIDImpl targetModuleID =
+                                        new TargetModuleIDImpl((TargetImpl)targetImpl,
+                                            moduleID);
+                                    targetModuleIDList.add(targetModuleID);
+                               }
+                            }
+                            break;
+                        }
+                    }
+                }
+
+                TargetModuleIDImpl[] result =
+                    new TargetModuleIDImpl[targetModuleIDList.size()];
+                return (TargetModuleIDImpl[]) targetModuleIDList.toArray(result);
+
+            } else {
+                /*
+                 * We received a response from the server but the status was
+                 * reported as unsuccessful.  Because listAppRefs does not
+                 * return a ProgressObject which the caller could use to find
+                 * out about the success or failure, we must throw an exception
+                 * so the caller knows about the failure.
+                 */
+                commandExecutionException = new IOException(
+                        "remote command execution failed on the server");
+                commandExecutionException.initCause(
+                        new RuntimeException(mainStatus.getAllStageMessages()));
+                throw commandExecutionException;
+            }
+        } catch (Throwable ex) {
+
+//           logger.log(Level.WARNING, "Error during getting application refs: ",                ex);
+//           ex);
+            if (commandExecutionException == null) {
+                throw new RuntimeException("error submitting remote command", ex);
+            } else {
+                throw (IOException) ex;
+            }
+        }
     }
 
     private Target[] prepareTargets(Target[] targets) {
         if (targets == null || targets.length == 0) {
             targets = new Target[]{targetForDefaultServer()};
+        }
+        if (targets.length > 1) {
+            throw new UnsupportedOperationException("Multiple targets not supported in v3");
         }
         return targets;
     }
@@ -343,6 +451,8 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
     public DFProgressObject undeploy(Target[] targets, String moduleID, Map undeploymentOptions) {
         ensureConnected();
         targets = prepareTargets(targets);
+        String targetsParam = createTargetsParam(targets);
+        undeploymentOptions.put("target", targetsParam);
         ProgressObjectImpl po = new ProgressObjectImpl(targets);
         try {
             DFCommandRunner commandRunner = getDFCommandRunner(
@@ -380,7 +490,7 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
 
 
     public String getWebURL(TargetModuleID tmid) {
-        throw new UnsupportedOperationException("Not supported for v3 prelude");
+        throw new UnsupportedOperationException("Not supported for v3");
     }
 
     protected ServerConnectionIdentifier getTargetDAS() {

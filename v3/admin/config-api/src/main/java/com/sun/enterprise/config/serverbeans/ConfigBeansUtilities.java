@@ -173,6 +173,24 @@ public final class ConfigBeansUtilities {
         return ( allSysApps );
     }
     
+   public static List<ApplicationRef> getApplicationRefsInServer(String sn) {
+        Servers ss = domain.getServers();
+        List<Server> list = ss.getServer();
+        Server theServer = null;
+        for (Server s : list) {
+            if (s.getName().equals(sn)) {
+                theServer = s;
+                break;
+            }
+        }
+        if (theServer != null) {
+            return theServer.getApplicationRef();
+        } else {
+            return new ArrayList<ApplicationRef>();
+        }
+    }
+
+
     public static ApplicationRef getApplicationRefInServer(String sn, String name) {
         Servers ss = domain.getServers();
         List<Server> list = ss.getServer();
