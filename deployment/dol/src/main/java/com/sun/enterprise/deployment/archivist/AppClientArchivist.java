@@ -66,8 +66,7 @@ import java.util.logging.Level;
  */
 @Service
 @Scoped(PerLookup.class)
-public class AppClientArchivist extends Archivist<ApplicationClientDescriptor> 
-    implements PrivateArchivist {
+public class AppClientArchivist extends Archivist<ApplicationClientDescriptor> {
 
     ApplicationClientDescriptor descriptor = null;
     DeploymentDescriptorFile standardDD = new AppClientDeploymentDescriptorFile();

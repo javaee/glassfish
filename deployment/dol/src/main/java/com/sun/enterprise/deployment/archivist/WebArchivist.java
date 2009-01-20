@@ -71,8 +71,7 @@ import java.net.URL;
  */
 @Service
 @Scoped(PerLookup.class)
-public class WebArchivist extends Archivist<WebBundleDescriptor>
-    implements PrivateArchivist {
+public class WebArchivist extends Archivist<WebBundleDescriptor> {
 
 
     private static final String DEFAULT_WEB_XML = "default-web.xml";

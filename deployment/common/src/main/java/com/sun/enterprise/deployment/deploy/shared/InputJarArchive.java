@@ -170,6 +170,13 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
 	// jar file are not recursive    
   	return entries();
     }
+
+    public JarEntry getJarEntry(String name) {
+        if (jarFile!=null) {
+            return jarFile.getJarEntry(name);
+        }
+        return null;
+    }
     
     /**
      * Returns the existence of the given entry name
@@ -185,7 +192,7 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
             }
         }
         return false;
-    }
+    }    
 
     /**
      * @return a @see java.io.InputStream for an existing entry in

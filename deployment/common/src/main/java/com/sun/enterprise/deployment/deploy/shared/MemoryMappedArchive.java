@@ -40,6 +40,7 @@ import java.util.Vector;
 import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
+import java.util.jar.JarEntry;
 import java.util.zip.ZipEntry;
 
 /**
@@ -209,6 +210,21 @@ public class MemoryMappedArchive extends JarArchive implements ReadableArchive {
                 return new BufferedInputStream(jis);
         }
         return null;        
+    }
+
+    public JarEntry getJarEntry(String name) {
+        try {
+            JarInputStream jis = new JarInputStream(new ByteArrayInputStream(file));
+            JarEntry ze;
+            while ((ze=jis.getNextJarEntry())!=null) {
+                if (ze.getName().equals(name)) {
+                    return ze;
+                }
+            }
+        } catch(IOException e) {
+            return null;
+        }
+        return null;
     }
 
     /**

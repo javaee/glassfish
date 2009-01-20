@@ -139,11 +139,13 @@ public class ApplicationLifecycle implements Deployment {
      */
     public ArchiveHandler getArchiveHandler(ReadableArchive archive) throws IOException {
         for (ArchiveHandler handler : habitat.getAllByContract(ArchiveHandler.class)) {
-            if (handler.handles(archive)) {
-                return handler;
+            if (!"DEFAULT".equals(handler.getClass().getAnnotation(Service.class).name())) {
+                if (handler.handles(archive)) {
+                    return handler;
+                }
             }
         }
-        return null;
+        return habitat.getComponent(ArchiveHandler.class, "DEFAULT");
     }
 
     public ApplicationInfo deploy(final ExtendedDeploymentContext context, final ActionReport report) {

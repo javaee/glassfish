@@ -37,16 +37,48 @@ package org.glassfish.javaee.core.deployment;
 
 import java.net.URLClassLoader;
 import java.net.URL;
+import java.util.List;
+import java.util.LinkedList;
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: Jan 16, 2009
- * Time: 3:37:18 PM
- * To change this template use File | Settings | File Templates.
+ * Simplistic class loader which will delegate to each module class loader in the order
+ * they were added to the instance
+ *
+ * @author Jerome Dochez
  */
 public class EarClassLoader extends URLClassLoader {
+
+    private final List<ClassLoader> delegates = new LinkedList<ClassLoader>();
+    private final Method findClass; 
+
     public EarClassLoader(URL[] urls, ClassLoader classLoader) {
         super(urls, classLoader);
+        try {
+            findClass = ClassLoader.class.getDeclaredMethod("findClass", new Class[] {String.class});
+            findClass.setAccessible(true);
+        } catch(NoSuchMethodException e) {
+            // this is impossible.
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void addModuleClassLoader(ClassLoader cl) {
+        delegates.add(cl);
+    }
+
+    @Override
+    protected Class<?> findClass(String s) throws ClassNotFoundException {
+        for (ClassLoader cl : delegates) {
+            try {
+                return (Class<?>) findClass.invoke(cl, s);
+            } catch(IllegalAccessException e) {
+                
+            } catch(InvocationTargetException e) {
+                // not found most likely.   
+            }
+        }
+        throw new ClassNotFoundException(s);
     }
 }

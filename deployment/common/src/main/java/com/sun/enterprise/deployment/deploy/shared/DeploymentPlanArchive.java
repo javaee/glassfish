@@ -122,6 +122,13 @@ public class DeploymentPlanArchive extends JarArchive implements ReadableArchive
         }
         return false;
     }
+
+    public JarEntry getJarEntry(String name) {
+        if (jarFile!=null) {
+            return jarFile.getJarEntry(name);
+        }
+        return null;
+    }    
     
     /**
      * @return an Enumeration of entries for this archive

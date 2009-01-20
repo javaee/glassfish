@@ -38,10 +38,25 @@ package org.glassfish.javaee.core.deployment;
 
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.deployment.common.DeploymentUtils;
+import org.glassfish.internal.deployment.Deployment;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
 import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
+import com.sun.enterprise.util.io.FileUtils;
+import com.sun.logging.LogDomains;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.BufferedInputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.jar.Manifest;
+import java.util.jar.JarFile;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * Created by IntelliJ IDEA.
@@ -50,8 +65,14 @@ import java.io.IOException;
  * Time: 3:33:40 PM
  * To change this template use File | Settings | File Templates.
  */
+@Service(name="ear")
 public class EarHandler extends AbstractArchiveHandler implements ArchiveHandler {
 
+    final private Logger logger = LogDomains.getLogger(EarHandler.class, LogDomains.DPL_LOGGER);
+    
+    @Inject
+    Deployment deployment;
+    
     public String getArchiveType() {
         return "ear";
     }
@@ -60,7 +81,78 @@ public class EarHandler extends AbstractArchiveHandler implements ArchiveHandler
         return DeploymentUtils.isEAR(archive);
     }
 
+    @Override
+    public void expand(ReadableArchive source, WritableArchive target) throws IOException {
+
+        Enumeration<String> e = source.entries();
+        while (e.hasMoreElements()) {
+            String entryName = e.nextElement();
+            if (!entryName.endsWith("xml")) {
+                ReadableArchive subArchive = source.getSubArchive(entryName);
+                try {
+                    ArchiveHandler subHandler = deployment.getArchiveHandler(subArchive);
+                    if (subHandler!=null) {
+                        WritableArchive subTarget = target.createSubArchive(entryName);
+                        subHandler.expand(subArchive, subTarget);
+                        target.closeEntry(subTarget);
+                        continue;
+                    }
+                } catch(IOException ioe) {
+                    logger.log(Level.FINE, "Exception while processing " + entryName, ioe);
+
+                }
+            }
+            // normal file, just copy.
+            InputStream is = new BufferedInputStream(source.getEntry(entryName));
+            OutputStream os = null;
+            try {
+                os = target.putNextEntry(entryName);
+                FileUtils.copy(is, os, source.getEntrySize(entryName));
+            } finally {
+                if (os!=null) {
+                    target.closeEntry();
+                }
+                is.close();
+            }
+        }
+
+        // last is manifest is existing.
+        Manifest m = source.getManifest();
+        if (m!=null) {
+            OutputStream os  = target.putNextEntry(JarFile.MANIFEST_NAME);
+            m.write(os);
+            target.closeEntry();
+        }
+    }
+
     public ClassLoader getClassLoader(ClassLoader parent, ReadableArchive archive) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        EarClassLoader cl = new EarClassLoader(new URL[0], null);
+        Enumeration<String> entries = archive.entries();
+        while (entries.hasMoreElements()) {
+            String entryName = entries.nextElement();
+            if (archive.isDirectory(entryName) || !entryName.endsWith("xml")) {
+                ReadableArchive sub = null;
+                try {
+                    sub = archive.getSubArchive(entryName);
+                } catch (IOException e) {
+                    logger.log(Level.FINE, "Sub archive " + entryName + " seems unreadable" ,e);
+                }
+                if (sub!=null) {
+                    try {
+                        ArchiveHandler handler = deployment.getArchiveHandler(sub);
+                        if (handler!=null) {
+                            // todo : this is a hack, once again, the handklet is assuming a file:// url
+                            
+                            ClassLoader subCl = handler.getClassLoader(cl, sub);
+                            cl.addModuleClassLoader(subCl);
+                        }
+                    } catch (IOException e) {
+                        logger.log(Level.SEVERE, "Cannot find a class loader for submodule", e);
+                    }
+
+                }
+            }
+        }
+        return cl;
     }
 }

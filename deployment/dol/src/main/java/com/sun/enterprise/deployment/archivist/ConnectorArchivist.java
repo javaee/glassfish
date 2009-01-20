@@ -57,8 +57,7 @@ import java.io.IOException;
  */
 @Service
 @Scoped(PerLookup.class)
-public class ConnectorArchivist extends Archivist<ConnectorDescriptor> 
-    implements PrivateArchivist {
+public class ConnectorArchivist extends Archivist<ConnectorDescriptor> {
     
     /** 
      * The DeploymentDescriptorFile handlers we are delegating for XML i/o

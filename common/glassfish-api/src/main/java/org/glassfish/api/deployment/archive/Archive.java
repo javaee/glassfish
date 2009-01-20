@@ -64,6 +64,12 @@ public interface Archive {
      */ 
     public Enumeration<String> entries(String prefix);
 
+    /**
+     * Returns true if the entry is a directory or a plain file
+     * @param name name is one of the entries returned by {@link #entries()}
+     * @return true if the entry denoted by the passed name is a directory
+     */
+    public boolean isDirectory(String name);
     
     /**
      * Returns the manifest information for this archive

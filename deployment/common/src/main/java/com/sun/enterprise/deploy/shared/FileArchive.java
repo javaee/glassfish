@@ -137,7 +137,20 @@ public class FileArchive implements ReadableArchive, WritableArchive {
         getListOfFiles(archive, namesList, null);
         return namesList.elements();
     }
-    
+
+    /**
+     * Returns true if the entry is a directory or a plain file
+     * @param name name is one of the entries returned by {@link #entries()}
+     * @return true if the entry denoted by the passed name is a directory
+     */
+    public boolean isDirectory(String name) {
+        File f = new File(archive, name);
+        if (!f.exists()) {
+            throw new IllegalArgumentException(name);
+        }
+        return f.isDirectory();
+    }
+
     /**
      *  @return an @see java.util.Enumeration of entries in this abstract
      * archive, providing the list of embedded archive to not count their 

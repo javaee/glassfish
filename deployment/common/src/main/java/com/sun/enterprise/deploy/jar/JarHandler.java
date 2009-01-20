@@ -53,22 +53,14 @@ import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
  *
  * @author Jerome Dochez
  */
-@Service
+@Service(name="DEFAULT")
 public class JarHandler extends AbstractArchiveHandler implements ArchiveHandler {
     public String getArchiveType() {
         return "jar";
     }
 
     public boolean handles(ReadableArchive archive) {
-        // I don't handle war files...
-        if (DeploymentUtils.isWebArchive(archive)) {
-            return false;
-        }
-		// Do not handle (resource-adapters) rar files
-        if(DeploymentUtils.isRAR(archive)){
-            return false;
-        }
-        // but I handle everything else
+        // but I handle everything that looks like a jar...
         return true;
     }
 

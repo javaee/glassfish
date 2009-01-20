@@ -37,6 +37,7 @@ package org.glassfish.javaee.core.deployment;
 
 import org.glassfish.api.container.Container;
 import org.glassfish.api.deployment.Deployer;
+import org.jvnet.hk2.annotations.Service;
 
 /**
  * Created by IntelliJ IDEA.
@@ -45,7 +46,7 @@ import org.glassfish.api.deployment.Deployer;
  * Time: 11:00:31 AM
  * To change this template use File | Settings | File Templates.
  */
-
+@Service(name="ear")
 public class EarContainer implements Container {
 
     public Class<? extends Deployer> getDeployer() {
@@ -54,5 +55,5 @@ public class EarContainer implements Container {
 
     public String getName() {
         return "application";
-    }
+    }                                                                     
 }

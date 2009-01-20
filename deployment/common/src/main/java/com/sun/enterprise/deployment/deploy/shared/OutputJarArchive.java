@@ -30,6 +30,7 @@ import java.io.*;
 import java.util.Enumeration;
 import java.util.Vector;
 import java.util.jar.Manifest;
+import java.util.jar.JarEntry;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import java.net.URI;
@@ -74,6 +75,10 @@ public class OutputJarArchive extends JarArchive implements WritableArchive {
             jos.close();
             jos = null;
         }
+    }
+
+    protected JarEntry getJarEntry(String entryName) {
+        return null; 
     }
 
     /**
