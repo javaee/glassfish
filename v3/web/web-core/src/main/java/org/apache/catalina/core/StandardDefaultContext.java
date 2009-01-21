@@ -91,9 +91,9 @@ import org.apache.catalina.deploy.ResourceParams;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.mbeans.MBeanUtils;
 import org.apache.catalina.util.StringManager;
-import org.apache.commons.modeler.ManagedBean;
-import org.apache.commons.modeler.Registry;
 import org.apache.naming.ContextAccessController;
+import org.apache.tomcat.util.modeler.ManagedBean;
+import org.apache.tomcat.util.modeler.Registry;
 
 /**
  * Used to store the default configuration a Host will use
@@ -1796,7 +1796,7 @@ public class StandardDefaultContext
         nresources.addEnvironment(env);
 
         // Return the corresponding MBean name
-        ManagedBean managed = Registry.getRegistry().findManagedBean("ContextEnvironment");
+        ManagedBean managed = Registry.getRegistry(null, null).findManagedBean("ContextEnvironment");
         ObjectName oname =
             MBeanUtils.createObjectName(managed.getDomain(), env);
         return (oname.toString());
@@ -1827,7 +1827,7 @@ public class StandardDefaultContext
         nresources.addResource(resource);
 
         // Return the corresponding MBean name
-        ManagedBean managed = Registry.getRegistry().findManagedBean("ContextResource");
+        ManagedBean managed = Registry.getRegistry(null, null).findManagedBean("ContextResource");
         ObjectName oname =
             MBeanUtils.createObjectName(managed.getDomain(), resource);
 
@@ -1861,7 +1861,7 @@ public class StandardDefaultContext
         nresources.addResourceLink(resourceLink);
 
         // Return the corresponding MBean name
-        ManagedBean managed = Registry.getRegistry().findManagedBean("ContextResourceLink");
+        ManagedBean managed = Registry.getRegistry(null, null).findManagedBean("ContextResourceLink");
         ObjectName oname =
             MBeanUtils.createObjectName(managed.getDomain(), resourceLink);
         return (oname.toString());

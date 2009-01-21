@@ -101,7 +101,7 @@ import org.apache.catalina.SessionLocker;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.util.StringManager;
-import org.apache.commons.modeler.Registry;
+import org.apache.tomcat.util.modeler.Registry;
 
 //HERCULES:added
 import com.sun.enterprise.util.uuid.UuidGeneratorImpl;
@@ -801,7 +801,7 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
     // --------------------------------------------------------- Public Methods
     public void destroy() {
         if( oname != null )
-            Registry.getRegistry().unregisterComponent(oname);
+            Registry.getRegistry(null, null).unregisterComponent(oname);
         initialized=false;
         oname = null;
     }
@@ -823,7 +823,7 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
                 }   
                 oname=new ObjectName(domain + ":type=Manager,path="
                 + path + ",host=" + hst.getName());
-                Registry.getRegistry().registerComponent(this, oname, null );
+                Registry.getRegistry(null, null).registerComponent(this, oname, null );
             } catch (Exception e) {
                 log.log(Level.SEVERE, "Error registering ", e);
             }

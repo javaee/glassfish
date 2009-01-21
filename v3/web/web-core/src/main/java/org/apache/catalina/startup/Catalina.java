@@ -67,8 +67,8 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Server;
 import org.apache.catalina.core.StandardServer;
 import org.apache.catalina.util.CatalinaDigester;
-import org.apache.commons.digester.Digester;
-import org.apache.commons.digester.Rule;
+import org.apache.tomcat.util.digester.Digester;
+import org.apache.tomcat.util.digester.Rule;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 

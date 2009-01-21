@@ -71,7 +71,7 @@ import javax.management.MBeanRegistration;
 import javax.management.MalformedObjectNameException;
 
 
-import org.apache.commons.modeler.Registry;
+import org.apache.tomcat.util.modeler.Registry;
 
 import com.sun.grizzly.util.IntrospectionUtils;
 import com.sun.grizzly.util.http.mapper.Mapper;
@@ -1507,6 +1507,20 @@ public class Connector
 
     }
 
+
+    protected ObjectName createObjectName(String domain, String type)
+            throws MalformedObjectNameException {
+        String encodedAddr = null;
+        if (getAddress() != null) {
+            encodedAddr = URLEncoder.encode(getProperty("address").toString());
+        }
+        String addSuffix = (getAddress() == null) ? "" : ",address="
+                + encodedAddr;
+        ObjectName _oname = new ObjectName(domain + ":type=" + type + ",port="
+                + getPort() + addSuffix);
+        return _oname;
+    }
+
     /**
      * Initialize this connector (create ServerSocket here!)
      */
@@ -1533,14 +1547,9 @@ public class Connector
             try {
                 // we are loaded directly, via API - and no name was given to us
                 StandardEngine cb=(StandardEngine)container;
-                String encodedAddr = null;
-                if (getAddress() != null) {
-                    encodedAddr = URLEncoder.encode(getAddress());
-                }
-                String addSuffix=(getAddress()==null) ?"": ",address=" + encodedAddr;
-                oname=new ObjectName(domain + ":type=Connector,port="+
-                        getPort() + addSuffix);
-                Registry.getRegistry().registerComponent(this, oname, null);
+                oname = createObjectName(domain, "Connector");
+                Registry.getRegistry(null, null)
+                    .registerComponent(this, oname, null);
                 controller=oname;
             } catch (Exception e) {
                 log.log(Level.SEVERE, "Error registering connector ", e);
@@ -1722,10 +1731,8 @@ public class Connector
         if ( this.oname != null ) {
             // We are registred - register the adapter as well.
             try {
-                Registry.getRegistry().registerComponent
-                    (protocolHandler, this.domain, "protocolHandler",
-                     "type=protocolHandler,className="
-                     + protocolHandlerClassName);
+                Registry.getRegistry(null, null).registerComponent
+                    (protocolHandler, createObjectName(this.domain, "ProtocolHandler"), null);
             } catch (Exception ex) {
                 log.log(Level.SEVERE,
                         sm.getString("coyoteConnector.protocolRegistrationFailed"),
@@ -1753,9 +1760,9 @@ public class Connector
             //mapperListener.setEngine( service.getContainer().getName() );
             mapperListener.init();
             try {
-                Registry.getRegistry().registerComponent
-                        (mapper, this.domain, "Mapper",
-                                "type=Mapper");
+                ObjectName mapperOname = createObjectName(this.domain, "Mapper");
+                Registry.getRegistry(null, null).registerComponent
+                        (mapper, mapperOname, "Mapper");
             } catch (Exception ex) {
                 log.log(Level.SEVERE,
                         sm.getString("coyoteConnector.protocolRegistrationFailed"),
@@ -1784,10 +1791,10 @@ public class Connector
         // START PWC 6393300
         if ( domain != null){
             try {
-                Registry.getRegistry().unregisterComponent(new ObjectName(domain,"type", "Mapper"));
-                Registry.getRegistry().unregisterComponent(new ObjectName(domain
-                        + ":type=protocolHandler,className="
-                        + protocolHandlerClassName));
+                Registry.getRegistry(null, null).unregisterComponent(
+                    createObjectName(this.domain, "Mapper"));
+                Registry.getRegistry(null, null).unregisterComponent(
+                    createObjectName(this.domain, "ProtocolHandler"));
             } catch (MalformedObjectNameException e) {
                 log.log(Level.INFO, "Error unregistering mapper ", e);
             }
@@ -2164,7 +2171,7 @@ public class Connector
             if (log.isLoggable(Level.FINE)) {
                 log.fine("Unregister itself " + oname );
             }
-            Registry.getRegistry().unregisterComponent(oname);
+            Registry.getRegistry(null, null).unregisterComponent(oname);
         }
         if( getService() == null)
             return;

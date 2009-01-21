@@ -95,7 +95,7 @@ import org.apache.catalina.security.SecurityUtil;
 import org.apache.catalina.util.Enumerator;
 import org.apache.catalina.util.InstanceSupport;
 import com.sun.grizzly.util.IntrospectionUtils;
-import org.apache.commons.modeler.Registry;
+import org.apache.tomcat.util.modeler.Registry;
 
 // START GlassFish 1343
 import org.glassfish.web.valve.GlassFishValve;
@@ -1863,7 +1863,7 @@ public class StandardWrapper
         }
         
         if( oname != null ) {
-            Registry.getRegistry().unregisterComponent(oname);
+            Registry.getRegistry(null, null).unregisterComponent(oname);
             
             // Send j2ee.object.deleted notification 
             Notification notification = 
@@ -1897,7 +1897,7 @@ public class StandardWrapper
         try {
             oname=new ObjectName(onameStr);
             controller=oname;
-            Registry.getRegistry().registerComponent(this, oname, null );
+            Registry.getRegistry(null, null).registerComponent(this, oname, null );
             
             // Send j2ee.object.created notification 
             if (this.getObjectName() != null) {

@@ -139,13 +139,13 @@ import org.apache.catalina.util.CustomObjectInputStream;
 import org.apache.catalina.util.ExtensionValidator;
 import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.util.URLEncoder;
-import org.apache.commons.modeler.ManagedBean;
-import org.apache.commons.modeler.Registry;
 import org.apache.naming.ContextBindings;
 import org.apache.naming.resources.BaseDirContext;
 import org.apache.naming.resources.FileDirContext;
 import org.apache.naming.resources.ProxyDirContext;
 import org.apache.naming.resources.WARDirContext;
+import org.apache.tomcat.util.modeler.ManagedBean;
+import org.apache.tomcat.util.modeler.Registry;
 import com.sun.grizzly.util.http.mapper.Mapper;
 
 /**
@@ -5300,7 +5300,7 @@ public class StandardContext
         preRegisterJMX();
 
         if ((oname != null) &&
-            (Registry.getRegistry().getMBeanServer().isRegistered(oname))) {
+            (Registry.getRegistry(null, null).getMBeanServer().isRegistered(oname))) {
             // As things depend on the JMX registration, the context
             // must be reregistered again once properly initialized
             Registry.getRegistry(null, null).unregisterComponent(oname);

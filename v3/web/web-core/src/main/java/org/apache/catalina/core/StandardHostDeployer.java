@@ -80,7 +80,7 @@ import org.apache.catalina.startup.ContextRuleSet;
 import org.apache.catalina.startup.ExpandWar;
 import org.apache.catalina.startup.NamingRuleSet;
 import org.apache.catalina.util.StringManager;
-import org.apache.commons.digester.Digester;
+import org.apache.tomcat.util.digester.Digester;
 import org.xml.sax.SAXParseException;
 
 

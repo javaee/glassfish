@@ -90,7 +90,7 @@ import org.apache.catalina.deploy.LoginConfig;
 import org.apache.catalina.deploy.SecurityConstraint;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.util.RequestUtil;
-import org.apache.commons.digester.Digester;
+import org.apache.tomcat.util.digester.Digester;
 // START SJSWS 6324431
 import org.apache.catalina.core.StandardContext; 
 // END SJSWS 6324431

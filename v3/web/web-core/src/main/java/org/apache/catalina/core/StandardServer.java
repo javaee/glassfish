@@ -116,7 +116,7 @@ import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.util.LifecycleSupport;
 import org.apache.catalina.util.StringManager;
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.modeler.Registry;
+import org.apache.tomcat.util.modeler.Registry;
 import org.glassfish.web.valve.GlassFishValve;
 
 /**
@@ -2395,7 +2395,7 @@ public final class StandardServer
         if( oname==null ) {
             try {
                 oname=new ObjectName( "Catalina:type=Server");
-                Registry.getRegistry().registerComponent(this, oname, null );
+                Registry.getRegistry(null, null).registerComponent(this, oname, null );
             } catch (Exception e) {
                 log.log(Level.SEVERE, "Error registering ",e);
             }

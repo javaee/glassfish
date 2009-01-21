@@ -87,8 +87,6 @@ import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.servlet.ServletContext;
 
-import org.apache.commons.modeler.Registry;
-
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.DefaultContext;
@@ -101,6 +99,7 @@ import org.apache.catalina.Loader;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.util.LifecycleSupport;
 import org.apache.catalina.util.StringManager;
+import org.apache.tomcat.util.modeler.Registry;
 import org.apache.naming.resources.DirContextURLStreamHandler;
 import org.apache.naming.resources.DirContextURLStreamHandlerFactory;
 import org.apache.naming.resources.Resource;
@@ -675,7 +674,7 @@ public class WebappLoader
                                            ":type=Loader,path=" +
                                            path + ",host=" +
                                            ctx.getParent().getName());
-                    Registry.getRegistry().registerComponent(this, oname,
+                    Registry.getRegistry(null, null).registerComponent(this, oname,
                                                              null);
                     controller = oname;
                 } catch (Exception e) {
@@ -694,7 +693,7 @@ public class WebappLoader
     public void destroy() {
         if( controller==oname ) {
             // Self-registration, undo it
-            Registry.getRegistry().unregisterComponent(oname);
+            Registry.getRegistry(null, null).unregisterComponent(oname);
             oname = null;
         }
         initialized = false;

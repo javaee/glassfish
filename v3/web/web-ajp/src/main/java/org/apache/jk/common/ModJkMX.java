@@ -72,13 +72,13 @@ import javax.management.Attribute;
 import javax.management.ObjectName;
 
 import org.apache.jk.core.JkHandler;
-import org.apache.commons.modeler.Registry;
-import org.apache.commons.modeler.BaseModelMBean;
-import org.apache.commons.modeler.ManagedBean;
-import org.apache.commons.modeler.AttributeInfo;
-import org.apache.commons.modeler.OperationInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.tomcat.util.modeler.Registry;
+import org.apache.tomcat.util.modeler.BaseModelMBean;
+import org.apache.tomcat.util.modeler.ManagedBean;
+import org.apache.tomcat.util.modeler.AttributeInfo;
+import org.apache.tomcat.util.modeler.OperationInfo;
 
 /**
  * A small mbean that will act as a proxy for mod_jk2.

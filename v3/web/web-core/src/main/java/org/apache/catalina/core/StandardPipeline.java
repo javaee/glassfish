@@ -85,7 +85,7 @@ import org.glassfish.web.valve.GlassFishValveAdapter;
 import org.glassfish.web.valve.TomcatValveAdapter;
 
 /** CR 6411114 (Lifecycle implementation moved to ValveBase)
-import org.apache.commons.modeler.Registry;
+import org.apache.tomcat.util.modeler.Registry;
 */
 
 

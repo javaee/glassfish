@@ -100,7 +100,7 @@ import org.apache.catalina.util.StringManager;
 //START SJSAS 6202703
 import org.apache.catalina.util.DateTool;
 //END SJSAS 6202703
-import org.apache.commons.modeler.Registry;
+import org.apache.tomcat.util.modeler.Registry;
 // START SJSWS 6324431
 import org.apache.catalina.core.StandardContext;
 // END SJSWS 6324431

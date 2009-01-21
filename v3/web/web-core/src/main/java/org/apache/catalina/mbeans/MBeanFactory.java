@@ -74,6 +74,7 @@ import org.apache.catalina.Server;
 import org.apache.catalina.ServerFactory;
 import org.apache.catalina.Service;
 import org.apache.catalina.authenticator.SingleSignOn;
+import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.ContainerBase;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardDefaultContext;
@@ -94,10 +95,9 @@ import org.apache.catalina.valves.RemoteAddrValve;
 import org.apache.catalina.valves.RemoteHostValve;
 import org.apache.catalina.valves.RequestDumperValve;
 import org.apache.catalina.valves.ValveBase;
-import org.apache.commons.modeler.BaseModelMBean;
-import org.apache.commons.modeler.ManagedBean;
-import org.apache.commons.modeler.Registry;
-import org.apache.catalina.connector.Connector;
+import org.apache.tomcat.util.modeler.BaseModelMBean;
+import org.apache.tomcat.util.modeler.ManagedBean;
+import org.apache.tomcat.util.modeler.Registry;
 import org.glassfish.web.valve.GlassFishValve;
 
 /**

@@ -77,7 +77,7 @@ import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.util.LifecycleSupport;
-import org.apache.commons.modeler.Registry;
+import org.apache.tomcat.util.modeler.Registry;
 
 
 /**
@@ -526,7 +526,7 @@ public class LoggerBase
         if ( getObjectName()==null ) {   
             ObjectName oname = createObjectName();   
             try {   
-                Registry.getRegistry().registerComponent(this, oname, null);
+                Registry.getRegistry(null, null).registerComponent(this, oname, null);
                 if (log.isLoggable(Level.FINE)) {
                     log.fine("Registering logger " + oname);
                 }
@@ -552,7 +552,7 @@ public class LoggerBase
         if ( getObjectName()!=null ) {   
             ObjectName oname = createObjectName();   
             try {   
-                Registry.getRegistry().unregisterComponent(oname); 
+                Registry.getRegistry(null, null).unregisterComponent(oname); 
                 if (log.isLoggable(Level.FINE)) {
                     log.fine("Unregistering logger " + oname);
                 }

@@ -61,7 +61,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.management.ObjectName;
 
-import org.apache.commons.modeler.Registry;
+import org.apache.tomcat.util.modeler.Registry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import com.sun.grizzly.util.net.SSLImplementation;
@@ -942,12 +942,12 @@ public class GrizzlyConnectorLauncher extends CoyoteConnectorLauncher {
         @SuppressWarnings("deprecation")
         public void registerComponent(Object bean, ObjectName oname, String type) 
                 throws Exception{
-            Registry.getRegistry().registerComponent(bean,oname,type);
+            Registry.getRegistry(null, null).registerComponent(bean,oname,type);
         }
 
         @SuppressWarnings("deprecation")
         public void unregisterComponent(ObjectName oname) throws Exception{
-            Registry.getRegistry().
+            Registry.getRegistry(null, null).
                     unregisterComponent(oname);
         }     
     }

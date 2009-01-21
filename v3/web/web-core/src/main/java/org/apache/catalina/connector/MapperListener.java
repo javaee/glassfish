@@ -73,14 +73,14 @@ import javax.management.NotificationFilter;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 
-import org.apache.commons.modeler.Registry;
-
 import org.apache.catalina.Host;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.util.StringManager;
+
+import org.apache.tomcat.util.modeler.Registry;
 
 import com.sun.grizzly.util.buf.MessageBytes;
 import com.sun.grizzly.util.http.mapper.Mapper;
@@ -201,7 +201,7 @@ public class MapperListener
 
         try {
 
-            mBeanServer = Registry.getServer();
+            mBeanServer = Registry.getRegistry(null, null).getMBeanServer();
 
             // Query hosts
             String onStr = domain + ":type=Host,*";

@@ -59,8 +59,8 @@ package org.apache.catalina.startup;
 
 import org.glassfish.internal.api.ServerContext;
 import com.sun.logging.LogDomains;
-import org.apache.commons.digester.Digester;
-import org.apache.commons.digester.RuleSet;
+import org.apache.tomcat.util.digester.Digester;
+import org.apache.tomcat.util.digester.RuleSet;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.xml.sax.EntityResolver;

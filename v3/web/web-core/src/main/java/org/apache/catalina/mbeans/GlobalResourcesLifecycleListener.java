@@ -68,7 +68,7 @@ import javax.naming.OperationNotSupportedException;
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
-import org.apache.commons.modeler.Registry;
+import org.apache.tomcat.util.modeler.Registry;
 
 /**
  * Implementation of <code>LifecycleListener</code> that instantiates the

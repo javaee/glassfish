@@ -172,7 +172,7 @@ public class ThreadPool  {
     public static ThreadPool createThreadPool(boolean jmx) {
 //        if( jmx ) {
 //            try {
-//                Class.forName( "org.apache.commons.modeler.Registry");
+//                Class.forName( "org.apache.tomcat.util.modeler.Registry");
 //                Class tpc=Class.forName( "org.apache.tomcat.util.threads.ThreadPoolMX");
 //                ThreadPool res=(ThreadPool)tpc.newInstance();
 //                return res;
@@ -523,12 +523,6 @@ public class ThreadPool  {
         currentThreadCount = toOpen;
     }
 
-    /** @deprecated */
-    void log( String s ) {
-	log.info(s);
-	//loghelper.flush();
-    }
-    
     /** 
      * Periodically execute an action - cleanup in this case
      */

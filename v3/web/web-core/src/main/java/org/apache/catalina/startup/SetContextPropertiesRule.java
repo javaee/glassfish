@@ -60,7 +60,7 @@ package org.apache.catalina.startup;
 import org.xml.sax.Attributes;
 
 import com.sun.grizzly.util.IntrospectionUtils;
-import org.apache.commons.digester.Rule;
+import org.apache.tomcat.util.digester.Rule;
 
 /**
  * Rule that uses the introspection utils to set properties of a context 

@@ -99,8 +99,8 @@ import org.apache.catalina.Wrapper;
 import org.apache.catalina.logger.LoggerBase;
 import org.apache.catalina.util.LifecycleSupport;
 import org.apache.catalina.util.StringManager;
-import org.apache.commons.modeler.Registry;
 import org.apache.naming.resources.ProxyDirContext;
+import org.apache.tomcat.util.modeler.Registry;
 import org.glassfish.web.valve.GlassFishValve;
 
 /**
@@ -1162,7 +1162,7 @@ public abstract class ContainerBase
             if( lb.getObjectName()==null ) {
                 ObjectName lname=lb.createObjectName();
                 try {
-                    Registry.getRegistry().registerComponent(lb, lname,
+                    Registry.getRegistry(null, null).registerComponent(lb, lname,
                                                              null);
                 } catch( Exception ex ) {
                     log.log(Level.SEVERE, "Can't register logger " + lname,
@@ -1281,7 +1281,7 @@ public abstract class ContainerBase
             LoggerBase lb=(LoggerBase)logger;
             if( lb.getObjectName()!=null ) {
                 try {
-                    Registry.getRegistry().unregisterComponent(lb.getObjectName());
+                    Registry.getRegistry(null, null).unregisterComponent(lb.getObjectName());
                 } catch( Exception ex ) {
                     log.log(Level.SEVERE,
                             "Can't unregister logger " + lb.getObjectName(),

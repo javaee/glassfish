@@ -73,8 +73,8 @@ import org.apache.catalina.Realm;
 import org.apache.catalina.Service;
 import org.apache.catalina.realm.JAASRealm;
 import org.apache.catalina.util.ServerInfo;
-import org.apache.commons.modeler.Registry;
-import org.apache.commons.modeler.modules.MbeansSource;
+import org.apache.tomcat.util.modeler.Registry;
+import org.apache.tomcat.util.modeler.modules.MbeansSource;
 
 /**
  * Standard implementation of the <b>Engine</b> interface.  Each
@@ -406,7 +406,7 @@ public class StandardEngine
                 log.fine( "Register " + domain );
                 oname=new ObjectName(domain + ":type=Engine");
                 controller=oname;
-                Registry.getRegistry().registerComponent(this, oname, null);
+                Registry.getRegistry(null, null).registerComponent(this, oname, null);
             } catch (Throwable t) {
                 log.log(Level.INFO, "Error registering ", t);
             }
@@ -422,7 +422,7 @@ public class StandardEngine
         }
         if( mbeans != null ) {
             try {
-                Registry.getRegistry().invoke(mbeans, "init", false);
+                Registry.getRegistry(null, null).invoke(mbeans, "init", false);
             } catch (Exception e) {
                 log.log(Level.SEVERE, "Error in init() for " + mbeansFile, e);
             }
@@ -483,7 +483,7 @@ public class StandardEngine
 
         if( mbeans != null ) {
             try {
-                Registry.getRegistry().invoke(mbeans, "destroy", false);
+                Registry.getRegistry(null, null).invoke(mbeans, "destroy", false);
             } catch (Exception e) {
                 log.log(Level.SEVERE,
                         sm.getString(
@@ -496,7 +496,7 @@ public class StandardEngine
         if( mbeans != null ) {
             try {
                 for( int i=0; i<mbeans.size() ; i++ ) {
-                    Registry.getRegistry().unregisterComponent(mbeans.get(i));
+                    Registry.getRegistry(null, null).unregisterComponent(mbeans.get(i));
                 }
             } catch (Exception e) {
                 log.log(Level.SEVERE,
@@ -510,7 +510,7 @@ public class StandardEngine
         // force all metadata to be reloaded.
         // That doesn't affect existing beans. We should make it per
         // registry - and stop using the static.
-        Registry.getRegistry().resetMetadata();
+        Registry.getRegistry(null, null).resetMetadata();
         
                 
     }
@@ -540,7 +540,7 @@ public class StandardEngine
 
         if( mbeans != null ) {
             try {
-                Registry.getRegistry().invoke(mbeans, "start", false);
+                Registry.getRegistry(null, null).invoke(mbeans, "start", false);
             } catch (Exception e) {
                 log.log(Level.SEVERE, "Error in start() for " + mbeansFile, e);
             }
@@ -555,7 +555,7 @@ public class StandardEngine
         super.stop();
         if( mbeans != null ) {
             try {
-                Registry.getRegistry().invoke(mbeans, "stop", false);
+                Registry.getRegistry(null, null).invoke(mbeans, "stop", false);
             } catch (Exception e) {
                 log.log(Level.SEVERE, "Error in stop() for " + mbeansFile, e);
             }
@@ -617,11 +617,11 @@ public class StandardEngine
             File mbeansF=new File( mbeansFile );
             mbeansMB.setSource(mbeansF);
             
-            Registry.getRegistry().registerComponent(mbeansMB, 
+            Registry.getRegistry(null, null).registerComponent(mbeansMB, 
                     domain + ":type=MbeansFile", null);
             mbeansMB.load();
             mbeansMB.init();
-            mbeansMB.setRegistry(Registry.getRegistry());
+            mbeansMB.setRegistry(Registry.getRegistry(null, null));
             mbeans=mbeansMB.getMBeans();
             
         } catch( Throwable t ) {

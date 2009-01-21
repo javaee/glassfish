@@ -61,7 +61,7 @@ import java.util.HashMap;
 import java.util.logging.*;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.util.StringManager;
-import org.apache.commons.digester.Digester;
+import org.apache.tomcat.util.digester.Digester;
 
 /**
  * Simple implementation of <b>Realm</b> that reads an XML file to configure

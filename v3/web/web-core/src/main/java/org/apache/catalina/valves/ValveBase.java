@@ -91,7 +91,7 @@ import org.apache.catalina.util.LifecycleSupport;
 // END CR 6411114
 import org.apache.catalina.util.StringManager;
 // START CR 6411114
-import org.apache.commons.modeler.Registry;
+import org.apache.tomcat.util.modeler.Registry;
 // END CR 6411114
 import org.glassfish.web.valve.GlassFishValve;
 
@@ -546,7 +546,7 @@ public abstract class ValveBase
                 if (vname != null) {
                     setObjectName(vname);
                     setController(vname);
-                    Registry.getRegistry().registerComponent(this, vname, getClass().getName());
+                    Registry.getRegistry(null, null).registerComponent(this, vname, getClass().getName());
                 }
             } catch( Throwable t ) {
                 log.log(Level.INFO, "Can't register valve " + this , t );
@@ -558,8 +558,8 @@ public abstract class ValveBase
         try {
             if ((oname != null) && 
                 (oname == controller) &&
-                (Registry.getRegistry().getMBeanServer().isRegistered(oname))) {
-                Registry.getRegistry().getMBeanServer().unregisterMBean(oname);
+                (Registry.getRegistry(null, null).getMBeanServer().isRegistered(oname))) {
+                Registry.getRegistry(null, null).getMBeanServer().unregisterMBean(oname);
                 setObjectName(null);
                 setController(null);
             }

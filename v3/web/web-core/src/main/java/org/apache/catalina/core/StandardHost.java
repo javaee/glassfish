@@ -83,7 +83,7 @@ import org.apache.catalina.deploy.ErrorPage;
 import org.apache.catalina.util.RequestUtil;
 // END GlassFish 862
 import org.apache.catalina.valves.ValveBase;
-import org.apache.commons.modeler.Registry;
+import org.apache.tomcat.util.modeler.Registry;
 
 import org.glassfish.web.valve.GlassFishValve;
 
@@ -1313,7 +1313,7 @@ public class StandardHost
                 // START CR 6368091
                 controller = oname;
                 // END CR 6368091
-                Registry.getRegistry().registerComponent(this, oname, null);
+                Registry.getRegistry(null, null).registerComponent(this, oname, null);
             } catch( Throwable t ) {
                 log.log(Level.INFO, "Error registering ", t);
             }

@@ -61,7 +61,7 @@ import java.util.Iterator;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
-import org.apache.commons.modeler.Registry;
+import org.apache.tomcat.util.modeler.Registry;
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.tcp.ProtocolHandler;
 import com.sun.grizzly.tcp.Request;

@@ -70,7 +70,7 @@ import javax.management.modelmbean.InvalidTargetObjectTypeException;
 import org.apache.catalina.deploy.ContextResource;
 import org.apache.catalina.deploy.NamingResources;
 import org.apache.catalina.deploy.ResourceParams;
-import org.apache.commons.modeler.BaseModelMBean;
+import org.apache.tomcat.util.modeler.BaseModelMBean;
 
 
 /**

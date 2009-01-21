@@ -62,8 +62,8 @@ import org.apache.catalina.Context;
 import org.apache.catalina.Deployer;
 import org.apache.catalina.Host;
 import org.apache.catalina.core.StandardHost;
-import org.apache.commons.digester.Digester;
-import org.apache.commons.digester.Rule;
+import org.apache.tomcat.util.digester.Digester;
+import org.apache.tomcat.util.digester.Rule;
 import org.xml.sax.Attributes;
 
 /**
