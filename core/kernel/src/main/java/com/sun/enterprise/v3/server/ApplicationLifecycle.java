@@ -44,6 +44,7 @@ import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.*;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.deployment.archive.CompositeHandler;
 import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.internal.data.*;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
@@ -138,6 +139,15 @@ public class ApplicationLifecycle implements Deployment {
      * @throws IOException when an error occur
      */
     public ArchiveHandler getArchiveHandler(ReadableArchive archive) throws IOException {
+
+        // first we try the composite handlers as archive handlers can be fooled with the
+        // sub directories and such.
+        for (CompositeHandler handler : habitat.getAllByContract(CompositeHandler.class)) {
+            if (handler.handles(archive)) {
+                return handler;
+            }
+        }
+
         for (ArchiveHandler handler : habitat.getAllByContract(ArchiveHandler.class)) {
             if (!"DEFAULT".equals(handler.getClass().getAnnotation(Service.class).name())) {
                 if (handler.handles(archive)) {
@@ -186,7 +196,7 @@ public class ApplicationLifecycle implements Deployment {
                 // containers that are started are not stopped even if the deployment fail, the main reason
                 // is that some container do not support to be restarted.
                 LinkedList<EngineInfo> sortedEngineInfos =
-                    setupContainerInfos(sniffers, context, report);
+                    setupContainerInfos(handler, sniffers, context, report);
                 if (sortedEngineInfos ==null || sortedEngineInfos.isEmpty()) {
                     report.failure(logger, "There is no installed container capable of handling this application", null);
                     tracker.actOn(logger);
@@ -289,16 +299,20 @@ public class ApplicationLifecycle implements Deployment {
     public LinkedList<EngineInfo> setupContainerInfos(DeploymentContext context, ActionReport report)
         throws Exception {
 
-        return setupContainerInfos(null, context, report);
+        return setupContainerInfos(null, null, context, report);
     }
 
     // set up containers and prepare the sorted ModuleInfos
-    public LinkedList<EngineInfo> setupContainerInfos(
+    public LinkedList<EngineInfo> setupContainerInfos(final ArchiveHandler handler,
             Collection<Sniffer> sniffers, DeploymentContext context,
             ActionReport report) throws Exception {
 
         if (sniffers==null) {
-            sniffers = snifferManager.getSniffers(context.getSource(), context.getClassLoader());
+            ReadableArchive source=context.getSource();
+            if (handler instanceof CompositeHandler) {
+                source = new CompositeArchive(context.getSource(), (CompositeHandler) handler);
+            }
+            sniffers = snifferManager.getSniffers(source, context.getClassLoader());
             if (sniffers.size()==0) {
                 report.failure(logger,localStrings.getLocalString("deploy.unknownmoduletpe","Module type not recognized"));
                 return null;

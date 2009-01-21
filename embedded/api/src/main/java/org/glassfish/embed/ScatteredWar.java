@@ -110,6 +110,10 @@ public class ScatteredWar extends ReadableArchiveAdapter {
     public boolean exists(String name) throws IOException {
         return getFile(name).exists();
     }
+    
+    public Collection<String> getDirectories() throws IOException {
+    	return new Vector<String>();
+   	}
 
     public Enumeration<String> entries() {
         // TODO: abstraction breakage. We need file-level abstraction for archive

@@ -29,6 +29,7 @@ import org.jvnet.hk2.annotations.Service;
 import java.io.*;
 import java.util.Enumeration;
 import java.util.Vector;
+import java.util.Collection;
 import java.util.jar.Manifest;
 import java.util.jar.JarEntry;
 import java.util.zip.ZipEntry;
@@ -104,6 +105,10 @@ public class OutputJarArchive extends JarArchive implements WritableArchive {
      */
     public Enumeration entries() {
         return entries.elements();
+    }
+
+    public Collection<String> getDirectories() throws IOException {
+        return new Vector<String>();
     }
 
     /**

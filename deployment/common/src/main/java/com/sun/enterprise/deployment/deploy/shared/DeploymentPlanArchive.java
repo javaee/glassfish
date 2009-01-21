@@ -31,8 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.*;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.jar.JarEntry;
@@ -128,8 +127,12 @@ public class DeploymentPlanArchive extends JarArchive implements ReadableArchive
             return jarFile.getJarEntry(name);
         }
         return null;
-    }    
-    
+    }
+
+    public Collection<String> getDirectories() throws IOException {
+        return new Vector<String>();
+    }
+
     /**
      * @return an Enumeration of entries for this archive
      */

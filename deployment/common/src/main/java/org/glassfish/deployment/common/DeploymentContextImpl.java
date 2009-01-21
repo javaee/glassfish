@@ -233,6 +233,12 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
         if (moduleMetaData != null) {
             return metadataType.cast(moduleMetaData);
         } else {
+            for (Object metadata : modulesMetaData.values()) {
+                try {
+                    return metadataType.cast(metadata);
+                } catch (ClassCastException e) {
+                }
+            }
             return null;
         }
     }

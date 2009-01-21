@@ -39,6 +39,7 @@ package org.glassfish.javaee.core.deployment;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
+import org.glassfish.api.deployment.archive.CompositeHandler;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.internal.deployment.Deployment;
 import org.jvnet.hk2.annotations.Service;
@@ -66,7 +67,7 @@ import java.util.logging.Level;
  * To change this template use File | Settings | File Templates.
  */
 @Service(name="ear")
-public class EarHandler extends AbstractArchiveHandler implements ArchiveHandler {
+public class EarHandler extends AbstractArchiveHandler implements CompositeHandler {
 
     final private Logger logger = LogDomains.getLogger(EarHandler.class, LogDomains.DPL_LOGGER);
     
@@ -87,7 +88,7 @@ public class EarHandler extends AbstractArchiveHandler implements ArchiveHandler
         Enumeration<String> e = source.entries();
         while (e.hasMoreElements()) {
             String entryName = e.nextElement();
-            if (!entryName.endsWith("xml")) {
+            if (!source.isDirectory(entryName) && !entryName.endsWith("xml")) {
                 ReadableArchive subArchive = source.getSubArchive(entryName);
                 try {
                     ArchiveHandler subHandler = deployment.getArchiveHandler(subArchive);
@@ -126,11 +127,11 @@ public class EarHandler extends AbstractArchiveHandler implements ArchiveHandler
     }
 
     public ClassLoader getClassLoader(ClassLoader parent, ReadableArchive archive) {
-        EarClassLoader cl = new EarClassLoader(new URL[0], null);
-        Enumeration<String> entries = archive.entries();
-        while (entries.hasMoreElements()) {
-            String entryName = entries.nextElement();
-            if (archive.isDirectory(entryName) || !entryName.endsWith("xml")) {
+        EarClassLoader cl = new EarClassLoader(new URL[0], parent);
+        try {
+            for (String entryName : archive.getDirectories()) {
+                if (entryName.equals("META-INF"))
+                    continue;
                 ReadableArchive sub = null;
                 try {
                     sub = archive.getSubArchive(entryName);
@@ -142,7 +143,7 @@ public class EarHandler extends AbstractArchiveHandler implements ArchiveHandler
                         ArchiveHandler handler = deployment.getArchiveHandler(sub);
                         if (handler!=null) {
                             // todo : this is a hack, once again, the handklet is assuming a file:// url
-                            
+
                             ClassLoader subCl = handler.getClassLoader(cl, sub);
                             cl.addModuleClassLoader(subCl);
                         }
@@ -151,8 +152,17 @@ public class EarHandler extends AbstractArchiveHandler implements ArchiveHandler
                     }
 
                 }
+
             }
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         return cl;
+    }
+
+    public boolean accept(ReadableArchive source, String entryName) {
+        // I am hiding everything but the metadata.
+        return entryName.startsWith("META-INF");
+
     }
 }

@@ -48,6 +48,7 @@ import java.util.Collection;
 
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.container.Sniffer;
+import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.internal.data.EngineInfo;
 import org.glassfish.internal.data.ContainerRegistry;
 import org.glassfish.internal.data.ProgressTracker;
@@ -83,11 +84,11 @@ public class EmbeddedApplicationLifecycle extends ApplicationLifecycle {
 
 
     @Override
-    public LinkedList<EngineInfo> setupContainerInfos(
+    public LinkedList<EngineInfo> setupContainerInfos(ArchiveHandler handler, 
             Collection<Sniffer> sniffers, DeploymentContext context,
             ActionReport report) throws Exception {
             
-        LinkedList<EngineInfo> result = super.setupContainerInfos(sniffers, context, report);
+        LinkedList<EngineInfo> result = super.setupContainerInfos(handler, sniffers, context, report);
 
         if (result != null && result.isEmpty()) {
 

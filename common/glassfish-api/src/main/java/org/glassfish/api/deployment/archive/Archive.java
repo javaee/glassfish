@@ -28,6 +28,7 @@ import org.glassfish.api.deployment.DeploymentContext;
 import java.io.IOException;
 import java.io.File;
 import java.util.Enumeration;
+import java.util.Collection;
 import java.util.jar.Manifest;
 import java.net.URI;
 
@@ -64,6 +65,13 @@ public interface Archive {
      */ 
     public Enumeration<String> entries(String prefix);
 
+    /**
+     * Returns the enumeration of first level directories in this
+     * archive
+     * @return enumeration of directories under the root of this archive
+     */
+    public Collection<String> getDirectories() throws IOException;
+    
     /**
      * Returns true if the entry is a directory or a plain file
      * @param name name is one of the entries returned by {@link #entries()}

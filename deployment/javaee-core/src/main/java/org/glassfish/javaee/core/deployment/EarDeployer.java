@@ -40,6 +40,8 @@ import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.deployment.archive.ArchiveHandler;
+import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.api.container.Container;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.ActionReport;
@@ -57,6 +59,7 @@ import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.util.XModuleType;
+import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.logging.LogDomains;
 
 import java.util.*;
@@ -85,6 +88,9 @@ public class EarDeployer implements Deployer {
 
     @Inject
     ApplicationRegistry appRegistry;
+
+    @Inject
+    ArchiveFactory archiveFactory;
 
 
     final static Logger logger = LogDomains.getLogger(EarDeployer.class, LogDomains.DPL_LOGGER);
@@ -124,7 +130,7 @@ public class EarDeployer implements Deployer {
 
         }
 
-
+        context.addModuleMetaData(appInfo);
 
         return true;
     }
@@ -201,6 +207,15 @@ public class EarDeployer implements Deployer {
         LinkedList<EngineInfo> orderedContainers = null;
 
         ActionReport report = habitat.getComponent(ActionReport.class, "hk2-agent");
+        ProgressTracker tracker = new ProgressTracker() {
+            public void actOn(Logger logger) {
+                for (EngineRef module : get("prepared", EngineRef.class)) {
+                    module.clean(bundleContext, logger);
+                }
+
+            }
+
+        };
 
         try {
             // let's get the list of containers interested in this module
@@ -208,7 +223,7 @@ public class EarDeployer implements Deployer {
         } catch(Exception e) {
             e.printStackTrace();
         }
-        return deployment.prepareModule(orderedContainers, md.getName(), bundleContext, report, null);
+        return deployment.prepareModule(orderedContainers, md.getName(), bundleContext, report, tracker);
     }
 
     public ApplicationContainer load(Container container, DeploymentContext context) {

@@ -72,7 +72,10 @@ public class EarClassLoader extends URLClassLoader {
     protected Class<?> findClass(String s) throws ClassNotFoundException {
         for (ClassLoader cl : delegates) {
             try {
-                return (Class<?>) findClass.invoke(cl, s);
+                Class<?> clazz = (Class<?>) findClass.invoke(cl, s);
+                if (clazz!=null) {
+                    return clazz;
+                }
             } catch(IllegalAccessException e) {
                 
             } catch(InvocationTargetException e) {
