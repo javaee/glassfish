@@ -24,6 +24,8 @@
 package com.sun.enterprise.config.serverbeans;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -172,8 +174,25 @@ public final class ConfigBeansUtilities {
         }
         return ( allSysApps );
     }
-    
+
+   /**
+    * Lists the app refs for non-system apps assigned to the specified server
+    * @param sn server name
+    * @return List of ApplicationRef for non-system apps assigned to the specified server
+    */
    public static List<ApplicationRef> getApplicationRefsInServer(String sn) {
+       return getApplicationRefsInServer(sn, true);
+   }
+
+   /**
+    * Lists the app refs for apps assigned to the specified server, excluding
+    * system apps from the result if requested.
+    * @param sn server name to check
+    * @param excludeSystemApps whether system apps should be excluded
+    * @return List of ApplicationRef for apps assigned to the specified server
+    */
+   public static List<ApplicationRef> getApplicationRefsInServer(String sn, boolean excludeSystemApps) {
+
         Servers ss = domain.getServers();
         List<Server> list = ss.getServer();
         Server theServer = null;
@@ -184,9 +203,22 @@ public final class ConfigBeansUtilities {
             }
         }
         if (theServer != null) {
-            return theServer.getApplicationRef();
+            List<Module> modulesToExclude = excludeSystemApps ?
+                domain.getSystemApplications().getModules() : Collections.EMPTY_LIST;
+            List<ApplicationRef> result = new ArrayList<ApplicationRef>();
+          nextAppRef:
+              for (ApplicationRef candidateRef : theServer.getApplicationRef()) {
+                String appRefModuleName = candidateRef.getRef();
+                for (Module sysModule : modulesToExclude) {
+                    if (sysModule.getName().equals(appRefModuleName)) {
+                        break nextAppRef;
+                    }
+                }
+                result.add(candidateRef);
+            }
+            return result;
         } else {
-            return new ArrayList<ApplicationRef>();
+            return Collections.EMPTY_LIST;
         }
     }
 
