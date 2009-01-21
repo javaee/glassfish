@@ -221,6 +221,28 @@
 	        RE profile for release purposes.
             -->
             <id>release-phase2</id>
+
+	    <build>
+                <plugins>
+		    <!-- The installer module requires the dependency of jdk tools.jar -->
+		    <!-- to compile java classes in build.xml.  -->
+                    <plugin>
+                        <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
+                        <artifactId>maven-antrun-extended-plugin</artifactId>
+                        <version> 1.36 </version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>sun.jdk</groupId>
+                                <artifactId>tools</artifactId>
+                                <version>1.6</version>
+                                <scope>system</scope>
+                                <systemPath>${java.home}/../lib/tools.jar</systemPath>
+                            </dependency>
+                        </dependencies>
+                    </plugin>
+	        </plugins>
+	    </build>
+
             <modules>
                 <module>javaee-api</module>
               	<module>common</module>
@@ -290,8 +312,8 @@
 		<module>sun-glassfish/installer</module>
             </modules>
         </profile>
-
     </profiles>
+
     <repositories>
         <!-- first hits nexus repo for any artifact request, then falls to the next repo in the list / order -->
         <repository>
@@ -360,15 +382,6 @@
                     <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
                     <artifactId>maven-antrun-extended-plugin</artifactId>
                     <version> 1.36 </version>
-		    <dependencies>
-        	        <dependency>
-                 	    <groupId>sun.jdk</groupId>
-                 	    <artifactId>tools</artifactId>
-                 	    <version>1.6</version>
-                 	    <scope>system</scope>
-                 	    <systemPath>${java.home}/../lib/tools.jar</systemPath>
-             	        </dependency>
-		    </dependencies>
                 </plugin>
 
                  <plugin>
