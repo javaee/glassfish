@@ -45,26 +45,32 @@ import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
 import org.jvnet.hk2.annotations.Service;
 
-import javax.servlet.annotation.WebContextListener;
+import javax.servlet.ServletContextListener;
+import javax.servlet.ServletContextAttributeListener;
+import javax.servlet.ServletRequestListener;
+import javax.servlet.ServletRequestAttributeListener;
+import javax.servlet.annotation.WebListener;
+import javax.servlet.http.HttpSessionListener;
+import javax.servlet.http.HttpSessionAttributeListener;
 import java.lang.annotation.Annotation;
 import java.util.logging.Level;
 
 /**
  * This handler is responsible in handling
- * javax.servlet.annotation.WebContextListener.
+ * javax.servlet.annotation.WebListener.
  *
  * @author Shing Wai Chan
  */
 @Service
-public class WebContextListenerHandler extends AbstractWebHandler {
-    public WebContextListenerHandler() {
+public class WebListenerHandler extends AbstractWebHandler {
+    public WebListenerHandler() {
     }
 
     /**
      * @return the annotation type this annotation handler is handling
      */
     public Class<? extends Annotation> getAnnotationType() {
-        return WebContextListener.class;
+        return WebListener.class;
     }
 
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
@@ -87,19 +93,24 @@ public class WebContextListenerHandler extends AbstractWebHandler {
             throws AnnotationProcessorException {
 
         Class listenerClass = (Class)ainfo.getAnnotatedElement();
-        if (!javax.servlet.ServletContextListener.class.isAssignableFrom(listenerClass)) {
+        if (!ServletContextListener.class.isAssignableFrom(listenerClass) ||
+                ServletContextAttributeListener.class.isAssignableFrom(listenerClass) ||
+                ServletRequestListener.class.isAssignableFrom(listenerClass) ||
+                ServletRequestAttributeListener.class.isAssignableFrom(listenerClass) ||
+                HttpSessionListener.class.isAssignableFrom(listenerClass) ||
+                HttpSessionAttributeListener.class.isAssignableFrom(listenerClass)) {
             log(Level.SEVERE, ainfo,
                 localStrings.getLocalString(
-                "enterprise.deployment.annotation.handlers.needtoimpl",
-                "The Class {0} having annotation {1} need to implement the interface {2}.",
-                new Object[] { listenerClass.getName(), WebContextListener.class.getName(), javax.servlet.ServletContextListener.class.getName() }));
+                "enterprise.deployment.annotation.handlers.needtoimpllistenerinterface",
+                "The Class {0} having annotation javax.servlet.annotation.WebListener need to implement one of the following interfaces: javax.servlet.ServletContextLisener, javax.servlet.ServletContextAttributeListener, javax.servlet.ServletRequestListener, javax.servletServletRequestAttributeListener, javax.servlet.http.HttpSessionListener, javax.servlet.http.HttpSessionAttributeListener.",
+                listenerClass.getName()));
             return getDefaultFailedResult();
         }
 
-        WebContextListener wclAn = (WebContextListener)ainfo.getAnnotation();
+        WebListener listenerAn = (WebListener)ainfo.getAnnotation();
         AppListenerDescriptor appListener =
             new AppListenerDescriptorImpl(listenerClass.getName());
-        appListener.setDescription(wclAn.description());
+        appListener.setDescription(listenerAn.description());
         webBundleDesc.addAppListenerDescriptor(appListener);
         return getDefaultProcessedResult();
     }
