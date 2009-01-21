@@ -89,6 +89,7 @@
 
   <modules>
     <module>api</module>
+    <module>plugin</module>
     <!-- it's too slow for developers -->
     <!--module>packager</module-->
   </modules>
