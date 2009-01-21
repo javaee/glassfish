@@ -9,7 +9,7 @@ public class WebTest {
 
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
-    private static final String TEST_NAME = "web-servlet-context-listener-annotation";
+    private static final String TEST_NAME = "web-listener-annotation";
     private static final String EXPECTED_RESPONSE = "myservletcontextlistener";
 
     private String host;
