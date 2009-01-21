@@ -38,7 +38,7 @@
  *
  */
 
-package com.sun.enterprise.iiop.security;
+package com.sun.enterprise.common.iiop.security;
 
 /**
  * This class is part of the interface between J2EE RI and security 

@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.iiop.security;
+package com.sun.enterprise.common.iiop.security;
 
 import java.util.*;
 import java.util.logging.*;
