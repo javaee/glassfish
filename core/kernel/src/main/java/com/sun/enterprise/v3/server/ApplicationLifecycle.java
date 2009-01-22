@@ -207,7 +207,8 @@ public class ApplicationLifecycle implements Deployment {
                     ParameterNames.NAME);
 
                 ApplicationInfo appInfo = appRegistry.get(appName);
-                if (appInfo==null) {
+                boolean alreadyRegistered = appInfo!=null;
+                if (!alreadyRegistered) {
 
                     // this is a first time deployment as opposed as load following an unload event,
                     // we need to create the application info
@@ -241,6 +242,9 @@ public class ApplicationLifecycle implements Deployment {
                 } catch(Exception loadException) {
                     report.failure(logger, "Exception while loading the app", loadException);
                     tracker.actOn(logger);
+                    if (!alreadyRegistered) {
+                        appRegistry.remove(appName);    
+                    }
                     return null;
                 }
 

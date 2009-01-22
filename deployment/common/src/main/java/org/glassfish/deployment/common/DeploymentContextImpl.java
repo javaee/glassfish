@@ -156,8 +156,8 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
 
         ClassLoader parentCL = clh.createApplicationParentCL(applibCL, this);
 
-        this.sharableTemp = handler.getClassLoader(parentCL, source);
-        this.cloader = handler.getClassLoader(parentCL, source);
+        this.sharableTemp = handler.getClassLoader(parentCL, getSource());
+        this.cloader = handler.getClassLoader(parentCL, getSource());
     }
 
     public void invalidateTempClassLoader() {
@@ -219,7 +219,7 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
      */
     public File getSourceDir() {
 
-        return new File(source.getURI());
+        return new File(getSource().getURI());
     }
 
     public void addModuleMetaData(Object metaData) {

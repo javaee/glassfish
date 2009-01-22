@@ -143,7 +143,7 @@ public class ModuleInfo {
 
 
             } catch(Exception e) {
-                report.failure(logger, "Exception while invoking " + deployer.getClass() + " prepare method", e);
+                report.failure(logger, "Exception while invoking " + deployer.getClass() + " load method", e);
                 throw e;
             } finally {
                 Thread.currentThread().setContextClassLoader(currentClassLoader);

@@ -150,16 +150,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
         
             wmInfo = new WebModuleConfig();
             
-            WebBundleDescriptor wbd = null;
-
-            Application app = dc.getModuleMetaData(Application.class);
-            Set<WebBundleDescriptor> webDesc = app.getWebBundleDescriptors();
-            Iterator<WebBundleDescriptor> iter = webDesc.iterator();
-            if (iter.hasNext()) {
-                wbd = iter.next();
-            }
-
-            wmInfo.setDescriptor(wbd);
+            wmInfo.setDescriptor(dc.getModuleMetaData(WebBundleDescriptor.class));
             wmInfo.setVirtualServers(virtualServers);
             wmInfo.setLocation(dc.getSourceDir());
             wmInfo.setObjectType(dc.getProps().getProperty(ServerTags.OBJECT_TYPE));

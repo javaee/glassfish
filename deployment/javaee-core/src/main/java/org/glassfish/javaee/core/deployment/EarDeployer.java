@@ -64,7 +64,9 @@ import com.sun.logging.LogDomains;
 
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.io.IOException;
+import java.io.File;
 
 /**
  * Created by IntelliJ IDEA.
@@ -137,6 +139,9 @@ public class EarDeployer implements Deployer {
 
 
     private class CompositeApplicationInfo extends ApplicationInfo {
+
+        Application application=null;
+
         private CompositeApplicationInfo(ReadableArchive source, String name) {
             super(source, name);            
         }
@@ -144,7 +149,7 @@ public class EarDeployer implements Deployer {
         @Override
         public void load(ExtendedDeploymentContext context, ActionReport report, ProgressTracker tracker) throws Exception {
 
-            Application application = context.getModuleMetaData(Application.class);
+            application = context.getModuleMetaData(Application.class);
             final Map<ModuleDescriptor, ExtendedDeploymentContext> contextPerModules =
                     initSubContext(application, context);
             
@@ -157,7 +162,10 @@ public class EarDeployer implements Deployer {
         @Override
         public void start(DeploymentContext context, ActionReport report, ProgressTracker tracker) throws Exception {
 
-            Application application = context.getModuleMetaData(Application.class);
+            if (application==null) {
+                return;
+            }
+            
             final Map<ModuleDescriptor, ExtendedDeploymentContext> contextPerModules =
                     initSubContext(application, context);
 
@@ -165,6 +173,39 @@ public class EarDeployer implements Deployer {
                 final ModuleDescriptor md = application.getModuleDescriptorByUri(module.getName());
                 module.start(contextPerModules.get(md), report, tracker);
             }
+        }
+
+        @Override
+        public void unload(ExtendedDeploymentContext context, ActionReport report) {
+
+            if (application==null) {
+                return;
+            }
+            
+            final Map<ModuleDescriptor, ExtendedDeploymentContext> contextPerModules =
+                    initSubContext(application, context);
+
+            for (ModuleInfo module : super.getModuleInfos()) {
+                final ModuleDescriptor md = application.getModuleDescriptorByUri(module.getName());
+                module.unload(contextPerModules.get(md), report);
+            }
+
+        }
+
+        @Override
+        public void clean(ExtendedDeploymentContext context) throws Exception {
+
+            if (application==null) {
+                return;
+            }
+            
+            final Map<ModuleDescriptor, ExtendedDeploymentContext> contextPerModules =
+                    initSubContext(application, context);
+
+            for (ModuleInfo module : super.getModuleInfos()) {
+                final ModuleDescriptor md = application.getModuleDescriptorByUri(module.getName());
+                module.clean(contextPerModules.get(md));
+            }            
         }
     }
 
@@ -223,7 +264,7 @@ public class EarDeployer implements Deployer {
         } catch(Exception e) {
             e.printStackTrace();
         }
-        return deployment.prepareModule(orderedContainers, md.getName(), bundleContext, report, tracker);
+        return deployment.prepareModule(orderedContainers, md.getArchiveUri(), bundleContext, report, tracker);
     }
 
     public ApplicationContainer load(Container container, DeploymentContext context) {
@@ -261,7 +302,12 @@ public class EarDeployer implements Deployer {
 
                     @Override
                     public ClassLoader getClassLoader() {
-                        return context.getClassLoader();
+                        try {
+                            EarClassLoader appCl = EarClassLoader.class.cast(context.getClassLoader());
+                            return appCl.getModuleClassLoader(bd.getModuleDescriptor().getArchiveUri());
+                        } catch (ClassCastException e) {
+                            return context.getClassLoader();
+                        }                        
                     }
 
                     @Override

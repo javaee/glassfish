@@ -37,10 +37,10 @@ package org.glassfish.javaee.core.deployment;
 
 import java.net.URLClassLoader;
 import java.net.URL;
-import java.util.List;
-import java.util.LinkedList;
+import java.util.*;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
+import java.io.IOException;
 
 /**
  * Simplistic class loader which will delegate to each module class loader in the order
@@ -50,29 +50,47 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class EarClassLoader extends URLClassLoader {
 
-    private final List<ClassLoader> delegates = new LinkedList<ClassLoader>();
-    private final Method findClass; 
+    private final List<ClassLoaderHolder> delegates = new LinkedList<ClassLoaderHolder>();
+    private final Method findClass;
+    private final Method findResource;
+    private final Method findResources;
 
     public EarClassLoader(URL[] urls, ClassLoader classLoader) {
         super(urls, classLoader);
         try {
             findClass = ClassLoader.class.getDeclaredMethod("findClass", new Class[] {String.class});
             findClass.setAccessible(true);
+
+            findResource = ClassLoader.class.getDeclaredMethod("findResource", new Class[] {String.class});
+            findResource.setAccessible(true);
+
+            findResources = ClassLoader.class.getDeclaredMethod("findResources", new Class[] {String.class});
+            findResources.setAccessible(true);
+            
         } catch(NoSuchMethodException e) {
             // this is impossible.
             throw new RuntimeException(e);
         }
     }
 
-    public void addModuleClassLoader(ClassLoader cl) {
-        delegates.add(cl);
+    public void addModuleClassLoader(String moduleName, ClassLoader cl) {
+        delegates.add(new ClassLoaderHolder(moduleName, cl));
+    }
+
+    public ClassLoader getModuleClassLoader(String moduleName) {
+        for (ClassLoaderHolder clh : delegates) {
+            if (moduleName.equals(clh.moduleName)) {
+                return clh.loader;
+            }
+        }
+        return null;
     }
 
     @Override
     protected Class<?> findClass(String s) throws ClassNotFoundException {
-        for (ClassLoader cl : delegates) {
+        for (ClassLoaderHolder clh : delegates) {
             try {
-                Class<?> clazz = (Class<?>) findClass.invoke(cl, s);
+                Class<?> clazz = (Class<?>) findClass.invoke(clh.loader, s);
                 if (clazz!=null) {
                     return clazz;
                 }
@@ -83,5 +101,51 @@ public class EarClassLoader extends URLClassLoader {
             }
         }
         throw new ClassNotFoundException(s);
+    }
+
+    private class ClassLoaderHolder {
+        final ClassLoader loader;
+        final String moduleName;
+
+        private ClassLoaderHolder(String moduleName, ClassLoader loader) {
+            this.loader = loader;
+            this.moduleName = moduleName;
+        }
+    }
+
+    @Override
+    public URL findResource(String s) {
+        for(ClassLoaderHolder clh : delegates) {
+            URL url = null;
+            try {
+                url = (URL) findResource.invoke(clh.loader, s);
+            } catch (IllegalAccessException e) {
+
+            } catch (InvocationTargetException e) {
+
+            }
+            if (url!=null) {
+                return url;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Enumeration<URL> findResources(String s) throws IOException {
+        Vector<URL> urls = new Vector<URL>();
+        for(ClassLoaderHolder clh : delegates) {
+            try {
+                Enumeration<URL> enumeration = (Enumeration<URL>) findResources.invoke(clh.loader, s);
+                while (enumeration.hasMoreElements()) {
+                    urls.add(enumeration.nextElement());
+                }
+            } catch (IllegalAccessException e) {
+
+            } catch (InvocationTargetException e) {
+
+            }
+        }
+        return urls.elements();
     }
 }

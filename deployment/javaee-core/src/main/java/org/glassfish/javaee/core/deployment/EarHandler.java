@@ -44,8 +44,13 @@ import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.internal.deployment.Deployment;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
+import org.xml.sax.SAXParseException;
 import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
 import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.deployment.archivist.ApplicationArchivist;
+import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.logging.LogDomains;
 
 import java.io.IOException;
@@ -73,6 +78,9 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
     
     @Inject
     Deployment deployment;
+
+    @Inject
+    Habitat habitat;
     
     public String getArchiveType() {
         return "ear";
@@ -128,34 +136,41 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
 
     public ClassLoader getClassLoader(ClassLoader parent, ReadableArchive archive) {
         EarClassLoader cl = new EarClassLoader(new URL[0], parent);
+        Application app = null;
         try {
-            for (String entryName : archive.getDirectories()) {
-                if (entryName.equals("META-INF"))
-                    continue;
-                ReadableArchive sub = null;
+            ApplicationArchivist archivist = habitat.getComponent(ApplicationArchivist.class);
+            app = archivist.readStandardDeploymentDescriptor(archive);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (SAXParseException e) {
+            throw new RuntimeException(e);
+        }
+
+        if (app==null) {
+            throw new RuntimeException("Cannot read application metadata");
+        }
+        for (ModuleDescriptor md : app.getModules()) {
+            ReadableArchive sub = null;
+            try {
+                sub = archive.getSubArchive(md.getArchiveUri());
+            } catch (IOException e) {
+                logger.log(Level.FINE, "Sub archive " + md.getArchiveUri() + " seems unreadable" ,e);
+            }
+            if (sub!=null) {
                 try {
-                    sub = archive.getSubArchive(entryName);
-                } catch (IOException e) {
-                    logger.log(Level.FINE, "Sub archive " + entryName + " seems unreadable" ,e);
-                }
-                if (sub!=null) {
-                    try {
-                        ArchiveHandler handler = deployment.getArchiveHandler(sub);
-                        if (handler!=null) {
-                            // todo : this is a hack, once again, the handklet is assuming a file:// url
+                    ArchiveHandler handler = deployment.getArchiveHandler(sub);
+                    if (handler!=null) {
+                        // todo : this is a hack, once again, the handler is assuming a file:// url
 
-                            ClassLoader subCl = handler.getClassLoader(cl, sub);
-                            cl.addModuleClassLoader(subCl);
-                        }
-                    } catch (IOException e) {
-                        logger.log(Level.SEVERE, "Cannot find a class loader for submodule", e);
+                        ClassLoader subCl = handler.getClassLoader(cl, sub);
+                        cl.addModuleClassLoader(md.getArchiveUri(), subCl);
                     }
-
+                } catch (IOException e) {
+                    logger.log(Level.SEVERE, "Cannot find a class loader for submodule", e);
                 }
 
             }
-        } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+
         }
         return cl;
     }
