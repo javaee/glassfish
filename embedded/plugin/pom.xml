@@ -1,6 +1,6 @@
 <project>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.glassfish.maven.plugin</groupId>
+  <groupId>org.glassfish</groupId>
   <artifactId>maven-gfe-plugin</artifactId>
   <packaging>maven-plugin</packaging>
   <version>3.0-Prelude-Embedded-SNAPSHOT</version>
@@ -40,4 +40,21 @@
     </dependency>
 
   </dependencies>
+
+
+
+    <distributionManagement>
+        <repository>            
+            <uniqueVersion>false</uniqueVersion>
+            <!-- the ID maps to ~/.m2/settings.xml, so don't change the ID -->
+            <id>rator.sfbay</id>
+            <url>dav:http://rator.sfbay/maven/repositories/glassfish/</url>
+        </repository>
+    </distributionManagement>
+    
+
+
+
+
+
 </project>
