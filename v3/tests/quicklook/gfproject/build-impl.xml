@@ -316,6 +316,15 @@
 
 
 <!-- the following targets are for running the wsit tests -->
+    <path id="wsit.classpath">
+        <pathelement location="${java.home}/../lib/tools.jar"/>
+    </path>
+
+    <taskdef name="wsimport" classname="com.sun.tools.ws.ant.WsImport">
+         <classpath refid="class.path"/> 
+         <classpath refid="wsit.classpath"/>
+    </taskdef>
+
     <target name="runwsittest-impl">
         <antcall target="runwsittest-impl-class"/>
         <antcall target="runwsittest-impl-xml"/>
