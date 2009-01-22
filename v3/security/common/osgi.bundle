@@ -1,5 +1,5 @@
 -exportcontents: \
-                        com.sun.enterprise.iiop.security, \
+                        com.sun.enterprise.common.iiop.security, \
                         com.sun.enterprise.security.auth.digest.api, \
                         com.sun.enterprise.security.auth.digest.impl, \
                         com.sun.enterprise.security.auth.login.common, \
