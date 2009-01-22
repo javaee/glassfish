@@ -37,8 +37,32 @@
 
 package org.glassfish.maven;
 
+
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.project.MavenProject;
+import org.glassfish.embed.Application;
+import org.glassfish.embed.EmbeddedInfo;
+import org.glassfish.embed.ScatteredWar;
+import org.glassfish.embed.Server;
+
+/**
+ * Executes GlassFish v3 inside the current Maven and deploys the application being developed.
+ *
+ * @goal run
+ *
+ * @execute phase=compile
+ * @requiresDependencyResolution runtime
+ *
+ * @author Kohsuke Kawaguchi
+ * @author Byron Nevins
+ */
 
 /**
  * Says "Hi" to the user.
@@ -46,9 +70,41 @@ import org.apache.maven.plugin.MojoExecutionException;
  */
 public class RunMojo extends AbstractMojo
 {
-    public void execute() throws MojoExecutionException
-    {
-		String s = 
+    /**
+     *
+     * @parameter expression="${project}"
+     * @required
+     * @readonly
+     */
+    protected MavenProject project;
+
+    /**
+     * Directory for static resources, JSPs, etc.
+     *
+     * @parameter expression="${basedir}/src/main/webapp"
+     */
+    protected File resourcesDirectory;
+
+    /**
+     * If web.xml needs to be picked up from another location,
+     * you can do that by specifying its location here.
+     *
+     * <p>
+     * Defaults to {@code $resourceDirectory/WEB-INF/web.xml}
+     *
+     * @parameter
+     */
+    protected File webXml;
+
+    /**
+     * HTTP port to use. Defaults to 8080.
+     *
+     * @parameter
+     */
+    protected int httpPort = 8080;
+
+    public void execute() throws MojoExecutionException, MojoFailureException {
+		String s =
 			"**********************************************\n" +
 			"**********************************************\n" +
 			"**********************************************\n" +
@@ -57,7 +113,49 @@ public class RunMojo extends AbstractMojo
 			"******                              **********\n" +
 			"**********************************************\n" +
 			"**********************************************\n" +
-			"**********************************************\n"; 
+			"**********************************************\n";
         getLog().info(s);
+
+
+
+        try {
+            EmbeddedInfo info = new EmbeddedInfo();
+            info.setHttpPort(httpPort);
+            Server glassfish = new Server(info);
+            glassfish.start();
+
+            List<URL> classpath = new ArrayList<URL>();
+
+            for (Artifact a : (Set<Artifact>) project.getArtifacts()) {
+                classpath.add(a.getFile().toURI().toURL());
+            }
+            // resources, so that changes take effect in real time
+            for (Resource res : (List<Resource>) project.getBuild().getResources()) {
+                classpath.add(new File(res.getDirectory()).toURI().toURL());
+            }
+            // main artifacts
+            classpath.add(new File(project.getBuild().getOutputDirectory()).toURI().toURL());
+
+            ScatteredWar war = new ScatteredWar(
+                project.getArtifactId(),
+                resourcesDirectory,
+                webXml,
+                classpath
+            );
+
+            while(true) {
+                Application app = glassfish.deploy(war);
+
+                System.out.println("Hit ENTER for redeploy");
+
+                // wait for enter
+                new BufferedReader(new InputStreamReader(System.in)).readLine();
+
+                app.undeploy();
+            }
+        }
+        catch (Exception e) {
+            throw new MojoExecutionException(e.getMessage(),e);
+        }
     }
 }
