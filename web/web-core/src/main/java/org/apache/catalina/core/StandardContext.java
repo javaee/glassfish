@@ -88,6 +88,7 @@ import javax.management.ObjectName;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.servlet.FilterConfig;
+import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextAttributeListener;
 import javax.servlet.ServletContextEvent;
@@ -2883,12 +2884,14 @@ public class StandardContext
      * Adds servlet mappings from the given url patterns to the servlet
      * with the given servlet name to this servlet context.
      */
-    public void addServletMapping(String servletName,
-                                  String[] urlPatterns) {
-        if (urlPatterns != null) {
-            for (String urlPattern : urlPatterns) {
-                addServletMapping(servletName, urlPattern);
-            }
+    public void addServletMappings(String servletName,
+                                   String... urlPatterns) {
+        if (urlPatterns == null || urlPatterns.length == 0) {
+            throw new IllegalArgumentException
+                    (sm.getString("standardContext.servletMapping.missingUrlPattern", servletName));
+        }
+        for (String urlPattern : urlPatterns) {
+            addServletMapping(urlPattern, servletName);
         }
     }
 
@@ -2917,9 +2920,32 @@ public class StandardContext
 
         wrapper.setLoadOnStartup(loadOnStartup);
 
+       addChild(wrapper);
+    }
+
+    /**
+     * Adds the given servlet instance with the given name to this servlet
+     * context and initializes it.
+     *
+     * @param servletName the servlet name
+     * @param servlet the servlet instance
+     *
+     * @throws ServletException if the servlet fails to be initialized
+     */
+    public void addServlet(String servletName, Servlet instance)
+            throws ServletException {
+        if (!(instance instanceof Servlet)) {
+            throw new IllegalArgumentException("Not an instance of " +
+                                               "javax.servlet.Servlet");
+        }
+        StandardWrapper wrapper = (StandardWrapper) createWrapper();
+        wrapper.setName(servletName);
+        wrapper.setServlet(instance);
         addChild(wrapper);
     }
 
+
+    /**
 
     /**
      * Add a JSP tag library for the specified URI.
