@@ -130,8 +130,10 @@
     <security-role>
         <role-name>admin</role-name>
     </security-role>
+	<!--
     <error-page>
 		<exception-type>javax.faces.application.ViewExpiredException</exception-type>
         <location>/</location>
     </error-page>
+	-->
 </web-app>

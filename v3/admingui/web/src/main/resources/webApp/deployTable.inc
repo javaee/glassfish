@@ -157,9 +157,16 @@
         <!if $session{supportCluster}>
             <sun:hyperlink id="clusterLink" rendered="#{td.value.hasLaunch}" text="$resource{i18n.deployTable.launch}" 
                 onClick="var win=window.open('webApplicationLinks.jsf?appID=#{td.value.name}&contextRoot=#{td.value.contextRoot}','ViewerWindow','width='+.75*screen.width+',height='+.75*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes,directories=yes,location=yes');win.focus(); return false;" />
-        </!if>        
+        </!if>
+        // TODO: These resources should probably be in a web plugin bundle and not the core
         <sun:hyperlink id="link2" text="$resource{i18n.deployTable.redeploy}" 
             url="#{request.contextPath}/web/webApp/redeploy.jsf?appName=#{td.value.name}&appType=$pageSession{appType}&nextPage=#{listPageLink}" />
+        <sun:hyperlink id="restartLink" text="$resource{web.restart.restart}">
+            <!command
+                prepareSuccessfulMsg();
+                restartApplication(appName="#{td.value.name}");
+            />
+        </sun:hyperlink>
         
     </sun:tableColumn>
     

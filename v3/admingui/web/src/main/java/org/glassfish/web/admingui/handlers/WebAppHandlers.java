@@ -69,12 +69,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.enterprise.deploy.spi.Target;
 import javax.management.ObjectName;
 
 import org.glassfish.admingui.common.util.AMXRoot;
 import org.glassfish.admingui.common.util.AMXUtil;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.TargetUtil;
+import org.glassfish.deployment.client.DeploymentFacility;
 
 public class WebAppHandlers {
 
@@ -257,6 +259,30 @@ public class WebAppHandlers {
         handlerCtx.setOutputValue("displayType", displayMap.get(appType));
     }
 
+   @Handler(id = "restartApplication",
+        input = {
+            @HandlerInput(name = "appName", type = String.class, required = true)
+        })
+    // TODO: This may have issues with multiple VS/targets.  See DeploymentHandler.changeAppStatus()
+    public static void restartApplication(HandlerContext handlerCtx) {
+        String appName = (String) handlerCtx.getInputValue("appName");
+        String[] targetNames = new String[]{"server"};
+        try {
+            DeploymentFacility df = GuiUtil.getDeploymentFacility();
+            Target[] targets = df.createTargets(targetNames);
+            df.disable(targets, appName);
+            df.enable(targets, appName);
+            // Mimic behavior in DeploymentHandler.changeAppStatus
+            if (AMXRoot.getInstance().isEE()) {
+                GuiUtil.prepareAlert(handlerCtx, "success", GuiUtil.getMessage("org.glassfish.web.admingui.Strings", "restart.success"), null);
+            } else {
+                GuiUtil.prepareAlert(handlerCtx, "success", GuiUtil.getMessage("org.glassfish.web.admingui.Strings", "restart.successPE"), null);
+            }
+        } catch (Exception ex) {
+            GuiUtil.handleException(handlerCtx, ex);
+        }
+
+    }
 //    
 //    /** 
 //     * <p> Handler to set the viewKey which is used to decide if user wants summary or detail view.
