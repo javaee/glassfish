@@ -40,7 +40,7 @@ import org.testng.Assert;
 
 import java.io.*;
 
-public class WsitJaxwsFromWsdlTestNG {
+public class JaxwsFromWsdlTestNG {
 
     @Test(groups ={ "init"} )
     public void testAddNumbers_JaxwsFromWsdl() throws Exception{

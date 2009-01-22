@@ -37,8 +37,7 @@
 -->
 
 
-
-<project basedir="." default="help" name="wsitJaxWsFromWsdl">
+<project basedir="." default="help" name="JaxwsFromWsdl">
 
     <property file="build.properties" />
     <property file="${ws.root}/gfproject/${deploy.platform}-config.properties"/>
@@ -124,9 +123,9 @@
 
     <target  name="runtest">
         <antcall target="runwsittest-impl">
-           <param name="contextroot" value="${testng.test.name}"/>
+           <param name="contextroot" value="${contextroot}"/>
            <param name="testng.test.name" value="${testng.test.name}"/>
-           <param name="testng.testclient" value="WsitJaxwsFromWsdlTestNG"/>
+           <param name="testng.testclient" value="${testng.test.name}TestNG"/>
         </antcall>
     </target>
 
