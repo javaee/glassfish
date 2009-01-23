@@ -99,21 +99,27 @@ abstract class ModuleScanner<T> extends JavaEEScanner implements Scanner<T>, Pos
         JarFile jf = new JarFile(jarFile);
         
 
-        Enumeration<JarEntry> entriesEnum = jf.entries();
-        while(entriesEnum.hasMoreElements()) {
-            JarEntry je = entriesEnum.nextElement();
-            if (je.getName().endsWith(".class")) {
-                if (processAllClasses) {
-                    addEntry(je);
-                } else {
-                    // check if it contains top level annotations...
-                    ReadableByteChannel channel = Channels.newChannel(jf.getInputStream(je));
-                    if (channel!=null) {
-                        if (classFile.containsAnnotation(channel, je.getSize())) {
-                            addEntry(je);                     
+        try {
+            Enumeration<JarEntry> entriesEnum = jf.entries();
+            while(entriesEnum.hasMoreElements()) {
+                JarEntry je = entriesEnum.nextElement();
+                if (je.getName().endsWith(".class")) {
+                    if (processAllClasses) {
+                        addEntry(je);
+                    } else {
+                        // check if it contains top level annotations...
+                        ReadableByteChannel channel = Channels.newChannel(jf.getInputStream(je));
+                        if (channel!=null) {
+                            if (classFile.containsAnnotation(channel, je.getSize())) {
+                                addEntry(je);                     
+                            }
                         }
                     }
                 }
+            }
+        } finally {
+            if (jf != null) {
+                jf.close();
             }
         }
     }

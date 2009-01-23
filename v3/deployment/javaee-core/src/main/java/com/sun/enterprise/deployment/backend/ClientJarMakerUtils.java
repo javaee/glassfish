@@ -347,27 +347,33 @@ class ClientJarMakerUtils {
                     continue;
                 }
                 JarFile jar = new JarFile(jarFile);
-                Manifest mf = jar.getManifest();
-                List<String> classPathLibs = getClassPathElementsFromManifest(
+                try {
+                    Manifest mf = jar.getManifest();
+                    List<String> classPathLibs = getClassPathElementsFromManifest(
                         mf, appArchiveURI, appArchiveURI.resolve(jarFile.toURI()));
-                /*
-                 * Add each class path element from the manifest to the list of 
-                 * libraries if it does not already exist.
-                 */
-                for (String element : classPathLibs) {
-                    if ( ! libraries.contains(element)) {
-                        it.add(element);
-                        if (isFine) {
-                            elementsAdded.append(element).append(" ");
+                    /*
+                     * Add each class path element from the manifest to the list of 
+                     * libraries if it does not already exist.
+                     */
+                    for (String element : classPathLibs) {
+                        if ( ! libraries.contains(element)) {
+                            it.add(element);
+                            if (isFine) {
+                                elementsAdded.append(element).append(" ");
+                            }
                         }
                     }
-                }
-                if (elementsAdded != null) {
-                    if (elementsAdded.length() > 0) {
-                        logger.fine("Added following entries from " + 
-                            entry + " Class-Path to client JAR classpath: [ " + elementsAdded.toString() + "]");
-                    } else {
-                        logger.fine("No Class-Path entries to add to client JAR classpath from manifest of " + entry);
+                    if (elementsAdded != null) {
+                        if (elementsAdded.length() > 0) {
+                            logger.fine("Added following entries from " + 
+                                entry + " Class-Path to client JAR classpath: [ " + elementsAdded.toString() + "]");
+                        } else {
+                            logger.fine("No Class-Path entries to add to client JAR classpath from manifest of " + entry);
+                        }
+                    }
+                } finally {
+                    if (jar != null) {
+                        jar.close();
                     }
                 }
             }

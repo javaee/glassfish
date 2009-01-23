@@ -63,13 +63,19 @@ public class JarScanner extends JavaEEScanner implements Scanner<Object> {
         this.jarFile = jarFile;
         JarFile jf = new JarFile(jarFile);
         
-        Enumeration<JarEntry> entriesEnum = jf.entries();
-        while(entriesEnum.hasMoreElements()) {
-            JarEntry je = entriesEnum.nextElement();
-            if (je.getName().endsWith(".class")) {
-                entries.add(je);
+        try {
+            Enumeration<JarEntry> entriesEnum = jf.entries();
+            while(entriesEnum.hasMoreElements()) {
+                JarEntry je = entriesEnum.nextElement();
+                if (je.getName().endsWith(".class")) {
+                    entries.add(je);
+                }
+            }        
+        } finally {
+            if (jf != null) {
+                jf.close();
             }
-        }        
+        }
     }    
     
     public ClassLoader getClassLoader() {
