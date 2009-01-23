@@ -227,6 +227,11 @@ public class ApplicationLifecycle implements Deployment {
                     if (appInfo==null) {
                         appInfo = new ApplicationInfo(context.getSource(), appName);
                         appInfo.addModule(moduleInfo);
+
+                        for (Object m : context.getModuleMetadata()) {
+                            appInfo.addMetaData(m);
+                        }
+
                     }
 
                     appRegistry.add(appName, appInfo);
@@ -506,6 +511,7 @@ public class ApplicationLifecycle implements Deployment {
         DeploymentContext context, ActionReport report,
         ProgressTracker tracker) throws Exception {
 
+        List<EngineRef> addedEngines = new LinkedList<EngineRef>();
         for (EngineInfo engineInfo : sortedEngineInfos) {
 
             // get the deployer
@@ -517,6 +523,7 @@ public class ApplicationLifecycle implements Deployment {
                 // construct an incomplete EngineRef which will be later
                 // filled in at loading time
                 EngineRef engineRef = new EngineRef(engineInfo, adapter, null);
+                addedEngines.add(engineRef);
                 tracker.add("prepared", EngineRef.class, engineRef);
 
                 tracker.add(Deployer.class, deployer);
@@ -527,7 +534,7 @@ public class ApplicationLifecycle implements Deployment {
         }
         // I need to create the application info here from the context, or something like this.
         // and return the application info from this method for automatic registration in the caller.
-        return new ModuleInfo(moduleName, tracker.get("prepared",EngineRef.class));
+        return new ModuleInfo(moduleName, addedEngines);
     }
 
     protected Collection<EngineInfo> setupContainer(Sniffer sniffer, Module snifferModule,  Logger logger, ActionReport report) {

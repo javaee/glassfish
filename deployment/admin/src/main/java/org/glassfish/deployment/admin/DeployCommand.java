@@ -254,14 +254,17 @@ public class DeployCommand implements AdminCommand {
                     logger.fine(localStrings.getLocalString("deploy.cannotcreateexpansiondir", "Error while creating directory for jar expansion: {0}",expansionDir));
                 }
                 try {
+                    Long start = System.currentTimeMillis();
                     archiveHandler.expand(archive, archiveFactory.createArchive(expansionDir));
+                    System.out.println("Deployment expansion took " + (System.currentTimeMillis() - start));
+                    
                     // Close the JAR archive before losing the reference to it or else the JAR remains locked.
                     try {
                         archive.close();
                     } catch(IOException e) {
                         report.failure(logger,localStrings.getLocalString("deploy.errorclosingarchive","Error while closing deployable artifact {0}", file.getAbsolutePath()),e);
                         return;
-                    }
+                    }                                                        
                     // Proceed using the expanded directory.
                     file = expansionDir;
                     archive = archiveFactory.openArchive(expansionDir);

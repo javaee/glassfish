@@ -42,6 +42,7 @@ import org.glassfish.internal.data.ApplicationInfo;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.util.List;
+import java.util.Collection;
 import java.net.URISyntaxException;
 import java.net.MalformedURLException;
 
@@ -86,8 +87,6 @@ public interface ExtendedDeploymentContext extends DeploymentContext {
     public void createClassLoaders(ClassLoaderHierarchy clh, ArchiveHandler handler)
             throws URISyntaxException, MalformedURLException;
 
-    public void setApplicationInfo(ApplicationInfo appInfo);
-    public ApplicationInfo getApplicationInfo();
 
     public void clean();
 }

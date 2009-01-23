@@ -113,6 +113,9 @@ public class EarDeployer implements Deployer {
             ParameterNames.NAME);
         
         final ApplicationInfo appInfo = new CompositeApplicationInfo(context.getSource(), appName);
+        for (Object m : context.getModuleMetadata()) {
+            appInfo.addMetaData(m);
+        }
 
         final Map<ModuleDescriptor, ExtendedDeploymentContext> contextPerModules =
                 this.initSubContext(application, context);

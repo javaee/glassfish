@@ -243,6 +243,12 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
         }
     }
 
+    public Collection<Object> getModuleMetadata() {
+        List<Object> copy = new ArrayList<Object>();
+        copy.addAll(modulesMetaData.values());
+        return copy;
+    }
+
     /**
      * Returns the properties that will be persisted as a key value pair at
      * then end of deployment. That allows individual Deployers implementation
@@ -342,16 +348,6 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
             }
         }
         return urls;
-    }
-
-    ApplicationInfo appInfo = null;
-
-    public void setApplicationInfo(ApplicationInfo appInfo) {
-        this.appInfo = appInfo;
-    }
-
-    public ApplicationInfo getApplicationInfo() {
-        return appInfo;
     }
 
     public void clean() {

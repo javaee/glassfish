@@ -29,6 +29,7 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import java.io.File;
 import java.lang.instrument.ClassFileTransformer;
 import java.util.Properties;
+import java.util.Collection;
 
 /**
  * Useful services for Deployer service implementation
@@ -136,4 +137,11 @@ public interface DeploymentContext extends ApplicationContext, ExecutionContext 
      * deployment or revert to a mode without the byteocode enhancement feature.
      */
     public void addTransformer(ClassFileTransformer transformer);
+
+    /**
+     * Returns all the metadata assocated with this deployment
+     *
+     * @return collection of metadata added to the context
+     */
+    public Collection<Object> getModuleMetadata();        
 }

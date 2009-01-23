@@ -170,10 +170,12 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
             validateApplication(dc);
 
             prepareScratchDirs(dc);
-            String objectType = getObjectType(dc);
-            if (objectType != null) {
-                dc.getProps().setProperty(ServerTags.OBJECT_TYPE,
-                    objectType);
+            if (dc.getProps().getProperty(ServerTags.OBJECT_TYPE)==null) {
+                String objectType = getObjectType(dc);
+                if (objectType != null) {
+                    dc.getProps().setProperty(ServerTags.OBJECT_TYPE,
+                        objectType);
+                }
             }
 
             generateArtifacts(dc);
@@ -212,6 +214,7 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
         if (app != null && !app.isValidated()) {
             app.setClassLoader(dc.getClassLoader());
             app.visit((ApplicationVisitor) new ApplicationValidator());
+            app.setValidated(true);
         }
     }
 
@@ -270,13 +273,13 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
      * @param context deployment context
      */
     public void clean(DeploymentContext context) {
-        String appName = context.getCommandParameters().getProperty(
-            ParameterNames.NAME);
-        Application app = getApplicationFromApplicationInfo(appName);
-        if (app != null) {
-            context.addModuleMetaData(app);
-            if (undeploymentVisitor!=null) {
-                undeploymentVisitor.accept(app);
+        if (undeploymentVisitor!=null) {
+            String appName = context.getCommandParameters().getProperty(
+                ParameterNames.NAME);
+            Application app = getApplicationFromApplicationInfo(appName);
+            if (app != null) {
+                context.addModuleMetaData(app);
+                   undeploymentVisitor.accept(app);
             }
         }
     }
@@ -323,17 +326,7 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
         if (appInfo == null) {
             return null;
         }
-
-        for (ModuleInfo module : appInfo.getModuleInfos()) {
-            for (EngineRef ref : module.getEngineRefs()) {
-                ApplicationContainer appCtr = ref.getApplicationContainer();
-                Object descriptor = appCtr.getDescriptor();
-                if (descriptor instanceof BundleDescriptor) {
-                    return ((BundleDescriptor)descriptor).getApplication();
-                }
-            }
-        }
-        return null;
+        return appInfo.getMetaData(Application.class);
     }
 
     protected void handleDeploymentPlan(String deploymentPlan,

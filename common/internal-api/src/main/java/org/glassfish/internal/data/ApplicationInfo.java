@@ -61,6 +61,7 @@ public class ApplicationInfo {
     final private Collection<ModuleInfo> modules = new LinkedList<ModuleInfo>();
     final private String name;
     final private ReadableArchive source;
+    final private Map<Class<? extends Object>, Object> metaData = new HashMap<Class<? extends Object>, Object>();
 
 
     /**
@@ -75,6 +76,13 @@ public class ApplicationInfo {
         this.source = source;
     }
     
+    public void addMetaData(Object o) {
+        metaData.put(o.getClass(), o);
+    }
+
+    public <T> T getMetaData(Class<T> c) {
+        return c.cast(metaData.get(c));
+    }
 
     
     /**
