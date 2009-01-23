@@ -341,7 +341,9 @@ public class Server {
         // TODO: admin CLI should be really moved to a separate class
         parser.drop(AdminConsoleAdapter.class);
 
-        // don't care about auto-deploy either
+        /* IT 56 -- for now Auto Deploy is NOT turned off by default
+         * TODO see the IT issue
+
         try {
             Class.forName("org.glassfish.deployment.autodeploy.AutoDeployService");
             parser.drop(AutoDeployService.class);
@@ -349,6 +351,7 @@ public class Server {
         catch (Exception e) {
             // ignore.  It may not be available
         }
+        */
 
         //TODO: workaround for a bug
         parser.replace(ApplicationLifecycle.class, EmbeddedApplicationLifecycle.class);
