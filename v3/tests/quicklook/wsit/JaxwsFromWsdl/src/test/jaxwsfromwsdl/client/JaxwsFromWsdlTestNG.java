@@ -34,7 +34,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package fromwsdl.client;
+package jaxwsfromwsdl.client;
 import org.testng.annotations.Test;
 import org.testng.Assert;
 

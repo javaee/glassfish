@@ -54,14 +54,18 @@
 
     <target name="build-setup">
         <echo message="build-setup: build.home=${build.home}"/>
-        <mkdir dir="${build.home}"/>
         <mkdir dir="${build.classes.home}"/>
         <mkdir dir="${build.war.home}"/>
     </target>
 
-    <target name="build-clean">
-        <delete dir="${build.home}" includeEmptyDirs="true" />
-    </target>
+    <path id="wsit.classpath">
+        <pathelement location="${java.home}/../lib/tools.jar"/>
+    </path>
+
+    <taskdef name="wsimport" classname="com.sun.tools.ws.ant.WsImport">
+         <classpath refid="class.path"/> 
+         <classpath refid="wsit.classpath"/>
+    </taskdef>
 
     <target name="build-server-wsdl" depends="build-setup">
         <wsimport
@@ -90,7 +94,7 @@
                 includes="*.wsdl, *.xsd"
                 prefix="WEB-INF/wsdl"/>
            <classes dir="${build.classes.home}">        
-              <include name="**/fromwsdl/server/**/*.class"/>
+              <include name="**/jaxwsfromwsdl/server/**/*.class"/>
            </classes>
         </war>
         <copy file="${war.file.ext}" tofile="${dist.dir}/${war.file.ext}"/>

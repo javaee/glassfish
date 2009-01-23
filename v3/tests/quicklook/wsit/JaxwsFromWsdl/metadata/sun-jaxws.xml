@@ -43,9 +43,9 @@
     version="2.0">
 
     <endpoint
-        name="wsitJaxWsFromWsdl"
-        interface="fromwsdl.server.AddNumbersPortType"
-        implementation="fromwsdl.server.AddNumbersImpl"
+        name="JaxwsFromWsdl"
+        interface="jaxwsfromwsdl.server.AddNumbersPortType"
+        implementation="jaxwsfromwsdl.server.AddNumbersImpl"
         wsdl="WEB-INF/wsdl/AddNumbers.wsdl"
         service="{http://example.org}AddNumbersService"
         port="{http://example.org}AddNumbersPort"

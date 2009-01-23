@@ -34,9 +34,9 @@
  * holder.
  */
 
-package fromwsdl.server;
+package jaxwsfromwsdl.server;
 
-@javax.jws.WebService (endpointInterface="fromwsdl.server.AddNumbersPortType")
+@javax.jws.WebService (endpointInterface="jaxwsfromwsdl.server.AddNumbersPortType")
 public class AddNumbersImpl{
     
     /**

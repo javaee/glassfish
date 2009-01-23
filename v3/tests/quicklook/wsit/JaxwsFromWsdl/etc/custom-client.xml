@@ -45,11 +45,11 @@
     wsdlLocation="http://localhost:8080/JaxwsFromWsdl/addnumbers?wsdl"
     xmlns="http://java.sun.com/xml/ns/jaxws">    
     <bindings node="ns1:definitions" xmlns:ns1="http://schemas.xmlsoap.org/wsdl/">
-        <package name="fromwsdl.client"/>
+        <package name="jaxwsfromwsdl.client"/>
     </bindings>
     <bindings node="ns1:definitions/ns1:types/xsd:schema[@targetNamespace='http://example.org']" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://schemas.xmlsoap.org/wsdl/">
         <jaxb:schemaBindings>
-            <jaxb:package name="fromwsdl.client"/>
+            <jaxb:package name="jaxwsfromwsdl.client"/>
         </jaxb:schemaBindings>
     </bindings>
 </bindings>

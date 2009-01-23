@@ -37,20 +37,20 @@
 -->
 
 <web-app version="2.4" mlns="http://java.sun.com/xml/ns/j2ee">
-  <display-name>wsitJaxWsFromWsdl</display-name>
-  <description>wsitJaxWsFromWsdl</description>
+  <display-name>JaxwsFromWsdl</display-name>
+  <description>JaxwsFromWsdl</description>
   <listener>
     <listener-class>com.sun.xml.ws.transport.http.servlet.WSServletContextListener</listener-class>
   </listener>
   <servlet>
-    <servlet-name>wsitJaxWsFromWsdl</servlet-name>
-    <display-name>wsitJaxWsFromWsdl</display-name>
-    <description>JAX-WS endpoint - fromwsdl</description>
+    <servlet-name>JaxwsFromWsdl</servlet-name>
+    <display-name>JaxwsFromWsdl</display-name>
+    <description>JAX-WS endpoint - jaxwsfromwsdl</description>
     <servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet-mapping>
-    <servlet-name>wsitJaxWsFromWsdl</servlet-name>
+    <servlet-name>JaxwsFromWsdl</servlet-name>
     <url-pattern>/addnumbers</url-pattern>
   </servlet-mapping>
   <session-config>
