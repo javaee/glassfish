@@ -120,8 +120,6 @@ public class EarDeployer implements Deployer {
         final Map<ModuleDescriptor, ExtendedDeploymentContext> contextPerModules =
                 this.initSubContext(application, context);
 
-        context.getProps().put("SUB_CONTEXTS", contextPerModules);
-
         try {
             doOnAllBundles(application, new BundleBlock<ModuleInfo>() {
                 public ModuleInfo doBundle(ModuleDescriptor bundle) throws Exception {

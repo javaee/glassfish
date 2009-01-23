@@ -272,17 +272,23 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                     ActionReport report = new HTMLActionReporter();
 
                     List<Sniffer> sniffers = new ArrayList<Sniffer>();
-                    for (String snifferType : snifferTypes) {
-                        Sniffer sniffer = snifferManager.getSniffer(snifferType);
-                        if (sniffer!=null) {
-                            sniffers.add(sniffer);
-                        } else {
-                            logger.severe("Cannot find sniffer for module type : " + snifferType);
+                    if (app.getModule().size()==1) {
+                        for (String snifferType : snifferTypes) {
+                            Sniffer sniffer = snifferManager.getSniffer(snifferType);
+                            if (sniffer!=null) {
+                                sniffers.add(sniffer);
+                            } else {
+                                logger.severe("Cannot find sniffer for module type : " + snifferType);
+                            }
                         }
-                    }
-                    if (sniffers.isEmpty()) {
-                        logger.severe("Cannot find any sniffer for deployed app " + appName);
-                        return;
+                        if (sniffers.isEmpty()) {
+                            logger.severe("Cannot find any sniffer for deployed app " + appName);
+                            return;
+                        }
+                    } else {
+                        // todo, this is a cludge to force the reload and reparsing of the
+                        // composite application.
+                        sniffers=null;
                     }
                     deployment.deploy(sniffers, depContext, report);
                     if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {

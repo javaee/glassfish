@@ -138,8 +138,10 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
         EarClassLoader cl = new EarClassLoader(new URL[0], parent);
         Application app = null;
         try {
+            long start = System.currentTimeMillis();
             ApplicationArchivist archivist = habitat.getComponent(ApplicationArchivist.class);
             app = archivist.readStandardDeploymentDescriptor(archive);
+            System.out.println("tine to read application.xml" + (System.currentTimeMillis() - start));
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (SAXParseException e) {
