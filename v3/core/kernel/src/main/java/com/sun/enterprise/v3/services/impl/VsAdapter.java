@@ -201,7 +201,14 @@ public class VsAdapter extends AbstractAdapter implements Adapter {
     public void unregisterEndpoint(String contextRoot, ApplicationContainer app) {
         if (apps.containsValue(app)) {
             endpoints.remove(contextRoot);
-            apps.remove(app);
+            if(app != null){
+                for(com.sun.grizzly.tcp.Adapter adapter:apps.keySet()){
+                    ApplicationContainer container = apps.get(adapter);
+                    if((container != null) && app.equals(container)){
+                        apps.remove(adapter);
+                    }
+                }
+            }
         }
     }    
 

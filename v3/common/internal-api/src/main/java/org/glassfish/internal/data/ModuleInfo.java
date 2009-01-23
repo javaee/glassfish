@@ -97,11 +97,11 @@ public class ModuleInfo {
     public boolean start(ApplicationContext context, ProgressTracker tracker)
         throws Exception {
 
-        if (!appCtr.start(context)) {
-            return false;
+        tracker.add("started", ModuleInfo.class, this);
+        if (appCtr.start(context)) {
+            return true;
         }
 
-        tracker.add("started", ModuleInfo.class, this);
 
         // add the endpoint
         try {
