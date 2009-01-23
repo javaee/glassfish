@@ -110,21 +110,12 @@ public class EnableCommand extends ApplicationLifecycle implements AdminCommand 
         Properties contextProps;
         try {
             String path = null;
-            Application app = null; 
-            ApplicationRef appRef = null;
-            for (Module module : applications.getModules()) {
-                if (module.getName().equals(component)) {  
-                    app = (Application)module;
-                    break;
-                }
-            }
+            Application app = 
+                (Application)ConfigBeansUtilities.getModule(component); 
+            ApplicationRef appRef = 
+                ConfigBeansUtilities.getApplicationRefInServer(target, 
+                    component);
 
-            for (ApplicationRef ref : server.getApplicationRef()) {
-                if (ref.getRef().equals(component)) {
-                    appRef = ref;
-                    break;
-                }
-            }
             commandParams = populateDeployParamsFromDomainXML(app, appRef);
             contextProps = populateDeployPropsFromDomainXML(app);
  
