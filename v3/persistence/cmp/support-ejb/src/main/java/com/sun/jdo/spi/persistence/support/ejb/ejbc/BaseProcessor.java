@@ -37,11 +37,10 @@
 package com.sun.jdo.spi.persistence.support.ejb.ejbc;
 
 import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.backend.DeploymentEventInfo;
-import com.sun.enterprise.deployment.backend.DeploymentRequest;
-import com.sun.enterprise.deployment.backend.DeploymentStatus;
-import com.sun.enterprise.deployment.backend.IASDeploymentException;
-import com.sun.enterprise.util.io.FileUtils;
+//import com.sun.enterprise.deployment.backend.DeploymentEventInfo;
+//import com.sun.enterprise.deployment.backend.DeploymentRequest;
+//import com.sun.enterprise.deployment.backend.DeploymentStatus;
+//import com.sun.enterprise.deployment.backend.IASDeploymentException;
 
 import com.sun.jdo.spi.persistence.utility.I18NHelper;
 import com.sun.jdo.spi.persistence.utility.database.DatabaseConstants;
@@ -54,7 +53,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.SQLException;
-import java.util.logging.Level;
 import java.util.ResourceBundle;
 
 /**
@@ -73,8 +71,8 @@ abstract public class BaseProcessor
         BaseProcessor.class.getClassLoader());
 
     protected Application application;
-    protected DeploymentEventInfo info;
-    protected DeploymentStatus status;
+//    protected DeploymentEventInfo info;
+//    protected DeploymentStatus status;
     
     /**
      * True if this event results in creating new tables.
@@ -112,7 +110,8 @@ abstract public class BaseProcessor
      * @param cliDropTables the cli string to indicate that the tables
      * have to dropped at undeploy time.
      */
-    public BaseProcessor(DeploymentEventInfo info, 
+/*
+    public BaseProcessor(DeploymentEventInfo info,
             boolean create, String cliCreateTables,
             String cliDropAndCreateTables, String cliDropTables) {
         initializeVariables(info, create, cliCreateTables,
@@ -133,7 +132,7 @@ abstract public class BaseProcessor
         this.cliDropAndCreateTables = cliDropAndCreateTables;
         this.cliDropTables = cliDropTables;  
     }
-    
+  */
     abstract protected void processApplication();
 
     
@@ -213,10 +212,13 @@ abstract public class BaseProcessor
      * @param status DeploymentStatus via which user is warned
      * @param msg Message for user.
      */
+
     protected  void warnUser(String msg) {
+/*
         status.setStageStatus(DeploymentStatus.WARNING);
         status.setStageStatusMessage(
                 status.getStageStatusMessage() + "\n" + msg); // NOI18N
+  */
     }
 
     /**
@@ -307,9 +309,9 @@ abstract public class BaseProcessor
         if(null != this.appDeployedLocation)
             return;
         
-        this.appDeployedLocation =        
-            info.getDeploymentRequest().getDeployedDirectory().getAbsolutePath() 
-            + File.separator; 
+//        this.appDeployedLocation =
+//            info.getDeploymentRequest().getDeployedDirectory().getAbsolutePath()
+//            + File.separator;
     }
     
     /**
@@ -321,7 +323,7 @@ abstract public class BaseProcessor
     protected void setGeneratedLocation() {
         if(null != this.appGeneratedLocation)
             return;
-        this.appGeneratedLocation =
-                info.getStubsDir().getAbsolutePath() + File.separator;
+//        this.appGeneratedLocation =
+//                info.getStubsDir().getAbsolutePath() + File.separator;
     }
 } 

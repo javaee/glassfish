@@ -46,11 +46,11 @@ header
 {
     package com.sun.jdo.spi.persistence.support.ejb.ejbqlc;
 
-    import persistence.antlr.MismatchedTokenException;
-    import persistence.antlr.MismatchedCharException;
-    import persistence.antlr.NoViableAltException;
-    import persistence.antlr.NoViableAltForCharException;
-    import persistence.antlr.TokenStreamRecognitionException;
+    import antlr.MismatchedTokenException;
+    import antlr.MismatchedCharException;
+    import antlr.NoViableAltException;
+    import antlr.NoViableAltForCharException;
+    import antlr.TokenStreamRecognitionException;
     
     import java.util.ResourceBundle;
     import com.sun.jdo.spi.persistence.utility.I18NHelper;

@@ -64,13 +64,13 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
-import com.sun.ejb.codegen.EjbcContext;
+//import com.sun.ejb.codegen.EjbcContext;
 import com.sun.ejb.codegen.GeneratorException;
 
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
 
-import com.sun.enterprise.deployment.backend.DeploymentStatus;
+//import com.sun.enterprise.deployment.backend.DeploymentStatus;
 
 import com.sun.enterprise.server.Constants;
 
@@ -180,7 +180,7 @@ public class MappingGenerator extends
      * @throws ConversionException 
      */
     public SchemaElement generateMapping(
-            EjbcContext ejbcContext, String inputFilesPath, 
+            /* EjbcContext ejbcContext, */ String inputFilesPath,
             String generatedXmlsPath,  File classout,
             boolean ignoreSunDeploymentDescriptors) 
             throws IOException, DBException, ModelException, 
@@ -188,9 +188,10 @@ public class MappingGenerator extends
             ConversionException {
 
         SchemaElement schema = null;
+/*
         if (ejbcContext == null)
             isVerifyFlag = true;
-
+*/
         File cmpMappingFile = getSunCmpMappingFile(inputFilesPath);
         boolean mappedBeans = !ignoreSunDeploymentDescriptors 
                 && cmpMappingFile.exists();
@@ -208,20 +209,20 @@ public class MappingGenerator extends
         
         // Read deployment settings from the deployment descriptor
         // and CLI options.
+/*
         Results deploymentArguments = getDeploymentArguments(
                 ejbcContext, cmpResource, mustHaveDBVendorName);
         dbVendorName = deploymentArguments.getDatabaseVendorName();
-
+  */
         if (mappedBeans) {
             // If sun-cmp-mappings.xml exists and we are doing a deployment,
             // validate some arguments and make sure we have dbschema.
-
+/*
             // If it is from verify, skip deployment arguments check.
             if (!isVerifyFlag) {
                 String warning = null; // Warning for user, if required.
-            
-                if (isJavaToDatabaseFlag) {
 
+                if (isJavaToDatabaseFlag) {
                     // If beans were already mapped, we will generate tables, but
                     // they will be as per the existing mapping.  So if the user
                     // gave --uniquetablenames, warn them that we will not take
@@ -260,7 +261,7 @@ public class MappingGenerator extends
                     status.setStageStatusMessage(msg);
                 }
             }
-               
+*/
             // Sun-cmp-mapping.xml exists, use normal MappingClass loading
             SunCmpMappings sunCmpMappings = getSunCmpMappings(cmpMappingFile);
 
@@ -298,6 +299,7 @@ public class MappingGenerator extends
             // Generate mapping file and dbschema, since either
             // sun-cmp-mappings.xml does not exist (e.g. user didn't yet map)
             // or ejbcContext is null (e.g. running under auspices of AVK).
+/*
             DatabaseGenerator.Results results  = generateMappingClasses(
                     dbVendorName, deploymentArguments.getUseUniqueTableNames(), 
                     deploymentArguments.getUserPolicy(), inputFilesPath);
@@ -316,6 +318,7 @@ public class MappingGenerator extends
 
                 setJavaToDatabase(cmpResource, true);
             }
+*/
         }
 
         return schema;
@@ -517,8 +520,8 @@ public class MappingGenerator extends
      * a defined value, <code>false</code> otherwise
      */
     protected boolean isPropertyDefined(String propertyValue) {
-        return (super.isPropertyDefined(propertyValue) &&
-			!Constants.UNDEFINED.equals(propertyValue));
+        return (super.isPropertyDefined(propertyValue) /* &&
+			!Constants.UNDEFINED.equals(propertyValue) */);
     }
 
     /**
@@ -585,6 +588,7 @@ public class MappingGenerator extends
      * @param connectToDatabase If true, then connect to database to get
      * database vendor name if not otherwise available.
      */
+/*
     private Results getDeploymentArguments(
             EjbcContext ejbcContext, 
             ResourceReferenceDescriptor cmpResource,
@@ -656,7 +660,7 @@ public class MappingGenerator extends
 
         return new Results(useUniqueTableNames, dbVendorName, userPolicy, javaToDatabaseArgs);
     }
-
+*/
     /**
      * Check if cmp resource is specified in the deployment descriptor.
      * If the beans are mapped (sun-cmp-mapping.xml is present), the cmp

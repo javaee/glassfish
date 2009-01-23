@@ -35,7 +35,7 @@
 * only if the new code is made subject to such option by the copyright 
 * holder. 
 */ 
---> 
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -47,11 +47,11 @@
     <groupId>org.glassfish.persistence.cmp</groupId>
     <artifactId>cmp</artifactId>
     <packaging>pom</packaging>
-    <name>GlassFish cmp related modules</name>  
+    <name>GlassFish cmp related modules</name>
     <properties>
-	<dbschema.version>1.0</dbschema.version>
-    <schema2beans.version>1.0</schema2beans.version>
-    <antlr.version>2.7.6</antlr.version>
+        <dbschema.version>1.0</dbschema.version>
+        <schema2beans.version>1.0</schema2beans.version>
+        <antlr.version>2.7.6</antlr.version>
     </properties>
     <modules>
         <module>utility</module>
@@ -60,5 +60,77 @@
         <module>ejb-mapping</module>
         <module>enhancer</module>
         <module>support-sqlstore</module>
+        <module>support-ejb</module>
     </modules>
+    <repositories>
+        <repository>
+            <id>Netbeans repo</id>
+            <url>http://deadlock.netbeans.org/maven2</url>
+        </repository>
+    </repositories>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.netbeans.modules</groupId>
+                <artifactId>org-netbeans-modules-dbschema</artifactId>
+                <version>RELEASE60</version>
+                <exclusions>
+                    <!-- We only want to bring dbschema.jar and not its dependencies.
+                         Till http://jira.codehaus.org/browse/MNG-2315 is fixed,
+                         explicitly exclude all dependencies listed in dbschema.pom
+                    -->
+                    <exclusion>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-netbeans-api-progress</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-netbeans-modules-projectapi</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-netbeans-modules-projectuiapi</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-openide-actions</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-openide-awt</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-openide-dialogs</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-openide-filesystems</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-openide-loaders</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-openide-nodes</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-openide-util</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-openide-windows</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.netbeans.api</groupId>
+                <artifactId>org-netbeans-modules-schema2beans</artifactId>
+                <version>RELEASE55</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
 </project>

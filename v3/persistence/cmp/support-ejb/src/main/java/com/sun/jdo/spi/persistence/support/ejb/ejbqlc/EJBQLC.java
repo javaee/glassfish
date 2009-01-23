@@ -46,12 +46,10 @@ package com.sun.jdo.spi.persistence.support.ejb.ejbqlc;
 
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.Collection;
 import java.util.ResourceBundle;
 import java.lang.reflect.Method;
 
-import persistence.antlr.TokenBuffer;
-import persistence.antlr.ANTLRException;
+import antlr.TokenBuffer;
 
 import com.sun.jdo.spi.persistence.utility.I18NHelper;
 import com.sun.jdo.api.persistence.model.Model;

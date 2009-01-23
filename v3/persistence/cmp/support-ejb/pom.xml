@@ -35,19 +35,20 @@
 * only if the new code is made subject to such option by the copyright 
 * holder. 
 */ 
---> 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-	<groupId>org.glassfish.persistence.cmp</groupId>
-    	<artifactId>cmp</artifactId>
+        <groupId>org.glassfish.persistence.cmp</groupId>
+        <artifactId>cmp</artifactId>
         <version>3.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>support-ejb</artifactId>
     <packaging>jar</packaging>
     <name>support ejb module for cmp</name>
-    
+
     <developers>
         <developer>
             <id>mm110999</id>
@@ -55,7 +56,7 @@
             <organization>Sun Microsystems, Inc.</organization>
             <roles>
                 <role>developer</role>
-		        <role>lead</role>
+                <role>lead</role>
             </roles>
         </developer>
     </developers>
@@ -86,6 +87,16 @@
         <dependency>
             <groupId>org.glassfish.persistence.cmp</groupId>
             <artifactId>support-sqlstore</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.persistence.cmp</groupId>
+            <artifactId>ejb-mapping</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.persistence.cmp</groupId>
+            <artifactId>enhancer</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

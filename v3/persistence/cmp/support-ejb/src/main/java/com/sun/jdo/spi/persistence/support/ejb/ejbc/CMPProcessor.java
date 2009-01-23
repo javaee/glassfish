@@ -38,15 +38,13 @@ package com.sun.jdo.spi.persistence.support.ejb.ejbc;
 
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
-import com.sun.enterprise.deployment.io.DescriptorConstants;
-import com.sun.enterprise.deployment.backend.DeploymentEventInfo;
-import com.sun.enterprise.deployment.backend.DeploymentStatus;
+//import com.sun.enterprise.deployment.backend.DeploymentEventInfo;
+//import com.sun.enterprise.deployment.backend.DeploymentStatus;
 import com.sun.enterprise.server.Constants;
 
 import com.sun.jdo.spi.persistence.support.sqlstore.ejb.DeploymentHelper;
 import com.sun.jdo.spi.persistence.support.sqlstore.ejb.EJBHelper;
 import com.sun.jdo.api.persistence.support.JDOFatalUserException;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -76,13 +74,14 @@ public class CMPProcessor
      * @param cliDropTables the cli string to indicate that the tables
      * have to dropped at undeploy time.
      */
+/*
     public CMPProcessor(
             DeploymentEventInfo info, boolean create, 
             String cliCreateTables, String cliDropAndCreateTables, String cliDropTables) {
         super(info, create, cliCreateTables,
             cliDropAndCreateTables, cliDropTables);
     }
-   
+  */
     /**
      * The entry point into this class. Process
      * any ejb bundle descriptors if defined 
@@ -171,9 +170,10 @@ public class CMPProcessor
             ResourceReferenceDescriptor cmpResource) {
             boolean createTables = 
                 create 
-                    && (cliCreateTables.equals(Constants.TRUE) 
+/*
+                    && (cliCreateTables.equals(Constants.TRUE)
                         || (cmpResource.isCreateTablesAtDeploy()
-                            && cliCreateTables.equals(Constants.UNDEFINED)));
+                            && cliCreateTables.equals(Constants.UNDEFINED)))*/;
             return createTables;
     }    
 
@@ -193,11 +193,11 @@ public class CMPProcessor
             ResourceReferenceDescriptor cmpResource) {
         boolean dropTables = 
             (!create 
-                && (cliDropAndCreateTables.equals(Constants.TRUE) 
+                /*&& (cliDropAndCreateTables.equals(Constants.TRUE)
                     || cliDropTables.equals(Constants.TRUE) 
                     || (cmpResource.isDropTablesAtUndeploy()
                         && cliDropAndCreateTables.equals(Constants.UNDEFINED)
-                        && cliDropTables.equals(Constants.UNDEFINED))));
+                        && cliDropTables.equals(Constants.UNDEFINED)))*/);
        return dropTables;
     } 
     

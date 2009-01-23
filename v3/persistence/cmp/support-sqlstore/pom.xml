@@ -71,12 +71,11 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>antlr-maven-plugin</artifactId>
                 <configuration>
-                    <!-- <grammars>JQL.g, Semantic.g, Optimizer.g, CodeGeneration.g</grammars> -->
                     <grammars>JQL.g, Semantic.g, Optimizer.g, CodeGeneration.g</grammars>
                     <!--
-                                  <diagnostic>true</diagnostic>
-                                 <debug>true</debug>
-                                 <trace>true</trace>
+                       <diagnostic>true</diagnostic>
+                       <debug>true</debug>
+                       <trace>true</trace>
                        <traceLexer>true</traceLexer>
                        <traceParser>true</traceParser>
                        <traceTreeParser>true</traceTreeParser>
@@ -119,9 +118,9 @@
             <version>${project.version}</version>
         </dependency>
         <!--<dependency>-->
-            <!--<groupId>org.glassfish.transaction</groupId>-->
-            <!--<artifactId>jts</artifactId>-->
-            <!--<version>${project.version}</version>-->
+        <!--<groupId>org.glassfish.transaction</groupId>-->
+        <!--<artifactId>jts</artifactId>-->
+        <!--<version>${project.version}</version>-->
         <!--</dependency>-->
         <dependency>
             <groupId>org.glassfish.connectors</groupId>
@@ -129,9 +128,9 @@
             <version>${project.version}</version>
         </dependency>
         <!--<dependency>-->
-            <!--<groupId>org.glassfish.connectors</groupId>-->
-            <!--<artifactId>connectors-internal-api</artifactId>-->
-            <!--<version>${project.version}</version>-->
+        <!--<groupId>org.glassfish.connectors</groupId>-->
+        <!--<artifactId>connectors-internal-api</artifactId>-->
+        <!--<version>${project.version}</version>-->
         <!--</dependency>-->
         <dependency>
             <groupId>org.glassfish.ejb</groupId>

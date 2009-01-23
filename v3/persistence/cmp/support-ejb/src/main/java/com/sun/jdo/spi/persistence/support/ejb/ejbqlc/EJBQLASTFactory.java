@@ -44,8 +44,8 @@
 
 package com.sun.jdo.spi.persistence.support.ejb.ejbqlc;
 
-import persistence.antlr.collections.AST;
-import persistence.antlr.ASTFactory;
+import antlr.collections.AST;
+import antlr.ASTFactory;
 
 import java.util.ResourceBundle;
 import com.sun.jdo.spi.persistence.utility.I18NHelper;

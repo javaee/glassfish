@@ -44,9 +44,9 @@
 
 package com.sun.jdo.spi.persistence.support.ejb.ejbqlc;
 
-import persistence.antlr.Token;
-import persistence.antlr.CommonAST;
-import persistence.antlr.collections.AST;
+import antlr.Token;
+import antlr.CommonAST;
+import antlr.collections.AST;
 
 /** 
  * An instance of this class represents a node of the intermediate 

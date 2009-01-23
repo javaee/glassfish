@@ -53,14 +53,14 @@ import java.util.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import com.sun.ejb.codegen.CMPGenerator;
-import com.sun.ejb.codegen.EjbcContext;
+//import com.sun.ejb.codegen.CMPGenerator;
+//import com.sun.ejb.codegen.EjbcContext;
 import com.sun.ejb.codegen.GeneratorException;
 
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.IASEjbCMPEntityDescriptor;
 
-import com.sun.enterprise.deployment.backend.Deployer;
+//import com.sun.enterprise.deployment.backend.Deployer;
 import com.sun.enterprise.deployment.io.DescriptorConstants;
 import com.sun.enterprise.deployment.interfaces.QueryParser;
 
@@ -101,7 +101,7 @@ import org.netbeans.modules.schema2beans.Schema2BeansException;
  * @author Marina Vatkina
  */
 public class JDOCodeGenerator 
-    implements CMPGenerator, DatabaseConstants {
+    implements /* CMPGenerator ,*/ DatabaseConstants {
 
     /**
      * Signature with CVS keyword substitution for identifying the generated code
@@ -120,7 +120,7 @@ public class JDOCodeGenerator
 
     private ArrayList files = new ArrayList();
 
-    private EjbcContext ejbcContext = null;
+    //private EjbcContext ejbcContext = null;
     private ClassLoader loader = null;
     private JDOConcreteBeanGenerator cmp11Generator;
     private JDOConcreteBeanGenerator cmp20Generator;
@@ -138,7 +138,7 @@ public class JDOCodeGenerator
      * Flag set to <code>true</code> if code generation should proceed
      * even if model validation fails
      */
-    private static final boolean ignoreValidationResults = Deployer.getKeepFailedStubsValue();
+    private static final boolean ignoreValidationResults = false;//Deployer.getKeepFailedStubsValue();
 
     /** String representing the signatures of generic code-gen files */
     private static String signatures = null;
@@ -146,6 +146,7 @@ public class JDOCodeGenerator
     /**
      * @see CMPGenerator#init(EjbBundleDescriptor, EjbcContext, String)
      */
+/*
     public void init(EjbBundleDescriptor bundle, EjbcContext ejbcContext,
         String bundlePathName, String generatedXmlsPathName) 
         throws GeneratorException {
@@ -161,7 +162,7 @@ public class JDOCodeGenerator
         init(bundle, ejbcContext.getDescriptor().getClassLoader(), 
             bundlePathName, false);
     }
-
+  */
     /**
      * @see CMPGenerator#init(EjbBundleDescriptor, ClassLoader, String)
      *
@@ -636,6 +637,7 @@ public class JDOCodeGenerator
     private void loadOrCreateMappingClasses(boolean ignoreSunDeploymentDescriptors) 
         throws IOException, GeneratorException {
 
+/*
         try {
             SchemaElement schema = mappingGenerator.generateMapping(
                     ejbcContext, inputFilesPath, generatedXmlsPath, classout,
@@ -668,6 +670,7 @@ public class JDOCodeGenerator
             throw JDOCodeGeneratorHelper.createGeneratorException(
                     "CMG.MappingConversionException", bundle, ex); //NOI18N
         }
+*/        
     }
 
     /**
