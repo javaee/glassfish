@@ -134,6 +134,11 @@
       <class name="test.admin.WebtierTests"/>
     </classes>
   </test>
+  <test name="wsit_jaxws_tests">
+    <classes>
+      <class name="jaxwsfromwsdl.client.JaxwsFromWsdlTestNG"/>
+    </classes>
+  </test>
   <!-- test name="wsit_jaxws_tests">
     <classes>
       <class name="fromjava.client.WsitEnabledFromJavaTestNG"/>
