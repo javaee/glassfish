@@ -64,13 +64,13 @@
 
                                 <echo message="compile classpath: ${compile_classpath}"/>
                                 <echo message="plugin classpath:  ${plugin_classpath}"/>
-                                <if test="${test.wd}">
+                                <if test="${test.gd}">
                                   <ant dir="." antfile="build.xml" target="all">
                                     <property name="glassfish.home" value="${glassfish.home}"/>
                                   </ant>
                                 </if>
-                         	<if test="${test.gd}">
-                            	    <ant dir="." antfile="build.xml" target="all_gd"/>
+                         	<if test="${test.wd}">
+                            	    <ant dir="." antfile="build.xml" target="all_wd"/>
                                     <property name="glassfish.home" value="${glassfish.home}"/>
                         	</if>
                          	<if test="${test.debug}">
@@ -140,13 +140,13 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <test.wd>true</test.wd>
+                <test.gd>true</test.gd>
             </properties>
         </profile>
         <profile>
-            <id>test_gd</id>
+            <id>test_wd</id>
             <properties>
-                <test.gd>true</test.gd>
+                <test.wd>true</test.wd>
             </properties>
         </profile>
         <profile>

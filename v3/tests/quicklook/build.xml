@@ -42,7 +42,7 @@
      <import file="${basedir}/gfproject/db-targets.xml"/>
     
     <description>Builds, tests, and runs the project V3 Quicklook</description>
-    <target name="all" depends="clean">
+    <target name="all_wd" depends="clean">
         <record name="allrun.output" action="start"/>
         <antcall target="start-derby"/>        
         <antcall target="start-server-felix"/>
@@ -60,7 +60,7 @@
     </target>
 
     <!-- Target for testing glassfish distribution (containing EJB)  -->
-    <target name="all_gd" depends="clean">
+    <target name="all" depends="clean">
         <record name="allrun.output" action="start"/>
         <antcall target="start-derby"/>
         <antcall target="start-server-felix"/>

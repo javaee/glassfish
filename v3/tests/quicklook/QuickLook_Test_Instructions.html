@@ -43,21 +43,24 @@ directory to <span style="font-weight: bold;">v3/tests/quicklook</span>.
 All italic text below indicate a
 command. <br>
 <br>
-<span style="font-weight: bold;">1. To Run QL in Web Profile:</span><br>
+<span style="font-weight: bold;">1. To Run QL in Glassfish Profile:</span><br>
 <br>
-The web profile is the default profile and is for running QL against v3
-<span style="font-weight: bold;">web distribution</span>. <br>
+The v3 glassfish distribution includes extra modules such as EJB, jts
+and corba other than the modules in web distribution.
+The glassfish profile is the default profile of QL. It runs QL against
+v3 <span style="font-weight: bold;">Glassfish distribution</span>. <br>
 <ul>
-  <li>For <span style="font-weight: bold;">web.zip</span> bundle of
+  <li>For <span style="font-weight: bold;">glassfish</span> bundle of
 V3, {V3 Installation Dir} is equivelent to /test/glassfish in the
 example
 above. </li>
   <ul style="font-style: italic;">
     <li>mvn -Dglassfish.home={V3 Installation Dir} test | tee run.log</li>
   </ul>
-  <li>For <span style="font-weight: bold;">web-ips.zip</span> bundle
+  <li>For <span style="font-weight: bold;">glassfish-ips.zip</span>
+bundle
 of V3, the same command can be used but {V3 Installation Dir} is
-equivelent to in /test/glassfishv3-prelude/glassfish: <br>
+equivelent to in /test/glassfishv3/glassfish: <br>
   </li>
 </ul>
 <i style="font-style: italic;"></i><span style="font-style: italic;"></span>
@@ -68,7 +71,15 @@ equivelent to in /test/glassfishv3-prelude/glassfish: <br>
 <i><span style="font-style: italic;"></span></i>The test results will
 be in test-output directory.<br>
 <br>
-<span style="font-weight: bold;">2. To Run QL in V3 Debug Profile:</span><br>
+<span style="font-weight: bold;">2. To Run QL in Web Profile:</span><br>
+<br>
+The web profile (-P test_wd) should be used for
+testing the v3 web distribution.<br>
+<ul style="font-style: italic;">
+  <li>mvn -Dglassfish.home={V3 Installation Dir} <span
+ style="font-weight: bold;">-P test_wd test</span> | tee run.log</li>
+</ul>
+<span style="font-weight: bold;">3. To Run QL in V3 Debug Profile:</span><br>
 <br>
 Usually, user wants to run QL against a running v3 instance started
 in debug mode. The dev_debug profile can be used (-P dev_debug) in this
@@ -85,16 +96,8 @@ test | tee run.log</span><br>
 Note: The tests require restart domain (admincli) will be skipped in
 this scenario.<br>
 <br>
-<span style="font-weight: bold;">3. To Run QL in Glassfish Profile:</span><br>
-<br>
-The v3 glassfish distribution includes extra modules such as EJB, jts
-and corba. The glassfish profile (-P test_gd) should be used for
-testing the v3 glassfish distribution.<br>
-<ul style="font-style: italic;">
-  <li>mvn -Dglassfish.home={V3 Installation Dir} <span
- style="font-weight: bold;">-P test_gd test</span> | tee run.log</li>
-</ul>
-<span style="font-weight: bold;"></span><span style="font-weight: bold;">4.
+<span style="font-weight: bold;"></span><span style="font-weight: bold;"></span><span
+ style="font-weight: bold;">4.
 To Run Individual Test Suite from
 Directory Level:</span><br>
 <br>
