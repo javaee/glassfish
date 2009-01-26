@@ -176,7 +176,7 @@ public class StandardSession
     /**
      * The collection of user data attributes associated with this Session.
      */
-    protected Map attributes = new ConcurrentHashMap();    
+    protected Map<String, Object> attributes = new ConcurrentHashMap<String, Object>();    
 
 
     /**
@@ -201,8 +201,8 @@ public class StandardSession
     /**
      * The method signature for the <code>fireContainerEvent</code> method.
      */
-    protected static final Class containerEventTypes[] =
-    { String.class, Object.class };
+    protected static final Class<?> containerEventTypes[] =
+        { String.class, Object.class };
 
 
     /**
@@ -263,7 +263,8 @@ public class StandardSession
     /**
      * The session event listeners for this Session.
      */
-    protected transient ArrayList listeners = new ArrayList();
+    protected transient ArrayList<SessionListener> listeners =
+        new ArrayList<SessionListener>();
 
 
     /**
@@ -303,7 +304,7 @@ public class StandardSession
      * and event listeners.  <b>IMPLEMENTATION NOTE:</b> This object is
      * <em>not</em> saved and restored across session serializations!
      */
-    protected transient Map notes = new Hashtable();
+    protected transient Map<String, Object> notes = new Hashtable<String, Object>();
 
 
     /**
@@ -455,7 +456,7 @@ public class StandardSession
                                            "afterSessionCreated",
                                            listener);
                     } catch (Exception e) {
-                        ;
+                        // Ignore
                     }
                     log(sm.getString("standardSession.sessionEvent"), t);
                 }
@@ -617,8 +618,9 @@ public class StandardSession
         if (facade == null){
             if (SecurityUtil.isPackageProtectionEnabled()){
                 final StandardSession fsession = this;
-                facade = (StandardSessionFacade)AccessController.doPrivileged(new PrivilegedAction(){
-                    public Object run(){
+                facade = AccessController.doPrivileged(
+                        new PrivilegedAction<StandardSessionFacade>(){
+                    public StandardSessionFacade run(){
                         return new StandardSessionFacade(fsession);
                     }
                 });
@@ -793,7 +795,7 @@ public class StandardSession
                                                "afterSessionDestroyed",
                                                listener);
                         } catch (Exception e) {
-                            ;
+                            // Ignore
                         }
                         // FIXME - should we do anything besides log these?
                         log(sm.getString("standardSession.sessionEvent"), t);
@@ -922,7 +924,7 @@ public class StandardSession
      * Return an Iterator containing the String names of all notes bindings
      * that exist for this session.
      */
-    public Iterator getNoteNames() {
+    public Iterator<String> getNoteNames() {
         return (notes.keySet().iterator());
     }
 
@@ -1202,14 +1204,14 @@ public class StandardSession
      * @exception IllegalStateException if this method is called on an
      *  invalidated session
      */
-    public Enumeration getAttributeNames() {
+    public Enumeration<String> getAttributeNames() {
 
         if (!isValid())
             throw new IllegalStateException
                 (sm.getString("standardSession.getAttributeNames.ise"));
 
         synchronized (attributes) {
-            return (new Enumerator(attributes.keySet(), true));
+            return (new Enumerator<String>(attributes.keySet(), true));
         }
 
     }
@@ -1574,7 +1576,7 @@ public class StandardSession
                                        "afterSessionAttributeRemoved",
                                        listener);
                 } catch (Exception e) {
-                    ;
+                    // Ignore
                 }
                 log(sm.getString("standardSession.attributeEvent"), t);
             }
@@ -1731,7 +1733,7 @@ public class StandardSession
                                            listener);
                     }
                 } catch (Exception e) {
-                    ;
+                    // Ignore
                 }
                 log(sm.getString("standardSession.attributeEvent"), t);
             }
@@ -1758,8 +1760,12 @@ public class StandardSession
     private void readObject(ObjectInputStream stream)
         throws ClassNotFoundException, IOException {
 
-        listeners = new ArrayList();
-        notes = new Hashtable();
+        if (listeners == null) {
+            listeners = new ArrayList<SessionListener>();
+        }
+        if (notes == null) {
+            notes = new Hashtable<String, Object>();
+        }
 
         // Deserialize the scalar instance variables (except Manager)
         authType = null;        // Transient only
@@ -1824,7 +1830,7 @@ public class StandardSession
 
         // Deserialize the attribute count and attribute values
         if (attributes == null)
-            attributes = new ConcurrentHashMap();
+            attributes = new ConcurrentHashMap<String, Object>();
         /* PWC 6444754
         int n = ((Integer) stream.readObject()).intValue();
         */
@@ -1832,7 +1838,7 @@ public class StandardSession
         isValid = true;
         for (int i = 0; i < n; i++) {
             String name = (String) stream.readObject();
-            Object value = (Object) stream.readObject();
+            Object value = stream.readObject();
             if ((value instanceof String) && (value.equals(NOT_SERIALIZED)))
                 continue;
             if (debug >= 2)
@@ -1896,8 +1902,8 @@ public class StandardSession
 
         // Accumulate the names of serializable and non-serializable attributes
         String keys[] = keys();
-        ArrayList saveNames = new ArrayList();
-        ArrayList saveValues = new ArrayList();
+        ArrayList<String> saveNames = new ArrayList<String>();
+        ArrayList<Object> saveValues = new ArrayList<Object>();
         for (int i = 0; i < keys.length; i++) {
             Object value = attributes.get(keys[i]);
             if (value == null) {
@@ -1928,7 +1934,7 @@ public class StandardSession
         int n = saveNames.size();
         stream.writeObject(Integer.valueOf(n));
         for (int i = 0; i < n; i++) {
-            stream.writeObject((String) saveNames.get(i));
+            stream.writeObject(saveNames.get(i));
             //HERCULES:mod
             /* orignal PE code            
             try {
@@ -2062,11 +2068,11 @@ public class StandardSession
         SessionEvent event = new SessionEvent(this, type, data);
         SessionListener list[] = new SessionListener[0];
         synchronized (listeners) {
-            list = (SessionListener[]) listeners.toArray(list);
+            list = listeners.toArray(list);
         }
 
         for (int i = 0; i < list.length; i++){
-            ((SessionListener) list[i]).sessionEvent(event);
+            (list[i]).sessionEvent(event);
         }
 
     }
@@ -2079,7 +2085,7 @@ public class StandardSession
      */
     protected String[] keys() {
         if (attributes.size() > 0) {
-            return ((String[]) attributes.keySet().toArray(EMPTY_ARRAY));
+            return attributes.keySet().toArray(EMPTY_ARRAY);
         } else {
             return EMPTY_ARRAY;
         }

@@ -77,7 +77,7 @@ import java.util.NoSuchElementException;
  * @version $Revision: 1.2 $ $Date: 2005/12/08 01:28:15 $
  */
 
-public final class Enumerator implements Enumeration {
+public final class Enumerator<T> implements Enumeration<T> {
 
 
     // ----------------------------------------------------------- Constructors
@@ -88,7 +88,7 @@ public final class Enumerator implements Enumeration {
      *
      * @param collection Collection whose values should be enumerated
      */
-    public Enumerator(Collection collection) {
+    public Enumerator(Collection<T> collection) {
 
         this(collection.iterator());
 
@@ -101,7 +101,7 @@ public final class Enumerator implements Enumeration {
      * @param collection Collection whose values should be enumerated
      * @param clone true to clone iterator
      */
-    public Enumerator(Collection collection, boolean clone) {
+    public Enumerator(Collection<T> collection, boolean clone) {
 
         this(collection.iterator(), clone);
 
@@ -114,7 +114,7 @@ public final class Enumerator implements Enumeration {
      *
      * @param iterator Iterator to be wrapped
      */
-    public Enumerator(Iterator iterator) {
+    public Enumerator(Iterator<T> iterator) {
 
         super();
         this.iterator = iterator;
@@ -129,7 +129,7 @@ public final class Enumerator implements Enumeration {
      * @param iterator Iterator to be wrapped
      * @param clone true to clone iterator
      */
-    public Enumerator(Iterator iterator, boolean clone) {
+    public Enumerator(Iterator<T> iterator, boolean clone) {
 
         super();
         if (!clone) {
@@ -150,7 +150,7 @@ public final class Enumerator implements Enumeration {
      *
      * @param map Map whose values should be enumerated
      */
-    public Enumerator(Map map) {
+    public Enumerator(Map<?, T> map) {
 
         this(map.values().iterator());
 
@@ -163,7 +163,7 @@ public final class Enumerator implements Enumeration {
      * @param map Map whose values should be enumerated
      * @param clone true to clone iterator
      */
-    public Enumerator(Map map, boolean clone) {
+    public Enumerator(Map<?, T> map, boolean clone) {
 
         this(map.values().iterator(), clone);
 
@@ -177,7 +177,7 @@ public final class Enumerator implements Enumeration {
      * The <code>Iterator</code> over which the <code>Enumeration</code>
      * represented by this class actually operates.
      */
-    private Iterator iterator = null;
+    private Iterator<T> iterator = null;
 
 
     // --------------------------------------------------------- Public Methods
@@ -205,7 +205,7 @@ public final class Enumerator implements Enumeration {
      *
      * @exception NoSuchElementException if no more elements exist
      */
-    public Object nextElement() throws NoSuchElementException {
+    public T nextElement() throws NoSuchElementException {
 
         return (iterator.next());
 

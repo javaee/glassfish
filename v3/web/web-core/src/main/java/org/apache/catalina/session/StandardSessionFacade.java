@@ -94,7 +94,7 @@ public class StandardSessionFacade
      */
     public StandardSessionFacade(StandardSession session) {
         super();
-        this.session = (HttpSession) session;
+        this.session = session;
     }
 
 
@@ -150,6 +150,9 @@ public class StandardSessionFacade
     }
 
 
+    /**
+     * @deprecated
+     */
     public HttpSessionContext getSessionContext() {
         return session.getSessionContext();
     }
@@ -160,11 +163,17 @@ public class StandardSessionFacade
     }
 
 
+    /**
+     * @deprecated
+     */
     public Object getValue(String name) {
         return session.getAttribute(name);
     }
 
 
+    /**
+     * @deprecated
+     */
     public Enumeration getAttributeNames() {
         return session.getAttributeNames();
     }
@@ -180,6 +189,9 @@ public class StandardSessionFacade
     }
 
 
+    /**
+     * @deprecated
+     */
     public void putValue(String name, Object value) {
         session.setAttribute(name, value);
     }
@@ -190,6 +202,9 @@ public class StandardSessionFacade
     }
 
 
+    /**
+     * @deprecated
+     */
     public void removeValue(String name) {
         session.removeAttribute(name);
     }

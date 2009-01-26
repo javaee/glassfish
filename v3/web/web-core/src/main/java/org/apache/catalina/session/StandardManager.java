@@ -110,19 +110,20 @@ public class StandardManager
 
     // ---------------------------------------------------- Security Classes
     private class PrivilegedDoLoadFromFile
-        implements PrivilegedExceptionAction {
+        implements PrivilegedExceptionAction<Void> {
 
         PrivilegedDoLoadFromFile() {
+            // NOOP
         }
 
-        public Object run() throws Exception{
+        public Void run() throws Exception{
            doLoadFromFile();
            return null;
         }                       
     }
         
     private class PrivilegedDoUnloadToFile
-        implements PrivilegedExceptionAction {
+        implements PrivilegedExceptionAction<Void> {
 
         private boolean expire;
         private boolean isShutdown;
@@ -132,7 +133,7 @@ public class StandardManager
             isShutdown = shutDown;
         }
 
-        public Object run() throws Exception{
+        public Void run() throws Exception{
             doUnloadToFile(expire, isShutdown);
             return null;
         }            
@@ -504,7 +505,7 @@ public class StandardManager
                 try {
                     ois.close();
                 } catch (IOException f) {
-                    ;
+                    // Ignore
                 }
                 ois = null;
             }
@@ -532,7 +533,7 @@ public class StandardManager
                     try {
                         ois.close();
                     } catch (IOException f) {
-                        ;
+                        // Ignore
                     }
                     ois = null;
                 }
@@ -545,7 +546,7 @@ public class StandardManager
                     try {
                         ois.close();
                     } catch (IOException f) {
-                        ;
+                        // Ignore
                     }
                     ois = null;
                 }
@@ -696,7 +697,7 @@ public class StandardManager
                 try {
                     oos.close();
                 } catch (IOException f) {
-                    ;
+                    // Ignore
                 }
                 oos = null;
             }
@@ -704,7 +705,7 @@ public class StandardManager
         }
 
         // Write the number of active sessions, followed by the details
-        ArrayList list = new ArrayList();
+        ArrayList<StandardSession> list = new ArrayList<StandardSession>();
         synchronized (sessions) {
             if (log.isLoggable(Level.FINE))
                 log.fine("Unloading " + sessions.size() + " sessions");
@@ -719,12 +720,12 @@ public class StandardManager
                 }
                 // END SJSAS 6375689
                 oos.writeObject(Integer.valueOf(sessions.size()));
-                for (Object o : sessions.values()) {
+                for (Session o : sessions.values()) {
                     StandardSession session =
                         (StandardSession) o;
                     list.add(session);
                     /* SJSAS 6375689
-                    ((StandardSession) session).passivate();
+                    session.passivate();
                     */
                     oos.writeObject(session);
                 }
@@ -736,7 +737,7 @@ public class StandardManager
                     try {
                         oos.close();
                     } catch (IOException f) {
-                        ;
+                        // Ignore
                     }
                     oos = null;
                 }
@@ -752,7 +753,7 @@ public class StandardManager
                 try {
                     oos.close();
                 } catch (IOException f) {
-                    ;
+                    // Ignore
                 }
                 oos = null;
             }
@@ -771,13 +772,13 @@ public class StandardManager
             // Expire all the sessions we just wrote
             if (log.isLoggable(Level.FINE))
                 log.fine("Expiring " + list.size() + " persisted sessions");
-            Iterator expires = list.iterator();
+            Iterator<StandardSession> expires = list.iterator();
             while (expires.hasNext()) {
                 StandardSession session = (StandardSession) expires.next();
                 try {
                     session.expire(false);
                 } catch (Throwable t) {
-                    ;
+                    // Ignore
                 }
             }
         }
@@ -861,7 +862,7 @@ public class StandardManager
         // Force initialization of the random number generator
         if (log.isLoggable(Level.FINEST))
             log.finest("Force random number initialization starting");
-        String dummy = generateSessionId();
+        generateSessionId();
         if (log.isLoggable(Level.FINEST))
             log.finest("Force random number initialization completed");
 
@@ -928,7 +929,11 @@ public class StandardManager
             try {
                 session.expire();
             } catch(Throwable t) {
-                ;
+                // Ignore
+            } finally {
+                // Measure against memory leaking if references to the session
+                // object are kept in a shared field somewhere
+                session.recycle();
             }
         }
 
@@ -954,7 +959,6 @@ public class StandardManager
         // Validate the source of this event
         if (!(event.getSource() instanceof Context))
             return;
-        Context context = (Context) event.getSource();
 
         // Process a relevant property change
         if ("sessionTimeout".equals(event.getPropertyName())) {
