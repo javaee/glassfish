@@ -141,7 +141,12 @@ public class FileDirContext extends BaseDirContext {
     /**
      * File cache.
      */
+    // map x --> File(x)
+    protected Map docBaseFileCache = Collections.synchronizedMap(new WeakHashMap());
+    // map x --> File(base, x) 
     protected Map fileCache = Collections.synchronizedMap(new WeakHashMap());
+    // map file.getPath() + '/' + x --> File(file, x)
+    protected Map listFileCache = Collections.synchronizedMap(new WeakHashMap());
     // END S1AS8PE 4965170
 
     /**
@@ -183,11 +188,11 @@ public class FileDirContext extends BaseDirContext {
             (sm.getString("resources.null"));
 
         // START S1AS8PE 4965170
-        base = (File)fileCache.get(docBase);
+        base = (File)docBaseFileCache.get(docBase);
         if (base == null){
             // Calculate a File object referencing this document base directory
             base = new File(docBase);
-            fileCache.put(docBase,base);
+            docBaseFileCache.put(docBase,base);
         }
         // END S1AS8PE 4965170
 
@@ -902,11 +907,17 @@ public class FileDirContext extends BaseDirContext {
      * @param name Normalized context-relative path (with leading '/')
      */
     protected File file(String name) {
+        return file(base, name, name, fileCache);
+    }
 
+    /*
+     * Check that the file is valid for this context
+     */
+    private File file(File baseFile, String name, String keyName, Map fCache) {
         // START S1AS8PE 4965170
-        File file = (File)fileCache.get(name);
+        File file = (File)fCache.get(keyName);
         if (file == null){
-            file = new File(base, name);
+            file = new File(baseFile, name);
         }
         // END S1AS8PE 4965170
         
@@ -914,7 +925,7 @@ public class FileDirContext extends BaseDirContext {
 
             // START S1AS 6200277
             if (!caseSensitive && allowLinking) {
-                fileCache.put(name,file);
+                fCache.put(keyName,file);
                 return file;
             }
             // END S1AS 6200277
@@ -974,7 +985,7 @@ public class FileDirContext extends BaseDirContext {
             return null;
         }
         // START S1AS8PE 4965170
-        fileCache.put(name,file);
+        fCache.put(keyName,file);
         // END S1AS8PE 4965170
         return file;
 
@@ -1001,11 +1012,8 @@ public class FileDirContext extends BaseDirContext {
         for (int i = 0; i < names.length; i++) {
 
             // START S1AS8PE 4965170
-            File currentFile = (File)fileCache.get(names[i]);    
-            if ( currentFile == null ) {
-                currentFile = new File(file, names[i]);
-                fileCache.put(names[i],currentFile);
-            }
+            String keyName = file.getPath() + '/' + names[i];
+            File currentFile = file(file, names[i], keyName, listFileCache);
             // END S1AS8PE 4965170
 
             Object object = null;
