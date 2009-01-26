@@ -341,6 +341,8 @@ final class ApplicationFilterConfig implements FilterConfig, Serializable {
                 context.fireContainerEvent(
                     ContainerEvent.AFTER_FILTER_DESTROYED,
                     filter);
+                // See GlassFish IT 7071
+                context = null;
             }
 
         }
