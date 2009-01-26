@@ -62,7 +62,7 @@ public abstract class AppservRealm extends Realm
     public static final String JAAS_CONTEXT_PARAM="jaas-context";
     
     protected static final Logger _logger =
-        LogDomains.getLogger(AppservRealm.class, LogDomains.SECURITY_LOGGER);
+        LogDomains.getLogger(com.sun.enterprise.security.common.Util.class, LogDomains.SECURITY_LOGGER);
     protected static final StringManager sm =
         StringManager.getManager(IASRealm.class);
 

@@ -172,7 +172,7 @@ public class ServletNode extends DisplayableComponentNode {
         // init-param*
         WebBundleNode.addInitParam(myNode, WebTagNames.INIT_PARAM, descriptor.getInitializationParameters());
         
-        if (descriptor.getLoadOnStartUp()!=-1) {
+        if (descriptor.getLoadOnStartUp()!=null) {
             appendTextChild(myNode, WebTagNames.LOAD_ON_STARTUP, String.valueOf(descriptor.getLoadOnStartUp()));
         }
 
