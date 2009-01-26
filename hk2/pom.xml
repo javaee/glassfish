@@ -4,7 +4,7 @@
     <artifactId>hk2-parent</artifactId>
     <packaging>pom</packaging>
 
-    <version>0.3.37-SNAPSHOT</version>
+    <version>0.3.37</version>
     <name>Modules Subsystem</name>
     <description>Generic Modules subsystem</description>
 
@@ -72,7 +72,7 @@
     </mailingLists>
 
     <scm>
-        <connection>scm:svn:https://hk2.dev.java.net/svn/hk2</connection>
+        <connection>scm:svn:https://hk2.dev.java.net/svn/hk2/tags/hk2-parent-0.3.37</connection>
     </scm>
     <distributionManagement>
         <site>
