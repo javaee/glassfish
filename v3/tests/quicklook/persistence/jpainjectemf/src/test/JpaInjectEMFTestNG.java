@@ -51,9 +51,6 @@ import java.util.*;
  */
 public class JpaInjectEMFTestNG {
 
-    private static final String TEST_NAME =
-        "jpa-jpainjectemf";
-   
     private String strContextRoot="/jpainjectemf";
 
     static String result = "";
@@ -62,7 +59,7 @@ public class JpaInjectEMFTestNG {
            
 
     @Test(groups = { "init" })
-    public void test1() throws Exception{
+    public void testJpaPersistWithInjectEMF() throws Exception{
         boolean result=false;       
 
         try{
@@ -79,7 +76,7 @@ public class JpaInjectEMFTestNG {
     }
 
     @Test(dependsOnGroups = { "init.*" })
-    public void test2() throws Exception{
+    public void testJpaLazyLoadingByQuery() throws Exception{
         boolean result=false;        
 
         try{
@@ -96,7 +93,6 @@ public class JpaInjectEMFTestNG {
 
     private boolean test(String c) throws Exception {
         String EXPECTED_RESPONSE = c + ":pass";
-        String TEST_CASE = TEST_NAME + c;
         boolean result=false;
         String url = "http://" + host + ":" + port + strContextRoot + 
                      "/jpa?testcase=" + c;
