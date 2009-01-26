@@ -40,23 +40,24 @@ import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.api.deployment.archive.CompositeHandler;
+import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.deployment.common.DeploymentUtils;
+import org.glassfish.deployment.common.DeploymentContextImpl;
 import org.glassfish.internal.deployment.Deployment;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 import org.xml.sax.SAXParseException;
 import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
+import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.deployment.archivist.ApplicationArchivist;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.logging.LogDomains;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.BufferedInputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.jar.Manifest;
@@ -81,6 +82,12 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
 
     @Inject
     Habitat habitat;
+
+    @Inject
+    ArchiveFactory archiveFactory;
+
+    @Inject
+    ServerEnvironment env;
     
     public String getArchiveType() {
         return "ear";
@@ -97,18 +104,26 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
         while (e.hasMoreElements()) {
             String entryName = e.nextElement();
             if (!source.isDirectory(entryName) && !entryName.endsWith("xml")) {
-                ReadableArchive subArchive = source.getSubArchive(entryName);
+                File tmpFile = File.createTempFile("deploy", "jar");
                 try {
-                    ArchiveHandler subHandler = deployment.getArchiveHandler(subArchive);
-                    if (subHandler!=null) {
-                        WritableArchive subTarget = target.createSubArchive(entryName);
-                        subHandler.expand(subArchive, subTarget);
-                        target.closeEntry(subTarget);
-                        continue;
-                    }
-                } catch(IOException ioe) {
-                    logger.log(Level.FINE, "Exception while processing " + entryName, ioe);
+                    FileUtils.copy(source.getEntry(entryName), new FileOutputStream(tmpFile), source.getEntrySize(entryName));
+                    ReadableArchive subArchive = archiveFactory.openArchive(tmpFile);
 
+                    try {
+                        ArchiveHandler subHandler = deployment.getArchiveHandler(subArchive);
+                        if (subHandler!=null) {
+                            WritableArchive subTarget = target.createSubArchive(entryName);
+                            subHandler.expand(subArchive, subTarget);
+                            target.closeEntry(subTarget);
+                            continue;
+                        }
+                    } catch(IOException ioe) {
+                        logger.log(Level.FINE, "Exception while processing " + entryName, ioe);
+
+                    }
+                    
+                } finally {
+                    tmpFile.delete();
                 }
             }
             // normal file, just copy.
@@ -134,24 +149,28 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
         }
     }
 
-    public ClassLoader getClassLoader(ClassLoader parent, ReadableArchive archive) {
+    public ClassLoader getClassLoader(ClassLoader parent, DeploymentContext context) {
+        final ReadableArchive archive  = context.getSource();
         EarClassLoader cl = new EarClassLoader(new URL[0], parent);
-        Application app = null;
-        try {
-            long start = System.currentTimeMillis();
-            ApplicationArchivist archivist = habitat.getComponent(ApplicationArchivist.class);
-            app = archivist.readStandardDeploymentDescriptor(archive);
-            System.out.println("tine to read application.xml" + (System.currentTimeMillis() - start));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (SAXParseException e) {
-            throw new RuntimeException(e);
+        ApplicationHolder holder = context.getModuleMetaData(ApplicationHolder.class);
+        if (holder==null || holder.app==null) {
+            try {
+                long start = System.currentTimeMillis();
+                ApplicationArchivist archivist = habitat.getComponent(ApplicationArchivist.class);
+                holder = new ApplicationHolder(archivist.open(archive));
+                System.out.println("tine to read application.xml " + (System.currentTimeMillis() - start));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (SAXParseException e) {
+                throw new RuntimeException(e);
+            }
+            context.addModuleMetaData(holder);
         }
 
-        if (app==null) {
+        if (holder.app==null) {
             throw new RuntimeException("Cannot read application metadata");
         }
-        for (ModuleDescriptor md : app.getModules()) {
+        for (ModuleDescriptor md : holder.app.getModules()) {
             ReadableArchive sub = null;
             try {
                 sub = archive.getSubArchive(md.getArchiveUri());
@@ -163,8 +182,8 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                     ArchiveHandler handler = deployment.getArchiveHandler(sub);
                     if (handler!=null) {
                         // todo : this is a hack, once again, the handler is assuming a file:// url
-
-                        ClassLoader subCl = handler.getClassLoader(cl, sub);
+                        DeploymentContext subContext = new DeploymentContextImpl(context.getLogger(), sub, context.getProps(), env);
+                        ClassLoader subCl = handler.getClassLoader(cl, subContext);
                         cl.addModuleClassLoader(md.getArchiveUri(), subCl);
                     }
                 } catch (IOException e) {
@@ -181,5 +200,13 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
         // I am hiding everything but the metadata.
         return entryName.startsWith("META-INF");
 
+    }
+
+    public final class ApplicationHolder {
+        final Application app;
+
+        private ApplicationHolder(Application app) {
+            this.app = app;
+        }
     }
 }

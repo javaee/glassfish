@@ -71,9 +71,9 @@ public interface ArchiveHandler {
      * @param parent
      *      The newly created classloader to be returned must eventually delegate to this classloader.
      *      (This classloader is capable of resolving APIs and other things that the container
-     *      is expected to provide.)
+     * @param context
      */
-    public ClassLoader getClassLoader(ClassLoader parent, ReadableArchive archive);
+    public ClassLoader getClassLoader(ClassLoader parent, DeploymentContext context);
     
     /**
      * Prepares the jar file to a format the ApplicationContainer is

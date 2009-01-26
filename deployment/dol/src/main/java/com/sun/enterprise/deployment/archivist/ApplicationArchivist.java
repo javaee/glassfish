@@ -218,21 +218,26 @@ public class ApplicationArchivist extends Archivist<Application> {
         
         // read the standard deployment descriptors
         Application appDesc = readStandardDeploymentDescriptor(appArchive);
-        setDescriptor(appDesc);
+        return openWith(appDesc, appArchive);
+    }
+
+    public Application openWith(Application application, ReadableArchive archive)
+        throws IOException, SAXParseException {         
+
+        setDescriptor(application);
 
         // read the modules deployment descriptors
-        if (!readModulesDescriptors(appDesc, appArchive))
+        if (!readModulesDescriptors(application, archive))
             return null;
-        
+
         // now read the runtime deployment descriptors
-        super.readRuntimeDeploymentDescriptor(appArchive, appDesc);
+        super.readRuntimeDeploymentDescriptor(archive, application);
 
         // validate...
         if (classLoader!=null && isHandlingRuntimeInfo()) {
             validate(null);
         }
-        
-        return appDesc;
+        return application;
     }
 
     @Override

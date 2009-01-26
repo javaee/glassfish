@@ -476,6 +476,9 @@ public class ApplicationLifecycle implements Deployment {
         results.addFirst(deployer);
         if (deployer.getMetaData()!=null) {
             for (Class required : deployer.getMetaData().requires()) {
+                if (dc.getModuleMetaData(required)!=null) {
+                    continue;
+                }
                 if (typeByDeployer.containsKey(required)) {
                     loadDeployer(results,typeByDeployer.get(required), typeByDeployer, typeByProvider, dc);
                 } else {

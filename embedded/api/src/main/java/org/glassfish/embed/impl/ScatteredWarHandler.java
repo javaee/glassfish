@@ -42,6 +42,7 @@ import org.glassfish.web.loader.WebappClassLoader;
 import org.apache.naming.resources.FileDirContext;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.embed.ScatteredWar;
 import org.jvnet.hk2.annotations.Service;
 
@@ -61,8 +62,8 @@ public class ScatteredWarHandler extends AbstractArchiveHandler implements Archi
         return archive instanceof ScatteredWar;
     }
 
-    public ClassLoader getClassLoader(ClassLoader parent, ReadableArchive _archive) {
-        ScatteredWar archive = (ScatteredWar) _archive;
+    public ClassLoader getClassLoader(ClassLoader parent, DeploymentContext context) {
+        ScatteredWar archive = (ScatteredWar) context.getSource();
         WebappClassLoader cloader = new WebappClassLoader(parent);
 
         FileDirContext r = new FileDirContext();

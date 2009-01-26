@@ -40,9 +40,8 @@ import org.jvnet.hk2.annotations.Service;
 
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.deployment.common.DeploymentUtils;
-import java.io.IOException;
-import java.io.InputStream;
+import org.glassfish.api.deployment.DeploymentContext;
+
 import java.net.MalformedURLException;
 
 import com.sun.enterprise.loader.EJBClassLoader;
@@ -60,14 +59,14 @@ public class JarHandler extends AbstractArchiveHandler implements ArchiveHandler
     }
 
     public boolean handles(ReadableArchive archive) {
-        // but I handle everything that looks like a jar...
+        // but I handle everything that looks like a jar...   
         return true;
     }
 
-    public ClassLoader getClassLoader(ClassLoader parent, ReadableArchive archive) {
+    public ClassLoader getClassLoader(ClassLoader parent, DeploymentContext context) {
         EJBClassLoader cloader = new EJBClassLoader(parent);
         try {              
-            cloader.addURL(archive.getURI().toURL());
+            cloader.addURL(context.getSource().getURI().toURL());
         } catch(MalformedURLException e) {
             return null;
         }

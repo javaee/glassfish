@@ -24,7 +24,7 @@
 package org.glassfish.deployment.common;
 
 import java.lang.instrument.ClassFileTransformer;
-import org.glassfish.api.deployment.DeploymentContext;
+
 import org.glassfish.api.deployment.InstrumentableClassLoader;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -33,7 +33,6 @@ import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
-import org.glassfish.internal.data.ApplicationInfo;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -156,8 +155,8 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
 
         ClassLoader parentCL = clh.createApplicationParentCL(applibCL, this);
 
-        this.sharableTemp = handler.getClassLoader(parentCL, getSource());
-        this.cloader = handler.getClassLoader(parentCL, getSource());
+        this.sharableTemp = handler.getClassLoader(parentCL, this);
+        this.cloader = handler.getClassLoader(parentCL, this);
     }
 
     public void invalidateTempClassLoader() {
@@ -180,7 +179,7 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
             // their class loader during the prepare phase, we can continue using the
             // sharableone which will become the final class loader after all.
             if (tempClassLoaderInvalidated) {
-                if (sharableTemp!=null) {
+                if (sharableTemp!=null) {                                                                 
                     try {
                         PreDestroy.class.cast(sharableTemp).preDestroy();
                     } catch (Exception e) {

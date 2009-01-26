@@ -38,6 +38,7 @@ package com.sun.enterprise.glassfish.web;
 
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.web.loader.WebappClassLoader;
 import org.jvnet.hk2.annotations.Service;
@@ -48,7 +49,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
-import java.util.jar.Manifest;
 import java.util.jar.JarFile;
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -86,11 +86,11 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
         return DeploymentUtils.isWebArchive(archive);
     }
 
-    public ClassLoader getClassLoader(ClassLoader parent, ReadableArchive archive) {
+    public ClassLoader getClassLoader(ClassLoader parent, DeploymentContext context) {
         WebappClassLoader cloader = new WebappClassLoader(parent);
         try {
             FileDirContext r = new FileDirContext();
-            File base = new File(archive.getURI());
+            File base = new File(context.getSource().getURI());
             r.setDocBase(base.getAbsolutePath());
             SunWebXmlParser sunWebXmlParser = new SunWebXmlParser(base.getAbsolutePath());
 

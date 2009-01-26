@@ -39,6 +39,7 @@ import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
 import com.sun.appserv.connectors.internal.api.ConnectorsClassLoaderUtil;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.deployment.DeploymentContext;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 
@@ -73,8 +74,8 @@ public class ConnectorHandler extends AbstractArchiveHandler implements ArchiveH
     /**
      * {@inheritDoc}
      */
-    public ClassLoader getClassLoader(ClassLoader parent, ReadableArchive archive) {
-        String moduleDir = archive.getURI().getPath();
+    public ClassLoader getClassLoader(ClassLoader parent, DeploymentContext context) {
+        String moduleDir = context.getSource().getURI().getPath();
         return loader.createRARClassLoader(moduleDir);
     }
 }
