@@ -46,7 +46,7 @@
     </parent>
     <artifactId>console-branding-plugin</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>Admin Console Custom Plugin</name>
+    <name>Admin Console Community Edition Theme Plugin</name>
     <description>Custom Theme Plugin for Glassfish V3 Admin Console</description>
 
     <developers>
@@ -139,12 +139,12 @@
             <artifactId>console-plugin-service</artifactId>
             <version>${project.version}</version>
         </dependency>
-	<dependency>
-	    <groupId>com.sun.woodstock</groupId>
-	    <artifactId>webui-jsf-suntheme</artifactId>
-	    <version>4.3.0.7</version>
-	    <scope>compile</scope>
-	</dependency>
+        <dependency>
+            <groupId>com.sun.woodstock</groupId>
+            <artifactId>webui-jsf-suntheme</artifactId>
+            <version>4.3.0.7</version>
+            <scope>compile</scope>
+        </dependency>
 
 
     </dependencies>
