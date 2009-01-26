@@ -75,7 +75,7 @@
         <antcall target="stop-server"/>
         <antcall target="stop-derby"/>
         <antcall target="testng-summary"/>
-	<copy file="test-output/emailable-report.html" tofile="test-output/QL-GP-report.html"/>
+	<copy file="test-output/emailable-report.html" tofile="test-output/QL-GP-report.html" failonerror="false"/>
         <record name="allrun.output" action="stop"/>
     </target>
 
@@ -262,11 +262,12 @@
         </loadfile>
         <echo file="quicklook_summary.txt" append="true" message="${testng_output}"/>
         <antcall target="build-version"/>
+        <available file="test-output/emailable-report.html" property="report.present"/>
     	<antcall target="quicklook-report"/>
 	<delete file="version.output"/>
     </target>
 
-    <target name="quicklook-report">
+    <target name="quicklook-report" if="report.present">
         <loadfile srcfile="version.output" property="build_version">
            <filterchain>
               <headfilter lines="1"/>
