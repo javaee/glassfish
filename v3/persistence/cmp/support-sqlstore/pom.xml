@@ -64,6 +64,7 @@
         <resources>
             <resource>
                 <directory>src/main/java</directory>
+                <filtering>true</filtering> <!-- Used by sys.properties -->
             </resource>
         </resources>
         <plugins>
