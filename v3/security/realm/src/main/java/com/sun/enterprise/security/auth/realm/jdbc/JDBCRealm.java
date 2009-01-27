@@ -115,6 +115,7 @@ public final class JDBCRealm extends DigestRealmBase {
     public static final String PARAM_PASSWORD_COLUMN = "password-column";
     public static final String PARAM_GROUP_TABLE = "group-table";
     public static final String PARAM_GROUP_NAME_COLUMN = "group-name-column";
+    public static final String PARAM_GROUP_TABLE_USER_NAME_COLUMN = "group-table-user-name-column";
 
     private static final char[] HEXADECIMAL = { '0', '1', '2', '3',
         '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
@@ -156,6 +157,7 @@ public final class JDBCRealm extends DigestRealmBase {
         String passwordColumn = props.getProperty(PARAM_PASSWORD_COLUMN);
         String groupTable = props.getProperty(PARAM_GROUP_TABLE);
         String groupNameColumn = props.getProperty(PARAM_GROUP_NAME_COLUMN);
+        String groupTableUserNameColumn = props.getProperty(PARAM_GROUP_TABLE_USER_NAME_COLUMN,userNameColumn);
         cr = Util.getDefaultHabitat().getByContract(ConnectorRuntime.class);
         
         if (jaasCtx == null) {
@@ -194,12 +196,12 @@ public final class JDBCRealm extends DigestRealmBase {
                 "realm.missingprop", PARAM_GROUP_NAME_COLUMN, "JDBCRealm");
             throw new BadRealmException(msg);
         }
-
+        
         passwordQuery = "SELECT " + passwordColumn + " FROM " + userTable +
             " WHERE " + userNameColumn + " = ?";
 
         groupQuery = "SELECT " + groupNameColumn + " FROM " + groupTable +
-            " WHERE " + userNameColumn + " = ? ";
+            " WHERE " + groupTableUserNameColumn + " = ? ";
 
         if (!NONE.equalsIgnoreCase(digestAlgorithm)) {
             try {
