@@ -683,8 +683,9 @@ public final class TldConfig  {
 
     private void tldScan(URI uri, List<String> entries) throws Exception {
         String name = "";
+        JarFile jarFile = null;
         try {
-            JarFile jarFile = new JarFile(new File(uri));
+            jarFile = new JarFile(new File(uri));
             for (String entry : entries) {
                 name = entry;
                 tldScanStream(new InputSource(
@@ -696,6 +697,14 @@ public final class TldConfig  {
                     sm.getString("contextConfig.tldEntryException",
                                  name, uri.toString(), context.getPath()),
                     e);
+        } finally {
+            if (jarFile != null) {
+                try {
+                    jarFile.close();
+                } catch (Throwable t) {
+                    // Ignore
+                }
+            }
         }
     }
 

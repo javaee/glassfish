@@ -63,26 +63,36 @@ public class Rejar {
             })) {
                 // add module
                 JarFile in = new JarFile(module);
-                Enumeration<JarEntry> entries = in.entries();
-                while (entries.hasMoreElements()) {
-                    JarEntry je = entries.nextElement();
-                    if (je.getName().endsWith("MANIFEST.MF") || names.contains(je.getName())) {
-                        continue;
-                    }
-                    if (je.isDirectory())
-                        continue;
-
-                    if (je.getName().startsWith("META-INF/inhabitants/")
-                            || je.getName().startsWith("META-INF/services/")) {
-                        ByteArrayOutputStream stream = metadata.get(je.getName());
-                        if (stream==null) {
-                            metadata.put(je.getName(), stream = new ByteArrayOutputStream());
+                try {
+                    Enumeration<JarEntry> entries = in.entries();
+                    while (entries.hasMoreElements()) {
+                        JarEntry je = entries.nextElement();
+                        if (je.getName().endsWith("MANIFEST.MF") || names.contains(je.getName())) {
+                            continue;
                         }
-                        stream.write(("# from "+ module.getName() + "\n").getBytes());
-                        copy(in, je, stream);
-                    } else {
-                        names.add(je.getName());
-                        copy(in, je, jos);
+                        if (je.isDirectory())
+                            continue;
+
+                        if (je.getName().startsWith("META-INF/inhabitants/")
+                                || je.getName().startsWith("META-INF/services/")) {
+                            ByteArrayOutputStream stream = metadata.get(je.getName());
+                            if (stream==null) {
+                                metadata.put(je.getName(), stream = new ByteArrayOutputStream());
+                            }
+                            stream.write(("# from "+ module.getName() + "\n").getBytes());
+                            copy(in, je, stream);
+                        } else {
+                            names.add(je.getName());
+                            copy(in, je, jos);
+                        }
+                    }
+                } finally {
+                    if (in != null) {
+                        try {
+                            in.close();
+                        } catch (Throwable t) {
+                            // Ignore
+                        }
                     }
                 }
 
