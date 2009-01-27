@@ -1668,6 +1668,8 @@ public class WebModule extends PwcWebModule {
                                   WebBundleDescriptor wbd) {
 
         boolean timeoutConfigured = false;
+        boolean isEnableURLRewritingSpecified = false;
+        boolean isEnableCookiesSpecified = false;
         int timeoutSeconds = 1800; // tomcat default (see StandardContext)
 
         setCookies(webContainer.instanceEnableCookies);
@@ -1688,7 +1690,25 @@ public class WebModule extends PwcWebModule {
                         // XXX need error message
                     }
                 } else if("enableCookies".equalsIgnoreCase(name)) {
-                    setCookies(ConfigBeansUtilities.toBoolean(value));
+                    boolean isEnableCookies = ConfigBeansUtilities.toBoolean(value);
+                    isEnableCookiesSpecified = true;
+                    if (isEnableURLRewritingSpecified &&
+                            (getCookies() != isEnableCookies)) {
+                        String msg = rb.getString("webmodule.sessionTrackingModeConflict");
+                        throw new IllegalArgumentException(
+                            MessageFormat.format(msg, getName()));
+                    }
+                    setCookies(isEnableCookies);
+                } else if("enableURLRewriting".equalsIgnoreCase(name)) {
+                    boolean isEnableURLRewriting = ConfigBeansUtilities.toBoolean(value);
+                    isEnableURLRewritingSpecified = true;
+                    if (isEnableCookiesSpecified &&
+                            (getCookies() == isEnableURLRewriting)) {
+                        String msg = rb.getString("webmodule.sessionTrackingModeConflict");
+                        throw new IllegalArgumentException(
+                            MessageFormat.format(msg, getName()));
+                    }
+                    setCookies(!isEnableURLRewriting);
                 } else {
                     Object[] params = {name};
                     logger.log(Level.INFO, "webcontainer.notYet", params);
