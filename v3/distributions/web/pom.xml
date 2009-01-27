@@ -457,6 +457,11 @@
             <artifactId>javax.activation</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.sun.grizzly</groupId>
+            <artifactId>grizzly-cometd</artifactId>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 </project>
 
