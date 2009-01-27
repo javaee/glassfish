@@ -185,6 +185,27 @@ public final class EmbeddedFileSystem {
 
     /**
      *
+     * @return fake modules directory.  This is for the benefit of StartupContext
+     * which insists that the install root should be the PARENT of some other directory.
+     * This is some other directory.
+     * @throws org.glassfish.embed.EmbeddedException
+     */
+    public File getModulesDirectory() throws EmbeddedException {
+        mustBeInitialized("getModulesDirectory");
+        File f = new File(getInstallRoot(), "modules");
+
+        if(!f.isDirectory()) {
+            f.mkdirs();
+        }
+
+        if(!f.isDirectory()) {
+            throw new EmbeddedException("cant_create_modules_dir");
+        }
+        return f;
+    }
+
+    /**
+     *
      * @return instance root directory
      * @throws org.glassfish.embed.EmbeddedException
      */

@@ -608,7 +608,13 @@ public class Server {
         try {
             
             EmbeddedModulesRegistryImpl reg = new EmbeddedModulesRegistryImpl();
-            StartupContext startupContext = new StartupContext(efs.getInstallRoot(), new String[0]);
+            
+            // IT 54
+            // You would never guess it but V3 code will take the PARENT directory of
+            // the first arg to the StartupContext ctor and assume THAT is the install-dir.
+            // So we need to send in a fake directory.
+
+            StartupContext startupContext = new StartupContext(efs.getModulesDirectory(), new String[0]);
 
 
             // !!!!!!!!!!!!!!!!!!!!!!!!!
