@@ -1,6 +1,7 @@
 package org.glassfish.ejb.security;
 
 import com.sun.ejb.EjbInvocation;
+import java.lang.reflect.InvocationTargetException;
 import org.glassfish.api.container.Container;
 import org.glassfish.ejb.security.application.EJBSecurityManager;
 
@@ -65,5 +66,59 @@ public class EJBSecurityUtil {
         }
         return ret;
     }
+    
+    /** This method is called from the generated code to execute the
+     * method.  This is a translation of method.invoke that the
+     * generated code needs to do, to invoke a particular ejb
+     * method. The method is invoked under a security Subject. This
+     * method is called from the generated code.
+     * @param Method beanClassMethod, the bean class method to be invoked
+     * @param Invocation inv, the current invocation object
+     * @param Object o, the object on which this method needs to be invoked,
+     * @param Object[] oa, the parameters to the methods,
+     * @param Container c, the container from which the appropriate subject is 
+     * queried from.
+     */
+    
+    public static Object runMethod(Method beanClassMethod, EjbInvocation inv, Object o, Object[] oa,
+           EJBSecurityManager mgr)
+    throws Throwable {
 
+	    final Method meth = beanClassMethod;
+	    final Object obj = o;
+	    final Object[] objArr = oa;
+	    Object ret;
+	    //EJBSecurityManager mgr = (EJBSecurityManager) c.getSecurityManager();
+ 	    if (mgr == null) {
+ 		throw new SecurityException("SecurityManager not set");
+	    }
+
+            // Optimization.  Skip doAsPrivileged call if this is a local
+            // invocation and the target ejb uses caller identity or the
+	    // System Security Manager is disabled.
+            // Still need to execute it within the target bean's policy context.
+            // see CR 6331550
+            if((inv.isLocal && mgr.getUsesCallerIdentity()) || 
+	       System.getSecurityManager() == null) {
+                ret = mgr.runMethod(meth, obj, objArr);
+            } else {
+                try {
+                    PrivilegedExceptionAction pea =
+                        new PrivilegedExceptionAction(){
+                            public java.lang.Object run() throws Exception {
+                                return meth.invoke(obj, objArr);
+                            }
+                        };
+
+                    ret = mgr.doAsPrivileged(pea);
+                } catch(PrivilegedActionException pae) {
+                    Throwable cause = pae.getCause();
+                    if( cause instanceof InvocationTargetException ) {
+                        cause = ((InvocationTargetException) cause).getCause();
+                    } 
+                    throw cause;
+                } 
+            }
+	    return ret;
+    } 
 }
