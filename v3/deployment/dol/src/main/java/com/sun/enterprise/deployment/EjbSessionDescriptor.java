@@ -197,6 +197,13 @@ public class EjbSessionDescriptor extends EjbDescriptor {
 	this.isStateless = isStateless;
 
     }
+	/**
+	* Returns false 
+	*/
+    public boolean isSingleton() {
+	return false;
+    }
+    
 
     public boolean hasRemoveMethods() {
         return (!removeMethods.isEmpty());
