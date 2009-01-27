@@ -86,7 +86,7 @@ public class ResourceEntry {
     /**
      * Loaded class.
      */
-    public Class loadedClass = null;
+    public Class<?> loadedClass = null;
 
 
     /**

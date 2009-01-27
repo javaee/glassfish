@@ -163,8 +163,6 @@ public class WebappLoader
     // --------------------------------------------------- Instance Variables
 
     private ObjectName oname;
-    private MBeanServer mserver;
-    private String domain;
     private ObjectName controller;
 
     /**
@@ -266,7 +264,7 @@ public class WebappLoader
     /**
      * Repositories that are set in the loader, for JMX.
      */
-    private ArrayList loaderRepositories = null;
+    private ArrayList<String> loaderRepositories = null;
 
     
     // START PE 4985680`
@@ -524,12 +522,12 @@ public class WebappLoader
      */
     public String[] findRepositories() {
 
-        return ((String[])repositories.clone());
+        return repositories.clone();
 
     }
 
     public String[] getRepositories() {
-        return ((String[])repositories.clone());
+        return repositories.clone();
     }
 
     /** Extra repositories for this loader
@@ -665,7 +663,6 @@ public class WebappLoader
                 // Register ourself. The container must be a webapp
                 try {
                     StandardContext ctx=(StandardContext)container;
-                    Engine eng=(Engine)ctx.getParent().getParent();
                     String path = ctx.getEncodedPath();
                     if (path.equals("")) {
                         path = "/";
@@ -773,8 +770,8 @@ public class WebappLoader
             }
 
             // Binding the Webapp class loader to the directory context
-            DirContextURLStreamHandler.bind
-                ((ClassLoader) classLoader, this.container.getResources());
+            DirContextURLStreamHandler.bind(classLoader,
+                    this.container.getResources());
 
         } catch (Throwable t) {
             log.log(Level.SEVERE, "LifecycleException ", t);
@@ -809,6 +806,8 @@ public class WebappLoader
 
         // Throw away our current class loader
         stopNestedClassLoader();
+        DirContextURLStreamHandler.unbind(classLoader);
+
         classLoader = null;
 
         destroy();
@@ -841,7 +840,6 @@ public class WebappLoader
         // Validate the source of this event
         if (!(event.getSource() instanceof Context))
             return;
-        Context context = (Context) event.getSource();
 
         // Process a relevant property change
         if (event.getPropertyName().equals("reloadable")) {
@@ -866,15 +864,15 @@ public class WebappLoader
     protected ClassLoader createClassLoader()
         throws Exception {
 
-        Class clazz = Class.forName(loaderClass);
+        Class<?> clazz = Class.forName(loaderClass);
         WebappClassLoader classLoader = null;
 
         if (parentClassLoader == null) {
             parentClassLoader = Thread.currentThread().getContextClassLoader();
         }
-        Class[] argTypes = { ClassLoader.class };
+        Class<?>[] argTypes = { ClassLoader.class };
         Object[] args = { parentClassLoader };
-        Constructor constr = clazz.getConstructor(argTypes);
+        Constructor<?> constr = clazz.getConstructor(argTypes);
         classLoader = (WebappClassLoader) constr.newInstance(args);
 
         classLoader.setUseMyFaces(useMyFaces);
@@ -1039,7 +1037,7 @@ public class WebappLoader
         if (servletContext == null)
             return;
 
-        loaderRepositories=new ArrayList();
+        loaderRepositories=new ArrayList<String>();
         // Loading the work directory
         File workDir =
             (File) servletContext.getAttribute(Globals.WORK_DIR_ATTR);
@@ -1047,7 +1045,7 @@ public class WebappLoader
             log.info("No work dir for " + servletContext);
         }
 
-        if (log.isLoggable(Level.FINEST)) 
+        if (log.isLoggable(Level.FINEST) && workDir != null) 
             log.finest(sm.getString("webappLoader.deploy",
                                     workDir.getAbsolutePath()));
 
@@ -1132,10 +1130,11 @@ public class WebappLoader
 
             // Looking up directory /WEB-INF/lib in the context
             try {
-                NamingEnumeration enumeration = resources.listBindings(libPath);
+                NamingEnumeration<Binding> enumeration =
+                    resources.listBindings(libPath);
                 while (enumeration.hasMoreElements()) {
 
-                    Binding binding = (Binding) enumeration.nextElement();
+                    Binding binding = enumeration.nextElement();
                     String filename = libPath + "/" + binding.getName();
                     // START OF IASRI 4657979
                     if (!filename.endsWith(".jar") &&
@@ -1294,10 +1293,9 @@ public class WebappLoader
 
         try {
 
-            NamingEnumeration enumeration = srcDir.list("");
+            NamingEnumeration<NameClassPair> enumeration = srcDir.list("");
             while (enumeration.hasMoreElements()) {
-                NameClassPair ncPair =
-                    (NameClassPair) enumeration.nextElement();
+                NameClassPair ncPair = enumeration.nextElement();
                 String name = ncPair.getName();
                 Object object = srcDir.lookup(name);
                 File currentFile = new File(destDir, name);
@@ -1354,9 +1352,6 @@ public class WebappLoader
     public ObjectName preRegister(MBeanServer server,
                                   ObjectName name) throws Exception {
         oname=name;
-        mserver=server;
-        domain=name.getDomain();
-
         return name;
     }
 
