@@ -95,3 +95,9 @@ Committed revision 24304.
 ++    }
 ++
 ++
+===================================================================
+
+Jan 27, 2009  VERY IMPORTANT fix for IT 54:
+
+Index: src/main/java/com/sun/enterprise/universal/glassfish/GFLauncherUtils.java
+===================================================================
