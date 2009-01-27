@@ -61,7 +61,8 @@ final public class ClassFile implements VMConstants, Serializable {
     new short[]{46, 0}, // jdk 1.2
     new short[]{47, 0}, // jdk 1.3
     new short[]{48, 0}, // jdk 1.4
-    new short[]{49, 0}  // jdk 1.5
+    new short[]{49, 0}, // jdk 1.5
+    new short[]{50, 0}  // jdk 1.6      
   };
   public static final List jdkVersions =
     convertMajorMinorVersions(jdkMajorMinorVersions);
