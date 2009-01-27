@@ -22,6 +22,7 @@
  */
 package com.sun.enterprise.universal.glassfish;
 
+import static com.sun.enterprise.universal.glassfish.SystemPropertyConstants.*;
 import com.sun.enterprise.universal.io.SmartFile;
 import java.io.*;
 import java.net.*;
@@ -64,6 +65,9 @@ public class GFLauncherUtils {
     }
 */
     public static synchronized File getInstallDir() {
+        // if it is already set as a System Property -- skip the huge block below
+        setInstallDirFromSystemProp();
+
         if(installDir == null)
         {
             String resourceName = GFLauncherUtils.class.getName().replace(".", "/") + ".class";
@@ -234,6 +238,27 @@ public class GFLauncherUtils {
             sb.append(f.getPath().replace('\\', '/'));
         }
         return sb.toString();
+    }
+
+    private static void setInstallDirFromSystemProp() {
+        // https://embedded-glassfish.dev.java.net/issues/show_bug.cgi?id=54
+        //
+        // For instance if we are called from an Embedded Server then InstallRoot
+        // may already be set as a System Prop -- and the jar we are running from has
+        // nothing whatever to do with the concept of an "install root".
+        // In that case we certainly do not want to wipe out the already set install root.
+
+        // if anything is not kosher simply return w/o setting installDir to anything.
+        String installRootDirName = System.getProperty(INSTALL_ROOT_PROPERTY);
+
+        if(!ok(installRootDirName))
+            return;
+
+        File f = SmartFile.sanitize(new File(installRootDirName));
+
+        if(f.isDirectory()) {
+            installDir = f;
+        }
     }
 
     private static File installDir;
