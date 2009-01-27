@@ -455,7 +455,7 @@ public abstract class BaseContainer
                     isSession = true;
                     EjbSessionDescriptor sd =
                         (EjbSessionDescriptor)ejbDescriptor;
-                    if (ejbDescriptor.getType().equals(EjbSingletonDescriptor.TYPE)) {
+                    if (sd.isSingleton()) {
                         isSingleton = true;
                     } else {
                         isStatelessSession = sd.isStateless();
