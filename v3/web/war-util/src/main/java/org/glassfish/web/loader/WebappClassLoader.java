@@ -1954,8 +1954,15 @@ public class WebappClassLoader
                         if (logger.isLoggable(Level.FINE)) {
                             logger.log(Level.FINE, "Failed to open JAR", e);
                         }
+                        if (jarFiles[i] != null) {
+                            try {
+                                jarFiles[i].close();
+                            } catch (Throwable t) {
+                                // Ignore
+                            }
+                        }
                         return false;
-                    }
+                   }
                 }
             }
         }

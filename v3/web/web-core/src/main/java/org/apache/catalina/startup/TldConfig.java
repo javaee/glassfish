@@ -697,6 +697,14 @@ public final class TldConfig  {
                     sm.getString("contextConfig.tldEntryException",
                                  name, uri.toString(), context.getPath()),
                     e);
+        } finally {
+            if (jarFile != null) {
+                try {
+                    jarFile.close();
+                } catch (Throwable t) {
+                    // Ignore
+                }
+            }
         }
     }
 
