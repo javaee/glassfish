@@ -36,18 +36,17 @@ package org.glassfish.deployment.admin;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.Param;
 import org.glassfish.api.I18n;
 import org.glassfish.api.container.Sniffer;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
-import com.sun.enterprise.config.serverbeans.Applications;
-import com.sun.enterprise.config.serverbeans.Application;
-import com.sun.enterprise.config.serverbeans.Engine;
-import com.sun.enterprise.config.serverbeans.Module;
+import com.sun.enterprise.v3.server.SnifferManager;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import java.util.List;
 
@@ -57,10 +56,16 @@ import java.util.List;
 @Service(name="list-components")
 @I18n("list.components")
 @Scoped(PerLookup.class)
-public class ListComponentsCommand extends ApplicationLifecycle implements AdminCommand {
+public class ListComponentsCommand  implements AdminCommand {
 
     @Param(optional=true)
     String type = null;
+
+    @Inject
+    Applications applications;
+
+    @Inject
+    SnifferManager snifferManager;
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListComponentsCommand.class);    
 
@@ -70,14 +75,14 @@ public class ListComponentsCommand extends ApplicationLifecycle implements Admin
 
         ActionReport.MessagePart part = report.getTopMessagePart();        
         int numOfApplications = 0;
-        for (Module module : applications.getModules()) {
+        for (Named module : applications.getModules()) {
             if (module instanceof Application) {
                 final Application app = (Application)module;
                 if (app.getObjectType().equals("user")) {
                     if (type==null || isApplicationOfThisType(app, type)) {
                         ActionReport.MessagePart childPart = part.addChild();
                         childPart.setMessage(app.getName() + " " +
-                                             getSnifferEngines(app, true));
+                                             getSnifferEngines(app.getModule().get(0), true));
                         numOfApplications++;
                     }
                 }
@@ -97,10 +102,12 @@ public class ListComponentsCommand extends ApplicationLifecycle implements Admin
          *  false.
          */
     boolean isApplicationOfThisType(final Application app, final String type) {
-        final List<Engine> engineList = app.getEngine();
-        for (Engine engine : engineList) {
-            if (engine.getSniffer().equals(type)) {
-                return true;
+        for (Module module : app.getModule()) {
+            final List<Engine> engineList = module.getEngines();
+            for (Engine engine : engineList) {
+                if (engine.getSniffer().equals(type)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -109,11 +116,11 @@ public class ListComponentsCommand extends ApplicationLifecycle implements Admin
         /**
          * return all user visible sniffer engines in an application.
          * The return format is <sniffer1, sniffer2, ...>
-         * @param app - Application
+         * @param module - Application's module
          * @return sniffer engines
          */
-    String getSnifferEngines(final Application app, final boolean format) {
-        final List<Engine> engineList = app.getEngine();
+    String getSnifferEngines(final Module module, final boolean format) {
+        final List<Engine> engineList = module.getEngines();
         StringBuffer se = new StringBuffer();
         if (!engineList.isEmpty()) {
             if (format) {

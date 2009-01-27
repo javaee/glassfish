@@ -44,10 +44,8 @@ import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.admin.config.ReferenceContainer;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.List;
 
-import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
@@ -67,7 +65,18 @@ import org.glassfish.quality.ToDo;
 }) */
 @org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ClusterConfig")
 @Configured
-public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, SystemPropertyBag, Named, ReferenceContainer {
+public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer {
+
+    /**
+     *  Name of the configured object
+     *
+     * @return name of the configured object
+     FIXME: should set 'key=true'.  See bugs 6039, 6040
+     */
+    @Attribute(required=true)
+    String getName();
+
+    public void setName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the configRef property.

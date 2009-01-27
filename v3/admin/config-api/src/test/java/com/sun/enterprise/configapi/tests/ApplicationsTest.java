@@ -38,8 +38,8 @@ package com.sun.enterprise.configapi.tests;
 
 import org.junit.Test;
 import static org.junit.Assert.assertTrue;
+import org.glassfish.api.admin.config.Named;
 import com.sun.enterprise.config.serverbeans.Applications;
-import com.sun.enterprise.config.serverbeans.Module;
 
 import java.util.List;
 
@@ -63,8 +63,8 @@ public class ApplicationsTest extends ConfigApiTest {
     @Test
     public void getModulesTest() {
         Applications apps = getHabitat().getComponent(Applications.class);
-        List<Module> modules = apps.getModules();
-        for (Module module : modules) {
+        List<Named> modules = apps.getModules();
+        for (Named module : modules) {
             logger.fine("Module = " + module.getName());
         }
         assertTrue(modules!=null);

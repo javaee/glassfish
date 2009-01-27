@@ -45,9 +45,8 @@ import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.internal.data.ApplicationInfo;
-import org.glassfish.internal.data.ModuleInfo;
+import org.glassfish.internal.data.EngineRef;
 import org.glassfish.api.container.Container;
-import org.glassfish.api.deployment.DeploymentContext;
 import org.jvnet.hk2.component.Habitat;
 
 import java.io.File;
@@ -56,6 +55,8 @@ import java.net.URI;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.List;
+import java.util.Collection;
 
 public class ASClassLoaderUtil {
 
@@ -128,10 +129,20 @@ public class ASClassLoaderUtil {
             // this might be an internal web container app, like _default_web_app, ignore.
             return null;
         }
-        ModuleInfo module = app.getModuleInfo(type);
-        if (module!=null) {
-            WebApplication webApp = (WebApplication) module.getApplicationContainer();
-            return webApp.getLibraries();
+        Collection<EngineRef> refs = app.getEngineRefsForContainer(type);
+        if (refs!=null) {
+            StringBuffer result = new StringBuffer();
+            for (EngineRef ref : refs) {                
+                WebApplication webApp = (WebApplication) ref.getApplicationContainer();
+                if (result.length()>0) {
+                    result.append(",");
+                }
+                final String lib = webApp.getLibraries();
+                if (lib!=null) {
+                    result.append(lib);
+                }
+            }
+            return result.toString();
         }
         _logger.log(Level.SEVERE, "No web module loaded for this application " + moduleId);
         return null;

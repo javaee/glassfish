@@ -42,6 +42,7 @@ import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
+import org.glassfish.api.admin.config.Named;
 
 import java.util.List;
 
@@ -68,6 +69,6 @@ public interface SystemApplications extends ConfigBeanProxy, Injectable  {
      * {@link Application }
      */
     @Element("*")
-    public List<Module> getModules();
+    public List<Named> getModules();
 
 }

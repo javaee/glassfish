@@ -45,6 +45,11 @@ import java.util.Map;
 
 /**
  * Registry for deployed Applications
+ *
+ * TODO : dochez
+ * this class needs to go, I think we should use the configured tree (applications)
+ * to store this list. This could be achieve once hk2 configured support Transient
+ * objects attachment.
  */
 @Service
 @Scoped(Singleton.class)
@@ -54,9 +59,6 @@ public class ApplicationRegistry {
 
     public synchronized void add(String name, ApplicationInfo info) {
         apps.put(name, info);
-        for (ModuleInfo module : info.getModuleInfos()) {
-            module.getContainerInfo().add(info);    
-        }
     }
 
     public ApplicationInfo get(String name) {
@@ -65,11 +67,7 @@ public class ApplicationRegistry {
 
     public synchronized void remove(String name) {
 
-        ApplicationInfo oldApp = apps.remove(name);
-        for (ModuleInfo module : oldApp.getModuleInfos()) {
-            module.getContainerInfo().remove(name);
-        }
-
+        apps.remove(name);
     }
 
 }

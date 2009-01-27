@@ -45,7 +45,6 @@ import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.deployment.web.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
-import javax.enterprise.deploy.shared.ModuleType;
 import java.util.*;
 
 /**

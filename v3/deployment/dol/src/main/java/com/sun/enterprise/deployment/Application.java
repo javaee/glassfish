@@ -216,200 +216,6 @@ public class Application extends RootDeploymentDescriptor
         return application;
     }
 
-    /**
-     * This method creates a top level Application object for an ear.
-     *
-     * @param archive    the archive for the application
-     * @param introspect whether or not to create via introspection.  if
-     *                   true, an application object is constructed in the
-     *                   absence of an application.xml.  if false, it is
-     *                   constructed from reading the application.xml from
-     *                   the archive.
-     */
-    public static Application createApplication(Habitat habitat,
-            ReadableArchive archive, boolean introspect) {
-        return createApplication(habitat, archive, introspect, false);
-    }
-
-    /**
-     * This method creates a top level Application object for an ear.
-     *
-     * @param archive    the archive for the application
-     * @param introspect whether or not to create via introspection.  if
-     *                   true, an application object is constructed in the
-     *                   absence of an application.xml.  if false, it is
-     *                   constructed from reading the application.xml from
-     *                   the archive.
-     * @param directory  whether the application is packaged as a directory
-     */
-    public static Application createApplication(Habitat habitat,
-            ReadableArchive archive, boolean introspect, boolean directory) {
-        if (introspect) {
-            return getApplicationFromIntrospection(habitat,archive, directory);
-        } else {
-            return getApplicationFromAppXml(archive);
-        }
-    }
-
-    private static Application getApplicationFromAppXml(ReadableArchive archive) {
-        ApplicationArchivist archivist = new ApplicationArchivist();
-        archivist.setXMLValidation(false);
-
-        // read the standard deployment descriptors
-        Application application = null;
-        try {
-            application =
-                    (Application) archivist.readStandardDeploymentDescriptor(archive);
-        } catch (Exception ex) {
-            //@@@ i18n
-            _logger.log(Level.SEVERE,
-                    "Error loading application.xml from " + archive.getURI());
-            _logger.log(Level.SEVERE, ex.getMessage());
-        }
-
-        return application;
-    }
-
-    /**
-     * This method introspect an ear file and populate the Application object.
-     * We follow the Java EE platform specification, Section EE.8.4.2
-     * to determine the type of the modules included in this application.
-     *
-     * @param archive   the archive representing the application root
-     * @param directory whether this is a directory deployment
-     */
-    private static Application getApplicationFromIntrospection(
-            Habitat habitat, ReadableArchive archive, boolean directory) {
-        String appRoot = archive.getURI().getSchemeSpecificPart(); //archive is a directory
-        Application app = new Application(habitat);
-        app.setLoadedFromApplicationXml(false);
-        app.setVirtual(false);
-
-        //name of the file without its extension
-        String appName = appRoot.substring(
-                appRoot.lastIndexOf(File.separatorChar) + 1);
-        app.setName(appName);
-
-        List<ReadableArchive> unknowns = new ArrayList<ReadableArchive>();
-        File[] files = getEligibleEntries(new File(appRoot), directory);
-        for (File subModule : files) {
-            ReadableArchive subArchive = null;
-            try {
-                try {
-
-                    if (!directory) {
-                        subArchive = new InputJarArchive();
-                        subArchive.open(subModule.toURI());
-                    } else {
-                        subArchive = new FileArchive();
-                        subArchive.open(subModule.toURI());
-                    }
-                } catch (IOException ex) {
-                    _logger.log(Level.WARNING, ex.getMessage());
-                }
-
-                //for archive deployment, we check the sub archives by its
-                //file extension; for directory deployment, we check the sub
-                //directories by its name. We are now supporting directory
-                //names with both "_suffix" and ".suffix".
-
-                //Section EE.8.4.2.1.a
-                String name = subModule.getName();
-                String uri = deriveArchiveUri(appRoot, subModule, directory);
-                if ((!directory && name.endsWith(".war"))
-                        || (directory &&
-                        (name.endsWith("_war") ||
-                                name.endsWith(".war")))) {
-                    String contextRoot =
-                            uri.substring(uri.lastIndexOf('/') + 1, uri.lastIndexOf('.'));
-                    ModuleDescriptor<BundleDescriptor> md = new ModuleDescriptor<BundleDescriptor>();
-                    md.setArchiveUri(uri);
-                    md.setModuleType(XModuleType.WAR);
-                    md.setContextRoot(contextRoot);
-                    app.addModule(md);
-                }
-                //Section EE.8.4.2.1.b
-                else if ((!directory && name.endsWith(".rar"))
-                        || (directory &&
-                        (name.endsWith("_rar") ||
-                                name.endsWith(".rar")))) {
-                    ModuleDescriptor<BundleDescriptor> md = new ModuleDescriptor<BundleDescriptor>();
-                    md.setArchiveUri(uri);
-                    md.setModuleType(XModuleType.RAR);
-                    app.addModule(md);
-                } else if ((!directory && name.endsWith(".jar"))
-                        || (directory &&
-                        (name.endsWith("_jar") ||
-                                name.endsWith(".jar")))) {
-                    try {
-                        //Section EE.8.4.2.1.d.i
-                        AppClientArchivist acArchivist = new AppClientArchivist();
-                        if (acArchivist.hasStandardDeploymentDescriptor(subArchive)
-                                || acArchivist.hasRuntimeDeploymentDescriptor(subArchive)
-                                || acArchivist.getMainClassName(subArchive.getManifest()) != null) {
-
-                            ModuleDescriptor<BundleDescriptor> md = new ModuleDescriptor<BundleDescriptor>();
-                            md.setArchiveUri(uri);
-                            md.setModuleType(XModuleType.CAR);
-                            md.setManifest(subArchive.getManifest());
-                            app.addModule(md);
-                            continue;
-                        }
-
-                        //Section EE.8.4.2.1.d.ii
-                        EjbArchivist ejbArchivist = new EjbArchivist();
-                        if (ejbArchivist.hasStandardDeploymentDescriptor(subArchive)
-                                || ejbArchivist.hasRuntimeDeploymentDescriptor(subArchive)) {
-
-                            ModuleDescriptor<BundleDescriptor> md = new ModuleDescriptor<BundleDescriptor>();
-                            md.setArchiveUri(uri);
-                            md.setModuleType(XModuleType.EJB);
-                            app.addModule(md);
-                            continue;
-                        }
-                    } catch (IOException ex) {
-                        _logger.log(Level.WARNING, ex.getMessage());
-                    }
-
-                    //Still could not decide between an ejb and a library
-                    unknowns.add(subArchive);
-                } else {
-                    //ignored
-                }
-            } finally {
-                if (subArchive != null) {
-                    try {
-                        subArchive.close();
-                    } catch (IOException ioe) {
-                        _logger.log(Level.WARNING, localStrings.getLocalString("enterprise.deployment.errorClosingSubArch", "Error closing subarchive {0}", new Object[]{subModule.getAbsolutePath()}), ioe);
-                    }
-                }
-            }
-        }
-
-        if (unknowns.size() > 0) {
-            AnnotationDetector detector =
-                    new AnnotationDetector(new EjbComponentAnnotationScanner());
-            for (int i = 0; i < unknowns.size(); i++) {
-                File jarFile = new File(unknowns.get(i).getURI().getSchemeSpecificPart());
-                try {
-                    if (detector.hasAnnotationInArchive(unknowns.get(i))) {
-                        String uri = deriveArchiveUri(appRoot, jarFile, directory);
-                        //Section EE.8.4.2.1.d.ii, alas EJB
-                        ModuleDescriptor<BundleDescriptor> md = new ModuleDescriptor<BundleDescriptor>();
-                        md.setArchiveUri(uri);
-                        md.setModuleType(XModuleType.EJB);
-                        app.addModule(md);
-                    }
-                } catch (IOException ex) {
-                    _logger.log(Level.WARNING, ex.getMessage());
-                }
-            }
-        }
-
-        return app;
-    }
-
     public void setGeneratedXMLDirectory(String xmlDir) {
         generatedXMLDir = xmlDir;
     }
@@ -865,6 +671,27 @@ public class Application extends RootDeploymentDescriptor
             }
         }
         return null;
+    }
+
+
+    /**
+     * Lookup module by uri.
+     *
+     * @param uri the module path in the application archive
+     * @return a bundle descriptor in this application identified by uri
+     *         or null if not found.
+     */
+    public Collection<ModuleDescriptor<BundleDescriptor>> getModuleDescriptorsByType(XModuleType type) {
+        if (type==null) {
+            throw new IllegalArgumentException("type cannot be null");
+        }
+        LinkedList<ModuleDescriptor<BundleDescriptor>> results = new LinkedList<ModuleDescriptor<BundleDescriptor>>();
+        for (ModuleDescriptor<BundleDescriptor> aModule : getModules()) {
+            if (type.equals(aModule.getModuleType())) {
+                results.add(aModule);
+            }
+        }
+        return results;
     }
 
     /**
@@ -1651,76 +1478,6 @@ public class Application extends RootDeploymentDescriptor
         return resourceList;
     }
 
-    private static String deriveArchiveUri(
-            String appRoot, File subModule, boolean deploydir) {
-
-        //if deploydir, revert the name of the directory to
-        //the format of foo/bar/voodoo.ext (where ext is war/rar/jar)
-        if (deploydir) {
-            return FileUtils.revertFriendlyFilename(subModule.getName());
-        }
-
-        //if archive deploy, need to make sure all of the directory
-        //structure is correctly included
-        String uri = subModule.getAbsolutePath().substring(appRoot.length() + 1);
-        return uri.replace(File.separatorChar, '/');
-    }
-
-    private static File[] getEligibleEntries(File appRoot, boolean deploydir) {
-
-        //For deploydir, all modules are exploded at the top of application root
-        if (deploydir) {
-            return appRoot.listFiles(new DirectoryIntrospectionFilter());
-        }
-
-        //For archive deploy, recursively search the entire package
-        Vector<File> files = new Vector<File>();
-        getListOfFiles(appRoot, files,
-                new ArchiveIntrospectionFilter(appRoot.getAbsolutePath()));
-        return (File[]) files.toArray(new File[files.size()]);
-    }
-
-    private static void getListOfFiles(
-            File directory, Vector<File> files, FilenameFilter filter) {
-
-        File[] list = directory.listFiles(filter);
-        for (int i = 0; i < list.length; i++) {
-            if (!list[i].isDirectory()) {
-                files.add(list[i]);
-            } else {
-                getListOfFiles(list[i], files, filter);
-            }
-        }
-    }
-
-    private static class ArchiveIntrospectionFilter implements FilenameFilter {
-        private String libDir;
-
-        ArchiveIntrospectionFilter(String root) {
-            libDir = root + File.separator + "lib" + File.separator;
-        }
-
-        public boolean accept(File dir, String name) {
-
-            File currentFile = new File(dir, name);
-            if (currentFile.isDirectory()) {
-                return true;
-            }
-
-            //For ".war" and ".rar", check all files in the archive
-            if (name.endsWith(".war") || name.endsWith(".rar")) {
-                return true;
-            }
-
-            String path = currentFile.getAbsolutePath();
-            if (!path.startsWith(libDir) && path.endsWith(".jar")) {
-                return true;
-            }
-
-            return false;
-        }
-    }
-
     private boolean isValidated;
     
     public boolean isValidated() {
@@ -1729,33 +1486,5 @@ public class Application extends RootDeploymentDescriptor
 
     public void setValidated(boolean newValidated) {
         isValidated = newValidated;
-    }
-
-
-    private static class DirectoryIntrospectionFilter implements FilenameFilter {
-
-        DirectoryIntrospectionFilter() {
-        }
-
-        public boolean accept(File dir, String name) {
-
-            File currentFile = new File(dir, name);
-            if (!currentFile.isDirectory()) {
-                return false;
-            }
-
-            // now we are supporting directory names with 
-            // ".suffix" and "_suffix"
-            if (name.endsWith("_war")
-                    || name.endsWith(".war")
-                    || name.endsWith("_rar")
-                    || name.endsWith(".rar")
-                    || name.endsWith("_jar")
-                    || name.endsWith(".jar")) {
-                return true;
-            }
-
-            return false;
-        }
     }
 }

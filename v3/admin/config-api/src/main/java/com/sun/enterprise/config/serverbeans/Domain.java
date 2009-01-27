@@ -50,10 +50,7 @@ import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.glassfish.api.admin.config.PropertyDesc;
-import org.glassfish.api.admin.config.PropertiesDesc;
-import org.glassfish.api.admin.config.Property;
-import org.glassfish.api.admin.config.PropertyBag;
+import org.glassfish.api.admin.config.*;
 
 import org.glassfish.quality.ToDo;
 
@@ -378,7 +375,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
             List<Application> allSysApps = new ArrayList<Application>();
             SystemApplications sa = me.getSystemApplications();
             if (sa != null) {
-                for (Module m : sa.getModules()) {
+                for (Named m : sa.getModules()) {
                     if (m instanceof Application)
                         allSysApps.add((Application)m);
                 }

@@ -40,14 +40,16 @@ import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.module.bootstrap.Populator;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import org.glassfish.config.support.GlassFishDocument;
+import org.glassfish.api.admin.config.ConfigurationUpgrade;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigParser;
-import org.jvnet.hk2.config.Transactions;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -98,11 +100,23 @@ public class DomainXml implements Populator {
                 new ExistingSingletonInhabitant<ClassLoader>(ClassLoader.class, registry.getParentClassLoader()));
 
         try {
-            parseDomainXml(parser, getDomainXml(env), getInstanceName());
+            parseDomainXml(parser, getDomainXml(env), env.getInstanceName());
         } catch (IOException e) {
             // TODO: better exception handling scheme
             throw new RuntimeException("Failed to parse domain.xml",e);
         }
+
+        // run the upgrades...
+        try {
+            for (ConfigurationUpgrade cu : habitat.getAllByContract(ConfigurationUpgrade.class)) {
+                Logger.getAnonymousLogger().fine("Upgrading domain.xml with " + cu.getClass());
+            }
+        } catch (Exception e) {
+            // todo, some reporting facility would useful.
+        }
+
+        habitat.addIndex(new ExistingSingletonInhabitant(habitat.getComponent(Server.class, env.getInstanceName())),
+                         Server.class.getName(), ServerEnvironment.DEFAULT_INSTANCE_NAME);
     }
 
     /**
@@ -110,17 +124,6 @@ public class DomainXml implements Populator {
      */
     protected URL getDomainXml(ServerEnvironmentImpl env) throws IOException {
         return new File(env.getConfigDirPath(), ServerEnvironmentImpl.kConfigXMLFileName).toURI().toURL();
-    }
-
-    /**
-     * Obtains the server instance name, which is then matched up with
-     * &lt;server> element in domain.xml.
-     */
-    protected String getInstanceName() {
-        String instanceName = context.getArguments().getProperty("-instancename");
-        if(instanceName == null || instanceName.length() == 0)
-            instanceName = "server";
-        return instanceName;
     }
 
 

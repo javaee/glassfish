@@ -54,6 +54,7 @@ public class DeploymentUtils {
     private static final String WEB_INF_LIB = "WEB-INF/lib";
     private static final String JSP_SUFFIX = ".jsp";
     private static final String RA_XML = "META-INF/ra.xml";
+    private static final String APPLICATION_XML = "META-INF/application.xml";    
 
     // checking whether the archive is a web archive
     public static boolean isWebArchive(ReadableArchive archive) {
@@ -89,6 +90,21 @@ public class DeploymentUtils {
             //ignore
         }
         return isRar;
+    }
+
+    /**
+     * check whether the archive is a .rar
+     * @param archive archive to be tested
+     * @return status of .rar or not
+     */
+    public static boolean isEAR(ReadableArchive archive){
+        boolean isEar = false;
+        try{
+            isEar = archive.exists(APPLICATION_XML);
+        }catch(IOException ioe){
+            //ignore
+        }
+        return isEar;
     }
 
     /**

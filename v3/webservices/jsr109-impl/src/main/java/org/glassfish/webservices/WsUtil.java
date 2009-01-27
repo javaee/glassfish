@@ -1894,7 +1894,7 @@ public class WsUtil {
         }
 
         //Add expanded modules to classpath
-        for (Iterator modules = app.getModules(); modules.hasNext();) {
+        for (Iterator modules = app.getModule(); modules.hasNext();) {
 
             ModuleDescriptor md = (ModuleDescriptor) modules.next();
 

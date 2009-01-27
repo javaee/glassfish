@@ -44,15 +44,17 @@
 package org.glassfish.embed.impl;
 
 import java.util.LinkedList;
+import java.util.Collection;
 
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.container.Sniffer;
-import org.glassfish.internal.data.ContainerInfo;
+import org.glassfish.api.deployment.archive.ArchiveHandler;
+import org.glassfish.internal.data.EngineInfo;
 import org.glassfish.internal.data.ContainerRegistry;
 import org.glassfish.internal.data.ProgressTracker;
 import org.jvnet.hk2.annotations.Inject;
 
-import org.glassfish.deployment.common.DeploymentContextImpl;
+import org.glassfish.api.deployment.DeploymentContext;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
 
 /**
@@ -82,18 +84,19 @@ public class EmbeddedApplicationLifecycle extends ApplicationLifecycle {
 
 
     @Override
-    protected LinkedList<ContainerInfo> setupContainerInfos(
-            Iterable<Sniffer> sniffers, DeploymentContextImpl context,
-            ActionReport report, ProgressTracker tracker) throws Exception {
-        LinkedList<ContainerInfo> result = super.setupContainerInfos(sniffers, context, report, tracker);
+    public LinkedList<EngineInfo> setupContainerInfos(ArchiveHandler handler, 
+            Collection<Sniffer> sniffers, DeploymentContext context,
+            ActionReport report) throws Exception {
+            
+        LinkedList<EngineInfo> result = super.setupContainerInfos(handler, sniffers, context, report);
 
         if (result != null && result.isEmpty()) {
 
             for (Sniffer sniffer : sniffers) {
                 for (String containerName : sniffer.getContainersNames()) {
-                    ContainerInfo<?, ?> containerInfo = creg.getContainer(containerName);
-                    if (containerInfo != null) {
-                        result.add(containerInfo);
+                    EngineInfo<?, ?> engine = creg.getContainer(containerName);
+                    if (engine != null) {
+                        result.add(engine);
                     }
                 }
             }

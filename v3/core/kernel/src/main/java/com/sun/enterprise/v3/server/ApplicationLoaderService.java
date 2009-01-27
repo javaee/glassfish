@@ -23,18 +23,21 @@
 package com.sun.enterprise.v3.server;
 
 import com.sun.enterprise.v3.common.HTMLActionReporter;
-import org.glassfish.internal.data.ApplicationInfo;
-import org.glassfish.internal.data.ContainerInfo;
+import org.glassfish.internal.data.*;
+import org.glassfish.internal.deployment.Deployment;
+import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.deployment.common.DeploymentContextImpl;
-import com.sun.enterprise.config.serverbeans.Module;
-import com.sun.enterprise.config.serverbeans.Application;
-import com.sun.enterprise.config.serverbeans.Engine;
-import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Startup;
 import org.glassfish.api.event.*;
 import org.glassfish.api.admin.ParameterNames;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.container.Container;
 import org.glassfish.api.deployment.ApplicationContainer;
@@ -45,6 +48,8 @@ import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,9 +64,38 @@ import java.util.logging.Logger;
  *
  * @author Jerome Dochez
  */
-public class ApplicationLoaderService extends ApplicationLifecycle
-        implements Startup, PreDestroy, PostConstruct {
+@Service
+public class ApplicationLoaderService implements Startup, PreDestroy, PostConstruct {
 
+    final Logger logger = LogDomains.getLogger(AppServerStartup.class, LogDomains.CORE_LOGGER);
+
+    @Inject
+    Deployment deployment;
+
+    @Inject
+    ArchiveFactory archiveFactory;
+
+    @Inject
+    SnifferManager snifferManager;
+
+    @Inject
+    ContainerRegistry containerRegistry;
+
+    @Inject
+    ApplicationRegistry appRegistry;
+
+    @Inject
+    Events events;
+
+    @Inject
+    protected Applications applications;
+
+    @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Server server;
+
+    @Inject
+    ServerEnvironment env;
+    
     /**
      * Retuns the lifecyle of the service.
      * Once the applications are loaded, this service does not need to remain
@@ -85,7 +119,7 @@ public class ApplicationLoaderService extends ApplicationLifecycle
     public void foo() {
 */
         assert env!=null;
-        for (Module m : applications.getModules()) {
+        for (Named m : applications.getModules()) {
             if (m instanceof Application) {
                 Application module = (Application) m;
                 for (ApplicationRef appRef : server.getApplicationRef()) {
@@ -121,8 +155,6 @@ public class ApplicationLoaderService extends ApplicationLifecycle
                     deploymentProperties.setProperty(ParameterNames.NAME, sourceFile.getName());
 
                     // ok we need to explode the directory somwhere and remember to delete it on shutdown
-                    Events events = habitat.getComponent(Events.class);
-
                     try {
                         final File tmpFile = File.createTempFile(sourceFile.getName(),"");
                         final String path = tmpFile.getAbsolutePath();
@@ -141,7 +173,7 @@ public class ApplicationLoaderService extends ApplicationLifecycle
                         if (tmpDir.mkdirs()) {
                             ReadableArchive sourceArchive=null;
                             sourceArchive = archiveFactory.openArchive(sourceFile);
-                            ArchiveHandler handler = getArchiveHandler(sourceArchive);
+                            ArchiveHandler handler = deployment.getArchiveHandler(sourceArchive);
                             final String appName = handler.getDefaultApplicationName(sourceArchive);
                             deploymentProperties.setProperty(ParameterNames.NAME, appName);
                             deploymentProperties.setProperty(ParameterNames.CONTEXT_ROOT, appName);
@@ -160,7 +192,6 @@ public class ApplicationLoaderService extends ApplicationLifecycle
                     ReadableArchive sourceArchive=null;
                     try {
                         sourceArchive = archiveFactory.openArchive(sourceFile);
-                        ArchiveHandler handler = getArchiveHandler(sourceArchive);
 
                         deploymentProperties.setProperty(ParameterNames.NAME, sourceFile.getName());
                         deploymentProperties.setProperty(ParameterNames.ENABLED, "True");
@@ -169,17 +200,11 @@ public class ApplicationLoaderService extends ApplicationLifecycle
                                 sourceArchive,
                                 deploymentProperties,
                                 env);
-                        depContext.setPhase(DeploymentContextImpl.Phase.PREPARE);
-                        depContext.createClassLoaders(clh, handler);
 
-                        Iterable<Sniffer> appSniffers = snifferManager.getSniffers(sourceArchive,
-                                depContext.getClassLoader());
-                        if (appSniffers!=null) {
+                        ActionReport report = new HTMLActionReporter();
+                        ApplicationInfo appInfo = deployment.deploy(depContext, report);
+                        if (appInfo==null) {
 
-                            ActionReport report = new HTMLActionReporter();
-                            deploy(appSniffers, depContext, report);
-
-                        } else {
                             logger.severe("Cannot find the application type for the artifact at : "
                                     + sourceFile.getAbsolutePath());
                             logger.severe("Was the container or sniffer removed ?");
@@ -208,8 +233,10 @@ public class ApplicationLoaderService extends ApplicationLifecycle
         final String appName = app.getName();
 
         List<String> snifferTypes = new ArrayList<String>();
-        for (Engine engine : app.getEngine()) {
-            snifferTypes.add(engine.getSniffer());
+        for (Module module : app.getModule()) {
+            for (Engine engine : module.getEngines()) {
+                snifferTypes.add(engine.getSniffer());
+            }
         }
 
         if (snifferTypes.isEmpty()) {
@@ -231,7 +258,7 @@ public class ApplicationLoaderService extends ApplicationLifecycle
 
                     archive = archiveFactory.openArchive(sourceFile);
                     Properties deploymentParams =
-                        populateDeployParamsFromDomainXML(app, appRef);
+                        app.getDeployParameters(appRef);
 
                     DeploymentContextImpl depContext = new DeploymentContextImpl(
                             logger,
@@ -240,24 +267,30 @@ public class ApplicationLoaderService extends ApplicationLifecycle
                             env);
 
 
-                    depContext.setProps(populateDeployPropsFromDomainXML(app));
+                    depContext.setProps(app.getDeployProperties());
 
                     ActionReport report = new HTMLActionReporter();
 
                     List<Sniffer> sniffers = new ArrayList<Sniffer>();
-                    for (String snifferType : snifferTypes) {
-                        Sniffer sniffer = snifferManager.getSniffer(snifferType);
-                        if (sniffer!=null) {
-                            sniffers.add(sniffer);
-                        } else {
-                            logger.severe("Cannot find sniffer for module type : " + snifferType);
+                    if (app.getModule().size()==1) {
+                        for (String snifferType : snifferTypes) {
+                            Sniffer sniffer = snifferManager.getSniffer(snifferType);
+                            if (sniffer!=null) {
+                                sniffers.add(sniffer);
+                            } else {
+                                logger.severe("Cannot find sniffer for module type : " + snifferType);
+                            }
                         }
+                        if (sniffers.isEmpty()) {
+                            logger.severe("Cannot find any sniffer for deployed app " + appName);
+                            return;
+                        }
+                    } else {
+                        // todo, this is a cludge to force the reload and reparsing of the
+                        // composite application.
+                        sniffers=null;
                     }
-                    if (sniffers.isEmpty()) {
-                        logger.severe("Cannot find any sniffer for deployed app " + appName);
-                        return;
-                    }
-                    deploy(sniffers, depContext, report);
+                    deployment.deploy(sniffers, depContext, report);
                     if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
                         logger.info("Loading " + appName + " Application done is "
                                 + (Calendar.getInstance().getTimeInMillis() - operationStartTime) + " ms");
@@ -283,77 +316,6 @@ public class ApplicationLoaderService extends ApplicationLifecycle
         }
     }
 
-    @Override
-    protected <T extends Container, U extends ApplicationContainer> Deployer getDeployer(ContainerInfo<T, U> containerInfo) {
-        final Deployer<T, U> deployer = containerInfo.getDeployer();
-        assert deployer!=null;
-
-        return new Deployer<T,U>() {
-            /**
-             * Loads the meta date associated with the application.
-             *
-             * @parameters type type of metadata that this deployer has declared providing.
-             */
-            public <V> V loadMetaData(Class<V> type, DeploymentContext context) {
-                return deployer.loadMetaData(type, context);
-            }
-
-            /**
-             * Prepares the application bits for running in the application server.
-             * For certain cases, this is exploding the jar file to a format the
-             * ContractProvider instance is expecting, generating non portable artifacts and
-             * other application specific tasks.
-             * Failure to prepare should throw an exception which will cause the overall
-             * deployment to fail.
-             *
-             * @param context of the deployment
-             * @return true if the prepare phase was successful
-             */
-            public boolean prepare(DeploymentContext context) {
-                return true;
-            }
-
-            /**
-             * Loads a previously prepared application in its execution environment and
-             * return a ContractProvider instance that will identify this environment in
-             * future communications with the application's container runtime.
-             *
-             * @param container in which the application will reside
-             * @param context   of the deployment
-             * @return an ApplicationContainer instance identifying the running application
-             */
-            @SuppressWarnings("unchecked")
-            public U load(T container, DeploymentContext context) {
-                return deployer.load(container, context);
-            }
-
-            /**
-             * Unload or stop a previously running application identified with the
-             * ContractProvider instance. The container will be stop upon return from this
-             * method.
-             *
-             * @param appContainer instance to be stopped
-             * @param context      of the undeployment
-             */
-            @SuppressWarnings("unchecked")
-            public void unload(U appContainer, DeploymentContext context) {
-                deployer.unload(appContainer, context);
-            }
-
-            /**
-             * Clean any files and artifacts that were created during the execution
-             * of the prepare method.
-             */
-            public void clean(DeploymentContext context) {
-                // nothing to do
-            }
-
-            public MetaData getMetaData() {
-                return deployer.getMetaData();
-            }
-        };
-    }
-
 
     public String toString() {
         return "Application Loader";
@@ -367,20 +329,22 @@ public class ApplicationLoaderService extends ApplicationLifecycle
 
         final Properties props = new Properties();
         final ActionReport dummy = new HTMLActionReporter();
-        for (ContainerInfo containerInfo : containerRegistry.getContainers()) {
-            final Deployer deployer = getDeployer(containerInfo);
-            if (deployer==null) {
-                continue;
-            }
-            Iterable<ApplicationInfo> apps = containerInfo.getApplications();
-            for (ApplicationInfo appInfo : apps) {
+        // stop all running applications
+        for (Application app : applications.getApplications()) {
+            ApplicationInfo appInfo = deployment.get(app.getName());
+            if (appInfo!=null) {
                 props.put(ParameterNames.NAME, appInfo.getName());
 
                 DeploymentContextImpl depContext = new DeploymentContextImpl(
                     logger,appInfo.getSource() , props, env);
-                super.unload(appInfo.getName(), depContext, dummy);
+                appInfo.unload(depContext, dummy);
+                appRegistry.remove(appInfo.getName());
             }
-            stopContainer(logger, containerInfo);
+        }
+        // stop all the containers
+        for (EngineInfo engineInfo : containerRegistry.getContainers()) {
+            engineInfo.stop(logger);
         }
     }
+
 }

@@ -26,19 +26,29 @@ package org.glassfish.deployment.admin;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.ServerEnvironment;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
+import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.deployment.common.DeploymentContextImpl;
+import org.glassfish.internal.deployment.Deployment;
+import org.glassfish.internal.data.ApplicationInfo;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
 
 import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.beans.PropertyVetoException;
 
 /**
  * Disable command
@@ -47,12 +57,18 @@ import java.util.logging.Level;
 @I18n("disable.command")
 @Scoped(PerLookup.class)
     
-public class DisableCommand extends ApplicationLifecycle implements AdminCommand {
+public class DisableCommand implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DisableCommand.class);    
 
     @Inject
     ServerEnvironmentImpl env;
+
+    @Inject
+    Deployment deployment;
+
+    @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    protected Server server;    
 
     @Param(primary=true)
     String component = null;
@@ -65,9 +81,12 @@ public class DisableCommand extends ApplicationLifecycle implements AdminCommand
      * @param context context for the command.
      */
     public void execute(AdminCommandContext context) {
-        ActionReport report = context.getActionReport();
-        
-        if (!isRegistered(component)) {
+
+        final ActionReport report = context.getActionReport();
+        final Logger logger = context.getLogger();
+
+        ApplicationInfo appInfo = deployment.get(component);
+        if (appInfo==null) {
             report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", component));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
@@ -84,11 +103,23 @@ public class DisableCommand extends ApplicationLifecycle implements AdminCommand
             final DeploymentContextImpl deploymentContext =
                 new DeploymentContextImpl(logger, null, context.getCommandParameters(), env);
 
-            disable(component, deploymentContext, report);
+
+            appInfo.unload(deploymentContext, report);
 
             if (report.getActionExitCode().equals(
                 ActionReport.ExitCode.SUCCESS)) {
-                setEnableAttributeInDomainXML(component, false);
+            for (ApplicationRef ref : server.getApplicationRef()) {
+                if (ref.getRef().equals(component)) {
+                    ConfigSupport.apply(new SingleConfigCode<ApplicationRef>() {
+                        public Object run(ApplicationRef param) throws
+                                PropertyVetoException, TransactionFailure {
+                            param.setEnabled(String.valueOf(false));
+                            return null;
+                        }
+                    }, ref);
+                    break;
+                }
+            }
             }
 
         } catch(Exception e) {

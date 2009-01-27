@@ -67,7 +67,7 @@ import org.glassfish.quality.ToDo;
 }) */
 @org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.EngineConfig")
 @Configured
-public interface Engine extends ConfigBeanProxy, Injectable, Module, PropertyBag {
+public interface Engine extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the sniffer property.
@@ -102,6 +102,12 @@ public interface Engine extends ConfigBeanProxy, Injectable, Module, PropertyBag
      *              {@link String }
      */
     public void setDescription(String value) throws PropertyVetoException;
+
+
+    @Element
+    public ApplicationConfig getConfig();
+
+    public void setConfig(ApplicationConfig config) throws PropertyVetoException;
     
     /**
     	Properties as per {@link PropertyBag}

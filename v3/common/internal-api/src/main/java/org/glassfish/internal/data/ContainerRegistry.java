@@ -26,7 +26,9 @@ package org.glassfish.internal.data;
 import org.glassfish.api.container.Sniffer;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.component.Habitat;
 
 import java.util.*;
 
@@ -39,9 +41,13 @@ import java.util.*;
 @Scoped(Singleton.class)
 public class ContainerRegistry {
 
-    Map<String, ContainerInfo> containers = new HashMap<String, ContainerInfo>();
+    @Inject
+    Habitat habitat;
+    
+    Map<String, EngineInfo> containers = new HashMap<String, EngineInfo>();
 
-    public synchronized void addContainer(String name, ContainerInfo info) {
+
+    public synchronized void addContainer(String name, EngineInfo info) {
         containers.put(name, info);
         info.setRegistry(this);
     }
@@ -50,18 +56,18 @@ public class ContainerRegistry {
 
         ArrayList<Sniffer> sniffers = new ArrayList<Sniffer>();
 
-        for (ContainerInfo info : getContainers() ) {
+        for (EngineInfo info : getContainers() ) {
             sniffers.add(info.getSniffer());
         }
         return sniffers;
     }
 
-    public synchronized ContainerInfo getContainer(String containerType) {
+    public synchronized EngineInfo getContainer(String containerType) {
         return containers.get(containerType);
     }
 
-    public synchronized ContainerInfo removeContainer(ContainerInfo container) {
-        for (Map.Entry<String, ContainerInfo> entry : containers.entrySet()) {
+    public synchronized EngineInfo removeContainer(EngineInfo container) {
+        for (Map.Entry<String, EngineInfo> entry : containers.entrySet()) {
             if (entry.getValue().equals(container)) {
                 return containers.remove(entry.getKey());
             }
@@ -69,8 +75,8 @@ public class ContainerRegistry {
         return null;
     }
 
-    public Iterable<ContainerInfo> getContainers() {
-        ArrayList<ContainerInfo> copy = new ArrayList<ContainerInfo>(containers.size());
+    public Iterable<EngineInfo> getContainers() {
+        ArrayList<EngineInfo> copy = new ArrayList<EngineInfo>(containers.size());
         copy.addAll(containers.values());
         return copy;
     }

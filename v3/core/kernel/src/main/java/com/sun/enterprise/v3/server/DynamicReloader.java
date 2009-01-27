@@ -25,7 +25,6 @@ package com.sun.enterprise.v3.server;
 
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.Applications;
-import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.v3.admin.CommandRunner;
 import com.sun.enterprise.v3.common.XMLActionReporter;
 import java.io.File;
@@ -42,6 +41,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.config.Named;
 import org.glassfish.deployment.common.DeploymentProperties;
 import org.jvnet.hk2.component.Habitat;
 
@@ -86,7 +86,7 @@ public class DynamicReloader implements Runnable {
     private void initAppReloadInfo(Applications applications) throws URISyntaxException {
          appReloadInfo = new HashMap<String,AppReloadInfo>();
          logger.fine("[Reloader] Preparing list of apps to monitor:");
-         for (Module m : applications.getModules()) {
+         for (Named m : applications.getModules()) {
              if (m instanceof Application) {
                  Application app = (Application) m;
                  AppReloadInfo info = new AppReloadInfo(app);
@@ -134,7 +134,7 @@ public class DynamicReloader implements Runnable {
          */
         Set<AppReloadInfo> possiblyUndeployedApps = new HashSet<AppReloadInfo>(appReloadInfo.values());
         
-        for (Module m : applications.getModules()) {
+        for (Named m : applications.getModules()) {
             if (m instanceof Application) {
                 Application app = (Application) m;
                 

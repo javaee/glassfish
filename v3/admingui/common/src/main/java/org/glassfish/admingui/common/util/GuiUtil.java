@@ -69,11 +69,8 @@ import java.io.UnsupportedEncodingException;
 import com.sun.appserv.management.util.misc.ExceptionUtil;
 import javax.servlet.ServletContext;
 import org.glassfish.deployment.client.DeploymentFacility;
-import org.glassfish.deployment.client.DeploymentFacilityFactory;
 import org.glassfish.deployment.client.ServerConnectionIdentifier;
 import org.jvnet.hk2.component.Habitat;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  *

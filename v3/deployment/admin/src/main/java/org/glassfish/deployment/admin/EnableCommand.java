@@ -28,32 +28,34 @@ import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ParameterNames;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.deployment.archive.Archive;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
-import org.glassfish.internal.data.ApplicationInfo;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.config.serverbeans.Application;
-import com.sun.enterprise.config.serverbeans.Module;
-import com.sun.enterprise.config.serverbeans.ApplicationRef;
-import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
+import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.ParameterNames;
+import org.glassfish.internal.deployment.Deployment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
 
 import java.util.Properties;
 import java.util.Collection;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.beans.PropertyVetoException;
 
 /**
  * Enable command
@@ -61,12 +63,24 @@ import java.net.URI;
 @Service(name="enable")
 @I18n("enable.command")
 @Scoped(PerLookup.class)
-public class EnableCommand extends ApplicationLifecycle implements AdminCommand {
+public class EnableCommand implements AdminCommand {
 
-    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(EnableCommand.class);    
+    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(EnableCommand.class);
+
+    @Inject
+    Deployment deployment;
 
     @Inject
     ServerEnvironmentImpl env;
+
+    @Inject
+    Applications applications;
+
+    @Inject
+    ArchiveFactory archiveFactory;
+
+    @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    protected Server server;
 
     @Param(primary=true)
     String component = null;
@@ -81,8 +95,9 @@ public class EnableCommand extends ApplicationLifecycle implements AdminCommand 
     public void execute(AdminCommandContext context) {
         final Properties parameters = context.getCommandParameters();
         final ActionReport report = context.getActionReport();
+        final Logger logger = context.getLogger();
         
-        if (!isRegistered(component)) {
+        if (!deployment.isRegistered(component)) {
             report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", component));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
@@ -95,29 +110,30 @@ public class EnableCommand extends ApplicationLifecycle implements AdminCommand 
             return;
         }
 
-
-        if (snifferManager.getSniffers().isEmpty()) {
-            String msg = localStrings.getLocalString("nocontainer", "No container services registered, done...");
-            logger.severe(msg);
-            report.setMessage(msg);
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-        }
-
         ReadableArchive archive;
         File file = null;
-        Properties commandParams;
-        Properties contextProps;
+        ApplicationRef appRef = null;
+        Properties commandParams = new Properties();
+        Properties contextProps = new Properties();
         try {
-            String path = null;
-            Application app = 
-                (Application)ConfigBeansUtilities.getModule(component); 
-            ApplicationRef appRef = 
-                ConfigBeansUtilities.getApplicationRefInServer(target, 
-                    component);
+            Application app = null; 
+            for (Named module : applications.getModules()) {
+                if (module.getName().equals(component)) {  
+                    app = (Application)module;
+                    break;
+                }
+            }
 
-            commandParams = populateDeployParamsFromDomainXML(app, appRef);
-            contextProps = populateDeployPropsFromDomainXML(app);
+            for (ApplicationRef ref : server.getApplicationRef()) {
+                if (ref.getRef().equals(component)) {
+                    appRef = ref;
+                    break;
+                }
+            }
+            if (app!=null) {
+                commandParams = app.getDeployParameters(appRef);
+                contextProps = app.getDeployProperties();
+            }
  
             parameters.putAll(commandParams);
             URI uri = new URI(parameters.getProperty(
@@ -141,24 +157,24 @@ public class EnableCommand extends ApplicationLifecycle implements AdminCommand 
 
 
         try {
-            ArchiveHandler archiveHandler = getArchiveHandler(archive);
-            if (archiveHandler==null) {
-                report.setMessage(localStrings.getLocalString("unknownarchivetype","Archive type of {0} was not recognized",file.getName()));
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;
-            }
-
             final DeploymentContextImpl deploymentContext =
                 new DeploymentContextImpl(logger, archive, parameters, env);
-            deploymentContext.setPhase(DeploymentContextImpl.Phase.PREPARE);
-            deploymentContext.createClassLoaders(clh, archiveHandler);
+            deploymentContext.getCommandParameters().setProperty(ParameterNames.NAME, component);            
 
             deploymentContext.setProps(contextProps);
-            enable(component, deploymentContext, report);
+            deployment.deploy(deploymentContext, report);
 
             if (report.getActionExitCode().equals(
                 ActionReport.ExitCode.SUCCESS)) {
-                setEnableAttributeInDomainXML(component, true);
+                if (appRef!=null) {
+                    ConfigSupport.apply(new SingleConfigCode<ApplicationRef>() {
+                        public Object run(ApplicationRef param) throws
+                            PropertyVetoException, TransactionFailure {
+                            param.setEnabled(String.valueOf(true));
+                            return null;
+                        }
+                    }, appRef);
+                }
             }
 
         } catch(Exception e) {

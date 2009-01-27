@@ -33,15 +33,15 @@ import org.glassfish.api.container.Container;
 import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.internal.data.ApplicationInfo;
-import org.glassfish.internal.data.ModuleInfo;
+import org.glassfish.internal.data.EngineRef;
 import org.glassfish.internal.data.ApplicationRegistry;
+import org.glassfish.internal.data.ModuleInfo;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.zip.ZipItem;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.deploy.shared.DeploymentPlanArchive;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.BundleDescriptor;
-import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.util.ApplicationVisitor;
 import com.sun.enterprise.deployment.util.ApplicationValidator;
 import com.sun.enterprise.deployment.archivist.ApplicationFactory;
@@ -53,14 +53,12 @@ import org.glassfish.deployment.common.DeploymentProperties;
 import com.sun.enterprise.deployment.backend.DeploymentImplConstants;
 import com.sun.enterprise.deployment.backend.ClientJarMakerThread;
 import org.glassfish.deployment.common.DeploymentException;
-import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import org.jvnet.hk2.annotations.Inject;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.logging.Level;
 import java.util.jar.Manifest;
 import java.util.jar.Attributes;
 
@@ -172,10 +170,12 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
             validateApplication(dc);
 
             prepareScratchDirs(dc);
-            String objectType = getObjectType(dc);
-            if (objectType != null) {
-                dc.getProps().setProperty(ServerTags.OBJECT_TYPE,
-                    objectType);
+            if (dc.getProps().getProperty(ServerTags.OBJECT_TYPE)==null) {
+                String objectType = getObjectType(dc);
+                if (objectType != null) {
+                    dc.getProps().setProperty(ServerTags.OBJECT_TYPE,
+                        objectType);
+                }
             }
 
             generateArtifacts(dc);
@@ -214,6 +214,7 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
         if (app != null && !app.isValidated()) {
             app.setClassLoader(dc.getClassLoader());
             app.visit((ApplicationVisitor) new ApplicationValidator());
+            app.setValidated(true);
         }
     }
 
@@ -272,13 +273,13 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
      * @param context deployment context
      */
     public void clean(DeploymentContext context) {
-        String appName = context.getCommandParameters().getProperty(
-            ParameterNames.NAME);
-        Application app = getApplicationFromApplicationInfo(appName);
-        if (app != null) {
-            context.addModuleMetaData(app);
-            if (undeploymentVisitor!=null) {
-                undeploymentVisitor.accept(app);
+        if (undeploymentVisitor!=null) {
+            String appName = context.getCommandParameters().getProperty(
+                ParameterNames.NAME);
+            Application app = getApplicationFromApplicationInfo(appName);
+            if (app != null) {
+                context.addModuleMetaData(app);
+                   undeploymentVisitor.accept(app);
             }
         }
     }
@@ -325,15 +326,7 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
         if (appInfo == null) {
             return null;
         }
-
-        for (ModuleInfo moduleInfo: appInfo.getModuleInfos()) {
-            ApplicationContainer appCtr = moduleInfo.getApplicationContainer();
-            Object descriptor = appCtr.getDescriptor();
-            if (descriptor instanceof BundleDescriptor) {
-                return ((BundleDescriptor)descriptor).getApplication();
-            }
-        }
-        return null;
+        return appInfo.getMetaData(Application.class);
     }
 
     protected void handleDeploymentPlan(String deploymentPlan,

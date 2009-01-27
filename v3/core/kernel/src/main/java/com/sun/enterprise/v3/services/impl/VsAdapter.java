@@ -342,10 +342,10 @@ public class VsAdapter extends AbstractAdapter implements Adapter {
                     logger.log(Level.SEVERE, "Cannot get container registry", e);
                     return null;
                 }
-                ContainerInfo containerInfo = containerRegistry.getContainer(sniffer.getModuleType());
+                EngineInfo containerInfo = containerRegistry.getContainer(sniffer.getModuleType());
                 if (containerInfo==null) {
                     ContainerStarter starter = new ContainerStarter(modulesRegistry, habitat, logger);
-                    Collection<ContainerInfo> containersInfo = starter.startContainer(sniffer);
+                    Collection<EngineInfo> containersInfo = starter.startContainer(sniffer);
                     containerInfo = containersInfo.iterator().next();
                 }
                 Iterable<Class<? extends FileServer>> services;

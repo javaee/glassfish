@@ -49,10 +49,7 @@ import java.beans.VetoableChangeSupport;
 import java.io.Serializable;
 import java.util.List;
 
-import org.glassfish.api.admin.config.PropertyDesc;
-import org.glassfish.api.admin.config.PropertiesDesc;
-import org.glassfish.api.admin.config.Property;
-import org.glassfish.api.admin.config.PropertyBag;
+import org.glassfish.api.admin.config.*;
 
 import org.glassfish.quality.ToDo;
 
@@ -67,24 +64,8 @@ import org.glassfish.quality.ToDo;
 }) */
 @org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ExtensionModuleConfig")
 @Configured
-public interface ExtensionModule extends ConfigBeanProxy, Injectable, Module, PropertyBag {
+public interface ExtensionModule extends ConfigBeanProxy, Injectable, Named, PropertyBag {
 
-    /**
-     * Gets the value of the name property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
-    @Attribute(required = true, key=true)
-    public String getName();
-
-    /**
-     * Sets the value of the name property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    public void setName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the location property.

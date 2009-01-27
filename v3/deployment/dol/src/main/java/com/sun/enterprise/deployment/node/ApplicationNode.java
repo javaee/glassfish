@@ -42,6 +42,7 @@ import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.xml.ApplicationTagNames;
 import org.w3c.dom.Node;
+import org.glassfish.internal.api.Globals;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -149,7 +150,8 @@ public class ApplicationNode extends BundleNode<Application> {
     */    
     public Application getDescriptor() {
         if (descriptor==null) {
-            descriptor = (Application) DescriptorFactory.getDescriptor(getXMLPath());
+
+            descriptor = new Application(Globals.getDefaultHabitat());
         }
         return descriptor;
     }

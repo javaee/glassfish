@@ -64,7 +64,7 @@ package org.glassfish.admingui.handlers;
 //import com.sun.appserv.management.config.HTTPServiceConfig;
 //import com.sun.appserv.management.config.J2EEApplicationConfig;
 //import com.sun.appserv.management.config.LifecycleModuleConfig;
-//import com.sun.appserv.management.config.ModuleConfig;
+//import com.sun.appserv.management.config.AbstractModuleConfig;
 //import com.sun.appserv.management.config.ObjectType;
 //import com.sun.appserv.management.config.ObjectTypeValues;
 //import com.sun.appserv.management.config.RARModuleConfig;
@@ -134,7 +134,7 @@ public class ApplicationHandlers {
 //        
 //        String name = (String) handlerCtx.getInputValue("name");
 //        String appType = (String) handlerCtx.getInputValue("appType");
-//	ModuleConfig module = null;
+//	AbstractModuleConfig module = null;
 //        AMXRoot amxRoot = AMXRoot.getInstance();
 //        
 //        /*
@@ -251,7 +251,7 @@ public class ApplicationHandlers {
 //        AMXRoot amxRoot = AMXRoot.getInstance();
 //        
 //        try{
-//	ModuleConfig module = null;
+//	AbstractModuleConfig module = null;
 //	if ("application".equals(appType)){
 //	    module = amxRoot.getApplicationsConfig().getJ2EEApplicationConfigMap().get(name);
 //            if (module != null){

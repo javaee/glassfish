@@ -40,9 +40,8 @@ import org.jvnet.hk2.annotations.Service;
 
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.deployment.common.DeploymentUtils;
-import java.io.IOException;
-import java.io.InputStream;
+import org.glassfish.api.deployment.DeploymentContext;
+
 import java.net.MalformedURLException;
 
 import com.sun.enterprise.loader.EJBClassLoader;
@@ -53,29 +52,21 @@ import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
  *
  * @author Jerome Dochez
  */
-@Service
+@Service(name="DEFAULT")
 public class JarHandler extends AbstractArchiveHandler implements ArchiveHandler {
     public String getArchiveType() {
         return "jar";
     }
 
     public boolean handles(ReadableArchive archive) {
-        // I don't handle war files...
-        if (DeploymentUtils.isWebArchive(archive)) {
-            return false;
-        }
-		// Do not handle (resource-adapters) rar files
-        if(DeploymentUtils.isRAR(archive)){
-            return false;
-        }
-        // but I handle everything else
+        // but I handle everything that looks like a jar...   
         return true;
     }
 
-    public ClassLoader getClassLoader(ClassLoader parent, ReadableArchive archive) {
+    public ClassLoader getClassLoader(ClassLoader parent, DeploymentContext context) {
         EJBClassLoader cloader = new EJBClassLoader(parent);
         try {              
-            cloader.addURL(archive.getURI().toURL());
+            cloader.addURL(context.getSource().getURI().toURL());
         } catch(MalformedURLException e) {
             return null;
         }

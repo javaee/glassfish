@@ -37,9 +37,11 @@ import java.io.*;
 import java.net.URI;
 import java.util.Enumeration;
 import java.util.Vector;
+import java.util.Collection;
 import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
+import java.util.jar.JarEntry;
 import java.util.zip.ZipEntry;
 
 /**
@@ -120,18 +122,30 @@ public class MemoryMappedArchive extends JarArchive implements ReadableArchive {
      * archive
      */
     public Enumeration entries() {
+        return entries(false).elements();
+    }
+
+
+    public Collection<String> getDirectories() throws IOException {
+        return entries(true);
+    }
+
+    private Vector<String> entries(boolean directory) {
+
         Vector entries = new Vector();
         try {
             JarInputStream jis = new JarInputStream(new ByteArrayInputStream(file));
             ZipEntry ze;
             while ((ze=jis.getNextEntry())!=null) {
-                entries.add(ze.getName());
+                if (ze.isDirectory()==directory) {
+                    entries.add(ze.getName());
+                }
             }
             jis.close();
         } catch(IOException ioe) {
             ioe.printStackTrace();
         }
-        return entries.elements();        
+        return entries;        
     }
     
 	/**
@@ -209,6 +223,21 @@ public class MemoryMappedArchive extends JarArchive implements ReadableArchive {
                 return new BufferedInputStream(jis);
         }
         return null;        
+    }
+
+    public JarEntry getJarEntry(String name) {
+        try {
+            JarInputStream jis = new JarInputStream(new ByteArrayInputStream(file));
+            JarEntry ze;
+            while ((ze=jis.getNextJarEntry())!=null) {
+                if (ze.getName().equals(name)) {
+                    return ze;
+                }
+            }
+        } catch(IOException e) {
+            return null;
+        }
+        return null;
     }
 
     /**

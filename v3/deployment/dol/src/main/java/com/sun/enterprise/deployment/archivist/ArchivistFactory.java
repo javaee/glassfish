@@ -45,7 +45,6 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Singleton;
 
-import javax.enterprise.deploy.shared.ModuleType;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -60,10 +59,8 @@ import java.util.ArrayList;
 @Scoped(Singleton.class)
 public class ArchivistFactory implements ContractProvider {
 
-    // TODO: right now the ApplicationArchivist is not in the list
-    // to avoid circular injection
     @Inject
-    PrivateArchivist[] privateArchivists;
+    Archivist[] archivists;
 
     @Inject(optional = true)
     ExtensionsArchivist[] extensionsArchivists;
@@ -108,7 +105,7 @@ public class ArchivistFactory implements ContractProvider {
      */
     Archivist getPrivateArchivistFor(XModuleType moduleType)
         throws IOException {
-        for (PrivateArchivist pa : privateArchivists) {
+        for (Archivist pa : archivists) {
             Archivist a = Archivist.class.cast(pa);
             if (a.getModuleType().equals(moduleType)) {
                 return copyOf(a);
@@ -126,7 +123,7 @@ public class ArchivistFactory implements ContractProvider {
     Archivist getPrivateArchivistFor(ReadableArchive archive)
         throws IOException {
         //first, check the existence of any deployment descriptors
-        for (PrivateArchivist pa : privateArchivists) {
+        for (Archivist pa : archivists) {
             Archivist a = Archivist.class.cast(pa);
             if (a.hasStandardDeploymentDescriptor(archive) ||
                     a.hasRuntimeDeploymentDescriptor(archive)) {
@@ -141,7 +138,7 @@ public class ArchivistFactory implements ContractProvider {
         String uri = archive.getURI().getPath();
         File file = new File(uri);
         if (!file.isDirectory() && !uri.endsWith(Archivist.EJB_EXTENSION)) {
-            for (PrivateArchivist pa : privateArchivists) {
+            for (Archivist pa : archivists) {
                 Archivist a = Archivist.class.cast(pa);
                 if (uri.endsWith(a.getArchiveExtension())) {
                     return copyOf(a);
@@ -150,7 +147,7 @@ public class ArchivistFactory implements ContractProvider {
         }
 
         //finally, still not returned here, call for additional processing
-        for (PrivateArchivist pa : privateArchivists) {
+        for (Archivist pa : archivists) {
             Archivist a = Archivist.class.cast(pa);
             if (a.postHandles(archive)) {
                 return copyOf(a);

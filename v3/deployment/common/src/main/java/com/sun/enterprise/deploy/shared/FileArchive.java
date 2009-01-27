@@ -33,10 +33,7 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.net.URI;
@@ -127,7 +124,11 @@ public class FileArchive implements ReadableArchive, WritableArchive {
             return false;
         }
     }
-    
+
+    public boolean isDirectory(String name) {
+        return (new File(this.archive, name)).isDirectory();
+    }
+
     /**
      * @return an @see java.util.Enumeration of entries in this abstract
      * archive
@@ -137,7 +138,22 @@ public class FileArchive implements ReadableArchive, WritableArchive {
         getListOfFiles(archive, namesList, null);
         return namesList.elements();
     }
-    
+
+    /**
+     * Returns the enumeration of first level directories in this
+     * archive
+     * @return enumeration of directories under the root of this archive
+     */
+    public Collection<String> getDirectories() throws IOException {
+        List<String> results = new ArrayList<String>();
+        for (File f : archive.listFiles()) {
+            if (f.isDirectory()) {
+                results.add(f.getName());
+            }
+        }
+        return results;
+    }
+
     /**
      *  @return an @see java.util.Enumeration of entries in this abstract
      * archive, providing the list of embedded archive to not count their 

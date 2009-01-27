@@ -36,24 +36,20 @@
  */
 package org.glassfish.deployment.admin;
 
-import com.sun.enterprise.config.serverbeans.ApplicationConfig;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.Before;
 import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.TransactionFailure;
 
-import java.util.Properties;
 import org.glassfish.deployment.admin.ListComponentsCommand;
-import com.sun.enterprise.config.serverbeans.Application;
-import com.sun.enterprise.config.serverbeans.WebServiceEndpoint;
-import com.sun.enterprise.config.serverbeans.Engine;
-import com.sun.enterprise.config.serverbeans.Module;
+import com.sun.enterprise.config.serverbeans.*;
 import org.glassfish.api.admin.config.Property;
 import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeSupport;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Properties;
 
 
 /**
@@ -70,7 +66,11 @@ public class ListComponentsCommandTest {
             eng.setSniffer("web");
             List<Engine> engines = new ArrayList<Engine>();
             engines.add(eng);
-            app.setEngines(engines);
+            List<Module> modules = new ArrayList<Module>();
+            ModuleTest aModule = new ModuleTest();
+            aModule.setEngines(engines);
+            modules.add(aModule);
+            app.setModules(modules);
         
             boolean ret = lcc.isApplicationOfThisType(app, "web");
             assertTrue("test app with sniffer engine=web", true==lcc.isApplicationOfThisType(app, "web"));
@@ -93,9 +93,13 @@ public class ListComponentsCommandTest {
             engines.add(eng1);
             engines.add(eng2);
             
-            ApplicationTest app = new ApplicationTest();            
-            app.setEngines(engines);
-            String snifferEngines = lcc.getSnifferEngines(app, true);
+            ApplicationTest app = new ApplicationTest();
+            List<Module> modules = new ArrayList<Module>();              
+            ModuleTest aModule = new ModuleTest();
+            aModule.setEngines(engines);
+            modules.add(aModule);
+            app.setModules(modules);
+            String snifferEngines = lcc.getSnifferEngines(app.getModule().get(0), true);
             assertEquals("compare all sniffer engines", "<web, security>",
                         snifferEngines);
         }
@@ -140,13 +144,38 @@ public class ListComponentsCommandTest {
             throw new UnsupportedOperationException();
         }
 
+        @DuckTyped
+        public <T extends ConfigBeanProxy> T createChild(Class<T> type) throws TransactionFailure {
+            throw new UnsupportedOperationException();
+        }
+
 
         //hk2's Injectable class
         public void injectedInto(Object target){}
     }
+
+    public class ModuleTest extends RandomConfig implements Module {
+
+        public String getName() {
+            return null;
+        }
+
+        public void setName(String value) throws PropertyVetoException {}
+
+        private List<Engine> engineList = null;
+
+        public List<Engine> getEngines() {
+            return engineList;
+        }
+        public Engine getEngine(String snifferType) {return null;}
+
+        public void setEngines(List<Engine> engines) {
+            this.engineList = engines;
+        }
+    }
         //mock-up Application object
     public class ApplicationTest extends RandomConfig implements Application {
-        private List<Engine> engineList = null;
+        private List<Module> modules = null;
         
         public String getName() {
             return "hello";
@@ -168,18 +197,30 @@ public class ListComponentsCommandTest {
         public void setDirectoryDeployed(String value) throws PropertyVetoException{}
         public String getDescription(){ return "";}
         public void setDescription(String value) throws PropertyVetoException{}
-        public List<Engine> getEngine(){ return engineList;}
+        public List<Engine> getEngine(){ return null;}
         public List<Property> getProperty(){ return null;}
         public List<WebServiceEndpoint> getWebServiceEndpoint() {return null;}
         public List<ApplicationConfig> getApplicationConfig(Class<?> type) {return null;}
         public <T extends ApplicationConfig> T getApplicationConfig(Class<T> type) {return null;}
         public List<ApplicationConfig> getApplicationConfigs() {return null;}
-        
-        public void setEngines(List<Engine> engines) {
-            engineList = engines;
+
+        public Module getModule(String moduleName) {return null;}
+        public List<Module> getModule() {
+            return modules;
         }
 
-    }
+        public void setModules(List<Module> modules) {
+        this.modules = modules;
+        }
+
+            public Properties getDeployProperties() {
+                return new Properties();
+            }
+
+            public Properties getDeployParameters(ApplicationRef appRef) {
+                return new Properties();
+            }
+        }
 
             //mock-up Engine object
     public class EngineTest extends RandomConfig implements Engine {
@@ -198,5 +239,10 @@ public class ListComponentsCommandTest {
         }
         public void setName(String value) throws PropertyVetoException {}
 
+        public ApplicationConfig getConfig() {
+            return null;
+        }
+
+        public void setConfig(ApplicationConfig config) throws PropertyVetoException {}
     }
 }

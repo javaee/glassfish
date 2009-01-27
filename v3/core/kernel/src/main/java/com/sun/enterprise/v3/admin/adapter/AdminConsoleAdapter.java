@@ -843,7 +843,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
                 appLifecycle.undeploy(ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_APP_NAME, context, report);
             } else {
                 // no need to worry, let's just delete all created metadata.
-                appLifecycle.deleteContainerMetaInfo(context);
+                context.clean();
             }
             if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
                 logger.log(Level.SEVERE, "Cannot undeploy current admin gui ", report.getFailureCause());

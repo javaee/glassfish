@@ -27,11 +27,15 @@ import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.container.Container;
 import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.ApplicationContainer;
+import org.glassfish.api.deployment.DeploymentContext;
 import org.jvnet.hk2.component.Inhabitant;
 import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 
 
 import java.util.*;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -44,12 +48,11 @@ import java.lang.reflect.InvocationTargetException;
  *
  * @author Jerome Dochez 
  */
-public class ContainerInfo<T extends Container, U extends ApplicationContainer> {
+public class EngineInfo<T extends Container, U extends ApplicationContainer> {
 
     final Inhabitant<T> container;
     final Sniffer sniffer;
     ContainerRegistry registry = null;
-    Map<String, ApplicationInfo> deployedApps = new HashMap<String, ApplicationInfo>();
     Map<WeakReference<Thread>, Set<Integer>> addedThreadLocals = new HashMap();
     Deployer deployer;
     final ClassLoader mainClassLoader;
@@ -61,7 +64,7 @@ public class ContainerInfo<T extends Container, U extends ApplicationContainer> 
      * @param container instance of the container
      * @param sniffer sniffer associated with that container
      */
-    public ContainerInfo(Inhabitant<T> container, Sniffer sniffer, ClassLoader cloader) {
+    public EngineInfo(Inhabitant<T> container, Sniffer sniffer, ClassLoader cloader) {
         this.container = container;
         this.sniffer = sniffer;
         this.mainClassLoader = cloader;
@@ -101,48 +104,14 @@ public class ContainerInfo<T extends Container, U extends ApplicationContainer> 
         this.deployer = deployer;
     }
 
-   /**
-     * Adds a new application to our running applications.
-     */
-    public synchronized void add(ApplicationInfo application) {
-        deployedApps.put(application.getName(), application);
+    public void load(ExtendedDeploymentContext context) {
     }
 
-    /**
-     * Removes a running application.
-     */
-    public synchronized void remove(ApplicationInfo application) {
-
-        if (!deployedApps.containsKey(application.getName())) {
-            return;
-        }
-
-        deployedApps.remove(application.getName());
+    public void unload(ExtendedDeploymentContext context) throws Exception {
     }
 
-    /**
-     * Removes a running application
-     * @param name used to register the application
-     */
-    public synchronized void remove(String name) {
-        deployedApps.remove(name);
-    }
-
-    /**
-     * Returns a running application by its name
-     */
-    public ApplicationInfo get(String name) {
-        return deployedApps.get(name);
-    }
-
-    /**
-     * Returns list of deployed application in this container
-     * @return an iterable list
-     */
-    public Iterable<ApplicationInfo> getApplications() {
-        ArrayList<ApplicationInfo> copy = new ArrayList<ApplicationInfo>(deployedApps.size());
-        copy.addAll(deployedApps.values());
-        return copy;
+    public void clean(ExtendedDeploymentContext context) throws Exception {
+        getDeployer().clean(context);
     }
 
     /*
@@ -221,4 +190,25 @@ public class ContainerInfo<T extends Container, U extends ApplicationContainer> 
             }
         }
     }
+
+    // Todo : take care of Deployer when unloading...
+    public void stop(Logger logger)
+    {
+        if (getDeployer()!=null) {
+            Inhabitant i = registry.habitat.getInhabitantByType(getDeployer().getClass());
+            if (i!=null) {
+                i.release();
+            }
+        }
+        if (getContainer()!=null) {
+            Inhabitant i = registry.habitat.getInhabitantByType(getContainer().getClass());
+            if (i!=null) {
+                i.release();
+            }
+        }
+        registry.removeContainer(this);
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("Container " + getContainer().getName() + " stopped");
+        }
+    }    
 }

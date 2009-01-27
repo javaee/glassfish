@@ -6,7 +6,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.internal.data.ContainerRegistry;
-import org.glassfish.internal.data.ContainerInfo;
+import org.glassfish.internal.data.EngineInfo;
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.tcp.Request;
 import com.sun.grizzly.tcp.Response;
@@ -90,10 +90,10 @@ public class SnifferAdapter implements Adapter {
                 logger.info("Attempting to start the " + sniffer.getModuleType() + " container");
                 Module snifferModule = modulesRegistry.find(sniffer.getClass());
                 try {
-                    Collection<ContainerInfo> containersInfo = containerStarter.startContainer(sniffer, snifferModule);
+                    Collection<EngineInfo> containersInfo = containerStarter.startContainer(sniffer, snifferModule);
                     if (containersInfo != null && containersInfo.size() > 0) {
                         // force the start on each container
-                        for (ContainerInfo info : containersInfo) {
+                        for (EngineInfo info : containersInfo) {
                             if (logger.isLoggable(Level.FINE)) {
                                 logger.fine("Got container, deployer is " + info.getDeployer());
                             }

@@ -28,6 +28,9 @@ import java.net.URI;
 import org.glassfish.api.deployment.archive.Archive;
 import java.util.Enumeration;
 import java.util.Vector;
+import java.util.zip.ZipEntry;
+import java.util.jar.JarEntry;
+import java.io.IOException;
 
 /**
  * This abstract class contains all common implementation of the
@@ -76,6 +79,31 @@ public abstract class JarArchive implements Archive {
      */
     public String getName() {
          return JarArchive.getName(getURI());
+    }
+
+    abstract protected JarEntry getJarEntry(String entryName);
+
+    /**
+     * Returns the existence of the given entry name
+     * The file name must be relative to the root of the module.
+     *
+     * @param name the file name relative to the root of the module.          * @return the existence the given entry name.
+     */
+    public boolean exists(String name) throws IOException {
+        return getJarEntry(name)!=null;
+    }
+
+    /**
+     * Returns true if the entry is a directory or a plain file
+     * @param name name is one of the entries returned by {@link #entries()}
+     * @return true if the entry denoted by the passed name is a directory
+     */
+    public boolean isDirectory(String name) {
+        JarEntry entry = getJarEntry(name);
+        if (entry==null) {
+            throw new IllegalArgumentException(name);
+        }
+        return entry.isDirectory();
     }
 
     static String getName(URI uri) {

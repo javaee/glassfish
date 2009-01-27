@@ -39,6 +39,7 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.glassfish.api.amx.AMXCreatorInfo;
+import org.glassfish.api.admin.config.Named;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
@@ -74,10 +75,10 @@ public interface Applications extends ConfigBeanProxy, Injectable  {
      * {@link Mbean }
      * {@link ExtensionModule }
      * {@link Application }
-     */
+     */             
     @Element("*")
-    public List<Module> getModules();
-
+    public List<Named> getModules();     
+            
     /**
      * Gets a subset of {@link #getModules()} that has the given type.
      */
@@ -86,6 +87,9 @@ public interface Applications extends ConfigBeanProxy, Injectable  {
     
     @DuckTyped
     <T> T getModule(Class<T> type, String moduleID);
+
+    @DuckTyped
+    List<Application> getApplications();
     
     public class Duck {
         public static <T> List<T> getModules(Applications apps, Class<T> type) {
@@ -97,18 +101,22 @@ public interface Applications extends ConfigBeanProxy, Injectable  {
             }
             return modules;
         }
-
+                                                                                              
         public static <T> T getModule(Applications apps, Class<T> type, String moduleID) {
             if (moduleID == null) {
                 return null;
             }
 
-            for (Module module : apps.getModules())
+            for (Named module : apps.getModules())
                 if (type.isInstance(module) && module.getName().equals(moduleID))
                     return type.cast(module);
 
             return null;
 
+        }
+
+        public static List<Application> getApplications(Applications apps) {
+            return getModules(apps, Application.class);
         }
     }
 }

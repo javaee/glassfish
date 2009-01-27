@@ -47,10 +47,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.glassfish.api.amx.AMXConfigInfo;
-import org.glassfish.api.admin.config.PropertyDesc;
-import org.glassfish.api.admin.config.PropertiesDesc;
-import org.glassfish.api.admin.config.Property;
-import org.glassfish.api.admin.config.PropertyBag;
+import org.glassfish.api.admin.config.*;
 
 import org.glassfish.quality.ToDo;
 
@@ -65,24 +62,7 @@ import org.glassfish.quality.ToDo;
 }) */
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.WebModuleConfig")
 @Configured
-public interface WebModule extends ConfigBeanProxy, Injectable, Module, PropertyBag {
-
-    /**
-     * Gets the value of the name property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
-    @Attribute(required = true, key=true)
-    public String getName();
-
-    /**
-     * Sets the value of the name property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    public void setName(String value) throws PropertyVetoException;
+public interface WebModule extends ConfigBeanProxy, Injectable, Named, PropertyBag {
 
     /**
      * Gets the value of the contextRoot property.

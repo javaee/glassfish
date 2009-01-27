@@ -24,13 +24,15 @@
 package org.glassfish.deployment.common;
 
 import java.lang.instrument.ClassFileTransformer;
-import org.glassfish.api.deployment.DeploymentContext;
+
 import org.glassfish.api.deployment.InstrumentableClassLoader;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.admin.ParameterNames;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
+import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -41,22 +43,20 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.MalformedURLException;
 
-import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.component.PreDestroy;
-import com.sun.enterprise.module.ModuleDefinition;
+import com.sun.enterprise.util.io.FileUtils;
 
 /**
  *
  * @author dochez
  */
-public class DeploymentContextImpl implements DeploymentContext {
+public class DeploymentContextImpl implements ExtendedDeploymentContext {
 
-    public enum Phase { UNKNOWN, PREPARE, LOAD, START, STOP, UNLOAD, CLEAN };
 
     final ReadableArchive source;
     final Properties parameters;
     final Logger logger;
-    final ServerEnvironmentImpl env;
+    final ServerEnvironment env;
     ClassLoader cloader;
     Properties props;
     Map<String, Object> modulesMetaData = new HashMap<String, Object>();
@@ -67,7 +67,7 @@ public class DeploymentContextImpl implements DeploymentContext {
     ClassLoader sharableTemp = null;
 
     /** Creates a new instance of DeploymentContext */
-    public DeploymentContextImpl(Logger logger, ReadableArchive source, Properties params, ServerEnvironmentImpl env) {
+    public DeploymentContextImpl(Logger logger, ReadableArchive source, Properties params, ServerEnvironment env) {
         this.source = source;
         this.logger = logger;
         this.parameters = params;
@@ -155,8 +155,8 @@ public class DeploymentContextImpl implements DeploymentContext {
 
         ClassLoader parentCL = clh.createApplicationParentCL(applibCL, this);
 
-        this.sharableTemp = handler.getClassLoader(parentCL, source);
-        this.cloader = handler.getClassLoader(parentCL, source);
+        this.sharableTemp = handler.getClassLoader(parentCL, this);
+        this.cloader = handler.getClassLoader(parentCL, this);
     }
 
     public void invalidateTempClassLoader() {
@@ -179,7 +179,7 @@ public class DeploymentContextImpl implements DeploymentContext {
             // their class loader during the prepare phase, we can continue using the
             // sharableone which will become the final class loader after all.
             if (tempClassLoaderInvalidated) {
-                if (sharableTemp!=null) {
+                if (sharableTemp!=null) {                                                                 
                     try {
                         PreDestroy.class.cast(sharableTemp).preDestroy();
                     } catch (Exception e) {
@@ -218,7 +218,7 @@ public class DeploymentContextImpl implements DeploymentContext {
      */
     public File getSourceDir() {
 
-        return new File(source.getURI());
+        return new File(getSource().getURI());
     }
 
     public void addModuleMetaData(Object metaData) {
@@ -232,8 +232,20 @@ public class DeploymentContextImpl implements DeploymentContext {
         if (moduleMetaData != null) {
             return metadataType.cast(moduleMetaData);
         } else {
+            for (Object metadata : modulesMetaData.values()) {
+                try {
+                    return metadataType.cast(metadata);
+                } catch (ClassCastException e) {
+                }
+            }
             return null;
         }
+    }
+
+    public Collection<Object> getModuleMetadata() {
+        List<Object> copy = new ArrayList<Object>();
+        copy.addAll(modulesMetaData.values());
+        return copy;
     }
 
     /**
@@ -335,5 +347,25 @@ public class DeploymentContextImpl implements DeploymentContext {
             }
         }
         return urls;
-    }    
+    }
+
+    public void clean() {
+        // need to remove the generated directories...
+        // need to remove generated/xml, generated/ejb, generated/jsp
+
+        // remove generated/xml
+        File generatedXmlRoot = getScratchDir("xml");
+        FileUtils.whack(generatedXmlRoot);
+
+        // remove generated/ejb
+        File generatedEjbRoot = getScratchDir("ejb");
+        // recursively delete...
+        FileUtils.whack(generatedEjbRoot);
+
+        // remove generated/jsp
+        File generatedJspRoot = getScratchDir("jsp");
+        // recursively delete...
+        FileUtils.whack(generatedJspRoot);
+
+    }
 }

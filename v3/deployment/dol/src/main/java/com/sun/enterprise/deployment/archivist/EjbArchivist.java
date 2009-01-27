@@ -48,6 +48,5 @@ import org.jvnet.hk2.component.PerLookup;
  */
 @Service
 @Scoped(PerLookup.class)
-public class EjbArchivist extends BaseEjbArchivist implements
-    PrivateArchivist {
+public class EjbArchivist extends BaseEjbArchivist {
 }

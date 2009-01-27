@@ -51,6 +51,7 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.glassfish.config.support.TranslatedConfigView;
+import org.glassfish.api.admin.ServerEnvironment;
 
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -71,7 +72,7 @@ public class SystemTasks implements Init, PostConstruct {
     @Inject(optional = true)
     JavaConfig javaConfig;
    
-    @Inject
+    @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Server server;
     
     @Inject

@@ -33,8 +33,7 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 
 import java.io.*;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
@@ -106,6 +105,15 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
             jarIS=null;
         }
     }
+
+    /**
+     * Returns the enumeration of first level directories in this
+     * archive
+     * @return enumeration of directories under the root of this archive
+     */
+    public Collection<String> getDirectories() throws IOException {
+        return entries(true);
+    }     
         
     /** 
      * creates a new abstract archive with the given path
@@ -115,14 +123,19 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
     public void create(URI uri) throws IOException {
         throw new UnsupportedOperationException("Cannot write to an JAR archive open for reading");        
     }
-        
+
+    public Enumeration<String> entries() {
+
+        return entries(false).elements();
+
+    }
     /** 
      * @return an @see java.util.Enumeration of entries in this abstract
      * archive
      */
-    public Enumeration entries() {
-        Vector entries = new Vector();
- 
+    private Vector<String> entries(boolean directory) {
+        Vector<String> entries = new Vector<String>();
+
         if (parentArchive!=null) {
             try {
                 // reopen the embedded archive and position the input stream
@@ -131,7 +144,7 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
                 JarEntry ze;
                 do {
                     ze = jarIS.getNextJarEntry();
-                    if (ze!=null && !ze.isDirectory()) {
+                    if (ze!=null && ze.isDirectory()==directory) {
                         entries.add(ze.getName());
                     }                
                 } while (ze!=null);
@@ -146,19 +159,19 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
                     getJarFile(uri);
                 }
             } catch(IOException ioe) {
-                return entries.elements();
+                return entries;
             }
             if (jarFile==null) {
-                return entries.elements();
+                return entries;
             }
             for (Enumeration e = jarFile.entries();e.hasMoreElements();) {
                 ZipEntry ze = (ZipEntry) e.nextElement();
-                if (!ze.isDirectory() && !ze.getName().equals(JarFile.MANIFEST_NAME)) {
+                if (ze.isDirectory()==directory && !ze.getName().equals(JarFile.MANIFEST_NAME)) {
                     entries.add(ze.getName());
                 }
             }
         }
-        return entries.elements();        
+        return entries;        
     }
     
     /**
@@ -169,6 +182,13 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
      public Enumeration entries(Enumeration embeddedArchives) {
 	// jar file are not recursive    
   	return entries();
+    }
+
+    public JarEntry getJarEntry(String name) {
+        if (jarFile!=null) {
+            return jarFile.getJarEntry(name);
+        }
+        return null;
     }
     
     /**
@@ -185,7 +205,7 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
             }
         }
         return false;
-    }
+    }    
 
     /**
      * @return a @see java.io.InputStream for an existing entry in

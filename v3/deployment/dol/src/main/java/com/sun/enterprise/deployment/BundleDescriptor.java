@@ -41,7 +41,6 @@ import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
 
-import javax.enterprise.deploy.shared.ModuleType;
 import javax.persistence.EntityManagerFactory;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -129,6 +128,13 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
      */
     public boolean isApplication() {
         return false;
+    }
+
+    /**
+     * @return true if this module is a standalone deployment unit
+     */
+    public boolean isStandalone() {
+        return application.isVirtual();
     }
 
     /**

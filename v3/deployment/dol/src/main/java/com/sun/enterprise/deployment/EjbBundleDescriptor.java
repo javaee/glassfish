@@ -43,7 +43,6 @@ import com.sun.enterprise.deployment.runtime.common.SecurityRoleMapping;
 import com.sun.enterprise.deployment.util.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
-import javax.enterprise.deploy.shared.ModuleType;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;

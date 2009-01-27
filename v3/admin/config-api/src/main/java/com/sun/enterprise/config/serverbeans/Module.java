@@ -36,34 +36,38 @@
  */
 package com.sun.enterprise.config.serverbeans;
 
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.component.Injectable;
+import org.glassfish.api.admin.config.Named;
 
 import java.beans.PropertyVetoException;
+import java.util.List;
 
 /**
  * Tag Interface for any module
  *
  * @author Jerome Dochez
  */
+@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ModuleConfig")
 @Configured
-public interface Module extends ConfigBeanProxy {
+public interface Module extends Named, ConfigBeanProxy {
 
-    /**
-     * Gets the value of the name property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
-    public String getName();
+    @Element("*")
+    List<Engine> getEngines();
 
-    /**
-     * Sets the value of the name property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    public void setName(String value) throws PropertyVetoException;
+    @DuckTyped
+    Engine getEngine(String snifferType);
+
+    public class Duck {
+
+        public static Engine getEngine(Module instance, String snifferName) {
+            for (Engine engine : instance.getEngines()) {
+                if (engine.getSniffer().equals(snifferName)) {
+                    return engine;
+                }
+            }
+            return null;
+        }
+    }    
 
 }

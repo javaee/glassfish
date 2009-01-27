@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
+ *
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -33,27 +33,27 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
+
 package com.sun.appserv.management.config;
 
-import com.sun.appserv.management.base.AMX;
+import com.sun.appserv.management.base.XTypes;
+
+import java.util.List;
+import java.util.Map;
 
 /**
-	Functionality that all modules share.  
+ * Config AMX MBean for Module's config
+ * @since Glassfish V3
+ *
  */
-public interface ModuleConfig
-	extends AMX, Enabled, Description, ObjectType, NamedConfigElement,
-	DeployedItemRefConfigReferent, PropertiesAccess
+public interface ModuleConfig extends AMXConfig, PropertiesAccess
 {
-	/**
-	    The file system path to this module, typically something like
-	    <code>${com.sun.aas.instanceRoot}/applications/...</code>
-	 */
-	public String	getLocation();
-	
-	/**
-		Indicates whether the application has been     
-        deployed to a directory or not.              
-	 */
-    @ResolveTo(Boolean.class)
-	public boolean	getDirectoryDeployed();
+    public static final String	J2EE_TYPE =  XTypes.MODULE_CONFIG;
+
+    /**
+     * get the sniffer
+     */
+    public Map<String, EngineConfig> getEngineConfigMap();
+
 }

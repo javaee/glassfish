@@ -521,8 +521,6 @@ public class AppServer {
         //is this required?
         ClassLoader parentCL = createSnifferParentCL(null, snifMan.getSniffers());
 
-        ClassLoader cl = h.getClassLoader(parentCL, a);
-        Collection<Sniffer> activeSniffers = snifMan.getSniffers(a, cl);
 
         // TODO: we need to stop this totally type-unsafe way of passing parameters
         if (params == null) {
@@ -531,6 +529,9 @@ public class AppServer {
         params.put(ParameterNames.NAME, a.getName());
         params.put(ParameterNames.ENABLED, "true");
         final DeploymentContextImpl deploymentContext = new DeploymentContextImpl(Logger.getAnonymousLogger(), a, params, env);
+
+        ClassLoader cl = h.getClassLoader(parentCL, deploymentContext);
+        Collection<Sniffer> activeSniffers = snifMan.getSniffers(a, cl);
 
         SilentActionReport r = new SilentActionReport();
         ApplicationInfo appInfo = appLife.deploy(activeSniffers, deploymentContext, r);

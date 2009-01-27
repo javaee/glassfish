@@ -58,6 +58,7 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.component.PostConstruct;
+import org.glassfish.api.admin.ServerEnvironment;
 
 /**
  * @author lwhite
@@ -96,7 +97,7 @@ public final class EJBServerConfigLookup {
     @Inject
     Applications applications;
 
-    @Inject
+    @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Server server;
 
     /**

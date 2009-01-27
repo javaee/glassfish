@@ -116,6 +116,8 @@ public final class JSPCompiler {
             delegate = ConfigBeansUtilities.toBoolean(value);
         }
 
+        // so far, this is not segragated per web bundle, all web-bundles will get the
+        // same sysClassPath
         String sysClassPath = ASClassLoaderUtil.getWebModuleClassPath(
             serverContext.getDefaultHabitat(), appName, null);
         jspc.setSystemClassPath(sysClassPath);

@@ -2,6 +2,7 @@ package org.glassfish.javaee.core.deployment;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.deployment.ApplicationMetaDataProvider;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -10,11 +11,13 @@ import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.deployment.common.DeploymentProperties;
 import org.xml.sax.SAXParseException;
 import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.util.ApplicationVisitor;
 import com.sun.enterprise.deployment.deploy.shared.DeploymentPlanArchive;
 import com.sun.enterprise.deployment.archivist.Archivist;
 import com.sun.enterprise.deployment.archivist.ArchivistFactory;
 import com.sun.enterprise.deployment.archivist.ApplicationFactory;
+import com.sun.enterprise.deployment.archivist.ApplicationArchivist;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 
 import java.util.Properties;
@@ -39,8 +42,11 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
     @Inject
     protected ArchiveFactory archiveFactory;
 
+    @Inject
+    Habitat habitat;
+
     public MetaData getMetaData() {
-        return new MetaData(false, new Class[] { Application.class }, null);
+        return new MetaData(false, new Class[] { Application.class, WebBundleDescriptor.class }, null);
     }
 
     public Application load(DeploymentContext dc) throws IOException {
@@ -62,17 +68,41 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
                 DeploymentProperties.DEPLOYMENT_PLAN);
             handleDeploymentPlan(deploymentPlan, archivist, sourceArchive);
         }
-        Application application;
-        try {
-            application = applicationFactory.openArchive(
-                    name, archivist, sourceArchive, true);
-        } catch(SAXParseException e) {
-            throw new IOException(e);
+        long start = System.currentTimeMillis();
+        EarHandler.ApplicationHolder holder = dc.getModuleMetaData(EarHandler.ApplicationHolder.class);
+        Application application=null;
+        if (holder!=null) {
+            application = holder.app;
+
+            // finish the job.
+            application.setRegistrationName(name);
+            archivist.setDescriptor(application);
+            archivist.validate(cl);
+/*            ApplicationArchivist appArchivist = habitat.getComponent(ApplicationArchivist.class);
+            try {
+                application = appArchivist.openWith(application, sourceArchive);
+            } catch (SAXParseException e) {
+                application=null;
+            }
+            */
+        }
+        if (application==null) {
+            try {
+                application = applicationFactory.openArchive(
+                        name, archivist, sourceArchive, true);
+            } catch(SAXParseException e) {
+                throw new IOException(e);
+            }
         }
 
         // this may not be the best location for this but it will suffice.
         if (deploymentVisitor!=null) {
             deploymentVisitor.accept(application);
+        }
+        System.out.println("DOL Loading time" + (System.currentTimeMillis() - start));
+
+        if (application.isVirtual()) {
+            dc.addModuleMetaData(application.getStandaloneBundleDescriptor());
         }
 
         return application;

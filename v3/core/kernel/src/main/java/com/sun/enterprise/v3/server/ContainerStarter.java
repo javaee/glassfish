@@ -25,7 +25,7 @@ package com.sun.enterprise.v3.server;
 
 import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.module.*;
-import org.glassfish.internal.data.ContainerInfo;
+import org.glassfish.internal.data.EngineInfo;
 import org.glassfish.internal.data.ContainerRegistry;
 import com.sun.enterprise.util.StringUtils;
 import org.glassfish.api.container.Container;
@@ -69,7 +69,7 @@ public class ContainerStarter {
     @Inject
     ServerEnvironmentImpl env;
 
-    public Collection<ContainerInfo> startContainer(Sniffer sniffer, Module snifferModule) {
+    public Collection<EngineInfo> startContainer(Sniffer sniffer, Module snifferModule) {
 
         assert sniffer!=null;
         String containerName = sniffer.getModuleType();
@@ -115,7 +115,7 @@ public class ContainerStarter {
 
         // first the right container from that module.
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        List<ContainerInfo> containers = new ArrayList<ContainerInfo>();
+        List<EngineInfo> containers = new ArrayList<EngineInfo>();
         for (String name : sniffer.getContainersNames()) {
 
             try {
@@ -142,7 +142,7 @@ public class ContainerStarter {
                 }
                 Thread.currentThread().setContextClassLoader(containerClassLoader);
                 if (provider!=null) {
-                    ContainerInfo info = new ContainerInfo(provider, sniffer, containerClassLoader);
+                    EngineInfo info = new EngineInfo(provider, sniffer, containerClassLoader);
 
                     ContainerRegistry registry = habitat.getComponent(ContainerRegistry.class);
                     registry.addContainer(name, info);

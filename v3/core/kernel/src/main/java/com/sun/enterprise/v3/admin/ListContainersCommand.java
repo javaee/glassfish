@@ -25,10 +25,13 @@ package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.internal.data.ApplicationInfo;
-import org.glassfish.internal.data.ContainerInfo;
+import org.glassfish.internal.data.EngineInfo;
 import org.glassfish.internal.data.ContainerRegistry;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.config.serverbeans.Application;
+import com.sun.enterprise.config.serverbeans.Applications;
+import com.sun.enterprise.config.serverbeans.Engine;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.admin.AdminCommand;
@@ -57,6 +60,9 @@ public class ListContainersCommand implements AdminCommand {
     @Inject
     Habitat habitat;
 
+    @Inject
+    Applications applications;
+
     public void execute(AdminCommandContext context) {
 
         ActionReport report = context.getActionReport();
@@ -77,28 +83,37 @@ public class ListContainersCommand implements AdminCommand {
                 container.setMessage(sniffer.getModuleType());
                 container.addProperty(localStrings.getLocalString("contractprovider", "ContractProvider"),
                         sniffer.getModuleType());
-                ContainerInfo containerInfo = containerRegistry.getContainer(sniffer.getModuleType());
+                EngineInfo engineInfo = containerRegistry.getContainer(sniffer.getModuleType());
 
-                if (containerInfo != null) {
+                if (engineInfo != null) {
                     container.addProperty(
                             localStrings.getLocalString("status", "Status"),
                             localStrings.getLocalString("started", "Started"));
-                    Module connectorModule = modulesRegistry.find(containerInfo.getSniffer().getClass());
+                    Module connectorModule = modulesRegistry.find(engineInfo.getSniffer().getClass());
                     container.addProperty(localStrings.getLocalString("connector", "Connector"),
                             connectorModule.getModuleDefinition().getName() +
                             ":" + connectorModule.getModuleDefinition().getVersion());
                     container.addProperty(localStrings.getLocalString("implementation", "Implementation"),
-                            containerInfo.getContainer().getClass().toString());
-                    Iterable<ApplicationInfo> apps = containerInfo.getApplications();
-                    if (apps.iterator().hasNext()) {
+                            engineInfo.getContainer().getClass().toString());
+                    boolean atLeastOne = false;
+                    for (Application app : applications.getApplications()) {
+                        for (com.sun.enterprise.config.serverbeans.Module module : app.getModule()) {
+                            Engine engine = module.getEngine(engineInfo.getSniffer().getModuleType());
+                            if (engine!=null) {
+                                if (!atLeastOne) {
+                                    atLeastOne=true;
+                                    container.setChildrenType(localStrings.getLocalString("list.containers.listapps",
+                                            "Applications deployed"));
 
-                        container.setChildrenType(localStrings.getLocalString("list.containers.listapps",
-                                "Applications deployed"));
-                        for (ApplicationInfo info : apps) {
-                            container.addChild().setMessage(info.getName());
+                                }
+                                container.addChild().setMessage(app.getName());
+                            }
                         }
-                    } else {
-                        container.addProperty("Status", "Not Started");
+
+                        
+                    }
+                    if (!atLeastOne) {
+                       container.addProperty("Status", "Not Started");
                     }
                 }
             }

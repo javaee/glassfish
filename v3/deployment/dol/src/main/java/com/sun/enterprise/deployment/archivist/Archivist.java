@@ -57,6 +57,7 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.deployment.common.OptionalPkgDependency;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.xml.sax.SAXParseException;
@@ -77,6 +78,7 @@ import java.util.logging.Logger;
  *
  * @author Jerome Dochez
  */
+@Contract
 public abstract class Archivist<T extends RootDeploymentDescriptor> {
 
     protected static final Logger logger =

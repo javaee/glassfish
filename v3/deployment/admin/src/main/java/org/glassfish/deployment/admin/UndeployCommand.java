@@ -28,18 +28,19 @@ import org.glassfish.deployment.common.DeploymentProperties;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.internal.deployment.Deployment;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import org.glassfish.server.ServerEnvironmentImpl;
-import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
-import com.sun.logging.LogDomains;
+import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ParameterNames;
+import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
@@ -61,12 +62,18 @@ import java.util.logging.Level;
 @Service(name="undeploy")
 @I18n("undeploy.command")
 @Scoped(PerLookup.class)
-public class UndeployCommand extends ApplicationLifecycle implements AdminCommand {
+public class UndeployCommand implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(UndeployCommand.class);
     
     @Inject
     ServerEnvironmentImpl env;
+
+    @Inject
+    Deployment deployment;
+
+    @Inject
+    ArchiveFactory archiveFactory;
 
     @Param(primary = true, name=ParameterNames.NAME)
     String name=null;
@@ -84,6 +91,7 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
         
         Properties parameters = context.getCommandParameters();
         ActionReport report = context.getActionReport();
+        final Logger logger = context.getLogger();
         /**
          * A little bit of dancing around has to be done, in case the
          * user passed the path to the original directory.
@@ -91,9 +99,9 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
         name = (new File(name)).getName();
         parameters.setProperty(ParameterNames.NAME, name);
 
-        ApplicationInfo info = appRegistry.get(name);
+        ApplicationInfo info = deployment.get(name);
 
-        Module module = ConfigBeansUtilities.getModule(name);
+        Named module = ConfigBeansUtilities.getModule(name);
         Application application = null;
         if (module instanceof Application) {
             application = (Application) module;
@@ -130,7 +138,7 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
         }
 
         if (info!=null) {
-            undeploy(name, deploymentContext, report);
+            deployment.undeploy(name, deploymentContext, report);
         }
 
         // check if it's directory deployment
@@ -143,13 +151,13 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
             // so far I am doing this after the unload, maybe this should be moved before...
             try {
                 // remove the "application" element
-                unregisterAppFromDomainXML(name);
+                deployment.unregisterAppFromDomainXML(name);
             } catch(TransactionFailure e) {
                 logger.warning("Module " + name + " not found in configuration");
             }
 
             //remove context from generated
-            deleteContainerMetaInfo(deploymentContext);
+            deploymentContext.clean();
 
             //if directory deployment then do no remove the directory
             if (source!=null) {

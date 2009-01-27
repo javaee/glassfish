@@ -769,10 +769,25 @@ public class FileUtils {
         } else {
             ReadableByteChannel inChannel = Channels.newChannel(in);
             WritableByteChannel outChannel = Channels.newChannel(os);
-            ByteBuffer byteBuffer = ByteBuffer.allocate(Long.valueOf(size).intValue());
-            inChannel.read(byteBuffer);
-            byteBuffer.rewind();
-            outChannel.write(byteBuffer);
+            if (size==0) {
+
+                ByteBuffer byteBuffer = ByteBuffer.allocate(10240);
+                int read;
+                do {
+                    read = inChannel.read(byteBuffer);
+                    if (read>0) {
+                        byteBuffer.limit(byteBuffer.position());
+                        byteBuffer.rewind();
+                        outChannel.write(byteBuffer);
+                        byteBuffer.clear();
+                    }
+                } while (read>0);
+            } else {
+                ByteBuffer byteBuffer = ByteBuffer.allocate(Long.valueOf(size).intValue());
+                inChannel.read(byteBuffer);
+                byteBuffer.rewind();
+                outChannel.write(byteBuffer);
+            }
         }
     }
 
