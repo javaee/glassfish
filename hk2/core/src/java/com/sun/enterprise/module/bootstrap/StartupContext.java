@@ -56,9 +56,17 @@ import java.util.Properties;
  * This class contains important information about the startup process
  * @author Jerome Dochez
  */
+
 @Service
 public class StartupContext {
-    
+/*
+ * January 27, 2009 -- bnevins -- important note.
+ * Surprisingly, root is a directory *underneath* the install root!
+ * startup code in v3 proper that uses this object will assume that the install-root
+ * is getRootDirectory().getParentFile() !!!!!
+ * I.e. in the normal v3 case root will be: /glassfish/modules
+ * This behavior is weird and caused issue #54 in Embedded
+ */
     final File root;
     final Properties args;
     final long timeZero;
