@@ -35,56 +35,62 @@
  * holder.
  */
 package jaxwsfromwsdl.client;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 import org.testng.Assert;
-
+import java.lang.reflect.*;
 import java.io.*;
 
 public class JaxwsFromWsdlTestNG {
 
-    @Test(groups ={ "init"} )
-    public void testAddNumbers_JaxwsFromWsdl() throws Exception{
 
-      AddNumbersPortType port = null;
+    private Class cls = null;
+    private Constructor  ct = null;
+    private Object  obj = null;
+    private Method meth = null;
+
+    @BeforeTest
+    public void loadClass() throws Exception {
       try {
-        port = new AddNumbersService().getAddNumbersPort ();
-
-        int number1 = 10;
-        int number2 = 20;
-
-        // System.out.printf ("Invoking addNumbers(%d, %d)\n", number1, number2);
-        int result = port.addNumbers (number1, number2);
-        // System.out.printf ("The result of adding %d and %d is %d.\n\n", number1, number2, result);
-        Assert.assertEquals(result, 30, "10 + 20 doesn't give the expected result 30");
-
+	cls = Class.forName ("jaxwsfromwsdl.client.AddNumbersClient");
+        ct = cls.getConstructor();
+        obj = ct.newInstance();
+	// System.out.println ("class is loaded");
       } catch (Exception ex) {
-        // TODO handle custom exceptions here
-	Assert.assertTrue(false, "Unexpected exception is thrown");
-	System.out.println("*******Unexpected exception"); 
-      } finally {
-	((Closeable)port).close();
+	System.out.println ("Got ex, class is not loaded.");
+        throw new Exception(ex);
       }
-
+        System.out.println("done for init");
     }
 
-    @Test(dependsOnGroups = { "init.*" })
+    @Test(groups ={"functional"})
+    public void testAddNumbers_JaxwsFromWsdl() throws Exception{
+      boolean result = false; 
+      try {
+        meth = cls.getMethod("testAddNumbers");
+        // System.out.println("meth="+ meth.toString());
+        // System.out.println("cls="+ cls);
+        // System.out.println("ct="+ ct);
+        // System.out.println("obj="+ obj);
+	result = (Boolean) meth.invoke(obj, (Object[])null);     
+      } catch (Exception ex) {
+	System.out.println ("got unexpected exception.");
+        throw new Exception(ex);
+      }
+      Assert.assertTrue(result);
+    }
+
+
+    @Test(dependsOnMethods = { "testAddNumbers_JaxwsFromWsdl" })
     public void testAddNumbersException_JaxwsFromWsdl() throws Exception{
-        AddNumbersPortType port = null;
-        try {
-            port = new AddNumbersService().getAddNumbersPort ();
-
-            int number1 = -10;
-            int number2 = 20;
-            //System.out.printf ("Invoking addNumbers(%d, %d)\n", number1, number2);
-            int result = port.addNumbers (number1, number2);
-            //System.out.printf ("The result of adding %d and %d is %d.\n", number1, number2, result);
-            Assert.assertTrue(false, "Expected fault is not thrown");
-        } catch (AddNumbersFault_Exception ex) {
-            //System.out.printf ("Caught AddNumbersFault_Exception: %s\n", ex.getFaultInfo().getFaultInfo ());
-            Assert.assertTrue(true, "Expected fault is not thrown");
-        } finally {
-            ((Closeable)port).close();
-        }
-
+      boolean result = false; 
+      try {
+        meth = cls.getMethod("testAddNumbersException");
+	result = (Boolean) meth.invoke(obj, (Object[])null);     
+      } catch (Exception ex) {
+	System.out.println ("got unexpected exception");
+        throw new Exception(ex);
+      }
+      Assert.assertTrue(result);
     }
+
 }

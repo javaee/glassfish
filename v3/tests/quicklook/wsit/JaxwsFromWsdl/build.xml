@@ -50,7 +50,7 @@
     <target name="all" depends="server, client, runtest, undeploy"/>
 
     <target name="server" depends="build-server-wsdl, create-war, deploy"/>
-    <target name="client" depends="generate-client, build-client"/>
+    <target name="client" depends="generate-client, build-client1, build-client2"/>
 
     <target name="build-setup">
         <echo message="build-setup: build.home=${build.home}"/>
@@ -124,6 +124,28 @@
         </javac>
     </target>
 
+    <target name="build-client1" depends="generate-client">
+        <javac
+            fork="true"
+            failonerror="false"
+            srcdir="src"
+            destdir="${build.classes.home}"
+            includes="**/*Client.java" classpathref="class.path">
+            <classpath refid="wsit.classpath"/>
+        </javac>
+    </target>
+
+    <target name="build-client2">
+        <javac
+            fork="true"
+            failonerror="false"
+            srcdir="src"
+            destdir="${build.classes.home}"
+            includes="**/client/*TestNG.java"  classpathref="class.path">
+            <classpath refid="wsit.classpath"/>
+        </javac>
+    </target>
+
 
     <target  name="runtest">
         <antcall target="runwsittest-impl">
@@ -131,6 +153,16 @@
            <param name="testng.test.name" value="${testng.test.name}"/>
            <param name="testng.testclient" value="${testng.test.name}TestNG"/>
         </antcall>
+    </target>
+
+    <target name="run">
+        <java fork="true" classname="${client}">
+            <classpath>
+                <path refid="wsit.classpath"/>
+                <pathelement location="${build.classes.home}"/>
+                <pathelement location="${basedir}/etc"/>
+            </classpath>
+        </java>
     </target>
 
     <target name="deploy">
