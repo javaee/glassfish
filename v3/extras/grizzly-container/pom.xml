@@ -47,7 +47,6 @@
         <dependency>
             <groupId>com.sun.grizzly</groupId>
             <artifactId>grizzly-utils</artifactId>
-            <version>${grizzly.original-version}</version>
         </dependency>
     </dependencies>
 </project>
