@@ -89,6 +89,7 @@ public class EjbSingletonDescriptor
              new HashMap<MethodDescriptor, MethodLockInfo>(ejbDesc.getMethodContainerLocks());
     }
 
+    @Override
     public boolean isSingleton() {
         return true;
     }
