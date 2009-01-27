@@ -211,13 +211,13 @@ own identifying information: Portions Copyright [yyyy]
         </graphDef>
 
 	<resolveArtifact artifactId="ejb-timer-databases" todir="target/fragments" />
-                
+
 	<unzip dest="target/stage/${install.dir.name}">
                 <patternset>
                     <exclude name="META-INF/**"/>
                 </patternset>
-                <fileset dir="target/fragments" includes="*.zip"/>
-            </unzip>
+                <fileset dir="target/fragments" includes="*"/>
+        </unzip>
 
 	<delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.zip" />   
 	<delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.pom" />  
