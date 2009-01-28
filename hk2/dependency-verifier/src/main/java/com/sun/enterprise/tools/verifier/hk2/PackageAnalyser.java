@@ -40,7 +40,6 @@ package com.sun.enterprise.tools.verifier.hk2;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.ModuleDependency;
 import com.sun.enterprise.module.Repository;
-import com.sun.enterprise.module.common_impl.DirectoryBasedRepository;
 import com.sun.enterprise.tools.verifier.apiscan.classfile.ClassFile;
 import com.sun.enterprise.tools.verifier.apiscan.classfile.ClassFileLoader;
 import com.sun.enterprise.tools.verifier.apiscan.classfile.ClassFileLoaderFactory;
@@ -62,6 +61,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -77,6 +78,7 @@ import org.jvnet.hk2.osgiadapter.OSGiDirectoryBasedRepository;
  */
 public class PackageAnalyser {
     private Set<Bundle> bundles;
+    private Logger logger;
 
     /**
      * A dats structure to capture bundle details needed for our
@@ -251,7 +253,12 @@ public class PackageAnalyser {
     private Repository moduleRepository;
 
     public PackageAnalyser(Repository moduleRepository) {
-        this.moduleRepository = moduleRepository;
+        this(moduleRepository, Logger.getAnonymousLogger());
+    }
+
+    public PackageAnalyser(Repository repo, Logger logger) {
+        this.moduleRepository = repo;
+        this.logger = logger;
     }
 
     /**
@@ -276,9 +283,14 @@ public class PackageAnalyser {
             JarEntry je = entries.nextElement();
             if (je.getName().endsWith(classExt)) {
                 String className = Util.convertToExternalClassName(je.getName().substring(0, je.getName().length() - classExt.length()));
-                ClassFile cf = cfl.load(className);
-                for (String c : cf.getAllReferencedClassNames()) {
-                    requiredPkgs.add(Util.getPackageName(c));
+                ClassFile cf = null;
+                try {
+                    cf = cfl.load(className);
+                    for (String c : cf.getAllReferencedClassNames()) {
+                        requiredPkgs.add(Util.getPackageName(c));
+                    }
+                } catch (IOException e) {
+                    logger.logp(Level.FINE, "PackageAnalyser", "computeRequiredPackages", "Skipping analysis of {0} as the following exception was thrown:\n {1}", new Object[]{className, e});
                 }
             }
         }

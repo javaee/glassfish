@@ -111,7 +111,7 @@ public class PackageAnalyserMojo extends AbstractMojo {
             MavenProjectRepository repo = new MavenProjectRepository(
                     project, artifactResolver, localRepository, artifactFactory);
             repo.initialize();
-            PackageAnalyser analyser = new PackageAnalyser(repo);
+            PackageAnalyser analyser = new PackageAnalyser(repo, logger);
             Collection<PackageAnalyser.Wire> wires = analyser.analyseWirings();
             StringBuilder sb = new StringBuilder("Wiring details are given below:\n");
             for (PackageAnalyser.Wire w : wires) {
