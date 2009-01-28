@@ -123,19 +123,19 @@ public class CommandExecutorTest {
         assertEquals(ActionReport.ExitCode.SUCCESS, ce.getExitCode());
     }
 
-    @Test
-    public void testCreateJdbcConnectionPoolFail() {
+    @Test(expected=EmbeddedException.class)
+    public void testCreateJdbcConnectionPoolFail() throws EmbeddedException {
+        System.out.println("Negative Test: CommandExecutorTest testCreateJdbcConnectionPoolFail()");
+        System.out.println("Severe messages expected...");
         options.setProperty("DEFAULT", "poolA");
         try {
             ce.execute("create-jdbc-connection-pool", options);
+        } catch (EmbeddedException ee) {
+            System.out.println("Expected Exception: " + ee.getLocalizedMessage());
+            throw ee;
         } catch (Exception ex) {
-            boolean isEmbEx = ex instanceof EmbeddedException;
-            assertTrue(isEmbEx);
-            if (!isEmbEx) {
-                LoggerHelper.severe("testCreateJdbcConnectionPoolFail failed");
-                ex.printStackTrace();
-                fail();
-            }
+            LoggerHelper.severe("Unexpected Exception: " + ex);
+            fail("test failed: testCreateJdbcConnectionPoolFail");
         }
         assertEquals(ActionReport.ExitCode.FAILURE, ce.getExitCode());
     }
@@ -174,17 +174,18 @@ public class CommandExecutorTest {
 
     @Test(expected=EmbeddedException.class)
     public void testDeployFail() throws EmbeddedException {
+        System.out.println("Negative Test: CommandExecutorTest testDeployFail()");
+        System.out.println("Severe messages expected...");
         String file = "foo";
         options.setProperty("DEFAULT", file);
         try {
             ce.execute("deploy", options);
         } catch (EmbeddedException ee) {
-            System.out.println(ee.getLocalizedMessage());
+            System.out.println("Expected Exception: " + ee.getLocalizedMessage());
             throw ee;
         } catch (Exception ex) {
-            LoggerHelper.severe("testDeployFail failed");
-            ex.printStackTrace();
-            fail();
+            System.out.print("Unexpected Exception: " + ex);
+            fail("test failed: testDeployFail");
         }
         assertEquals(ActionReport.ExitCode.FAILURE, ce.getExitCode());
     }
