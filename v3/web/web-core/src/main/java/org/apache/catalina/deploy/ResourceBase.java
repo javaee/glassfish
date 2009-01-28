@@ -52,31 +52,28 @@
  * limitations under the License.
  */
 
-
-
-
 package org.apache.catalina.deploy;
 
 import java.io.Serializable;
+import java.util.Iterator;
+import java.util.HashMap;
 
 
 /**
- * Representation of an EJB resource reference for a web application, as
- * represented in a <code>&lt;ejb-ref&gt;</code> element in the
- * deployment descriptor.
+ * Representation of an Context element
  *
- * @author Craig R. McClanahan
- * @version $Revision: 1.2 $ $Date: 2005/12/08 01:27:39 $
+ * @author Peter Rossbach (pero@apache.org)
+ * @version $Revision$ $Date$
  */
 
-public class ContextEjb extends ResourceBase implements Serializable {
+public class ResourceBase implements Serializable {
 
 
     // ------------------------------------------------------------- Properties
 
 
     /**
-     * The description of this EJB.
+     * The description of this Context Element.
      */
     private String description = null;
 
@@ -89,36 +86,9 @@ public class ContextEjb extends ResourceBase implements Serializable {
     }
 
 
-    /**
-     * The name of the EJB home implementation class.
-     */
-    private String home = null;
-
-    public String getHome() {
-        return (this.home);
-    }
-
-    public void setHome(String home) {
-        this.home = home;
-    }
-
 
     /**
-     * The link to a J2EE EJB definition.
-     */
-    private String link = null;
-
-    public String getLink() {
-        return (this.link);
-    }
-
-    public void setLink(String link) {
-        this.link = link;
-    }
-
-
-    /**
-     * The name of this EJB.
+     * The name of this context Element.
      */
     private String name = null;
 
@@ -128,20 +98,6 @@ public class ContextEjb extends ResourceBase implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-
-    /**
-     * The name of the EJB remote implementation class.
-     */
-    private String remote = null;
-
-    public String getRemote() {
-        return (this.remote);
-    }
-
-    public void setRemote(String remote) {
-        this.remote = remote;
     }
 
 
@@ -159,43 +115,40 @@ public class ContextEjb extends ResourceBase implements Serializable {
     }
 
 
-    // --------------------------------------------------------- Public Methods
-
+    /**
+     * Holder for our configured properties.
+     */
+    private HashMap properties = new HashMap();
 
     /**
-     * Return a String representation of this object.
+     * Return a configured property.
      */
-    public String toString() {
-
-        StringBuffer sb = new StringBuffer("ContextEjb[");
-        sb.append("name=");
-        sb.append(name);
-        if (description != null) {
-            sb.append(", description=");
-            sb.append(description);
-        }
-        if (type != null) {
-            sb.append(", type=");
-            sb.append(type);
-        }
-        if (home != null) {
-            sb.append(", home=");
-            sb.append(home);
-        }
-        if (remote != null) {
-            sb.append(", remote=");
-            sb.append(remote);
-        }
-        if (link != null) {
-            sb.append(", link=");
-            sb.append(link);
-        }
-        sb.append("]");
-        return (sb.toString());
-
+    public Object getProperty(String name) {
+        return properties.get(name);
     }
 
+    /**
+     * Set a configured property.
+     */
+    public void setProperty(String name, Object value) {
+        properties.put(name, value);
+    }
 
+    /** 
+     * remove a configured property.
+     */
+    public void removeProperty(String name) {
+        properties.remove(name);
+    }
+
+    /**
+     * List properties.
+     */
+    public Iterator listProperties() {
+        return properties.keySet().iterator();
+    }
+    
+    
     // -------------------------------------------------------- Package Methods
 
 

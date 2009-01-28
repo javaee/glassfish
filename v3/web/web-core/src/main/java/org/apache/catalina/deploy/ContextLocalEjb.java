@@ -69,7 +69,7 @@ import java.io.Serializable;
  * @version $Revision: 1.2 $ $Date: 2005/12/08 01:27:39 $
  */
 
-public class ContextLocalEjb implements Serializable {
+public class ContextLocalEjb extends ResourceBase implements Serializable {
 
 
     // ------------------------------------------------------------- Properties

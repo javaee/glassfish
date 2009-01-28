@@ -69,7 +69,7 @@ import java.io.Serializable;
  * @version $Revision: 1.2 $ $Date: 2005/12/08 01:27:40 $
  */
 
-public class ContextResourceLink implements Serializable {
+public class ContextResourceLink extends ResourceBase implements Serializable {
 
 
     // ------------------------------------------------------------- Properties
