@@ -143,6 +143,7 @@ class GFEmbeddedLauncher extends GFLauncher{
         cmdLine.add(domainDir.getPath());
         cmdLine.add("--autodelete");
         cmdLine.add("false");
+        cmdLine.add("--autodeploy");
     }
 
     private void addDebug(List<String> cmdLine) {
