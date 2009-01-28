@@ -227,6 +227,27 @@ public interface Context extends Container {
 
 
     /**
+     * Checks whether the rewriting of URLs with the jsessionids of
+     * HTTP sessions belonging to this context is enabled or not.
+     *
+     * @return true if the rewriting of URLs with the jsessionids of HTTP
+     * sessions belonging to this context is enabled, false otherwise
+     */
+    public boolean isEnableURLRewriting();
+
+
+    /**
+     * Enables or disables the rewriting of URLs with the jsessionids of
+     * HTTP sessions belonging to this context.
+     *
+     * @param enableURLRewriting true if the rewriting of URLs with the
+     * jsessionids of HTTP sessions belonging to this context should be
+     * enabled, false otherwise
+     */
+    public void setEnableURLRewriting(boolean enableURLRewriting);
+
+
+    /**
      * Return the "allow crossing servlet contexts" flag.
      */
     boolean getCrossContext();

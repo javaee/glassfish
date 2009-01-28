@@ -1503,8 +1503,8 @@ public class Response
             return (false);
         }
         if (hreq.isRequestedSessionIdFromCookie() ||
-                (getContext() != null && getContext().getCookies())) {
-            return (false);
+                (getContext() != null && !getContext().isEnableURLRewriting())) {
+            return false;
         }
 
         if (SecurityUtil.isPackageProtectionEnabled()) {

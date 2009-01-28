@@ -308,6 +308,13 @@ public class StandardContext
 
 
     /**
+     * true if the rewriting of URLs with the jsessionids of HTTP
+     * sessions belonging to this context is enabled, false otherwise
+     */
+    private boolean enableURLRewriting = true;
+
+
+    /**
      * Should we allow the <code>ServletContext.getContext()</code> method
      * to access the context of other web applications in this server?
      */
@@ -1135,13 +1142,11 @@ public class StandardContext
      * @param configured The new correctly configured flag
      */
     public void setConfigured(boolean configured) {
-
         boolean oldConfigured = this.configured;
         this.configured = configured;
         support.firePropertyChange("configured",
                                    Boolean.valueOf(oldConfigured),
                                    Boolean.valueOf(this.configured));
-
     }
 
 
@@ -1149,9 +1154,7 @@ public class StandardContext
      * Return the "use cookies for session ids" flag.
      */
     public boolean getCookies() {
-
         return (this.cookies);
-
     }
 
 
@@ -1161,13 +1164,40 @@ public class StandardContext
      * @param cookies The new flag
      */
     public void setCookies(boolean cookies) {
-
         boolean oldCookies = this.cookies;
         this.cookies = cookies;
         support.firePropertyChange("cookies",
                                    Boolean.valueOf(oldCookies),
                                    Boolean.valueOf(this.cookies));
+    }
 
+
+    /**
+     * Checks whether the rewriting of URLs with the jsessionids of
+     * HTTP sessions belonging to this context is enabled or not.
+     *
+     * @return true if the rewriting of URLs with the jsessionids of HTTP
+     * sessions belonging to this context is enabled, false otherwise
+     */
+    public boolean isEnableURLRewriting() {
+        return enableURLRewriting;
+    }
+
+
+    /**
+     * Enables or disables the rewriting of URLs with the jsessionids of
+     * HTTP sessions belonging to this context.
+     *
+     * @param enableURLRewriting true if the rewriting of URLs with the
+     * jsessionids of HTTP sessions belonging to this context should be
+     * enabled, false otherwise
+     */
+    public void setEnableURLRewriting(boolean enableURLRewriting) {
+        boolean oldEnableURLRewriting = this.enableURLRewriting;
+        this.enableURLRewriting = enableURLRewriting;
+        support.firePropertyChange("enableURLRewriting",
+                                   Boolean.valueOf(oldEnableURLRewriting),
+                                   Boolean.valueOf(this.enableURLRewriting));
     }
 
 
@@ -1175,9 +1205,7 @@ public class StandardContext
      * Return the "allow crossing servlet contexts" flag.
      */
     public boolean getCrossContext() {
-
         return (this.crossContext);
-
     }
 
 
@@ -2759,13 +2787,6 @@ public class StandardContext
                     "applicationContext.sessionTrackingModes.iae.unsupported",
                     SessionTrackingMode.SSL, getName()));
         }
-        if (sessionTrackingModes.contains(SessionTrackingMode.URL) &&
-                sessionTrackingModes.contains(SessionTrackingMode.COOKIE)) {
-            throw new IllegalArgumentException(
-                sm.getString(
-                    "applicationContext.sessionTrackingModes.iae",
-                    sessionTrackingModes, getName()));
-        }
 
         if (isContextInitializedCalled) {
             throw new IllegalStateException(
@@ -2778,6 +2799,12 @@ public class StandardContext
             setCookies(true);
         } else {
             setCookies(false);
+        }
+
+        if (sessionTrackingModes.contains(SessionTrackingMode.URL)) {
+            setEnableURLRewriting(true);
+        } else {
+            setEnableURLRewriting(false);
         }
     }
 
