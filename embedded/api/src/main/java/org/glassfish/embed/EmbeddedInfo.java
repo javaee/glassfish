@@ -161,6 +161,14 @@ public class EmbeddedInfo {
     public void setVerbose(boolean b) {
         verbose = b;
     }
+
+    /**
+     * Turn on the autodeploy service.
+     * TODO also check that domain.xml has it enabled.
+     */
+    public void enableAutoDeploy() {
+        autoDeploy = true;
+    }
     
     /**
      * Checks that archives exist.  Checks that the HTTP port is a valid port number.
@@ -206,6 +214,7 @@ public class EmbeddedInfo {
     boolean                 logging                 = false;
     boolean                 verbose                 = false;
     boolean                 createOnly              = false;
+    boolean                 autoDeploy              = false;
 
     public void setCreateOnly(boolean b) {
         createOnly = b;

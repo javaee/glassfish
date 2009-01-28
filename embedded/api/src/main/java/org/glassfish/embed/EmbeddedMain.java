@@ -201,6 +201,12 @@ public class EmbeddedMain {
             info.setCreateOnly(true);
         }
 
+        ///////// AutoDeploy Service ///////////////
+
+        if(Boolean.parseBoolean(params.get("autodeploy"))) {
+            info.enableAutoDeploy();
+        }
+
         ////////// done!  //////////
         
         return info;
@@ -274,15 +280,19 @@ public class EmbeddedMain {
         new Arg("jmxport",          "j",           "" + ServerConstants.DEFAULT_JMX_CONNECTOR_PORT,"JMX System Connector Port"),
         new BoolArg("help",         "h",            false,                                         "Help"),
         new BoolArg("create",       "c",            false,                                         "Create the server and then exit."),
+        new BoolArg("autodeploy",   "b",            false,                                         "Turn on the AutoDeploy Service"),
 
         // note that --autodelete and --log are NOT BoolArg's
         // TODO make BoolArg more sophisticated so that you can hve the default be false
         // and allow --foo=true and --foo true and --foo
         // BoolArg work kind of weird -- if you use one -- test VERY thoroughly!
+        //
+        // bnevins Jan 28, 2009 -- I think the trick is to make the default of EVERY BoolArg false.
+        // see autodeploy above.  E.g. for log - rename to "nolog" and set the default to false.
 
         new Arg("verbose",          "v",            "true",                                          "Verbose Mode"),
         new Arg("log",              "l",            "true",                                          "Send logging to instance-root/logs/server.log"),
-        new Arg("autodelete",   "a",            "true",                                         "Automatically delete Filesystem"),
+        new Arg("autodelete",       "a",            "true",                                         "Automatically delete Filesystem"),
     };
     
     private LocalStringsImpl strings = new LocalStringsImpl(this.getClass());

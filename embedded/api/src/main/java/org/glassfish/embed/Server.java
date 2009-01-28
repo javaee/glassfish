@@ -341,13 +341,14 @@ public class Server {
         // TODO: admin CLI should be really moved to a separate class
         parser.drop(AdminConsoleAdapter.class);
 
-        // don't care about auto-deploy either
-        try {
-            Class.forName("org.glassfish.deployment.autodeploy.AutoDeployService");
-            parser.drop(AutoDeployService.class);
-        }
-        catch (Exception e) {
-            // ignore.  It may not be available
+        if(info.autoDeploy == false) {
+            try {
+                Class.forName("org.glassfish.deployment.autodeploy.AutoDeployService");
+                parser.drop(AutoDeployService.class);
+            }
+            catch (Exception e) {
+                // ignore.  It may not be available
+            }
         }
 
         //TODO: workaround for a bug
