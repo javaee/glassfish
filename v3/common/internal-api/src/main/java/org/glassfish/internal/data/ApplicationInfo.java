@@ -177,9 +177,6 @@ public class ApplicationInfo {
     }
 
     public void unload(ExtendedDeploymentContext context, ActionReport report) {
-
-        stop(context, logger);
-
         for (ModuleInfo module : getModuleInfos()) {
             module.unload(context, report);
         }
