@@ -95,8 +95,9 @@ class GFEmbeddedLauncher extends GFLauncher{
                 instanceName = "server";
 
             File dom = new File(parent, domainName);
-            File dx = new File(dom, "config/domain.xml");
-
+            File theConfigDir = new File(dom, "config");
+            File dx = new File(theConfigDir, "domain.xml");
+            info.setConfigDir(theConfigDir);
 
             MiniXmlParser parser = new MiniXmlParser(dx, instanceName);
             info.setAdminPorts(parser.getAdminPorts());

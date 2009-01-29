@@ -132,7 +132,11 @@ public class GFLauncherInfo {
     public File getConfigDir() {
         return SmartFile.sanitize(configDir);
     }
-            
+
+    void setConfigDir(File f) {
+        configDir = SmartFile.sanitize(f);
+    }
+
     
     public File getInstanceRootDir() throws GFLauncherException {
         if (!valid) {
