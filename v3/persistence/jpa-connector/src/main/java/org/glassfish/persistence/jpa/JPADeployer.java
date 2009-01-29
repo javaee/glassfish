@@ -26,7 +26,6 @@ import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.PersistenceUnitDescriptor;
-import com.sun.enterprise.module.ModulesRegistry;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.InstrumentableClassLoader;
@@ -58,10 +57,6 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPAApplication> {
 
     @Inject
     private ConnectorRuntime connectorRuntime;
-
-    @Inject
-    private ModulesRegistry modulesRegistry;
-    
 
     @Override public MetaData getMetaData() {
 
