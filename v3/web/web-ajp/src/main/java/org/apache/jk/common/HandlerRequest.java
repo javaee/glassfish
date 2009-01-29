@@ -306,8 +306,20 @@ public class HandlerRequest extends JkHandler
                                  ((Request)ep.getRequest()).unparsedURI());
                 }
             } catch( Exception ex ) {
+                /* If we are here it is because we have a bad header or something like that */
                 log.error( "Error decoding request ", ex );
                 msg.dump( "Incomming message");
+                msg.reset();
+                msg.appendByte(AjpConstants.JK_AJP13_SEND_HEADERS);
+                msg.appendInt(400); /* Error 400 */
+                if(tmpMB != null) {
+                    tmpMB.recycle();
+                }
+                tmpMB.setString("Bad Request");
+                msg.appendBytes(tmpMB);
+                msg.appendInt(0);
+                ep.getSource().send( msg, ep );
+                ep.getSource().flush( msg, ep ); // Server needs to get it
                 return ERROR;
             }
 
