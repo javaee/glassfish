@@ -72,7 +72,7 @@ public class ASMainStatic extends AbstractMain {
         ClassLoader singleClassLoader = null;
 
         // set up the cache.
-        final File cacheDir = new File(domainDir, "static-cache/gf/");
+        final File cacheDir = (System.getProperty("glassfish.static.cache.dir") != null)?new File(System.getProperty("glassfish.static.cache.dir"), "static-cache/gf/"):new File(domainDir, "static-cache/gf/");
         out = new File(cacheDir, "glassfish.jar");
         final long lastModified = getLastModified(bootstrapFile.getParentFile(), 0);
         Thread cacheThread = null;
