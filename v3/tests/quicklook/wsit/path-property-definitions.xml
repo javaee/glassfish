@@ -85,21 +85,23 @@
 
     <path id="wsit.classpath">
         <pathelement location="${java.home}/../lib/tools.jar"/>
-    </path>
+        <pathelement location="${as.home}/modules/webservices.jar"/>
+        <pathelement location="${as.home}/modules/jaxb.jar"/>
+      </path>
 
     <taskdef name="apt" classname="com.sun.tools.ws.ant.Apt">
-         <classpath refid="class.path"/> 
-         <classpath refid="wsit.classpath"/>
+       <classpath refid="class.path"/>
+        <!--<classpath refid="wsit.classpath"/>-->
     </taskdef>
 
     <taskdef name="wsimport" classname="com.sun.tools.ws.ant.WsImport">
-         <classpath refid="class.path"/> 
-         <classpath refid="wsit.classpath"/>
+         <classpath refid="class.path"/>
+          <!--<classpath refid="wsit.classpath"/>-->
     </taskdef>
 
     <taskdef name="wsimport" classname="com.sun.tools.ws.ant.WsImport">
-         <classpath refid="class.path"/> 
-         <classpath refid="wsit.classpath"/>
+          <classpath refid="class.path"/>
+           <!--<classpath refid="wsit.classpath"/>-->
     </taskdef>
 
 </project>
