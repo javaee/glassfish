@@ -90,7 +90,9 @@ public class VersionExtracter {
         String asAdminFileStr = this.installDir + "/" + 
                 UpgradeConstants.AS_BIN_DIRECTORY +  "/" + asadminString;
         if(new File(asAdminFileStr).exists()){
-            String execCommand = asAdminFileStr+" version";
+            //-String execCommand = asAdminFileStr+" version";
+            String execCommand = asAdminFileStr+" version --terse=true";
+
             try{
                 java.lang.Process asadminProcess = 
                         Runtime.getRuntime().exec(execCommand);

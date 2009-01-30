@@ -37,6 +37,7 @@
 package com.sun.enterprise.tools.upgrade.common.arguments;
 
 import com.sun.enterprise.tools.upgrade.common.CommonInfoModel;
+import com.sun.enterprise.util.i18n.StringManager;
 
 /**
  *
@@ -47,6 +48,8 @@ public class ARG_version extends ArgumentHandler {
     /** Creates a new instance of ARG_version */
 	public ARG_version() {
         super();
+        //- product name msgs kept in single properties file
+        StringManager tmpSM = StringManager.getManager(CommonInfoModel.class);
         _logger.info(sm.getString("enterprise.tools.upgrade.cli.arg_version.versionMessage", 
                         CommonInfoModel.getInstance().getTarget().getVersion()));
         System.exit(0);

@@ -57,8 +57,10 @@ public final class UpgradeConstants {
 
     public static final String VERSION_91 = "9.1";	
 	public static final String VERSION_91_01 = "9.1_01";	//as91_ur1
-	public static final String VERSION_91_1 = "9.1.1";		// sailfin
-	public static final String VERSION_10_0 = "10.0";		// GF_v3
+    public static final String VERSION_91_02 = "9.1_02";	//as91_ur2
+	public static final String VERSION_91_1 = "9.1.1";		// sailfin  (not to be upgraded to v3)
+	public static final String VERSION_3_0 = "3.0";		// GF_v3
+    public static final String VERSION_2_1 = "2.1";         // as91_ur2 ( Sun GlassFish Enterprise Server v2.1)
 
     public static final String DEVELOPER_PROFILE = "developer";
 	public static final String CLUSTER_PROFILE = "cluster";
@@ -87,27 +89,15 @@ public final class UpgradeConstants {
     public static final String OS_NAME_WINDOWS = "Windows";
     
     public static final HashMap supportMap = new HashMap();
-    static{		
-		//- as9.1.x and gfv3 upgrades supported
-		HashSet as91Set = new HashSet();
-		as91Set.add(VERSION_91);
-		as91Set.add(VERSION_91_01);
-		as91Set.add(VERSION_91_1);
-		as91Set.add(VERSION_10_0);
-        supportMap.put(VERSION_91,as91Set);
-		
-		/** tables may be required for future releases
-		//--- rls
-		HashSet as91_01Set = new HashSet();
-		as91_01Set.add(VERSION_91_1);
-		as91_01Set.add(VERSION_10_0);
-        supportMap.put(VERSION_91_01,as91_01Set);
-		
-		//-- rls
-        HashSet as91_1Set = new HashSet();
-		as91_1Set.add(VERSION_10_0);
-        supportMap.put(VERSION_91_1,as91_1Set);
-		***/
+    static{
+        HashSet trgSet = new HashSet();
+        trgSet.add(VERSION_3_0);
+
+        //- prior product versions that can be upgraded to the target server
+        supportMap.put(VERSION_91,trgSet);
+        supportMap.put(VERSION_91_01,trgSet);
+        supportMap.put(VERSION_91_02,trgSet);
+        supportMap.put(VERSION_2_1,trgSet);
     };
 
     /** Creates a new instance of UpgradeConstants */

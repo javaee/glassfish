@@ -45,6 +45,7 @@ package com.sun.enterprise.tools.upgrade.common;
 
 import java.io.File;
 import com.sun.enterprise.tools.upgrade.common.CommonInfoModel;
+
 /**
  *
  * @author rebeccas
@@ -53,6 +54,11 @@ public class TargetAppSrvObj extends BaseDomainInfoObj{
 	private static final String TARGET_WSS_SERVER_CONFIG_XML = "wss-server-config-1.0.xml";
     static final String DEFAULT_WEB_XML_FILE = "default-web.xml";
 	private String dtdFilename = null;
+    
+    //- Value indicates if an in-place upgrade of domains is supported by
+    //- the traget appserver.  This value is specific to each product release
+    //- and should be set accordingly V3 does not support in-place upgrade.
+    private boolean isInPlaceUpgradeAllowed = false;
 	
 	/** Creates a new instance of TargetAppSrvObj */
 	public TargetAppSrvObj() {
@@ -125,4 +131,8 @@ public class TargetAppSrvObj extends BaseDomainInfoObj{
 	public String getInstallRootProperty(){
 		return System.getProperty(UpgradeConstants.AS_INSTALL_ROOT);
 	}
+
+    public boolean isInPlaceUpgradeAllowed(){
+        return isInPlaceUpgradeAllowed;
+    }
 }

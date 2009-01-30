@@ -111,17 +111,23 @@ public class CommonInfoModel{
         return logger;
     }
 
-	public void setupTasks(){
+	public void setupTasks() throws Exception {
 		String domainName = sAppSrvObj.getDomainName();
 		String srcDomainDir = sAppSrvObj.getDomainDir();
 		
-		//- identify to target domain to upgrade
+		//- identify target domain to upgrade
 		tAppSrvObj.setDomainName(domainName);
 		setIsInPlace(srcDomainDir.equals(tAppSrvObj.getDomainDir()));
+
 		if (isInPlace()){
-			String backupDomainPath = UpgradeUtils.getUpgradeUtils(this).backupDomain(
-				domainName, sAppSrvObj.getInstallDir(), tAppSrvObj.getInstallDir());
-			sAppSrvObj.setBackupDomainDir(backupDomainPath);
+            //- Not all target appServer versions allow in-place upgrades
+            if (tAppSrvObj.isInPlaceUpgradeAllowed()) {
+                String backupDomainPath = UpgradeUtils.getUpgradeUtils(this).backupDomain(
+                        domainName, sAppSrvObj.getInstallDir(), tAppSrvObj.getInstallDir());
+                sAppSrvObj.setBackupDomainDir(backupDomainPath);
+            } else {
+                throw new Exception(stringManager.getString("upgrade.common.inplace_upgrade_not_supported"));
+            }
 		}
 	}
 	

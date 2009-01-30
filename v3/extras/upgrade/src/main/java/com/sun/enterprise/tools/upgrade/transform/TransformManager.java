@@ -179,8 +179,6 @@ public class TransformManager implements BaseModule{
             UpdateProgressManager.getProgressManager().setContinueUpgrade(false);
             logger.log(Level.SEVERE, stringManager.getString(
                     "upgrade.transform.startFailureMessage",ex.getMessage()),ex);
-            logger.log(Level.SEVERE, stringManager.getString(
-                    "upgrade.transform.startFailureCheckAccessMessage"));
             return false;
         }
         //login after transformation in case admin port changed

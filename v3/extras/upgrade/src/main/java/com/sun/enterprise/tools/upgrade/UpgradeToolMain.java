@@ -60,6 +60,7 @@ public class UpgradeToolMain {
             System.out.println("Configuration Error: AS_DEFS_DOMAINS_PATH is not set.");
             System.exit(1);
         }
+
         String upgradeLogPath =domainRoot+"/"+"upgrade.log";
         try{
             File f = new File(domainRoot);
@@ -76,52 +77,29 @@ public class UpgradeToolMain {
     }
     
     static Logger _logger=LogService.getLogger(LogService.UPGRADE_LOGGER);
-    private CommonInfoModel commonInfo;
-    private UpgradeHarness harness;
-    private String certDbPassword;
-    private String aliasname;
-    private String keyStorePassword;
     private StringManager sm;
+    private CommonInfoModel commonInfo = CommonInfoModel.getInstance();
+    private UpgradeHarness harness = new UpgradeHarness();;
     
     public UpgradeToolMain() {
-/** rls        
-        final ASenvPropertyReader reader = new ASenvPropertyReader(
-           System.getProperty(SystemPropertyConstants.CONFIG_ROOT_PROPERTY));
-        reader.setSystemProperties();
-**/
-       //- sets asenv.conf properties to system properties
-        final ASenvPropertyReader reader = new ASenvPropertyReader();
-        
         sm = StringManager.getManager(UpgradeToolMain.class);
-        _logger.log(Level.INFO,
-			sm.getString("enterprise.tools.upgrade.start_upgrade_tool"));
+        _logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.start_upgrade_tool"));
 
-		commonInfo = CommonInfoModel.getInstance();
-        
-        String targetDomainRoot = System.getProperty(UpgradeConstants.AS_DOMAIN_ROOT);
-        if(targetDomainRoot == null) {
-           targetDomainRoot = new File("").getAbsolutePath();
-        }
-        
-		commonInfo.getTarget().setInstallDir(targetDomainRoot);
-        
-        harness = new UpgradeHarness();
+        //- sets asenv.conf properties to system properties
+        final ASenvPropertyReader reader = new ASenvPropertyReader();
+
+        //- Verify target server's home directory
         String targetInstallPath = commonInfo.getTarget().getInstallRootProperty();
-		String asadmin = null;
         String osName = System.getProperty(UpgradeConstants.OS_NAME_IDENTIFIER);
-        
         commonInfo.setOSName(osName);
-        
-        //Test for valid configuration by checking installRoot
+        String asadmin = targetInstallPath + "/" +
+                    UpgradeConstants.AS_BIN_DIRECTORY +
+                    "/" + UpgradeConstants.ASUPGRADE;
         if(osName.indexOf(UpgradeConstants.OS_NAME_WINDOWS) != -1) {
             asadmin = targetInstallPath + "/" + 
                     UpgradeConstants.AS_BIN_DIRECTORY + 
                     "/" + UpgradeConstants.ASUPGRADE_BAT;
-        } else {
-            asadmin = targetInstallPath + "/" + 
-                    UpgradeConstants.AS_BIN_DIRECTORY + 
-                    "/" + UpgradeConstants.ASUPGRADE;
-        }
+        } 
         try {
             if(! new File(asadmin).exists()) {
                 _logger.log(Level.WARNING,
@@ -132,6 +110,13 @@ public class UpgradeToolMain {
             _logger.log(Level.WARNING,
                     sm.getString("enterprise.tools.upgrade.unknownError"),e);
         }
+
+        //- Default location of all traget server domains
+        String targetDomainRoot = System.getProperty(UpgradeConstants.AS_DOMAIN_ROOT);
+        if(targetDomainRoot == null) {
+           targetDomainRoot = new File("").getAbsolutePath();
+        }
+		commonInfo.getTarget().setInstallDir(targetDomainRoot);
     }
     
     public void startGUI(String [] args){
@@ -216,26 +201,34 @@ public class UpgradeToolMain {
 	
     private void processUIEvent(DialogEvent evt){
         if(evt.getAction() == DialogEvent.FINISH_ACTION ||
-        evt.getAction() == DialogEvent.CANCEL_ACTION){
+           evt.getAction() == DialogEvent.CANCEL_ACTION){
             System.exit(0);
         }else if(evt.getAction() == DialogEvent.UPGRADE_ACTION){
             this.upgrade();
         }
     }
     
-    private void upgrade(){		
-		commonInfo.setupTasks();
-		harness.setCommonInfoModel(commonInfo);
-		
-		//Start Upgrade
-		_logger.log(Level.INFO, sm.getString(
-			"enterprise.tools.upgrade.start_upgrade_harness"));
-		harness.startUpgrade();
-		
-		//Delete temporary files (if any) created during the process
-		_logger.log(Level.INFO, sm.getString(
-			"enterprise.tools.upgrade.deletingTempPasswordFiles"));
-		commonInfo.getSource().getDomainCredentials().deletePasswordFile();	
+    private void upgrade(){
+        try {
+            //- todo validate user input
+
+            
+            commonInfo.setupTasks();
+            harness.setCommonInfoModel(commonInfo);
+
+            //Start Upgrade
+            _logger.log(Level.INFO, sm.getString(
+                    "enterprise.tools.upgrade.start_upgrade_harness"));
+            harness.startUpgrade();
+
+            //Delete temporary files (if any) created during the process
+            _logger.log(Level.INFO, sm.getString(
+                    "enterprise.tools.upgrade.deletingTempPasswordFiles"));
+            commonInfo.getSource().getDomainCredentials().deletePasswordFile();
+        } catch (Exception e){
+            _logger.log(Level.INFO, e.getMessage());
+            System.out.println(e.getMessage());
+        }
 	}
     
     public static void main(String [] args) {
