@@ -90,6 +90,13 @@
             <artifactId>connectors-runtime</artifactId>
             <version>${project.version}</version>
         </dependency>
+      <!-- temporarily adding connectors-admin module, this will
+      eventually move to its own package, glassfish-jca-management -->
+    	<dependency>
+            <groupId>org.glassfish.connectors</groupId>
+            <artifactId>connectors-admin</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
 	<!-- now, listing package dependencies so that their content
              can be excluded during staging -->	
