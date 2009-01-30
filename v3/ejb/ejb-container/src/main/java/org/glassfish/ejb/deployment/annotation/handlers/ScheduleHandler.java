@@ -90,22 +90,21 @@ public class ScheduleHandler extends AbstractAttributeHandler {
 
             if (ElementType.METHOD.equals(ainfo.getElementType())) {
                 Method annMethod = (Method) ainfo.getAnnotatedElement();
+                ejbDesc.addSchedule(annMethod, sch);
+
                 if (logger.isLoggable(Level.FINE)) {
                     logger.fine("@@@ Found Schedule on " + annMethod);
+                    TimerSchedule ts = new TimerSchedule(sch, 
+                        annMethod.getName(), annMethod.getParameterTypes().length);
+
+                    java.util.Calendar date = ts.getNextTimeout();
+                    logger.fine("@@@ First timeout: " + 
+                            ((ts.isValid(date))? date.getTime() : "NEVER"));
+                    logger.fine("@@@ Schedule : " + ts.getScheduleAsString());
+                    logger.fine("@@@ TimerConfig : " + 
+                            ((sch.info() != null && !sch.info().equals(""))? sch.info() : null) + 
+                            " # " + sch.persistent());
                 }
-                TimerSchedule ts = new TimerSchedule(sch);
-
-                java.util.Calendar date = ts.getNextTimeout();
-                System.out.println("@@@ First timeout: " + ((ts.isValid(date))? date.getTime() : "NEVER"));
-                System.out.println("@@@ Schedule : " + ts.getScheduleAsString());
-
-                TimerConfig tc = new TimerConfig();
-                if (sch.info() != null && !sch.info().equals("")) {
-                    tc.setInfo(sch.info());
-                }
-                tc.setPersistent(sch.persistent());
-
-                System.out.println("@@@ TimerConfig : " + tc.getInfo() + " # " + tc.isPersistent());
             }
         }
 
@@ -119,13 +118,11 @@ public class ScheduleHandler extends AbstractAttributeHandler {
      */
     public Class<? extends Annotation>[] getTypeDependencies() {
         
-        return new Class[] {
-            Stateful.class, Stateless.class, Singleton.class};
+        return new Class[] {Stateless.class, Singleton.class};
                 
     }
 
     protected boolean supportTypeInheritance() {
         return true;
     }
-
 }

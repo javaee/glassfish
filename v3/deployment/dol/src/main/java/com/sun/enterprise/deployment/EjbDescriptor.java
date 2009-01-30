@@ -142,6 +142,9 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
 
     private MethodDescriptor timedObjectMethod;
 
+    private ConcurrentMap<Method, List> schedules = 
+            new ConcurrentHashMap<Method, List>();
+
     private ConcurrentMap<Method, MethodDescriptor> allMethodDescriptors = 
             new ConcurrentHashMap<Method, MethodDescriptor>();
 
@@ -214,6 +217,7 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
         this.ejbClassName = other.ejbClassName;
         this.usesCallerIdentity = other.usesCallerIdentity;
         this.bundleDescriptor = other.bundleDescriptor;
+        this.schedules = new ConcurrentHashMap(other.schedules);
         this.allMethodDescriptors = new ConcurrentHashMap(other.allMethodDescriptors);
     }
 
@@ -336,7 +340,7 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
     }
 
     public boolean isTimedObject() {
-        return (timedObjectMethod != null);
+        return (timedObjectMethod != null || schedules.size() > 0);
     }
 
     public MethodDescriptor getEjbTimeoutMethod() {
@@ -345,6 +349,25 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
 
     public void setEjbTimeoutMethod(MethodDescriptor method) {
         timedObjectMethod = method;
+    }
+
+    public void addSchedule(Method m, Object sch) {
+        List l = schedules.get(m);
+        if (l == null) {
+            l = new ArrayList();
+            l.add(sch);
+            List l0 = schedules.putIfAbsent(m, l);
+            if (l0 != null) {
+                // Another thread already added its version
+                l0.add(sch);
+            }
+        } else {
+            l.add(sch);
+        }
+    }
+
+    public Map<Method, List> getSchedules() {
+        return schedules;
     }
 
     public Set<LifecycleCallbackDescriptor>
@@ -1764,7 +1787,10 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
     public Set getTxBusinessMethodDescriptors() {
         Set txBusMethods = getBusinessMethodDescriptors();
         if (isTimedObject()) {
-            txBusMethods.add(getEjbTimeoutMethod());
+            if (timedObjectMethod != null) {
+                txBusMethods.add(timedObjectMethod);
+            }
+            // XXX TODO - add schedule methods
         }
         return txBusMethods;
     }

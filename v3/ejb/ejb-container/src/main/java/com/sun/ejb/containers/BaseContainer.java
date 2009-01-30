@@ -330,6 +330,9 @@ public abstract class BaseContainer
     
     
     protected Map invocationInfoMap = new HashMap();
+    protected Map<TimerPrimaryKey, Method> scheduleIds = 
+            new HashMap<TimerPrimaryKey, Method>();
+
     // Need a separate map for web service methods since it's possible for
     // an EJB Remote interface to be a subtype of the Service Endpoint
     // Interface.  In that case, it's ambiguous to do a lookup based only
@@ -626,40 +629,20 @@ public abstract class BaseContainer
             if ( ejbDescriptor.isTimedObject() ) {
                 MethodDescriptor ejbTimeoutMethodDesc = 
                     ejbDescriptor.getEjbTimeoutMethod();
-                Method method = ejbTimeoutMethodDesc.getMethod(ejbDescriptor);
-                
-                Class[] params = method.getParameterTypes();
-                if( (params.length == 1) &&
-                    (params[0] == javax.ejb.Timer.class) &&
-                    (method.getReturnType() == Void.TYPE) ) {
-                    
-                    isTimedObject_ = true;
-                    ejbTimeoutMethod = method;
+                // Can be a @Timeout or @Schedule or TimedObject
+                if (ejbTimeoutMethodDesc != null) {
+                    Method method = ejbTimeoutMethodDesc.getMethod(ejbDescriptor);
+                    processEjbTimeoutMethod(method);
 
-                    final Method ejbTimeoutAccessible = ejbTimeoutMethod;
-                    // Since timeout method can have any kind of access
-                    // setAccessible to true.
-                    if(System.getSecurityManager() == null) {
-                        if( !ejbTimeoutAccessible.isAccessible() ) {
-                            ejbTimeoutAccessible.setAccessible(true);
-                        }
-                    } else {
-                        java.security.AccessController.doPrivileged(
-                                new java.security.PrivilegedExceptionAction() {
-                            public java.lang.Object run() throws Exception {
-                                if( !ejbTimeoutAccessible.isAccessible() ) {
-                                    ejbTimeoutAccessible.setAccessible(true);
-                                }
-                                return null;
-                            }
-                        });
-                    }
-                } else {
-                    throw new EJBException
-                        ("Invalid @Timeout signature for " + 
-                         method + " @Timeout method must return void" +
-                         " and take a single javax.ejb.Timer param");
+                    ejbTimeoutMethod = method;
                 }
+                for (Method method : ejbDescriptor.getSchedules().keySet()) {
+                    if( _logger.isLoggable(Level.FINE) ) {
+	                _logger.log(Level.FINE, "... processing " + method );
+                    }
+                    processEjbTimeoutMethod(method);
+                }
+                
             }
             if( isTimedObject_ ) {
                 if( !isStatefulSession ) {
@@ -686,6 +669,7 @@ public abstract class BaseContainer
             initializeInvocationInfo();
 
             setupEnvironment();
+
         } catch (Exception ex) {
             _logger.log(Level.FINE,"ejb.basecontainer_exception",logParams);
             _logger.log(Level.FINE,"", ex);
@@ -1379,7 +1363,8 @@ public abstract class BaseContainer
                 return;
             }
 
-            if (inv.method != ejbTimeoutMethod) {
+            if (inv.method != ejbTimeoutMethod || 
+                    !ejbDescriptor.getSchedules().keySet().contains(inv.method)) {
                 if (! authorize(inv)) {
                     throw new AccessLocalException(
                         "Client not authorized for this invocation.");
@@ -1631,6 +1616,43 @@ public abstract class BaseContainer
                 throw (RemoteException)t;
             else
                 throw ex; // throw the AccessException
+        }
+    }
+
+    /**
+     * Check timeout method and set it accessable
+     */
+    private void processEjbTimeoutMethod(Method method) throws Exception {
+        Class[] params = method.getParameterTypes();
+        if( (params.length == 0 || 
+            (params.length == 1 && params[0] == javax.ejb.Timer.class)) &&
+            (method.getReturnType() == Void.TYPE) ) {
+            
+            isTimedObject_ = true;
+
+            final Method ejbTimeoutAccessible = method;
+            // Since timeout method can have any kind of access
+            // setAccessible to true.
+            if(System.getSecurityManager() == null) {
+                if( !ejbTimeoutAccessible.isAccessible() ) {
+                    ejbTimeoutAccessible.setAccessible(true);
+                }
+            } else {
+                java.security.AccessController.doPrivileged(
+                        new java.security.PrivilegedExceptionAction() {
+                    public java.lang.Object run() throws Exception {
+                        if( !ejbTimeoutAccessible.isAccessible() ) {
+                            ejbTimeoutAccessible.setAccessible(true);
+                        }
+                        return null;
+                    }
+                });
+            }
+        } else {
+            throw new EJBException
+                ("Invalid @Timeout or @Schedule signature for " + 
+                 method + " @Timeout or @Schedule method must return void" +
+                 " and be a no-arg method or take a single javax.ejb.Timer param");
         }
     }
 
@@ -2632,20 +2654,26 @@ public abstract class BaseContainer
         }
         
         if( isTimedObject() ) {
-            int txAttr = findTxAttr(ejbTimeoutMethod, 
-                                    MethodDescriptor.EJB_BEAN);
-            if( isBeanManagedTran ||
-                txAttr == TX_REQUIRED ||
-                txAttr == TX_REQUIRES_NEW ||
-                txAttr == TX_NOT_SUPPORTED ) {
-                addInvocationInfo(ejbTimeoutMethod, MethodDescriptor.EJB_BEAN,
-                                  null);
-            } else {
-                throw new EJBException("Timeout method " + ejbTimeoutMethod +
+            Set<Method> timeoutMethods = new HashSet<Method>(
+                    ejbDescriptor.getSchedules().keySet());
+            if (ejbTimeoutMethod != null) {
+                timeoutMethods.add(ejbTimeoutMethod);
+            }
+
+            for (Method m : timeoutMethods) {
+                int txAttr = findTxAttr(m, MethodDescriptor.EJB_BEAN);
+                if( isBeanManagedTran ||
+                    txAttr == TX_REQUIRED ||
+                    txAttr == TX_REQUIRES_NEW ||
+                    txAttr == TX_NOT_SUPPORTED ) {
+                    addInvocationInfo(m, MethodDescriptor.EJB_BEAN, null);
+                } else {
+                    throw new EJBException("Timeout method " + m +
                                        "must have TX attribute of " +
                                        "TX_REQUIRES_NEW or TX_REQUIRED or " +
                                        "TX_NOT_SUPPORTED for ejb " +
                                        ejbDescriptor.getName());
+                }
             }
         }
 
@@ -3054,6 +3082,16 @@ public abstract class BaseContainer
         _logger.log(Level.FINE,"Application deployment successful : " + 
                     this);
 
+        // By now all existing timers should have been restored.
+        if( isTimedObject_ ) {
+            EJBTimerService timerService = 
+                ejbContainerUtilImpl.getEJBTimerService();
+            if( timerService != null ) {
+                scheduleIds = timerService.getOrCreateSchedules(
+                        getContainerId(), ejbDescriptor.getSchedules());
+            }
+        }
+
         setStartedState();
     }
     
@@ -3079,13 +3117,21 @@ public abstract class BaseContainer
         // If run-as is specified for the bean, it should be used.
         inv.securityPermissions = com.sun.ejb.Container.SEC_UNCHECKED;
      
-        inv.method = ejbTimeoutMethod;
-        inv.beanMethod = ejbTimeoutMethod;
+        inv.method = scheduleIds.get(timerState.getTimerId());
+        if (inv.method == null) {
+            inv.method = ejbTimeoutMethod;
+        }
 
-        // Application must be passed a TimerWrapper.
-        Object[] args  = { new TimerWrapper(timerState.getTimerId(),
+        inv.beanMethod = inv.method;
+
+        // If the timeout method has an argument, we'll pass a TimerWrapper.
+        if (inv.method.getParameterTypes().length == 1) {
+            Object[] args  = { new TimerWrapper(timerState.getTimerId(),
                                             timerService) };
-        inv.methodParams = args;
+            inv.methodParams = args;
+        } else {
+            inv.methodParams = null;
+        }
      
         // Delegate to subclass for i.ejbObject / i.isLocal setup.
         doTimerInvocationInit(inv, timerState);

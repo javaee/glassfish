@@ -72,8 +72,12 @@ public class TimerSchedule implements Serializable {
     private Date start_ = null;
     private Date end_ = null;
 
-    private boolean automatic_ = true;
+    private boolean automatic_ = false;
+    private String methodName_ = null;
+    private int paramCount_ = 0;
+
     private boolean configured = false;
+
     private boolean lastDayOfMonth = false;
     private int dayBeforeEndOfMonth = 0;
 
@@ -164,7 +168,7 @@ public class TimerSchedule implements Serializable {
 
     /** Construct TimerSchedule instance from a given Schedule annotation.
       */
-    public TimerSchedule(Schedule s) {
+    public TimerSchedule(Schedule s, String methodName, int paramCount) {
         second(s.second());
         minute(s.minute());
         hour(s.hour());
@@ -172,6 +176,11 @@ public class TimerSchedule implements Serializable {
         month(s.month());
         dayOfWeek(s.dayOfWeek());
         year(s.year());
+
+        methodName_ = methodName;
+        paramCount_ = paramCount;
+
+        automatic_ = true;
 
         configure();
     }
@@ -181,7 +190,7 @@ public class TimerSchedule implements Serializable {
     public TimerSchedule(String s) {
         String[] sp = s.split(" # ");
 
-        if (sp.length != 10) {
+        if (!(sp.length == 10 || sp.length == 12)) {
             throw new EJBException("Cannot construct TimerSchedule from " + s);
         }
 
@@ -195,6 +204,11 @@ public class TimerSchedule implements Serializable {
         start_ = (sp[7].equals("null")? null : new Date(Long.parseLong(sp[7])));
         end_ = (sp[8].equals("null")? null : new Date(Long.parseLong(sp[8])));
         automatic_ = Boolean.parseBoolean(sp[9]);
+
+        if (sp.length == 12) {
+            methodName_ = sp[10];
+            paramCount_ = Integer.parseInt(sp[11]);
+        }
 
         configure();
     }
@@ -301,6 +315,14 @@ public class TimerSchedule implements Serializable {
         return automatic_;
     }
 
+    public String getTimerMethodName() {
+        return methodName_;
+    }
+
+    public int getMethodParamCount() {
+        return paramCount_;
+    }
+
     public String getScheduleAsString() {
         StringBuffer s = new StringBuffer()
                .append(second_).append(" # ")
@@ -314,6 +336,10 @@ public class TimerSchedule implements Serializable {
                .append(" # ") 
                .append(((end_ == null) ? null : end_.getTime()))
                .append(" # ").append(automatic_);
+
+        if (automatic_) {
+            s.append(" # ").append(methodName_).append(" # ").append(paramCount_);
+        }
 
         return s.toString();
     }

@@ -120,12 +120,6 @@ public class EjbApplication
             }
         }
 
-        for (Container container : containers) {
-            container.doAfterApplicationDeploy();
-        }
-
-        singletonLCM.doStartup();
-        
         // TODO: move restoreEJBTimers to correct location
         synchronized (lock) {
             System.out.println("==> Restore Timers? == " + restored);
@@ -140,6 +134,12 @@ public class EjbApplication
         }
         // TODO: move restoreEJBTimers to correct location
 
+        for (Container container : containers) {
+            container.doAfterApplicationDeploy();
+        }
+
+        singletonLCM.doStartup();
+        
         return true;
     }
 

@@ -35,9 +35,11 @@
  */
 package com.sun.ejb.containers;
 
+import java.lang.reflect.Method;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.ArrayList;
@@ -64,6 +66,7 @@ import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.CreateException;
 import javax.ejb.TimerConfig;
+import javax.ejb.Schedule;
 import javax.ejb.ScheduleExpression;
 
 import com.sun.enterprise.admin.monitor.callflow.RequestType;
@@ -131,7 +134,7 @@ public class EJBTimerService
 
     // Defaults for configurable timer service properties.
 
-    private static final long MINIMUM_DELIVERY_INTERVAL = 7000;
+    private static final long MINIMUM_DELIVERY_INTERVAL = 1000;
     private static final int MAX_REDELIVERIES = 1;
     private static final long REDELIVERY_INTERVAL = 5000;
 
@@ -1109,6 +1112,80 @@ public class EJBTimerService
         return timerId;
     }
 
+    Map<TimerPrimaryKey, Method> getOrCreateSchedules(
+            long containerId, Map<Method, List> schedules) {
+        Map<TimerPrimaryKey, Method> result = new HashMap<TimerPrimaryKey, Method>();
+
+        boolean skipPersistent = false;
+        for (Object next : timerLocal_.findTimersByContainer(containerId)) {
+            TimerState timer = (TimerState) next;
+            TimerSchedule ts = timer.getTimerSchedule();
+            if (ts != null && ts.isAutomatic()) {
+                for (Method m : schedules.keySet()) {
+                    if (m.getName().equals(ts.getTimerMethodName()) &&
+                            m.getParameterTypes().length == ts.getMethodParamCount()) {
+                        result.put(new TimerPrimaryKey(timer.getTimerId()), m);
+                        if( logger.isLoggable(Level.FINE) ) {
+                            logger.log(Level.FINE, "@@@ FOUND existing schedule: " + 
+                                    ts.getScheduleAsString() + " FOR method: " + m);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (result.size() > 0) {
+            logger.log(Level.FINE, "Found " + result.size() + 
+                    " persistent timers for containerId: " + containerId);
+            skipPersistent = true;
+        }
+
+        TransactionManager tm = ejbContainerUtil.getTransactionManager();
+        try {
+                              
+            tm.begin();
+            for (Method m : schedules.keySet()) {
+                for (Object element : schedules.get(m)) {
+                    Schedule sch = (Schedule) element;
+                    if (sch.persistent() && skipPersistent) {
+                        continue;
+                    }
+
+                    TimerSchedule ts = new TimerSchedule(sch, 
+                        m.getName(), m.getParameterTypes().length);
+
+                    TimerConfig tc = new TimerConfig();
+                    if (sch.info() != null && !sch.info().equals("")) {
+                        tc.setInfo(sch.info());
+                    }
+                    tc.setPersistent(sch.persistent());
+                    result.put(createTimer(containerId, null, ts, tc), m);
+                    if( logger.isLoggable(Level.FINE) ) {
+                        logger.log(Level.FINE, "@@@ CREATED new schedule: " + 
+                                    ts.getScheduleAsString() + " FOR method: " + m);
+                    }
+                }
+            }
+            tm.commit();
+
+        } catch(Exception e) {
+            logger.log(Level.FINE, "schedule creation error", e);
+
+            try {
+                tm.rollback();
+            } catch(Exception re) {
+                logger.log(Level.FINE, "schedule creation rollback error", re);
+            }
+
+            //Propagate the exception caught 
+            EJBException ejbEx = createEJBException( e );
+            throw ejbEx;
+
+        }
+
+        return result;
+    }
+
     /**
      * Use database query to retrieve all active timers.  Results must
      * be transactionally consistent. E.g.,  a client calling
@@ -1947,21 +2024,25 @@ public class EJBTimerService
             String timerId) throws Exception {
 
         Transaction transaction = null;
-        if (context_ == null) {
-            ComponentInvocation i = ejbContainerUtil.getCurrentInvocation();
-            transaction = (Transaction) i.getTransaction();
-        } else {
+        if (context_ != null) {
             transaction = context_.getTransaction();
-            if( transaction == null ) {
-                ComponentInvocation i = ejbContainerUtil.getCurrentInvocation();
+        }
+
+        if( transaction == null ) {
+            ComponentInvocation i = ejbContainerUtil.getCurrentInvocation();
+            if (i == null) {
+                // This should happen only when creating timers for methods annotated with @Schedule
+                transaction = ejbContainerUtil.getTransactionManager().getTransaction();
+            } else {
                 transaction = (Transaction) i.getTransaction();
-                if (transaction != null) {
+                if (context_ != null && transaction != null) {
                     // Need to know when it happens
                     logger.log(Level.WARNING, "Context transaction in TimerBean = null. Using " +
                            "invocation instead."); // , new Throwable());
                 }
             }
         }
+
         if( transaction == null ) {
             throw new Exception("transaction = null in getContainerSynch " +
                                 "for timerId = " + timerId);

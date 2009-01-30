@@ -232,30 +232,33 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
                 // Method object corresponding to the timeout method.  The
                 // timeout method can have any access type and be anywhere
                 // in the bean class hierarchy.
-                String timeoutMethodName = ejb.getEjbTimeoutMethod().getName();
-                MethodDescriptor timeoutMethodDesc = null;
-                Class nextClass = ejbClass;
-                while((nextClass != Object.class) && (nextClass != null) 
-                      && (timeoutMethodDesc == null) ) {
-                    Method[] methods = nextClass.getDeclaredMethods();
-                    for(Method m : methods) {
-                        if( (m.getName().equals(timeoutMethodName)) ) {
-                            Class[] params = m.getParameterTypes();
-                            AnnotationTypesProvider provider = Globals.getDefaultHabitat().getComponent(AnnotationTypesProvider.class, "EJB");
-                            if (provider!=null) {
-                                Class timerClass = provider.getType("javax.ejb.Timer");
-                                if( (params.length == 1) &&
-                                    (params[0] == timerClass) ) {
-                                    timeoutMethodDesc = new MethodDescriptor
-                                        (m, MethodDescriptor.EJB_BEAN);
-                                    ejb.setEjbTimeoutMethod(timeoutMethodDesc);
-                                    break;
+                if (ejb.getEjbTimeoutMethod() != null) {
+                    String timeoutMethodName = ejb.getEjbTimeoutMethod().getName();
+                    MethodDescriptor timeoutMethodDesc = null;
+                    Class nextClass = ejbClass;
+                    while((nextClass != Object.class) && (nextClass != null) 
+                          && (timeoutMethodDesc == null) ) {
+                        Method[] methods = nextClass.getDeclaredMethods();
+                        for(Method m : methods) {
+                            if( (m.getName().equals(timeoutMethodName)) ) {
+                                Class[] params = m.getParameterTypes();
+                                AnnotationTypesProvider provider = Globals.getDefaultHabitat().getComponent(AnnotationTypesProvider.class, "EJB");
+                                if (provider!=null) {
+                                    Class timerClass = provider.getType("javax.ejb.Timer");
+                                    if( (params.length == 1) &&
+                                        (params[0] == timerClass) ) {
+                                        timeoutMethodDesc = new MethodDescriptor
+                                            (m, MethodDescriptor.EJB_BEAN);
+                                        ejb.setEjbTimeoutMethod(timeoutMethodDesc);
+                                        break;
+                                    }
                                 }
                             }
                         }
+                        nextClass = nextClass.getSuperclass();
                     }
-                    nextClass = nextClass.getSuperclass();
                 }
+                // XXX TODO - process schedule entries
             }
 
         } catch(Exception e) {
