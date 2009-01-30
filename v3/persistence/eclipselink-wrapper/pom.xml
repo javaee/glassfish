@@ -48,7 +48,7 @@
     <packaging>pom</packaging>
     <name>Repackaging of EclipseLink as a module</name>
     <properties>
-	<eclipselink.version>1.1.0-M6</eclipselink.version>
+	<eclipselink.version>1.1.0-M8</eclipselink.version>
     </properties>
     <developers>
         <developer>
