@@ -83,6 +83,7 @@ import org.apache.catalina.authenticator.AuthenticatorBase;
 
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
+import org.apache.catalina.Globals;
 import org.apache.catalina.HttpRequest;
 import org.apache.catalina.HttpResponse;
 import org.apache.catalina.Lifecycle;
@@ -1213,7 +1214,7 @@ public abstract class RealmBase
         String requestedSessionId = hrequest.getRequestedSessionId();
         if ((requestedSessionId != null) &&
             hrequest.isRequestedSessionIdFromURL()) {
-            file.append(";jsessionid=");
+            file.append(";" + Globals.SESSION_PARAMETER_NAME + "=");
             file.append(requestedSessionId);
         }
         String queryString = hrequest.getQueryString();

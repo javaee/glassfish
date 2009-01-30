@@ -941,7 +941,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         String requestedSessionId = hrequest.getRequestedSessionId();
         if ((requestedSessionId != null) &&
                 hrequest.isRequestedSessionIdFromURL()) {
-            file.append(";jsessionid=");
+            file.append(";" + Globals.SESSION_PARAMETER_NAME + "=");
             file.append(requestedSessionId);
         }
         String queryString = hrequest.getQueryString();

@@ -569,7 +569,7 @@ public class CoyoteAdapter
             if (request.isRequestedSessionIdFromURL()) {
                 // This is not optimal, but as this is not very common, it
                 // shouldn't matter
-                redirectPath = redirectPath + ";jsessionid=" 
+                redirectPath = redirectPath + ";" + Globals.SESSION_PARAMETER_NAME + "=" 
                     + request.getRequestedSessionId();
             }            
             // START GlassFish 936
