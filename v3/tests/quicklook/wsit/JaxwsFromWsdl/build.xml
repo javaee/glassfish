@@ -58,16 +58,7 @@
         <mkdir dir="${build.war.home}"/>
     </target>
 
-    <path id="wsit.classpath">
-        <pathelement location="${java.home}/../lib/tools.jar"/>
-    </path>
-
-    <taskdef name="wsimport" classname="com.sun.tools.ws.ant.WsImport">
-         <classpath refid="class.path"/> 
-         <classpath refid="wsit.classpath"/>
-    </taskdef>
-
-    <target name="build-server-wsdl" depends="build-setup">
+    <target name="build-server-wsdl" depends="declare-wsimport,build-setup" if="wsjar.available">
         <wsimport
             debug="${debug}"
             verbose="${verbose}"
@@ -100,7 +91,7 @@
         <copy file="${war.file.ext}" tofile="${dist.dir}/${war.file.ext}"/>
     </target>
      
-    <target name="generate-client" depends="build-setup">
+    <target name="generate-client" depends="declare-wsimport,build-setup" if="wsjar.available">
         <wsimport
             debug="${debug}"
             verbose="${verbose}"
