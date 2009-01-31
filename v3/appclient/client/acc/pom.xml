@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+/* 
+* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER. 
+* 
+* Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved. 
+* 
+* The contents of this file are subject to the terms of either the GNU 
+* General Public License Version 2 only ("GPL") or the Common Development 
+* and Distribution License("CDDL") (collectively, the "License").  You 
+* may not use this file except in compliance with the License. You can obtain 
+* a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html 
+* or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific 
+* language governing permissions and limitations under the License. 
+* 
+* When distributing the software, include this License Header Notice in each 
+* file and include the License file at glassfish/bootstrap/legal/LICENSE.txt. 
+* Sun designates this particular file as subject to the "Classpath" exception 
+* as provided by Sun in the GPL Version 2 section of the License file that 
+* accompanied this code.  If applicable, add the following below the License 
+* Header, with the fields enclosed by brackets [] replaced by your own 
+* identifying information: "Portions Copyrighted [year] 
+* [name of copyright owner]" 
+* 
+* Contributor(s): 
+* 
+* If you wish your version of this file to be governed by only the CDDL or 
+* only the GPL Version 2, indicate your decision by adding "[Contributor] 
+* elects to include this software in this distribution under the [CDDL or GPL 
+* Version 2] license."  If you don't indicate a single choice of license, a 
+* recipient has the option to distribute your version of this file under 
+* either the CDDL, the GPL Version 2 or to extend the choice of license to 
+* its licensees as provided above.  However, if you add GPL Version 2 code 
+* and therefore, elected the GPL Version 2 license, then the option applies 
+* only if the new code is made subject to such option by the copyright 
+* holder. 
+*/ 
+--><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.glassfish.appclient</groupId>
+        <artifactId>client</artifactId>
+        <version>3.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>gf-acc</artifactId>
+    <packaging>hk2-jar</packaging> <!-- the main artifact is the OSGi module JAR -->
+    <name>App Client Container</name>
+
+    <!--
+        This module creates the app client container in three artifacts:
+            1. OSGi module for the ACC
+            2. stand-alone ACC JAR, suitable for running using java -jar ...
+            3. bundle suitable for distribution to remote clients.
+
+        Java programs that want to use the embeddable ACC would place the stand-
+        alone ACC JAR on their class paths.  OSGi modules that use the embeddable
+        ACC could simply declare a dependency on the ACC OSGi module.
+
+        The zip bundle contains the stand-alone ACC JAR and all other JARs on
+        which it depends.  End-users or administrators could copy this bundle
+        to remote clients and expand it, resulting in a single self-contained
+        directory which would contain all the required JARs.
+    -->
+
+    <properties>
+        <extracted-dtd-root>temp</extracted-dtd-root>
+        <extracted-dtd-top-level-directory>${extracted-dtd-root}/glassfish</extracted-dtd-top-level-directory>
+        <extracted-dtd-directory>${extracted-dtd-top-level-directory}/lib/dtds</extracted-dtd-directory>
+        <config-dtd-file>sun-application-client-container_1_2.dtd</config-dtd-file>
+
+        <acc.corba-version>3.0.0-b001</acc.corba-version>
+
+        <standalone.classifier>sa</standalone.classifier>
+<!--
+        <config-xsd-dir>src/main/resources</config-xsd-dir>
+        <config-xsd-file>sun-application-client-container_1_2.xsd</config-xsd-file>
+-->
+    </properties>
+
+    <developers>
+      <developer>
+            <id>tjquinn</id>
+            <name>Tim Quinn</name>
+            <url>http://blogs.sun.com/quinn</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+		        <role>lead</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+        </resources>
+
+        <plugins>
+            <!--
+                Extracts the sun-application-client-container_x_y.dtd from the
+                deployment/dtds module into a temp file.
+                The "generate" phase will use it to create JAXB classes.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+
+                <executions>
+                  <execution>
+                    <id>unpack-dtd</id>
+                    <phase>initialize</phase> <!-- make sure this is before generate -->
+                    <goals>
+                      <goal>unpack</goal>
+                    </goals>
+                    <configuration>
+                      <artifactItems>
+                        <artifactItem>
+                          <groupId>org.glassfish.deployment</groupId>
+                          <artifactId>dtds</artifactId>
+                          <version>${project.version}</version>
+                          <type>zip</type>
+                          <includes>**/${config-dtd-file}</includes>
+                          <overWrite>true</overWrite>
+                          <outputDirectory>${extracted-dtd-root}</outputDirectory>
+                        </artifactItem>
+                      </artifactItems>
+                    </configuration>
+                  </execution>
+                </executions>
+
+
+            </plugin>
+
+            <!--
+                Generates JAXB classes based on the ACC configuration file DTD.
+            -->
+            <plugin>
+                <groupId>org.jvnet.jaxb2.maven2</groupId>
+                <artifactId>maven-jaxb2-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal> <!-- must be before compile -->
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <schemaLanguage>DTD</schemaLanguage>
+                    <schemaDirectory>${extracted-dtd-directory}</schemaDirectory>
+<!--
+                    <schemaDirectory>${config-xsd-dir}</schemaDirectory>
+-->
+                    <generatePackage>org.glassfish.appclient.client.acc.config</generatePackage>
+                    <schemaIncludes>
+                        <include>${config-dtd-file}</include>
+<!--
+                        <include>${config-xsd-file}</include>
+-->
+                    </schemaIncludes>
+                    <bindingDirectory>src/main/resources</bindingDirectory>
+                    <bindingIncludes>
+                        <include>configBindings.xml</include>
+                    </bindingIncludes>
+                </configuration>
+            </plugin>
+
+
+            <!--
+                Adds the temp directory (which holds the extracted DTD) to the
+                directories cleaned by the 'clean' phase.
+            -->
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>2.2</version>
+                <executions>
+                    <execution>
+                        <id>clean-extracted-dtd</id>
+                    </execution>
+                </executions>
+                <configuration>
+                  <filesets>
+                    <fileset>
+                      <directory>${extracted-dtd-root}</directory>
+                    </fileset>
+                  </filesets>
+                </configuration>
+            </plugin>
+            
+            <!--
+                Creates the stand-alone (non-OSGi) JAR artifact.
+            -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>2.2</version>
+            <executions>
+                <execution>
+                    <id>create-stand-alone-JAR</id>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>jar</goal>
+                    </goals>
+                    <configuration>
+                        <!--
+                            Uses a different classifier or we'd override the
+                            default usage of this plug-in as the main artifact
+                            was created, which would also overwrite the OSGi
+                            module JAR with this non-OSGi JAR.
+                        -->
+                        <classifier>${standalone.classifier}</classifier> <!-- sa = stand-alone (non-OSGi) -->
+
+                        <!--
+                            Excludes all content because the stand-alone JAR
+                            simply lists all the OSGi modules we use in the
+                            manifest's Class-Path element.
+                        -->
+                        <excludes>
+                            <exclude>**/*</exclude>
+                        </excludes>
+                        <archive>
+                            <manifest>
+                              <mainClass>org.glassfish.appclient.client.acc.AppClientCommand</mainClass>
+                              <packageName>org.glassfish.appclient.client.acc</packageName>
+                              <addClasspath>true</addClasspath>
+                            </manifest>
+                        </archive>
+                    </configuration>
+                </execution>
+            </executions>
+          </plugin>
+
+
+            <!--
+                Creates a zip file containing the stand-alone ACC JAR and all the
+                module JARs on which the ACC depends.
+            -->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.1</version>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/assemble/bundle.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>create-ACC-bundle</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+<!--
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.0.2</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+-->
+        </plugins>
+    </build>
+
+    <dependencies>
+<!--
+        <dependency>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2</artifactId>
+        </dependency>
+	    <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>glassfish-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+-->
+
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>common-util</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.security</groupId>
+            <artifactId>security</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!--
+            We depend on the deployment/dtds module which contains the
+            sun-application-client-container_1_2.dtd.  We use that for
+            generating JAXB classes but we do not want to package the DTD
+            with the ACC module, nor do we want the ACC module depending on
+            the deploymenet/dtds module at runtime.  Note the scope is "compile"
+            to indicate this.
+        -->
+        <dependency>
+            <scope>compile</scope>
+            <groupId>org.glassfish.deployment</groupId>
+            <artifactId>dtds</artifactId>
+            <type>zip</type>
+            <version>${project.version}</version>
+        </dependency>
+
+<!--
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.1</version>
+        </dependency>
+-->
+        <!--
+            required for annotation processing support
+        -->
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>common-util</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- required for InjectionManager -->
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>container-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!--
+            Required for AnnotationDetector, AnnotationScanner, PersistenceUnitDescriptor
+        -->
+        <dependency>
+            <groupId>org.glassfish.deployment</groupId>
+            <artifactId>dol</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!--
+            Required for InstrumentableClassLoader (persistence unit support)
+        -->
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>glassfish-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- required for ClientPipeCloser -->
+        <dependency>
+            <groupId>org.glassfish.security</groupId>
+            <artifactId>webservices.security</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- required for DirContextURLStreamHandler and its factory -->
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>web-naming</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!--
+            Ken C. reports that eight ORB-related modules are needed, but
+            the one "orb" module directly or indirectly depends on the others
+            so I have just included it here.
+        -->
+        <dependency>
+            <groupId>com.sun.corba</groupId>
+            <artifactId>glassfish-corba-orb</artifactId>
+            <version>${acc.corba-version}</version>
+        </dependency>
+<!--
+<dependency>
+            <groupId>org.glassfish.deployment</groupId>
+            <artifactId>deployment-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+       <dependency>
+            <groupId>org.glassfish.core</groupId>
+            <artifactId>kernel</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.deployment</groupId>
+            <artifactId>deployment-admin</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+-->
+   </dependencies>
+</project>

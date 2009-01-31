@@ -1,0 +1,233 @@
+/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License. You can obtain
+ * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * Sun designates this particular file as subject to the "Classpath" exception
+ * as provided by Sun in the GPL Version 2 section of the License file that
+ * accompanied this code.  If applicable, add the following below the License
+ * Header, with the fields enclosed by brackets [] replaced by your own
+ * identifying information: "Portions Copyrighted [year]
+ * [name of copyright owner]"
+ *
+ * Contributor(s):
+ *
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
+package org.glassfish.appclient.client.acc;
+
+import com.sun.enterprise.security.UsernamePasswordStore;
+import java.net.URL;
+import java.util.Properties;
+import java.util.logging.Logger;
+import org.apache.naming.resources.DirContextURLStreamHandlerFactory;
+import org.glassfish.appclient.client.acc.config.TargetServer;
+
+/**
+ *
+ * @author tjquinn
+ */
+class AppClientContainerSecurityHelper {
+
+    private static final String ORB_INITIAL_HOST_PROPERTYNAME = "org.omg.CORBA.ORBInitialHost";
+    private static final String ORB_INITIAL_PORT_PROPERTYNAME = "org.omg.CORBA.ORBInitialPort";
+    private final Logger logger = Logger.getLogger(getClass().getName());
+
+    private final Properties iiopProperties;
+
+    AppClientContainerSecurityHelper(
+            final TargetServer[] targetServers, 
+            final Properties containerProperties,
+            final String username,
+            final char[] password,
+            final String realmName) {
+        
+        iiopProperties = prepareIIOP(targetServers, containerProperties);
+        setClientCredentials(username, password, realmName);
+        
+    }
+
+    /**
+     * Returns the already-initialized IIOP properties object.
+     * @return Properties object containing IIOP property settings
+     */
+    Properties getIIOPProperties() {
+        return iiopProperties;
+    }
+
+    /**
+     * Creates a Properties object containing the ORB settings and, possibly,
+     * as a side-effect may assign some system property settings because that
+     * is how the ORB reads certain settings.
+     * <p>
+     * If there are multiple endpoints configured then the ACC chooses a
+     * default load balancing setting.
+     * The ACC assembled the full list of ORB settings in this order:
+     * <ol>
+     * <li>From Property objects in the ClientContainer configuration (this
+     * usage is deprecated and will be logged as such but for historical
+     * reasons is given priority)
+     * <li>From TargetServer object(s) in the ClientContainer configuration
+     * </ol>
+     * Note that the calling program should normally provide at least one
+     * TargetServer object.
+     *
+     * @return Properties object suitable as the argument to InitialContext
+     */
+    private Properties prepareIIOP(final TargetServer[] targetServers,
+            final Properties containerProperties) {
+
+        boolean isEndpointPropertySpecifiedByUser = false;
+        String loadBalancingPolicy = null;
+
+        Properties iiopProperties = new Properties();
+
+        boolean isLBEnabled = false;
+        boolean isSSLSpecifiedForATargetServer = false;
+
+	    /*
+         * Although targetServerEndpoints is for user-friendly logging
+         * we need to compute lb_enabled and also to note if any target-server
+         * specifies ssl, so the loop is multi-purpose.
+         */
+	    StringBuilder targetServerEndpoints = new StringBuilder();
+        for (TargetServer tServer : targetServers) {
+            addEndpoint(targetServerEndpoints, formatEndpoint(tServer.getAddress(), tServer.getport()));
+            isLBEnabled = true;
+		    /*
+             * In the configuration the ssl sub-part is required if the
+             * security part is present.  So for speed just look for the
+             * security part under this target server.  That will ensure that
+             * the ssl part is there also, and that's all we're concerned with
+             * at this point.
+             */
+            isSSLSpecifiedForATargetServer |= (tServer.getSecurity() != null);
+        }
+
+		if (isSSLRequired(targetServers, containerProperties)) {
+            // XXX ORBManager needed
+//            ORBManager.getCSIv2Props().put(ORBManager.ORB_SSL_CLIENT_REQUIRED, "true");
+        }
+
+        /*
+         * Find and use (if it exists) the container-level property that specifies a load balancing policy.
+         */
+        // XXX S1ASCtxFactory needed
+//        loadBalancingPolicy = containerProperties.getProperty(S1ASCtxFactory.LOAD_BALANCING_PROPERTY);
+        isLBEnabled |= loadBalancingPolicy != null;
+
+		logger.fine("targetServerEndpoints = " + targetServerEndpoints.toString());
+
+        if (isLBEnabled) {
+        // XXX S1ASCtxFactory needed
+//            System.setProperty(S1ASCtxFactory.IIOP_ENDPOINTS_PROPERTY, targetServerEndpoints.toString());
+            /*
+             * Honor any explicit setting of the load-balancing policy.
+             * Otherwise just defer to whatever default the ORB uses.
+             */
+            if (loadBalancingPolicy != null) {
+        // XXX S1ASCtxFactory needed
+//                System.setProperty(S1ASCtxFactory.LOAD_BALANCING_PROPERTY, loadBalancingPolicy);
+            }
+            /*
+             * For load-balancing the Properties object is not used to convey
+             * the LB information.  Rather,
+             * the ORB detects the system property settings.  So return a
+             * null for the LB case.
+             */
+            iiopProperties = null;
+        } else {
+            /*
+             * For the non-load-balancing case, the Properties object must
+             * contain the initial host and port settings for the ORB.
+             */
+            iiopProperties.setProperty(ORB_INITIAL_HOST_PROPERTYNAME, targetServers[0].getAddress());
+            iiopProperties.setProperty(ORB_INITIAL_PORT_PROPERTYNAME, targetServers[0].getport().toString());
+        }
+        return iiopProperties;
+    }
+
+    private StringBuilder addEndpoint(final StringBuilder endpointSB, final String endpoint) {
+        if (endpointSB.length() > 0) {
+            endpointSB.append(",");
+        }
+        endpointSB.append(endpoint);
+        return endpointSB;
+    }
+
+    private String formatEndpoint(final String host, final int port) {
+        return host + ":" + port;
+    }
+
+    /**
+     * Reports whether the ORB should be requested to use SSL.
+     * <p>
+     * If any TargetServer specifies SSL or the container-level properties
+     * specify SSL then report "true."
+     * @param targetServers configured TargetServer(s)
+     * @param containerProperties configured container-level properties
+     * @return whether the target servers or the properties implies the use of SSL
+     */
+    private boolean isSSLRequired(final TargetServer[] targetServers, final Properties containerProperties) {
+        if (containerProperties != null) {
+            String sslPropertyValue = containerProperties.getProperty("ssl");
+            if ("required".equals(sslPropertyValue)) {
+                return true;
+            }
+        }
+        for (TargetServer ts : targetServers) {
+            /*
+             * If this target server has the optional security sub-item then
+             * the security sub-item must have an ssl sub-item.  So we can just
+             * look for the security sub-item.
+             */
+            if (ts.getSecurity() != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void setClientCredentials(final String username,
+            final char[] password, final String realmName) {
+
+        /// XXX From original v2 code - what to do about realm?
+        UsernamePasswordStore.set(username, new String(password));
+    }
+
+    /**
+     *Assigns the URL stream handler factory.
+     */
+    private static void prepareURLStreamHandling() {
+        // Set the HTTPS URL stream handler.
+        java.security.AccessController.doPrivileged(new
+                                       java.security.PrivilegedAction() {
+                public Object run() {
+                    URL.setURLStreamHandlerFactory(new
+                                       DirContextURLStreamHandlerFactory());
+                    return null;
+                }
+            });
+    }
+
+
+}

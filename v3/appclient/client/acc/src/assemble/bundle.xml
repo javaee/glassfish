@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="MacRoman"?>
+
+<!--
+    Document   : bundle.xml
+    Created on : January 30, 2009, 1:11 PM
+    Author     : tjquinn
+    Description:
+        Purpose of the document follows.
+-->
+
+<assembly>
+    <id>bundle</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+
+    <dependencySets useProjectArtifact="true">
+        <dependencySet>
+            <excludes>
+                <exclude>com.sun.xml.bind:jaxb</exclude> <!-- we don't need 2.1 of this; 2.0 is in the JRE -->
+            </excludes>
+        </dependencySet>
+    </dependencySets>
+
+    <fileSets>
+        <fileSet>
+            <includes>
+                <include>**/target/${project.artifactId}-${standalone.classifier}.jar</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+</assembly>
