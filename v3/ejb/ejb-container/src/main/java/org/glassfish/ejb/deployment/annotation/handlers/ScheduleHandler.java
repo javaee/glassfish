@@ -90,20 +90,22 @@ public class ScheduleHandler extends AbstractAttributeHandler {
 
             if (ElementType.METHOD.equals(ainfo.getElementType())) {
                 Method annMethod = (Method) ainfo.getAnnotatedElement();
-                ejbDesc.addSchedule(annMethod, sch);
+                if (TimerSchedule.isValid(sch)) {
+                    ejbDesc.addSchedule(annMethod, sch);
 
-                if (logger.isLoggable(Level.FINE)) {
-                    logger.fine("@@@ Found Schedule on " + annMethod);
-                    TimerSchedule ts = new TimerSchedule(sch, 
-                        annMethod.getName(), annMethod.getParameterTypes().length);
+                    if (logger.isLoggable(Level.FINE)) {
+                        logger.fine("@@@ Found Schedule on " + annMethod);
+                        TimerSchedule ts = new TimerSchedule(sch, 
+                            annMethod.getName(), annMethod.getParameterTypes().length);
 
-                    java.util.Calendar date = ts.getNextTimeout();
-                    logger.fine("@@@ First timeout: " + 
-                            ((ts.isValid(date))? date.getTime() : "NEVER"));
-                    logger.fine("@@@ Schedule : " + ts.getScheduleAsString());
-                    logger.fine("@@@ TimerConfig : " + 
-                            ((sch.info() != null && !sch.info().equals(""))? sch.info() : null) + 
-                            " # " + sch.persistent());
+                        java.util.Calendar date = ts.getNextTimeout();
+                        logger.fine("@@@ First timeout: " + 
+                                ((ts.isValid(date))? date.getTime() : "NEVER"));
+                        logger.fine("@@@ Schedule : " + ts.getScheduleAsString());
+                        logger.fine("@@@ TimerConfig : " + 
+                                ((sch.info() != null && !sch.info().equals(""))? sch.info() : null) + 
+                                " # " + sch.persistent());
+                    }
                 }
             }
         }

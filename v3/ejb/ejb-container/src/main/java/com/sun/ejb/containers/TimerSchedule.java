@@ -374,6 +374,17 @@ public class TimerSchedule implements Serializable {
     }
 
     /**
+     * Returns true if this Schedule can calculate its next timeout
+     * without errors.
+     */
+    public static boolean isValid(Schedule s) {
+        TimerSchedule ts = new TimerSchedule(s, null, 0);
+        ts.getNextTimeout();
+
+        return true;
+    }
+
+    /**
      * Returns true if this date can be used for the next timeout of
      * the schedule represented by this instance.
      */

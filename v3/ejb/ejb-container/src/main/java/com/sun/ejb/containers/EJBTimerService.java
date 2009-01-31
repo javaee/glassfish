@@ -503,8 +503,9 @@ public class EJBTimerService
     /**
      * The portion of timer restoration that deals with registering the
      * JDK timer tasks and checking for missed expirations.
+     * @return the Set of restored timers
      */
-    private void _restoreTimers(Set<TimerState> timersEligibleForRestoration) {
+    private Set<TimerState> _restoreTimers(Set<TimerState> timersEligibleForRestoration) {
                       
         // Do timer restoration in two passes.  The first pass updates
         // the timer cache with each timer.  The second pass schedules
@@ -512,10 +513,18 @@ public class EJBTimerService
         
         Map timersToRestore = new HashMap();
         Set timerIdsToRemove = new HashSet();
+        Set<TimerState> result = new HashSet<TimerState>();
 
         for(TimerState timer: timersEligibleForRestoration) {
 
             TimerPrimaryKey timerId = getPrimaryKey(timer);
+            if (getTimerState(timerId) != null) {
+                // Already restored. Add it to the result but do nothing else.
+                logger.log(Level.FINE, "@@@ Timer already restored: " + timer);
+                result.add(timer);
+                continue;
+            }
+
             long containerId = timer.getContainerId();
 
             // Timer might refer to an obsolete container.
@@ -630,6 +639,7 @@ public class EJBTimerService
                             "Removing schedule-based timer " + timerState +
                                    " that will never expire again");
                     timerIdsToRemove.add(timerId);
+                    result.add(timer);
                 } else {
                     timersToRestore.put(timerState, expirationTime);
                 }
@@ -637,9 +647,8 @@ public class EJBTimerService
             } else {
                 // Timed object's container no longer exists - remember its id.
                 logger.log(Level.FINE,
-                        "Removing timer " + timerId +
-                               " for unknown container " + containerId);
-                timerIdsToRemove.add(timerId);
+                        "Skipping timer " + timerId +
+                               " for container that is not up: " + containerId);
             }
         } // End -- for each active timer
 
@@ -660,6 +669,7 @@ public class EJBTimerService
         }
 
         logger.log(Level.FINE, "DONE EJBTimerService.restoreTimers()");
+        return result;
     }
 
     void shutdown() {
@@ -792,7 +802,6 @@ public class EJBTimerService
             synchronized(timerState) {
 
                 Date timerExpiration = expiration;
-
                 if( !rescheduled ) {
                     // Guard against very small timer intervals. The EJB Timer 
                     // service is defined in units of milliseconds, but it is
@@ -1114,36 +1123,40 @@ public class EJBTimerService
 
     Map<TimerPrimaryKey, Method> getOrCreateSchedules(
             long containerId, Map<Method, List> schedules) {
+
         Map<TimerPrimaryKey, Method> result = new HashMap<TimerPrimaryKey, Method>();
-
         boolean skipPersistent = false;
-        for (Object next : timerLocal_.findTimersByContainer(containerId)) {
-            TimerState timer = (TimerState) next;
-            TimerSchedule ts = timer.getTimerSchedule();
-            if (ts != null && ts.isAutomatic()) {
-                for (Method m : schedules.keySet()) {
-                    if (m.getName().equals(ts.getTimerMethodName()) &&
-                            m.getParameterTypes().length == ts.getMethodParamCount()) {
-                        result.put(new TimerPrimaryKey(timer.getTimerId()), m);
-                        if( logger.isLoggable(Level.FINE) ) {
-                            logger.log(Level.FINE, "@@@ FOUND existing schedule: " + 
-                                    ts.getScheduleAsString() + " FOR method: " + m);
-                        }
-                    }
-                }
-            }
-        }
-
-        if (result.size() > 0) {
-            logger.log(Level.FINE, "Found " + result.size() + 
-                    " persistent timers for containerId: " + containerId);
-            skipPersistent = true;
-        }
 
         TransactionManager tm = ejbContainerUtil.getTransactionManager();
         try {
                               
             tm.begin();
+
+            Set<TimerState> timers = 
+                (Set<TimerState>)timerLocal_.findActiveTimersOwnedByThisServerByContainer(containerId);
+
+            for (TimerState timer : _restoreTimers(timers)) {
+                TimerSchedule ts = timer.getTimerSchedule();
+                if (ts != null && ts.isAutomatic()) {
+                    for (Method m : schedules.keySet()) {
+                        if (m.getName().equals(ts.getTimerMethodName()) &&
+                                m.getParameterTypes().length == ts.getMethodParamCount()) {
+                            result.put(new TimerPrimaryKey(timer.getTimerId()), m);
+                            if( logger.isLoggable(Level.FINE) ) {
+                                logger.log(Level.FINE, "@@@ FOUND existing schedule: " + 
+                                        ts.getScheduleAsString() + " FOR method: " + m);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (result.size() > 0) {
+                logger.log(Level.FINE, "Found " + result.size() + 
+                        " persistent timers for containerId: " + containerId);
+                skipPersistent = true;
+            }
+
             for (Method m : schedules.keySet()) {
                 for (Object element : schedules.get(m)) {
                     Schedule sch = (Schedule) element;
@@ -1166,15 +1179,16 @@ public class EJBTimerService
                     }
                 }
             }
+
             tm.commit();
 
         } catch(Exception e) {
-            logger.log(Level.FINE, "schedule creation error", e);
+            logger.log(Level.FINE, "Timer restore or schedule creation error", e);
 
             try {
                 tm.rollback();
             } catch(Exception re) {
-                logger.log(Level.FINE, "schedule creation rollback error", re);
+                logger.log(Level.FINE, "Timer restore or schedule creation rollback error", re);
             }
 
             //Propagate the exception caught 
