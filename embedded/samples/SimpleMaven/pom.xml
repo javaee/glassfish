@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>mygfe</groupId>
+    <artifactId>SimpleMaven</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>SimpleMaven</name>
+
+    <repositories>
+        <repository>
+            <id>gfe</id>
+            <url>http://maven.glassfish.org/content/groups/glassfish/</url>
+        </repository>
+    </repositories>
+
+    <build>
+        <defaultGoal>install</defaultGoal>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.0.2</version>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <configuration>
+                    <outputDirectory>${project.build.directory}</outputDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.embedded</groupId>
+            <artifactId>glassfish-embedded-all</artifactId>
+            <version>3.0-Prelude-Embedded-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+</project>
