@@ -105,15 +105,15 @@ Directory Level:</span><br>
 After the first run with maven from top level, the dependency jars will
 be downloaded to local maven repository. Now it's possible to run
 individual test suite from directory level. Change directory to the
-test directory. For example, to run quicklook/web/helloworld test suite
-for <span style="font-weight: bold;">web.zip</span> bundle:<br>
+test directory. For example, to run quicklook/ejb/slsbnicmt test suite
+against <span style="font-weight: bold;">glassfish</span> bundle:<br>
 <ul>
   <ul>
     <li><span style="font-style: italic;">{V3
-Installation Dir}/bin/</span><i>asadmin start-database</i><i></i></li>
+Installation Dir}/bin/</span><i>asadmin start-database</i></li>
+    <li><i>cd </i><span style="font-style: italic;">ejb/slsbnicmt</span></li>
     <li><i>ant -Dglassfish.home=</i><span style="font-style: italic;">{V3
-Installation Dir}</span><i>&nbsp; start-server-felix</i></li>
-    <li style="font-style: italic;">cd web/helloworld</li>
+Installation Dir}</span><i>&nbsp; start-server</i></li>
     <li><span style="font-style: italic;">ant -Dglassfish.home={V3
 Installation Dir} all</span><br>
     </li>
