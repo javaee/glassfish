@@ -39,6 +39,18 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version> 2.4.3 </version>
+                <configuration>
+                  <!-- these are the magic incantations that will force the
+                    classpath to be set to our dependencies list
+                    -->
+                    <useSystemClassLoader>true</useSystemClassLoader>
+                    <useManifestOnlyJar>false</useManifestOnlyJar>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <dependencies>
