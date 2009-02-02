@@ -20,6 +20,9 @@ public class GlassFishORBFactoryImpl
     @Inject
     Habitat habitat;
 
+    @Inject
+    IIOPUtils iiopUtils;
+
     private volatile ORB gfORB;
 
     public ORB createORB(Properties props) {

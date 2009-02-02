@@ -293,7 +293,7 @@ public final class GlassFishORBManager {
                             } else {
                                 assert (iiopServiceBean != null);
 
-                                iiopListenerBeans = (IiopListener[]) iiopServiceBean.getIiopListener().toArray();
+                                iiopListenerBeans = (IiopListener[]) iiopServiceBean.getIiopListener().toArray(new IiopListener[0]);
                                 assert (iiopListenerBeans != null && iiopListenerBeans.length > 0);
 
                                 // checkORBInitialPort looks at iiopListenerBeans, if present
@@ -447,7 +447,7 @@ public final class GlassFishORBManager {
                 logger.log(Level.FINE, ".initORB->: ");
             }
 
-            setORBSystemProperties() ;
+            setORBSystemProperties();
 
             Properties orbInitProperties = new Properties();
             orbInitProperties.putAll(props);
@@ -527,7 +527,13 @@ public final class GlassFishORBManager {
              * Having an IORInterceptor (TxSecIORInterceptor) get called during ORB init always results in a
              * nested ORB.init call because of the call to getORB in the IORInterceptor.
              */
-            orb = ORB.init(args, orbInitProperties);
+            final ClassLoader prevCL = Thread.currentThread().getContextClassLoader();
+            try {
+                Thread.currentThread().setContextClassLoader(GlassFishORBManager.class.getClassLoader());
+                orb = ORB.init(args, orbInitProperties);
+            } finally {
+                Thread.currentThread().setContextClassLoader(prevCL);
+            }
 
             // Done to indicate this is a server and
             // needs to create listen ports.

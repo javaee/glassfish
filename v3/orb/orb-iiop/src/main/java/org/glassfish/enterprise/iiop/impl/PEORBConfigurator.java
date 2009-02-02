@@ -160,7 +160,7 @@ public class PEORBConfigurator implements ORBConfigurator {
 
     // Called from GlassFishORBManager only when the ORB is running on server side
     public static void setThreadPoolManager() {
-        threadpoolMgr = S1ASThreadPoolManager.getThreadPoolManager();
+        //threadpoolMgr = S1ASThreadPoolManager.getThreadPoolManager();
     }
 
     private static void configureCallflowInvocationInterceptor(ORB orb) {

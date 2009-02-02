@@ -5,6 +5,7 @@ import org.glassfish.enterprise.iiop.api.GlassFishORBLifeCycleListener;
 import org.glassfish.enterprise.iiop.api.IIOPInterceptorFactory;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 import org.omg.CORBA.ORB;
@@ -16,6 +17,7 @@ import java.util.List;
  * @author Mahesh Kannan
  *         Date: Jan 15, 2009
  */
+@Service
 public class IIOPUtils
         implements PostConstruct {
 
@@ -32,12 +34,6 @@ public class IIOPUtils
 
     @Inject
     IiopService iiopService;
-
-    @Inject
-    Clusters clusters;
-
-    @Inject
-    Cluster cluster;
 
     @Inject
     ServerRef[] serverRefs;
@@ -65,14 +61,6 @@ public class IIOPUtils
 
     public IiopService getIiopService() {
         return iiopService;
-    }
-
-    public Clusters getClusters() {
-        return clusters;
-    }
-
-    public Cluster getMyCluster() {
-        return cluster;
     }
 
     public ServerRef[] getServerRefs() {
