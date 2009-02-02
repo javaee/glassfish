@@ -232,13 +232,13 @@ public class UpgradeToolMain {
 	}
     
     public static void main(String [] args) {
-/******/
+/***
 System.out.println(
         "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n" +
         "Upgrade Tool is not available for use at this time.\n" +
         "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-if(true)return;
-
+//-if(true)return;
+***/
         UpgradeToolMain main = new UpgradeToolMain();
 		boolean isCLIcmd = false;
         for(int i=0;i<args.length;i++){
