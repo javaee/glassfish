@@ -43,7 +43,7 @@
     <import file="${ws.root}/gfproject/build-impl.xml"/>   
     <import file="${ws.root}/gfproject/${deploy.platform}-targets.xml"/>
     
-    <target name="all" depends="start-server,build,deploy,runtest,undeploy,stop-server" />    
+    <target name="all" depends="build,deploy,runtest,undeploy" />    
     <target name="build-deploy" depends="build,deploy" />
 
    
