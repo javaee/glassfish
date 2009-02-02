@@ -22,7 +22,8 @@
 <h1 style="margin-left: 80px;"><big><font style="font-size: 16pt;"
  size="4"><big><b><font face="Trebuchet MS, sans-serif">Instructions
 for QuickLook tests</font></b></big></font></big></h1>
-<br>
+Last updated at: Feb. 2, 2009<br>
+By: Ming.Zhang@sun.com<br>
 <p style="margin-bottom: 0in;" align="left"><big><font size="4"><big><b>I.
 Running QuickLook tests:</b></big></font></big></p>
 <br>
@@ -108,8 +109,8 @@ test directory. For example, to run quicklook/web/helloworld test suite
 for <span style="font-weight: bold;">web.zip</span> bundle:<br>
 <ul>
   <ul>
-    <li><i>ant -Dglassfish.home=</i><span style="font-style: italic;">{V3
-Installation Dir}</span><i>&nbsp; startDerby</i></li>
+    <li><span style="font-style: italic;">{V3
+Installation Dir}/bin/</span><i>asadmin start-database</i><i></i></li>
     <li><i>ant -Dglassfish.home=</i><span style="font-style: italic;">{V3
 Installation Dir}</span><i>&nbsp; start-server-felix</i></li>
     <li style="font-style: italic;">cd web/helloworld</li>
@@ -160,6 +161,29 @@ the actuall maven repository (will not work on windows platform).</li>
 </ul>
 <p style="margin-bottom: 0in;"><big><big style="font-weight: bold;">II.
 Adding Tests to QuickLook</big></big><br>
+</p>
+<p style="margin-bottom: 0in;"><span style="font-weight: bold;">1.
+Requirements for the Adding Tests to QL:</span><br>
+</p>
+<p style="margin-bottom: 0in;">The QL has a wide user communite which
+includes developer, RE and SQE teams. So tests added need to follow the
+criteria below:<br>
+</p>
+<ul>
+  <li>The tests need to be robust. For example, the failure of the test
+in any process (compile, build, deploy, run ...) should not stop the
+process of generating the finial QL report.</li>
+  <li>Not depend on internet access. The tests should be offline and
+selfsufficient.</li>
+  <li>Performance. The QL tests should be testing the basic features of
+the module and fast. Ideally, tests for one&nbsp;module should be less
+than 1 minute.</li>
+</ul>
+To make sure the tests don't break the RE and SQE processes, please
+send the tests to Ming.Zhang@sun.com for reviewing. <br>
+<p style="margin-bottom: 0in;"><span style="font-weight: bold;"></span></p>
+<p style="margin-bottom: 0in;"><span style="font-weight: bold;">2.
+Steps of Adding Tests to QL</span><br>
 </p>
 <p style="margin-bottom: 0in;">The test framework of QuickLook is <a
  href="http://testng.org/doc/">TestNG</a>. TestNG allows us to
