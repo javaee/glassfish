@@ -186,6 +186,7 @@
                 <module>flashlight</module>
                 <module>embedded</module>
                 <module>webservices</module>
+                <module>orb</module>
             </modules>
         </profile>
         <profile>
