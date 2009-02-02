@@ -76,6 +76,8 @@ public class EjbSessionDescriptor extends EjbDescriptor {
     /** Idicates statefullness of a session ejb.*/
     public final static String STATEFUL = "Stateful";
     
+    public final static String SINGLETON = "Singleton";
+    
     private static LocalStringManagerImpl localStrings =
 	    new LocalStringManagerImpl(EjbSessionDescriptor.class); 
 
@@ -183,11 +185,15 @@ public class EjbSessionDescriptor extends EjbDescriptor {
 	* Returns true if I am describing a stateless session bean.
 	*/
     public boolean isStateless() {
-	return isStateless;
+	    return isStateless;
     }
     
     public boolean isStateful() {
         return !isStateless();
+    }
+
+    public boolean isSingleton() {
+        return false;
     }
     
 	/**
@@ -197,13 +203,6 @@ public class EjbSessionDescriptor extends EjbDescriptor {
 	this.isStateless = isStateless;
 
     }
-	/**
-	* Returns false 
-	*/
-    public boolean isSingleton() {
-	return false;
-    }
-    
 
     public boolean hasRemoveMethods() {
         return (!removeMethods.isEmpty());

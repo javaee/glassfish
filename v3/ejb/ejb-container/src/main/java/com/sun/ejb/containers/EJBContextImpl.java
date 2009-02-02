@@ -98,6 +98,7 @@ public abstract class EJBContextImpl
 
     transient protected EJBLocalObjectImpl ejbLocalObjectImpl;
     transient protected EJBLocalObjectImpl ejbLocalBusinessObjectImpl;
+    transient protected EJBLocalObjectImpl optionalEjbLocalBusinessObjectImpl;
     
     transient private long lastTimeUsed;
     transient protected BeanState state;
@@ -148,6 +149,11 @@ public abstract class EJBContextImpl
         this.ejbLocalBusinessObjectImpl = localBusObjectImpl;
     }
 
+
+    void setOptionalEJBLocalBusinessObjectImpl(EJBLocalObjectImpl optionalLocalBusObjectImpl) {
+        this.optionalEjbLocalBusinessObjectImpl = optionalLocalBusObjectImpl;
+    }
+
     
     void setEJBObjectImpl(EJBObjectImpl ejbo) {
         this.ejbObjectImpl = ejbo;
@@ -171,6 +177,10 @@ public abstract class EJBContextImpl
 
     EJBLocalObjectImpl getEJBLocalBusinessObjectImpl() {
         return ejbLocalBusinessObjectImpl;
+    }
+
+    EJBLocalObjectImpl getOptionalEJBLocalBusinessObjectImpl() {
+        return optionalEjbLocalBusinessObjectImpl;
     }
     
     void setContainer(BaseContainer container) {

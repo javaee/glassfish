@@ -104,11 +104,13 @@ public abstract class EJBLocalHomeImpl
 
     /**
      * Create a new EJBLocalBusinessObjectImpl and new EJB if necessary.
+     * @param s
      */
-    protected final EJBLocalObjectImpl createEJBLocalBusinessObjectImpl()
+    protected final EJBLocalObjectImpl createEJBLocalBusinessObjectImpl(String intfName)
         throws CreateException
     {
-        return container.createEJBLocalBusinessObjectImpl();
+        // intfName is the Generated interface name in the case of the no-interface view
+        return container.createEJBLocalBusinessObjectImpl(intfName);
     }
     
     /**

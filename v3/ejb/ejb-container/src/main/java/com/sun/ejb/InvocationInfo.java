@@ -94,6 +94,8 @@ public class InvocationInfo {
 
     private boolean asyncMethodFlag;
 
+    public InvocationInfo() {}
+    
     public InvocationInfo(Method method) {
         this.method = method;
     }

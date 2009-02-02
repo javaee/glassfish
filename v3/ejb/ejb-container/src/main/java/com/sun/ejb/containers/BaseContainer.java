@@ -465,10 +465,12 @@ public abstract class BaseContainer
                         isStatefulSession  = !isStatelessSession;
 
                         if( isStatefulSession ) {
+                            /*  Enable after ORB Integration -- only needed for passivation
                             if( !Serializable.class.isAssignableFrom(ejbClass) ) {
                                 ejbClass = EJBUtils.loadGeneratedSerializableClass
                                     (loader, ejbClass.getName());
                             }
+                            */
                         }
                     }
                     if ( sd.getTransactionType().equals("Bean") ) {
@@ -581,8 +583,6 @@ public abstract class BaseContainer
                     hasOptionalLocalBusinessView = true;
 
                     ejbOptionalLocalBusinessHomeIntf = GenericEJBLocalHome.class;
-                    String genOptionalLocalIntf = EJBUtils.getGeneratedOptionalInterfaceName(
-                            ejbDescriptor.getEjbClassName());
                     Class clz = loader.loadClass(ejbDescriptor.getEjbClassName());
                     addToGeneratedMonitoredMethodInfo(ejbDescriptor.getEjbClassName(), clz);
 
@@ -828,10 +828,18 @@ public abstract class BaseContainer
     /**
      * Return an object that implements ejb's local business home interface.
      */
-    public final GenericEJBLocalHome getEJBLocalBusinessHome() {
-        return (hasOptionalLocalBusinessView)
+    public final GenericEJBLocalHome getEJBLocalBusinessHome(String clientViewClassName) {
+
+        return isLocalBeanClass(clientViewClassName)
             ? ejbOptionalLocalBusinessHome
             : ejbLocalBusinessHome;
+    }
+
+    boolean isLocalBeanClass(String className) {
+
+        return hasOptionalLocalBusinessView &&
+                ( className.equals(ejbClass.getName()) ||
+                  className.equals(ejbGeneratedOptionalLocalBusinessIntfClass.getName()) );
     }
 
     public final Class getEJBClass() {
@@ -1825,14 +1833,23 @@ public abstract class BaseContainer
             "Internal ERROR: BaseContainer.createEJBLocalObject called");
     }
 
-    // Only implemented in Stateless and Stateful session containers
-    EJBLocalObjectImpl createEJBLocalBusinessObjectImpl()
+    // Only implemented in Stateless , Stateful, and Singleton session containers
+    EJBLocalObjectImpl createEJBLocalBusinessObjectImpl(boolean localBeanView)
         throws CreateException
     {
         throw new EJBException(
-            "Internal ERROR: BaseContainer.createEJBLocalObject called");
+            "Internal ERROR: BaseContainer.createEJBLocalBusinessObject called");
     }
-    
+
+    EJBLocalObjectImpl createEJBLocalBusinessObjectImpl(String clientIntf)
+        throws CreateException
+    {
+
+        boolean useLocalBeanView = isLocalBeanClass(clientIntf);
+        return createEJBLocalBusinessObjectImpl(useLocalBeanView);
+
+    }
+
     /**
      * Called when a remote invocation arrives for an EJB.
      * Implemented in subclasses.
@@ -2325,9 +2342,67 @@ public abstract class BaseContainer
             }
         }
 
+        // Set locking info
+        if( isSingleton ) {
+            EjbSingletonDescriptor singletonDesc = (EjbSingletonDescriptor) ejbDescriptor;
+            Set<MethodDescriptor> readLockMethods = singletonDesc.getReadLockMethods();
+            Set<MethodDescriptor> writeLockMethods = singletonDesc.getWriteLockMethods();
+
+            MethodLockInfo lockInfo = null;
+            for(MethodDescriptor readLockMethodDesc : readLockMethods) {
+                Method readLockMethod = readLockMethodDesc.getMethod(singletonDesc);
+                if(TypeUtil.sameMethodSignature(method, readLockMethod)) {
+
+                    lockInfo = new MethodLockInfo();
+                    lockInfo.setLockType(LockType.READ);
+                    break;
+                }
+            }
+
+            if( lockInfo == null ) {
+                for(MethodDescriptor writeLockMethodDesc : writeLockMethods) {
+                    Method writeLockMethod = writeLockMethodDesc.getMethod(singletonDesc);
+                    if(TypeUtil.sameMethodSignature(method, writeLockMethod)) {
+
+                        lockInfo = new MethodLockInfo();
+                        lockInfo.setLockType(LockType.WRITE);
+                        break;
+                    }
+                }
+            }
+
+            if( lockInfo != null) {
+                invInfo.methodLockInfo = lockInfo;
+            }
+        }
+
+        // Set AccessTimeout info
+        if( isSingleton ) {
+            // @@@ need to do this for stateful session beans too
+            EjbSingletonDescriptor singletonDesc = (EjbSingletonDescriptor) ejbDescriptor;
+            Set<MethodDescriptor> accessTimeoutMethods = singletonDesc.getAccessTimeoutMethods();
+
+
+            for(MethodDescriptor accessTimeoutMethodDesc : accessTimeoutMethods) {
+                Method accessTimeoutMethod = accessTimeoutMethodDesc.getMethod(singletonDesc);
+                if(TypeUtil.sameMethodSignature(method, accessTimeoutMethod)) {
+
+                    MethodLockInfo lockInfo = (invInfo.methodLockInfo == null)
+                            ? new MethodLockInfo() : invInfo.methodLockInfo;
+                    EjbSingletonDescriptor.AccessTimeoutHolder holder =
+                            singletonDesc.getAccessTimeoutForMethod(accessTimeoutMethodDesc);
+                    lockInfo.setTimeout(holder.value , holder.unit);
+
+                    break;
+                }
+            }
+        }
+
         if( _logger.isLoggable(Level.FINE) ) {
             _logger.log(Level.FINE, invInfo.toString());
         }
+
+
 
         return invInfo;
     }
@@ -2395,7 +2470,8 @@ public abstract class BaseContainer
         } catch(NoSuchMethodException nsme) {
             
             if( (methodClass == localBusinessHomeIntf) ||
-                (methodClass == remoteBusinessHomeIntf) ) {
+                (methodClass == remoteBusinessHomeIntf) ||
+                (methodClass == ejbOptionalLocalBusinessHomeIntf) ) {
                 // Not an error.  This is the case where the EJB 3.0
                 // client view is being used and there is no corresponding
                 // create/init method.
@@ -2651,6 +2727,8 @@ public abstract class BaseContainer
                 }
             }
 
+
+
         }
         
         if( isTimedObject() ) {
@@ -2698,7 +2776,7 @@ public abstract class BaseContainer
     // Search for the transaction attribute for a method.
     // This is only used during container initialization.  After that,
     // tx attributes can be looked up with variations of getTxAttr()
-    private int findTxAttr(Method method, String methodIntf) {
+    protected int findTxAttr(Method method, String methodIntf) {
         int txAttr = -1;
         
         if ( isBeanManagedTran )
@@ -3517,7 +3595,8 @@ public abstract class BaseContainer
         // For SessionBeans, ejbCreate/ejbRemove must be called without a Tx.
         // For EntityBeans, ejbCreate/ejbRemove/ejbFind must be called with a Tx
         // so no special work needed.
-        if ( isSession && !inv.invocationInfo.isBusinessMethod ) {
+        if ( (isStatefulSession || isStatelessSession) &&
+             !inv.invocationInfo.isBusinessMethod ) {
             // EJB2.0 section 7.5.7 says that ejbCreate/ejbRemove etc are called
             // without a Tx. So suspend the client's Tx if any.
             
@@ -3565,7 +3644,7 @@ public abstract class BaseContainer
                     // client request associated with a Tx, always suspend
                     inv.clientTx = transactionManager.suspend();
                 }
-                if ( isSession && !isStatelessSession && prevTx != null
+                if ( isStatefulSession && prevTx != null
                 && prevTx.getStatus() != Status.STATUS_NO_TRANSACTION ) {
                     // Note: if prevTx != null , then it means
                     // afterCompletion was not called yet for the
@@ -3654,8 +3733,8 @@ public abstract class BaseContainer
     // Check if the bean is associated with an unfinished tx.
     protected void checkUnfinishedTx(Transaction prevTx, EjbInvocation inv) {
         try {
-            if ( !isMessageDriven && !isStatelessSession && prevTx != null &&
-            	prevTx.getStatus() != Status.STATUS_NO_TRANSACTION ) {
+            if ( !isMessageDriven && !isStatelessSession && !isSingleton && (prevTx != null) &&
+            	(prevTx.getStatus() != Status.STATUS_NO_TRANSACTION) ) {
                 // An unfinished tx exists for the bean.
                 // so we cannot invoke the bean with no Tx or a new Tx.
                 throw new IllegalStateException(
@@ -3778,7 +3857,7 @@ public abstract class BaseContainer
                     // Create a Synchronization object.
                     
                     // Not needed for stateless beans or message-driven beans
-                    // because they cant have Synchronization callbacks,
+                    // or singletons because they cant have Synchronization callbacks,
                     // and they cant be associated with a tx across
                     // invocations.
                     // Register sync for methods other than finders/home methods
@@ -3839,7 +3918,7 @@ public abstract class BaseContainer
     public void postInvokeTx(EjbInvocation inv)
         throws Exception
     {
-        Method method = inv.method;
+        
         InvocationInfo invInfo = inv.invocationInfo;
         Throwable exception = inv.exception;
         
@@ -3847,7 +3926,7 @@ public abstract class BaseContainer
         // so resume client's Tx if needed.
         // For EntityBeans, ejbCreate/ejbRemove/ejbFind must be called with a Tx
         // so no special processing needed.
-        if ( isSession && !invInfo.isBusinessMethod ) {
+        if ( (isStatefulSession || isStatelessSession) && !invInfo.isBusinessMethod ) {
             // check if there was a suspended client Tx
             if ( inv.clientTx != null )
                 transactionManager.resume(inv.clientTx);
@@ -3980,7 +4059,7 @@ public abstract class BaseContainer
         else {
             // EJB was invoked, EJB's Tx is incomplete.
             // See EJB2.0 Section 17.6.1
-            if ( isSession && !isStatelessSession ) {
+            if ( isStatefulSession ) {
                 if ( !isSystemUncheckedException(exception) ) {
                     if( isAppExceptionRequiringRollback(exception) ) {
                         transactionManager.rollback();
@@ -3998,7 +4077,7 @@ public abstract class BaseContainer
                     newException = processSystemException(exception);
                 }
             }
-            else if( isStatelessSession ) { // stateless SessionBean
+            else if( isStatelessSession  ) { // stateless SessionBean
                 try {
                     forceDestroyBean(context);
                 } finally {
@@ -4006,6 +4085,19 @@ public abstract class BaseContainer
                 }
                 newException = new EJBException(
                     "Stateless SessionBean method returned without" + 
+                    " completing transaction");
+                _logger.log(Level.FINE,
+                    "ejb.incomplete_sessionbean_txn_exception",logParams);
+                _logger.log(Level.FINE,"",newException);
+            }
+            else if( isSingleton ) {
+                try {
+                    forceDestroyBean(context);
+                } finally {
+                    transactionManager.rollback();
+                }
+                newException = new EJBException(
+                    "Singleton SessionBean method returned without" + 
                     " completing transaction");
                 _logger.log(Level.FINE,
                     "ejb.incomplete_sessionbean_txn_exception",logParams);
@@ -4096,7 +4188,7 @@ public abstract class BaseContainer
             return newException;
         }
 
-        if ( isSession && !isStatelessSession && (context instanceof SessionContextImpl)) {
+        if ( isStatefulSession && (context instanceof SessionContextImpl)) {
             ((SessionContextImpl) context).setTxCompleting(true);
         }
 

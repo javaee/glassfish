@@ -284,7 +284,7 @@ public class EJBUtils {
 
             if( refDesc.isEJB30ClientView() ) {
                 GenericEJBLocalHome genericLocalHome = 
-                    container.getEJBLocalBusinessHome();
+                    container.getEJBLocalBusinessHome(refDesc.getEjbInterface());
                 returnObject = genericLocalHome.create(refDesc.getEjbInterface());
             } else {
                 returnObject = container.getEJBLocalHome();

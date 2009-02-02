@@ -45,8 +45,11 @@ import static com.sun.enterprise.deployment.LifecycleCallbackDescriptor.Callback
 import com.sun.enterprise.deployment.runtime.BeanCacheDescriptor;
 import com.sun.enterprise.deployment.runtime.BeanPoolDescriptor;
 import com.sun.enterprise.deployment.runtime.IASEjbExtraDescriptors;
+import com.sun.enterprise.deployment.LifecycleCallbackDescriptor;
+import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.invocation.ComponentInvocation;
+import org.glassfish.api.invocation.ResourceHandler;
 import org.glassfish.ejb.startup.SingletonLifeCycleManager;
 
 import javax.ejb.*;
@@ -56,29 +59,14 @@ import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
+import com.sun.ejb.Container;
+import com.sun.ejb.InvocationInfo;
 
-/** This class provides container functionality specific to stateless 
- *  SessionBeans.
- *  At deployment time, one instance of the StatelessSessionContainer is created
- *  for each stateless SessionBean type (i.e. deployment descriptor) in a JAR. 
- * <P>
- * The 3 states of a Stateless EJB (an EJB can be in only 1 state at a time):
- * 1. POOLED : ready for invocations, no transaction in progress
- * 2. INVOKING : processing an invocation
- * 3. DESTROYED : does not exist  
- * <P>
- * This container services invocations using a pool of EJB instances.
- * An instance is returned to the pool immediately after the invocation
- * completes, so the # of instances needed = # of concurrent invocations.
- * <P>
- * A Stateless Bean can hold open DB connections across invocations.
- * Its assumed that the Resource Manager can handle
- * multiple incomplete transactions on the same
- * connection.
- *
- */    
 
 public abstract class AbstractSingletonContainer
     extends BaseContainer {
@@ -87,22 +75,16 @@ public abstract class AbstractSingletonContainer
 
     private static final byte[] singletonInstanceKey = {0, 0, 0, 1};
 
-    // All stateless EJBs have the same instanceKey, since all stateless EJBs
-    // are identical. Note: the first byte of instanceKey must be left empty.
-    private Method homeCreateMethod 	 = null;
-    private Method localHomeCreateMethod = null;
+    // All Singleton EJBs have the same instanceKey
+    //  Note: the first byte of instanceKey must be left empty.
 
-    // All stateless EJB instances of a particular class (i.e. all bean 
-    // instances created by this container instance) have the same 
-    // EJBObject/EJBLocalObject instance since they are all identical.
-    private EJBLocalObjectImpl theEJBLocalObjectImpl = null;
+    // Note : Singletons do not support the legacy EJB 2.x RemoteHome/LocalHome
+    //        client views.
+
+
     private EJBLocalObjectImpl theEJBLocalBusinessObjectImpl = null;
     private EJBLocalObjectImpl theOptionalEJBLocalBusinessObjectImpl = null;
 
-    // Data members for RemoteHome view
-    private EJBObjectImpl theEJBObjectImpl = null;
-    private EJBObject theEJBObject = null;
-    private EJBObject theEJBStub = null;
 
     // Data members for Remote business view. Any objects representing the
     // Remote business interface are not subtypes of EJBObject.
@@ -122,15 +104,21 @@ public abstract class AbstractSingletonContainer
     private Server svr 						 = null;
     private EjbContainer ejbContainer 		 = null;
 
-    private PoolProperties poolProp 		 = null;
-
     protected ObjectFactory singletonCtxFactory;
 
     private SingletonLifeCycleManager lcm;
 
     protected AtomicBoolean singletonInitialized = new AtomicBoolean(false);
 
+    // Set to true if Singleton failed to complete its initialization successfully.
+    // If true, Singleton is not accessible.
+    protected boolean singletonInitializationFailed = false;
+
     protected volatile ComponentContext singletonCtx;
+
+
+    private InvocationInfo postConstructInvInfo;
+    private InvocationInfo preDestroyInvInfo;
 
     /**
      * This constructor is called from the JarManager when a Jar is deployed.
@@ -143,38 +131,95 @@ public abstract class AbstractSingletonContainer
             super(ContainerType.SINGLETON, desc, loader);
 
 
-        try {
-            // get the ejbCreate method for stateless beans
-            if ( hasLocalHomeView ) {
-                localHomeCreateMethod = 
-                    localHomeIntf.getMethod("create", NO_PARAMS);
-            }
-            if ( hasRemoteHomeView ) {
-                homeCreateMethod = 
-                    homeIntf.getMethod("create", NO_PARAMS);
-            }
-        } catch (Exception ex) {
-            if(_logger.isLoggable(Level.SEVERE)) {
-                _logger.log(Level.SEVERE,
-                    "ejb.get_ejbcreate_method_exception",logParams);
-                _logger.log(Level.SEVERE,"",ex);
-            }
-            throw ex;
-        }
-
         ejbContainer = ejbContainerUtilImpl.getEjbContainer();
 
         super.setMonitorOn(false); //TODO super.setMonitorOn(ejbContainer.isMonitoringEnabled());
 
         //super.createCallFlowAgent(ComponentType.SLSB);
+
+        Set<LifecycleCallbackDescriptor> postConstructDescriptors =
+            ejbDescriptor.getPostConstructDescriptors();
+        Set<LifecycleCallbackDescriptor> preDestroyDescriptors =
+            ejbDescriptor.getPreDestroyDescriptors();
+
+        // Tx attribute for PostConstruct/PreDestroy methods can only be specified using
+        // a PostConstruct/PreDestroy method defined on the bean class.  If nothing is
+        // specified, the CMT default is for the method to run within a transaction.  We
+        // actually use TX_REQUIRES_NEW to force the transaction manager to always suspend
+        // any existing transaction in the case that the Singleton instance is initialized
+        // lazily as a side effect of an invocation.   Like timeout methods, from the
+        // developer's perspective there is never an inflowing transaction to a Singleton
+        // PostConstruct or PreDestroy method.
+        int defaultTxAttr =  isBeanManagedTran ?
+                Container.TX_BEAN_MANAGED : Container.TX_REQUIRES_NEW;
+
+        int postConstructTxAttr = defaultTxAttr;
+        int preDestroyTxAttr = defaultTxAttr;
+
+        if( !isBeanManagedTran ) {
+            for(LifecycleCallbackDescriptor lcd : postConstructDescriptors) {
+                if( lcd.getLifecycleCallbackClass().equals(ejbDescriptor.getEjbClassName())) {
+
+                    Method postConstructMethod =
+                        lcd.getLifecycleCallbackMethodObject(loader);
+                    int txAttr = findTxAttr(postConstructMethod, MethodDescriptor.EJB_BEAN);
+                    // Since REQUIRED and REQUIRES_NEW are already taken care of, only
+                    // override the value if it's TX_NOT_SUPPORTED.
+                    if( txAttr == Container.TX_NOT_SUPPORTED ) {
+                        postConstructTxAttr = txAttr;                       
+                    }
+                    break;
+                }
+            }
+            for(LifecycleCallbackDescriptor lcd : preDestroyDescriptors) {
+                if( lcd.getLifecycleCallbackClass().equals(ejbDescriptor.getEjbClassName())) {
+
+                    Method preDestroyMethod =
+                        lcd.getLifecycleCallbackMethodObject(loader);
+                    int txAttr = findTxAttr(preDestroyMethod, MethodDescriptor.EJB_BEAN);
+                    // Since REQUIRED and REQUIRES_NEW are already taken care of, only
+                    // override the value if it's TX_NOT_SUPPORTED.
+                    if( txAttr == Container.TX_NOT_SUPPORTED ) {
+                        preDestroyTxAttr = txAttr;                       
+                    }
+                    break;
+                }
+            }
+        }
+
+        postConstructInvInfo = new InvocationInfo();
+        postConstructInvInfo.ejbName = ejbDescriptor.getName();
+        postConstructInvInfo.methodIntf = MethodDescriptor.EJB_BEAN;
+        postConstructInvInfo.txAttr = postConstructTxAttr;
+
+        preDestroyInvInfo = new InvocationInfo();
+        preDestroyInvInfo.ejbName = ejbDescriptor.getName();
+        preDestroyInvInfo.methodIntf = MethodDescriptor.EJB_BEAN;
+        preDestroyInvInfo.txAttr = preDestroyTxAttr;            
+
+
     }
 
     public String getMonitorAttributeValues() {
         StringBuffer sbuf = new StringBuffer();
-        sbuf.append("STATELESS ").append(ejbDescriptor.getName());
+        sbuf.append("SINGLETON ").append(ejbDescriptor.getName());
         sbuf.append("]");
 
         return sbuf.toString();
+    }
+
+    @Override
+    EjbInvocation createEjbInvocation() {
+        EjbInvocation inv = super.createEjbInvocation();
+
+        // Singletons can not store the underlying resource list
+        // in the context impl since that is shared across many
+        // concurrent invocations.  Instead, set the resource
+        // handler on the invocation to provide a different
+        // resource List for each Singleton invocation. 
+        inv.setResourceHandler(new ResourceHandlerImpl());
+
+        return inv;
     }
 
     protected void initializeHome()
@@ -185,21 +230,7 @@ public abstract class AbstractSingletonContainer
 
         if ( isRemote ) {
             /*TODO
-            if( hasRemoteHomeView ) {
-                // Create theEJBObjectImpl
-                theEJBObjectImpl = instantiateEJBObjectImpl();
-                theEJBObject = (EJBObject) theEJBObjectImpl.getEJBObject();
-                
-                // connect the EJBObject to the ProtocolManager 
-                // (creates the stub 
-                // too). Note: cant do this in constructor above because 
-                // containerId is not set at that time.
-                theEJBStub = (EJBObject) 
-                    remoteHomeRefFactory.createRemoteReference
-                       (statelessInstanceKey);
-                
-                theEJBObjectImpl.setStub(theEJBStub);
-            }
+
 
             if( hasRemoteBusinessView ) {
 
@@ -224,9 +255,7 @@ public abstract class AbstractSingletonContainer
         }
 
         if ( isLocal ) {
-            if( hasLocalHomeView ) {
-                theEJBLocalObjectImpl = instantiateEJBLocalObjectImpl();
-            }
+
             if( hasLocalBusinessView ) {
                 theEJBLocalBusinessObjectImpl = 
                     instantiateEJBLocalBusinessObjectImpl();
@@ -326,21 +355,7 @@ public abstract class AbstractSingletonContainer
     public EJBObjectImpl createEJBObjectImpl()
         throws CreateException, RemoteException
     {
-        // Need to do access control check here because BaseContainer.preInvoke
-        // is not called for stateless sessionbean creates.
-        authorizeRemoteMethod(EJBHome_create);
-        /*TODO
-        if ( AppVerification.doInstrument() ) {
-            AppVerification.getInstrumentLogger().doInstrumentForEjb(
-                ejbDescriptor, homeCreateMethod, null);
-        }
-        */
-	statCreateCount++;
-
-        // For stateless EJBs, EJB2.0 Section 7.8 says that 
-        // Home.create() need not do any real creation.
-        // If necessary, a stateless bean is created below during getContext().
-        return theEJBObjectImpl;
+        throw new CreateException("EJB 2.x Remote view not supported on Singletons");
     }
 
     /**
@@ -349,61 +364,46 @@ public abstract class AbstractSingletonContainer
     public EJBLocalObjectImpl createEJBLocalObjectImpl()
         throws CreateException
     {	
-        // Need to do access control check here because BaseContainer.preInvoke
-        // is not called for stateless sessionbean creates.
-        authorizeLocalMethod(EJBLocalHome_create);
-        /*TODO
-        if ( AppVerification.doInstrument() ) {
-            AppVerification.getInstrumentLogger().doInstrumentForEjb(
-                ejbDescriptor, localHomeCreateMethod, null);
-        }
-        */
-        // For stateless EJBs, EJB2.0 Section 7.8 says that 
-        // Home.create() need not do any real creation.
-        // If necessary, a stateless bean is created below during getContext().
-        return theEJBLocalObjectImpl;
+        throw new CreateException("EJB 2.x Local view not supported on Singletons");
     }
 
     /**
      * Called during internal creation of session bean
      */
-    public EJBLocalObjectImpl createEJBLocalBusinessObjectImpl()
+    public EJBLocalObjectImpl createEJBLocalBusinessObjectImpl(boolean localBeanView)
         throws CreateException
     {	
         // No access checks needed because this is called as a result
         // of an internal creation, not a user-visible create method.
-        return (hasOptionalLocalBusinessView)
+        return (localBeanView)
                 ? theOptionalEJBLocalBusinessObjectImpl
                 : theEJBLocalBusinessObjectImpl;
     }
 
 
-    // Called from EJBObjectImpl.remove, EJBLocalObjectImpl.remove,
-    // EJBHomeImpl.remove(Handle).
+    // Doesn't apply to Singletons
     void removeBean(EJBLocalRemoteObject ejbo, Method removeMethod,
 	    boolean local)
 	throws RemoveException, EJBException, RemoteException
     {
-        if( local ) {
-            authorizeLocalMethod(BaseContainer.EJBLocalObject_remove);
-        } else {
-            authorizeRemoteMethod(BaseContainer.EJBObject_remove);
-        }
-	statRemoveCount++;
+        throw new EJBException("Not applicable to Singletons");
     }
 
     /**
-     * Force destroy the EJB should be a no-op for singletons
+     * Force destroy the EJB should be a no-op for singletons.
+     * After Initialization completes successfully, runtime exceptions
+     * during invocations on the Singleton do not result in the instance
+     * being destroyed. 
      */
     void forceDestroyBean(EJBContextImpl sc) {
     }
 
 
     /**
-     * Called when a remote invocation arrives for an EJB.
+     * Not applicable to Singletons
      */
     EJBObjectImpl getEJBObjectImpl(byte[] instanceKey) {
-        return theEJBObjectImpl;
+        return null;
     }
     
     EJBObjectImpl getEJBRemoteBusinessObjectImpl(byte[] instanceKey) {
@@ -411,11 +411,10 @@ public abstract class AbstractSingletonContainer
     }
 
     /**
-    * Called from EJBLocalObjectImpl.getLocalObject() while deserializing
-    * a local object reference.
-    */
+     * Not applicable to Singletons
+     */
     EJBLocalObjectImpl getEJBLocalObjectImpl(Object key) {
-        return theEJBLocalObjectImpl;
+        return null;
     }
 
     /**
@@ -432,6 +431,11 @@ public abstract class AbstractSingletonContainer
     }
 
     protected void checkInit() {
+        if( singletonInitializationFailed ) {
+            throw new EJBException("Singleton " + ejbDescriptor.getName() + " is unavailable " +
+                                   "because its original initialization failed.");
+        }
+
         if (! singletonInitialized.get()) {
             //Note: NEVER call instantiateSingletonInstance() directly from here
             // The following starts all dependent beans as well
@@ -457,11 +461,7 @@ public abstract class AbstractSingletonContainer
         return singletonCtx;
     }
 
-    /**
-    * called when an invocation arrives and there are no instances
-    * left to deliver the invocation to.
-    * Called from SessionContextFactory.create() !
-    */
+    
     private SingletonContextImpl createSingletonEJB()
         throws CreateException
     { 
@@ -483,12 +483,6 @@ public abstract class AbstractSingletonContainer
             ejbInv.context = context;
             invocationManager.preInvoke(ejbInv);
 
-            // setSessionContext will be called without a Tx as required
-            // by the spec, because the EJBHome.create would have been called
-            // after the container suspended any client Tx.
-            // setSessionContext is also called before context.setEJBStub
-            // because the bean is not allowed to do EJBContext.getEJBObject
-            setSessionContext(ejb, context);
 
             // Perform injection right after where setSessionContext
             // would be called.  This is important since injection methods
@@ -502,10 +496,7 @@ public abstract class AbstractSingletonContainer
 
             if ( isRemote ) {
                 /*TODO
-                if( hasRemoteHomeView ) {
-                    context.setEJBObjectImpl(theEJBObjectImpl);
-                    context.setEJBStub(theEJBStub);
-                }
+
                 if( hasRemoteBusinessView ) {
                     context.setEJBRemoteBusinessObjectImpl
                         (theRemoteBusinessObjectImpl);
@@ -513,57 +504,72 @@ public abstract class AbstractSingletonContainer
                 */
             }
             if ( isLocal ) {
-                if( hasLocalHomeView ) {
-                    context.setEJBLocalObjectImpl(theEJBLocalObjectImpl);
-                }
+                
                 if( hasLocalBusinessView ) {
                     context.setEJBLocalBusinessObjectImpl
                         (theEJBLocalBusinessObjectImpl);
                 }
+                if( hasOptionalLocalBusinessView ) {
+                    context.setOptionalEJBLocalBusinessObjectImpl
+                        (theOptionalEJBLocalBusinessObjectImpl);
+                }
             }
 
-            // all stateless beans have the same id and same InstanceKey
+            // Call preInvokeTx directly.  InvocationInfo containing tx
+            // attribute must be set prior to calling preInvoke
+            ejbInv.transactionAttribute = postConstructInvInfo.txAttr;
+            ejbInv.invocationInfo = postConstructInvInfo;
+            preInvokeTx(ejbInv);
+
             context.setInstanceKey(singletonInstanceKey);
 
-            //Call ejbCreate() or @PostConstruct method
             interceptorManager.intercept(
                     CallbackType.POST_CONSTRUCT, context);
 
-            // Set the state to POOLED after ejbCreate so that 
-            // EJBContext methods not allowed will throw exceptions
-            context.setState(EJBContextImpl.BeanState.POOLED);
+
         } catch ( Throwable th ) {
+            ejbInv.exception = th;
+            singletonInitializationFailed = true;
             _logger.log(Level.INFO, "ejb.stateless_ejbcreate_exception", th);
-            CreateException creEx = new CreateException("Could not create stateless EJB");
+            CreateException creEx = new CreateException("Could not create Singleton EJB");
             creEx.initCause(th);
             throw creEx;
         } finally {
             if (ejbInv != null) {
                 invocationManager.postInvoke(ejbInv);
+                try {
+                    postInvokeTx(ejbInv);
+                } catch(Exception pie) {
+                    ejbInv.exception = pie;
+                    singletonInitializationFailed = true;
+                    _logger.log(Level.INFO, "ejb.stateless_ejbcreate_exception", pie);
+                    CreateException creEx = new CreateException("Could not create Singleton EJB");
+                    creEx.initCause(pie);
+                    throw creEx;
+                }
             }
         }
+
+        // Set the state to POOLED after ejbCreate so that
+        // EJBContext methods not allowed will throw exceptions
+        context.setState(EJBContextImpl.BeanState.POOLED);
         context.touch();
         return context;
-    }
-
-    /**
-     * Allow overriding this method by the TimerBeanContainer
-     */
-    void setSessionContext(Object ejb, SingletonContextImpl context)
-            throws Exception {
-        if( ejb instanceof SessionBean ) {
-            ((SessionBean)ejb).setSessionContext(context);
-        }
     }
 
     void doTimerInvocationInit(EjbInvocation inv, RuntimeTimerState timerState)
         throws Exception 
 	{
         if( isRemote ) {
+            
+            // @@@ Revisit setting ejbObject in invocation.
+            // What about if bean doesn't expose a remote or local view?
+            // How is inv.ejbObject used in timer invocation ?
+
             //TODO inv.ejbObject = theEJBObjectImpl;
             inv.isLocal = false;
         } else {
-            inv.ejbObject = theEJBLocalObjectImpl;
+            // inv.ejbObject = 
             inv.isLocal = true;
         }
     }
@@ -572,47 +578,17 @@ public abstract class AbstractSingletonContainer
         boolean utMethodsAllowed = false;
         if( isBeanManagedTran ) {
             if( inv instanceof EjbInvocation ) {
+
                 EjbInvocation ejbInv = (EjbInvocation) inv;
-                EJBContextImpl sc = (EJBContextImpl) ejbInv.context;
-                // If Invocation, only ejbRemove not allowed.
-                utMethodsAllowed = !sc.isInEjbRemove();
-            } else {
-                // This will prevent setSessionContext/ejbCreate access
-                utMethodsAllowed = false;
-            }
+                SessionContextImpl sc = (SessionContextImpl) ejbInv.context;
+
+                // Allowed any time after dependency injection
+                utMethodsAllowed = (sc.getInstanceKey() != null);
+            } 
         }
         return utMethodsAllowed;
     }
 
-
-    boolean isIdentical(EJBObjectImpl ejbo, EJBObject other)
-        throws RemoteException
-    {
-        return false;
-        /*TODO
-        if ( other == ejbo.getStub() ) {
-            return true;
-        }else {
-            try {
-                // other may be a stub for a remote object.
-                // Although all stateless sessionbeans for a bean type
-                // are identical, we dont know whether other is of the
-                // same bean type as ejbo.
-                if ( protocolMgr.isIdentical(ejbo.getStub(), other) )
-                        return true;
-                else
-                        return false;
-            } catch ( Exception ex ) {
-                if(_logger.isLoggable(Level.SEVERE)) {
-                    _logger.log(Level.SEVERE,"ejb.ejb_getstub_exception",
-                        logParams);
-                    _logger.log(Level.SEVERE,"",ex);
-                }
-                throw new RemoteException("Error during isIdentical.", ex);
-            }
-        }
-        */
-    }
 
     /**
     * Check if the given EJBObject/LocalObject has been removed.
@@ -620,26 +596,21 @@ public abstract class AbstractSingletonContainer
     */
     void checkExists(EJBLocalRemoteObject ejbObj) 
     {
-        // For stateless session beans, EJBObject/EJBLocalObj are never removed.
-        // So do nothing.
+        // Doesn't apply to Singletons
     }
 
-
     void afterBegin(EJBContextImpl context) {
-        // Stateless SessionBeans cannot implement SessionSynchronization!!
+        // Singleton SessionBeans cannot implement SessionSynchronization!!
         // EJB2.0 Spec 7.8.
     }
 
     void beforeCompletion(EJBContextImpl context) {
-        // Stateless SessionBeans cannot implement SessionSynchronization!!
+        // Singleton SessionBeans cannot implement SessionSynchronization!!
         // EJB2.0 Spec 7.8.
     }
 
     void afterCompletion(EJBContextImpl ctx, int status) {
-        // Stateless SessionBeans cannot implement SessionSynchronization!!
-        // EJB2.0 Spec 7.8.
-
-        // We dissociate the transaction from the bean in releaseContext above
+        // Singleton SessionBeans cannot implement SessionSynchronization!!
     }
 
     // default
@@ -651,19 +622,27 @@ public abstract class AbstractSingletonContainer
     public void activateEJB(Object ctx, Object instanceKey) {}
 
     public void appendStats(StringBuffer sbuf) {
-	sbuf.append("\nStatelessContainer: ")
+	sbuf.append("\nSingletonContainer: ")
 	    .append("CreateCount=").append(statCreateCount).append("; ")
 	    .append("RemoveCount=").append(statRemoveCount).append("; ")
 	    .append("]");
     }
 
     public void undeploy() {
-        //Change the container state to ensure that all new invocations will be rejected
-        super.setUndeployedState();
 
+        // Shutdown the singleton instance.
+        // Do this before setUndeployState() b/c PreDestroy can be
+        // transactional and ContainerSynchronization callbacks abort the
+        // transaction if container is in the undeploy state.
+        // TODO : Disable use of ContainerSynchronization since it's not really
+        //        needed for Singletons anyway.  Then, setUndeployedState can
+        //        be called first.
         if (singletonCtxFactory != null) {
                 singletonCtxFactory.destroy(singletonCtx);
         }
+
+        //Change the container state to ensure that all new invocations will be rejected
+        super.setUndeployedState();
 
         try {
             /*TODO
@@ -684,13 +663,7 @@ public abstract class AbstractSingletonContainer
             */
 
             /*TODO
-            if ( hasRemoteHomeView ) {
-                    // destroy EJBObject refs
-                    // XXX invocations still in progress will get exceptions ??
-                remoteHomeRefFactory.destroyReference
-                    (theEJBObjectImpl.getStub(), 
-                     theEJBObjectImpl.getEJBObject());
-            }
+           
             if ( hasRemoteBusinessView ) {
                 for(RemoteBusinessIntfInfo next : 
                         remoteBusinessIntfInfo.values()) {
@@ -706,17 +679,11 @@ public abstract class AbstractSingletonContainer
         } finally {
             super.undeploy();
 
-            this.homeCreateMethod      = null;
-            this.localHomeCreateMethod = null;
-            this.theEJBLocalObjectImpl = null;
-            this.theEJBObjectImpl      = null;
-            this.theEJBStub            = null;
             this.iased                 = null;
             this.beanCacheDes          = null;
             this.beanPoolDes           = null;
             this.svr                   = null;
             this.ejbContainer          = null;
-            this.poolProp              = null;
 
         }
     }
@@ -739,19 +706,18 @@ public abstract class AbstractSingletonContainer
 
         public void destroy(Object obj) {
             SingletonContextImpl singletonCtx = (SingletonContextImpl) obj;
-            // Note: stateless SessionBeans cannot have incomplete transactions
+            // Note: Singletons cannot have incomplete transactions
             // in progress. So it is ok to destroy the EJB.
 
-            if (singletonCtx == null) {
-                //possible if the bean was never accessed and it wasn't marked with @Startup
-                return;
-            }
-            
-            Object sb = singletonCtx.getEJB();
-            if (singletonCtx.getState() != EJBContextImpl.BeanState.DESTROYED) {
-                //Called from pool implementation to reduce the pool size.
-                //So need to call ejb.ejbRemove()
-                // mark context as destroyed
+            // Only need to cleanup and destroy bean (andd call @PreDestroy)
+            // if it successfully completed initialization. 
+            if ( singletonCtx != null )  {
+
+                Object sb = singletonCtx.getEJB();
+
+                // Called from pool implementation to reduce the pool size.
+                // So we need to call @PreDestroy and mark context as destroyed
+
                 singletonCtx.setState(EJBContextImpl.BeanState.DESTROYED);
                 EjbInvocation ejbInv = null;
                 try {
@@ -761,90 +727,65 @@ public abstract class AbstractSingletonContainer
                     ejbInv.context = singletonCtx;
                     invocationManager.preInvoke(ejbInv);
                     singletonCtx.setInEjbRemove(true);
-   
+
+                    // Call preInvokeTx directly.  InvocationInfo containing tx
+                    // attribute must be set prior to calling preInvoke
+                    ejbInv.transactionAttribute = preDestroyInvInfo.txAttr;
+                    ejbInv.invocationInfo = preDestroyInvInfo;
+                    preInvokeTx(ejbInv);
+
                     interceptorManager.intercept(
                             CallbackType.PRE_DESTROY, singletonCtx);
 
                 } catch ( Throwable t ) {
-                     _logger.log(Level.FINE, "ejbRemove exception", t);
+                    ejbInv.exception = t;
+                     _logger.log(Level.FINE, "ejbRemove exception", t);                    
                 } finally {
                     singletonCtx.setInEjbRemove(false);
                     if( ejbInv != null ) {
                         invocationManager.postInvoke(ejbInv);
+                        try {
+                            postInvokeTx(ejbInv);
+                        } catch(Exception pie) {
+                            _logger.log(Level.FINE, "singleton postInvokeTx exception", pie);
+                        }
                     }
                 }
-            } else {
-                //Called from forceDestroyBean
-                //So NO need to call ejb.ejbRemove()
-                // mark the context's transaction for rollback
-                Transaction tx = singletonCtx.getTransaction();
-                try {
-                    if ( (tx != null) && 
-                        (tx.getStatus() != Status.STATUS_NO_TRANSACTION ) )  {
-                        tx.setRollbackOnly();
-                    }	
-                } catch ( Exception ex ) {
-                     _logger.log(Level.FINE,"forceDestroyBean exception", ex);
-                }
+
+                // TODO
+                // It's not clear whether we need to tell the transaction manager
+                // to release the resources for this bean.  Where can we reliably
+                // get the resource list since it's stored in the invocation?
+                //
+
+                singletonCtx.deleteAllReferences();
+                singletonCtx = null;
             }
-
-            // tell the TM to release resources held by the bean
-            //TODO [P1] transactionManager.ejbDestroyed(singletonCtx);
-
-            singletonCtx.setTransaction(null);
-
-            singletonCtx.deleteAllReferences();
-            singletonCtx = null;
         }
+
     } // SessionContextFactory{}
 
-    private class PoolProperties {
-        int maxPoolSize;
-        int poolIdleTimeoutInSeconds;
-        int poolResizeQuantity;
-        int steadyPoolSize;
-
-        public PoolProperties() {
-
-            maxPoolSize = new Integer(ejbContainer.getMaxPoolSize()).intValue();
-            poolIdleTimeoutInSeconds = new Integer(
-                ejbContainer.getPoolIdleTimeoutInSeconds()).intValue();
-            poolResizeQuantity = new Integer(
-                ejbContainer.getPoolResizeQuantity()).intValue();
-            steadyPoolSize = new Integer(
-                ejbContainer.getSteadyPoolSize()).intValue();
-            if(beanPoolDes != null) {
-                int temp = 0;
-                if (( temp = beanPoolDes.getMaxPoolSize()) != -1) {
-                        maxPoolSize = temp;
-                }
-                if (( temp = beanPoolDes.getPoolIdleTimeoutInSeconds()) != -1) {
-                        poolIdleTimeoutInSeconds = temp;
-                }
-
-                if (( temp = beanPoolDes.getPoolResizeQuantity()) != -1) {
-                        poolResizeQuantity = temp;
-                }
-                if (( temp = beanPoolDes.getSteadyPoolSize()) != -1) {
-                        steadyPoolSize = temp;
-                }
-            }
-        }
-    } // PoolProperties{}
 
     //Methods for StatelessSessionBeanStatsProvider
     public int getMaxPoolSize() {
-        return (poolProp.maxPoolSize <= 0)
-	    ? Integer.MAX_VALUE
-	    : poolProp.maxPoolSize;
+        return 1;
     }
 
     public int getSteadyPoolSize() {
-        return (poolProp.steadyPoolSize <= 0)
-	    ? 0
-	    : poolProp.steadyPoolSize;
+        return 1;
     }
 
+    private static class ResourceHandlerImpl implements ResourceHandler {
+        private List l = null;
 
-} // StatelessSessionContainer.java
+        public List getResourceList() {
+            if( l == null ) {
+                l = new ArrayList();
+            }
+            return l;
+        }
+
+    }
+
+} 
 

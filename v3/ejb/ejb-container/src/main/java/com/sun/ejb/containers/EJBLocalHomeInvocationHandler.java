@@ -152,7 +152,7 @@ final class EJBLocalHomeInvocationHandler
             // client view, so just create a local business object and 
             // return it.
             EJBLocalObjectImpl localImpl = 
-                createEJBLocalBusinessObjectImpl();
+                createEJBLocalBusinessObjectImpl((String) args[0]);
             return localImpl.getClientObject((String) args[0]);
             
         } 

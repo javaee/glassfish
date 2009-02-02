@@ -37,18 +37,20 @@
 package org.glassfish.ejb.deployment;
 
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.lang.reflect.Method;
 
 import com.sun.enterprise.deployment.EjbSessionDescriptor;
+import com.sun.enterprise.deployment.LifecycleCallbackDescriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.enterprise.deployment.util.EjbVisitor;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
-import javax.ejb.LockType;
-import javax.ejb.AccessTimeout;
 
 /**
  * @author Mahesh Kannan
@@ -58,6 +60,11 @@ public class EjbSingletonDescriptor
 
     private static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(EjbSingletonDescriptor.class);
+
+    private Set<MethodDescriptor> readLockMethods = new HashSet<MethodDescriptor>();
+    private Set<MethodDescriptor> writeLockMethods = new HashSet<MethodDescriptor>();
+    private Map<MethodDescriptor, AccessTimeoutHolder> accessTimeoutMethods =
+            new HashMap<MethodDescriptor, AccessTimeoutHolder>();
 
     private static final String[] _emptyDepends = new String[] {};
 
@@ -71,9 +78,6 @@ public class EjbSingletonDescriptor
 
     private String cmcInXML;
 
-    private MethodLockInfo defaultMethodLockInfo = new MethodLockInfo(LockType.WRITE);
-
-    private HashMap<MethodDescriptor, MethodLockInfo> methodContainerLocks = null;
 
     public EjbSingletonDescriptor() {
         super();
@@ -85,13 +89,26 @@ public class EjbSingletonDescriptor
 
     public void addEjbDescriptor(EjbSingletonDescriptor ejbDesc) {
         super.addEjbDescriptor((EjbDescriptor)ejbDesc);
-        this.methodContainerLocks = 
-             new HashMap<MethodDescriptor, MethodLockInfo>(ejbDesc.getMethodContainerLocks());
+    }
+
+    @Override
+    public String getSessionType() {
+	    return SINGLETON;
     }
 
     @Override
     public boolean isSingleton() {
         return true;
+    }
+
+    @Override
+    public boolean isStateless() {
+	    return false;
+    }
+
+    @Override
+    public boolean isStateful() {
+        return false;
     }
 
     public boolean isStartup() {
@@ -134,92 +151,78 @@ public class EjbSingletonDescriptor
         cmcInXML = value;
     }
 
-    /**
-     * Sets the default lock type for the given bean.
-     * Throws an Illegal argument if this ejb has ConcurrencyManagementType.BEAN
-     */
-    public void setDefaultLockType(LockType type) {
-        checkLockTypeAllowed();
-        System.out.println("@@@@SETTING DEFAULT LockType TO: " + type);
-        defaultMethodLockInfo.setLockType(type);
-    }
+    @Override
+    public Set getTxBusinessMethodDescriptors() {
+        Set txBusinessMethodDescs = super.getTxBusinessMethodDescriptors();
 
-    /**
-     * Sets the default AccessTimeout for the given bean.
-     * Throws an Illegal argument if this ejb has ConcurrencyManagementType.BEAN
-     */
-    public void setDefaultAccessTimeout(AccessTimeout value) {
-        checkLockTypeAllowed();
-        System.out.println("@@@@SETTING DEFAULT AccessTimeout TO: " + value);
-        defaultMethodLockInfo.setTimeout(value.value());
-        defaultMethodLockInfo.setUnit(value.unit());
-    }
-
-    public MethodLockInfo getDefaultMethodLockInfo() {
-        return defaultMethodLockInfo;
-    }
-
-    public LockType getDefaultLockType() {
-        return defaultMethodLockInfo.getLockType();
-    }
-
-    /**
-     * Sets the AccessTimeout for the given method descriptor.
-     * Throws an Illegal argument if this ejb has ConcurrencyManagementType.BEAN
-     */
-    public void setCMCAccessTimeoutFor(MethodDescriptor methodDescriptor, AccessTimeout value) {
-        MethodLockInfo info = getCMCLockFor(methodDescriptor);
-        long time = value.value();
-        TimeUnit unit = value.unit();
-        boolean changed = false;
-
-        if (info == null) {
-            checkLockTypeAllowed();
-            info = new MethodLockInfo(time, unit);
-            changed = true;
-        } else if (info.getTimeout() != time || !(info.getUnit().equals(unit))) {
-            info.setTimeout(time);
-            info.setUnit(unit);
-            changed = true;
+        /**
+         *  TODO Need to revisit his.  For some reason there's a problem with
+         *  handling the method descriptor during transaction attribute
+         *  processing of @PostConstruct/@PreDestroy.  CMT Singletons with
+         *  TX_REQUIRED/REQUIRES_NEW will work fine.  Only TX_NOT_SUPPORTED
+         *  will not work yet. 
+         *
+        // Add Singleton PostConstruct and PreDestroy methods 
+        for(LifecycleCallbackDescriptor lcd : getPostConstructDescriptors()) {
+            if( lcd.getLifecycleCallbackClass().equals(getEjbClassName())) {
+               String methodName = lcd.getLifecycleCallbackMethod();
+               MethodDescriptor methodDesc = new MethodDescriptor
+                       (methodName, "postConstructMethod", MethodDescriptor.EJB_BEAN);
+               // Class name is needed for method resolution
+               methodDesc.setClassName(getEjbClassName());
+               txBusinessMethodDescs.add(methodDesc);
+               break;
+            }
         }
-
-        if (changed) {
-            System.out.println("@@@@put " + methodDescriptor + " " + info);
-            //_logger.log(Level.FINE,"put " + methodDescriptor + " " + info);
-            getMethodContainerLocks().put(methodDescriptor, info);
+        for(LifecycleCallbackDescriptor lcd : getPreDestroyDescriptors()) {
+            if( lcd.getLifecycleCallbackClass().equals(getEjbClassName())) {
+               String methodName = lcd.getLifecycleCallbackMethod();
+               MethodDescriptor methodDesc = new MethodDescriptor
+                       (methodName, "ptrDestroyMethod", MethodDescriptor.EJB_BEAN);
+               methodDesc.setClassName(getEjbClassName());
+               txBusinessMethodDescs.add(methodDesc);
+               break;
+            }
         }
+        **/
+
+        return txBusinessMethodDescs;
     }
 
-    /**
-     * Sets the lock type for the given method descriptor.
-     * Throws an Illegal argument if this ejb has ConcurrencyManagementType.BEAN
-     */
-    public void setCMCLockTypeFor(MethodDescriptor methodDescriptor, LockType lockType) {
-        MethodLockInfo info = getCMCLockFor(methodDescriptor);
-        boolean changed = false;
-
-        if (info == null) {
-            checkLockTypeAllowed();
-            info = new MethodLockInfo(lockType);
-            changed = true;
-        } else if(info.getLockType() == null || 
-                !(info.getLockType().equals(lockType))) {
-            info.setLockType(lockType);
-            changed = true;
-        }
-
-        if (changed) {
-            System.out.println("@@@@put " + methodDescriptor + " " + info);
-            //_logger.log(Level.FINE,"put " + methodDescriptor + " " + info);
-            getMethodContainerLocks().put(methodDescriptor, info);
-        }
+    public void addReadLockMethod(MethodDescriptor methodDescriptor) {
+        readLockMethods.add(methodDescriptor);
     }
 
-    /**
-     * Fetches the assigned lock type object for the given method object or null.
-     */
-    public MethodLockInfo getCMCLockFor(MethodDescriptor methodDescriptor) {
-        return  getMethodContainerLocks().get(methodDescriptor);
+    public void addWriteLockMethod(MethodDescriptor methodDescriptor) {
+        writeLockMethods.add(methodDescriptor);
+    }
+
+    public Set<MethodDescriptor> getReadLockMethods() {
+        return new HashSet<MethodDescriptor>(readLockMethods);
+    }
+
+    public Set<MethodDescriptor> getWriteLockMethods() {
+        return new HashSet<MethodDescriptor>(writeLockMethods);
+    }
+
+    public Set<MethodDescriptor> getReadAndWriteLockMethods() {
+        Set<MethodDescriptor> readAndWriteLockMethods = new HashSet<MethodDescriptor>();
+        readAndWriteLockMethods.addAll(readLockMethods);
+        readAndWriteLockMethods.addAll(writeLockMethods);
+        return readAndWriteLockMethods;
+    }
+
+    public void addAccessTimeoutMethod(MethodDescriptor methodDescriptor, long value,
+                                       TimeUnit unit) {
+        accessTimeoutMethods.put(methodDescriptor, new AccessTimeoutHolder(value, unit));
+    }
+
+    public Set<MethodDescriptor> getAccessTimeoutMethods() {
+        return new HashSet<MethodDescriptor>(accessTimeoutMethods.keySet());
+    }
+
+    public AccessTimeoutHolder getAccessTimeoutForMethod(MethodDescriptor methodDescriptor) {
+        return accessTimeoutMethods.get(methodDescriptor);
     }
 
     /**
@@ -228,10 +231,6 @@ public class EjbSingletonDescriptor
     public void print(StringBuffer toStringBuffer) {
         super.print(toStringBuffer);
         toStringBuffer.append("\n ContainerManagedConcurrency ").append(isContainerManagedConcurrency());
-        if (isContainerManagedConcurrency()) {
-            toStringBuffer.append("\n defaultMethodLockInfo ").append(defaultMethodLockInfo);
-        }
-        toStringBuffer.append("\n methodContainerLocks ").append(getMethodContainerLocks());
     }
 
     /**
@@ -241,34 +240,15 @@ public class EjbSingletonDescriptor
      */
     public void visit(EjbVisitor aVisitor) {
         super.visit(aVisitor);
-        for (Iterator e = getMethodContainerLocks().keySet().iterator(); e.hasNext();) {
-            MethodDescriptor md = (MethodDescriptor) e.next();
-            MethodLockInfo lt = getMethodContainerLocks().get(md);
-            // XXX ??? aVisitor.accept(md, lt);
-        }
     }
 
-    private void removeCMCLockFor(MethodDescriptor methodDescriptor) {
-        getMethodContainerTransactions().remove(methodDescriptor);
+    public static class AccessTimeoutHolder {
+        public AccessTimeoutHolder(long v, TimeUnit u) {
+            value = v;
+            unit = u;
+        }
+        public long value;
+        public TimeUnit unit;
     }
 
-    /**
-     * Return a copy of the mapping held internally of method descriptors 
-     * to MethodLockInfo objects.
-     */
-    private HashMap<MethodDescriptor, MethodLockInfo> getMethodContainerLocks() {
-        if (this.methodContainerLocks == null) {
-            this.methodContainerLocks = new HashMap<MethodDescriptor, MethodLockInfo>();
-        }
-        return methodContainerLocks;
-    }
-
-    private void checkLockTypeAllowed() {
-        if (isCMC == false) {
-            throw new IllegalArgumentException(localStrings.getLocalString(
-                    "enterprise.deployment.exceptionlocktypespecifiedinbeanwithbeanlocktype",
-                    "Lock attributes may not be specified on a bean with nean managed lock type" 
-                    ));
-        }
-    }
 }

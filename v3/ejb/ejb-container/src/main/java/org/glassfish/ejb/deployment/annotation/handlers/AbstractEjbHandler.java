@@ -350,6 +350,11 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
             }
         }
 
+        LocalBean localBeanAnn = (LocalBean) ejbClass.getAnnotation(LocalBean.class);
+        if( localBeanAnn != null ) {
+            ejbDesc.setLocalBean(true);
+        }
+
         // total number of local/remote business interfaces declared
         // outside of the implements clause
         int nonImplementsClauseBusinessInterfaceCount =
@@ -383,7 +388,8 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
 
             } else {
 
-                if( nonImplementsClauseBusinessInterfaceCount == 0 ) {
+                if( (nonImplementsClauseBusinessInterfaceCount == 0) &&
+                    (localBeanAnn == null) ) {
 
                     // If there's an empty @Remote annotation on the class,
                     // it's treated as a remote business interface. Otherwise,
@@ -431,10 +437,6 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
             }
         }
 
-        LocalBean localBeanAnn = (LocalBean) ejbClass.getAnnotation(LocalBean.class); 
-        if( localBeanAnn != null ) {
-            ejbDesc.setLocalBean(true);
-        }
 
         // Do Adapted @Home / Adapted @LocalHome processing here too since
         // they are logically part of the structural @Stateless/@Stateful info.
@@ -447,6 +449,7 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
             if( EJBHome.class.isAssignableFrom(remoteHome) &&
                 (remoteIntf != null) ) {
 
+                clientInterfaces.add(remoteHome);
                 ejbDesc.setHomeClassName(remoteHome.getName());
                 ejbDesc.setRemoteClassName(remoteIntf.getName());
 
@@ -469,6 +472,7 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
             if( EJBLocalHome.class.isAssignableFrom(localHome) &&
                 (localIntf != null) ) {
 
+                clientInterfaces.add(localHome);
                 ejbDesc.setLocalHomeClassName(localHome.getName());
                 ejbDesc.setLocalClassName(localIntf.getName());
 
@@ -480,6 +484,14 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
                     new Object[] { localHome }));
                 return getDefaultFailedResult();
             }
+        }
+
+
+        if( (localBeanAnn == null ) &&
+            (clientInterfaces.size() == 0) &&
+            !ejbDesc.hasWebServiceEndpointInterface() &&
+            (ejbClass.getAnnotation(javax.jws.WebService.class) == null) ) {
+            ejbDesc.setLocalBean(true);
         }
 
         return getDefaultProcessedResult();       

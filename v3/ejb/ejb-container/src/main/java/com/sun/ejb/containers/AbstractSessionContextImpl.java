@@ -139,6 +139,9 @@ public abstract class AbstractSessionContextImpl
     public <T> T getBusinessObject(Class<T> businessInterface)
             throws IllegalStateException {
 
+        // businessInterface param can also be a class in the case of the
+        // no-interface view
+
         // getBusinessObject not allowed for Stateless/Stateful beans
         // until after dependency injection
         if (instanceKey == null) {
@@ -182,6 +185,11 @@ public abstract class AbstractSessionContextImpl
                     throw ise;
                 }
                 */
+            } else if( ejbDesc.isLocalBean() && intfName.equals( ejbDesc.getEjbClassName() ) ) {
+
+                businessObject = (T) optionalEjbLocalBusinessObjectImpl.
+                        getClientObject(ejbDesc.getEjbClassName());
+
             }
         }
 
@@ -205,6 +213,10 @@ public abstract class AbstractSessionContextImpl
                 EjbInvocation invocation = (EjbInvocation) inv;
                 if (invocation.isBusinessInterface) {
                     businessInterface = invocation.clientInterface;
+                    if( container.isLocalBeanClass(invocation.clientInterface.getName()) ) {
+                        businessInterface = container.getEJBClass();
+                    }
+
                 }
             }
         } catch (Exception e) {

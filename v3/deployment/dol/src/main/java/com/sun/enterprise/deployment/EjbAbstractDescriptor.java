@@ -60,7 +60,7 @@ public abstract class EjbAbstractDescriptor extends Descriptor implements NamedD
     private String jndiName = "";
     private String mappedName = "";
     
-    // Is set to true if this bean is designated as a LocalBean 
+    // Is set to true if this bean exposes a no-interface view 
     private boolean localBean = false;
        
 	/** 
@@ -277,20 +277,10 @@ public abstract class EjbAbstractDescriptor extends Descriptor implements NamedD
     }
 
     /**
-     * @return true if this is an EJB provides a no interface local view.
+     * @return true if this is an EJB provides a no interface Local view.
      */
     public boolean isLocalBean() {
-        if (localBean) {
-            return true;
-        }
-
-        boolean result =
-                isRemoteInterfacesSupported() ||
-                isRemoteBusinessInterfacesSupported() ||
-                isLocalInterfacesSupported() ||
-                isLocalBusinessInterfacesSupported();
-
-        return (! result);
+        return localBean;     
     }
 
 }

@@ -42,6 +42,7 @@ import com.sun.enterprise.security.CachedPermission;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
+import javax.ejb.LockType;
 
 /**
  * MethodLockInfo caches various attributes of lock attributes
@@ -51,30 +52,43 @@ import java.util.concurrent.TimeUnit;
 
 public class MethodLockInfo {
 
-    public static final int NO_TIMEOUT = -32767;
+    private static final int NO_TIMEOUT = -32767;
 
-    private boolean isReadLockedMethod;
+    private LockType lockType = LockType.WRITE;
 
     private long timeout = NO_TIMEOUT;
 
-    private TimeUnit unit;
+    private TimeUnit timeUnit;
 
-    public MethodLockInfo(boolean isReadLocked, long timeout, TimeUnit unit) {
-        this.isReadLockedMethod = isReadLocked;
-        this.timeout = timeout;
-        this.unit = unit;
+    public MethodLockInfo() {}
+
+    public void setLockType(LockType type) {
+        lockType = type;
+    }
+
+    public void setTimeout(long value, TimeUnit unit) {
+        timeout = value;
+        timeUnit = unit;
     }
 
     public boolean isReadLockedMethod() {
-        return isReadLockedMethod;
+        return (lockType == LockType.READ);
+    }
+
+    public boolean isWriteLockedMethod() {
+        return (lockType == LockType.WRITE);
+    }
+
+    public boolean hasTimeout() {
+        return (timeout != NO_TIMEOUT);
     }
 
     public long getTimeout() {
         return timeout;
     }
 
-    public TimeUnit getUnit() {
-        return unit;
+    public TimeUnit getTimeUnit() {
+        return timeUnit;
     }
 
 }

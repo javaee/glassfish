@@ -110,7 +110,7 @@ public final class ContainerFactoryImpl implements ContainerFactory {
                 } else {
                     StatefulContainerBuilder sfsbBuilder = habitat.getComponent(
                             StatefulContainerBuilder.class);
-                    sfsbBuilder.createContainer(ejbDescriptor, loader);
+                    sfsbBuilder.buildContainer(ejbDescriptor, loader);
                     container = sfsbBuilder.getContainer();
                 }
             } else if ( ejbDescriptor instanceof EjbMessageBeanDescriptor) {

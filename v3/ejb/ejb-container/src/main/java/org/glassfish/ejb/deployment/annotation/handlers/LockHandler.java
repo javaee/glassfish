@@ -65,7 +65,7 @@ import org.jvnet.hk2.annotations.Service;
  * @author Marina Vatkina
  */
 @Service
-public class LockHandler extends AbstractAttributeHandler {
+public class LockHandler extends AbstractAttributeHandler implements PostProcessor {
 
     public LockHandler() {
     }
@@ -80,8 +80,7 @@ public class LockHandler extends AbstractAttributeHandler {
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
             EjbContext[] ejbContexts) throws AnnotationProcessorException {
 
-        Lock lockAnn =
-                (Lock) ainfo.getAnnotation();
+        Lock lockAnn = (Lock) ainfo.getAnnotation();
 
         for (EjbContext ejbContext : ejbContexts) {
             if (ejbContext.getDescriptor() instanceof EjbSingletonDescriptor) {
@@ -90,19 +89,20 @@ public class LockHandler extends AbstractAttributeHandler {
                 LockType lockType = lockAnn.value();
 
                 if (ElementType.TYPE.equals(ainfo.getElementType())) {
-                    System.out.println("***Setting Lock " + lockType + " AT CLASS LEVEL***");
-                    singletonDesc.setDefaultLockType(lockType);
+                    // Delay processing Class-level default until after methods are processed
+                    ejbContext.addPostProcessInfo(ainfo, this);
                 } else {
                     Method annMethod = (Method) ainfo.getAnnotatedElement();
 
-                    Set busMethods = singletonDesc.getMethodDescriptors();
-                    for (Object next : busMethods) {
-                        MethodDescriptor nextDesc = (MethodDescriptor) next;
-                        Method m = nextDesc.getMethod(singletonDesc);
-                        if (TypeUtil.sameMethodSignature(m, annMethod)) {
-                            // override by xml
-                            System.out.println("$$$$$ Got ann: " + lockType + "  ON " + annMethod);
-                            singletonDesc.setCMCLockTypeFor(nextDesc, lockType);
+                    // Only assign lock type if the method hasn't already been processed.
+                    // This correctly ignores superclass methods that are overridden and
+                    // applies the correct .xml overriding semantics.
+                    if(!matchesExistingReadOrWriteLockMethod(annMethod, singletonDesc)) {
+                        MethodDescriptor newMethodDesc = new MethodDescriptor(annMethod);
+                        if( lockAnn.value() == LockType.WRITE) {
+                            singletonDesc.addWriteLockMethod(newMethodDesc);
+                        } else {
+                            singletonDesc.addReadLockMethod(newMethodDesc);
                         }
                     }
                 }
@@ -126,5 +126,53 @@ public class LockHandler extends AbstractAttributeHandler {
     protected boolean supportTypeInheritance() {
         return true;
     }
+
+    /**
+     * Set the default value (from class type annotation) on all
+     * methods that don't have a value.
+     */
+    public void postProcessAnnotation(AnnotationInfo ainfo,
+            AnnotatedElementHandler aeHandler)
+            throws AnnotationProcessorException {
+        EjbContext ejbContext = (EjbContext)aeHandler;
+        EjbSingletonDescriptor ejbDesc = (EjbSingletonDescriptor) ejbContext.getDescriptor();
+
+        Class classAn = (Class)ainfo.getAnnotatedElement();
+        Lock lockAnn = (Lock) ainfo.getAnnotation();
+
+        Method[] classMethods = classAn.getDeclaredMethods();
+        for( Method m : classMethods ) {
+
+            if( !matchesExistingReadOrWriteLockMethod(m, ejbDesc) ) {
+                MethodDescriptor newMethodDesc = new MethodDescriptor(m);
+                if( lockAnn.value() == LockType.WRITE) {
+                    ejbDesc.addWriteLockMethod(newMethodDesc);
+                } else {
+                    ejbDesc.addReadLockMethod(newMethodDesc);
+                }
+            }
+
+        }
+
+    }
+
+    private boolean matchesExistingReadOrWriteLockMethod(Method methodToMatch,
+                                                         EjbSingletonDescriptor desc) {
+
+        Set<MethodDescriptor> lockMethods = desc.getReadAndWriteLockMethods();
+
+        boolean match = false;
+        for (MethodDescriptor next : lockMethods) {
+
+            Method m = next.getMethod(desc);
+            if (TypeUtil.sameMethodSignature(m, methodToMatch)) {
+                match = true;
+                break;
+            }
+        }
+
+        return match;
+    }
+
 
 }

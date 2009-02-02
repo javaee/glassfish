@@ -56,7 +56,7 @@ public class JavaGlobalJndiNamingObjectProxy
 
     public Object create(Context ic) {
         GenericEJBLocalHome genericLocalHome =
-                container.getEJBLocalBusinessHome();
+                container.getEJBLocalBusinessHome(intfName);
         return genericLocalHome.create(intfName);
     }
 }

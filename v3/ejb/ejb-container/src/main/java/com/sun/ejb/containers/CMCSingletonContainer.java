@@ -42,6 +42,7 @@ import com.sun.ejb.EjbInvocation;
 import com.sun.ejb.InvocationInfo;
 import com.sun.ejb.MethodLockInfo;
 
+import javax.ejb.ConcurrentAccessException;
 import javax.ejb.ConcurrentAccessTimeoutException;
 import javax.ejb.LockType;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -62,18 +63,16 @@ public class CMCSingletonContainer
 
     private final ReentrantReadWriteLock.WriteLock writeLock = rwLock.writeLock();
 
-    private final Lock defaultLock;
-
     private final MethodLockInfo defaultMethodLockInfo;
 
     public CMCSingletonContainer(EjbDescriptor desc, ClassLoader cl)
             throws Exception {
         super(desc, cl);
-        LockType defaultLockType = ((EjbSingletonDescriptor) desc).getDefaultLockType();
-        defaultLock = (defaultLockType == LockType.WRITE) ? writeLock : readLock;
-        defaultMethodLockInfo = new MethodLockInfo(defaultLock == readLock,
-                MethodLockInfo.NO_TIMEOUT, TimeUnit.SECONDS);
-        System.out.println("** CMC Singleton Container **");
+
+        // In absence of any method lock info default is WRITE lock with no timeout.
+        defaultMethodLockInfo = new MethodLockInfo();
+        defaultMethodLockInfo.setLockType(LockType.WRITE);
+
     }
 
     protected ComponentContext _getContext(EjbInvocation inv) {
@@ -84,17 +83,31 @@ public class CMCSingletonContainer
                 ? defaultMethodLockInfo : invInfo.methodLockInfo;
         Lock theLock = lockInfo.isReadLockedMethod() ? readLock : writeLock;
 
-        if (lockInfo.getTimeout() == MethodLockInfo.NO_TIMEOUT) {
+        if ( (rwLock.getReadHoldCount() > 0) &&
+             (!rwLock.isWriteLockedByCurrentThread()) ) {
+            if( lockInfo.isWriteLockedMethod() ) {
+                // @@@ Replace with javax.ejb.IllegalLoopbackException
+                throw new ConcurrentAccessException("Illegal Reentrant Access : Attempt to make " +
+                        "a loopback call on a Write Lock method '" + invInfo.targetMethod1 +
+                        "' while a Read lock is already held");
+            }
+        }
+
+
+
+        if (!lockInfo.hasTimeout()) {
             theLock.lock();
         } else {
             try {
-                boolean lockStatus = theLock.tryLock(lockInfo.getTimeout(), lockInfo.getUnit());
+                boolean lockStatus = theLock.tryLock(lockInfo.getTimeout(), lockInfo.getTimeUnit());
                 if (! lockStatus) {
-                    String msg = "Couldn't acquire a lock within " + lockInfo.getTimeout() + " " + lockInfo.getUnit();
+                    String msg = "Couldn't acquire a lock within " + lockInfo.getTimeout() +
+                            " " + lockInfo.getTimeUnit();
                     throw new ConcurrentAccessTimeoutException(msg);
                 }
             } catch (InterruptedException inEx) {
-                String msg = "Couldn't acquire a lock within " + lockInfo.getTimeout() + " " + lockInfo.getUnit();
+                String msg = "Couldn't acquire a lock within " + lockInfo.getTimeout() +
+                        " " + lockInfo.getTimeUnit();
                 throw new ConcurrentAccessTimeoutException(msg);
             }
         }

@@ -52,6 +52,8 @@ import java.io.PrintWriter;
 import java.io.BufferedWriter;
 import java.io.Serializable;
 
+import com.sun.enterprise.deployment.util.TypeUtil;
+
 public class EjbOptionalIntfGenerator
     extends ClassLoader
     implements Opcodes {
@@ -106,6 +108,7 @@ public class EjbOptionalIntfGenerator
                 intfInternalName, null,
                 Type.getType(Object.class).getInternalName(), null);
 
+        Set<java.lang.reflect.Method> allMethods = new HashSet<java.lang.reflect.Method>();
         for (Class clz = ejbClass; clz != Object.class; clz = clz.getSuperclass()) {
             java.lang.reflect.Method[] beanMethods = clz.getDeclaredMethods();
             for (java.lang.reflect.Method m : beanMethods) {
@@ -114,7 +117,10 @@ public class EjbOptionalIntfGenerator
                         (! Modifier.isStatic(mod)) &&
                         (! Modifier.isAbstract(mod)) &&
                         (! Modifier.isFinal(mod)) ) {
-                    generateInterfaceMethod(tv, m);
+                    if( !hasSameSignatureAsExisting(m, allMethods)) {
+                        generateInterfaceMethod(tv, m);
+                        allMethods.add(m);
+                    }
                 }
             }
         }
@@ -125,6 +131,17 @@ public class EjbOptionalIntfGenerator
         classMap.put(intfClassName, classData);
     }
 
+    private boolean hasSameSignatureAsExisting(java.lang.reflect.Method toMatch,
+                                               Set<java.lang.reflect.Method> methods) {
+        boolean sameSignature = false;
+        for(java.lang.reflect.Method m : methods) {
+            if( TypeUtil.sameMethodSignature(m, toMatch) ) {
+                sameSignature = true;
+                break;
+            }
+        }
+        return sameSignature;
+    }
 
     public void generateOptionalLocalInterfaceSubClass(Class superClass, String subClassName,
                                                        Class delegateClass)
@@ -165,12 +182,16 @@ public class EjbOptionalIntfGenerator
         mg.endMethod();
 
         generateSetDelegateMethod(tv, delegateClass, subClassName);
-
+        Set<java.lang.reflect.Method> allMethods = new HashSet<java.lang.reflect.Method>();
+        
         for (Class clz = superClass; clz != Object.class; clz = clz.getSuperclass()) {
             java.lang.reflect.Method[] beanMethods = clz.getDeclaredMethods();
             for (java.lang.reflect.Method mth : beanMethods) {
                 if (Modifier.isPublic(mth.getModifiers())) {
-                    generateBeanMethod(tv, subClassName, mth, delegateClass);
+                    if( !hasSameSignatureAsExisting(mth, allMethods)) {
+                        generateBeanMethod(tv, subClassName, mth, delegateClass);
+                        allMethods.add(mth);
+                    }
                 }
             }
         }

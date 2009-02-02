@@ -44,6 +44,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
 
 import javax.ejb.*;
@@ -159,6 +160,10 @@ public final class StatefulSessionContainer
 
     private SFSBVersionManager sfsbVersionManager;
 
+    private Method afterBeginMethod;
+    private Method beforeCompletionMethod;
+    private Method afterCompletionMethod;
+
     /*
      * Cache for keeping ref count for shared extended entity manager.
      * The key in this map is the physical entity manager
@@ -193,9 +198,34 @@ public final class StatefulSessionContainer
             throws Exception {
         super.initializeHome();
 
-        loadCheckpointInfo();
+	    initSessionSyncMethods();
 
-        registerMonitorableComponents();
+        // TODO loadCheckpointInfo();
+
+        // TODO registerMonitorableComponents();
+
+    }
+
+    private void initSessionSyncMethods() {
+
+	if( SessionSynchronization.class.isAssignableFrom(ejbClass) ) {
+
+	    try {
+		afterBeginMethod = ejbClass.getMethod("afterBegin", null);
+		beforeCompletionMethod = ejbClass.getMethod("beforeCompletion", null);
+		afterCompletionMethod = ejbClass.getMethod("afterCompletion", Boolean.TYPE);
+	    } catch(Exception e) {
+		 _logger.log(Level.WARNING, "[SFSBContainer] Exception while "
+                    + " initializing SessionSynchronization methods ", e);
+	    }
+	} else {
+
+        EjbSessionDescriptor sessionDesc = (EjbSessionDescriptor) ejbDescriptor;
+	    afterBeginMethod = sessionDesc.getAfterBeginMethod();
+	    beforeCompletionMethod = sessionDesc.getBeforeCompletionMethod();
+	    afterCompletionMethod = sessionDesc.getAfterCompletionMethod();
+
+	}
 
     }
 
@@ -406,13 +436,16 @@ public final class StatefulSessionContainer
     /**
      * Internal creation event for Local Business view of SFSB
      */
-    EJBLocalObjectImpl createEJBLocalBusinessObjectImpl()
+    EJBLocalObjectImpl createEJBLocalBusinessObjectImpl(boolean localBeanView)
             throws CreateException {
         try {
+
+            
             SessionContextImpl context = createBeanInstance();
 
-            EJBLocalObjectImpl localBusinessObjImpl =
-                    createEJBLocalBusinessObjectImpl(context);
+            EJBLocalObjectImpl localBusinessObjImpl = localBeanView ?
+                createOptionalEJBLocalBusinessObjectImpl(context) :
+                createEJBLocalBusinessObjectImpl(context);
 
             afterInstanceCreation(context);
 
@@ -641,6 +674,10 @@ public final class StatefulSessionContainer
             createEJBLocalBusinessObjectImpl(context);
         }
 
+        if (hasOptionalLocalBusinessView) {
+            createOptionalEJBLocalBusinessObjectImpl(context);
+        }
+
         if (hasRemoteHomeView) {
             createEJBObjectImpl(context);  // enable remote invocations too
         }
@@ -664,6 +701,10 @@ public final class StatefulSessionContainer
         localBusinessObjImpl.setContext(context);
         localBusinessObjImpl.setKey(context.getInstanceKey());
 
+        if (hasOptionalLocalBusinessView) {
+            createOptionalEJBLocalBusinessObjectImpl(context);
+        }
+
         if (hasLocalHomeView) {
             createEJBLocalObjectImpl(context);
         }
@@ -677,6 +718,37 @@ public final class StatefulSessionContainer
         }
 
         return localBusinessObjImpl;
+    }
+
+    private EJBLocalObjectImpl createOptionalEJBLocalBusinessObjectImpl
+            (SessionContextImpl context) throws Exception {
+        if (context.getOptionalEJBLocalBusinessObjectImpl() != null)
+            return context.getOptionalEJBLocalBusinessObjectImpl();
+
+        EJBLocalObjectImpl optionalLocalBusinessObjImpl =
+                instantiateOptionalEJBLocalBusinessObjectImpl();
+
+        context.setOptionalEJBLocalBusinessObjectImpl(optionalLocalBusinessObjImpl);
+        optionalLocalBusinessObjImpl.setContext(context);
+        optionalLocalBusinessObjImpl.setKey(context.getInstanceKey());
+
+        if (hasLocalBusinessView) {
+            createEJBLocalBusinessObjectImpl(context);
+        }
+        
+        if (hasLocalHomeView) {
+            createEJBLocalObjectImpl(context);
+        }
+
+        if (hasRemoteHomeView) {
+            createEJBObjectImpl(context);  // enable remote invocations too
+        }
+
+        if (hasRemoteBusinessView) {
+            createRemoteBusinessObjectImpl(context);
+        }
+
+        return optionalLocalBusinessObjImpl;
     }
 
     // called from createEJBObject and activateEJB and createEJBLocalObjectImpl
@@ -716,6 +788,9 @@ public final class StatefulSessionContainer
             if (hasLocalBusinessView) {
                 // enable local business invocations too
                 createEJBLocalBusinessObjectImpl(context);
+            }
+            if (hasOptionalLocalBusinessView) {
+                createOptionalEJBLocalBusinessObjectImpl(context);
             }
         }
         */
@@ -761,6 +836,9 @@ public final class StatefulSessionContainer
             if (hasLocalBusinessView) {
                 // enable local business invocations too
                 createEJBLocalBusinessObjectImpl(context);
+            }
+            if (hasOptionalLocalBusinessView) {
+                createOptionalEJBLocalBusinessObjectImpl(context);
             }
         }
 
@@ -1475,16 +1553,16 @@ public final class StatefulSessionContainer
         // Note: this is only called for business methods.
         // For SessionBeans non-business methods are never called with a Tx.
         Object ejb = context.getEJB();
-        if (ejb instanceof SessionSynchronization) {
-            SessionSynchronization sync = (SessionSynchronization) ejb;
+        if (afterBeginMethod != null ) {
             try {
-                sync.afterBegin();
+		        afterBeginMethod.invoke(ejb, null);
             } catch (Exception ex) {
+           
                 // Error during afterBegin, so discard bean: EJB2.0 18.3.3
                 forceDestroyBean(context);
                 throw new EJBException("Error during SessionSynchronization." +
-                        ".afterBegin(), EJB instance discarded",
-                        ex);
+                        ".afterBegin(), EJB instance discarded", ex);
+                       
             }
         }
 
@@ -1511,12 +1589,11 @@ public final class StatefulSessionContainer
     void beforeCompletion(EJBContextImpl context) {
         // SessionSync calls on TX_BEAN_MANAGED SessionBeans
         // are not allowed
-        if (isBeanManagedTran)
+        if( isBeanManagedTran || (beforeCompletionMethod == null) ) {
             return;
+	}
 
         Object ejb = context.getEJB();
-        if (!(ejb instanceof SessionSynchronization))
-            return;
 
         // No need to check for a concurrent invocation
         // because beforeCompletion can only be called after
@@ -1526,10 +1603,11 @@ public final class StatefulSessionContainer
         invocationManager.preInvoke(inv);
         try {
             transactionManager.enlistComponentResources();
-
-            ((SessionSynchronization) ejb).beforeCompletion();
+	   
+	    beforeCompletionMethod.invoke(ejb, null);
 
         } catch (Exception ex) {
+
             // Error during beforeCompletion, so discard bean: EJB2.0 18.3.3
             try {
                 forceDestroyBean(context);
@@ -1537,8 +1615,8 @@ public final class StatefulSessionContainer
                 _logger.log(Level.FINE, "error destroying bean", e);
             }
             throw new EJBException("Error during SessionSynchronization." +
-                    "beforeCompletion, EJB instance discarded",
-                    ex);
+                    "beforeCompletion, EJB instance discarded", ex);
+
         } finally {
             invocationManager.postInvoke(inv);
         }
@@ -1562,7 +1640,7 @@ public final class StatefulSessionContainer
 
         // SessionSync calls on TX_BEAN_MANAGED SessionBeans
         // are not allowed.
-        if (!isBeanManagedTran && (ejb instanceof SessionSynchronization)) {
+        if (!isBeanManagedTran && (afterCompletionMethod != null)) {
 
             // Check for a concurrent invocation
             // because afterCompletion can be called asynchronously
@@ -1682,35 +1760,41 @@ public final class StatefulSessionContainer
 
     private void callEjbAfterCompletion(SessionContextImpl context,
                                         boolean status) {
-        Object ejb = context.getEJB();
-        EjbInvocation ejbInv = invFactory.create(ejb, context);
-        invocationManager.preInvoke(ejbInv);
-        try {
-            context.setInAfterCompletion(true);
-            ((SessionSynchronization) ejb).afterCompletion(status);
+	if( afterCompletionMethod != null ) {
+	    Object ejb = context.getEJB();
+	    EjbInvocation ejbInv = invFactory.create(ejb, context);
+	    invocationManager.preInvoke(ejbInv);
+	    try {
+		context.setInAfterCompletion(true);
+		afterCompletionMethod.invoke(ejb, status);
 
-            // reset flags
-            context.setAfterCompletionDelayed(false);
-            context.setTxCompleting(false);
-        }
-        catch (Exception ex) {
-            // Error during afterCompletion, so discard bean: EJB2.0 18.3.3
-            try {
-                forceDestroyBean(context);
-            } catch (Exception e) {
-                _logger.log(Level.FINE, "error removing bean", e);
-            }
-
-            _logger.log(Level.INFO, "ejb.aftercompletion_exception", ex);
-
-            // No use throwing an exception here, since the tx has already
-            // completed, and afterCompletion may be called asynchronously
-            // when there is no client to receive the exception.
-        }
-        finally {
-            context.setInAfterCompletion(false);
-            invocationManager.postInvoke(ejbInv);
-        }
+		// reset flags
+		context.setAfterCompletionDelayed(false);
+		context.setTxCompleting(false);
+	    }
+	    catch (Exception ex) {
+		    Throwable realException = ex;
+		    if( ex instanceof InvocationTargetException ) {
+		        realException = ((InvocationTargetException)ex).getTargetException();
+		    }
+		// Error during afterCompletion, so discard bean: EJB2.0 18.3.3
+		try {
+		    forceDestroyBean(context);
+		} catch (Exception e) {
+		    _logger.log(Level.FINE, "error removing bean", e);
+		}
+		
+		_logger.log(Level.INFO, "ejb.aftercompletion_exception", realException);
+		
+		// No use throwing an exception here, since the tx has already
+		// completed, and afterCompletion may be called asynchronously
+		// when there is no client to receive the exception.
+	    }
+	    finally {
+		context.setInAfterCompletion(false);
+		invocationManager.postInvoke(ejbInv);
+	    }
+	}
     }
 
     public final boolean canPassivateEJB(ComponentContext context) {
@@ -1722,6 +1806,11 @@ public final class StatefulSessionContainer
     public final boolean passivateEJB(ComponentContext context) {
         SessionContextImpl sc = (SessionContextImpl) context;
 
+        // @@@ Have to enable this at a later time
+        // @@@ remember to add optional local view logic to clear out session ctx , etc.
+        
+        return true;
+        /*
         boolean success = false;
         try {
 
@@ -1790,7 +1879,7 @@ public final class StatefulSessionContainer
                     decrementRefCountsForEEMs(sc);
 
                     if (isRemote) {
-                        /*TODO
+
                         if (hasRemoteHomeView) {
                             // disconnect the EJBObject from the EJB
                             EJBObjectImpl ejbObjImpl = sc.getEJBObjectImpl();
@@ -1818,7 +1907,7 @@ public final class StatefulSessionContainer
                                                         (next.generatedRemoteIntf.getName()));
                             }
                         }
-                        */
+
                     }
                     if (isLocal) {
                         long version = sc.getVersion();
@@ -1881,6 +1970,7 @@ public final class StatefulSessionContainer
             _logger.log(Level.WARNING, "sfsb passivation error", ex);
         }
         return success;
+        */
     }
 
     public final int getPassivationBatchCount() {
@@ -1992,6 +2082,9 @@ public final class StatefulSessionContainer
                     }
                     if (hasLocalBusinessView) {
                         createEJBLocalBusinessObjectImpl(context);
+                    }
+                    if (hasOptionalLocalBusinessView) {
+                        createOptionalEJBLocalBusinessObjectImpl(context);
                     }
                 }
             }*/ else if (ejbObject instanceof EJBLocalObjectImpl) {
@@ -2183,6 +2276,11 @@ public final class StatefulSessionContainer
      */
 
     public void onShutdown() {
+
+        // @@@ Right now we're getting this callback before an undeploy.
+        // Ideally we need to know the difference between a server instance
+        // shutdown without undeploy and an undeploy.
+
         _logger.log(Level.FINE, "StatefulSessionContainer.onshutdown() called");
         ClassLoader origClassLoader = Utility.setContextClassLoader(loader);
         try {
@@ -2204,7 +2302,16 @@ public final class StatefulSessionContainer
             }
 
             super.onShutdown();
-            sessionBeanCache.destroy();
+
+
+            /*
+             ** @@@
+             * Skip session bean cache destruction until we can distinguish
+             *  between a shutdown and an undeploy
+             *
+             *  sessionBeanCache.destroy();
+             */
+
             try {
                 sfsbStoreManager.shutdown();
             } catch (SFSBStoreManagerException sfsbEx) {
@@ -2227,8 +2334,9 @@ public final class StatefulSessionContainer
         ClassLoader origLoader = null;
         try {
             cancelAllTimerTasks();
-            sessionBeanCache.setUndeployedState();
 
+            sessionBeanCache.setUndeployedState();
+            
             origLoader = Utility.setContextClassLoader(loader);
             Iterator iter = sessionBeanCache.values();
             while (iter.hasNext()) {

@@ -88,8 +88,9 @@ public class TimerBeanContainer
 
         try {
 
-            TimerLocal timerLocal = (TimerLocal) createEJBLocalBusinessObjectImpl().
-                    getClientObject("com.sun.ejb.containers.TimerLocal");
+            String timerLocalIntf = "com.sun.ejb.containers.TimerLocal";
+            TimerLocal timerLocal = (TimerLocal) createEJBLocalBusinessObjectImpl(timerLocalIntf).
+                    getClientObject(timerLocalIntf);
 
             String timerResourceJndiName = "jdbc/__TimerPool";
 // XXX It's NOT possible to replace the datasource in PU XXX

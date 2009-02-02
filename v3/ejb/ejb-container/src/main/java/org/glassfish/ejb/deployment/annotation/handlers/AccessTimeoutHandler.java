@@ -65,7 +65,7 @@ import org.jvnet.hk2.annotations.Service;
  * @author Marina Vatkina
  */
 @Service
-public class AccessTimeoutHandler extends AbstractAttributeHandler {
+public class AccessTimeoutHandler extends AbstractAttributeHandler implements PostProcessor {
 
     public AccessTimeoutHandler() {
     }
@@ -84,23 +84,22 @@ public class AccessTimeoutHandler extends AbstractAttributeHandler {
 
         for (EjbContext ejbContext : ejbContexts) {
             if (ejbContext.getDescriptor() instanceof EjbSingletonDescriptor) {
-                EjbSingletonDescriptor singletonDesc = 
+                EjbSingletonDescriptor singletonDesc =
                         (EjbSingletonDescriptor) ejbContext.getDescriptor();
+
                 if (ElementType.TYPE.equals(ainfo.getElementType())) {
-                    System.out.println("***Setting AccessTimeout " + timeout + " AT CLASS LEVEL***");
-                    singletonDesc.setDefaultAccessTimeout(timeout);
+                    // Delay processing Class-level default until after methods are processed
+                    ejbContext.addPostProcessInfo(ainfo, this);
                 } else {
                     Method annMethod = (Method) ainfo.getAnnotatedElement();
 
-                    Set busMethods = singletonDesc.getMethodDescriptors();
-                    for (Object next : busMethods) {
-                        MethodDescriptor nextDesc = (MethodDescriptor) next;
-                        Method m = nextDesc.getMethod(singletonDesc);
-                        if (TypeUtil.sameMethodSignature(m, annMethod)) {
-                            // override by xml
-                            System.out.println("$$$$$ Got ann: " + timeout + "  ON " + annMethod);
-                            singletonDesc.setCMCAccessTimeoutFor(nextDesc, timeout);
-                        }
+                    // Only assign access timeout info if the method hasn't already
+                    // been processed.  This correctly ignores superclass methods that
+                    // are overridden and applies the correct .xml overriding semantics.
+                    if(!matchesExistingAccessTimeoutMethod(annMethod, singletonDesc)) {
+                        MethodDescriptor newMethodDesc = new MethodDescriptor(annMethod);
+                        singletonDesc.addAccessTimeoutMethod(newMethodDesc, timeout.value(),
+                                                             timeout.unit());
                     }
                 }
             }
@@ -116,12 +115,55 @@ public class AccessTimeoutHandler extends AbstractAttributeHandler {
      */
     public Class<? extends Annotation>[] getTypeDependencies() {
 
-        return new Class[]{Singleton.class, ConcurrencyManagement.class};
+        return new Class[]{Singleton.class, Stateful.class, ConcurrencyManagement.class};
 
     }
 
     protected boolean supportTypeInheritance() {
         return true;
+    }
+
+    /**
+     * Set the default value (from class type annotation) on all
+     * methods that don't have a value.
+     */
+    public void postProcessAnnotation(AnnotationInfo ainfo,
+            AnnotatedElementHandler aeHandler)
+            throws AnnotationProcessorException {
+        EjbContext ejbContext = (EjbContext)aeHandler;
+        EjbSingletonDescriptor ejbDesc = (EjbSingletonDescriptor) ejbContext.getDescriptor();
+
+        Class classAn = (Class)ainfo.getAnnotatedElement();
+        AccessTimeout timeoutAnn = (AccessTimeout) ainfo.getAnnotation();
+       
+        Method[] classMethods = classAn.getDeclaredMethods();
+        for( Method m : classMethods ) {
+
+            if( !matchesExistingAccessTimeoutMethod(m, ejbDesc) ) {
+                MethodDescriptor newMethodDesc = new MethodDescriptor(m);
+                    ejbDesc.addAccessTimeoutMethod(newMethodDesc, timeoutAnn.value(),
+                                                   timeoutAnn.unit());
+            }
+        }
+
+    }
+
+    private boolean matchesExistingAccessTimeoutMethod(Method methodToMatch,
+                                                       EjbSingletonDescriptor desc) {
+
+        Set<MethodDescriptor> timeoutMethods = desc.getAccessTimeoutMethods();
+
+        boolean match = false;
+        for (MethodDescriptor next : timeoutMethods) {
+
+            Method m = next.getMethod(desc);
+            if (TypeUtil.sameMethodSignature(m, methodToMatch)) {
+                match = true;
+                break;
+            }
+        }
+
+        return match;
     }
 
 }

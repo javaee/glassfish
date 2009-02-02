@@ -382,12 +382,12 @@ public class StatelessSessionContainer
     /**
      * Called during internal creation of session bean
      */
-    public EJBLocalObjectImpl createEJBLocalBusinessObjectImpl()
+    public EJBLocalObjectImpl createEJBLocalBusinessObjectImpl(boolean localBeanView)
         throws CreateException
     {	
         // No access checks needed because this is called as a result
         // of an internal creation, not a user-visible create method.
-        return (hasOptionalLocalBusinessView)
+        return (localBeanView)
                 ? theOptionalEJBLocalBusinessObjectImpl
                 : theEJBLocalBusinessObjectImpl;
     }
@@ -530,6 +530,10 @@ public class StatelessSessionContainer
                 if( hasLocalBusinessView ) {
                     context.setEJBLocalBusinessObjectImpl
                         (theEJBLocalBusinessObjectImpl);
+                }
+                if( hasOptionalLocalBusinessView ) {
+                    context.setOptionalEJBLocalBusinessObjectImpl
+                        (theOptionalEJBLocalBusinessObjectImpl);
                 }
             }
 
@@ -818,7 +822,7 @@ public class StatelessSessionContainer
             }
 
             // tell the TM to release resources held by the bean
-            //TODO [P1] transactionManager.ejbDestroyed(sessionCtx);
+            transactionManager.componentDestroyed(sessionCtx);   
 
             sessionCtx.setTransaction(null);
 

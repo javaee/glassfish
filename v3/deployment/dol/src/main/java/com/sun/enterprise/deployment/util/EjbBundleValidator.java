@@ -592,17 +592,21 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
                     ejbReferee.getLocalBusinessClassNames() :
                     ejbReferee.getRemoteBusinessClassNames();
 
-                if( !targetBusinessIntfs.contains(intfClassName) ) {
+                EjbDescriptor ejbDesc = ejbRef.getEjbDescriptor();
 
-                    EjbDescriptor ejbDesc = ejbRef.getEjbDescriptor();
-                    if (! ejbDesc.isLocalBean()) {
-                        DOLUtils.getDefaultLogger().log(Level.WARNING,
+                // If it's neither a business interface nor a no-interface view
+                if( !targetBusinessIntfs.contains(intfClassName) &&
+                    (   ejbDesc.isLocalBean() &&
+                        !(intfClassName.equals(ejbReferee.getEjbClassName()))) ) {
+
+
+                    DOLUtils.getDefaultLogger().log(Level.WARNING,
                            "enterprise.deployment.backend.ejbRefTypeMismatch",
                            new Object[] {ejbRef.getName() , intfClassName, 
                            ejbReferee.getName(), ( ejbRef.isLocal() ?
                            "Local Business" : "Remote Business"),
                                              targetBusinessIntfs.toString()});
-                    }
+
 
                     // We can only figure out what the correct type should be
                     // if there is only 1 target remote/local business intf.

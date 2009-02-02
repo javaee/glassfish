@@ -35,7 +35,14 @@
  */
 package com.sun.ejb.containers;
 
+import org.glassfish.api.invocation.ComponentInvocation;
+
 import javax.ejb.SessionContext;
+import javax.ejb.TimerService;
+import javax.ejb.EJBException;
+import javax.transaction.TransactionManager;
+import javax.transaction.Status;
+import java.util.logging.Level;
 
 /**
  * Implementation of EJBContext for Singleton SessionBeans
@@ -51,5 +58,103 @@ public final class SingletonContextImpl
     SingletonContextImpl(Object ejb, BaseContainer container) {
         super(ejb, container);
     }
+
+    @Override
+    public TimerService getTimerService() throws IllegalStateException {
+
+        // Instance key is first set after dependency injection but
+        // before ejbCreate
+        if ( instanceKey == null ) {
+            throw new IllegalStateException("Operation not allowed");
+        }
+
+        EJBTimerService timerService = EjbContainerUtilImpl.getInstance().getEJBTimerService();
+        if( timerService == null ) {
+            throw new EJBException("EJB Timer service not available");
+        }
+
+        return new EJBTimerServiceWrapper(timerService, this);
+        
+    }
+
+    @Override
+    public void setRollbackOnly()
+        throws IllegalStateException
+    {
+        if (instanceKey == null) {
+            throw new IllegalStateException("Singleton setRollbackOnly not allowed");
+        }
+
+        if ( container.isBeanManagedTx() ) {
+            throw new IllegalStateException(
+                "Illegal operation for bean-managed transactions");
+        }
+
+        TransactionManager tm = EjbContainerUtilImpl.getInstance().getTransactionManager();
+
+        try {
+            if ( tm.getStatus() == Status.STATUS_NO_TRANSACTION ) {
+                // EJB might be in a non-business method (for SessionBeans)
+                // or afterCompletion.
+                // OR this was a NotSupported/Never/Supports
+                // EJB which was invoked without a global transaction.
+                // In that case the JDBC connection would have autoCommit=true
+                // so the container doesnt have to do anything.
+                throw new IllegalStateException("No transaction context.");
+            }
+
+            tm.setRollbackOnly();
+
+        } catch (Exception ex) {
+            IllegalStateException illEx = new IllegalStateException(ex.toString());
+            illEx.initCause(ex);
+            throw illEx;
+        }
+    }
+
+    @Override
+    public boolean getRollbackOnly()
+        throws IllegalStateException
+    {
+        if (instanceKey == null) {
+            throw new IllegalStateException("Singleton getRollbackOnly not allowed");
+        }
+
+
+        if ( container.isBeanManagedTx() ) {
+            throw new IllegalStateException(
+                "Illegal operation for bean-managed transactions");
+        }
+
+        TransactionManager tm = EjbContainerUtilImpl.getInstance().getTransactionManager();
+
+        try {
+            int status = tm.getStatus();
+            if ( status == Status.STATUS_NO_TRANSACTION ) {
+                // EJB which was invoked without a global transaction.
+                throw new IllegalStateException("No transaction context.");
+            }
+
+            return ( status == Status.STATUS_MARKED_ROLLBACK ||
+                     status == Status.STATUS_ROLLEDBACK      ||
+                     status == Status.STATUS_ROLLING_BACK );
+
+        } catch (Exception ex) {
+            IllegalStateException illEx = new IllegalStateException(ex.toString());
+            illEx.initCause(ex);
+            throw illEx;
+        }
+    }
+
+    @Override
+    public void checkTimerServiceMethodAccess()
+        throws IllegalStateException
+    {
+        if ( instanceKey == null ) {
+            throw new IllegalStateException
+            ("EJB Timer method calls cannot be called in this context");
+        }
+    }
+
 
 }
