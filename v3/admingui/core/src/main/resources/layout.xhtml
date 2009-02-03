@@ -103,21 +103,17 @@
                     <h:inputText id="tag" value="#{requestScope.tag}"/>
                     <h:commandButton id="searchTagButton" value="Search" onclick="submitTagSearchForm(this); return false;">
                         <ui:event type="command">
-                            searchTags(tag="$attribute{tag}", hits=>$pageSession{tagSearchHits});
+                            searchTags(tag="$attribute{tag}", hits=>$attribute{tagSearchHits});
                             setAttribute(key="tag" value="");
                         </ui:event>
                     </h:commandButton>
                 </h:form>
                 <br/>
                 <div style="height: 300px; overflow: auto;">
-                    <h:panelGroup id="hits">
-                        "$pageSession{tagSearchHits}"
-                        <ul>
-                        <ui:repeat var="hit" value="$pageSession{tagSearchHits}">
-                            <li>Hello: <a href="#{hit.url}">#{hit.name}</a> - #{hit}</li>
-                        </ui:repeat>
-                        </ul>
-                    </h:panelGroup>
+                    "#{requestScope.tagSearchHits}"
+                    <h:dataTable id="hits" value="#{requestScope.tagSearchHits}" var="hit" style="border: 1px solid red">
+                        <h:column>#{hit}</h:column>
+                    </h:dataTable>
                 </div>
         </sc:panel>
         <script type="text/javascript">
@@ -142,10 +138,8 @@
                         execute: 'hits,tagSearch:tag,'+el.id,
                         inputs: 'hits,tagSearch:tag,'+el.id,
                         render: 'hits',
-                        postReplace: function(zone, html, closure, xjson) {
-                            alert('post replace for' + zone.id + ': ' + html);
-                        },
-                        replaceElement: function() {
+                        postReplace: function(zone, html) {
+                            alert('post replace for ' + zone.id + ': ' + html);
                             YAHOO.util.Dom.get('tagSearch:tag').value = '';
                         }
                     } );
