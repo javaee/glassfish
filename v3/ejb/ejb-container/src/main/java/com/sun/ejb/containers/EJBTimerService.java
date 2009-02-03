@@ -1121,7 +1121,19 @@ public class EJBTimerService
         return timerId;
     }
 
-    Map<TimerPrimaryKey, Method> getOrCreateSchedules(
+    /**
+     * Recover pre-existing timers associated with the Container identified 
+     * by the containerId, and create automatic timers defined by the @Schedule
+     * annotation on the EJB bean.
+     * If there were no timers for this containerId, it is the 1st load and both
+     * persistent and non-persistent timers will be created.
+     * Otherwise only non-persistent timers are created by this method.
+     *
+     * @return a Map of both, restored and created timers, where the key is TimerPrimaryKey 
+     * and the value is the Method to be executed by the container when the timer with
+     * this PK times out.
+     */
+    Map<TimerPrimaryKey, Method> recoverAndCreateSchedules(
             long containerId, Map<Method, List> schedules) {
 
         Map<TimerPrimaryKey, Method> result = new HashMap<TimerPrimaryKey, Method>();

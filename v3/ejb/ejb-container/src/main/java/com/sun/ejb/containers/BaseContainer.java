@@ -3165,7 +3165,7 @@ public abstract class BaseContainer
             EJBTimerService timerService = 
                 ejbContainerUtilImpl.getEJBTimerService();
             if( timerService != null ) {
-                scheduleIds = timerService.getOrCreateSchedules(
+                scheduleIds = timerService.recoverAndCreateSchedules(
                         getContainerId(), ejbDescriptor.getSchedules());
             }
         }
