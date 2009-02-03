@@ -293,7 +293,14 @@ public interface Response {
      */
     public void resetBuffer();
 
-
+    
+    /**
+     * Reset the data buffer and the using Writer/Stream flags but not any
+     * status or header information.
+     */
+    public void resetBuffer(boolean resetWriterStreamFlags);
+    
+    
     /**
      * Send an acknowledgment of a request.
      * 

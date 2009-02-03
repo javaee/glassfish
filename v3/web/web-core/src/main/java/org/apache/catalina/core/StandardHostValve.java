@@ -464,7 +464,7 @@ final class StandardHostValve
 
         if (exception == null)
             return (null);
-        Class clazz = exception.getClass();
+        Class<?> clazz = exception.getClass();
         String name = clazz.getName();
         while (!Object.class.equals(clazz)) {
             ErrorPage errorPage = context.findErrorPage(name);
@@ -521,16 +521,8 @@ final class StandardHostValve
         ((HttpRequest) request).setPathInfo(errorPage.getLocation());
 
         try {
+            response.resetBuffer(true);
 
-            // Reset the response if possible (else IllegalStateException)
-            //hres.reset();
-            // Reset the response (keeping the real error code and message)
-            Integer statusCodeObj =
-                (Integer) hreq.getAttribute(Globals.STATUS_CODE_ATTR);
-            int statusCode = statusCodeObj.intValue();
-            String message = 
-                (String) hreq.getAttribute(Globals.ERROR_MESSAGE_ATTR);
-            ((HttpResponse) response).reset(statusCode, message);
 
             // Forward control to the specified location
             ServletContext servletContext =

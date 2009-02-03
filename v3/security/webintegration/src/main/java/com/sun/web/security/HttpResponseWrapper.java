@@ -209,7 +209,11 @@ class HttpResponseWrapper extends HttpServletResponseWrapper
        httpResponse.resetBuffer();
        }
        */
-
+    
+    public void resetBuffer(boolean resetWriterStreamFlags) {
+        httpResponse.resetBuffer(resetWriterStreamFlags);
+    }
+    
     public void sendAcknowledgement() throws IOException {
         httpResponse.sendAcknowledgement();
     }

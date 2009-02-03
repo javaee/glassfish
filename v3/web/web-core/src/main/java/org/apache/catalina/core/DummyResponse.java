@@ -131,6 +131,8 @@ public class DummyResponse
     public boolean isCommitted() { return false; }
     public void reset() {}
     public void resetBuffer() {}
+    
+    public void resetBuffer(boolean resetWriterStreamFlags) {}
     public void setBufferSize(int size) {}
     public void setContentLength(int length) {}
     public void setContentType(String type) {}
