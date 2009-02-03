@@ -44,7 +44,7 @@
         <artifactId>admingui</artifactId>
         <version>3.0-SNAPSHOT</version>
     </parent>
-    <artifactId>console-branding-plugin</artifactId>
+    <artifactId>community-branding-plugin</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Admin Console Community Edition Theme Plugin</name>
     <description>Custom Theme Plugin for Glassfish V3 Admin Console</description>
