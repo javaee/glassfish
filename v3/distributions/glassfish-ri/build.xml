@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--
+ The contents of this file are subject to the terms
+ of the Common Development and Distribution License
+ (the "License").  You may not use this file except
+ in compliance with the License.
+
+ You can obtain a copy of the license at
+ glassfish/bootstrap/legal/CDDLv1.0.txt or
+ https://glassfish.dev.java.net/public/CDDLv1.0.html.
+ See the License for the specific language governing
+ permissions and limitations under the License.
+
+ When distributing Covered Code, include this CDDL
+ HEADER in each file and include the License file at
+ glassfish/bootstrap/legal/CDDLv1.0.txt.  If applicable,
+ add the following below this CDDL HEADER, with the
+ fields enclosed by brackets "[]" replaced with your
+ own identifying information: Portions Copyright [yyyy]
+ [name of copyright owner]
+-->
+<project name="glassfish reference implemation creation" default="create.ri" basedir=".">
+
+    <property file="${basedir}/build.properties"/>
+    <property name="stage" value="target/stage" />
+    <property name="v3.stage" value="${stage}/v3" />
+    <target name="ri.init">
+        <mkdir dir="${v3.stage}"/>
+    </target>
+
+    <target name="create.ri" depends="ri.init">
+<!--
+        <echo message="vi directory: ${v3.dir}"/>
+	<antcall target="module.copy" /> 
+	<antcall target="hk2.project" />
+	<antcall target="grizzly.project" />
+	<antcall target="jsf.project" />
+        <antcall target="delete.files">
+             <param name="dir" value="${stage}"/>
+        </antcall>
+-->
+
+	<zip destfile="${stage}/../glassfish-ri.zip"
+             basedir="${stage}" 
+             excludes="**/.svn/**" />
+
+    </target>
+	 
+    <target name="module.copy" >
+        <copy todir="${v3.stage}" enablemultiplemappings="true" >  
+            <fileset dir="${v3.dir}" casesensitive="yes" includes="${module.list}" excludes="**/.svn,**/target/**"/>
+        </copy>
+    </target>
+
+    <target name="hk2.project" >
+        <exec executable="svn" dir="${stage}" failonerror="true" >
+	    <arg line="checkout" />
+            <arg line="${hk2.svn.url}" />
+            <arg line="hk2" />
+	</exec>
+    </target>
+
+    <target name="grizzly.project" >
+        <exec executable="svn" dir="${stage}" failonerror="true" >
+	    <arg line="checkout" />
+            <arg line="${grizzly.svn.url}" />
+            <arg line="grizzly" />
+	</exec>
+    </target>
+
+
+    <target name="jsf.project" >
+        <exec executable="svn" dir="${stage}" failonerror="true" >
+	    <arg line="checkout" />
+            <arg line="${jsf.svn.url}" />
+            <arg line="jsf" />
+	</exec>
+    </target>
+
+    <target name="delete.files" >
+        <delete includeemptydirs="true">    
+            <fileset dir="${dir}" includes="**/.svn/**" defaultexcludes="false"/>
+        </delete>
+    </target>
+
+</project>
+

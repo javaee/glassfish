@@ -1,0 +1,21 @@
+To compile:
+
+GFv3 modules:
+cd v3
+mvn install --file <module-name>/pom.xml
+The jar files are located in <module-name>/target
+
+HK2:
+cd hk2
+mvn install 
+
+Grizzly:
+cd grizzly
+mvn install
+
+jsp-api (jsf/mojarra):
+cd jsf/mojarra
+modify build.properties:  jsf.build.home=SOURCE_HOME where SOURCE_HOME is <glassfish-ri>/jsf
+cd jsf/jsf-api
+ant -f jsf-api/build.xml
+The jsp-api.jar file is located in: <glassfish-ri>/jsf/build/lib/jsf-api.jar
