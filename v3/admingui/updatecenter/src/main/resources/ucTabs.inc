@@ -35,7 +35,7 @@
 -->
 <!-- updateCenter/ucTabs.inc -->
 
-<sun:tabSet id="ucSet" immediate="$boolean{true}" selected="#{sessionScope.ucTabs}">
+<sun:tabSet id="ucSet" immediate="$boolean{true}" selected="#{sessionScope.ucTabs}" width="100%">
         <sun:tab id="addOn" immediate="$boolean{true}" text="$resource{i18nUC.updateCenter.AddOnTab}">
             <!command
                 setSessionAttribute(key="ucTabs" value="addOn");

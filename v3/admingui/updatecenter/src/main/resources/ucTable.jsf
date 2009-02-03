@@ -38,7 +38,7 @@
 <sun:table id="ucTable" title="$attribute{tableTitle}" sortPanelToggleButton="#{false}" deselectMultipleButton="$boolean{true}"
         deselectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)"
         selectMultipleButton="$boolean{true}"
-        selectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)" >
+        selectMultipleButtonOnClick="setTimeout('changeOneTableButton()', 0)" width="100%">
 
          <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{tableId});

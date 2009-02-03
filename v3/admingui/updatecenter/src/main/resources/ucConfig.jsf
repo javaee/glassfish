@@ -40,6 +40,9 @@
 	setResourceBundle(key="i18nUC" bundle="org.glassfish.updatecenter.admingui.Strings");
         setResourceBundle(key="help" bundle="org.glassfish.updatecenter.admingui.Helplinks")
 />
+<!composition template="/layout.xhtml">
+<!define name="content">
+/*
 <!composition template="/templates/baseTemplate.tpl" 
     pageTitle="$resource{i18nUC.updateCenter.ConfigPageTitle}" 
     helpText="$resource{i18nUC.updateCenter.ConfigPageTitleHelp}"
@@ -70,6 +73,7 @@
              />
         </sun:button>
     </define>
+*/
     <!define name="content">
         <sun:propertySheet id="propertySheet">
             <!beforeCreate

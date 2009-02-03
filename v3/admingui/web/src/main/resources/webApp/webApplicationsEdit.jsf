@@ -34,37 +34,36 @@
  holder.
 -->
 <!-- webApp/webApplicationsEdit.jsf -->
-<sun:page id="page1" >
-    <!beforeCreate
-    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
-    setSessionAttribute(key="appGeneralTabs" value="general");
-    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
-    setPageSessionAttribute(key="pageTitle" value="$resource{i18n.webApp.editPageTitle}");
-    setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.webApp.editPageTitleHelp}");
-    setPageSessionAttribute(key="hasJavaWebStart" value="#{false}");
-    setPageSessionAttribute(key="hasHa" value="#{true}");
-    setPageSessionAttribute(key="hasContextRoot" value="#{true}");
-    #TODO-V3 omit Libraries
-    setPageSessionAttribute(key="hasLibraries" value="#{false}");
-    setPageSessionAttribute(key="hasThreadPool" value="#{false}");
-    setPageSessionAttribute(key="hasVS" value="#{true}");
-    setPageSessionAttribute(key="hasComponentTable" value="#{true}");
-    setPageSessionAttribute(key="hasActionColumn" value="#{false}");
-    setPageSessionAttribute(key="appType" value="webApp");
-    setPageSessionAttribute(key="generalPage" value="webApplicationsEdit.jsf");
-    setPageSessionAttribute(key="editDDPage" value="webDDEdit.jsf");
-    setPageSessionAttribute(key="descriptorPage" value="webApplicationDesc.jsf");
-    setPageSessionAttribute(key="targetPage" value="webApplicationTargets.jsf");
-    if ($session{supportCluster} ){
-    	setPageSessionAttribute(key="hasVS" value="#{false}");
-    }
-    />
+<!composition template="/layout.xhtml">
+//< ! define name="title">#{pageTitle}</define>
+<!define name="content">
+    <event>
+        <!beforeCreate
+        setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
+        setSessionAttribute(key="appGeneralTabs" value="general");
+        setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
+        setPageSessionAttribute(key="pageTitle" value="$resource{i18n.webApp.editPageTitle}");
+        setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.webApp.editPageTitleHelp}");
+        setPageSessionAttribute(key="hasJavaWebStart" value="#{false}");
+        setPageSessionAttribute(key="hasHa" value="#{true}");
+        setPageSessionAttribute(key="hasContextRoot" value="#{true}");
+        #TODO-V3 omit Libraries
+        setPageSessionAttribute(key="hasLibraries" value="#{false}");
+        setPageSessionAttribute(key="hasThreadPool" value="#{false}");
+        setPageSessionAttribute(key="hasVS" value="#{true}");
+        setPageSessionAttribute(key="hasComponentTable" value="#{true}");
+        setPageSessionAttribute(key="hasActionColumn" value="#{false}");
+        setPageSessionAttribute(key="appType" value="webApp");
+        setPageSessionAttribute(key="generalPage" value="webApplicationsEdit.jsf");
+        setPageSessionAttribute(key="editDDPage" value="webDDEdit.jsf");
+        setPageSessionAttribute(key="descriptorPage" value="webApplicationDesc.jsf");
+        setPageSessionAttribute(key="targetPage" value="webApplicationTargets.jsf");
+        if ($session{supportCluster} ){
+            setPageSessionAttribute(key="hasVS" value="#{false}");
+        }
+        />
+    </event>
 #include "/shared/restart.inc"    
-<sun:html id="html2">
-    <sun:head id="propertyhead" title="#{pageTitle}" >
-        <sun:script url="/resource/js/adminjsf.js" />
-    </sun:head>
-    <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
         <sun:form id="propertyForm">
         
         #include "/shared/treeBreadcrumbs.inc"
@@ -75,7 +74,5 @@
         #include "subComponentTable.inc"
 	<sun:hidden id="helpKey" value="$resource{help.webApplicationsEdit}" />
         </sun:form>
-    </sun:body>
-  </sun:html>
-</sun:page>
-
+</define>
+</composition>

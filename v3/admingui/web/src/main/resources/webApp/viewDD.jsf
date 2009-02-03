@@ -34,38 +34,14 @@
  holder.
 -->
 <!-- webApp/webDDEdit.jsf -->
-<sun:page id="page1">
+"<pre>
+<h:outputText id="descriptorText" value="#{descriptorText}" escape="#{true}" style="font-size: large;">
     <!beforeCreate
         setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
         getRequestValue(key="appName" value=>$page{name});
         getRequestValue(key="descriptorName" value=>$page{descriptorName});
-        getDeploymentDescriptor(appName="$pageSession{name}", descriptorName="$pageSession{descriptorName}", 
+        getDeploymentDescriptor(appName="$pageSession{name}", descriptorName="$pageSession{descriptorName}",
         descriptorText=>$attribute{descriptorText});
     />
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18n.webApp.viewDDPageTitle}"/>
-        <sun:body id="body3">
-            <!-- Page Title -->
-            <sun:title id="propertyContentPage" title="#{pageTitle}" helpText="#{pageTitleHelp}" >
-                <!-- Buttons  -->                    
-                <!facet pageButtonsTop>
-                <sun:panelGroup id="topButtons">
-                    <sun:button id="closeButton" text="$resource{i18n.button.Close}" 
-                                onClick="window.close()" primary="#{true}">  
-                    </sun:button>
-                </sun:panelGroup>
-                </facet>
-                <!facet pageButtonsBottom>
-                <sun:panelGroup id="bottomButtons">
-                    <sun:button id="closeButton2" text="$resource{i18n.button.Close}" 
-                                onClick="window.close()" primary="#{true}">  
-                    </sun:button>
-                </sun:panelGroup>
-                </facet>
-                "<pre>
-                <h:outputText id="descriptorText" value="#{descriptorText}" escape="#{true}" style="font-size: large;"/>
-                "</pre>
-            </sun:title>
-        </sun:body>
-    </sun:html>
-</sun:page>
+</h:outputText>
+"</pre>

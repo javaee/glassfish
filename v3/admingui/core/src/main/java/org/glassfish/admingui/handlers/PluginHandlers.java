@@ -50,9 +50,7 @@ import org.glassfish.admingui.plugin.IntegrationPointComparator;
 import org.jvnet.hk2.component.Habitat;
 
 import java.net.URL;
-import java.net.URLClassLoader;
 
-import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -64,10 +62,8 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 
-import com.sun.webui.theme.ServletThemeContext;
 import com.sun.webui.theme.ThemeContext;
 
-import java.io.IOException;
 
 import org.glassfish.admingui.common.plugin.ConsoleClassLoader;
 
