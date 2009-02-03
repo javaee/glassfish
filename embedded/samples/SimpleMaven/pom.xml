@@ -42,14 +42,17 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+				<!-- the version is critical.-->
+
                 <version> 2.4.3 </version>
+
+				<!-- These values are not needed.  Leaving them here because
+				  of the huge hassle finding them again if needed.
                 <configuration>
-                  <!-- these are the magic incantations that will force the
-                    classpath to be set to our dependencies list
-                    -->
                     <useSystemClassLoader>true</useSystemClassLoader>
                     <useManifestOnlyJar>false</useManifestOnlyJar>
                 </configuration>
+                -->
             </plugin>
         </plugins>
     </build>
