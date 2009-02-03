@@ -81,7 +81,15 @@ import java.security.PrivilegedAction;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.jar.Attributes;
@@ -216,7 +224,7 @@ public class WebappClassLoader
      * they belong to a protected namespace (i.e., a namespace that may never
      * be overridden by any webapp)
      */
-    private ArrayList overridablePackages;
+    private ConcurrentLinkedQueue<String> overridablePackages;
    // END PE 4985680
 
 
@@ -276,13 +284,13 @@ public class WebappClassLoader
      * The cache of ResourceEntry for classes and resources we have loaded,
      * keyed by resource name.
      */
-    protected HashMap<String, ResourceEntry> resourceEntries = new HashMap<String, ResourceEntry>();
+    protected ConcurrentHashMap<String, ResourceEntry> resourceEntries = new ConcurrentHashMap<String, ResourceEntry>();
 
 
     /**
      * The list of not found resources.
      */
-    protected HashMap<String, String> notFoundResources = new HashMap<String, String>();
+    protected ConcurrentHashMap<String, String> notFoundResources = new ConcurrentHashMap<String, String>();
 
 
     /**
@@ -374,7 +382,7 @@ public class WebappClassLoader
      * A list of read File and Jndi Permission's required if this loader
      * is for a web application context.
      */
-    private ArrayList<Permission> permissionList = new ArrayList<Permission>();
+    private ConcurrentLinkedQueue<Permission> permissionList = new ConcurrentLinkedQueue<Permission>();
 
 
     /**
@@ -387,7 +395,7 @@ public class WebappClassLoader
      * The PermissionCollection for each CodeSource for a web
      * application context.
      */
-    private HashMap<String, PermissionCollection> loaderPC = new HashMap<String, PermissionCollection>();
+    private ConcurrentHashMap<String, PermissionCollection> loaderPC = new ConcurrentHashMap<String, PermissionCollection>();
 
 
     /**
@@ -429,8 +437,8 @@ public class WebappClassLoader
     /**
      * List of byte code pre-processors per webapp class loader.
      */
-    ArrayList<BytecodePreprocessor> byteCodePreprocessors =
-            new ArrayList<BytecodePreprocessor>();
+    private ConcurrentLinkedQueue<BytecodePreprocessor> byteCodePreprocessors =
+            new ConcurrentLinkedQueue<BytecodePreprocessor>();
     // END SJSAS 6344989
 
     private boolean useMyFaces;
@@ -442,9 +450,9 @@ public class WebappClassLoader
      * Adds the given package name to the list of packages that may always be
      * overriden, regardless of whether they belong to a protected namespace
      */
-    public void addOverridablePackage(String packageName){
+    public synchronized void addOverridablePackage(String packageName){
         if (overridablePackages == null){
-            overridablePackages = new ArrayList();
+            overridablePackages = new ConcurrentLinkedQueue<String>();
         }
         overridablePackages.add(packageName);
     }
@@ -1820,7 +1828,7 @@ public class WebappClassLoader
         // Null out any static or final fields from loaded classes,
         // as a workaround for apparent garbage collection bugs
         if (ENABLE_CLEAR_REFERENCES) {
-            Collection<ResourceEntry> values = ((HashMap<String, ResourceEntry>) resourceEntries.clone()).values();
+            Collection<ResourceEntry> values = resourceEntries.values();
             Iterator<ResourceEntry> loadedClasses = values.iterator();
             /*
              * Step 1: Enumerate all classes loaded by this WebappClassLoader
@@ -1830,8 +1838,11 @@ public class WebappClassLoader
              */
             while(loadedClasses.hasNext()) {
                 ResourceEntry entry = loadedClasses.next();
-                if (entry.loadedClass != null) {
-                    Class<?> clazz = entry.loadedClass;
+                Class<?> clazz = null;
+                synchronized(this) {
+                    clazz = entry.loadedClass;
+                }
+                if (clazz != null) {
                     try {
                         Field[] fields = clazz.getDeclaredFields();
                         for (int i = 0; i < fields.length; i++) {
@@ -1851,8 +1862,11 @@ public class WebappClassLoader
             loadedClasses = values.iterator();
             while (loadedClasses.hasNext()) {
                 ResourceEntry entry = loadedClasses.next();
-                if (entry.loadedClass != null) {
-                    Class<?> clazz = entry.loadedClass;
+                Class<?> clazz = null;
+                synchronized(this) {
+                    clazz = entry.loadedClass;
+                }
+                if (clazz != null) {
                     try {
                         Field[] fields = clazz.getDeclaredFields();
                         for (int i = 0; i < fields.length; i++) {
@@ -2014,12 +2028,12 @@ public class WebappClassLoader
         if (entry == null)
                throw new ClassNotFoundException(name);
 
-        Class<?> clazz = entry.loadedClass;
-        if (clazz != null)
-            return entry;
-
         synchronized (this) {
-            if (entry.binaryContent == null && entry.loadedClass == null)
+            Class<?> clazz = entry.loadedClass;
+            if (clazz != null)
+                return entry;
+
+            if (entry.binaryContent == null)
                 throw new ClassNotFoundException(name);
         }
 
@@ -2124,23 +2138,17 @@ public class WebappClassLoader
         }
 
         if (entry == null) {
-            synchronized (notFoundResources) {
-                notFoundResources.put(name, name);
-            }
+            notFoundResources.put(name, name);
             return null;
         }
 
         // Add the entry in the local resource repository
-        synchronized (resourceEntries) {
-            // Ensures that all the threads which may be in a race to load
-            // a particular class all end up with the same ResourceEntry
-            // instance
-            ResourceEntry entry2 = resourceEntries.get(name);
-            if (entry2 == null) {
-                resourceEntries.put(name, entry);
-            } else {
-                entry = entry2;
-            }
+        // Ensures that all the threads which may be in a race to load
+        // a particular class all end up with the same ResourceEntry
+        // instance
+        ResourceEntry entry2 = resourceEntries.putIfAbsent(name, entry);
+        if (entry2 != null) {
+            entry = entry2;
         }
 
         return entry;
@@ -2438,7 +2446,9 @@ public class WebappClassLoader
 
         ResourceEntry entry = resourceEntries.get(name);
         if (entry != null) {
-            return entry.loadedClass;
+            synchronized(this) {
+                return entry.loadedClass;
+            }
         }
         return (null);  // FIXME - findLoadedResource()
 
@@ -2490,9 +2500,8 @@ public class WebappClassLoader
             return false;
 
         if (overridablePackages != null){
-            for (int i = 0; i < overridablePackages.size(); i++) {
-                if (packageName.
-                        startsWith((String)overridablePackages.get(i)))
+            for (String overridePkg : overridablePackages) {
+                if (packageName.startsWith(overridePkg))
                     return false;
             }
         }
