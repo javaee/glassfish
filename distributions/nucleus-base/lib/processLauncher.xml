@@ -1,0 +1,189 @@
+<?xml version="1.0"?>
+
+<!--
+ The contents of this file are subject to the terms 
+ of the Common Development and Distribution License 
+ (the License).  You may not use this file except in
+ compliance with the License.
+ 
+ You can obtain a copy of the license at 
+ https://glassfish.dev.java.net/public/CDDLv1.0.html or
+ glassfish/bootstrap/legal/CDDLv1.0.txt.
+ See the License for the specific language governing 
+ permissions and limitations under the License.
+ 
+ When distributing Covered Code, include this CDDL 
+ Header Notice in each file and include the License file 
+ at glassfish/bootstrap/legal/CDDLv1.0.txt.  
+ If applicable, add the following below the CDDL Header, 
+ with the fields enclosed by brackets [] replaced by
+ you own identifying information: 
+ "Portions Copyrighted [year] [name of copyright owner]"
+ 
+ Copyright 2006 Sun Microsystems, Inc. All rights reserved.
+-->
+
+<processes xmlns="http://java.sun.com/j2ee/s1as8se/processLauncher"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="processLauncher.xsd">
+    <process name="s1as8-server">
+        <!-- This defined process type is used for all server instances that are executed using information
+        extracted from domain.xml.  This type uses a large portion of the soon to be depreciated PELaunchFilter's
+        methods to perform the tasks that are involved with digesting domaim.xml properly.  In fact, many of
+        the methods were copied in their entirety.  For the methods that couldn't be copied, they were re-coded
+        to emulate the functionality. -->
+        <!-- settable jvm options are meant to come from domain.xml -->
+        <sysproperty key="com.sun.aas.instanceName" value="${com.sun.aas.instanceName}"/>
+    	<sysproperty key="domain.name" value="${domain.name}"/>
+        <sysproperty key="com.sun.aas.domainName" value="${domain.name}"/>
+        <sysproperty key="com.sun.aas.clusterName" value="${com.sun.aas.clusterName}" 
+            if="com.sun.aas.clusterName"/>
+        <sysproperty key="com.sun.aas.installRoot" value="${com.sun.aas.installRoot}"/>
+        <sysproperty key="com.sun.aas.instanceRoot" value="${com.sun.aas.instanceRoot}"/>
+        <sysproperty key="com.sun.aas.configRoot" value="${com.sun.aas.configRoot}"/>
+        <sysproperty key="user.classpath" value="${CLASSPATH}" if="CLASSPATH"/>
+        <sysproperty key="java.util.logging.manager"
+            value="com.sun.enterprise.server.logging.ServerLogManager"/>
+        <sysproperty key="com.sun.enterprise.overrideablejavaxpackages"
+            value="javax.xml.bind,javax.help,javax.portlet"/>
+        <sysproperty key="jmx.invoke.getters" value="true"/>
+        <sysproperty key="com.sun.aas.processLauncher" value="SE"/>
+        <sysproperty key="com.sun.aas.promptForIdentity" value="true"/>
+
+        <main_class classname="com.sun.enterprise.server.PEMain" />
+        <!-- Can't Remove commons-launcher.jar from the exclude list util can remove pemain dependency -->
+        <!--
+            * classpath construction hierarchy:
+            * (javaConfig.getClasspathPrefix)
+            * (processLauncher.Classpath.prefix)
+            * (processLauncher.Classpath.j2se1_4_prefix or processLauncher.Classpath.j2se1_5_or_later_prefix)
+            * (derivedClasspath based on processLauncher.Classpath excludes and includes)
+            * (javaConfig.getServerClasspath)
+            * (javaConfig.getClasspathSuffix)
+            * (javaConfig.profilerClasspath if enabled)
+            * (Environment classpath if enabled)
+        -->
+        <classpath dir="${com.sun.aas.installRoot}/lib" includes=".*jar$"
+            j2se1_4_prefix="${com.sun.aas.installRoot}/lib/appserv-rt.jar${path.separator}${com.sun.aas.javaRoot}/lib/tools.jar"  
+            j2se1_5_or_later_prefix="${com.sun.aas.javaRoot}/lib/tools.jar${path.separator}${com.sun.aas.installRoot}/lib/appserv-rt.jar" 
+            excludes="appserv-rt.jar,appserv-assemblytool.jar,appserv-tags.jar,deployhelp.jar,jhall.jar,sun-appserv-ant.jar,appserv-jwsacc.jar,appserv-jwsacc-signed.jar,j2ee.jar" />
+    </process>
+    
+    <!-- Default process for AS9.x -->
+    <process name="as9-server">
+        <!-- This defined process type is used for all server instances that are executed using information
+        extracted from domain.xml.  This type uses a large portion of the soon to be depreciated PELaunchFilter's
+        methods to perform the tasks that are involved with digesting domaim.xml properly.  In fact, many of
+        the methods were copied in their entirety.  For the methods that couldn't be copied, they were re-coded
+        to emulate the functionality. -->
+        <!-- settable jvm options are meant to come from domain.xml -->
+        <sysproperty key="com.sun.aas.instanceName" value="${com.sun.aas.instanceName}"/>
+    	<sysproperty key="domain.name" value="${domain.name}"/>
+        <sysproperty key="com.sun.aas.domainName" value="${domain.name}"/>
+        <sysproperty key="com.sun.aas.clusterName" value="${com.sun.aas.clusterName}" 
+            if="com.sun.aas.clusterName"/>
+        <sysproperty key="com.sun.aas.installRoot" value="${com.sun.aas.installRoot}"/>
+        <sysproperty key="com.sun.aas.instanceRoot" value="${com.sun.aas.instanceRoot}"/>
+        <sysproperty key="com.sun.aas.configRoot" value="${com.sun.aas.configRoot}"/>
+        <sysproperty key="user.classpath" value="${CLASSPATH}" if="CLASSPATH"/>
+        <sysproperty key="java.util.logging.manager"
+            value="com.sun.enterprise.server.logging.ServerLogManager"/>
+        <sysproperty key="com.sun.enterprise.overrideablejavaxpackages"
+            value="javax.xml.bind,javax.help,javax.portlet"/>
+        <sysproperty key="jmx.invoke.getters" value="true"/>
+        <sysproperty key="com.sun.aas.processLauncher" value="SE"/>
+        <sysproperty key="com.sun.aas.promptForIdentity" value="true"/>
+        <sysproperty key="com.sun.updatecenter.home" value="${com.sun.aas.installRoot}/updatecenter"/>
+
+        <!-- sysproperties for the new classloader hierarchy. used in PELaunch -->
+        <sysproperty key="com.sun.aas.classloader.sharedChainJars"
+        value="javaee.jar,${com.sun.aas.javaRoot}/lib/tools.jar,install/applications/jmsra/imqjmsra.jar,commons-launcher.jar,${com.sun.aas.imqLib}/jaxm-api.jar,${com.sun.aas.imqLib}/fscontext.jar,${com.sun.aas.imqLib}/imqbroker.jar,${com.sun.aas.imqLib}/imqjmx.jar,${com.sun.aas.imqLib}/imqxm.jar,${com.sun.aas.antLib}/ant.jar,webservices-rt.jar,webservices-tools.jar,mail.jar,jsf-api.jar,jsf-impl.jar,appserv-jstl.jar,appserv-env.jar,jmxremote_optional.jar,${com.sun.aas.jdmkHome}/lib/jdmkrt.jar,commons-logging.jar,activation.jar,appserv-rt.jar,appserv-admin.jar,appserv-cmp.jar,${com.sun.aas.installRoot}/updatecenter/lib/updatecenter.jar"/>
+        <sysproperty key="com.sun.aas.classloader.sharedChainJars.ee" value="appserv-se.jar,appserv-ee.jar,${com.sun.aas.hadbRoot}/lib/dbstate.jar,${com.sun.aas.hadbRoot}/lib/hadbjdbc4.jar,jgroups-all.jar,${com.sun.aas.mfwkHome}/lib/mfwk_instrum_tk.jar"/>
+        <sysproperty key="com.sun.aas.classloader.serverClassPath" value="${com.sun.aas.installRoot}/lib/install/applications/jmsra/imqjmsra.jar,${com.sun.aas.imqLib}/jaxm-api.jar,${com.sun.aas.imqLib}/fscontext.jar,${com.sun.aas.imqLib}/imqbroker.jar,${com.sun.aas.imqLib}/imqjmx.jar,${com.sun.aas.antLib}/ant.jar,${com.sun.aas.jdmkHome}/lib/jdmkrt.jar"/>
+        <sysproperty key="com.sun.aas.classloader.serverClassPath.ee" value="${com.sun.aas.hadbRoot}/lib/hadbjdbc4.jar,${com.sun.aas.jdmkHome}/lib/jdmkrt.jar,${com.sun.aas.hadbRoot}/lib/dbstate.jar,${com.sun.aas.hadbRoot}/lib/hadbm.jar,${com.sun.aas.hadbRoot}/lib/hadbmgt.jar,${com.sun.aas.mfwkHome}/lib/mfwk_instrum_tk.jar"/>
+        <sysproperty key="com.sun.aas.classloader.optionalOverrideableChain" value="webservices-rt.jar,webservices-tools.jar,commons-logging.jar,commons-launcher.jar"/>
+        <sysproperty key="com.sun.aas.classloader.optionalOverrideableChain.ee" value=""/>
+        <sysproperty key="com.sun.aas.classloader.appserverChainJars" value="admin-cli.jar,admin-cli-ee.jar,dbschema.jar,j2ee-svc.jar"/>
+        <sysproperty key="com.sun.aas.classloader.appserverChainJars.ee" value=""/>
+
+        <main_class classname="com.sun.enterprise.server.PELaunch" />
+        <!-- Can't Remove commons-launcher.jar from the exclude list util can remove pemain dependency -->
+        <!--
+            * classpath construction hierarchy:
+            * (javaConfig.getClasspathPrefix)
+            * (processLauncher.Classpath.prefix)
+            * (processLauncher.Classpath.j2se1_4_prefix or processLauncher.Classpath.j2se1_5_or_later_prefix)
+            * (derivedClasspath based on processLauncher.Classpath excludes and includes)
+            * (javaConfig.getSystemClasspath)
+            * (javaConfig.getClasspathSuffix)
+            * (javaConfig.profilerClasspath if enabled)
+            * (Environment classpath if enabled)
+        -->
+        <classpath dir="${com.sun.aas.installRoot}/lib"/>
+    </process>
+    
+    <process name="s1as8-nodeagent">
+        <!-- This defined process type is specifically created for the Node Agent -->
+        <!--
+        <sysproperty key="-Xdebug"/>
+        <sysproperty key="-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=1321"/>
+        -->
+        <!-- this defaultLogFile property has to be there for the the native launcher to redirect the log 
+             and it is also used for the nodeagent's log in the launcher before rendezvous, the launcher
+             will read domain.xml if it exists and reset this property, if appropriate 
+         -->
+        <sysproperty key="com.sun.aas.defaultLogFile" value="${com.sun.aas.instanceRoot}/logs/server.log"/> 
+        <sysproperty key="com.sun.aas.instanceName" value="${com.sun.aas.instanceName}"/>
+        <sysproperty key="com.sun.aas.instanceRoot" value="${com.sun.aas.instanceRoot}"/>
+        <sysproperty key="com.sun.aas.configRoot" value="${com.sun.aas.configRoot}"/>
+        <sysproperty key="com.sun.appserv.nss.db" value="${com.sun.aas.instanceRoot}/config"/>
+        <sysproperty key="java.security.auth.login.config" value="${com.sun.aas.instanceRoot}/config/login.conf"/>
+        <sysproperty key="java.endorsed.dirs" value="${java.endorsed.dirs}"/>
+        <sysproperty key="java.util.logging.manager" value="com.sun.enterprise.server.logging.ServerLogManager"/>
+        <sysproperty key="jmx.invoke.getters" value="true"/>
+        <sysproperty key="com.sun.appserv.admin.pluggable.features"
+            value="com.sun.enterprise.ee.admin.pluggable.EEClientPluggableFeatureImpl"/>
+        <sysproperty key="com.sun.appserv.pluggable.features"
+            value="com.sun.enterprise.ee.server.pluggable.EEPluggableFeatureImpl"/>
+        <sysproperty key="com.sun.aas.promptForIdentity" value="true"/>
+        <!-- used for security, do not remove -->
+        <sysproperty key="com.sun.aas.isNodeAgent" value="true"/>
+        
+        <main_class classname="com.sun.enterprise.ee.nodeagent.NodeAgentMain" />
+        <!--
+            * classpath construction hierarchy:
+            * (processLauncher.Classpath.prefix)
+            * (processLauncher.Classpath.j2se1_4_prefix or processLauncher.Classpath.j2se1_5_or_later_prefix)
+            * (derivedClasspath based on processLauncher.Classpath excludes and includes)
+        -->
+        <classpath dir="${com.sun.aas.installRoot}/lib"
+            includes="appserv-ee.jar,appserv-se.jar,appserv-admin.jar,appserv-rt.jar,appserv-ext.jar,javaee.jar"/>
+    </process>
+    <process name="s1as-deploytool">
+        <!-- This defined process type is specifically created for the Deployment Tool. -->
+        <!--
+        <sysproperty key="-Xdebug"/>
+        <sysproperty key="-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=1321"/>
+        -->
+        <sysproperty key="com.sun.aas.installRoot" value="${com.sun.aas.installRoot}"/>
+        <sysproperty key="java.endorsed.dirs" value="${com.sun.aas.installRoot}/lib/endorsed"/>
+        <sysproperty key="com.sun.aas.defaultUserName" value="${com.sun.aas.defaultUserName}"
+            if="com.sun.aas.defaultUserName"/>
+        <sysproperty key="com.sun.aas.defaultPassword" value="${com.sun.aas.defaultPassword}"
+            if="com.sun.aas.defaultPassword"/>
+        <sysproperty key="com.sun.aas.defaultLogFile" value="${user.home}/.deploytool/logfile"
+            if="user.home"/>
+	<sysproperty key="ui.debugMode" value="true" if="com.sun.aas.verboseMode"/>
+
+        <main_class classname="com.sun.enterprise.tools.deployment.ui.Main" />
+        <!--
+            * classpath construction hierarchy:
+            * (processLauncher.Classpath.prefix)
+            * (processLauncher.Classpath.j2se1_4_prefix or processLauncher.Classpath.j2se1_5_or_later_prefix)
+            * (derivedClasspath based on processLauncher.Classpath excludes and includes)
+        -->
+        <classpath dir="${com.sun.aas.installRoot}/lib"
+            prefix="${com.sun.aas.javaRoot}/lib/tools.jar${path.separator}${com.sun.aas.jhelpRoot}/jhall.jar"
+            includes="appserv-assemblytool.jar,activation.jar,appserv-admin.jar,appserv-cmp.jar,appserv-rt.jar,javaee.jar,jaxrpc-impl.jar,appserv-ext.jar,deployhelp.jar,admin-cli.jar,dom.jar,xercesImpl.jar,xalan.jar,mail.jar"/>
+    </process>
+</processes>

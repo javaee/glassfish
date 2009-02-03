@@ -1,0 +1,169 @@
+/*
+ * The contents of this file are subject to the terms 
+ * of the Common Development and Distribution License 
+ * (the License).  You may not use this file except in
+ * compliance with the License.
+ * 
+ * You can obtain a copy of the license at 
+ * https://glassfish.dev.java.net/public/CDDLv1.0.html or
+ * glassfish/bootstrap/legal/CDDLv1.0.txt.
+ * See the License for the specific language governing 
+ * permissions and limitations under the License.
+ * 
+ * When distributing Covered Code, include this CDDL 
+ * Header Notice in each file and include the License file 
+ * at glassfish/bootstrap/legal/CDDLv1.0.txt.  
+ * If applicable, add the following below the CDDL Header, 
+ * with the fields enclosed by brackets [] replaced by
+ * you own identifying information: 
+ * "Portions Copyrighted [year] [name of copyright owner]"
+ * 
+ * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
+ */
+
+package javax.ejb;
+
+import java.util.Date;
+import java.io.Serializable;
+
+/**
+ * A calendar-based timeout expression for an enterprise bean timer.
+ */
+
+public final class ScheduleExpression implements Serializable {
+
+    public ScheduleExpression() {}
+
+    public ScheduleExpression second(String s) {
+        second_ = s; 
+        return this;
+    }
+
+    public ScheduleExpression second(int s) {
+        second_ = s + "";
+        return this;
+    }
+
+    public String getSecond() {
+        return second_;
+    }
+
+    public ScheduleExpression minute(String m) {
+        minute_ = m;
+        return this;
+    }
+
+    public ScheduleExpression minute(int m) {
+        minute_ = m + "";
+        return this;
+    }
+
+    public String getMinute() {
+	return minute_;
+    }
+
+    public ScheduleExpression hour(String h) {
+        hour_ = h;
+        return this;
+    }
+
+    public ScheduleExpression hour(int h) {
+        hour_ = h + "";
+        return this;
+    }
+
+    public String getHour() {
+        return hour_;
+    }
+
+    public ScheduleExpression dayOfMonth(String d) {
+        dayOfMonth_ = d;
+        return this;
+    }
+
+    public ScheduleExpression dayOfMonth(int d) {
+        dayOfMonth_ = d + "";
+        return this;
+    }
+
+    public String getDayOfMonth() {
+	return dayOfMonth_;
+    }
+
+    public ScheduleExpression month(String m) {
+        month_ = m;
+        return this;
+    }
+
+    public ScheduleExpression month(int m) {
+        month_ = m + "";
+        return this;
+    }
+
+    public String getMonth() {
+        return month_;
+    }
+
+    public ScheduleExpression dayOfWeek(String d) {
+        dayOfWeek_ = d;
+        return this;
+    }
+
+    public ScheduleExpression dayOfWeek(int d) {
+        dayOfWeek_ = d + "";
+        return this;
+    }
+
+    public String getDayOfWeek() {
+	return dayOfWeek_;
+    }
+
+    public ScheduleExpression year(String y) {
+        year_ = y;
+        return this;
+    }
+
+    public ScheduleExpression year(int y) {
+        year_ = y + "";
+        return this;
+    }
+
+    public String getYear() {
+        return year_;
+    }
+
+    public ScheduleExpression start(Date s) {
+        start_ = (s == null) ? null : new Date(s.getTime());
+
+        return this;
+    }
+
+    public Date getStart() {
+        return (start_ == null) ? null : new Date(start_.getTime());
+    }
+
+    public ScheduleExpression end(Date e) {
+        end_ = (e == null) ? null : new Date(e.getTime());
+
+        return this;
+    }
+
+    public Date getEnd() {
+        return (end_ == null) ? null : new Date(end_.getTime());
+    }
+
+
+    private String second_ = "0";
+    private String minute_ = "0";
+    private String hour_ = "0";
+
+    private String dayOfMonth_ = "*";
+    private String month_ = "*";
+    private String dayOfWeek_ = "*";
+    private String year_ = "*";
+
+    private Date start_ = null;
+
+    private Date end_ = null;
+
+}

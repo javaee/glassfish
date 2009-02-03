@@ -1,1 +1,0 @@
-Custom error page for SQL exception
