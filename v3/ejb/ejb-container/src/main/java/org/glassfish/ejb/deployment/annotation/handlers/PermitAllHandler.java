@@ -33,13 +33,15 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.deployment.annotation.handlers;
+package org.glassfish.ejb.deployment.annotation.handlers;
 
+import com.sun.enterprise.deployment.annotation.handlers.*;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.enterprise.deployment.MethodPermission;
 import com.sun.enterprise.deployment.annotation.context.EjbContext;
 import com.sun.enterprise.deployment.util.TypeUtil;
+import org.glassfish.apf.AnnotatedElementHandler;
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
@@ -49,26 +51,28 @@ import javax.annotation.security.DenyAll;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
 
 /**
- * This handler is responsible for handling the javax.annotation.security.DenyAll.
+ * This handler is responsible for handling the
+ * javax.annotation.security.PermitAll.
  *
  * @author Shing Wai Chan
  */
 @Service
-public class DenyAllHandler extends AbstractAttributeHandler {
+public class PermitAllHandler extends AbstractAttributeHandler implements PostProcessor {
     
-    public DenyAllHandler() {
+    public PermitAllHandler() {
     }
     
     /**
      * @return the annoation type this annotation handler is handling
      */
     public Class<? extends Annotation> getAnnotationType() {
-        return DenyAll.class;
+        return PermitAll.class;
     }    
 
     /**
@@ -81,8 +85,7 @@ public class DenyAllHandler extends AbstractAttributeHandler {
             EjbContext[] ejbContexts) throws AnnotationProcessorException {
 
         AnnotatedElement ae = (AnnotatedElement)ainfo.getAnnotatedElement();
-        Method annMethod = (Method) ainfo.getAnnotatedElement();
-        if (ae.isAnnotationPresent(PermitAll.class) ||
+        if (ae.isAnnotationPresent(DenyAll.class) ||
                 ae.isAnnotationPresent(RolesAllowed.class)) {
             log(Level.SEVERE, ainfo,
                 localStrings.getLocalString(
@@ -93,15 +96,22 @@ public class DenyAllHandler extends AbstractAttributeHandler {
 
         for (EjbContext ejbContext : ejbContexts) {
             EjbDescriptor ejbDesc = ejbContext.getDescriptor();
-                
-            for (Object next : ejbDesc.getSecurityBusinessMethodDescriptors()) {
-                MethodDescriptor md = (MethodDescriptor)next;
-                // override by xml
-                if (!hasMethodPermissionsFromDD(md, ejbDesc)) {
+
+            if (ElementType.TYPE.equals(ainfo.getElementType())) {
+                // postpone the processing at the end
+                ejbContext.addPostProcessInfo(ainfo, this);
+            } else { // METHOD
+                Method annMethod = (Method)ainfo.getAnnotatedElement();
+                for (Object next : ejbDesc.getSecurityBusinessMethodDescriptors()) {
+                    MethodDescriptor md = (MethodDescriptor)next;
                     Method m = md.getMethod(ejbDesc);
                     if (TypeUtil.sameMethodSignature(m, annMethod)) {
-                        ejbDesc.addPermissionedMethod(
-                            MethodPermission.getExcludedMethodPermission(), md);
+                        // override by xml
+                        if (!hasMethodPermissionsFromDD(md, ejbDesc)) {
+                            ejbDesc.addPermissionedMethod(
+                                MethodPermission.getUncheckedMethodPermission(),
+                                md);
+                        }
                     }
                 }
             }
@@ -109,4 +119,43 @@ public class DenyAllHandler extends AbstractAttributeHandler {
 
         return getDefaultProcessedResult();
     }   
+
+    /**
+     * @return an array of annotation types this annotation handler would
+     * require to be processed (if present) before it processes it's own
+     * annotation type.
+     */
+    public Class<? extends Annotation>[] getTypeDependencies() {
+        return getEjbAnnotationTypes();
+    }
+
+    protected boolean supportTypeInheritance() {
+        return true;
+    }
+
+    public void postProcessAnnotation(AnnotationInfo ainfo,
+            AnnotatedElementHandler aeHandler)
+            throws AnnotationProcessorException {
+        EjbContext ejbContext = (EjbContext)aeHandler;
+        EjbDescriptor ejbDesc = ejbContext.getDescriptor();
+        if (!ejbContext.isInherited() &&
+                (ejbDesc.getMethodPermissionsFromDD() == null ||
+                ejbDesc.getMethodPermissionsFromDD().size() == 0)) {
+            for (MethodDescriptor md : getMethodAllDescriptors(ejbDesc)) {
+                ejbDesc.addPermissionedMethod(
+                    MethodPermission.getUncheckedMethodPermission(), md);
+            }
+        } else {
+            Class classAn = (Class)ainfo.getAnnotatedElement();
+            for (Object next : ejbDesc.getSecurityBusinessMethodDescriptors()) {
+                MethodDescriptor md = (MethodDescriptor)next;
+                if (classAn.equals(ejbContext.getDeclaringClass(md)) &&
+                        !hasMethodPermissionsFromDD(md, ejbDesc)) {
+                    ejbDesc.addPermissionedMethod(
+                        MethodPermission.getUncheckedMethodPermission(),
+                        md);
+                }
+            }
+        }
+    }
 }

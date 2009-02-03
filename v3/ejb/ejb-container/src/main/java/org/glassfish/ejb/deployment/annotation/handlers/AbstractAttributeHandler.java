@@ -33,8 +33,9 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.deployment.annotation.handlers;
+package org.glassfish.ejb.deployment.annotation.handlers;
 
+import com.sun.enterprise.deployment.annotation.handlers.*;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.enterprise.deployment.annotation.context.*;

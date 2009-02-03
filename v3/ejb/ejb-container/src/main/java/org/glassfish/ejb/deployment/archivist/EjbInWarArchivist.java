@@ -34,12 +34,13 @@
  * holder.
  */
 
-package com.sun.enterprise.deployment.archivist;
+package org.glassfish.ejb.deployment.archivist;
 
+import com.sun.enterprise.deployment.archivist.*;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.util.XModuleType;
-import com.sun.enterprise.deployment.annotation.impl.EjbInWarScanner;
+import org.glassfish.ejb.deployment.annotation.impl.EjbInWarScanner;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.DescriptorConstants;
 import com.sun.enterprise.deployment.io.EjbDeploymentDescriptorFile;

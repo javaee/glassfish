@@ -34,8 +34,9 @@
  * holder.
  */
 
-package com.sun.enterprise.deployment.annotation.impl;
+package org.glassfish.ejb.deployment.annotation.impl;
 
+import com.sun.enterprise.deployment.annotation.impl.*;
 import com.sun.enterprise.deployment.*;
 import org.glassfish.apf.impl.AnnotationUtils;
 import org.jvnet.hk2.annotations.Scoped;

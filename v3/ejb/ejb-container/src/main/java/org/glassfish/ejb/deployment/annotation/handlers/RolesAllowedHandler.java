@@ -33,11 +33,13 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.deployment.annotation.handlers;
+package org.glassfish.ejb.deployment.annotation.handlers;
 
+import com.sun.enterprise.deployment.annotation.handlers.*;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.enterprise.deployment.MethodPermission;
+import com.sun.enterprise.deployment.Role;
 import com.sun.enterprise.deployment.annotation.context.EjbContext;
 import com.sun.enterprise.deployment.util.TypeUtil;
 import org.glassfish.apf.AnnotatedElementHandler;
@@ -57,59 +59,54 @@ import java.util.logging.Level;
 
 /**
  * This handler is responsible for handling the
- * javax.annotation.security.PermitAll.
+ * javax.annotation.security.RolesAllowed.
  *
  * @author Shing Wai Chan
  */
 @Service
-public class PermitAllHandler extends AbstractAttributeHandler implements PostProcessor {
+public class RolesAllowedHandler extends AbstractAttributeHandler implements PostProcessor {
     
-    public PermitAllHandler() {
+    public RolesAllowedHandler() {
     }
     
     /**
      * @return the annoation type this annotation handler is handling
      */
     public Class<? extends Annotation> getAnnotationType() {
-        return PermitAll.class;
+        return RolesAllowed.class;
     }    
-
-    /**
-     * Process Annotation with given EjbContexts.
-     * @param ainfo
-     * @param ejbContexts
-     * @return HandlerProcessingResult
-     */
+        
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
             EjbContext[] ejbContexts) throws AnnotationProcessorException {
 
         AnnotatedElement ae = (AnnotatedElement)ainfo.getAnnotatedElement();
+
         if (ae.isAnnotationPresent(DenyAll.class) ||
-                ae.isAnnotationPresent(RolesAllowed.class)) {
+                ae.isAnnotationPresent(PermitAll.class)) {
             log(Level.SEVERE, ainfo,
                 localStrings.getLocalString(
                 "enterprise.deployment.annotation.handlers.inconsistentsecannotation",
                 "This annotation is not consistent with other annotations.  One cannot have more than one of @RolesAllowed, @PermitAll, @DenyAll in the same AnnotatedElement."));
             return getDefaultFailedResult();
         }
+        
+        RolesAllowed rolesAllowedAn = (RolesAllowed)ainfo.getAnnotation();
 
         for (EjbContext ejbContext : ejbContexts) {
             EjbDescriptor ejbDesc = ejbContext.getDescriptor();
-
             if (ElementType.TYPE.equals(ainfo.getElementType())) {
                 // postpone the processing at the end
                 ejbContext.addPostProcessInfo(ainfo, this);
-            } else { // METHOD
-                Method annMethod = (Method)ainfo.getAnnotatedElement();
+            } else {
+                Method annMethod = (Method) ainfo.getAnnotatedElement();
+                
                 for (Object next : ejbDesc.getSecurityBusinessMethodDescriptors()) {
                     MethodDescriptor md = (MethodDescriptor)next;
                     Method m = md.getMethod(ejbDesc);
                     if (TypeUtil.sameMethodSignature(m, annMethod)) {
                         // override by xml
                         if (!hasMethodPermissionsFromDD(md, ejbDesc)) {
-                            ejbDesc.addPermissionedMethod(
-                                MethodPermission.getUncheckedMethodPermission(),
-                                md);
+                            addMethodPermissions(rolesAllowedAn, ejbDesc, md);
                         }
                     }
                 }
@@ -120,8 +117,8 @@ public class PermitAllHandler extends AbstractAttributeHandler implements PostPr
     }   
 
     /**
-     * @return an array of annotation types this annotation handler would
-     * require to be processed (if present) before it processes it's own
+     * @return an array of annotation types this annotation handler would 
+     * require to be processed (if present) before it processes it's own 
      * annotation type.
      */
     public Class<? extends Annotation>[] getTypeDependencies() {
@@ -137,24 +134,41 @@ public class PermitAllHandler extends AbstractAttributeHandler implements PostPr
             throws AnnotationProcessorException {
         EjbContext ejbContext = (EjbContext)aeHandler;
         EjbDescriptor ejbDesc = ejbContext.getDescriptor();
+        RolesAllowed rolesAllowedAn = (RolesAllowed)ainfo.getAnnotation();
         if (!ejbContext.isInherited() &&
                 (ejbDesc.getMethodPermissionsFromDD() == null ||
                 ejbDesc.getMethodPermissionsFromDD().size() == 0)) {
             for (MethodDescriptor md : getMethodAllDescriptors(ejbDesc)) {
-                ejbDesc.addPermissionedMethod(
-                    MethodPermission.getUncheckedMethodPermission(), md);
+                addMethodPermissions(rolesAllowedAn, ejbDesc, md);
             }
         } else {
             Class classAn = (Class)ainfo.getAnnotatedElement();
             for (Object next : ejbDesc.getSecurityBusinessMethodDescriptors()) {
                 MethodDescriptor md = (MethodDescriptor)next;
+                Method m = md.getMethod(ejbDesc);
+                // override by existing info
                 if (classAn.equals(ejbContext.getDeclaringClass(md)) &&
                         !hasMethodPermissionsFromDD(md, ejbDesc)) {
-                    ejbDesc.addPermissionedMethod(
-                        MethodPermission.getUncheckedMethodPermission(),
-                        md);
+                    addMethodPermissions(rolesAllowedAn, ejbDesc, md);
                 }
             }
         }
     }
+
+    /**
+     * Add roles and permissions to given method in EjbDescriptor.
+     * @param rolesAllowedAn
+     * @param ejbDesc
+     * @param md
+     */
+    private void addMethodPermissions(RolesAllowed rolesAllowedAn,
+            EjbDescriptor ejbDesc, MethodDescriptor md) {
+        for (String roleName : rolesAllowedAn.value()) {
+            Role role = new Role(roleName);
+            // add role if not exists
+            ejbDesc.getEjbBundleDescriptor().addRole(role);
+            ejbDesc.addPermissionedMethod(new MethodPermission(role), md);
+        }
+    }
+
 }

@@ -10,7 +10,8 @@
                         com.sun.ejb.spi.io, \
                         com.sun.ejb.spi.stats, \
                         com.sun.enterprise, \
-                        org.glassfish.ejb.startup
+                        org.glassfish.ejb.startup, \
+                        org.glassfish.ejb.deployment.archivist
 Import-Package: \
                         javax.xml.soap;resolution:=optional, \
                         javax.xml.ws;resolution:=optional, \
