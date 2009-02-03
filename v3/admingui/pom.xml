@@ -83,7 +83,7 @@
     	<module>plugin-service</module>
 	<module>common</module>
         <module>core</module>
-        <module>customtheme</module>
+        <module>community-theme</module>
         <module>web</module>
         <module>jdbc-gui</module>
         <module>security</module>
