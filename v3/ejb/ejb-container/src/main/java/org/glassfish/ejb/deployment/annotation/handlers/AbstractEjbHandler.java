@@ -489,8 +489,10 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
 
         if( (localBeanAnn == null ) &&
             (clientInterfaces.size() == 0) &&
-            !ejbDesc.hasWebServiceEndpointInterface() &&
-            (ejbClass.getAnnotation(javax.jws.WebService.class) == null) ) {
+            !ejbDesc.hasWebServiceEndpointInterface()
+            // TODO temporarily comment out javax.jws dependency.  Will
+            // revisit when we enable EJB 3.1 Lite in Web Profile
+            /*(ejbClass.getAnnotation(javax.jws.WebService.class) == null)*/ ) {
             ejbDesc.setLocalBean(true);
         }
 
