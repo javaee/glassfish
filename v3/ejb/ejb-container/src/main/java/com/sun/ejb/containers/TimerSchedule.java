@@ -77,6 +77,7 @@ public class TimerSchedule implements Serializable {
     private int paramCount_ = 0;
 
     private boolean configured = false;
+    private boolean isValid = true;
 
     private boolean lastDayOfMonth = false;
     private int dayBeforeEndOfMonth = 0;
@@ -109,6 +110,8 @@ public class TimerSchedule implements Serializable {
     private static final String HOUR = "hour";
     private static final String MINUTE = "minute";
     private static final String SECOND = "second";
+
+    private static final int MAX_YEAR_TRY = 100;
 
     static {
         conversionTable.put("jan", 1);
@@ -394,7 +397,7 @@ public class TimerSchedule implements Serializable {
         }
 
         if (years.size() == 0) {
-            return true;
+            return isValid;
         }
 
         Calendar now = new GregorianCalendar();
@@ -484,6 +487,7 @@ public class TimerSchedule implements Serializable {
      * year value and starting date. If year is 0, any year will be correct.
      */
     private Calendar getNextTimeout(Calendar next, int year) {
+        int i = 0;
         while (end_ == null || !next.getTime().after(end_)) {
 
             if (year != 0 && next.get(Calendar.YEAR) > year) {
@@ -491,6 +495,12 @@ public class TimerSchedule implements Serializable {
             }
 
             if(skipToNextValue(next, months, Calendar.MONTH, Calendar.YEAR)) {
+                if (++i > MAX_YEAR_TRY) {
+                    // Can't find the date - it's most probably invalid
+                    isValid = false;
+                    break;
+                }
+
                 next.set(Calendar.DAY_OF_MONTH, 1);
                 next.set(Calendar.HOUR_OF_DAY, 0);
                 next.set(Calendar.MINUTE, 0);
