@@ -1381,6 +1381,35 @@ public class Response
             // END RIMOD 4642650   
             setStatus(SC_FOUND);
             setHeader("Location", absolute);
+
+            // According to RFC2616 section 10.3.3 302 Found,
+            // the response SHOULD contain a short hypertext note with
+            // a hyperlink to the new URI.
+            setContentType("text/html");
+            setLocale(Locale.getDefault());
+
+            String href = RequestUtil.filter(absolute);
+            StringBuilder sb = new StringBuilder(150 + href.length());
+
+            sb.append("<html>\r\n");
+            sb.append("<head><title>Document moved</title></head>\r\n");
+            sb.append("<body><h1>Document moved</h1>\r\n");
+            sb.append("This document has moved <a href=\"");
+            sb.append(href);
+            sb.append("\">here</a>.<p>\r\n");
+            sb.append("</body>\r\n");
+            sb.append("</html>\r\n");
+
+            try {
+                getWriter().write(sb.toString());
+            } catch (IllegalStateException ise1) {
+                try {
+                    getOutputStream().print(sb.toString());
+                } catch (IllegalStateException ise2) {
+                    // ignore; the RFC says "SHOULD" so it is acceptable
+                    // to omit the body in case of an error
+                }
+            }
         } catch (IllegalArgumentException e) {
             setStatus(SC_NOT_FOUND);
         }
