@@ -37,15 +37,15 @@
 
 package org.glassfish.embed;
 
-import com.sun.enterprise.admin.cli.AsadminMain;
+import org.glassfish.embed.util.BoolArg;
+import org.glassfish.embed.util.Arg;
+import org.glassfish.embed.util.ArgProcessor;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import java.io.*;
 import java.net.*;
-import java.net.MalformedURLException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.glassfish.embed.args.*;
 import org.glassfish.embed.util.StringUtils;
 
 /**

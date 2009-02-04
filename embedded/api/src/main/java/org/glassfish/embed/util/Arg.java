@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.embed.args;
+package org.glassfish.embed.util;
 
 import org.glassfish.embed.util.StringUtils;
 
