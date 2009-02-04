@@ -230,9 +230,7 @@ public class ApplicationContext
      * current context root.
      */
     public DirContext getResources() {
-
         return context.getResources();
-
     }
 
 
@@ -341,7 +339,6 @@ public class ApplicationContext
      * @param name Name of the initialization parameter to retrieve
      */
     public String getInitParameter(final String name) {
-
         mergeParameters();
         synchronized (parameters) {
             return ((String) parameters.get(name));
@@ -354,12 +351,26 @@ public class ApplicationContext
      * empty enumeration if the context has no initialization parameters.
      */
     public Enumeration getInitParameterNames() {
-
         mergeParameters();
         synchronized (parameters) {
            return (new Enumerator(parameters.keySet()));
         }
+    }
 
+
+    /**
+     * @return true if the context initialization parameter with the given
+     * name and value was set successfully on this ServletContext, and false
+     * if it was not set because this ServletContext already contains a
+     * context initialization parameter with a matching name
+     */
+    public boolean setInitParameter(String name, String value) {
+        try {
+            context.addParameter(name, value);
+            return true;
+        } catch (IllegalArgumentException iae) {
+            return false;
+        }
     }
 
 
@@ -367,9 +378,7 @@ public class ApplicationContext
      * Return the major version of the Java Servlet API that we implement.
      */
     public int getMajorVersion() {
-
         return (Constants.MAJOR_VERSION);
-
     }
 
 

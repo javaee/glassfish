@@ -359,6 +359,21 @@ public final class ApplicationContextFacade
         }
     }
 
+    /**
+     * @return true if the context initialization parameter with the given
+     * name and value was set successfully on this ServletContext, and false
+     * if it was not set because this ServletContext already contains a
+     * context initialization parameter with a matching name
+     */
+    public boolean setInitParameter(String name, String value) {
+        if (SecurityUtil.isPackageProtectionEnabled()) {
+            return ((Boolean) doPrivileged(
+                "setInitParameter", new Object[]{name, value})).booleanValue();
+        } else {
+            return context.setInitParameter(name, value);
+        }
+    }
+
 
     public Object getAttribute(String name) {
         if (SecurityUtil.isPackageProtectionEnabled()) {

@@ -2631,7 +2631,11 @@ public class StandardContext
      * context.
      */
     public FilterRegistration addFilter(String filterName, String className) {
-        return new FilterRegistrationImpl(this, filterName, className);
+        if (findFilterDef(filterName) == null) {
+            return new FilterRegistrationImpl(this, filterName, className);
+        } else {
+            return null;
+        }
     }
 
 
@@ -3185,7 +3189,11 @@ public class StandardContext
      */
     public ServletRegistration addServlet(String servletName,
                                           String className) {
-        return new ServletRegistrationImpl(this, servletName, className);
+        if (findChild(servletName) == null) {
+            return new ServletRegistrationImpl(this, servletName, className);
+        } else {
+            return null;
+        }
     }
 
 
