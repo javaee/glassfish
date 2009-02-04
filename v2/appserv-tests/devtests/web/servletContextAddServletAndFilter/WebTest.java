@@ -26,7 +26,7 @@ public class WebTest {
     public static void main(String[] args) {
 
         stat.addDescription("Unit test for ServletContext#addServlet and " +
-                            "ServletContext#addFilter";
+                            "ServletContext#addFilter");
         WebTest webTest = new WebTest(args);
 
         try {
