@@ -9,24 +9,16 @@ import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
-import com.sun.hk2.component.InhabitantsParser;
 import java.io.File;
-import java.net.URL;
-import java.util.Collection;
-import java.util.Properties;
-import java.util.logging.Level;
 import org.apache.catalina.Engine;
-import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.jvnet.hk2.component.Habitat;
 
 /**
  *
@@ -122,11 +114,11 @@ public class ServerTest {
     @Test
     public void testDeploy_RA_Success() throws Exception {
         File archive = SmartFile.sanitize(new File("target/test-classes/simple.war"));
-        ArchiveFactory archiveFactory = server.habitat.getComponent(ArchiveFactory.class);
+        ArchiveFactory archiveFactory = server.getHabitat().getComponent(ArchiveFactory.class);
         ReadableArchive a = archiveFactory.openArchive(archive);
         assertTrue(archive.exists());
 
-        ApplicationLifecycle appLife = server.habitat.getComponent(ApplicationLifecycle.class);
+        ApplicationLifecycle appLife = server.getHabitat().getComponent(ApplicationLifecycle.class);
         ArchiveHandler h = appLife.getArchiveHandler(a);
         File appDir = new File(server.getFileSystem().getAppsDir(), a.getName());
         FileUtils.whack(appDir);
@@ -152,7 +144,7 @@ public class ServerTest {
     @Test(expected=EmbeddedException.class)
     public void testDeploy_RA_Fail() throws Exception {
         File archive = SmartFile.sanitize(new File("target/test-classes/simple.war"));
-        ArchiveFactory archiveFactory = server.habitat.getComponent(ArchiveFactory.class);
+        ArchiveFactory archiveFactory = server.getHabitat().getComponent(ArchiveFactory.class);
         ReadableArchive a = archiveFactory.openArchive(archive);
 
         Application app = null;

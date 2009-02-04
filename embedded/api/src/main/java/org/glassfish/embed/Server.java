@@ -281,53 +281,6 @@ public class Server {
     public static void setLogLevel(Level level) {
         Logger.getLogger("javax.enterprise").setLevel(level);
     }
-
-    /**
-     *
-     * @return
-     * @throws org.glassfish.embed.EmbeddedException
-     */
-    public EmbeddedVirtualServer createAdminVirtualServer() throws EmbeddedException {
-        mustNotBeStarted("createAdminVirtualServer");
-
-        DomBuilder db = onHttpService();
-        db.element("virtual-server").attribute("id", info.adminVSName).attribute("http-listeners", info.adminHttpListenerName).attribute("hosts", "${com.sun.aas.hostName}") // ???
-                .attribute("log-file", "").element("property").attribute("name", "docroot").attribute("value", ".");
-
-        return new EmbeddedVirtualServer(null);
-    }
-
-    public EmbeddedHttpListener createAdminHttpListener() throws EmbeddedException {
-        mustNotBeStarted("createAdminHttpListener");
-
-        onHttpService().element("http-listener").attribute("id", info.adminHttpListenerName).attribute("address", "0.0.0.0").attribute("port", info.adminHttpPort).attribute("default-virtual-server", info.adminVSName).attribute("server-name", "").attribute("enabled", true);
-
-        return new EmbeddedHttpListener(String.valueOf(info.adminHttpPort), null);
-    }
-
-    /*
-     *         <admin-service system-jmx-connector-name="system" type="das-and-server">
-    <!-- The JSR 160 "system-jmx-connector" -->
-    <!--
-    <jmx-connector
-    accept-all="false"
-    address="0.0.0.0"
-    auth-realm-name="admin-realm"
-    enabled="true"
-    name="system"
-    port="8686"
-    protocol="rmi_jrmp"
-    security-enabled="false"
-    />
-    -->
-    <!-- The JSR 160 "system-jmx-connector" -->
-     */
-    /**
-     * Starts the server if hasn't done so already.
-     * Necessary to work around the live HTTP listener update.
-     * It is an error to call this more than once.
-     * @throws EmbeddedException
-     */
     public void start() throws EmbeddedException {
         if (started)
             throw new EmbeddedException("already_started");
@@ -640,32 +593,6 @@ public class Server {
 
         return new EmbeddedVirtualServer(null);
 
-//        try {
-//            Configs configs = habitat.getComponent(Configs.class);
-//
-//            HttpService httpService = configs.getConfig().get(0).getHttpService();
-//            return  (GFVirtualServer) ConfigSupport.apply(new SingleConfigCode<HttpService>() {
-//                public Object run(HttpService param) throws PropertyVetoException, TransactionFailure {
-//                    VirtualServer vs = ConfigSupport.createChildOf(param, VirtualServer.class);
-//                    vs.setId("server");
-//                    vs.setHttpListeners(listener.core.getId());
-//                    vs.setHosts("${com.sun.aas.hostName}");
-////                    vs.setDefaultWebModule("no-such-module");
-//
-//                    Property property =
-//                        ConfigSupport.createChildOf(vs, Property.class);
-//                    property.setName("docroot");
-//                    property.setValue(".");
-//                    vs.getProperty().add(property);
-//
-//
-//                    param.getVirtualServer().add(vs);
-//                    return new GFVirtualServer(vs);
-//                }
-//            }, httpService);
-//        } catch(TransactionFailure e) {
-//            throw new GFException(e);
-//        }
     }
 
     private EmbeddedHttpListener createHttpListener() throws EmbeddedException {
@@ -677,27 +604,30 @@ public class Server {
 
         return new EmbeddedHttpListener(String.valueOf(info.httpPort), null);
 
-//        try {
-//            Configs configs = habitat.getComponent(Configs.class);
-//
-//            HttpService httpService = configs.getConfig().get(0).getHttpService();
-//            return (GFHttpListener)ConfigSupport.apply(new SingleConfigCode<HttpService>() {
-//                public Object run(HttpService param) throws PropertyVetoException, TransactionFailure {
-//                    HttpListener newListener = ConfigSupport.createChildOf(param, HttpListener.class);
-//                    newListener.setId("http-listener-"+listenerPort);
-//                    newListener.setAddress("127.0.0.1");
-//                    newListener.setPort(String.valueOf(listenerPort));
-//                    newListener.setDefaultVirtualServer("server");
-//                    newListener.setEnabled("true");
-//
-//                    param.getHttpListener().add(newListener);
-//                    return new GFHttpListener(newListener);
-//                }
-//            }, httpService);
-//        } catch(TransactionFailure e) {
-//            throw new GFException(e);
-//        }
     }
+    public EmbeddedVirtualServer createAdminVirtualServer() throws EmbeddedException {
+        mustNotBeStarted("createAdminVirtualServer");
+
+        DomBuilder db = onHttpService();
+        db.element("virtual-server").attribute("id", info.adminVSName).attribute("http-listeners", info.adminHttpListenerName).attribute("hosts", "${com.sun.aas.hostName}") // ???
+                .attribute("log-file", "").element("property").attribute("name", "docroot").attribute("value", ".");
+
+        return new EmbeddedVirtualServer(null);
+    }
+
+    public EmbeddedHttpListener createAdminHttpListener() throws EmbeddedException {
+        mustNotBeStarted("createAdminHttpListener");
+
+        onHttpService().element("http-listener").attribute("id", info.adminHttpListenerName).attribute("address", "0.0.0.0").attribute("port", info.adminHttpPort).attribute("default-virtual-server", info.adminVSName).attribute("server-name", "").attribute("enabled", true);
+
+        return new EmbeddedHttpListener(String.valueOf(info.adminHttpPort), null);
+    }
+    /**
+     * Starts the server if hasn't done so already.
+     * Necessary to work around the live HTTP listener update.
+     * It is an error to call this more than once.
+     * @throws EmbeddedException
+     */
 
     private void readDomainXmlSource() throws EmbeddedException {
         URL sourceUrl = efs.getSourceDomainXml();
@@ -956,8 +886,97 @@ public class Server {
     ////////////////////////////////////////////////////////
     /////////////   private variables //////////////////////
     ////////////////////////////////////////////////////////
-    /**
-     * Work around until the live HTTP listener support comes back.
+    // API note from bnevins
+    // I always keep private variables at the end of files.  Since
+    // they are private they are merely an implementation detail and are not
+    // of interest to anyone trying to see the API.
+    // Java coding conventions are wrong about this, IMHO.  I believe the "variables at
+    // the top" are merely a leftover from C where variables *had* to be at the top.
+
+    private Habitat                     habitat;
+    private final XPath                 xpath           = XPathFactory.newInstance().newXPath();
+    private URL                         defaultWebXml;
+    private boolean                     started;
+    private ApplicationLifecycle        appLife;
+    private SnifferManager              snifMan;
+    private ArchiveFactory              archiveFactory;
+    private ServerEnvironmentImpl       env;
+    private String                      id;
+    private WebContainer                wc;
+    private EmbeddedWebContainer        ewc;
+    private Document                    domainXmlDocument;
+    private EmbeddedFileSystem          efs;
+    private EmbeddedInfo                info;
+    private static Map<String, Server>  servers         = new HashMap<String, Server>();
+}
+
+/****************************************************************************    
+ ******  POSSIBLY USEFUL stuff -- feel free to delete after March 2009 ******
+ ****************************************************************************
+ */
+//        try {
+//            Configs configs = habitat.getComponent(Configs.class);
+//
+//            HttpService httpService = configs.getConfig().get(0).getHttpService();
+//            return (GFHttpListener)ConfigSupport.apply(new SingleConfigCode<HttpService>() {
+//                public Object run(HttpService param) throws PropertyVetoException, TransactionFailure {
+//                    HttpListener newListener = ConfigSupport.createChildOf(param, HttpListener.class);
+//                    newListener.setId("http-listener-"+listenerPort);
+//                    newListener.setAddress("127.0.0.1");
+//                    newListener.setPort(String.valueOf(listenerPort));
+//                    newListener.setDefaultVirtualServer("server");
+//                    newListener.setEnabled("true");
+//
+//                    param.getHttpListener().add(newListener);
+//                    return new GFHttpListener(newListener);
+//                }
+//            }, httpService);
+//        } catch(TransactionFailure e) {
+//            throw new GFException(e);
+//        }
+//        try {
+//            Configs configs = habitat.getComponent(Configs.class);
+//
+//            HttpService httpService = configs.getConfig().get(0).getHttpService();
+//            return  (GFVirtualServer) ConfigSupport.apply(new SingleConfigCode<HttpService>() {
+//                public Object run(HttpService param) throws PropertyVetoException, TransactionFailure {
+//                    VirtualServer vs = ConfigSupport.createChildOf(param, VirtualServer.class);
+//                    vs.setId("server");
+//                    vs.setHttpListeners(listener.core.getId());
+//                    vs.setHosts("${com.sun.aas.hostName}");
+////                    vs.setDefaultWebModule("no-such-module");
+//
+//                    Property property =
+//                        ConfigSupport.createChildOf(vs, Property.class);
+//                    property.setName("docroot");
+//                    property.setValue(".");
+//                    vs.getProperty().add(property);
+//
+//
+//                    param.getVirtualServer().add(vs);
+//                    return new GFVirtualServer(vs);
+//                }
+//            }, httpService);
+//        } catch(TransactionFailure e) {
+//            throw new GFException(e);
+//        }
+
+    /*
+     *         <admin-service system-jmx-connector-name="system" type="das-and-server">
+    <!-- The JSR 160 "system-jmx-connector" -->
+    <!--
+    <jmx-connector
+    accept-all="false"
+    address="0.0.0.0"
+    auth-realm-name="admin-realm"
+    enabled="true"
+    name="system"
+    port="8686"
+    protocol="rmi_jrmp"
+    security-enabled="false"
+    />
+    -->
+    <!-- The JSR 160 "system-jmx-connector" -->
      */
     /**
      * As of April 2008, several key configurations like HTTP listener
@@ -966,27 +985,3 @@ public class Server {
      * We hide this from the client of this API by laziyl starting
      * the server, and this flag remembers which state we are in.
      */
-    private boolean started;
-
-    /*pkg-private*/ /*almost final*/ Habitat habitat;
-    /**
-     * To navigate around {@link #domainXml}.
-     */
-    private final XPath xpath = XPathFactory.newInstance().newXPath();
-    //URL domainXmlUrl;
-    /*pkg-private*/ URL defaultWebXml;
-
-    // key components inside GlassFish. We access them all the time,
-    // so we might just as well keep them here for ease of access.
-    /*pkg-private*/ /*almost final*/ private ApplicationLifecycle appLife;
-    /*pkg-private*/ /*almost final*/ private SnifferManager snifMan;
-    /*pkg-private*/ /*almost final*/ private ArchiveFactory archiveFactory;
-    /*pkg-private*/ /*almost  final*/ private ServerEnvironmentImpl env;
-    private String id;
-    private WebContainer wc;
-    private EmbeddedWebContainer ewc;
-    private Document domainXmlDocument;
-    private EmbeddedFileSystem efs;
-    private EmbeddedInfo info;
-    private static Map<String, Server> servers = new HashMap<String, Server>();
-}
