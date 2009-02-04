@@ -69,7 +69,7 @@ public final class Application {
      */
     public void undeploy() throws EmbeddedException{
         SilentActionReport r = new SilentActionReport();
-        owner.appLife.undeploy(app.getName(),deploymentContext, r);
+        owner.getAppLife().undeploy(app.getName(),deploymentContext, r);
         r.check();
     }
 }
