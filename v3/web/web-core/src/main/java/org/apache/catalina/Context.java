@@ -721,12 +721,33 @@ public interface Context extends Container {
      * Adds the given servlet instance with the given name to this servlet
      * context and initializes it.
      *
+     * <p>In order to add any URL patterns that will be mapped to the
+     * given servlet, addServletMappings must be used. If this context
+     * has already been started, the URL patterns must be passed to
+     * addServlet instead.
+     *
      * @param servletName the servlet name
      * @param instance the servlet instance
      *
      * @throws ServletException if the servlet fails to be initialized
      */
-    public void addServlet(String servletName, Servlet instance) throws ServletException;
+    public void addServlet(String servletName, Servlet instance)
+        throws ServletException;
+
+
+    /**
+     * Adds the given servlet instance with the given name and URL patterns
+     * to this servlet context, and initializes it.
+     *
+     * @param servletName the servlet name
+     * @param instance the servlet instance
+     * @param urlPatterns the URL patterns that will be mapped to the servlet
+     *
+     * @throws ServletException if the servlet fails to be initialized
+     */
+    public void addServlet(String servletName, Servlet instance,
+                           String... urlPatterns)
+            throws ServletException;
 
 
     /**
