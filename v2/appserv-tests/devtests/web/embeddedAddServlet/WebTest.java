@@ -44,7 +44,7 @@ public class WebTest {
 
         Socket sock = new Socket(host, new Integer(port).intValue());
         OutputStream os = sock.getOutputStream();
-        os.write(("GET " + contextRoot + "/From" + " HTTP/1.0\n\n").getBytes());
+        os.write(("GET " + contextRoot + "/addServlet" + " HTTP/1.0\n\n").getBytes());
 
         InputStream is = sock.getInputStream();
         BufferedReader bis = new BufferedReader(new InputStreamReader(is));
