@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="345"/>
+    <property name="TOTAL_EXPECTED" value="346"/>
 
     &commonSetup;
     &commonBuild;
@@ -170,6 +170,7 @@
         <ant dir="servletContextListenerAnnotationPreDestroy" target="all"/>
         <ant dir="servletContextDestroyedEventAttributesAvailable" target="all"/>
         <ant dir="servletContextAttributeListenerAnnotationPreDestroy" target="all"/>
+        <ant dir="servletContextSetInitParameter" target="all"/>
         <ant dir="servletResourceInjectionServletInstance" target="all"/>
         <ant dir="servletResourceInjectionServletInstanceLoadOnStartup" target="all"/>
         <ant dir="servletResourceInjectionContextListener" target="all"/>
