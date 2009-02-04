@@ -164,6 +164,7 @@
         <ant dir="sessionSetMaxInactiveIntervalExpire" target="all"/>
         <ant dir="distributableWebappEnforceSerializableSessionAttrs" target="all"/>
         <ant dir="forwardWithQueryString" target="all"/>
+        <ant dir="servletContextAddServletAndFilter" target="all"/>
         <ant dir="servletContextAttributeEventAttributeRemoved" target="all"/>
         <ant dir="servletGetServerPort" target="all"/>
         <ant dir="servletAnnotationPreDestroy" target="all"/>
@@ -198,7 +199,6 @@
         <ant dir="servletContextGetContextPath" target="all"/>
         <ant dir="servletContextGetEmptyContextPath" target="all"/>
         <ant dir="servletEmptyLoadOnStartup" target="all"/>
-        <ant dir="servletAndFilterProgrammaticRegistration" target="all"/>
         <ant dir="sessionExpired" target="all"/>
         <ant dir="servletSSLRequestAttributes" target="all"/>
         <ant dir="servletRequestURIMultipleSemicolons" target="all"/>
