@@ -210,7 +210,7 @@
         <ant dir="xmlOverrideAnnotation" target="all"/>
         <ant dir="webFragment" target="all"/>
         <ant dir="multiWebFragments" target="all"/>
-        <!-- Comment out until Grizzly 392 fixed
+        <!-- Commented out until Grizzly 392 fixed
         <ant dir="asyncListenerOnComplete" target="all"/>
         <ant dir="asyncListenerOnTimeout" target="all"/>
         -->
@@ -224,6 +224,9 @@
         <ant dir="accessLoggingDynamicReconfig" target="all"/>
         <ant dir="commonsLogging" target="all"/>
         <ant dir="commonsLoggingLocalAndGlobal" target="all"/>
+        <!-- Commented out until IT 7125 has been fixed
+        <ant dir="commonsLoggingLocalOverrideGlobal" target="all"/>
+        -->
         <ant dir="contextXmlConfig" target="all"/> 
         <ant dir="contextPathXmlConfig" target="all"/>
         <ant dir="cookieValueWithSpaces" target="all"/>
