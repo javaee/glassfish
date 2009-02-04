@@ -69,11 +69,10 @@ import java.io.IOException;
 import java.io.File;
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: Jan 8, 2009
- * Time: 11:01:25 AM
- * To change this template use File | Settings | File Templates.
+ * EarDeployer to deploy composite Java EE applications.
+ * todo : could be generified into any composite applications.
+ *
+ * @author Jerome Dochez
  */
 @Service
 @Scoped(PerLookup.class)
@@ -299,7 +298,7 @@ public class EarDeployer implements Deployer {
                     ioe.printStackTrace();
                     return null;
                 }
-                ExtendedDeploymentContext subContext = new DeploymentContextImpl(logger, context.getSource(), context.getCommandParameters(), env) {
+                ExtendedDeploymentContext subContext = new DeploymentContextImpl(logger, context.getSource(), context.getCommandParameters(), env, context.isRestart()) {
 
                     @Override
                     public ClassLoader getClassLoader() {

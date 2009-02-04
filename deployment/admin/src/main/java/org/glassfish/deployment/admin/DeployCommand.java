@@ -278,7 +278,7 @@ public class DeployCommand implements AdminCommand {
             // create the parent class loader
             final ReadableArchive sourceArchive = archive;
             final DeploymentContextImpl deploymentContext = new DeploymentContextImpl(logger,
-                    sourceArchive, parameters, env);
+                    sourceArchive, parameters, env, false);
 
             // reset the properties (might be null) set by the deployers when undeploying.
             deploymentContext.setProps(undeployProps);

@@ -57,6 +57,7 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
     final Properties parameters;
     final Logger logger;
     final ServerEnvironment env;
+    final boolean serverRestart;
     ClassLoader cloader;
     Properties props;
     Map<String, Object> modulesMetaData = new HashMap<String, Object>();
@@ -67,13 +68,18 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
     ClassLoader sharableTemp = null;
 
     /** Creates a new instance of DeploymentContext */
-    public DeploymentContextImpl(Logger logger, ReadableArchive source, Properties params, ServerEnvironment env) {
+    public DeploymentContextImpl(Logger logger, ReadableArchive source,
+                                 Properties params, ServerEnvironment env, boolean serverRestart) {
         this.source = source;
         this.logger = logger;
         this.parameters = params;
         this.env = env;
+        this.serverRestart = serverRestart;
     }
 
+    public boolean isRestart() {
+        return serverRestart;
+    }
 
     public void setPhase(Phase newPhase) {
         this.phase = newPhase;

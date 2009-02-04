@@ -182,7 +182,7 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                     ArchiveHandler handler = deployment.getArchiveHandler(sub);
                     if (handler!=null) {
                         // todo : this is a hack, once again, the handler is assuming a file:// url
-                        DeploymentContext subContext = new DeploymentContextImpl(context.getLogger(), sub, context.getProps(), env);
+                        DeploymentContext subContext = new DeploymentContextImpl(context.getLogger(), sub, context.getProps(), env, context.isRestart());
                         ClassLoader subCl = handler.getClassLoader(cl, subContext);
                         cl.addModuleClassLoader(md.getArchiveUri(), subCl);
                     }

@@ -835,7 +835,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 
             Properties prop = new Properties();
             prop.setProperty(ParameterNames.NAME, ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_APP_NAME);
-            DeploymentContextImpl context = new DeploymentContextImpl(logger, archive, prop, env);
+            DeploymentContextImpl context = new DeploymentContextImpl(logger, archive, prop, env, false);
             ActionReport report = new PlainTextActionReporter();
             ApplicationInfo info = appRegistry.get(ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_APP_NAME);
             final ApplicationLifecycle appLifecycle = habitat.getComponent(ApplicationLifecycle.class);

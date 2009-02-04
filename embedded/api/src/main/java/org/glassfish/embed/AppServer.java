@@ -528,7 +528,7 @@ public class AppServer {
         }
         params.put(ParameterNames.NAME, a.getName());
         params.put(ParameterNames.ENABLED, "true");
-        final DeploymentContextImpl deploymentContext = new DeploymentContextImpl(Logger.getAnonymousLogger(), a, params, env);
+        final DeploymentContextImpl deploymentContext = new DeploymentContextImpl(Logger.getAnonymousLogger(), a, params, env,true);
 
         ClassLoader cl = h.getClassLoader(parentCL, deploymentContext);
         Collection<Sniffer> activeSniffers = snifMan.getSniffers(a, cl);

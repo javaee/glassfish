@@ -143,5 +143,12 @@ public interface DeploymentContext extends ApplicationContext, ExecutionContext 
      *
      * @return collection of metadata added to the context
      */
-    public Collection<Object> getModuleMetadata();        
+    public Collection<Object> getModuleMetadata();
+
+
+    /**
+     * Returns true if this is a server restart, false if this is a new deployment
+     * @return true if server is restarting, false for a new deployment
+     */
+    public boolean isRestart();    
 }

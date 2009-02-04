@@ -40,6 +40,7 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.event.EventTypes;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.EngineInfo;
 import org.glassfish.internal.data.ModuleInfo;
@@ -58,6 +59,11 @@ import java.util.Collection;
  */
 @Contract
 public interface Deployment {
+
+
+    public final EventTypes<ExtendedDeploymentContext> DEPLOYMENT_START = EventTypes.create("Deployment_Start", ExtendedDeploymentContext.class);
+    public final EventTypes<ExtendedDeploymentContext> DEPLOYMENT_FAIL = EventTypes.create("Deployment_Failed", ExtendedDeploymentContext.class);
+    public final EventTypes<ApplicationInfo> DEPLOYMENT_SUCCESS = EventTypes.create("Deployment_Success", ApplicationInfo.class);
 
     public ArchiveHandler getArchiveHandler(ReadableArchive archive) throws IOException;
     public ModuleInfo prepareModule(

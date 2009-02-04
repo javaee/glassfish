@@ -132,7 +132,7 @@ public class UndeployCommand implements AdminCommand {
             source = info.getSource();
         }
 
-        DeploymentContextImpl deploymentContext = new DeploymentContextImpl(logger, source, parameters, env);
+        DeploymentContextImpl deploymentContext = new DeploymentContextImpl(logger, source, parameters, env, false);
         if (properties!=null) {
             deploymentContext.setProps(properties);
         }

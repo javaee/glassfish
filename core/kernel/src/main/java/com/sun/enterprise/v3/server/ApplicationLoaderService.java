@@ -199,7 +199,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                                 logger,
                                 sourceArchive,
                                 deploymentProperties,
-                                env);
+                                env, true);
 
                         ActionReport report = new HTMLActionReporter();
                         ApplicationInfo appInfo = deployment.deploy(depContext, report);
@@ -264,7 +264,8 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                             logger,
                             archive,
                             deploymentParams,
-                            env);
+                            env,
+                            true);
 
 
                     depContext.setProps(app.getDeployProperties());
@@ -336,7 +337,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                 props.put(ParameterNames.NAME, appInfo.getName());
 
                 DeploymentContextImpl depContext = new DeploymentContextImpl(
-                    logger,appInfo.getSource() , props, env);
+                    logger,appInfo.getSource() , props, env, false);
                 appInfo.unload(depContext, dummy);
                 appRegistry.remove(appInfo.getName());
             }

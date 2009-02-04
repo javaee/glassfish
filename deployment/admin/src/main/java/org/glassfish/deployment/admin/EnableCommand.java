@@ -158,7 +158,7 @@ public class EnableCommand implements AdminCommand {
 
         try {
             final DeploymentContextImpl deploymentContext =
-                new DeploymentContextImpl(logger, archive, parameters, env);
+                new DeploymentContextImpl(logger, archive, parameters, env, false);
             deploymentContext.getCommandParameters().setProperty(ParameterNames.NAME, component);            
 
             deploymentContext.setProps(contextProps);

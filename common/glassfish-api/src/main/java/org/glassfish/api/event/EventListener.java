@@ -50,13 +50,16 @@ public interface EventListener {
         final EventTypes<T> type;
         final T hook;
 
-        public Event(EventTypes type) {
+        public Event(EventTypes<T> type) {
+            if (type.getHookType()!=null) {
+                throw new IllegalArgumentException("Null event hook [" + type.getHookType() + "]");
+            }
             inception = System.currentTimeMillis();
             this.type = type;
             this.hook = null;
         }
 
-        public Event(EventTypes type, T hook) {
+        public Event(EventTypes<T> type, T hook) {
             inception = System.currentTimeMillis();
             this.type = type;
             this.hook = hook;

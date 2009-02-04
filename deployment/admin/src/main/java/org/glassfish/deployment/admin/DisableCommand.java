@@ -101,7 +101,7 @@ public class DisableCommand implements AdminCommand {
 
         try {
             final DeploymentContextImpl deploymentContext =
-                new DeploymentContextImpl(logger, null, context.getCommandParameters(), env);
+                new DeploymentContextImpl(logger, null, context.getCommandParameters(), env, false);
 
 
             appInfo.unload(deploymentContext, report);
