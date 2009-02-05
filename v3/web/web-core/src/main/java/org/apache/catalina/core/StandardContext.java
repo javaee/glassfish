@@ -2740,7 +2740,8 @@ public class StandardContext
         }
         if (isContextInitializedCalled) {
             throw new IllegalStateException
-                    (sm.getString("standardContext.filterMap.initialized"));
+                    (sm.getString("standardContext.filterMap.initialized",
+                                  filterName, getName()));
         }
         for (String urlPattern : urlPatterns) {
             FilterMap fmap = new FilterMap();
