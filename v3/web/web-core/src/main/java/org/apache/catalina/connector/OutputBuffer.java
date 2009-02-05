@@ -699,20 +699,16 @@ public class OutputBuffer extends Writer
         }
  
         StandardContext ctx = (StandardContext) coyoteResponse.getContext();
-        if (ctx == null || ctx.getJvmRoute() == null) {
+        if (ctx == null || ctx.getJvmRoute() == null || !ctx.getCookies()) {
             return;
         }
     
-        if (response.containsHeader(SET_COOKIE_HEADER)) {
-            return;
-        }
-
         Session sess = req.getSessionInternal(false);
         if (sess == null) {
             return;
         }
 
-        // Creating JSESSIONID cookie that includes jvmRoute
+        // Create JSESSIONID cookie that includes jvmRoute
         Cookie cookie = new Cookie(Globals.SESSION_COOKIE_NAME,
                                    sess.getIdInternal() + "." +
                                    ctx.getJvmRoute());

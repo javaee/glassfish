@@ -2942,14 +2942,20 @@ public class Request
             }
 
             if (getContext().getCookies()) {
-                String id = session.getIdInternal();
                 String jvmRoute = ((StandardContext) getContext()).getJvmRoute();
-                if (jvmRoute != null) {
-                    id += ("." + jvmRoute);
+                /*
+                 * Check if context has been configured with jvmRoute for
+                 * Apache LB. If it has, do not add the JSESSIONID cookie
+                 * here, but rely on OutputBuffer#addSessionCookieWithJvmRoute
+                 * to add the jvmRoute enhanced JSESSIONID as a cookie right
+                 * before the response is flushed.
+                 */
+                if (jvmRoute == null) {
+                    String id = session.getIdInternal();
+                    Cookie cookie = new Cookie(Globals.SESSION_COOKIE_NAME, id);
+                    configureSessionCookie(cookie);
+                    ((HttpServletResponse) response).addCookie(cookie);
                 }
-                Cookie cookie = new Cookie(Globals.SESSION_COOKIE_NAME, id);
-                configureSessionCookie(cookie);
-                ((HttpServletResponse) response).addCookie(cookie);
             }
         }
 
