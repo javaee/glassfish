@@ -43,6 +43,7 @@ import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.ejb.containers.EJBLocalRemoteObject;
 import com.sun.ejb.containers.EjbFutureTask;
 import org.glassfish.api.invocation.ComponentInvocation;
+import com.sun.enterprise.transaction.spi.TransactionOperationsManager;
 
 import javax.ejb.EJBContext;
 import javax.interceptor.InvocationContext;
@@ -69,7 +70,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class EjbInvocation
     extends ComponentInvocation
-    implements InvocationContext, Cloneable
+    implements InvocationContext, TransactionOperationsManager, Cloneable
 {
   
     private static Map<Class, Set<Class>> compatiblePrimitiveWrapper
@@ -404,6 +405,28 @@ public class EjbInvocation
 
     public void setCMCLock(java.util.concurrent.locks.Lock l) {
         cmcLock = l;
+    }
+
+    @Override
+    public Object getTransactionOperationsManager() {
+        return this;
+    }
+
+    //Implementation of TransactionOperationsManager methods
+    
+    /**
+     * Called by the UserTransaction implementation to verify 
+     * access to the UserTransaction methods.
+     */
+    public boolean userTransactionMethodsAllowed() {
+        return ((Container) container).userTransactionMethodsAllowed(this);
+    }
+
+    /**
+     * Called by the UserTransaction when transaction is started.
+     */
+    public void doAfterUtxBegin() {
+        ((Container) container).doAfterBegin(this);
     }
 
     //Implementation of InvocationContext methods
