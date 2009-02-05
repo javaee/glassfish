@@ -37,10 +37,11 @@ package org.glassfish.ejb.deployment.annotation.handlers;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
-import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
 
 import javax.ejb.*;
 
@@ -97,6 +98,7 @@ public class AccessTimeoutHandler extends AbstractAttributeHandler implements Po
                     // been processed.  This correctly ignores superclass methods that
                     // are overridden and applies the correct .xml overriding semantics.
                     if(!matchesExistingAccessTimeoutMethod(annMethod, singletonDesc)) {
+                      
                         MethodDescriptor newMethodDesc = new MethodDescriptor(annMethod);
                         singletonDesc.addAccessTimeoutMethod(newMethodDesc, timeout.value(),
                                                              timeout.unit());
@@ -133,13 +135,34 @@ public class AccessTimeoutHandler extends AbstractAttributeHandler implements Po
         EjbContext ejbContext = (EjbContext)aeHandler;
         EjbSingletonDescriptor ejbDesc = (EjbSingletonDescriptor) ejbContext.getDescriptor();
 
+        // At this point, all method-level specific annotations have been processed.
+        // For non-private methods, find the ones from the EjbContext's
+        // component definition view that are declared on this class.  This will correctly
+        // eliminate any overridden methods and provide the most-derived version of each.
+        // Use the Class's declared methods list to get the private methods.
+        
         Class classAn = (Class)ainfo.getAnnotatedElement();
         AccessTimeout timeoutAnn = (AccessTimeout) ainfo.getAnnotation();
-       
-        Method[] classMethods = classAn.getDeclaredMethods();
-        for( Method m : classMethods ) {
 
+        List<Method> toProcess = new ArrayList<Method>();
+        for(Method m : ejbContext.getComponentDefinitionMethods()) {
+            if( classAn.equals(m.getDeclaringClass())) {
+                toProcess.add(m);
+            }
+        }
+        for(Method m : classAn.getDeclaredMethods()) {
+            if( Modifier.isPrivate(m.getModifiers()) ) {
+                toProcess.add(m);
+            }
+        }
+
+        for( Method m : toProcess ) {
+
+            // If the method is declared on the same class as the TYPE-level default
+            // and it hasn't already been assigned lock information from the deployment
+            // descriptor, set it.
             if( !matchesExistingAccessTimeoutMethod(m, ejbDesc) ) {
+
                 MethodDescriptor newMethodDesc = new MethodDescriptor(m);
                     ejbDesc.addAccessTimeoutMethod(newMethodDesc, timeoutAnn.value(),
                                                    timeoutAnn.unit());
@@ -151,13 +174,14 @@ public class AccessTimeoutHandler extends AbstractAttributeHandler implements Po
     private boolean matchesExistingAccessTimeoutMethod(Method methodToMatch,
                                                        EjbSingletonDescriptor desc) {
 
-        Set<MethodDescriptor> timeoutMethods = desc.getAccessTimeoutMethods();
+        List<MethodDescriptor> timeoutMethods = desc.getAccessTimeoutMethods();
 
         boolean match = false;
         for (MethodDescriptor next : timeoutMethods) {
 
             Method m = next.getMethod(desc);
-            if (TypeUtil.sameMethodSignature(m, methodToMatch)) {
+            if (( m.getDeclaringClass().equals(methodToMatch.getDeclaringClass()) ) &&
+                  TypeUtil.sameMethodSignature(m, methodToMatch) ) {
                 match = true;
                 break;
             }

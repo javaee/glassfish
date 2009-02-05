@@ -2342,16 +2342,17 @@ public abstract class BaseContainer
             }
         }
 
+        MethodLockInfo lockInfo = null;
+
         // Set locking info
         if( isSingleton ) {
             EjbSingletonDescriptor singletonDesc = (EjbSingletonDescriptor) ejbDescriptor;
-            Set<MethodDescriptor> readLockMethods = singletonDesc.getReadLockMethods();
-            Set<MethodDescriptor> writeLockMethods = singletonDesc.getWriteLockMethods();
+            List<MethodDescriptor> readLockMethods = singletonDesc.getReadLockMethods();
+            List<MethodDescriptor> writeLockMethods = singletonDesc.getWriteLockMethods();
 
-            MethodLockInfo lockInfo = null;
             for(MethodDescriptor readLockMethodDesc : readLockMethods) {
                 Method readLockMethod = readLockMethodDesc.getMethod(singletonDesc);
-                if(TypeUtil.sameMethodSignature(method, readLockMethod)) {
+                if(implMethodMatchesInvInfoMethod(method, methodIntf, readLockMethod)) {
 
                     lockInfo = new MethodLockInfo();
                     lockInfo.setLockType(LockType.READ);
@@ -2362,7 +2363,7 @@ public abstract class BaseContainer
             if( lockInfo == null ) {
                 for(MethodDescriptor writeLockMethodDesc : writeLockMethods) {
                     Method writeLockMethod = writeLockMethodDesc.getMethod(singletonDesc);
-                    if(TypeUtil.sameMethodSignature(method, writeLockMethod)) {
+                    if(implMethodMatchesInvInfoMethod(method, methodIntf, writeLockMethod)) {
 
                         lockInfo = new MethodLockInfo();
                         lockInfo.setLockType(LockType.WRITE);
@@ -2370,32 +2371,34 @@ public abstract class BaseContainer
                     }
                 }
             }
-
-            if( lockInfo != null) {
-                invInfo.methodLockInfo = lockInfo;
-            }
         }
 
         // Set AccessTimeout info
         if( isSingleton ) {
             // @@@ need to do this for stateful session beans too
             EjbSingletonDescriptor singletonDesc = (EjbSingletonDescriptor) ejbDescriptor;
-            Set<MethodDescriptor> accessTimeoutMethods = singletonDesc.getAccessTimeoutMethods();
+            List<EjbSingletonDescriptor.AccessTimeoutHolder> accessTimeoutInfo =
+                    singletonDesc.getAccessTimeoutInfo();
 
 
-            for(MethodDescriptor accessTimeoutMethodDesc : accessTimeoutMethods) {
+            for(EjbSingletonDescriptor.AccessTimeoutHolder accessTimeoutHolder : accessTimeoutInfo) {
+                MethodDescriptor accessTimeoutMethodDesc = accessTimeoutHolder.method;
                 Method accessTimeoutMethod = accessTimeoutMethodDesc.getMethod(singletonDesc);
-                if(TypeUtil.sameMethodSignature(method, accessTimeoutMethod)) {
+                if(implMethodMatchesInvInfoMethod(method, methodIntf, accessTimeoutMethod)) {
 
-                    MethodLockInfo lockInfo = (invInfo.methodLockInfo == null)
-                            ? new MethodLockInfo() : invInfo.methodLockInfo;
-                    EjbSingletonDescriptor.AccessTimeoutHolder holder =
-                            singletonDesc.getAccessTimeoutForMethod(accessTimeoutMethodDesc);
-                    lockInfo.setTimeout(holder.value , holder.unit);
+                    if( lockInfo == null ) {
+                        lockInfo = new MethodLockInfo();
+                    }
+
+                    lockInfo.setTimeout(accessTimeoutHolder.value , accessTimeoutHolder.unit);
 
                     break;
                 }
             }
+        }
+
+        if( lockInfo != null) {
+            invInfo.methodLockInfo = lockInfo;
         }
 
         if( _logger.isLoggable(Level.FINE) ) {
@@ -2405,6 +2408,25 @@ public abstract class BaseContainer
 
 
         return invInfo;
+    }
+
+    private boolean implMethodMatchesInvInfoMethod
+            (Method m, String methodIntf, Method invInfoMethod) {
+
+        boolean match = false;
+
+        if( methodIntf.equals(MethodDescriptor.EJB_BEAN) ) {
+            // Declaring class must match in addition to signature
+            match = ( m.getDeclaringClass().equals(invInfoMethod.getDeclaringClass()) &&
+                      TypeUtil.sameMethodSignature(m, invInfoMethod) );
+
+        } else {
+            match = Modifier.isPublic(m.getModifiers()) &&
+                    Modifier.isPublic(invInfoMethod.getModifiers()) &&
+                    TypeUtil.sameMethodSignature(m, invInfoMethod);
+        }
+
+        return match;
     }
 
     protected InvocationInfo postProcessInvocationInfo(

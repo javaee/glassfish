@@ -121,6 +121,8 @@ public class InvocationInfo {
         sb.append("flushenabled = " + flushEnabled + "\t");
         sb.append("checkpointenabled = " + checkpointEnabled + "\t");
         sb.append("removalInfo = " + removalInfo + "\t");
+        sb.append("lockInfo = " + methodLockInfo + "\t");
+        sb.append("async = " + asyncMethodFlag + "\t");
         sb.append("\n");
         return sb.toString();
     }

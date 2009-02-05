@@ -121,6 +121,10 @@ public class EjbContext extends ResourceContainerContextImpl {
         return declaringClass;
     }
 
+    public Method[] getComponentDefinitionMethods() {
+        return methods;
+    }
+
     public boolean isInherited() {
         return inherited;
     }

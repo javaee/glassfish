@@ -37,9 +37,11 @@
 package org.glassfish.ejb.deployment;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.lang.reflect.Method;
 
@@ -61,10 +63,10 @@ public class EjbSingletonDescriptor
     private static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(EjbSingletonDescriptor.class);
 
-    private Set<MethodDescriptor> readLockMethods = new HashSet<MethodDescriptor>();
-    private Set<MethodDescriptor> writeLockMethods = new HashSet<MethodDescriptor>();
-    private Map<MethodDescriptor, AccessTimeoutHolder> accessTimeoutMethods =
-            new HashMap<MethodDescriptor, AccessTimeoutHolder>();
+    private List<MethodDescriptor> readLockMethods = new ArrayList<MethodDescriptor>();
+    private List<MethodDescriptor> writeLockMethods = new ArrayList<MethodDescriptor>();
+    private List<AccessTimeoutHolder> accessTimeoutMethods =
+            new ArrayList<AccessTimeoutHolder>();
 
     private static final String[] _emptyDepends = new String[] {};
 
@@ -197,16 +199,16 @@ public class EjbSingletonDescriptor
         writeLockMethods.add(methodDescriptor);
     }
 
-    public Set<MethodDescriptor> getReadLockMethods() {
-        return new HashSet<MethodDescriptor>(readLockMethods);
+    public List<MethodDescriptor> getReadLockMethods() {
+        return new ArrayList<MethodDescriptor>(readLockMethods);
     }
 
-    public Set<MethodDescriptor> getWriteLockMethods() {
-        return new HashSet<MethodDescriptor>(writeLockMethods);
+    public List<MethodDescriptor> getWriteLockMethods() {
+        return new ArrayList<MethodDescriptor>(writeLockMethods);
     }
 
-    public Set<MethodDescriptor> getReadAndWriteLockMethods() {
-        Set<MethodDescriptor> readAndWriteLockMethods = new HashSet<MethodDescriptor>();
+    public List<MethodDescriptor> getReadAndWriteLockMethods() {
+        List<MethodDescriptor> readAndWriteLockMethods = new ArrayList<MethodDescriptor>();
         readAndWriteLockMethods.addAll(readLockMethods);
         readAndWriteLockMethods.addAll(writeLockMethods);
         return readAndWriteLockMethods;
@@ -214,15 +216,23 @@ public class EjbSingletonDescriptor
 
     public void addAccessTimeoutMethod(MethodDescriptor methodDescriptor, long value,
                                        TimeUnit unit) {
-        accessTimeoutMethods.put(methodDescriptor, new AccessTimeoutHolder(value, unit));
+        accessTimeoutMethods.add(new AccessTimeoutHolder(value, unit, methodDescriptor));
     }
 
-    public Set<MethodDescriptor> getAccessTimeoutMethods() {
-        return new HashSet<MethodDescriptor>(accessTimeoutMethods.keySet());
+    public List<MethodDescriptor> getAccessTimeoutMethods() {
+        List<MethodDescriptor> methods = new ArrayList<MethodDescriptor>();
+        for(AccessTimeoutHolder holder : accessTimeoutMethods){
+            methods.add(holder.method);
+        }
+        return methods;
     }
 
-    public AccessTimeoutHolder getAccessTimeoutForMethod(MethodDescriptor methodDescriptor) {
-        return accessTimeoutMethods.get(methodDescriptor);
+    public List<AccessTimeoutHolder> getAccessTimeoutInfo() {
+        List<AccessTimeoutHolder> all = new ArrayList<AccessTimeoutHolder>();
+        for(AccessTimeoutHolder holder : accessTimeoutMethods){
+            all.add(holder);
+        }
+        return all;
     }
 
     /**
@@ -243,12 +253,14 @@ public class EjbSingletonDescriptor
     }
 
     public static class AccessTimeoutHolder {
-        public AccessTimeoutHolder(long v, TimeUnit u) {
+        public AccessTimeoutHolder(long v, TimeUnit u, MethodDescriptor m) {
             value = v;
             unit = u;
+            method = m;
         }
         public long value;
         public TimeUnit unit;
+        public MethodDescriptor method;
     }
 
 }

@@ -91,4 +91,8 @@ public class MethodLockInfo {
         return timeUnit;
     }
 
+    public String toString() {
+        return lockType + ":" + timeout + ":" + timeUnit;
+    }
+
 }

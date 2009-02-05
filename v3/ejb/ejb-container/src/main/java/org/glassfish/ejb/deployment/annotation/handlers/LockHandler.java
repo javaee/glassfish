@@ -39,8 +39,10 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
-import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
 
 import javax.ejb.*;
 
@@ -95,7 +97,7 @@ public class LockHandler extends AbstractAttributeHandler implements PostProcess
                     Method annMethod = (Method) ainfo.getAnnotatedElement();
 
                     // Only assign lock type if the method hasn't already been processed.
-                    // This correctly ignores superclass methods that are overridden and
+                    // This correctly ignores overridden superclass methods and
                     // applies the correct .xml overriding semantics.
                     if(!matchesExistingReadOrWriteLockMethod(annMethod, singletonDesc)) {
                         MethodDescriptor newMethodDesc = new MethodDescriptor(annMethod);
@@ -140,9 +142,29 @@ public class LockHandler extends AbstractAttributeHandler implements PostProcess
         Class classAn = (Class)ainfo.getAnnotatedElement();
         Lock lockAnn = (Lock) ainfo.getAnnotation();
 
-        Method[] classMethods = classAn.getDeclaredMethods();
-        for( Method m : classMethods ) {
+        // At this point, all method-level specific annotations have been processed.
+        // For non-private methods, find the ones from the EjbContext's
+        // component definition view that are declared on this class.  This will correctly
+        // eliminate any overridden methods and provide the most-derived version of each.
+        // Use the Class's declared methods list to get the private methods.
 
+        List<Method> toProcess = new ArrayList<Method>();
+        for(Method m : ejbContext.getComponentDefinitionMethods()) {
+            if( classAn.equals(m.getDeclaringClass())) {
+                toProcess.add(m);
+            }
+        }
+        for(Method m : classAn.getDeclaredMethods()) {
+            if( Modifier.isPrivate(m.getModifiers()) ) {
+                toProcess.add(m);
+            }
+        }
+
+        for( Method m : toProcess ) {
+
+            // If the method is declared on the same class as the TYPE-level default
+            // and it hasn't already been assigned lock information from the deployment
+            // descriptor, set it.
             if( !matchesExistingReadOrWriteLockMethod(m, ejbDesc) ) {
                 MethodDescriptor newMethodDesc = new MethodDescriptor(m);
                 if( lockAnn.value() == LockType.WRITE) {
@@ -153,19 +175,19 @@ public class LockHandler extends AbstractAttributeHandler implements PostProcess
             }
 
         }
-
     }
 
     private boolean matchesExistingReadOrWriteLockMethod(Method methodToMatch,
                                                          EjbSingletonDescriptor desc) {
 
-        Set<MethodDescriptor> lockMethods = desc.getReadAndWriteLockMethods();
+        List<MethodDescriptor> lockMethods = desc.getReadAndWriteLockMethods();
 
         boolean match = false;
         for (MethodDescriptor next : lockMethods) {
 
             Method m = next.getMethod(desc);
-            if (TypeUtil.sameMethodSignature(m, methodToMatch)) {
+            if( ( m.getDeclaringClass().equals(methodToMatch.getDeclaringClass()) ) &&
+                TypeUtil.sameMethodSignature(m, methodToMatch) ) {
                 match = true;
                 break;
             }
