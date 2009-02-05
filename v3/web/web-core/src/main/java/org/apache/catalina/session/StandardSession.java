@@ -85,6 +85,7 @@ import javax.servlet.http.HttpSessionContext;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
+import org.apache.catalina.ContainerEvent;
 import org.apache.catalina.Context;
 import org.apache.catalina.Globals;
 import org.apache.catalina.Manager;
@@ -1537,7 +1538,17 @@ public class StandardSession
         HttpSessionBindingEvent event = null;
         if (value instanceof HttpSessionBindingListener) {
             event = new HttpSessionBindingEvent(getSession(), name, value);
-            ((HttpSessionBindingListener) value).valueUnbound(event);
+            try {
+                context.fireContainerEvent(
+                    ContainerEvent.BEFORE_SESSION_VALUE_UNBOUND, null);
+                ((HttpSessionBindingListener) value).valueUnbound(event);
+                context.fireContainerEvent(
+                    ContainerEvent.AFTER_SESSION_VALUE_UNBOUND, null);
+            } catch (Throwable t) {
+                // Log exception
+                context.fireContainerEvent(
+                    ContainerEvent.AFTER_SESSION_VALUE_UNBOUND, null);
+            }
         }
         
         // Notify special event listeners on removeAttribute

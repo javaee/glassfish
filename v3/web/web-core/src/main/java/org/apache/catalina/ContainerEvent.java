@@ -144,6 +144,12 @@ public final class ContainerEvent extends EventObject {
     public static final String AFTER_SESSION_ATTRIBUTE_REPLACED
         = "afterSessionAttributeReplaced";
 
+    public static final String BEFORE_SESSION_VALUE_UNBOUND
+        = "beforeSessionValueUnbound";
+
+    public static final String AFTER_SESSION_VALUE_UNBOUND
+        = "afterSessionValueUnbound";
+
     public static final String BEFORE_FILTER_INITIALIZED
         = "beforeFilterInitialized";
 

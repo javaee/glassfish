@@ -85,6 +85,7 @@ public final class WebContainerListener
         beforeEvents.add(ContainerEvent.BEFORE_SESSION_ATTRIBUTE_ADDED);
         beforeEvents.add(ContainerEvent.BEFORE_SESSION_ATTRIBUTE_REMOVED);
         beforeEvents.add(ContainerEvent.BEFORE_SESSION_ATTRIBUTE_REPLACED);
+        beforeEvents.add(ContainerEvent.BEFORE_SESSION_VALUE_UNBOUND);
         beforeEvents.add(ContainerEvent.BEFORE_FILTER_INITIALIZED);
         beforeEvents.add(ContainerEvent.BEFORE_FILTER_DESTROYED);
 
@@ -101,6 +102,7 @@ public final class WebContainerListener
         afterEvents.add(ContainerEvent.AFTER_SESSION_ATTRIBUTE_ADDED);
         afterEvents.add(ContainerEvent.AFTER_SESSION_ATTRIBUTE_REMOVED);
         afterEvents.add(ContainerEvent.AFTER_SESSION_ATTRIBUTE_REPLACED);
+        afterEvents.add(ContainerEvent.AFTER_SESSION_VALUE_UNBOUND);
         afterEvents.add(ContainerEvent.AFTER_FILTER_INITIALIZED);
         afterEvents.add(ContainerEvent.AFTER_FILTER_DESTROYED);
     }
