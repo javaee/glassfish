@@ -91,7 +91,7 @@ class LogDBHelper {
 
         } catch (Throwable t) {
             _logger.log(Level.SEVERE,"jts.unconfigured_db_log_resource",resName);
-            _logger.log(Level.SEVERE,t.getLocalizedMessage(),t);
+            _logger.log(Level.SEVERE,"",t);
         }
     }
 
