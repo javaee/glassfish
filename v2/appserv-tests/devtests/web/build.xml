@@ -231,9 +231,7 @@
         <ant dir="contextPathXmlConfig" target="all"/>
         <ant dir="cookieValueWithSpaces" target="all"/>
         <ant dir="cookieValueWithEquals" target="all"/>
-        <!-- EAR files not supported in GlassFish v3 Prelude
         <ant dir="crossContextDispatchLongestContextRootMatch" target="all"/> 
-        -->
         <ant dir="delegate" target="all"/>
         <ant dir="errorPageExceptionTypeMapping" target="all"/>
         <ant dir="jsfWithBundledOneDotOneJarFiles" target="all"/>
