@@ -212,8 +212,17 @@ public class Server {
         }
     }
 
+    public synchronized CommandExecutor getCommandExecutor() throws EmbeddedException {
+        mustBeStarted("getCommandExecutor");
+
+        if(ce == null)
+            ce = new CommandExecutor(this);
+
+        return ce;
+    }
+    
     /**
-     *
+     * TODO CLEANUP
      * @param url
      */
     public void setDefaultWebXml(URL url) {
@@ -221,6 +230,7 @@ public class Server {
     }
 
     /**
+     * TODO CLEANUP
      *
      * @return
      */
@@ -281,6 +291,7 @@ public class Server {
     public static void setLogLevel(Level level) {
         Logger.getLogger("javax.enterprise").setLevel(level);
     }
+
     public void start() throws EmbeddedException {
         if (started)
             throw new EmbeddedException("already_started");
@@ -574,6 +585,25 @@ public class Server {
      *************    private   ********************************
      ******************************************************************
      */
+
+    private EmbeddedVirtualServer createAdminVirtualServer() throws EmbeddedException {
+        mustNotBeStarted("createAdminVirtualServer");
+
+        DomBuilder db = onHttpService();
+        db.element("virtual-server").attribute("id", info.adminVSName).attribute("http-listeners", info.adminHttpListenerName).attribute("hosts", "${com.sun.aas.hostName}") // ???
+                .attribute("log-file", "").element("property").attribute("name", "docroot").attribute("value", ".");
+
+        return new EmbeddedVirtualServer(null);
+    }
+
+    private EmbeddedHttpListener createAdminHttpListener() throws EmbeddedException {
+        mustNotBeStarted("createAdminHttpListener");
+
+        onHttpService().element("http-listener").attribute("id", info.adminHttpListenerName).attribute("address", "0.0.0.0").attribute("port", info.adminHttpPort).attribute("default-virtual-server", info.adminVSName).attribute("server-name", "").attribute("enabled", true);
+
+        return new EmbeddedHttpListener(String.valueOf(info.adminHttpPort), null);
+    }
+
     private DomBuilder onAdminService() {
         try {
             return new DomBuilder((Element) xpath.evaluate("//admin-service", domainXmlDocument, XPathConstants.NODE));
@@ -605,23 +635,7 @@ public class Server {
         return new EmbeddedHttpListener(String.valueOf(info.httpPort), null);
 
     }
-    public EmbeddedVirtualServer createAdminVirtualServer() throws EmbeddedException {
-        mustNotBeStarted("createAdminVirtualServer");
 
-        DomBuilder db = onHttpService();
-        db.element("virtual-server").attribute("id", info.adminVSName).attribute("http-listeners", info.adminHttpListenerName).attribute("hosts", "${com.sun.aas.hostName}") // ???
-                .attribute("log-file", "").element("property").attribute("name", "docroot").attribute("value", ".");
-
-        return new EmbeddedVirtualServer(null);
-    }
-
-    public EmbeddedHttpListener createAdminHttpListener() throws EmbeddedException {
-        mustNotBeStarted("createAdminHttpListener");
-
-        onHttpService().element("http-listener").attribute("id", info.adminHttpListenerName).attribute("address", "0.0.0.0").attribute("port", info.adminHttpPort).attribute("default-virtual-server", info.adminVSName).attribute("server-name", "").attribute("enabled", true);
-
-        return new EmbeddedHttpListener(String.valueOf(info.adminHttpPort), null);
-    }
     /**
      * Starts the server if hasn't done so already.
      * Necessary to work around the live HTTP listener update.
@@ -907,6 +921,7 @@ public class Server {
     private Document                    domainXmlDocument;
     private EmbeddedFileSystem          efs;
     private EmbeddedInfo                info;
+    private CommandExecutor             ce;
     private static Map<String, Server>  servers         = new HashMap<String, Server>();
 }
 

@@ -34,7 +34,7 @@ public class CommandExecutor {
      * @param server the server to execute commands on
      * @throws org.glassfish.embed.EmbeddedException
      */
-    public CommandExecutor(Server server) throws EmbeddedException {
+    CommandExecutor(Server server) throws EmbeddedException {
         try {
             cr = server.getHabitat().getComponent(CommandRunner.class);
         } catch (NullPointerException e) {
