@@ -52,12 +52,9 @@
  * limitations under the License.
  */
 
-
-
-
 package org.apache.catalina;
 
-
+import java.util.Map;
 import javax.servlet.*;
 
 import com.sun.grizzly.util.http.mapper.Mapper;
@@ -728,10 +725,13 @@ public interface Context extends Container {
      *
      * @param servletName the servlet name
      * @param instance the servlet instance
+     * @param initParams Map containing the initialization parameters for 
+     * the servlet
      *
      * @throws ServletException if the servlet fails to be initialized
      */
-    public void addServlet(String servletName, Servlet instance)
+    public void addServlet(String servletName, Servlet instance,
+                           Map<String, String> initParams)
         throws ServletException;
 
 
@@ -741,11 +741,14 @@ public interface Context extends Container {
      *
      * @param servletName the servlet name
      * @param instance the servlet instance
+     * @param initParams Map containing the initialization parameters for 
+     * the servlet
      * @param urlPatterns the URL patterns that will be mapped to the servlet
      *
      * @throws ServletException if the servlet fails to be initialized
      */
     public void addServlet(String servletName, Servlet instance,
+                           Map<String, String> initParams,
                            String... urlPatterns)
             throws ServletException;
 

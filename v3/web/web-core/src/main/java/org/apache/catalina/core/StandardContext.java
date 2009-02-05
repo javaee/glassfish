@@ -2620,7 +2620,7 @@ public class StandardContext
 
         // Add this filter mapping to our registered set
         synchronized (filterMaps) {
-            FilterMap results[] =new FilterMap[filterMaps.length + 1];
+            FilterMap results[] = new FilterMap[filterMaps.length + 1];
             if (isMatchAfter) {
                 System.arraycopy(filterMaps, 0, results, 0, filterMaps.length);
                 results[filterMaps.length] = filterMap;
@@ -3229,12 +3229,15 @@ public class StandardContext
      *
      * @param servletName the servlet name
      * @param instance the servlet instance
+     * @param initParams Map containing the initialization parameters for 
+     * the servlet
      *
      * @throws ServletException if the servlet fails to be initialized
      */
-    public void addServlet(String servletName, Servlet instance)
+    public void addServlet(String servletName, Servlet instance,
+                           Map<String, String> initParams)
             throws ServletException {
-        addServlet(servletName, instance, null);
+        addServlet(servletName, instance, initParams, null);
     }
 
 
@@ -3244,24 +3247,38 @@ public class StandardContext
      *
      * @param servletName the servlet name
      * @param instance the servlet instance
+     * @param initParams Map containing the initialization parameters for 
+     * the servlet
      * @param urlPatterns the URL patterns that will be mapped to the servlet
      *
      * @throws ServletException if the servlet fails to be initialized
      */
     public void addServlet(String servletName, Servlet instance,
-                           String... urlPatterns) throws ServletException {
+                           Map<String, String> initParams,
+                           String... urlPatterns)
+            throws ServletException {
         if (!(instance instanceof Servlet)) {
             throw new IllegalArgumentException("Not an instance of " +
                                                "javax.servlet.Servlet");
         }
+
         StandardWrapper wrapper = (StandardWrapper) createWrapper();
+
+        if (initParams != null) {
+            for (Map.Entry<String, String> e : initParams.entrySet()) {
+                wrapper.addInitParameter(e.getKey(), e.getValue());
+            }
+        }
+
         wrapper.setName(servletName);
         wrapper.setServlet(instance);
+
         if (urlPatterns != null) {
             for (String urlPattern : urlPatterns) {
                 wrapper.addMapping(urlPattern);
             }
         }
+
         addChild(wrapper);
     }
 
