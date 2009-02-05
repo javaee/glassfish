@@ -123,7 +123,7 @@
     	</dependency>
         <dependency>
             <groupId>org.glassfish.admingui</groupId>
-            <artifactId>console-branding-plugin</artifactId>
+	    <artifactId>console-community-branding-plugin</artifactId>
             <version>${project.version}</version>
     	</dependency>
         <dependency>        
