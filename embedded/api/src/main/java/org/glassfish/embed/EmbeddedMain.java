@@ -97,8 +97,7 @@ public class EmbeddedMain {
      */
     private static EmbeddedInfo paramsToInfo(Map<String, String> params, List<String> operands) throws EmbeddedException {
         EmbeddedInfo info = new EmbeddedInfo();
-        EmbeddedFileSystem efs = new EmbeddedFileSystem();
-        info.setFileSystem(efs);
+        EmbeddedFileSystem efs = info.getFileSystem();
 
         /*  Use operands for war filenames -- for now....
          */

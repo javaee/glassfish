@@ -120,7 +120,7 @@ public class ServerTest {
 
         ApplicationLifecycle appLife = server.getHabitat().getComponent(ApplicationLifecycle.class);
         ArchiveHandler h = appLife.getArchiveHandler(a);
-        File appDir = new File(server.getFileSystem().getAppsDir(), a.getName());
+        File appDir = new File(server.getFileSystem().getApplicationsDir(), a.getName());
         FileUtils.whack(appDir);
         appDir.mkdirs();
         h.expand(a, archiveFactory.createArchive(appDir));

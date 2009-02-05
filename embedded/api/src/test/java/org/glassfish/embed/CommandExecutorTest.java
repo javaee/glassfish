@@ -36,10 +36,9 @@ public class CommandExecutorTest {
         if(myGF == null) {
             EmbeddedInfo ei = new EmbeddedInfo();
             ei.setServerName("server");
-            EmbeddedFileSystem efs = new EmbeddedFileSystem();
-            efs.setRoot(new File("cetest"));
+            EmbeddedFileSystem efs = ei.getFileSystem();
+            efs.setInstallRoot(new File("cetest"));
             efs.setAutoDelete(true);
-            ei.setFileSystem(efs);
             myGF = new Server(ei);
         }
         try {

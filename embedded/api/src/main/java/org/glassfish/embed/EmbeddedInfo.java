@@ -66,20 +66,13 @@ public class EmbeddedInfo {
     }
 
     /**
-     * Sets an {@link EmbeddedFileSystem} on this <code>EmbeddedInfo</EmbeddedInfo> object
-     *
-     * @param efs
-     * @see EmbeddedFileSystem
-     */
-    public void setFileSystem(EmbeddedFileSystem efs) {
-        this.efs = efs;
-    }
-
-    /**
      *
      * @return the {@link EmbeddedFileSystem} used by this <code>EmbeddedInfo</object>
      */
-    public EmbeddedFileSystem getFileSystem() {
+    public synchronized EmbeddedFileSystem getFileSystem() {
+        if(efs == null) {
+            efs = new EmbeddedFileSystem();
+        }
         return efs;
     }
 
@@ -211,7 +204,7 @@ public class EmbeddedInfo {
     String                  httpListenerName        = DEFAULT_HTTP_LISTENER_NAME;
     String                  adminHttpListenerName   = DEFAULT_ADMIN_HTTP_LISTENER_NAME;
     String                  adminVSName             = DEFAULT_ADMIN_VIRTUAL_SERVER_ID;
-    boolean                 logging                 = false;
+    boolean                 logging                 = true;
     boolean                 verbose                 = false;
     boolean                 createOnly              = false;
     boolean                 autoDeploy              = false;
@@ -236,10 +229,7 @@ public class EmbeddedInfo {
     }
 
     private void validateFilesystem() throws EmbeddedException {
-        if(efs == null) {
-            efs = new EmbeddedFileSystem();
-        }
-        efs.initialize();
+        getFileSystem().initialize();
     }
 
     private void validateLogging() throws EmbeddedException {

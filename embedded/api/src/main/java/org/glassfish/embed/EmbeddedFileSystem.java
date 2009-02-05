@@ -39,8 +39,6 @@ package org.glassfish.embed;
 import com.sun.enterprise.util.diagnostics.ObjectAnalyzer;
 import static com.sun.enterprise.universal.glassfish.SystemPropertyConstants.*;
 import java.net.MalformedURLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import static org.glassfish.embed.ServerConstants.*;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.util.io.FileUtils;
@@ -63,23 +61,13 @@ public final class EmbeddedFileSystem {
     /**
      *
      */
-    public EmbeddedFileSystem() {
+    EmbeddedFileSystem() {
     }
 
     // ****************************************************
     // *************    public setters
     // ****************************************************
-    /**
-     * @deprecated
-     * Sets install root and instance root to the specified directory
-     * @param f
-     * @throws org.glassfish.embed.EmbeddedException
-     */
-    @Deprecated
-    public void setRoot(File f) throws EmbeddedException {
-        setInstallRoot(f);
-        setInstanceRoot(f);
-    }
+
 
     /**
      * Set the root directory for the Embedded GlassFish file system.
@@ -157,8 +145,7 @@ public final class EmbeddedFileSystem {
 
     /**
      * Specifies whether to delete the Embedded file system after stopping Embedded
-     * GlassFish process.  If set to <code>true</code>, and default install root, "gfe",
-     * and default instance root, "domains/domain1", were used, then the install root
+     * GlassFish process.  If set to <code>true</code> the install root
      * and all directories and files under it will be deleted upon exit.
      *
      * @param b true - delete default install root, "gfe" upon exit
@@ -169,6 +156,12 @@ public final class EmbeddedFileSystem {
         mustNotBeInitialized("setAutoDelete");
         autoDelete = b;
     }
+
+    public void setLogFile(File f) {
+        // f can be null -- it is pointless but OK
+        logFile = f;
+    }
+    
     // ****************************************************
     // *************    public getters
     // ****************************************************
@@ -181,27 +174,6 @@ public final class EmbeddedFileSystem {
     public File getInstallRoot() throws EmbeddedException {
         mustBeInitialized("getInstallRoot");
         return installRoot;
-    }
-
-    /**
-     *
-     * @return fake modules directory.  This is for the benefit of StartupContext
-     * which insists that the install root should be the PARENT of some other directory.
-     * This is some other directory.
-     * @throws org.glassfish.embed.EmbeddedException
-     */
-    public File getModulesDirectory() throws EmbeddedException {
-        mustBeInitialized("getModulesDirectory");
-        File f = new File(getInstallRoot(), "modules");
-
-        if(!f.isDirectory()) {
-            f.mkdirs();
-        }
-
-        if(!f.isDirectory()) {
-            throw new EmbeddedException("cant_create_modules_dir");
-        }
-        return f;
     }
 
     /**
@@ -249,7 +221,7 @@ public final class EmbeddedFileSystem {
      *
      * @return applications directory
      */
-    public File getAppsDir() {
+    public File getApplicationsDir() {
         return appsDir;
     }
 
@@ -268,6 +240,28 @@ public final class EmbeddedFileSystem {
     // ****************************************************
     // *************    package private. Think long and hard before making public!
     // ****************************************************
+
+    /**
+     *
+     * @return fake modules directory.  This is for the benefit of StartupContext
+     * which insists that the install root should be the PARENT of some other directory.
+     * This is some other directory.
+     * @throws org.glassfish.embed.EmbeddedException
+     */
+    File getModulesDirectory() throws EmbeddedException {
+        mustBeInitialized("getModulesDirectory");
+        File f = new File(getInstallRoot(), "modules");
+
+        if(!f.isDirectory()) {
+            f.mkdirs();
+        }
+
+        if(!f.isDirectory()) {
+            throw new EmbeddedException("cant_create_modules_dir");
+        }
+        return f;
+    }
+
     void cleanup() throws EmbeddedException {
         mustBeInitialized("cleanup");
         if (shouldCleanup()) {
@@ -359,6 +353,14 @@ public final class EmbeddedFileSystem {
     }
 
     private void initializeLogFile() throws EmbeddedException {
+
+        // The user may have already specified a logfile.
+        // if so - do a sanity check and return it.
+
+        if(logFile != null) {
+            return;
+        }
+
         File logDir = new File(instanceRoot, LOG_FILE_DIR);
 
         if (!EmbeddedUtils.mkdirsIfNotExist(logDir)) {
@@ -431,15 +433,7 @@ public final class EmbeddedFileSystem {
 
     private boolean shouldCleanup() {
         // don't EVER delete if the flag is false!!!
-        // don't EVER delete if they specified either directory
-
-        if (autoDelete == true &&
-                defaultInstallRoot.equals(installRoot) &&
-                defaultInstanceRoot.equals(instanceRoot)) {
-            return true;
-        }
-
-        return false;
+        return autoDelete;
     }
 
     private void mustBeInitialized(String name) throws EmbeddedException {

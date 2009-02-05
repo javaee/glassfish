@@ -352,7 +352,7 @@ public class Server {
             if (!archive.isDirectory()) {
 
                 ArchiveHandler h = appLife.getArchiveHandler(a);
-                File appDir = new File(efs.getAppsDir(), a.getName());
+                File appDir = new File(efs.getApplicationsDir(), a.getName());
                 FileUtils.whack(appDir);
                 appDir.mkdirs();
                 h.expand(a, archiveFactory.createArchive(appDir));
