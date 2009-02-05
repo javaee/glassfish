@@ -1,0 +1,25 @@
+<html>
+<head>
+<script language="javascript">
+//make a big string value
+var v = '=';
+for (i = 0; i < 1000; i++) {
+    v += 'a';
+}
+var myDate = new Date();
+myDate.setDate(myDate.getDate() + 3);
+v += '; expires ' + myDate.toUTCString() + ';';
+
+//insert a number of cookies.
+//8 works
+for (i = 0; i < 9; i++) {
+    var c = 'key' + i + v;
+//    alert(c);
+    document.cookie = c;
+}
+</script>
+</head>
+<body>
+Now reload this page to get a 400 Bad Request error rather than a blank screen.<br/>
+</body>
+</html>
