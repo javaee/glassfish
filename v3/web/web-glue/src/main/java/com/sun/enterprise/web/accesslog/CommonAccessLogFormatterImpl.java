@@ -39,6 +39,7 @@ package com.sun.enterprise.web.accesslog;
 import java.nio.CharBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -66,14 +67,39 @@ public class CommonAccessLogFormatterImpl extends AccessLogFormatter {
 
         super();
 
-        dayFormatter = new SimpleDateFormat("dd");
-        dayFormatter.setTimeZone(tz);
-        monthFormatter = new SimpleDateFormat("MM");
-        monthFormatter.setTimeZone(tz);
-        yearFormatter = new SimpleDateFormat("yyyy");
-        yearFormatter.setTimeZone(tz);
-        timeFormatter = new SimpleDateFormat("HH:mm:ss");
-        timeFormatter.setTimeZone(tz);
+        final TimeZone timeZone = tz;
+        dayFormatter = new ThreadLocal<SimpleDateFormat>() {
+            @Override
+            protected SimpleDateFormat initialValue() {
+                SimpleDateFormat f = new SimpleDateFormat("dd");
+                f.setTimeZone(timeZone);
+                return f;
+            }
+        };
+        monthFormatter = new ThreadLocal<SimpleDateFormat>() {
+            @Override
+            protected SimpleDateFormat initialValue() {
+                SimpleDateFormat f = new SimpleDateFormat("MM");
+                f.setTimeZone(timeZone);
+                return f;
+            }
+        };
+        yearFormatter = new ThreadLocal<SimpleDateFormat>() {
+            @Override
+            protected SimpleDateFormat initialValue() {
+                SimpleDateFormat f = new SimpleDateFormat("yyyy");
+                f.setTimeZone(timeZone);
+                return f;
+            }
+        };
+        timeFormatter = new ThreadLocal<SimpleDateFormat>() {
+            @Override
+            protected SimpleDateFormat initialValue() {
+                SimpleDateFormat f = new SimpleDateFormat("HH:mm:ss");
+                f.setTimeZone(timeZone);
+                return f;
+            }
+        };
     }
 
 
@@ -154,15 +180,15 @@ public class CommonAccessLogFormatterImpl extends AccessLogFormatter {
     private void appendCurrentDate(CharBuffer cb) {
         Date date = getDate();
         cb.put("[");
-        cb.put(dayFormatter.format(date));           // Day
+        cb.put(dayFormatter.get().format(date));           // Day
         cb.put('/');
-        cb.put(lookup(monthFormatter.format(date))); // Month
+        cb.put(lookup(monthFormatter.get().format(date))); // Month
         cb.put('/');
-        cb.put(yearFormatter.format(date));          // Year
+        cb.put(yearFormatter.get().format(date));          // Year
         cb.put(':');
-        cb.put(timeFormatter.format(date));          // Time
+        cb.put(timeFormatter.get().format(date));          // Time
         cb.put(SPACE);
-        cb.put(timeZone);                            // Time Zone
+        cb.put(timeZone);                                  // Time Zone
         cb.put("]");
     }
 

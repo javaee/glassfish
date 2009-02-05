@@ -37,7 +37,6 @@
 package com.sun.enterprise.web.accesslog;
 
 import java.nio.CharBuffer;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;

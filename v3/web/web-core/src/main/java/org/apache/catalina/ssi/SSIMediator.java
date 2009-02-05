@@ -59,9 +59,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
-import org.apache.catalina.util.DateTool;
 import org.apache.catalina.util.Strftime;
 import org.apache.catalina.util.URLEncoder;
 import com.sun.grizzly.util.http.HttpMessages;
@@ -130,8 +130,8 @@ public class SSIMediator {
 
     public void setConfigTimeFmt(String configTimeFmt, boolean fromConstructor) {
         this.configTimeFmt = configTimeFmt;
-        //What's the story here with DateTool.LOCALE_US?? Why??
-        this.strftime = new Strftime(configTimeFmt, DateTool.LOCALE_US);
+        //What's the story here with Locale.US?? Why??
+        this.strftime = new Strftime(configTimeFmt, Locale.US);
         //Variables like DATE_LOCAL, DATE_GMT, and LAST_MODIFIED need to be
         // updated when
         //the timefmt changes. This is what Apache SSI does.

@@ -62,28 +62,28 @@ public abstract class AccessLogFormatter {
     protected static final String SPACE = " ";
 
     /**
-     * A date formatter to format Dates into a day string in the format
+     * ThreadLocal for a date formatter to format Dates into a day string in the format
      * "dd".
      */
-    protected SimpleDateFormat dayFormatter = null;
+    protected volatile ThreadLocal<SimpleDateFormat> dayFormatter = null;
 
     /**
-     * A date formatter to format a Date into a month string in the format
+     * ThreadLocal for a date formatter to format a Date into a month string in the format
      * "MM".
      */
-    protected SimpleDateFormat monthFormatter = null;
+    protected volatile ThreadLocal<SimpleDateFormat> monthFormatter = null;
 
     /**
-     * A date formatter to format a Date into a year string in the format
+     * ThreadLocal for a date formatter to format a Date into a year string in the format
      * "yyyy".
      */
-    protected SimpleDateFormat yearFormatter = null;
+    protected volatile ThreadLocal<SimpleDateFormat> yearFormatter = null;
 
     /**
-     * A date formatter to format a Date into a time in the format
+     * ThreadLocal for a date formatter to format a Date into a time in the format
      * "kk:mm:ss" (kk is a 24-hour representation of the hour).
      */
-    protected SimpleDateFormat timeFormatter = null;
+    protected volatile ThreadLocal<SimpleDateFormat> timeFormatter = null;
 
     /**
      * The time zone relative to GMT.

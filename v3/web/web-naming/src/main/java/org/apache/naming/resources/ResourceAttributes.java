@@ -172,40 +172,46 @@ public class ResourceAttributes implements Attributes {
     public static final String COLLECTION_TYPE = "<collection/>";
     
     
+    protected final static TimeZone gmtZone = TimeZone.getTimeZone("GMT");
+
+
     /**
      * HTTP date format.
      */
-    protected static final SimpleDateFormat format =
-        new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
+    protected static final ThreadLocal<SimpleDateFormat> FORMAT =
+        new ThreadLocal<SimpleDateFormat>() {
+            @Override
+            protected SimpleDateFormat initialValue() {
+                SimpleDateFormat f = 
+                    new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
+                f.setTimeZone(gmtZone);
+                return f;
+            }
+        };
     
     
     /**
      * Date formats using for Date parsing.
      */
-    protected static final SimpleDateFormat formats[] = {
-        new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US),
-        new SimpleDateFormat("EEEEEE, dd-MMM-yy HH:mm:ss zzz", Locale.US),
-        new SimpleDateFormat("EEE MMMM d HH:mm:ss yyyy", Locale.US)
-    };
+    protected static final ThreadLocal FORMATS =
+        new ThreadLocal() {
+            @Override
+            protected Object initialValue() {
+                SimpleDateFormat f[] = new SimpleDateFormat[3];
+                f[0] = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz",
+                        Locale.US);
+                f[0].setTimeZone(gmtZone);
+                f[1] = new SimpleDateFormat("EEEEEE, dd-MMM-yy HH:mm:ss zzz",
+                        Locale.US);
+                f[1].setTimeZone(gmtZone);
+                f[2] = new SimpleDateFormat("EEE MMMM d HH:mm:ss yyyy",
+                        Locale.US);
+                f[2].setTimeZone(gmtZone);
+                return f;
+            }
+        };
     
     
-    protected final static TimeZone gmtZone = TimeZone.getTimeZone("GMT");
-
-
-    /**
-     * GMT timezone - all HTTP dates are on GMT
-     */
-    static {
-
-        format.setTimeZone(gmtZone);
-
-        formats[0].setTimeZone(gmtZone);
-        formats[1].setTimeZone(gmtZone);
-        formats[2].setTimeZone(gmtZone);
-
-    }
-
-
     // ----------------------------------------------------------- Constructors
     
     
@@ -397,6 +403,7 @@ public class ResourceAttributes implements Attributes {
                         String creationDateValue = value.toString();
                         Date result = null;
                         // Parsing the HTTP Date
+                        SimpleDateFormat[] formats = (SimpleDateFormat[])FORMATS.get();
                         for (int i = 0; (result == null) && 
                                  (i < formats.length); i++) {
                             try {
@@ -459,6 +466,7 @@ public class ResourceAttributes implements Attributes {
                         String creationDateValue = value.toString();
                         Date result = null;
                         // Parsing the HTTP Date
+                        SimpleDateFormat[] formats = (SimpleDateFormat[])FORMATS.get();
                         for (int i = 0; (result == null) && 
                                  (i < formats.length); i++) {
                             try {
@@ -518,6 +526,7 @@ public class ResourceAttributes implements Attributes {
                         String lastModifiedDateValue = value.toString();
                         Date result = null;
                         // Parsing the HTTP Date
+                        SimpleDateFormat[] formats = (SimpleDateFormat[])FORMATS.get();
                         for (int i = 0; (result == null) && 
                                  (i < formats.length); i++) {
                             try {
@@ -592,6 +601,7 @@ public class ResourceAttributes implements Attributes {
                         String lastModifiedDateValue = value.toString();
                         Date result = null;
                         // Parsing the HTTP Date
+                        SimpleDateFormat[] formats = (SimpleDateFormat[])FORMATS.get();
                         for (int i = 0; (result == null) && 
                                  (i < formats.length); i++) {
                             try {
@@ -641,9 +651,7 @@ public class ResourceAttributes implements Attributes {
         if (modifiedDate == null) {
             modifiedDate = new Date();
         }
-        synchronized (format) {
-            lastModifiedHttp = format.format(modifiedDate);
-        }
+        lastModifiedHttp = FORMAT.get().format(modifiedDate);
         return lastModifiedHttp;
     }
     

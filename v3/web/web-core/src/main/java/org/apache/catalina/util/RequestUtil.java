@@ -58,7 +58,6 @@
 package org.apache.catalina.util;
 
 import java.io.UnsupportedEncodingException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -81,16 +80,6 @@ import com.sun.grizzly.util.buf.ByteChunk;
 public final class RequestUtil {
 
     private static final String SESSION_VERSION_SEPARATOR = ":";
-
-    /**
-     * The DateFormat to use for generating readable dates in cookies.
-     */
-    private static SimpleDateFormat format =
-        new SimpleDateFormat(" EEEE, dd-MMM-yy kk:mm:ss zz");
-
-    static {
-        format.setTimeZone(TimeZone.getTimeZone("GMT"));
-    }
 
 
     /**

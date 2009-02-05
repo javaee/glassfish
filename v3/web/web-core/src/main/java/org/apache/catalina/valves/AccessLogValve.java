@@ -281,44 +281,83 @@ public final class AccessLogValve
 
 
     /**
-     * A date formatter to format a Date into a date in the format
+     * ThreadLocal for a date formatter to format a Date into a date in the format
      * "yyyy-MM-dd".
      */
-    private SimpleDateFormat dateFormatter = null;
+    private volatile ThreadLocal<SimpleDateFormat> dateFormatter = null;
 
+    private static final TimeZone DEFAULT_TIME_ZONE = TimeZone.getDefault();
 
     /**
-     * A date formatter to format Dates into a day string in the format
+     * ThreadLocal for a date formatter to format Dates into a day string in the format
      * "dd".
      */
-    private SimpleDateFormat dayFormatter = null;
+    private static final ThreadLocal<SimpleDateFormat> dayFormatter =
+        new ThreadLocal<SimpleDateFormat>() {
+            @Override
+            protected SimpleDateFormat initialValue() {
+                SimpleDateFormat f = new SimpleDateFormat("dd");
+                f.setTimeZone(DEFAULT_TIME_ZONE);
+                return f;
+            }
+        };
 
 
     /**
-     * A date formatter to format a Date into a month string in the format
+     * ThreadLocal for a date formatter to format a Date into a month string in the format
      * "MM".
      */
-    private SimpleDateFormat monthFormatter = null;
+    private static final ThreadLocal<SimpleDateFormat> monthFormatter =
+        new ThreadLocal<SimpleDateFormat>() {
+            @Override
+            protected SimpleDateFormat initialValue() {
+                SimpleDateFormat f = new SimpleDateFormat("MM");
+                f.setTimeZone(DEFAULT_TIME_ZONE);
+                return f;
+            }
+        };
 
 
     /**
-     * Time taken formatter for 3 decimal places.
+     * ThreadLocal for a time taken formatter for 3 decimal places.
      */
-     private DecimalFormat timeTakenFormatter = null;
+     private static final ThreadLocal<DecimalFormat> timeTakenFormatter =
+         new ThreadLocal<DecimalFormat>() {
+            @Override
+            protected DecimalFormat initialValue() {
+                 return  new DecimalFormat("0.000");
+            }
+        };
 
 
     /**
-     * A date formatter to format a Date into a year string in the format
+     * ThreadLocal for a date formatter to format a Date into a year string in the format
      * "yyyy".
      */
-    private SimpleDateFormat yearFormatter = null;
+    private ThreadLocal<SimpleDateFormat> yearFormatter =
+        new ThreadLocal<SimpleDateFormat>() {
+            @Override
+            protected SimpleDateFormat initialValue() {
+                SimpleDateFormat f = new SimpleDateFormat("yyyy");
+                f.setTimeZone(DEFAULT_TIME_ZONE);
+                return f;
+            }
+        };
 
 
     /**
-     * A date formatter to format a Date into a time in the format
+     * ThreadLocal for a date formatter to format a Date into a time in the format
      * "kk:mm:ss" (kk is a 24-hour representation of the hour).
      */
-    private SimpleDateFormat timeFormatter = null;
+    private ThreadLocal<SimpleDateFormat> timeFormatter =
+         new ThreadLocal<SimpleDateFormat>() {
+            @Override
+            protected SimpleDateFormat initialValue() {
+                SimpleDateFormat f = new SimpleDateFormat("HH:mm:ss");
+                f.setTimeZone(DEFAULT_TIME_ZONE);
+                return f;
+            }
+        };
 
 
     /**
@@ -629,13 +668,13 @@ public final class AccessLogValve
             }
 
             result.append("[");
-            result.append(dayFormatter.format(date));            // Day
+            result.append(dayFormatter.get().format(date));            // Day
             result.append('/');
-            result.append(lookup(monthFormatter.format(date))); // Month
+            result.append(lookup(monthFormatter.get().format(date))); // Month
             result.append('/');
-            result.append(yearFormatter.format(date));            // Year
+            result.append(yearFormatter.get().format(date));            // Year
             result.append(':');
-            result.append(timeFormatter.format(date));        // Time
+            result.append(timeFormatter.get().format(date));        // Time
             result.append(space);
             result.append(timeZone);                            // Time Zone
             result.append("] \"");
@@ -765,7 +804,7 @@ public final class AccessLogValve
                 rotationLastChecked = systime;
 
                 // Check for a change of date
-                String tsDate = dateFormatter.format(currentDate);
+                String tsDate = dateFormatter.get().format(currentDate);
 
                 // If the date has changed, switch log files
                 if (!dateStamp.equals(tsDate)) {
@@ -935,19 +974,19 @@ public final class AccessLogValve
                 value = "-";
         } else if (pattern == 't') {
             StringBuffer temp = new StringBuffer("[");
-            temp.append(dayFormatter.format(date));             // Day
+            temp.append(dayFormatter.get().format(date));             // Day
             temp.append('/');
-            temp.append(lookup(monthFormatter.format(date)));   // Month
+            temp.append(lookup(monthFormatter.get().format(date)));   // Month
             temp.append('/');
-            temp.append(yearFormatter.format(date));            // Year
+            temp.append(yearFormatter.get().format(date));            // Year
             temp.append(':');
-            temp.append(timeFormatter.format(date));            // Time
+            temp.append(timeFormatter.get().format(date));            // Time
             temp.append(' ');
-            temp.append(timeZone);                              // Timezone
+            temp.append(timeZone);                                    // Timezone
             temp.append(']');
             value = temp.toString();
         } else if (pattern == 'T') {
-            value = timeTakenFormatter.format(time/1000d);
+            value = timeTakenFormatter.get().format(time/1000d);
         } else if (pattern == 'u') {
             if (hreq != null)
                 value = hreq.getRemoteUser();
@@ -1155,24 +1194,21 @@ public final class AccessLogValve
         // END CR 6411114
 
         // Initialize the timeZone, Date formatters, and currentDate
-        TimeZone tz = TimeZone.getDefault();
-        timeZone = calculateTimeZoneOffset(tz.getRawOffset());
+        timeZone = calculateTimeZoneOffset(DEFAULT_TIME_ZONE.getRawOffset());
 
         if (fileDateFormat==null || fileDateFormat.length()==0)
             fileDateFormat = "yyyy-MM-dd";
-        dateFormatter = new SimpleDateFormat(fileDateFormat);
-        dateFormatter.setTimeZone(tz);
-        dayFormatter = new SimpleDateFormat("dd");
-        dayFormatter.setTimeZone(tz);
-        monthFormatter = new SimpleDateFormat("MM");
-        monthFormatter.setTimeZone(tz);
-        yearFormatter = new SimpleDateFormat("yyyy");
-        yearFormatter.setTimeZone(tz);
-        timeFormatter = new SimpleDateFormat("HH:mm:ss");
-        timeFormatter.setTimeZone(tz);
+
+        dateFormatter = new ThreadLocal<SimpleDateFormat>() {
+            @Override
+            protected SimpleDateFormat initialValue() {
+                SimpleDateFormat f = new SimpleDateFormat(fileDateFormat);
+                f.setTimeZone(DEFAULT_TIME_ZONE);
+                return f;
+            }
+        };
         currentDate = new Date();
-        dateStamp = dateFormatter.format(currentDate);
-        timeTakenFormatter = new DecimalFormat("0.000");
+        dateStamp = dateFormatter.get().format(currentDate);
 
         open();
 

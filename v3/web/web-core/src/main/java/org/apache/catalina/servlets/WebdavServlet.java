@@ -220,11 +220,21 @@ public class WebdavServlet
     protected static final String DEFAULT_NAMESPACE = "DAV:";
 
 
+    private static final TimeZone GMT_TIME_ZONE = TimeZone.getTimeZone("GMT");
+
+
     /**
-     * Simple date format for the creation date ISO representation (partial).
+     * A ThreadLocal for simple date format for the creation date ISO representation (partial).
      */
-    protected static final SimpleDateFormat creationDateFormat =
-        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    protected static final ThreadLocal<SimpleDateFormat> creationDateFormat =
+        new ThreadLocal<SimpleDateFormat>() {
+            @Override
+            protected SimpleDateFormat initialValue() {
+                SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                f.setTimeZone(GMT_TIME_ZONE);
+                return f;
+            }
+        };
 
 
      /**
@@ -237,12 +247,6 @@ public class WebdavServlet
      * The MD5 helper object for this class.
      */
     protected static final MD5Encoder md5Encoder = new MD5Encoder();
-
-
-
-    static {
-        creationDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-    }
 
 
     // ----------------------------------------------------- Instance Variables
@@ -2672,7 +2676,7 @@ public class WebdavServlet
      */
     private String getISOCreationDate(long creationDate) {
         StringBuffer creationDateValue = new StringBuffer
-            (creationDateFormat.format
+            (creationDateFormat.get().format
              (new Date(creationDate)));
         /*
         int offset = Calendar.getInstance().getTimeZone().getRawOffset()

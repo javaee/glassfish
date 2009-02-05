@@ -90,6 +90,7 @@ import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Realm;
+import org.apache.catalina.connector.Response;
 import org.apache.catalina.core.ContainerBase;
 import org.apache.catalina.deploy.LoginConfig;
 import org.apache.catalina.deploy.SecurityConstraint;
@@ -98,9 +99,6 @@ import org.apache.catalina.util.HexUtils;
 import org.apache.catalina.util.LifecycleSupport;
 import org.apache.catalina.util.MD5Encoder;
 import org.apache.catalina.util.StringManager;
-//START SJSAS 6202703
-import org.apache.catalina.util.DateTool;
-//END SJSAS 6202703
 import org.apache.tomcat.util.modeler.Registry;
 // START SJSWS 6324431
 import org.apache.catalina.core.StandardContext;
@@ -125,7 +123,7 @@ public abstract class RealmBase
      * "Expires" header always set to Date(1), so generate once only
      */
     private static final String DATE_ONE =
-            (new SimpleDateFormat(DateTool.HTTP_RESPONSE_DATE_HEADER,
+            (new SimpleDateFormat(Response.HTTP_RESPONSE_DATE_HEADER,
             Locale.US)).format(new Date(1));
     //END SJSAS 6202703
 

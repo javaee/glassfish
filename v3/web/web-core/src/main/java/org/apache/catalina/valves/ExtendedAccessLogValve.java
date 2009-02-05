@@ -245,30 +245,55 @@ public final class ExtendedAccessLogValve
     private PrintWriter writer = null;
 
 
+    private static final TimeZone GMT_TIME_ZONE = TimeZone.getTimeZone("GMT");
+
+
     /**
-     * The formatter for the date contained in the file name.
+     * ThreadLocal for the formatter for the date contained in the file name.
      */
-    private SimpleDateFormat fileDateFormatter = null;
+    private volatile ThreadLocal<SimpleDateFormat> fileDateFormatter = null;
 
 
     /**
-     * A date formatter to format a Date into a date in the format
+     *  ThreadLocal for a date formatter to format a Date into a date in the format
      * "yyyy-MM-dd".
      */
-    private SimpleDateFormat dateFormatter = null;
+    private static final ThreadLocal<SimpleDateFormat> dateFormatter =
+        new ThreadLocal<SimpleDateFormat>() {
+            @Override
+            protected SimpleDateFormat initialValue() {
+                SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd");
+                f.setTimeZone(GMT_TIME_ZONE);
+                return f;
+            }
+        };
 
 
     /**
-     * A date formatter to format a Date into a time in the format
+     * ThreadLocal for a date formatter to format a Date into a time in the format
      * "kk:mm:ss" (kk is a 24-hour representation of the hour).
      */
-    private SimpleDateFormat timeFormatter = null;
+    private static final ThreadLocal<SimpleDateFormat> timeFormatter =
+        new ThreadLocal<SimpleDateFormat>() {
+            @Override
+            protected SimpleDateFormat initialValue() {
+                SimpleDateFormat f = new SimpleDateFormat("HH:mm:ss");
+                f.setTimeZone(GMT_TIME_ZONE);
+                return f;
+            }
+        };
 
 
     /**
-     * Time taken formatter for 3 decimal places.
+     * ThreadLocal for a time taken formatter for 3 decimal places.
      */
-     private DecimalFormat timeTakenFormatter = null;
+     private static final ThreadLocal<DecimalFormat> timeTakenFormatter =
+         new ThreadLocal<DecimalFormat>() {
+             @Override
+             protected DecimalFormat initialValue() {
+                 return new DecimalFormat("0.000");
+             }
+         };
 
 
     /**
@@ -636,11 +661,11 @@ public final class ExtendedAccessLogValve
                     break;
                 case FieldInfo.DATA_SPECIAL:
                     if (FieldInfo.SPECIAL_DATE==fieldInfos[i].location)
-                        result.append(dateFormatter.format(date));
+                        result.append(dateFormatter.get().format(date));
                     else if (FieldInfo.SPECIAL_TIME_TAKEN==fieldInfos[i].location)
-                        result.append(timeTakenFormatter.format(runTime/1000d));
+                        result.append(timeTakenFormatter.get().format(runTime/1000d));
                     else if (FieldInfo.SPECIAL_TIME==fieldInfos[i].location)
-                        result.append(timeFormatter.format(date));
+                        result.append(timeFormatter.get().format(date));
                     else if (FieldInfo.SPECIAL_BYTES==fieldInfos[i].location) {
                         int length = response.getContentCount();
                         if (length > 0)
@@ -687,8 +712,13 @@ public final class ExtendedAccessLogValve
 
             /* Make sure date is correct */
             currentDate = new Date();
-            fileDateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-            dateStamp = dateFormatter.format(currentDate);
+            fileDateFormatter = new ThreadLocal<SimpleDateFormat>() {
+                @Override
+                protected SimpleDateFormat initialValue() {
+                    return new SimpleDateFormat("yyyy-MM-dd");
+                }
+            };
+            dateStamp = dateFormatter.get().format(currentDate);
 
             open();
             return true;
@@ -932,7 +962,7 @@ public final class ExtendedAccessLogValve
                 rotationLastChecked = systime;
 
                 // Check for a change of date
-                String tsDate = fileDateFormatter.format(currentDate);
+                String tsDate = fileDateFormatter.get().format(currentDate);
 
                 // If the date has changed, switch log files
                 if (!dateStamp.equals(tsDate)) {
@@ -960,8 +990,13 @@ public final class ExtendedAccessLogValve
 
                     /* Make sure date is correct */
                     currentDate = new Date(System.currentTimeMillis());
-                    fileDateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-                    dateStamp = dateFormatter.format(currentDate);
+                    fileDateFormatter = new ThreadLocal<SimpleDateFormat>() {
+                        @Override
+                        protected SimpleDateFormat initialValue() {
+                            return new SimpleDateFormat("yyyy-MM-dd");
+                        }
+                    };
+                    dateStamp = dateFormatter.get().format(currentDate);
 
                     open();
                 }
@@ -1109,17 +1144,16 @@ public final class ExtendedAccessLogValve
         // END CR 6411114
 
         // Initialize the timeZone, Date formatters, and currentDate
-        TimeZone tz = TimeZone.getTimeZone("GMT");
-        dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-        dateFormatter.setTimeZone(tz);
-        timeFormatter = new SimpleDateFormat("HH:mm:ss");
-        timeFormatter.setTimeZone(tz);
         currentDate = new Date(System.currentTimeMillis());
         if (fileDateFormat==null || fileDateFormat.length()==0)
             fileDateFormat = "yyyy-MM-dd";
-        fileDateFormatter = new SimpleDateFormat(fileDateFormat);
-        dateStamp = fileDateFormatter.format(currentDate);
-        timeTakenFormatter = new DecimalFormat("0.000");
+        fileDateFormatter = new ThreadLocal<SimpleDateFormat>() {
+            @Override
+            protected SimpleDateFormat initialValue() {
+                return new SimpleDateFormat(fileDateFormat);
+            }
+        };
+        dateStamp = fileDateFormatter.get().format(currentDate);
 
         /* Everybody say ick ... ick */
         try {

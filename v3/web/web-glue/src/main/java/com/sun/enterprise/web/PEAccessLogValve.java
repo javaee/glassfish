@@ -182,10 +182,10 @@ public final class PEAccessLogValve
 
 
     /**
-     * A date formatter to format a Date into a date in the format
+     * ThreadLocal for a date formatter to format a Date into a date in the format
      * "yyyy-MM-dd".
      */
-    private SimpleDateFormat dateFormatter = null;
+    private volatile ThreadLocal<SimpleDateFormat> dateFormatter = null;
 
 
     /**
@@ -653,9 +653,9 @@ public final class PEAccessLogValve
 
                         // Rotate only if the formatted datestamps are
                         // different
-                        String lastDateStamp = dateFormatter.format(
+                        String lastDateStamp = dateFormatter.get().format(
                             new Date(lastAccessLogCreationTime));
-                        String newDateStamp = dateFormatter.format(
+                        String newDateStamp = dateFormatter.get().format(
                             new Date(systime));
 
                         lastAccessLogCreationTime = systime;
@@ -1066,16 +1066,22 @@ public final class PEAccessLogValve
         charBuffer = CharBuffer.allocate(bufferSize);
 
         // Initialize the timeZone, Date formatters, and currentDate
-        TimeZone tz = TimeZone.getDefault();
+        final TimeZone tz = TimeZone.getDefault();
 
         if (fileDateFormat==null || fileDateFormat.length()==0)
             fileDateFormat = "yyyy-MM-dd";
-        dateFormatter = new SimpleDateFormat(fileDateFormat);
-        dateFormatter.setTimeZone(tz);
+        dateFormatter = new ThreadLocal<SimpleDateFormat>() {
+            @Override
+            protected SimpleDateFormat initialValue() {
+                SimpleDateFormat f = new SimpleDateFormat(fileDateFormat);
+                f.setTimeZone(tz);
+                return f;
+            }
+        };
 
         long systime = System.currentTimeMillis();
         try {
-            open(dateFormatter.format(new Date(systime)), true);
+            open(dateFormatter.get().format(new Date(systime)), true);
         } catch (IOException ioe) {
             throw new LifecycleException(ioe);
         }

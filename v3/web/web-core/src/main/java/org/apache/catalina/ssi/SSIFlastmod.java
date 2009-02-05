@@ -57,7 +57,7 @@ package org.apache.catalina.ssi;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
-import org.apache.catalina.util.DateTool;
+import java.util.Locale;
 import org.apache.catalina.util.Strftime;
 /**
  * Implements the Server-side #flastmod command
@@ -107,7 +107,7 @@ public final class SSIFlastmod implements SSICommand {
 
 
     protected String formatDate(Date date, String configTimeFmt) {
-        Strftime strftime = new Strftime(configTimeFmt, DateTool.LOCALE_US);
+        Strftime strftime = new Strftime(configTimeFmt, Locale.US);
         return strftime.format(date);
     }
 }
