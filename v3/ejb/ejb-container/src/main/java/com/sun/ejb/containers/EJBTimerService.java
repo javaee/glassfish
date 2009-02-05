@@ -843,7 +843,7 @@ public class EJBTimerService
 
 
     /**
-     * Called from TimerBean to cancel the next scheduled expiration 
+     * Called by #cancelTimerSynchronization() to cancel the next scheduled expiration 
      * for a timer.
      * @return (initialExpiration time) if state is CREATED or
      *         (time that expiration would have occurred) if state=SCHEDULED or
@@ -1098,7 +1098,7 @@ public class EJBTimerService
                 } else if (!expired) {
                     addTimerSynchronization(null, 
                             timerId.getTimerId(), initialExpiration,
-                            containerId, ownerIdOfThisServer_);
+                            containerId, ownerIdOfThisServer_, false);
                 }
             } catch(Exception e) {
                 logger.log(Level.SEVERE, "ejb.create_timer_failure",
@@ -1345,7 +1345,7 @@ public class EJBTimerService
             }
 
             cancelTimerSynchronization(null, timerId,
-                rt.getContainerId(), ownerIdOfThisServer_);
+                rt.getContainerId(), ownerIdOfThisServer_, false);
         } else {
 
             // @@@ We can't assume this server instance owns the timer
@@ -1969,20 +1969,38 @@ public class EJBTimerService
             Date initialExpiration, long containerId, String ownerId) 
             throws Exception {
 
+        addTimerSynchronization(context_, timerId, initialExpiration,
+                containerId, ownerId, true);
+    }
+
+    void addTimerSynchronization(EJBContextImpl context_, String timerId, 
+            Date initialExpiration, long containerId, String ownerId, 
+            boolean persistent) throws Exception {
+
         // context_ is null for a non-persistent timer as it's not called 
         // from the TimerBean.
         if (context_ == null || timerOwnedByThisServer(ownerId)) {
             TimerPrimaryKey pk = new TimerPrimaryKey(timerId);
 
-            // Register a synchronization object to handle the commit/rollback
-            // semantics and ejbTimeout notifications.
-            Synchronization timerSynch =
-                new TimerSynch(pk, TimerState.ACTIVE, initialExpiration,
-                               ejbContainerUtil.getContainer(containerId),
-                               this);
+            ContainerSynchronization containerSynch = getContainerSynch(context_, timerId, persistent);
+            if (containerSynch == null) {
+                // null ContainerSynchronization for persistent timer would've
+                // caused exception in #getContainerSynch(). For non-persistent 
+                // timer schedule it right away
+                scheduleTask(pk, initialExpiration);
+                // XXX TODO XXX ejbContainerUtil.getContainer(containerId).incrementCreatedTimedObject();
 
-            ContainerSynchronization containerSynch = getContainerSynch(context_, timerId);
-            containerSynch.addTimerSynchronization(pk, timerSynch);
+            } else {
+
+                // Register a synchronization object to handle the commit/rollback
+                // semantics and ejbTimeout notifications.
+                Synchronization timerSynch =
+                        new TimerSynch(pk, TimerState.ACTIVE, initialExpiration,
+                                   ejbContainerUtil.getContainer(containerId),
+                                   this);
+
+                containerSynch.addTimerSynchronization(pk, timerSynch);
+            }
 
         }
     }
@@ -1990,6 +2008,13 @@ public class EJBTimerService
     void cancelTimerSynchronization(EJBContextImpl context_, 
             TimerPrimaryKey timerId, long containerId, String ownerId) 
             throws Exception {
+
+        cancelTimerSynchronization(context_, timerId, containerId, ownerId, true);
+    }
+
+    void cancelTimerSynchronization(EJBContextImpl context_, 
+            TimerPrimaryKey timerId, long containerId, String ownerId, 
+            boolean persistent) throws Exception {
 
         // Only proceed with JDK timer task cancellation if this timer
         // is owned by the current server instance.
@@ -2002,23 +2027,33 @@ public class EJBTimerService
             Date nextTimeout = cancelTask(timerId);
 
             ContainerSynchronization containerSynch = 
-                    getContainerSynch(context_, timerId.getTimerId());
-            Synchronization timerSynch =
-                    containerSynch.getTimerSynchronization(timerId);
+                    getContainerSynch(context_, timerId.getTimerId(), persistent);
 
-            if( timerSynch != null ) {
-                // This timer was created and cancelled within the
-                // same transaction.  No tx synchronization actions
-                // are needed, since whether tx commits or rolls back,
-                // timer will not exist.
-                containerSynch.removeTimerSynchronization(timerId);
+            if (containerSynch == null) {
+                // null ContainerSynchronization for persistent timer would've
+                // caused exception in #getContainerSynch(). For non-persistent 
+                // timer remove it right away
                 expungeTimer(timerId);
+                // XXX TODO XXX ejbContainerUtil.getContainer(containerId).incrementRemovedTimedObject();
             } else {
-                // Set tx synchronization action to handle timer cancellation.
-                timerSynch = new TimerSynch(timerId, TimerState.CANCELLED, nextTimeout,
+
+                Synchronization timerSynch =
+                        containerSynch.getTimerSynchronization(timerId);
+
+                if( timerSynch != null ) {
+                    // This timer was created and cancelled within the
+                    // same transaction.  No tx synchronization actions
+                    // are needed, since whether tx commits or rolls back,
+                    // timer will not exist.
+                    containerSynch.removeTimerSynchronization(timerId);
+                    expungeTimer(timerId);
+                } else {
+                    // Set tx synchronization action to handle timer cancellation.
+                    timerSynch = new TimerSynch(timerId, TimerState.CANCELLED, nextTimeout,
                                         ejbContainerUtil.getContainer(containerId),
                                         this);
-                containerSynch.addTimerSynchronization(timerId, timerSynch);
+                    containerSynch.addTimerSynchronization(timerId, timerSynch);
+                }
             }
         }
     }
@@ -2047,7 +2082,7 @@ public class EJBTimerService
     }
 
     private ContainerSynchronization getContainerSynch(EJBContextImpl context_, 
-            String timerId) throws Exception {
+            String timerId, boolean persistent) throws Exception {
 
         Transaction transaction = null;
         if (context_ != null) {
@@ -2070,8 +2105,15 @@ public class EJBTimerService
         }
 
         if( transaction == null ) {
-            throw new Exception("transaction = null in getContainerSynch " +
+            if (persistent) {
+                // Shouldn't happen
+                throw new Exception("transaction = null in getContainerSynch " +
                                 "for timerId = " + timerId);
+            } else {
+                // null ContainerSynchronization for non-persistent timer will
+                // schedule or cancel it right away
+                return null;
+            }
         }
 
         return ejbContainerUtil.getContainerSync(transaction);
