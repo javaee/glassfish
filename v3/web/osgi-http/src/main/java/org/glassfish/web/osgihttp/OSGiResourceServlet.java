@@ -48,6 +48,8 @@ import java.io.OutputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -87,7 +89,12 @@ public class OSGiResourceServlet extends HttpServlet {
         String servletPath = req.getServletPath();
         assert(servletPath == alias);
         String contextPath = req.getContextPath();
-        final String requestURI = req.getRequestURI();
+        final String requestURI;
+        try {
+            requestURI = new URI(req.getRequestURI()).normalize().toString();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
+        }
         String requestedPath = requestURI.substring(contextPath.length());
         StringBuilder mappedPath = new StringBuilder(requestedPath);
         String internalName = name == "/" ? "" : name;

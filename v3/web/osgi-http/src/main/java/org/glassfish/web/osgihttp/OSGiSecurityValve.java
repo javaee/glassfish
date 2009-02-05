@@ -64,8 +64,8 @@ public class OSGiSecurityValve extends ValveBase {
                 HttpServletResponse.class.cast(response))) {
             return INVOKE_NEXT;
         } else {
-            HttpServletResponse.class.cast(response).sendError(
-                    HttpServletResponse.SC_FORBIDDEN);
+//            HttpServletResponse.class.cast(response).sendError(
+//                    HttpServletResponse.SC_FORBIDDEN);
             return END_PIPELINE;
         }
     }
