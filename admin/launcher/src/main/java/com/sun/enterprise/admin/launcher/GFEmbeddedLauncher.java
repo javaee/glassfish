@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.sun.enterprise.admin.launcher;
 
 import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
@@ -19,10 +18,9 @@ import java.util.List;
  *
  * @author bnevins
  */
-class GFEmbeddedLauncher extends GFLauncher{
+class GFEmbeddedLauncher extends GFLauncher {
 
-
-    public GFEmbeddedLauncher(GFLauncherInfo info)   {
+    public GFEmbeddedLauncher(GFLauncherInfo info) {
         super(info);
 
     }
@@ -42,11 +40,11 @@ class GFEmbeddedLauncher extends GFLauncher{
         List<File> list = new ArrayList<File>(1);
 
         String gfeJar = System.getenv(GFE_JAR);
-        
-        if(GFLauncherUtils.ok(gfeJar)) {
+
+        if (GFLauncherUtils.ok(gfeJar)) {
             File f = new File(gfeJar);
 
-            if(f.isFile()) {
+            if (f.isFile()) {
                 list.add(f);
                 return list;
             }
@@ -58,12 +56,13 @@ class GFEmbeddedLauncher extends GFLauncher{
     String getMainClass() throws GFLauncherException {
         return "org.glassfish.embed.EmbeddedMain";
     }
+
     @Override
     public synchronized void setup() throws GFLauncherException, MiniXmlParserException {
         // remember -- this is designed exclusively for SQE usage
         // don't do it mmore than once -- that would be silly!
 
-        if(setup)
+        if (setup)
             return;
         else
             setup = true;
@@ -71,7 +70,7 @@ class GFEmbeddedLauncher extends GFLauncher{
         try {
             setupFromEnv();
         }
-        catch(GFLauncherException gfle) {
+        catch (GFLauncherException gfle) {
             String msg = "";
             throw new GFLauncherException(GENERAL_MESSAGE + gfle.getMessage());
         }
@@ -91,7 +90,7 @@ class GFEmbeddedLauncher extends GFLauncher{
             String domainName = info.getDomainName();
             String instanceName = info.getInstanceName();
 
-            if(instanceName == null)
+            if (instanceName == null)
                 instanceName = "server";
 
             File dom = new File(parent, domainName);
@@ -103,28 +102,28 @@ class GFEmbeddedLauncher extends GFLauncher{
             info.setAdminPorts(parser.getAdminPorts());
 
         }
-        catch(Exception e) {
+        catch (Exception e) {
             // temp todo
             e.printStackTrace();
         }
 
         Set<Integer> adminPorts = info.getAdminPorts();
 
-        if(adminPorts == null || adminPorts.isEmpty()) {
+        if (adminPorts == null || adminPorts.isEmpty()) {
             adminPorts = new HashSet<Integer>();
             adminPorts.add(4848);
             info.setAdminPorts(adminPorts);
         }
-        
-        /*
-        String domainName = parser.getDomainName();
-        if(GFLauncherUtils.ok(domainName)) {
-            info.setDomainName(domainName);
-        }
-        */
+
+    /*
+    String domainName = parser.getDomainName();
+    if(GFLauncherUtils.ok(domainName)) {
+    info.setDomainName(domainName);
+    }
+     */
 
     }
-    
+
     @Override
     void setCommandLine() throws GFLauncherException {
         List<String> cmdLine = getCommandLine();
@@ -132,6 +131,7 @@ class GFEmbeddedLauncher extends GFLauncher{
         cmdLine.add(javaExe.getPath());
         cmdLine.add("-cp");
         cmdLine.add(getClasspath());
+        addDerbyLib(cmdLine);
         addDebug(cmdLine);
         cmdLine.add(getMainClass());
         //cmdLine.add("--port");
@@ -151,7 +151,7 @@ class GFEmbeddedLauncher extends GFLauncher{
         String suspend;
         String debugPort = System.getenv("GFE_DEBUG_PORT");
 
-        if(ok(debugPort)) {
+        if (ok(debugPort)) {
             suspend = "y";
         }
         else {
@@ -162,8 +162,6 @@ class GFEmbeddedLauncher extends GFLauncher{
         cmdLine.add("-Xdebug");
         cmdLine.add("-Xrunjdwp:transport=dt_socket,server=y,suspend=" + suspend + ",address=" + debugPort);
     }
-
-
 
     private void setupFromEnv() throws GFLauncherException {
         // we require several env. variables to be set for embedded-cli usage
@@ -178,10 +176,10 @@ class GFEmbeddedLauncher extends GFLauncher{
         domainDir = getInfo().getDomainParentDir();
         domainDir = new File(domainDir, domainDirName);
 
-        if(!domainDir.isDirectory())
+        if (!domainDir.isDirectory())
             domainDir.mkdirs();
 
-        if(!domainDir.isDirectory())
+        if (!domainDir.isDirectory())
             throw new GFLauncherException("Can not create directory: " + domainDir);
 
         domainDir = SmartFile.sanitize(domainDir);
@@ -193,20 +191,20 @@ class GFEmbeddedLauncher extends GFLauncher{
                 "at a valid JDK.  <jdk>/bin/javac[.exe] must exist.";
 
         String jdkDirName = System.getenv(JAVA_HOME);
-        if(!ok(jdkDirName))
+        if (!ok(jdkDirName))
             throw new GFLauncherException(err);
 
         File jdkDir = new File(jdkDirName);
 
-        if(!jdkDir.isDirectory())
+        if (!jdkDir.isDirectory())
             throw new GFLauncherException(err);
 
-        if(File.separatorChar == '\\')
+        if (File.separatorChar == '\\')
             javaExe = new File(jdkDir, "bin/java.exe");
         else
             javaExe = new File(jdkDir, "bin/java");
 
-        if(!javaExe.isFile())
+        if (!javaExe.isFile())
             throw new GFLauncherException(err);
 
         javaExe = SmartFile.sanitize(javaExe);
@@ -218,15 +216,15 @@ class GFEmbeddedLauncher extends GFLauncher{
                 "location where an empty directory can be created.";
         String installDirName = System.getenv(INSTALL_HOME);
 
-        if(!ok(installDirName))
+        if (!ok(installDirName))
             throw new GFLauncherException(err);
 
         installDir = new File(installDirName);
 
-        if(!installDir.isDirectory())
+        if (!installDir.isDirectory())
             installDir.mkdirs();
 
-        if(!installDir.isDirectory())
+        if (!installDir.isDirectory())
             throw new GFLauncherException(err);
 
         installDir = SmartFile.sanitize(installDir);
@@ -235,33 +233,49 @@ class GFEmbeddedLauncher extends GFLauncher{
     private void setupEmbeddedJar() throws GFLauncherException {
         String err = "You must set the environmental variable GFE_JAR to point " +
                 "at the Embedded jarfile.";
-        
+
         String gfeJarName = System.getenv(GFE_JAR);
 
-        if(!ok(gfeJarName))
+        if (!ok(gfeJarName))
             throw new GFLauncherException(err);
 
-         gfeJar = new File(gfeJarName);
+        gfeJar = new File(gfeJarName);
 
-        if(!gfeJar.isFile() || gfeJar.length() < 1000000L)
+        if (!gfeJar.isFile() || gfeJar.length() < 1000000L)
             throw new GFLauncherException(err);
 
-         gfeJar = SmartFile.sanitize(gfeJar);
-}
+        gfeJar = SmartFile.sanitize(gfeJar);
+    }
+
+    private void addDerbyLib(List<String> cmdLine) throws GFLauncherException {
+        // It normally will be in either:
+        //  * install-dir/javadb/lib
+        //  * install-dir/../javadb/lib
+
+        String relPath = "javadb/lib";
+        File derbyLib = new File(installDir, relPath);
+
+        if(!derbyLib.isDirectory())
+            derbyLib = new File(installDir.getParentFile(), relPath);
+
+        if(!derbyLib.isDirectory())
+            throw new GFLauncherException("Could not find the JavaDB lib directory.");
+
+        cmdLine.add("-Djava.ext.dirs=" + derbyLib.getAbsolutePath());
+    }
 
     private boolean ok(String s) {
         return s != null && s.length() > 0;
     }
-
     private boolean setup = false;
     private File gfeJar;
     private File installDir;
     private File javaExe;
     private File domainDir;
     private File domainXml;
-    private static final String GFE_JAR          = "GFE_JAR";
-    private static final String INSTALL_HOME    = "S1AS_HOME";
-    private static final String JAVA_HOME        = "JAVA_HOME";
+    private static final String GFE_JAR = "GFE_JAR";
+    private static final String INSTALL_HOME = "S1AS_HOME";
+    private static final String JAVA_HOME = "JAVA_HOME";
     //private static final String DOMAIN_DIR       = "GFE_DOMAIN";
     private static final String GENERAL_MESSAGE =
             " *********  GENERAL MESSAGE ********\n" +
@@ -270,8 +284,6 @@ class GFEmbeddedLauncher extends GFLauncher{
             "GFE_JAR - path to the embedded jar\n" +
             "S1AS_HOME - path to installation directory.  This can be empty or not exist yet.\n" +
             "JAVA_HOME - path to a JDK installation.  JRE installation is generally not good enough\n" +
-            "GFE_DOMAIN - path to the domain dir's config dir.  I.e. this is where the domain.xml will be written.\n" +
             "GFE_DEBUG_PORT - optional debugging port.  It will start suspended.\n" +
             "\n*********  SPECIFIC MESSAGE ********\n";
-
 }
