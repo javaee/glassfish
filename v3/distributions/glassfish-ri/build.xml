@@ -29,20 +29,19 @@
     </target>
 
     <target name="create.ri" depends="ri.init">
-<!--
-        <echo message="vi directory: ${v3.dir}"/>
+        <echo message="v3 directory: ${v3.dir}"/>
+        <copy file="${basedir}/README" todir="${stage}"/>
 	<antcall target="module.copy" /> 
 	<antcall target="hk2.project" />
 	<antcall target="grizzly.project" />
 	<antcall target="jsf.project" />
+        <antcall target="gfcorba.project" />
         <antcall target="delete.files">
              <param name="dir" value="${stage}"/>
         </antcall>
--->
-
 	<zip destfile="${stage}/../glassfish-ri.zip"
              basedir="${stage}" 
-             excludes="**/.svn/**" />
+             excludes="**/.svn/**,**/.hg*/**" />
 
     </target>
 	 
@@ -77,9 +76,19 @@
 	</exec>
     </target>
 
+    <!-- requires hg (mercurial) installed and in the path -->
+    <target name="gfcorba.project" >
+        <exec executable="hg" dir="${stage}" failonerror="true" >
+	    <arg line="clone" />
+            <arg line="${gfcorba.svn.url}" />
+            <arg line="glassfish-corba" />
+	</exec>
+    </target>
+
+
     <target name="delete.files" >
         <delete includeemptydirs="true">    
-            <fileset dir="${dir}" includes="**/.svn/**" defaultexcludes="false"/>
+            <fileset dir="${dir}" includes="**/.svn/**,**/.hg*/**" defaultexcludes="false"/>
         </delete>
     </target>
 

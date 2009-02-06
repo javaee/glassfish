@@ -1,21 +1,47 @@
-To compile:
+Follow the instructions below to compile.  Use the same local maven repository to compile the modules so that the dependent jar files are not downloaded from the remote maven repo.
 
 GFv3 modules:
-cd v3
-mvn install --file <module-name>/pom.xml
+============
+1. cd v3
+2. mvn -Dmaven.repo.local=<local maven repository> install --file <module-name>/pom.xml
 The jar files are located in <module-name>/target
 
-HK2:
-cd hk2
-mvn install 
+HK2 (https://hk2.dev.java.net):
+==============================
+1. cd hk2
+2. mvn -Dmaven.repo.local=<local maven repository> install 
 
-Grizzly:
-cd grizzly
-mvn install
+Grizzly (https://grizzly.dev.java.net):
+======================================
+1. cd grizzly
+2. mvn -Dmaven.repo.local=<local maven repository> install
 
-jsp-api (jsf/mojarra):
-cd jsf/mojarra
-modify build.properties:  jsf.build.home=SOURCE_HOME where SOURCE_HOME is <glassfish-ri>/jsf
-cd jsf/jsf-api
-ant -f jsf-api/build.xml
-The jsp-api.jar file is located in: <glassfish-ri>/jsf/build/lib/jsf-api.jar
+jsf-api (https://javaserverfaces.dev.java.net):
+==============================================
+1. cd jsf/mojarra
+2. modify build.properties:  jsf.build.home=SOURCE_HOME where SOURCE_HOME is <glassfish-ri>/jsf
+3. cd jsf/jsf-api
+4. ant -f build.xml
+   The jsp-api.jar file is located in: <glassfish-ri>/jsf/build/lib/jsf-api.jar
+5. modify jsf-api-pom.xml: 
+    <distributionManagement>
+        <repository>
+            <id>java.net-m2-repository</id>
+            <url>java-net:/maven2-repository/trunk/www/repository/</url>
+        </repository>
+    </distributionManagement>
+    change <url>...</url> to your local maven repository.
+   e.g. <url>file:/export/home/GlassFish/jsf/repository</url>
+6. ant push-to-maven
+
+
+glassfish-corba (https://glassfish-corba.dev.java.net/design/orb_notes.html#htoc7):
+==================================================================================
+1. cd glassfish-corba/make
+2. ant rename
+3. cd glassfish-corba/build/rename/ee/make
+4. ant build
+5. cd glassfish-corba/make
+6. ant make-bundles
+7. ant -Drepo.url="file:<local-maven-repo>" -Drelease.version=3.0.0 -Dbuild.version=b001  release
+
