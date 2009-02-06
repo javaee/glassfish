@@ -62,13 +62,13 @@ public class DeployCommandParameters extends DeploymentOperationParameters {
     public String libraries = null;
 
     @Param(optional=true, defaultValue="false")
-    public Boolean force;
+    public Boolean force = false;
 
     @Param(name=ParameterNames.PRECOMPILE_JSP, optional=true, defaultValue="false")
-    public Boolean precompilejsp;
+    public Boolean precompilejsp = false;
 
     @Param(optional=true, defaultValue="false")
-    public Boolean verify;
+    public Boolean verify = false;
 
     @Param(optional=true)
     public String retrieve = null;
@@ -91,22 +91,22 @@ public class DeployCommandParameters extends DeploymentOperationParameters {
     public File deploymentplan = null;
 
     @Param(name=ParameterNames.ENABLED, optional=true, defaultValue="true")
-    public Boolean enabled;
+    public Boolean enabled=true;
 
     @Param(optional=true, defaultValue="false")
-    public Boolean generatermistubs;
+    public Boolean generatermistubs = false;
 
     @Param(optional=true, defaultValue="false")
-    public Boolean availabilityenabled;
+    public Boolean availabilityenabled = false;
 
     @Param(optional=true)
     public String target = "server";
 
     @Param(optional=true, defaultValue="false")
-    public Boolean keepreposdir;
+    public Boolean keepreposdir = false;
 
     @Param(optional=true, defaultValue="true")
-    public Boolean logReportedErrors;
+    public Boolean logReportedErrors = false;
 
     @Param(primary=true)
     public File path;

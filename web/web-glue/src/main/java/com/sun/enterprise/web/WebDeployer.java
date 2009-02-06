@@ -27,6 +27,7 @@ package com.sun.enterprise.web;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.ServerTags;
+import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.io.WebDeploymentDescriptorFile;
@@ -179,8 +180,11 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
         com.sun.enterprise.config.serverbeans.Application config =
                 domain.getApplications().getModule(com.sun.enterprise.config.serverbeans.Application.class,
                     dc.getCommandParameters(DeploymentOperationParameters.class).name());
-
-        WebApplication webApp = new WebApplication(container, wmInfo, config.getModule(wmInfo.getDescriptor().getName()),
+        Module moduleConfig = null;
+        if (config!=null) {
+            moduleConfig = config.getModule(wmInfo.getDescriptor().getName());
+        }
+        WebApplication webApp = new WebApplication(container, wmInfo, moduleConfig,
             (Boolean.parseBoolean(dc.getProps().getProperty(DeploymentProperties.KEEP_SESSIONS))?
                 dc.getProps():null));
         // we need to save the libraries in our application context since JSPC can occur at any

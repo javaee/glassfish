@@ -65,7 +65,7 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
 
     private final WebContainer container;
     private final WebModuleConfig wmInfo;
-    private final Module moduleConfig; 
+    private final Module moduleConfig;
     Properties props = null;
     String libraries = null;
 
