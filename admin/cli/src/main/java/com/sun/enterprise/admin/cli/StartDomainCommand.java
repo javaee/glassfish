@@ -37,18 +37,76 @@ import java.util.logging.*;
 
 public class StartDomainCommand extends AbstractCommand {
     public void runCommand() throws CommandException, CommandValidationException {
+
+        String gfejar = System.getenv("GFE_JAR");
+
+        if(gfejar != null && gfejar.length() > 0)
+            runCommandEmbedded();
+        else
+            runCommandNotEmbedded();
+    }
+        private void runCommandNotEmbedded() throws CommandException, CommandValidationException {
+
+        try {
+            validateOptions();
+            GFLauncher launcher = GFLauncherFactory.getInstance(
+                    GFLauncherFactory.ServerType.domain);
+            info = launcher.getInfo();
+
+            if (!operands.isEmpty()) {
+                info.setDomainName((String) operands.firstElement());
+            }
+
+            String parent = getOption("domaindir");
+
+            if (parent != null) {
+                info.setDomainParentDir(parent);
+            }
+
+            boolean verbose = getBooleanOption("verbose");
+            info.setVerbose(verbose);
+            info.setDebug(getBooleanOption("debug"));
+            launcher.setup();
+            // CLI calls this method only to ensure that domain.xml is parsed
+            // once. This is a performance optimization.
+            // km@dev.java.net (Aug 2008)
+            if(isServerAlive(info.getAdminPorts())) {
+                String port = info.getAdminPorts().toArray(new Integer[0])[0] + "";
+                String msg = getLocalizedString("ServerRunning", new String[]{info.getDomainName(), port});
+                throw new CommandException(msg);
+            }
+
+            launcher.launch();
+
+            // if we are in verbose mode, we definitely do NOT want to wait for DAS --
+            // since it already ran and is now dead!!
+            if(!verbose) {
+                waitForDAS(info.getAdminPorts());
+                report(info);
+            }
+        }
+        catch(GFLauncherException gfle) {
+            throw new CommandException(gfle.getMessage());
+        }
+        catch(MiniXmlParserException me) {
+            throw new CommandException(me);
+        }
+    }
+
+
+    private void runCommandEmbedded() throws CommandException, CommandValidationException {
         try {
             GFLauncher launcher = null;
 
             // bnevins nov 23 2008
             // Embedded is a new type of server
             // For now -- we ONLY start embedded
-			
+
                 launcher = GFLauncherFactory.getInstance(
                     GFLauncherFactory.ServerType.embedded);
 
             info = launcher.getInfo();
-            
+
             if(!operands.isEmpty()) {
                 info.setDomainName((String) operands.firstElement());
             }
@@ -79,7 +137,7 @@ public class StartDomainCommand extends AbstractCommand {
             }
 
             launcher.launch();
-            
+
             // if we are in verbose mode, we definitely do NOT want to wait for DAS --
             // since it already ran and is now dead!!
             //if(!verbose) {
@@ -94,7 +152,6 @@ public class StartDomainCommand extends AbstractCommand {
             throw new CommandException(me);
         }
     }
-
 
     // bnevins: note to me -- this String handling is EVIL.  Need to add plenty of utilities...
     
