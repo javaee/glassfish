@@ -164,7 +164,7 @@
             </activation>
             <modules>
                 <!-- Every time you change module list, please change 
-                     the same under release profile as well (below) -->
+                     the same under release profiles as well (below) -->
                 <module>javaee-api</module>
               	<module>common</module>
               	<module>deployment</module>
@@ -262,6 +262,7 @@
                 <module>flashlight</module>
                 <module>embedded</module>
                 <module>webservices</module>
+                <module>orb</module>
                 <module>packager</module>
                 <module>distributions-ips</module>
                 <module>installer</module>
@@ -300,6 +301,7 @@
                 <module>flashlight</module>
                 <module>embedded</module>
                 <module>webservices</module>
+                <module>orb</module>
                 <module>packager</module>
                 <module>distributions-ips</module>
                 <module>installer</module>
