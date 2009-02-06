@@ -46,6 +46,8 @@ import org.jvnet.hk2.config.TransactionFailure;
 import org.glassfish.deployment.admin.ListComponentsCommand;
 import com.sun.enterprise.config.serverbeans.*;
 import org.glassfish.api.admin.config.Property;
+import org.glassfish.api.deployment.DeployCommandParameters;
+
 import java.beans.PropertyVetoException;
 import java.util.List;
 import java.util.ArrayList;
@@ -217,8 +219,8 @@ public class ListComponentsCommandTest {
                 return new Properties();
             }
 
-            public Properties getDeployParameters(ApplicationRef appRef) {
-                return new Properties();
+            public DeployCommandParameters getDeployParameters(ApplicationRef appRef) {
+                return new DeployCommandParameters();
             }
         }
 

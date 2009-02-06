@@ -36,6 +36,7 @@
 package org.glassfish.internal.deployment;
 
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.api.deployment.DeploymentOperationParameters;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.data.ApplicationInfo;
@@ -53,7 +54,7 @@ import java.net.MalformedURLException;
  */
 public interface ExtendedDeploymentContext extends DeploymentContext {
     
-    public enum Phase { UNKNOWN, PREPARE, LOAD, START, STOP, UNLOAD, CLEAN };
+    public enum Phase { UNKNOWN, PREPARE, LOAD, START, STOP, UNLOAD, CLEAN }
 
 
     /**

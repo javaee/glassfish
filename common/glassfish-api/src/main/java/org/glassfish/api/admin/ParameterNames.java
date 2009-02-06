@@ -11,7 +11,6 @@ public class ParameterNames {
     public static final String COMPONENT = "component";
     public static final String VIRTUAL_SERVERS = "virtualservers";
     public static final String CONTEXT_ROOT = "contextroot";
-    public static final String PREVIOUS_CONTEXT_ROOT = "previous_contextroot";
     public static final String LIBRARIES = "libraries";
     public static final String DIRECTORY_DEPLOYED = "directorydeployed";
     public static final String LOCATION = "location";

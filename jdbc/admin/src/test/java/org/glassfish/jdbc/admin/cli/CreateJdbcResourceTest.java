@@ -111,7 +111,7 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
         
         context = new AdminCommandContext(
                 LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER),
-                new PropsFileActionReporter(), parameters);
+                new PropsFileActionReporter());
         
         cr = new CommandRunner();
     }

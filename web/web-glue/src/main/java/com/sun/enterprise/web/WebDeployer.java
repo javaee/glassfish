@@ -35,6 +35,8 @@ import org.glassfish.web.loader.util.ASClassLoaderUtil;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
+import org.glassfish.api.deployment.DeploymentOperationParameters;
+import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.admin.ServerEnvironment;
@@ -109,19 +111,18 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
             // 3. Context root from last deployment if applicable
             // 4. The default context root
             // 5. archive name
-            Properties params = dc.getCommandParameters();
-            String contextRoot = params.getProperty(ParameterNames.CONTEXT_ROOT);
+            DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
+            String contextRoot = params.contextRoot;
             if(contextRoot==null) {
                 contextRoot = wbd.getContextRoot();
                 if("".equals(contextRoot))
                     contextRoot = null;
             }
             if(contextRoot==null) {
-                contextRoot = params.getProperty(
-                    ParameterNames.PREVIOUS_CONTEXT_ROOT);
+                contextRoot = params.previousContextRoot;
             }
             if(contextRoot==null)
-                contextRoot = params.getProperty(ParameterNames.NAME);
+                contextRoot = params.name();
             if(contextRoot==null)
                 contextRoot = dc.getSource().getName();
 
@@ -129,7 +130,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
                 contextRoot = "/" + contextRoot;
             }
             wbd.setContextRoot(contextRoot);
-            wbd.setName(params.getProperty(ParameterNames.NAME));
+            wbd.setName(params.name());
 
             // set the context root to deployment context props so this value
             // will be persisted in domain.xml
@@ -144,14 +145,12 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
         WebModuleConfig wmInfo = null;
         
         try {
-            ReadableArchive source = dc.getSource();
-            Properties params = dc.getCommandParameters();
-            String virtualServers = params.getProperty(ParameterNames.VIRTUAL_SERVERS);
-        
+            DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
+
             wmInfo = new WebModuleConfig();
             
             wmInfo.setDescriptor(dc.getModuleMetaData(WebBundleDescriptor.class));
-            wmInfo.setVirtualServers(virtualServers);
+            wmInfo.setVirtualServers(params.virtualservers);
             wmInfo.setLocation(dc.getSourceDir());
             wmInfo.setObjectType(dc.getProps().getProperty(ServerTags.OBJECT_TYPE));
         } catch (Exception ex) {
@@ -165,9 +164,8 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
     @Override
     protected void generateArtifacts(DeploymentContext dc) 
         throws DeploymentException {
-        final Properties params = dc.getCommandParameters();
-        final boolean precompileJSP = Boolean.parseBoolean(params.getProperty(ParameterNames.PRECOMPILE_JSP));
-        if (precompileJSP) {
+        DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
+        if (params.precompilejsp) {
             //call JSPCompiler... 
             runJSPC(dc);
         }
@@ -178,7 +176,11 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
     public WebApplication load(WebContainer container, DeploymentContext dc) {
         super.load(container, dc);
         WebModuleConfig wmInfo = loadWebModuleConfig(dc);
-        WebApplication webApp = new WebApplication(container, wmInfo,
+        com.sun.enterprise.config.serverbeans.Application config =
+                domain.getApplications().getModule(com.sun.enterprise.config.serverbeans.Application.class,
+                    dc.getCommandParameters(DeploymentOperationParameters.class).name());
+
+        WebApplication webApp = new WebApplication(container, wmInfo, config.getModule(wmInfo.getDescriptor().getName()),
             (Boolean.parseBoolean(dc.getProps().getProperty(DeploymentProperties.KEEP_SESSIONS))?
                 dc.getProps():null));
         // we need to save the libraries in our application context since JSPC can occur at any

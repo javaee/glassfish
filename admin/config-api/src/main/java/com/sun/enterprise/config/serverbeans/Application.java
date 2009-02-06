@@ -48,11 +48,13 @@ import org.jvnet.hk2.component.Injectable;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeSupport;
 import java.io.Serializable;
+import java.io.File;
 import java.util.List;
 import java.util.Properties;
 
 import org.glassfish.api.admin.config.*;
 import org.glassfish.api.admin.ParameterNames;
+import org.glassfish.api.deployment.DeployCommandParameters;
 
 import org.glassfish.quality.ToDo;
 
@@ -295,7 +297,7 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
     public Properties getDeployProperties();
 
     @DuckTyped
-    public Properties getDeployParameters(ApplicationRef appRef);    
+    public DeployCommandParameters getDeployParameters(ApplicationRef appRef);    
 
     public class Duck {
         public static <T extends ApplicationConfig> T getApplicationConfig(Application me, Class<T> type) {
@@ -332,33 +334,17 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
             return deploymentProps;            
         }
 
-        public static Properties getDeployParameters(Application app, ApplicationRef appRef) {
+        public static DeployCommandParameters getDeployParameters(Application app, ApplicationRef appRef) {
 
-            Properties deploymentParams = new Properties();
             if (appRef==null) {
-                return deploymentParams;
+                throw new IllegalArgumentException("Null appRef passed");
             }
-            deploymentParams.setProperty(ParameterNames.NAME, app.getName());
-            deploymentParams.setProperty(ParameterNames.LOCATION, app.getLocation());
-            deploymentParams.setProperty(ParameterNames.ENABLED, app.getEnabled());
-            if (app.getContextRoot() != null) {
-                deploymentParams.setProperty(ParameterNames.CONTEXT_ROOT,
-                    app.getContextRoot());
-            }
-            if (app.getLibraries() != null) {
-                deploymentParams.setProperty(ParameterNames.LIBRARIES,
-                    app.getLibraries());
-            }
-            deploymentParams.setProperty(ParameterNames.DIRECTORY_DEPLOYED,
-                app.getDirectoryDeployed());
-
-            if (appRef.getVirtualServers() != null) {
-                deploymentParams.setProperty(ParameterNames.VIRTUAL_SERVERS,
-                    appRef.getVirtualServers());
-            }
-
-            deploymentParams.put("APPLICATION_CONFIG", app);
-
+            DeployCommandParameters deploymentParams = new DeployCommandParameters(new File(app.getLocation()));
+            deploymentParams.name = app.getName();
+            deploymentParams.enabled = Boolean.parseBoolean(app.getEnabled());
+            deploymentParams.contextRoot = app.getContextRoot();
+            deploymentParams.libraries = app.getLibraries();
+            deploymentParams.virtualservers = appRef.getVirtualServers();
             return deploymentParams;
         }
     }

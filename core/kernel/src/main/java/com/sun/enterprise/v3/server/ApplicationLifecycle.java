@@ -178,6 +178,7 @@ public class ApplicationLifecycle implements Deployment {
                 }
             }
         };
+        DeployCommandParameters commandParams = context.getCommandParameters(DeployCommandParameters.class);
 
         context.setPhase(DeploymentContextImpl.Phase.PREPARE);
         ApplicationInfo appInfo = null;
@@ -205,8 +206,7 @@ public class ApplicationLifecycle implements Deployment {
                     return null;
                 }
 
-                final String appName = context.getCommandParameters().getProperty(
-                    ParameterNames.NAME);
+                final String appName = commandParams.name();
 
                 appInfo = appRegistry.get(appName);
                 boolean alreadyRegistered = appInfo!=null;
@@ -257,8 +257,7 @@ public class ApplicationLifecycle implements Deployment {
 
                 // if enable attribute is set to true
                 // we start the application
-                if (Boolean.valueOf(context.getCommandParameters().getProperty(
-                    ParameterNames.ENABLED))) {
+                if (commandParams.enabled) {
                     appInfo.start(context, report, tracker);
                 }
                 return appInfo;

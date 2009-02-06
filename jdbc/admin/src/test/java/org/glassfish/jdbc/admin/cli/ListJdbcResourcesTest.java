@@ -120,7 +120,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
 
         AdminCommandContext context = new AdminCommandContext(
                 LogDomains.getLogger(ListJdbcResourcesTest.class, LogDomains.ADMIN_LOGGER),
-                new PropsFileActionReporter(), parameters);
+                new PropsFileActionReporter());
         
         //Call CommandRunner.doCommand(..) to execute the command
         CommandRunner cr = new CommandRunner();
@@ -147,7 +147,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
         
         context = new AdminCommandContext(
                 LogDomains.getLogger(ListJdbcResourcesTest.class, LogDomains.ADMIN_LOGGER),
-                new PropsFileActionReporter(), parameters);
+                new PropsFileActionReporter());
         
         //Call CommandRunner.doCommand(..) to execute the command
         cr.doCommand("list-jdbc-resources", listCommand, parameters, context.getActionReport());      
@@ -178,7 +178,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
         
         context = new AdminCommandContext(
                 LogDomains.getLogger(ListJdbcResourcesTest.class, LogDomains.ADMIN_LOGGER),
-                new PropsFileActionReporter(), parameters);
+                new PropsFileActionReporter());
         
         cr.doCommand("create-jdbc-resource", createCommand, parameters, context.getActionReport());
         
@@ -190,7 +190,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
         parameters.clear();
         context = new AdminCommandContext(
                 LogDomains.getLogger(ListJdbcResourcesTest.class, LogDomains.ADMIN_LOGGER),
-                new PropsFileActionReporter(), parameters);
+                new PropsFileActionReporter());
         
         //Call CommandRunner.doCommand(..) to execute the command
         cr.doCommand("list-jdbc-resources", listCommand, parameters, context.getActionReport());
@@ -227,7 +227,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
         
         context = new AdminCommandContext(
                 LogDomains.getLogger(ListJdbcResourcesTest.class, LogDomains.ADMIN_LOGGER),
-                new PropsFileActionReporter(), parameters);
+                new PropsFileActionReporter());
         
         cr.doCommand("delete-jdbc-resource", deleteCommand, parameters, context.getActionReport());
         
@@ -239,7 +239,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
         parameters.clear();        
         context = new AdminCommandContext(
                 LogDomains.getLogger(ListJdbcResourcesTest.class, LogDomains.ADMIN_LOGGER),
-                new PropsFileActionReporter(), parameters);
+                new PropsFileActionReporter());
         
         //Call CommandRunner.doCommand(..) to execute the command
         cr.doCommand("list-jdbc-resources", listCommand, parameters, context.getActionReport());
@@ -272,7 +272,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
         
         context = new AdminCommandContext(
                 LogDomains.getLogger(ListJdbcResourcesTest.class, LogDomains.ADMIN_LOGGER),
-                new PropsFileActionReporter(), parameters);
+                new PropsFileActionReporter());
         
         //Call CommandRunner.doCommand(..) to execute the command
         cr.doCommand("list-jdbc-resources", listCommand, parameters, context.getActionReport());      
@@ -297,7 +297,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
         parameters.setProperty("invalid", "invalid");
         context = new AdminCommandContext(
                 LogDomains.getLogger(ListJdbcResourcesTest.class, LogDomains.ADMIN_LOGGER),
-                new PropsFileActionReporter(), parameters);
+                new PropsFileActionReporter());
         
         cr.doCommand("list-jdbc-resources", listCommand, parameters, context.getActionReport());      
         
