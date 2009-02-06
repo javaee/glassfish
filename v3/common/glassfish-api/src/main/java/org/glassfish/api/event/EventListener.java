@@ -45,13 +45,26 @@ public interface EventListener {
 
     public void event(Event event);
 
-    public class Event {
+    public class Event<T> {
         final long inception;
-        final EventTypes type;
-        public Event(EventTypes type) {
+        final EventTypes<T> type;
+        final T hook;
+
+        public Event(EventTypes<T> type) {
+            if (type.getHookType()!=null) {
+                throw new IllegalArgumentException("Null event hook [" + type.getHookType() + "]");
+            }
             inception = System.currentTimeMillis();
             this.type = type;
+            this.hook = null;
         }
+
+        public Event(EventTypes<T> type, T hook) {
+            inception = System.currentTimeMillis();
+            this.type = type;
+            this.hook = hook;
+        }
+
         public long inception() {
             return inception;
         }
@@ -62,6 +75,10 @@ public interface EventListener {
 
         public boolean is(EventTypes type) {
             return type==this.type;
+        }
+
+        public T hook() {
+            return type.getHookType().cast(hook);
         }
     }
 

@@ -47,7 +47,7 @@ import java.util.Map;
  * 
  * @author dochez
  */
-public final class EventTypes {
+public final class EventTypes<T> {
     
     private final static Map<String, EventTypes> EVENTS=new HashMap<String, EventTypes>();
 
@@ -56,28 +56,38 @@ public final class EventTypes {
     public static final String SERVER_READY_NAME = "server_ready";
     public static final String PREPARE_SHUTDOWN_NAME = "prepare_shutdown";
     public static final String SERVER_SHUTDOWN_NAME = "server_shutdown";
+
     public static final EventTypes SERVER_READY = create(SERVER_READY_NAME);
     public static final EventTypes SERVER_SHUTDOWN = create(SERVER_SHUTDOWN_NAME);
     public static final EventTypes PREPARE_SHUTDOWN = create(PREPARE_SHUTDOWN_NAME);
 
-    
     public static EventTypes create(String name) {
+        return create(name, null);
+    }
+
+    public static EventTypes create(String name, Class hookType) {
         synchronized(EVENTS) {
             if (!EVENTS.containsKey(name)) {
-                EVENTS.put(name, new EventTypes(name));                
+                EVENTS.put(name, new EventTypes(name, hookType));
             }
         }
         return EVENTS.get(name);
     }    
     
     private final String name;
+    private final Class<T> hookType;
 
-    private EventTypes(String name) {
+    private EventTypes(String name, Class<T> hookType) {
         this.name = name;
+        this.hookType = hookType;
     }
     
     public String type() {
         return name;
+    }
+
+    public Class<T> getHookType() {
+        return hookType;
     }
     
     /**

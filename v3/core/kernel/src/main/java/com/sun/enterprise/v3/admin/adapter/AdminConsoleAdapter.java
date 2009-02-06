@@ -53,6 +53,7 @@ import org.glassfish.api.event.RestrictTo;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.internal.api.AdminAuthenticator;
 import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.internal.data.ApplicationInfo;
@@ -833,9 +834,8 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             final ArchiveFactory archiveFactory = habitat.getComponent(ArchiveFactory.class);
             final ReadableArchive archive = archiveFactory.openArchive(new File(location));
 
-            Properties prop = new Properties();
-            prop.setProperty(ParameterNames.NAME, ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_APP_NAME);
-            DeploymentContextImpl context = new DeploymentContextImpl(logger, archive, prop, env);
+            UndeployCommandParameters parameters = new UndeployCommandParameters(ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_APP_NAME);
+            DeploymentContextImpl context = new DeploymentContextImpl(logger, archive, parameters, env, false);
             ActionReport report = new PlainTextActionReporter();
             ApplicationInfo info = appRegistry.get(ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_APP_NAME);
             final ApplicationLifecycle appLifecycle = habitat.getComponent(ApplicationLifecycle.class);

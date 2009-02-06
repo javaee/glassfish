@@ -79,7 +79,6 @@ public class PNDumpCommand extends AMXCommandBase implements AdminCommand
     public void _execute(AdminCommandContext context)
     {
         final Pathnames pathnames = getDomainRoot().getPathnames();
-        final java.util.Properties params = context.getCommandParameters();
         
         final ActionReport report = getActionReport();
         report.setMessage( "plist ");

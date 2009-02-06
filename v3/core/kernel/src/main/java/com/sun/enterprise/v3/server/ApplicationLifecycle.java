@@ -30,13 +30,13 @@ import org.glassfish.api.admin.config.Named;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.deployment.common.DeploymentContextImpl;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.enterprise.v3.admin.AdminAdapter;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.event.Events;
 import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.container.Container;
@@ -55,18 +55,14 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigCode;
 import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 
 import java.beans.PropertyVetoException;
-import java.io.File;
 import java.io.IOException;
-import java.lang.instrument.ClassFileTransformer;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -122,6 +118,9 @@ public class ApplicationLifecycle implements Deployment {
     @Inject
     protected ClassLoaderHierarchy clh;
 
+    @Inject
+    Events events;
+
     protected Logger logger = LogDomains.getLogger(AppServerStartup.class, LogDomains.CORE_LOGGER);
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ApplicationLifecycle.class);      
 
@@ -164,6 +163,8 @@ public class ApplicationLifecycle implements Deployment {
 
     public ApplicationInfo deploy(Collection<Sniffer> sniffers, final ExtendedDeploymentContext context, final ActionReport report) {
 
+        events.send(new org.glassfish.api.event.EventListener.Event<ExtendedDeploymentContext>(Deployment.DEPLOYMENT_START, context));
+        
         ProgressTracker tracker = new ProgressTracker() {
             public void actOn(Logger logger) {
                 for (EngineRef module : get("started", EngineRef.class)) {
@@ -177,8 +178,10 @@ public class ApplicationLifecycle implements Deployment {
                 }
             }
         };
+        DeployCommandParameters commandParams = context.getCommandParameters(DeployCommandParameters.class);
 
         context.setPhase(DeploymentContextImpl.Phase.PREPARE);
+        ApplicationInfo appInfo = null;
         try {
             ArchiveHandler handler = getArchiveHandler(context.getSource());
             if (handler==null) {
@@ -203,10 +206,9 @@ public class ApplicationLifecycle implements Deployment {
                     return null;
                 }
 
-                final String appName = context.getCommandParameters().getProperty(
-                    ParameterNames.NAME);
+                final String appName = commandParams.name();
 
-                ApplicationInfo appInfo = appRegistry.get(appName);
+                appInfo = appRegistry.get(appName);
                 boolean alreadyRegistered = appInfo!=null;
                 if (!alreadyRegistered) {
 
@@ -255,8 +257,7 @@ public class ApplicationLifecycle implements Deployment {
 
                 // if enable attribute is set to true
                 // we start the application
-                if (Boolean.valueOf(context.getCommandParameters().getProperty(
-                    ParameterNames.ENABLED))) {
+                if (commandParams.enabled) {
                     appInfo.start(context, report, tracker);
                 }
                 return appInfo;
@@ -268,6 +269,12 @@ public class ApplicationLifecycle implements Deployment {
             report.failure(logger, "Exception while deploying the app", e);
             tracker.actOn(logger);
             return null;
+        } finally {
+            if (appInfo==null) {
+                events.send(new org.glassfish.api.event.EventListener.Event<ExtendedDeploymentContext>(Deployment.DEPLOYMENT_FAIL, context));
+            } else {
+                events.send(new org.glassfish.api.event.EventListener.Event<ApplicationInfo>(Deployment.DEPLOYMENT_SUCCESS, appInfo));
+            }
         }
     }
 

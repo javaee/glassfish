@@ -40,19 +40,17 @@ import java.util.logging.Logger;
 public class AdminCommandContext implements ExecutionContext {
     
     public  ActionReport report;
-    public final Properties params;
     public final Logger logger;
     private List<File> uploadedFiles;
     
-    public AdminCommandContext(Logger logger, ActionReport report, Properties params) {
-        this(logger, report, params, null);
+    public AdminCommandContext(Logger logger, ActionReport report) {
+        this(logger, report, null);
     }
     
-    public AdminCommandContext(Logger logger, ActionReport report, Properties params,
+    public AdminCommandContext(Logger logger, ActionReport report,
             List<File> uploadedFiles) {
         this.logger = logger;
         this.report = report;
-        this.params = params;
         this.uploadedFiles = (uploadedFiles == null) ? emptyFileList() : uploadedFiles;
     }
     
@@ -72,14 +70,6 @@ public class AdminCommandContext implements ExecutionContext {
      */
     public void setActionReport(ActionReport newReport) {
         report = newReport;
-    }
-    
-    /**
-     * Returns the DeployCommand parameters 
-     * @return the command parameters
-     */
-    public Properties getCommandParameters() {
-        return params;
     }
 
     /**

@@ -65,6 +65,7 @@ import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.autodeploy.AutoDeployService;
+import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.deployment.common.DeploymentContextImpl;
 import org.glassfish.embed.impl.EmbeddedAPIClassLoaderServiceImpl;
 import org.glassfish.embed.impl.EmbeddedApplicationLifecycle;
@@ -511,7 +512,7 @@ public class AppServer {
      * @return
      * @throws IOException
      */
-    public App deploy(ReadableArchive a, Properties params) throws IOException {
+    public App deploy(ReadableArchive a, DeployCommandParameters params) throws IOException {
         start();
 
         ArchiveHandler h = appLife.getArchiveHandler(a);
@@ -520,15 +521,13 @@ public class AppServer {
 
         //is this required?
         ClassLoader parentCL = createSnifferParentCL(null, snifMan.getSniffers());
-
-
-        // TODO: we need to stop this totally type-unsafe way of passing parameters
-        if (params == null) {
-            params = new Properties();
+        if (params==null) {
+            params = new DeployCommandParameters();
         }
-        params.put(ParameterNames.NAME, a.getName());
-        params.put(ParameterNames.ENABLED, "true");
-        final DeploymentContextImpl deploymentContext = new DeploymentContextImpl(Logger.getAnonymousLogger(), a, params, env);
+        params.name = a.getName();
+        params.enabled = true;
+
+        final DeploymentContextImpl deploymentContext = new DeploymentContextImpl(Logger.getAnonymousLogger(), a, params, env,true);
 
         ClassLoader cl = h.getClassLoader(parentCL, deploymentContext);
         Collection<Sniffer> activeSniffers = snifMan.getSniffers(a, cl);
@@ -572,14 +571,12 @@ public class AppServer {
      * @param virtualServer the virtual server ID
      */
     public App deployWar(ScatteredWar war, String contextRoot, String virtualServer) throws IOException {
-        Properties params = new Properties();
+        DeployCommandParameters params = new DeployCommandParameters();
         if (virtualServer == null) {
             virtualServer = "server";
         }
-        params.put(ParameterNames.VIRTUAL_SERVERS, virtualServer);
-        if (contextRoot != null) {
-            params.put(ParameterNames.CONTEXT_ROOT, contextRoot);
-        }
+        params.virtualservers=virtualServer;
+        params.contextRoot=contextRoot;
         return deploy(war, params);
     }
 

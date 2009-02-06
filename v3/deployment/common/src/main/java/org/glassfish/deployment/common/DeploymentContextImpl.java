@@ -26,10 +26,11 @@ package org.glassfish.deployment.common;
 import java.lang.instrument.ClassFileTransformer;
 
 import org.glassfish.api.deployment.InstrumentableClassLoader;
+import org.glassfish.api.deployment.DeploymentOperationParameters;
+import org.glassfish.api.deployment.DeployCommandParameters;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
-import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
@@ -54,9 +55,10 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
 
 
     final ReadableArchive source;
-    final Properties parameters;
+    final DeploymentOperationParameters parameters;
     final Logger logger;
     final ServerEnvironment env;
+    final boolean serverRestart;
     ClassLoader cloader;
     Properties props;
     Map<String, Object> modulesMetaData = new HashMap<String, Object>();
@@ -67,13 +69,18 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
     ClassLoader sharableTemp = null;
 
     /** Creates a new instance of DeploymentContext */
-    public DeploymentContextImpl(Logger logger, ReadableArchive source, Properties params, ServerEnvironment env) {
+    public DeploymentContextImpl(Logger logger, ReadableArchive source,
+                                 DeploymentOperationParameters params, ServerEnvironment env, boolean serverRestart) {
         this.source = source;
         this.logger = logger;
         this.parameters = params;
         this.env = env;
+        this.serverRestart = serverRestart;
     }
 
+    public boolean isRestart() {
+        return serverRestart;
+    }
 
     public void setPhase(Phase newPhase) {
         this.phase = newPhase;
@@ -83,12 +90,14 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
         return source;
     }
 
-    public Properties getCommandParameters() {
-        return parameters;
+    public <U extends DeploymentOperationParameters> U getCommandParameters(Class<U> commandParametersType) {
+        return commandParametersType.cast(parameters);
     }
 
     public Properties getParameters() {
-        return parameters;
+        // todo : fix this...
+        //return parameters;
+        return null;
     }
 
     public Logger getLogger() {
@@ -115,7 +124,10 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
         // check if we are in prepare phase and the final class loader has been accessed...
         if (phase==Phase.PREPARE) {
             if (finalClassLoaderAccessedDuringPrepare) {
-                Boolean force = Boolean.parseBoolean(getCommandParameters().getProperty("force"));
+                Boolean force = false;
+                if (parameters instanceof DeployCommandParameters) {
+                    force = ((DeployCommandParameters) parameters).force;
+                }
                 if (!force) {
                     throw new RuntimeException("More than one deployer is trying to access the final class loader during prepare phase," +
                             " use --force=true to force deployment");
@@ -150,8 +162,7 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
             return;
         }
         // first we create the appLib class loader, this is non shared libraries class loader
-        final String appName = getCommandParameters().getProperty(ParameterNames.NAME);
-        ClassLoader applibCL = clh.getAppLibClassLoader(appName, getAppLibs());
+        ClassLoader applibCL = clh.getAppLibClassLoader(parameters.name(), getAppLibs());
 
         ClassLoader parentCL = clh.createApplicationParentCL(applibCL, this);
 
@@ -206,11 +217,10 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
      *         passed in value is null.
      */
     public File getScratchDir(String subDirName) {
-        final String appName = parameters.getProperty(ParameterNames.NAME);
         File rootScratchDir = env.getApplicationStubPath();
         if (subDirName != null )
             rootScratchDir = new File(rootScratchDir, subDirName);
-        return new File(rootScratchDir, appName);
+        return new File(rootScratchDir, parameters.name());
     }
 
     /**
@@ -302,9 +312,8 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
     private List<URI> getAppLibs()
             throws URISyntaxException {
         List<URI> libURIs = new ArrayList<URI>();
-        String libraries = getCommandParameters().getProperty(ParameterNames.LIBRARIES);
-        if (libraries != null) {
-            URL[] urls = convertToURL(libraries);
+        if (parameters.libraries() != null) {
+            URL[] urls = convertToURL(parameters.libraries());
             for (URL url : urls) {
                 libURIs.add(url.toURI());
             }

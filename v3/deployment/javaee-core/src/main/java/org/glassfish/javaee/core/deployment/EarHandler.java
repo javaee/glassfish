@@ -41,6 +41,7 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.api.deployment.archive.CompositeHandler;
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.deployment.common.DeploymentContextImpl;
@@ -182,7 +183,7 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                     ArchiveHandler handler = deployment.getArchiveHandler(sub);
                     if (handler!=null) {
                         // todo : this is a hack, once again, the handler is assuming a file:// url
-                        DeploymentContext subContext = new DeploymentContextImpl(context.getLogger(), sub, context.getProps(), env);
+                        DeploymentContext subContext = new DeploymentContextImpl(context.getLogger(), sub, context.getCommandParameters(DeployCommandParameters.class), env, context.isRestart());
                         ClassLoader subCl = handler.getClassLoader(cl, subContext);
                         cl.addModuleClassLoader(md.getArchiveUri(), subCl);
                     }

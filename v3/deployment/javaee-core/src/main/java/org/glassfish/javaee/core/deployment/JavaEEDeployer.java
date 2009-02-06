@@ -23,10 +23,7 @@
 
 package org.glassfish.javaee.core.deployment;
 
-import org.glassfish.api.deployment.DeploymentContext;
-import org.glassfish.api.deployment.MetaData;
-import org.glassfish.api.deployment.Deployer;
-import org.glassfish.api.deployment.ApplicationContainer;
+import org.glassfish.api.deployment.*;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.api.container.Container;
@@ -228,10 +225,8 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
 
     protected final void createClientJar(DeploymentContext dc,
         ZipItem[] clientStubs) throws DeploymentException {
-        Properties props = dc.getCommandParameters();
-        String name = props.getProperty(DeploymentProperties.NAME);
-        String clientJarRequested =
-            props.getProperty(DeploymentProperties.CLIENTJARREQUESTED);
+
+        DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
 
         // destination file for the client jar file
         File appDirectory = dc.getScratchDir("xml");
@@ -241,7 +236,7 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
             appDirectory = dc.getSourceDir();
         }
 
-        File clientJar = new File(appDirectory, name
+        File clientJar = new File(appDirectory, params.name()
             + DeploymentImplConstants.ClientJarSuffix);
 
         //XXX: do we need to worry about upgrade scenario where the jar
@@ -249,8 +244,7 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
 
         // now we look if the client jar file is being requested by the client
         // tool
-        if (clientJarRequested!=null &&
-                Boolean.valueOf(clientJarRequested).booleanValue()) {
+        if (params.clientJarRequested) {
 
             // the client jar file is requested upon deployment,
             // we need to build synchronously
@@ -274,8 +268,8 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
      */
     public void clean(DeploymentContext context) {
         if (undeploymentVisitor!=null) {
-            String appName = context.getCommandParameters().getProperty(
-                ParameterNames.NAME);
+
+            String appName = context.getCommandParameters(DeploymentOperationParameters.class).name();
             Application app = getApplicationFromApplicationInfo(appName);
             if (app != null) {
                 context.addModuleMetaData(app);

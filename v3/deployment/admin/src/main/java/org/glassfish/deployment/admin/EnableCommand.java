@@ -32,6 +32,8 @@ import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.deployment.StateCommandParameters;
+import org.glassfish.api.deployment.DeployCommandParameters;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.*;
@@ -63,7 +65,7 @@ import java.beans.PropertyVetoException;
 @Service(name="enable")
 @I18n("enable.command")
 @Scoped(PerLookup.class)
-public class EnableCommand implements AdminCommand {
+public class EnableCommand extends StateCommandParameters implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(EnableCommand.class);
 
@@ -82,30 +84,23 @@ public class EnableCommand implements AdminCommand {
     @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
     protected Server server;
 
-    @Param(primary=true)
-    String component = null;
-
-    @Param(optional=true)
-    String target = "server";
-
     /**
      * Entry point from the framework into the command execution
      * @param context context for the command.
      */
     public void execute(AdminCommandContext context) {
-        final Properties parameters = context.getCommandParameters();
         final ActionReport report = context.getActionReport();
         final Logger logger = context.getLogger();
         
-        if (!deployment.isRegistered(component)) {
-            report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", component));
+        if (!deployment.isRegistered(name())) {
+            report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", name()));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
 
         // return if the application is already in enabled state
         if (Boolean.valueOf(ConfigBeansUtilities.getEnabled(target, 
-            component))) {
+            name()))) {
             logger.fine("The application is already enabled");
             return;
         }
@@ -113,19 +108,19 @@ public class EnableCommand implements AdminCommand {
         ReadableArchive archive;
         File file = null;
         ApplicationRef appRef = null;
-        Properties commandParams = new Properties();
+        DeployCommandParameters commandParams=null;
         Properties contextProps = new Properties();
         try {
             Application app = null; 
             for (Named module : applications.getModules()) {
-                if (module.getName().equals(component)) {  
+                if (module.getName().equals(name())) {  
                     app = (Application)module;
                     break;
                 }
             }
 
             for (ApplicationRef ref : server.getApplicationRef()) {
-                if (ref.getRef().equals(component)) {
+                if (ref.getRef().equals(name())) {
                     appRef = ref;
                     break;
                 }
@@ -134,10 +129,14 @@ public class EnableCommand implements AdminCommand {
                 commandParams = app.getDeployParameters(appRef);
                 contextProps = app.getDeployProperties();
             }
- 
-            parameters.putAll(commandParams);
-            URI uri = new URI(parameters.getProperty(
-                ParameterNames.LOCATION));
+            if (commandParams==null) {
+                report.setMessage(localStrings.getLocalString("bug",
+                    "invalid domain.xml entries, please file a bug"));
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return;                
+            }
+
+            URI uri = new URI(app.getLocation());
             file = new File(uri);
 
             if (!file.exists()) {
@@ -158,8 +157,7 @@ public class EnableCommand implements AdminCommand {
 
         try {
             final DeploymentContextImpl deploymentContext =
-                new DeploymentContextImpl(logger, archive, parameters, env);
-            deploymentContext.getCommandParameters().setProperty(ParameterNames.NAME, component);            
+                new DeploymentContextImpl(logger, archive, commandParams, env, false);
 
             deploymentContext.setProps(contextProps);
             deployment.deploy(deploymentContext, report);

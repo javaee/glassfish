@@ -35,6 +35,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
+import org.glassfish.api.deployment.StateCommandParameters;
 import org.glassfish.deployment.common.DeploymentContextImpl;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.data.ApplicationInfo;
@@ -57,7 +58,7 @@ import java.beans.PropertyVetoException;
 @I18n("disable.command")
 @Scoped(PerLookup.class)
     
-public class DisableCommand implements AdminCommand {
+public class DisableCommand extends StateCommandParameters implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DisableCommand.class);    
 
@@ -70,12 +71,6 @@ public class DisableCommand implements AdminCommand {
     @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
     protected Server server;    
 
-    @Param(primary=true)
-    String component = null;
-
-    @Param(optional=true)    
-    String target = "server";
-
     /**
      * Entry point from the framework into the command execution
      * @param context context for the command.
@@ -85,23 +80,23 @@ public class DisableCommand implements AdminCommand {
         final ActionReport report = context.getActionReport();
         final Logger logger = context.getLogger();
 
-        ApplicationInfo appInfo = deployment.get(component);
+        ApplicationInfo appInfo = deployment.get(name());
         if (appInfo==null) {
-            report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", component));
+            report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", name()));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
 
         // return if the application is already in disabled state
         if (!Boolean.valueOf(ConfigBeansUtilities.getEnabled(target,
-            component))) {
+            name()))) {
             logger.fine("The application is already disabled");
             return;
         }
 
         try {
             final DeploymentContextImpl deploymentContext =
-                new DeploymentContextImpl(logger, null, context.getCommandParameters(), env);
+                new DeploymentContextImpl(logger, null, this, env, false);
 
 
             appInfo.unload(deploymentContext, report);
@@ -109,7 +104,7 @@ public class DisableCommand implements AdminCommand {
             if (report.getActionExitCode().equals(
                 ActionReport.ExitCode.SUCCESS)) {
             for (ApplicationRef ref : server.getApplicationRef()) {
-                if (ref.getRef().equals(component)) {
+                if (ref.getRef().equals(name())) {
                     ConfigSupport.apply(new SingleConfigCode<ApplicationRef>() {
                         public Object run(ApplicationRef param) throws
                                 PropertyVetoException, TransactionFailure {

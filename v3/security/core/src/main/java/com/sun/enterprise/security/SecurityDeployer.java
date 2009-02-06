@@ -26,6 +26,7 @@ import com.sun.enterprise.security.web.integration.WebSecurityManagerFactory;
 import com.sun.enterprise.security.web.integration.WebSecurityManager;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
+import org.glassfish.api.deployment.DeploymentOperationParameters;
 import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.deployment.common.SimpleDeployer;
@@ -82,17 +83,16 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
     
     @Override
     public void unload(DummyApplication container, DeploymentContext context) {
-        Properties params = context.getCommandParameters();
-        String appName = params.getProperty(ParameterNames.NAME);
-        cleanSecurityContext(appName);
+        DeploymentOperationParameters params = context.getCommandParameters(DeploymentOperationParameters.class);
+        cleanSecurityContext(params.name());
     }
 
 
     // TODO: need to add ear and standalone ejb module case
     protected void generatePolicy(DeploymentContext dc)
             throws DeploymentException {
-        Properties params = dc.getCommandParameters();
-        String appName = params.getProperty(ParameterNames.NAME);
+        DeploymentOperationParameters params = dc.getCommandParameters(DeploymentOperationParameters.class);
+        String appName = params.name();
         try {
             policyLoader.loadPolicy();
             Application app = dc.getModuleMetaData(Application.class);
@@ -124,8 +124,8 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
     // TODO: need to add ear and standalone ejb module case
     private void removePolicy(DeploymentContext dc) throws
             DeploymentException {
-        Properties params = dc.getCommandParameters();
-        String appName = params.getProperty(ParameterNames.NAME);
+        DeploymentOperationParameters params = dc.getCommandParameters(DeploymentOperationParameters.class);
+        String appName = params.name();
 
         try {
             WebSecurityManagerFactory wsmf =habitat.getComponent(WebSecurityManagerFactory.class);

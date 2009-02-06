@@ -42,6 +42,7 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -62,7 +63,7 @@ import java.util.logging.Level;
 @Service(name="undeploy")
 @I18n("undeploy.command")
 @Scoped(PerLookup.class)
-public class UndeployCommand implements AdminCommand {
+public class UndeployCommand extends UndeployCommandParameters implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(UndeployCommand.class);
     
@@ -75,21 +76,8 @@ public class UndeployCommand implements AdminCommand {
     @Inject
     ArchiveFactory archiveFactory;
 
-    @Param(primary = true, name=ParameterNames.NAME)
-    String name=null;
-
-    @Param(optional=true)
-    String target = "server";
-    
-    @Param(optional=true, defaultValue="false")
-    Boolean keepreposdir;
-
-    @Param(optional=true)
-    Properties properties=null;
-
     public void execute(AdminCommandContext context) {
         
-        Properties parameters = context.getCommandParameters();
         ActionReport report = context.getActionReport();
         final Logger logger = context.getLogger();
         /**
@@ -97,7 +85,6 @@ public class UndeployCommand implements AdminCommand {
          * user passed the path to the original directory.
          */
         name = (new File(name)).getName();
-        parameters.setProperty(ParameterNames.NAME, name);
 
         ApplicationInfo info = deployment.get(name);
 
@@ -132,7 +119,7 @@ public class UndeployCommand implements AdminCommand {
             source = info.getSource();
         }
 
-        DeploymentContextImpl deploymentContext = new DeploymentContextImpl(logger, source, parameters, env);
+        DeploymentContextImpl deploymentContext = new DeploymentContextImpl(logger, source, this, env, false);
         if (properties!=null) {
             deploymentContext.setProps(properties);
         }

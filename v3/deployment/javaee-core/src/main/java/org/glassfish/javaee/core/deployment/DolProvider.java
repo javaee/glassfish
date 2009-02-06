@@ -6,6 +6,7 @@ import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.deployment.ApplicationMetaDataProvider;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.deployment.common.DeploymentProperties;
@@ -53,8 +54,9 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
 
         ReadableArchive sourceArchive = dc.getSource();
         ClassLoader cl = dc.getClassLoader();
-        Properties props = dc.getCommandParameters();
-        String name = props.getProperty(DeploymentProperties.NAME);
+        DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
+
+        String name = params.name();
 
         Archivist archivist = archivistFactory.getArchivist(
                 sourceArchive, cl);
@@ -64,8 +66,7 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
 
         // we only expand deployment plan once in the first deployer
         if (dc.getModuleMetaData(Application.class) == null) {
-            String deploymentPlan = props.getProperty(
-                DeploymentProperties.DEPLOYMENT_PLAN);
+            File deploymentPlan = params.deploymentplan;
             handleDeploymentPlan(deploymentPlan, archivist, sourceArchive);
         }
         long start = System.currentTimeMillis();
@@ -108,14 +109,14 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
         return application;
 
     }
-    protected void handleDeploymentPlan(String deploymentPlan,
+    protected void handleDeploymentPlan(File deploymentPlan,
         Archivist archivist, ReadableArchive sourceArchive) throws IOException {
         //Note in copying of deployment plan to the portable archive,
         //we should make sure the manifest in the deployment plan jar
         //file does not overwrite the one in the original archive
         if (deploymentPlan != null) {
             DeploymentPlanArchive dpa = new DeploymentPlanArchive();
-            dpa.open(new File(deploymentPlan).toURI());
+            dpa.open(deploymentPlan.toURI());
             // need to revisit for ear case
             WritableArchive targetArchive = archiveFactory.createArchive(
                 sourceArchive.getURI());

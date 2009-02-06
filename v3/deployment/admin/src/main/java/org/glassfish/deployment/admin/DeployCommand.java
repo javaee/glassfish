@@ -32,7 +32,6 @@ import com.sun.enterprise.v3.admin.CommandRunner;
 import java.net.URI;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.deployment.Deployment;
-import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import com.sun.enterprise.v3.server.SnifferManager;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import org.glassfish.server.ServerEnvironmentImpl;
@@ -41,13 +40,12 @@ import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.config.serverbeans.ApplicationConfig;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
-import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.ParameterNames;
-import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.deployment.DeployCommandParameters;
+import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -56,8 +54,6 @@ import org.jvnet.hk2.component.PerLookup;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -73,7 +69,7 @@ import org.glassfish.deployment.common.DeploymentContextImpl;
 @Service(name="deploy")
 @I18n("deploy.command")
 @Scoped(PerLookup.class)
-public class DeployCommand implements AdminCommand {
+public class DeployCommand extends DeployCommandParameters implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeployCommand.class);
 
@@ -97,77 +93,8 @@ public class DeployCommand implements AdminCommand {
     @Inject
     ArchiveFactory archiveFactory;
 
-    @Param(name = ParameterNames.NAME, optional=true)
-    String name = null;
-
-    @Param(name = ParameterNames.CONTEXT_ROOT, optional=true)
-    String contextRoot = null;
-
-    @Param(name = ParameterNames.VIRTUAL_SERVERS, optional=true)
-    @I18n("virtualservers")
-    String virtualservers = null;
-
-    @Param(name=ParameterNames.LIBRARIES, optional=true)
-    String libraries = null;
-
-    @Param(optional=true, defaultValue="false")
-    Boolean force;
-
-    @Param(name=ParameterNames.PRECOMPILE_JSP, optional=true, defaultValue="false")
-    Boolean precompilejsp;
-
-    @Param(optional=true, defaultValue="false")
-    Boolean verify;
-    
-    @Param(optional=true)
-    String retrieve = null;
-    
-    @Param(optional=true)
-    String dbvendorname = null;
-
-    //mutually exclusive with dropandcreatetables
-    @Param(optional=true)
-    Boolean createtables;
-
-    //mutually exclusive with createtables
-    @Param(optional=true)
-    Boolean dropandcreatetables;
-
-    @Param(optional=true)
-    Boolean uniquetablenames;
-
-    @Param(name=ParameterNames.DEPLOYMENT_PLAN, optional=true)
-    File deploymentplan = null;
-
-    @Param(name=ParameterNames.ENABLED, optional=true, defaultValue="true")
-    Boolean enabled;
-    
-    @Param(optional=true, defaultValue="false")
-    Boolean generatermistubs;
-    
-    @Param(optional=true, defaultValue="false")
-    Boolean availabilityenabled;
-    
-    @Param(optional=true)
-    String target = "server";
-    
-    @Param(optional=true, defaultValue="false")
-    Boolean keepreposdir;
-
-    @Param(optional=true, defaultValue="true")
-    Boolean logReportedErrors;
-
     @Inject
     Domain domain;
-
-    @Param(primary=true)
-    File path;
-
-    @Param(optional=true)
-    String description;
-
-    @Param(optional=true, name="property")
-    Properties properties;
 
     private List<ApplicationConfig> appConfigList; 
 
@@ -179,7 +106,7 @@ public class DeployCommand implements AdminCommand {
 
         long operationStartTime = Calendar.getInstance().getTimeInMillis();
 
-        final Properties parameters = context.getCommandParameters();
+        //final Properties parameters = context.getCommandParameters();
         final ActionReport report = context.getActionReport();
         final Logger logger = context.getLogger();
 
@@ -222,22 +149,14 @@ public class DeployCommand implements AdminCommand {
             if (name==null) {
                 // Archive handlers know how to construct default app names.
                 name = archiveHandler.getDefaultApplicationName(archive);
-                // For the autodeployer in particular the name must be set in the
-                // command context parameters for later use.
-                parameters.put(ParameterNames.NAME, name);
             }
-            
-            if (parameters.containsKey(ParameterNames.DEPLOYMENT_PLAN)) {
-                parameters.put(ParameterNames.DEPLOYMENT_PLAN, deploymentplan.getAbsolutePath());
-            }
-            
-            Properties undeployProps = handleRedeploy(name, report, parameters);
+
+            Properties undeployProps = handleRedeploy(name, report);
 
             // clean up any left over repository files
             if ( ! keepreposdir.booleanValue()) {
                 FileUtils.whack(new File(env.getApplicationRepositoryPath(), name));
             }
-            parameters.put(ParameterNames.ENABLED, enabled.toString());
 
             File source = new File(archive.getURI().getSchemeSpecificPart());
             boolean isDirectoryDeployed = true;
@@ -278,7 +197,7 @@ public class DeployCommand implements AdminCommand {
             // create the parent class loader
             final ReadableArchive sourceArchive = archive;
             final DeploymentContextImpl deploymentContext = new DeploymentContextImpl(logger,
-                    sourceArchive, parameters, env);
+                    sourceArchive, this, env, false);
 
             // reset the properties (might be null) set by the deployers when undeploying.
             deploymentContext.setProps(undeployProps);
@@ -382,8 +301,7 @@ public class DeployCommand implements AdminCommand {
      * while undeploying the application
      *
      */
-    private Properties handleRedeploy(final String name, final ActionReport report,
-                                Properties parameters) 
+    private Properties handleRedeploy(final String name, final ActionReport report)
         throws Exception {
         boolean isRegistered = deployment.isRegistered(name);
         if (isRegistered && !force) {
@@ -395,19 +313,23 @@ public class DeployCommand implements AdminCommand {
         else if (isRegistered && force) 
         {
             //preserve settings first before undeploy
-            settingsFromDomainXML(parameters);
+            Application app = apps.getModule(Application.class, name);
+
+            // we save some of the old registration information in our deployment parameters
+            settingsFromDomainXML(app);
+
             //if applicaiton is already deployed and force=true,
             //then undeploy the application first.
-            Properties undeployParam = new Properties();
-            undeployParam.put(ParameterNames.NAME, name);
-            undeployParam.put(DeploymentProperties.KEEP_REPOSITORY_DIRECTORY, 
-                    keepreposdir.toString());
+            UndeployCommandParameters undeployParams = new UndeployCommandParameters(name);
+            undeployParams.keepreposdir = keepreposdir;
+
             ActionReport subReport = report.addSubActionsReport();
             if (properties!=null && properties.containsKey(DeploymentProperties.KEEP_SESSIONS)) {
-                undeployParam.setProperty("properties", DeploymentProperties.KEEP_SESSIONS+"="+properties.getProperty(DeploymentProperties.KEEP_SESSIONS));
+                undeployParams.properties = new Properties();
+                undeployParams.properties.put(DeploymentProperties.KEEP_SESSIONS, properties.getProperty(DeploymentProperties.KEEP_SESSIONS));
                 subReport.setExtraProperties(new Properties());
             }
-            commandRunner.doCommand("undeploy", undeployParam, subReport);
+            commandRunner.doCommand("undeploy", undeployParams, subReport, null);
             return subReport.getExtraProperties();
         }
         return null;
@@ -418,37 +340,24 @@ public class DeployCommand implements AdminCommand {
      *  Get settings from domain.xml and preserve the values.
      *  This is a private api and its invoked when --force=true and if the app is registered.
      *
-     *  @param parameters 
+     *  @param app is the registration information about the previously deployed application
      *
      */
-    private void settingsFromDomainXML(Properties parameters) {
+    private void settingsFromDomainXML(Application app) {
             //if name is null then cannot get the application's setting from domain.xml
         if (name != null) {
             if (contextRoot == null) {            
-                contextRoot = ConfigBeansUtilities.getContextRoot(name);
+                contextRoot = app.getContextRoot();
                 if (contextRoot != null) {
-                    parameters.put(ParameterNames.PREVIOUS_CONTEXT_ROOT, 
-                        contextRoot);
+                    this.previousContextRoot = contextRoot;
                 }
             }
             if (libraries == null) {
-                libraries = ConfigBeansUtilities.getLibraries(name);
-                if (libraries != null) {
-                    parameters.put(ParameterNames.LIBRARIES, libraries);
-                }
+                libraries = app.getLibraries();
             }
             if (virtualservers == null) {
                 virtualservers = ConfigBeansUtilities.getVirtualServers(
                     target, name);
-                if (virtualservers != null) {
-                    parameters.put(ParameterNames.VIRTUAL_SERVERS, virtualservers);
-                }
-            }
-
-            // also save the application config data
-            final Application app = apps.getModule(Application.class, name);
-            if (app != null) {
-                parameters.put("APPLICATION_CONFIG", app);
             }
 
         }

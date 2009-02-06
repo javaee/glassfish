@@ -52,6 +52,7 @@ import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.zip.ZipItem;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.api.deployment.DeploymentOperationParameters;
 
 import java.io.File;
 import java.util.Collection;
@@ -90,8 +91,7 @@ public class ClientJarMakerThread extends Thread {
         // client jar maker registry
         ClientJarMakerRegistry registry = ClientJarMakerRegistry.getInstance();
         
-        String moduleID = dc.getCommandParameters().getProperty(
-            DeploymentProperties.NAME);
+        String moduleID = dc.getCommandParameters(DeploymentOperationParameters.class).name();
         registry.register(moduleID, this);
         
         // now we build the client jar file 

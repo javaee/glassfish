@@ -40,10 +40,7 @@ import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.container.Container;
-import org.glassfish.api.deployment.ApplicationContainer;
-import org.glassfish.api.deployment.Deployer;
-import org.glassfish.api.deployment.DeploymentContext;
-import org.glassfish.api.deployment.MetaData;
+import org.glassfish.api.deployment.*;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.component.PostConstruct;
@@ -193,13 +190,15 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                     try {
                         sourceArchive = archiveFactory.openArchive(sourceFile);
 
-                        deploymentProperties.setProperty(ParameterNames.NAME, sourceFile.getName());
-                        deploymentProperties.setProperty(ParameterNames.ENABLED, "True");
+                        DeployCommandParameters parameters = new DeployCommandParameters(sourceFile);
+                        parameters.name = sourceFile.getName();
+                        parameters.enabled = Boolean.TRUE;
+
                         DeploymentContextImpl depContext = new DeploymentContextImpl(
                                 logger,
                                 sourceArchive,
-                                deploymentProperties,
-                                env);
+                                parameters,
+                                env, true);
 
                         ActionReport report = new HTMLActionReporter();
                         ApplicationInfo appInfo = deployment.deploy(depContext, report);
@@ -257,14 +256,15 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                 try {
 
                     archive = archiveFactory.openArchive(sourceFile);
-                    Properties deploymentParams =
+                    DeployCommandParameters deploymentParams =
                         app.getDeployParameters(appRef);
 
                     DeploymentContextImpl depContext = new DeploymentContextImpl(
                             logger,
                             archive,
                             deploymentParams,
-                            env);
+                            env,
+                            true);
 
 
                     depContext.setProps(app.getDeployProperties());
@@ -327,16 +327,14 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
     public void preDestroy() {
 
 
-        final Properties props = new Properties();
         final ActionReport dummy = new HTMLActionReporter();
         // stop all running applications
         for (Application app : applications.getApplications()) {
             ApplicationInfo appInfo = deployment.get(app.getName());
             if (appInfo!=null) {
-                props.put(ParameterNames.NAME, appInfo.getName());
-
+                UndeployCommandParameters parameters = new UndeployCommandParameters(appInfo.getName());
                 DeploymentContextImpl depContext = new DeploymentContextImpl(
-                    logger,appInfo.getSource() , props, env);
+                    logger,appInfo.getSource() , parameters, env, false);
                 appInfo.unload(depContext, dummy);
                 appRegistry.remove(appInfo.getName());
             }

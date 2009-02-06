@@ -78,7 +78,6 @@ public class PGetCommand extends AMXCommandBase implements AdminCommand
     public void _execute(AdminCommandContext context)
     {
         final Pathnames pathnames = getDomainRoot().getPathnames();
-        final java.util.Properties params = context.getCommandParameters();
         
         final ActionReport report = getActionReport();
         report.setMessage( "pget " + StringUtil.quote(expr));

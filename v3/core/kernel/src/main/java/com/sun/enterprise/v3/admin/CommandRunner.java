@@ -47,6 +47,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Properties;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.ActionReport;
@@ -134,44 +135,19 @@ public class CommandRunner {
             final ActionReport report) {
         return doCommand(commandName, command, parameters, report, null);
     }
-        
-    /**
-     * Executes the provided command object.
-     * @param commandName name of the command (used for logging and reporting)
-     * @param command the command service to execute
-     * @param parameters name/value pairs to be passed to the command
-     * @param report will hold the result of the command's execution
-     * @param uploadedFiles files uploaded from the client
-     */
-    
-    public ActionReport doCommand(
-            final String commandName, 
-            final AdminCommand command,
-            final Properties parameters, 
-            final ActionReport report,
-            final List<File> uploadedFiles) {
-        
-        if (parameters.get("help")!=null) {
-            InputStream in = getManPage(commandName, command);
-            String manPage = encodeManPage(in);
 
-            if(manPage != null) {
-                report.getTopMessagePart().addProperty("MANPAGE", manPage);
-            }
-            else {
-                report.getTopMessagePart().addProperty(AdminCommandResponse.GENERATED_HELP, "true");
-                getHelp(commandName, command, report);
-            }
+    public ActionReport doCommand(
+        final String commandName,
+        final Object parameters,
+        final ActionReport report,
+        final List<File> uploadedFiles) {
+
+        final AdminCommand command = getCommand(commandName, report, logger);
+        if (command==null) {
             return report;
         }
-        report.setActionDescription(commandName + " AdminCommand");
-
-        final AdminCommandContext context = new AdminCommandContext(
-                LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER),
-                report, parameters, uploadedFiles);                                                 
-
-        // initialize the injector.
-        InjectionManager injectionMgr =  new InjectionManager<Param>() {
+        
+        InjectionManager<Param> injectionMgr =  new InjectionManager<Param>() {
 
             @Override
             protected boolean isOptional(Param annotation) {
@@ -179,47 +155,56 @@ public class CommandRunner {
             }
 
             protected Object getValue(Object component, AnnotatedElement target, Class type) throws ComponentException {
+
                 // look for the name in the list of parameters passed.
                 Param param = target.getAnnotation(Param.class);
                 String acceptable = param.acceptableValues();
                 String paramName = getParamName(param, target);
-                if (param.primary()) {
-                    // this is the primary parameter for the command
-                    String value = parameters.getProperty("DEFAULT");
-                    if (value!=null) {
-                        // let's also copy this value to the command with a real name.
-                        parameters.setProperty(paramName, value);
-                        return convertStringToObject(paramName, type, value);
-                    }
-                }
-                String paramValueStr = getParamValueString(parameters, param,
-                                                           target);
-
-                if(ok(acceptable)&& ok(paramValueStr)) {
-                    String[] ss = acceptable.split(",");
-                    boolean ok = false;
-                    
-                    for(String s : ss) {
-                        if(paramValueStr.equals(s.trim())) {
-                            ok = true;
-                            break;
+                
+                if (target instanceof Field) {
+                    Field targetField = (Field) target;
+                    try {
+                        Field sourceField = parameters.getClass().getField(targetField.getName());
+                        targetField.setAccessible(true);
+                        Object paramValue = sourceField.get(parameters);
+                        if (paramValue==null) {
+                            return convertStringToObject(paramName, type, param.defaultValue());
                         }
+                        checkAgainstAcceptableValues(target, paramValue.toString());
+                        return paramValue;
+                    } catch (IllegalAccessException e) {
+                    } catch (NoSuchFieldException e) {
                     }
-                    if(!ok)
-                        throw new UnacceptableValueException(
-                            adminStrings.getLocalString("adapter.command.unacceptableValue", 
-                            "Invalid parameter: {0}.  Its value is {1} but it isn''t one of these acceptable values: {2}",
-                            paramName,
-                            paramValueStr,
-                            acceptable));
                 }
-                if (paramValueStr != null) {
-                    return convertStringToObject(paramName, type, paramValueStr);
-                }
-                //return default value
-                return getParamField(component, target);
+                return null;
             }
         };
+        return doCommand(commandName, command, injectionMgr, report, uploadedFiles);
+
+    }
+
+
+    /**
+     * Executes the provided command object.
+     * @param commandName name of the command (used for logging and reporting)
+     * @param command the command service to execute
+     * @param injector injector capable of populating the command parameters
+     * @param report will hold the result of the command's execution
+     * @param uploadedFiles files uploaded from the client
+     */
+
+    public ActionReport doCommand(
+            final String commandName,
+            final AdminCommand command,
+            final InjectionManager<Param> injector,
+            final ActionReport report,
+            final List<File> uploadedFiles) {
+
+        report.setActionDescription(commandName + " AdminCommand");
+
+        final AdminCommandContext context = new AdminCommandContext(
+                LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER),
+                report, uploadedFiles);
 
         LocalStringManagerImpl localStrings = new LocalStringManagerImpl(command.getClass());
 
@@ -232,15 +217,12 @@ public class CommandRunner {
 
         // inject
         try {
-            injectionMgr.inject(command, Param.class);
-            if (!skipValidation(command)) {
-                validateParameters(command, parameters);
-            }
+            injector.inject(command, Param.class);
         } catch (UnsatisfiedDepedencyException e) {
             Param param = e.getUnsatisfiedElement().getAnnotation(Param.class);
-            String paramName = getParamName(param, e.getUnsatisfiedElement());            
+            String paramName = getParamName(param, e.getUnsatisfiedElement());
             String paramDesc = getParamDescription(localStrings, i18n_key, paramName, e.getUnsatisfiedElement());
-            final String usage = getUsageText(command);                                
+            final String usage = getUsageText(command);
             String errorMsg;
             if (param.primary()) {
                 errorMsg = adminStrings.getLocalString("commandrunner.operand.required",
@@ -252,13 +234,13 @@ public class CommandRunner {
             else if (paramDesc!=null) {
                 errorMsg = adminStrings.getLocalString("admin.param.missing",
                                                        "{0} command requires the {1} parameter : {2}", commandName, paramName, paramDesc);
-                
+
             }
             else {
                 errorMsg = adminStrings.getLocalString("admin.param.missing.nodesc",
                         "{0} command requires the {1} parameter", commandName, paramName);
             }
-            logger.severe(errorMsg);            
+            logger.severe(errorMsg);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(errorMsg);
             report.setFailureCause(e);
@@ -268,7 +250,7 @@ public class CommandRunner {
         } catch (ComponentException e) {
             // if the cause is UnacceptableValueException -- we want the message
             // from it.  It is wrapped with a less useful Exception
-            
+
             Exception exception = e;
             Throwable cause = e.getCause();
             if(cause != null && (cause instanceof UnacceptableValueException)) {
@@ -333,7 +315,141 @@ public class CommandRunner {
             report.setMessage(
                     adminStrings.getLocalString("adapter.command.launch", "Command {0} was successfully initiated asynchronously.", commandName));
         }
-        return context.getActionReport();
+        return context.getActionReport();   
+    }
+        
+    /**
+     * Executes the provided command object.
+     * @param commandName name of the command (used for logging and reporting)
+     * @param command the command service to execute
+     * @param parameters name/value pairs to be passed to the command
+     * @param report will hold the result of the command's execution
+     * @param uploadedFiles files uploaded from the client
+     */
+    
+    public ActionReport doCommand(
+            final String commandName, 
+            final AdminCommand command,
+            final Properties parameters,
+            final ActionReport report,
+            final List<File> uploadedFiles) {
+
+        if (parameters.get("help")!=null) {
+            InputStream in = getManPage(commandName, command);
+            String manPage = encodeManPage(in);
+
+            if(manPage != null) {
+                report.getTopMessagePart().addProperty("MANPAGE", manPage);
+            }
+            else {
+                report.getTopMessagePart().addProperty(AdminCommandResponse.GENERATED_HELP, "true");
+                getHelp(commandName, command, report);
+            }
+            return report;
+        }
+
+        try {
+            if (!skipValidation(command)) {
+                validateParameters(command, parameters);
+            }
+        } catch (ComponentException e) {
+            // if the cause is UnacceptableValueException -- we want the message
+            // from it.  It is wrapped with a less useful Exception
+
+            Exception exception = e;
+            Throwable cause = e.getCause();
+            if(cause != null && (cause instanceof UnacceptableValueException)) {
+                // throw away the wrapper.
+                exception = (Exception)cause;
+            }
+            logger.severe(exception.getMessage());
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(exception.getMessage());
+            report.setFailureCause(exception);
+            ActionReport.MessagePart childPart = report.getTopMessagePart().addChild();
+            childPart.setMessage(getUsageText(command));
+            return report;
+        }
+
+        // initialize the injector.
+        InjectionManager<Param> injectionMgr =  new InjectionManager<Param>() {
+
+            @Override
+            protected boolean isOptional(Param annotation) {
+                return annotation.optional();
+            }
+
+            protected Object getValue(Object component, AnnotatedElement target, Class type) throws ComponentException {
+                // look for the name in the list of parameters passed.
+                Param param = target.getAnnotation(Param.class);
+                String acceptable = param.acceptableValues();
+                String paramName = getParamName(param, target);
+                if (param.primary()) {
+                    // this is the primary parameter for the command
+                    String value = parameters.getProperty("DEFAULT");
+                    if (value!=null) {
+                        // let's also copy this value to the command with a real name.
+                        parameters.setProperty(paramName, value);
+                        return convertStringToObject(paramName, type, value);
+                    }
+                }
+                String paramValueStr = getParamValueString(parameters, param,
+                                                           target);
+
+                if(ok(acceptable)&& ok(paramValueStr)) {
+                    String[] ss = acceptable.split(",");
+                    boolean ok = false;
+                    
+                    for(String s : ss) {
+                        if(paramValueStr.equals(s.trim())) {
+                            ok = true;
+                            break;
+                        }
+                    }
+                    if(!ok)
+                        throw new UnacceptableValueException(
+                            adminStrings.getLocalString("adapter.command.unacceptableValue", 
+                            "Invalid parameter: {0}.  Its value is {1} but it isn''t one of these acceptable values: {2}",
+                            paramName,
+                            paramValueStr,
+                            acceptable));
+                }
+                if (paramValueStr != null) {
+                    return convertStringToObject(paramName, type, paramValueStr);
+                }
+                //return default value
+                return getParamField(component, target);
+            }
+        };
+
+        return doCommand(commandName, command, injectionMgr, report, uploadedFiles);
+
+    }
+
+    private void checkAgainstAcceptableValues(AnnotatedElement target, String paramValueStr ) {
+
+        Param param = target.getAnnotation(Param.class);
+        String acceptable = param.acceptableValues();
+        String paramName = getParamName(param, target);
+        
+        if(ok(acceptable)&& ok(paramValueStr)) {
+            String[] ss = acceptable.split(",");
+            boolean ok = false;
+
+            for(String s : ss) {
+                if(paramValueStr.equals(s.trim())) {
+                    ok = true;
+                    break;
+                }
+            }
+            if(!ok)
+                throw new UnacceptableValueException(
+                    adminStrings.getLocalString("adapter.command.unacceptableValue",
+                    "Invalid parameter: {0}.  Its value is {1} but it isn''t one of these acceptable values: {2}",
+                    paramName,
+                    paramValueStr,
+                    acceptable));
+        }
     }
 
     protected String getParamDescription(LocalStringManagerImpl localStrings, String i18nKey, String paramName, AnnotatedElement annotated) {
@@ -716,7 +832,7 @@ public class CommandRunner {
      * then it's a operand.
      *
      * @param command - command class
-     * @param parameter - parameters from URL
+     * @param parameters - parameters from URL
      *
      * @throws ComponentException if option is invalid
      */
@@ -738,19 +854,25 @@ public class CommandRunner {
                 //loop through the Param field in the command class
                 //if either field name or the param name is equal to
                 //key then it's a valid option
-            for (Field field : command.getClass().getDeclaredFields()) {
-                final Param param = field.getAnnotation(Param.class);
-                if (param == null)     continue;
-                
-                if (key.startsWith(ASADMIN_CMD_PREFIX)) {
-                    validOption = true;
-                    continue;
+            Class commandClass = command.getClass();
+            while (!validOption && commandClass!=null) {
+                for (Field field : commandClass.getDeclaredFields()) {
+                    final Param param = field.getAnnotation(Param.class);
+                    if (param == null)     continue;
+
+                    if (key.startsWith(ASADMIN_CMD_PREFIX)) {
+                        validOption = true;
+                        continue;
+                    }
+                    if (field.getName().equals(key) ||
+                        param.name().equals(key) ||
+                        param.shortName().equals(key) ) {
+                        validOption=true;
+                        break;
+                    }
                 }
-                if (field.getName().equals(key) ||
-                    param.name().equals(key) ||
-                    param.shortName().equals(key) ) {
-                    validOption=true;
-                    break;
+                if (!validOption) {
+                    commandClass = commandClass.getSuperclass();
                 }
             }
             if (!validOption) {
@@ -795,7 +917,7 @@ public class CommandRunner {
          * The Properties object contains elements:
          * {name1=value1, name2=value2, name3=value3, ...}
          *
-         * @param listString - the String to convert
+         * @param propsString - the String to convert
          * @return Properties containing the elements in String
          */
     Properties convertStringToProperties(String propsString) {

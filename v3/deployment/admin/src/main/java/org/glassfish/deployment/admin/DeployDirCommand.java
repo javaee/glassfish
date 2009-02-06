@@ -43,16 +43,8 @@ import org.jvnet.hk2.annotations.Scoped;
 @Service(name="deploydir")
 @Scoped(PerLookup.class)
 @I18n("deploydir.command")
+public class DeployDirCommand extends DeployCommand implements AdminCommand {
 
-public class DeployDirCommand implements AdminCommand {
-
-    @Inject
-    CommandRunner commandRunner;
-
-    //define this variable to skip parameter valadation.
-    //Param validation will be done when referencing deploy command.
-    boolean skipParamValidation = true;
-    
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeployDirCommand.class);
     
     /**
@@ -66,7 +58,6 @@ public class DeployDirCommand implements AdminCommand {
         msgPart.setChildrenType("WARNING");
         ActionReport.MessagePart childPart = msgPart.addChild();
         childPart.setMessage(localStrings.getLocalString("deploydir.command.deprecated", "{0} command deprecated.  Please use {1} command instead.", "deploydir", "deploy"));
-        commandRunner.doCommand("deploy", context.getCommandParameters(),
-                                report);
+        super.execute(context);
     }
 }

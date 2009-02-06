@@ -28,6 +28,7 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
+import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.internal.deployment.Deployment;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.v3.admin.CommandRunner;
@@ -39,6 +40,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.annotations.Scoped;
 import java.util.Properties;
+import java.io.File;
 
 /**
  *
@@ -85,17 +87,19 @@ public class ReDeployCommand implements AdminCommand {
         if (!validateParameters(name, report)) {
             return;
         }
-        Properties deployParam = new Properties(context.getCommandParameters());
-        deployParam.put("force", Boolean.TRUE.toString());
-        deployParam.put("path", path);
+        DeployCommandParameters params = new DeployCommandParameters(new File(path));
+        params.force = true;
+        params.name = name;
+        params.properties = properties;
+
 
         if (context.getUploadedFiles().size() >= 1) {
             // in case of uploading files, pass the uploaded files 
             // to the admin context for deploy command
-            commandRunner.doCommand("deploy", deployParam, report, 
+            commandRunner.doCommand("deploy", params, report,
                 context.getUploadedFiles());
         } else {
-            commandRunner.doCommand("deploy", deployParam, report); 
+            commandRunner.doCommand("deploy", params, report, null); 
         }
     }
 

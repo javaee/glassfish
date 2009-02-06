@@ -65,13 +65,15 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
 
     private final WebContainer container;
     private final WebModuleConfig wmInfo;
+    private final Module moduleConfig;
     Properties props = null;
     String libraries = null;
 
-    public WebApplication(WebContainer container, WebModuleConfig config, Properties props) {
+    public WebApplication(WebContainer container, WebModuleConfig config, Module moduleConfig, Properties props) {
         this.container = container;
         this.wmInfo = config;
         this.props = props;
+        this.moduleConfig = moduleConfig;
     }
 
 
@@ -193,21 +195,12 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
      * @param appContext
      */
     private void applyApplicationConfig(ApplicationContext appContext) {
-        Properties startupParams = appContext.getParameters();
-        /*
-         * Fetch the WebModuleConfig object, if any was stored in the startup parameters
-         * so we could retrieve it here.
-         */
-        Application application = (Application) startupParams.get("APPLICATION_CONFIG");
-        if (application==null) {
-            return;
-        }
+
         WebBundleDescriptor descriptor = wmInfo.getDescriptor();
 
-        Module module = application.getModule(descriptor.getModuleDescriptor().getName());
-        if (module!=null) {
+        if (moduleConfig!=null) {
             try {
-                Engine engine = module.getEngine("org.glassfish.web.sniffer.WebSniffer");
+                Engine engine = moduleConfig.getEngine("org.glassfish.web.sniffer.WebSniffer");
                 if (engine!=null) {
                     org.glassfish.web.plugin.common.WebModuleConfig c =
                             (org.glassfish.web.plugin.common.WebModuleConfig) engine.getConfig();

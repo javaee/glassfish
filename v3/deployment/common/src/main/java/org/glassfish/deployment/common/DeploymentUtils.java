@@ -64,7 +64,7 @@ public class DeploymentUtils {
                 return true;
             } 
             Enumeration<String> entries = archive.entries();
-            while (entries.hasMoreElements()) {
+            while (entries  .hasMoreElements()) {
                 String entryName = entries.nextElement();
                 if (entryName.endsWith(JSP_SUFFIX)) {
                     return true;
