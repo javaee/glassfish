@@ -639,9 +639,9 @@ public class EJBTimerService
                             "Removing schedule-based timer " + timerState +
                                    " that will never expire again");
                     timerIdsToRemove.add(timerId);
-                    result.add(timer);
                 } else {
                     timersToRestore.put(timerState, expirationTime);
+                    result.add(timer);
                 }
 
             } else {
@@ -1070,10 +1070,12 @@ public class EJBTimerService
                                       schedule.getScheduleAsString() + 
                                       " already expired");
                 // schedule-based timer will never expire.
-                // we'll create it now, and remove on server restart
+                // we'll create it now, and remove soon or on server restart
                 expired = true; 
+                initialExpiration = new Date();
+            } else {
+                initialExpiration = next.getTime();
             }
-            initialExpiration = next.getTime();
         }
 
         RuntimeTimerState timerState = 
@@ -1082,6 +1084,10 @@ public class EJBTimerService
                                   timedObjectPrimaryKey,
                                   schedule, timerConfig.getInfo(),
                                   timerConfig.isPersistent());
+
+        if (expired) {
+            timerState.expired();
+        }
 
         synchronized(timerState) {
             // Add timer entry before calling TimerBean.create, since 
@@ -1095,7 +1101,7 @@ public class EJBTimerService
                                        timedObjectPrimaryKey, 
                                        initialExpiration, intervalDuration, 
                                        schedule, timerConfig);
-                } else if (!expired) {
+                } else {
                     addTimerSynchronization(null, 
                             timerId.getTimerId(), initialExpiration,
                             containerId, ownerIdOfThisServer_, false);
@@ -1144,10 +1150,16 @@ public class EJBTimerService
                               
             tm.begin();
 
-            Set<TimerState> timers = 
-                (Set<TimerState>)timerLocal_.findActiveTimersOwnedByThisServerByContainer(containerId);
+            Set<TimerState> timers = _restoreTimers(
+                (Set<TimerState>)timerLocal_.findActiveTimersOwnedByThisServerByContainer(containerId));
 
-            for (TimerState timer : _restoreTimers(timers)) {
+            if (timers.size() > 0) {
+                logger.log(Level.FINE, "Found " + timers.size() + 
+                        " persistent timers for containerId: " + containerId);
+                skipPersistent = true;
+            }
+
+            for (TimerState timer : timers) {
                 TimerSchedule ts = timer.getTimerSchedule();
                 if (ts != null && ts.isAutomatic()) {
                     for (Method m : schedules.keySet()) {
@@ -1161,12 +1173,6 @@ public class EJBTimerService
                         }
                     }
                 }
-            }
-
-            if (result.size() > 0) {
-                logger.log(Level.FINE, "Found " + result.size() + 
-                        " persistent timers for containerId: " + containerId);
-                skipPersistent = true;
             }
 
             for (Method m : schedules.keySet()) {
@@ -1633,7 +1639,12 @@ public class EJBTimerService
             // 2) Post-processing for setting up next timer delivery and
             //    other redelivery conditions.  
             // 
-            boolean redeliver = container.callEJBTimeout(timerState, this);
+
+            // Do not deliver bogus timeout, but continue processing and 
+            // cancel such timer
+
+            boolean redeliver = (timerState.isExpired())? false :
+                    container.callEJBTimeout(timerState, this);
 
             if( shutdown_ ) {
                 // Server is shutting down so we can't finish processing 
@@ -1665,6 +1676,9 @@ public class EJBTimerService
                 Date now = new Date();
                 if( timerState.isCancelled() ) {
                     // nothing more to do.
+                } else if (timerState.isExpired()) {
+                    // schedule-based timer without valid expiration
+                    cancelTimer(timerId);
                 } else if( redeliver ) {
                     if( timerState.getNumFailedDeliveries() <
                         getMaxRedeliveries() ) {

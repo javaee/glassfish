@@ -27,6 +27,23 @@ import com.sun.ejb.Container;
 import com.sun.ejb.ContainerFactory;
 import com.sun.ejb.containers.AbstractSingletonContainer;
 import com.sun.enterprise.deployment.EjbDescriptor;
+
+// For auto-deploying EJBTimerService
+import com.sun.ejb.containers.EjbContainerUtil;
+import com.sun.ejb.containers.EjbContainerUtilImpl;
+import com.sun.ejb.containers.EJBTimerService;
+import com.sun.enterprise.v3.common.PlainTextActionReporter;
+import com.sun.enterprise.v3.admin.CommandRunner;
+import org.glassfish.api.ActionReport;
+import org.glassfish.internal.api.ServerContext;
+import org.glassfish.internal.deployment.Deployment;
+
+import java.io.File;
+import java.util.Properties;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+// For auto-deploying EJBTimerService
+
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.ApplicationContext;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -58,6 +75,7 @@ public class EjbApplication
     private DeploymentContext dc;
     
     private Habitat habitat;
+
     @Inject
     private EJBSecurityManagerFactory ejbSMF;
 
@@ -102,6 +120,7 @@ public class EjbApplication
 
         //System.out.println("**CL => " + bundleDesc.getClassLoader());
         int counter = 0;
+        boolean usesEJBTimerService = false;
         singletonLCM = new SingletonLifeCycleManager();
 
         for (EjbDescriptor desc : ejbs) {
@@ -115,22 +134,16 @@ public class EjbApplication
                 if (container instanceof AbstractSingletonContainer) {
                     singletonLCM.addSingletonContainer((AbstractSingletonContainer) container);
                 }
+                usesEJBTimerService = (usesEJBTimerService || container.isTimedObject());
             } catch (Throwable th) {
                 throw new RuntimeException("Error during EjbApplication.start() ", th);
             }
         }
 
         // TODO: move restoreEJBTimers to correct location
-        synchronized (lock) {
-            System.out.println("==> Restore Timers? == " + restored);
-            if (!restored) {
-                com.sun.ejb.containers.EJBTimerService ejbTimerService =
-                        com.sun.ejb.containers.EjbContainerUtilImpl.getInstance().getEJBTimerService();
-                if (ejbTimerService != null) {
-                    restored = ejbTimerService.restoreEJBTimers();
-                    System.out.println("==> Restored Timers? == " + restored);
-                }
-            }
+        System.out.println("==> Uses Timers? == " + usesEJBTimerService);
+        if (usesEJBTimerService) {
+            initEJBTimerService();
         }
         // TODO: move restoreEJBTimers to correct location
 
@@ -209,4 +222,45 @@ public class EjbApplication
         containers.clear();
     }
 
+    private void initEJBTimerService() {
+        synchronized (lock) {
+            EjbContainerUtil ejbContainerUtil = EjbContainerUtilImpl.getInstance();
+
+            EJBTimerService ejbTimerService = ejbContainerUtil.getEJBTimerService();
+
+            if (ejbTimerService == null) {
+
+                Logger logger = ejbContainerUtil.getLogger();
+
+                Deployment deployment = habitat.getByContract(Deployment.class);
+                boolean isRegistered = deployment.isRegistered("ejb-timer-service-app");
+
+                if (isRegistered) {
+                    logger.log (Level.FINE, 
+                            "EJBTimerService is already deployed and will be loaded later.");
+                    return;
+                }
+
+                logger.log (Level.INFO, "Loading EJBTimerService. Please wait.");
+
+                ServerContext sc = habitat.getByContract(ServerContext.class);
+                File root = sc.getInstallRoot();
+                File app = new File(root, 
+                        "lib/install/applications/ejb-timer-service-app.war");
+
+                Properties params = new Properties();
+                params.put("path", app.getAbsolutePath()); 
+
+                ActionReport report = new PlainTextActionReporter();
+                CommandRunner cr = habitat.getComponent(CommandRunner.class);
+
+                cr.doCommand("deploy", params, report);
+
+                if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
+                    throw new RuntimeException("Failed to deploy EJBTimerService: " + 
+                            report.getFailureCause());
+                }
+            }
+        }
+    }
 }

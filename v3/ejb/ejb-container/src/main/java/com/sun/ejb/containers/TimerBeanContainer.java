@@ -50,7 +50,8 @@ public class TimerBeanContainer
 
     private static EjbContainerUtil ejbContainerUtil = EjbContainerUtilImpl.getInstance();
 
-    private static final Logger _logger = LogDomains.getLogger(TimerBeanContainer.class, LogDomains.EJB_LOGGER);
+    private static final Logger _logger = LogDomains.getLogger(
+            TimerBeanContainer.class, LogDomains.EJB_LOGGER);
         
     /**
      * This constructor is called when the timer service system application is
@@ -159,6 +160,10 @@ public class TimerBeanContainer
                 // error logged by timer bean.
             }
 ** XXX **/
+        
+            _logger.log(Level.INFO, "==> Restoring Timers ... " );
+            ejbTimerService.restoreEJBTimers();
+            _logger.log(Level.INFO, "<== ... Timers Restored.");
 
 /** XXX
         } catch (NamingException nnfe) {
@@ -174,14 +179,14 @@ public class TimerBeanContainer
                         logParams);
             _logger.log(Level.WARNING, "", ex);
         } 
-        
+
     }
 
     /**
-     * @Override
      * Call setSessionContext even though TimerBean doesn't implement
      * SessionBean interface.
      */
+    @Override
     void setSessionContext(Object ejb, SessionContextImpl context) {
         if( ejb instanceof TimerBean ) {
             ((TimerBean)ejb).setSessionContext(context);

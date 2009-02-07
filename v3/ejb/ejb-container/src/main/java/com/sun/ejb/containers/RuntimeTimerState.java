@@ -93,6 +93,8 @@ class RuntimeTimerState {
     private Serializable info_;
     private TimerSchedule schedule_;
 
+    private boolean expired_ = false;
+
     //
     private BaseContainer container_;
 
@@ -313,6 +315,14 @@ class RuntimeTimerState {
         Date timeout = getNextTimeout();
         Date now = new Date();
         return (timeout.getTime() - now.getTime());
+    }
+
+    void expired() {
+        expired_ = true;
+    }
+
+    boolean isExpired() {
+        return expired_;
     }
 
     /**

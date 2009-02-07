@@ -333,5 +333,8 @@ public interface Container {
      */
     boolean authorize(EjbInvocation inv);
 
-
+    /**
+     * Returns true if this Container uses EJB Timer Service.
+     */
+    boolean isTimedObject();
 }

@@ -746,7 +746,7 @@ public abstract class BaseContainer
 	return (containerState == CONTAINER_UNDEPLOYED);
     }
 
-    final boolean isTimedObject() {
+    public final boolean isTimedObject() {
         return isTimedObject_;
     }
     
