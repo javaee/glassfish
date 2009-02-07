@@ -482,6 +482,8 @@ public abstract class EJBContextImpl
             }
             
             checkActivatePassivate();
+
+            doGetSetRollbackTxAttrCheck();
             
             tm.setRollbackOnly();
             
@@ -517,6 +519,8 @@ public abstract class EJBContextImpl
             }
             
             checkActivatePassivate();
+
+            doGetSetRollbackTxAttrCheck();
             
             if ( status == Status.STATUS_MARKED_ROLLBACK
             || status == Status.STATUS_ROLLEDBACK
@@ -531,6 +535,25 @@ public abstract class EJBContextImpl
             illEx.initCause(ex);
             throw illEx;
         }
+    }
+
+    protected void doGetSetRollbackTxAttrCheck() {
+
+        ComponentInvocation inv =
+                    EjbContainerUtilImpl.getInstance().getCurrentInvocation();
+        if ( inv instanceof EjbInvocation ) {
+            EjbInvocation ejbInv = (EjbInvocation) inv;
+
+            if( ejbInv.invocationInfo != null ) {
+                switch(ejbInv.invocationInfo.txAttr) {
+                    case Container.TX_NOT_SUPPORTED :
+                    case Container.TX_SUPPORTS :
+                    case Container.TX_NEVER :
+                        throw new IllegalStateException("Illegal tx attribute");
+                }
+            }
+        }
+
     }
     
     /**************************************************************************

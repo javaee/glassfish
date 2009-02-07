@@ -91,7 +91,20 @@ public class ApplicationExceptionHandler extends AbstractHandler {
             appExcInfo.setExceptionClassName(annotatedClass.getName());
             appExcInfo.setRollback(appExcAnn.rollback());
 
-            ejbBundle.addApplicationException(appExcInfo);
+            // Set on descriptor unless the same application exception was defined
+            // in ejb-jar.xml
+            boolean alreadyExists = false;
+            for(EjbApplicationExceptionInfo existingAppEx :
+                    ejbBundle.getApplicationExceptions()) {
+                if( existingAppEx.getExceptionClassName().equals(annotatedClass.getName()) ) {
+                    alreadyExists = true;
+                    break;
+                }
+            }
+
+            if( !alreadyExists ) {
+                ejbBundle.addApplicationException(appExcInfo);
+            }
 
         }
 

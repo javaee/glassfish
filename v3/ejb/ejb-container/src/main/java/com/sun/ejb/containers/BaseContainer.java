@@ -738,12 +738,16 @@ public abstract class BaseContainer
         containerState = CONTAINER_STOPPED;
     }
 
+    public final boolean isStopped() {
+        return containerState == CONTAINER_STOPPED;
+    }
+
     public final void setUndeployedState() {
         containerState = CONTAINER_UNDEPLOYED;
     }
 
     public final boolean isUndeployed() {
-	return (containerState == CONTAINER_UNDEPLOYED);
+	    return (containerState == CONTAINER_UNDEPLOYED);
     }
 
     public final boolean isTimedObject() {
@@ -3343,24 +3347,65 @@ public abstract class BaseContainer
     }
     
     /**
-     * Perform common undeploy actions.  NOTE that this should be done
+     * Undeploy event.
+     */
+    public final void undeploy() {
+        
+        if ( !isUndeployed() ) {
+            
+            setUndeployedState();
+
+            undeployRelatedCleanup();
+        }
+
+    }
+
+    /**
+     * Called when server instance is shuting down
+     */
+    public final void onShutdown() {
+        // TODO Fix when we can distinguish between server shutdown and undeploy
+        // Right now we can't distinguish between shutdown being called because
+        // of a server shutdown or before an application undeploy.  It only makes
+        // a difference for SFSBs so tell SFSB container it's an undeploy.
+        if ( !isStopped() && !isUndeployed() ) {
+            setStoppedState();
+            
+            if( isStatefulSession ) {
+                doConcreteContainerShutdown(true);
+            } else {
+                doConcreteContainerShutdown(false);
+            }
+        }
+    }
+
+    // Concrete container shutdown actions
+    protected abstract void doConcreteContainerShutdown(boolean appBeingUndeployed);
+
+    /**
+     * Perform common container shutdown actions.  NOTE that this should be done
      * defensively so that we attempt to do as much cleanup as possible, even
-     * in the face of errors during undeploy.  This might be called after
+     * in the face of errors.  This might be called after
      * an unsuccessful deployment, in which case some of the services might
      * not have been initialized.
      */
-    public void undeploy() {
+
+
+
+    private void undeployRelatedCleanup() {
+
+        try {
+           destroyTimers();
+        } catch(Exception e) {
+            _logger.log(Level.FINE, "Error destroying timers for " +
+                        ejbDescriptor.getName(), e);
+        }
         
         final Thread currentThread = Thread.currentThread();
         final ClassLoader previousClassLoader =
             currentThread.getContextClassLoader();
        
-        try {
-            destroyTimers();
-        } catch(Exception e) {
-            _logger.log(Level.FINE, "Error destroying timers for " +
-                        ejbDescriptor.getName(), e);
-        }
+
 
         try {
             if(System.getSecurityManager() == null) {
@@ -3386,7 +3431,7 @@ public abstract class BaseContainer
                     }
                     if ( isRemote ) {
                        
-
+                        /*
                         if( hasRemoteHomeView ) {
                             try {
                                 namingManager.unpublishObject
@@ -3410,7 +3455,9 @@ public abstract class BaseContainer
                             // destroy the factory itself
                             remoteHomeRefFactory.destroy(); 
                         }
+                        */
 
+                        /*
                         if( hasRemoteBusinessView ) {
                             try {
                                 namingManager.unpublishObject
@@ -3437,6 +3484,8 @@ public abstract class BaseContainer
                                     _logger.log(Level.FINE, "", ne);
                                 }
                             }
+
+
 
                             // Home related cleanup
                             RemoteReferenceFactory remoteBusinessRefFactory =
@@ -3478,7 +3527,8 @@ public abstract class BaseContainer
                                 // destroy the factory itself
                                 next.referenceFactory.destroy(); 
                             }
-                        }
+
+                        } */
       
                     }
 
@@ -3502,9 +3552,9 @@ public abstract class BaseContainer
 	    try {
 		    ejbContainerUtilImpl.getComponentEnvManager().unbindFromComponentNamespace(ejbDescriptor);
 	    } catch (javax.naming.NamingException namEx) {
-		_logger.log(Level.FINE, "ejb.undeploy_exception", 
+		    _logger.log(Level.FINE, "ejb.undeploy_exception",
                         logParams);
-		_logger.log(Level.FINE, "", namEx);
+		    _logger.log(Level.FINE, "", namEx);
 	    }
             
 	    registryMediator.undeploy();
@@ -3525,23 +3575,24 @@ public abstract class BaseContainer
                 });
             }
         }
-        
-        _logger.log(Level.FINE,
-                    "**** [BaseContainer]: Successfully Undeployed " +
+
+        _logger.log(Level.FINE, "**** [BaseContainer]: Successfully Undeployed " +
                     ejbDescriptor.getName() + " ...");
-        
+
+    // TODO do we really need to set all these fields to null???
+
         ejbDescriptor = null;
-        
+
         if (invocationInfoMap != null)  { invocationInfoMap.clear(); }
         if (methodMonitorMap != null)   { methodMonitorMap.clear();  }
-        
-        
+
+
         loader                  = null;
         ejbClass                = null;
         ejbPassivateMethod      = null;
         ejbActivateMethod       = null;
         ejbRemoveMethod         = null;
-        
+
         remoteIntf              = null;
         homeIntf                = null;
         localHomeIntf           = null;
@@ -3554,21 +3605,18 @@ public abstract class BaseContainer
         ejbIntfMethods          = null;
         envProps                = null;
         methodMonitorMap        = null;
+
+        
+
+        
+
     }
 
     /**
      * Called when server instance is Ready
      */
     public void onReady() {}
-    
-    
-    
-    /**
-     * Called when server instance is shuting down
-     */
-    public void onShutdown() {
-        setStoppedState();
-    }
+
     
     /**
      * Called when server instance is terminating. This method is the last
@@ -4375,6 +4423,7 @@ public abstract class BaseContainer
                 if( exceptionClassName.equals
                     (excepInfo.getExceptionClassName()) ) {
                     appExceptionRequiringRollback = excepInfo.getRollback();
+                    break;
                 }
             }
         }

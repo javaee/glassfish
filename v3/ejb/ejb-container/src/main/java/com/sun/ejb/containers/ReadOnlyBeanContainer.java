@@ -377,16 +377,18 @@ public class ReadOnlyBeanContainer
         
     }
     
-    public void undeploy() {
+    protected void doConcreteContainerShutdown(boolean appBeingUndeployed) {
+
         this.distributedReadOnlyBeanService.removeReadOnlyBeanRefreshEventHandler(
                 getContainerId());
-        super.undeploy();
         
         if( refreshTask != null ) {
             refreshTask.cancel();
         }
 
         robCache.clear();
+
+        super.doConcreteContainerShutdown(appBeingUndeployed);
     }
     
     // Called from BaseContainer just before invoking a business method

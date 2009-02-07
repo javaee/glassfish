@@ -445,7 +445,8 @@ public abstract class AbstractSingletonContainer
         }
     }
 
-    //Called from SingletonLifeCycleManager
+    // Called from SingletonLifeCycleManager to initialize a Singleton as part of the
+    // eager loading and @DependsOn sequence
     public ComponentContext instantiateSingletonInstance() {
         if (! singletonInitialized.get()) {
             synchronized (this) {
@@ -460,7 +461,6 @@ public abstract class AbstractSingletonContainer
 
         return singletonCtx;
     }
-
     
     private SingletonContextImpl createSingletonEJB()
         throws CreateException
@@ -469,7 +469,7 @@ public abstract class AbstractSingletonContainer
         SingletonContextImpl context;
 
         try {
-            // create new stateless EJB
+            // create new Singleton EJB
             Object ejb = ejbClass.newInstance();
 
             // create SessionContext and set it in the EJB
@@ -530,8 +530,8 @@ public abstract class AbstractSingletonContainer
         } catch ( Throwable th ) {
             ejbInv.exception = th;
             singletonInitializationFailed = true;
-            _logger.log(Level.INFO, "ejb.stateless_ejbcreate_exception", th);
-            CreateException creEx = new CreateException("Could not create Singleton EJB");
+            CreateException creEx = new CreateException("Initialization failed for Singleton " +
+                                    ejbDescriptor.getName());
             creEx.initCause(th);
             throw creEx;
         } finally {
@@ -542,8 +542,8 @@ public abstract class AbstractSingletonContainer
                 } catch(Exception pie) {
                     ejbInv.exception = pie;
                     singletonInitializationFailed = true;
-                    _logger.log(Level.INFO, "ejb.stateless_ejbcreate_exception", pie);
-                    CreateException creEx = new CreateException("Could not create Singleton EJB");
+                    CreateException creEx = new CreateException("Initialization failed for Singleton " +
+                                    ejbDescriptor.getName());
                     creEx.initCause(pie);
                     throw creEx;
                 }
@@ -580,7 +580,7 @@ public abstract class AbstractSingletonContainer
             if( inv instanceof EjbInvocation ) {
 
                 EjbInvocation ejbInv = (EjbInvocation) inv;
-                SessionContextImpl sc = (SessionContextImpl) ejbInv.context;
+                AbstractSessionContextImpl sc = (AbstractSessionContextImpl) ejbInv.context;
 
                 // Allowed any time after dependency injection
                 utMethodsAllowed = (sc.getInstanceKey() != null);
@@ -628,21 +628,12 @@ public abstract class AbstractSingletonContainer
 	    .append("]");
     }
 
-    public void undeploy() {
+    protected void doConcreteContainerShutdown(boolean appBeingUndeployed) {
 
         // Shutdown the singleton instance.
-        // Do this before setUndeployState() b/c PreDestroy can be
-        // transactional and ContainerSynchronization callbacks abort the
-        // transaction if container is in the undeploy state.
-        // TODO : Disable use of ContainerSynchronization since it's not really
-        //        needed for Singletons anyway.  Then, setUndeployedState can
-        //        be called first.
         if (singletonCtxFactory != null) {
-                singletonCtxFactory.destroy(singletonCtx);
+            singletonCtxFactory.destroy(singletonCtx);
         }
-
-        //Change the container state to ensure that all new invocations will be rejected
-        super.setUndeployedState();
 
         try {
             /*TODO
@@ -677,7 +668,6 @@ public abstract class AbstractSingletonContainer
             */
 
         } finally {
-            super.undeploy();
 
             this.iased                 = null;
             this.beanCacheDes          = null;

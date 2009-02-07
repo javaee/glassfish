@@ -894,24 +894,12 @@ public final class MessageBeanContainer extends BaseContainer implements
 		}
 	}
 
-	public void undeploy() {
-		// This will cause all new invocations to be rejected.
-		super.setUndeployedState();
-
-		_logger.log(Level.FINE, "containers.mdb.undeploy", appEJBName_);
-
-		cleanupResources();
-
-		super.undeploy();
-	}
-
 	/**
-	 * Called when server instance is shuting down
+	 * Called by BaseContainer during container shutdown sequence
 	 */
-	public void onShutdown() {
+	protected void doConcreteContainerShutdown(boolean appBeingUndeployed) {
 		_logger.log(Level.FINE, "containers.mdb.shutdown_cleanup_start",
 				appEJBName_);
-		setStoppedState();
 		monitorOn = false;
 		cleanupResources();
 		_logger.log(Level.FINE, "containers.mdb.shutdown_cleanup_end",

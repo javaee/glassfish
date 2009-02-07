@@ -178,7 +178,7 @@ public class EngineRef {
         try {
             getContainerInfo().clean(context);            
         } catch (Exception e) {
-            logger.log(Level.WARNING, "Exception while cleaning module '" + this + "'" + e);
+            logger.log(Level.WARNING, "Exception while cleaning module '" + this + "'" + e, e);
         }
     }
 

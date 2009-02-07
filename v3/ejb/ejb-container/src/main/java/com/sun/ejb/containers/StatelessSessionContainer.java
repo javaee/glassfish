@@ -692,9 +692,7 @@ public class StatelessSessionContainer
 	    .append("]");
     }
 
-    public void undeploy() {
-        //Change the container state to ensure that all new invocations will be rejected
-        super.setUndeployedState();
+    protected void doConcreteContainerShutdown(boolean appBeingUndeployed) {
 
         try {
             /*TODO
@@ -741,7 +739,6 @@ public class StatelessSessionContainer
             }
 
         } finally {
-            super.undeploy();
 
             this.homeCreateMethod      = null;
             this.localHomeCreateMethod = null;

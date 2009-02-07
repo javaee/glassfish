@@ -69,14 +69,14 @@ public class TimerBeanContainer
 
     }
 
-    public void onShutdown() {
-        _logger.log(Level.FINE,"[TimerBeanContainer] onShutdown() called....");
-
-        super.onShutdown();
+    protected void doConcreteContainerShutdown(boolean appBeingUndeployed) {
+        _logger.log(Level.FINE,"[TimerBeanContainer] Shutdown() called....");
 
         if (ejbTimerService != null) {
             ejbTimerService.onShutdown();
         }
+
+        super.doConcreteContainerShutdown(appBeingUndeployed);        
     }
 
     /**

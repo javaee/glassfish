@@ -157,9 +157,16 @@ public class EjbApplication
     }
 
     public boolean stop(ApplicationContext stopContext) {
+        // First, shutdown any singletons that were initialized based
+        // on a particular ordering dependency.
+        // TODO Make sure this covers both eagerly and lazily initialized
+        // Singletons.
+        singletonLCM.doShutdown();
+
         for (Container container : containers) {
             container.onShutdown();
         }
+        
         return true;
     }
 

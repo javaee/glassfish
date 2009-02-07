@@ -60,7 +60,7 @@ public class EjbContainerStarter
         instanceName = _serverContext.getInstanceName();
 
         System.out.println(">>Started EJB Container Service....: " + instanceName);
-        System.out.println(">>EjbContianerUtil: " + ejbContainerUtilImpl);
+        System.out.println(">>EjbContainerUtil: " + ejbContainerUtilImpl);
     }    
     
     public void preDestroy() {

@@ -2369,10 +2369,7 @@ public class EntityContainer
         }
     }
     
-    public void undeploy() {
-        
-        //Change the container state to ensure that all new invocations will be rejected
-        super.setUndeployedState();
+    protected void doConcreteContainerShutdown(boolean appBeingUndeployed) {
         
         String ejbName = ejbDescriptor.getName();
         
@@ -2434,8 +2431,6 @@ public class EntityContainer
 	    cancelTimerTasks();
         }
         finally {
-            
-            super.undeploy();
             
             // helps garbage collection
             this.ejbObjectStore         = null;

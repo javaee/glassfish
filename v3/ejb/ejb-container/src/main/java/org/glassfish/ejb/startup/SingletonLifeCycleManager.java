@@ -27,7 +27,10 @@ public class SingletonLifeCycleManager {
 
     boolean adj[][];
 
-    Set<Container> initializedSingletons = new HashSet<Container>();
+    // List of eagerly initialized singletons, in the order they were
+    // initialized.
+    List<AbstractSingletonContainer> initializedSingletons =
+            new ArrayList<AbstractSingletonContainer>();
 
     private Map<String, AbstractSingletonContainer> name2Container =
             new HashMap<String, AbstractSingletonContainer>();
@@ -68,6 +71,20 @@ public class SingletonLifeCycleManager {
                 initializeSingleton(name2Container.get(s));
             }
         }
+    }
+
+    public void doShutdown() {
+
+        // Shutdown singletons in the reverse order of their initialization
+        Collections.reverse(initializedSingletons);
+
+        for(AbstractSingletonContainer singletonContainer : initializedSingletons) {
+
+            singletonContainer.onShutdown();
+
+        }
+
+        return;
     }
 
     public synchronized void initializeSingleton(AbstractSingletonContainer c) {

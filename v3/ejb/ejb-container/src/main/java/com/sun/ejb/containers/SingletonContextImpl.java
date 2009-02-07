@@ -90,6 +90,8 @@ public final class SingletonContextImpl
                 "Illegal operation for bean-managed transactions");
         }
 
+        doGetSetRollbackTxAttrCheck();
+
         TransactionManager tm = EjbContainerUtilImpl.getInstance().getTransactionManager();
 
         try {
@@ -126,6 +128,8 @@ public final class SingletonContextImpl
                 "Illegal operation for bean-managed transactions");
         }
 
+        doGetSetRollbackTxAttrCheck();
+        
         TransactionManager tm = EjbContainerUtilImpl.getInstance().getTransactionManager();
 
         try {

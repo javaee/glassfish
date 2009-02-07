@@ -206,27 +206,60 @@ public final class StatefulSessionContainer
 
     }
 
-    private void initSessionSyncMethods() {
+    private void initSessionSyncMethods() throws Exception {
 
-	if( SessionSynchronization.class.isAssignableFrom(ejbClass) ) {
+	    if( SessionSynchronization.class.isAssignableFrom(ejbClass) ) {
 
-	    try {
-		afterBeginMethod = ejbClass.getMethod("afterBegin", null);
-		beforeCompletionMethod = ejbClass.getMethod("beforeCompletion", null);
-		afterCompletionMethod = ejbClass.getMethod("afterCompletion", Boolean.TYPE);
-	    } catch(Exception e) {
-		 _logger.log(Level.WARNING, "[SFSBContainer] Exception while "
+	        try {
+		        afterBeginMethod = ejbClass.getMethod("afterBegin", null);
+		        beforeCompletionMethod = ejbClass.getMethod("beforeCompletion", null);
+		        afterCompletionMethod = ejbClass.getMethod("afterCompletion", Boolean.TYPE);
+	        } catch(Exception e) {
+		        _logger.log(Level.WARNING, "[SFSBContainer] Exception while "
                     + " initializing SessionSynchronization methods ", e);
+	        }
+	    } else {
+
+            EjbSessionDescriptor sessionDesc = (EjbSessionDescriptor) ejbDescriptor;
+
+	        afterBeginMethod = sessionDesc.getAfterBeginMethod();
+            if( afterBeginMethod != null ) {
+                processSessionSynchMethod(afterBeginMethod);
+            }
+
+	        beforeCompletionMethod = sessionDesc.getBeforeCompletionMethod();
+            if( beforeCompletionMethod != null ) {
+                processSessionSynchMethod(beforeCompletionMethod);
+            }
+            
+	        afterCompletionMethod = sessionDesc.getAfterCompletionMethod();
+            if( afterCompletionMethod != null ) {
+                processSessionSynchMethod(afterCompletionMethod);
+            }
+
 	    }
-	} else {
 
-        EjbSessionDescriptor sessionDesc = (EjbSessionDescriptor) ejbDescriptor;
-	    afterBeginMethod = sessionDesc.getAfterBeginMethod();
-	    beforeCompletionMethod = sessionDesc.getBeforeCompletionMethod();
-	    afterCompletionMethod = sessionDesc.getAfterCompletionMethod();
+    }
 
-	}
+    private void processSessionSynchMethod(Method sessionSynchMethod)
+        throws Exception {
 
+        final Method methodAccessible = sessionSynchMethod;
+
+        // SessionSynch method defined through annotation or ejb-jar.xml
+        // can have any access modifier so make sure we have permission
+        // to invoke it.
+
+        java.security.AccessController.doPrivileged(
+            new java.security.PrivilegedExceptionAction() {
+                public java.lang.Object run() throws Exception {
+                    if( !methodAccessible.isAccessible() ) {
+                        methodAccessible.setAccessible(true);
+                    }
+                    return null;
+                }
+         });
+      
     }
 
     protected void loadCheckpointInfo() {
@@ -2275,18 +2308,32 @@ public final class StatefulSessionContainer
      * *****************************************************************
      */
 
-    public void onShutdown() {
+    protected void doConcreteContainerShutdown(boolean appBeingUndeployed) {
 
-        // @@@ Right now we're getting this callback before an undeploy.
-        // Ideally we need to know the difference between a server instance
-        // shutdown without undeploy and an undeploy.
+        cancelAllTimerTasks();
 
-        _logger.log(Level.FINE, "StatefulSessionContainer.onshutdown() called");
-        ClassLoader origClassLoader = Utility.setContextClassLoader(loader);
+        if( appBeingUndeployed ) {
+
+            removeBeansOnUndeploy();
+
+        } else {
+
+            passivateBeansOnShutdown();
+
+        }
+    }
+
+    private void passivateBeansOnShutdown() {
+
+        ClassLoader origLoader = Utility.setContextClassLoader(loader);
+
+        _logger.log(Level.FINE, "Passivating SFSBs before container shutdown");
+
         try {
-            cancelAllTimerTasks();
 
             sessionBeanCache.shutdown();
+
+            /*
             while (true) {
                 ComponentContext ctx = null;
                 synchronized (asyncTaskSemaphore) {
@@ -2300,9 +2347,7 @@ public final class StatefulSessionContainer
                 }
                 passivateEJB(ctx);
             }
-
-            super.onShutdown();
-
+            */
 
             /*
              ** @@@
@@ -2322,22 +2367,22 @@ public final class StatefulSessionContainer
             _logger.log(Level.WARNING, "[" + ejbName + "]: Error during "
                     + " onShutdown()", th);
         } finally {
-            Utility.setContextClassLoader(origClassLoader);
+            Utility.setContextClassLoader(origLoader);
         }
     }
 
-    public void undeploy() {
-        _logger.log(Level.FINE, "StatefulSessionContainer.undeploy() called");
-        long myContainerId = getContainerId();
-        super.setUndeployedState();
+    private void removeBeansOnUndeploy() {
 
-        ClassLoader origLoader = null;
+         _logger.log(Level.FINE, "Removing SFSBs during application undeploy");
+
+        long myContainerId = getContainerId();
+
+
+        ClassLoader origLoader = Utility.setContextClassLoader(loader);
         try {
-            cancelAllTimerTasks();
 
             sessionBeanCache.setUndeployedState();
-            
-            origLoader = Utility.setContextClassLoader(loader);
+
             Iterator iter = sessionBeanCache.values();
             while (iter.hasNext()) {
                 SessionContextImpl ctx = (SessionContextImpl) iter.next();
@@ -2366,7 +2411,7 @@ public final class StatefulSessionContainer
                         + "storeManager.shutdown()", sfsbEx);
             }
         } finally {
-            super.undeploy();
+
             if (sfsbVersionManager != null) {
                 sfsbVersionManager.removeAll(myContainerId);
             }
@@ -2381,6 +2426,7 @@ public final class StatefulSessionContainer
                 Utility.setContextClassLoader(origLoader);
             }
         }
+
     }
 
     private void invokePreDestroyAndUndeploy(SessionContextImpl ctx) {
@@ -2414,6 +2460,8 @@ public final class StatefulSessionContainer
                 task.cancel();
             }
         } catch (Exception ex) {
+        }  finally {
+            scheduledTimerTasks.clear();
         }
     }
 
