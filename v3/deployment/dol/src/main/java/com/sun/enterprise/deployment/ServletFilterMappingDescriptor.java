@@ -53,9 +53,10 @@ public final class ServletFilterMappingDescriptor
     public static final String TARGET_TYPE_SERVLET = 
 	ServletFilterMapping.TARGET_TYPE_SERVLET;
 
+    public static final String FORWARD = ServletFilterMapping.FORWARD;
     public static final String INCLUDE = ServletFilterMapping.INCLUDE;
     public static final String REQUEST = ServletFilterMapping.REQUEST;
-    public static final String FORWARD = ServletFilterMapping.FORWARD;
+    public static final String ASYNC = ServletFilterMapping.ASYNC;
     public static final String ERROR = ServletFilterMapping.ERROR;
 
     private static Set allowed_dispatchers;
@@ -181,9 +182,10 @@ public final class ServletFilterMappingDescriptor
     public static Set getAllowedDispatchers() {
         if (allowed_dispatchers == null) {
             allowed_dispatchers = new HashSet();
+            allowed_dispatchers.add(FORWARD);
             allowed_dispatchers.add(INCLUDE);
             allowed_dispatchers.add(REQUEST);
-            allowed_dispatchers.add(FORWARD);
+            allowed_dispatchers.add(ASYNC);
             allowed_dispatchers.add(ERROR);
         }
         return allowed_dispatchers;
