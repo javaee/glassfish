@@ -22,19 +22,19 @@
                 <role>developer</role>
             </roles>
         </developer>
+        <developer>
+            <id>bbissett</id>
+            <name>Bobby Bissett</name>
+            <url>http://blogs.sun.com/bobby</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
     </developers>
 
     <build>
         <resources>
-            <resource>
-                <directory>src/main/java</directory>
-                <includes>
-                    <include>**/*.properties</include>
-                </includes>
-                <excludes>
-                    <exclude>src/main/resources/*</exclude>
-                </excludes>
-            </resource>
         </resources>
     </build>
 

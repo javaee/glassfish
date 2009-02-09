@@ -1,0 +1,28 @@
+Instructions for building and running upgrade tool.
+
+To build, you must have Java 6 and Maven 2.0.9 installed (error messages
+in the build process will give you the exact versions). From the
+'upgrade' directory run:
+
+  maven clean install
+
+To install and run:
+
+- Set JAVA_HOME if not already set.
+
+- Copy target/upgrade.jar to ${v3_install}/glassfish/modules
+
+- Copy src/main/scripts/asupgrade(.bat) to ${v3_install}/glassfish/bin.
+  chmod +x asupgrade if it isn't executable already.
+
+- Copy javahelp-2.0.02.jar from your .m2 repository to
+  ${v3_install}/glassfish/lib. It should be under:
+    .m2/repository/javax/help/javahelp/2.0.02/
+  You can also download it from:
+    http://mvnrepository.com/artifact/javax.help/javahelp
+  (TODO: how can this be included in target dir when building?)
+
+- Run asupgrade or asupgrade.bat script. With no arguments it will
+  bring up the GUI. Arguments are:
+    asupgrade -c    -> Runs the cli
+    asupgrade -help	-> Shows all options
