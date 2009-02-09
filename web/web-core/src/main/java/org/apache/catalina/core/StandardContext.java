@@ -297,6 +297,10 @@ public class StandardContext
     protected transient ApplicationContext context = null;
     // END RIMOD 4894300
 
+    /**
+     *  Is the context initialized.
+     */
+    private boolean isContextInitializedCalled = false;
 
     /**
      * Compiler classpath to use.
@@ -2244,9 +2248,10 @@ public class StandardContext
         }
 
         Wrapper wrapper = (Wrapper) child;
-        boolean isJspServlet = "jsp".equals(child.getName());
+        String wrapperName = child.getName();
 
         // Allow webapp to override JspServlet inherited from global web.xml.
+        boolean isJspServlet = "jsp".equals(child.getName());
         if (isJspServlet) {
             oldJspServlet = (Wrapper) findChild("jsp");
             if (oldJspServlet != null) {
@@ -2269,6 +2274,16 @@ public class StandardContext
         }
 
         super.addChild(child);
+
+        /*
+         * If the given wrapper contains any mappings (this would be required
+         * if it was being added to a context that was already started),
+         * call addServletMapping for each.
+         */
+        String[] mappings = wrapper.findMappings();
+        for (String mapping : mappings) {
+            addServletMapping(mapping, wrapperName, false);
+        }
 
         // START SJSAS 6342808
         /* SJSWS 6362207
@@ -2296,7 +2311,7 @@ public class StandardContext
              */
             String[] jspMappings = oldJspServlet.findMappings();
             for (int i=0; jspMappings!=null && i<jspMappings.length; i++) {
-                addServletMapping(jspMappings[i], child.getName());
+                addServletMapping(jspMappings[i], wrapperName);
             }
         }
     }
@@ -2890,6 +2905,13 @@ public class StandardContext
             throw new IllegalArgumentException
                     (sm.getString("standardContext.servletMapping.missingUrlPattern", servletName));
         }
+
+        if (isContextInitializedCalled) {
+            throw new IllegalStateException
+                    (sm.getString("standardContext.servletMap.initialized",
+                                  servletName, getName()));
+        }
+
         for (String urlPattern : urlPatterns) {
             addServletMapping(urlPattern, servletName);
         }
@@ -2927,6 +2949,11 @@ public class StandardContext
      * Adds the given servlet instance with the given name to this servlet
      * context and initializes it.
      *
+     * <p>In order to add any URL patterns that will be mapped to the
+     * given servlet, addServletMappings must be used. If this context
+     * has already been started, the URL patterns must be passed to
+     * addServlet instead.
+     *
      * @param servletName the servlet name
      * @param servlet the servlet instance
      *
@@ -2934,6 +2961,22 @@ public class StandardContext
      */
     public void addServlet(String servletName, Servlet instance)
             throws ServletException {
+        addServlet(servletName, instance, null);
+    }
+
+
+    /**
+     * Adds the given servlet instance with the given name and URL patterns
+     * to this servlet context, and initializes it.
+     *
+     * @param servletName the servlet name
+     * @param instance the servlet instance
+     * @param urlPatterns the URL patterns that will be mapped to the servlet
+     *
+     * @throws ServletException if the servlet fails to be initialized
+     */
+    public void addServlet(String servletName, Servlet instance,
+                           String... urlPatterns) throws ServletException {
         if (!(instance instanceof Servlet)) {
             throw new IllegalArgumentException("Not an instance of " +
                                                "javax.servlet.Servlet");
@@ -2941,6 +2984,11 @@ public class StandardContext
         StandardWrapper wrapper = (StandardWrapper) createWrapper();
         wrapper.setName(servletName);
         wrapper.setServlet(instance);
+        if (urlPatterns != null) {
+            for (String urlPattern : urlPatterns) {
+                wrapper.addMapping(urlPattern);
+            }
+        }
         addChild(wrapper);
     }
 
@@ -4658,6 +4706,7 @@ public class StandardContext
                 ok = false;
             }
         }
+        isContextInitializedCalled = true;
         return (ok);
 
     }
@@ -6745,7 +6794,11 @@ public class StandardContext
         // 2 - STOPPING
         return 3; // STOPPED
     }
-    
+
+    boolean isContextInitializedCalled() {
+        return isContextInitializedCalled;
+    }
+
     /**
      * The J2EE Server ObjectName this module is deployed on.
      */     
