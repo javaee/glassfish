@@ -15,7 +15,7 @@ import java.util.Properties;
 public class UndeployCommandParameters extends DeploymentOperationParameters {
 
     @Param(primary = true, name= ParameterNames.NAME)
-    protected String name=null;
+    public String name=null;
 
     @Param(optional=true)
     public String target = "server";
