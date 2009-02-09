@@ -1,4 +1,3 @@
-<!namespace http://java.sun.com/mojarra/scales="sc" />
 <sun:masthead id="Masthead" productImageURL="#{request.contextPath}/resource/customTheme/images/masthead-product_name_open1.png" 
               style="border-width: 0px"
               productImageDescription="Glassfish v3 Prelude Administration Console"

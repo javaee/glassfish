@@ -63,16 +63,6 @@
             <sc:menuBar width="100%">
 #include "/menu1.inc"
 #include "/menu2.inc"
-<!--
-                <sc:menuItem value="Dashboard" url="#{request.contextPath}/commonTask.jsf"/>
-                <sc:subMenu value="Configure">
-                    <sc:menuItem value="Applications" url="#{request.contextPath}/web/webApp/webApplications.jsf"/>
-                </sc:subMenu>
-                <sc:subMenu value="Monitor"></sc:subMenu>
-                <sc:subMenu value="Utilities">
-                    <sc:menuItem value="Update Center" url="#{request.contextPath}/updateCenter/addOn.jsf"/>
-                </sc:subMenu>
--->
             </sc:menuBar>
         </div>
         <div id="content" style="padding-left: 5px; padding-right: 5px;">
@@ -100,7 +90,7 @@
                 </h:commandButton>
             </h:form>
         </sc:panel>
-        <sc:panel id="searchTagsPanel" visible="false" modal="true" closable="true" fixedCenter="true" width="800px">
+        <sc:panel id="searchTagsPanel" visible="false" modal="true" closable="true" fixedCenter="true" width="300px">
             <h3>Search Tags</h3>
                 <div style="width:40px; float: left">Tag:</div>
                 <h:form id="tagSearch">
@@ -112,11 +102,9 @@
                         </ui:event>
                     </h:commandButton>
                 </h:form>
-                <br/>
-                <div style="height: 300px; overflow: auto;">
-                    "#{requestScope.tagSearchHits}"
-                    <h:dataTable id="hits" value="#{requestScope.tagSearchHits}" var="hit" style="border: 1px solid red">
-                        <h:column>#{hit}</h:column>
+                <div style="height: 200px; overflow: auto;">
+                    <h:dataTable id="hits" value="#{requestScope.tagSearchHits}" var="hit">
+                        <h:column><a href="#{hit.url}">#{hit.name}</a></h:column>
                     </h:dataTable>
                 </div>
         </sc:panel>
@@ -128,10 +116,10 @@
                         execute: 'tagForm:tag,tagForm:name,tagForm:url,'+el.id,
                         inputs: 'tagForm:tag,tagForm:name,tagForm:url,'+el.id,
                         render: 'tagForm:tag,tagForm:name,tagForm:url,'+el.id,
-                        replaceElement: function() {
-                            hidePanel('addTagPanel');
+                        postReplace: function() {
                             YAHOO.util.Dom.get('tagForm:tag').value = '';
                             YAHOO.util.Dom.get('tagForm:name').value = '';
+                            hidePanel('addTagPanel');
                         }
                     } );
             }
@@ -143,7 +131,6 @@
                         inputs: 'hits,tagSearch:tag,'+el.id,
                         render: 'hits',
                         postReplace: function(zone, html) {
-                            alert('post replace for ' + zone.id + ': ' + html);
                             YAHOO.util.Dom.get('tagSearch:tag').value = '';
                         }
                     } );
