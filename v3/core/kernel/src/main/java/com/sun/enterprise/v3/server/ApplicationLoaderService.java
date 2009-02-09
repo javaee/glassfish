@@ -92,6 +92,8 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
 
     @Inject
     ServerEnvironment env;
+
+    private static final String IS_COMPOSITE = "isComposite";
     
     /**
      * Retuns the lifecyle of the service.
@@ -272,7 +274,8 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                     ActionReport report = new HTMLActionReporter();
 
                     List<Sniffer> sniffers = new ArrayList<Sniffer>();
-                    if (app.getModule().size()==1) {
+                    if (!Boolean.valueOf(app.getDeployProperties().getProperty
+                        (IS_COMPOSITE))) {
                         for (String snifferType : snifferTypes) {
                             Sniffer sniffer = snifferManager.getSniffer(snifferType);
                             if (sniffer!=null) {

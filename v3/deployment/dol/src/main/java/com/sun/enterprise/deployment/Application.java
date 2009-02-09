@@ -1477,14 +1477,4 @@ public class Application extends RootDeploymentDescriptor
     public List<Resource> getResourceList() {
         return resourceList;
     }
-
-    private boolean isValidated;
-    
-    public boolean isValidated() {
-        return isValidated;
-    }
-
-    public void setValidated(boolean newValidated) {
-        isValidated = newValidated;
-    }
 }

@@ -46,6 +46,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
 import javax.enterprise.deploy.shared.ModuleType;
+import com.sun.enterprise.deployment.util.XModuleType;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -94,7 +95,7 @@ public class DescriptorArchivist {
                             out.closeEntry();
                         }
                     } else {
-                        if (aModule.getModuleType().equals(ModuleType.WAR)) {
+                        if (aModule.getModuleType().equals(XModuleType.WAR)) {
                             WebBundleDescriptor webBundle = 
                                 (WebBundleDescriptor) aModule.getDescriptor();
                             if (webBundle.hasWebServices()) {
@@ -168,7 +169,7 @@ public class DescriptorArchivist {
             // Also if this is a web bundle descriptor, we always want to 
             // rewrite the standard deployment descriptors if we have web 
             // services since the servlet implementation has been switched
-            if (bundle.getModuleType().equals(ModuleType.WAR)) {
+            if (bundle.getModuleType().equals(XModuleType.WAR)) {
                 WebBundleDescriptor webBundle = (WebBundleDescriptor) bundle;
                 if (webBundle.hasWebServices()) {
                     archivist.writeStandardDeploymentDescriptors(out);

@@ -128,7 +128,6 @@ public class WebServicesDeployer extends WebDeployer {
             } else {
                 generateArtifacts(dc);
                 doWebServicesDeployment(app,dc) ;
-                saveAppDescriptor(dc);
             }
             return true;
         } catch (Exception ex) {

@@ -14,11 +14,13 @@ import org.xml.sax.SAXParseException;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.util.ApplicationVisitor;
+import com.sun.enterprise.deployment.util.ApplicationValidator;
 import com.sun.enterprise.deployment.deploy.shared.DeploymentPlanArchive;
 import com.sun.enterprise.deployment.archivist.Archivist;
 import com.sun.enterprise.deployment.archivist.ArchivistFactory;
 import com.sun.enterprise.deployment.archivist.ApplicationFactory;
 import com.sun.enterprise.deployment.archivist.ApplicationArchivist;
+import com.sun.enterprise.deployment.archivist.DescriptorArchivist;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 
 import java.util.Properties;
@@ -44,7 +46,16 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
     protected ArchiveFactory archiveFactory;
 
     @Inject
+    protected DescriptorArchivist descriptorArchivist;
+
+    @Inject
+    protected ApplicationArchivist applicationArchivist;
+
+    @Inject
     Habitat habitat;
+
+    private static String WRITEOUT_XML = System.getProperty(
+        "writeout.xml");
 
     public MetaData getMetaData() {
         return new MetaData(false, new Class[] { Application.class, WebBundleDescriptor.class }, null);
@@ -79,13 +90,6 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
             application.setRegistrationName(name);
             archivist.setDescriptor(application);
             archivist.validate(cl);
-/*            ApplicationArchivist appArchivist = habitat.getComponent(ApplicationArchivist.class);
-            try {
-                application = appArchivist.openWith(application, sourceArchive);
-            } catch (SAXParseException e) {
-                application=null;
-            }
-            */
         }
         if (application==null) {
             try {
@@ -96,10 +100,18 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
             }
         }
 
+        validateApplication(application, dc);
+
         // this may not be the best location for this but it will suffice.
         if (deploymentVisitor!=null) {
             deploymentVisitor.accept(application);
         }
+
+        // write out xml files if needed
+        if (Boolean.valueOf(WRITEOUT_XML)) {
+            saveAppDescriptor(application, dc);
+        }
+
         System.out.println("DOL Loading time" + (System.currentTimeMillis() - start));
 
         if (application.isVirtual()) {
@@ -109,6 +121,7 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
         return application;
 
     }
+
     protected void handleDeploymentPlan(File deploymentPlan,
         Archivist archivist, ReadableArchive sourceArchive) throws IOException {
         //Note in copying of deployment plan to the portable archive,
@@ -123,4 +136,27 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
             archivist.copyInto(dpa, targetArchive, false);
         }
     }    
+
+    protected void saveAppDescriptor(Application application, 
+        DeploymentContext context) throws IOException {
+        if (application != null) {
+            ReadableArchive archive = archiveFactory.openArchive(
+                context.getSourceDir());
+            context.getScratchDir("xml").mkdirs();
+            WritableArchive archive2 = archiveFactory.createArchive(
+                context.getScratchDir("xml"));
+            descriptorArchivist.write(application, archive, archive2);
+
+            // copy the additional webservice elements etc
+            applicationArchivist.copyExtraElements(archive, archive2);
+        }
+    }
+
+    protected void validateApplication(Application app, DeploymentContext dc) {
+        if (app != null) {
+            app.setClassLoader(dc.getClassLoader());
+            app.visit((ApplicationVisitor) new ApplicationValidator());
+        }
+    }
+
 }

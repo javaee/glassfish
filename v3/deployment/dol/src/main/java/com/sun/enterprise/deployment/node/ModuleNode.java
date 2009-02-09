@@ -102,7 +102,7 @@ public class ModuleNode extends DeploymentDescriptorNode {
     public Node writeDescriptor(Node parent, String nodeName, ModuleDescriptor descriptor) {   
         
         Node module = appendChild(parent, nodeName);
-        if (ModuleType.WAR.equals(descriptor.getModuleType())) {            
+        if (XModuleType.WAR.equals(descriptor.getModuleType())) {            
             Node modType = appendChild(module, ApplicationTagNames.WEB);
             appendTextChild(modType, ApplicationTagNames.WEB_URI, descriptor.getArchiveUri());
             forceAppendTextChild(modType, ApplicationTagNames.CONTEXT_ROOT, descriptor.getContextRoot());
@@ -110,9 +110,9 @@ public class ModuleNode extends DeploymentDescriptorNode {
         } else {
             // default initialization if ejb...
             String type = ApplicationTagNames.EJB;
-            if (ModuleType.CAR.equals(descriptor.getModuleType())) {
+            if (XModuleType.CAR.equals(descriptor.getModuleType())) {
                 type = ApplicationTagNames.APPLICATION_CLIENT;
-            } else if (ModuleType.RAR.equals(descriptor.getModuleType())) {
+            } else if (XModuleType.RAR.equals(descriptor.getModuleType())) {
                 type = ApplicationTagNames.CONNECTOR;
             }
             appendTextChild(module, type, descriptor.getArchiveUri());

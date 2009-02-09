@@ -24,29 +24,17 @@
 package org.glassfish.javaee.core.deployment;
 
 import org.glassfish.api.deployment.*;
-import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.api.container.Container;
 import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.internal.data.ApplicationInfo;
-import org.glassfish.internal.data.EngineRef;
 import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.internal.data.ModuleInfo;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.zip.ZipItem;
-import com.sun.enterprise.deploy.shared.ArchiveFactory;
-import com.sun.enterprise.deployment.deploy.shared.DeploymentPlanArchive;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.util.ApplicationVisitor;
-import com.sun.enterprise.deployment.util.ApplicationValidator;
-import com.sun.enterprise.deployment.archivist.ApplicationFactory;
-import com.sun.enterprise.deployment.archivist.ArchivistFactory;
-import com.sun.enterprise.deployment.archivist.Archivist;
-import com.sun.enterprise.deployment.archivist.ApplicationArchivist;
-import com.sun.enterprise.deployment.archivist.DescriptorArchivist;
-import org.glassfish.deployment.common.DeploymentProperties;
 import com.sun.enterprise.deployment.backend.DeploymentImplConstants;
 import com.sun.enterprise.deployment.backend.ClientJarMakerThread;
 import org.glassfish.deployment.common.DeploymentException;
@@ -70,25 +58,7 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
     protected ServerEnvironment env;
 
     @Inject
-    protected ArchiveFactory archiveFactory;
-
-    @Inject
-    protected ArchivistFactory archivistFactory;
-
-    @Inject
-    protected ApplicationFactory applicationFactory;
-
-    @Inject
-    protected DescriptorArchivist descriptorArchivist;
-
-    @Inject
-    protected ApplicationArchivist applicationArchivist;
-
-    @Inject
     protected ApplicationRegistry appRegistry;
-
-    @Inject(name="application_deploy", optional=true)
-    protected ApplicationVisitor deploymentVisitor=null;
 
     @Inject(name="application_undeploy", optional=true)
     protected ApplicationVisitor undeploymentVisitor=null;
@@ -97,9 +67,6 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
         DeploymentImplConstants.CLIENT_JAR_MAKER_CHOICE);
 
     private static final String APPLICATION_TYPE = "Application-Type";
-
-    private static String WRITEOUT_XML = System.getProperty(
-        "writeout.xml");
 
     /**
      * Returns the meta data assocated with this Deployer
@@ -164,8 +131,6 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
      */
     public boolean prepare(DeploymentContext dc) {
         try {
-            validateApplication(dc);
-
             prepareScratchDirs(dc);
             if (dc.getProps().getProperty(ServerTags.OBJECT_TYPE)==null) {
                 String objectType = getObjectType(dc);
@@ -176,10 +141,6 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
             }
 
             generateArtifacts(dc);
-            if (Boolean.valueOf(WRITEOUT_XML)) {
-                saveAppDescriptor(dc);
-            }
-            createClientJar(dc);
             return true;
         } catch (Exception ex) {
             // re-throw all the exceptions as runtime exceptions
@@ -205,24 +166,12 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
         return null;
     }
 
-    protected void validateApplication(DeploymentContext dc) {
-        Application app = dc.getModuleMetaData(Application.class);
-        // we only validate the application once
-        if (app != null && !app.isValidated()) {
-            app.setClassLoader(dc.getClassLoader());
-            app.visit((ApplicationVisitor) new ApplicationValidator());
-            app.setValidated(true);
-        }
-    }
-
     protected void generateArtifacts(DeploymentContext dc)
         throws DeploymentException {
     }
 
-    protected void createClientJar(DeploymentContext dc)
-        throws DeploymentException {
-    }
-
+    // we need to figure out a good place to call this
+    // it should only be called once per application
     protected final void createClientJar(DeploymentContext dc,
         ZipItem[] clientStubs) throws DeploymentException {
 
@@ -278,20 +227,6 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
         }
     }
 
-    protected void saveAppDescriptor(DeploymentContext context)
-        throws IOException {
-        Application application =
-            context.getModuleMetaData(Application.class);
-        ReadableArchive archive = archiveFactory.openArchive(
-            context.getSourceDir());
-        WritableArchive archive2 = archiveFactory.createArchive(
-            context.getScratchDir("xml"));
-        descriptorArchivist.write(application, archive, archive2);
-
-        // copy the additional webservice elements etc
-        applicationArchivist.copyExtraElements(archive, archive2);
-    }
-
     protected void prepareScratchDirs(DeploymentContext context)
         throws IOException {
         context.getScratchDir("ejb").mkdirs();
@@ -321,21 +256,6 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
             return null;
         }
         return appInfo.getMetaData(Application.class);
-    }
-
-    protected void handleDeploymentPlan(String deploymentPlan,
-        Archivist archivist, ReadableArchive sourceArchive) throws IOException {
-        //Note in copying of deployment plan to the portable archive,
-        //we should make sure the manifest in the deployment plan jar
-        //file does not overwrite the one in the original archive
-        if (deploymentPlan != null) {
-            DeploymentPlanArchive dpa = new DeploymentPlanArchive();
-            dpa.open(new File(deploymentPlan).toURI());
-            // need to revisit for ear case
-            WritableArchive targetArchive = archiveFactory.createArchive(
-                sourceArchive.getURI());
-            archivist.copyInto(dpa, targetArchive, false);
-        }
     }
 
     abstract protected String getModuleType();

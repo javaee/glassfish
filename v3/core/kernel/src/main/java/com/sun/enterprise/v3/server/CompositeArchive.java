@@ -121,14 +121,10 @@ public class CompositeArchive implements ReadableArchive {
         return delegate.getName();
     }
 
+    // we don't hide the top level directories as we need to use them
+    // to figure out whether the EarSniffer can handle it in the 
+    // case of optional application.xml
     public Collection<String> getDirectories() throws IOException {
-        Collection<String> originals = delegate.getDirectories();
-        List<String> results = new ArrayList<String>();
-        for (String name : originals) {
-            if (filter.accept(delegate, name)) {
-                results.add(name);
-            }
-        }
-        return results;
+        return delegate.getDirectories();
     }
 }

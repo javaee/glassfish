@@ -38,6 +38,7 @@ package org.glassfish.deployment.common;
 
 import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import com.sun.enterprise.deployment.deploy.shared.Util;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,10 +56,20 @@ public class DeploymentUtils {
     private static final String JSP_SUFFIX = ".jsp";
     private static final String RA_XML = "META-INF/ra.xml";
     private static final String APPLICATION_XML = "META-INF/application.xml";    
-
+    private static final String EAR_EXTENSION = ".ear";
+    private static final String WAR_EXTENSION = ".war";
+    private static final String RAR_EXTENSION = ".rar";
+    private static final String EXPANDED_WAR_SUFFIX = "_war";
+    private static final String EXPANDED_RAR_SUFFIX = "_rar";
+    private static final String EXPANDED_JAR_SUFFIX = "_jar";
+    
     // checking whether the archive is a web archive
     public static boolean isWebArchive(ReadableArchive archive) {
         try {
+            if (Util.getURIName(archive.getURI()).endsWith(WAR_EXTENSION)) {
+                return true;
+            }
+
             if (archive.exists(WEB_XML) || archive.exists(WEB_INF_CLASSES) || 
                 archive.exists(WEB_INF_LIB) ) {
                 return true;
@@ -85,6 +96,10 @@ public class DeploymentUtils {
     public static boolean isRAR(ReadableArchive archive){
         boolean isRar = false;
         try{
+            if (Util.getURIName(archive.getURI()).endsWith(RAR_EXTENSION)) {
+                return true;
+            }
+
             isRar = archive.exists(RA_XML);
         }catch(IOException ioe){
             //ignore
@@ -93,18 +108,43 @@ public class DeploymentUtils {
     }
 
     /**
-     * check whether the archive is a .rar
+     * check whether the archive is a .ear
      * @param archive archive to be tested
-     * @return status of .rar or not
+     * @return status of .ear or not
      */
     public static boolean isEAR(ReadableArchive archive){
         boolean isEar = false;
+
         try{
+            if (Util.getURIName(archive.getURI()).endsWith(EAR_EXTENSION)) {
+                return true;
+            }
+
             isEar = archive.exists(APPLICATION_XML);
+
+            if (!isEar) {
+                isEar = isEARFromIntrospecting(archive);
+            } 
         }catch(IOException ioe){
             //ignore
         }
         return isEar;
+    }
+
+    // introspecting the sub archives to see if any of them 
+    // ended with expected suffix
+    private static boolean isEARFromIntrospecting(ReadableArchive archive) 
+        throws IOException {
+        for (String entryName : archive.getDirectories()) {
+            // we don't have other choices but to look if any of
+            // the subdirectories is ended with expected suffix
+            if ( entryName.endsWith(EXPANDED_WAR_SUFFIX) || 
+                 entryName.endsWith(EXPANDED_RAR_SUFFIX) || 
+                 entryName.endsWith(EXPANDED_JAR_SUFFIX) ) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
