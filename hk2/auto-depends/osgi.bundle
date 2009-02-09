@@ -1,5 +1,5 @@
 -exportcontents: \
                             org.jvnet.hk2.component; \
                             org.jvnet.hk2.annotations; \
-                            com.sun.hk2.component
+                            com.sun.hk2.component; version=${project.osgi.version}
 

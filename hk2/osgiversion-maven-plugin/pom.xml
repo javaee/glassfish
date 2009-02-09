@@ -1,0 +1,42 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.sun.enterprise</groupId>
+        <artifactId>hk2-parent</artifactId>
+        <version>0.3.39-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>osgiversion-maven-plugin</artifactId>
+    <packaging>maven-plugin</packaging>
+
+    <name>Maven Plugin for computing OSGi versions from Maven versions</name>
+    <description>Maven Plugin for computing OSGi versions from Maven versions</description>
+     
+    <!-- This plugin is used during build of all OSGi artifacts in HK2 like core,
+         config, auto-depends, etc. If we make this part of hk2-maven-plugin,
+         it will cause a circular dependency like this:
+         hk2-maven-plugin -> hk2-maven -> hk2-core -> hk2-maven-plugin.
+         So, this is separated from hk2-maven-plugin.
+         This plugin is used to set a predefined property called
+         project.osgi.version which can then be used in pom.xmls.
+    -->
+
+    <build>
+        <!-- Override settings from parent which set the following to different values -->
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <testSourceDirectory>src/test/java</testSourceDirectory>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-api</artifactId>
+            <version>2.0.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.shared</groupId>
+            <artifactId>maven-osgi</artifactId>
+            <version>0.2.0</version>
+        </dependency>
+    </dependencies>
+</project>
