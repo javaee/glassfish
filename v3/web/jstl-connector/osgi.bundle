@@ -1,1 +1,2 @@
--exportcontents:org.apache.taglibs.standard,org.glassfish.jstl.integration
+-exportcontents:org.apache.taglibs.standard; \
+                org.glassfish.jstl.integration; version=${project.osgi.version}

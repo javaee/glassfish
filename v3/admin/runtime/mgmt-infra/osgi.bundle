@@ -1,1 +1,1 @@
--exportcontents: org.glassfish.admin.runtime.mgmtinfra
+-exportcontents: org.glassfish.admin.runtime.mgmtinfra; version=${project.osgi.version}

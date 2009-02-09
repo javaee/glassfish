@@ -1,1 +1,1 @@
--exportcontents: org.glassfish.faces.integration.*
+-exportcontents: org.glassfish.faces.integration.*; version=${project.osgi.version}

@@ -1,1 +1,1 @@
--exportcontents: org.glassfish.web.sniffer
+-exportcontents: org.glassfish.web.sniffer; version=${project.osgi.version}

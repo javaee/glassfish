@@ -1,17 +1,17 @@
 -exportcontents: \
-                        com.sun.ejb, \
-                        com.sun.ejb.base.io, \
-                        com.sun.ejb.base.stats, \
-                        com.sun.ejb.containers, \
-                        com.sun.ejb.containers.interceptors, \
-                        com.sun.ejb.containers.util, \
-                        com.sun.ejb.containers.util.pool, \
-                        com.sun.ejb.portable, \
-                        com.sun.ejb.spi.io, \
-                        com.sun.ejb.spi.stats, \
-                        com.sun.enterprise, \
-                        org.glassfish.ejb.startup, \
-                        org.glassfish.ejb.deployment.archivist
+                        com.sun.ejb; \
+                        com.sun.ejb.base.io; \
+                        com.sun.ejb.base.stats; \
+                        com.sun.ejb.containers; \
+                        com.sun.ejb.containers.interceptors; \
+                        com.sun.ejb.containers.util; \
+                        com.sun.ejb.containers.util.pool; \
+                        com.sun.ejb.portable; \
+                        com.sun.ejb.spi.io; \
+                        com.sun.ejb.spi.stats; \
+                        com.sun.enterprise; \
+                        org.glassfish.ejb.startup; \
+                        org.glassfish.ejb.deployment.archivist; version=${project.osgi.version}
 Import-Package: \
                         javax.xml.soap;resolution:=optional, \
                         javax.xml.ws;resolution:=optional, \

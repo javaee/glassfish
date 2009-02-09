@@ -1,4 +1,4 @@
--exportcontents: org.glassfish.admin.mbeanserver
+-exportcontents: org.glassfish.admin.mbeanserver; version=${project.osgi.version}
 
 # Need to ass jmxremote_optional to the dependency
 # for jmxmp protocol to be recognized.

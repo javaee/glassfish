@@ -1,2 +1,2 @@
--exportcontents: com.sun.appserv.connectors.internal.api, \
-                 com.sun.appserv.connectors.internal.spi
+-exportcontents: com.sun.appserv.connectors.internal.api; \
+                 com.sun.appserv.connectors.internal.spi; version=${project.osgi.version}

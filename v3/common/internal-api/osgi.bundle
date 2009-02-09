@@ -1,8 +1,8 @@
 -exportcontents: \
-                        org.glassfish.internal.api, \
-                        org.glassfish.internal.data, \
-                        org.glassfish.internal.deployment, \
-                        org.glassfish.flashlight.datatree, \
-                        org.glassfish.j2ee.statistics, \
-                        org.glassfish.flashlight                        
+                        org.glassfish.internal.api; \
+                        org.glassfish.internal.data; \
+                        org.glassfish.internal.deployment; \
+                        org.glassfish.flashlight.datatree; \
+                        org.glassfish.j2ee.statistics; \
+                        org.glassfish.flashlight; version=${project.osgi.version}
 

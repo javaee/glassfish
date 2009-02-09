@@ -1,1 +1,1 @@
--exportcontents: org.glassfish.deployment.admin
+-exportcontents: org.glassfish.deployment.admin; version=${project.osgi.version}

@@ -1,1 +1,1 @@
--exportcontents: com.sun.enterprise.registration.impl
+-exportcontents: com.sun.enterprise.registration.impl; version=${project.osgi.version}

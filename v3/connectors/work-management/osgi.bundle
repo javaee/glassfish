@@ -1,4 +1,4 @@
 -exportcontents: \
-                        com.sun.enterprise.connectors.work,\
-                        com.sun.enterprise.connectors.work.monitor
+                        com.sun.enterprise.connectors.work;\
+                        com.sun.enterprise.connectors.work.monitor; version=${project.osgi.version}
 

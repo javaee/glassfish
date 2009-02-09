@@ -1,4 +1,4 @@
--exportcontents: com.sun.web.security
+-exportcontents: com.sun.web.security; version=${project.osgi.version}
 Import-Package: \
                         com.sun.logging.enterprise.system.core.security, \
                         *

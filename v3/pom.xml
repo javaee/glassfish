@@ -119,8 +119,8 @@
         <commons.collections.version>2.1</commons.collections.version>
         <commons.digester.version>1.5</commons.digester.version>
         <commons.modeler.version>1.1</commons.modeler.version>
-        <hk2.version>0.3.38</hk2.version>
-        <hk2.plugin.version>0.3.38</hk2.plugin.version>
+        <hk2.version>0.3.39</hk2.version>
+        <hk2.plugin.version>0.3.39</hk2.plugin.version>
 
         <jsr223-api.version>1.0</jsr223-api.version>
         <phobos.version>0.5.10</phobos.version>
@@ -378,6 +378,12 @@
                 </plugin>
 
                 <plugin>
+                    <groupId>com.sun.enterprise</groupId>
+                    <artifactId>osgiversion-maven-plugin</artifactId>
+                    <version>${hk2.plugin.version}</version>
+                </plugin>
+
+                <plugin>
                     <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
                     <artifactId>maven-antrun-extended-plugin</artifactId>
                     <version> 1.36 </version>
@@ -553,6 +559,27 @@
                         <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
                     </archive>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>osgiversion-maven-plugin</artifactId>
+                <executions>
+                    <!-- Since we don't want qualifier like b05 or SNAPSHOT to appear
+                         in package version attribute, we use the following goal to
+                         populate a project property with an OSGi version which is
+                         equivalent to maven version without qualifier and then use that
+                         property in osgi.bundle while exporting. -->
+                    <execution>
+                        <id>compute-osgi-version</id>
+                        <goals>
+                            <goal>compute-osgi-version</goal>
+                        </goals>
+                        <configuration>
+                            <dropVersionComponent>qualifier</dropVersionComponent>
+                            <versionPropertyName>project.osgi.version</versionPropertyName>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

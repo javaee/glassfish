@@ -1,5 +1,5 @@
 -exportcontents: \
-                org.apache.jk.server.*, \
-                org.apache.jk.core.*, \
-                org.apache.jk.*
+                org.apache.jk.server.*; \
+                org.apache.jk.core.*; \
+                org.apache.jk.*; version=${project.osgi.version}
 

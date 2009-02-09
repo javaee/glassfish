@@ -1,1 +1,1 @@
--exportcontents: com.sun.enterprise.cli.framework
+-exportcontents: com.sun.enterprise.cli.framework; version=${project.osgi.version}

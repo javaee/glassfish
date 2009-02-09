@@ -1,1 +1,1 @@
--exportcontents: com.sun.enterprise.connectors.inbound
+-exportcontents: com.sun.enterprise.connectors.inbound; version=${project.osgi.version}

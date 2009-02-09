@@ -1,1 +1,1 @@
--exportcontents: org.glassfish.flashlight.client
+-exportcontents: org.glassfish.flashlight.client; version=${project.osgi.version}

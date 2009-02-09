@@ -1,11 +1,11 @@
 -exportcontents: \
-                        com.sun.enterprise.server.logging, \
-                        com.sun.enterprise.v3.admin, \
-                        com.sun.enterprise.v3.admin.adapter, \
-                        com.sun.enterprise.v3.admin.commands, \
-                        com.sun.enterprise.v3.bootstrap, \
-                        com.sun.enterprise.v3.common, \
-                        com.sun.enterprise.v3.logging, \
-                        com.sun.enterprise.v3.server, \
-                        com.sun.enterprise.v3.services.impl, \
-                        org.glassfish.kernel.event
+                        com.sun.enterprise.server.logging; \
+                        com.sun.enterprise.v3.admin; \
+                        com.sun.enterprise.v3.admin.adapter; \
+                        com.sun.enterprise.v3.admin.commands; \
+                        com.sun.enterprise.v3.bootstrap; \
+                        com.sun.enterprise.v3.common; \
+                        com.sun.enterprise.v3.logging; \
+                        com.sun.enterprise.v3.server; \
+                        com.sun.enterprise.v3.services.impl; \
+                        org.glassfish.kernel.event; version=${project.osgi.version}

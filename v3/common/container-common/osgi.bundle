@@ -1,10 +1,10 @@
 -exportcontents: \
-                        com.sun.appserv.security.provider, \
-                        com.sun.enterprise.container.common, \
-                        com.sun.enterprise.container.common.impl, \
-                        com.sun.enterprise.container.common.impl.util, \
-                        com.sun.enterprise.container.common.spi, \
-                        com.sun.enterprise.container.common.spi.util, \
-                        org.glassfish.javaee.admin, \
-                        org.glassfish.javaee.services
+                        com.sun.appserv.security.provider; \
+                        com.sun.enterprise.container.common; \
+                        com.sun.enterprise.container.common.impl; \
+                        com.sun.enterprise.container.common.impl.util; \
+                        com.sun.enterprise.container.common.spi; \
+                        com.sun.enterprise.container.common.spi.util; \
+                        org.glassfish.javaee.admin; \
+                        org.glassfish.javaee.services; version=${project.osgi.version}
 

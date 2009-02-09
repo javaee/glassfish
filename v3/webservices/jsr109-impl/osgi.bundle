@@ -1,6 +1,6 @@
 -exportcontents: \
-                        org.glassfish.webservices, \
-                        org.glassfish.webservices.monitoring
+                        org.glassfish.webservices; \
+                        org.glassfish.webservices.monitoring; version=${project.osgi.version}
 Import-Package: \
                        com.sun.enterprise.deployment.*, \
                        com.sun.enterprise.deployment.annotation.*, \

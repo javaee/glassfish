@@ -1,1 +1,1 @@
--exportcontents: org.glassfish.web.plugin.common
+-exportcontents: org.glassfish.web.plugin.common; version=${project.osgi.version}

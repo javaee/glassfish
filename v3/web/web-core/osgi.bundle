@@ -1,23 +1,23 @@
 -exportcontents: \
-                        com.sun.enterprise.web.connector.grizzly, \
-                        org.apache.catalina, \
-                        org.apache.catalina.authenticator, \
-                        org.apache.catalina.connector, \
-                        org.apache.catalina.core, \
-                        org.apache.catalina.deploy, \
-                        org.apache.catalina.loader, \
-                        org.apache.catalina.logger, \
-                        org.apache.catalina.mbeans, \
-                        org.apache.catalina.net, \
-                        org.apache.catalina.realm, \
-                        org.apache.catalina.security, \
-                        org.apache.catalina.servlets, \
-                        org.apache.catalina.session, \
-                        org.apache.catalina.ssi, \
-                        org.apache.catalina.startup, \
-                        org.apache.catalina.util, \
-                        org.apache.catalina.valves, \
-                        org.glassfish.web.valve
+                        com.sun.enterprise.web.connector.grizzly; \
+                        org.apache.catalina; \
+                        org.apache.catalina.authenticator; \
+                        org.apache.catalina.connector; \
+                        org.apache.catalina.core; \
+                        org.apache.catalina.deploy; \
+                        org.apache.catalina.loader; \
+                        org.apache.catalina.logger; \
+                        org.apache.catalina.mbeans; \
+                        org.apache.catalina.net; \
+                        org.apache.catalina.realm; \
+                        org.apache.catalina.security; \
+                        org.apache.catalina.servlets; \
+                        org.apache.catalina.session; \
+                        org.apache.catalina.ssi; \
+                        org.apache.catalina.startup; \
+                        org.apache.catalina.util; \
+                        org.apache.catalina.valves; \
+                        org.glassfish.web.valve; version=${project.osgi.version}
 
 # Normally Import-Package is not required, as the default value of *
 # is enough to find all static dependencies. But, when a module is

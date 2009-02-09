@@ -1,1 +1,1 @@
--exportcontents: com.sun.enterprise.transaction; password="GlassFish"; mandatory:=password
+-exportcontents: com.sun.enterprise.transaction; password="GlassFish"; mandatory:=password; version=${project.osgi.version}

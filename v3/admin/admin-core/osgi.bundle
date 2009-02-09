@@ -1,1 +1,1 @@
--exportcontents: com.sun.enterprise.admin
+-exportcontents: com.sun.enterprise.admin; version=${project.osgi.version}

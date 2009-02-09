@@ -1,1 +1,1 @@
--exportcontents: com.sun.enterprise.admin.launcher
+-exportcontents: com.sun.enterprise.admin.launcher; version=${project.osgi.version}
