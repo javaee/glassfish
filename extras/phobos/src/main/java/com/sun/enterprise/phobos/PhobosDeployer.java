@@ -23,13 +23,11 @@
 
 package com.sun.enterprise.phobos;
 
-import org.glassfish.deployment.admin.DeployCommand;
 import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
-import org.glassfish.api.deployment.DeploymentOperationParameters;
+import org.glassfish.api.deployment.OpsParams;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.admin.ParameterNames;
 import org.jvnet.hk2.annotations.Service;
 
 import java.io.File;
@@ -94,7 +92,7 @@ public class PhobosDeployer implements Deployer<PhobosContainer, GlassFishPhobos
         ReadableArchive source = context.getSource();
 
         // so far context root is application name`
-        DeploymentOperationParameters params = context.getCommandParameters(DeploymentOperationParameters.class);
+        OpsParams params = context.getCommandParameters(OpsParams.class);
         String appName = params.name();
         String contextRoot = "/" + appName;
 

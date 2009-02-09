@@ -23,25 +23,21 @@
 
 package org.glassfish.deployment.admin;
 
-import org.glassfish.deployment.common.DeploymentContextImpl;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.config.Named;
-import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.StateCommandParameters;
 import org.glassfish.api.deployment.DeployCommandParameters;
-import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
-import org.glassfish.api.Param;
 import org.glassfish.internal.deployment.Deployment;
+import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -51,7 +47,6 @@ import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 
 import java.util.Properties;
-import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.File;
@@ -83,6 +78,10 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
 
     @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
     protected Server server;
+
+    public EnableCommand() {
+        origin = Origin.load;
+    }
 
     /**
      * Entry point from the framework into the command execution
@@ -156,10 +155,9 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
 
 
         try {
-            final DeploymentContextImpl deploymentContext =
-                new DeploymentContextImpl(logger, archive, commandParams, env, false);
+            final ExtendedDeploymentContext deploymentContext = deployment.getContext(logger, archive, this);
 
-            deploymentContext.setProps(contextProps);
+            deploymentContext.getProps().putAll(contextProps);
             deployment.deploy(deploymentContext, report);
 
             if (report.getActionExitCode().equals(

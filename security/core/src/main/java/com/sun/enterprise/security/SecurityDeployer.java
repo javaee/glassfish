@@ -26,8 +26,7 @@ import com.sun.enterprise.security.web.integration.WebSecurityManagerFactory;
 import com.sun.enterprise.security.web.integration.WebSecurityManager;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
-import org.glassfish.api.deployment.DeploymentOperationParameters;
-import org.glassfish.api.admin.ParameterNames;
+import org.glassfish.api.deployment.OpsParams;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.deployment.common.SimpleDeployer;
 import org.glassfish.deployment.common.DummyApplication;
@@ -83,7 +82,7 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
     
     @Override
     public void unload(DummyApplication container, DeploymentContext context) {
-        DeploymentOperationParameters params = context.getCommandParameters(DeploymentOperationParameters.class);
+        OpsParams params = context.getCommandParameters(OpsParams.class);
         cleanSecurityContext(params.name());
     }
 
@@ -91,7 +90,7 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
     // TODO: need to add ear and standalone ejb module case
     protected void generatePolicy(DeploymentContext dc)
             throws DeploymentException {
-        DeploymentOperationParameters params = dc.getCommandParameters(DeploymentOperationParameters.class);
+        OpsParams params = dc.getCommandParameters(OpsParams.class);
         String appName = params.name();
         try {
             policyLoader.loadPolicy();
@@ -124,7 +123,7 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
     // TODO: need to add ear and standalone ejb module case
     private void removePolicy(DeploymentContext dc) throws
             DeploymentException {
-        DeploymentOperationParameters params = dc.getCommandParameters(DeploymentOperationParameters.class);
+        OpsParams params = dc.getCommandParameters(OpsParams.class);
         String appName = params.name();
 
         try {

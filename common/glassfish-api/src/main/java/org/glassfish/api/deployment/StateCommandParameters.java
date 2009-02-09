@@ -5,10 +5,10 @@ import org.glassfish.api.Param;
 /**
  * parameters passed to commands changing the state of a deployed application
  */
-public class StateCommandParameters extends DeploymentOperationParameters  {
+public class StateCommandParameters extends OpsParams {
 
     @Param(primary=true)
-    String component = null;
+    protected String component = null;
 
     @Param(optional=true)
     public String target = "server";

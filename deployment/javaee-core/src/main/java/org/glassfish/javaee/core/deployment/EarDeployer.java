@@ -295,8 +295,9 @@ public class EarDeployer implements Deployer {
                     ioe.printStackTrace();
                     return null;
                 }
+
                 ExtendedDeploymentContext subContext = new DeploymentContextImpl(logger, context.getSource(),
-                        context.getCommandParameters(DeployCommandParameters.class), env, context.isRestart()) {
+                        context.getCommandParameters(DeployCommandParameters.class), env) {
 
                     @Override
                     public ClassLoader getClassLoader() {

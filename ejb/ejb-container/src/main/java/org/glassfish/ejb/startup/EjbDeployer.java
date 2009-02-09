@@ -31,8 +31,7 @@ import org.glassfish.internal.api.ServerContext;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
-import org.glassfish.api.deployment.DeploymentOperationParameters;
-import org.glassfish.api.admin.ParameterNames;
+import org.glassfish.api.deployment.OpsParams;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
@@ -97,7 +96,7 @@ public class EjbDeployer
 
         EjbApplication ejbApp = new EjbApplication(ebds, dc, dc.getClassLoader(), habitat);
 
-        DeploymentOperationParameters params = dc.getCommandParameters(DeploymentOperationParameters.class);
+        OpsParams params = dc.getCommandParameters(OpsParams.class);
         String appName = params.name();
 
         ejbApps.put(appName, ejbApp);
@@ -119,7 +118,7 @@ public class EjbDeployer
      */
     public void clean(DeploymentContext dc) {
 
-        DeploymentOperationParameters params = dc.getCommandParameters(DeploymentOperationParameters.class);
+        OpsParams params = dc.getCommandParameters(OpsParams.class);
         String appName = params.name();
 
         EjbApplication ejbApp = ejbApps.get(appName);

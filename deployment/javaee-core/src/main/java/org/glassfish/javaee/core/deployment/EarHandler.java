@@ -42,9 +42,7 @@ import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.api.deployment.archive.CompositeHandler;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.DeployCommandParameters;
-import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.deployment.common.DeploymentUtils;
-import org.glassfish.deployment.common.DeploymentContextImpl;
 import org.glassfish.internal.deployment.Deployment;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
@@ -86,9 +84,6 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
 
     @Inject
     ArchiveFactory archiveFactory;
-
-    @Inject
-    ServerEnvironment env;
     
     public String getArchiveType() {
         return "ear";
@@ -183,7 +178,7 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                     ArchiveHandler handler = deployment.getArchiveHandler(sub);
                     if (handler!=null) {
                         // todo : this is a hack, once again, the handler is assuming a file:// url
-                        DeploymentContext subContext = new DeploymentContextImpl(context.getLogger(), sub, context.getCommandParameters(DeployCommandParameters.class), env, context.isRestart());
+                        DeploymentContext subContext = deployment.getContext(context.getLogger(), sub, context.getCommandParameters(DeployCommandParameters.class));
                         ClassLoader subCl = handler.getClassLoader(cl, subContext);
                         cl.addModuleClassLoader(md.getArchiveUri(), subCl);
                     }

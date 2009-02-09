@@ -84,10 +84,10 @@ public interface DeploymentContext extends ApplicationContext, ExecutionContext 
 
     /**
      * Returns the DeployCommand parameters
-     * @param commandParametersType expected deployment operation parameters type.
+     * @param opsParamsType expected deployment operation parameters type.
      * @return the command parameters
      */
-    public <U extends DeploymentOperationParameters> U getCommandParameters(Class<U> commandParametersType);
+    public <U extends OpsParams> U getCommandParameters(Class<U> opsParamsType);
 
     /**
      * Returns a scratch directory that can be used to store things in.
@@ -157,12 +157,5 @@ public interface DeploymentContext extends ApplicationContext, ExecutionContext 
      *
      * @return collection of metadata added to the context
      */
-    public Collection<Object> getModuleMetadata();
-
-
-    /**
-     * Returns true if this is a server restart, false if this is a new deployment
-     * @return true if server is restarting, false for a new deployment
-     */
-    public boolean isRestart();    
+    public Collection<Object> getModuleMetadata();  
 }

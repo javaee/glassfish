@@ -37,10 +37,7 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.Param;
-import org.glassfish.api.I18n;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -50,7 +47,7 @@ import java.util.List;
 
 @Service(name="list-app-refs")
 @Scoped(PerLookup.class)
-public class ListAppRefsCommand extends ApplicationLifecycle implements AdminCommand {
+public class ListAppRefsCommand implements AdminCommand {
 
     @Param(optional=true)
     String target = "server";

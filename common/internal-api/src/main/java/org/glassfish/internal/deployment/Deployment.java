@@ -38,6 +38,7 @@ package org.glassfish.internal.deployment;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.api.deployment.OpsParams;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.event.EventTypes;
@@ -49,8 +50,10 @@ import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.config.TransactionFailure;
 
 import java.io.IOException;
+import java.io.File;
 import java.util.LinkedList;
 import java.util.Collection;
+import java.util.logging.Logger;
 
 /**
  * Deployment facility
@@ -66,12 +69,22 @@ public interface Deployment {
     public final EventTypes<ApplicationInfo> DEPLOYMENT_SUCCESS = EventTypes.create("Deployment_Success", ApplicationInfo.class);
 
     public ArchiveHandler getArchiveHandler(ReadableArchive archive) throws IOException;
+
+    public ExtendedDeploymentContext getContext(Logger logger, File source, OpsParams params)
+            throws IOException;
+
+    public ExtendedDeploymentContext getContext(Logger logger, ReadableArchive source, OpsParams params)
+            throws IOException;
+
+
     public ModuleInfo prepareModule(
         LinkedList<EngineInfo> sortedEngineInfos, String moduleName,
         DeploymentContext context, ActionReport report,
-        ProgressTracker tracker) throws Exception;    
+        ProgressTracker tracker) throws Exception;
+
     public ApplicationInfo deploy(final ExtendedDeploymentContext context, final ActionReport report);
     public ApplicationInfo deploy(final Collection<Sniffer> sniffers, final ExtendedDeploymentContext context, final ActionReport report);
+
     public void undeploy(String appName, ExtendedDeploymentContext context, ActionReport report);
 
     public void registerAppInDomainXML(final ApplicationInfo
@@ -89,6 +102,6 @@ public interface Deployment {
     public boolean isRegistered(String appName);
 
     public ApplicationInfo get(String appName);
-    
+
 
 }
