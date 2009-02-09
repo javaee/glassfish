@@ -168,6 +168,24 @@
                          </instructions>
                      </configuration>
                  </plugin>
+                <plugin>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>osgiversion-maven-plugin</artifactId>
+                    <version>${project.version}</version>
+                    <executions>
+                        <execution>
+                            <id>compute-osgi-version</id>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>compute-osgi-version</goal>
+                            </goals>
+                            <configuration>
+                                <dropVersionComponent>qualifier</dropVersionComponent>
+                                <versionPropertyName>project.osgi.version</versionPropertyName>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
              </plugins>
         </pluginManagement>
     </build>
@@ -185,6 +203,7 @@
         <module>osgi-adapter</module>
         <module>test-harness</module>
         <module>dependency-verifier</module>
+        <module>osgiversion-maven-plugin</module>
     </modules>
 
     <dependencies>
