@@ -44,12 +44,15 @@
              excludes="**/.svn/**,**/.hg*/**" />
 
     </target>
+
 	 
     <target name="module.copy" >
+        <echo message="copy the following modules: ${module.list}"/>
         <copy todir="${v3.stage}" enablemultiplemappings="true" >  
-            <fileset dir="${v3.dir}" casesensitive="yes" includes="${module.list}" excludes="**/.svn,**/target/**"/>
+            <fileset dir="${v3.dir}" casesensitive="yes" includes="${module.list}" excludes="**/.svn/**,**/target/**"/>
         </copy>
     </target>
+
 
     <target name="hk2.project" >
         <exec executable="svn" dir="${stage}" failonerror="true" >
@@ -58,6 +61,7 @@
             <arg line="hk2" />
 	</exec>
     </target>
+
 
     <target name="grizzly.project" >
         <exec executable="svn" dir="${stage}" failonerror="true" >
@@ -76,11 +80,30 @@
 	</exec>
     </target>
 
+
+    <target name="jsp.project" >
+        <exec executable="svn" dir="${stage}" failonerror="true" >
+	    <arg line="checkout" />
+            <arg line="${jsp.svn.url}" />
+            <arg line="jsp" />
+	</exec>
+    </target>
+
+
+    <target name="uel.project" >
+        <exec executable="svn" dir="${stage}" failonerror="true" >
+	    <arg line="checkout" />
+            <arg line="${uel.svn.url}" />
+            <arg line="uel" />
+	</exec>
+    </target>
+
+
     <!-- requires hg (mercurial) installed and in the path -->
     <target name="gfcorba.project" >
         <exec executable="hg" dir="${stage}" failonerror="true" >
 	    <arg line="clone" />
-            <arg line="${gfcorba.svn.url}" />
+            <arg line="${gfcorba.hg.url}" />
             <arg line="glassfish-corba" />
 	</exec>
     </target>

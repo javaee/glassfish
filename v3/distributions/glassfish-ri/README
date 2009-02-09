@@ -3,18 +3,34 @@ Follow the instructions below to compile.  Use the same local maven repository t
 GFv3 modules:
 ============
 1. cd v3
-2. mvn -Dmaven.repo.local=<local maven repository> install --file <module-name>/pom.xml
-The jar files are located in <module-name>/target
+2. remove the following module in v3/pom.xml:
+    admingui, distributions, registration, tests, embedded,
+3. mvn -Dmaven.repo.local=<local maven repository> install 
+
 
 HK2 (https://hk2.dev.java.net):
 ==============================
 1. cd hk2
 2. mvn -Dmaven.repo.local=<local maven repository> install 
 
+
+JSP (https://jsp.dev.java.net):
+==============================
+1. cd jsp
+2. mvn -Dmaven.repo.local=<local maven repository> install 
+
+
+UEL (https://uel.dev.java.net):
+==============================
+1. cd uel
+2. mvn -Dmaven.repo.local=<local maven repository> install 
+
+
 Grizzly (https://grizzly.dev.java.net):
 ======================================
 1. cd grizzly
 2. mvn -Dmaven.repo.local=<local maven repository> install
+
 
 jsf-api (https://javaserverfaces.dev.java.net):
 ==============================================
@@ -33,6 +49,7 @@ jsf-api (https://javaserverfaces.dev.java.net):
     change <url>...</url> to your local maven repository.
    e.g. <url>file:/export/home/GlassFish/jsf/repository</url>
 6. ant push-to-maven
+
 
 
 glassfish-corba (https://glassfish-corba.dev.java.net/design/orb_notes.html#htoc7):
