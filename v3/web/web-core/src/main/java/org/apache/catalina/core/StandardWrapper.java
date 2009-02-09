@@ -68,14 +68,7 @@ import java.util.logging.*;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
-import javax.servlet.Servlet;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.SingleThreadModel;
-import javax.servlet.UnavailableException;
+import javax.servlet.*;
 import javax.management.Notification;
 import javax.management.NotificationBroadcasterSupport;
 import javax.management.ObjectName;
@@ -326,7 +319,36 @@ public class StandardWrapper
     private boolean isSetServletClassCalled = false;
 
 
+    /**
+     * The ServletRegistration object through which this wrapper may be
+     * further configured
+     */
+    private ServletRegistration servletRegistration = null;
+
+
     // ------------------------------------------------------------- Properties
+
+
+    /**
+     * Sets the ServletRegistration through which this wrapper may be
+     * further configured.
+     *
+     * @param regis the ServletRegistration
+     */
+    public void setServletRegistration(ServletRegistration regis) {
+        servletRegistration = regis;
+    }
+
+
+    /**
+     * Gets the ServletRegistration through which this wrapper may be
+     * further configured.
+     *
+     * @return the ServletRegistration
+     */
+    public ServletRegistration getServletRegistration() {
+        return servletRegistration;
+    }
 
 
     /**

@@ -57,6 +57,7 @@ package org.apache.catalina.deploy;
 import java.util.HashMap;
 import java.util.Map;
 import java.io.Serializable;
+import javax.servlet.FilterRegistration;
 
 /**
  * Representation of a filter definition for a web application, as represented
@@ -112,7 +113,36 @@ public class FilterDef implements Serializable {
     private long asyncTimeout;
 
 
+    /**
+     * The FilterRegistration object through which this FilterDef may be
+     * further configured
+     */
+    private FilterRegistration filterRegistration = null;
+
+
     // ------------------------------------------------------------- Properties
+
+    /**
+     * Sets the FilterRegistration through which this FilterDef may be
+     * further configured.
+     *
+     * @param regis the FilterRegistration
+     */
+    public void setFilterRegistration(FilterRegistration regis) {
+        filterRegistration = regis;
+    }
+
+
+    /**
+     * Gets the FilterRegistration through which this FilterDef may be
+     * further configured.
+     *
+     * @return the FilterRegistration
+     */
+    public FilterRegistration getFilterRegistration() {
+        return filterRegistration;
+    }
+
 
     public String getDescription() {
         return (this.description);
@@ -213,6 +243,7 @@ public class FilterDef implements Serializable {
     public long getAsyncTimeout() {
         return asyncTimeout;
     }
+
 
 
     // --------------------------------------------------------- Public Methods

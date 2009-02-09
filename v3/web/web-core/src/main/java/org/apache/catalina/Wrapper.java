@@ -60,6 +60,7 @@ package org.apache.catalina;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRegistration;
 import javax.servlet.UnavailableException;
 
 
@@ -407,5 +408,23 @@ public interface Wrapper extends Container {
      * initiated by the wrapped servlet
      */
     public long getAsyncTimeout();
+
+
+    /**
+     * Sets the ServletRegistration through which the wrapped servlet
+     * may be further configured.
+     *
+     * @param regis the ServletRegistration
+     */
+    public void setServletRegistration(ServletRegistration regis);
+
+
+    /**
+     * Gets the ServletRegistration through which the wrapped servlet
+     * may be further configured.
+     *
+     * @return the ServletRegistration
+     */
+    public ServletRegistration getServletRegistration();
 
 }

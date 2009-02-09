@@ -1005,12 +1005,11 @@ public class ApplicationContext
 
 
     /**
-     * Adds servlet mappings from the given url patterns to the servlet
-     * with the given servlet name to this servlet context.
+     * Gets the ServletRegistration corresponding to the servlet with the
+     * given <tt>servletName</tt>.
      */
-    public void addServletMapping(String servletName,
-                                  String... urlPatterns) {
-        context.addServletMappings(servletName, urlPatterns);
+    public ServletRegistration findServletRegistration(String servletName) {
+        return context.findServletRegistration(servletName);
     }
 
 
@@ -1024,53 +1023,14 @@ public class ApplicationContext
     
     
     /**
-     * Adds a filter mapping with the given servlet names, and
-     * dispatcher types for the filter with the given filter name to this
-     * servlet context.
-     *
-     * @param filterName the name of the filter for which the filter
-     * mapping is added
-     * @param dispatcherTypes the dispatcher types of the filter mapping,
-     * or null if the default <tt>DispatcherType.REQUEST</tt> is to be used
-     * @param isMatchAfter true if the given filter mapping should be matched
-     * against requests after any declared filter mappings of this servlet
-     * context, and false if it is supposed to be matched before any declared
-     * filter mappings of this servlet context
-     * @param servletNames the servlet names of the filter mapping
+     * Gets the FilterRegistration corresponding to the filter with the
+     * given <tt>filterName</tt>.
      */
-    public void addFilterMappingForServletNames(String filterName,
-                                    EnumSet<DispatcherType> dispatcherTypes,
-                                    boolean isMatchAfter,
-                                    String... servletNames) {
-        context.addFilterMappingForServletNames(filterName, dispatcherTypes, isMatchAfter, 
-                            servletNames);
+    public FilterRegistration findFilterRegistration(String filterName) {
+        return context.findFilterRegistration(filterName);
     }
 
-    
-    /**
-     * Adds a filter mapping with the given url patterns, and
-     * dispatcher types for the filter with the given filter name to this
-     * servlet context.     
-     *
-     * @param filterName the name of the filter for which the filter
-     * mapping is added
-     * @param dispatcherTypes the dispatcher types of the filter mapping,
-     * or null if the default <tt>DispatcherType.REQUEST</tt> is to be used
-     * @param isMatchAfter true if the given filter mapping should be matched
-     * against requests after any declared filter mappings of this servlet
-     * context, and false if it is supposed to be matched before any declared
-     * filter mappings of this servlet context
-     * @param urlPatterns the url patterns of the filter mapping
-     */
-    public void addFilterMappingForUrlPatterns(String filterName,
-                                  EnumSet<DispatcherType> dispatcherTypes,
-                                  boolean isMatchAfter,
-                                  String... urlPatterns) {
-        context.addFilterMappingForUrlPatterns(filterName, dispatcherTypes,
-                                        isMatchAfter, urlPatterns);
-    }
 
-        
     /**
      * Sets the session tracking cookie configuration for this 
      * <tt>ServletContext</tt>.

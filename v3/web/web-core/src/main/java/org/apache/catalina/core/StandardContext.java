@@ -2298,16 +2298,31 @@ public class StandardContext
 
 
     /**
-     * Add a child Container, only if the proposed child is an implementation
-     * of Wrapper.
+     * Adds the given child Container to this context.
      *
-     * @param child Child container to be added
+     * @param child the child Container to add
      *
-     * @exception IllegalArgumentException if the proposed container is
-     *  not an implementation of Wrapper
+     * @exception IllegalArgumentException if the given child Container is
+     * not an instance of Wrapper
      */
     @Override
     public void addChild(Container child) {
+        addChild(child, false);
+    }
+
+
+    /**
+     * Adds the given child Container to this context.
+     *
+     * @param child the child Container to add
+     * @param isProgrammatic true if the given child is added through
+     * one of the programmatic interfaces, and false if the child is 
+     * declared in the deployment descriptor
+     *
+     * @exception IllegalArgumentException if the given child Container is
+     * not an instance of Wrapper
+     */
+    protected void addChild(Container child, boolean isProgrammatic) {
 
         // Global JspServlet
         Wrapper oldJspServlet = null;
@@ -2384,6 +2399,10 @@ public class StandardContext
                 addServletMapping(jspMappings[i], wrapperName);
             }
         }
+
+        ServletRegistration regis = new ServletRegistrationImpl(
+            wrapper, this, isProgrammatic);
+        wrapper.setServletRegistration(regis);
     }
 
 
@@ -2525,7 +2544,15 @@ public class StandardContext
      * @param filterDef The filter definition to be added
      */
     public void addFilterDef(FilterDef filterDef) {
+        addFilterDef(filterDef, false);
+    }
 
+
+    public void addFilterDef(FilterDef filterDef, boolean isProgrammatic) {
+        FilterRegistration regis = new FilterRegistrationImpl(
+            filterDef, this, isProgrammatic);
+        filterDef.setFilterRegistration(regis);
+  
         synchronized (filterDefs) {
             filterDefs.put(filterDef.getFilterName(), filterDef);
         }
@@ -2643,7 +2670,11 @@ public class StandardContext
      */
     public FilterRegistration addFilter(String filterName, String className) {
         if (findFilterDef(filterName) == null) {
-            return new FilterRegistrationImpl(this, filterName, className);
+            FilterDef filterDef = new FilterDef();
+            filterDef.setFilterName(filterName);
+            filterDef.setFilterClass(className);
+            addFilterDef(filterDef, true);
+            return filterDef.getFilterRegistration();
         } else {
             return null;
         }
@@ -2651,113 +2682,16 @@ public class StandardContext
 
 
     /**
-     * Adds a filter mapping with the given servlet names, and
-     * dispatcher types for the filter with the given filter name to this
-     * servlet context.
-     *
-     * @param filterName the name of the filter for which the filter
-     * mapping is added
-     *
-     * @param dispatcherTypes the dispatcher types of the filter mapping,
-     * or null if the default <tt>DispatcherType.REQUEST</tt> is to be used
-     *
-     * @param isMatchAfter true if the given filter mapping should be matched
-     * against requests after any declared filter mappings of this servlet
-     * context, and false if it is supposed to be matched before any declared
-     * filter mappings of this servlet context
-     *
-     * @param servletNames the servlet names of the filter mapping
-     *
-     * @throws IllegalArgumentException if <tt>servletNames</tt> is
-     * null or empty
-     *
-     * @throws IllegalStateException if this servlet context has already
-     * been initialized
+     * Gets the FilterRegistration corresponding to the filter with the
+     * given <tt>filterName</tt>.
      */
-    public void addFilterMappingForServletNames(String filterName,
-                                    EnumSet<DispatcherType> dispatcherTypes,
-                                    boolean isMatchAfter,
-                                    String... servletNames) {
-        if ((servletNames==null) || (servletNames.length==0)) {
-            throw new IllegalArgumentException
-                    (sm.getString("standardContext.filterMap.either"));
+    public FilterRegistration findFilterRegistration(String filterName) {
+        synchronized (filterDefs) {
+            FilterDef filterDef = filterDefs.get(filterName);
+            return (filterDef != null) ? filterDef.getFilterRegistration() :
+                                         null;
         }
-
-        if (isContextInitializedCalled) {
-            throw new IllegalStateException
-                    (sm.getString("standardContext.filterMap.initialized",
-                                  filterName, getName()));
-        }
-
-        for (String servletName : servletNames) {
-            FilterMap fmap = new FilterMap();
-            fmap.setFilterName(filterName);
-            fmap.setServletName(servletName);
-            for (DispatcherType dispatcherType : dispatcherTypes) {
-                switch (dispatcherType) {
-                    case FORWARD : fmap.setDispatcher("FORWARD"); break;
-                    case INCLUDE : fmap.setDispatcher("INCLUDE"); break;
-                    case REQUEST : fmap.setDispatcher("REQUEST"); break;
-                    case ERROR : fmap.setDispatcher("ERROR"); break;
-                }
-            }
-            addFilterMap(fmap, isMatchAfter);
-        }
-     }
-
-
-    /**
-     * Adds a filter mapping with the given url patterns, and
-     * dispatcher types for the filter with the given filter name to this
-     * servlet context.
-     *
-     * @param filterName the name of the filter for which the filter
-     * mapping is added
-     *
-     * @param dispatcherTypes the dispatcher types of the filter mapping,
-     * or null if the default <tt>DispatcherType.REQUEST</tt> is to be used
-     *
-     * @param isMatchAfter true if the given filter mapping should be matched
-     * against requests after any declared filter mappings of this servlet
-     * context, and false if it is supposed to be matched before any declared
-     * filter mappings of this servlet context
-     *
-     * @param urlPatterns the url patterns of the filter mapping
-     *
-     * @throws IllegalArgumentException if <tt>urlPatterns</tt>
-     * is both null or empty
-     *
-     * @throws IllegalStateException if this servlet context has already
-     * been initialized
-     */
-    public void addFilterMappingForUrlPatterns(String filterName,
-                                  EnumSet<DispatcherType> dispatcherTypes,
-                                  boolean isMatchAfter,
-                                  String... urlPatterns) {
-        if ((urlPatterns==null) || (urlPatterns.length==0)) {
-            throw new IllegalArgumentException
-                    (sm.getString("standardContext.filterMap.either"));
-        }
-        if (isContextInitializedCalled) {
-            throw new IllegalStateException
-                    (sm.getString("standardContext.filterMap.initialized",
-                                  filterName, getName()));
-        }
-        for (String urlPattern : urlPatterns) {
-            FilterMap fmap = new FilterMap();
-            fmap.setFilterName(filterName);
-            fmap.setURLPattern(urlPattern);
-            for (DispatcherType dispatcherType : dispatcherTypes) {
-                switch (dispatcherType) {
-                    case FORWARD : fmap.setDispatcher("FORWARD"); break;
-                    case INCLUDE : fmap.setDispatcher("INCLUDE"); break;
-                    case REQUEST : fmap.setDispatcher("REQUEST"); break;
-                    case ERROR : fmap.setDispatcher("ERROR"); break;
-                }
-            }
-            addFilterMap(fmap, isMatchAfter);
-        }
-     }
+    }
 
 
     /**
@@ -3182,40 +3116,37 @@ public class StandardContext
     }
 
 
-    /**
-     * Adds servlet mappings from the given url patterns to the servlet
-     * with the given servlet name to this servlet context.
-     */
-    public void addServletMappings(String servletName,
-                                   String... urlPatterns) {
-        if (urlPatterns == null || urlPatterns.length == 0) {
-            throw new IllegalArgumentException
-                    (sm.getString("standardContext.servletMapping.missingUrlPattern", servletName));
-        }
-
-        if (isContextInitializedCalled) {
-            throw new IllegalStateException
-                    (sm.getString("standardContext.servletMap.initialized",
-                                  servletName, getName()));
-        }
-
-        for (String urlPattern : urlPatterns) {
-            addServletMapping(urlPattern, servletName);
-        }
-    }
-
-
     /*
      * Adds the servlet with the given name and class name to this servlet
      * context.
+     *
+     * @param servletName the servlet name
+     * @param className the servlet class name
+     *     
+     * @return the ServletRegistration through which the servlet may be
+     * further configured
      */
     public ServletRegistration addServlet(String servletName,
                                           String className) {
         if (findChild(servletName) == null) {
-            return new ServletRegistrationImpl(this, servletName, className);
+            Wrapper wrapper = createWrapper();
+            wrapper.setName(servletName);
+            wrapper.setServletClass(className);
+            addChild(wrapper, true);
+            return wrapper.getServletRegistration();
         } else {
             return null;
         }
+    }
+
+
+    /**
+     * Gets the ServletRegistration corresponding to the servlet with the
+     * given <tt>servletName</tt>.
+     */
+    public ServletRegistration findServletRegistration(String servletName) {
+        Wrapper wrapper = (Wrapper) findChild(servletName);
+        return (wrapper != null) ? wrapper.getServletRegistration() : null;
     }
 
 
@@ -3235,10 +3166,10 @@ public class StandardContext
      *
      * @throws ServletException if the servlet fails to be initialized
      */
-    public void addServlet(String servletName, Servlet instance,
-                           Map<String, String> initParams)
-            throws ServletException {
-        addServlet(servletName, instance, initParams, null);
+    public ServletRegistration addServlet(String servletName,
+            Servlet instance, Map<String, String> initParams)
+                throws ServletException {
+        return addServlet(servletName, instance, initParams, null);
     }
 
 
@@ -3252,12 +3183,14 @@ public class StandardContext
      * the servlet
      * @param urlPatterns the URL patterns that will be mapped to the servlet
      *
+     * @return the ServletRegistration through which the servlet may be
+     * further configured
+     *
      * @throws ServletException if the servlet fails to be initialized
      */
-    public void addServlet(String servletName, Servlet instance,
-                           Map<String, String> initParams,
-                           String... urlPatterns)
-            throws ServletException {
+    public ServletRegistration addServlet(String servletName,
+            Servlet instance, Map<String, String> initParams,
+            String... urlPatterns) throws ServletException {
         if (!(instance instanceof Servlet)) {
             throw new IllegalArgumentException("Not an instance of " +
                                                "javax.servlet.Servlet");
@@ -3280,7 +3213,9 @@ public class StandardContext
             }
         }
 
-        addChild(wrapper);
+        addChild(wrapper, true);
+
+        return wrapper.getServletRegistration();
     }
 
 
@@ -5385,7 +5320,7 @@ public class StandardContext
 
         long startupTimeStart = System.currentTimeMillis();
 
-        if( !initialized ) {
+        if(!initialized) {
             try {
                 init();
             } catch( Exception ex ) {
