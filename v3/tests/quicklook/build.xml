@@ -97,9 +97,7 @@
         <echo message="ANT PROJECT ${ant.project.name}"/>
         <ant dir="amx" target="build"/>
         <ant dir="admin" target="build"/>
-		<!--
         <ant dir="adminconsole" target="build"/>
-		-->
         <ant dir="classloader/hellojsf" target="build-deploy"/>
         <ant dir="web/helloworld" target="build-deploy"/>
         <ant dir="web/jsfastrologer" target="build-deploy"/>
