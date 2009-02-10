@@ -69,7 +69,6 @@ import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.embed.impl.EmbeddedAPIClassLoaderServiceImpl;
-import org.glassfish.embed.impl.EmbeddedApplicationLifecycle;
 import org.glassfish.embed.impl.EmbeddedDomainXml;
 import org.glassfish.embed.impl.EmbeddedServerEnvironment;
 import org.glassfish.embed.impl.EmbeddedWebDeployer;
@@ -254,9 +253,6 @@ public class AppServer {
         catch (Exception e) {
             // ignore.  It may not be available
         }
-
-        //TODO: workaround for a bug
-        parser.replace(ApplicationLifecycle.class, EmbeddedApplicationLifecycle.class);
 
         parser.replace(APIClassLoaderServiceImpl.class, EmbeddedAPIClassLoaderServiceImpl.class);
         // we don't really parse domain.xml from disk

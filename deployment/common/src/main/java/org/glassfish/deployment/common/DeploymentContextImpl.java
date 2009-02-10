@@ -85,7 +85,11 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
     }
 
     public <U extends OpsParams> U getCommandParameters(Class<U> commandParametersType) {
-        return commandParametersType.cast(parameters);
+        try {
+            return commandParametersType.cast(parameters);
+        } catch (ClassCastException e) {
+            return null;
+        }
     }
 
     public Logger getLogger() {

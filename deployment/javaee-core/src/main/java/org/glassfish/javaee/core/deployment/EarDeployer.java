@@ -297,7 +297,7 @@ public class EarDeployer implements Deployer {
                 }
 
                 ExtendedDeploymentContext subContext = new DeploymentContextImpl(logger, context.getSource(),
-                        context.getCommandParameters(DeployCommandParameters.class), env) {
+                        context.getCommandParameters(OpsParams.class), env) {
 
                     @Override
                     public ClassLoader getClassLoader() {

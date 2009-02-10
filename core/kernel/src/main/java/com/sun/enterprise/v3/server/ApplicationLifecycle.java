@@ -92,7 +92,7 @@ import java.util.logging.Logger;
  */
 @Service
 @Scoped(Singleton.class)
-class ApplicationLifecycle implements Deployment {
+public class ApplicationLifecycle implements Deployment {
         
 
     @Inject
@@ -211,7 +211,7 @@ class ApplicationLifecycle implements Deployment {
                 LinkedList<EngineInfo> sortedEngineInfos =
                     setupContainerInfos(handler, sniffers, context, report);
                 if (sortedEngineInfos ==null || sortedEngineInfos.isEmpty()) {
-                    report.failure(logger, "There is no installed container capable of handling this application", null);
+                    report.setMessage(localStrings.getLocalString("unknowncontainertype","There is no installed container capable of handling this application {0}",context.getSource()));                    
                     tracker.actOn(logger);
                     return null;
                 }

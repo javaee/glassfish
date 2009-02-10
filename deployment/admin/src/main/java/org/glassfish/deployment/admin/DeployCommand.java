@@ -209,7 +209,9 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             final ExtendedDeploymentContext deploymentContext = deployment.getContext(logger, sourceArchive, this);
 
             // reset the properties (might be null) set by the deployers when undeploying.
-            deploymentContext.getProps().putAll(undeployProps);
+            if (undeployProps!=null) {
+                deploymentContext.getProps().putAll(undeployProps);
+            }
 
             if (properties!=null) {
                 deploymentContext.getProps().putAll(properties);
