@@ -50,12 +50,32 @@ import java.io.File;
  */
 public interface VirtualServer {
 
+    /**
+     * Returns the id associated with the VirtualServer
+     * 
+     * @return String the id for the virtual server
+     */
     public String getId();
-
+    
+    /**
+     * Returns the docroot associated with the VirtualServer
+     * 
+     * @return File the docroot for the virtual server
+     */
     public File getDocRoot();
 
-    public HttpListener[] getHttpListeners();
+    /**
+     * Returns the list of <code>WebListener</code> associated with the 
+     * <code>VirtualServer</code>
+     * 
+     * @return String the id for the virtual server
+     */
+    public <T extends WebListener>T[] getWebListeners();
 
-    public void addValve(Valve valve);
+    /**
+     * Adds a <code>Valve</code> to the <code>VirtualServer</code>
+     * 
+     */
+    public <T extends Valve> void addValve(T t);
     
 }
