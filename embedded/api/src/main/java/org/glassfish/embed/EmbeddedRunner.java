@@ -38,6 +38,7 @@
 package org.glassfish.embed;
 
 import java.io.*;
+import java.util.*;
 
 /**
  *
@@ -45,9 +46,9 @@ import java.io.*;
  */
 
 class EmbeddedRunner {
-
-    EmbeddedRunner(EmbeddedInfo info) throws EmbeddedException {
+    EmbeddedRunner(EmbeddedInfo info, List<File> archives) throws EmbeddedException {
         this.info = info;
+        this.archives = archives;
     }
 
     void run() throws EmbeddedException {
@@ -58,11 +59,12 @@ class EmbeddedRunner {
 
         server.start();
         
-        for(File f : info.archives) {
+        for(File f : archives) {
             server.getDeployer().deploy(f);
             LoggerHelper.info("deploy_successful", f);
         }
     }
 
     private EmbeddedInfo info;
+    private List<File> archives;
 }

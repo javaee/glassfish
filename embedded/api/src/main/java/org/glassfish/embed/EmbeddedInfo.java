@@ -77,32 +77,6 @@ public class EmbeddedInfo {
     }
 
     /**
-     *
-     * @param f
-     */
-    public void addArchive(File f) {
-        archives.add(f);
-    }
-
-    /**
-     *
-     * @param sw
-     */
-    public void addScatteredWar(ScatteredWar sw) {
-        throw new UnsupportedOperationException("Not yet implemented");
-        //scatteredWars.add(sw);
-    }
-    
-    /**
-     *
-     * @param ra
-     */
-    public void addReadableArchive(ReadableArchive ra) {
-        throw new UnsupportedOperationException("Not yet implemented");
-        //readableArchives.add(ra);
-    }
-
-    /**
      * Set the HTTP port
      * @param port
      */
@@ -171,7 +145,6 @@ public class EmbeddedInfo {
      * @throws org.glassfish.embed.EmbeddedException
      */
     public void validate() throws EmbeddedException {
-        validateArchives();
         validatePorts();
         validateFilesystem();
         validateLogging();
@@ -197,9 +170,6 @@ public class EmbeddedInfo {
     int                     httpPort                = DEFAULT_HTTP_PORT;
     int                     adminHttpPort           = DEFAULT_ADMIN_HTTP_PORT;
     int                     jmxConnectorPort        = DEFAULT_JMX_CONNECTOR_PORT;
-    List<File>              archives                = new LinkedList<File>();
-    List<ReadableArchive>   readableArchives        = new LinkedList<ReadableArchive>();
-    List<ScatteredWar>      scatteredWars           = new LinkedList<ScatteredWar>();
     EmbeddedFileSystem      efs;
     String                  httpListenerName        = DEFAULT_HTTP_LISTENER_NAME;
     String                  adminHttpListenerName   = DEFAULT_ADMIN_HTTP_LISTENER_NAME;
@@ -219,14 +189,6 @@ public class EmbeddedInfo {
 
 
     //////////////////////  all private below //////////////////////
-
-    private void validateArchives() throws EmbeddedException {
-        for(File f : archives) {
-            // at least make sure it exists
-            if(!f.exists())
-                throw new EmbeddedException("no_such_file", f);
-        }
-    }
 
     private void validateFilesystem() throws EmbeddedException {
         getFileSystem().initialize();
@@ -257,14 +219,5 @@ public class EmbeddedInfo {
         // todo TODO
     }
 
-    private boolean isDeployable() {
-        // is ther at least one deployable item?
-        return 
-                archives.size() > 0 || 
-                readableArchives.size() > 0 || 
-                scatteredWars.size() > 0;
-    }
-
     //////////////////////   private variables  ////////////////////////////////
-    
 }

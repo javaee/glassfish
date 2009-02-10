@@ -80,8 +80,10 @@ public class EmbeddedMain {
             }
             
             // create an Info object based on the commandline args
-            EmbeddedInfo info = paramsToInfo(params, operands);
-            EmbeddedRunner runner = new EmbeddedRunner(info);
+            EmbeddedInfo info = new EmbeddedInfo();
+            List<File> wars = new ArrayList<File>(3);
+            parseInput(params, operands, info, wars);
+            EmbeddedRunner runner = new EmbeddedRunner(info, wars);
             runner.run();
         }
         catch(Exception e) {
@@ -95,19 +97,21 @@ public class EmbeddedMain {
      * Do minimal error detection here.  The ironclad checking is done in
      * the Info object later.
      */
-    private static EmbeddedInfo paramsToInfo(Map<String, String> params, List<String> operands) throws EmbeddedException {
-        EmbeddedInfo info = new EmbeddedInfo();
+    private static EmbeddedInfo parseInput(     Map<String, String> params,
+                                                List<String> operands,
+                                                EmbeddedInfo info,
+                                                List<File> wars)
+                                                    throws EmbeddedException {
         EmbeddedFileSystem efs = info.getFileSystem();
 
-        /*  Use operands for war filenames -- for now....
+        /*  Use operands for war filenames
          */
 
         for(String s : operands) {
             if(StringUtils.ok(s)) {
-               info.addArchive(new File(s));
+               wars.add(new File(s));
             }
         }
-
 
         //////   port  //////
         { // for scope only
