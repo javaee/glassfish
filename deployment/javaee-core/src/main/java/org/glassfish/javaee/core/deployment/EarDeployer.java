@@ -37,13 +37,9 @@ package org.glassfish.javaee.core.deployment;
 
 import org.glassfish.api.deployment.*;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.deployment.archive.ArchiveHandler;
-import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.api.container.Container;
-import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.internal.data.*;

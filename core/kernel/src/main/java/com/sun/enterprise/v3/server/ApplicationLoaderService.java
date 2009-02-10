@@ -33,7 +33,6 @@ import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Startup;
 import org.glassfish.api.event.*;
-import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.container.Sniffer;
@@ -136,13 +135,10 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                 sourceFile = new File(defaultParam);
             }
 
-            Properties deploymentProperties = new Properties();
-            deploymentProperties.setProperty(ParameterNames.NAME, sourceFile.getName());
-            
+
             if (sourceFile.exists()) {
                 sourceFile = sourceFile.getAbsoluteFile();
                 if (!sourceFile.isDirectory()) {
-                    deploymentProperties.setProperty(ParameterNames.NAME, sourceFile.getName());
 
                     // ok we need to explode the directory somwhere and remember to delete it on shutdown
                     try {
@@ -165,8 +161,6 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                             sourceArchive = archiveFactory.openArchive(sourceFile);
                             ArchiveHandler handler = deployment.getArchiveHandler(sourceArchive);
                             final String appName = handler.getDefaultApplicationName(sourceArchive);
-                            deploymentProperties.setProperty(ParameterNames.NAME, appName);
-                            deploymentProperties.setProperty(ParameterNames.CONTEXT_ROOT, appName);
                             handler.expand(sourceArchive, archiveFactory.createArchive(tmpDir));
                             sourceFile = tmpDir;
                             logger.info("Source is not a directory, using temporary location " + tmpDir.getAbsolutePath());
