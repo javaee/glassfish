@@ -57,10 +57,9 @@
 
 package org.apache.catalina.deploy;
 
-
-import org.apache.catalina.util.RequestUtil;
 import java.io.Serializable;
-
+import javax.servlet.DispatcherType;
+import org.apache.catalina.util.RequestUtil;
 
 /**
  * Representation of a filter mapping for a web application, as represented
@@ -103,7 +102,7 @@ public class FilterMap implements Serializable {
     // as equal to a REQUEST
     private static final int NOT_SET = -1;
     
-    private int dispatcherMapping=NOT_SET;
+    private int dispatcherMapping = NOT_SET;
     
     private String filterName = null;    
 
@@ -142,9 +141,9 @@ public class FilterMap implements Serializable {
     public void setURLPattern(String urlPattern) {
         this.urlPattern = RequestUtil.URLDecode(urlPattern);
     }
+
     
     /**
-     *
      * This method will be used to set the current state of the FilterMap
      * representing the state of when filters should be applied:
      *
@@ -161,12 +160,9 @@ public class FilterMap implements Serializable {
      *        REQUEST_INCLUDE
      *        REQUEST_FORWARD,
      *        REQUEST_FORWARD_INCLUDE
-     *
      */
-    public void setDispatcher(String dispatcherString) {
-        String dispatcher = dispatcherString.toUpperCase();
-        
-        if (dispatcher.equals("FORWARD")) {
+    public void setDispatcher(DispatcherType dispatcher) {
+        if (dispatcher.equals(DispatcherType.FORWARD)) {
 
             // apply FORWARD to the global dispatcherMapping.
             switch (dispatcherMapping) {
@@ -179,7 +175,7 @@ public class FilterMap implements Serializable {
                 case REQUEST_ERROR_INCLUDE : dispatcherMapping = REQUEST_ERROR_FORWARD_INCLUDE; break;
                 case REQUEST_INCLUDE : dispatcherMapping = REQUEST_FORWARD_INCLUDE; break;
             }
-        } else if (dispatcher.equals("INCLUDE")) {
+        } else if (dispatcher.equals(DispatcherType.INCLUDE)) {
             // apply INCLUDE to the global dispatcherMapping.
             switch (dispatcherMapping) {
                 case NOT_SET  :  dispatcherMapping = INCLUDE; break;
@@ -191,7 +187,7 @@ public class FilterMap implements Serializable {
                 case REQUEST_ERROR_FORWARD : dispatcherMapping = REQUEST_ERROR_FORWARD_INCLUDE; break;
                 case REQUEST_FORWARD : dispatcherMapping = REQUEST_FORWARD_INCLUDE; break;
             }
-        } else if (dispatcher.equals("REQUEST")) {
+        } else if (dispatcher.equals(DispatcherType.REQUEST)) {
             // apply REQUEST to the global dispatcherMapping.
             switch (dispatcherMapping) {
                 case NOT_SET  :  dispatcherMapping = REQUEST; break;
@@ -203,7 +199,7 @@ public class FilterMap implements Serializable {
                 case INCLUDE_FORWARD : dispatcherMapping = REQUEST_FORWARD_INCLUDE; break;
                 case INCLUDE_ERROR_FORWARD : dispatcherMapping = REQUEST_ERROR_FORWARD_INCLUDE; break;
             }
-        }  else if (dispatcher.equals("ERROR")) {
+        }  else if (dispatcher.equals(DispatcherType.ERROR)) {
             // apply ERROR to the global dispatcherMapping.
             switch (dispatcherMapping) {
                 case NOT_SET  :  dispatcherMapping = ERROR; break;
@@ -256,4 +252,28 @@ public class FilterMap implements Serializable {
     }
 
 
+    /**
+     * Converts string representation of dispatcher type to
+     * corresponding DispatcherType
+     */
+    public static DispatcherType string2DispatcherType(String dispatcher) {
+
+        DispatcherType ret = null;
+
+        if ("REQUEST".equals(dispatcher)) {
+            ret = DispatcherType.REQUEST;
+        } else if ("FORWARD".equals(dispatcher)) {
+            ret = DispatcherType.FORWARD;
+        } else if ("INCLUDE".equals(dispatcher)) {
+            ret = DispatcherType.INCLUDE;
+        } else if ("ASYNC".equals(dispatcher)) {
+            ret = DispatcherType.ASYNC;
+        } else if ("ERROR".equals(dispatcher)) {
+            ret = DispatcherType.ERROR;
+        } else {
+            throw new IllegalArgumentException("Invalid dispatcher type");
+        }
+
+        return ret;
+    }
 }

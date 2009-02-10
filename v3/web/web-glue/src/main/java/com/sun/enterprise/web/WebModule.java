@@ -97,6 +97,7 @@ import org.apache.catalina.Valve;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.core.StandardPipeline;
 import org.apache.catalina.core.StandardWrapper;
+import org.apache.catalina.deploy.FilterMap;
 import org.apache.catalina.deploy.FilterMaps;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.session.StandardManager;
@@ -822,8 +823,9 @@ public class WebModule extends PwcWebModule {
 
         Set<String> dispatchers = sfm.getDispatchers();
         if (dispatchers != null) {
-            for(String dispatcher : dispatchers) {
-                filterMaps.setDispatcher(dispatcher);
+            for (String dispatcher : dispatchers) {
+                filterMaps.setDispatcher(
+                    FilterMap.string2DispatcherType(dispatcher));
             }
         }
         

@@ -211,9 +211,12 @@ public final class CacheModule {
             filterMap.setServletName(mapping.getServletName());
             filterMap.setURLPattern(mapping.getURLPattern());
             String[] dispatchers = mapConfig.getDispatcher();
-            for (int j=0; dispatchers!=null && j<dispatchers.length; j++) {
-                // calls to FilterMap.setDispatcher are cumulative
-                filterMap.setDispatcher(dispatchers[j]);
+            if (dispatchers != null) {
+                for (String dispatcher : dispatchers) {
+                    // calls to FilterMap.setDispatcher are cumulative
+                    filterMap.setDispatcher(FilterMap.string2DispatcherType(
+                        dispatcher));
+                }
             }
             filterMap.setFilterName(filterName);
             app.addFilterMap(filterMap);
