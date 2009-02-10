@@ -80,6 +80,7 @@ import org.apache.jk.core.Msg;
 import org.apache.jk.core.MsgContext;
 import org.apache.jk.core.JkChannel;
 import org.apache.jk.core.WorkerEnv;
+import com.sun.grizzly.tcp.ActionCode;
 import com.sun.grizzly.tcp.Request;
 import com.sun.grizzly.tcp.RequestGroupInfo;
 import com.sun.grizzly.tcp.RequestInfo;
@@ -741,11 +742,7 @@ public class ChannelSocket extends JkHandler
                 status= this.invoke( recv, ep );
                 if( status!= JkHandler.OK ) {
                     log.warn("processCallbacks status " + status );
-                    recv.reset();
-                    recv.appendByte(AjpConstants.JK_AJP13_END_RESPONSE);
-                    recv.appendByte(0);
-                    ep.getSource().send( recv, ep );
-                    ep.getSource().flush( recv, ep ); // Server needs to get it
+                    ep.action(ActionCode.ACTION_CLOSE, ep.getRequest().getResponse()); 
                     break;
                 }
             }
