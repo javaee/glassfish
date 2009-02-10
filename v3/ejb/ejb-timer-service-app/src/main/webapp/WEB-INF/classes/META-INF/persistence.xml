@@ -5,6 +5,7 @@
           <class>com.sun.ejb.containers.TimerState</class>
           <exclude-unlisted-classes/>
           <properties>
+            <property name="eclipselink.cache.shared.default" value="false"/>
             <property name="eclipselink.weaving" value="false"/>
             <property name="eclipselink.ddl-generation" value="create-tables"/>
         </properties>
