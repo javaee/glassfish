@@ -211,6 +211,7 @@ File to check is ${file.to.check}</echo>
 
         <antcall target="undeploy.asadmin"/>
 
+<!--
         <antcall target="deploy.jsr88"/>
         <antcall target="run.positive">
             <param name="log.id" value="3"/>
@@ -234,6 +235,7 @@ File to check is ${file.to.check}</echo>
         </antcall>
 
         <antcall target="undeploy.jsr88"/>
+-->
     </target>
 
     <target name="clobber" depends="clean">

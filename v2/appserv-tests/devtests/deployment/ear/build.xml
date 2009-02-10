@@ -12,18 +12,22 @@
 		<ant dir="earwithwar" target="private-all">
 			<property name="build" value="${build}/earwithwar"/>
 		</ant>
+<!--
 		<ant dir="earwithejb" target="private-all">
 			<property name="build" value="${build}/earwithejb"/>
 		</ant>
+-->
 		<!--ant dir="wstoejb" target="private-all">
 			<property name="build" value="${build}/wstoejb"/>
 		</ant>
 		<ant dir="earwithall" target="private-all">
 			<property name="build" value="${build}/earwithall"/>
 		</ant-->
+<!--
 		<ant dir="earwithall2" target="private-all">
 			<property name="build" value="${build}/earwithall2"/>
 		</ant>
+-->
 		<ant dir="uniquecr" target="private-all">
 			<property name="build" value="${build}/uniquecr"/>
 		</ant>
@@ -31,8 +35,10 @@
 			<property name="build" value="${build}/libClassPath"/>
 		</ant>
                 
+<!--
                 <ant dir="libclasspath2" target="private-all">
 			<property name="build" value="${build}/libclasspath2"/>
 		</ant>
+-->
 	</target>
 </project>

@@ -182,6 +182,7 @@
         </antcall>
         <antcall target="undeploy.asadmin"/>
 
+<!--
         <antcall target="deploy.jsr88"/>
         <antcall target="run.positive">
             <param name="log.id" value="5"/>
@@ -207,6 +208,7 @@
         </antcall>
 
         <antcall target="undeploy.jsr88"/>
+-->
     </target>
 
     <target name="clobber" depends="clean">

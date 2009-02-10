@@ -1,40 +1,40 @@
 UNIT TESTS ON DEPLOYMENT FOR CURRENT V3 RELEASE
 ================================================
-
 TESTS INFO :
 ------------
 
 1. war/* are tests that deploy WAR module only. The name of directories indicate
-   what kind of WAR each tests build for deployment
+   what kind of WAR each tests build for deployment. 
 
-2. dol/* 
+2. ear/* are tests that deploy EAR module. We will turn on ear with war tests 
+   once ClassCastException for CommandParameters is fixed.
 
-3. annotation/* 
+3. In all totally 25 unit test cases will be executed.
 
-FOR RUNNING THE DEPLOYMENT TESTS ON V3 :
+
+FOR RUNNING THE DEPLOYMENT TESTS ON v3:
 ----------------------------------------
 
 0. Please make sure if you have the following env. variable set at all, they
    need to be in the following values:
-   S1AS_HOME=<glassfish TP2 installation>
+   S1AS_HOME=<glassfish v3 installation>
    APS_HOME=<appserv-tests>
 
    In addition:
    SECURE=false
    DEPL_TARGET=PE
    Nothing needs to be done if you don't have those env. var set.
-   The following setup is need to run annotation tests.
 
 1. Start the domain.
    asadmin start-domain -v or 
 
-2. Start the derby database.
-   asadmin start-database
-
-2. Simply type "ant -Drun.jsr88=false all" from appserv-tests/devtests/deployment/war.  
-   At the end of the run, in the above mentioned directory two files are created : 
+2. Simply type "ant all" from appserv-tests/devtests/deployment.  At the end
+   of the run, in the above mentioned directory two files are created :
    result.html has the result of each test; client.log has all output from test run
 
+3. To run individual tests, go to the test directory and type "ant all". For
+   example, to run war/servletonly test "cd war/servletonly" and do "ant all".
+   The results.html and client.log are created in war/servletonly directory
 
 READING RESULTS :
 -----------------
@@ -46,63 +46,21 @@ READING RESULTS :
    (specifically those from MBeans etc were thrown). Search for 'exception'
    in this file to ensure no uncaught exceptions were thrown.
 
-Notes about redeploy tests
---------------------------
-
-1. When adding new test, should also add redeploy test for that.
-2. Assume redeploy test always run after deploy test, so we don't need to 
-   call undeploy after the deploy test, and only need to call deploy once
-   for redeploy test.
-
-Overcoming 'ant' compile problem :
-----------------------------------
-In some cases the ant test clients run out of memory during the test run.
-To avoid this problem, add -Xmx999m to the command that starts the ant java vm
-
-Here is how to do that :
-
-cat `which ant` :
-
-(... go towards bottom of ant script and add the option -Xmx999m as shown below)
-
- "$JAVACMD" -Xmx999m -classpath "$LOCALCLASSPATH" -Dant.home="${ANT_HOME}" $ANT_OPTS org.apache.tools.ant.Main $ANT_ARGS "$@"
-
-For help contact s1as-deployment-dev@sun.com
-
-
-EXPECTED RESULT FOR deployment/war TESTS :
+EXPECTED RESULTS :
 ------------------------------------------
 [PASSED] servletonly : war/servletonly Test asadmin deploy (server)
 [PASSED] servletonly : war/servletonly Test asadmin redeploy (server)
 [PASSED] servletonly : war/servletonly Test v3 asadmin redeploy (server)
 [PASSED] servletonly : war/servletonly Test asadmin disable (server)
 [PASSED] servletonly : war/servletonly Test asadmin enable (server)
-[UNKNOWN] servletonly : war/servletonly Test jsr88 deploy (server)
-[PASSED] servletonly : war/servletonly Test jsr88 stopped state (server)
-[UNKNOWN] servletonly : war/servletonly Test jsr88 started state (server)
-[PASSED] servletonly : war/servletonly Test jsr88 redeploy stop (server)
-[UNKNOWN] servletonly : war/servletonly Test jsr88 redeploy start (server)
 [PASSED] jsponly : war/jsponly Test asadmin deploy (server)
 [PASSED] jsponly : war/jsponly Test asadmin redeploy (server)
-[UNKNOWN] jsponly : war/jsponly Test jsr88 deploy (server)
-[PASSED] jsponly : war/jsponly Test jsr88 stopped state (server)
-[UNKNOWN] jsponly : war/jsponly Test jsr88 started state (server)
-[PASSED] jsponly : war/jsponly Test jsr88 redeploy stop (server)
-[UNKNOWN] jsponly : war/jsponly Test jsr88 redeploy start (server)
 [PASSED] htmlonly : war/htmlonly Test asadmin deploy (server)
 [PASSED] htmlonly : war/htmlonly Test asadmin redeploy (server)
 [PASSED] htmlonly : war/htmlonly Test asadmin disable (server)
 [PASSED] htmlonly : war/htmlonly Test asadmin enable (server)
-[UNKNOWN] htmlonly : war/htmlonly Test jsr88 deploy (server)
-[PASSED] htmlonly : war/htmlonly Test jsr88 stopped state (server)
-[UNKNOWN] htmlonly : war/htmlonly Test jsr88 started state (server)
-[UNKNOWN] htmlonly : war/htmlonly Test jsr88 redeploy (server)
 [PASSED] webinflib : war/webinflib Test asadmin deploy (server)
 [PASSED] webinflib : war/webinflib Test asadmin redeploy (server)
-[UNKNOWN] webinflib : war/webinflib Test jsr88 deploy (server)
-[PASSED] webinflib : war/webinflib Test jsr88 stopped state (server)
-[UNKNOWN] webinflib : war/webinflib Test jsr88 started state (server)
-[UNKNOWN] webinflib : war/webinflib Test jsr88 redeploy (server)
 [PASSED] deploydir : war/deploydir Test asadmin deploydir
 [PASSED] deploydir : war/deploydir Test asadmin redeploydir
 [PASSED] deploydir : war/deploydir Test asadmin v3 redeploydir
@@ -112,12 +70,6 @@ EXPECTED RESULT FOR deployment/war TESTS :
 [PASSED] deploydir : war/deploydir Test v3 asadmin redeploydir preserves context root
 [PASSED] deploydir : war/deploydir Test asadmin undeploydir
 [PASSED] nojarexpansion : war/nojarexpansion Test asadmin deploy (server)
-[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after deploy  
+[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after deploy
 [PASSED] nojarexpansion : war/nojarexpansion Test asadmin redeploy (server)
-[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after redeploy  
-[UNKNOWN] nojarexpansion : war/nojarexpansionTest jsr88 deploy (server)
-[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after jsr88 deploy  
-[UNKNOWN] nojarexpansion : war/nojarexpansion Test jsr88 redeploy (server)
-[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after jsr88 redeploy 
-
-All current failures (UNKNOWN) are related to jsr88.
+[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after redeploy

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <!DOCTYPE project [
-<!ENTITY commonBuild SYSTEM "file:../../config/common.xml">
+<!ENTITY commonBuild SYSTEM "./../../config/common.xml">
 ]>
 
 <project name="i18n-simple" default="all" basedir=".">
@@ -22,12 +22,15 @@
     </target>
 
     <target name="compile" depends="prepare">
-        <javac srcdir="misc" destdir="${build}" debug="on" failonerror="true"
-            classpath="${inst}/lib/j2ee.jar"/>
-        <javac srcdir="war" destdir="${build}" debug="on" failonerror="true"
-            classpath="${inst}/lib/j2ee.jar"/>
-        <javac srcdir="client" destdir="${build}" debug="on" failonerror="true"
-            classpath="${inst}/lib/j2ee.jar"/>
+        <javac srcdir="misc" destdir="${build}" debug="on" failonerror="true">
+         <classpath refid="gfv3.classpath"/>
+        </javac>
+        <javac srcdir="war" destdir="${build}" debug="on" failonerror="true">
+         <classpath refid="gfv3.classpath"/>
+        </javac>
+        <javac srcdir="client" destdir="${build}" debug="on" failonerror="true">
+         <classpath refid="gfv3.classpath"/>
+        </javac>
     </target>
 
     <target name="assemble" depends="compile">
@@ -100,7 +103,6 @@
    <target name="private-all">
         <antcall target="assemble"/>
 
-<!--
         <antcall target="deploy.asadmin"/>
 
         <antcall target="run.positive">
@@ -108,6 +110,5 @@
             <param name="desc" value="libClasspath Test asadmin deploy"/>
         </antcall>
         <antcall target="undeploy.asadmin"/>
--->
     </target>
 </project>

@@ -13,21 +13,28 @@
         <ant dir="war" target="private-all">
             <property name="build" value="${build}/war"/>
         </ant>
+<!--
         <ant dir="ejb" target="private-all">
             <property name="build" value="${build}/ejb"/>
         </ant>
+-->
+<!--
         <ant dir="ear" target="private-all">
             <property name="build" value="${build}/ear"/>
         </ant>                
+-->
+<!--
         <ant dir="jsr88" target="private-all">
             <property name="build" value="${build}/jsr88"/>
         </ant>
         <ant dir="dol" target="private-all">
             <property name="build" value="${build}/dol"/>
         </ant>
+-->
 <!--        <ant dir="autodeploy" target="private-all">
             <property name="build" value="${build}/autodeploy"/>
         </ant> -->
+<!--
         <ant dir="annotation" target="private-all">
             <property name="build" value="${build}/annotation"/>
         </ant>
@@ -40,6 +47,7 @@
         <ant dir="directorydeploy" target="private-all">
             <property name="build" value="${build}/directorydeploy"/>
         </ant>
+-->
     </target>
 
     <target name="clobber" depends="clean">
