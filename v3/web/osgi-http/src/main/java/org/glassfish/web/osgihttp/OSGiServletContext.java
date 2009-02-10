@@ -230,4 +230,8 @@ public class OSGiServletContext implements ServletContext {
     public EnumSet<SessionTrackingMode> getEffectiveSessionTrackingModes() {
         throw new UnsupportedOperationException(); // TODO(Sahoo):
     }
+
+    public boolean setInitParameter(String name, String value) {
+        return delegate.setInitParameter(name, value);
+    }
 }
