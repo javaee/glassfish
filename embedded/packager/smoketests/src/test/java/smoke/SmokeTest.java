@@ -44,7 +44,7 @@ public class SmokeTest {
             }
             
             myGF.start();
-            Application app = myGF.deploy(simpleWar);
+            myGF.getDeployer().deploy(simpleWar);
             
             // TODO -- get output at port 9999
             
@@ -127,10 +127,9 @@ public class SmokeTest {
     public void badWar() throws Exception{
         File qqq = new File("xxxxxx");
         Server myGF = new Server(9999);
-        Application app = null;
         
         try {
-            app = myGF.deploy(qqq);
+            myGF.getDeployer().deploy(qqq);
         }
         catch(Exception e) {
             System.out.println("Caught an Exception as Expected: " + e);
