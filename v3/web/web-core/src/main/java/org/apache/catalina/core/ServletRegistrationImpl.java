@@ -41,9 +41,9 @@ import javax.servlet.*;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.util.StringManager;
 
-public class ServletRegistrationImpl extends ServletRegistration {
+public class ServletRegistrationImpl implements ServletRegistration {
 
-    protected static final StringManager sm =
+    private static final StringManager sm =
         StringManager.getManager(Constants.Package);
 
     private Wrapper wrapper;
@@ -77,7 +77,6 @@ public class ServletRegistrationImpl extends ServletRegistration {
                              ctx.getName()));
         }
 
-        super.setDescription(description);
         wrapper.setDescription(description);
     }
 
@@ -98,6 +97,16 @@ public class ServletRegistrationImpl extends ServletRegistration {
     }
 
 
+    public void setInitParameters(Map<String, String> initParameters) {
+        if (null == initParameters) {
+            throw new IllegalArgumentException("Null init parameters");
+        }
+        for (Map.Entry<String, String> e : initParameters.entrySet()) {
+            setInitParameter(e.getKey(), e.getValue());
+        }
+    }
+
+
     public void setLoadOnStartup(int loadOnStartup) {
         if (ctx.isContextInitializedCalled()) {
             throw new IllegalStateException(
@@ -106,7 +115,6 @@ public class ServletRegistrationImpl extends ServletRegistration {
                              ctx.getName()));
         }
 
-        super.setLoadOnStartup(loadOnStartup);
         wrapper.setLoadOnStartup(loadOnStartup);
     }
 
@@ -119,7 +127,6 @@ public class ServletRegistrationImpl extends ServletRegistration {
                              ctx.getName()));
         }
 
-        super.setAsyncSupported(isAsyncSupported);
         wrapper.setIsAsyncSupported(isAsyncSupported);
     }
 
