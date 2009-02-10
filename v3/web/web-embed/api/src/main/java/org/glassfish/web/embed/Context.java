@@ -61,7 +61,7 @@ public interface Context extends ServletContext {
     /**
      * 
      */
-    public void addValve(Valve valve);
+    public <T extends Valve> void addValve(T t);
 
     public void start() throws Exception;
 
@@ -69,7 +69,7 @@ public interface Context extends ServletContext {
 
     public void unregister();
 
-    public void addListener(EventListener listener)
+    public <T extends EventListener> void addListener(T t)
     			throws IllegalArgumentException;
 
     public void addListener(Class <? extends EventListener> listener) 
