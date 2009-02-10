@@ -442,22 +442,18 @@ public class Server {
      ******************************************************************
      */
 
-    private EmbeddedVirtualServer createAdminVirtualServer() throws EmbeddedException {
+    private void createAdminVirtualServer() throws EmbeddedException {
         mustNotBeStarted("createAdminVirtualServer");
 
         DomBuilder db = onHttpService();
         db.element("virtual-server").attribute("id", info.adminVSName).attribute("http-listeners", info.adminHttpListenerName).attribute("hosts", "${com.sun.aas.hostName}") // ???
                 .attribute("log-file", "").element("property").attribute("name", "docroot").attribute("value", ".");
-
-        return new EmbeddedVirtualServer(null);
     }
 
-    private EmbeddedHttpListener createAdminHttpListener() throws EmbeddedException {
+    private void createAdminHttpListener() throws EmbeddedException {
         mustNotBeStarted("createAdminHttpListener");
 
         onHttpService().element("http-listener").attribute("id", info.adminHttpListenerName).attribute("address", "0.0.0.0").attribute("port", info.adminHttpPort).attribute("default-virtual-server", info.adminVSName).attribute("server-name", "").attribute("enabled", true);
-
-        return new EmbeddedHttpListener(String.valueOf(info.adminHttpPort), null);
     }
 
     private DomBuilder onAdminService() {
@@ -469,27 +465,21 @@ public class Server {
         }
     }
 
-    private EmbeddedVirtualServer createVirtualServer() throws EmbeddedException {
+    private void createVirtualServer() throws EmbeddedException {
         // the following live update code doesn't work yet due to the missing functionality in the webtier.
         mustNotBeStarted("createVirtualServer");
 
         DomBuilder db = onHttpService();
         db.element("virtual-server").attribute("id", "server").attribute("http-listeners", info.httpListenerName).attribute("hosts", "${com.sun.aas.hostName}") // ???
                 .attribute("log-file", "").element("property").attribute("name", "docroot").attribute("value", ".");
-
-        return new EmbeddedVirtualServer(null);
-
     }
 
-    private EmbeddedHttpListener createHttpListener() throws EmbeddedException {
+    private void createHttpListener() throws EmbeddedException {
         // the following live update code doesn't work yet due to the missing functionality in the webtier.
         mustNotBeStarted("createHttpListener");
 
         onHttpService().element("http-listener") //hardcoding to http-listner-1 should not be a requirment, but the id is used to find the right Inhabitant
                 .attribute("id", info.httpListenerName).attribute("address", "0.0.0.0").attribute("port", info.httpPort).attribute("default-virtual-server", "server").attribute("server-name", "").attribute("enabled", true);
-
-        return new EmbeddedHttpListener(String.valueOf(info.httpPort), null);
-
     }
 
     /**
