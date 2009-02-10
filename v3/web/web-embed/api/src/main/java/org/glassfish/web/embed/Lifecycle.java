@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,8 +42,20 @@ package org.glassfish.web.embed;
  */
 public interface Lifecycle {
 
+    /**
+     * Starts this component.
+     * 
+     * @throws LifecycleException if an error occurs during the starting
+     * of this component
+     */
     public void start() throws LifecycleException;
 
+    /**
+     * Stops this component.
+     * 
+     * @throws LifecycleException if an error occurs during the stopping
+     * of this component
+     */
     public void stop() throws LifecycleException;
 
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,46 +46,75 @@ import org.jvnet.hk2.annotations.Contract;
  * and their static and dynamic resources into the URI namespace.
  */
 
-@Contract
+//@Contract
 public interface EmbeddedWebContainer {
 
     /**
-     * Create a context with the specified context root
+     * Creates a <tt>Context</tt>.
      *
-     * @param root The context root for the app
-     * @param classLoader The classloader to be used for the context. If null is passed then the caller's
-     * class loader will be used (effectively this.getClass.getClassLoader());
-     * @return Context an instance of Context that represents the context of the app or
-     * null if there is already a context registered at the root
-     * specified
+     * <p>The classloader of the class on which this method is called
+     * will be set as the thread's context classloader whenever the
+     * new <tt>Context</tt> or any of its resources are asked to process
+     * a request.
+     *
+     * <p>In order to access the new <tt>Context</tt> or any of its 
+     * resources, the <tt>Context</tt> must be registered with a
+     * <tt>VirtualServer</tt>.
+     *
+     * @return the new <tt>Context</tt>
+     *
+     * @see VirtualServer#addContext
      */
-    public Context createContext(String root, ClassLoader classLoader);
+    public Context createContext();
 
     /**
-     * Create a context with the specified context root and associate
-     * it with a VirtualServer
-     * @param root The context root for the app
-     * @param vServer The virtual server with which the context is associated
-     * @param classLoader The classloader to be used for the context. If null is passed then the caller's
-     * class loader will be used (effectively this.getClass.getClassLoader());
-     * @return Context an instance of
-     * Context that represents the context of the app
-     * fro the specified virtual server or null if there is already a 
-     * context registered at the root specified.
+     * Creates a <tt>Context</tt> and configures it with the given
+     * docroot and classloader.
+     *
+     * <p>The given classloader will be set as the thread's context
+     * classloader whenever the new <tt>Context</tt> or any of its
+     * resources are asked to process a request.
+     * If a <tt>null</tt> classloader is passed, the classloader of the
+     * class on which this method is called will be used.
+     *
+     * <p>In order to access the new <tt>Context</tt> or any of its 
+     * resources, the <tt>Context</tt> must be registered with a
+     * <tt>VirtualServer</tt>.
+     *
+     * @param docRoot the docroot of the <tt>Context</tt>
+     * @param classLoader the classloader of the <tt>Context</tt>
+     *
+     * @return the new <tt>Context</tt>
+     *
+     * @see VirtualServer#addContext
      */
-    public Context createContext(String root, VirtualServer vServer,
-        ClassLoader classLoader);
+    public Context createContext(File docRoot, ClassLoader classLoader);
 
     /**
-     * Creates a WebListener with the specified Listener type. The 
-     * supported ones are <code>HttpListener</code> and
-     * <code>HttpsListener</code>
+     * Creates a <tt>WebListener</tt> from the given class type and
+     * assigns the given id to it.
      *
-     * @param c The type of listener to create.
+     * @param id the id of the new <tt>WebListener</tt>
+     * @param c the class type of the new <tt>WebListener</tt>
      * 
-     * @return An instance of WebListener.
+     * @return the new <tt>WebListener</tt>
+     *
+     * @throws Exception if a <tt>WebListener</tt> with the given id
+     * already exists in this web container
      */
-    public <T extends WebListener> T createWebListener(Class<T> c);
+    public <T extends WebListener> T createWebListener(String id, Class<T> c)
+        throws Exception;
+
+    /**
+     * Finds the <tt>WebListener</tt> with the given id.
+     *
+     * @param id the id of the <tt>WebListener</tt> to find
+     *
+     * @return the <tt>WebListener</tt> with the given id, or
+     * <tt>null</tt> if no <tt>WebListener</tt> with that id exists
+     * in this web container
+     */
+    public WebListener findWebListener(String id);
 
     /**
      * Creates a <tt>VirtualServer</tt> with the given id and docroot.
@@ -98,10 +127,23 @@ public interface EmbeddedWebContainer {
      * @param webListeners the list of <tt>WebListener</tt> instances from 
      * which the <tt>VirtualServer</tt> will receive requests
      * 
-     * @return the new <tt>VirtualServer</tt>, or <tt>null</tt> if a 
-     * <tt>VirtualServer</tt> with the given id already exists in this
-     * web container
+     * @return the new <tt>VirtualServer</tt>
+     *
+     * @throws Exception if a <tt>VirtualServer</tt> with the given id
+     * already exists in this web container
      */
     public VirtualServer createVirtualServer(String id,
-        File docRoot, WebListener...  webListeners);
+        File docRoot, WebListener...  webListeners) throws Exception;
+
+    /**
+     * Finds the <tt>VirtualServer</tt> with the given id.
+     *
+     * @param id the id of the <tt>VirtualServer</tt> to find
+     *
+     * @return the <tt>VirtualServer</tt> with the given id, or
+     * <tt>null</tt> if no <tt>VirtualServer</tt> with that id exists
+     * in this web container
+     */
+    public VirtualServer findVirtualServer(String id);
+
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,6 +38,7 @@
 package org.glassfish.web.embed;
 
 import java.io.File;
+import java.util.Collection;
 import org.apache.catalina.Valve;
 
 /**
@@ -63,23 +64,47 @@ public interface VirtualServer extends Lifecycle {
     public File getDocRoot();
 
     /**
-     * Returns the list of <tt>WebListener</tt> instances from which
+     * Gets the collection of <tt>WebListener</tt> instances from which
      * this <tt>VirtualServer</tt> receives requests.
      * 
-     * @return the list of <tt>WebListener</tt> instances from which
+     * @return the collection of <tt>WebListener</tt> instances from which
      * this <tt>VirtualServer</tt> receives requests.
      */
-    public <T extends WebListener>T[] getWebListeners();
+    public Collection<WebListener> getWebListeners();
 
     /**
      * Adds the given <tt>Valve</tt> to this <tt>VirtualServer</tt>
      * 
-     * @param t the <tt>Valve</tt> to add
+     * @param t the <tt>Valve</tt> to be added
      */
     public <T extends Valve> void addValve(T t);
 
     /**
-     * Gets the <tt>Context</tt> registered at the given context root.
+     * Registers the given <tt>Context</tt> with this <tt>VirtualServer</tt>
+     * at the given context root.
+     *
+     * @param context the <tt>Context</tt> to register
+     * @param contextRoot the context root at which to register
+     *
+     * @throws Exception if a <tt>Context</tt> already exists at the given
+     * context root on this <tt>VirtualServer</tt>
+     */
+    public void addContext(Context context, String contextRoot)
+        throws Exception;
+
+    /**
+     * Unregisters the <tt>Context</tt> at the given context root from 
+     * this <tt>VirtualServer</tt>.
+     *
+     * @param contextRoot the context root from which to unregister
+     *
+     * @return the <tt>Context</tt> that was unregistered, or <tt>null</tt>
+     * if no <tt>Context</tt> was found at the given context root
+     */
+    public Context removeContext(String contextRoot);
+
+    /**
+     * Finds the <tt>Context</tt> registered at the given context root.
      *
      * @param contextRoot the context root whose <tt>Context</tt> to get
      *
@@ -87,5 +112,15 @@ public interface VirtualServer extends Lifecycle {
      * or <tt>null</tt> if no <tt>Context</tt> exists at the given context
      * root
      */
-    public Context getContext(String contextRoot);
+    public Context findContext(String contextRoot);
+
+    /**
+     * Gets the collection of <tt>Context</tt> instances registered with
+     * this <tt>VirtualServer</tt>.
+     * 
+     * @return the collection of <tt>Context</tt> instances registered with
+     * this <tt>VirtualServer</tt>.
+     */
+    public Collection<Context> getContexts();
+
 }

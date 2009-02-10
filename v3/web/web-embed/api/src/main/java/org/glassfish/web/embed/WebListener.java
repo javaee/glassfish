@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,10 +40,34 @@ package org.glassfish.web.embed;
 /**
  * @author Rajiv Mordani
  */
-public interface WebListener {
+public interface WebListener extends Lifecycle {
 
+    /**
+     * Sets the id for this <tt>WebListener</tt>.
+     *
+     * @param id the id for this <tt>WebListener</tt>
+     */
+    public void setId(String id);
+
+    /**
+     * Gets the id of this <tt>WebListener</tt>.
+     *
+     * @return the id of this <tt>WebListener</tt>
+     */
     public String getId();
 
+    /**
+     * Sets the port number for this <tt>WebListener</tt>.
+     *
+     * @param port the port number for this <tt>WebListener</tt>
+     */
+    public void setPort(int port);
+
+    /**
+     * Gets the port number of this <tt>WebListener</tt>.
+     *
+     * @return the port number of this <tt>WebListener</tt>
+     */
     public int getPort();
 
 }

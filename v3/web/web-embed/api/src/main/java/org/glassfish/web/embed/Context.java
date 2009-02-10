@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -52,12 +52,14 @@ import org.apache.catalina.Valve;
 public interface Context extends ServletContext, Lifecycle {
 
     /**
-     * 
+     * Adds the given <tt>Valve</tt> to this <tt>Context</tt>.
+     *
+     * @param t the <tt>Valve</tt> to be added
      */
     public <T extends Valve> void addValve(T t);
 
     /**
-     * Registers the given listener with this context.
+     * Registers the given listener with this <tt>Context</tt>.
      * 
      * <p>The given listener must be an instance of one or more of the
      * following interfaces:
@@ -70,7 +72,7 @@ public interface Context extends ServletContext, Lifecycle {
      * <li><tt>javax.servlet.http.HttpSessionListener</tt>
      * </ul>
      *
-     * @param t the listener to be registered with this context
+     * @param t the listener to be registered with this <tt>Context</tt>
      *
      * @throws IllegalArgumentException if the given listener is not
      * an instance of any of the above interfaces
@@ -80,8 +82,8 @@ public interface Context extends ServletContext, Lifecycle {
     public <T extends EventListener> void addListener(T t);
 
     /**
-     * Instantiates the given listener Class and registers it with this
-     * context.
+     * Creates a listener from the given class type and registers it with
+     * this <tt>Context</tt>.
      * 
      * <p>The given listener must be an instance of one or more of the
      * following interfaces:
@@ -94,13 +96,12 @@ public interface Context extends ServletContext, Lifecycle {
      * <li><tt>javax.servlet.http.HttpSessionListener</tt>
      * </ul>
      *
-     * @param listenerClass the listener Class to be instantiated and 
-     * registered with this context
+     * @param c the class type of the listener
      *
      * @throws IllegalArgumentException if the given class does not
      * implement any of the above interfaces
      * @throws IllegalStateException if this context has already been
      * initialized and started
      */
-    public void addListener(Class <? extends EventListener> listenerClass);
+    public void addListener(Class <? extends EventListener> c);
 }
