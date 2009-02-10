@@ -93,16 +93,16 @@ public interface EmbeddedWebContainer {
 
 
     /**
-     * Creates a WebListener with the specified Listener type. The supported ones are HttpListener and
-     * HttpsListener
+     * Creates a WebListener with the specified Listener type. The 
+     * supported ones are <code>HttpListener</code> and
+     * <code>HttpsListener</code>
      *
      * @param c The type of listener to create.
      * 
      * @return An instance of WebListener.
      */
-//    public HttpListener createHttpListener(String id, int port, boolean secure);
 
-    public <T extends WebListener> T createListener(Class<T> c);
+    public <T extends WebListener> T createWebListener(Class<T> c);
 
     /**
      * Creates a VirtualServer for the with the specified id, docroot
