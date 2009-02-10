@@ -43,12 +43,7 @@ import java.util.Properties;
  *
  */
 public interface ApplicationContext {
-
-    /**
-     * @return the operation parameters
-     */
-    public Properties getParameters();
-
+    
     /**
      * Returns the class loader associated with the application.
      * ClassLoader instances are usually obtained by the getClassLoader API on

@@ -26,20 +26,16 @@ import com.sun.enterprise.v3.common.HTMLActionReporter;
 import org.glassfish.internal.data.*;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
-import org.glassfish.deployment.common.DeploymentContextImpl;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.io.FileUtils;
-import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Startup;
 import org.glassfish.api.event.*;
-import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.container.Sniffer;
-import org.glassfish.api.container.Container;
 import org.glassfish.api.deployment.*;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -112,11 +108,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
      * Invoke the deployer load() method for each application.
      */
     public void postConstruct() {
-/*        throw new RuntimeException("Just for fun !");
-    }
-
-    public void foo() {
-*/
+        
         assert env!=null;
         for (Named m : applications.getModules()) {
             if (m instanceof Application) {
@@ -145,13 +137,10 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                 sourceFile = new File(defaultParam);
             }
 
-            Properties deploymentProperties = new Properties();
-            deploymentProperties.setProperty(ParameterNames.NAME, sourceFile.getName());
-            
+
             if (sourceFile.exists()) {
                 sourceFile = sourceFile.getAbsoluteFile();
                 if (!sourceFile.isDirectory()) {
-                    deploymentProperties.setProperty(ParameterNames.NAME, sourceFile.getName());
 
                     // ok we need to explode the directory somwhere and remember to delete it on shutdown
                     try {
@@ -174,8 +163,6 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                             sourceArchive = archiveFactory.openArchive(sourceFile);
                             ArchiveHandler handler = deployment.getArchiveHandler(sourceArchive);
                             final String appName = handler.getDefaultApplicationName(sourceArchive);
-                            deploymentProperties.setProperty(ParameterNames.NAME, appName);
-                            deploymentProperties.setProperty(ParameterNames.CONTEXT_ROOT, appName);
                             handler.expand(sourceArchive, archiveFactory.createArchive(tmpDir));
                             sourceFile = tmpDir;
                             logger.info("Source is not a directory, using temporary location " + tmpDir.getAbsolutePath());
@@ -195,12 +182,9 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                         DeployCommandParameters parameters = new DeployCommandParameters(sourceFile);
                         parameters.name = sourceFile.getName();
                         parameters.enabled = Boolean.TRUE;
+                        parameters.origin = DeployCommandParameters.Origin.deploy;
 
-                        DeploymentContextImpl depContext = new DeploymentContextImpl(
-                                logger,
-                                sourceArchive,
-                                parameters,
-                                env, true);
+                        ExtendedDeploymentContext depContext = deployment.getContext(logger, sourceArchive, parameters);
 
                         ActionReport report = new HTMLActionReporter();
                         ApplicationInfo appInfo = deployment.deploy(depContext, report);
@@ -260,16 +244,11 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                     archive = archiveFactory.openArchive(sourceFile);
                     DeployCommandParameters deploymentParams =
                         app.getDeployParameters(appRef);
+                    deploymentParams.origin = DeployCommandParameters.Origin.load;
 
-                    DeploymentContextImpl depContext = new DeploymentContextImpl(
-                            logger,
-                            archive,
-                            deploymentParams,
-                            env,
-                            true);
+                    ExtendedDeploymentContext depContext = deployment.getContext(logger, archive, deploymentParams);
 
-
-                    depContext.setProps(app.getDeployProperties());
+                    depContext.getProps().putAll(app.getDeployProperties());
 
                     ActionReport report = new HTMLActionReporter();
 
@@ -336,9 +315,14 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
             ApplicationInfo appInfo = deployment.get(app.getName());
             if (appInfo!=null) {
                 UndeployCommandParameters parameters = new UndeployCommandParameters(appInfo.getName());
-                DeploymentContextImpl depContext = new DeploymentContextImpl(
-                    logger,appInfo.getSource() , parameters, env, false);
-                appInfo.unload(depContext, dummy);
+                parameters.origin = UndeployCommandParameters.Origin.unload;
+
+                try {
+                    ExtendedDeploymentContext depContext = deployment.getContext(logger, appInfo.getSource(), parameters);
+                    appInfo.unload(depContext, dummy);
+                } catch (IOException e) {
+                    logger.log(Level.SEVERE, "Cannot create unloading context for " + app.getName(), e);
+                }
                 appRegistry.remove(appInfo.getName());
             }
         }

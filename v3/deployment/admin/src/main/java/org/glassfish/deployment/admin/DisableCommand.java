@@ -30,14 +30,13 @@ import org.glassfish.api.admin.ServerEnvironment;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
-import org.glassfish.api.Param;
 import org.glassfish.api.deployment.StateCommandParameters;
-import org.glassfish.deployment.common.DeploymentContextImpl;
+import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.internal.deployment.Deployment;
+import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
@@ -69,7 +68,11 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
     Deployment deployment;
 
     @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
-    protected Server server;    
+    protected Server server;
+
+    public DisableCommand() {
+        origin = Origin.unload;
+    }
 
     /**
      * Entry point from the framework into the command execution
@@ -95,9 +98,8 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
         }
 
         try {
-            final DeploymentContextImpl deploymentContext =
-                new DeploymentContextImpl(logger, null, this, env, false);
-
+            final ExtendedDeploymentContext deploymentContext =
+                    deployment.getContext(logger, (ReadableArchive) null, this);
 
             appInfo.unload(deploymentContext, report);
 

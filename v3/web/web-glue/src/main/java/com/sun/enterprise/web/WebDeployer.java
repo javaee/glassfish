@@ -30,16 +30,12 @@ import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.io.WebDeploymentDescriptorFile;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.web.loader.util.ASClassLoaderUtil;
-import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
-import org.glassfish.api.deployment.DeploymentOperationParameters;
+import org.glassfish.api.deployment.OpsParams;
 import org.glassfish.api.deployment.DeployCommandParameters;
-import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
@@ -52,9 +48,6 @@ import org.glassfish.deployment.common.DeploymentProperties;
 import java.util.*;
 import java.util.logging.Level;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 
 /**
  * Web module deployer.
@@ -179,7 +172,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
         WebModuleConfig wmInfo = loadWebModuleConfig(dc);
         com.sun.enterprise.config.serverbeans.Application config =
                 domain.getApplications().getModule(com.sun.enterprise.config.serverbeans.Application.class,
-                    dc.getCommandParameters(DeploymentOperationParameters.class).name());
+                    dc.getCommandParameters(OpsParams.class).name());
         Module moduleConfig = null;
         if (config!=null) {
             moduleConfig = config.getModule(wmInfo.getDescriptor().getName());

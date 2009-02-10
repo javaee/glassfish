@@ -36,14 +36,12 @@
 package org.glassfish.internal.deployment;
 
 import org.glassfish.api.deployment.DeploymentContext;
-import org.glassfish.api.deployment.DeploymentOperationParameters;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
-import org.glassfish.internal.data.ApplicationInfo;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.util.List;
-import java.util.Collection;
+import java.util.Properties;
 import java.net.URISyntaxException;
 import java.net.MalformedURLException;
 
@@ -90,4 +88,11 @@ public interface ExtendedDeploymentContext extends DeploymentContext {
 
 
     public void clean();
+
+    /**
+     * Sets the properties (possibly saved from a previous deployment operation)
+     *
+     * @param props
+     */
+    public void setProps(Properties props);
 }

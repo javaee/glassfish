@@ -66,9 +66,9 @@ import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.autodeploy.AutoDeployService;
 import org.glassfish.api.deployment.DeployCommandParameters;
-import org.glassfish.deployment.common.DeploymentContextImpl;
+import org.glassfish.internal.deployment.Deployment;
+import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.embed.impl.EmbeddedAPIClassLoaderServiceImpl;
-import org.glassfish.embed.impl.EmbeddedApplicationLifecycle;
 import org.glassfish.embed.impl.EmbeddedDomainXml;
 import org.glassfish.embed.impl.EmbeddedServerEnvironment;
 import org.glassfish.embed.impl.EmbeddedWebDeployer;
@@ -144,7 +144,7 @@ public class AppServer {
 
     // key components inside GlassFish. We access them all the time,
     // so we might just as well keep them here for ease of access.
-    protected /*almost final*/ ApplicationLifecycle appLife;
+    protected /*almost final*/ Deployment deployment;
     protected /*almost final*/ SnifferManager snifMan;
     protected /*almost final*/ ArchiveFactory archiveFactory;
     protected /*almost  final*/ ServerEnvironmentImpl env;
@@ -253,9 +253,6 @@ public class AppServer {
         catch (Exception e) {
             // ignore.  It may not be available
         }
-
-        //TODO: workaround for a bug
-        parser.replace(ApplicationLifecycle.class, EmbeddedApplicationLifecycle.class);
 
         parser.replace(APIClassLoaderServiceImpl.class, EmbeddedAPIClassLoaderServiceImpl.class);
         // we don't really parse domain.xml from disk
@@ -440,7 +437,7 @@ public class AppServer {
 
 
             habitat = main.launch(modulesRegistry, startupContext);
-            appLife = habitat.getComponent(ApplicationLifecycle.class);
+            deployment = habitat.getComponent(Deployment.class);
             snifMan = habitat.getComponent(SnifferManager.class);
             archiveFactory = habitat.getComponent(ArchiveFactory.class);
             env = habitat.getComponent(ServerEnvironmentImpl.class);
@@ -466,7 +463,7 @@ public class AppServer {
 
         if (!archive.isDirectory()) {
             // explode (if I don't, WarHandler won't work)
-            ArchiveHandler h = appLife.getArchiveHandler(a);
+            ArchiveHandler h = deployment.getArchiveHandler(a);
 
             File tmpDir = new File(a.getName());
             FileUtils.whack(tmpDir);
@@ -515,7 +512,7 @@ public class AppServer {
     public App deploy(ReadableArchive a, DeployCommandParameters params) throws IOException {
         start();
 
-        ArchiveHandler h = appLife.getArchiveHandler(a);
+        ArchiveHandler h = deployment.getArchiveHandler(a);
 
         // now prepare sniffers
 
@@ -526,14 +523,15 @@ public class AppServer {
         }
         params.name = a.getName();
         params.enabled = true;
+        params.origin = DeployCommandParameters.Origin.deploy;
 
-        final DeploymentContextImpl deploymentContext = new DeploymentContextImpl(Logger.getAnonymousLogger(), a, params, env,true);
+		final ExtendedDeploymentContext deploymentContext = deployment.getContext(Logger.getAnonymousLogger(), a, params);
 
         ClassLoader cl = h.getClassLoader(parentCL, deploymentContext);
         Collection<Sniffer> activeSniffers = snifMan.getSniffers(a, cl);
 
         SilentActionReport r = new SilentActionReport();
-        ApplicationInfo appInfo = appLife.deploy(activeSniffers, deploymentContext, r);
+        ApplicationInfo appInfo = deployment.deploy(activeSniffers, deploymentContext, r);
         r.check();
 
         return new App(this, appInfo, deploymentContext);

@@ -46,14 +46,11 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeSupport;
-import java.io.Serializable;
 import java.io.File;
 import java.util.List;
 import java.util.Properties;
 
 import org.glassfish.api.admin.config.*;
-import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.deployment.DeployCommandParameters;
 
 import org.glassfish.quality.ToDo;

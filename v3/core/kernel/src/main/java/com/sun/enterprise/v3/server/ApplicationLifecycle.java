@@ -1,24 +1,34 @@
 /*
- * The contents of this file are subject to the terms
- * of the Common Development and Distribution License
- * (the License).  You may not use this file except in
- * compliance with the License.
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * You can obtain a copy of the license at
- * https://glassfish.dev.java.net/public/CDDLv1.0.html or
- * glassfish/bootstrap/legal/CDDLv1.0.txt.
- * See the License for the specific language governing
- * permissions and limitations under the License.
+ * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
  *
- * When distributing Covered Code, include this CDDL
- * Header Notice in each file and include the License file
- * at glassfish/bootstrap/legal/CDDLv1.0.txt.
- * If applicable, add the following below the CDDL Header,
- * with the fields enclosed by brackets [] replaced by
- * you own identifying information:
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License. You can obtain
+ * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * If applicable, add the following below the License Header, with the fields
+ * enclosed by brackets [] replaced by your own identifying information:
  * "Portions Copyrighted [year] [name of copyright owner]"
  *
- * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
+ * Contributor(s):
+ *
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
  */
 
 package com.sun.enterprise.v3.server;
@@ -37,7 +47,6 @@ import com.sun.enterprise.v3.admin.AdminAdapter;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.event.Events;
-import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.container.Container;
 import org.glassfish.api.container.Sniffer;
@@ -63,6 +72,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 
 import java.beans.PropertyVetoException;
 import java.io.IOException;
+import java.io.File;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -202,7 +212,7 @@ public class ApplicationLifecycle implements Deployment {
                 LinkedList<EngineInfo> sortedEngineInfos =
                     setupContainerInfos(handler, sniffers, context, report);
                 if (sortedEngineInfos ==null || sortedEngineInfos.isEmpty()) {
-                    report.failure(logger, "There is no installed container capable of handling this application", null);
+                    report.setMessage(localStrings.getLocalString("unknowncontainertype","There is no installed container capable of handling this application {0}",context.getSource()));                    
                     tracker.actOn(logger);
                     return null;
                 }
@@ -770,6 +780,23 @@ public class ApplicationLifecycle implements Deployment {
 
     public ApplicationInfo get(String appName) {
         return appRegistry.get(appName);
+    }
+
+    public ExtendedDeploymentContext getContext(Logger logger, File source, OpsParams params)
+        throws IOException {
+
+        ReadableArchive archive = null;
+        if (source!=null) {
+             archive = archiveFactory.openArchive(source);
+            if (archive==null) {
+                throw new IOException("Invalid archive type : " + source.getAbsolutePath());
+            }
+        }
+        return getContext(logger, archive, params);
+    }
+
+    public ExtendedDeploymentContext getContext(Logger logger, ReadableArchive source, OpsParams params) throws IOException {
+        return new DeploymentContextImpl(logger, source, params, env);
     }
 }
 

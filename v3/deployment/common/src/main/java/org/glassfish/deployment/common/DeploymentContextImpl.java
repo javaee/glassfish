@@ -26,7 +26,7 @@ package org.glassfish.deployment.common;
 import java.lang.instrument.ClassFileTransformer;
 
 import org.glassfish.api.deployment.InstrumentableClassLoader;
-import org.glassfish.api.deployment.DeploymentOperationParameters;
+import org.glassfish.api.deployment.OpsParams;
 import org.glassfish.api.deployment.DeployCommandParameters;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -55,10 +55,9 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
 
 
     final ReadableArchive source;
-    final DeploymentOperationParameters parameters;
+    final OpsParams parameters;
     final Logger logger;
     final ServerEnvironment env;
-    final boolean serverRestart;
     ClassLoader cloader;
     Properties props;
     Map<String, Object> modulesMetaData = new HashMap<String, Object>();
@@ -70,16 +69,11 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
 
     /** Creates a new instance of DeploymentContext */
     public DeploymentContextImpl(Logger logger, ReadableArchive source,
-                                 DeploymentOperationParameters params, ServerEnvironment env, boolean serverRestart) {
+                                 OpsParams params, ServerEnvironment env) {
         this.source = source;
         this.logger = logger;
         this.parameters = params;
         this.env = env;
-        this.serverRestart = serverRestart;
-    }
-
-    public boolean isRestart() {
-        return serverRestart;
     }
 
     public void setPhase(Phase newPhase) {
@@ -90,14 +84,12 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
         return source;
     }
 
-    public <U extends DeploymentOperationParameters> U getCommandParameters(Class<U> commandParametersType) {
-        return commandParametersType.cast(parameters);
-    }
-
-    public Properties getParameters() {
-        // todo : fix this...
-        //return parameters;
-        return null;
+    public <U extends OpsParams> U getCommandParameters(Class<U> commandParametersType) {
+        try {
+            return commandParametersType.cast(parameters);
+        } catch (ClassCastException e) {
+            return null;
+        }
     }
 
     public Logger getLogger() {

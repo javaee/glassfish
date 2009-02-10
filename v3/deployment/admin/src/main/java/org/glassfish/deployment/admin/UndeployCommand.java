@@ -1,45 +1,50 @@
 /*
- * The contents of this file are subject to the terms 
- * of the Common Development and Distribution License 
- * (the License).  You may not use this file except in
- * compliance with the License.
- * 
- * You can obtain a copy of the license at 
- * https://glassfish.dev.java.net/public/CDDLv1.0.html or
- * glassfish/bootstrap/legal/CDDLv1.0.txt.
- * See the License for the specific language governing 
- * permissions and limitations under the License.
- * 
- * When distributing Covered Code, include this CDDL 
- * Header Notice in each file and include the License file 
- * at glassfish/bootstrap/legal/CDDLv1.0.txt.  
- * If applicable, add the following below the CDDL Header, 
- * with the fields enclosed by brackets [] replaced by
- * you own identifying information: 
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License. You can obtain
+ * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * If applicable, add the following below the License Header, with the fields
+ * enclosed by brackets [] replaced by your own identifying information:
  * "Portions Copyrighted [year] [name of copyright owner]"
- * 
- * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
+ *
+ * Contributor(s):
+ *
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
  */
 
 package org.glassfish.deployment.admin;
 
-import org.glassfish.deployment.common.DeploymentContextImpl;
-import org.glassfish.deployment.common.DeploymentProperties;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.deployment.Deployment;
-import com.sun.enterprise.v3.server.ApplicationLifecycle;
-import org.glassfish.server.ServerEnvironmentImpl;
+import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
-import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.UndeployCommandParameters;
@@ -51,7 +56,6 @@ import org.jvnet.hk2.config.TransactionFailure;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Properties;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -66,15 +70,16 @@ import java.util.logging.Level;
 public class UndeployCommand extends UndeployCommandParameters implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(UndeployCommand.class);
-    
-    @Inject
-    ServerEnvironmentImpl env;
-
+   
     @Inject
     Deployment deployment;
 
     @Inject
     ArchiveFactory archiveFactory;
+
+    public UndeployCommand() {
+        origin = Origin.undeploy;
+    }
 
     public void execute(AdminCommandContext context) {
         
@@ -119,9 +124,17 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
             source = info.getSource();
         }
 
-        DeploymentContextImpl deploymentContext = new DeploymentContextImpl(logger, source, this, env, false);
+        ExtendedDeploymentContext deploymentContext = null;
+        try {
+            deploymentContext = deployment.getContext(logger, source, this);
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Cannot create context for undeployment ", e);
+            report.setMessage(localStrings.getLocalString("undeploy.contextcreation.failed","Cannot create context for undeployment : {0} ", e.getMessage()));            
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
         if (properties!=null) {
-            deploymentContext.setProps(properties);
+            deploymentContext.getProps().putAll(properties);
         }
 
         if (info!=null) {

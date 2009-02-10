@@ -27,24 +27,17 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.*;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.container.Container;
-import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
-import org.jvnet.hk2.component.PreDestroy;
-import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.annotations.Service;
 
 import java.util.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.lang.instrument.ClassFileTransformer;
 import java.beans.PropertyVetoException;
 
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.config.serverbeans.Application;
-import com.sun.enterprise.config.serverbeans.Engine;
 import com.sun.enterprise.config.serverbeans.Module;
 
 /**

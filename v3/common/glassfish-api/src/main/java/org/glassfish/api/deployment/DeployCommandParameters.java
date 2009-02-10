@@ -38,7 +38,6 @@ package org.glassfish.api.deployment;
 import org.glassfish.api.Param;
 import org.glassfish.api.I18n;
 import org.glassfish.api.admin.ParameterNames;
-import org.jvnet.hk2.annotations.Inject;
 
 import java.io.File;
 import java.util.Properties;
@@ -46,7 +45,7 @@ import java.util.Properties;
 /**
  * Parameters passed by the user to a deployment request. 
  */
-public class DeployCommandParameters extends DeploymentOperationParameters {
+public class DeployCommandParameters extends OpsParams {
     
     @Param(name = ParameterNames.NAME, optional=true)
     public String name = null;

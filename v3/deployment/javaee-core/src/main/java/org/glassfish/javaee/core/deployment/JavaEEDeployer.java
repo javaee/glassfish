@@ -25,15 +25,12 @@ package org.glassfish.javaee.core.deployment;
 
 import org.glassfish.api.deployment.*;
 import org.glassfish.api.container.Container;
-import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.ApplicationRegistry;
-import org.glassfish.internal.data.ModuleInfo;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.zip.ZipItem;
 import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.util.ApplicationVisitor;
 import com.sun.enterprise.deployment.backend.DeploymentImplConstants;
 import com.sun.enterprise.deployment.backend.ClientJarMakerThread;
@@ -43,7 +40,6 @@ import org.jvnet.hk2.annotations.Inject;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Properties;
 import java.util.jar.Manifest;
 import java.util.jar.Attributes;
 
@@ -218,7 +214,7 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
     public void clean(DeploymentContext context) {
         if (undeploymentVisitor!=null) {
 
-            String appName = context.getCommandParameters(DeploymentOperationParameters.class).name();
+            String appName = context.getCommandParameters(OpsParams.class).name();
             Application app = getApplicationFromApplicationInfo(appName);
             if (app != null) {
                 context.addModuleMetaData(app);

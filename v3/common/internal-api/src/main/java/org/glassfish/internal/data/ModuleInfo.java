@@ -39,11 +39,9 @@ import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.container.Container;
 import org.glassfish.api.deployment.*;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.config.TransactionFailure;
-import org.jvnet.hk2.config.ConfigSupport;
 
 import java.util.*;
 import java.util.logging.Level;
