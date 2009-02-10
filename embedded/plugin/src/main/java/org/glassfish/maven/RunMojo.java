@@ -47,7 +47,7 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
-import org.glassfish.embed.Application;
+import org.glassfish.embed.EmbeddedDeployer;
 import org.glassfish.embed.EmbeddedInfo;
 import org.glassfish.embed.ScatteredWar;
 import org.glassfish.embed.Server;
@@ -143,16 +143,11 @@ public class RunMojo extends AbstractMojo
                 classpath
             );
 
-            while(true) {
-                Application app = glassfish.deploy(war);
-
-                System.out.println("Hit ENTER for redeploy");
-
-                // wait for enter
-                new BufferedReader(new InputStreamReader(System.in)).readLine();
-
-                app.undeploy();
-            }
+            EmbeddedDeployer deployer = glassfish.getDeployer();
+            deployer.deployScattered(war, null, null);
+            System.out.println("Hit ENTER to exit");
+            new BufferedReader(new InputStreamReader(System.in)).readLine();
+            System.exit(0);
         }
         catch (Exception e) {
             throw new MojoExecutionException(e.getMessage(),e);
