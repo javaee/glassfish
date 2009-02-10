@@ -37,41 +37,70 @@
 
 package org.glassfish.web.embed;
 
+import java.util.*;
+import javax.servlet.*;
 import org.apache.catalina.Valve;
 
-import javax.servlet.*;
-import java.util.Set;
-import java.util.Enumeration;
-import java.util.EnumSet;
-import java.util.Map;
-import java.net.URL;
-import java.net.MalformedURLException;
-import java.io.InputStream;
-import java.util.EventListener;
-
 /**
- * This class represents a Web application context. 
+ * Representation of a web application.
+ *
  * @author Rajiv Mordani
  * @author Jan Luehe
  */
 // TODO: Add support for configuring environment entries
 // Security realms support
-public interface Context extends ServletContext {
+public interface Context extends ServletContext, Lifecycle {
 
     /**
      * 
      */
     public <T extends Valve> void addValve(T t);
 
-    public void start() throws Exception;
+    /**
+     * Registers the given listener with this context.
+     * 
+     * <p>The given listener must be an instance of one or more of the
+     * following interfaces:
+     * <ul>
+     * <li><tt>javax.servlet.ServletContextAttributeListener</tt>
+     * <li><tt>javax.servlet.ServletRequestAttributeListener</tt>
+     * <li><tt>javax.servlet.ServletRequestListener</tt>
+     * <li><tt>javax.servlet.ServletContextListener</tt>
+     * <li><tt>javax.servlet.http.HttpSessionAttributeListener</tt>
+     * <li><tt>javax.servlet.http.HttpSessionListener</tt>
+     * </ul>
+     *
+     * @param t the listener to be registered with this context
+     *
+     * @throws IllegalArgumentException if the given listener is not
+     * an instance of any of the above interfaces
+     * @throws IllegalStateException if this context has already been
+     * initialized and started
+     */
+    public <T extends EventListener> void addListener(T t);
 
-    public void stop() throws Exception;
-
-    public void unregister();
-
-    public <T extends EventListener> void addListener(T t)
-    			throws IllegalArgumentException;
-
-    public void addListener(Class <? extends EventListener> listener) 
-    			throws IllegalArgumentException;
+    /**
+     * Instantiates the given listener Class and registers it with this
+     * context.
+     * 
+     * <p>The given listener must be an instance of one or more of the
+     * following interfaces:
+     * <ul>
+     * <li><tt>javax.servlet.ServletContextAttributeListener</tt>
+     * <li><tt>javax.servlet.ServletRequestAttributeListener</tt>
+     * <li><tt>javax.servlet.ServletRequestListener</tt>
+     * <li><tt>javax.servlet.ServletContextListener</tt>
+     * <li><tt>javax.servlet.http.HttpSessionAttributeListener</tt>
+     * <li><tt>javax.servlet.http.HttpSessionListener</tt>
+     * </ul>
+     *
+     * @param listenerClass the listener Class to be instantiated and 
+     * registered with this context
+     *
+     * @throws IllegalArgumentException if the given class does not
+     * implement any of the above interfaces
+     * @throws IllegalStateException if this context has already been
+     * initialized and started
+     */
+    public void addListener(Class <? extends EventListener> listenerClass);
 }

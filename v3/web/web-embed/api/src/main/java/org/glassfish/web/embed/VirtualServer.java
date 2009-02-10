@@ -37,45 +37,55 @@
 
 package org.glassfish.web.embed;
 
+import java.io.File;
 import org.apache.catalina.Valve;
 
-import java.io.File;
-
-
 /**
- * Virtual server.
+ * Representation of a virtual server.
  * 
  * @author Rajiv Mordani
  * @author Jan Luehe
  */
-public interface VirtualServer {
+public interface VirtualServer extends Lifecycle {
 
     /**
-     * Returns the id associated with the VirtualServer
+     * Gets the id of this <tt>VirtualServer</tt>.
      * 
-     * @return String the id for the virtual server
+     * @return the id of this <tt>VirtualServer</tt>
      */
     public String getId();
     
     /**
-     * Returns the docroot associated with the VirtualServer
+     * Gets the docroot of this <tt>VirtualServer</tt>.
      * 
-     * @return File the docroot for the virtual server
+     * @return the docroot of this <tt>VirtualServer</tt>
      */
     public File getDocRoot();
 
     /**
-     * Returns the list of <code>WebListener</code> associated with the 
-     * <code>VirtualServer</code>
+     * Returns the list of <tt>WebListener</tt> instances from which
+     * this <tt>VirtualServer</tt> receives requests.
      * 
-     * @return String the id for the virtual server
+     * @return the list of <tt>WebListener</tt> instances from which
+     * this <tt>VirtualServer</tt> receives requests.
      */
     public <T extends WebListener>T[] getWebListeners();
 
     /**
-     * Adds a <code>Valve</code> to the <code>VirtualServer</code>
+     * Adds the given <tt>Valve</tt> to this <tt>VirtualServer</tt>
      * 
+     * @param t the <tt>Valve</tt> to add
      */
     public <T extends Valve> void addValve(T t);
-    
+
+    /**
+     * Gets the <tt>Context</tt> registered at the given context root.
+     *
+     * @param contextRoot the context root whose <tt>Context</tt> to get
+     *
+     * @return the <tt>Context</tt> registered at the given context root,
+     * or <tt>null</tt> if no <tt>Context</tt> exists at the given context
+     * root
+     */
+    public Context getContext(String contextRoot);
 }

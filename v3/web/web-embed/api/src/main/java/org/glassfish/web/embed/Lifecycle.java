@@ -38,12 +38,12 @@
 package org.glassfish.web.embed;
 
 /**
- * @author Rajiv Mordani
+ * Interface for lifecycle events
  */
-public interface WebListener {
+public interface Lifecycle {
 
-    public String getId();
+    public void start() throws LifecycleException;
 
-    public int getPort();
+    public void stop() throws LifecycleException;
 
 }

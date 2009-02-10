@@ -37,23 +37,21 @@
 
 package org.glassfish.web.embed;
 
+import java.io.File;
 import org.jvnet.hk2.annotations.Contract;
 
-import java.io.File;
-
 /**
- * This is the entry point for the Web container. This interface allows
- * a user to create context, add context, create http listeners and
- * virtual servers.
+ * Entry point to the web container, which allows users to create
+ * HTTP listeners and virtual servers, and register web applications
+ * and their static and dynamic resources into the URI namespace.
  */
 
 @Contract
 public interface EmbeddedWebContainer {
 
-    // Entry point for the EmbeddedWebContainer in the embedded space
-
     /**
      * Create a context with the specified context root
+     *
      * @param root The context root for the app
      * @param classLoader The classloader to be used for the context. If null is passed then the caller's
      * class loader will be used (effectively this.getClass.getClassLoader());
@@ -75,22 +73,8 @@ public interface EmbeddedWebContainer {
      * fro the specified virtual server or null if there is already a 
      * context registered at the root specified.
      */
-    public Context createContext(String root, VirtualServer vServer, ClassLoader classLoader);
-
-    // This allows retrieval of an Context from an
-    // Application created using Server.deploy()
-    /**
-     * This method returns an instance of Context for
-     * the specified context root.
-
-     * @param contextRoot the context root for which an instance of the
-     * Context is returned
-     *
-     * @return An instance of Context.
-     */
-    public Context getContext(String contextRoot);
-
-
+    public Context createContext(String root, VirtualServer vServer,
+        ClassLoader classLoader);
 
     /**
      * Creates a WebListener with the specified Listener type. The 
@@ -101,23 +85,23 @@ public interface EmbeddedWebContainer {
      * 
      * @return An instance of WebListener.
      */
-
     public <T extends WebListener> T createWebListener(Class<T> c);
 
     /**
-     * Creates a VirtualServer for the with the specified id, docroot
-     * associated with the httpListenerIds
+     * Creates a <tt>VirtualServer</tt> with the given id and docroot.
      *
-     * @param virtualServerId the id for the virtual server being
-     * created
-     * @param docRoot the docroot for the virtual server
-     * @param webListeners The list of web listeners that the
-     * instance of virtual server is associated with
+     * <p>The new <tt>VirtualServer</tt> will receive requests from the
+     * given <tt>WebListener</tt> instances.
      * 
-     * @return An instance of VirtualServer
-     *
+     * @param id the id of the <tt>VirtualServer</tt>
+     * @param docRoot the docroot of the <tt>VirtualServer</tt>
+     * @param webListeners the list of <tt>WebListener</tt> instances from 
+     * which the <tt>VirtualServer</tt> will receive requests
+     * 
+     * @return the new <tt>VirtualServer</tt>, or <tt>null</tt> if a 
+     * <tt>VirtualServer</tt> with the given id already exists in this
+     * web container
      */
-
-    public VirtualServer createVirtualServer(String virtualServerId,
-    				File docRoot, WebListener...  webListeners);
+    public VirtualServer createVirtualServer(String id,
+        File docRoot, WebListener...  webListeners);
 }
