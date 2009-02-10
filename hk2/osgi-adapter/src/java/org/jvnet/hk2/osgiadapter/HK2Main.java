@@ -38,15 +38,15 @@
 
 package org.jvnet.hk2.osgiadapter;
 
-import com.sun.enterprise.module.*;
-import com.sun.enterprise.module.bootstrap.Main;
-import com.sun.enterprise.module.bootstrap.StartupContext;
-import com.sun.enterprise.module.bootstrap.ModuleStartup;
+import com.sun.enterprise.module.ModuleDefinition;
+import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.Repository;
 import com.sun.enterprise.module.bootstrap.BootException;
+import com.sun.enterprise.module.bootstrap.Main;
+import com.sun.enterprise.module.bootstrap.ModuleStartup;
+import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.common_impl.AbstractFactory;
-import com.sun.enterprise.module.common_impl.AbstractModulesRegistryImpl;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
-import com.sun.hk2.component.InhabitantsParser;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import static org.jvnet.hk2.osgiadapter.BundleEventType.valueOf;
@@ -60,13 +60,20 @@ import org.osgi.framework.SynchronousBundleListener;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
-import java.io.*;
-import java.net.URI;
-import java.util.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Dictionary;
+import java.util.List;
+import java.util.Properties;
 import java.util.logging.Level;
 
 /**
- * {@link BundleActivator} that launches a Habitat and hands the execution to {@link ModuleStartup}.
+ * {@link org.osgi.framework.BundleActivator} that launches a Habitat and
+ * hands the execution to {@link com.sun.enterprise.module.bootstrap.ModuleStartup}.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
@@ -95,7 +102,7 @@ public class HK2Main extends Main implements
      * e.g., GlassFish Kernel's AppServerStartup instance
      */
     private ModuleStartup moduleStartup;
-                                                                
+
     public void start(BundleContext context) throws Exception {
         this.ctx = context;
         logger.logp(Level.FINE, "HK2Main", "run",
@@ -111,7 +118,7 @@ public class HK2Main extends Main implements
         // get the startup context from the System properties
         String lineformat = System.getProperty("glassfish.startup.context");
         StartupContext startupContext;
-        if (lineformat!=null) {
+        if (lineformat != null) {
             Properties arguments = new Properties();
             /**
              * for jdk6 switch to this
@@ -130,7 +137,7 @@ public class HK2Main extends Main implements
         mr = createModulesRegistry();
         habitat = createHabitat(mr, startupContext);
         createServiceTracker(habitat);
-        moduleStartup = launch(mr,habitat,null,startupContext);
+        moduleStartup = launch(mr, habitat, null, startupContext);
     }
 
     protected ModulesRegistry createModulesRegistry() {
@@ -138,8 +145,14 @@ public class HK2Main extends Main implements
 
         Collection<? extends Repository> reps = createRepositories();
 
-        for (Repository rep : reps)
-            mr.addRepository(rep);
+        // don't add the repositories, just add all the modules from the repos.
+        // Later on, we use FileInstall bundle from Felix to monitor
+        // repositories.
+        for (Repository rep : reps) {
+            for (ModuleDefinition md : rep.findAll()) {
+                mr.add(md, false); // don't resolve the modules; just install
+            }
+        }
 
         return mr;
     }
@@ -183,13 +196,12 @@ public class HK2Main extends Main implements
                     public boolean accept(File pathname) {
                         return pathname.isDirectory();
                     }
-                }))
-        {
+                })) {
             rep = new OSGiDirectoryBasedRepository(dir.getName(), dir);
             try {
                 rep.initialize();
                 reps.add(rep);
-            } catch(IOException e) {
+            } catch (IOException e) {
                 try {
                     rep.shutdown();
                 } catch (IOException e1) {
@@ -198,52 +210,14 @@ public class HK2Main extends Main implements
                 logger.log(Level.SEVERE, "Cannot initialize repository at " + dir.getAbsolutePath(), e);
             }
         }
-        // add a listener for each repository
-        for (Repository repo : reps) {
-            repo.addListener(new RepositoryChangeListener() {
-
-                public void added(URI location) {
-                    try {
-                        File file = new File(location);
-                        if (file.isDirectory()) {
-                            initializeRepo(new OSGiDirectoryBasedRepository(file.getName(), file), habitat, mr);
-                        }
-                    } catch (IOException e) {
-                        logger.log(Level.SEVERE, "Exception while adding new repository of modules", e);
-                    }
-                }
-
-                public void removed(URI location) {
-                    //TODO: Not yet implemented
-                }
-
-                public void moduleAdded(ModuleDefinition definition) {
-
-                    InhabitantsParser parser = new InhabitantsParser(habitat);
-                    // note by dochez
-                    // the code below is potentially dangerous, it can create resolution exception
-                    // if the user is installing different modules inter-dependent.
-                    Module module = mr.add(definition);
-                    try {
-                        ((AbstractModulesRegistryImpl) mr).parseInhabitants(module, "default", parser);
-                    } catch (IOException e) {
-                        logger.log(Level.WARNING, "Exception while processing newly added module ", e);
-                    }
-                }
-
-                public void moduleRemoved(ModuleDefinition definition) {
-                    //TODO: Not Yet Implemented
-                }
-            });
-        }
-    logger.exiting("HK2Main","createRepositories", reps);
-    return reps;
-}
+        logger.exiting("HK2Main", "createRepositories", reps);
+        return reps;
+    }
 
     public void stop(BundleContext context) throws Exception {
         // Execute code in reverse order w.r.t. start()
         moduleStartup.stop();
-        if(mr!=null) {
+        if (mr != null) {
             mr.shutdown();
         }
     }
@@ -254,113 +228,83 @@ public class HK2Main extends Main implements
                 valueOf(event.getType())});
     }
 
-private class NonHK2ServiceFilter implements Filter {
-    public boolean match(ServiceReference serviceReference) {
-        return (!ctx.getBundle().equals(serviceReference.getBundle()));
-    }
-
-    public boolean match(Dictionary dictionary) {
-        throw new RuntimeException("Unexpected method called");
-    }
-
-    public boolean matchCase(Dictionary dictionary) {
-        throw new RuntimeException("Unexpected method called");
-    }
-
-    public String toString() {
-        return "(objectClass=*)";
-    }
-}
-
-private class HK2ServiceTrackerCustomizer implements ServiceTrackerCustomizer {
-    private final Habitat habitat;
-
-    private HK2ServiceTrackerCustomizer(Habitat habitat) {
-        this.habitat = habitat;
-    }
-
-    public Object addingService(final ServiceReference reference) {
-        final Object object = ctx.getService(reference);
-
-        // let's get the list of implemented contracts
-        String[] contractNames = (String[]) reference.getProperty("objectclass");
-        if (contractNames != null && contractNames.length > 0) {
-            // we will register this service under each contract it implements
-            for (String contractName : contractNames) {
-                // let's get a name if possible, that will only work with Spring OSGi services
-                // we may need to find a better way to get a potential name.
-                String name = (String) reference.getProperty("org.springframework.osgi.bean.name");
-                habitat.addIndex(new ExistingSingletonInhabitant(object), contractName, name);
-                logger.logp(Level.INFO, "HK2Main$HK2ServiceTrackerCustomizer",
-                        "addingService", "registering service = {0}, contract = {1}, name = {2}", new Object[]{
-                        object, contractName, name});
-            }
-        } else {
-            // this service does not implement a specific contract, let's register it by its type.
-            habitat.add(new ExistingSingletonInhabitant(object));
-            logger.logp(Level.INFO, "HK2Main$HK2ServiceTrackerCustomizer",
-                    "addingService", "registering service = {0}", object);
+    private class NonHK2ServiceFilter implements Filter {
+        public boolean match(ServiceReference serviceReference) {
+            return (!ctx.getBundle().equals(serviceReference.getBundle()));
         }
-        return object;
+
+        public boolean match(Dictionary dictionary) {
+            throw new RuntimeException("Unexpected method called");
+        }
+
+        public boolean matchCase(Dictionary dictionary) {
+            throw new RuntimeException("Unexpected method called");
+        }
+
+        public String toString() {
+            return "(objectClass=*)";
+        }
     }
 
-    public void modifiedService(ServiceReference reference, Object service) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
+    private class HK2ServiceTrackerCustomizer implements ServiceTrackerCustomizer {
+        private final Habitat habitat;
 
-    public void removedService(ServiceReference reference, Object service) {
-        // we need to unregister the service for each contract it implements.
-        String[] contractNames = (String[]) reference.getProperty("objectclass");
-        if (contractNames != null && contractNames.length > 0) {
-            for (String contractName : contractNames) {
-                habitat.removeIndex(contractName, service);
-                logger.logp(Level.INFO, "HK2Main$HK2ServiceTrackerCustomizer",
-                        "removingService", "removing service = {0}, contract = {1}",
-                        new Object[]{service, contractName});
+        private HK2ServiceTrackerCustomizer(Habitat habitat) {
+            this.habitat = habitat;
+        }
 
-            }
-        } else {
-            // it was registered by type
-            Inhabitant<?> inhabitant = habitat.getInhabitantByType(service.getClass());
-            if (inhabitant != null) {
-                habitat.remove(inhabitant);
+        public Object addingService(final ServiceReference reference) {
+            final Object object = ctx.getService(reference);
+
+            // let's get the list of implemented contracts
+            String[] contractNames = (String[]) reference.getProperty("objectclass");
+            if (contractNames != null && contractNames.length > 0) {
+                // we will register this service under each contract it implements
+                for (String contractName : contractNames) {
+                    // let's get a name if possible, that will only work with Spring OSGi services
+                    // we may need to find a better way to get a potential name.
+                    String name = (String) reference.getProperty("org.springframework.osgi.bean.name");
+                    habitat.addIndex(new ExistingSingletonInhabitant(object), contractName, name);
+                    logger.logp(Level.INFO, "HK2Main$HK2ServiceTrackerCustomizer",
+                            "addingService", "registering service = {0}, contract = {1}, name = {2}", new Object[]{
+                            object, contractName, name});
+                }
             } else {
-                logger.logp(Level.WARNING, "HK2Main$HK2ServiceTrackerCustomizer",
-                        "removedService", "cannot removed singleton service = {0}", service);
+                // this service does not implement a specific contract, let's register it by its type.
+                habitat.add(new ExistingSingletonInhabitant(object));
+                logger.logp(Level.INFO, "HK2Main$HK2ServiceTrackerCustomizer",
+                        "addingService", "registering service = {0}", object);
             }
+            return object;
         }
-    }
 
-}
+        public void modifiedService(ServiceReference reference, Object service) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
 
-    private void initializeRepo(Repository repo, Habitat habitat, ModulesRegistry mr) throws IOException {
+        public void removedService(ServiceReference reference, Object service) {
+            // we need to unregister the service for each contract it implements.
+            String[] contractNames = (String[]) reference.getProperty("objectclass");
+            if (contractNames != null && contractNames.length > 0) {
+                for (String contractName : contractNames) {
+                    habitat.removeIndex(contractName, service);
+                    logger.logp(Level.INFO, "HK2Main$HK2ServiceTrackerCustomizer",
+                            "removingService", "removing service = {0}, contract = {1}",
+                            new Object[]{service, contractName});
 
-        try {
-            repo.initialize();
-        } catch(IOException e) {
-            logger.info("Exception while processing jars in newly added repository");
-            int maxTry = 10;
-            boolean done = false;
-            while (!done && maxTry>0) {
-                try {
-                    repo.initialize();
-                    done = true;
-                } catch(IOException ex) {
-                    maxTry--;
-                    logger.warning("Error while processing, " + maxTry + " tries left");
+                }
+            } else {
+                // it was registered by type
+                Inhabitant<?> inhabitant = habitat.getInhabitantByType(service.getClass());
+                if (inhabitant != null) {
+                    habitat.remove(inhabitant);
+                } else {
+                    logger.logp(Level.WARNING, "HK2Main$HK2ServiceTrackerCustomizer",
+                            "removedService", "cannot removed singleton service = {0}", service);
                 }
             }
-            if (!done) {
-                logger.log(Level.SEVERE, "Exception while processing jars in newly added repository", e);
-            }
         }
-        mr.addRepository(repo);
 
-        InhabitantsParser parser = new InhabitantsParser(habitat);
-        for (Module module : mr.getModules()) {
-            if (repo.find(module.getModuleDefinition().getName(), module.getModuleDefinition().getVersion()) != null) {
-                ((AbstractModulesRegistryImpl) mr).parseInhabitants(module, "default", parser);
-            }
-        }
     }
+
 }

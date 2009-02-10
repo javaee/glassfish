@@ -482,4 +482,17 @@ public final class OSGiModuleImpl implements Module {
     public String toString() {
         return md.toString();
     }
+
+    @Override
+    public int hashCode() {
+        return bundle.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof OSGiModuleImpl) {
+            return bundle.equals(OSGiModuleImpl.class.cast(obj).bundle);
+        }
+        return false;
+    }
 }

@@ -157,6 +157,19 @@ public interface ModulesRegistry extends ModuleChangeListener {
     Module makeModuleFor(String name, String version) throws ResolveError;
 
     /**
+     * Returns the <code>Module</code> instance giving a name and version
+     * constraints.
+     *
+     * @param name the module name
+     * @param version
+     *      the module version. Can be null if the caller doesn't care about the version.
+     * @param resolve should the module be resolved or not
+     * @return the module instance or null if none can be found
+     * @throws ResolveError if the module dependencies cannot be resolved
+     */
+    Module makeModuleFor(String name, String version, boolean resolve) throws ResolveError;
+
+    /**
      * Find and return a loaded Module that has the package name in its list
      * of exported interfaces.
      *
@@ -190,6 +203,15 @@ public interface ModulesRegistry extends ModuleChangeListener {
      * <code>Module</code> instances.
      */
     Module add(ModuleDefinition info) throws ResolveError;
+
+    /**
+     * Registers a new DefaultModuleDefinition in this registry. Using this module
+     * definition, the registry will be capable of created shared and private
+     * <code>Module</code> instances.
+     * @param info ModuleDefinition representing the new module content
+     * @param resolve should the new module be resolved or not
+     */
+    Module add(ModuleDefinition info, boolean resolve) throws ResolveError;
 
     /**
      * Print a Registry dump to the logger

@@ -226,10 +226,15 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
      * @throws ResolveError if the module dependencies cannot be resolved
      */
     public Module makeModuleFor(String name, String version) throws ResolveError {
+        return makeModuleFor(name, version, true);
+    }
+
+    public Module makeModuleFor(String name, String version, boolean resolve) throws ResolveError {
         Module module;
-        Logger.getAnonymousLogger().fine("this.makeModuleFor("+name+ ", " + version + ") called.");
+        Logger.getAnonymousLogger().fine("this.makeModuleFor("+name+ ", " +
+                version + ", " + resolve + ") called.");
         if(parent!=null) {
-            module = parent.makeModuleFor(name,version);
+            module = parent.makeModuleFor(name,version, resolve);
             if(module!=null)        return module;
         }
 
@@ -240,7 +245,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
                 add(module);
             }
         }
-        if (module!=null) {
+        if (module!=null && resolve) {
             module.resolve();
         }
         Logger.getAnonymousLogger().fine("this.makeModuleFor("+name+ ", " + version + ") returned " + module);
@@ -305,6 +310,9 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
         //    Utils.getDefaultLogger().info("New module " + newModule);
         //}
         assert newModule.getRegistry()==this;
+        // see if this module is already added. This can happen
+        // in case of OSGiModulesRegistryImpl which uses SynchronousBundleListener.
+        if (modules.values().contains(newModule)) return;
         modules.put(newModule.getModuleDefinition().getName(), newModule);
 
         // pick up providers from this module
@@ -384,9 +392,12 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
      * <code>Module</code> instances.
      */
     public synchronized Module add(ModuleDefinition info) throws ResolveError {
+        return add(info, true);
+    }
 
+    public Module add(ModuleDefinition info, boolean resolve) throws ResolveError {
         // it may have already been created
-        Module service = makeModuleFor(info.getName(), info.getVersion());
+        Module service = makeModuleFor(info.getName(), info.getVersion(), resolve);
         if (service!=null) {
         //    Utils.getDefaultLogger().info("Service " + info.getName()
         //       + " already registered");
