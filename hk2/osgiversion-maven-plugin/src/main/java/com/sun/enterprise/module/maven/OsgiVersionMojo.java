@@ -131,8 +131,8 @@ public class OsgiVersionMojo extends AbstractMojo {
         }
         String v = converter.getVersion(newVersion.toString());
 
-        getLog().info("OSGi Version for "+project.getVersion()+" is "+v);
-        getLog().info("It is set in project property called "+ versionPropertyName);
+        getLog().debug("OSGi Version for "+project.getVersion()+" is "+v);
+        getLog().debug("It is set in project property called "+ versionPropertyName);
         project.getProperties().put(versionPropertyName,v);
     }
 }

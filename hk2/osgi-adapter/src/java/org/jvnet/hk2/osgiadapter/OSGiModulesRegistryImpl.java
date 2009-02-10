@@ -48,9 +48,6 @@ import com.sun.hk2.component.InhabitantsParser;
 import java.io.IOException;
 import java.io.File;
 import java.util.*;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.jar.Manifest;
 import java.util.logging.*;
 import java.net.URL;
 import java.net.URI;
@@ -59,10 +56,14 @@ import java.net.URLClassLoader;
 import java.net.URISyntaxException;
 
 /**
+ * This is an implementation of {@link com.sun.enterprise.module.ModulesRegistry}.
+ * It uses OSGi extender pattern to do necessary parsing of OSGi bundles.
+ *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class OSGiModulesRegistryImpl
-        extends com.sun.enterprise.module.common_impl.AbstractModulesRegistryImpl {
+        extends com.sun.enterprise.module.common_impl.AbstractModulesRegistryImpl
+        implements SynchronousBundleListener {
 
     /**
      * OSGi BundleContext - used to install/uninstall, start/stop bundles
@@ -77,14 +78,19 @@ public class OSGiModulesRegistryImpl
     /*package*/ OSGiModulesRegistryImpl(BundleContext bctx) {
         super(null);
         this.bctx = bctx;
+
+        // Need to add a listener so that we get notification about
+        // bundles that get installed/uninstalled from now on...
+        // This must happen before we start iterating the existing bundles.
+        bctx.addBundleListener(this);
+
         // Populate registry with pre-installed bundles
         for (final Bundle b : bctx.getBundles()) {
             if (b.getLocation().equals (Constants.SYSTEM_BUNDLE_LOCATION)) {
                 continue;
             }
-            ModuleDefinition md;
             try {
-                md = new OSGiModuleDefinition(b);
+                add(makeModule(b)); // call add as it processes provider names
             } catch (Exception e) {
                 logger.logp(Level.WARNING, "OSGiModulesRegistryImpl",
                         "OSGiModulesRegistryImpl",
@@ -93,18 +99,74 @@ public class OSGiModulesRegistryImpl
                         new Object[]{b, b.getLocation(), e});
                 continue;
             }
-            Module m = new OSGiModuleImpl(this, b, md);
-            add(m); // call add as it processes provider names
         }
         ServiceReference ref = bctx.getServiceReference(PackageAdmin.class.getName());
         pa = PackageAdmin.class.cast(bctx.getService(ref));
     }
 
+    public void bundleChanged(BundleEvent event) {
+        // Extender implementation.
+        try {
+            final Bundle bundle = event.getBundle();
+            switch (event.getType()) {
+                case BundleEvent.INSTALLED :
+                {
+                    // call add as it processes provider names
+                    add(makeModule(bundle));
+                    break;
+                }
+                case BundleEvent.UNINSTALLED :
+                {
+                    final Module m = getModule(bundle);
+                    if (m!=null) {
+                        // getModule can return null if some bundle got uninstalled
+                        // before we have finished initialization.
+                        // call remove as it processes provider names
+                        remove(m);
+                    }
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            logger.logp(Level.WARNING, "OSGiModulesRegistryImpl", "bundleChanged",
+                    "e = {0}", new Object[]{e});
+        }
+    }
+
+    // Factory method
+    private Module makeModule(Bundle bundle) throws IOException, URISyntaxException {
+        final OSGiModuleDefinition md = makeModuleDef(bundle);
+        Module m = new OSGiModuleImpl(this, bundle, md);
+        return m;
+    }
+
+    // Factory method
+    private OSGiModuleDefinition makeModuleDef(Bundle bundle)
+            throws IOException, URISyntaxException {
+        OSGiModuleDefinition md = new OSGiModuleDefinition(bundle);
+        return md;
+    }
+
+    @Override
+    protected synchronized void add(Module newModule) {
+        // It is overridden to make it synchronized as it is called from
+        // BundleListener.
+        super.add(newModule);
+    }
+
+    @Override
+    public synchronized void remove(Module module) {
+        // It is overridden to make it synchronized as it is called from
+        // BundleListener.
+        super.remove(module);
+    }
+
+    // factory method
     protected Module newModule(ModuleDefinition moduleDef) {
         String location = moduleDef.getLocations()[0].toString();
         try {
             if (logger.isLoggable(Level.FINE)) {
-                logger.logp(Level.FINE, "OSGiModulesRegistryImpl", "add",
+                logger.logp(Level.FINE, "OSGiModulesRegistryImpl", "newModule",
                     "location = {0}", location);
             }
             File l = new File(moduleDef.getLocations()[0]);
@@ -115,7 +177,7 @@ public class OSGiModulesRegistryImpl
             // wrap Bundle by a Module object
             return new OSGiModuleImpl(this, bundle, moduleDef);
         } catch (BundleException e) {
-            logger.logp(Level.WARNING, "OSGiModulesRegistryImpl", "add",
+            logger.logp(Level.WARNING, "OSGiModulesRegistryImpl", "newModule",
                     "Exception {0} while adding location = {1}", new Object[]{e, location});
 //            throw new RuntimeException(e); // continue
         }
@@ -304,7 +366,7 @@ public class OSGiModulesRegistryImpl
     }
 
     public void addModuleChangeListener(final ModuleChangeListener listener, final OSGiModuleImpl module) {
-        SynchronousBundleListener bundleListener = new SynchronousBundleListener() {
+        BundleListener bundleListener = new BundleListener() {
             public void bundleChanged(BundleEvent event) {
                 if ((event.getBundle() == module.getBundle()) &&
                         ((event.getType() & BundleEvent.UPDATED) == BundleEvent.UPDATED)) {
@@ -326,10 +388,15 @@ public class OSGiModulesRegistryImpl
     }
 
     public void register(final ModuleLifecycleListener listener) {
-        SynchronousBundleListener bundleListener = new SynchronousBundleListener() {
+        BundleListener bundleListener = new BundleListener() {
             public void bundleChanged(BundleEvent event) {
-                if ((event.getType() & BundleEvent.STARTED) == BundleEvent.STARTED) {
-                    listener.moduleStarted(getModule(event.getBundle()));
+                switch (event.getType()) {
+                    case BundleEvent.STARTED:
+                        listener.moduleStarted(getModule(event.getBundle()));
+                        break;
+                    case BundleEvent.STOPPED:
+                        listener.moduleStopped(getModule(event.getBundle()));
+                        break;
                 }
             }
         };
@@ -360,48 +427,4 @@ public class OSGiModulesRegistryImpl
         return modules.get(bundle.getHeaders().get(ManifestConstants.BUNDLE_NAME));
     }
 
-    private static class DummyModuleDefinition implements ModuleDefinition {
-        private final Bundle b;
-        private URI location;
-        public DummyModuleDefinition(Bundle b) throws URISyntaxException {
-            this.b = b;
-            location = new URI(b.getLocation());
-        }
-
-        public String getName() {
-            return b.getSymbolicName();
-        }
-
-        public String[] getPublicInterfaces() {
-            return new String[0];
-        }
-
-        public ModuleDependency[] getDependencies() {
-            return new ModuleDependency[0];
-        }
-
-        public URI[] getLocations() {
-            return new URI[]{location};
-        }
-
-        public String getVersion() {
-            return String.class.cast(b.getHeaders().get(Constants.BUNDLE_VERSION));
-        }
-
-        public String getImportPolicyClassName() {
-            return null;
-        }
-
-        public String getLifecyclePolicyClassName() {
-            return null;
-        }
-
-        public Manifest getManifest() {
-            return null;
-        }
-
-        public ModuleMetadata getMetadata() {
-            return new ModuleMetadata();
-        }
-    }
 }
