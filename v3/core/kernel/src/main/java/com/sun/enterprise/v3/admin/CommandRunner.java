@@ -167,10 +167,15 @@ public class CommandRunner {
                         Field sourceField = parameters.getClass().getField(targetField.getName());
                         targetField.setAccessible(true);
                         Object paramValue = sourceField.get(parameters);
+/*
                         if (paramValue==null) {
                             return convertStringToObject(paramName, type, param.defaultValue());
                         }
+*/
+                        // XXX temp fix, to revisit 
+                        if (paramValue != null) {
                         checkAgainstAcceptableValues(target, paramValue.toString());
+                        }
                         return paramValue;
                     } catch (IllegalAccessException e) {
                     } catch (NoSuchFieldException e) {
