@@ -152,14 +152,6 @@ public class Server {
      ******************************************************************
      */
     /**
-     *
-     * @return the name of this server
-     */
-    public String getServerName() {
-        return this.info.name;
-    }
-
-    /**
      * Creates a Server object with the given EmbeddedInfo object.
      *
      * @param info EmbeddedInfo object which specifies information like server
@@ -196,6 +188,14 @@ public class Server {
         addServer(info.name, this);
         writeXml();
     }
+
+    /**
+     * @return the name of this server
+     */
+    public String getServerName() {
+        return this.info.name;
+    }
+
 
     /**
      * @return the domainXml URL.
@@ -285,6 +285,7 @@ public class Server {
     }
      */
     /**
+     * TODO does this work?
      * Sets the overall logging level for the Server.
      * @param level
      */
@@ -325,9 +326,7 @@ public class Server {
 
             habitat = main.launch(reg, startupContext);
             appLife = habitat.getComponent(ApplicationLifecycle.class);
-            snifMan = habitat.getComponent(SnifferManager.class);
             archiveFactory = habitat.getComponent(ArchiveFactory.class);
-            env = habitat.getComponent(ServerEnvironmentImpl.class);
             wc = habitat.getComponent(WebContainer.class);
             ewc = habitat.getComponent(EmbeddedWebContainer.class);
         }
@@ -337,173 +336,7 @@ public class Server {
 
     }
 
-    /**
-     * Deploys WAR/EAR/RAR/etc to this Server.
-     *
-     * @param archive
-     * @return always non-null. Represents the deployed application.
-     * @throws EmbeddedException
-     */
-    public Application deploy(File archive) throws EmbeddedException {
-        try {
-            mustBeStarted("deploy");
-            ReadableArchive a = archiveFactory.openArchive(archive);
 
-            if (!archive.isDirectory()) {
-
-                ArchiveHandler h = appLife.getArchiveHandler(a);
-                File appDir = new File(efs.getApplicationsDir(), a.getName());
-                FileUtils.whack(appDir);
-                appDir.mkdirs();
-                h.expand(a, archiveFactory.createArchive(appDir));
-                a.close();
-                a = archiveFactory.openArchive(appDir);
-            }
-            return deploy(a);
-        }
-        catch (EmbeddedException ex) {
-            throw ex;
-        }
-        catch (Exception ex) {
-            throw new EmbeddedException(ex);
-        }
-
-    }
-
-    /**
-     * Deploys a {@link ReadableArchive} to this Server.
-     * <p/>
-     * <p/>
-     * This overloaded version of the deploy method is for advanced users.
-     * It allows the caller to deploy an application in a non-standard layout.
-     * <p/>
-     * <p/>
-     * The deployment uses the {@link ReadableArchive#getName() archive name}
-     * as the context path.
-     *
-     * @param a
-     * @return The object that represents a deployed application.
-     *         Never null.
-     * @throws EmbeddedException
-     */
-    public Application deploy(ReadableArchive a) throws EmbeddedException {
-        return deploy(a, null);
-    }
-
-    /**
-     * Deploys a {@link ReadableArchive} to this Server.
-     * <p/>
-     * <p/>
-     * This overloaded version of the deploy method is for advanced users.
-     * It allows you specifying additional parameters to be passed to the deploy command
-     *
-     * @param a
-     * @param params
-     * @return
-     * @throws EmbeddedException
-     */
-    public Application deploy(ReadableArchive a, Properties params) throws EmbeddedException {
-        try {
-            mustBeStarted("deploy");
-
-            ArchiveHandler h = appLife.getArchiveHandler(a);
-
-            // now prepare sniffers
-            //is this required?
-            ClassLoader parentCL = createSnifferParentCL(null, snifMan.getSniffers());
-
-            ClassLoader cl = h.getClassLoader(parentCL, a);
-            Collection<Sniffer> activeSniffers = snifMan.getSniffers(a, cl);
-
-            // TODO: we need to stop this totally type-unsafe way of passing parameters
-            if (params == null) {
-                params = new Properties();
-            }
-            params.put(ParameterNames.NAME, a.getName());
-            params.put(ParameterNames.ENABLED, "true");
-            final DeploymentContextImpl deploymentContext = new DeploymentContextImpl(Logger.getAnonymousLogger(), a, params, env);
-
-            SilentActionReport r = new SilentActionReport();
-            ApplicationInfo appInfo = appLife.deploy(activeSniffers, deploymentContext, r);
-            r.check();
-
-            return new Application(this, appInfo, deploymentContext);
-        }
-        catch (EmbeddedException ex) {
-            throw ex;
-        }
-        catch (Exception ex) {
-            throw new EmbeddedException(ex);
-        }
-    }
-
-    /**
-     * Sets up a parent classloader that will be used to create a temporary application
-     * class loader to load classes from the archive before the Deployers are available.
-     * Sniffer.handles() method takes a class loader as a parameter and this class loader
-     * needs to be able to load any class the sniffer load themselves.
-     *
-     * @param parent   parent class loader for this class loader
-     * @param sniffers sniffer instances
-     * @return a class loader with visibility on all classes loadable by classloaders.
-     */
-    public ClassLoader createSnifferParentCL(ClassLoader parent, Collection<Sniffer> sniffers) {
-        // Use the sniffers class loaders as the delegates to the parent class loader.
-        // This will allow any class loadable by the sniffer (therefore visible to the sniffer
-        // class loader) to be also loadable by the archive's class loader.
-        ClassLoaderProxy cl = new ClassLoaderProxy(new URL[0], parent);
-        for (Sniffer sniffer : sniffers) {
-            cl.addDelegate(sniffer.getClass().getClassLoader());
-        }
-        return cl;
-
-    }
-
-    /**
-     * Convenience method to deploy a scattered war archive on a given virtual server
-     * and using the specified context root.
-     *
-     * @param war           the scattered war
-     * @param contextRoot   the context root to use
-     * @param virtualServer the virtual server ID
-     * @return
-     * @throws EmbeddedException
-     */
-    public Application deployWar(ScatteredWar war, String contextRoot, String virtualServer) throws EmbeddedException {
-        Properties params = new Properties();
-        if (virtualServer == null) {
-            virtualServer = "server";
-        }
-        params.put(ParameterNames.VIRTUAL_SERVERS, virtualServer);
-        if (contextRoot != null) {
-            params.put(ParameterNames.CONTEXT_ROOT, contextRoot);
-        }
-        return deploy(war, params);
-    }
-
-    /**
-     * Convenience method to deploy a scattered war archive on the default virtual server.
-     *
-     * @param war         the archive
-     * @param contextRoot the context root to use
-     * @return
-     * @throws EmbeddedException
-     */
-    public Application deployWar(ScatteredWar war, String contextRoot) throws EmbeddedException {
-        return deployWar(war, contextRoot, null);
-    }
-
-    /**
-     * Convenience method to deploy a scattered war archive on the default virtual server
-     * (as defined by the embedded domain.xml) and using the root "/" context.
-     *
-     * @param war the scattered war
-     * @return
-     * @throws EmbeddedException
-     */
-    public Application deployWar(ScatteredWar war) throws EmbeddedException {
-        return deployWar(war, null, null);
-    }
 
     /**
      * Stops the running server.
@@ -569,6 +402,12 @@ public class Server {
         return vss;
     }
 
+
+    public EmbeddedDeployer getDeployer() throws EmbeddedException {
+        return new EmbeddedDeployer(this);
+    }
+
+
     /******************************************************************
      *************    package-private methods   ********************************
      ******************************************************************
@@ -580,6 +419,23 @@ public class Server {
     Habitat getHabitat() {
         return habitat;
     }
+
+	EmbeddedInfo getInfo() {
+	    return info;
+    }
+
+    void mustBeStarted(String methodName) throws EmbeddedException {
+        if (!isStarted()) {
+            throw new EmbeddedException("not_started", methodName);
+        }
+    }
+
+    void mustNotBeStarted(String methodName) throws EmbeddedException {
+        if (isStarted()) {
+            throw new EmbeddedException("should_not_be_started", methodName);
+        }
+    }
+
 
     /******************************************************************
      *************    private   ********************************
@@ -748,17 +604,6 @@ public class Server {
         return started;
     }
 
-    private void mustBeStarted(String methodName) throws EmbeddedException {
-        if (!isStarted()) {
-            throw new EmbeddedException("not_started", methodName);
-        }
-    }
-
-    private void mustNotBeStarted(String methodName) throws EmbeddedException {
-        if (isStarted()) {
-            throw new EmbeddedException("should_not_be_started", methodName);
-        }
-    }
 
     private void writeXml() throws EmbeddedException {
         // Write domain.xml to target
@@ -912,9 +757,7 @@ public class Server {
     private URL                         defaultWebXml;
     private boolean                     started;
     private ApplicationLifecycle        appLife;
-    private SnifferManager              snifMan;
     private ArchiveFactory              archiveFactory;
-    private ServerEnvironmentImpl       env;
     private String                      id;
     private WebContainer                wc;
     private EmbeddedWebContainer        ewc;

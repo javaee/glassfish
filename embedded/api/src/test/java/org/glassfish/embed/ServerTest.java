@@ -10,6 +10,7 @@ import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import java.io.File;
+import java.util.*;
 import org.apache.catalina.Engine;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -78,18 +79,15 @@ public class ServerTest {
 
         assertTrue(archive.exists());
 
-        Application app = null;
         server.start();
         try {
-            app = server.deploy(archive);
+            server.getDeployer().deploy(archive);
         }
         catch(Exception e) {
             System.out.println("Unexpected Exception: " + e);
             fail("test failed: testDeploy_File_Success");
         }
 
-        assertNotNull(app);
-        app.undeploy();
         server.stop();
     }
 
@@ -99,9 +97,8 @@ public class ServerTest {
         File archive = SmartFile.sanitize(new File("target/test-classes/simple.war"));
         assertTrue(archive.exists());
 
-        Application app = null;
         try {
-            app = server.deploy(archive);
+            server.getDeployer().deploy(archive);
         } catch(EmbeddedException ee) {
             System.out.println("Expected Exception: " + ee);
             throw ee;
@@ -127,17 +124,14 @@ public class ServerTest {
         a.close();
         a = archiveFactory.openArchive(appDir);
 
-        Application app = null;
         server.start();
         try {
-            app = server.deploy(a);
+            server.getDeployer().deploy(a, new Properties());
         } catch(Exception e) {
             System.out.println("Unexpected Exception: " + e);
             fail("failed test: testDeploy_RA_Success");
         }
 
-        assertNotNull(app);
-        app.undeploy();
         server.stop();
     }
 
@@ -147,9 +141,8 @@ public class ServerTest {
         ArchiveFactory archiveFactory = server.getHabitat().getComponent(ArchiveFactory.class);
         ReadableArchive a = archiveFactory.openArchive(archive);
 
-        Application app = null;
         try {
-            app = server.deploy(a);
+           server.getDeployer().deploy(a, new Properties());
         } catch(EmbeddedException ee) {
             System.out.println("Expected Exception: " + ee);
             throw ee;

@@ -55,10 +55,9 @@ public class DeployWebAppTest {
     @Test
     public void garbageWar() throws Exception{
         File qqq = new File("xxxxxx");
-        Application app = null;
         
         try {
-            app = myGF.deploy(qqq);
+            myGF.getDeployer().deploy(qqq);
         }
         catch(Exception e) {
             System.out.println("Caught an Exception as Expected: " + e);
@@ -72,10 +71,9 @@ public class DeployWebAppTest {
         File simpleWar = SmartFile.sanitize(new File("target/test-classes/simple.war"));
         assertTrue(simpleWar.exists());
         System.out.println("Located simple.war");
-        Application app = null;
         
         try {
-            app = myGF.deploy(simpleWar);
+            myGF.getDeployer().deploy(simpleWar);
         }
         catch(Exception e) {
             System.out.println("Unexpected Exception: " + e);
@@ -93,7 +91,6 @@ public class DeployWebAppTest {
             fail(e.getLocalizedMessage());
         }
 
-        app.undeploy();
         System.out.println("Simple War deployed and undeployed OK...");
 
         myGF.setListings(true);

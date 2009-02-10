@@ -73,7 +73,7 @@ public class EmbeddedCommandRunner extends CommandRunner{
 				info.setServerName(serverName);
 				server = new Server(info);
 			}
-            server.deploy(f);
+            server.getDeployer().deploy(f);
             report.setMessage(StringHelper.get("deploy_successful", f.getName()));
             return EmbeddedUtils.succeed(report);
         }

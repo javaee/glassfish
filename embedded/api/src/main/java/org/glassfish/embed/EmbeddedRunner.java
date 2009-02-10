@@ -59,7 +59,7 @@ class EmbeddedRunner {
         server.start();
         
         for(File f : info.archives) {
-            server.deploy(f);
+            server.getDeployer().deploy(f);
             LoggerHelper.info("deploy_successful", f);
         }
     }
