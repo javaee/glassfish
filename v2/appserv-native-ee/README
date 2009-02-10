@@ -1,4 +1,0 @@
-module               : appserv-native-ee
-purpose              : for utilities that involve native code (C/C++).
-contact              : Shing Wai Chan
-date created         : April 08, 2004
