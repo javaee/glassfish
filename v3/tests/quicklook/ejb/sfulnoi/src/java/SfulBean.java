@@ -4,15 +4,14 @@ import javax.ejb.Stateful;
 
 @Stateful
 public class SfulBean {
+    private String name = "foo";
 
-    private String myId = "unknown";
-
-    public void setId(String id) {
-        myId = id;
+    public String getName() {
+        return name;
     }
 
-    public String getId() {
-        return myId;
+    public void setName(String name) {
+        this.name = name;
     }
 
 }

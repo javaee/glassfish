@@ -37,9 +37,7 @@
 <body>
 <h2>JPA in EJB war environment (InjectEMF and UserTransaction)</h2>
 <h3>JPA mapping!</h3>
-<a href="test?tc=EJBInject">@EJB Injection in Servlet</a> <br>
-<a href="test?tc=JpaPersist">Persist Entity</a> <br>
-<a href="test?tc=JpaRemove">Verify Persisted Entity and Remove Entity</a> <br>
-<a href="test?tc=JpaVerify">Verify Removed Entity</a> <br>
+<a href="test?tc=SetName">@EJB Injection in Servlet and Set name.</a> <br>
+<a href="test?tc=GetName">Get the name set by test.</a> <br>
 </body>
 </html>

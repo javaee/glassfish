@@ -4,11 +4,13 @@ import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.ejb.EJB;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 public class SfulServlet extends HttpServlet {
    
-    @EJB 
-    private static SfulBean simpleEJB;
+    @EJB
+    private SfulBean simpleEJB;
     
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
@@ -17,36 +19,42 @@ public class SfulServlet extends HttpServlet {
         boolean status = false;
         try {
             
-            out.println("-------AnnotatedServlet--------");  
-            out.println("AnntatedServlet at " + request.getContextPath ());
+            out.println("-------SfulServlet--------");  
+            out.println("SfulServlet at " + request.getContextPath ());
 
             String testcase = request.getParameter("tc");
             out.println("testcase = " + testcase);
             if (testcase != null) {
 
-	      if ("SetID".equals(testcase)){
-
+        if ("SetName".equals(testcase)){
 		out.println("Simple EJB:");
 		out.println("@EJB Injection="+simpleEJB);
-		String simpleEJBID = null;
-		
+
 		if (simpleEJB != null) {
-		  simpleEJB.setId("Duke");
-		  out.println("@EJB.getName()=" + simpleEJBID);
+		  out.println("Verify Persisted Entity and Remove Entity");
+            try {
+                simpleEJB.setName("Duke");
+                status = true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                status = false;
+            }
 		}
 
-	      } else if ("GetID".equals(testcase)){
-        String simpleEJBID = null;
+	      } else if ("GetName".equals(testcase)){
+
+		String simpleEJBName = null;
+		
 		if (simpleEJB != null) {
-            simpleEJBID = simpleEJB.getId();
-            out.println("@EJB.getName()=" + simpleEJBID);
+		  simpleEJBName = simpleEJB.getName();
+		  out.println("@EJB.getName()=" + simpleEJBName);
 		}
 
 		if (simpleEJB != null &&
-		    "Duke".equals(simpleEJBID)){
+		    "Duke".equals(simpleEJBName)){
 		  status = true;
 		}
-		
+
 	      } else {
 		out.println("No such testcase");
 	      }
@@ -76,7 +84,15 @@ public class SfulServlet extends HttpServlet {
     }
 
     public String getServletInfo() {
-        return "StatefulServlet";
+        return "SfulServlet";
+    }
+
+    private Object lookupField(String name) {
+        try {
+            return new InitialContext().lookup("java:comp/env/" + getClass().getName() + "/" + name);
+        } catch (NamingException e) {
+            return null;
+        }
     }
 
 }

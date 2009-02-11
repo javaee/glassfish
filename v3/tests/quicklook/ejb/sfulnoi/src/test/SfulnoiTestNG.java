@@ -53,10 +53,10 @@ public class SfulnoiTestNG {
            
 
     @Test(groups = { "init" })
-    public void SfulSetID() throws Exception{
+    public void SetName() throws Exception{
         boolean result=false;       
         try{
-            result = test("SetID");
+            result = test("SetName");
             Assert.assertEquals(result, true,"Unexpected Results");
         }catch(Exception e){
             e.printStackTrace();
@@ -65,10 +65,10 @@ public class SfulnoiTestNG {
     }
 
     @Test(dependsOnGroups = { "init.*" })
-    public void JpaPersist() throws Exception{
+    public void GetName() throws Exception{
         boolean result = false;
         try{
-            result = test("GetID");
+            result = test("GetName");
             Assert.assertEquals(result, true,"Unexpected Results");
         }catch(Exception e){
             e.printStackTrace();
@@ -82,7 +82,7 @@ public class SfulnoiTestNG {
         boolean result=false;
         String url = "http://" + host + ":" + port + strContextRoot + 
                      "/test?tc=" + c;
-        System.out.println("url="+url);
+        //System.out.println("url="+url);
 
         HttpURLConnection conn = (HttpURLConnection)
             (new URL(url)).openConnection();
