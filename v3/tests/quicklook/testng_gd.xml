@@ -125,6 +125,7 @@
     <classes>
 	<class name="test.ejb.singleton.SingletonTestNG" />
 	<class name="test.ejb.slsbnicmt.SlsbnicmtTestNG" />
+	<class name="test.ejb.sfulnoi.SfulnoiTestNG" />
     </classes>
   </test> 
   <test name="asadmin_tests">
