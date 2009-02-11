@@ -188,11 +188,11 @@ public class EmbeddedInfo {
     boolean                 createOnly              = false;
     boolean                 autoDeploy              = false;
 
-    public void setCreateOnly(boolean b) {
+    void setCreateOnly(boolean b) {
         createOnly = b;
     }
 
-    public boolean getCreateOnly() {
+    boolean getCreateOnly() {
         return createOnly;
     }
 
