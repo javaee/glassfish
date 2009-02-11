@@ -36,66 +36,13 @@
  */
 package org.glassfish.embed;
 
-import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
-import com.sun.enterprise.deploy.shared.ArchiveFactory;
-import com.sun.enterprise.module.bootstrap.Main;
-import com.sun.enterprise.module.bootstrap.StartupContext;
-import com.sun.enterprise.module.impl.ClassLoaderProxy;
-import com.sun.enterprise.security.SecuritySniffer;
-import com.sun.enterprise.util.io.FileUtils;
-import com.sun.enterprise.v3.admin.CommandRunner;
-import com.sun.enterprise.v3.admin.adapter.AdminConsoleAdapter;
-import com.sun.enterprise.v3.server.APIClassLoaderServiceImpl;
-import com.sun.enterprise.v3.server.ApplicationLifecycle;
-import com.sun.enterprise.v3.server.DomainXml;
-import com.sun.enterprise.v3.server.DomainXmlPersistence;
-import com.sun.enterprise.v3.server.SnifferManager;
-import com.sun.enterprise.v3.services.impl.LogManagerService;
-import com.sun.enterprise.web.EmbeddedWebContainer;
-import com.sun.enterprise.web.VirtualServer;
-import com.sun.enterprise.web.WebContainer;
-import com.sun.enterprise.web.WebDeployer;
-import com.sun.enterprise.web.WebModule;
-import com.sun.hk2.component.ExistingSingletonInhabitant;
-import com.sun.hk2.component.InhabitantsParser;
-import com.sun.web.security.RealmAdapter;
-import com.sun.web.server.DecoratorForJ2EEInstanceListener;
 import java.io.*;
-import java.net.MalformedURLException;
 import java.util.*;
-import javax.servlet.ServletException;
-import org.apache.catalina.Container;
-import org.apache.catalina.Engine;
-import org.apache.catalina.Wrapper;
-import org.glassfish.api.Startup;
-import org.glassfish.api.admin.ParameterNames;
-import org.glassfish.api.container.Sniffer;
-import org.glassfish.api.deployment.archive.ArchiveHandler;
-import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.deployment.autodeploy.AutoDeployService;
-import org.glassfish.deployment.common.DeploymentContextImpl;
-import org.glassfish.embed.impl.EmbeddedAPIClassLoaderServiceImpl;
-import org.glassfish.embed.impl.EmbeddedApplicationLifecycle;
-import org.glassfish.embed.impl.EmbeddedCommandRunner;
-import org.glassfish.embed.impl.EmbeddedDomainXml;
-import org.glassfish.embed.impl.EmbeddedServerEnvironment;
-import org.glassfish.embed.impl.EmbeddedWebDeployer;
-import org.glassfish.embed.impl.EntityResolverImpl;
-import org.glassfish.embed.impl.ScatteredWarHandler;
-import org.glassfish.embed.impl.SilentActionReport;
-import org.glassfish.internal.api.Init;
-import org.glassfish.internal.data.ApplicationInfo;
-import org.glassfish.server.ServerEnvironmentImpl;
-import org.glassfish.web.WebEntityResolver;
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.Inhabitants;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
+import java.net.*;
+import java.util.logging.*;
 
+import javax.servlet.ServletException;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -104,15 +51,28 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.Collection;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
+import com.sun.enterprise.module.bootstrap.Main;
+import com.sun.enterprise.module.bootstrap.StartupContext;
+import com.sun.enterprise.v3.server.ApplicationLifecycle;
+import com.sun.enterprise.web.EmbeddedWebContainer;
+import com.sun.enterprise.web.VirtualServer;
+import com.sun.enterprise.web.WebContainer;
+import com.sun.enterprise.web.WebModule;
+
+import org.apache.catalina.Container;
+import org.apache.catalina.Engine;
+import org.apache.catalina.Wrapper;
 import org.apache.catalina.servlets.DefaultServlet;
 import org.glassfish.embed.impl.EmbeddedModulesRegistryImpl;
+import org.glassfish.api.Startup;
+import org.glassfish.internal.api.Init;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Inhabitant;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import static org.glassfish.embed.ServerConstants.*;
 
 /**
@@ -156,7 +116,7 @@ public class Server {
      *
      * @param info EmbeddedInfo object which specifies information like server
      *             name and HTTP port
-     * @throws org.glassfish.embed.EmbeddedException
+     * @throws EmbeddedException
      */
     public Server(EmbeddedInfo info) throws EmbeddedException {
         this.info = info;
@@ -190,7 +150,9 @@ public class Server {
     }
 
     /**
+     * The name of the server is inside the contained EmbeddedInfo object
      * @return the name of this server
+     * @see EmbeddedInfo
      */
     public String getServerName() {
         return this.info.name;
@@ -212,6 +174,12 @@ public class Server {
         }
     }
 
+    /**
+     *
+     * @return A CommndExecutor instance ready for accepting commands.
+     * @throws EmbeddedException
+     * @see CommandExecutor
+     */
     public synchronized CommandExecutor getCommandExecutor() throws EmbeddedException {
         mustBeStarted("getCommandExecutor");
 
@@ -222,7 +190,8 @@ public class Server {
     }
     
     /**
-     * TODO CLEANUP
+     * Sets the default web.xml to url.  The default url is located inside the
+     * Embedded GlassFish jars.
      * @param url
      */
     public void setDefaultWebXml(URL url) {
@@ -230,9 +199,8 @@ public class Server {
     }
 
     /**
-     * TODO CLEANUP
-     *
-     * @return
+     * The default web.xml is inside the Embedded GlassFish jar.
+     * @return the default web.xml url
      */
     public URL getDefaultWebXml() {
         return defaultWebXml;
@@ -244,7 +212,7 @@ public class Server {
      * be started before calling getEngine().  If it is not started EmbeddedException
      * is thrown.
      * @return Engine
-     * @throws org.glassfish.embed.EmbeddedException
+     * @throws EmbeddedException
      */
     public Engine getEngine() throws EmbeddedException {
         mustBeStarted("getEngine");
@@ -263,7 +231,7 @@ public class Server {
      * be started before calling getEmbeddedWebContainer().  If it is not started
      * EmbeddedException is thrown.
      * @return EmbeddedWebContainer
-     * @throws org.glassfish.embed.EmbeddedException
+     * @throws EmbeddedException
      */
     public EmbeddedWebContainer getEmbeddedWebContainer() throws EmbeddedException {
         mustBeStarted("getEmbeddedWebContainer");
@@ -275,24 +243,31 @@ public class Server {
         return ewc;
     }
 
+    /**
+     * Convenience method that returns this server's EmbeddedFileSystem instance.
+     * THE instance is contained in this server's EmbeddedInfo object.  It can
+     * also be accessed through the EmbeddedInfo object.
+     * @return EmbeddedFileSystem
+     * @throws EmbeddedException
+     * @see EmbeddedFileSystem
+     */
     public EmbeddedFileSystem getFileSystem() {
         return efs;
     }
 
-    /*
-    URL getDomainXML() {
-    return domainXmlUrl;
-    }
-     */
     /**
-     * TODO does this work?
      * Sets the overall logging level for the Server.
      * @param level
      */
     public static void setLogLevel(Level level) {
-        Logger.getLogger("javax.enterprise").setLevel(level);
+        LoggerHelper.setLevel(level);
     }
 
+
+    /**
+     * Starts the server
+     * @throws EmbeddedException
+     */
     public void start() throws EmbeddedException {
         if (started)
             throw new EmbeddedException("already_started");
@@ -309,31 +284,15 @@ public class Server {
             // So we need to send in a fake directory.
 
             StartupContext startupContext = new StartupContext(efs.getModulesDirectory(), new String[0]);
-
-
-            // !!!!!!!!!!!!!!!!!!!!!!!!!
-            // ANONYMOUS CLASS HERE!!
-            // TODO
-            // !!!!!!!!!!!!!!!!!!!!!!!!!
-            Main main = new Main() {
-
-                @Override
-                protected InhabitantsParser createInhabitantsParser(Habitat habitat1) {
-                    return decorateInhabitantsParser(super.createInhabitantsParser(habitat1));
-                }
-            };
-
-
-            habitat = main.launch(reg, startupContext);
-            appLife = habitat.getComponent(ApplicationLifecycle.class);
-            archiveFactory = habitat.getComponent(ArchiveFactory.class);
-            wc = habitat.getComponent(WebContainer.class);
-            ewc = habitat.getComponent(EmbeddedWebContainer.class);
+            Main main       = new EmbeddedBootstrap(this);
+            habitat         = main.launch(reg, startupContext);
+            appLife         = habitat.getComponent(ApplicationLifecycle.class);
+            wc              = habitat.getComponent(WebContainer.class);
+            ewc             = habitat.getComponent(EmbeddedWebContainer.class);
         }
         catch (Exception e) {
             throw new EmbeddedException(e);
         }
-
     }
 
 
@@ -367,6 +326,16 @@ public class Server {
         return servers.get(id);
     }
 
+
+    /**
+     * If a browser is pointed to a web application that has no welcome file then
+     * a file listing is shown in the browser if Listings is set to true.
+     * The default is tken from the default web.xml file.  This method will override
+     * whatever default is in web.xml
+     * @param b true turns listings on, false turns them off
+     * @throws EmbeddedException
+     * @see setDefaultWebXml()
+     */
     public void setListings(boolean b) throws EmbeddedException {
         Container[] vss = getVirtualServers();
 
@@ -393,6 +362,12 @@ public class Server {
         }
     }
 
+
+    /**
+     * Returns all virtual servers from this server's web container.
+     * @return this server's virtual servers
+     * @throws EmbeddedException
+     */
     public Container[] getVirtualServers() throws EmbeddedException {
         Container[] vss = getEngine().findChildren();
 
@@ -403,6 +378,13 @@ public class Server {
     }
 
 
+    /**
+     * Returns an EmbeddedDeployer instance that can be used to deploy applications
+     * to this server.
+     * @return a freshly created EmbeddedDeployer for this server
+     * @throws EmbeddedException
+     * @see EmbeddedDeployer
+     */
     public EmbeddedDeployer getDeployer() throws EmbeddedException {
         return new EmbeddedDeployer(this);
     }
@@ -638,86 +620,6 @@ public class Server {
         throw new EmbeddedException("bad_web_module", "No Default Servlet");
     }
 
-    /**
-     * Tweaks the 'recipe' --- for embedded use, we'd like GFv3 to behave a little bit
-     * differently from normal stand-alone use.
-     * @param parser
-     * @return
-     */
-    private InhabitantsParser decorateInhabitantsParser(InhabitantsParser parser) {
-        // registering the server using the base class and not the current instance class
-        // (GlassFish server may be extended by the user)
-        parser.habitat.add(new ExistingSingletonInhabitant<Server>(Server.class, this));
-        // register scattered web handler before normal WarHandler kicks in.
-        Inhabitant<ScatteredWarHandler> swh = Inhabitants.create(new ScatteredWarHandler());
-        parser.habitat.add(swh);
-        parser.habitat.addIndex(swh, ArchiveHandler.class.getName(), null);
-
-        // we don't want GFv3 to reconfigure all the loggers
-        parser.drop(LogManagerService.class);
-
-        // we don't need admin CLI support.
-        // TODO: admin CLI should be really moved to a separate class
-        parser.drop(AdminConsoleAdapter.class);
-
-        if (info.autoDeploy == false) {
-            try {
-                Class.forName("org.glassfish.deployment.autodeploy.AutoDeployService");
-                parser.drop(AutoDeployService.class);
-            }
-            catch (Exception e) {
-                // ignore.  It may not be available
-            }
-        }
-
-        //TODO: workaround for a bug
-        parser.replace(ApplicationLifecycle.class, EmbeddedApplicationLifecycle.class);
-
-        parser.replace(APIClassLoaderServiceImpl.class, EmbeddedAPIClassLoaderServiceImpl.class);
-        // we don't really parse domain.xml from disk
-        parser.replace(DomainXml.class, EmbeddedDomainXml.class);
-
-        // ... and we don't persist it either.
-        parser.replace(DomainXmlPersistence.class, EmbeddedDomainXml.class);
-        try {
-            // we provide our own ServerEnvironment
-            EmbeddedServerEnvironment.setInstanceRoot(efs.getInstanceRoot());
-        }
-        catch (EmbeddedException ex) {
-            //TODO ????
-        }
-
-        parser.replace(ServerEnvironmentImpl.class, EmbeddedServerEnvironment.class);
-
-        {// adjustment for webtier only bundle
-            parser.drop(DecoratorForJ2EEInstanceListener.class);
-
-            // in the webtier-only bundle, these components don't exist to begin with.
-
-            try {
-                // security code needs a whole lot more work to work in the modular environment.
-                // disabling it for now.
-                parser.drop(SecuritySniffer.class);
-
-                // WebContainer has a bug in how it looks up Realm, but this should work around that.
-                parser.drop(RealmAdapter.class);
-            }
-            catch (LinkageError e) {
-                // maybe we are running in the webtier only bundle
-            }
-        }
-
-        // override the location of default-web.xml
-        parser.replace(WebDeployer.class, EmbeddedWebDeployer.class);
-
-        // override the location of cached DTDs and schemas
-        parser.replace(WebEntityResolver.class, EntityResolverImpl.class);
-
-        parser.replace(CommandRunner.class, EmbeddedCommandRunner.class);
-
-        return parser;
-    }
-
     private void createJMXConnector() throws EmbeddedException {
         mustNotBeStarted("createJMXConnector");
 
@@ -732,6 +634,7 @@ public class Server {
             throw new AssertionError(e);    // impossible
         }
     }
+
     ////////////////////////////////////////////////////////
     /////////////   private variables //////////////////////
     ////////////////////////////////////////////////////////
@@ -747,8 +650,6 @@ public class Server {
     private URL                         defaultWebXml;
     private boolean                     started;
     private ApplicationLifecycle        appLife;
-    private ArchiveFactory              archiveFactory;
-    private String                      id;
     private WebContainer                wc;
     private EmbeddedWebContainer        ewc;
     private Document                    domainXmlDocument;
