@@ -46,7 +46,7 @@ import org.jvnet.hk2.annotations.Contract;
  * and their static and dynamic resources into the URI namespace.
  */
 
-//@Contract
+@Contract
 public interface EmbeddedWebContainer {
 
     /**
