@@ -44,7 +44,7 @@ public class DeployWebAppTest {
     }
 
     //@Test( expected=MiniXmlParserException.class)
-    //@Test
+    @Test
     public void garbageWar() throws Exception{
         File qqq = new File("xxxxxx");
         App app = null;
