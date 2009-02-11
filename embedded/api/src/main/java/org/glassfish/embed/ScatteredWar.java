@@ -49,15 +49,17 @@ import java.util.jar.Manifest;
  * is not assembled into the canonical war format. 
  *
  * @author Kohsuke Kawaguchi
+ * @author Byron Nevins
  */
+
 public class ScatteredWar extends ReadableArchiveAdapter {
     /**
      *
-     * @param name
-     *      Application name. Among other things, this is used by default as the context path
+     * @param name Application name. Among other things, this is used by default as the context path
      *      when you deploy this scattered war file.
-     * @param webXml
-     *      if null, defaults to {@code WEB-INF/web.xml} under {@code resources}.
+     * @param resources Directory where static resources like JSPs live.  WEB-INF/web.xml may be hre as well.
+     * @param webXml if null, defaults to {@code WEB-INF/web.xml} under {@code resources}.
+     * @param classes A Collection of classpath URLs for this application
      */
     public ScatteredWar(String name, File resources, File webXml, Collection<URL> classes) {
         this.name = name;
@@ -66,15 +68,122 @@ public class ScatteredWar extends ReadableArchiveAdapter {
             webXml = new File(resources,"WEB-INF/web.xml");
         this.webXml = webXml;
         this.classpath = classes;
+        java.io.BufferedInputStream bis = null;
     }
 
+    /**
+     * Get the classpath URLs
+     * @return A read-only copy of the classpath URL Collection
+     */
     public Iterable<URL> getClassPath() {
         return Collections.unmodifiableCollection(classpath);
     }
 
+    /**
+     *
+     * @return The resources directory
+     */
     public File getResourcesDir() {
         return resources;
     }
+
+
+    ///////////////////////////////////////////////////////////////////////////
+    //////      public methods that implement the Archive interface
+    ///////////////////////////////////////////////////////////////////////////
+
+  /**
+     * Returns the InputStream for the given entry name
+     * The file name must be relative to the root of the module.
+     *
+     * @param name the file name relative to the root of the module.
+     * @return the InputStream for the given entry name or null if not found.
+     */
+    
+    public InputStream getEntry(String name) throws IOException {
+        File f = getFile(name);
+        if(f.exists())  return new FileInputStream(f);
+        return null;
+    }
+   /**
+     * Returns whether or not a file by that name exists
+     * The file name must be relative to the root of the module.
+     *
+     * @param name the file name relative to the root of the module.
+     * @return does the file exist?
+     */
+
+    public boolean exists(String name) throws IOException {
+        return getFile(name).exists();
+    }
+
+   /**
+     * Returns an enumeration of the module file entries.  All elements
+     * in the enumeration are of type String.  Each String represents a
+     * file name relative to the root of the module.
+     * <p><strong>Currently under construction</strong>
+     * @return an enumeration of the archive file entries.
+     */
+    public Enumeration<String> entries() {
+        // TODO: abstraction breakage. We need file-level abstraction for archive
+        // and then more structured abstraction.
+        return EMPTY_ENUMERATOR;
+    }
+
+    /**
+     * Returns the manifest information for this archive
+     * @return the manifest info
+     */
+    public Manifest getManifest() throws IOException {
+        // TODO: we can support manifest.
+        // for now I'm not doing this because it seems like the value of this is limited for webapps.
+        return null;
+    }
+    /**
+     * Returns the path used to create or open the underlying archive
+     *
+     * <p>
+     * TODO: abstraction breakage:
+     * Several callers, most notably {@link DeploymentContext#getSourceDir()}
+     * implementation, assumes that this URI is an URL, and in fact file URL.
+     *
+     * <p>
+     * If this needs to be URL, use of {@link URI} is misleading. And furthermore,
+     * if its needs to be a file URL, this should be {@link File}.
+     *
+     * @return the path for this archive.
+     */
+    public URI getURI() {
+        return resources.toURI();
+    }
+
+    /**
+     * Returns the name of the archive.
+     * <p>
+     * Implementations should not return null.
+     * @return the name of the archive
+     */
+    public String getName() {
+        return name;
+    }
+    /**
+     * Returns an enumeration of the module file entries with the
+     * specified prefix.  All elements in the enumeration are of
+     * type String.  Each String represents a file name relative
+     * to the root of the module.
+     * <p><strong>Currently Not Supported</strong>
+     * @param prefix the prefix of entries to be included
+     * @return an enumeration of the archive file entries.
+     * @throws UnsupportedOperationException always
+     */
+
+    public Enumeration<String> entries(String s) {
+        throw new UnsupportedOperationException(unsupported("entries(String)"));
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    //////             End of public API     //////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
 
 
     /**
@@ -85,10 +194,8 @@ public class ScatteredWar extends ReadableArchiveAdapter {
      * when in reality we don't. The illusion is partial because we can't
      * emulate WEB-INF/classes and WEB-INF/lib.
      *
-     * @param name
-     *      Relative path from within the canonical war format.
-     * @return
-     *      concrete location.
+     * @param name Relative path from within the canonical war format.
+     * @return concrete location.
      */
     private File getFile(String name) {
         if(name.equals("WEB-INF/web.xml"))
@@ -96,48 +203,17 @@ public class ScatteredWar extends ReadableArchiveAdapter {
         return new File(resources, name);
     }
 
-    public InputStream getEntry(String name) throws IOException {
-        File f = getFile(name);
-        if(f.exists())  return new FileInputStream(f);
-        return null;
+    private String unsupported(String s) {
+        s = getClass().getName() + "." + s;
+        s += " is not supported yet.";
+        return s;
     }
-
-    public boolean exists(String name) throws IOException {
-        return getFile(name).exists();
-    }
-
-    public Enumeration<String> entries() {
-        // TODO: abstraction breakage. We need file-level abstraction for archive
-        // and then more structured abstraction.
-        return EMPTY_ENUMERATOR;
-    }
-
-    public Manifest getManifest() throws IOException {
-        // TODO: we can support manifest.
-        // for now I'm not doing this because it seems like the value of this is limited for webapps.
-        return null;
-    }
-
-    public URI getURI() {
-        return resources.toURI();
-        // see my note on getURI javadoc. This isn't a URI
-//        return URI.create("scattered-war:"+resources.getPath());
-    }
-
-    public String getName() {
-        return name;
-    }
-
+    
     ///////////////////////////////////////////////////////////////////////////
     
     private final File resources;       // Static resources, JSP, etc.
     private final File webXml;          // Location of web.xml
     private final Collection<URL> classpath;  // Classes and jar files
     private final String name;
-    private static final Enumeration EMPTY_ENUMERATOR = new Vector().elements();
-
-
-    public Enumeration<String> entries(String arg0) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+    private static final Enumeration<String> EMPTY_ENUMERATOR = new Vector<String>().elements();
 }
