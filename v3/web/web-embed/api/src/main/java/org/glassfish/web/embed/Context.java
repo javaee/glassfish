@@ -52,6 +52,44 @@ import org.apache.catalina.Valve;
 public interface Context extends ServletContext, Lifecycle {
 
     /**
+     * Adds the given <tt>Servlet</tt> to this <tt>Context</tt>
+     * under the given <tt>servletName</tt>.
+     *
+     * @param servletName the <tt>Servlet</tt> name
+     * @param t the <tt>Servlet</tt> to be added
+     *
+     * @return a <tt>ServletRegistration</tt> object that may be used to
+     * further configure the registered <tt>Servlet</tt>, or <tt>null</tt>
+     * if this <tt>Context</tt> already contains a <tt>Servlet</tt> with a
+     * matching name
+     *
+     * @throws IllegalStateException if this context has already been
+     * initialized and started
+     */
+    public <T extends Servlet> ServletRegistration addServlet(
+        String servletName, T t);
+
+    /**
+     * Instantiates a <tt>Servlet</tt> from the given class and adds
+     * it to this <tt>Context</tt> under the given <tt>servletName</tt>.
+     *
+     * @param servletName the <tt>Servlet</tt> name
+     * @param c the class from which to instantiate the <tt>Servlet</tt>
+     *
+     * @return a <tt>ServletRegistration</tt> object that may be used to
+     * further configure the registered <tt>Servlet</tt>, or <tt>null</tt>
+     * if this <tt>Context</tt> already contains a <tt>Servlet</tt> with a
+     * matching name
+     *
+     * @throws IllegalArgumentException if the given class does not
+     * implement the <tt>Servlet</tt> interface
+     * @throws IllegalStateException if this context has already been
+     * initialized and started
+     */
+    public ServletRegistration addServlet(String servletName,
+                                          Class <? extends Servlet> c);
+
+    /**
      * Adds the given <tt>Valve</tt> to this <tt>Context</tt>.
      *
      * @param t the <tt>Valve</tt> to be added
@@ -82,7 +120,7 @@ public interface Context extends ServletContext, Lifecycle {
     public <T extends EventListener> void addListener(T t);
 
     /**
-     * Creates a listener from the given class type and registers it with
+     * Instantiates a listener from the given class and registers it with
      * this <tt>Context</tt>.
      * 
      * <p>The given listener must be an instance of one or more of the
@@ -96,7 +134,7 @@ public interface Context extends ServletContext, Lifecycle {
      * <li><tt>javax.servlet.http.HttpSessionListener</tt>
      * </ul>
      *
-     * @param c the class type of the listener
+     * @param c the class from which to instantiate of the listener
      *
      * @throws IllegalArgumentException if the given class does not
      * implement any of the above interfaces
