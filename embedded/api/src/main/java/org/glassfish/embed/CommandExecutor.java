@@ -20,7 +20,7 @@ import java.util.Properties;
  * EmbeddedInfo ei = new EmbeddedInfo();
  * Server server = new Server(ei);
  * server.start();
- * CommandExecutor ce = new CommandExecutor(server);
+ * CommandExecutor ce = server.getCommandExecutor();
  * </xmp>
  * @author Jennifer
  * @see <a href="http://docs.sun.com/app/docs/doc/820-4495/gcode?a=view">CLI commands</a>
@@ -87,31 +87,52 @@ public class CommandExecutor {
     }
 
     /**
-     * <code>ActionReport</code> contains information about the execution of the
-     * command.  This information includes command execution messages and exit
-     * codes.
+     * <code>org.glassfish.api.ActionReport</code> contains information about
+     * the execution of the command.  The content of the
+     * <code>org.glassfish.api.ActionReport</code> is set by the individual 
+     * commands.  This information may include command execution
+     * messages and exit codes.  This method is called after {@link execute} to
+     * retrieve an <code>ActionReport</code> that has been populated by the command.
+     * It will be empty if no command has been executed.
      *
-     * @return the {@link ActionReport}
+     * Example of how to use <code>org.glassfish.api.ActionReport</code> with a list command.
+     *
+     * <xmp>
+     *  ce.execute("list-jdbc-connection-pools", options);
+        ActionReport report = ce.getReport();
+        List<org.glassfish.api.ActionReport.MessagePart> list = report.getTopMessagePart().getChildren();
+        for (org.glassfish.api.ActionReport.MessagePart mp : list) {
+            System.out.println(mp.getMessage());
+        }
+     * </xmp>
+     *
+     * @return the {@link org.glassfish.api.ActionReport}
      */
     public ActionReport getReport() {
         return report;
     }
 
     /**
-     * Returns the exit code from the command execution
+     * Returns the exit code from the command execution.  This method is called
+     * after {@link execute} to retrieve an
+     * <code>org.glassfish.api.ActionReport.ExitCode</code> from the command.
      * <ul>
-     * <li>0 = success</li>
-     * <li>1 = failure</li>
+     * <li>SUCCESS</li>
+     * <li>FAILURE</li>
      * </ul>
-     * @return the exit code from command execution
+     * @return the exit code from the <code>org.glassfish.api.ActionReport</code>
      */
     public ActionReport.ExitCode getExitCode() {
         return report.getActionExitCode();
     }
 
     /**
+     * Returns the message if any from the command execution.  This method is
+     * called after {@link execute} to retrieve a message from the command.
+     * If this method returns an empty string, either no command was executed or
+     * the command did not set any message on the <code>org.glassfish.api.ActionReport</code>
      *
-     * @return the message from the <code>ActionReport</code>
+     * @return the message from the <code>org.glassfish.api.ActionReport</code>
      */
     public String getMessage() {
         String msg = report.getMessage();
