@@ -32,6 +32,8 @@ public class ServerTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
+        System.out.println("\n*********  setUpClass in serverTest\n");
+
         EmbeddedInfo info = new EmbeddedInfo();
         info.setServerName("server");
         server = Server.getServer(info.name);
@@ -42,6 +44,7 @@ public class ServerTest {
 
     @AfterClass
     public static void tearDownClass() throws Exception {
+        System.out.println("\n*********  tearClass in serverTest\n");
         try {
             server.stop();
         } catch (EmbeddedException ee) {

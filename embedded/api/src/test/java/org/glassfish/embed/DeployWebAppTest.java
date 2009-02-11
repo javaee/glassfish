@@ -23,6 +23,7 @@ public class DeployWebAppTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception{
+        System.out.println("\n*********  setUpClass in deploywebappTest\n");
         EmbeddedInfo info = new EmbeddedInfo();
         info.setServerName("server");
         myGF = Server.getServer(info.name);
@@ -40,6 +41,8 @@ public class DeployWebAppTest {
 
     @AfterClass
     public static void tearDownClass() throws Exception {
+        System.out.println("\n*********  tearClass in deploywebapptest\n");
+
         myGF.stop();
     }
 

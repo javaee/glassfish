@@ -32,6 +32,7 @@ public class CommandExecutorTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
+        System.out.println("\n*********  setUpClass in CETest\n");
         myGF = Server.getServer("server");
         if(myGF == null) {
             EmbeddedInfo ei = new EmbeddedInfo();
@@ -52,6 +53,7 @@ public class CommandExecutorTest {
 
     @AfterClass
     public static void tearDownClass() throws Exception {
+        System.out.println("\n*********  tearClass in CETest\n");
         myGF.stop();
     }
 

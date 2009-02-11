@@ -250,20 +250,12 @@ public final class EmbeddedFileSystem {
      */
     File getModulesDirectory() throws EmbeddedException {
         mustBeInitialized("getModulesDirectory");
-        File f = new File(getInstallRoot(), "modules");
-
-        if(!f.isDirectory()) {
-            f.mkdirs();
-        }
-
-        if(!f.isDirectory()) {
-            throw new EmbeddedException("cant_create_modules_dir");
-        }
-        return f;
+        return modulesDir;
     }
 
     void cleanup() throws EmbeddedException {
         mustBeInitialized("cleanup");
+        defaultsAreInUse = false;
         if (shouldCleanup()) {
             // note that Logger will not work now because the JVM has shut it down
             System.out.println("Cleaning up files");
@@ -272,8 +264,6 @@ public final class EmbeddedFileSystem {
             if (!instanceRoot.equals(installRoot)) {
                 FileUtils.whack(instanceRoot);
             }
-
-            defaultsAreInUse = false;
         }
     }
 
@@ -283,9 +273,8 @@ public final class EmbeddedFileSystem {
      * worry about getting into a weird inconsistent state later.
      */
     void initialize() throws EmbeddedException {
-        initializeInstanceAndInstallDirs();
+        initializeDirectories();
         initializeDomainXml(); // very complicated!!
-        initializeApplicationsDirectory();
         setSystemProps();
         initializeLogFile();
         initialized = true;
@@ -298,6 +287,16 @@ public final class EmbeddedFileSystem {
     // ****************************************************
     // *************    private
     // ****************************************************
+
+    private void initializeDirectories() throws EmbeddedException {
+        initializeInstanceAndInstallDirs();
+        // bnevins note: 
+        //it is too early to call the getters for installRoot and instanceRoot - so
+        // we access the variables themselves.
+        appsDir         = initializeDirectory(instanceRoot, APPLICATIONS_DIR_NAME, "Applications");
+        generatedDir    = initializeDirectory(instanceRoot, GENERATED_DIR_NAME, "Generated");
+        modulesDir      = initializeDirectory(installRoot, MODULES_DIR_NAME, "Modules");
+    }
 
     /**
      * The idea here is that the Url ALWAYS points at the source of data.
@@ -410,12 +409,15 @@ public final class EmbeddedFileSystem {
         }
     }
 
-    private void initializeApplicationsDirectory() throws EmbeddedException {
-        appsDir = new File(instanceRoot, APPLICATIONS_DIR);
 
-        if (!EmbeddedUtils.mkdirsIfNotExist(appsDir)) {
-            throw new EmbeddedException("cant_create_apps_dir", appsDir);
+ 
+    private File initializeDirectory(File parent, String filename, String messageName) throws EmbeddedException {
+        File dir = new File(parent, filename);
+
+        if (!EmbeddedUtils.mkdirsIfNotExist(dir)) {
+            throw new EmbeddedException("cant_create_dir", messageName, dir);
         }
+        return dir;
     }
 
     private void setSystemProps() {
@@ -463,8 +465,11 @@ public final class EmbeddedFileSystem {
     private File                instanceRoot;
     private File                domainXmlTarget;
     private File                appsDir;
+    private File                generatedDir;
+    private File                modulesDir;
     private File                logFile;
     private URL                 domainXmlSource;
     private boolean             autoDelete          = true;
     private boolean             initialized         = false;
+
 }
