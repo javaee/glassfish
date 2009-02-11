@@ -65,14 +65,24 @@ public final class SolarisRealm extends IASRealm
 {
     // Descriptive string of the authentication type of this realm.
     public static final String AUTH_TYPE = "solaris";
+    public static final String OS_ARCH = "os.arch";
+    public static final String SOL_SPARC_OS_ARCH = "sparc";
+    public static final String SOL_X86_OS_ARCH = "x86";
 
     private HashMap groupCache;
     private Vector emptyVector;
+    private static String osArchType = null;
 
 
     // Library for native methods
     static {
-        System.loadLibrary("solarisauth");
+        osArchType = System.getProperty(OS_ARCH);
+        if(SOL_SPARC_OS_ARCH.equals(osArchType)) {
+            System.loadLibrary("solsparcauth");
+        }
+        else if (SOL_X86_OS_ARCH.equals(osArchType)) {
+            System.loadLibrary("solx86auth");
+        }
     }
 
     

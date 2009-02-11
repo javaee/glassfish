@@ -12,9 +12,12 @@ Import-Package: \
                         com.sun.logging.enterprise.system.core.security, \
                         *
 Bundle-NativeCode: \
-        lib/libsolarisauth.so ; \
-	osname=SunOS ; \
-	osname=Solaris ; \
-	processor=sparc , \
-	*
-
+        lib/libsolsparcauth.so ; \
+        osname=SunOS ; \
+        osname=Solaris ; \
+        processor=sparc , \
+        lib/libsolx86auth.so ; \
+        osname=SunOS ; \
+        osname=Solaris ; \
+        processor=x86 , \
+        *
