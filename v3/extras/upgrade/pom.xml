@@ -36,6 +36,22 @@
     <build>
         <resources>
         </resources>
+        <plugins>
+        <plugin>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.sun.enterprise.tools.upgrade.UpgradeToolMain</mainClass>
+                        </manifest>
+                        <manifestEntries>
+                        <Class-Path>kernel.jar admin-cli.jar stax-osgi.jar admin-cli-l10n.jar</Class-Path>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 
     <dependencies>

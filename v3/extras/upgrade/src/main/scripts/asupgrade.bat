@@ -18,5 +18,5 @@ AS_INSTALL=%~dp0..\
 set Path=%AS_INSTALL%\bin;%PATH%
 
 REM note: $AS_DEF_DOMAINS_PATH is relative to config dir
-"%AS_JAVA%\bin\java" -Dcom.sun.aas.utool.LogLevel="INFO" -Dcom.sun.aas.installRoot="%AS_INSTALL%" -Dcom.sun.aas.domainRoot="%AS_INSTALL%\config\%AS_DEF_DOMAINS_PATH%" -Dcom.sun.aas.instanceRoot="%AS_INSTALL%" -Dcom.sun.aas.configRoot="%AS_CONFIG%" -Dcom.sun.aas.java.home="%AS_JAVA%" -cp "%AS_INSTALL_MOD%/admin-cli.jar";"%AS_INSTALL_MOD%/admin-cli.jar";"%AS_INSTALL_MOD%/kernel.jar";"%AS_INSTALL_MOD%/upgrade.jar";"%AS_INSTALL_LIB%/javahelp-2.0.02.jar"  com.sun.enterprise.tools.upgrade.UpgradeToolMain %*
+"%AS_JAVA%\bin\java" -Dcom.sun.aas.utool.LogLevel="INFO" -Dcom.sun.aas.installRoot="%AS_INSTALL%" -Dcom.sun.aas.domainRoot="%AS_INSTALL%\config\%AS_DEF_DOMAINS_PATH%" -Dcom.sun.aas.instanceRoot="%AS_INSTALL%" -Dcom.sun.aas.configRoot="%AS_CONFIG%" -Dcom.sun.aas.java.home="%AS_JAVA%" -jar "%AS_INSTALL_LIB%/upgradeTool.jar" %*
 endlocal
