@@ -74,8 +74,8 @@
         <antcall target="quicklook-summary"/>
         <antcall target="stop-server"/>
         <antcall target="stop-derby"/>
-        <antcall target="testng-summary"/>
 	<copy file="test-output/emailable-report.html" tofile="test-output/QL-GP-report.html" failonerror="false"/>
+        <antcall target="testng-summary"/>
         <record name="allrun.output" action="stop"/>
     </target>
 
@@ -117,6 +117,7 @@
         <echo message="Glassfish Distribution Build Deploy"/>
         <ant dir="ejb/singleton" target="build-deploy"/>
         <ant dir="ejb/slsbnicmt" target="build-deploy"/>
+        <ant dir="ejb/sfulnoi" target="build-deploy"/>
         <ant dir="wsit/JaxwsFromWsdl" target="build-deploy"/>
         <!-- ant dir="wsit" target="build-deploy"/ -->
     </target>
@@ -140,6 +141,7 @@
     <target name="undeploy-gd">
         <ant dir="ejb/singleton" target="undeploy"/>
         <ant dir="ejb/slsbnicmt" target="undeploy"/>
+        <ant dir="ejb/sfulnoi" target="undeploy"/>
         <ant dir="wsit/JaxwsFromWsdl" target="undeploy"/>
         <!-- ant dir="wsit" target="undeploy"/ -->
     </target>
