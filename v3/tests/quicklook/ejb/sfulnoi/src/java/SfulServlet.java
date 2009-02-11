@@ -4,8 +4,6 @@ import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.ejb.EJB;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 
 public class SfulServlet extends HttpServlet {
    
@@ -31,7 +29,7 @@ public class SfulServlet extends HttpServlet {
 		out.println("@EJB Injection="+simpleEJB);
 
 		if (simpleEJB != null) {
-		  out.println("Verify Persisted Entity and Remove Entity");
+		  out.println("SetName in a stateful session bean.");
             try {
                 simpleEJB.setName("Duke");
                 status = true;
@@ -85,14 +83,6 @@ public class SfulServlet extends HttpServlet {
 
     public String getServletInfo() {
         return "SfulServlet";
-    }
-
-    private Object lookupField(String name) {
-        try {
-            return new InitialContext().lookup("java:comp/env/" + getClass().getName() + "/" + name);
-        } catch (NamingException e) {
-            return null;
-        }
     }
 
 }
