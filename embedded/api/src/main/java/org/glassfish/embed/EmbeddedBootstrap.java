@@ -99,6 +99,7 @@ class EmbeddedBootstrap extends Main{
 
             // in the webtier-only bundle, these components don't exist to begin with.
 
+            /** bnevins -- let us see what happens when Security is not dropped 2/11/09
             try {
                 // security code needs a whole lot more work to work in the modular environment.
                 // disabling it for now.
@@ -110,6 +111,7 @@ class EmbeddedBootstrap extends Main{
             catch (LinkageError e) {
                 // maybe we are running in the webtier only bundle
             }
+             */
         }
 
         // override the location of default-web.xml

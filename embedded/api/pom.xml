@@ -138,9 +138,7 @@
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
-                    <!--
-					<excludePackageNames>*.impl</excludePackageNames>
-					-->
+					<excludePackageNames>*.util</excludePackageNames>
                 </configuration>
             </plugin>
         </plugins>
