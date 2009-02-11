@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <!DOCTYPE project [
-<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
 ]>
+<!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
 
 <project name="deployment-ejb30-ear-session-App" default="all" basedir=".">
 

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <!DOCTYPE project [
-<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
-<!ENTITY commonSetup SYSTEM "file:./../../../../../config/properties.xml">
-<!ENTITY common2Build SYSTEM "file:./../../../../../config/common.xml">
+<!ENTITY commonSetup SYSTEM "./../../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
+<!ENTITY common2Build SYSTEM "./../../../../../config/common.xml">
 ]>
 
 <project name="deployment-ejb30-ear-session3-App" default="all" basedir=".">

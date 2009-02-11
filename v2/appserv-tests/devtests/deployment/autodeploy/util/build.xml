@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!DOCTYPE project [
-<!ENTITY commonBuild SYSTEM "file:../../config/common.xml">
-<!ENTITY autodeployUtil SYSTEM "file:util.xml">
+<!ENTITY autodeployUtil SYSTEM "./util.xml">
+<!ENTITY commonBuild SYSTEM "./../../config/common.xml">
 ]>
 
 <project name="autodeploy-util" default="all" basedir=".">
