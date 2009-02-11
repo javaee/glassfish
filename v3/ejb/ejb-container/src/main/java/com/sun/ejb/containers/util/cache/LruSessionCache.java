@@ -95,7 +95,8 @@ public class LruSessionCache
 
     protected int	confMaxCacheSize = Integer.MAX_VALUE;
 
-    private StatefulSessionStoreMonitor	    sfsbStoreMonitor;
+    // TODO enable when enabling monitoring in SFSB container
+    // private StatefulSessionStoreMonitor	    sfsbStoreMonitor;
 
     /**
      * Destroys all references. This is the last method call of this object's 
@@ -135,7 +136,7 @@ public class LruSessionCache
     public void setStatefulSessionStoreMonitor(
 	StatefulSessionStoreMonitor storeMonitor)
     {
-	this.sfsbStoreMonitor = storeMonitor;
+	// this.sfsbStoreMonitor = storeMonitor;
     }
 
     public void setSessionStore(SFSBStoreManager storeManager) {
@@ -246,9 +247,9 @@ public class LruSessionCache
 
         //This is the thread that actually does the I/O
 	long activationStartTime = -1;
-	if (sfsbStoreMonitor.isMonitoringOn()) {
+	/*if (sfsbStoreMonitor.isMonitoringOn()) {
 	    activationStartTime = System.currentTimeMillis();
-	}
+	}*/
         try {
             newItem.value = value = getStateFromStore(sessionKey, container);
             synchronized (buckets[index]) {
@@ -272,7 +273,7 @@ public class LruSessionCache
                 } else {
                     container.activateEJB(sessionKey,
                         (StatefulEJBContext) value, cookie);
-		    sfsbStoreMonitor.incrementActivationCount(true);
+		    // sfsbStoreMonitor.incrementActivationCount(true);
 
                     CacheItem overflow = itemAdded(newItem);
                     incrementEntryCount();
@@ -283,7 +284,7 @@ public class LruSessionCache
                 }
             } //end of sync
         } catch (javax.ejb.EJBException ejbEx) {
-	    sfsbStoreMonitor.incrementActivationCount(false);
+	    //sfsbStoreMonitor.incrementActivationCount(false);
             remove(sessionKey);
             value = null;
         } finally {
@@ -296,7 +297,7 @@ public class LruSessionCache
 	    if (activationStartTime != -1) {
 		long timeSpent = System.currentTimeMillis()
 		    - activationStartTime;
-		sfsbStoreMonitor.setActivationTime(timeSpent);
+		//sfsbStoreMonitor.setActivationTime(timeSpent);
 	    }
         }
 
@@ -478,7 +479,7 @@ public class LruSessionCache
                                 + " BACKUPSTORE FOR Key: <" + sessionKey + ">");
                 }
             }  else {
-		sfsbStoreMonitor.setActivationSize(data.length);
+		//sfsbStoreMonitor.setActivationSize(data.length);
                 incrementLoadFromBackupCount();
                 object = IOUtils.deserializeObject(data, true,
                         container.getClassLoader());
@@ -513,7 +514,7 @@ public class LruSessionCache
         beanState.setVersion(ctx.getVersion());
 	    try {
 		storeManager.passivateSave(beanState);
-		sfsbStoreMonitor.setPassivationSize(data.length);
+		// sfsbStoreMonitor.setPassivationSize(data.length);
 		status = true;
 	    } catch (SFSBStoreManagerException sfsbEx) {
 		_logger.log(Level.WARNING, "[" + cacheName + "]: Exception during "
@@ -837,23 +838,27 @@ public class LruSessionCache
     }
 
     public int getNumExpiredSessionsRemoved() {
-	return (sfsbStoreMonitor == null)
-        ? 0 : sfsbStoreMonitor.getNumExpiredSessionsRemoved();
+	/*return (sfsbStoreMonitor == null)
+        ? 0 : sfsbStoreMonitor.getNumExpiredSessionsRemoved(); */
+        return 0;
     }
 
     public int getNumPassivationErrors() {
-	return (sfsbStoreMonitor == null)
-        ? 0 : sfsbStoreMonitor.getNumPassivationErrors();
+	/* return (sfsbStoreMonitor == null)
+        ? 0 : sfsbStoreMonitor.getNumPassivationErrors(); */
+        return 0;
     }
 
     public int getNumPassivations() {
-	return (sfsbStoreMonitor == null)
-        ? 0 : sfsbStoreMonitor.getNumPassivations();
+	 /* return (sfsbStoreMonitor == null)
+        ? 0 : sfsbStoreMonitor.getNumPassivations(); */
+        return 0;
     }
 
     public int getNumPassivationSuccess() {
-	return (sfsbStoreMonitor == null)
-        ? 0 : sfsbStoreMonitor.getNumPassivationSuccess();
+	/*return (sfsbStoreMonitor == null)
+        ? 0 : sfsbStoreMonitor.getNumPassivationSuccess(); */
+        return 0;
     }
 
     public void setMaxCacheSize(int val) {

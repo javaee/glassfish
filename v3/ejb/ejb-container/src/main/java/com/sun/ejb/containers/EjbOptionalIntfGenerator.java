@@ -40,6 +40,7 @@ import org.objectweb.asm.*;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.util.Map;
@@ -149,9 +150,10 @@ public class EjbOptionalIntfGenerator
 
         ClassWriter cw = new ClassWriter(INTF_FLAGS);
 
-//        ClassVisitor tv = (_debug)
-//                ? new TraceClassVisitor(cw, new PrintWriter(System.out)) : cw;
-        ClassVisitor tv = cw;
+       ClassVisitor tv = cw;
+              //  new TraceClassVisitor(cw, new PrintWriter(System.out));
+        
+        //ClassVisitor tv = cw;
         boolean isSuperClassSerializable = superClass.isAssignableFrom(Serializable.class);
 
         String[] interfaces = null;
@@ -187,11 +189,22 @@ public class EjbOptionalIntfGenerator
         for (Class clz = superClass; clz != Object.class; clz = clz.getSuperclass()) {
             java.lang.reflect.Method[] beanMethods = clz.getDeclaredMethods();
             for (java.lang.reflect.Method mth : beanMethods) {
-                if (Modifier.isPublic(mth.getModifiers())) {
-                    if( !hasSameSignatureAsExisting(mth, allMethods)) {
+                if( !hasSameSignatureAsExisting(mth, allMethods)) {
+
+                    int modifiers = mth.getModifiers();
+                    boolean isPublic = Modifier.isPublic(modifiers);
+                    boolean isPrivate = Modifier.isPrivate(modifiers);
+                    boolean isProtected = Modifier.isProtected(modifiers);
+                    boolean isPackage = !isPublic && !isPrivate && !isProtected;
+
+                    boolean isStatic = Modifier.isStatic(modifiers);
+
+                    if (isPublic && !isStatic) {
                         generateBeanMethod(tv, subClassName, mth, delegateClass);
-                        allMethods.add(mth);
-                    }
+                    } else if( (isPackage || isProtected) && !isStatic ) {
+                        generateNonAccessibleMethod(tv, mth);
+                    }                    
+                    allMethods.add(mth);
                 }
             }
         }
@@ -234,6 +247,30 @@ public class EjbOptionalIntfGenerator
         mg.loadArgs();
         mg.invokeInterface(Type.getType(delegateClass), asmMethod);
         mg.returnValue();
+        mg.endMethod();
+
+    }
+
+    private static void generateNonAccessibleMethod(ClassVisitor cv,
+                                           java.lang.reflect.Method m)
+        throws Exception {
+
+        String methodName = m.getName();
+        Type returnType = Type.getReturnType(m);
+        Type[] argTypes = Type.getArgumentTypes(m);
+        Method asmMethod = new Method(methodName, returnType, argTypes);
+
+        // Only called for non-static Protected or Package access
+        int access =  ACC_PUBLIC;
+
+        GeneratorAdapter mg = new GeneratorAdapter(access, asmMethod, null,
+                getExceptionTypes(m), cv);
+
+        mg.throwException(Type.getType(javax.ejb.EJBException.class),
+                "Illegal non-business method access on no-interface view");
+        
+        mg.returnValue();
+        
         mg.endMethod();
 
     }

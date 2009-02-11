@@ -740,19 +740,6 @@ public class StatelessSessionContainer
 
         } finally {
 
-            this.homeCreateMethod      = null;
-            this.localHomeCreateMethod = null;
-            this.theEJBLocalObjectImpl = null;
-            this.theEJBObjectImpl      = null;
-            this.theEJBStub            = null;
-            this.pool                  = null;
-            this.iased                 = null;
-            this.beanCacheDes          = null;
-            this.beanPoolDes           = null;
-            this.svr                   = null;
-            this.ejbContainer          = null;
-            this.poolProp              = null;
-
         }
     }
 

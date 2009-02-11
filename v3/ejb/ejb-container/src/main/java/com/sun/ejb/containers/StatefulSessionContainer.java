@@ -1077,6 +1077,13 @@ public final class StatefulSessionContainer
                     localBusinessObjImpl.setRemoved(true);
                     sc.setEJBLocalBusinessObjectImpl(null);
                 }
+                if (hasOptionalLocalBusinessView) {
+                    EJBLocalObjectImpl optionalLocalBusinessObjImpl =
+                            (EJBLocalObjectImpl) sc.getOptionalEJBLocalBusinessObjectImpl();
+                    optionalLocalBusinessObjImpl.clearContext();
+                    optionalLocalBusinessObjImpl.setRemoved(true);
+                    sc.setOptionalEJBLocalBusinessObjectImpl(null);
+                }
             }
 
             destroyExtendedEMsForContext(sc);
@@ -2415,12 +2422,6 @@ public final class StatefulSessionContainer
             if (sfsbVersionManager != null) {
                 sfsbVersionManager.removeAll(myContainerId);
             }
-
-            // helps garbage collection
-            // this.storeHelper = null;
-            this.passivationCandidates = null;
-            this.asyncTaskSemaphore = null;
-            this.sessionBeanCache = null;
 
             if (origLoader != null) {
                 Utility.setContextClassLoader(origLoader);

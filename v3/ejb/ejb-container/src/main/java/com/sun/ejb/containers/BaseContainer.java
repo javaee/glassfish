@@ -465,12 +465,15 @@ public abstract class BaseContainer
                         isStatefulSession  = !isStatelessSession;
 
                         if( isStatefulSession ) {
-                            /*  Enable after ORB Integration -- only needed for passivation
+
+                            /* TODO uncomment to enable support for serialization
                             if( !Serializable.class.isAssignableFrom(ejbClass) ) {
                                 ejbClass = EJBUtils.loadGeneratedSerializableClass
                                     (loader, ejbClass.getName());
                             }
                             */
+
+                           
                         }
                     }
                     if ( sd.getTransactionType().equals("Bean") ) {
@@ -3075,7 +3078,7 @@ public abstract class BaseContainer
                 ejbClass, beanSubClassName, ejbGeneratedOptionalLocalBusinessIntfClass);
 
         Class dummyIntfTst = optIntfClassLoader.loadClass(ejbGeneratedOptionalLocalBusinessIntfClass.getName());
-
+                       
         Class subClass = optIntfClassLoader.loadClass(beanSubClassName);
         OptionalLocalInterfaceProvider provider =
                 (OptionalLocalInterfaceProvider) subClass.newInstance();
@@ -3578,36 +3581,6 @@ public abstract class BaseContainer
 
         _logger.log(Level.FINE, "**** [BaseContainer]: Successfully Undeployed " +
                     ejbDescriptor.getName() + " ...");
-
-    // TODO do we really need to set all these fields to null???
-
-        ejbDescriptor = null;
-
-        if (invocationInfoMap != null)  { invocationInfoMap.clear(); }
-        if (methodMonitorMap != null)   { methodMonitorMap.clear();  }
-
-
-        loader                  = null;
-        ejbClass                = null;
-        ejbPassivateMethod      = null;
-        ejbActivateMethod       = null;
-        ejbRemoveMethod         = null;
-
-        remoteIntf              = null;
-        homeIntf                = null;
-        localHomeIntf           = null;
-        localIntf               = null;
-        ejbLocalHome            = null;
-        metadata                = null;
-        ejbHomeImpl             = null;
-        ejbHomeStub             = null;
-        invocationInfoMap       = null;
-        ejbIntfMethods          = null;
-        envProps                = null;
-        methodMonitorMap        = null;
-
-        
-
         
 
     }
