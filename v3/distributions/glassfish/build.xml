@@ -19,38 +19,27 @@
  own identifying information: Portions Copyright [yyyy]
  [name of copyright owner]
 -->
-<project name="nucleus-base bundle creation" default="create.bundle" basedir=".">
+<project name="glassfish bundle creation" default="create.bundle" basedir=".">
 
     <!-- import the bundle build script from the web module -->
     <resolveArtifact artifactId="web" classifier="build" type="xml" property="base.build.xml"/>
     <import file="${base.build.xml}" />
 
-    <target name="ejb.moduleDef">
-        <moduleDef name="ejb" artifactId="ejb-all" />
-    </target>
 
-    <target name="create.bundle" depends="web.prepare, ejb.moduleDef, web.moduleDef">
-        <resolveAll todir="target/stage/glassfish/modules" tolerateBrokenPOMs="true" stripVersion="true">
-            <fullGraph />
-            <removeSpecificArtifacts>
-                <scope level="compile,runtime"/>
-                <artifact artifactId="webtier-all"/>
-                <artifact artifactId="ejb-all" />
-            </removeSpecificArtifacts>
-        </resolveAll>
+    <target name="create.bundle" depends="web.prepare">
+
+         <resolveAll todir="target/stage/glassfish/modules" tolerateBrokenPOMs="true" stripVersion="true">
+	    <scope level="compile,runtime" />
+         </resolveAll>	
 
 	<delete dir="target/stage/glassfish/modules" includes="*.zip" />
 	<delete dir="target/stage/glassfish/modules" includes="*.pom" />
+	<delete dir="target/stage/glassfish/modules" includes="*.war" />
+	<delete dir="target/stage/glassfish/modules" includes="*.xml" />
 
         <graphDef id="generate-picture" tolerateBrokenPOMs="true">
             <visualize file="modules.png">
                 <scope level="compile,runtime" />
-                <subGraph color="red">
-                    <graphRef refid="web-modules"/>
-                </subGraph>
-                <subGraph color="blue">
-                    <graphRef refid="ejb-modules"/>
-                </subGraph>
             </visualize>
         </graphDef>
 

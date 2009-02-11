@@ -19,7 +19,7 @@
  own identifying information: Portions Copyright [yyyy]
  [name of copyright owner]
 -->
-<project name="nucleus-base bundle creation" default="create.bundle" basedir=".">
+<project name="web bundle creation" default="create.bundle" basedir=".">
     <!--
         Perform the part of bundle creation that doesn't involve in module jar staging.
         This part will be reused by other bundles that build on the web bundle.
@@ -28,64 +28,6 @@
         <mkdir dir="target/stage"/>
 
         <resolveArtifact artifactId="nucleus-base" property="nucleus-base.zip"/>
-    </target>
-
-    <!--
-        Macro for defining a module set rooted at the given node.
-    -->
-    <macrodef name="moduleDef">
-        <!--
-            The module subgraph will be placed under ID "<name>-modules",
-            and the module jars are placed under "modules/<name>" sub directory.
-        -->
-        <attribute name="name"/>
-        <!--
-            ArtifactId of the root module of this module set.
-        -->
-        <attribute name="artifactId" />
-        <sequential>
-            <!--
-              This filtering definition obtains a set of HK2 modules that are retained by webtier
-              (that is, set of modules that won't be in the dependency list if webtier is not a part of the dependency;
-              IOW, a dependency only reachable through webtier)
-
-              The formula to compute this is non-trivial. We first compute a subgraph X which represents
-              nodes that we *don't* want in webtier directory. That is, all dependencies that are reachable without going through
-              webtier.
-
-              We then finally compute the set of modules and jars that are not in X by one more subtraction.
-            -->
-            <graphDef id="@{name}-modules" tolerateBrokenPOMs="true">
-                <scope level="compile,runtime">
-                    <subtract>
-                        <subGraph artifactId="@{artifactId}" />
-                        <scope level="compile,runtime"><!-- = subgraph X -->
-                            <excludeArtifactsTransitively>
-                                <artifact artifactId="@{artifactId}" />
-                            </excludeArtifactsTransitively>
-                        </scope>
-                    </subtract>
-                </scope>
-            </graphDef>
-
-            <resolveAll todir="target/stage/glassfish/modules/@{name}" tolerateBrokenPOMs="true" stripVersion="true">
-                <graphRef refid="@{name}-modules"/>
-       	    </resolveAll>
-
-	    <delete dir="target/stage/glassfish/modules/@{name}" includes="*.zip"/>
-	    <delete dir="target/stage/glassfish/modules/@{name}" includes="*.pom"/>
-	    <delete dir="target/stage/glassfish/modules/@{name}" includes="*.war"/>
-        </sequential>
-    </macrodef>
-
-    <!--
-        Define a dependency graph for the web modules,
-        and place the web modules into the modules/ dir.
-
-        This part will be reused by other bundles that build on the web module.
-    -->
-    <target name="web.moduleDef">
-        <moduleDef name="web" artifactId="webtier-all" />
     </target>
 
     <!--
@@ -115,21 +57,19 @@
         </sequential>
     </macrodef>
 
-    <target name="create.bundle" depends="web.prepare, web.moduleDef">
-        <resolveAll todir="target/stage/glassfish/modules" tolerateBrokenPOMs="true" stripVersion="true">
-            <!-- first filter out all the distribution fragments and their transitive dependencies -->
-            <packaging not="distribution-fragment" />
-            <!-- Also filter our projects with pom packaging to avoid packaging the .pom--> 
-            <packaging not="pom" />
-            <!-- then get rid of all the dependencies that are in the webtier -->
-            <removeSpecificArtifacts>
-                <scope level="compile,runtime"/>
-                <artifact artifactId="webtier-all"/>
-            </removeSpecificArtifacts>
-        </resolveAll>
+    <target name="create.bundle" depends="web.prepare">
+	
+         <resolveAll todir="target/stage/glassfish/modules" tolerateBrokenPOMs="true" stripVersion="true">
+	    <scope level="compile,runtime" />
+         </resolveAll>
+      
+
+	<!-- cleanup -->
 
 	<delete dir="target/stage/glassfish/modules" includes="*.zip"/>
 	<delete dir="target/stage/glassfish/modules" includes="*.pom"/>
+	<delete dir="target/stage/glassfish/modules" includes="*.war"/>
+	<delete dir="target/stage/glassfish/modules" includes="*.xml" />
 
         <graphDef id="generate-picture" tolerateBrokenPOMs="true">
             <visualize file="modules.png">
@@ -138,9 +78,6 @@
                                 <artifact groupId="com.sun.enterprise" artifactId="hk2" />
                             </excludeArtifactsTransitively>
                 </scope>
-                <subGraph color="red">
-                    <graphRef refid="web-modules"/>
-                </subGraph>
             </visualize>
         </graphDef>
 
