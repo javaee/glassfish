@@ -21,6 +21,10 @@ import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.component.Habitat;
 
 /**
+ * <code>EmbeddedDeployer</code> is used to deploy applications to {@link Server} 
+ * <p>
+ * <code>Server</code> must be started before calling {@link getDeployer} on
+ * <code>Server</code> to get an instance of <code>EmbeddedDeployer</code>.
  *
  * @author bnevins
  */
@@ -38,9 +42,9 @@ public class EmbeddedDeployer {
 
 
     /**
-     * Deploys WAR/EAR/RAR/etc to server.
+     * Deploys a WAR to <code>Server</code>.
      *
-     * @param archive
+     * @param archive pathname of WAR file or directory
      * @throws EmbeddedException
      */
 
@@ -73,15 +77,14 @@ public class EmbeddedDeployer {
     }
 
     /**
-     * Deploys a {@link ReadableArchive} to this Server.
+     * Deploys a {@link org.glassfish.api.deployment.archive.ReadableArchive} to this Server.
      * <p/>
      * <p/>
      * This overloaded version of the deploy method is for advanced users.
      * It allows you specifying additional parameters to be passed to the deploy command
      *
-     * @param a
-     * @param params
-     * @return
+     * @param a WAR as a <code>ReadableArchive</code>
+     * @param params parameters of the deploy command
      * @throws EmbeddedException
      */
     public void deploy(ReadableArchive a, Properties params) throws EmbeddedException {
@@ -124,7 +127,6 @@ public class EmbeddedDeployer {
      * @param war           the scattered war
      * @param contextRoot   the context root to use
      * @param virtualServer the virtual server ID
-     * @return
      * @throws EmbeddedException
      */
     public void deployScattered(ScatteredWar war, String contextRoot, String virtualServer) throws EmbeddedException {
