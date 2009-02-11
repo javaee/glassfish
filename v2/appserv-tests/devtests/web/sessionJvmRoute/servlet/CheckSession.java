@@ -10,13 +10,10 @@ public class CheckSession extends HttpServlet {
         boolean passed = false;
 
         HttpSession session = req.getSession(false);
-        if (session != null && session.getId().indexOf(".MYINSTANCE") == -1) {
-            passed = true;
+        if (session == null || session.getId().indexOf(".MYINSTANCE") != -1) {
+            throw new ServletException("Missing or invalid session");
         }
 
-        res.getWriter().print(passed);
+        res.addCookie(new Cookie("MYNAME", "MYVALUE"));
     }
 }
-
-
-
