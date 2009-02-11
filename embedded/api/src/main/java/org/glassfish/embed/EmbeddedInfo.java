@@ -46,13 +46,10 @@ import org.glassfish.embed.util.StringUtils;
 import static org.glassfish.embed.ServerConstants.*;
 
 /**
- * <code>EmbeddedInfo</code> holds all the {@link Server} details:
- * <ul>
- * <li>{@link EmbeddedFileSystem}</li>
- * <li>HTTP port</li>
- * <li>server name</li>
- * <li>archives</li>
- * </ul>
+ * <code>EmbeddedInfo</code> contains the {@link Server} configuration.  Server
+ * name, port, logging, and autodeploy configuration may be set.  The file
+ * system, {@link EmbeddedFileSystem}, used by <code>Server</code> can be
+ * retrieved.
  * 
  * @author bnevins
  */
@@ -66,8 +63,9 @@ public class EmbeddedInfo {
     }
 
     /**
+     * Get the file system used by the server
      *
-     * @return the {@link EmbeddedFileSystem} used by this <code>EmbeddedInfo</object>
+     * @return {@link EmbeddedFileSystem}
      */
     public synchronized EmbeddedFileSystem getFileSystem() {
         if(efs == null) {
@@ -78,7 +76,7 @@ public class EmbeddedInfo {
 
     /**
      * Set the HTTP port
-     * @param port
+     * @param port valid port number
      */
     public void setHttpPort(int port) {
         httpPort = port;
@@ -87,7 +85,7 @@ public class EmbeddedInfo {
 
     /**
      * Set the Admin HTTP port
-     * @param port
+     * @param port valid port number
      */
     public void setAdminHttpPort(int port) {
         adminHttpPort = port;
@@ -95,7 +93,7 @@ public class EmbeddedInfo {
 
     /**
      * Set the system JMX Connector port
-     * @param port
+     * @param port valid port number
      */
     public void setJmxConnectorPort(int port) {
         jmxConnectorPort = port;
@@ -103,7 +101,7 @@ public class EmbeddedInfo {
 
     /**
      * Set the server name
-     * @param newName
+     * @param newName server name
      */
     public void setServerName(String newName) {
         if(StringUtils.ok(newName))
@@ -112,8 +110,8 @@ public class EmbeddedInfo {
 
 
     /**
-     * Set the http listener name.
-     * @param newName
+     * Set the HTTP listener name.
+     * @param newName HTTP listener name
      */
     public void setHttpListenerName(String newName) {
         if(StringUtils.ok(newName))
@@ -121,9 +119,12 @@ public class EmbeddedInfo {
     }
 
     /**
-     * Set verbose -- if verbose is true then log messages go to the console.
+     * Turn verbose mode on or off.
+     * If verbose is set to true, log messages output to the console.
+     * If verbose is set to false, log messages output to the console.
      *
-     * @param b
+     * @param b true to turn verbose mode on
+     *          false to turn verbose mode off
      */
     public void setVerbose(boolean b) {
         verbose = b;
@@ -138,10 +139,12 @@ public class EmbeddedInfo {
     }
     
     /**
-     * Checks that archives exist.  Checks that the HTTP port is a valid port number.
+     * Checks that the HTTP port and Admin port are valid port numbers.
      * Checks if an {@link EmbeddedFileSystem} has been set.
      * If none has been set, a default <code>EmbeddedFileSystem</code>
      * is created.
+     * Sets up logging.
+     *
      * @throws org.glassfish.embed.EmbeddedException
      */
     public void validate() throws EmbeddedException {
@@ -150,6 +153,12 @@ public class EmbeddedInfo {
         validateLogging();
     }
 
+    /**
+     * Turn logging on or off.
+     *
+     * @param b true to turn logging on
+     *          false to turn logging off
+     */
     public void setLogging(boolean b) {
         logging = b;
     }
