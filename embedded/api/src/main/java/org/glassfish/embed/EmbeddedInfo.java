@@ -147,7 +147,7 @@ public class EmbeddedInfo {
      *
      * @throws org.glassfish.embed.EmbeddedException
      */
-    public void validate() throws EmbeddedException {
+    void validate() throws EmbeddedException {
         validatePorts();
         validateFilesystem();
         validateLogging();
