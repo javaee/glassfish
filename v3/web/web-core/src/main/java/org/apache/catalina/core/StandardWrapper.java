@@ -59,11 +59,7 @@ package org.apache.catalina.core;
 
 import java.lang.reflect.Method;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Stack;
+import java.util.*;
 import java.util.logging.*;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
@@ -843,27 +839,86 @@ public class StandardWrapper
      * @param child Child container to be added
      */
     public void addChild(Container child) {
-
         throw new IllegalStateException
             (sm.getString("standardWrapper.notChild"));
-
     }
 
 
     /**
-     * Add a new servlet initialization parameter for this servlet.
+     * Adds the initialization parameter with the given name and value
+     * to this servlet.
      *
-     * @param name Name of this initialization parameter to add
-     * @param value Value of this initialization parameter to add
+     * @param name the name of the init parameter
+     * @param value the value of the init parameter
      */
     public void addInitParameter(String name, String value) {
-
-        synchronized (parameters) {
-            parameters.put(name, value);
-        }
-
+        setInitParameter(name, value, true);
         if (notifyContainerListeners) {
             fireContainerEvent("addInitParameter", name);
+        }
+    }
+
+
+    /**
+     * Sets the init parameter with the given name and value
+     * on this servlet.
+     *
+     * @param name the init parameter name
+     * @param value the init parameter value
+     * @param override true if the given init param is supposed to
+     * override an existing init param with the same name, and false
+     * otherwise
+     *
+     * @return true if the init parameter with the given name and value
+     * was set, false otherwise
+     */
+    public boolean setInitParameter(String name, String value, 
+                                    boolean override) {
+        if (null == name || null == value) {
+            throw new IllegalArgumentException(
+                "Null servlet init parameter name or value");
+        }
+
+        synchronized (parameters) {
+            if (override || !parameters.containsKey(name)) {
+                parameters.put(name, value);
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+
+    /**
+     * Sets the initialization parameters contained in the given map
+     * on this servlet.
+     *
+     * @param initParameters the map with the init params to set
+     *
+     * @return true if the update was successful, false otherwise
+     */
+    public boolean setInitParameters(Map<String, String> initParameters) {
+        if (null == initParameters) {
+            throw new IllegalArgumentException("Null init parameters");
+        }
+
+        synchronized (parameters) {
+            for (Map.Entry<String, String> e : initParameters.entrySet()) {
+                if (e.getKey() == null || e.getValue() == null) {
+                    throw new IllegalArgumentException(
+                        "Null parameter name or value");
+                }
+                if (parameters.containsKey(e.getKey())) {
+                    return false;
+                }
+            }
+
+            for (Map.Entry<String, String> e : initParameters.entrySet()) {
+                setInitParameter(e.getKey(), e.getValue(), true);
+            }
+   
+            return true;
         }
     }
 
@@ -874,9 +929,7 @@ public class StandardWrapper
      * @param listener The new listener
      */
     public void addInstanceListener(InstanceListener listener) {
-
         instanceSupport.addInstanceListener(listener);
-
     }
 
 

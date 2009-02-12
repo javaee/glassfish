@@ -2401,7 +2401,7 @@ public class StandardContext
         }
 
         ServletRegistration regis = new ServletRegistrationImpl(
-            wrapper, this, isProgrammatic);
+            (StandardWrapper) wrapper, this, isProgrammatic);
         wrapper.setServletRegistration(regis);
     }
 

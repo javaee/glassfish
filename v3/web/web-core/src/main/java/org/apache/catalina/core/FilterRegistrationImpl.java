@@ -70,7 +70,7 @@ public class FilterRegistrationImpl implements FilterRegistration {
     }
 
 
-    public void setDescription(String description) {
+    public boolean setDescription(String description) {
         if (ctx.isContextInitializedCalled()) {
             throw new IllegalStateException(
                 sm.getString("filterRegistration.alreadyInitialized",
@@ -78,11 +78,16 @@ public class FilterRegistrationImpl implements FilterRegistration {
                              ctx.getName()));
         }
 
-        filterDef.setDescription(description);
+        if (!isProgrammatic) {
+            return false;
+        } else {
+            filterDef.setDescription(description);
+            return true;
+        }
     }
 
 
-    public void setInitParameter(String name, String value) {
+    public boolean setInitParameter(String name, String value) {
         if (ctx.isContextInitializedCalled()) {
             throw new IllegalStateException(
                 sm.getString("filterRegistration.alreadyInitialized",
@@ -90,25 +95,16 @@ public class FilterRegistrationImpl implements FilterRegistration {
                              ctx.getName()));
         }
 
-        if (null != value) {
-            filterDef.addInitParameter(name, value);
-        } else {
-            filterDef.removeInitParameter(name);
-        }
+        return filterDef.setInitParameter(name, value, false);
     }
 
 
-    public void setInitParameters(Map<String, String> initParameters) {
-        if (null == initParameters) {
-            throw new IllegalArgumentException("Null init parameters");
-        }
-        for (Map.Entry<String, String> e : initParameters.entrySet()) {
-            setInitParameter(e.getKey(), e.getValue());
-        }
+    public boolean setInitParameters(Map<String, String> initParameters) {
+        return filterDef.setInitParameters(initParameters);
     }
 
 
-    public void setAsyncSupported(boolean isAsyncSupported) {
+    public boolean setAsyncSupported(boolean isAsyncSupported) {
         if (ctx.isContextInitializedCalled()) {
             throw new IllegalStateException(
                 sm.getString("filterRegistration.alreadyInitialized",
@@ -116,11 +112,16 @@ public class FilterRegistrationImpl implements FilterRegistration {
                              ctx.getName()));
         }
 
-        filterDef.setIsAsyncSupported(isAsyncSupported);
+        if (!isProgrammatic) {
+            return false;
+        } else {
+            filterDef.setIsAsyncSupported(isAsyncSupported);
+            return true;
+        }
     }
 
 
-    public void addMappingForServletNames(
+    public boolean addMappingForServletNames(
             EnumSet<DispatcherType> dispatcherTypes, boolean isMatchAfter,
             String... servletNames) {
 
@@ -148,10 +149,12 @@ public class FilterRegistrationImpl implements FilterRegistration {
             }
             ctx.addFilterMap(fmap, isMatchAfter);
         }
+
+        return true;
     }
 
 
-    public void addMappingForUrlPatterns(
+    public boolean addMappingForUrlPatterns(
             EnumSet<DispatcherType> dispatcherTypes, boolean isMatchAfter,
             String... urlPatterns) {
 
@@ -178,6 +181,8 @@ public class FilterRegistrationImpl implements FilterRegistration {
             }
             ctx.addFilterMap(fmap, isMatchAfter);
         }
+
+        return true;
     }
 
 }

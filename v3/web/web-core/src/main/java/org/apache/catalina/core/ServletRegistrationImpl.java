@@ -38,7 +38,7 @@ package org.apache.catalina.core;
 
 import java.util.*;
 import javax.servlet.*;
-import org.apache.catalina.Wrapper;
+import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.util.StringManager;
 
 public class ServletRegistrationImpl implements ServletRegistration {
@@ -46,7 +46,7 @@ public class ServletRegistrationImpl implements ServletRegistration {
     private static final StringManager sm =
         StringManager.getManager(Constants.Package);
 
-    private Wrapper wrapper;
+    private StandardWrapper wrapper;
     private StandardContext ctx;
 
     /*
@@ -61,7 +61,7 @@ public class ServletRegistrationImpl implements ServletRegistration {
     /**
      * Constructor
      */
-    ServletRegistrationImpl(Wrapper wrapper, StandardContext ctx,
+    ServletRegistrationImpl(StandardWrapper wrapper, StandardContext ctx,
                             boolean isProgrammatic) {
         this.wrapper = wrapper;
         this.ctx = ctx;
@@ -69,7 +69,7 @@ public class ServletRegistrationImpl implements ServletRegistration {
     }
 
 
-    public void setDescription(String description) {
+    public boolean setDescription(String description) {
         if (ctx.isContextInitializedCalled()) {
             throw new IllegalStateException(
                 sm.getString("servletRegistration.alreadyInitialized",
@@ -77,11 +77,16 @@ public class ServletRegistrationImpl implements ServletRegistration {
                              ctx.getName()));
         }
 
-        wrapper.setDescription(description);
+        if (!isProgrammatic) {
+            return false;
+        } else {
+            wrapper.setDescription(description);
+            return true;
+        }
     }
 
 
-    public void setInitParameter(String name, String value) {
+    public boolean setInitParameter(String name, String value) {
         if (ctx.isContextInitializedCalled()) {
             throw new IllegalStateException(
                 sm.getString("servletRegistration.alreadyInitialized",
@@ -89,25 +94,16 @@ public class ServletRegistrationImpl implements ServletRegistration {
                              ctx.getName()));
         }
 
-        if (null != value) {
-            wrapper.addInitParameter(name, value);
-        } else {
-            wrapper.removeInitParameter(name);
-        }
+        return wrapper.setInitParameter(name, value, false);
     }
 
 
-    public void setInitParameters(Map<String, String> initParameters) {
-        if (null == initParameters) {
-            throw new IllegalArgumentException("Null init parameters");
-        }
-        for (Map.Entry<String, String> e : initParameters.entrySet()) {
-            setInitParameter(e.getKey(), e.getValue());
-        }
+    public boolean setInitParameters(Map<String, String> initParameters) {
+        return wrapper.setInitParameters(initParameters);
     }
 
 
-    public void setLoadOnStartup(int loadOnStartup) {
+    public boolean setLoadOnStartup(int loadOnStartup) {
         if (ctx.isContextInitializedCalled()) {
             throw new IllegalStateException(
                 sm.getString("servletRegistration.alreadyInitialized",
@@ -115,11 +111,16 @@ public class ServletRegistrationImpl implements ServletRegistration {
                              ctx.getName()));
         }
 
-        wrapper.setLoadOnStartup(loadOnStartup);
+        if (!isProgrammatic) {
+            return false;
+        } else {
+            wrapper.setLoadOnStartup(loadOnStartup);
+            return true;
+        }
     }
 
 
-    public void setAsyncSupported(boolean isAsyncSupported) {
+    public boolean setAsyncSupported(boolean isAsyncSupported) {
         if (ctx.isContextInitializedCalled()) {
             throw new IllegalStateException(
                 sm.getString("servletRegistration.alreadyInitialized",
@@ -127,11 +128,16 @@ public class ServletRegistrationImpl implements ServletRegistration {
                              ctx.getName()));
         }
 
-        wrapper.setIsAsyncSupported(isAsyncSupported);
+        if (!isProgrammatic) {
+            return false;
+        } else {
+            wrapper.setIsAsyncSupported(isAsyncSupported);
+            return true;
+        }
     }
 
 
-    public void addMapping(String... urlPatterns) {
+    public boolean addMapping(String... urlPatterns) {
         if (ctx.isContextInitializedCalled()) {
             throw new IllegalStateException(
                 sm.getString("servletRegistration.alreadyInitialized",
@@ -148,6 +154,8 @@ public class ServletRegistrationImpl implements ServletRegistration {
         for (String urlPattern : urlPatterns) {
             ctx.addServletMapping(urlPattern, wrapper.getName());
         }
+
+        return true;
     }
 
 }

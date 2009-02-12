@@ -104,7 +104,7 @@ public class FilterDef implements Serializable {
      * The set of initialization parameters for this filter, keyed by
      * parameter name.
      */
-    private Map parameters = new HashMap();
+    private Map<String,String> parameters = new HashMap();
 
     /**
      * Async support
@@ -249,14 +249,81 @@ public class FilterDef implements Serializable {
     // --------------------------------------------------------- Public Methods
 
     /**
-     * Add an initialization parameter to the set of parameters associated
-     * with this filter.
+     * Adds the initialization parameter with the given name and value
+     * on this filter.
      *
-     * @param name The initialization parameter name
-     * @param value The initialization parameter value
+     * <p>If an init param with the given name already exists, its value
+     * will be overridden.
+     *
+     * @param name the init parameter name
+     * @param value the init parameter value
      */
     public void addInitParameter(String name, String value) {
-        parameters.put(name, value);
+        setInitParameter(name, value, true);
+    }
+
+
+    /**
+     * Sets the init parameter with the given name and value
+     * on this filter.
+     *
+     * @param name the init parameter name
+     * @param value the init parameter value
+     * @param override true if the given init param is supposed to
+     * override an existing init param with the same name, and false
+     * otherwise
+     *
+     * @return true if the init parameter with the given name and value
+     * was set, false otherwise
+     */
+    public boolean setInitParameter(String name, String value, 
+                                    boolean override) {
+        if (null == name || null == value) {
+            throw new IllegalArgumentException(
+                "Null filter init parameter name or value");
+        }
+
+        synchronized (parameters) {
+            if (override || !parameters.containsKey(name)) {
+                parameters.put(name, value);
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+
+    /**
+     * Sets the initialization parameters contained in the given map
+     * on this filter.
+     *
+     * @param initParameters the map with the init params to set
+     *
+     * @return true if the update was successful, false otherwise
+     */
+    public boolean setInitParameters(Map<String, String> initParameters) {
+        if (null == initParameters) {
+            throw new IllegalArgumentException("Null init parameters");
+        }
+
+        synchronized (parameters) {
+            for (Map.Entry<String, String> e : initParameters.entrySet()) {
+                if (e.getKey() == null || e.getValue() == null) {
+                    throw new IllegalArgumentException(
+                        "Null parameter name or value");
+                }
+                if (parameters.containsKey(e.getKey())) {
+                    return false;
+                }
+            }
+
+            for (Map.Entry<String, String> e : initParameters.entrySet()) {
+                setInitParameter(e.getKey(), e.getValue(), true);
+            }
+   
+            return true;
+        }
     }
 
 
@@ -266,7 +333,9 @@ public class FilterDef implements Serializable {
      * @param name the name of the initialization parameter to be removed
      */
     public void removeInitParameter(String name) {
-        parameters.remove(name);
+        synchronized (parameters) {
+            parameters.remove(name);
+        }
     }
 
 
