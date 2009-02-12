@@ -6,10 +6,10 @@ TESTS INFO :
 1. war/* are tests that deploy WAR module only. The name of directories indicate
    what kind of WAR each tests build for deployment. 
 
-2. ear/* are tests that deploy EAR module. We will turn on ear with war tests 
-   once ClassCastException for CommandParameters is fixed.
+2. ear/* are tests that deploy EAR module. Only ear with war tests are turned
+   on now.
 
-3. In all totally 25 unit test cases will be executed.
+3. In all totally 27 unit test cases will be executed.
 
 
 FOR RUNNING THE DEPLOYMENT TESTS ON v3:
@@ -73,3 +73,5 @@ EXPECTED RESULTS :
 [PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after deploy
 [PASSED] nojarexpansion : war/nojarexpansion Test asadmin redeploy (server)
 [PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after redeploy
+[PASSED] earwithwar : ear/earwithwar Test asadmin deploy (server)
+[PASSED] earwithwar : ear/earwithwar Test asadmin redeploy (server)

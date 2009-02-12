@@ -2,9 +2,9 @@
 
 <!DOCTYPE project [
 <!ENTITY commonSetup SYSTEM "./../../../../../config/properties.xml">
+]>
 <!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
 <!ENTITY common2Build SYSTEM "./../../../../../config/common.xml">
-]>
 
 <project name="deployment-ejb30-ear-session3-App" default="all" basedir=".">
 
