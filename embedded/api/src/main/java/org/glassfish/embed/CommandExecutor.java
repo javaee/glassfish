@@ -85,7 +85,11 @@ public class CommandExecutor {
             if (msg!=null) 
                 LoggerHelper.severe(msg);
 
-            throw new EmbeddedException(t, "command_failed", commandName);
+            if (t == null) {
+                throw new EmbeddedException("command_failed", commandName);
+            } else {
+                throw new EmbeddedException(t, "command_failed", commandName);
+            }
         }
     }
 
