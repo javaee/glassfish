@@ -78,11 +78,14 @@ public class CommandExecutor {
         Throwable t  = report.getFailureCause();
         if (exitCode.equals(exitCode.SUCCESS)) {
             LoggerHelper.info("command_successful", commandName);
-            if (msg!=null) LoggerHelper.info(msg);
+            if (msg!=null)
+                LoggerHelper.info(msg);
         } else if (exitCode.equals(exitCode.FAILURE)) {
             LoggerHelper.severe("command_failed", commandName);
-            if (msg!=null) LoggerHelper.severe(msg);
-            throw new EmbeddedException("command_failed", commandName, t);
+            if (msg!=null) 
+                LoggerHelper.severe(msg);
+
+            throw new EmbeddedException(StringHelper.get("command_failed", commandName), t);
         }
     }
 
