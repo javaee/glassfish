@@ -45,33 +45,4 @@ READING RESULTS :
    tests. This file HAS TO BE CHECKED to ensure that no exception
    (specifically those from MBeans etc were thrown). Search for 'exception'
    in this file to ensure no uncaught exceptions were thrown.
-
-EXPECTED RESULTS :
-------------------------------------------
-[PASSED] servletonly : war/servletonly Test asadmin deploy (server)
-[PASSED] servletonly : war/servletonly Test asadmin redeploy (server)
-[PASSED] servletonly : war/servletonly Test v3 asadmin redeploy (server)
-[PASSED] servletonly : war/servletonly Test asadmin disable (server)
-[PASSED] servletonly : war/servletonly Test asadmin enable (server)
-[PASSED] jsponly : war/jsponly Test asadmin deploy (server)
-[PASSED] jsponly : war/jsponly Test asadmin redeploy (server)
-[PASSED] htmlonly : war/htmlonly Test asadmin deploy (server)
-[PASSED] htmlonly : war/htmlonly Test asadmin redeploy (server)
-[PASSED] htmlonly : war/htmlonly Test asadmin disable (server)
-[PASSED] htmlonly : war/htmlonly Test asadmin enable (server)
-[PASSED] webinflib : war/webinflib Test asadmin deploy (server)
-[PASSED] webinflib : war/webinflib Test asadmin redeploy (server)
-[PASSED] deploydir : war/deploydir Test asadmin deploydir
-[PASSED] deploydir : war/deploydir Test asadmin redeploydir
-[PASSED] deploydir : war/deploydir Test asadmin v3 redeploydir
-[PASSED] deploydir : war/deploydir Test asadmin v3 redeploy
-[PASSED] deploydir : war/deploydir Test asadmin deploydir with a different context root
-[PASSED] deploydir : war/deploydir Test asadmin redeploydir preserves context root
-[PASSED] deploydir : war/deploydir Test v3 asadmin redeploydir preserves context root
-[PASSED] deploydir : war/deploydir Test asadmin undeploydir
-[PASSED] nojarexpansion : war/nojarexpansion Test asadmin deploy (server)
-[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after deploy
-[PASSED] nojarexpansion : war/nojarexpansion Test asadmin redeploy (server)
-[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after redeploy
-[PASSED] earwithwar : ear/earwithwar Test asadmin deploy (server)
-[PASSED] earwithwar : ear/earwithwar Test asadmin redeploy (server)
+3. compare results with EXPECTED_RESULTS.v3.txt.
