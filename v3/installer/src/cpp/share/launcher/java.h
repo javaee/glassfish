@@ -95,6 +95,13 @@
 
 #define SIMS_NATIVE_OPTION "-Dsims.native-file-dir="
 
+/* Open installer zip files to be extracted instead of bundling the extracted ones.
+Saves about 4-5 MB to the download size. */
+#define ENGINE_ZIP_PATH FILE_SEPARATOR "Product" FILE_SEPARATOR "Packages" FILE_SEPARATOR "Engine.zip"
+#define RESOURCES_ZIP_PATH FILE_SEPARATOR "Product" FILE_SEPARATOR "Packages" FILE_SEPARATOR "Resources.zip"
+#define METADATA_ZIP_PATH FILE_SEPARATOR "Product" FILE_SEPARATOR "Packages" FILE_SEPARATOR "metadata.zip"
+
+
 
 /*
  * Each of these entries are added onto the classpath by the launcher.

@@ -131,6 +131,9 @@ main(int argc, char **argv)
     /* Log Level */
     jboolean logLevelOption = JNI_FALSE;
 
+	/* reference to Open Installer Framework zip File */
+	char oiZipFile[MAXPATHLEN];
+
     
 
         char classPath[2048];
@@ -390,6 +393,7 @@ main(int argc, char **argv)
         return ret;
     }
 
+
     if ((zipFile = zipOpen(execname, &zipError)) != NULL)
     {
         char *message = GetLocalizedMessage("unzipping_files");
@@ -407,7 +411,62 @@ main(int argc, char **argv)
         zipClose(zipFile);
     }
 
-    
+	/* Could have wrapped this repeated piece of code in a method, but too many arguments to pass, 
+	Moreover this is a temp. fix */
+
+	sprintf(oiZipFile, "%s" ENGINE_ZIP_PATH, workdir);
+   if ((zipFile = zipOpen(oiZipFile, &zipError)) != NULL)
+    {
+        char *message = GetLocalizedMessage("unzipping_files_engine_zip");
+        statusf(message);
+        free(message);
+        message = NULL;
+        if (!UnzipFiles(zipFile, workdir, NULL))
+        {
+            char *message = GetLocalizedMessage("corrupted_zip_file");
+            fprintf(stderr, message, execname);
+            free(message);
+            message = NULL;
+            return 1;
+        }
+        zipClose(zipFile);
+    }
+
+    sprintf(oiZipFile, "%s" RESOURCES_ZIP_PATH, workdir);
+    if ((zipFile = zipOpen(oiZipFile , &zipError)) != NULL)
+    {
+        char *message = GetLocalizedMessage("unzipping_files_resources_zip");
+        statusf(message);
+        free(message);
+        message = NULL;
+        if (!UnzipFiles(zipFile, workdir, NULL))
+        {
+            char *message = GetLocalizedMessage("corrupted_zip_file");
+            fprintf(stderr, message, execname);
+            free(message);
+            message = NULL;
+            return 1;
+        }
+        zipClose(zipFile);
+    }
+            
+     sprintf(oiZipFile, "%s" METADATA_ZIP_PATH, workdir);
+    if ((zipFile = zipOpen(oiZipFile , &zipError)) != NULL)
+    {
+        char *message = GetLocalizedMessage("unzipping_files_metadata_zip");
+        statusf(message);
+        free(message);
+        message = NULL;
+        if (!UnzipFiles(zipFile, workdir, NULL))
+        {
+            char *message = GetLocalizedMessage("corrupted_zip_file");
+            fprintf(stderr, message, execname);
+            free(message);
+            message = NULL;
+            return 1;
+        }
+        zipClose(zipFile);
+    }
 
     /* Set CLASSPATH */
     if ((apphome = GetApplicationHome()) == NULL)

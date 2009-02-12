@@ -24,8 +24,7 @@
     <property name="uc.stage.dir" value="${basedir}/target/uc" />
     <property name="tmp.dir" value="${basedir}/target/tmp" />
     <property name="resources.dir" value="${basedir}/src/main/resources" />
-    <property name="gf.zip.dir" value="${basedir}/../distributions-ips/glassfish/target" />
-    <property name="javaresources.dir" value="${basedir}/src/main/java/org/openinstaller/resource" />
+    <property name="gf.zip.dir" value="${basedir}/../distributions-ips/glassfish/target" />    <property name="javaresources.dir" value="${basedir}/src/main/java/org/openinstaller/resource" />
       
     <!-- all -->
     <target name="all" depends="extract.oi, extract.uc, compile, assemble, package"  description="Build entire component">
@@ -37,9 +36,6 @@
 
 	<resolveArtifact groupID="org.openinstaller" artifactId="resources" property="resources.zip"/>
        
-	<!-- Explode the resources.zip to enable installer to refer the contents -->
-	<unzip src="${resources.zip}" dest="${stage.dir}"/>
-
 	<!-- Copy Resources.zip to payload directly as there are no changes to it -->
 	 <copy tofile="${stage.dir}/Product/Packages/Resources.zip"
 		 file="${resources.zip}"/>
@@ -120,16 +116,9 @@
 	<zip destfile="${stage.dir}/Product/Packages/Engine.zip"
              basedir="${engine.stage.dir}" />
 
-	<!-- unzip the newly created file under stage.dir for reference to installer ,this is fun :-(.
-	Much faster instead of copying the temporary directory to parent directory. -->
-	<unzip src="${stage.dir}/Product/Packages/Engine.zip" dest="${stage.dir}"/>
-
-	<!-- Delete the temporary install stage directory used to host engine.zip contents. -->
 	<delete dir="${engine.stage.dir}"/>
 
-	<!-- Change wrapper permission on exploded directory to be used for install. -->
-         <chmod file="${stage.dir}/install/bin/engine-wrapper" perm="ugo+rx"/>
-    </target>
+   </target>
 
     <target name="assemble"  description="Assembling installer distribution layout">
          <mkdir dir="${stage.dir}/metadata"/>
@@ -157,6 +146,8 @@
 
          <zip destfile="${stage.dir}/Product/Packages/metadata.zip"
              basedir="${stage.dir}" includes="metadata/**" />
+
+	 <delete dir="${stage.dir}/metadata"/>
 
          <echo message="Staging wrappers"/>
 

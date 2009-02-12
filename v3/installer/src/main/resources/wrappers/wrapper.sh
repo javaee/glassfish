@@ -153,6 +153,9 @@ echo "Extracting archive, please wait..."
 tail +163l $0 > $tmp/tmp.jar
 cd $tmp
 $my_jar xvf tmp.jar 
+$my_jar xvf ./Product/Packages/Engine.zip 
+$my_jar xvf ./Product/Packages/Resources.zip 
+$my_jar xvf ./Product/Packages/metadata.zip 
 rm tmp.jar
 chmod ugo+x product-installer.sh
 chmod ugo+x install/bin/engine-wrapper
