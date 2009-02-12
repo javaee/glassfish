@@ -248,7 +248,6 @@ public class Server {
      * THE instance is contained in this server's EmbeddedInfo object.  It can
      * also be accessed through the EmbeddedInfo object.
      * @return EmbeddedFileSystem
-     * @throws EmbeddedException
      * @see EmbeddedFileSystem
      */
     public EmbeddedFileSystem getFileSystem() {
