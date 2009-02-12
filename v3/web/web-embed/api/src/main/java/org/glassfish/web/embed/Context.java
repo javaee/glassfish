@@ -142,4 +142,21 @@ public interface Context extends ServletContext, Lifecycle {
      * initialized and started
      */
     public void addListener(Class <? extends EventListener> c);
+
+    /**
+     * Enables or disables directory listings on this <tt>Context</tt>.
+     *
+     * @param directoryListing true if directory listings are to be
+     * enabled on this <tt>Context</tt>, false otherwise
+     */
+    public void setDirectoryListing(boolean directoryListing);
+
+    /**
+     * Checks whether directory listings are enabled or disabled on this
+     * <tt>Context</tt>.
+     *
+     * @return true if directory listings are enabled on this 
+     * <tt>Context</tt>, false otherwise
+     */
+    public void isDirectoryListing();
 }

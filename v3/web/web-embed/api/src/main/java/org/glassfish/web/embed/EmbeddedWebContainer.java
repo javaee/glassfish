@@ -38,6 +38,7 @@
 package org.glassfish.web.embed;
 
 import java.io.File;
+import java.util.Collection;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -117,6 +118,15 @@ public interface EmbeddedWebContainer {
     public WebListener findWebListener(String id);
 
     /**
+     * Gets the collection of <tt>WebListener</tt> instances registered
+     * with this web container.
+     * 
+     * @return the collection of <tt>WebListener</tt> instances registered
+     * with this web container
+     */
+    public Collection<WebListener> getWebListeners();
+
+    /**
      * Creates a <tt>VirtualServer</tt> with the given id and docroot.
      *
      * <p>The new <tt>VirtualServer</tt> will receive requests from the
@@ -145,5 +155,14 @@ public interface EmbeddedWebContainer {
      * in this web container
      */
     public VirtualServer findVirtualServer(String id);
+
+    /**
+     * Gets the collection of <tt>VirtualServer</tt> instances registered
+     * with this web container.
+     * 
+     * @return the collection of <tt>VirtualServer</tt> instances registered
+     * with this web container
+     */
+    public Collection<VirtualServer> getVirtualServers();
 
 }

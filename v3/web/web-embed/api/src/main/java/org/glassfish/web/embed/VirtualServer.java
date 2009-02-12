@@ -119,7 +119,7 @@ public interface VirtualServer extends Lifecycle {
      * this <tt>VirtualServer</tt>.
      * 
      * @return the collection of <tt>Context</tt> instances registered with
-     * this <tt>VirtualServer</tt>.
+     * this <tt>VirtualServer</tt>
      */
     public Collection<Context> getContexts();
 
