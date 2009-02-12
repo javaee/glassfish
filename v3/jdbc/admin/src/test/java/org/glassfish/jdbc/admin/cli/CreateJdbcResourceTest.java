@@ -36,7 +36,6 @@
 
 package org.glassfish.jdbc.admin.cli;
 
-import com.sun.enterprise.v3.admin.*;
 import com.sun.enterprise.config.serverbeans.JdbcResource;
 import com.sun.enterprise.config.serverbeans.Resource;
 import com.sun.enterprise.config.serverbeans.Resources;
@@ -51,6 +50,7 @@ import java.beans.PropertyVetoException;
 import java.util.Properties;
 
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandRunner;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -113,7 +113,7 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
                 LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER),
                 new PropsFileActionReporter());
         
-        cr = new CommandRunner();
+        cr = habitat.getComponent(CommandRunner.class);
     }
 
     @After
@@ -158,7 +158,7 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
         // Set operand
         parameters.setProperty("DEFAULT", "jdbc/foo");
 
-        //Call CommandRunner.doCommand(..) to execute the command
+        //Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.doCommand("create-jdbc-resource", command, parameters, context.getActionReport());
         
         // Check the exit code is SUCCESS
@@ -213,7 +213,7 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
         parameters.setProperty("DEFAULT", "jdbc/alldefaults");
         
 
-        //Call CommandRunner.doCommand(..) to execute the command
+        //Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.doCommand("create-jdbc-resource", command, parameters, context.getActionReport());
         
         // Check the exit code is SUCCESS
@@ -251,7 +251,7 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
         // Set operand
         parameters.setProperty("DEFAULT", "dupRes");
 
-        //Call CommandRunner.doCommand(..) to execute the command
+        //Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.doCommand("create-jdbc-resource", command, parameters, context.getActionReport());
         
         // Check the exit code is SUCCESS
@@ -308,7 +308,7 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
         parameters.setProperty("connectionpoolid", "xxxxxx");
         parameters.setProperty("DEFAULT", "jdbc/nopool");
         
-        // Call CommandRunner.doCommand(..) to execute the command
+        // Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.doCommand("create-jdbc-resource", command, parameters, context.getActionReport());
         
         // Check the exit code is Failure
@@ -343,13 +343,13 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
         parameters.setProperty("enabled", "junk");
         parameters.setProperty("DEFAULT", "jdbc/junk");
         
-        // Call CommandRunner.doCommand(..) to execute the command
+        // Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.doCommand("create-jdbc-resource", command, parameters, context.getActionReport());
         
         // Check the exit code is Failure
         assertEquals(ActionReport.ExitCode.FAILURE, context.getActionReport().getActionExitCode());
 
-        // Don't check error message.  Error message being set by CommandRunner.    
+        // Don't check error message.  Error message being set by CommandRunnerImpl.
     }
     
     /**
@@ -363,7 +363,7 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
         parameters.setProperty("enabled", "");
         parameters.setProperty("DEFAULT", "jdbc/sun");
         
-        // Call CommandRunner.doCommand(..) to execute the command
+        // Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.doCommand("create-jdbc-resource", command, parameters, context.getActionReport());
         
         // Check the exit code is SUCCESS

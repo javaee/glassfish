@@ -23,13 +23,9 @@
 
 package com.sun.enterprise.web;
 
-import com.sun.enterprise.v3.services.impl.V3Mapper;
+import org.glassfish.internal.grizzly.V3Mapper;
 import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
 import org.apache.catalina.LifecycleException;
-import org.apache.tomcat.util.modeler.Registry;
-import java.util.logging.*;
-import javax.management.ObjectName;
-import javax.management.MalformedObjectNameException;
 
 /**
  * A CoyoteConnector subclass which "wraps around" an existing Grizzly

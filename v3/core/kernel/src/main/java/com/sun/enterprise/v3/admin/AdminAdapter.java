@@ -28,9 +28,6 @@ import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.common_impl.LogHelper;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
-import com.sun.enterprise.v3.common.HTMLActionReporter;
-import com.sun.enterprise.v3.common.PropsFileActionReporter;
-import com.sun.enterprise.v3.common.XMLActionReporter;
 import com.sun.grizzly.tcp.Request;
 import com.sun.logging.LogDomains;
 import java.io.BufferedInputStream;
@@ -102,7 +99,7 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
     ModulesRegistry modulesRegistry;
 
     @Inject
-    CommandRunner commandRunner;
+    CommandRunnerImpl commandRunner;
 
     @Inject
     ServerEnvironmentImpl env;
@@ -280,7 +277,7 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
         try {
             if (req.getMethod().equalsIgnoreCase(GET)) {
                 logger.fine("***** AdminAdapter GET  *****");
-                report = commandRunner.doCommand(command, parameters, report);
+                commandRunner.doCommand(command, parameters, report);
             } 
             else if (req.getMethod().equalsIgnoreCase(POST)) {
                 logger.fine("***** AdminAdapter POST *****");
@@ -289,7 +286,7 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
                  */
                 uploadedFilesInfo = new UploadedFilesInfo(req.getInputStream(), report);
                 
-                report = commandRunner.doCommand(command, parameters, report, uploadedFilesInfo.getFiles());
+                commandRunner.doCommand(command, parameters, report, uploadedFilesInfo.getFiles());
             }
         } catch (Throwable t) {
             /*

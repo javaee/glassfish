@@ -89,7 +89,6 @@ import com.sun.enterprise.security.integration.RealmInitializer;
 import com.sun.enterprise.util.Result;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.io.FileUtils;
-import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
 import com.sun.enterprise.web.logger.IASLogger;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
@@ -231,9 +230,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     @Inject
     ClassLoaderHierarchy clh;
-
-    @Inject
-    GrizzlyService grizzlyService;
 
     @Inject
     JavaEEObjectStreamFactory javaEEObjectStreamFactory;

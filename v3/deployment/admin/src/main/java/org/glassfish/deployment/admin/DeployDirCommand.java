@@ -28,9 +28,7 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.v3.admin.CommandRunner;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.annotations.Scoped;
 

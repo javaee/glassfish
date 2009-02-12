@@ -20,7 +20,7 @@
  *
  * Copyright 2007 Sun Microsystems, Inc. All rights reserved.
  */
-package com.sun.enterprise.v3.services.impl;
+package org.glassfish.internal.grizzly;
 
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.util.http.mapper.Mapper;

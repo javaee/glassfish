@@ -33,8 +33,8 @@ import com.sun.ejb.containers.EjbContainerUtil;
 import com.sun.ejb.containers.EjbContainerUtilImpl;
 import com.sun.ejb.containers.EJBTimerService;
 import com.sun.enterprise.v3.common.PlainTextActionReporter;
-import com.sun.enterprise.v3.admin.CommandRunner;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.internal.deployment.Deployment;
 

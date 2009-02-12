@@ -25,7 +25,7 @@ package com.sun.enterprise.v3.server;
 
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.Applications;
-import com.sun.enterprise.v3.admin.CommandRunner;
+import com.sun.enterprise.v3.admin.CommandRunnerImpl;
 import com.sun.enterprise.v3.common.XMLActionReporter;
 import java.io.File;
 import java.io.IOException;
@@ -182,8 +182,7 @@ public class DynamicReloader implements Runnable {
          * the app is directory-deployed.
          * 
          */
-        CommandRunner commandRunner = 
-            (CommandRunner) habitat.getComponent(CommandRunner.class);
+        CommandRunnerImpl commandRunner = habitat.getComponent(CommandRunnerImpl.class);
 
         Properties deployParam = new Properties();
         deployParam.put(DeploymentProperties.FORCE, Boolean.TRUE.toString());

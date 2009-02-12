@@ -2,8 +2,6 @@ package com.sun.enterprise.v3.admin;
 
 import org.glassfish.tests.utils.ConfigApiTest;
 import org.glassfish.tests.utils.Utils;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.ActionReport;
 import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.component.Habitat;
@@ -12,19 +10,17 @@ import org.junit.Ignore;
 import static org.junit.Assert.*;
 
 import java.util.Properties;
-import java.util.logging.Logger;
 import java.beans.PropertyChangeEvent;
 
 import com.sun.enterprise.v3.common.HTMLActionReporter;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.HttpListener;
-import junit.framework.Assert;
 
 /**
  * test the set command
  * @author Jerome Dochez
  */
-// Ignored temporarily because it fails to inject CommandRunner as ModulesRegistry is not available
+// Ignored temporarily because it fails to inject CommandRunnerImpl as ModulesRegistry is not available
 @Ignore 
 public class ConfigAttributeSetTest  extends ConfigApiTest implements ConfigListener {
 
@@ -48,7 +44,7 @@ public class ConfigAttributeSetTest  extends ConfigApiTest implements ConfigList
     @Test
      public void simpleAttributeSetTest() {
 
-        CommandRunner runner = habitat.getComponent(CommandRunner.class);
+        CommandRunnerImpl runner = habitat.getComponent(CommandRunnerImpl.class);
         assertNotNull(runner);
 
         // let's find our target

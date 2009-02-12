@@ -38,7 +38,6 @@ package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.config.serverbeans.JavaConfig;
 import com.sun.enterprise.config.serverbeans.Profiler;
-import com.sun.enterprise.v3.common.PropsFileActionReporter;
 import com.sun.logging.LogDomains;
 
 import java.beans.PropertyVetoException;
@@ -73,7 +72,7 @@ public class CreateProfilerTest extends ConfigApiTest {
     private CreateProfiler command = null;
     private Properties parameters = new Properties();
     private AdminCommandContext context = null;
-    private CommandRunner cr = null;
+    private CommandRunnerImpl cr = habitat.getComponent(CommandRunnerImpl.class);
     
     public DomDocument getDocument(Habitat habitat) {
 
@@ -100,9 +99,8 @@ public class CreateProfilerTest extends ConfigApiTest {
         
         context = new AdminCommandContext(
                 LogDomains.getLogger(CreateProfilerTest.class, LogDomains.ADMIN_LOGGER),
-                new PropsFileActionReporter());
+                habitat.getComponent(ActionReport.class, "hk2-agent"));
         
-        cr = new CommandRunner();
     }
 
     @After
@@ -135,7 +133,7 @@ public class CreateProfilerTest extends ConfigApiTest {
         parameters.setProperty("DEFAULT", "testProfiler");
         
 
-        //Call CommandRunner.doCommand(..) to execute the command
+        //Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.doCommand("create-profiler", command, parameters, context.getActionReport());
         
         // Check the exit code is SUCCESS
@@ -182,7 +180,7 @@ public class CreateProfilerTest extends ConfigApiTest {
         parameters.setProperty("DEFAULT", "myProfilerAllDefaults");
         
 
-        //Call CommandRunner.doCommand(..) to execute the command
+        //Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.doCommand("create-profiler", command, parameters, context.getActionReport());
         
         // Check the exit code is SUCCESS
@@ -216,7 +214,7 @@ public class CreateProfilerTest extends ConfigApiTest {
         parameters.setProperty("DEFAULT", "testProfiler");
         
 
-        //Call CommandRunner.doCommand(..) to execute the command
+        //Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.doCommand("create-profiler", command, parameters, context.getActionReport());
         
         // Check the exit code is SUCCESS
@@ -228,7 +226,7 @@ public class CreateProfilerTest extends ConfigApiTest {
         parameters.setProperty("DEFAULT", "testProfilerNew");
         
 
-        //Call CommandRunner.doCommand(..) to execute the command
+        //Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.doCommand("create-profiler", command, parameters, context.getActionReport());
         
         // Check the exit code is SUCCESS
@@ -264,7 +262,7 @@ public class CreateProfilerTest extends ConfigApiTest {
         parameters.setProperty("enabled", "junk");
         parameters.setProperty("DEFAULT", "myProfiler");
         
-        // Call CommandRunner.doCommand(..) to execute the command
+        // Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.doCommand("create-profiler", command, parameters, context.getActionReport());
         
         // Check the exit code is Failure - test fails, need bug fix before uncommenting
@@ -287,7 +285,7 @@ public class CreateProfilerTest extends ConfigApiTest {
         parameters.setProperty("enabled", "");
         parameters.setProperty("DEFAULT", "testProfiler");
         
-        // Call CommandRunner.doCommand(..) to execute the command
+        // Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.doCommand("create-profiler", command, parameters, context.getActionReport());
         
         //Check that the profiler is created

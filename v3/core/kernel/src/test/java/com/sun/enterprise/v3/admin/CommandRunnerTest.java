@@ -39,11 +39,10 @@ package com.sun.enterprise.v3.admin;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.Before;
-import com.sun.enterprise.v3.admin.CommandRunner;
 import java.util.Properties;
 import java.util.List;
 import org.glassfish.api.Param;
-import org.glassfish.api.I18n;
+
 import java.lang.reflect.AnnotatedElement;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -54,7 +53,7 @@ import org.jvnet.hk2.component.ComponentException;
  * junit test to test CommandRunner class
  */
 public class CommandRunnerTest {
-    private CommandRunner cr = null;
+    private CommandRunnerImpl cr = null;
 
     @Test
     public void getPropertiesValueTest() {
@@ -239,7 +238,7 @@ public class CommandRunnerTest {
     
     @Before
     public void setup() {
-        cr = new CommandRunner();
+        cr = new CommandRunnerImpl();
     }
 
         //mock-up DummyCommand object

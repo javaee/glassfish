@@ -28,12 +28,11 @@ import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.util.Result;
 import com.sun.enterprise.v3.common.PlainTextActionReporter;
-import com.sun.enterprise.v3.common.BooleanLatch;
-import com.sun.enterprise.v3.admin.CommandRunner;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.Startup;
 import org.glassfish.api.Async;
 import org.glassfish.api.FutureProvider;
+import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.branding.Branding;
 import org.glassfish.api.event.EventListener.Event;
 

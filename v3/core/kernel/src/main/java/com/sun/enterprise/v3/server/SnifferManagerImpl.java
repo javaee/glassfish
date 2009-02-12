@@ -42,11 +42,11 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.container.Sniffer;
+import org.glassfish.internal.deployment.SnifferManager;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
-import java.net.URL;
 
 import com.sun.enterprise.module.impl.ClassLoaderProxy;
 
@@ -56,7 +56,7 @@ import com.sun.enterprise.module.impl.ClassLoaderProxy;
  * @author Kohsuke Kawaguchi
  */
 @Service
-public class SnifferManager {
+public class SnifferManagerImpl implements SnifferManager {
     // I am not injecting the sniffers because this can rapidly become an expensive
     // operation especially when no application has been deployed.
     volatile Collection<Sniffer> sniffers;

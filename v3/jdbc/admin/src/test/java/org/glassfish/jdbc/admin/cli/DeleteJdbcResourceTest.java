@@ -45,11 +45,11 @@ import com.sun.enterprise.config.serverbeans.Servers;
 import com.sun.enterprise.v3.common.PropsFileActionReporter;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.logging.LogDomains;
-import com.sun.enterprise.v3.admin.CommandRunner;
 
 import java.util.Properties;
 
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandRunner;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -73,7 +73,7 @@ public class DeleteJdbcResourceTest extends ConfigApiTest {
     private DeleteJdbcResource deleteCommand = null;
     private Properties parameters = new Properties();
     private AdminCommandContext context = null;
-    private CommandRunner cr = null;
+    private CommandRunner cr = habitat.getComponent(CommandRunner.class);
     
     public DomDocument getDocument(Habitat habitat) {
 
@@ -105,7 +105,6 @@ public class DeleteJdbcResourceTest extends ConfigApiTest {
                 LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER),
                 new PropsFileActionReporter());
         
-        cr = new CommandRunner();
         cr.doCommand("create-jdbc-resource", createCommand, parameters, context.getActionReport());
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
         
@@ -132,7 +131,7 @@ public class DeleteJdbcResourceTest extends ConfigApiTest {
         // Set operand
         parameters.setProperty("DEFAULT", "jdbc/foo");
         
-        //Call CommandRunner.doCommand(..) to execute the command
+        //Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.doCommand("delete-jdbc-resource", deleteCommand, parameters, context.getActionReport());
         
         // Check the exit code is SUCCESS
@@ -182,7 +181,7 @@ public class DeleteJdbcResourceTest extends ConfigApiTest {
         parameters.setProperty("target", "server");
         parameters.setProperty("DEFAULT", "jdbc/foo");
         
-        //Call CommandRunner.doCommand(..) to execute the command
+        //Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.doCommand("delete-jdbc-resource", deleteCommand, parameters, context.getActionReport());
         
         // Check the exit code is SUCCESS
@@ -231,7 +230,7 @@ public class DeleteJdbcResourceTest extends ConfigApiTest {
         // Set operand
         parameters.setProperty("DEFAULT", "doesnotexist");
         
-        //Call CommandRunner.doCommand(..) to execute the command
+        //Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.doCommand("delete-jdbc-resource", deleteCommand, parameters, context.getActionReport());
         
         // Check the exit code is FAILURE
@@ -248,7 +247,7 @@ public class DeleteJdbcResourceTest extends ConfigApiTest {
      */
     @Test
     public void testExecuteFailNoOperand() {
-        //Call CommandRunner.doCommand(..) to execute the command
+        //Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.doCommand("delete-jdbc-resource", deleteCommand, parameters, context.getActionReport());
         
         // Check the exit code is FAILURE
@@ -268,7 +267,7 @@ public class DeleteJdbcResourceTest extends ConfigApiTest {
         parameters.setProperty("invalid", "");
         parameters.setProperty("DEFAULT", "jdbc/foo");
         
-        //Call CommandRunner.doCommand(..) to execute the command
+        //Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.doCommand("delete-jdbc-resource", deleteCommand, parameters, context.getActionReport());
         
         // Check the exit code is FAILURE
@@ -288,7 +287,7 @@ public class DeleteJdbcResourceTest extends ConfigApiTest {
         parameters.setProperty("target", "invalid");
         parameters.setProperty("DEFAULT", "jdbc/foo");
         
-        //Call CommandRunner.doCommand(..) to execute the command
+        //Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.doCommand("delete-jdbc-resource", deleteCommand, parameters, context.getActionReport());
         
         //Check that the resource was NOT deleted

@@ -96,7 +96,7 @@ public class ApplicationLifecycle implements Deployment {
         
 
     @Inject
-    protected SnifferManager snifferManager;
+    protected SnifferManagerImpl snifferManager;
 
     @Inject
     Habitat habitat;

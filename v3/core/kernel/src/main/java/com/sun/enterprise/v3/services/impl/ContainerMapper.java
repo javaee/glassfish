@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.logging.Level;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.ApplicationContainer;
+import org.glassfish.internal.grizzly.V3Mapper;
 import org.jvnet.hk2.component.Habitat;
 
 import com.sun.grizzly.util.http.mapper.Mapper;

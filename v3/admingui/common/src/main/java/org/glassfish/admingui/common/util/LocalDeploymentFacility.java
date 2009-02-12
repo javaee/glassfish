@@ -40,15 +40,13 @@ package org.glassfish.admingui.common.util;
 import java.util.Collection;
 import java.util.Properties;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.deployment.client.*;
 import com.sun.enterprise.cli.framework.CommandException;
-import com.sun.enterprise.v3.admin.CommandRunner;
-import com.sun.enterprise.v3.common.XMLActionReporter;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import org.glassfish.api.ActionReport.MessagePart;
-import org.glassfish.deployment.client.AbstractDeploymentFacility.DFCommandRunner;
 import org.glassfish.internal.api.Globals;
 import org.jvnet.hk2.component.Habitat;
 
@@ -135,7 +133,7 @@ public class LocalDeploymentFacility extends AbstractDeploymentFacility {
         }
 
         public DFDeploymentStatus run() throws CommandException {
-            final XMLActionReporter report = new XMLActionReporter();
+            final ActionReport report = commandRunner.getActionReport("xml");
             final Properties parameters = prepareParameters(commandOptions, operands);
             commandRunner.doCommand(commandName, parameters, report);
             final DFDeploymentStatus status = actionReportToStatus(report);

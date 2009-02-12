@@ -149,7 +149,7 @@ public class DistributionDashboardMojo extends AbstractGlassfishMojo {
 
             for(Artifact a : ourArtifacts) {
 
-                if ("pom".equals(a.getType())) {
+                if ("pom".equals(a.getType()) || "xml".equals(a.getType())) {
                     continue;
                 }
                 if (isModule(a)) {

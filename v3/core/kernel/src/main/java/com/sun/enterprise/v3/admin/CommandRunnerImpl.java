@@ -35,7 +35,6 @@
  */
 package com.sun.enterprise.v3.admin;
 
-import com.sun.enterprise.module.impl.Utils;
 import com.sun.enterprise.module.common_impl.LogHelper;
 import com.sun.enterprise.universal.collections.ManifestUtils;
 import com.sun.enterprise.universal.glassfish.AdminCommandResponse;
@@ -47,7 +46,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Properties;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.ActionReport;
@@ -56,6 +54,7 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Inject;
@@ -74,9 +73,9 @@ import com.sun.enterprise.universal.BASE64Decoder;
  * @author tjquinn
  */
 @Service
-public class CommandRunner {
+public class CommandRunnerImpl implements CommandRunner {
     
-    public final static LocalStringManagerImpl adminStrings = new LocalStringManagerImpl(CommandRunner.class);
+    public final static LocalStringManagerImpl adminStrings = new LocalStringManagerImpl(CommandRunnerImpl.class);
     public final static Logger logger = LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER);
 
     private static final String ASADMIN_CMD_PREFIX = "AS_ADMIN_";
@@ -87,6 +86,15 @@ public class CommandRunner {
     ClassLoaderHierarchy clh;
 
     /**
+     * Returns a uninitialized action report
+     * @param name action report type name
+     * @return unitialized action report
+     */
+    public ActionReport getActionReport(String name) {
+        return habitat.getComponent(ActionReport.class, name);
+    }
+
+    /**
      * Executes a command by name.
      * <p>
      * The commandName parameter value should correspond to the name of a 
@@ -95,9 +103,9 @@ public class CommandRunner {
      * @param parameters name/value pairs to be passed to the command
      * @param report will hold the result of the command's execution
      */
-    public ActionReport doCommand(final String commandName, final Properties parameters, final ActionReport report) {
+    public void doCommand(final String commandName, final Properties parameters, final ActionReport report) {
 
-        return doCommand(commandName, parameters, report, null);
+        doCommand(commandName, parameters, report, null);
     }
     
     /**
@@ -110,14 +118,14 @@ public class CommandRunner {
      * @param report will hold the result of the command's execution
      * @param uploadedFiles files uploaded from the client
      */
-    public ActionReport doCommand(final String commandName, final Properties parameters, 
+    public void doCommand(final String commandName, final Properties parameters,
             final ActionReport report, List<File> uploadedFiles) {
 
         final AdminCommand handler = getCommand(commandName, report, logger);
         if (handler==null) {
-            return report;
+            return;
         }
-        return doCommand(commandName, handler, parameters, report, uploadedFiles);
+        doCommand(commandName, handler, parameters, report, uploadedFiles);
     }
 
     /**
@@ -128,12 +136,12 @@ public class CommandRunner {
      * @param report will hold the result of the command's execution
      */
     
-    public ActionReport doCommand(
+    public void doCommand(
             final String commandName, 
             final AdminCommand command, 
             final Properties parameters, 
             final ActionReport report) {
-        return doCommand(commandName, command, parameters, report, null);
+        doCommand(commandName, command, parameters, report, null);
     }
 
     public ActionReport doCommand(

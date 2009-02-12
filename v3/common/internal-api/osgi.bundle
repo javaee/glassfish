@@ -4,5 +4,6 @@
                         org.glassfish.internal.deployment; \
                         org.glassfish.flashlight.datatree; \
                         org.glassfish.j2ee.statistics; \
+                        org.glassfish.internal.grizzly; \
                         org.glassfish.flashlight; version=${project.osgi.version}
 

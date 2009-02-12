@@ -23,8 +23,6 @@
 package org.glassfish.deployment.autodeploy;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.v3.admin.CommandRunner;
-import com.sun.enterprise.v3.common.PropsFileActionReporter;
 import com.sun.logging.LogDomains;
 import java.io.File;
 import java.util.Properties;
@@ -32,6 +30,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.deployment.autodeploy.AutoDeployer.AutodeploymentStatus;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.jvnet.hk2.annotations.Inject;
@@ -118,7 +117,7 @@ public abstract class AutoOperation {
      */
     final AutodeploymentStatus run() throws AutoDeploymentException {
         try {
-            ActionReport report = new PropsFileActionReporter();
+            ActionReport report = commandRunner.getActionReport("hk2-agent");
             commandRunner.doCommand(commandName, command, props, report);
             AutodeploymentStatus ds = AutodeploymentStatus.forExitCode(report.getActionExitCode());
             Level messageLevel = (ds.status ? Level.INFO : Level.WARNING);

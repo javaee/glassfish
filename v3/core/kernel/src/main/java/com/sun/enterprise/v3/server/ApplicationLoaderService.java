@@ -26,6 +26,7 @@ import com.sun.enterprise.v3.common.HTMLActionReporter;
 import org.glassfish.internal.data.*;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
+import org.glassfish.internal.deployment.SnifferManager;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;

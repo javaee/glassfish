@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,23 +33,55 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.api.admin;
+
+package org.glassfish.internal.deployment;
+
+import org.glassfish.api.container.Sniffer;
+import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.jvnet.hk2.annotations.Contract;
+
+import java.util.Collection;
 
 /**
- * User: Jerome Dochez
- * Date: May 16, 2008
- * Time: 11:47:02 AM
+ * Service for easy access to sniffers.
  */
-public class ParameterNames {
+@Contract
+public interface SnifferManager {
+
+    /**
+     * Return a sniffer instance based on its registered name
+     * @param name the sniffer service registration name
+     * @return the sniffer instance of null if not found.
+     */
+    public Sniffer getSniffer(String name);
+
+    /**
+     * Returns true if no sniffer/container is registered in the habitat.
+     * @return true if not sniffer is registered
+     */
+    public boolean hasNoSniffers();
+
+    /**
+     * Returns all the presently registered sniffers
+     *
+     * @return Collection (possibly empty but never null) of Sniffer
+     */
+    public Collection<Sniffer> getSniffers();    
+
+    /**
+     * Returns a collection of sniffers that recognized some parts of the
+     * passed archive as components their container handle.
+     *
+     * If no sniffer recognize the passed archive, an empty collection is
+     * returned.
+     *
+     * @param archive source archive abstraction
+     * @param cloader is a class loader capable of loading classes and resources
+     * from the passed archive.
+     * @return possibly empty collection of sniffers that handle the passed
+     * archive.
+     */
+    public Collection<Sniffer> getSniffers(ReadableArchive archive, ClassLoader cloader);    
+
     
-    public static final String NAME = "name";
-    public static final String COMPONENT = "component";
-    public static final String VIRTUAL_SERVERS = "virtualservers";
-    public static final String CONTEXT_ROOT = "contextroot";
-    public static final String LIBRARIES = "libraries";
-    public static final String DIRECTORY_DEPLOYED = "directorydeployed";
-    public static final String LOCATION = "location";
-    public static final String ENABLED = "enabled";
-    public static final String PRECOMPILE_JSP = "precompilejsp";    
-    public static final String DEPLOYMENT_PLAN = "deploymentplan";    
 }

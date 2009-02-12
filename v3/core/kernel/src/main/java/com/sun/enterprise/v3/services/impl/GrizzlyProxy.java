@@ -43,6 +43,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.container.EndpointRegistrationException;
+import org.glassfish.internal.grizzly.V3Mapper;
 
 import java.util.logging.Logger;
 import org.jvnet.hk2.component.Inhabitant;

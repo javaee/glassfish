@@ -41,16 +41,15 @@ import com.sun.enterprise.config.serverbeans.Resource;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.v3.common.PropsFileActionReporter;
 import com.sun.logging.LogDomains;
-import com.sun.enterprise.v3.admin.CommandRunner;
 
 import java.util.List;
 import java.util.Properties;
 
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandRunner;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.jvnet.hk2.component.Habitat;
@@ -59,8 +58,6 @@ import org.glassfish.api.ActionReport.MessagePart;
 import org.glassfish.tests.utils.Utils;
 import org.glassfish.tests.utils.ConfigApiTest;
 import org.jvnet.hk2.config.DomDocument;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 
 /**
@@ -77,7 +74,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
     DeleteJdbcResource deleteCommand = null;
     ListJdbcResources listCommand = null;
     AdminCommandContext context = null;
-    CommandRunner cr = new CommandRunner();
+    CommandRunner cr = habitat.getComponent(CommandRunner.class);
     
     public DomDocument getDocument(Habitat habitat) {
 
@@ -122,8 +119,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
                 LogDomains.getLogger(ListJdbcResourcesTest.class, LogDomains.ADMIN_LOGGER),
                 new PropsFileActionReporter());
         
-        //Call CommandRunner.doCommand(..) to execute the command
-        CommandRunner cr = new CommandRunner();
+        //Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.doCommand("list-jdbc-resources", listCommand, parameters, context.getActionReport());
                 
         List<MessagePart> list = context.getActionReport().getTopMessagePart().getChildren();
@@ -149,7 +145,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
                 LogDomains.getLogger(ListJdbcResourcesTest.class, LogDomains.ADMIN_LOGGER),
                 new PropsFileActionReporter());
         
-        //Call CommandRunner.doCommand(..) to execute the command
+        //Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.doCommand("list-jdbc-resources", listCommand, parameters, context.getActionReport());      
         
         List<MessagePart> list = context.getActionReport().getTopMessagePart().getChildren();        
@@ -192,7 +188,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
                 LogDomains.getLogger(ListJdbcResourcesTest.class, LogDomains.ADMIN_LOGGER),
                 new PropsFileActionReporter());
         
-        //Call CommandRunner.doCommand(..) to execute the command
+        //Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.doCommand("list-jdbc-resources", listCommand, parameters, context.getActionReport());
                 
         List<MessagePart> list = context.getActionReport().getTopMessagePart().getChildren();
@@ -241,7 +237,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
                 LogDomains.getLogger(ListJdbcResourcesTest.class, LogDomains.ADMIN_LOGGER),
                 new PropsFileActionReporter());
         
-        //Call CommandRunner.doCommand(..) to execute the command
+        //Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.doCommand("list-jdbc-resources", listCommand, parameters, context.getActionReport());
                 
         List<MessagePart> list = context.getActionReport().getTopMessagePart().getChildren();
@@ -274,7 +270,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
                 LogDomains.getLogger(ListJdbcResourcesTest.class, LogDomains.ADMIN_LOGGER),
                 new PropsFileActionReporter());
         
-        //Call CommandRunner.doCommand(..) to execute the command
+        //Call CommandRunnerImpl.doCommand(..) to execute the command
         cr.doCommand("list-jdbc-resources", listCommand, parameters, context.getActionReport());      
         
         // Need bug fix before uncommenting assertion

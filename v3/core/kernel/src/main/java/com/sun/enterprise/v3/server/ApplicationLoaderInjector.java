@@ -1,19 +1,8 @@
 package com.sun.enterprise.v3.server;
 
-import org.glassfish.server.ServerEnvironmentImpl;
-import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.*;
 import org.glassfish.api.Startup;
-import com.sun.enterprise.v3.services.impl.GrizzlyService;
-import org.glassfish.internal.data.ApplicationRegistry;
-import org.glassfish.internal.data.ContainerRegistry;
-import org.glassfish.internal.api.ClassLoaderHierarchy;
-import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.Applications;
-import com.sun.enterprise.deploy.shared.ArchiveFactory;
-import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.hk2.component.ExistingSingletonInhabitant;
 
 /**
  * User: Jerome Dochez
@@ -54,7 +43,7 @@ public class ApplicationLoaderInjector implements Startup, PostConstruct, PreDes
         service.modulesRegistry = habitat.getComponent(ModulesRegistry.class);
         service.containerRegistry = habitat.getComponent(ContainerRegistry.class);
         service.env = habitat.getComponent(ServerEnvironmentImpl.class);
-        service.snifferManager = habitat.getComponent(SnifferManager.class);
+        service.snifferManager = habitat.getComponent(SnifferManagerImpl.class);
         service.clh = habitat.getComponent(ClassLoaderHierarchy.class);
         habitat.add(new ExistingSingletonInhabitant<ApplicationLoaderService>(service));
         try {
