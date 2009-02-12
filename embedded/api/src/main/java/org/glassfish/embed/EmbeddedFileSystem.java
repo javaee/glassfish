@@ -70,7 +70,7 @@ public final class EmbeddedFileSystem {
 
 
     /**
-     * Set the root directory for the Embedded GlassFish file system.
+     * Set the root directory of the Embedded GlassFish file system.
      * The directory specified must exist.
      *
      * @param f install root directory
@@ -105,7 +105,7 @@ public final class EmbeddedFileSystem {
      * Use the specified file as the target domain.xml.
      * The target domain.xml is the output of the in-memory domain.xml
      *
-     * @param f target domain.xml file
+     * @param f file that the server writes out to as domain.xml
      * @throws org.glassfish.embed.EmbeddedException
      */
     public void setDomainXmlTarget(File f) throws EmbeddedException {
@@ -117,7 +117,7 @@ public final class EmbeddedFileSystem {
      * Use the specified URL as the source domain.xml.
      * The source domain.xml is the input to the in-memory domain.xml
      *
-     * @param url
+     * @param url URL that is read in by the server as domain.xml
      * @throws org.glassfish.embed.EmbeddedException
      */
     public void setDomainXmlSource(URL url) throws EmbeddedException {
@@ -129,7 +129,7 @@ public final class EmbeddedFileSystem {
      * Use the specified file as the source domain.xml.
      * The source domain.xml is the input to the in-memory domain.xml.
      *
-     * @param f domain.xml file to be used as a source
+     * @param f file that is read in by the server as domain.xml
      * @throws org.glassfish.embed.EmbeddedException
      */
     public void setDomainXmlSource(File f) throws EmbeddedException {
@@ -148,8 +148,8 @@ public final class EmbeddedFileSystem {
      * GlassFish process.  If set to <code>true</code> the install root
      * and all directories and files under it will be deleted upon exit.
      *
-     * @param b true - delete default install root, "gfe" upon exit
-     *          false - keep default install root, "gfe" upon exit
+     * @param b true - deletes the install root upon exit
+     *          false - keeps the install root upon exit
      * @throws org.glassfish.embed.EmbeddedException
      */
     public void setAutoDelete(boolean b) throws EmbeddedException {
@@ -157,6 +157,11 @@ public final class EmbeddedFileSystem {
         autoDelete = b;
     }
 
+    /**
+     * Specify the file to be used for logging
+     *
+     * @param f file for logging
+     */
     public void setLogFile(File f) {
         // f can be null -- it is pointless but OK
         logFile = f;
@@ -167,6 +172,7 @@ public final class EmbeddedFileSystem {
     // ****************************************************
 
     /**
+     * Returns the root directory of the Embedded GlassFish file system.
      *
      * @return install root directory
      * @throws org.glassfish.embed.EmbeddedException
@@ -177,6 +183,7 @@ public final class EmbeddedFileSystem {
     }
 
     /**
+     * Returns the root directory of the server instance
      *
      * @return instance root directory
      * @throws org.glassfish.embed.EmbeddedException
@@ -187,6 +194,7 @@ public final class EmbeddedFileSystem {
     }
 
     /**
+     * Returns the file that the server writes out to as domain.xml
      *
      * @return target domain.xml file
      * @throws org.glassfish.embed.EmbeddedException
@@ -197,6 +205,7 @@ public final class EmbeddedFileSystem {
     }
 
     /**
+     * Returns the URL that the server reads in as domain.xml
      *
      * @return source domain.xml URL
      * @throws org.glassfish.embed.EmbeddedException
@@ -207,7 +216,7 @@ public final class EmbeddedFileSystem {
     }
 
     /**
-     *
+     * Returns the log file
      *
      * @return logfile
      * @throws org.glassfish.embed.EmbeddedException
@@ -218,6 +227,7 @@ public final class EmbeddedFileSystem {
     }
 
     /**
+     * Returns the applications directory of the Embedded GlassFish file system
      *
      * @return applications directory
      */
