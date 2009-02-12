@@ -85,7 +85,7 @@ public class CommandExecutor {
             if (msg!=null) 
                 LoggerHelper.severe(msg);
 
-            throw new EmbeddedException(StringHelper.get("command_failed", commandName), t);
+            throw new EmbeddedException(t, "command_failed", commandName);
         }
     }
 
