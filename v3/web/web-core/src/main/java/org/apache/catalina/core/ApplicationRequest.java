@@ -123,11 +123,9 @@ public class ApplicationRequest extends ServletRequestWrapper {
      * @param isFowardDispatch true if this wrapper is being created for a 
      * RD.forward, false otherwise
      */
-    public ApplicationRequest(ServletRequest request,
-                              boolean isFowardDispatch) {
+    public ApplicationRequest(ServletRequest request) {
         super(request);
         setRequest(request);
-        this.isForwardDispatch = isForwardDispatch;
     }
 
 
@@ -146,13 +144,6 @@ public class ApplicationRequest extends ServletRequestWrapper {
      */
     protected static final StringManager sm =
         StringManager.getManager(Constants.Package);
-
-
-    /*
-     * true if this is a wrapper for RD.forward, false if otherwise (i.e.,
-     * this is a wrapper for RD.include)
-     */
-    private boolean isForwardDispatch = false;
 
 
     // ------------------------------------------------- ServletRequest Methods

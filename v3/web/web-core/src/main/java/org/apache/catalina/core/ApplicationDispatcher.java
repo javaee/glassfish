@@ -148,39 +148,28 @@ final class ApplicationDispatcher
      * return single ServletRequest or ServletResponse objects.
      */
     private class State {
+
+        // Outermost request that will be passed on to the invoked servlet
+        ServletRequest outerRequest = null;
+
+        // Outermost response that will be passed on to the invoked servlet.
+        ServletResponse outerResponse = null;
+        
+        // Request wrapper we have created and installed (if any).
+        ServletRequest wrapRequest = null;
+
+        // Response wrapper we have created and installed (if any).
+        ServletResponse wrapResponse = null;
+        
+        // Are we performing an include() instead of a forward()?
+        boolean including = false;
+
         State(ServletRequest request, ServletResponse response,
                 boolean including) {
             this.outerRequest = request;
             this.outerResponse = response;
             this.including = including;
         }
-
-        /**
-         * The outermost request that will be passed on to the invoked servlet.
-         */
-        ServletRequest outerRequest = null;
-
-
-        /**
-         * The outermost response that will be passed on to the invoked servlet.
-         */
-        ServletResponse outerResponse = null;
-        
-        /**
-         * The request wrapper we have created and installed (if any).
-         */
-        ServletRequest wrapRequest = null;
-
-
-        /**
-         * The response wrapper we have created and installed (if any).
-         */
-        ServletResponse wrapResponse = null;
-        
-        /**
-         * Are we performing an include() instead of a forward()?
-         */
-        boolean including = false;
     }
 
     // ----------------------------------------------------------- Constructors
@@ -231,7 +220,6 @@ final class ApplicationDispatcher
     private static Logger log = Logger.getLogger(
         ApplicationDispatcher.class.getName());
 
-
     //START OF 6364900
     /**
      * is this dispatch cross context
@@ -239,18 +227,15 @@ final class ApplicationDispatcher
     private Boolean crossContextFlag = null;
     //END OF 6364900
 
-
     /**
      * The Context this RequestDispatcher is associated with.
      */
     private Context context = null;
 
-
     /**
      * The debugging detail level for this component.
      */
     private int debug = 0;
-
 
     /**
      * Descriptive information about this implementation.
@@ -258,43 +243,36 @@ final class ApplicationDispatcher
     private static final String info =
         "org.apache.catalina.core.ApplicationDispatcher/1.0";
 
-
     /**
      * The servlet name for a named dispatcher.
      */
     private String name = null;
-
 
     /**
      * The extra path information for this RequestDispatcher.
      */
     private String pathInfo = null;
 
-
     /**
      * The query string parameters for this RequestDispatcher.
      */
     private String queryString = null;
-
 
     /**
      * The request URI for this RequestDispatcher.
      */
     private String requestURI = null;
 
-
     /**
      * The servlet path for this RequestDispatcher.
      */
     private String servletPath = null;
-
 
     /**
      * The StringManager for this package.
      */
     private static final StringManager sm =
       StringManager.getManager(Constants.Package);
-
 
     /**
      * The Wrapper associated with the resource that will be forwarded to
@@ -310,22 +288,21 @@ final class ApplicationDispatcher
      * Return the descriptive information about this implementation.
      */
     public String getInfo() {
-
         return (this.info);
-
     }
 
 
     // --------------------------------------------------------- Public Methods
 
-
     /**
-     * Forward this request and response to another resource for processing.
-     * Any runtime exception, IOException, or ServletException thrown by the
-     * called servlet will be propogated to the caller.
+     * Forwards the given request and response to the resource
+     * for which this dispatcher was acquired.
      *
-     * @param request The servlet request to be forwarded
-     * @param response The servlet response to be forwarded
+     * <p>Any runtime exceptions, IOException, or ServletException thrown
+     * by the target will be propogated to the caller.
+     *
+     * @param request The request to be forwarded
+     * @param response The response to be forwarded
      *
      * @exception IOException if an input/output error occurs
      * @exception ServletException if a servlet exception occurs
@@ -335,6 +312,21 @@ final class ApplicationDispatcher
         forward(request, response, true);
     }
 
+    /**
+     * Forwards the given request and response to the resource
+     * for which this dispatcher was acquired.
+     *
+     * <p>Any runtime exceptions, IOException, or ServletException thrown
+     * by the target will be propogated to the caller.
+     *
+     * @param request The request to be forwarded
+     * @param response The response to be forwarded
+     * @param isCommit true if the response is to be committed before
+     * the forward returns, false otherwise
+     *
+     * @exception IOException if an input/output error occurs
+     * @exception ServletException if a servlet exception occurs
+     */
     void forward(ServletRequest request, ServletResponse response,
                  boolean isCommit)
             throws ServletException, IOException {
@@ -412,22 +404,14 @@ final class ApplicationDispatcher
 
         // Handle a non-HTTP forward by passing the existing request/response
         if ((hrequest == null) || (hresponse == null)) {
-
-            if (log.isLoggable(Level.FINE))
-                log.fine(" Non-HTTP Forward");
-            
             processRequest(hrequest,hresponse,state);
-
         }
 
         // Handle an HTTP named dispatcher forward
         else if ((servletPath == null) && (pathInfo == null)) {
 
-            if (log.isLoggable(Level.FINE))
-                log.fine(" Named Dispatcher Forward");
-
-            ApplicationHttpRequest wrequest =
-                (ApplicationHttpRequest) wrapRequest(state, true);
+            ApplicationHttpRequest wrequest = (ApplicationHttpRequest)
+                wrapRequest(state);
             wrequest.setRequestURI(hrequest.getRequestURI());
             wrequest.setContextPath(hrequest.getContextPath());
             wrequest.setServletPath(hrequest.getServletPath());
@@ -442,12 +426,8 @@ final class ApplicationDispatcher
 
         // Handle an HTTP path-based forward
         else {
-
-            if (log.isLoggable(Level.FINE))
-                log.fine(" Path Based Forward");
-
-            ApplicationHttpRequest wrequest =
-                (ApplicationHttpRequest) wrapRequest(state, true);
+            ApplicationHttpRequest wrequest = (ApplicationHttpRequest)
+                wrapRequest(state);
             String contextPath = context.getPath();
 
             if (hrequest.getAttribute(RequestDispatcher.FORWARD_REQUEST_URI) == null) { 
@@ -473,47 +453,12 @@ final class ApplicationDispatcher
             unwrapRequest(state);
 
         }
-
-        /* SJSAS 6374990
-        // This is not a real close in order to support error processing
-        if ( log.isDebugEnabled() )
-            log.debug(" Disabling the response for futher output");
-
-        if  (response instanceof ResponseFacade) {
-            ((ResponseFacade) response).finish();
-        } else {
-            // Servlet SRV.6.2.2. The Resquest/Response may have been wrapped
-            // and may no longer be instance of RequestFacade 
-            if (log.isDebugEnabled()){
-                log.debug( " The Response is vehiculed using a wrapper: " 
-                           + response.getClass().getName() );
-            }
-
-            // Close anyway
-            try {
-                PrintWriter writer = response.getWriter();
-                writer.close();
-            } catch (IllegalStateException e) {
-                try {
-                    ServletOutputStream stream = response.getOutputStream();
-                    stream.close();
-                } catch (IllegalStateException f) {
-                    ;
-                } catch (IOException f) {
-                    ;
-                }
-            } catch (IOException e) {
-                ;
-            }
-        }
-        */
-
     }
 
-    
 
     /**
      * Prepare the request based on the filter configuration.
+     *
      * @param request The servlet request we are processing
      * @param response The servlet response we are creating
      *
@@ -542,14 +487,15 @@ final class ApplicationDispatcher
                 }
             }
         }
-
     }
     
     
     /**
-     * Combine the servletPath and the pathInfo. If pathInfo is
-     * <code>null</code> it is ignored. If servletPath is <code>null</code> then
-     * <code>null</code> is returned.
+     * Combines the servletPath and the pathInfo.
+     *
+     * If pathInfo is <code>null</code>, it is ignored. If servletPath
+     * is <code>null</code>, then <code>null</code> is returned.
+     *
      * @return The combined path with pathInfo appended to servletInfo
      */
     private String getCombinedPath() {
@@ -583,7 +529,6 @@ final class ApplicationDispatcher
                 AccessController.doPrivileged(dp);
             } catch (PrivilegedActionException pe) {
                 Exception e = pe.getException();
-
                 if (e instanceof ServletException)
                     throw (ServletException) e;
                 throw (IOException) e;
@@ -592,6 +537,7 @@ final class ApplicationDispatcher
             doInclude(request,response);
         }
     }
+
 
     private void doInclude(ServletRequest request, ServletResponse response)
         throws ServletException, IOException
@@ -629,11 +575,8 @@ final class ApplicationDispatcher
         // Handle an HTTP named dispatcher include
         if (name != null) {
         // END GlassFish 6386229
-            if (log.isLoggable(Level.FINE))
-                log.fine("Named Dispatcher Include");
-
-            ApplicationHttpRequest wrequest =
-                (ApplicationHttpRequest) wrapRequest(state, false);
+            ApplicationHttpRequest wrequest = (ApplicationHttpRequest)
+                wrapRequest(state);
             wrequest.setAttribute(Globals.NAMED_DISPATCHER_ATTR, name);
             if (servletPath != null)
                 wrequest.setServletPath(servletPath);
@@ -655,12 +598,8 @@ final class ApplicationDispatcher
 
         // Handle an HTTP path based include
         else {
-
-            if (log.isLoggable(Level.FINE))
-                log.fine("Path Based Include");
-
-            ApplicationHttpRequest wrequest =
-                (ApplicationHttpRequest) wrapRequest(state, false);
+            ApplicationHttpRequest wrequest = (ApplicationHttpRequest)
+                wrapRequest(state);
             wrequest.initSpecialAttributes(requestURI,
                                            context.getPath(),
                                            servletPath,
@@ -681,9 +620,7 @@ final class ApplicationDispatcher
                 unwrapRequest(state);
                 unwrapResponse(state);
            }
-
         }
-
     }
 
 
@@ -706,25 +643,28 @@ final class ApplicationDispatcher
      * @exception ServletException if a servlet error occurs
      */
     private void invoke(ServletRequest request, ServletResponse response,
-        State state) throws IOException, ServletException {
+                State state)
+            throws IOException, ServletException {
         //START OF 6364900 original invoke has been renamed to doInvoke
         boolean crossContext = false;
         if(crossContextFlag != null && crossContextFlag.booleanValue()) {
             crossContext = true;
         }
-        if(crossContext) {
+        if (crossContext) {
             context.getManager().lockSession(request); 
         }       
         try {
-            if(crossContext) {
-                context.getManager().preRequestDispatcherProcess(request, response);
+            if (crossContext) {
+                context.getManager().preRequestDispatcherProcess(request,
+                                                                 response);
             }            
             doInvoke(request, response, crossContext);
-            if(crossContext) {
-                context.getManager().postRequestDispatcherProcess(request, response);
+            if (crossContext) {
+                context.getManager().postRequestDispatcherProcess(request,
+                                                                  response);
             }
         } finally {
-            if(crossContext) {
+            if (crossContext) {
                 context.getManager().unlockSession(request);
             }
             crossContextFlag = null;
@@ -809,11 +749,7 @@ final class ApplicationDispatcher
         // Allocate a servlet instance to process this request
         try {
             if (!unavailable) {
-                //                if (debug >= 2)
-                //                    log("  Allocating servlet instance");
                 servlet = wrapper.allocate();
-                //                if ((debug >= 2) && (servlet == null))
-                //                    log("    No servlet instance returned!");
             }
         } catch (ServletException e) {
             log(sm.getString("applicationDispatcher.allocateException",
@@ -919,8 +855,9 @@ final class ApplicationDispatcher
             runtimeException = e;
         // START OF S1AS 4703023
         } finally {
-            if (origRequest != null)
+            if (origRequest != null) {
                 origRequest.decrementDispatchDepth();
+            }
         // END OF S1AS 4703023
         }
 
@@ -933,7 +870,8 @@ final class ApplicationDispatcher
                     sm.getString("standardWrapper.releaseFilters",
                                  wrapper.getName()),
                     e);
-          //FIXME Exception handling needs to be simpiler to what is in the StandardWrapperValue
+            // FIXME Exception handling needs to be simpiler to what is
+            // in the StandardWrapperValue
         }
 
         // Deallocate the allocated servlet instance
@@ -964,7 +902,6 @@ final class ApplicationDispatcher
             throw servletException;
         if (runtimeException != null)
             throw runtimeException;
-
     }
 
 
@@ -981,7 +918,6 @@ final class ApplicationDispatcher
         else
             System.out.println("ApplicationDispatcher[" +
                                context.getPath() + "]: " + message);
-
     }
 
 
@@ -1001,7 +937,6 @@ final class ApplicationDispatcher
                                context.getPath() + "]: " + message);
             throwable.printStackTrace(System.out);
         }
-
     }
 
 
@@ -1015,6 +950,7 @@ final class ApplicationDispatcher
 
         ServletRequest previous = null;
         ServletRequest current = state.outerRequest;
+
         while (current != null) {
 
             // If we run into the container request we are done
@@ -1036,9 +972,7 @@ final class ApplicationDispatcher
             // Advance to the next request in the chain
             previous = current;
             current = ((ServletRequestWrapper) current).getRequest();
-
         }
-
     }
 
 
@@ -1052,11 +986,12 @@ final class ApplicationDispatcher
 
         ServletResponse previous = null;
         ServletResponse current = state.outerResponse;
+
         while (current != null) {
 
             // If we run into the container response we are done
-            if ((current instanceof org.apache.catalina.Response)
-                || (current instanceof ResponseFacade))
+            if ((current instanceof org.apache.catalina.Response) ||
+                    (current instanceof ResponseFacade))
                 break;
 
             // Remove the current response if it is our wrapper
@@ -1073,9 +1008,7 @@ final class ApplicationDispatcher
             // Advance to the next response in the chain
             previous = current;
             current = ((ServletResponseWrapper) current).getResponse();
-
         }
-
     }
 
 
@@ -1083,11 +1016,12 @@ final class ApplicationDispatcher
      * Create and return a request wrapper that has been inserted in the
      * appropriate spot in the request chain.
      */
-    private ServletRequest wrapRequest(State state, boolean isForward) {
+    private ServletRequest wrapRequest(State state) {
 
         // Locate the request we should insert in front of
         ServletRequest previous = null;
         ServletRequest current = state.outerRequest;
+
         while (current != null) {
             if ("org.apache.catalina.servlets.InvokerHttpRequest".
                 equals(current.getClass().getName()))
@@ -1116,18 +1050,18 @@ final class ApplicationDispatcher
             //START OF 6364900
             crossContextFlag = Boolean.valueOf(crossContext);
             //END OF 6364900
-            wrapper = new ApplicationHttpRequest
-                (hcurrent, context, crossContext, isForward);
+            wrapper = new ApplicationHttpRequest(hcurrent, context,
+                                                 crossContext);
         } else {
-            wrapper = new ApplicationRequest(current, isForward);
+            wrapper = new ApplicationRequest(current);
         }
         if (previous == null)
             state.outerRequest = wrapper;
         else
             ((ServletRequestWrapper) previous).setRequest(wrapper);
         state.wrapRequest = wrapper;
-        return (wrapper);
 
+        return (wrapper);
     }
 
 
@@ -1140,6 +1074,7 @@ final class ApplicationDispatcher
         // Locate the response we should insert in front of
         ServletResponse previous = null;
         ServletResponse current = state.outerResponse;
+
         while (current != null) {
             if (!(current instanceof ServletResponseWrapper))
                 break;
@@ -1168,14 +1103,15 @@ final class ApplicationDispatcher
         else
             ((ServletResponseWrapper) previous).setResponse(wrapper);
         state.wrapResponse = wrapper;
-        return (wrapper);
 
+        return (wrapper);
     }
 
 
     // START OF S1AS 4703023
     /**
-     * Finds and returns the underlying/original request object.
+     * Unwraps the given request object, and returns the original
+     * request object.
      *
      * (Doing instanceof in a loop will impact performance)
      */
@@ -1183,8 +1119,9 @@ final class ApplicationDispatcher
 
         Request coyoteRequest = null;
         Object current = request;
+
         while (current != null) {
-            // When we run into the original request object, return it
+            // When we discover the original request object, return it
             if (current instanceof RequestFacade) {
                 coyoteRequest = ((RequestFacade)current).getUnwrappedCoyoteRequest();
                 break;
@@ -1193,10 +1130,9 @@ final class ApplicationDispatcher
             } else
                 break;
         }
-        return coyoteRequest;
 
+        return coyoteRequest;
     }
     // END OF S1AS 4703023
-
 
 }

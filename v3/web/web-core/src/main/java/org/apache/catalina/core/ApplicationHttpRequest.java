@@ -59,19 +59,9 @@ package org.apache.catalina.core;
 
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.NoSuchElementException;
-
-import javax.servlet.DispatcherType;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpSession;
-
+import java.util.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
 import org.apache.catalina.Context;
 import org.apache.catalina.Globals;
 import org.apache.catalina.Session;
@@ -100,12 +90,10 @@ import org.apache.catalina.connector.SessionTracker;
  * @author Remy Maucherat
  * @version $Revision: 1.15 $ $Date: 2007/05/03 21:58:54 $
  */
-
 public class ApplicationHttpRequest extends HttpServletRequestWrapper {
 
 
     // ------------------------------------------------------- Static Variables
-
 
     /**
      * The string manager for this package.
@@ -126,12 +114,10 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
      */
     public ApplicationHttpRequest(HttpServletRequest request,
                                   Context context,
-                                  boolean crossContext,
-                                  boolean isForwardDispatch) {
+                                  boolean crossContext) {
         super(request);
         this.context = context;
         this.crossContext = crossContext;
-        this.isForwardDispatch = isForwardDispatch;
         setRequest(request);
 
         if (context.getManager() != null) {
@@ -195,66 +181,50 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
      */
     protected Map parameters = null;
 
-
     /**
      * Have the parameters for this request already been parsed?
      */
     private boolean parsedParams = false;
-
 
     /**
      * The path information for this request.
      */
     protected String pathInfo = null;
 
-
     /**
      * The query parameters for the current request.
      */
     private String queryParamString = null;
-
 
     /**
      * The query string for this request.
      */
     protected String queryString = null;
 
-
     /**
      * The current request dispatcher path.
      */
     protected Object requestDispatcherPath = null;
-
 
     /**
      * The request URI for this request.
      */
     protected String requestURI = null;
 
-
     /**
      * The servlet path for this request.
      */
     protected String servletPath = null;
-
 
     /**
      * The currently active session for this request.
      */
     protected Session session = null;
 
-
     /**
      * Special attributes.
      */
     private HashMap specialAttributes = null;
-
-
-    /*
-     * true if this is a wrapper for RD.forward, false if otherwise (i.e.,
-     * this is a wrapper for RD.include)
-     */
-    private boolean isForwardDispatch = false;
 
 
     // ------------------------------------------------- ServletRequest Methods
@@ -897,7 +867,8 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
 
         specialAttributes = new HashMap(5);
 
-        if (!isForwardDispatch) {        
+        switch (dispatcherType) {
+        case INCLUDE:
             specialAttributes.put(RequestDispatcher.INCLUDE_REQUEST_URI,
                                   requestUri);
             specialAttributes.put(RequestDispatcher.INCLUDE_CONTEXT_PATH,
@@ -908,7 +879,8 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
                                   pathInfo);
             specialAttributes.put(RequestDispatcher.INCLUDE_QUERY_STRING,
                                   queryString);
-        } else {
+            break;
+        case FORWARD:
             specialAttributes.put(RequestDispatcher.FORWARD_REQUEST_URI,
                                   requestUri);
             specialAttributes.put(RequestDispatcher.FORWARD_CONTEXT_PATH,
@@ -919,6 +891,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
                                   pathInfo);
             specialAttributes.put(RequestDispatcher.FORWARD_QUERY_STRING,
                                   queryString);
+            break;
         }
     }
 
@@ -1048,10 +1021,10 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
             String result = null;
             while ((result == null) && (parentEnumeration.hasMoreElements())) {
                 String current = (String) parentEnumeration.nextElement();
-                if (!ApplicationRequest.isSpecial(current)
-                        || (!isForwardDispatch
-                            && current.startsWith("javax.servlet.forward")
-                            && getAttribute(current) != null)) {
+                if (!ApplicationRequest.isSpecial(current) ||
+                        (!dispatcherType.equals(DispatcherType.FORWARD) &&
+                        current.startsWith("javax.servlet.forward") &&
+                        getAttribute(current) != null)) {
                     result = current;
                 }
             }
