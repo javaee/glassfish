@@ -158,37 +158,17 @@ own identifying information: Portions Copyright [yyyy]
 	 </graphDef>
 
 
-         <graphDef id="web-modules" tolerateBrokenPOMs="true">
-                <scope level="compile,runtime">
-                    <subtract>
-                        <subGraph artifactId="webtier-all" />
-                        <scope level="compile,runtime"><!-- = subgraph X -->
-                            <excludeArtifactsTransitively>
-				    <artifact artifactId="webtier-all" />
-                            </excludeArtifactsTransitively>
-                        </scope>
-		    </subtract>
-                </scope>
-            </graphDef>
+       
 
-	    <resolveAll todir="target/stage/${install.dir.name}/glassfish/modules/web" tolerateBrokenPOMs="true"
+	    <resolveAll todir="target/stage/${install.dir.name}/glassfish/modules" tolerateBrokenPOMs="true"
                         stripVersion="true">
-			<graphRef refid="web-modules"/>
+			<graphRef refid="glassfish-web-modules"/>
 			<excludeArtifactsTransitively>
 				    <artifact groupID="javax.servlet" artifactId="servlet-api" />
 			            <artifact groupID="javax.servlet.jsp" artifactId="jsp-api" />
 			            <artifact groupID="javax.servlet.jsp.jstl" artifactId="jstl-api" />
                             </excludeArtifactsTransitively>
     	</resolveAll>
-
-	    <resolveAll todir="target/stage/${install.dir.name}/glassfish/modules" tolerateBrokenPOMs="true"
-                        stripVersion="true">
-		 <graphRef refid="glassfish-web-modules"/>
-		<removeSpecificArtifacts>
-                    <scope level="compile,runtime"/>
-                    <artifact artifactId="webtier-all"/>
-                </removeSpecificArtifacts>
-	   </resolveAll>
 
 	  	<graphDef id="generate-whole-picture" tolerateBrokenPOMs="true">
 		  <visualize file="all-modules.png">
@@ -208,8 +188,6 @@ own identifying information: Portions Copyright [yyyy]
 
 	<delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.zip" />   
 	<delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.pom" />  
-	<delete dir="target/stage/${install.dir.name}/glassfish/modules/web" includes="*.zip" />   
-	<delete dir="target/stage/${install.dir.name}/glassfish/modules/web" includes="*.pom" /> 
 
         <if test="${compression}">
 	       <antcall target="pack.compression" />

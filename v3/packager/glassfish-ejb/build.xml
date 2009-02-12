@@ -166,33 +166,11 @@ own identifying information: Portions Copyright [yyyy]
                  </scope>		 
 	 </graphDef> 
 	
-         <graphDef id="ejb-modules" tolerateBrokenPOMs="true">
-                <scope level="compile,runtime">
-                    <subtract>
-                        <subGraph artifactId="ejb-all" />
-                        <scope level="compile,runtime"><!-- = subgraph X -->
-                            <excludeArtifactsTransitively>
-                                <artifact artifactId="ejb-all" />
-                            </excludeArtifactsTransitively>
-                        </scope>
-                    </subtract>
-                </scope>
-            </graphDef>
-
-	    <resolveAll todir="target/stage/${install.dir.name}/glassfish/modules/ejb" tolerateBrokenPOMs="true"
-                        stripVersion="true">
-	        <graphRef refid="ejb-modules"/>
-    	</resolveAll>
 
 	    <resolveAll todir="target/stage/${install.dir.name}/glassfish/modules" tolerateBrokenPOMs="true"
                         stripVersion="true">
-		 <graphRef refid="glassfish-ejb-modules"/>
-		<removeSpecificArtifacts>
-                    <scope level="compile,runtime"/>
-		    <artifact artifactId="webtier-all"/>
-		    <artifact artifactId="ejb-all"/>
-                </removeSpecificArtifacts>
-	   </resolveAll>
+	        <graphRef refid="glassfish-ejb-modules"/>
+    	</resolveAll>
 
 	  	<graphDef id="generate-whole-picture" tolerateBrokenPOMs="true">
 		  <visualize file="all-modules.png">
@@ -221,10 +199,8 @@ own identifying information: Portions Copyright [yyyy]
 
 	<delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.zip" />   
 	<delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.pom" />  
+	<delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.war" />  
 
-	<delete dir="target/stage/${install.dir.name}/glassfish/modules/ejb" includes="*.zip" />   
-	<delete dir="target/stage/${install.dir.name}/glassfish/modules/ejb" includes="*.pom" />  
-	<delete dir="target/stage/${install.dir.name}/glassfish/modules/ejb" includes="*.war" />
 
         <if test="${compression}">
 	       <antcall target="pack.compression" />

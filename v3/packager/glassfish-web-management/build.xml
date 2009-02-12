@@ -149,7 +149,7 @@ own identifying information: Portions Copyright [yyyy]
 	 </graphDef> 
 	
 
-	 <resolveAll todir="target/stage/${install.dir.name}/glassfish/modules/web" tolerateBrokenPOMs="true"
+	 <resolveAll todir="target/stage/${install.dir.name}/glassfish/modules" tolerateBrokenPOMs="true"
                         stripVersion="true">
                 <graphRef refid="glassfish-web-management-modules"/>
 	   </resolveAll>
@@ -170,7 +170,7 @@ own identifying information: Portions Copyright [yyyy]
             </visualize>
         </graphDef>
 
-	<delete dir="target/stage/${install.dir.name}/glassfish/modules/web" includes="*.zip" />   
+	<delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.zip" />   
 
         <if test="${compression}">
 	       <antcall target="pack.compression" />
