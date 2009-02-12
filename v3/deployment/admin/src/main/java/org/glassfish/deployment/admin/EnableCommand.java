@@ -79,10 +79,6 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
     @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
     protected Server server;
 
-    public EnableCommand() {
-        origin = Origin.load;
-    }
-
     /**
      * Entry point from the framework into the command execution
      * @param context context for the command.
@@ -126,6 +122,8 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
             }
             if (app!=null) {
                 commandParams = app.getDeployParameters(appRef);
+                commandParams.origin = Origin.load;
+                commandParams.target = target;
                 contextProps = app.getDeployProperties();
             }
             if (commandParams==null) {
@@ -155,7 +153,7 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
 
 
         try {
-            final ExtendedDeploymentContext deploymentContext = deployment.getContext(logger, archive, this);
+            final ExtendedDeploymentContext deploymentContext = deployment.getContext(logger, archive, commandParams);
 
             deploymentContext.getProps().putAll(contextProps);
             deployment.deploy(deploymentContext, report);
