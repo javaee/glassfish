@@ -276,8 +276,8 @@ public class VirtualServerPipeline extends StandardPipeline {
                     }
                     locationCC.append(urlEncoder.encodeURL(url.getPath()));
                     if (queryString != null) {
-                       locationCC.append("?");
-                       locationCC.append(url.getQuery());
+                        locationCC.append("?");
+                        locationCC.append(url.getQuery());
                     }
                     location = locationCC.toString();
                 } catch (MalformedURLException mue) {
