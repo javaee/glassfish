@@ -81,5 +81,6 @@ public class EjbComponentAnnotationScanner implements AnnotationScanner {
         annotations.add("Ljavax/ejb/Stateless;");
         annotations.add("Ljavax/ejb/Stateful;");
         annotations.add("Ljavax/ejb/MessageDriven;");
+        annotations.add("Ljavax/ejb/Singleton;");
     }
 }
