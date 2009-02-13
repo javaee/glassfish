@@ -19,7 +19,6 @@ import java.util.List;
  * @author bnevins
  */
 class GFEmbeddedLauncher extends GFLauncher {
-
     public GFEmbeddedLauncher(GFLauncherInfo info) {
         super(info);
 
@@ -37,19 +36,7 @@ class GFEmbeddedLauncher extends GFLauncher {
 
     @Override
     List<File> getMainClasspath() throws GFLauncherException {
-        List<File> list = new ArrayList<File>(1);
-
-        String gfeJar = System.getenv(GFE_JAR);
-
-        if (GFLauncherUtils.ok(gfeJar)) {
-            File f = new File(gfeJar);
-
-            if (f.isFile()) {
-                list.add(f);
-                return list;
-            }
-        }
-        throw new GFLauncherException("no_gfe_jar");
+        throw new GFLauncherException("not needed?!?");
     }
 
     @Override
@@ -75,7 +62,6 @@ class GFEmbeddedLauncher extends GFLauncher {
             throw new GFLauncherException(GENERAL_MESSAGE + gfle.getMessage());
         }
 
-        setClasspath(gfeJar.getPath());
         setCommandLine();
 
         /* it is NOT an error for there to be no domain.xml (yet).
@@ -125,13 +111,17 @@ class GFEmbeddedLauncher extends GFLauncher {
     }
 
     @Override
+    void setClasspath() {
+        setClasspath(gfeJar.getPath() + File.pathSeparator + javaDbClassPath);
+    }
+
+    @Override
     void setCommandLine() throws GFLauncherException {
         List<String> cmdLine = getCommandLine();
         cmdLine.clear();
         cmdLine.add(javaExe.getPath());
         cmdLine.add("-cp");
         cmdLine.add(getClasspath());
-        addDerbyLib(cmdLine);
         addDebug(cmdLine);
         cmdLine.add(getMainClass());
         //cmdLine.add("--port");
@@ -169,6 +159,8 @@ class GFEmbeddedLauncher extends GFLauncher {
         setupInstallationDir();
         setupJDK();
         setupDomainDir();
+        setupJavaDB();
+        setClasspath();
     }
 
     private void setupDomainDir() throws GFLauncherException {
@@ -247,10 +239,13 @@ class GFEmbeddedLauncher extends GFLauncher {
         gfeJar = SmartFile.sanitize(gfeJar);
     }
 
-    private void addDerbyLib(List<String> cmdLine) throws GFLauncherException {
+    private void setupJavaDB() throws GFLauncherException {
         // It normally will be in either:
         //  * install-dir/javadb/lib
         //  * install-dir/../javadb/lib
+
+        if(javaDbClassPath != null)
+            return;
 
         String relPath = "javadb/lib";
         File derbyLib = new File(installDir, relPath);
@@ -261,7 +256,24 @@ class GFEmbeddedLauncher extends GFLauncher {
         if(!derbyLib.isDirectory())
             throw new GFLauncherException("Could not find the JavaDB lib directory.");
 
-        cmdLine.add("-Djava.ext.dirs=" + derbyLib.getAbsolutePath());
+        // we have a valid directory.  Let's verify the right jars are there!
+
+        javaDbClassPath = "";
+        boolean firstItem = true;
+        for(String fname : DERBY_FILES) {
+            File f = new File(derbyLib, fname);
+
+            if(javaDbClassPath == null) {
+                javaDbClassPath = f.getPath();
+            }
+            else {
+                javaDbClassPath += File.pathSeparator;
+                javaDbClassPath += f.getPath();
+            }
+
+            if(!f.exists())
+                throw new GFLauncherException("Could not find the JavaDB jar: " + f);
+        }
     }
 
     private boolean ok(String s) {
@@ -273,6 +285,7 @@ class GFEmbeddedLauncher extends GFLauncher {
     private File javaExe;
     private File domainDir;
     private File domainXml;
+    private String javaDbClassPath;
     private static final String GFE_JAR = "GFE_JAR";
     private static final String INSTALL_HOME = "S1AS_HOME";
     private static final String JAVA_HOME = "JAVA_HOME";
@@ -286,4 +299,10 @@ class GFEmbeddedLauncher extends GFLauncher {
             "JAVA_HOME - path to a JDK installation.  JRE installation is generally not good enough\n" +
             "GFE_DEBUG_PORT - optional debugging port.  It will start suspended.\n" +
             "\n*********  SPECIFIC MESSAGE ********\n";
+
+    private String[] DERBY_FILES =
+    {
+        "derby.jar",
+        "derbyclient.jar",
+    };
 }
