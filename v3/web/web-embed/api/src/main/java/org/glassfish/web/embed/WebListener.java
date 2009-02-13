@@ -38,6 +38,11 @@
 package org.glassfish.web.embed;
 
 /**
+ * Representation of a network listener for web requests.
+ *
+ * <p>Instances of <tt>WebListener</tt> may be in one of two states:
+ * <i>stopped</i> or <i>started</i>.
+ *
  * @author Rajiv Mordani
  */
 public interface WebListener extends Lifecycle {

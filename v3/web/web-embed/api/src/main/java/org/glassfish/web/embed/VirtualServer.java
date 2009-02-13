@@ -43,6 +43,12 @@ import org.apache.catalina.Valve;
 
 /**
  * Representation of a virtual server.
+ *
+ * <p>Instances of <tt>VirtualServer</tt> may be in one of two states:
+ * <i>stopped</i> or <i>started</i>. Any requests mapped to a 
+ * <tt>VirtualServer</tt> that was stopped will result in a response with
+ * a status code equal to
+ * javax.servlet.http.HttpServletResponse#SC_NOT_FOUND.
  * 
  * @author Rajiv Mordani
  * @author Jan Luehe
@@ -82,6 +88,10 @@ public interface VirtualServer extends Lifecycle {
     /**
      * Registers the given <tt>Context</tt> with this <tt>VirtualServer</tt>
      * at the given context root.
+     *
+     * <p>If this <tt>VirtualServer</tt> has been started, the given
+     * <tt>Context</tt> will also be started (unless it was already
+     * started).
      *
      * @param context the <tt>Context</tt> to register
      * @param contextRoot the context root at which to register

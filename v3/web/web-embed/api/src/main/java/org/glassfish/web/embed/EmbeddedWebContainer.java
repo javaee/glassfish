@@ -48,7 +48,7 @@ import org.jvnet.hk2.annotations.Contract;
  */
 
 @Contract
-public interface EmbeddedWebContainer {
+public interface EmbeddedWebContainer extends Lifecycle {
 
     /**
      * Creates a <tt>Context</tt>.
@@ -59,8 +59,8 @@ public interface EmbeddedWebContainer {
      * a request.
      *
      * <p>In order to access the new <tt>Context</tt> or any of its 
-     * resources, the <tt>Context</tt> must be registered with a
-     * <tt>VirtualServer</tt>.
+     * resources, the <tt>Context</tt> must be started and registered
+     * with a <tt>VirtualServer</tt>.
      *
      * @return the new <tt>Context</tt>
      *
@@ -79,8 +79,8 @@ public interface EmbeddedWebContainer {
      * class on which this method is called will be used.
      *
      * <p>In order to access the new <tt>Context</tt> or any of its 
-     * resources, the <tt>Context</tt> must be registered with a
-     * <tt>VirtualServer</tt>.
+     * resources, the <tt>Context</tt> must be started and registered
+     * with a <tt>VirtualServer</tt>.
      *
      * @param docRoot the docroot of the <tt>Context</tt>
      * @param classLoader the classloader of the <tt>Context</tt>
@@ -94,6 +94,10 @@ public interface EmbeddedWebContainer {
     /**
      * Creates a <tt>WebListener</tt> from the given class type and
      * assigns the given id to it.
+     *
+     * <p>If this web container has already been started, the new
+     * <tt>WebListener</tt> will also be started (unless it was already
+     * started).
      *
      * @param id the id of the new <tt>WebListener</tt>
      * @param c the class type of the new <tt>WebListener</tt>
@@ -127,11 +131,13 @@ public interface EmbeddedWebContainer {
     public Collection<WebListener> getWebListeners();
 
     /**
-     * Creates a <tt>VirtualServer</tt> with the given id and docroot.
-     *
-     * <p>The new <tt>VirtualServer</tt> will receive requests from the
-     * given <tt>WebListener</tt> instances.
+     * Creates a <tt>VirtualServer</tt> with the given id and docroot, and
+     * attaches it to the given <tt>WebListener</tt> instances.
      * 
+     * <p>If this web container has already been started, the new
+     * <tt>VirtualServer</tt> will also be started (unless it was already
+     * started).
+     *
      * @param id the id of the <tt>VirtualServer</tt>
      * @param docRoot the docroot of the <tt>VirtualServer</tt>
      * @param webListeners the list of <tt>WebListener</tt> instances from 
