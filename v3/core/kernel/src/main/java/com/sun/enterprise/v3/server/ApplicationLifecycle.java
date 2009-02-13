@@ -282,7 +282,7 @@ public class ApplicationLifecycle implements Deployment {
             return null;
         } finally {
             if (appInfo==null) {
-                events.send(new org.glassfish.api.event.EventListener.Event<ExtendedDeploymentContext>(Deployment.DEPLOYMENT_FAIL, context));
+                events.send(new org.glassfish.api.event.EventListener.Event<ExtendedDeploymentContext>(Deployment.DEPLOYMENT_FAILURE, context));
             } else {
                 events.send(new org.glassfish.api.event.EventListener.Event<ApplicationInfo>(Deployment.DEPLOYMENT_SUCCESS, appInfo));
             }

@@ -65,7 +65,7 @@ public interface Deployment {
 
 
     public final EventTypes<ExtendedDeploymentContext> DEPLOYMENT_START = EventTypes.create("Deployment_Start", ExtendedDeploymentContext.class);
-    public final EventTypes<ExtendedDeploymentContext> DEPLOYMENT_FAIL = EventTypes.create("Deployment_Failed", ExtendedDeploymentContext.class);
+    public final EventTypes<ExtendedDeploymentContext> DEPLOYMENT_FAILURE = EventTypes.create("Deployment_Failed", ExtendedDeploymentContext.class);
     public final EventTypes<ApplicationInfo> DEPLOYMENT_SUCCESS = EventTypes.create("Deployment_Success", ApplicationInfo.class);
 
     public ArchiveHandler getArchiveHandler(ReadableArchive archive) throws IOException;

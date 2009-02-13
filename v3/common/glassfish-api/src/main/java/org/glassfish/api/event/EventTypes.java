@@ -89,6 +89,14 @@ public final class EventTypes<T> {
     public Class<T> getHookType() {
         return hookType;
     }
+
+
+    public T getHook(EventListener.Event<T> e) {
+        if (e.is(this)) {
+            return e.hook();
+        }
+        return null;
+    }
     
     /**
      * {@inheritDoc}
