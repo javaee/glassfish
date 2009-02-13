@@ -100,17 +100,10 @@
             <extension>
                 <groupId>org.glassfish.build</groupId>
                 <artifactId>maven-glassfish-extension</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>3.0-Prelude-b28b</version>
             </extension>
         </extensions>
     </build>
-
-
-
-
-
-
-
     <dependencies>
         <dependency>
             <groupId>org.glassfish.distributions</groupId>
