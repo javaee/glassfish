@@ -249,7 +249,7 @@ public class VirtualServerPipeline extends StandardPipeline {
   
             String queryString = hreq.getQueryString();
             if (queryString != null) {
-                location += queryString;
+                location += "?" + queryString;
             }
      
             CharChunk locationCC = null;
@@ -275,6 +275,10 @@ public class VirtualServerPipeline extends StandardPipeline {
                         urlEncoder.addSafeCharacter('/');
                     }
                     locationCC.append(urlEncoder.encodeURL(url.getPath()));
+                    if (queryString != null) {
+                       locationCC.append("?");
+                       locationCC.append(url.getQuery());
+                    }
                     location = locationCC.toString();
                 } catch (MalformedURLException mue) {
                     logger.log(Level.WARNING,
