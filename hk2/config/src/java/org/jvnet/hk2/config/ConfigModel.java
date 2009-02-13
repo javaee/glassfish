@@ -128,6 +128,20 @@ public final class ConfigModel {
         return Collections.unmodifiableSet( attributes.keySet() );
     }
 
+    public Set<String> getLeafElementNames() {
+        final Set<String> results = new HashSet<String>();
+        for (Map.Entry<String,Property> prop : elements.entrySet()) {
+            if (prop.getValue().isLeaf()) {
+                results.add(prop.getKey());
+            }
+        }
+        return Collections.unmodifiableSet(results);
+    }
+
+    public Set<String> getElementNames() {
+        return Collections.unmodifiableSet(elements.keySet());
+    }
+
     /**
      * Performs injection to the given object.
      */
