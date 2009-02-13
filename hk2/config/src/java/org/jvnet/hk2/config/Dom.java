@@ -249,20 +249,6 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
         }
         return value;
     }
-    
-    public Set<String> getAttributeNames() {
-        return model.getAttributeNames();
-    }
-    
-    public Set<String> getLeafElementNames() {
-        final List<Child> children = this.children; // fix the snapshot that we'll work with
-
-        final Set<String> names = new HashSet<String>();
-        for (final Child child : children) {
-            names.add( child.name );
-        }
-        return names;
-    }
 
     /**
      * Obtains the plural attribute value. Values are separate by ',' and surrounding whitespaces are ignored.
@@ -298,6 +284,23 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
             // since we can't enumerate all scope instances.)
             getInjector().injectAttribute(this,name,get());
         }
+    }
+
+    /**
+     * Returns the child element by name
+     * @param name of the element
+     * @return child element
+     */
+    public Dom element(String name) {
+        
+        List<Child> children = this.children; // fix the snapshot that we'll work with
+
+        for (Child child : children) {
+            if (child.name.equals(name)) {
+                return ((NodeChild) child).dom;
+            }
+        }
+        return null;
     }
 
     /**
@@ -398,9 +401,7 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
     public synchronized boolean removeLeafElement(String xmlName, String element) {
         List<Child> children = this.children; // fix the snapshot that we'll work with
 
-        int len = children.size();
-        for( int i=0; i<len; i++ ) {
-            Child child = children.get(i);
+        for (Child child : children) {
             if(child.name.equals(xmlName) && ((LeafChild) child).value.equals(element)) {
                 return children.remove(child);
             }
