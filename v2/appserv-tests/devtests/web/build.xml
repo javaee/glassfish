@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="349"/>
+    <property name="TOTAL_EXPECTED" value="350"/>
 
     &commonSetup;
     &commonBuild;
@@ -313,6 +313,7 @@
         <ant dir="ssiHtmlEntity" target="all"/>
         <ant dir="valveTomcatStyle" target="all"/>
         <ant dir="valveGlassFishStyleBackwardCompatible" target="all"/>
+        <ant dir="valveWithParams" target="all"/>
         <ant dir="webdavCopyDelete" target="all"/>
         <ant dir="useBundledJsf" target="all"/>
         <ant dir="embeddedAddServlet" target="all"/>

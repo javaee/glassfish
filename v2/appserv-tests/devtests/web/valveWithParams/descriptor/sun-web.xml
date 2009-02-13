@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sun-web-app PUBLIC "-//Sun Microsystems, Inc.//DTD GlassFish v3 Servlet 3.0//EN" "http://www.sun.com/software/appserver/dtds/sun-web-app_3_0-0.dtd">
+<sun-web-app>
+  <valve name="gfValveWithProperty" class-name="valves.TestValve1">
+      <property name="testProperty" value="testValue" />
+  </valve>
+  <valve name="gfValveWithEmptyProperty" class-name="valves.TestValve1">
+      <property name="testProperty" value="" />
+  </valve>
+  <valve name="gfValveTestWithoutValue" class-name="valves.TestValve1">
+  </valve>
+  <valve name="tomcatValveWithProperty" class-name="valves.TestValve2">
+      <property name="testProperty" value="testValue" />
+  </valve>
+  <valve name="tomcatValveWithEmptyProperty" class-name="valves.TestValve2">
+      <property name="testProperty" value="" />
+  </valve>
+  <valve name="tomcatValveTestWithoutValue" class-name="valves.TestValve2">
+  </valve>
+</sun-web-app>
