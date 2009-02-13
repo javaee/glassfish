@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# Copyright 1997-2008 Sun Microsystems, Inc.  All rights reserved.
+# Copyright 1997-2009 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
 
@@ -10,12 +10,13 @@ AS_INSTALL_LIB=$AS_INSTALL/modules
 ANT_LIB=$AS_INSTALL_LIB/ant.jar
 SERVLET_API=$AS_INSTALL_LIB/javax.servlet.jar
 JSP_API=$AS_INSTALL_LIB/javax.servlet.jsp.jar
-JSP_IMPL=$AS_INSTALL_LIB/web/jsp-impl.jar
-EL_IMPL=$AS_INSTALL_LIB/web/el-impl.jar
-JSTL_API=$AS_INSTALL_LIB/web/javax.servlet.jsp.jstl.jar
-JSTL_IMPL=$AS_INSTALL_LIB/web/jstl-impl.jar
+JSP_IMPL=$AS_INSTALL_LIB/jsp-impl.jar
+EL_IMPL=$AS_INSTALL_LIB/el-impl.jar
+JSTL_API=$AS_INSTALL_LIB/javax.servlet.jsp.jstl.jar
+JSTL_IMPL=$AS_INSTALL_LIB/jstl-impl.jar
 JSF_API=$AS_INSTALL_LIB/jsf-api.jar
-JSF_IMPL=$AS_INSTALL_LIB/web/jsf-impl.jar
+JSF_IMPL=$AS_INSTALL_LIB/jsf-impl.jar
+AS_LIB=$AS_INSTALL/lib
 
-java -cp "$SERVLET_API:$JSP_API:$JSTL_API:$JSF_API:$ANT_LIB:$EL_IMPL:$JSP_IMPL" org.apache.jasper.JspC -classpath "$JSTL_IMPL:$JSF_IMPL" "$@"
+java -cp "$SERVLET_API:$JSP_API:$JSTL_API:$JSF_API:$ANT_LIB:$EL_IMPL:$JSP_IMPL:$AS_LIB" org.apache.jasper.JspC -classpath "$JSTL_IMPL:$JSF_IMPL" -schemas "/schemas/" -dtds "/dtds/" "$@"
 
