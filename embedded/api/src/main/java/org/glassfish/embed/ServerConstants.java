@@ -39,6 +39,7 @@ package org.glassfish.embed;
 
 import java.net.*;
 import org.glassfish.embed.impl.EmbeddedServerEnvironment;
+//import static com.sun.enterprise.universal.glassfish.SystemPropertyConstants.*;
 
 /**
  *
@@ -66,12 +67,13 @@ public class ServerConstants {
     public static final String          DEFAULT_PATH_TO_DOMAIN_XML_IN_GFE   = DEFAULT_GFE_DIR + "/" + DEFAULT_PATH_TO_INSTANCE + "/" + DEFAULT_DOMAIN_XML_URL;
     public static final String          LOG_FILE_DIR                        = "logs";
     public static final String          LOG_FILE                            = "server.log";
-    public static final String          DEFAULT_DOCROOT                     = ".";
     public static final int             DEFAULT_JMX_CONNECTOR_PORT          = 8686;
     public static final String          MODULES_DIR_NAME                    = "modules"; // install-root/modules
     public static final String          APPLICATIONS_DIR_NAME               = EmbeddedServerEnvironment.kRepositoryDirName;
     public static final String          GENERATED_DIR_NAME                  = EmbeddedServerEnvironment.kGeneratedDirName;
     public static final String          CONFIG_DIR_NAME                     = EmbeddedServerEnvironment.kConfigDirName;
+    public static final String          DOCROOT_DIR_NAME                    = "docroot";
     public static final String          CONFIG_FILE_NAME                    = EmbeddedServerEnvironment.kConfigXMLFileName;
     public static final String          DEFAULT_PATH_TO_DOMAIN_XML          = CONFIG_DIR_NAME + "/" + CONFIG_FILE_NAME;
+    public static final String          WELCOME_FILE                        = "index.html";
 }

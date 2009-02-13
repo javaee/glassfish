@@ -143,6 +143,7 @@ public class Server {
             createJMXConnector();
         }
 
+        copyWelcomeFile();
         // todo TODO
         //else check & make sure therir xml has a listener(??)
         addServer(info.name, this);
@@ -427,8 +428,14 @@ public class Server {
         mustNotBeStarted("createAdminVirtualServer");
 
         DomBuilder db = onHttpService();
-        db.element("virtual-server").attribute("id", info.adminVSName).attribute("http-listeners", info.adminHttpListenerName).attribute("hosts", "${com.sun.aas.hostName}") // ???
-                .attribute("log-file", "").element("property").attribute("name", "docroot").attribute("value", ".");
+        db.element("virtual-server")
+                .attribute("id", info.adminVSName)
+                .attribute("http-listeners", info.adminHttpListenerName)
+                .attribute("hosts", "${com.sun.aas.hostName}") // ???
+                .attribute("log-file", "")
+                .element("property")
+                    .attribute("name", "docroot")
+                    .attribute("value", efs.getDocRootDir().getPath());
     }
 
     private void createAdminHttpListener() throws EmbeddedException {
@@ -451,8 +458,14 @@ public class Server {
         mustNotBeStarted("createVirtualServer");
 
         DomBuilder db = onHttpService();
-        db.element("virtual-server").attribute("id", "server").attribute("http-listeners", info.httpListenerName).attribute("hosts", "${com.sun.aas.hostName}") // ???
-                .attribute("log-file", "").element("property").attribute("name", "docroot").attribute("value", ".");
+        db.element("virtual-server")
+                .attribute("id", "server")
+                .attribute("http-listeners", info.httpListenerName)
+                .attribute("hosts", "${com.sun.aas.hostName}") // ???
+                .attribute("log-file", "")
+                .element("property")
+                    .attribute("name", "docroot")
+                    .attribute("value", efs.getDocRootDir().getPath());
     }
 
     private void createHttpListener() throws EmbeddedException {
@@ -557,10 +570,49 @@ public class Server {
         copy(dsr, ds);
         copy(xar, xa);
     }
+    /**
+     * copy a simple "your server is running..." index.html file
+     */
+    private void copyWelcomeFile() throws EmbeddedException {
+        if(welcomeExists())
+            return;
+
+        File out = new File(efs.getDocRootDir(), WELCOME_FILE);
+        Class clazz = getClass();
+        final String base = "/org/glassfish/embed";
+
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(
+                    clazz.getResourceAsStream(base + "/" + WELCOME_FILE)));
+            copy(br, out);
+        }
+        catch(Exception e) {
+            throw new EmbeddedException(e, "bad_copy_welcome", out);
+        }
+    }
+
+    /*
+     * Is index.* already in docroot?
+     */
+    private boolean welcomeExists() throws EmbeddedException {
+       File[] files = efs.getDocRootDir().listFiles();
+
+       if(files == null)
+           return false;
+
+       for(File f : files) {
+           String name = f.getName().toLowerCase();
+
+           if(name != null && name.startsWith("index"))
+               return true;
+       }
+
+       return false;
+    }
 
     private static void copy(BufferedReader in, File out) throws FileNotFoundException, IOException {
         // If we did regular byte copying -- we would have a horrible mess on Windows
-        // this way we get the right line termintors on any platform.
+        // this way we get the right line terminators on any platform.
         PrintWriter pw = new PrintWriter(out);
 
         for (String s = in.readLine(); s != null; s = in.readLine()) {

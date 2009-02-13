@@ -142,6 +142,23 @@ public final class EmbeddedFileSystem {
             throw new EmbeddedException("bad_file", f, e);
         }
     }
+    /**
+     * Set the docroot directory of the Embedded GlassFish file system.
+     * The default is instance-dir/docroot
+     *
+     * The directory must exist or it must be possible to create it.
+     *
+     * @param docRoot  the desired docroot directory
+     * @throws EmbeddedException
+     */
+    public void setDocRootDir(File docRoot) throws EmbeddedException {
+        mustNotBeInitialized("setDocRootDir");
+        docRootDir = SmartFile.sanitize(docRoot);
+
+        if (!EmbeddedUtils.mkdirsIfNotExist(docRootDir)) {
+            throw new EmbeddedException("bad_docroot", docRootDir);
+        }
+    }
 
     /**
      * Specifies whether to delete the Embedded file system after stopping Embedded
@@ -235,6 +252,16 @@ public final class EmbeddedFileSystem {
         return appsDir;
     }
 
+    /**
+     * Returns the docroot directory of the Embedded GlassFish file system
+     *
+     * @return docroot directory
+     */
+    public File getDocRootDir() throws EmbeddedException {
+        mustBeInitialized("getDocRootDir");
+        return docRootDir;
+    }
+
     /*
      * Return a String representation.
      */
@@ -306,6 +333,9 @@ public final class EmbeddedFileSystem {
         appsDir         = initializeDirectory(instanceRoot, APPLICATIONS_DIR_NAME, "Applications");
         generatedDir    = initializeDirectory(instanceRoot, GENERATED_DIR_NAME, "Generated");
         modulesDir      = initializeDirectory(installRoot, MODULES_DIR_NAME, "Modules");
+
+        if(docRootDir == null)
+            docRootDir =  initializeDirectory(instanceRoot, DOCROOT_DIR_NAME, "Docroot");
     }
 
     /**
@@ -475,6 +505,7 @@ public final class EmbeddedFileSystem {
     private File                instanceRoot;
     private File                domainXmlTarget;
     private File                appsDir;
+    private File                docRootDir;
     private File                generatedDir;
     private File                modulesDir;
     private File                logFile;
