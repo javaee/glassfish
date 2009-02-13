@@ -217,7 +217,6 @@
 	    We are defining these values here so we can support a range
 	    of versions.  Anything after these version numbers is supported.
 	-->
-	<jsftemplating.version>1.2.6</jsftemplating.version>
 	<amx-api.version>${project.version}</amx-api.version>
         <!-- raih:During release first official release change the versions of the following to the current level and then release the comments
 	<glassfish-api.version>10.0.0-rev8</glassfish-api.version>
