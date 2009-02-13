@@ -148,6 +148,7 @@ public class Server {
         //else check & make sure therir xml has a listener(??)
         addServer(info.name, this);
         writeXml();
+        testDerby();
     }
 
     /**
@@ -589,6 +590,23 @@ public class Server {
         catch(Exception e) {
             throw new EmbeddedException(e, "bad_copy_welcome", out);
         }
+    }
+
+    private void testDerby() {
+        try
+        {
+            String driver = "org.apache.derby.jdbc.EmbeddedDriver";
+
+            Class.forName(driver).newInstance();
+            LoggerHelper.info("Successfully loaded JavaDB driver");
+        }
+        catch(Exception ex)
+        {
+            LoggerHelper.info("could not load JavaDB driver");
+        }
+
+
+
     }
 
     /*
