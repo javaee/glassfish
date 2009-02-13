@@ -223,6 +223,10 @@ public final class DTDRegistry {
     public static final String SUN_WEBAPP_250_DTD_SYSTEM_ID =
         "http://www.sun.com/software/appserver/dtds/sun-web-app_2_5-0.dtd";	
     
+    public static final String SUN_WEBAPP_300_DTD_PUBLIC_ID =
+        "-//Sun Microsystems, Inc.//DTD GlassFish v3 Servlet 3.0//EN";
+    public static final String SUN_WEBAPP_300_DTD_SYSTEM_ID =
+        "http://www.sun.com/software/appserver/dtds/sun-web-app_3_0-0.dtd";
     
     /**
      * Application Client Container: Sun ONE App Server specific dtd info.

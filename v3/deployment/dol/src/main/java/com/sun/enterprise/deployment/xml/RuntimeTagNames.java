@@ -286,6 +286,8 @@ public interface RuntimeTagNames extends TagNames {
     public static final String JAVA_METHOD = "java-method";
     public final static String METHOD_PARAMS = "method-params";
     public final static String METHOD_PARAM = "method-param";
+
+    public final static String VALVE = "valve";
     
     // Java Web Start-support related
     public final static String JAVA_WEB_START_ACCESS = "java-web-start-access";

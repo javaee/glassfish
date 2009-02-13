@@ -17,7 +17,7 @@
                        ejb-ref*, resource-ref*, resource-env-ref*,  service-ref*,
                        message-destination-ref*, cache?, class-loader?,
                        jsp-config?, locale-charset-info?, parameter-encoding?,
-                       property*, message-destination*, webservice-description*)>
+                       property*, valve*, message-destination*, webservice-description*)>
 <!ATTLIST sun-web-app error-url CDATA ""
                       httpservlet-security-provider CDATA #IMPLIED>
 
@@ -321,6 +321,9 @@ This text nodes holds a value string.
 -->
 <!ELEMENT value (#PCDATA)>
 
+<!ELEMENT valve (description?, property*)>
+<!ATTLIST valve name        CDATA  #REQUIRED
+                class-name  CDATA  #REQUIRED>
 
 <!--
   					W E B   S E R V I C E S 

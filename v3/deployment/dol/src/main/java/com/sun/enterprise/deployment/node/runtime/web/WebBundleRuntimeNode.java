@@ -131,6 +131,9 @@ public class WebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescriptor>
         			MessageDestinationRuntimeNode.class);
         registerElementHandler(new XMLElement(WebServicesTagNames.WEB_SERVICE),
              			WebServiceRuntimeNode.class);
+        registerElementHandler(new XMLElement(RuntimeTagNames.VALVE),
+                               ValveNode.class);
+
     }
     
     /**
@@ -144,15 +147,15 @@ public class WebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescriptor>
      * @return the DOCTYPE that should be written to the XML file
      */
     public String getDocType() {
-	return DTDRegistry.SUN_WEBAPP_250_DTD_PUBLIC_ID;
+        return DTDRegistry.SUN_WEBAPP_300_DTD_PUBLIC_ID;
     }
     
     /**
      * @return the SystemID of the XML file
      */
     public String getSystemID() {
-	return DTDRegistry.SUN_WEBAPP_250_DTD_SYSTEM_ID;
-    }   
+        return DTDRegistry.SUN_WEBAPP_300_DTD_SYSTEM_ID;
+    }
 
     /**
      * @return NULL for all runtime nodes.
@@ -173,6 +176,7 @@ public class WebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescriptor>
        publicIDToDTD.put(DTDRegistry.SUN_WEBAPP_240_DTD_PUBLIC_ID, DTDRegistry.SUN_WEBAPP_240_DTD_SYSTEM_ID);
        publicIDToDTD.put(DTDRegistry.SUN_WEBAPP_241_DTD_PUBLIC_ID, DTDRegistry.SUN_WEBAPP_241_DTD_SYSTEM_ID);
        publicIDToDTD.put(DTDRegistry.SUN_WEBAPP_250_DTD_PUBLIC_ID, DTDRegistry.SUN_WEBAPP_250_DTD_SYSTEM_ID);
+       publicIDToDTD.put(DTDRegistry.SUN_WEBAPP_300_DTD_PUBLIC_ID, DTDRegistry.SUN_WEBAPP_300_DTD_SYSTEM_ID);
        if (!restrictDTDDeclarations()) {
           publicIDToDTD.put(DTDRegistry.SUN_WEBAPP_240beta_DTD_PUBLIC_ID, DTDRegistry.SUN_WEBAPP_240beta_DTD_SYSTEM_ID);
        }
@@ -296,6 +300,9 @@ public class WebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescriptor>
         } else if (newDescriptor instanceof WebProperty) {
             descriptor.getSunDescriptor().addWebProperty(
                 (WebProperty)newDescriptor);
+        } else if (newDescriptor instanceof Valve) {
+            descriptor.getSunDescriptor().addValve(
+                (Valve)newDescriptor);
         }
 	else super.addDescriptor(descriptor);
     }
@@ -501,6 +508,13 @@ public class WebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescriptor>
 	    props.writeDescriptor(web, RuntimeTagNames.PROPERTY, sunWebApp.getWebProperty());
 	}
         
+        // valve*
+        if (sunWebApp.getValve()!=null) {
+            ValveNode valve = new ValveNode();
+            valve.writeDescriptor(web, RuntimeTagNames.VALVE,
+                                  sunWebApp.getValve());
+        }
+
 	// message-destination*
         RuntimeDescriptorNode.writeMessageDestinationInfo(web, bundleDescriptor);
 

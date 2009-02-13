@@ -85,6 +85,8 @@ import com.sun.enterprise.web.pwc.PwcWebModule;
 import com.sun.enterprise.web.session.PersistenceType;
 import com.sun.enterprise.web.session.SessionCookieConfig;
 import com.sun.logging.LogDomains;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import org.apache.catalina.Container;
 import org.apache.catalina.ContainerListener;
 import org.apache.catalina.InstanceListener;
@@ -468,10 +470,9 @@ public class WebModule extends PwcWebModule {
         // Configure catalina listeners and valves. This can only happen
         // after this web module has been started, in order to be able to
         // load the specified listener and valve classes.
+        configureValves();
         configureCatalinaProperties();
-
         webModuleStartedEvent();
-
         hasStarted = true;
     }
 
@@ -871,6 +872,20 @@ public class WebModule extends PwcWebModule {
     }
     
    
+
+    /**
+     * Configure the <code>WebModule</code> valves.
+     */
+    protected void configureValves(){
+        if (iasBean.getValve() != null && iasBean.sizeValve() > 0) {
+            com.sun.enterprise.deployment.runtime.web.Valve[] valves = iasBean.getValve();
+            for (com.sun.enterprise.deployment.runtime.web.Valve valve: valves) {
+                addValve(valve);
+            }
+        }
+
+    }
+
     /**
      * Configure the <code>WebModule</code< properties.
      */
@@ -921,22 +936,99 @@ public class WebModule extends PwcWebModule {
     
 
     /**
-     * Add a <code>Valve</code> to a <code>VirtualServer</code> pipeline.
-     * @param valveName the fully qualified class name of the Valve.  
+     * Instantiates a <tt>Valve</tt> from the given <tt>className</tt>
+     * and adds it to the <tt>Pipeline</tt> of this WebModule.
+     *
+     * @param className the fully qualified class name of the <tt>Valve</tt>
      */
-    protected void addValve(String valveName) {
-        Object valve = loadInstance(valveName);
+    protected void addValve(String className) {
+        Object valve = loadInstance(className);
         if (valve instanceof Valve) {
             super.addValve((Valve) valve); 
         } else if (valve instanceof GlassFishValve) {
             super.addValve((GlassFishValve) valve);       
         } else {
-            logger.log(Level.WARNING,
-                        "Object of type classname " + valveName +
-                        " not an instance of Valve or GlassFishValve");
+            logger.log(Level.WARNING, "webmodule.valve.classNameNoValve",
+                       className);
         }     
     }    
     
+    /**
+     * Constructs a <tt>Valve</tt> from the given <tt>valveDescriptor</tt>
+     * and adds it to the <tt>Pipeline</tt> of this WebModule.
+     * @param valveDescriptor the object containing the information to
+     * create the valve.
+     */
+    protected void addValve(com.sun.enterprise.deployment.runtime.web.Valve valveDescriptor) {
+        String valveName = valveDescriptor.getAttributeValue(
+                com.sun.enterprise.deployment.runtime.web.Valve.NAME);
+        String className = valveDescriptor.getAttributeValue(
+                com.sun.enterprise.deployment.runtime.web.Valve.CLASS_NAME);
+        if (valveName == null) {
+            logger.log(Level.WARNING, "webmodule.valve.missingName",
+                       getName());
+            return;
+        }
+        if (className == null) {
+            logger.log(Level.WARNING, "webmodule.valve.missingClassname",
+                       new Object[]{valveName, getName()});
+            return;
+        }
+        Object valve = loadInstance(className);
+        if (valve == null) {
+            return;
+        }
+        if (!(valve instanceof GlassFishValve) &&
+                !(valve instanceof Valve)) {
+            logger.log(Level.WARNING, "webmodule.valve.classNameNoValve",
+                       className);
+            return;
+        }
+        WebProperty[] props = valveDescriptor.getWebProperty();
+        if (props != null && props.length > 0) {
+            for (WebProperty property: props) {
+                String propName = getSetterName(
+                    property.getAttributeValue(WebProperty.NAME));
+                if (propName != null && propName.length() != 0) {
+                    String value = property.getAttributeValue(
+                        WebProperty.VALUE);
+                    try {
+                        Method method = valve.getClass().getMethod(
+                            propName, String.class);
+                        method.invoke(valve, value);
+                    } catch (NoSuchMethodException ex) {
+                        String msg = rb.getString(
+                            "webmodule.valve.specifiedMethodMissing");
+                        msg = MessageFormat.format(msg,
+                            new Object[] { propName, valveName, getName()});
+                        logger.log(Level.SEVERE, msg, ex);
+                    } catch (Throwable t) {
+                        String msg = rb.getString(
+                            "webmodule.valve.setterCausedException");
+                        msg = MessageFormat.format(msg,
+                            new Object[] { propName, valveName, getName()});
+                        logger.log(Level.SEVERE, msg, t);
+                    }
+                }
+                else {
+                    String msg = rb.getString(
+                        "webmodule.valve.missingPropertyName");
+                    msg = MessageFormat.format(msg, new Object[] {valveName});
+                    logger.log(Level.WARNING,
+                        "webmodule.valve.missingPropertyName",
+                        new Object[]{valveName, getName()});
+                    return;
+                }
+            }
+        }
+        if (valve instanceof Valve) {
+            super.addValve((Valve) valve);
+        } else if (valve instanceof GlassFishValve) {
+            super.addValve((GlassFishValve) valve);
+        }
+    }
+    
+
     
     /**
      * Add a Catalina listener to a <code>ContractProvider</code>
@@ -973,6 +1065,19 @@ public class WebModule extends PwcWebModule {
         return null;
     } 
 
+
+    private String getSetterName(String propName) {
+        if (propName != null) {
+            if (propName.length() > 1) {
+                propName = "set" + Character.toUpperCase(propName.charAt(0)) +
+                        propName.substring(1);
+            }
+            else {
+                propName = "set" + Character.toUpperCase(propName.charAt(0));
+            }
+        }
+        return propName;
+    }
     
     public com.sun.enterprise.config.serverbeans.WebModule getBean() {
         return bean;

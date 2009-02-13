@@ -62,7 +62,7 @@ public class SunWebApp extends WebPropertyContainer
     public static final String IDEMPOTENT_URL_PATTERN = "IdempotentUrlPattern";
     public static final String ERROR_URL = "ErrorUrl";
     public static final String HTTPSERVLET_SECURITY_PROVIDER = "HttpServletSecurityProvider";
-
+    public static final String VALVE = "Valve";
     
     public SunWebApp()
     {
@@ -424,4 +424,40 @@ public class SunWebApp extends WebPropertyContainer
         }
         return ret.booleanValue();
     }
+
+    // This attribute is a valve to be added at the specified index
+    public void setValve(int index, Valve value) {
+        this.setValue(VALVE, index, value);
+    }
+
+    // The return value is the valve at the specified index
+    public Valve getValve(int index) {
+        return (Valve)this.getValue(VALVE, index);
+    }
+
+    // This attribute is an array, possibly empty
+    public void setValve(Valve[] value) {
+        this.setValue(VALVE, value);
+    }
+
+    // This return value is an array, possibly empty
+    public Valve[] getValve() {
+        return (Valve[])this.getValues(VALVE);
+    }
+
+    // Return the number of valves
+    public int sizeValve() {
+        return this.size(VALVE);
+    }
+
+    // Add a new element returning its index in the list
+    public int addValve(Valve value) {
+        return this.addValue(VALVE, value);
+    }
+
+    // Remove an element using its reference
+    public int removeValve(Valve value) {
+        return this.removeValue(VALVE, value);
+    }
+
 }
