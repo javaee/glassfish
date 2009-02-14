@@ -62,13 +62,6 @@
                 </configuration>
              </plugin>
         </plugins>
-        <extensions>
-            <extension>
-                <groupId>org.glassfish.build</groupId>
-                <artifactId>maven-glassfish-extension</artifactId>
-                <version>${project.version}</version>
-            </extension>
-        </extensions>
     </build>
     <!-- Do not place any dependencies in this distribution, dependencies
     should go in the nucleaus, web or glassfish distributions -->

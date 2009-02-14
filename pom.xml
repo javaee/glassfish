@@ -1,3 +1,4 @@
+
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
 /* 
@@ -153,10 +154,6 @@
     </properties>
 
 
-    <modules>
-        <!-- Don't add any other module here. Instead add them in debug profile -->
-      	<module>build</module>
-    </modules>
     <profiles>
         <profile>
             <!-- this profile is used during the development -->
@@ -189,22 +186,6 @@
                 <module>webservices</module>
             </modules>
         </profile>
-        <profile>
-            <!--
-                The GlassFish build depends on maven-glassfish-plugin as an extension,
-                so it causes a chicken and egg problem during a release;
-                Maven tries to resolve all extensions early on, but it fails
-                because the maven-glassfish-plugin is not built yet.
-
-                So the work around is a release in two-phase. First we
-                do "mvn release:prepare", which fails due to the problem described above.
-                At this point the workspace is left with POM that has non-SNAPSHOT version.
-                So now we run "mvn -P release-phase1" and builds the build module.
-                This puts maven-glassfish-plugin in local repo,
-                so the retry of "mvn release:prepare" now works.
-            -->
-            <id>release-phase1</id>
-        </profile>
     </profiles>
     <repositories>
         <repository>
@@ -230,7 +211,13 @@
     <build>
         <defaultGoal>install</defaultGoal>
         <sourceDirectory>src/main/java</sourceDirectory>
-
+        <extensions>
+            <extension>
+                <groupId>org.glassfish.build</groupId>
+                <artifactId>maven-glassfish-extension</artifactId>
+                <version>3.0-Prelude-b28b</version>
+            </extension>
+        </extensions>
 	<!--    Begin: Parent Plugin Management Section -->
         <pluginManagement>
             <plugins>
@@ -273,7 +260,7 @@
                 <plugin>
                     <groupId>org.glassfish.build</groupId>
                     <artifactId>maven-glassfish-plugin</artifactId>
-                    <version>${project.version}</version>
+                    <version>3.0-Prelude-b28b</version>
                     <configuration>
                         <!-- configuration for the checkout mojo -->
                         <checkoutDirectory>.</checkoutDirectory>
