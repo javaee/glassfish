@@ -65,7 +65,11 @@ public class SilentActionReport extends ActionReporter {
                 throw (Error) t;
             if (t instanceof RuntimeException)
                 throw (RuntimeException) t;
-            throw new EmbeddedException(getMessage(),t);
+            if (t == null) {
+                throw new EmbeddedException(getMessage());
+            } else {
+                throw new EmbeddedException(getMessage(),t);
+            }
         }
     }
 }
