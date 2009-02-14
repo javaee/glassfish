@@ -108,7 +108,11 @@
 	   <version>${jaxb.version}</version>
 	   <classifier>osgi</classifier>
        </dependency> 
-    
+       <dependency>
+           <groupId>org.glassfish.security</groupId>
+           <artifactId>webservices.security</artifactId>
+           <version>${project.version}</version>
+       </dependency> 
     </dependencies>
 
     <profiles>
