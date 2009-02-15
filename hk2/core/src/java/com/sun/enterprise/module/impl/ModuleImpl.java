@@ -339,7 +339,7 @@ public final class ModuleImpl implements Module {
             }
         }
         for (ModuleDependency dependency : moduleDef.getDependencies()) {
-            ModuleImpl depModule = (ModuleImpl)registry.makeModuleFor(dependency.getName(), null);
+            ModuleImpl depModule = (ModuleImpl)registry.makeModuleFor(dependency.getName(), dependency.getVersion());
             if (depModule==null) {
                 state = ModuleState.ERROR;                
                 throw new ResolveError(dependency + " referenced from " 

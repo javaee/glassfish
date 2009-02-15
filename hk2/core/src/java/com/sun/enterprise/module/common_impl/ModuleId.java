@@ -1,9 +1,8 @@
 /*
- * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
- * Copyright 2007-2008 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
+ * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -11,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -20,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -36,47 +35,75 @@
  */
 
 
-package org.jvnet.hk2.osgiadapter;
+package com.sun.enterprise.module.common_impl;
 
-import static org.jvnet.hk2.osgiadapter.Logger.logger;
-import com.sun.enterprise.module.common_impl.AbstractFactory;
-import com.sun.enterprise.module.common_impl.ModuleId;
 import com.sun.enterprise.module.ModuleDefinition;
-import org.osgi.framework.BundleContext;
-
-import java.util.logging.Level;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * Class representing the primary Key for a {@link com.sun.enterprise.module.Module}.
+ * A module is identified by its name and version. This class
+ * encapsulates both and implements hashCode and equals method
+ * so that it can be used in Sets and Maps.
+ *
+ * @author Sahoo@Sun.COM
  */
-public class OSGiFactoryImpl extends AbstractFactory {
+public class ModuleId
+{
+    protected String name;
+    protected String version;
 
-    private BundleContext ctx;
+    protected ModuleId() {}
 
-    /* package */ static synchronized void initialize(BundleContext ctx) {
-        if (Instance != null) {
-            // TODO : this is somehow invoked twice during gf startup, we need to investigate.
-            logger.logp(Level.FINE, "OSGiFactoryImpl", "initialize",
-                    "Singleton already initialized as {0}", getInstance());
+    public ModuleId(String name)
+    {
+        this.name = name;
+    }
+
+    public ModuleId(String name, String version)
+    {
+        init(name, version);
+    }
+
+    public ModuleId(ModuleDefinition md)
+    {
+        init(md.getName(), md.getVersion());
+    }
+
+    protected void init(String name, String version)
+    {
+        this.name = name;
+        this.version = version;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return (name + version).hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        boolean result = false;
+        if (obj instanceof ModuleId) {
+            ModuleId other = ModuleId.class.cast(obj);
+            result = (name == other.name);
+            if (!result && (name!=null)) {
+                result = name.equals(other.name);
+            }
+            if (result) {
+                result = (version == other.version);
+                if (!result && (version!=null)) {
+                    result = version.equals(other.version);
+                }
+            }
         }
-        Instance = new OSGiFactoryImpl(ctx);
+        return result;
     }
 
-    private OSGiFactoryImpl(BundleContext ctx) {
-        this.ctx = ctx;
-    }
-
-    public OSGiModulesRegistryImpl createModulesRegistry() {
-        return new OSGiModulesRegistryImpl(ctx);
-    }
-
-    public ModuleId createModuleId(String name, String version)
+    @Override
+    public String toString()
     {
-        return new OSGiModuleId(name, version);
-    }
-
-    public ModuleId createModuleId(ModuleDefinition md)
-    {
-        return new OSGiModuleId(md);
+        return name + ":" + version;
     }
 }

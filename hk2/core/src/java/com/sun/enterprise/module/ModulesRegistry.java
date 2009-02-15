@@ -192,6 +192,19 @@ public interface ModulesRegistry extends ModuleChangeListener {
     Collection<Module> getModules();
 
     /**
+     * Returns the list of shared Modules registered in this instance whose name
+     * matches the given name
+     *
+     * <p>
+     * The returned list will not include the modules defined in the ancestor
+     * {@link ModulesRegistry}s.
+     *
+     * @return an umodifiable list of loaded modules having names that match
+     * the given name
+     */
+    Collection<Module> getModules(String moduleName);
+
+    /**
      * Detaches all the modules from this registry. The modules are not
      * deconstructed when calling this method.
      */

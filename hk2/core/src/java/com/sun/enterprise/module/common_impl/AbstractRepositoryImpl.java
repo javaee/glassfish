@@ -59,7 +59,7 @@ import java.util.jar.Manifest;
 public abstract class AbstractRepositoryImpl implements Repository {
     private final String name;
     private final URI location;
-    private Map<String,ModuleDefinition> moduleDefs;
+    private Map<ModuleId, ModuleDefinition> moduleDefs;
     private List<URI> libraries;
     protected List<RepositoryChangeListener> listeners;
 
@@ -77,7 +77,7 @@ public abstract class AbstractRepositoryImpl implements Repository {
     }
 
     public ModuleDefinition find(String name, String version) {
-        return moduleDefs.get(name);
+        return moduleDefs.get(AbstractFactory.getInstance().createModuleId(name, version));
     }
 
     public List<ModuleDefinition> findAll() {
@@ -85,12 +85,16 @@ public abstract class AbstractRepositoryImpl implements Repository {
     }
 
     public List<ModuleDefinition> findAll(String name) {
-        return Collections.singletonList(moduleDefs.get(name));
+        List<ModuleDefinition> result = new ArrayList<ModuleDefinition>();
+        for (ModuleDefinition md : findAll()) {
+            if (name.equals(md.getName())) result.add(md);
+        }
+        return result;
     }
 
     public void initialize() throws IOException {
         assert moduleDefs==null;    // TODO: is it allowed to call the initialize method multiple times?
-        moduleDefs = new HashMap<String, ModuleDefinition>();
+        moduleDefs = new HashMap<ModuleId, ModuleDefinition>();
         libraries = new ArrayList<URI>();
         loadModuleDefs(moduleDefs, libraries);
     }
@@ -98,7 +102,7 @@ public abstract class AbstractRepositoryImpl implements Repository {
     /**
      * Called from {@link #initialize()} to load all {@link ModuleDefinition}s and libraries defintions
      */
-    protected abstract void loadModuleDefs(Map<String, ModuleDefinition> moduleDefs,
+    protected abstract void loadModuleDefs(Map<ModuleId, ModuleDefinition> moduleDefs,
                                            List<URI> libraries) throws IOException;
 
     /**
@@ -159,11 +163,11 @@ public abstract class AbstractRepositoryImpl implements Repository {
     }
 
     protected void add(ModuleDefinition def) {
-        moduleDefs.put(def.getName(), def);
+        moduleDefs.put(AbstractFactory.getInstance().createModuleId(def), def);
     }
 
     protected void remove(ModuleDefinition def) {
-        moduleDefs.remove(def.getName());
+        moduleDefs.remove(AbstractFactory.getInstance().createModuleId(def));
     }
 
     protected void addLibrary(URI location) {

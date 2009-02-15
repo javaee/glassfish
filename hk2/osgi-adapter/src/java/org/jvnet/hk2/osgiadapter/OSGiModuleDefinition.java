@@ -88,8 +88,14 @@ public class OSGiModuleDefinition implements ModuleDefinition {
         manifest = jarFile.getManifest();
         Attributes mainAttr = manifest.getMainAttributes();
         name = mainAttr.getValue(Constants.BUNDLE_SYMBOLICNAME);
+        // R3 bundles may not have any name, yet HK2 requires some name to be
+        // assigned. So, we use location in such cases. We encounter this
+        // problem when user has dropped some plain jars or R3 bundles
+        // in modules dir. If you choose to use a different name,
+        // please also change the code in OSGiModuleId class which makes
+        // similar assumption.
+        if (name == null) name = location.toString();
         version = mainAttr.getValue(Constants.BUNDLE_VERSION);
-        if (version == null) version = "0.0.0"; // default in OSGi
         lifecyclePolicyClassName = mainAttr.getValue(ManifestConstants.LIFECYLE_POLICY);
         jarFile.loadMetadata(metadata);
     }

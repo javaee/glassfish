@@ -40,7 +40,9 @@ package com.sun.enterprise.module.impl;
 
 import com.sun.enterprise.module.common_impl.AbstractFactory;
 import com.sun.enterprise.module.common_impl.LogHelper;
+import com.sun.enterprise.module.common_impl.ModuleId;
 import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.ModuleDefinition;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -58,4 +60,15 @@ public class HK2Factory extends AbstractFactory {
         return new ModulesRegistryImpl(null);
     }
 
+    public ModuleId createModuleId(String name, String version)
+    {
+        // In HK2, we don't yet use version to compare modules.
+        return new ModuleId(name);
+    }
+
+    public ModuleId createModuleId(ModuleDefinition md)
+    {
+        // In HK2, we don't yet use version to compare modules.
+        return new ModuleId(md.getName());
+    }
 }
