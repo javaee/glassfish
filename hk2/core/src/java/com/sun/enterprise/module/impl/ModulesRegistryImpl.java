@@ -40,6 +40,8 @@ package com.sun.enterprise.module.impl;
 
 import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.common_impl.AbstractModulesRegistryImpl;
+import com.sun.enterprise.module.common_impl.ModuleId;
+import com.sun.enterprise.module.common_impl.AbstractFactory;
 import com.sun.hk2.component.InhabitantsParser;
 
 import java.io.IOException;
@@ -97,8 +99,9 @@ public class ModulesRegistryImpl extends AbstractModulesRegistryImpl {
             if(m!=null)     return m;
         }
 
-        if (modules.containsKey(moduleName)) {
-            Module module = modules.get(moduleName);
+        ModuleId id = AbstractFactory.getInstance().createModuleId(moduleName, version);
+        Module module = modules.get(id);
+        if (module!=null) {
             ModuleImpl privateModule =
                     (ModuleImpl)newModule(module.getModuleDefinition());
             privateModule.resolve();

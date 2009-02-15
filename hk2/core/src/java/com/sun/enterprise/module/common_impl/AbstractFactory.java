@@ -54,6 +54,10 @@ public abstract class AbstractFactory {
 
     public abstract ModulesRegistry createModulesRegistry();
 
+    public abstract ModuleId createModuleId(String name, String version);
+
+    public abstract ModuleId createModuleId(ModuleDefinition md);
+
     public static AbstractFactory getInstance() {
         assert(Instance != null);
         return Instance;

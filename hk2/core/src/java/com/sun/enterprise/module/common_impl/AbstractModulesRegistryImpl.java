@@ -60,6 +60,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -80,7 +81,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
      * are visible to children. 
      */
     protected final AbstractModulesRegistryImpl parent;
-    protected final ConcurrentMap<String,Module> modules = new ConcurrentHashMap<String,Module>();
+    protected final ConcurrentMap<ModuleId,Module> modules = new ConcurrentHashMap<ModuleId,Module>();
 
     protected final Map<Integer,Repository> repositories = new TreeMap<Integer,Repository>();
 
@@ -238,7 +239,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
             if(module!=null)        return module;
         }
 
-        module = modules.get(name);
+        module = modules.get(AbstractFactory.getInstance().createModuleId(name, version));
         if (module==null) {
             module = loadFromRepository(name, version);
             if (module!=null) {
@@ -312,8 +313,10 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
         assert newModule.getRegistry()==this;
         // see if this module is already added. This can happen
         // in case of OSGiModulesRegistryImpl which uses SynchronousBundleListener.
-        if (modules.values().contains(newModule)) return;
-        modules.put(newModule.getModuleDefinition().getName(), newModule);
+        ModuleId id = AbstractFactory.getInstance().createModuleId(
+                newModule.getModuleDefinition());
+        if (modules.get(id) != null) return;
+        modules.put(id, newModule);
 
         // pick up providers from this module
         for( ModuleMetadata.Entry spi : newModule.getMetadata().getEntries() ) {
@@ -331,7 +334,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
         //    Utils.getDefaultLogger().info("Removed module " + module);
         //}
         assert module.getRegistry()==this;
-        modules.remove(module.getModuleDefinition().getName());
+        modules.remove(AbstractFactory.getInstance().createModuleId(module.getModuleDefinition()));
 
         // TODO: modules comes right back when getModules() is called.
         // the modeling is incorrect
@@ -354,7 +357,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
         for (Integer key : sortedKeys) {
             Repository repo = repositories.get(key);
             for (ModuleDefinition moduleDef : repo.findAll()) {
-                if (modules.get(moduleDef.getName())==null) {
+                if (modules.get(AbstractFactory.getInstance().createModuleId(moduleDef))==null) {
                     Module newModule = newModule(moduleDef);
                     if (newModule!=null) {
                         // When some module can't get installed,
@@ -366,6 +369,15 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
             }
         }
         return modules.values();
+    }
+
+    public Collection<Module> getModules(String moduleName)
+    {
+        List<Module> result = new ArrayList<Module>();
+        for (Module m : getModules()) {
+            if (m.getName().equals(moduleName)) result.add(m);
+        }
+        return result;
     }
 
     /**
@@ -517,5 +529,6 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
             module.dumpState(writer);
         }
     }
+
 
 }

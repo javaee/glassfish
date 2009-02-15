@@ -128,7 +128,7 @@ public class DirectoryBasedRepository extends AbstractRepositoryImpl {
     }
     
 
-    protected void loadModuleDefs(Map<String, ModuleDefinition> moduleDefs, List<URI> libraries) throws IOException {
+    protected void loadModuleDefs(Map<ModuleId, ModuleDefinition> moduleDefs, List<URI> libraries) throws IOException {
         if (!repository.exists()) {
             throw new FileNotFoundException(repository.getAbsolutePath());
         }
@@ -140,7 +140,7 @@ public class DirectoryBasedRepository extends AbstractRepositoryImpl {
                 if (aFile.getName().endsWith(".jar") && !isDisabled(aFile)) {
                     ModuleDefinition moduleDef = loadJar(aFile);
                     if (moduleDef!=null) {
-                        moduleDefs.put(moduleDef.getName(), moduleDef);
+                        moduleDefs.put(AbstractFactory.getInstance().createModuleId(moduleDef), moduleDef);
                     } else {
                         libraries.add(aFile.toURI());
                     }
@@ -168,7 +168,8 @@ public class DirectoryBasedRepository extends AbstractRepositoryImpl {
     private synchronized void directoryChanged() {
 
         // not the most efficient implementation, could be revisited later
-        HashMap<String, ModuleDefinition> newModuleDefs = new HashMap<String, ModuleDefinition>();
+        HashMap<ModuleId, ModuleDefinition> newModuleDefs =
+                new HashMap<ModuleId, ModuleDefinition>();
         List<URI> libraries = new ArrayList<URI>();
 
         try {

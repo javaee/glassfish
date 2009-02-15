@@ -40,6 +40,8 @@ import com.sun.enterprise.module.ManifestConstants;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.Repository;
 import com.sun.enterprise.module.common_impl.AbstractRepositoryImpl;
+import com.sun.enterprise.module.common_impl.ModuleId;
+import com.sun.enterprise.module.common_impl.AbstractFactory;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -136,7 +138,7 @@ public class MavenProjectRepository extends AbstractRepositoryImpl {
     }
 
     @Override
-    protected void loadModuleDefs(Map<String, ModuleDefinition> moduleDefs, List<URI> libraries) throws IOException {
+    protected void loadModuleDefs(Map<ModuleId, ModuleDefinition> moduleDefs, List<URI> libraries) throws IOException {
 
         logger.info("Loading modules list from "+project.getFile());
 
@@ -163,7 +165,7 @@ public class MavenProjectRepository extends AbstractRepositoryImpl {
 
     }
 
-    private MavenModuleDefinition buildModule(Artifact a, Map<String, ModuleDefinition> moduleDefs, List<URI> libraries)
+    private MavenModuleDefinition buildModule(Artifact a, Map<ModuleId, ModuleDefinition> moduleDefs, List<URI> libraries)
             throws IOException {
 
         File jarFile = a.getFile();
@@ -183,7 +185,7 @@ public class MavenProjectRepository extends AbstractRepositoryImpl {
         if(logger.isLoggable(Level.CONFIG))
             logger.config("Adding module "+a.getId()+" trail: "+a.getDependencyTrail());
 
-        moduleDefs.put(moduleDef.getName(), moduleDef);
+        moduleDefs.put(AbstractFactory.getInstance().createModuleId(moduleDef), moduleDef);
         return moduleDef;
     }
 

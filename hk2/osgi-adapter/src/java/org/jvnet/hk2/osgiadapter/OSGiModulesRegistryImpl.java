@@ -43,6 +43,7 @@ import org.osgi.service.packageadmin.PackageAdmin;
 import static org.jvnet.hk2.osgiadapter.Logger.logger;
 import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.common_impl.CompositeEnumeration;
+import com.sun.enterprise.module.common_impl.ModuleId;
 import com.sun.hk2.component.InhabitantsParser;
 
 import java.io.IOException;
@@ -356,7 +357,7 @@ public class OSGiModulesRegistryImpl
     public Module find(Class clazz) {
         Bundle b = pa.getBundle(clazz);
         if (b!=null) {
-            return modules.get(b.getSymbolicName());
+            return getModule(b);
         }
         return null;
     }
@@ -417,14 +418,14 @@ public class OSGiModulesRegistryImpl
      * all the repositories and installs new modules. When such a side effect is not
      * necessary, this method can be called. The returned collection does not include
      * modules known to ancestors of this registry.
-     * @return a readonly map of module name to module.
+     * @return a readonly map of moduleId to modules.
      */
-    /*package*/Map<String, Module> getExistingModules() {
+    /*package*/Map<ModuleId, Module> getExistingModules() {
         return Collections.unmodifiableMap(modules);
     }
 
     /*package*/ Module getModule(Bundle bundle) {
-        return modules.get(bundle.getHeaders().get(ManifestConstants.BUNDLE_NAME));
+        return modules.get(new OSGiModuleId(bundle));
     }
 
 }

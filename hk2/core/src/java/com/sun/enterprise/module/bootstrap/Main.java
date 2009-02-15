@@ -330,14 +330,14 @@ public class Main {
         if(mainModuleName!=null) {
             // instantiate the main module, this is the entry point of the application
             // code. it is supposed to have 1 ModuleStartup implementation.
-            mainModule = registry.makeModuleFor(mainModuleName, null);
-            if (mainModule == null) {
+            Collection<Module> modules = registry.getModules(mainModuleName);
+            if (modules.size() != 1) {
                 if(registry.getModules().isEmpty())
                     throw new BootException("Registry has no module at all");
                 else
                     throw new BootException("Cannot find main module " + mainModuleName+" : no such module");
             }
-
+            mainModule = modules.iterator().next();
             String targetClassName = findModuleStartup(mainModule, HABITAT_NAME);
             if (targetClassName==null) {
                 throw new BootException("Cannot find a ModuleStartup implementation in the META-INF/services/com.sun.enterprise.v3.ModuleStartup file, aborting");
