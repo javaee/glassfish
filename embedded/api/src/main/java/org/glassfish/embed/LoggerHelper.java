@@ -163,7 +163,7 @@ public class LoggerHelper {
     public final static void setLogFile(String logFile) {
         FileHandler fh = null;
         try {
-            fh = new FileHandler(logFile, true);
+            fh = new FileHandler(logFile, 1048576, 100, true);
         } catch (IOException ex) {
             Logger.getLogger(LoggerHelper.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SecurityException ex) {
