@@ -128,7 +128,7 @@ public class LoggerHelper {
         }
         catch (Throwable t) {
             try {
-                logger = Logger.getLogger("embedded");
+                logger = Logger.getLogger("org.glassfish.embed");
                 logger.warning("Couldn't create Logger with a resource bundle.  Created a Logger without a Resource Bundle.");
             }
             catch (Throwable t2) {
