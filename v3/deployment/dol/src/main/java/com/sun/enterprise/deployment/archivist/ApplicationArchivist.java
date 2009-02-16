@@ -73,7 +73,8 @@ import java.util.logging.Level;
  */
 @Service
 @Scoped(PerLookup.class)
-public class ApplicationArchivist extends Archivist<Application> {
+public class ApplicationArchivist extends Archivist<Application> 
+    implements CompositeArchivist {
 
     @Inject
     ArchiveFactory archiveFactory;
@@ -519,6 +520,8 @@ public class ApplicationArchivist extends Archivist<Application> {
             newArchivist.setRuntimeXMLValidation(this.getRuntimeXMLValidation());
             newArchivist.setRuntimeXMLValidationLevel(
                 this.getRuntimeXMLValidationLevel());
+            newArchivist.setAnnotationProcessingRequested(
+                annotationProcessingRequested);
 
             ReadableArchive embeddedArchive = appArchive.getSubArchive(aModule.getArchiveUri());
             if (aModule.getAlternateDescriptor()!=null) {

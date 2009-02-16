@@ -15,6 +15,7 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.util.ApplicationVisitor;
 import com.sun.enterprise.deployment.util.ApplicationValidator;
+import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.deploy.shared.DeploymentPlanArchive;
 import com.sun.enterprise.deployment.archivist.Archivist;
 import com.sun.enterprise.deployment.archivist.ArchivistFactory;
@@ -75,21 +76,29 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
         archivist.setXMLValidation(false);
         archivist.setRuntimeXMLValidation(false);
 
-        // we only expand deployment plan once in the first deployer
-        if (dc.getModuleMetaData(Application.class) == null) {
-            File deploymentPlan = params.deploymentplan;
-            handleDeploymentPlan(deploymentPlan, archivist, sourceArchive);
-        }
+        File deploymentPlan = params.deploymentplan;
+        handleDeploymentPlan(deploymentPlan, archivist, sourceArchive);
+
         long start = System.currentTimeMillis();
         EarHandler.ApplicationHolder holder = dc.getModuleMetaData(EarHandler.ApplicationHolder.class);
         Application application=null;
         if (holder!=null) {
+            // this is the ear case
+
             application = holder.app;
 
-            // finish the job.
+            // finish the job
+            ApplicationArchivist appArchivist = 
+                ApplicationArchivist.class.cast(archivist);
+            appArchivist.setClassLoader(cl);
+
+            appArchivist.setManifest(sourceArchive.getManifest());
+            try {
+                appArchivist.openWith(application, sourceArchive);
+            } catch(SAXParseException e) {
+                throw new IOException(e);
+            }
             application.setRegistrationName(name);
-            archivist.setDescriptor(application);
-            archivist.validate(cl);
         }
         if (application==null) {
             try {

@@ -153,8 +153,8 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
             try {
                 long start = System.currentTimeMillis();
                 ApplicationArchivist archivist = habitat.getComponent(ApplicationArchivist.class);
-                holder = new ApplicationHolder(archivist.open(archive));
-                System.out.println("tine to read application.xml " + (System.currentTimeMillis() - start));
+                holder = new ApplicationHolder(archivist.readStandardDeploymentDescriptor(archive));
+                System.out.println("time to read application.xml " + (System.currentTimeMillis() - start));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } catch (SAXParseException e) {

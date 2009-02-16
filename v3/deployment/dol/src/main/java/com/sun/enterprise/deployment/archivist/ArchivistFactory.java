@@ -62,6 +62,9 @@ public class ArchivistFactory implements ContractProvider {
     @Inject
     Archivist[] archivists;
 
+    @Inject
+    CompositeArchivist[] compositeArchivists;
+
     @Inject(optional = true)
     ExtensionsArchivist[] extensionsArchivists;
 
@@ -122,8 +125,18 @@ public class ArchivistFactory implements ContractProvider {
      */
     Archivist getPrivateArchivistFor(ReadableArchive archive)
         throws IOException {
+        // do CompositeArchivist first
+        Archivist a = getPrivateArchivistFor(archive, compositeArchivists); 
+        if (a == null) {
+            a = getPrivateArchivistFor(archive, archivists);
+        }
+        return a;
+    }
+
+    private Archivist getPrivateArchivistFor(ReadableArchive archive, 
+        Object[] aa) throws IOException {
         //first, check the existence of any deployment descriptors
-        for (Archivist pa : archivists) {
+        for (Object pa : aa) {
             Archivist a = Archivist.class.cast(pa);
             if (a.hasStandardDeploymentDescriptor(archive) ||
                     a.hasRuntimeDeploymentDescriptor(archive)) {
@@ -138,7 +151,7 @@ public class ArchivistFactory implements ContractProvider {
         String uri = archive.getURI().getPath();
         File file = new File(uri);
         if (!file.isDirectory() && !uri.endsWith(Archivist.EJB_EXTENSION)) {
-            for (Archivist pa : archivists) {
+            for (Object pa : aa) {
                 Archivist a = Archivist.class.cast(pa);
                 if (uri.endsWith(a.getArchiveExtension())) {
                     return copyOf(a);
@@ -147,7 +160,7 @@ public class ArchivistFactory implements ContractProvider {
         }
 
         //finally, still not returned here, call for additional processing
-        for (Archivist pa : archivists) {
+        for (Object pa : aa) {
             Archivist a = Archivist.class.cast(pa);
             if (a.postHandles(archive)) {
                 return copyOf(a);
