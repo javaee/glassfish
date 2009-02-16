@@ -57,6 +57,8 @@ public class EjbAsyncInvocationManager
 
     private AtomicLong invCounter = new AtomicLong();
 
+    // Only used to store Remote Future<> tasks.  Otherwise,
+    // there's no need to store it.
     private ConcurrentHashMap<Long, EjbFutureTask> taskMap =
             new ConcurrentHashMap<Long, EjbFutureTask>();
 
@@ -69,20 +71,8 @@ public class EjbAsyncInvocationManager
         super.setThreadFactory(new EjbAsyncThreadFactory());
     }
 
-    public boolean isCancelRequestedByCurrentInvocation() {
-        boolean result = false;
-        ComponentInvocation compInv = (ComponentInvocation) invMgr.getCurrentInvocation();
-        if (compInv instanceof EjbInvocation) {
-            EjbFutureTask task = taskMap.get(((EjbInvocation) compInv).getInvId());
-            if (task != null) {
-                result = task.isCancelled();
-            }
-        }
-        return result;
-    }
-
     public FutureTask createFuture(EjbInvocation inv) {
-        EjbFutureTask futureTask = new EjbFutureTask(new EjbAsyncTask());
+        EjbFutureTask futureTask = new EjbFutureTask(new EjbAsyncTask(), this);
         inv.setEjbFutureTask(futureTask);
 
         return futureTask;
@@ -103,7 +93,6 @@ public class EjbAsyncInvocationManager
         EjbFutureTask futureTask = asyncInv.getEjbFutureTask();
         futureTask.getEjbAsyncTask().initialize(asyncInv);
 
-        taskMap.put(invId, futureTask);
         return super.submit(futureTask.getEjbAsyncTask());
     }
 
@@ -131,10 +120,10 @@ public class EjbAsyncInvocationManager
         private AtomicInteger threadId = new AtomicInteger(0);
 
         public Thread newThread(Runnable r) {
+            // TODO change this to use common thread pool
             Thread th = new Thread(r, "Ejb-Async-Thread-" + threadId.incrementAndGet());
             th.setDaemon(true);
 
-            System.out.println("Created thread: " + th);
             th.setContextClassLoader(null); //Prevent any app classloader being set as CCL
             return th;
         }

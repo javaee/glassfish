@@ -383,8 +383,12 @@ public abstract class EJBContextImpl
             if( initialContext == null ) {
                 initialContext = new InitialContext();
             }
-            // name is relative to the private component namespace
-            o = initialContext.lookup("java:comp/env/" + name);
+            // if name starts with java: use it as is.  Otherwise, treat it
+            // as relative to the private component namespace.
+            String lookupString = name.startsWith("java:") ?
+                    name : "java:comp/env/" + name;
+
+            o = initialContext.lookup(lookupString);
         } catch(Exception e) {
             throw new IllegalArgumentException(e);
         }

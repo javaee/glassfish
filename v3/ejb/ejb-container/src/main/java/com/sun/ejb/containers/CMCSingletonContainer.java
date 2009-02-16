@@ -44,6 +44,7 @@ import com.sun.ejb.MethodLockInfo;
 
 import javax.ejb.ConcurrentAccessException;
 import javax.ejb.ConcurrentAccessTimeoutException;
+import javax.ejb.IllegalLoopbackException;
 import javax.ejb.LockType;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.Lock;
@@ -86,8 +87,7 @@ public class CMCSingletonContainer
         if ( (rwLock.getReadHoldCount() > 0) &&
              (!rwLock.isWriteLockedByCurrentThread()) ) {
             if( lockInfo.isWriteLockedMethod() ) {
-                // @@@ Replace with javax.ejb.IllegalLoopbackException
-                throw new ConcurrentAccessException("Illegal Reentrant Access : Attempt to make " +
+                throw new IllegalLoopbackException("Illegal Reentrant Access : Attempt to make " +
                         "a loopback call on a Write Lock method '" + invInfo.targetMethod1 +
                         "' while a Read lock is already held");
             }

@@ -41,6 +41,8 @@ import org.glassfish.internal.api.Globals;
 import java.util.*;
 import java.lang.reflect.Method;
 
+import java.util.concurrent.TimeUnit;
+
 /**
     * Objects of this kind represent the deployment information describing a single 
     * Session Ejb, either stateful or stateless.
@@ -49,7 +51,7 @@ import java.lang.reflect.Method;
 
 public class EjbSessionDescriptor extends EjbDescriptor {
     private boolean isStateless = false;
-    private int timeout = 0;
+
 
     private Set<LifecycleCallbackDescriptor> postActivateDescs =
         new HashSet<LifecycleCallbackDescriptor>();
@@ -69,6 +71,13 @@ public class EjbSessionDescriptor extends EjbDescriptor {
     private Method beforeCompletionMethod = null;
     private Method afterCompletionMethod = null;
 
+    // Holds @StatefulTimeout or stateful-timeout from
+    // ejb-jar.xml.  Only applies to stateful session beans.
+    // Initialize to "not set"(null) state so annotation processing
+    // can apply the correct overriding behavior.
+    private Long statefulTimeoutValue = null;
+    private TimeUnit statefulTimeoutUnit;
+
     /** The Session type String.*/
     public final static String TYPE = "Session";
     /** The String to indicate stalessness. */
@@ -86,19 +95,7 @@ public class EjbSessionDescriptor extends EjbDescriptor {
 	*/
     public EjbSessionDescriptor() {
     }
-    
-    /** 
-    * The copy constructor.
-    */
-    
-    public EjbSessionDescriptor(EjbDescriptor other) {
-	super(other);
-	if (other instanceof EjbSessionDescriptor) {
-	    EjbSessionDescriptor session = (EjbSessionDescriptor) other;
-	    this.isStateless = session.isStateless;
-	    this.timeout = session.timeout;
-	}
-    }
+
     
 	/**
 	* Returns the type of this bean - always "Session".
@@ -148,20 +145,7 @@ public class EjbSessionDescriptor extends EjbDescriptor {
 								   "Cannot set the type of a session bean"));
     }
     
-	/**
-	* Sets the timeout value for this session bean. 
-	*/
 
-    public void setTimeout(int timeout) {
-	this.timeout = timeout;
-    }
-    
-	/**
-	* Returns the timeout value of this bean. 
-	*/
-    public int getTimeout() {
-	return this.timeout;
-    }
     
 	/**
 	*  Sets the transaction type for this bean. Must be either BEAN_TRANSACTION_TYPE or CONTAINER_TRANSACTION_TYPE.
@@ -202,6 +186,23 @@ public class EjbSessionDescriptor extends EjbDescriptor {
     public void setStateless(boolean isStateless) {
 	this.isStateless = isStateless;
 
+    }
+
+    public void setStatefulTimeout(Long value, TimeUnit unit) {
+        statefulTimeoutValue = value;
+        statefulTimeoutUnit = unit;
+    }
+
+    public boolean hasStatefulTimeout() {
+        return (statefulTimeoutValue != null);
+    }
+
+    public Long getStatefulTimeoutValue() {
+        return statefulTimeoutValue;
+    }
+
+    public TimeUnit getStatefulTimeoutUnit() {
+        return statefulTimeoutUnit;
     }
 
     public boolean hasRemoveMethods() {

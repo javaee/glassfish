@@ -234,6 +234,33 @@ public abstract class AbstractSessionContextImpl
         return businessInterface;
     }
 
+    public boolean wasCancelCalled() {
+
+        try {
+            ComponentInvocation inv = EjbContainerUtilImpl.getInstance().getCurrentInvocation();
+
+            if ((inv != null) && (inv instanceof EjbInvocation)) {
+                EjbInvocation invocation = (EjbInvocation) inv;
+                EjbFutureTask task = invocation.getEjbFutureTask();
+                if (task == null) {
+                    throw new IllegalStateException("Must be invoked from an async method");
+                }
+                if( (invocation.method.getReturnType() == Void.TYPE) ) {
+                    throw new IllegalStateException("Must be invoked from a method with a Future<V> " +
+                                                    "return type");
+                }
+                return invocation.getWasCancelCalled();
+            }
+        } catch (Exception e) {
+            IllegalStateException ise = new IllegalStateException(e.getMessage());
+            ise.initCause(e);
+            throw ise;
+        }
+
+        throw new IllegalStateException("Attempt to invoke wasCancelCalled from " +
+                                        "outside an ejb invocation");
+    }
+
     protected void checkAccessToCallerSecurity()
             throws IllegalStateException {
         if (state == BeanState.CREATED) {

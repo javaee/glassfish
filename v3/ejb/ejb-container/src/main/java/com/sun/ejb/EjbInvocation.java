@@ -298,12 +298,22 @@ public class EjbInvocation
 
     private EjbFutureTask asyncFuture;
 
+    private boolean wasCancelCalled = false;
+
     public EjbFutureTask getEjbFutureTask() {
         return asyncFuture;
     }
 
     public void setEjbFutureTask(EjbFutureTask future) {
         asyncFuture = future;
+    }
+
+    public void setWasCancelCalled(boolean flag) {
+        wasCancelCalled = flag;
+    }
+
+    public boolean getWasCancelCalled() {
+        return wasCancelCalled;
     }
 
     public long getInvId() {

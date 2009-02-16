@@ -929,6 +929,8 @@ public abstract class BaseContainer
     void initializeHome()
         throws Exception
     {
+        Set<String> intfsForPortableJndi = new HashSet<String>();
+
         if (isRemote) {
             
             if( hasRemoteHomeView ) {
@@ -1090,6 +1092,8 @@ public abstract class BaseContainer
                                                   localIntf });
                 ejbLocalObjectProxyCtor = ejbLocalObjectProxyClass.
                     getConstructor(new Class[] { InvocationHandler.class });
+
+                intfsForPortableJndi.add(localHomeIntf.getName());
             }
 
             if( hasLocalBusinessView ) {
@@ -1111,38 +1115,8 @@ public abstract class BaseContainer
                 ejbLocalBusinessObjectProxyCtor = proxyClass.
                     getConstructor(new Class[] { InvocationHandler.class });
 
-                String javaGlobalName = getJavaGlobalJndiNamePrefix();
-
                 for (Class next : localBusinessIntfs) {
-                    String globalName = javaGlobalName + "#" + next.getName();
-
-                    try {
-                        JavaGlobalJndiNamingObjectProxy namingProxy =
-                                new JavaGlobalJndiNamingObjectProxy(this, next.getName());
-
-                        namingManager.publishObject(globalName, namingProxy, true);
-                        publishedGlobalJndiNames.add(globalName);
-
-                        _logger.log(Level.INFO, "Bound Java:Global name [business view] : " + globalName);
-                    } catch (Exception ex) {
-                        _logger.log(Level.WARNING, "Error while binding: " + javaGlobalName, ex);
-                    }
-                }
-
-                //The following has to move out. We should generate the
-                //  unqualified global name iff the bean implements just one interface
-                //
-                if (localBusinessIntfs.size() == 1) {
-                    try {
-                        String intfName = localBusinessIntfs.iterator().next().getName();
-                        JavaGlobalJndiNamingObjectProxy namingProxy =
-                                new JavaGlobalJndiNamingObjectProxy(this, intfName);
-                        namingManager.publishObject(javaGlobalName, namingProxy, true);
-                         publishedGlobalJndiNames.add(javaGlobalName);
-                        _logger.log(Level.INFO, "Bound Java:Global name [single business view] : " + javaGlobalName);
-                    } catch (Exception ex) {
-                        _logger.log(Level.WARNING, "Error while binding: " + javaGlobalName, ex);
-                    }
+                    intfsForPortableJndi.add(next.getName());
                 }
 
             }
@@ -1167,31 +1141,38 @@ public abstract class BaseContainer
                 ejbOptionalLocalBusinessObjectProxyCtor = proxyClass.
                     getConstructor(new Class[] { InvocationHandler.class });
 
-                String javaGlobalName = getJavaGlobalJndiNamePrefix();
-                String qJavaGlobalName = javaGlobalName + "#" + ejbClass.getName();
-
-                JavaGlobalJndiNamingObjectProxy namingProxy =
-                        new JavaGlobalJndiNamingObjectProxy(this, ejbClass.getName());
-                try {
-                    namingManager.publishObject(qJavaGlobalName, namingProxy, true);
-                } catch (Exception ex) {
-                    _logger.log(Level.WARNING, "Error while binding: " + qJavaGlobalName, ex);
-                }
-
-                try {
-                    namingManager.publishObject(javaGlobalName, namingProxy, true);
-                } catch (Exception ex) {
-                    _logger.log(Level.WARNING, "Error while binding: " + javaGlobalName, ex);
-                }
-
-                publishedGlobalJndiNames.add(javaGlobalName);
-                publishedGlobalJndiNames.add(qJavaGlobalName);
-
-                System.out.println("Java:Global name [no interface view] : " + javaGlobalName);
-                System.out.println("Java:Global name [no interface view] : " + qJavaGlobalName);
+                intfsForPortableJndi.add(ejbClass.getName());
 
             }
             
+        }
+
+        // Register portable global JNDI names
+        String javaGlobalName = getJavaGlobalJndiNamePrefix();
+        for(String intf : intfsForPortableJndi) {
+
+            String fullyQualifiedJavaGlobalName = javaGlobalName + "!" + intf;
+            JavaGlobalJndiNamingObjectProxy namingProxy =
+                new JavaGlobalJndiNamingObjectProxy(this, intf);
+            try {
+
+                if (intfsForPortableJndi.size() == 1) {
+                    namingManager.publishObject(javaGlobalName, namingProxy, true);
+                    publishedGlobalJndiNames.add(javaGlobalName);
+                }
+
+                namingManager.publishObject(fullyQualifiedJavaGlobalName, namingProxy, true);
+                publishedGlobalJndiNames.add(fullyQualifiedJavaGlobalName);
+
+            } catch (Exception ex) {
+                _logger.log(Level.WARNING, "Error while binding portable JNDI name for EJB : " +
+                            this.ejbDescriptor.getName(), ex);
+            }
+        }
+
+        if( !publishedGlobalJndiNames.isEmpty() ) {
+            _logger.log(Level.INFO, "Portable JNDI names for EJB " +
+                        this.ejbDescriptor.getName() + " : " + publishedGlobalJndiNames);
         }
         
         // create EJBMetaData
@@ -1544,11 +1525,14 @@ public abstract class BaseContainer
 
             // Log system exceptions by default and application exceptions only
             // when log level is FINE or higher.
-            Level exLogLevel = isSystemUncheckedException(inv.exception) ?
-                Level.INFO : Level.FINE;
 
-            _logger.log(exLogLevel,"ejb.some_unmapped_exception", logParams);
-            _logger.log(exLogLevel, "", inv.exception);
+            if( isSystemUncheckedException(inv.exception) ) {
+                _logger.log(Level.WARNING, "A system exception occurred during an invocation on EJB " +
+                                           ejbDescriptor.getName(), inv.exception);
+            } else {
+                _logger.log(Level.FINE, "An application exception occurred during an invocation on EJB " +
+                                           ejbDescriptor.getName(), inv.exception);
+            }
             
             if ( !inv.isLocal ) {
 
@@ -2260,8 +2244,7 @@ public abstract class BaseContainer
         InvocationInfo info = createInvocationInfo
             (method, txAttr, flushEnabled, methodIntf, originalIntf);
         boolean isHomeIntf = (methodIntf.equals(MethodDescriptor.EJB_HOME)
-                || methodIntf.equals(MethodDescriptor.EJB_LOCALHOME)
-                || methodIntf.equals(MethodDescriptor.EJB_OPTIONAL_LOCALHOME));
+                || methodIntf.equals(MethodDescriptor.EJB_LOCALHOME));
         if (! isHomeIntf) {
             Method beanMethod = null;
             try {
@@ -2338,10 +2321,6 @@ public abstract class BaseContainer
         } else if( methodIntf.equals(MethodDescriptor.EJB_REMOTE) ) {
             if( method.getDeclaringClass() != EJBObject.class ) {
                 setEJBObjectTargetMethodInfo(invInfo, false, originalIntf);
-            }
-        }  else if( methodIntf.equals(MethodDescriptor.EJB_OPTIONAL_LOCALHOME) ) {
-            if( method.getDeclaringClass() != EJBLocalHome.class ) {
-                setHomeTargetMethodInfo(invInfo, true);
             }
         } else if( methodIntf.equals(MethodDescriptor.EJB_LOCAL_BEAN) ) {
             if( method.getDeclaringClass() != EJBLocalObject.class ) {
@@ -2740,7 +2719,7 @@ public abstract class BaseContainer
                     for ( int i=0; i<optHomeMethods.length; i++ ) {
                         Method method = optHomeMethods[i];
                         addInvocationInfo(method,
-                                          MethodDescriptor.EJB_OPTIONAL_LOCALHOME,
+                                          MethodDescriptor.EJB_LOCALHOME,
                                           ejbOptionalLocalBusinessHomeIntf);
                     }
                 }
@@ -4458,7 +4437,7 @@ public abstract class BaseContainer
             EjbAsyncInvocationManager asyncManager =
                     ((EjbContainerUtilImpl) ejbContainerUtilImpl).getEjbAsyncInvocationManager();
             FutureTask future = asyncManager.createFuture(inv);
-            result = inv.invocationInfo.method.getReturnType() == void.class
+            result = (inv.invocationInfo.method.getReturnType() == void.class)
                     ? null : future;
         }  else {
             result = __intercept(inv);

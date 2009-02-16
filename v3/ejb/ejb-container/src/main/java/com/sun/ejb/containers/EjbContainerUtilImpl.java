@@ -65,6 +65,9 @@ import java.util.Timer;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.lang.reflect.Proxy;
@@ -81,6 +84,12 @@ public class EjbContainerUtilImpl
 
     private Logger _logger = LogDomains.getLogger(EjbContainerUtilImpl.class, LogDomains.EJB_LOGGER);
 
+    // TODO Temporary thread pool for Timer Service.  We should probably use
+    // a common thread pool by default but allow configuration of a timer-service
+    // specific one.  Should also consider using a distinct JDK timer for
+    // timer service than the one used by containers for periodic work. 
+    private ExecutorService timerExecutorService;
+    
     @Inject
     private Habitat habitat;
 
@@ -171,6 +180,16 @@ public class EjbContainerUtilImpl
 
     public  void setEJBTimerService(EJBTimerService es) {
         _ejbTimerService = es;
+
+        if( timerExecutorService != null ) {
+            timerExecutorService.shutdown();
+            timerExecutorService = null;
+        }
+
+        if( es != null ) {
+            ThreadFactory tf = new EjbTimerThreadFactory();
+            timerExecutorService = Executors.newCachedThreadPool(tf);
+        }
     }
 
     public  EJBTimerService getEJBTimerService() {
@@ -311,9 +330,28 @@ public class EjbContainerUtilImpl
     }
 
     public void addWork(Runnable task) {
-        task.run();
+
+        timerExecutorService.submit(task);
     }
-        // Various pieces of data associated with a tx.  Store directly
+
+    private static class EjbTimerThreadFactory
+        implements ThreadFactory {
+
+        private AtomicInteger threadId = new AtomicInteger(0);
+
+        public Thread newThread(Runnable r) {
+            // TODO change this to use common thread pool
+            Thread th = new Thread(r, "Ejb-Timer-Thread-" + threadId.incrementAndGet());
+            th.setDaemon(true);
+
+            // Prevent any app classloader being set as CCL
+            // App classloader is set by task itself
+            th.setContextClassLoader(null);
+            return th;
+        }
+    }
+
+    // Various pieces of data associated with a tx.  Store directly
     // in J2EETransaction to avoid repeated Map<tx, data> lookups.
     private  class TxData {
         ContainerSynchronization sync;

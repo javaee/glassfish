@@ -548,7 +548,7 @@ public class StatelessSessionContainer
             // EJBContext methods not allowed will throw exceptions
             context.setState(EJBContextImpl.BeanState.POOLED);
         } catch ( Throwable th ) {
-            _logger.log(Level.INFO, "ejb.stateless_ejbcreate_exception", th);
+            _logger.log(Level.WARNING, "ejb.stateless_ejbcreate_exception", logParams);
             CreateException creEx = new CreateException("Could not create stateless EJB");
             creEx.initCause(th);
             throw creEx;

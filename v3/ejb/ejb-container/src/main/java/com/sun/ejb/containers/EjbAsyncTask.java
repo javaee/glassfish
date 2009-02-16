@@ -96,6 +96,13 @@ public class EjbAsyncTask<V>
         } finally {
             try {
                 container.postInvoke(inv, inv.getDoTxProcessingInPostInvoke());
+
+                // Use the same exception handling logic here as is used in the
+                // various invocation handlers.  This ensures that the same
+                // exception that would be received in the synchronous case will
+                // be set as the cause of the ExecutionException returned from
+                // Future.get().
+                
                 if (inv.exception != null) {
                     if (inv.isLocal) {
                         InvocationHandlerUtil.throwLocalException(
@@ -106,13 +113,15 @@ public class EjbAsyncTask<V>
                     }
                 }
             } catch (Throwable th) {
-                //Setting the exception ensures that future.get() throws the exception
-                ejbFutureTask.setException(th);
+                ExecutionException ee = new ExecutionException(th);
+                ejbFutureTask.setResultException(ee);
+                throw ee;
             } finally {
                 Utility.setContextClassLoader(prevCL);
             }
         }
 
+        ejbFutureTask.setResultValue(returnValue);
         return returnValue;
     }
 }

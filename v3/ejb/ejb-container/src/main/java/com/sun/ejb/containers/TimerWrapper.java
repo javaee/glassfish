@@ -39,6 +39,7 @@ import java.util.Date;
 import java.io.Serializable;
 
 import javax.ejb.NoSuchObjectLocalException;
+import javax.ejb.NoMoreTimeoutsException;
 import javax.ejb.EJBException;
 import javax.ejb.Timer;
 import javax.ejb.TimerHandle;
@@ -95,7 +96,7 @@ public class TimerWrapper
     }
     
     public long getTimeRemaining() 
-        throws IllegalStateException, NoSuchObjectLocalException {
+        throws IllegalStateException, NoMoreTimeoutsException, NoSuchObjectLocalException {
 
         Date nextTimeout = getNextTimeout();
         if (nextTimeout == null) {
@@ -110,7 +111,7 @@ public class TimerWrapper
     }
     
     public Date getNextTimeout() 
-        throws IllegalStateException, NoSuchObjectLocalException {
+        throws IllegalStateException, NoMoreTimeoutsException, NoSuchObjectLocalException {
 
         checkCallPermission();
 
@@ -146,6 +147,10 @@ public class TimerWrapper
 
         checkCallPermission();
 
+        if( !isPersistent() ) {
+            throw new IllegalStateException("Only allowed for persistent timers");
+        }
+
         if( !timerService_.timerExists(timerId_) ) {
             throw new NoSuchObjectLocalException("timer no longer exists");
         } 
@@ -159,6 +164,10 @@ public class TimerWrapper
         checkCallPermission();
         ScheduleExpression schedule;
 
+        if( !isCalendarTimer() ) {
+            throw new IllegalStateException("Only allowed for calendar-based timers");
+        }
+
         try {
             schedule = timerService_.getScheduleExpression(timerId_);
         } catch(FinderException fe) {
@@ -167,6 +176,26 @@ public class TimerWrapper
 
         return schedule;
     }
+
+    public boolean isCalendarTimer() throws java.lang.IllegalStateException,
+            javax.ejb.NoSuchObjectLocalException, javax.ejb.EJBException {
+
+        checkCallPermission();
+
+        // TODO -- implement isCalendarTimer() 
+        return true;
+
+        /*
+        try {
+
+            ...
+
+        } catch(FinderException fe) {
+            throw new NoSuchObjectLocalException("timer no longer exists", fe);
+        }
+        */
+    }
+
 
     public boolean isPersistent() throws java.lang.IllegalStateException, 
             javax.ejb.NoSuchObjectLocalException, javax.ejb.EJBException {

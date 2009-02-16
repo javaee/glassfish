@@ -85,10 +85,6 @@ public class EjbSingletonDescriptor
         super();
     }
 
-    public EjbSingletonDescriptor(EjbDescriptor ejbDesc) {
-        super(ejbDesc);
-    }
-
     public void addEjbDescriptor(EjbSingletonDescriptor ejbDesc) {
         super.addEjbDescriptor((EjbDescriptor)ejbDesc);
     }

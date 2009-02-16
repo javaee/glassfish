@@ -132,7 +132,7 @@ public class EJBTimerServiceWrapper implements TimerService {
         return createTimerInternal(initialExpiration, intervalDuration, info);
     }
 
-    public Timer createTimer(long duration, TimerConfig timerConfig) throws
+    public Timer createSingleActionTimer(long duration, TimerConfig timerConfig) throws
                      java.lang.IllegalArgumentException, java.lang.IllegalStateException,
                      javax.ejb.EJBException {
         checkCreateTimerCallPermission();
@@ -141,7 +141,7 @@ public class EJBTimerServiceWrapper implements TimerService {
         return createTimerInternal(duration, 0, timerConfig);
     }
 
-    public Timer createTimer(long initialDuration,
+    public Timer createIntervalTimer(long initialDuration,
                      long intervalDuration, TimerConfig timerConfig) throws
                      java.lang.IllegalArgumentException, java.lang.IllegalStateException,
                      javax.ejb.EJBException {
@@ -151,7 +151,7 @@ public class EJBTimerServiceWrapper implements TimerService {
         return createTimerInternal(initialDuration, intervalDuration, timerConfig);
     }
 
-    public Timer createTimer(Date initialExpiration,
+    public Timer createSingleActionTimer(Date initialExpiration,
                      TimerConfig timerConfig) throws
                      java.lang.IllegalArgumentException, java.lang.IllegalStateException,
                      javax.ejb.EJBException {
@@ -161,7 +161,7 @@ public class EJBTimerServiceWrapper implements TimerService {
         return createTimerInternal(initialExpiration, 0, timerConfig);
     }
 
-    public Timer createTimer(Date initialExpiration,
+    public Timer createIntervalTimer(Date initialExpiration,
                      long intervalDuration, TimerConfig timerConfig) throws
                      java.lang.IllegalArgumentException, java.lang.IllegalStateException,
                      javax.ejb.EJBException {
@@ -171,7 +171,7 @@ public class EJBTimerServiceWrapper implements TimerService {
         return createTimerInternal(initialExpiration, intervalDuration, timerConfig);
     }
 
-    public Timer createTimer(ScheduleExpression schedule,
+    public Timer createCalendarTimer(ScheduleExpression schedule,
                   TimerConfig timerConfig) throws
                      java.lang.IllegalArgumentException, java.lang.IllegalStateException,
                      javax.ejb.EJBException {
@@ -181,19 +181,19 @@ public class EJBTimerServiceWrapper implements TimerService {
         return createTimerInternal(schedule, timerConfig);
     }
 
-    public Timer createTimer(ScheduleExpression schedule, Serializable info) throws
+    public Timer createCalendarTimer(ScheduleExpression schedule) throws
                      java.lang.IllegalArgumentException, java.lang.IllegalStateException,
                      javax.ejb.EJBException {
         checkCreateTimerCallPermission();
         checkScheduleExpression(schedule);
 
         TimerConfig tc = new TimerConfig();
-        tc.setInfo(info);
+        tc.setInfo(null);
 
         return createTimerInternal(schedule, tc);
     }
 
-    public Collection getTimers() throws IllegalStateException, EJBException {
+    public Collection<Timer> getTimers() throws IllegalStateException, EJBException {
         
         checkCallPermission();
         
@@ -210,7 +210,7 @@ public class EJBTimerServiceWrapper implements TimerService {
             }
         } 
                                                         
-        Collection timerWrappers = new HashSet();
+        Collection<Timer> timerWrappers = new HashSet();
 
         for(Iterator iter = timerIds.iterator(); iter.hasNext();) {
             TimerPrimaryKey next = (TimerPrimaryKey) iter.next();
