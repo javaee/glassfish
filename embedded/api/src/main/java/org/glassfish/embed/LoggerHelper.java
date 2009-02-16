@@ -148,7 +148,7 @@ public class LoggerHelper {
     public final static void stopConsoleLogging() {
         for (Handler h  : rootLogger.getHandlers()) {
             if (h instanceof ConsoleHandler) {
-                rootLogger.removeHandler(h);
+                h.setLevel(Level.OFF);
             }
         }
 
