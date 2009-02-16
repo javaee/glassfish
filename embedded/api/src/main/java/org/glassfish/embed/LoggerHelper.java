@@ -124,7 +124,7 @@ public class LoggerHelper {
 
     static {
         try {
-            logger = Logger.getLogger("embedded", ServerConstants.LOGGING_RESOURCE_BUNDLE);
+            logger = Logger.getLogger("org.glassfish.embed", ServerConstants.LOGGING_RESOURCE_BUNDLE);
         }
         catch (Throwable t) {
             try {
