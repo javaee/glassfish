@@ -99,12 +99,8 @@ public class TimerWrapper
         throws IllegalStateException, NoMoreTimeoutsException, NoSuchObjectLocalException {
 
         Date nextTimeout = getNextTimeout();
-        if (nextTimeout == null) {
-            return -1;
-        }
 
         Date now = new Date();
-
         long timeRemaining = nextTimeout.getTime() - now.getTime();
 
         return (timeRemaining > 0) ? timeRemaining : 0;
@@ -122,6 +118,10 @@ public class TimerWrapper
         } catch(FinderException fe) {
             throw new NoSuchObjectLocalException("timer no longer exists", fe);
         } 
+
+        if (nextTimeout == null) {
+            throw new NoMoreTimeoutsException();
+        }
 
         return nextTimeout;
     }
