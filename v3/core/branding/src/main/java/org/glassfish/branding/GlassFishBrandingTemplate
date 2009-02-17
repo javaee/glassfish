@@ -109,7 +109,8 @@ public class GlassFishBranding implements Branding, PostConstruct {
                 }
             } catch(MissingResourceException mre) {
                 // cannot use logger because this may have been called from logger itself
-                System.out.println("no resource bundle found for version, using default GlassFish version");
+                // commented println to supress message for nucleus distro
+                //System.out.println("no resource bundle found for version, using default GlassFish version");
             }
 
         // construct full version
