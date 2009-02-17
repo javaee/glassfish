@@ -196,7 +196,7 @@ public final class EmbeddedFileSystem {
      */
     public File getInstallRoot() throws EmbeddedException {
         mustBeInitialized("getInstallRoot");
-        return installRoot;
+        return EmbeddedUtils.cloneAndVerifyFile(installRoot);
     }
 
     /**
@@ -207,7 +207,7 @@ public final class EmbeddedFileSystem {
      */
     public File getInstanceRoot() throws EmbeddedException {
         mustBeInitialized("getInstanceRoot");
-        return instanceRoot;
+        return EmbeddedUtils.cloneAndVerifyFile(instanceRoot);
     }
 
     /**
@@ -240,7 +240,7 @@ public final class EmbeddedFileSystem {
      */
     public File getLogFile() throws EmbeddedException {
         mustBeInitialized("getLogFile");
-        return logFile;
+        return EmbeddedUtils.cloneFile(logFile);
     }
 
     /**
@@ -248,8 +248,8 @@ public final class EmbeddedFileSystem {
      *
      * @return applications directory
      */
-    public File getApplicationsDir() {
-        return appsDir;
+    public File getApplicationsDir() throws EmbeddedException {
+        return EmbeddedUtils.cloneAndVerifyFile(appsDir);
     }
 
     /**
@@ -259,7 +259,7 @@ public final class EmbeddedFileSystem {
      */
     public File getDocRootDir() throws EmbeddedException {
         mustBeInitialized("getDocRootDir");
-        return docRootDir;
+        return EmbeddedUtils.cloneAndVerifyFile(docRootDir);
     }
 
     /*
@@ -317,10 +317,19 @@ public final class EmbeddedFileSystem {
         initialized = true;
     }
 
-    public boolean isOurDomainXml() {
-        return domainXmlSource == DEFAULT_DOMAIN_XML_URL;
+    /**
+     * If we are not using an external user-provided domain.xml then we will
+     * need to add virtual srvers and listeners.  This method will reveal where the
+     * domain.xml has come from.
+     * @return true when the source configuration file is not the domain.xml bundled
+     * inside the Embedded GlassFish jar file.
+     */
+    boolean isUserDomainXml() {
+        return domainXmlSource != DEFAULT_DOMAIN_XML_URL;
 
     }
+
+
     // ****************************************************
     // *************    private
     // ****************************************************

@@ -135,7 +135,7 @@ public class Server {
         // only add listeners and virtual-servers when using *our* built-in
         // domain.xml.
 
-        if (efs.isOurDomainXml()) {
+        if (!efs.isUserDomainXml()) {
             createHttpListener();
             createVirtualServer();
             createAdminHttpListener();
