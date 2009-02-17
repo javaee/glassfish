@@ -123,11 +123,21 @@ public final class ConfigModel {
      * @see ConfigMetadata#KEY
      */
     public final String key;
-    
+
+    /**
+     * Returns the set of possible attributes names on this configuration model.
+     *
+     * @return the set of all possible attributes names on this model
+     */
     public Set<String> getAttributeNames() {
         return Collections.unmodifiableSet( attributes.keySet() );
     }
 
+    /**
+     * Returns the list of all the leaf attribute names on this model
+     *
+     * @return the list of all leaf attribute names.
+     */
     public Set<String> getLeafElementNames() {
         final Set<String> results = new HashSet<String>();
         for (Map.Entry<String,Property> prop : elements.entrySet()) {
@@ -138,9 +148,33 @@ public final class ConfigModel {
         return Collections.unmodifiableSet(results);
     }
 
+    /**
+     * Returns the list of all posible elements names on this model
+     *
+     * @return the list of all posible elements names.
+     */
     public Set<String> getElementNames() {
         return Collections.unmodifiableSet(elements.keySet());
     }
+
+    /**
+     * Returns the Property model for an element associated with this model
+     * or null of the element name is not known,
+     * @param elementName element name identifying the property
+     * @return the Property instance describing the element
+     */
+    public Property getElement(String elementName) {
+        return elements.get(elementName);
+    }
+
+
+    public Property getElementFromXMlName( final String xmlName ) {
+        final ConfigModel.Property cmp = findIgnoreCase(xmlName);
+        if (cmp == null) {
+            throw new IllegalArgumentException( "Illegal name: " + xmlName );
+        }
+        return cmp;
+    }    
 
     /**
      * Performs injection to the given object.

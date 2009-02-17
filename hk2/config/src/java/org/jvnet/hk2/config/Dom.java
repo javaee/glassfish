@@ -219,6 +219,32 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
     }
 
     /**
+     * Returns the list of attributes with a value on this config instance.
+     * This is by definition a subset of the attributes names as known
+     * to the model {@see ConfigModel.getAttributeNames}.
+     *
+     * @return list of attributes names which have values on this config instance
+     */
+    public Set<String> getAttributeNames() {
+        return Collections.unmodifiableSet( attributes.keySet() );
+    }
+
+    /**
+     * Returns the children name associated with this config instance.
+     * This is by definition a subset of the element names as known to the
+     * model {#see ConfigModel.getElementNames().
+     *
+     * @Return list of elements names associated with this config instance
+     */
+    public Set<String> getElementNames() {
+        Set<String> names = new HashSet<String>();
+        for (Child child : children) {
+            names.add(child.name);
+        }
+        return names;
+    }    
+
+    /**
      * Performs translation with null pass-through.
      */
     private String t(String s) {
@@ -848,23 +874,6 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
 
         // at this point name should match XML names in the model, modulo case.
         return model.findIgnoreCase(name);
-    }
-    
-        protected ConfigModel.Property
-    getConfigModel_Property( final String xmlName ) {
-        final ConfigModel.Property cmp = model.findIgnoreCase(xmlName);
-        if (cmp == null) {
-            throw new IllegalArgumentException( "Illegal name: " + xmlName );
-        }
-        return cmp;
-    }
-    
-    public boolean isLeaf( final String xmlName ) {
-        return getConfigModel_Property(xmlName).isLeaf();
-    }
-    
-    public boolean isCollection( final String xmlName ) {
-        return getConfigModel_Property(xmlName).isCollection();
     }
 
     public static String convertName(String name) {
