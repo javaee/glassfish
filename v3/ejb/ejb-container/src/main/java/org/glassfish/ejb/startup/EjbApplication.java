@@ -254,6 +254,10 @@ public class EjbApplication
                 File root = sc.getInstallRoot();
                 File app = new File(root, 
                         "lib/install/applications/ejb-timer-service-app.war");
+                if (!app.exists()) {
+                    throw new RuntimeException("Failed to deploy EJBTimerService: " + 
+                            "required WAR file (ejb-timer-service-app.war) is not installed");
+                }
 
                 Properties params = new Properties();
                 params.put("path", app.getAbsolutePath()); 
