@@ -223,7 +223,7 @@
         </dependency>
         <dependency>
            <groupId>org.glassfish.transaction</groupId>
-           <artifactId>jta</artifactId>
+           <artifactId>jts</artifactId>
            <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -287,6 +287,16 @@
         <dependency>
             <groupId>org.glassfish.connectors</groupId>
             <artifactId>connectors-admin</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.ejb</groupId>
+            <artifactId>gf-ejb-connector</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.ejb</groupId>
+            <artifactId>ejb-container</artifactId>
             <version>${project.version}</version>
         </dependency>
 
