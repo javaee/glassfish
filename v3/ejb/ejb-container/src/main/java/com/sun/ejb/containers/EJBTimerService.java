@@ -1432,24 +1432,14 @@ public class EJBTimerService
 
     ScheduleExpression getScheduleExpression(TimerPrimaryKey timerId) throws FinderException {
         
-        // Check non-persistent timers first
-        TimerSchedule ts = null;
-
-        RuntimeTimerState rt = getNonPersistentTimer(timerId);
-        if (rt != null) {
-            ts = rt.getTimerSchedule();
-        } else {
-
-            // @@@ We can't assume this server instance owns the persistent timer
-            // so always ask the database.  Investigate possible use of
-            // timer cache for optimization.
-
-            TimerState timer = getPersistentTimer(timerId);
-            ts = timer.getTimerSchedule();
-        }
-
+        TimerSchedule ts = getTimerSchedule(timerId);
         return (ts == null)? null : ts.getScheduleExpression();
+    }
+
+    boolean isCalendarTimer(TimerPrimaryKey timerId) throws FinderException {
         
+        TimerSchedule ts = getTimerSchedule(timerId);
+        return (ts != null);
     }
 
     boolean isPersistent(TimerPrimaryKey timerId) throws FinderException {
@@ -1490,6 +1480,30 @@ public class EJBTimerService
         } 
         
         return exists;
+    }
+
+    /**
+     * Called by #getScheduleExpression and #isCalendarTimer
+     */
+    private TimerSchedule getTimerSchedule(TimerPrimaryKey timerId) throws FinderException {
+
+        // Check non-persistent timers first
+        TimerSchedule ts = null;
+
+        RuntimeTimerState rt = getNonPersistentTimer(timerId);
+        if (rt != null) {
+            ts = rt.getTimerSchedule();
+        } else {
+
+            // @@@ We can't assume this server instance owns the persistent timer
+            // so always ask the database.  Investigate possible use of
+            // timer cache for optimization.
+
+            TimerState timer = getPersistentTimer(timerId);
+            ts = timer.getTimerSchedule();
+        }
+
+        return ts;
     }
 
     private void removeTimerBean(TimerPrimaryKey timerId) {

@@ -182,18 +182,11 @@ public class TimerWrapper
 
         checkCallPermission();
 
-        // TODO -- implement isCalendarTimer() 
-        return true;
-
-        /*
         try {
-
-            ...
-
+            return timerService_.isCalendarTimer(timerId_);
         } catch(FinderException fe) {
             throw new NoSuchObjectLocalException("timer no longer exists", fe);
         }
-        */
     }
 
 
