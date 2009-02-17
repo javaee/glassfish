@@ -76,4 +76,5 @@ public class ServerConstants {
     public static final String          CONFIG_FILE_NAME                    = EmbeddedServerEnvironment.kConfigXMLFileName;
     public static final String          DEFAULT_PATH_TO_DOMAIN_XML          = CONFIG_DIR_NAME + "/" + CONFIG_FILE_NAME;
     public static final String          WELCOME_FILE                        = "index.html";
+    public static final String          EMBEDDED_LOGGER                     = "org.glassfish.embed";
 }
