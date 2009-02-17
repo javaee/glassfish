@@ -55,6 +55,7 @@ import com.sun.enterprise.security.auth.realm.RealmsManager;
 import com.sun.enterprise.security.authorize.PolicyContextHandlerImpl;
 import com.sun.enterprise.security.common.Util;
 import com.sun.enterprise.security.jmac.config.GFAuthConfigFactory;
+import com.sun.enterprise.security.ssl.SSLUtils;
 import org.glassfish.internal.api.ServerContext;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.logging.LogDomains;
@@ -91,6 +92,9 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
     
     @Inject 
     private Util util;
+    
+    @Inject
+    private SSLUtils sslUtils;
     
     @Inject
     private SecurityConfigListener configListener;

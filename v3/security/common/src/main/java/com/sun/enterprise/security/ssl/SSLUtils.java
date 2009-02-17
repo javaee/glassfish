@@ -86,6 +86,7 @@ public final class SSLUtils implements PostConstruct {
 
     private static final String KEYSTORE_PASS_PROP = "javax.net.ssl.keyStorePassword";
     private static final String TRUSTSTORE_PASS_PROP = "javax.net.ssl.trustStorePassword";
+    private static final String DEFAULT_OUTBOUND_KEY_ALIAS = "s1as";
     public static final String HTTPS_OUTBOUND_KEY_ALIAS = "com.sun.enterprise.security.httpsOutboundKeyAlias";
 
     private static final Logger _logger = LogDomains.getLogger(SSLUtils.class, LogDomains.SECURITY_LOGGER);
@@ -140,7 +141,7 @@ public final class SSLUtils implements PostConstruct {
             // Creating a default SSLContext and HttpsURLConnection for clients
             // that use Https
             SSLContext ctx = SSLContext.getInstance("TLS");
-            String keyAlias = System.getProperty(HTTPS_OUTBOUND_KEY_ALIAS);
+            String keyAlias = System.getProperty(HTTPS_OUTBOUND_KEY_ALIAS,DEFAULT_OUTBOUND_KEY_ALIAS);
             KeyManager[] kMgrs = getKeyManagers();
             if (keyAlias != null && keyAlias.length() > 0 && kMgrs != null) {
                 for (int i = 0; i < kMgrs.length; i++) {
