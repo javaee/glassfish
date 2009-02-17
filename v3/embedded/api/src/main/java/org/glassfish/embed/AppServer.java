@@ -411,7 +411,6 @@ public class AppServer {
 
         try {
             final Module[] proxyMod = new Module[1];
-
             // ANONYMOUS CLASS HERE!!
             ModulesRegistryImpl modulesRegistry = new ModulesRegistryImpl(null) {
                 public Module find(Class clazz) {
@@ -614,5 +613,10 @@ public class AppServer {
             svc.release();
         }
     }
+
+	static {
+		// initialize HK2
+        com.sun.enterprise.module.impl.HK2Factory.initialize();
+	}
 
 }
