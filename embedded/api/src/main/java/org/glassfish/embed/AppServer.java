@@ -615,4 +615,8 @@ public class AppServer {
         }
     }
 
+	static {
+		// initialize HK2
+        com.sun.enterprise.module.impl.HK2Factory.initialize();
+	}
 }

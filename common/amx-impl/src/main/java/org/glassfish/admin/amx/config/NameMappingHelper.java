@@ -82,7 +82,7 @@ final class NameMappingHelper {
         NameMapping mapping = NameMappingRegistry.getInstance(mJ2EEType);
         if ( mapping == null )
         {
-            final Set<String> xmlAttrNames = mConfigBean.getAttributeNames();
+            final Set<String> xmlAttrNames = mConfigBean.model.getAttributeNames();
             final Set<String> xmlLeafNames = GSetUtil.newStringSet(ConfigSupport.getElementsNames(mConfigBean));
             final Set<String> xmlNames = new HashSet<String>( xmlAttrNames );
             xmlNames.addAll( xmlLeafNames );
