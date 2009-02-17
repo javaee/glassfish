@@ -70,7 +70,7 @@ public class V2DottedNameSupport {
 
     protected void getAllSubDottedNames(String prefix, Dom parent,Map<Dom, String> result) {
 
-        Set<String> elementNames = parent.getLeafElementNames();
+        Set<String> elementNames = parent.model.getLeafElementNames();
 
         for (String childName : elementNames) {
 
@@ -81,9 +81,9 @@ public class V2DottedNameSupport {
             boolean collection = true;
             if (parent.model.findIgnoreCase(childName)!=null) {
                 // if this is a leaf node, we should really treat it as an attribute.
-                if (parent.isLeaf(childName))
+                if (parent.model.getElement(childName).isLeaf())
                     continue;
-                collection = parent.isCollection(childName);
+                collection = parent.model.getElement(childName).isCollection();
 
             }
 
@@ -121,7 +121,7 @@ public class V2DottedNameSupport {
                 result.put(attrName, value);
             }
         }
-        for (String leafName : node.getLeafElementNames()) {
+        for (String leafName : node.model.getLeafElementNames()) {
             ConfigModel.Property property = node.model.findIgnoreCase(leafName);
             if (property==null) {
                 property = node.model.findIgnoreCase("*");

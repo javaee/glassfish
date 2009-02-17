@@ -62,7 +62,6 @@ public class PropertyChangeListenerTest  extends ConfigApiTest implements Config
             }
         }, prop);
 
-        System.out.println("Property = " + target.getProperty().get(0).getValue());
         Transactions.get().waitForDrain();
         assertTrue(result);
         ((ObservableBean) ConfigSupport.getImpl(target)).removeListener(this);

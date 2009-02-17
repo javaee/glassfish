@@ -49,8 +49,7 @@ import java.util.concurrent.ThreadFactory;
  * Date: Mar 25, 2008
  * Time: 12:38:30 PM
  */
-@Ignore
-public class ConfigApiTest extends org.glassfish.tests.utils.ConfigApiTest {
+public abstract class ConfigApiTest extends org.glassfish.tests.utils.ConfigApiTest {
 
     public DomDocument getDocument(Habitat habitat) {
         DomDocument doc = habitat.getByType(GlassFishDocument.class);

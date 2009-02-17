@@ -54,7 +54,6 @@ import java.beans.PropertyVetoException;
  * Date: Apr 8, 2008
  * Time: 9:45:21 PM
  */
-@Ignore
 public class CollectionsAccessTest extends ConfigApiTest  {
 
 

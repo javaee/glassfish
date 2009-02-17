@@ -25,7 +25,6 @@ public class ContainerExtensionTest extends ConfigApiTest {
     }
     
     @Test
-    @Ignore
     public void existenceTest() {
 
         Config config = habitat.getComponent(Domain.class).getConfigs().getConfig().get(0);

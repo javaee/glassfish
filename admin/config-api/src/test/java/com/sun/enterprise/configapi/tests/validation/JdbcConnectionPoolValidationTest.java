@@ -13,12 +13,14 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.jvnet.hk2.config.ValidationException;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
 
 /**
  *
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net) 
  */
-@Ignore
 public class JdbcConnectionPoolValidationTest extends ConfigApiTest {
 
     private JdbcConnectionPool pool = null;
@@ -46,37 +48,62 @@ public class JdbcConnectionPoolValidationTest extends ConfigApiTest {
     // The methods must be annotated with annotation @Test. For example:
     //
     @Test (expected=ValidationException.class)
-    public void testBooleanDoesNotTakeInteger1() {
+    public void testBooleanDoesNotTakeInteger1() throws Throwable {
         try {
-            pool.setConnectionLeakReclaim("123"); //this method should only take boolean;
-        } catch(PropertyVetoException pv) {
-            //ignore?
+            ConfigSupport.apply(new SingleConfigCode<JdbcConnectionPool>() {
+                public Object run(JdbcConnectionPool jdbcConnectionPool) throws PropertyVetoException, TransactionFailure {
+                    jdbcConnectionPool.setConnectionLeakReclaim("123"); //this method should only take boolean;
+                    return null;
+                }
+            }, pool);
+
+        } catch(TransactionFailure e) {
+            throw e.getCause().getCause();
         }
     }
     
     @Test (expected=ValidationException.class)
-    public void testPositiveIntegerDoesNotTakeString1() {
+    public void testPositiveIntegerDoesNotTakeString1() throws Throwable {
         try {
-            pool.setSteadyPoolSize("xyz"); //this only takes a positive integer
-        } catch(PropertyVetoException pv) {
-            pv.printStackTrace();
-        }
+            ConfigSupport.apply(new SingleConfigCode<JdbcConnectionPool>() {
+                public Object run(JdbcConnectionPool jdbcConnectionPool) throws PropertyVetoException, TransactionFailure {
+                    jdbcConnectionPool.setSteadyPoolSize("xyz"); //this only takes a positive integer
+                    return null;
+                }
+            }, pool);
+
+        } catch(TransactionFailure e) {
+            throw e.getCause().getCause();
+        }        
     }
     @Test (expected=ValidationException.class)
-    public void testPositiveIntegerDoesNotTakeNegativeInger() {
+    public void testPositiveIntegerDoesNotTakeNegativeInger() throws Throwable {
         try {
-            pool.setSteadyPoolSize("-1"); //this only takes a positive integer
-        } catch(PropertyVetoException pv) {
-            pv.printStackTrace();
+            ConfigSupport.apply(new SingleConfigCode<JdbcConnectionPool>() {
+                public Object run(JdbcConnectionPool jdbcConnectionPool) throws PropertyVetoException, TransactionFailure {
+                    jdbcConnectionPool.setSteadyPoolSize("-1"); //this only takes a positive integer
+                    return null;
+                }
+            }, pool);
+
+        } catch(TransactionFailure e) {
+            throw e.getCause().getCause();
         }
     }
+    
     @Test (expected=ValidationException.class)
-    public void testPositiveIntegerDoesNotTakeZero() {
+    public void testPositiveIntegerDoesNotTakeZero() throws Throwable {
         try {
-            pool.setSteadyPoolSize("0"); //this only takes a positive integer
-        } catch(PropertyVetoException pv) {
-            pv.printStackTrace();
-        }
+            ConfigSupport.apply(new SingleConfigCode<JdbcConnectionPool>() {
+                public Object run(JdbcConnectionPool jdbcConnectionPool) throws PropertyVetoException, TransactionFailure {
+                    jdbcConnectionPool.setSteadyPoolSize("0"); //this only takes a positive integer
+                    return null;
+                }
+            }, pool);
+
+        } catch(TransactionFailure e) {
+            throw e.getCause().getCause();
+        }        
     }
     @Test
     public void testBooleanTakesTrueFalse() {
