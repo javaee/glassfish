@@ -1,1 +1,0 @@
-isSecure=${pageContext.request.secure}

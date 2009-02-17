@@ -1,1 +1,0 @@
--exportcontents: com.sun.enterprise.transaction.xa; version=${project.osgi.version}

@@ -1,1 +1,0 @@
--exportcontents: net.munnangi.addon; version=${project.osgi.version}

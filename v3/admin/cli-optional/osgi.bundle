@@ -1,1 +1,0 @@
--exportcontents: com.sun.enterprise.admin.cli.optional; version=${project.osgi.version}

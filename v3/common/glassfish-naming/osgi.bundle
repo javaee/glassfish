@@ -1,5 +1,0 @@
--exportcontents: \
-                        com.sun.enterprise.naming.impl; \
-                        com.sun.enterprise.naming.spi; \
-                        com.sun.enterprise.naming.util; version=${project.osgi.version}
-

@@ -1,1 +1,0 @@
--exportcontents: com.sun.enterprise.phobos; version=${project.osgi.version}

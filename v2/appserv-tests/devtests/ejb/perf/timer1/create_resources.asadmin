@@ -1,7 +1,0 @@
-create-jms-resource --restype javax.jms.QueueConnectionFactory jms/ejb_perf_timer1_TQCF
-
-create-jmsdest --desttype queue ejb_perf_timer1_TQueue
-create-jms-resource --restype javax.jms.Queue --property imqDestinationName=ejb_perf_timer1_TQueue jms/ejb_perf_timer1_TQueue
-
-
-quit

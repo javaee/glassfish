@@ -1,8 +1,0 @@
-#
-# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-#
-# Copyright 2008 Sun Microsystems, Inc. All rights reserved.
-# 
-# Use is subject to License Terms
-#
-ZLIB = zlib

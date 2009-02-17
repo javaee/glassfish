@@ -1,3 +1,0 @@
--exportcontents: \
-                        com.sun.enterprise.config.serverbeans; \
-                        org.glassfish.config.support; version=${project.osgi.version}

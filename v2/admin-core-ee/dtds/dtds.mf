@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-Created-By: 1.4.0 (Sun Microsystems Inc.)
-Implementation-Vendor-Id: com.sun
-Implementation-Vendor: Sun Microsystems, Inc.
-Specification-Vendor: Sun Microsystems, Inc.

@@ -1,8 +1,0 @@
--exportcontents: 
-Import-Package: \
-                        com.sun.corba.ee.spi.oa.rfm;resolution:=optional, \
-                        com.sun.corba.ee.impl.txpoa;resolution:=optional, \
-                        com.sun.corba.ee.spi.presentation.rmi;resolution:=optional, \
-                        com.sun.enterprise.transaction;password=GlassFish, \
-                        *
-
