@@ -36,7 +36,6 @@
             setRegistrationNodeText();
         }
 
-
         if(! $session{supportCluster}){
             checkRestart(RestartRequired=>$session{restartRequired},
             unprocessedChanges=>$session{unprocessedChanges});
@@ -138,6 +137,24 @@
                     } );
             }
         </script>
+
+<!-- ###### Temporary Toggle Button Begin ##### -->
+<h:form>
+<h:commandButton value="Toggle Scheme">
+    <ui:event type="command">
+	setAttribute(key="guiOldValue" value="#{sessionScope.guiNavScheme}");
+	if ("#{requestScope.guiOldValue}=menu") {
+	    setSessionAttribute(key="guiNavScheme" value="tree");
+	}
+	if ("#{requestScope.guiOldValue}=tree") {
+	    setSessionAttribute(key="guiNavScheme" value="menu");
+	}
+	redirect(page="#{request.requestURI}");
+    </ui:event>
+</h:commandButton>
+</h:form>
+<!-- ###### Temporary Toggle Button End ##### -->
+
     </sun:body>
 </sun:html>
 </sun:page>
