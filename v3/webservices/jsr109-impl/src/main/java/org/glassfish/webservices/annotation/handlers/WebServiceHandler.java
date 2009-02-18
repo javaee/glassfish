@@ -72,6 +72,7 @@ import com.sun.enterprise.deployment.annotation.handlers.AbstractHandler;
 import com.sun.logging.LogDomains;
 
 import javax.xml.namespace.QName;
+import javax.ejb.Stateless;
 
 import org.jvnet.hk2.annotations.Service;
 
@@ -420,22 +421,22 @@ public class WebServiceHandler extends AbstractHandler {
 
                if(endpoint.getEjbLink() == null) {
                   //TODO BM handle stateless
-              /*  Class <? extends Annotation> stateless = null;
+               Stateless stateless = null;
                 try {
-                    stateless = provider.getType("javax.ejb.Stateless");
-                } catch (ClassNotFoundException e) {
+                    stateless = annElem.getAnnotation(javax.ejb.Stateless.class);
+                } catch (Exception e) {
                     //This can happen in the web.zip installation where there is no ejb
                     //Just logging the error
                     logger.fine(rb.getString("exception.thrown") + e.getMessage() );
-                }*/
+                }
                 String name;
 
                 //TODO BM FIX ME FOR EJB case
-                /*if ((stateless).name()==null || stateless.name().length()>0) {
+                if ((stateless).name()==null || stateless.name().length()>0) {
                     name = stateless.name();
-                } else {*/
+                } else {
                     name = ((Class) annElem).getSimpleName();
-                //}
+                }
                 EjbDescriptor ejb = ((EjbBundleDescriptor) bundleDesc).getEjbByName(name);
                 endpoint.setEjbComponentImpl(ejb);
                 ejb.setWebServiceEndpointInterfaceName(endpoint.getServiceEndpointInterface());

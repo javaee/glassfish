@@ -122,12 +122,19 @@ public class WebServicesDeployer extends WebDeployer {
 
                 return false;
             }
-            WebBundleDescriptor wbd = (WebBundleDescriptor) app.getStandaloneBundleDescriptor();
-            if (!wbd.getSpecVersion().equals("2.5") || (!wbd.hasWebServices())){
-                super.generateArtifacts(dc);
-            } else {
+            if ((app.getStandaloneBundleDescriptor() instanceof WebBundleDescriptor)
+                    &&  ((!app.getStandaloneBundleDescriptor().getSpecVersion().equals("2.5")
+                          || (!app.getStandaloneBundleDescriptor().hasWebServices()) ) )
+                    ) {
+
+                    super.generateArtifacts(dc);
+
+            }   else {
+                //This is either a webapp with version 2.5 or EJB with webservices
+                //Proceed with JSR 109
                 generateArtifacts(dc);
                 doWebServicesDeployment(app,dc) ;
+
             }
             return true;
         } catch (Exception ex) {
