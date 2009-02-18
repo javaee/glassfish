@@ -32,6 +32,10 @@ import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+
+import java.util.Iterator;
+import java.util.Collection;
+
 /**
  * AdminCommand to stop the domain execution which mean shuting down the application
  * server.
@@ -61,10 +65,13 @@ public class StopDomainCommand implements AdminCommand {
     public void execute(AdminCommandContext context) {
          
         context.getLogger().info(localStrings.getLocalString("stop.domain.init","Server shutdown initiated"));
-        final Module mgmtAgentModule = registry.makeModuleFor(
-                "com.sun.enterprise.osgi-adapter", null);
-        if (mgmtAgentModule!=null) {
+        Collection<Module> modules = registry.getModules(
+                "com.sun.enterprise.osgi-adapter");
+        if (modules.size() == 1) {
+            final Module mgmtAgentModule = modules.iterator().next();
             mgmtAgentModule.stop();
+        } else {
+            context.getLogger().warning(modules.size() + " no of primordial modules found");
         }
         if (force) {
             System.exit(0);

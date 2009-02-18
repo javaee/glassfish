@@ -80,7 +80,7 @@ public class APIClassLoaderServiceImpl implements PostConstruct {
     }
 
     private void createAPIClassLoader() throws IOException {
-        APIModule = mr.makeModuleFor(APIExporterModuleName, null);
+        APIModule = mr.getModules(APIExporterModuleName).iterator().next();
         assert(APIModule != null);
         APIClassLoader = APIModule.getClassLoader();
         logger.logp(Level.INFO, "APIClassLoaderService", "createAPIClassLoader",

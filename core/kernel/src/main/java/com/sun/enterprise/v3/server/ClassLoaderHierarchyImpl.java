@@ -50,6 +50,7 @@ import java.net.URI;
 import java.net.MalformedURLException;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.jar.Manifest;
@@ -139,10 +140,11 @@ public class ClassLoaderHierarchyImpl implements ClassLoaderHierarchy {
             String importedBundles = m.getMainAttributes().getValue(ManifestConstants.BUNDLE_IMPORT_NAME);
             if (importedBundles!=null) {
                 for( String token : new Tokenizer(importedBundles,",")) {
-                    // will throw ResolveError if not found.
-                    Module module = modulesRegistry.makeModuleFor(token, null);
-                    if (module!=null) {
-                        defs.add(module.getModuleDefinition());
+                    Collection<Module> modules = modulesRegistry.getModules(token);
+                    if (modules.size() ==1) {
+                        defs.add(modules.iterator().next().getModuleDefinition());
+                    } else {
+                        throw new ResolveError("Not able to locate a unique module by name " + token);
                     }
                 }
             }

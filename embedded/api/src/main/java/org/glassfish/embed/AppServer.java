@@ -43,6 +43,7 @@ import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.impl.ClassLoaderProxy;
+import com.sun.enterprise.module.impl.HK2Factory;
 import com.sun.enterprise.module.impl.ModulesRegistryImpl;
 import com.sun.enterprise.security.SecuritySniffer;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
@@ -411,6 +412,9 @@ public class AppServer {
 
         try {
             final Module[] proxyMod = new Module[1];
+
+            // Initialize HK2Factory
+            HK2Factory.initialize();
 
             // ANONYMOUS CLASS HERE!!
             ModulesRegistryImpl modulesRegistry = new ModulesRegistryImpl(null) {

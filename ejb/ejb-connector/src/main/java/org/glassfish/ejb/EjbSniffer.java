@@ -45,6 +45,7 @@ import org.jvnet.hk2.component.Habitat;
 import java.io.IOException;
 import java.io.File;
 import java.util.logging.Logger;
+import java.util.Collection;
 import java.lang.annotation.Annotation;
 
 /**
@@ -85,9 +86,9 @@ public class EjbSniffer  extends GenericSniffer implements Sniffer {
         @Override
      public Module[] setup(String containerHome, Logger logger) throws IOException {
 
-            Module[] modules = new Module[1];
-            Module m = modulesRegistry.makeModuleFor("org.glassfish.ejb.ejb-container", null);
-            if (m == null) {
+            final String ejbContainerName = "org.glassfish.ejb.ejb-container";
+            Collection<Module> modules = modulesRegistry.getModules(ejbContainerName);
+            if (modules.isEmpty()) {
 
                 // let's see if I have a ejb directory since we started the VM
                 File ejbLib = null;
@@ -111,11 +112,10 @@ public class EjbSniffer  extends GenericSniffer implements Sniffer {
                     }
                 }
 
-                m = modulesRegistry.makeModuleFor("org.glassfish.ejb:ejb-container", null);
+                modules = modulesRegistry.getModules(ejbContainerName);
             }
-            if (m != null) {
-                modules[0] = m;
-                return modules;
+            if (modules.size() == 1) {
+                return modules.toArray(new Module[1]);
             } else {
                 throw new IOException("Cannot find ejb module from the module's repositories");
             }

@@ -57,7 +57,7 @@ import org.jvnet.hk2.config.ObservableBean;
 
 
 
-@Service
+@Service(name="ResourceManager") // this name is used in ApplicationLoaderService
 /**
  * Resource manager to bind various resources during startup, create/update/delete of resource/pool
  * @author Jagadish Ramu
