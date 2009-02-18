@@ -37,6 +37,7 @@
 
 package org.glassfish.embed;
 
+import com.sun.enterprise.util.diagnostics.ObjectAnalyzer;
 import org.glassfish.embed.impl.ReadableArchiveAdapter;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 
@@ -180,6 +181,10 @@ public class ScatteredWar extends ReadableArchiveAdapter {
 
     public Enumeration<String> entries(String s) {
         throw new UnsupportedOperationException(unsupported("entries(String)"));
+    }
+
+    public String toString() {
+        return ObjectAnalyzer.toString(this);
     }
 
     ///////////////////////////////////////////////////////////////////////////
