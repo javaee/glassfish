@@ -35,7 +35,7 @@
  *
  */
 
-package org.glassfish.embed;
+package org.glassfish.embed.util;
 
 import java.net.*;
 import org.glassfish.embed.impl.EmbeddedServerEnvironment;

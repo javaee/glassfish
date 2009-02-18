@@ -5,6 +5,7 @@
 
 package org.glassfish.embed;
 
+import org.glassfish.embed.util.LoggerHelper;
 import com.sun.enterprise.v3.admin.CommandRunner;
 import com.sun.enterprise.v3.common.PropsFileActionReporter;
 import org.glassfish.api.ActionReport;

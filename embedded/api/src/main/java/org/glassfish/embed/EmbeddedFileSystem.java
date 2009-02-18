@@ -39,7 +39,7 @@ package org.glassfish.embed;
 import com.sun.enterprise.util.diagnostics.ObjectAnalyzer;
 import static com.sun.enterprise.universal.glassfish.SystemPropertyConstants.*;
 import java.net.MalformedURLException;
-import static org.glassfish.embed.ServerConstants.*;
+import static org.glassfish.embed.util.ServerConstants.*;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.util.io.FileUtils;
 import java.io.File;

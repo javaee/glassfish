@@ -37,6 +37,8 @@
 
 package org.glassfish.embed;
 
+import org.glassfish.embed.util.StringHelper;
+
 /**
  * Indicates a failure inside GlassFish.
  *

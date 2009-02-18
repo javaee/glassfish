@@ -5,6 +5,7 @@
 
 package org.glassfish.embed;
 
+import org.glassfish.embed.util.LoggerHelper;
 import com.sun.enterprise.universal.io.SmartFile;
 import org.glassfish.api.ActionReport;
 import java.io.File;

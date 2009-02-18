@@ -42,11 +42,13 @@
  * @author  bnevins
  *
  */
-package org.glassfish.embed;
+package org.glassfish.embed.util;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.*;
+import static org.glassfish.embed.util.ServerConstants.*;
+
 
 // Resource Bundle:
 // com/sun/logging/enterprise/system/tools/deployment/backend/LogStrings.properties
@@ -124,11 +126,11 @@ public class LoggerHelper {
 
     static {
         try {
-            logger = Logger.getLogger(ServerConstants.EMBEDDED_LOGGER, ServerConstants.LOGGING_RESOURCE_BUNDLE);
+            logger = Logger.getLogger(EMBEDDED_LOGGER, LOGGING_RESOURCE_BUNDLE);
         }
         catch (Throwable t) {
             try {
-                logger = Logger.getLogger(ServerConstants.EMBEDDED_LOGGER);
+                logger = Logger.getLogger(EMBEDDED_LOGGER);
                 logger.warning("Couldn't create Logger with a resource bundle.  Created a Logger without a Resource Bundle.");
             }
             catch (Throwable t2) {

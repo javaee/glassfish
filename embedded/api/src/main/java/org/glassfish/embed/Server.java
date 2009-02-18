@@ -36,6 +36,7 @@
  */
 package org.glassfish.embed;
 
+import org.glassfish.embed.util.LoggerHelper;
 import java.io.*;
 import java.util.*;
 import java.net.*;
@@ -72,8 +73,7 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import static org.glassfish.embed.ServerConstants.*;
+import static org.glassfish.embed.util.ServerConstants.*;
 
 /**
  * Entry point to the embedded GlassFish Server.
@@ -703,6 +703,12 @@ public class Server {
             throw new AssertionError(e);    // impossible
         }
     }
+    
+    static {
+		// initialize HK2
+        // this ought to be in HK2Factory class itself
+        com.sun.enterprise.module.impl.HK2Factory.initialize();
+	}
 
     ////////////////////////////////////////////////////////
     /////////////   private variables //////////////////////

@@ -15,8 +15,8 @@ import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.embed.EmbeddedException;
 import org.glassfish.embed.EmbeddedInfo;
 import org.glassfish.embed.Server;
-import org.glassfish.embed.StringHelper;
-import org.glassfish.embed.LoggerHelper;
+import org.glassfish.embed.util.StringHelper;
+import org.glassfish.embed.util.LoggerHelper;
 import org.glassfish.embed.util.EmbeddedUtils;
 
 /**

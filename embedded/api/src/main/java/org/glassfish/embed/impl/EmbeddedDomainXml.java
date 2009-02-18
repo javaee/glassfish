@@ -50,7 +50,7 @@ import org.glassfish.embed.Server;
 import org.jvnet.hk2.config.DomDocument;
 import org.jvnet.hk2.annotations.Inject;
 import com.sun.enterprise.v3.server.DomainXml;
-import org.glassfish.embed.LoggerHelper;
+import org.glassfish.embed.util.LoggerHelper;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.config.IndentingXMLStreamWriter;
 

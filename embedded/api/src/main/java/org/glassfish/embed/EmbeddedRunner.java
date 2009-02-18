@@ -37,6 +37,7 @@
 
 package org.glassfish.embed;
 
+import org.glassfish.embed.util.LoggerHelper;
 import java.io.*;
 import java.util.*;
 

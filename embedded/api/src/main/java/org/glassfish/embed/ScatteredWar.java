@@ -37,6 +37,7 @@
 
 package org.glassfish.embed;
 
+import org.glassfish.embed.impl.ReadableArchiveAdapter;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 
 import java.io.*;

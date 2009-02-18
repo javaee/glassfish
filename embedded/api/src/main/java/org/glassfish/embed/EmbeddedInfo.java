@@ -37,13 +37,14 @@
 
 package org.glassfish.embed;
 
+import org.glassfish.embed.util.LoggerHelper;
 import com.sun.enterprise.util.diagnostics.ObjectAnalyzer;
 import java.io.*;
 import java.util.*;
 import java.net.*;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.embed.util.StringUtils;
-import static org.glassfish.embed.ServerConstants.*;
+import static org.glassfish.embed.util.ServerConstants.*;
 
 /**
  * <code>EmbeddedInfo</code> contains the {@link Server} configuration.  Server

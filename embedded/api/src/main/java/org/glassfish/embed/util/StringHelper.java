@@ -1,5 +1,5 @@
 
-package org.glassfish.embed;
+package org.glassfish.embed.util;
 
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 

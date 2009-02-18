@@ -37,6 +37,8 @@
 
 package org.glassfish.embed;
 
+import org.glassfish.embed.util.LoggerHelper;
+import org.glassfish.embed.util.StringHelper;
 import org.glassfish.embed.util.BoolArg;
 import org.glassfish.embed.util.Arg;
 import org.glassfish.embed.util.ArgProcessor;
@@ -47,7 +49,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.embed.util.StringUtils;
-
+import static org.glassfish.embed.util.ServerConstants.*;
 /**
  * 
  * @author bnevins
@@ -269,12 +271,12 @@ public class EmbeddedMain {
 
         //       longname       shortname   default or req                                     description
         //new Arg("war",          "w",            false,                                       "War File"),
-        new Arg("port",             "p",            "" + ServerConstants.DEFAULT_HTTP_PORT,        "HTTP Port"),
+        new Arg("port",             "p",            "" + DEFAULT_HTTP_PORT,        "HTTP Port"),
         new Arg("installDir",       "d",            false,                                         "Filesystem Installation Directory"),
         new Arg("instanceDir",      "i",            false,                                         "Filesystem Instance Directory"),
         new Arg("xml",              "x",            false,                                         "domain.xml filename or URL"),
-        new Arg("adminport",        "q",           "" + ServerConstants.DEFAULT_ADMIN_HTTP_PORT,   "Admin HTTP"),
-        new Arg("jmxport",          "j",           "" + ServerConstants.DEFAULT_JMX_CONNECTOR_PORT,"JMX System Connector Port"),
+        new Arg("adminport",        "q",           "" + DEFAULT_ADMIN_HTTP_PORT,   "Admin HTTP"),
+        new Arg("jmxport",          "j",           "" + DEFAULT_JMX_CONNECTOR_PORT,"JMX System Connector Port"),
         new BoolArg("help",         "h",            false,                                         "Help"),
         new BoolArg("autodeploy",   "b",            false,                                         "Turn on the AutoDeploy Service"),
 

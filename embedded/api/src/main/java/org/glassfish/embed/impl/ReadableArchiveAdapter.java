@@ -1,5 +1,5 @@
 
-package org.glassfish.embed;
+package org.glassfish.embed.impl;
 
 import java.io.IOException;
 import java.net.URI;
@@ -12,7 +12,7 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
  * easier to understand.
  * @author bnevins
  */
-abstract class ReadableArchiveAdapter implements ReadableArchive{
+abstract public class ReadableArchiveAdapter implements ReadableArchive{
 
     public long getEntrySize(String arg0) {
         throw new UnsupportedOperationException("Not supported yet.");
