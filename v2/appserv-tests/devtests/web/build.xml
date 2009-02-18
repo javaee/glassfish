@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="350"/>
+    <property name="TOTAL_EXPECTED" value="351"/>
 
     &commonSetup;
     &commonBuild;
@@ -194,6 +194,7 @@
         <ant dir="servletRequestSetCharEncodingIllegalStateException" target="all"/>
         <ant dir="servletRequestGetPathInfoGetPathTranslated" target="all"/>
         <ant dir="servletFilterMappingWithServletNameAndURLPattern" target="all"/>
+        <ant dir="servletFilterDefaultInvocationOrder" target="all"/>
         <ant dir="servletMappingWithMultipleURLPatterns" target="all"/>
         <ant dir="servletChainedException" target="all"/>
         <ant dir="servletResponseQuotedContentTypeImbalance" target="all"/>
