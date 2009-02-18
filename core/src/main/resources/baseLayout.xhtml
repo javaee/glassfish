@@ -44,8 +44,7 @@
             setSessionAttribute(key="restartRequired" value="$boolean{false}");
         }
     </ui:event>
-    <sun:head>
-        <title><ui:insert name="title">GlassFish v3 Administration Console</ui:insert></title>
+    <sun:head title="#{guiTitle}">
         <link rel="stylesheet" type="text/css" href="#{facesContext.externalContext.request.contextPath}/style.css" />
         <sc:links/>
         <sun:script url="/resource/js/adminjsf.js" />

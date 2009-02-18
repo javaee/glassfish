@@ -36,12 +36,13 @@
 <!-- commonTask.jsf -->
 
 <!initPage
-setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
-setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+<!--
+    Any page-specific I18N files can be included here, core.*
+    bundles are already included.
+-->
 #include "/sysnet/regInit.inc"
 />
-<!composition template="/layout.xhtml">
-<!define name="title">$resource{i18n.commonTasks.title}</define>
+<!composition template="/layout.xhtml" guiTitle="$resource{i18n.commonTasks.title}">
 <!define name="content">
       <sun:script>
         <f:verbatim>
