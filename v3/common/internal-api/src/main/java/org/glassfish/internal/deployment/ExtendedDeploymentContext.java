@@ -95,4 +95,18 @@ public interface ExtendedDeploymentContext extends DeploymentContext {
      * @param props
      */
     public void setProps(Properties props);
+
+    /**
+     * Returns the archive handler that's associated with this context
+     *
+     * @return archive handler
+     */
+    public ArchiveHandler getArchiveHandler();
+
+    /**
+     * Sets the archive handler that's associated with this context
+     *
+     * @param archiveHandler
+     */
+    public void setArchiveHandler(ArchiveHandler archiveHandler);
 }

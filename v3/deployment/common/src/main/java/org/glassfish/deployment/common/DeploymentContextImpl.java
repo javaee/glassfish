@@ -59,6 +59,7 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
     final Logger logger;
     final ServerEnvironment env;
     ClassLoader cloader;
+    ArchiveHandler archiveHandler;
     Properties props;
     Map<String, Object> modulesMetaData = new HashMap<String, Object>();
     List<ClassFileTransformer> transformers = new ArrayList<ClassFileTransformer>();
@@ -368,5 +369,13 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
         // recursively delete...
         FileUtils.whack(generatedJspRoot);
 
+    }
+
+    public ArchiveHandler getArchiveHandler() {
+        return archiveHandler;
+    }
+
+    public void setArchiveHandler(ArchiveHandler archiveHandler) {
+        this.archiveHandler = archiveHandler;
     }
 }

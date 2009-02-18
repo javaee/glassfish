@@ -119,6 +119,9 @@ public class ApplicationLifecycle implements Deployment {
     @Inject
     protected Applications applications;
 
+    @Inject
+    protected Domain domain;
+
     @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
     protected Server server;
 
@@ -194,12 +197,17 @@ public class ApplicationLifecycle implements Deployment {
         context.setPhase(DeploymentContextImpl.Phase.PREPARE);
         ApplicationInfo appInfo = null;
         try {
-            ArchiveHandler handler = getArchiveHandler(context.getSource());
+            ArchiveHandler handler = context.getArchiveHandler();
+            if (handler == null) {
+                handler = getArchiveHandler(context.getSource());
+            }
             if (handler==null) {
                 report.setMessage(localStrings.getLocalString("unknownarchivetype","Archive type of {0} was not recognized",context.getSource()));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return null;                
             }
+            context.setArchiveHandler(handler);
+
             context.createClassLoaders(clh, handler);
 
             final ClassLoader cloader = context.getClassLoader();
@@ -796,6 +804,37 @@ public class ApplicationLifecycle implements Deployment {
     }
 
     public ExtendedDeploymentContext getContext(Logger logger, ReadableArchive source, OpsParams params) throws IOException {
+        if (source != null && !(new File(source.getURI().getSchemeSpecificPart()).isDirectory())) {
+            File expansionDir = new File(domain.getApplicationRoot(), 
+                params.name());
+            if (!expansionDir.mkdirs()) {
+                /*
+                 * On Windows especially a previous directory might have
+                 * remainded after an earlier undeployment, for example if
+                 * a JAR file in the earlier deployment had been locked.
+                 * Warn but do not fail in such a case.
+                 */
+                logger.fine(localStrings.getLocalString("deploy.cannotcreateexpansiondir", "Error while creating directory for jar expansion: {0}",expansionDir));
+            }
+            try {
+                ArchiveHandler archiveHandler = getArchiveHandler(source);
+                Long start = System.currentTimeMillis();
+                archiveHandler.expand(source, archiveFactory.createArchive(expansionDir));
+                System.out.println("Deployment expansion took " + (System.currentTimeMillis() - start));
+
+                // Close the JAR archive before losing the reference to it or else the JAR remains locked.
+                try {
+                    source.close();
+                } catch(IOException e) {
+                    logger.log(Level.SEVERE, localStrings.getLocalString("deploy.errorclosingarchive","Error while closing deployable artifact {0}", source.getURI().getSchemeSpecificPart()),e);
+                    throw e;
+                }
+                source = archiveFactory.openArchive(expansionDir);
+            } catch(IOException e) {
+                logger.log(Level.SEVERE, localStrings.getLocalString("deploy.errorexpandingjar","Error while expanding archive file"),e);
+                throw e;
+            }
+        }
         return new DeploymentContextImpl(logger, source, params, env);
     }
 }

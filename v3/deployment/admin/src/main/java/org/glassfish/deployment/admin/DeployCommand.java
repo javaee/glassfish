@@ -116,7 +116,6 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
         long operationStartTime = Calendar.getInstance().getTimeInMillis();
 
-        //final Properties parameters = context.getCommandParameters();
         final ActionReport report = context.getActionReport();
         final Logger logger = context.getLogger();
 
@@ -155,6 +154,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 report.failure(logger,localStrings.getLocalString("deploy.unknownarchivetype","Archive type of {0} was not recognized",file.getName()));
                 return;
             }
+
             // get an application name
             if (name==null) {
                 // Archive handlers know how to construct default app names.
@@ -173,40 +173,14 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             if (!source.isDirectory()) {
                 isDirectoryDeployed = false;
                 expansionDir = new File(domain.getApplicationRoot(), name);
-                if (!expansionDir.mkdirs()) {
-                    /*
-                     * On Windows especially a previous directory might have
-                     * remainded after an earlier undeployment, for example if
-                     * a JAR file in the earlier deployment had been locked.
-                     * Warn but do not fail in such a case.
-                     */
-                    logger.fine(localStrings.getLocalString("deploy.cannotcreateexpansiondir", "Error while creating directory for jar expansion: {0}",expansionDir));
-                }
-                try {
-                    Long start = System.currentTimeMillis();
-                    archiveHandler.expand(archive, archiveFactory.createArchive(expansionDir));
-                    System.out.println("Deployment expansion took " + (System.currentTimeMillis() - start));
-                    
-                    // Close the JAR archive before losing the reference to it or else the JAR remains locked.
-                    try {
-                        archive.close();
-                    } catch(IOException e) {
-                        report.failure(logger,localStrings.getLocalString("deploy.errorclosingarchive","Error while closing deployable artifact {0}", file.getAbsolutePath()),e);
-                        return;
-                    }                                                        
-                    // Proceed using the expanded directory.
-                    file = expansionDir;
-                    archive = archiveFactory.openArchive(expansionDir);
-                } catch(IOException e) {
-                    report.failure(logger,localStrings.getLocalString("deploy.errorexpandingjar","Error while expanding archive file"),e);
-                    return;
-
-                }
+                file = expansionDir;
             }
 
             // create the parent class loader
-            final ReadableArchive sourceArchive = archive;
-            final ExtendedDeploymentContext deploymentContext = deployment.getContext(logger, sourceArchive, this);
+            final ExtendedDeploymentContext deploymentContext = deployment.getContext(logger, archive, this);
+
+            // store the archive handler in the context
+            deploymentContext.setArchiveHandler(archiveHandler);
 
             // reset the properties (might be null) set by the deployers when undeploying.
             if (undeployProps!=null) {
