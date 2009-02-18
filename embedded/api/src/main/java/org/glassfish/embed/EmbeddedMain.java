@@ -197,12 +197,6 @@ public class EmbeddedMain {
         if(Boolean.parseBoolean(params.get("verbose")))
                 info.setVerbose(true);
 
-        ///////// create-only ///////////////
-
-        if(Boolean.parseBoolean(params.get("create"))) {
-            efs.setAutoDelete(true);
-            info.setCreateOnly(true);
-        }
 
         ///////// AutoDeploy Service ///////////////
 
@@ -282,7 +276,6 @@ public class EmbeddedMain {
         new Arg("adminport",        "q",           "" + ServerConstants.DEFAULT_ADMIN_HTTP_PORT,   "Admin HTTP"),
         new Arg("jmxport",          "j",           "" + ServerConstants.DEFAULT_JMX_CONNECTOR_PORT,"JMX System Connector Port"),
         new BoolArg("help",         "h",            false,                                         "Help"),
-        new BoolArg("create",       "c",            false,                                         "Create the server and then exit."),
         new BoolArg("autodeploy",   "b",            false,                                         "Turn on the AutoDeploy Service"),
 
         // note that --autodelete and --log are NOT BoolArg's

@@ -185,16 +185,7 @@ public class EmbeddedInfo {
     String                  adminVSName             = DEFAULT_ADMIN_VIRTUAL_SERVER_ID;
     boolean                 logging                 = true;
     boolean                 verbose                 = false;
-    boolean                 createOnly              = false;
     boolean                 autoDeploy              = false;
-
-    void setCreateOnly(boolean b) {
-        createOnly = b;
-    }
-
-    boolean getCreateOnly() {
-        return createOnly;
-    }
 
 
     //////////////////////  all private below //////////////////////
