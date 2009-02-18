@@ -1,21 +1,25 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<sun:page xmlns="http://www.w3.org/1999/xhtml"
+<html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:sc="http://java.sun.com/mojarra/scales"
       xmlns:sun="http://www.sun.com/webui/webuijsf"
       xmlns:jsfExt="http://java.sun.com/jsf/extensions/dynafaces">
+
+<!-- initPage must exist outside all UIComponents (for now) -->
 <ui:event type="initPage">
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
     setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
-    println("In layout.xhtml");
     getAmxRoot(amxRoot=>$attribute{amxRoot});
     setAttribute(key="anonLogin", value="#{amxRoot.realmsMgr.anonymousLogin}");
 </ui:event>
 
+<!-- Composition for trimming -->
+<ui:composition>
+<sun:page>
 <sun:html>
     <ui:event type="beforeCreate">
         checkSupport(supportCluster=>$session{supportCluster});
@@ -136,5 +140,6 @@
         </script>
     </sun:body>
 </sun:html>
-
 </sun:page>
+</ui:composition>
+</html>
