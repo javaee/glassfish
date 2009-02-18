@@ -50,6 +50,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Vector;
 
 /**
  * Allows validation of module content that might involve actually
@@ -200,20 +201,12 @@ public class ModuleContentValidator extends DefaultDOLVisitor {
                         if( ep.implementedByWebComponent() ) {
                             updateServletEndpointRuntime(ep);
                         } else {
-                            //TODO BM this is the case where this is an ejb endpoint
-                            //should not reach here
-                            String msg = localStrings.getLocalString("enterprise.deployment.unexpectedEJBEndpoint",
-                                    "Unexpected EJB endpoint{0}",new Object []{ep.getEndpointName()});
-                            throw new DeploymentException(msg);
-                            //wsUtil.validateEjbEndpoint(ep);
+                            validateEjbEndpoint(ep);
                         }
                     }
 
                  } else {
-                     String msg = localStrings.getLocalString("enterprise.deployment.unexpectedJAXRPCEndpoint",
-                             "Unexpected JAXRPC endpoint , this version is not supported",
-                             new Object[] { webService.getWebServicesDescriptor().getSpecVersion()});
-                     throw new DeploymentException(msg);
+                     jaxrpcWebService(webService);
 
                 }
             } catch(Exception e) {
@@ -336,5 +329,60 @@ public class ModuleContentValidator extends DefaultDOLVisitor {
     public boolean isWsdlContent(String uri, BundleDescriptor bundle) {
         String wsdlDir = bundle.getWsdlDir();
         return (uri != null) && uri.startsWith(wsdlDir);
-    }    
+    }
+
+
+    public void validateEjbEndpoint(WebServiceEndpoint ejbEndpoint) {
+        EjbDescriptor ejbDescriptor = ejbEndpoint.getEjbComponentImpl();
+        EjbBundleDescriptor bundle = ejbDescriptor.getEjbBundleDescriptor();
+        WebServicesDescriptor webServices = bundle.getWebServices();
+        Collection endpoints =
+                webServices.getEndpointsImplementedBy(ejbDescriptor);
+        if( endpoints.size() == 1 ) {
+            if( ejbDescriptor.hasWebServiceEndpointInterface() ) {
+                if(!ejbEndpoint.getServiceEndpointInterface().equals
+                        (ejbDescriptor.getWebServiceEndpointInterfaceName())) {
+                    String msg = "Ejb " + ejbDescriptor.getName() +
+                            " service endpoint interface does not match " +
+                            " port component " + ejbEndpoint.getEndpointName();
+                    throw new IllegalStateException(msg);
+                }
+            } else {
+                String msg = "Ejb " + ejbDescriptor.getName() +
+                        " must declare <service-endpoint> interface";
+                throw new IllegalStateException(msg);
+            }
+        } else if( endpoints.size() > 1 ) {
+            String msg = "Ejb " + ejbDescriptor.getName() +
+                    " implements " + endpoints.size() + " web service endpoints " +
+                    " but must only implement 1";
+            throw new IllegalStateException(msg);
+        }
+    }
+
+    private void jaxrpcWebService(WebService webService)
+            throws Exception {
+
+        if((webService.getWsdlFileUrl() == null) ||
+                (webService.getMappingFileUri() == null)) {
+            throw new DeploymentException(localStrings.getLocalString(
+                    "enterprise.webservice.jaxrpcFilesNotFound",
+                    "Service {0} seems to be a JAXRPC based web service but without "+
+                            "the mandatory WSDL and Mapping file. Deployment cannot proceed",
+                    new Object[] {webService.getName()}));
+        }
+        /*ModelInfo modelInfo = createModelInfo(webService);
+        String args[] = createJaxrpcCompileArgs(true);
+
+        CompileTool wscompile =
+                rpcFactory.createCompileTool(System.out, "wscompile");
+        wscompileForWebServices = wscompile;
+        WsCompile delegate = new WsCompile(wscompile, webService);
+        delegate.setModelInfo(modelInfo);
+        wscompile.setDelegate(delegate);
+
+        jaxrpc(args, delegate, webService, files);*/
+    }
+
+
 }
