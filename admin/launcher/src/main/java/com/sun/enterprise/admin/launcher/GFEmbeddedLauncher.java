@@ -120,14 +120,11 @@ class GFEmbeddedLauncher extends GFLauncher {
         List<String> cmdLine = getCommandLine();
         cmdLine.clear();
         cmdLine.add(javaExe.getPath());
+        addThreadDump(cmdLine);
         cmdLine.add("-cp");
         cmdLine.add(getClasspath());
         addDebug(cmdLine);
         cmdLine.add(getMainClass());
-        //cmdLine.add("--port");
-        //cmdLine.add("8080");
-        //cmdLine.add("--xml");
-        //cmdLine.add(domainXml.getPath() );
         cmdLine.add("--installDir");
         cmdLine.add(installDir.getPath());
         cmdLine.add("--instanceDir");
@@ -151,6 +148,19 @@ class GFEmbeddedLauncher extends GFLauncher {
 
         cmdLine.add("-Xdebug");
         cmdLine.add("-Xrunjdwp:transport=dt_socket,server=y,suspend=" + suspend + ",address=" + debugPort);
+    }
+
+    private void addThreadDump(List<String> cmdLine) {
+        File logDir = new File(domainDir, "logs");
+        File jvmLogFile = new File(logDir, "jvm.log");
+
+        // bnevins :
+        // warning these are the only order-dependent JVM options that I know about
+        // Unlock... *must* come before the other two.
+
+        cmdLine.add("-XX:+UnlockDiagnosticVMOptions");
+        cmdLine.add("-XX:+LogVMOutput");
+        cmdLine.add("-XX:LogFile="      + jvmLogFile.getPath());
     }
 
     private void setupFromEnv() throws GFLauncherException {
