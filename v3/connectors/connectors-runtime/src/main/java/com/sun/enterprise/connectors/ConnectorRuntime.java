@@ -495,25 +495,6 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
                 ConnectorAdminServicesFactory.getService(ConnectorConstants.AOR);
 
         //TODO V3 class-loader (temprorarily initializing with current thread's context cl)
-
-        // add the APIs visibility...
-        List<ModuleDefinition> defs = new ArrayList<ModuleDefinition>();
-        Module module = registry.makeModuleFor("org.glassfish.common.glassfish-api", null);
-        if (module != null) {
-            defs.add(module.getModuleDefinition());
-        }
-        module = registry.makeModuleFor("org.glassfish.common.glassfish-ee-api", null);
-        if (module != null) {
-            defs.add(module.getModuleDefinition());
-        }
-        module = registry.makeModuleFor("org.glassfish.common.common-util", null);
-        if (module != null) {
-            defs.add(module.getModuleDefinition());
-        }
-        module = registry.makeModuleFor("org.glassfish.connectors.connectors-internal-api", null);
-        if (module != null) {
-            defs.add(module.getModuleDefinition());
-        }
     }
 
     /**

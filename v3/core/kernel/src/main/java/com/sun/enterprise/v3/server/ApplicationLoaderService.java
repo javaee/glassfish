@@ -90,8 +90,15 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
     @Inject
     ServerEnvironment env;
 
+    // ApplicationLoaderService needs to be initialized after
+    // ResourceManager. By injecting ResourceManager, we guarantee the
+    // initialization order.
+    // See https://glassfish.dev.java.net/issues/show_bug.cgi?id=7179
+    @Inject(name="ResourceManager", optional = true)
+    Startup resourceManager;
+
     private static final String IS_COMPOSITE = "isComposite";
-    
+
     /**
      * Retuns the lifecyle of the service.
      * Once the applications are loaded, this service does not need to remain

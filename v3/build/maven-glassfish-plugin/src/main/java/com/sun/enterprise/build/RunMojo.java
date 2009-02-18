@@ -69,6 +69,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -246,8 +247,9 @@ public class RunMojo extends DistributionAssemblyMojo {
             HK2Factory.initialize();
             ModulesRegistry mr = createModuleRegistry(distPoms);
             mr.setParentClassLoader(this.getClass().getClassLoader());
-            Module mainModule = mr.makeModuleFor("org.glassfish.core:glassfish", null);
-            if (mainModule!=null) {
+            Collection<Module> modules = mr.getModules("org.glassfish.core:glassfish");
+            if (modules.size() == 1) {
+                Module mainModule = modules.iterator().next();
                 try {
                     Class mainClass = mainModule.getClassLoader().loadClass("com.sun.enterprise.glassfish.bootstrap.ASMainHK2");
                     Object instance = mainClass.newInstance();

@@ -66,6 +66,6 @@ public @interface PropertyDesc {
     /** Possible values, might not be a complete list and/or there could be other alternatives
        such as specific numbers, variables, etc.
      */
-    String[] values();
+    String[] values() default {};
 }
 

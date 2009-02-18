@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
   <jdbc-connection-pool datasource-classname="org.apache.derby.jdbc.EmbeddedXADataSource" 
                         res-type="javax.sql.XADataSource" 
-                        name="test" <!-- don't change this -->
-<!-- This is what test tries to do, set various invalid/valid values.
-                        max-pool-size="abc"        <!-- not an integer -->
-                        pool-resize-quantity="0"   <!-- not a valid integer -->
-                        pool-resize-quantity="0"   <!-- not a valid integer -->
-                        steady-pool-size="${SIZE}" <!-- it's a token, should be allowed -->
--->
-  >
+                        name="test"
+                        max-pool-size="abc"
+                        pool-resize-quantity="0"
+                        steady-pool-size="${SIZE}">
   </jdbc-connection-pool>

@@ -349,11 +349,12 @@ public class ApplicationLifecycle implements Deployment {
                 context.getProps().setProperty(IS_COMPOSITE, "true");
             }
             sniffers = snifferManager.getSniffers(source, context.getClassLoader());
-            if (sniffers.size()==0) {
-                report.failure(logger,localStrings.getLocalString("deploy.unknownmoduletpe","Module type not recognized"));
-                return null;
-            }
 
+        }
+
+        if (sniffers.size()==0) {
+            report.failure(logger,localStrings.getLocalString("deploy.unknownmoduletpe","Module type not recognized"));
+            return null;
         }
 
         Map<Deployer, EngineInfo> containerInfosByDeployers = new HashMap<Deployer, EngineInfo>();

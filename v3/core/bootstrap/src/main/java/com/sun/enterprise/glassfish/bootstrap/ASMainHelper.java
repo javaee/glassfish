@@ -1,9 +1,9 @@
 /*
- * 
+ *
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
+ *
  * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -11,7 +11,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -20,9 +20,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -40,6 +40,7 @@ import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.Repository;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.common_impl.AbstractRepositoryImpl;
+import com.sun.enterprise.module.common_impl.ModuleId;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -157,7 +158,7 @@ public class ASMainHelper {
                 }
             }
         }
-    }    
+    }
 
     /**
      * Figures out the asenv.conf file to load.
@@ -330,7 +331,7 @@ public class ASMainHelper {
         }
 
         protected void loadModuleDefs(
-                Map<String, ModuleDefinition> moduleDefs,
+                Map<ModuleId, ModuleDefinition> moduleDefs,
                 List<URI> libraries) throws IOException {
             if (aFile.exists()) {
                 libraries.add(aFile.toURI());
