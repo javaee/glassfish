@@ -72,17 +72,8 @@ import java.net.URLDecoder;
 // END GlassFish 898
 import java.security.Principal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.TimeZone;
-import java.util.TreeMap;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.logging.*;
 
 import java.security.AccessController;
@@ -90,23 +81,8 @@ import java.security.PrivilegedExceptionAction;
 import java.security.PrivilegedActionException;
 import javax.security.auth.Subject;
 
-import javax.servlet.AsyncContext;
-import javax.servlet.AsyncEvent;
-import javax.servlet.AsyncListener;
-import javax.servlet.DispatcherType;
-import javax.servlet.FilterChain;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletRequestAttributeEvent;
-import javax.servlet.ServletRequestAttributeListener;
-import javax.servlet.ServletResponse;
-import javax.servlet.SessionCookieConfig;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import javax.servlet.*;
+import javax.servlet.http.*;
 
 import com.sun.grizzly.util.buf.B2CConverter;
 // START CR 6309511
@@ -557,8 +533,7 @@ public class Request
     // Has setAsyncTimeout been called on this request?
     private boolean isSetAsyncTimeoutCalled;
     private boolean isOkToReinitializeAsync;
-    private Timer asyncTimer;    
-    private TimerTask asyncTimerTask;
+    private ScheduledFuture asyncTimeoutTask;
 
     /**
      * Associated context.
@@ -670,8 +645,7 @@ public class Request
         isOkToReinitializeAsync = false;
 
         asyncTimeoutMillis = -1L;
-
-        stopAsyncTimer();
+        cancelAsyncTimeoutTask();
     }
 
 
@@ -3837,7 +3811,7 @@ public class Request
 
         // TBD
 
-        startAsyncTimer();
+        asyncTimeoutTask = scheduleAsyncTimeoutTask();
 
         coyoteRequest.getResponse().suspend();
 
@@ -3985,7 +3959,8 @@ public class Request
 
 
     /*
-     * Invokes all AsyncListeners at their onComplete method
+     * Invokes any registered AsyncListener instances at their
+     * <tt>onComplete</tt> method
      */
     void asyncComplete() {
 
@@ -3993,7 +3968,7 @@ public class Request
             throw new IllegalStateException("Request not in async mode");
         }
 
-        stopAsyncTimer();
+        cancelAsyncTimeoutTask();
         isAsyncComplete = true;
         notifyAsyncListeners(AsyncEventType.COMPLETE);
         coyoteRequest.getResponse().resume();
@@ -4001,10 +3976,11 @@ public class Request
 
 
     /*
-     * Invokes all AsyncListeners at their onTimeout method
+     * Invokes any registered AsyncListener instances at their
+     * <tt>onTimeout</tt> method
      * 
-     * If none of the onTimeout handlers call complete or forward, have
-     * the container call complete
+     * If none of the <tt>onTimeout</tt> handlers call complete or forward,
+     * have the container complete the async operation.
      */
     private void asyncTimeout() {
         notifyAsyncListeners(AsyncEventType.TIMEOUT);
@@ -4060,12 +4036,13 @@ public class Request
 
 
     /*
-     * Starts the async timer.
+     * Schedules an async timeout event.
+     *
+     * @return the scheduled future for the async timeout event
      */
-    private void startAsyncTimer() {
-        asyncTimer = new Timer("AsyncTimer", true);
-        asyncTimer.schedule(
-            asyncTimerTask = new TimerTask() {
+    private ScheduledFuture scheduleAsyncTimeoutTask() {
+        return AsyncContextImpl.getAsyncTimeoutScheduler().schedule(
+            new TimerTask() {
                 @Override
                 public void run() {
                     try {
@@ -4075,16 +4052,21 @@ public class Request
                     }
                 }
             }, 
-            asyncTimeoutMillis);
+            asyncTimeoutMillis,
+            TimeUnit.MILLISECONDS);
     }
 
 
     /*
-     * Stops the async timer.
+     * Cancels any task that may have been scheduled to deliver an async
+     * timeout event.
      */
-    void stopAsyncTimer() {
-        if (asyncTimerTask != null) {
-            asyncTimerTask.cancel();
+    void cancelAsyncTimeoutTask() {
+        if (asyncTimeoutTask != null) {
+            if (!asyncTimeoutTask.isDone()) {
+                asyncTimeoutTask.cancel(false);
+            }
+            asyncTimeoutTask = null;
         }
     }
 
