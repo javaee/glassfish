@@ -320,6 +320,21 @@ public class EarDeployer implements Deployer {
                         try {
                             return metadataType.cast(bd);
                         } catch (Exception e) {
+                            // let's first try the extensions mechanisms...
+                            if (RootDeploymentDescriptor.class.isAssignableFrom(metadataType)) {
+                                for (RootDeploymentDescriptor extension  : bd.getExtensionsDescriptors((Class<RootDeploymentDescriptor>) metadataType)) {
+                                    // we assume there can only be one type of
+                                    if (extension!=null) {
+                                        try {
+                                            return metadataType.cast(extension);
+                                        } catch (Exception e1) {
+                                            // next one...
+                                        }
+                                    }
+                                }
+                                
+                            }
+
                             return context.getModuleMetaData(metadataType);
                         }
                     }

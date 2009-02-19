@@ -13,6 +13,7 @@ import org.glassfish.deployment.common.DeploymentProperties;
 import org.xml.sax.SAXParseException;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.util.ApplicationVisitor;
 import com.sun.enterprise.deployment.util.ApplicationValidator;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
@@ -125,6 +126,9 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
 
         if (application.isVirtual()) {
             dc.addModuleMetaData(application.getStandaloneBundleDescriptor());
+            for (RootDeploymentDescriptor extension : application.getStandaloneBundleDescriptor().getExtensionsDescriptors()) {
+                dc.addModuleMetaData(extension);
+            }
         }
 
         return application;
