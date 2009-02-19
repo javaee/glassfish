@@ -44,7 +44,7 @@
             setSessionAttribute(key="restartRequired" value="$boolean{false}");
         }
     </ui:event>
-    <sun:head title="#{guiTitle}">
+    <sun:head title="#{guiTitle}" debug="true" parseOnLoad="false">
         <link rel="stylesheet" type="text/css" href="#{facesContext.externalContext.request.contextPath}/style.css" />
         <sc:links/>
         <sun:script url="/resource/js/adminjsf.js" />
@@ -53,7 +53,7 @@
 	<ui:insert name="guiExtraHead" />
     </sun:head>
 
-    <sun:body>
+    <sun:body onLoad="#{guiOnLoad}#{guiTemplateOnLoad}">
         <div class="header_main">
             <sun:form id="headerForm">
                 <!-- Customizing the masthead -->
