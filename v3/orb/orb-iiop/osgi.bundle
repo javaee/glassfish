@@ -1,0 +1,5 @@
+-exportcontents: \
+    org.glassfish.enterprise.iiop.util, \
+    org.glassfish.enterprise.iiop.impl
+    
+

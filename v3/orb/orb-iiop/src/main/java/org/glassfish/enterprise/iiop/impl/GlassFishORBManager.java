@@ -36,6 +36,7 @@
 package org.glassfish.enterprise.iiop.impl;
 
 import com.sun.corba.ee.spi.oa.rfm.ReferenceFactoryManager;
+import com.sun.corba.ee.spi.orb.ORBFactory;
 import com.sun.corba.ee.spi.orbutil.ORBConstants;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.logging.LogDomains;
@@ -191,7 +192,7 @@ public final class GlassFishORBManager {
     public static final String S1AS_ORB_ID = "S1AS-ORB";
 
     // the ORB instance shared throughout the app server
-    private static org.omg.CORBA.ORB orb = null;
+    private static ORB orb = null;
 
     // The ReferenceFactoryManager from the orb.
     private static ReferenceFactoryManager rfm = null;
@@ -530,7 +531,10 @@ public final class GlassFishORBManager {
             final ClassLoader prevCL = Thread.currentThread().getContextClassLoader();
             try {
                 Thread.currentThread().setContextClassLoader(GlassFishORBManager.class.getClassLoader());
-                orb = ORB.init(args, orbInitProperties);
+                orb = ORBFactory.create(args, orbInitProperties);
+                System.out.println("***********************");
+                System.out.println("*** ORB: " + orb + " ***");
+                System.out.println("***********************");
             } finally {
                 Thread.currentThread().setContextClassLoader(prevCL);
             }

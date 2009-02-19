@@ -9,7 +9,7 @@
 
     <artifactId>orb-connector</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>GlassFish ORB conector implementation</name>
+    <name>GlassFish ORB connector implementation</name>
 
     <developers>
         <developer>

@@ -35,20 +35,15 @@
  */
 package org.glassfish.enterprise.iiop.util;
 
-import com.sun.corba.ee.impl.orbutil.threadpool.ThreadPoolImpl;
 import com.sun.corba.ee.spi.orbutil.ORBConstants;
-import com.sun.corba.ee.spi.orbutil.threadpool.NoSuchThreadPoolException;
-import com.sun.corba.ee.spi.orbutil.threadpool.ThreadPool;
-import com.sun.corba.ee.spi.orbutil.threadpool.ThreadPoolChooser;
-import com.sun.corba.ee.spi.orbutil.threadpool.ThreadPoolManager;
+import com.sun.corba.ee.spi.orbutil.threadpool.*;
 import com.sun.logging.LogDomains;
+import org.glassfish.enterprise.iiop.impl.IIOPUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.glassfish.enterprise.iiop.impl.IIOPUtils;
 
 public class S1ASThreadPoolManager implements ThreadPoolManager {
 
@@ -179,8 +174,9 @@ public class S1ASThreadPoolManager implements ThreadPoolManager {
         }
 
         // Mutiplied the idleTimeoutInSeconds by 1000 to convert to milliseconds
+        ThreadPoolFactory threadPoolFactory = new ThreadPoolFactory();
         ThreadPool threadpool =
-                new ThreadPoolImpl(minThreads, maxThreads,
+                threadPoolFactory.create(minThreads, maxThreads,
                         idleTimeoutInSeconds * 1000, threadpoolId,
                         iiopUtils.getCommonClassLoader());
 
