@@ -49,6 +49,8 @@
         <sc:links/>
         <sun:script url="/resource/js/adminjsf.js" />
         <jsfExt:scripts/>
+	<ui:insert name="guiTemplateExtraHead" />
+	<ui:insert name="guiExtraHead" />
     </sun:head>
 
     <sun:body>
@@ -67,8 +69,10 @@
         </div>
         <div id="content" style="padding-left: 5px; padding-right: 5px;">
             <h:messages />
-            <ui:insert name="content">
-                Content Missing!
+            <ui:insert name="guiTemplateContent">
+		<ui:insert name="content">
+		    Content Missing!
+		</ui:insert>
             </ui:insert>
         </div>
         <sc:panel id="addTagPanel" visible="false" modal="true" closable="true" fixedCenter="true">
