@@ -1043,7 +1043,7 @@ final class ApplicationDispatcher
             wrapper = new ApplicationHttpRequest(hcurrent, context,
                 crossContext, state.dispatcherType);
         } else {
-            wrapper = new ApplicationRequest(current);
+            wrapper = new ApplicationRequest(current, state.dispatcherType);
         }
         if (previous == null)
             state.outerRequest = wrapper;

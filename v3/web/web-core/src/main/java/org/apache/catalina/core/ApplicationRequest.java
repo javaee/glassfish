@@ -121,11 +121,12 @@ public class ApplicationRequest extends ServletRequestWrapper {
      * Construct a new wrapped request around the specified servlet request.
      *
      * @param request The servlet request being wrapped
-     * @param isFowardDispatch true if this wrapper is being created for a 
-     * RD.forward, false otherwise
+     * @param dispatcherType the dispatcher type
      */
-    public ApplicationRequest(ServletRequest request) {
+    public ApplicationRequest(ServletRequest request,
+                              DispatcherType dispatcherType) {
         super(request);
+        this.dispatcherType = dispatcherType;
         setRequest(request);
     }
 
@@ -139,6 +140,10 @@ public class ApplicationRequest extends ServletRequestWrapper {
      */
     protected HashMap attributes = new HashMap();
 
+    /**
+     * The dispatcher type.
+     */
+    protected DispatcherType dispatcherType;
 
     /**
      * The string manager for this package.
@@ -239,12 +244,7 @@ public class ApplicationRequest extends ServletRequestWrapper {
 
 
     public DispatcherType getDispatcherType() {
-        DispatcherType dispatcher = (DispatcherType) getAttribute(
-            Globals.DISPATCHER_TYPE_ATTR);
-        if (dispatcher == null) {
-            dispatcher = DispatcherType.REQUEST;
-        }
-        return dispatcher;
+        return dispatcherType;
     }
 
 
