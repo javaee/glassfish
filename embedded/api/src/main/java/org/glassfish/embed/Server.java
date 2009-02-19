@@ -257,11 +257,30 @@ public class Server {
     }
 
     /**
-     * Sets the overall logging level for the Server.
-     * @param level
+     * Sets the log level on the given logger.
+     *
+     * If no logger name is provided, where loggerName is NULL, then the new log
+     * level will be set on the Embedded Logger ("org.glassfish.embed") and the
+     * GlassFish v3 Root Logger ("javax.enterprise").
+     *
+     * @param loggerName logger to set level on.  NULL is allowed.
+     * @param level the new log {@link Level}
+     * @see Table 9–1 Logger Namespaces for Enterprise Server Modules in
+     * <a href="http://docs.sun.com/app/docs/doc/820-4495/abluj?a=view">Chapter 9 Administering Logging</a>
+     * of the Sun GlassFish Enterprise Server v3 Prelude Administration Guide
      */
-    public static void setLogLevel(Level level) {
-        LoggerHelper.setLevel(level);
+    public static void setLogLevel(String loggerName, Level level) {
+        LoggerHelper.setLevel(loggerName, level);
+    }
+
+    /**
+     * Sets the log level on the Embedded Logger ("org.glassfish.embed") and the
+     * GlassFish v3 Root Logger ("javax.enterprise").
+     *
+     * @param newLevel the new log {@link Level}
+     */
+    public static void setLevel(Level newLevel) {
+       setLogLevel(null, newLevel);
     }
 
 
