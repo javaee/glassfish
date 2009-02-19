@@ -70,7 +70,7 @@ public class V2DottedNameSupport {
 
     protected void getAllSubDottedNames(String prefix, Dom parent,Map<Dom, String> result) {
 
-        Set<String> elementNames = parent.model.getLeafElementNames();
+        Set<String> elementNames = parent.model.getElementNames();
 
         for (String childName : elementNames) {
 
