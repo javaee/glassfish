@@ -43,11 +43,13 @@ import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
+import org.jvnet.hk2.config.DuckTyped;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
@@ -318,4 +320,36 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
     @PropertiesDesc(props={})
     @Element
     List<Property> getProperty();
+
+     /**
+     * Returns the javac options for deployment. The options can be anything
+     * except "-d",  "-classpath" and "-cp".
+     * It tokenizes the options by blank space between them. It does
+     * not to detect options like "-g -g -g" since javac handles it.
+     *
+     * @return javac options as of a list of java.lang.String
+     */
+    @DuckTyped
+    public List<String> getJavacOptionsAsList();
+
+    public class Duck {
+        public static List<String> getJavacOptionsAsList(JavaConfig me) {
+
+            List<String> javacOptions = new ArrayList<String>();
+
+            String options = me.getJavacOptions();
+
+            StringTokenizer st = new StringTokenizer(options, " ");
+            while (st.hasMoreTokens()) {
+                String op = (String) st.nextToken();
+                if ( !(op.startsWith("-d")
+                   || op.startsWith("-cp") || op.startsWith("-classpath")) ) {
+                    javacOptions.add(op);
+                }
+            }
+
+            return javacOptions;
+        }
+    }
+
 }
