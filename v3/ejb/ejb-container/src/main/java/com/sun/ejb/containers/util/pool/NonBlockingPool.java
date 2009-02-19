@@ -78,6 +78,10 @@ public class NonBlockingPool
     protected boolean	  addedIdleBeanWork = false;
     protected boolean	  inResizing = false;
     private boolean	  maintainSteadySize = false;
+
+    // Set to true after close().  Prevents race condition
+    // of async resize task kicking in after close().
+    private boolean poolClosed = false;
     
     private int		  resizeTaskCount;
     private int		  timerTaskCount;
@@ -353,13 +357,14 @@ public class NonBlockingPool
             list.clear(); 
 
             Utility.setContextClassLoader(origLoader);
-        }
 
-        // helps garbage collection
-        this.list                  = null;
-        this.factory               = null;
-        this.poolTimerTask         = null;
-        this.containerClassLoader  = null;
+            poolClosed = true;
+
+            this.list                  = null;
+            this.factory               = null;
+            this.poolTimerTask         = null;
+            this.containerClassLoader  = null;
+        }
         
     }
 
@@ -387,6 +392,10 @@ public class NonBlockingPool
     }
     
     protected void doResize() {
+
+        if( poolClosed ) {
+            return;
+        }
         
         //We need to set the context class loader for this (deamon) thread!!
         final Thread currentThread = Thread.currentThread();
@@ -421,7 +430,7 @@ public class NonBlockingPool
             ArrayList removeList = new ArrayList();
             int populateCount = 0;
             synchronized (list) {
-                if (inResizing == true) {
+                if ((inResizing == true) || poolClosed) {
                     return;
                 }
 

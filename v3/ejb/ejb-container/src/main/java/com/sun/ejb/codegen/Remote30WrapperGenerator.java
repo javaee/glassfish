@@ -38,23 +38,15 @@ package com.sun.ejb.codegen;
 import java.lang.reflect.Method;
 import java.io.*;
 import java.util.*;
-import java.util.logging.*;
-import com.sun.logging.*;
+
 
 import static java.lang.reflect.Modifier.*;
-/*TODO
+
 import static com.sun.corba.ee.spi.orbutil.codegen.Wrapper.*;
 import com.sun.corba.ee.spi.orbutil.codegen.Type;
 import com.sun.corba.ee.spi.orbutil.codegen.Expression;
-import com.sun.corba.ee.impl.orbutil.codegen.ClassGenerator;
-*/
 
-import javax.ejb.EnterpriseBean;
-import javax.ejb.SessionBean;
-import javax.ejb.EntityBean;
 import com.sun.ejb.EJBUtils;
-import com.sun.ejb.containers.InternalEJBContainerException;
-import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 /**
@@ -94,20 +86,20 @@ public class Remote30WrapperGenerator extends Generator
         (ClassLoader cl, String businessIntfName, String remoteIntfName)
 	throws GeneratorException 
     {
-	super();
+	    super();
 
         remoteInterfaceName = remoteIntfName;
 
         loader = cl;
 
-	try {
-	    this.businessInterface = cl.loadClass(businessIntfName);
-	} catch (ClassNotFoundException ex) {
-	    throw new InvalidBean(
-		localStrings.getLocalString(
-		"generator.remote_interface_not_found",
-		"Business interface " + businessInterface + " not found "));
-	}
+	    try {
+	        this.businessInterface = cl.loadClass(businessIntfName);
+	    } catch (ClassNotFoundException ex) {
+	        throw new InvalidBean(
+		    localStrings.getLocalString(
+		    "generator.remote_interface_not_found",
+		    "Business interface " + businessInterface + " not found "));
+	    }
 
         if( javax.ejb.EJBObject.class.isAssignableFrom(businessInterface) ) {
             throw new GeneratorException("Invalid Remote Business Interface " +
@@ -121,15 +113,15 @@ public class Remote30WrapperGenerator extends Generator
         remoteClientPackageName = getPackageName(remoteClientClassName);
         remoteClientSimpleName = getBaseName(remoteClientClassName);
 
-	bizMethods = removeDups(businessInterface.getMethods());
+	    bizMethods = removeDups(businessInterface.getMethods());
 
         // NOTE : no need to remove ejb object methods because EJBObject
         // is only visible through the RemoteHome view.
 
     }
 
-    /*TODO
-    public ClassGenerator evaluate() {
+
+    public void evaluate() {
 
         _clear();
 
@@ -162,24 +154,25 @@ public class Remote30WrapperGenerator extends Generator
 
         _end();
 
-        
-        System.out.println("Generating byte code for remote30rwappergen");
+
         try {
             java.util.Properties p = new java.util.Properties();
             p.put("Wrapper.DUMP_AFTER_SETUP_VISITOR", "true");
             p.put("Wrapper.TRACE_BYTE_CODE_GENERATION", "true");
             p.put("Wrapper.USE_ASM_VERIFIER", "true");
-            _byteCode(loader, null, p);
+            _byteCode(loader, p);
         } catch(Exception e) {
             System.out.println("Got exception when generating byte code");
             e.printStackTrace();
         }
        
 
-        return _classGenerator() ;
+        _classGenerator() ;
+
+        return;
 
     }
-	*/
+
             
     /**
      * Generate the code to the specified output stream.
@@ -223,7 +216,7 @@ public class Remote30WrapperGenerator extends Generator
 	p.close();
     }
 
-    /*TODO
+
     private void printMethodImpl(Method m)
     {
 
@@ -346,7 +339,7 @@ public class Remote30WrapperGenerator extends Generator
 
         _end();
     }
-	*/
+
     
     /**
      * Generate the code for a single method.

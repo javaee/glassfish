@@ -49,12 +49,11 @@ import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import static java.lang.reflect.Modifier.*;
-/*TODO
+
 import static com.sun.corba.ee.spi.orbutil.codegen.Wrapper.*;
 import com.sun.corba.ee.spi.orbutil.codegen.Type;
-import com.sun.corba.ee.spi.orbutil.codegen.Expression;
-import com.sun.corba.ee.impl.orbutil.codegen.ClassGenerator;
-*/
+
+
 
 /**
  * This class is used to generate a Serializable sub-class
@@ -90,29 +89,28 @@ public class SerializableBeanGenerator extends Generator
                                      String beanClassName) 
 	throws GeneratorException 
     {
-	super();
+	    super();
 
         loader = cl;
-	try {
-	    beanClass = cl.loadClass(beanClassName);
-	} catch (ClassNotFoundException ex) {
-	    throw new InvalidBean(
-		localStrings.getLocalString(
-		"generator.remote_interface_not_found",
-		"Remote interface not found "));
-	}
+	    try {
+	        beanClass = cl.loadClass(beanClassName);
+	    } catch (ClassNotFoundException ex) {
+	        throw new InvalidBean(
+		    localStrings.getLocalString(
+		    "generator.remote_interface_not_found",
+		    "Remote interface not found "));
+	    }
 
         generatedSerializableClassName = 
             EJBUtils.getGeneratedSerializableClassName(beanClassName);
 
     }
 
-    /*TODO
-    public ClassGenerator evaluate() {
+    public void evaluate() {
 
         _clear();
 
-	String packageName = getPackageName(generatedSerializableClassName);
+	    String packageName = getPackageName(generatedSerializableClassName);
         String simpleName = getBaseName(generatedSerializableClassName);
         
         if( packageName != null ) {
@@ -155,9 +153,11 @@ public class SerializableBeanGenerator extends Generator
      
         _end();
 
-        return _classGenerator() ;
+         _classGenerator();
+
+        return;
     }
-	*/
+
     
     /**
      * Generate the code to the specified output stream.
@@ -170,18 +170,18 @@ public class SerializableBeanGenerator extends Generator
     {
     	IndentingWriter p = new IndentingWriter(new OutputStreamWriter(out));
 
-	String packageName = getPackageName(generatedSerializableClassName);
+	    String packageName = getPackageName(generatedSerializableClassName);
         String simpleName = getBaseName(generatedSerializableClassName);
 
         p.pln("");
 
-	if (packageName != null) {
-	    p.pln("package " + packageName + ";");
+	    if (packageName != null) {
+	        p.pln("package " + packageName + ";");
         }
 
         p.pln("");
 
-	p.plnI("public class " + simpleName + " extends " + beanClass.getName()
+	    p.plnI("public class " + simpleName + " extends " + beanClass.getName()
                + " implements java.io.Serializable { ");
 
         p.pln("");
@@ -196,8 +196,8 @@ public class SerializableBeanGenerator extends Generator
               beanClass.getName() + ".class, this, ois);");
         p.pln("}");
 
-	p.pOln("}");
-	p.close();
+	    p.pOln("}");
+	    p.close();
     }
 
 

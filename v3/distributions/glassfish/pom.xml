@@ -130,6 +130,11 @@
            <artifactId>webservices.security</artifactId>
            <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.sun.corba</groupId>
+            <artifactId>glassfish-corba-codegen</artifactId>
+            <version>${glassfish-corba.version}</version>
+        </dependency>
 
     </dependencies>
 </project>

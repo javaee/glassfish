@@ -466,12 +466,17 @@ public abstract class BaseContainer
 
                         if( isStatefulSession ) {
 
-                            /* TODO uncomment to enable support for serialization
-                            if( !Serializable.class.isAssignableFrom(ejbClass) ) {
-                                ejbClass = EJBUtils.loadGeneratedSerializableClass
-                                    (loader, ejbClass.getName());
-                            }
+
+                            /** TODO need to do this as part of enabling support for
+                             *  passivation / activation.  Need to rewrite using ASM
+                             *  to avoid corba codegen dependency in Web Profile
+                             *
+                             * if( !Serializable.class.isAssignableFrom(ejbClass) ) {
+                             *   ejbClass = EJBUtils.loadGeneratedSerializableClass
+                             *       (loader, ejbClass.getName());
+                             * }
                             */
+                            
 
                            
                         }

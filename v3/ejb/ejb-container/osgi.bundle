@@ -16,4 +16,6 @@ Import-Package: \
                         javax.xml.soap;resolution:=optional, \
                         javax.xml.ws;resolution:=optional, \
                         javax.xml.ws.handler;resolution:=optional, \
+                        com.sun.corba.ee.spi.orbutil.codegen;resolution:=optional, \
+                        !com.sun.corba.ee.impl.orbutil.codegen, \
                         *

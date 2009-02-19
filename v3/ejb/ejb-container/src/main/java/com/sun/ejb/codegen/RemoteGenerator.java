@@ -38,22 +38,13 @@ package com.sun.ejb.codegen;
 import java.lang.reflect.Method;
 import java.io.*;
 import java.util.*;
-import java.util.logging.*;
-import com.sun.logging.*;
 import com.sun.ejb.EJBUtils;
 
 import static java.lang.reflect.Modifier.*;
-/*TODO
+
 import static com.sun.corba.ee.spi.orbutil.codegen.Wrapper.*;
 import com.sun.corba.ee.spi.orbutil.codegen.Type;
-import com.sun.corba.ee.spi.orbutil.codegen.Expression;
-import com.sun.corba.ee.impl.orbutil.codegen.ClassGenerator;
-*/
 
-import javax.ejb.EnterpriseBean;
-import javax.ejb.SessionBean;
-import javax.ejb.EntityBean;
-import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 /**
@@ -111,22 +102,22 @@ public class RemoteGenerator extends Generator
         remoteInterfaceName = EJBUtils.getGeneratedRemoteIntfName
             (businessInterface.getName());
 
-	remoteInterfacePackageName = getPackageName(remoteInterfaceName);
+	    remoteInterfacePackageName = getPackageName(remoteInterfaceName);
         remoteInterfaceSimpleName = getBaseName(remoteInterfaceName);
 	
-	bizMethods = removeDups(businessInterface.getMethods());
+	    bizMethods = removeDups(businessInterface.getMethods());
         
         // NOTE : no need to remove ejb object methods because EJBObject
         // is only visible through the RemoteHome view.
     }
 
-    /*TODO
-    public ClassGenerator evaluate() {
+
+    public void evaluate() {
 
         _clear();
 
-	if (remoteInterfacePackageName != null) {
-	    _package(remoteInterfacePackageName);
+	    if (remoteInterfacePackageName != null) {
+	        _package(remoteInterfacePackageName);
         } else {
             // no-arg _package() call is required for default package
             _package();
@@ -137,15 +128,16 @@ public class RemoteGenerator extends Generator
                    _t("com.sun.ejb.containers.RemoteBusinessObject"));
 
         for(int i = 0; i < bizMethods.length; i++) {
-	    printMethod(bizMethods[i]);
-	}
+	        printMethod(bizMethods[i]);
+	    }
 
         _end();
 
-        return _classGenerator() ;
+        _classGenerator() ;
+
+        return;
 
     }
-	*/
 
 
     /**
@@ -157,37 +149,37 @@ public class RemoteGenerator extends Generator
     public void generate(OutputStream out)
 	throws GeneratorException, IOException 
     {
-	IndentingWriter p = new IndentingWriter(new OutputStreamWriter(out));
+	    IndentingWriter p = new IndentingWriter(new OutputStreamWriter(out));
 
         p.pln("");
 
-	if (remoteInterfacePackageName != null) {
-	    p.pln("package " + remoteInterfacePackageName + ";");
+	    if (remoteInterfacePackageName != null) {
+	        p.pln("package " + remoteInterfacePackageName + ";");
         }
 
         p.pln("");
 
-	p.plnI("public interface " + remoteInterfaceSimpleName + " extends " +
+	    p.plnI("public interface " + remoteInterfaceSimpleName + " extends " +
             "java.rmi.Remote , com.sun.ejb.containers.RemoteBusinessObject {");
 
         p.pln("");
 
-	// each remote method
-	for(int i = 0; i < bizMethods.length; i++) {
-	    printMethod(p, bizMethods[i]);
-	}
+	    // each remote method
+	    for(int i = 0; i < bizMethods.length; i++) {
+	        printMethod(p, bizMethods[i]);
+	    }
 
-	p.pOln("}");
-	p.close();
+	    p.pOln("}");
+	    p.close();
     }
 
-    /*TODO
+
     private void printMethod(Method m)
     {
 
         boolean throwsRemoteException = false;
         List<Type> exceptionList = new LinkedList<Type>();
-	for(Class exception : m.getExceptionTypes()) {
+	    for(Class exception : m.getExceptionTypes()) {
             exceptionList.add(Type.type(exception));
             if( exception.getName().equals("java.rmi.RemoteException") ) {
                 throwsRemoteException = true;
@@ -209,7 +201,7 @@ public class RemoteGenerator extends Generator
 
         _end();
     }
-	*/
+
 
     /**
      * Generate the code for a single method.

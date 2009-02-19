@@ -147,12 +147,11 @@
             <artifactId>asm-all-repackaged</artifactId>
             <version>${project.version}</version>
         </dependency>
-<!--
         <dependency>
             <groupId>com.sun.corba</groupId>
             <artifactId>glassfish-corba-codegen</artifactId>
             <version>${glassfish-corba.version}</version>
+	    <optional>true</optional> 
         </dependency>
--->
     </dependencies>
 </project>

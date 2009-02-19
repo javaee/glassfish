@@ -35,21 +35,16 @@
  */
 package com.sun.ejb.codegen;
 
-import java.lang.reflect.Method;
+
 import java.io.*;
-import java.util.*;
-import java.util.logging.*;
-import com.sun.logging.*;
 import com.sun.ejb.EJBUtils;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import static java.lang.reflect.Modifier.*;
-/*TODO
+
 import static com.sun.corba.ee.spi.orbutil.codegen.Wrapper.*;
-import com.sun.corba.ee.spi.orbutil.codegen.Type;
-import com.sun.corba.ee.impl.orbutil.codegen.ClassGenerator;
-*/
+
 
 /**
  * This class is used to generate a sub-interface of the
@@ -80,16 +75,16 @@ public class GenericHomeGenerator extends Generator
     }
 
     public GenericHomeGenerator(ClassLoader cl)
-	throws GeneratorException 
+	    throws GeneratorException
     {
-	super();
+	    super();
 
         genericEJBHomeClassName = EJBUtils.getGenericEJBHomeClassName();
         loader = cl;
     }
 
-    /*TODO
-    public ClassGenerator evaluate() {
+
+    public void evaluate() {
 
         _clear();
 
@@ -110,12 +105,13 @@ public class GenericHomeGenerator extends Generator
 
         _end();
 
-        return _classGenerator() ;
+        _classGenerator() ;
+
+        return;
     }
-	*/
     
     public void generate(OutputStream out)
-	throws GeneratorException, IOException 
+	    throws GeneratorException, IOException
     {
         throw new IllegalStateException("not supported");
     }

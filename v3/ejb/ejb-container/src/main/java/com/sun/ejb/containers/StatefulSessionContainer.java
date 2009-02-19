@@ -1540,6 +1540,11 @@ public final class StatefulSessionContainer
                                 t);
                     }
 
+                    // Explicitly null out transaction association in bean's context.
+                    // Otherwise, forceDestroyBean() will mark that tx for rollback,
+                    // which could incorrectly rollback a client-propagated transaction.
+                    sc.setTransaction(null);
+
                     forceDestroyBean(sc);
                 }
             }
