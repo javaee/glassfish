@@ -54,6 +54,7 @@ public class EarClassLoader extends URLClassLoader {
     private final Method findClass;
     private final Method findResource;
     private final Method findResources;
+    private final Map<String, Class> classes = new HashMap<String, Class>();
 
     public EarClassLoader(URL[] urls, ClassLoader classLoader) {
         super(urls, classLoader);
@@ -88,10 +89,14 @@ public class EarClassLoader extends URLClassLoader {
 
     @Override
     protected Class<?> findClass(String s) throws ClassNotFoundException {
+        if (classes.containsKey(s)) {
+            return classes.get(s);
+        }
         for (ClassLoaderHolder clh : delegates) {
             try {
                 Class<?> clazz = (Class<?>) findClass.invoke(clh.loader, s);
                 if (clazz!=null) {
+                    classes.put(s, clazz);
                     return clazz;
                 }
             } catch(IllegalAccessException e) {
