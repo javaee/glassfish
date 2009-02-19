@@ -12,9 +12,11 @@ import java.util.*;
 import java.util.logging.*;
 import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.container.Sniffer;
+import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.DeploymentContextImpl;
+import org.glassfish.embed.EmbeddedException;
 import org.glassfish.embed.impl.SilentActionReport;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.server.ServerEnvironmentImpl;
@@ -110,7 +112,7 @@ public class EmbeddedDeployer {
             SilentActionReport r = new SilentActionReport();
             ApplicationInfo appInfo = appLife.deploy(activeSniffers, deploymentContext, r);
             r.check();
-
+            addApp(new Application(appInfo, deploymentContext));
             //return new Application(this, appInfo, deploymentContext);
         }
         catch (EmbeddedException ex) {
@@ -139,6 +141,39 @@ public class EmbeddedDeployer {
             params.put(ParameterNames.CONTEXT_ROOT, contextRoot);
         }
         deploy(war, params);
+    }
+     /*
+      * undeploy the app that was deployed by this deployer with the given name.
+      * @param name the name of the app
+      * @throws org.glassfish.embed.EmbeddedException if any errors or the app does not exist
+     */
+
+    public void undeploy(String name) throws EmbeddedException {
+        try {
+            for(Application anApp : appList) {
+                if(name.equals(anApp.getName())) {
+                    anApp.undeploy();
+                    appList.remove(anApp);
+                    return;
+                }
+            }
+        }
+        catch(EmbeddedException ee) {
+            throw ee;
+        }
+
+        throw new EmbeddedException("undeploy_error", name);
+    }
+
+    /**
+     * undeploy all apps that were deployed by this deployer
+     * @throws org.glassfish.embed.EmbeddedException
+     */
+    public void undeploy() throws EmbeddedException {
+        for(Application anApp : appList) {
+            anApp.undeploy();
+        }
+        appList.clear();
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -171,6 +206,10 @@ public class EmbeddedDeployer {
         
     }
 
+    private void addApp(Application anApp) {
+        appList.add(anApp);
+    }
+
     private Server                  server;
     private ArchiveFactory          archiveFactory;
     private ApplicationLifecycle    appLife;
@@ -178,4 +217,31 @@ public class EmbeddedDeployer {
     private SnifferManager          snifferManager;
     private ServerEnvironmentImpl   serverEnvironment;
     private static final String     CLASS_NAME = "EmbeddedDeployer.";
+    private List<Application>       appList = new LinkedList<Application>();
+
+    private class Application{
+        Application(ApplicationInfo app, DeploymentContext deploymentContext) {
+            //this.owner = owner;
+            this.app = app;
+            this.deploymentContext = deploymentContext;
+        }
+
+        void undeploy() throws EmbeddedException{
+            SilentActionReport r = new SilentActionReport();
+            server.getAppLife().undeploy(app.getName(),deploymentContext, r);
+            r.check();
+        }
+
+        String getName() {
+            return app.getName();
+        }
+        //private Server owner;
+        private final ApplicationInfo app;
+        private final DeploymentContext deploymentContext;
+    }
 }
+/***
+ *
+ *
+
+ */
