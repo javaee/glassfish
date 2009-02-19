@@ -35,10 +35,7 @@
 -->
 <!-- updateCenter/update.jsf -->
 
-//<sun:page id="page1">
-<!composition template="/layout.xhtml">
-<!define name="content">
-    <event>
+<sun:page id="page1">
     <!beforeCreate
         setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
         setResourceBundle(key="i18nUC" bundle="org.glassfish.updatecenter.admingui.Strings");
@@ -62,7 +59,6 @@
         getAuthority(result=>$attribute{authority});
         getUcList(state="update", result=>$attribute{listOfRows} );
     />
-    </event>
 #include "updateCenterContent.jsf"
-</define>
-</composition>
+</sun:page>
+

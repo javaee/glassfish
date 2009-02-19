@@ -37,13 +37,19 @@
 
 
 #include "/shared/restart.inc"    
+    <sun:html id="html2">
+        <sun:head id="propertyhead" title="$attribute{pageTitle}" >
+            <sun:script url="/resource/js/adminjsf.js" />
+        </sun:head>
+
+        <sun:body id="body3" onLoad="reloadHeader('#{pageSession.doReloadHeader}'); synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}');">
             <sun:form id="propertyForm">
 <f:verbatim>
     <script type="text/javascript">
         admingui.nav.selectTreeNodeById('form:tree:updateCenter');
     </script>
 </f:verbatim>
- #include "/shared/treeBreadcrumbs.inc"
+#include "/shared/treeBreadcrumbs.inc"
 #include "/updateCenter/ucTabs.inc"
 #include "/shared/alertMsg.inc"
         <!-- Page Title -->
@@ -68,6 +74,7 @@
          "<br /><br />
 	<sun:hidden id="helpKey" value="$attribute{helpKey}" />
             </sun:form>
+        </sun:body>
 #include "/shared/changeButtonsJS.inc"
 
 <f:verbatim>
@@ -79,3 +86,6 @@
         }
     </script>
 </f:verbatim>
+            
+
+    </sun:html>

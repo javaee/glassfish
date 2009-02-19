@@ -34,21 +34,30 @@
  holder.
 -->
 <!-- webApp/webDDEdit.jsf -->
-<!namespace sc="http://java.sun.com/mojarra/scales" />
-<!composition template="/layout.xhtml">
-<!define name="title">$resource{i18n.webApp.editDDPageTitle}</define>
-<!define name="content">
-    <event>
-        <!beforeCreate
-            setPageSessionAttribute(key="generalPage" value="webApplicationsEdit.jsf");
-            setPageSessionAttribute(key="editDDPage" value="webDDEdit.jsf");
-            getRequestValue(key="appName" value=>$page{name});
-            getDescriptors(appName="$pageSession{name}"  descriptors=>$attribute{descriptors});
-        />
-    </event>
+<sun:page id="page1">
+    <!beforeCreate
+        setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
+        setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+        setPageSessionAttribute(key="generalPage" value="webApplicationsEdit.jsf");
+        setPageSessionAttribute(key="editDDPage" value="webDDEdit.jsf");
+        getRequestValue(key="appName" value=>$page{name});
+        getDescriptors(appName="$pageSession{name}"  descriptors=>$attribute{descriptors});
+        #println("********");
+        #println("$attribute{descriptors}");
+        #println("********");
+        <!--
+        getWebDDInfo(appName="$pageSession{name}", appType="web", serverName="server", 
+                    envList=>$attribute{listOfCtxRows}, ctxParamList=>$attribute{listOfParamRows});
+        -->
+    />
    #include "/shared/restart.inc"    
+    <sun:html id="html2">
+        <sun:head id="propertyhead" title="$resource{i18n.webApp.editDDPageTitle}">
+            <sun:script url="/resource/js/restart.js" />
+        </sun:head>
+        <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
- #include "/shared/treeBreadcrumbs.inc"
+#include "/shared/treeBreadcrumbs.inc"
 #include "/web/webApp/appGeneralTabs.inc"         
 #include "/shared/alertMsg.inc"                
             <!-- Page Title -->
@@ -94,7 +103,6 @@
                 <sun:property id="DdProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.webApp.descriptors}" >
                     <foreach key="dd" list="$attribute{descriptors}">
                         "<a href="#" style="text-decoration: none" onClick="var win=window.open('viewDD.jsf?appName=$pageSession{name}&descriptorName=#{dd.descriptorPath}','ViewerWindow','width='+.75*screen.width+',height='+.75*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=no,status=yes,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');win.focus(); return false;">#{dd.descriptor}</a>
-                        " | <a href="#" style="text-decoration: none" onclick="showDD('$pageSession{name}', '#{dd.descriptorPath}');">#{dd.descriptor}</a>
                         "<br />
                     </foreach>
                 </sun:property>     
@@ -105,54 +113,6 @@
     #include "/web/webApp/editWebDDTable.inc"
 	<sun:hidden id="helpKey" value="$resource{help.webApp.editDD}" />
             </sun:form>
-            "<div id="panels"/>
-            <sc:panel id="webDDPanel" header="View Web Deployment Descriptor" fixedCenter="true" visible="false" modal="true" width="800px" height="600px" closable="true">
-                "<div id="ddContent" style="height: 550px; overflow: auto;">
-                    "Default content
-                "</div>
-            </sc:panel>
-    <f:verbatim>
-        <script type="text/javascript">
-            function showDD(appName, descriptorPath) {
-                var callback = {
-                    success : function (o) {
-                        scalesPanels['webDDPanel'].setHeader('View Web Deployment Descriptor: ' + appName + descriptorPath);
-                        YAHOO.util.Dom.get('ddContent').innerHTML = o.responseText;
-                        showPanel('webDDPanel');
-                    },
-                    failure : function (o) {
-                        alert (o.statusText);
-                    },
-                    timeout: 5000
-                };
-                YAHOO.util.Connect.asyncRequest('GET', 'viewDD.jsf?appName='+appName+'&descriptorName='+descriptorPath, callback, null);
-            }
-
-            function dynamicWindow(appName, path) {
-                var callback = {
-                    success : function (o) {
-                        var panel = new YAHOO.widget.Panel(null, {
-                            width : screen.width*0.75,
-                            height:screen.width*0.75,
-                            closable:true,
-                            draggable: true,
-                            modal: true,
-                            visible: false,
-                            fixedcenter:true});
-                        panel.render(document);
-                        panel.setHeader('View Web Deployment Descriptor: ' + appName + path);
-                        panel.setBody(o.responseText);
-                        //panel.hideEvent = function() { this.destroy; };
-                        panel.show();
-                    },
-                    failure : function (o) {
-                        alert (o.statusText);
-                    },
-                    timeout: 5000
-                };
-                YAHOO.util.Connect.asyncRequest('GET', 'viewDD.jsf?appName='+appName+'&descriptorName='+path, callback, null);
-            }
-        </script>
-    </f:verbatim>
- </define>
- </composition>
+        </sun:body>
+    </sun:html>
+</sun:page>
