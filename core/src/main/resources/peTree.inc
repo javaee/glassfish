@@ -71,7 +71,7 @@
   <sun:form id="treeForm">
     <sun:tree id="tree" 
 	      text="$resource{i18n.tree.commonTasks}"
-	      url="/homePage.jsf"
+	      url="/commonTask.jsf"
 	      imageURL="resource/images/common_tasks.gif"
 	      target="main"
 	      clientSide="#{true}">

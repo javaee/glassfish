@@ -160,6 +160,22 @@
 
     </sun:body>
 </sun:html>
+
+<script type="text/javascript">
+    function showSearchPanel(e) {
+	var result = true;
+	if ((e.charCode == 102) &amp;&amp; (e.ctrlKey == true)) {
+	    showPanel('searchTagsPanel');
+	    if (e.preventDefault) {
+		e.preventDefault();
+	    }
+	    result = false;
+	}
+	return result;
+    }
+    YAHOO.util.Event.addListener(document, "keypress", showSearchPanel);
+</script>
+
 </sun:page>
 </ui:composition>
 </html>
