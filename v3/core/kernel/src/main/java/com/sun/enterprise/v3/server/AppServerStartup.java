@@ -103,12 +103,20 @@ public class AppServerStartup implements ModuleStartup {
     private Thread serverThread;
 
     public void start() {
-        // wait indefinitely for shutdown to be called
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        // wait indefinitely for shutdown to be called by starting
+        // a non-daemon thread.
         serverThread = new Thread("GlassFish Kernel Main Thread"){
             @Override
             public void run() {
                 logger.logp(Level.INFO, "AppServerStartup", "run",
                         "[{0}] started", new Object[]{this});
+
+                // notify the other thread to continue now that a non-daemon
+                // thread has started.
+                latch.countDown();
+
                 // See issue #5596 to know why we set context CL as common CL.
                 Thread.currentThread().setContextClassLoader(
                         cch.getCommonClassLoader());
@@ -124,24 +132,20 @@ public class AppServerStartup implements ModuleStartup {
                         "[{0}] exiting", new Object[]{this});
             }
         };
-        final CountDownLatch latch = new CountDownLatch(1);
-        serverThread.start();
-        org.glassfish.api.event.EventListener listener = new org.glassfish.api.event.EventListener() {
-            public void event(Event event) {
-                if (event.is(EventTypes.SERVER_READY) || event.is(EventTypes.SERVER_SHUTDOWN))
-                    latch.countDown();
-            }
-        };
-        events.register(listener);
 
-        // wait until we are finished started.
+        // by default a thread inherits daemon status of parent thread.
+        // Since this method can be called by non-daemon threads (e.g.,
+        // PackageAdmin service in case of an update of bundles), we
+        // have to explicitly set the daemon status to false.
+        serverThread.setDaemon(false);
+        serverThread.start();
+
+        // wait until we have spwaned a non-daemon thread
         try {
             latch.await();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        events.unregister(listener);
-
     }
 
     public void run() {
