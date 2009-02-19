@@ -82,12 +82,6 @@ public final class ApplicationFilterFactory {
 
     // -------------------------------------------------------------- Constants
 
-
-    public static final String DISPATCHER_TYPE_ATTR = 
-        Globals.DISPATCHER_TYPE_ATTR;
-    public static final String DISPATCHER_REQUEST_PATH_ATTR = 
-        Globals.DISPATCHER_REQUEST_PATH_ATTR;
-
     private static ApplicationFilterFactory factory = new ApplicationFilterFactory();
 
 
@@ -157,9 +151,10 @@ public final class ApplicationFilterFactory {
             return (filterChain);
 
         // get the dispatcher type
-        DispatcherType dispatcher = (DispatcherType) request.getAttribute(DISPATCHER_TYPE_ATTR);
+        DispatcherType dispatcher = request.getDispatcherType();
         String requestPath = null;
-        Object attribute = request.getAttribute(DISPATCHER_REQUEST_PATH_ATTR);
+        Object attribute = request.getAttribute(
+            Globals.DISPATCHER_REQUEST_PATH_ATTR);
         if (attribute != null){
             requestPath = attribute.toString();
         }

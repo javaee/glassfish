@@ -41,8 +41,8 @@ import java.util.concurrent.*;
 import java.util.logging.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import org.apache.catalina.connector.Request;
-import org.apache.catalina.core.ApplicationFilterFactory;
+import org.apache.catalina.Globals;
+import org.apache.catalina.connector.*;
 
 public class AsyncContextImpl implements AsyncContext {
 
@@ -103,7 +103,7 @@ public class AsyncContextImpl implements AsyncContext {
 
 
     public void dispatch() {
-        origRequest.setAttribute(ApplicationFilterFactory.DISPATCHER_TYPE_ATTR,
+        origRequest.setAttribute(Globals.DISPATCHER_TYPE_ATTR,
                                  DispatcherType.ASYNC);
         origRequest.stopAsyncTimer();
         if (servletRequest instanceof HttpServletRequest) {
@@ -126,7 +126,7 @@ public class AsyncContextImpl implements AsyncContext {
         if (path == null) {
             throw new IllegalArgumentException("Null path");
         }
-        origRequest.setAttribute(ApplicationFilterFactory.DISPATCHER_TYPE_ATTR,
+        origRequest.setAttribute(Globals.DISPATCHER_TYPE_ATTR,
                                  DispatcherType.ASYNC);
         origRequest.stopAsyncTimer();
         RequestDispatcher rd = servletRequest.getRequestDispatcher(path);
@@ -143,7 +143,7 @@ public class AsyncContextImpl implements AsyncContext {
         if (path == null || context == null) {
             throw new IllegalArgumentException("Null context or path");
         }
-        origRequest.setAttribute(ApplicationFilterFactory.DISPATCHER_TYPE_ATTR,
+        origRequest.setAttribute(Globals.DISPATCHER_TYPE_ATTR,
                                  DispatcherType.ASYNC);
         origRequest.stopAsyncTimer();
         RequestDispatcher rd = context.getRequestDispatcher(path);

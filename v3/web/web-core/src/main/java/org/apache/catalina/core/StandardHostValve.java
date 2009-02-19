@@ -301,10 +301,9 @@ final class StandardHostValve
             response.setAppCommitted(false);
             ServletRequest sreq = request.getRequest();
             ServletResponse sresp = response.getResponse();
-            sreq.setAttribute
-                (ApplicationFilterFactory.DISPATCHER_REQUEST_PATH_ATTR,
-                 errorPage.getLocation());
-            sreq.setAttribute(ApplicationFilterFactory.DISPATCHER_TYPE_ATTR,
+            sreq.setAttribute(Globals.DISPATCHER_REQUEST_PATH_ATTR,
+                              errorPage.getLocation());
+            sreq.setAttribute(Globals.DISPATCHER_TYPE_ATTR,
                               DispatcherType.ERROR);
             sreq.setAttribute
                 (Globals.STATUS_CODE_ATTR,
@@ -413,10 +412,9 @@ final class StandardHostValve
             if (message == null)
                 message = "";
             sreq.setAttribute(Globals.ERROR_MESSAGE_ATTR, message);
-            sreq.setAttribute
-                (ApplicationFilterFactory.DISPATCHER_REQUEST_PATH_ATTR,
-                 errorPage.getLocation());
-            sreq.setAttribute(ApplicationFilterFactory.DISPATCHER_TYPE_ATTR,
+            sreq.setAttribute(Globals.DISPATCHER_REQUEST_PATH_ATTR,
+                              errorPage.getLocation());
+            sreq.setAttribute(Globals.DISPATCHER_TYPE_ATTR,
                               DispatcherType.ERROR);
              
             Wrapper wrapper = request.getWrapper();

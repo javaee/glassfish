@@ -66,6 +66,7 @@ import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletRequestWrapper;
+import org.apache.catalina.Globals;
 import org.apache.catalina.Request;
 import org.apache.catalina.util.Enumerator;
 import org.apache.catalina.util.StringManager;
@@ -239,7 +240,7 @@ public class ApplicationRequest extends ServletRequestWrapper {
 
     public DispatcherType getDispatcherType() {
         DispatcherType dispatcher = (DispatcherType) getAttribute(
-            ApplicationFilterFactory.DISPATCHER_TYPE_ATTR);
+            Globals.DISPATCHER_TYPE_ATTR);
         if (dispatcher == null) {
             dispatcher = DispatcherType.REQUEST;
         }

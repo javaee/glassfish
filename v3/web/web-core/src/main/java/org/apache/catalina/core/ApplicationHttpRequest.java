@@ -108,16 +108,21 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
     /**
      * Construct a new wrapped request around the specified servlet request.
      *
-     * @param request The servlet request being wrapped
-     * @param isFowardDispatch true if this wrapper is being created for a 
-     * RD.forward, false otherwise
+     * @param request the servlet request being wrapped
+     * @param context the target context of the request dispatch
+     * @param crossContext true if this is a cross-context dispatch, false
+     * otherwise
+     * @param dispatcherType the dispatcher type
      */
     public ApplicationHttpRequest(HttpServletRequest request,
                                   Context context,
-                                  boolean crossContext) {
+                                  boolean crossContext,
+                                  DispatcherType dispatcherType) {
         super(request);
         this.context = context;
         this.crossContext = crossContext;
+        this.dispatcherType = dispatcherType;
+
         setRequest(request);
 
         if (context.getManager() != null) {
@@ -165,7 +170,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
     /**
      * The current dispatcher type.
      */
-    protected DispatcherType dispatcherType = null;
+    protected DispatcherType dispatcherType;
 
 
     /**
@@ -237,9 +242,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
      */
     public Object getAttribute(String name) {
 
-        if (name.equals(Globals.DISPATCHER_TYPE_ATTR)) {
-            return dispatcherType;
-        } else if (name.equals(Globals.DISPATCHER_REQUEST_PATH_ATTR)) {
+        if (name.equals(Globals.DISPATCHER_REQUEST_PATH_ATTR)) {
             if ( requestDispatcherPath != null ){
                 return requestDispatcherPath.toString();
             } else {
@@ -312,10 +315,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
      */
     public void setAttribute(String name, Object value) {
 
-        if (name.equals(Globals.DISPATCHER_TYPE_ATTR)) {
-            dispatcherType = (DispatcherType) value;
-            return;
-        } else if (name.equals(Globals.DISPATCHER_REQUEST_PATH_ATTR)) {
+        if (name.equals(Globals.DISPATCHER_REQUEST_PATH_ATTR)) {
             requestDispatcherPath = value;
             return;
         }
@@ -776,8 +776,6 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
         super.setRequest(request);
 
         // Initialize the attributes for this request
-        dispatcherType = (DispatcherType)
-            request.getAttribute(Globals.DISPATCHER_TYPE_ATTR);
         requestDispatcherPath = 
             request.getAttribute(Globals.DISPATCHER_REQUEST_PATH_ATTR);
 
@@ -866,7 +864,6 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
                                String queryString) {
 
         specialAttributes = new HashMap(5);
-
         switch (dispatcherType) {
         case INCLUDE:
             specialAttributes.put(RequestDispatcher.INCLUDE_REQUEST_URI,
@@ -881,6 +878,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
                                   queryString);
             break;
         case FORWARD:
+        case ERROR:
             specialAttributes.put(RequestDispatcher.FORWARD_REQUEST_URI,
                                   requestUri);
             specialAttributes.put(RequestDispatcher.FORWARD_CONTEXT_PATH,

@@ -271,12 +271,10 @@ final class StandardWrapperValve
         if (hreq != null) {
             requestPathMB = hrequest.getRequestPathMB();
         }
-        hreq.setAttribute
-            (ApplicationFilterFactory.DISPATCHER_TYPE_ATTR,
-            DispatcherType.REQUEST);
-        hreq.setAttribute
-            (ApplicationFilterFactory.DISPATCHER_REQUEST_PATH_ATTR,
-            requestPathMB);
+        hreq.setAttribute(Globals.DISPATCHER_TYPE_ATTR,
+                          DispatcherType.REQUEST);
+        hreq.setAttribute(Globals.DISPATCHER_REQUEST_PATH_ATTR,
+                          requestPathMB);
         // Create the filter chain for this request
         ApplicationFilterFactory factory =
             ApplicationFilterFactory.getInstance();
