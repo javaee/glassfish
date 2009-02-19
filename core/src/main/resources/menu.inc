@@ -127,7 +127,7 @@
     <sc:menuItem value="Site Map" />
     <sc:menuItem value="Common Tasks Page" url="/commonTask.jsf" />
     <sc:menuItem value="Performance Advisor" />
-    <sc:menuItem value="Update Center" />
+    <sc:menuItem value="Update Center" url="/updateCenter/installed.jsf" />
     <sc:menuItem value="Edit Tags" />
     <sc:menuItem value="Preferences..." />
 </sc:subMenu>
