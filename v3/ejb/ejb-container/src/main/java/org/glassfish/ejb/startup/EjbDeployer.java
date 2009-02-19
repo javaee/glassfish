@@ -61,9 +61,8 @@ public class EjbDeployer
     @Inject
     protected Habitat habitat;
 
-    protected ThreadLocal<Application> tldApp = new ThreadLocal<Application>();
+    // protected ThreadLocal<Application> tldApp = new ThreadLocal<Application>();
 
-    protected ConcurrentHashMap<String, EjbApplication> ejbApps = new ConcurrentHashMap();
 
     /**
      * Constructor
@@ -86,20 +85,21 @@ public class EjbDeployer
     @Override
     public EjbApplication load(EjbContainerStarter containerStarter, DeploymentContext dc) {
         super.load(containerStarter, dc);
-        Application app = dc.getModuleMetaData(Application.class);
-        if (app == null) {
-            app = tldApp.get();
+
+        EjbBundleDescriptor ejbBundle = dc.getModuleMetaData(EjbBundleDescriptor.class);
+
+        Collection<EjbDescriptor> ebds = null;
+
+        if( ejbBundle != null ) {
+
+            ebds = (Collection<EjbDescriptor>) ejbBundle.getEjbs();
+
+        } else {
+            Application app = dc.getModuleMetaData(Application.class);
+            ebds = (Collection<EjbDescriptor>) app.getEjbDescriptors();
         }
 
-        Collection<EjbDescriptor> ebds =
-                (Collection<EjbDescriptor>) app.getEjbDescriptors();
-
         EjbApplication ejbApp = new EjbApplication(ebds, dc, dc.getClassLoader(), habitat);
-
-        OpsParams params = dc.getCommandParameters(OpsParams.class);
-        String appName = params.name();
-
-        ejbApps.put(appName, ejbApp);
 
         ejbApp.loadAndStartContainers(dc);
         return ejbApp;
@@ -117,17 +117,8 @@ public class EjbDeployer
      * @param dc deployment context
      */
     public void clean(DeploymentContext dc) {
-
-        OpsParams params = dc.getCommandParameters(OpsParams.class);
-        String appName = params.name();
-
-        EjbApplication ejbApp = ejbApps.get(appName);
-        if (ejbApp != null) {
-            ejbApp.undeploy();
-        } else {
-            dc.getLogger().log(Level.WARNING,
-                    "EjbApplication is null for name " + appName);
-        }
+        // Both undeploy and shutdown scenarios are
+        // handled directly in EjbApplication.shutdown.
     }
 }
 

@@ -669,11 +669,7 @@ public abstract class AbstractSingletonContainer
 
         } finally {
 
-            this.iased                 = null;
-            this.beanCacheDes          = null;
-            this.beanPoolDes           = null;
-            this.svr                   = null;
-            this.ejbContainer          = null;
+            singletonCtxFactory = null;
 
         }
     }
@@ -749,7 +745,6 @@ public abstract class AbstractSingletonContainer
                 //
 
                 singletonCtx.deleteAllReferences();
-                singletonCtx = null;
             }
         }
 

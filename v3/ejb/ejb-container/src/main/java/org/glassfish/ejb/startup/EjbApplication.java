@@ -47,6 +47,8 @@ import java.util.logging.Level;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.ApplicationContext;
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.api.deployment.UndeployCommandParameters;
+import org.glassfish.api.deployment.OpsParams;
 import org.glassfish.ejb.security.application.EJBSecurityManager;
 import org.glassfish.ejb.security.factory.EJBSecurityManagerFactory;
 import org.jvnet.hk2.annotations.Inject;
@@ -157,6 +159,15 @@ public class EjbApplication
     }
 
     public boolean stop(ApplicationContext stopContext) {
+
+        UndeployCommandParameters params = ((DeploymentContext)stopContext).
+                getCommandParameters(UndeployCommandParameters.class);
+
+        // If true we're shutting down b/c of an undeploy.  If false, it's
+        // a shutdown without undeploy.
+        boolean undeploy = (params.origin == OpsParams.Origin.undeploy );
+
+
         // First, shutdown any singletons that were initialized based
         // on a particular ordering dependency.
         // TODO Make sure this covers both eagerly and lazily initialized
@@ -164,8 +175,14 @@ public class EjbApplication
         singletonLCM.doShutdown();
 
         for (Container container : containers) {
-            container.onShutdown();
+            if( undeploy ) {
+                container.undeploy();
+            } else {
+                container.onShutdown();
+            }
         }
+        
+        containers.clear();
         
         return true;
     }
@@ -220,13 +237,6 @@ public class EjbApplication
         }
 
         return rc.toString().hashCode();
-    }
-
-    protected void undeploy() {
-        for (Container container : containers) {
-            container.undeploy();
-        }
-        containers.clear();
     }
 
     private void initEJBTimerService() {

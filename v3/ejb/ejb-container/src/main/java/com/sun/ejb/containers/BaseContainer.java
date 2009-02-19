@@ -1191,39 +1191,45 @@ public abstract class BaseContainer
     }
 
     protected String getJavaGlobalJndiNamePrefix() {
+
         String appName = null;
+
+        // TODO replace with logic that specifically uses the new
+        // EE 6 definition of app name
+
         Application app = ejbDescriptor.getApplication();
         if ( (! app.isVirtual()) && (! app.isPackagedAsSingleModule()) ) {
             appName = ejbDescriptor.getApplication().getRegistrationName();
         }
+
+        // TODO replace with logic that specifically uses the new
+        // EE 6 definition of module name.
+
         String modName = null;
         if (appName == null) {
             modName = ejbDescriptor.getApplication().getRegistrationName();
         } else {
-            String archiveuri = ejbDescriptor.getEjbBundleDescriptor().
+            String archiveUri = ejbDescriptor.getEjbBundleDescriptor().
                     getModuleDescriptor().getArchiveUri();
-            modName =
-                    com.sun.enterprise.util.io.FileUtils.makeFriendlyFilename(archiveuri);
+            // For now, just chop off the file extension
+            int length = archiveUri.length();
+            modName =  archiveUri.substring(0, length - 4);
         }
         String ejbName = ejbDescriptor.getName();
 
-        String specifiedMappedName = ejbDescriptor.getMappedName();
-        String actualMappedName = null;
+        StringBuffer javaGlobalPrefix = new StringBuffer("java:global/");
 
-        if (specifiedMappedName == null || specifiedMappedName.length() == 0) {
-            actualMappedName = "java:global/";
-
-            if (appName != null) {
-                actualMappedName += appName + "/";
-            }
-
-            actualMappedName += modName + "/";
-            actualMappedName += ejbName;
-        } else {
-            actualMappedName = specifiedMappedName;
+        if (appName != null) {
+            javaGlobalPrefix.append(appName);
+            javaGlobalPrefix.append("/");
         }
+        
+        javaGlobalPrefix.append(modName);
+        javaGlobalPrefix.append("/");
+        javaGlobalPrefix.append(ejbName);
 
-        return actualMappedName;
+
+        return javaGlobalPrefix.toString();
     }
     
     /**
@@ -3342,27 +3348,24 @@ public abstract class BaseContainer
             
             setUndeployedState();
 
+            doConcreteContainerShutdown(true);
+
             undeployRelatedCleanup();
         }
 
     }
 
     /**
-     * Called when server instance is shuting down
+     * Called when server instance is shuting down.
      */
     public final void onShutdown() {
-        // TODO Fix when we can distinguish between server shutdown and undeploy
-        // Right now we can't distinguish between shutdown being called because
-        // of a server shutdown or before an application undeploy.  It only makes
-        // a difference for SFSBs so tell SFSB container it's an undeploy.
-        if ( !isStopped() && !isUndeployed() ) {
-            setStoppedState();
+
+        if ( !isStopped() ) {
             
-            if( isStatefulSession ) {
-                doConcreteContainerShutdown(true);
-            } else {
-                doConcreteContainerShutdown(false);
-            }
+           setStoppedState();
+
+           // Cleanup without undeploy
+           doConcreteContainerShutdown(false);
         }
     }
 
