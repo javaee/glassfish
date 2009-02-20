@@ -36,28 +36,23 @@
 <!-- appServer/serverInstDomainAttrs.jsf -->
 
 <!initPage
-        setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
 	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
 />
-<sun:page id="page1">
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.server.DomainAttrs}" >
+<!define name="content">
     <event>
         <!beforeCreate
-        getServerDomainAttributes(AppRoot=>$attribute{appRoot}, LogRoot=>$attribute{logRoot}, Locale=>$attribute{locale});
+            setSessionAttribute(key="serverInstTabs" value="domainAttrs");
+            getServerDomainAttributes(AppRoot=>$attribute{appRoot}, LogRoot=>$attribute{logRoot}, Locale=>$attribute{locale});
         />   
     </event>
 #include "/shared/restart.inc"
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18n.server.DomainAttrs}">
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>
-        <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-#include "/shared/treeBreadcrumbs.inc"
+   #include "/shared/treeBreadcrumbs.inc"
 #include "serverInstTabs.inc"
 #include "/shared/alertMsg.inc"
 #include "/shared/domainAttributesCommon.inc"
 	<sun:hidden id="helpKey" value="$resource{help.serverInstDomainAttrs}" />
             </sun:form>
-        </sun:body>
-    </sun:html>
-</sun:page>
+</define>
+</composition>

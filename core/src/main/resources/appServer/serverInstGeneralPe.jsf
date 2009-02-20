@@ -36,17 +36,16 @@
 -->
 
 <!-- appServer/serverInstGeneralPe.jsf -->
-<!initPage
-        setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
-	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
-/>
-<sun:page id="page1">
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.instance.GeneralTitle}" >
+<!define name="content">
+    <event>
     <!beforeCreate
         setPageSessionAttribute(key="PE" value="#{false}");
         setPageSessionAttribute(key="instanceName" value="server");
         setSessionAttribute(key="serverInstTabs" value="general");
         setPageSessionAttribute(key="pageName" value="appServer/serverInstGeneralPe.jsf");
     />
+    </event>
     <event>
         <!beforeEncode
         getInstanceGeneralAttributes(instanceName="#{instanceName}", hostName=>$attribute{hostName}, httpPorts=>$attribute{httpPorts},
@@ -55,14 +54,8 @@
         />   
     </event>
 #include "/shared/restart.inc"
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18n.instance.GeneralTitle}">
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>
-        <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-            
-#include "/shared/treeBreadcrumbs.inc"
+    #include "/shared/treeBreadcrumbs.inc"
 #include "serverInstTabs.inc"
           
                 <!-- Page Title -->
@@ -136,6 +129,5 @@
                     </sun:propertySheet>    
 	<sun:hidden id="helpKey" value="$resource{help.serverInstGeneralPe}" />
             </sun:form>
-        </sun:body>
-    </sun:html>
-</sun:page>
+</define>
+</composition>

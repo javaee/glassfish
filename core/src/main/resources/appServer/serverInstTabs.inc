@@ -39,9 +39,9 @@
 <sun:tabSet id="serverInstTabs" immediate="true" selected="#{sessionScope.serverInstTabs}">
 
     <sun:tab id="general" immediate="true" text="$resource{i18n.common.General}" >
-    	    <!command
-                setSessionAttribute(key="serverInstTabs" value="general");
-		navigate(page="/appServer/serverInstGeneralPe.jsf");
+        <!command
+            setSessionAttribute(key="serverInstTabs" value="general");
+            redirect(page="#{request.contextPath}/appServer/serverInstGeneralPe.jsf");
 	    />       
     </sun:tab>
 
