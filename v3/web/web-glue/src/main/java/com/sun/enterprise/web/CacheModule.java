@@ -39,7 +39,7 @@ import java.util.HashMap;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
-import javax.servlet.ServletContext;
+import javax.servlet.*;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
@@ -214,8 +214,8 @@ public final class CacheModule {
             if (dispatchers != null) {
                 for (String dispatcher : dispatchers) {
                     // calls to FilterMap.setDispatcher are cumulative
-                    filterMap.setDispatcher(FilterMap.string2DispatcherType(
-                        dispatcher));
+                    filterMap.setDispatcher(Enum.valueOf(DispatcherType.class,
+                                                         dispatcher));
                 }
             }
             filterMap.setFilterName(filterName);

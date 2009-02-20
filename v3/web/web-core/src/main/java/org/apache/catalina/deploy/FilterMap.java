@@ -251,29 +251,4 @@ public class FilterMap implements Serializable {
 
     }
 
-
-    /**
-     * Converts string representation of dispatcher type to
-     * corresponding DispatcherType
-     */
-    public static DispatcherType string2DispatcherType(String dispatcher) {
-
-        DispatcherType ret = null;
-
-        if ("REQUEST".equals(dispatcher)) {
-            ret = DispatcherType.REQUEST;
-        } else if ("FORWARD".equals(dispatcher)) {
-            ret = DispatcherType.FORWARD;
-        } else if ("INCLUDE".equals(dispatcher)) {
-            ret = DispatcherType.INCLUDE;
-        } else if ("ASYNC".equals(dispatcher)) {
-            ret = DispatcherType.ASYNC;
-        } else if ("ERROR".equals(dispatcher)) {
-            ret = DispatcherType.ERROR;
-        } else {
-            throw new IllegalArgumentException("Invalid dispatcher type");
-        }
-
-        return ret;
-    }
 }

@@ -36,29 +36,14 @@
 
 package com.sun.enterprise.web;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.Servlet;
+import javax.servlet.*;
 import javax.servlet.http.HttpSession;
 
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
@@ -825,8 +810,8 @@ public class WebModule extends PwcWebModule {
         Set<String> dispatchers = sfm.getDispatchers();
         if (dispatchers != null) {
             for (String dispatcher : dispatchers) {
-                filterMaps.setDispatcher(
-                    FilterMap.string2DispatcherType(dispatcher));
+                filterMaps.setDispatcher(Enum.valueOf(DispatcherType.class,
+                                                      dispatcher));
             }
         }
         
