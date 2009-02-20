@@ -64,7 +64,8 @@
 	<sc:menuItem value="Application Client Modules" />
     </sc:subMenu>
     <sc:subMenu value="Application Server">
-	<sc:menuItem value="JVM Settings" />
+    <sc:menuItem value="General"  url="/appServer/serverInstGeneralPe.jsf" />
+	<sc:menuItem value="JVM Settings" url="/appServer/serverInstJvmGeneral.jsf" />
 	<sc:menuItem value="Logger Settings" />
 	<sc:menuItem value="Thread Pools" />
     </sc:subMenu>
