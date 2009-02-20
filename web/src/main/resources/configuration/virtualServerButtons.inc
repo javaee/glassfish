@@ -88,7 +88,7 @@
             redirect(page="virtualServers.jsf?configName=#{configName}")
         />
     </sun:button>
-    <sun:button id="cancelButton" rendered="#{!edit}" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.Cancel}" >
+    <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.Cancel}" >
         <!command
             redirect(page="virtualServers.jsf?configName=#{configName}");
         />

@@ -33,29 +33,27 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!initPage 
+<!-- configuration/listenersSslNew.jsf -->
+<!initPage
+    setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
+	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
     setAttribute(key="edit" value="#{false}" )
 />
-<!-- configuration/listenersSslNew.jsf -->
-<sun:page id="page1">
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.edJmxConnector.sslSettingsLabel}" >
+<!define name="content">
+    <event>
   <!beforeCreate
-    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
-    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
-    getRequestValue(key="configName" value=>$page{configName});
+    getRequestValue(key="configName" value=>$page{configName}  default="server-config");
     getRequestValue(key="tabName", value=>$page{tabName});        
     getRequestValue(key="type", value=>$page{type});        
     getRequestValue(key="finalPage", value=>$page{finalPage});        
     getRequestValue(key="prevPage", value=>$page{prevPage});        
     getRequestValue(key="sslPageTitle", value=>$page{sslPageTitle});  
   />
+    </event>
 #include "/shared/restart.inc"  
-  <sun:html id="html2">
-        <sun:head id="propertyhead"  title="$resource{i18n.edJmxConnector.sslSettingsLabel}" parseOnLoad="false">
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>    
-        <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-#include "/shared/treeBreadcrumbs.inc"
+   #include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc"
 #include "/web/shared/sslProperties.inc"
                 <sun:title id="title2">
@@ -65,7 +63,6 @@
                 </sun:title>
                 <sun:hidden id="helpKey" value="$resource{help.httpListenerNew2}" />
             </sun:form>
-        </sun:body>
 #include "/web/shared/sslValidationsJS.inc"        
-    </sun:html>
-</sun:page>
+</define>
+</composition>
