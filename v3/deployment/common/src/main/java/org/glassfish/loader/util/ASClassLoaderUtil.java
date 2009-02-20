@@ -38,6 +38,8 @@ package org.glassfish.loader.util;
 
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
+import org.glassfish.api.deployment.DeployCommandParameters;
+import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.internal.data.ApplicationInfo;
@@ -92,6 +94,14 @@ public class ASClassLoaderUtil {
 
     }
 
+    public static String getModuleClassPath (Habitat habitat, 
+        DeploymentContext context) {
+        DeployCommandParameters params = 
+            context.getCommandParameters(DeployCommandParameters.class);
+        return getModuleClassPath(habitat, params.name(), params.libraries());
+    }
+
+
     private static void addLibrariesForModule(StringBuilder sb, 
         String moduleId, String deploymentLibs, Habitat habitat) {
         if (deploymentLibs == null) {
@@ -113,6 +123,12 @@ public class ASClassLoaderUtil {
         }
     }
 
+    private static URL[] getLibrariesAsURLs(String librariesStr, 
+        Habitat habitat) {
+            return getLibrariesAsURLs(librariesStr, 
+                habitat.getComponent(ServerEnvironment.class));
+    }
+
     /**
      * converts libraries specified via the --libraries deployment option to
      * URL[].  The library JAR files are specified by either relative or
@@ -121,19 +137,18 @@ public class ASClassLoaderUtil {
      * the application in the order specified.
      *
      * @param librariesStr is a comma-separated list of library JAR files
-     * @param habitat the habitat the application resides in.
+     * @param env the server environment
      * @return array of URL
      */
-    public static URL[] getLibrariesAsURLs(String librariesStr, 
-        Habitat habitat) {
+    public static URL[] getLibrariesAsURLs(String librariesStr,
+        ServerEnvironment env) {
         if(librariesStr == null)
             return null;
         String [] librariesStrArray = librariesStr.split(",");
         if(librariesStrArray == null)
             return null;
         final URL [] urls = new URL[librariesStrArray.length];
-        final String appLibsDir = 
-            habitat.getComponent(ServerEnvironment.class).getLibPath()
+        final String appLibsDir = env.getLibPath()
                 + File.separator + "applibs";
 
         int i=0;

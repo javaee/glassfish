@@ -34,6 +34,7 @@ import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
+import org.glassfish.loader.util.ASClassLoaderUtil;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -306,49 +307,14 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
             throws URISyntaxException {
         List<URI> libURIs = new ArrayList<URI>();
         if (parameters.libraries() != null) {
-            URL[] urls = convertToURL(parameters.libraries());
+            URL[] urls = 
+                ASClassLoaderUtil.getLibrariesAsURLs(parameters.libraries(), 
+                    env);
             for (URL url : urls) {
                 libURIs.add(url.toURI());
             }
         }
         return libURIs;
-    }
-
-    /**
-     * converts libraries specified via the --libraries deployment option to
-     * URL[].  The library JAR files are specified by either relative or
-     * absolute paths.  The relative path is relative to instance-root/lib/applibs.
-     * The libraries  are made available to the application in the order specified.
-     *
-     * @param librariesStr is a comma-separated list of library JAR files
-     * @return array of URL
-     */
-    private URL[] convertToURL(String librariesStr) {
-        if(librariesStr == null)
-            return null;
-        String [] librariesStrArray = librariesStr.split(",");
-        if(librariesStrArray == null)
-            return null;
-        final URL [] urls = new URL[librariesStrArray.length];
-        //Using the string from lib and applibs requires admin which is
-        //built after appserv-core.
-        final String appLibsDir = env.getLibPath()
-                                  + File.separator  + "applibs";
-        int i=0;
-        for(final String libraryStr:librariesStrArray){
-            try {
-                File f = new File(libraryStr);
-                if(!f.isAbsolute())
-                    f = new File(appLibsDir, libraryStr);
-                URL url =f.toURI().toURL();
-                urls[i++] = url;
-            } catch (MalformedURLException malEx) {
-                logger.log(Level.WARNING, "Cannot convert classpath to URL",
-                        libraryStr);
-                logger.log(Level.WARNING, malEx.getMessage(), malEx);
-            }
-        }
-        return urls;
     }
 
     public void clean() {

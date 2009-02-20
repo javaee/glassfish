@@ -67,6 +67,7 @@ public class JarHandler extends AbstractArchiveHandler implements ArchiveHandler
         EJBClassLoader cloader = new EJBClassLoader(parent);
         try {              
             cloader.addURL(context.getSource().getURI().toURL());
+            cloader.addURL(context.getScratchDir("ejb").toURL());
         } catch(MalformedURLException e) {
             return null;
         }
