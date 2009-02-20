@@ -75,7 +75,6 @@
 
 	<sun:hidden id="helpKey" value="$attribute{helpKey}" />
          </sun:form>
-        </sun:body>
 #include "/shared/changeButtonsJS.inc"
-    </sun:html>
-</sun:page>
+</define>
+</composition>

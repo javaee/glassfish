@@ -36,10 +36,12 @@
 <!-- shared/jvmPath_1.inc -->
 <!-- when including this page, should followed by including jvmPath_2.inc to make a complete page -->
 
-<sun:page id="page1">
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.jvm.PathSettingsTitle}" >
+<!define name="content">
     <event>
         <!beforeCreate
-        setPageSessionAttribute(key="configName", value="$requestParameter{configName}");    
+        setSessionAttribute(key="serverInstTabs" value="pathSettings");
+        getRequestValue(key="configName" value=>$page{configName}  default="server-config");
         getServerJvmPathSettings(ConfigName="#{configName}", SystemClasspath=>$attribute{systemClasspath}, 
         IgnoreEnvClasspath=>$attribute{ignoreEnvClasspath}, 
         ServerClasspath=>$attribute{serverClasspath}, 
@@ -51,10 +53,5 @@
         />   
     </event> 
 #include "/shared/restart.inc"
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18n.jvm.PathSettingsTitle}" >
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>
-        <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-#include "/shared/treeBreadcrumbs.inc"
+   #include "/shared/treeBreadcrumbs.inc"

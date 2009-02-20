@@ -81,6 +81,5 @@
                 </sun:title>
 	<sun:hidden id="helpKey" value="$attribute{helpKey}" />
             </sun:form>
-        </sun:body>
-    </sun:html>
-</sun:page>
+</define>
+</composition>
