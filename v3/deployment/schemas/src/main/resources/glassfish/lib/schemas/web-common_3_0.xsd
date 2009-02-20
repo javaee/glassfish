@@ -169,6 +169,144 @@
 
 <!-- **************************************************** -->
 
+  <xsd:complexType name="cookie-commentType">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        The comment that will be assigned to any session tracking
+        cookies created by this web application.
+
+	Used in: cookie-config
+
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:simpleContent>
+      <xsd:extension base="javaee:nonEmptyStringType"/>
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="cookie-configType">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        The cookie-configType defines the configuration for the
+        session tracking cookies of this web application.
+
+        Used in: session-config
+
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:sequence>
+      <xsd:element name="domain"
+                   type="javaee:cookie-domainType"
+                   minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>
+
+            The domain name that will be assigned to any session tracking
+            cookies created by this web application.
+
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="path"
+                   type="javaee:cookie-pathType"
+                   minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>
+
+            The path that will be assigned to any session tracking
+            cookies created by this web application.
+
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="comment"
+                   type="javaee:cookie-commentType"
+                   minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>
+
+            The comment that will be assigned to any session tracking
+            cookies created by this web application.
+
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="http-only"
+                   type="javaee:generic-booleanType"
+                   minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>
+
+            Specifies whether any session tracking cookies created
+            by this web application will be marked as HttpOnly
+
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="secure"
+                   type="javaee:generic-booleanType"
+                   minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>
+
+            Specifies whether any session tracking cookies created
+            by this web application will be marked as secure
+            even if the request that initiated the corresponding session
+            is using plain HTTP instead of HTTPS
+
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+    <xsd:attribute name="id" type="xsd:ID"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="cookie-domainType">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        The domain name that will be assigned to any session tracking
+        cookies created by this web application.
+
+        Used in: cookie-config
+
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:simpleContent>
+      <xsd:extension base="javaee:nonEmptyStringType"/>
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="cookie-pathType">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        The path that will be assigned to any session tracking
+        cookies created by this web application.
+
+	Used in: cookie-config
+
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:simpleContent>
+      <xsd:extension base="javaee:nonEmptyStringType"/>
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
   <xsd:complexType name="dispatcherType">
     <xsd:annotation>
       <xsd:documentation>
@@ -328,7 +466,7 @@
       </xsd:choice>
       <xsd:element name="dispatcher"
 		   type="javaee:dispatcherType"
-		   minOccurs="0" maxOccurs="4"/>
+		   minOccurs="0" maxOccurs="5"/>
     </xsd:sequence>
     <xsd:attribute name="id" type="xsd:ID"/>
   </xsd:complexType>
@@ -828,8 +966,8 @@
     <xsd:annotation>
       <xsd:documentation>
 
-	The session-configType defines the session parameters
-	for this web application.
+        The session-configType defines the session parameters
+        for this web application.
 
 	Used in: web-app
 
@@ -855,8 +993,55 @@
 	  </xsd:documentation>
 	</xsd:annotation>
       </xsd:element>
+      <xsd:element name="cookie-config"
+                   type="javaee:cookie-configType"
+                   minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>
+
+            The cookie-config element defines the configuration of the
+            session tracking cookies created by this web application.
+
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="tracking-mode"
+		   type="javaee:tracking-modeType"
+		   minOccurs="0" maxOccurs="3">
+        <xsd:annotation>
+          <xsd:documentation>
+
+            The tracking-mode element defines the tracking modes
+            for sessions created by this web application
+
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
     </xsd:sequence>
     <xsd:attribute name="id" type="xsd:ID"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="tracking-modeType">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        The tracking modes for sessions created by this web
+        application
+
+        Used in: session-config
+
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:simpleContent>
+      <xsd:restriction base="javaee:string">
+	<xsd:enumeration value="COOKIE"/>
+	<xsd:enumeration value="URL"/>
+	<xsd:enumeration value="SSL"/>
+      </xsd:restriction>
+    </xsd:simpleContent>
   </xsd:complexType>
 
 <!-- **************************************************** -->
