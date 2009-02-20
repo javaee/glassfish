@@ -34,21 +34,15 @@
  * holder.
  */
 
-package org.glassfish.web.loader.util;
+package org.glassfish.loader.util;
 
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.util.SystemPropertyConstants;
-import com.sun.enterprise.web.WebApplication;
-import com.sun.enterprise.web.WebContainer;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
-import org.glassfish.internal.api.Globals;
 import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.internal.data.ApplicationInfo;
-import org.glassfish.internal.data.EngineRef;
-import org.glassfish.api.container.Container;
 import org.jvnet.hk2.component.Habitat;
-
+import org.glassfish.api.admin.ServerEnvironment;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -65,20 +59,21 @@ public class ASClassLoaderUtil {
     private static String modulesClassPath = null;
 
     /**
-     * Gets the classpath associated with a web module, suffixing libraries defined
-     * [if any] for the application
+     * Gets the classpath associated with a module, suffixing libraries
+     * defined [if any] for the application
      *
      * @param habitat the habitat the application resides in.
-     * @param moduleId Module id of the web module
+     * @param moduleId Module id of the module
+     * @param deploymentLibs libraries option passed through deployment
      * @return A <code>File.pathSeparator</code> separated list of classpaths
-     *         for the passed in web module, including the module specified "libraries"
-     *         defined for the web module.
+     *         for the passed in module, including the module specified
+     *         "libraries" defined for the module.
      */
-    public static String getWebModuleClassPath(Habitat habitat,
-                                               String moduleId, String deploymentLibs) {
+    public static String getModuleClassPath
+        (Habitat habitat, String moduleId, String deploymentLibs) {
 
         if (_logger.isLoggable(Level.FINE)) {
-            _logger.log(Level.FINE, "ASClassLoaderUtil.getWebModuleClassPath " +
+            _logger.log(Level.FINE, "ASClassLoaderUtil.getModuleClassPath " +
                     "for module Id : " + moduleId);
         }
 
@@ -89,7 +84,7 @@ public class ASClassLoaderUtil {
         if (commonClassPath != null && commonClassPath.length() > 0) {
             classpath.append(commonClassPath).append(File.pathSeparator);
         }
-        addLibrariesForWebModule(classpath, moduleId, deploymentLibs);
+        addLibrariesForModule(classpath, moduleId, deploymentLibs, habitat);
         if (_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE, "Final classpath: " + classpath.toString());
         }
@@ -97,96 +92,62 @@ public class ASClassLoaderUtil {
 
     }
 
-    private static void addLibrariesForWebModule(StringBuilder sb,
-                                                 String moduleId, final String deploymentLibs) {
-        if (moduleId != null) {
-            String specifiedLibraries = getLibrariesForModule(WebContainer.class, moduleId);
-            if (specifiedLibraries==null && deploymentLibs!=null) {
-                specifiedLibraries = deploymentLibs;
+    private static void addLibrariesForModule(StringBuilder sb, 
+        String moduleId, String deploymentLibs, Habitat habitat) {
+        if (deploymentLibs == null) {
+            ApplicationInfo appInfo = 
+                habitat.getComponent(ApplicationRegistry.class).get(moduleId);
+            if (appInfo == null) {
+                // this might be an internal container app, 
+                // like _default_web_app, ignore.
+                return;
             }
-            final URL[] libs = getLibraries(specifiedLibraries);
-            if (libs != null) {
-                for (final URL u : libs) {
-                    sb.append(u.getPath());
-                    sb.append(File.pathSeparator);                    
-                }
+            deploymentLibs = appInfo.getLibraries();
+        }
+        final URL[] libs = getLibrariesAsURLs(deploymentLibs, habitat);
+        if (libs != null) {
+            for (final URL u : libs) {
+                sb.append(u.getPath());
+                sb.append(File.pathSeparator);                    
             }
         }
     }
 
     /**
-     * Gets the deploy-time "libraries" attribute specified for module
+     * converts libraries specified via the --libraries deployment option to
+     * URL[].  The library JAR files are specified by either relative or
+     * absolute paths.  The relative path is relative to 
+     * instance-root/lib/applibs. The libraries  are made available to 
+     * the application in the order specified.
      *
-     * @param type     the module type
-     * @param moduleId The module id of the web module
-     * @return A comma separated list representing the libraries
-     *         specified by the deployer.
+     * @param librariesStr is a comma-separated list of library JAR files
+     * @param habitat the habitat the application resides in.
+     * @return array of URL
      */
-    private static <T extends Container> String getLibrariesForModule(Class<T> type, String moduleId) {
-
-        ApplicationInfo app = Globals.get(ApplicationRegistry.class).get(moduleId);
-        if (app==null) {
-            // this might be an internal web container app, like _default_web_app, ignore.
+    public static URL[] getLibrariesAsURLs(String librariesStr, 
+        Habitat habitat) {
+        if(librariesStr == null)
             return null;
-        }
-        Collection<EngineRef> refs = app.getEngineRefsForContainer(type);
-        if (refs!=null) {
-            StringBuffer result = new StringBuffer();
-            for (EngineRef ref : refs) {                
-                WebApplication webApp = (WebApplication) ref.getApplicationContainer();
-                if (result.length()>0) {
-                    result.append(",");
-                }
-                final String lib = webApp.getLibraries();
-                if (lib!=null) {
-                    result.append(lib);
-                }
-            }
-            return result.toString();
-        }
-        _logger.log(Level.SEVERE, "No web module loaded for this application " + moduleId);
-        return null;
-    }
-
-    /**
-     * Utility method to obtain a resolved list of URLs representing the
-     * libraries specified for an application using the libraries
-     * application deploy-time attribute
-     *
-     * @param librariesStr The deploy-time libraries attribute as specified by
-     *                     the deployer for an application
-     * @return A list of URLs representing the libraries specified for
-     *         the application
-     */
-    private static URL[] getLibraries(String librariesStr) {
-        if (librariesStr == null)
+        String [] librariesStrArray = librariesStr.split(",");
+        if(librariesStrArray == null)
             return null;
-
-        String[] librariesStrArray = librariesStr.split(",");
-        if (librariesStrArray == null)
-            return null;
-
-        final URL[] urls = new URL[librariesStrArray.length];
-        //Using the string from lib and applibs requires admin which is 
-        //built after appserv-core.
-        final String appLibsDir = System.getProperty(
-                SystemPropertyConstants.INSTANCE_ROOT_PROPERTY)
-                + File.separator + "lib"
+        final URL [] urls = new URL[librariesStrArray.length];
+        final String appLibsDir = 
+            habitat.getComponent(ServerEnvironment.class).getLibPath()
                 + File.separator + "applibs";
 
-        int i = 0;
-        for (final String libraryStr : librariesStrArray) {
+        int i=0;
+        for(final String libraryStr:librariesStrArray){
             try {
                 File f = new File(libraryStr);
-                if (!f.isAbsolute())
+                if(!f.isAbsolute())
                     f = new File(appLibsDir, libraryStr);
-                URL url = f.toURI().toURL();
+                URL url =f.toURI().toURL();
                 urls[i++] = url;
             } catch (MalformedURLException malEx) {
-                _logger.log(Level.WARNING,
-                        "loader.cannot_convert_classpath_into_url",
+                _logger.log(Level.WARNING, "Cannot convert classpath to URL",
                         libraryStr);
-                _logger.log(Level.WARNING, "loader.exception", malEx);
+                _logger.log(Level.WARNING, malEx.getMessage(), malEx);
             }
         }
         return urls;
@@ -206,8 +167,8 @@ public class ASClassLoaderUtil {
                     }
                 }
 
-                //set sharedClasspathForWebModule so that it doesn't need to be recomputed
-                //for every other invocation
+                //set shared classpath for module so that it doesn't need to be 
+                //recomputed for every other invocation
                 modulesClassPath = tmpString.toString();
             }
         }

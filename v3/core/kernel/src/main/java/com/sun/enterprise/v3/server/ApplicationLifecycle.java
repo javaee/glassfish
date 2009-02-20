@@ -200,14 +200,13 @@ public class ApplicationLifecycle implements Deployment {
             ArchiveHandler handler = context.getArchiveHandler();
             if (handler == null) {
                 handler = getArchiveHandler(context.getSource());
+                context.setArchiveHandler(handler);
             }
             if (handler==null) {
                 report.setMessage(localStrings.getLocalString("unknownarchivetype","Archive type of {0} was not recognized",context.getSource()));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return null;                
             }
-            context.setArchiveHandler(handler);
-
             context.createClassLoaders(clh, handler);
 
             final ClassLoader cloader = context.getClassLoader();
@@ -263,6 +262,8 @@ public class ApplicationLifecycle implements Deployment {
                 // now were falling back into the mainstream loading/starting sequence, at this
                 // time the containers are set up, all the modules have been prepared in their
                 // associated engines and the application info is created and registered
+                appInfo.setLibraries(commandParams.libraries());
+
                 try {
                     appInfo.load(context, report, tracker);
                 } catch(Exception loadException) {

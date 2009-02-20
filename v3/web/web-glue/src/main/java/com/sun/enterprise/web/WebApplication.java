@@ -67,7 +67,6 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
     private final WebModuleConfig wmInfo;
     private final Module moduleConfig;
     Properties props = null;
-    String libraries = null;
 
     public WebApplication(WebContainer container, WebModuleConfig config, Module moduleConfig, Properties props) {
         this.container = container;
@@ -170,15 +169,6 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
     WebContainer getContainer() {
         return container;
     }
-
-    public void setLibraries(String libraries) {
-        this.libraries = libraries;
-    }
-
-    public String getLibraries() {
-        return libraries;
-    }
-
 
     /**
      * Returns the deployment descriptor associated with this application

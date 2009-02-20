@@ -65,7 +65,7 @@ import com.sun.enterprise.deployment.web.InitializationParameter;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.runtime.web.WebProperty;
 import com.sun.enterprise.deployment.runtime.web.JspConfig;
-import org.glassfish.web.loader.util.ASClassLoaderUtil;
+import org.glassfish.loader.util.ASClassLoaderUtil;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.internal.api.ServerContext;
 import com.sun.logging.LogDomains;
@@ -118,7 +118,7 @@ public final class JSPCompiler {
 
         // so far, this is not segragated per web bundle, all web-bundles will get the
         // same sysClassPath
-        String sysClassPath = ASClassLoaderUtil.getWebModuleClassPath(
+        String sysClassPath = ASClassLoaderUtil.getModuleClassPath(
             serverContext.getDefaultHabitat(), appName, null);
         jspc.setSystemClassPath(sysClassPath);
         // END SJSAS 6311155

@@ -55,6 +55,7 @@ public class ApplicationInfo {
     final private String name;
     final private ReadableArchive source;
     final private Map<Class<? extends Object>, Object> metaData = new HashMap<Class<? extends Object>, Object>();
+    private String libraries;
 
 
     /**
@@ -86,7 +87,21 @@ public class ApplicationInfo {
         return name;
     }  
     
+    /**
+     * Returns the deployment time libraries for this application
+     * @return the libraries
+     */
+    public String getLibraries() {
+        return libraries;
+    }
 
+    /**
+     * Sets the deployment time libraries for this application
+     * @param the libraries
+     */
+    public void setLibraries(String libraries) {
+        this.libraries = libraries;
+    }
 
     /**
      * Returns the directory where the application bits are located

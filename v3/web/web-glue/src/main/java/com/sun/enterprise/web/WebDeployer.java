@@ -31,7 +31,7 @@ import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import org.glassfish.internal.api.ServerContext;
-import org.glassfish.web.loader.util.ASClassLoaderUtil;
+import org.glassfish.loader.util.ASClassLoaderUtil;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.OpsParams;
@@ -180,11 +180,6 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
         WebApplication webApp = new WebApplication(container, wmInfo, moduleConfig,
             (Boolean.parseBoolean(dc.getProps().getProperty(DeploymentProperties.KEEP_SESSIONS))?
                 dc.getProps():null));
-        // we need to save the libraries in our application context since JSPC can occur at any
-        // time during the lifetime of the web application
-        if (dc.getProps().containsKey(ServerTags.LIBRARIES)) {
-            webApp.setLibraries(dc.getProps().getProperty(ServerTags.LIBRARIES));            
-        }
         return webApp;
     }
 
@@ -228,9 +223,10 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
             StringBuilder classpath = new StringBuilder(
                 super.getCommonClassPath());
             classpath.append(File.pathSeparatorChar);
-            classpath.append(ASClassLoaderUtil.getWebModuleClassPath(
+            classpath.append(ASClassLoaderUtil.getModuleClassPath(
                     sc.getDefaultHabitat(),
-                    wbd.getApplication().getName(), dc.getProps().getProperty(ServerTags.LIBRARIES)));
+                    wbd.getApplication().getName(), 
+                    dc.getProps().getProperty(ServerTags.LIBRARIES))); 
             JSPCompiler.compile(inDir, outDir, wbd, classpath.toString(), sc);
         } catch (DeploymentException de) {
             dc.getLogger().log(Level.SEVERE, "Error compiling JSP", de);

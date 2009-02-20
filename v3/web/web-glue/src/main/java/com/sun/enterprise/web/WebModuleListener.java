@@ -64,7 +64,7 @@ import com.sun.enterprise.web.jsp.JspProbeEmitterImpl;
 import com.sun.enterprise.web.jsp.ResourceInjectorImpl;
 import com.sun.logging.LogDomains;
 import com.sun.appserv.web.cache.CacheManager;
-import org.glassfish.web.loader.util.ASClassLoaderUtil;
+import org.glassfish.loader.util.ASClassLoaderUtil;
 //import com.sun.enterprise.server.PersistenceUnitLoaderImpl;
 //import com.sun.enterprise.server.PersistenceUnitLoader;
 //import com.sun.enterprise.config.ConfigException;
@@ -309,7 +309,7 @@ final class WebModuleListener
                     resourceInjector);
 
             // START SJSAS 6311155
-            String sysClassPath = ASClassLoaderUtil.getWebModuleClassPath(
+            String sysClassPath = ASClassLoaderUtil.getModuleClassPath(
                     serverContext.getDefaultHabitat(), webModule.getID(), null
             );
             if (_logger.isLoggable(Level.FINE)) {
