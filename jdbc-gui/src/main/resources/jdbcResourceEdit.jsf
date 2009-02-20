@@ -35,12 +35,14 @@
  holder.
 -->
 <!-- jdbc/jdbcResourceEdit.jsf -->
-
-<sun:page id="page1">
-    <!beforeCreate
-    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
+<!initPage
     setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings");
     setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+/>
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18njdbc.jdbcResource.editPageTitle}" >
+<!define name="content">
+    <event>
+    <!beforeCreate
     setSessionAttribute(key="resEditTabs" value="general");
     setPageSessionAttribute(key="pageTitle" value="$resource{i18njdbc.jdbcResource.editPageTitle}");
     setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18njdbc.jdbcResource.editPageTitleHelp}");
@@ -57,20 +59,14 @@
     setPageSessionAttribute(key="saveButtonLabel" value="$resource{i18n.button.Save}");
     setPageSessionAttribute(key="edit" value="#{true}");
     />
+    </event>
 #include "/shared/restart.inc"    
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="#{pageTitle}" >
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>
-
-             <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
                 <sun:form id="propertyForm">
-#include "/shared/treeBreadcrumbs.inc"
+   #include "/shared/treeBreadcrumbs.inc"
 #include "resourcesTabs.inc"
 #include "/shared/alertMsg.inc"
 #include "jdbcResource.inc"    
 	<sun:hidden id="helpKey" value="$resource{help.jdbcResourceEdit}" />
                 </sun:form>
-            </sun:body>
-    </sun:html>
-</sun:page>
+</define>
+</composition>
