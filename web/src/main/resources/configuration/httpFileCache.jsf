@@ -35,11 +35,17 @@
 -->
 <!-- configuration/accessLog.jsf -->
 
-<sun:page id="page1">
+<!initPage
+    setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
+	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+/>
+//<sun:page id="page1">
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.httpFileCache.Title}" >
+<!define name="content">
+    <event>
     <!beforeCreate
-        setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
-	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
-        getRequestValue(key="configName" value=>$page{configName});
+        getRequestValue(key="configName" value=>$page{configName}  default="server-config");
+        setSessionAttribute(key="httpServiceTabs" value="fileCache");
         getHttpFileCachingSettings(ConfigName="#{configName}", 
             Globally=>$attribute{globally}, 
             Age=>$attribute{age}, 
@@ -52,15 +58,11 @@
             FileCaching=>$attribute{fileCaching}
             );
          />
+    </event>
       
 #include "/shared/restart.inc"    
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18n.httpFileCache.Title}">
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>
-        <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-#include "/shared/treeBreadcrumbs.inc"
+      #include "/shared/treeBreadcrumbs.inc"
 #include "httpServiceTabs.inc"
 #include "/shared/alertMsg.inc"
                 <!-- Page Title -->
@@ -177,6 +179,5 @@
                 </sun:title>
 	<sun:hidden id="helpKey" value="$resource{help.httpFileCache}" />
             </sun:form>
-        </sun:body>
-    </sun:html>
-</sun:page>
+</define>
+</composition>
