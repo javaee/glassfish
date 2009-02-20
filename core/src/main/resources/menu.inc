@@ -1,7 +1,7 @@
 
 <sc:subMenu value="Deploy" id="deployMenu">
 <sc:menuItem value="Enterprise Application" url="#" />
-<sc:menuItem value="Web Application" url="#" />
+<sc:menuItem value="Web Application" url="/web/webApp/upload.jsf?appType=webApp" />
 <sc:menuItem value="EJB Module" url="#" />
 <sc:menuItem value="Connector Module" url="#" />
 <sc:menuItem value="Lifecycle Module" url="#" />
