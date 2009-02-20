@@ -97,6 +97,7 @@ import com.sun.grizzly.util.http.ServerCookie;
 import com.sun.grizzly.util.http.mapper.MappingData;
 
 import com.sun.grizzly.tcp.ActionCode;
+import com.sun.grizzly.tcp.CompletionHandler;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Globals;
@@ -533,7 +534,6 @@ public class Request
     // Has setAsyncTimeout been called on this request?
     private boolean isSetAsyncTimeoutCalled;
     private boolean isOkToReinitializeAsync;
-    private ScheduledFuture asyncTimeoutTask;
 
     /**
      * Associated context.
@@ -645,7 +645,6 @@ public class Request
         isOkToReinitializeAsync = false;
 
         asyncTimeoutMillis = -1L;
-        cancelAsyncTimeoutTask();
     }
 
 
@@ -3809,11 +3808,17 @@ public class Request
             isOkToReinitializeAsync = false;
         }
 
-        // TBD
+        coyoteRequest.getResponse().suspend(asyncTimeoutMillis, this,
+            new CompletionHandler<Request>() {
 
-        asyncTimeoutTask = scheduleAsyncTimeoutTask();
+                public void resumed(Request attachment) {
+                    attachment.notifyAsyncListeners(AsyncEventType.COMPLETE);
+                }
 
-        coyoteRequest.getResponse().suspend();
+                public void cancelled(Request attachment) {
+                    attachment.asyncTimeout();
+                }
+        });
 
         return asyncContext;
     }
@@ -3963,14 +3968,10 @@ public class Request
      * <tt>onComplete</tt> method
      */
     void asyncComplete() {
-
         if (!isAsyncStarted()) {
             throw new IllegalStateException("Request not in async mode");
         }
-
-        cancelAsyncTimeoutTask();
         isAsyncComplete = true;
-        notifyAsyncListeners(AsyncEventType.COMPLETE);
         coyoteRequest.getResponse().resume();
     }
 
@@ -3979,10 +3980,10 @@ public class Request
      * Invokes any registered AsyncListener instances at their
      * <tt>onTimeout</tt> method
      * 
-     * If none of the <tt>onTimeout</tt> handlers call complete or forward,
+     * If none of the <tt>onTimeout</tt> handlers call complete or dispatch,
      * have the container complete the async operation.
      */
-    private void asyncTimeout() {
+    void asyncTimeout() {
         notifyAsyncListeners(AsyncEventType.TIMEOUT);
         if (!isAsyncComplete) {
             asyncComplete();
@@ -4031,42 +4032,6 @@ public class Request
                             ioe);
                 }
             }
-        }
-    }
-
-
-    /*
-     * Schedules an async timeout event.
-     *
-     * @return the scheduled future for the async timeout event
-     */
-    private ScheduledFuture scheduleAsyncTimeoutTask() {
-        return AsyncContextImpl.getAsyncTimeoutScheduler().schedule(
-            new TimerTask() {
-                @Override
-                public void run() {
-                    try {
-                        asyncTimeout();
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                }
-            }, 
-            asyncTimeoutMillis,
-            TimeUnit.MILLISECONDS);
-    }
-
-
-    /*
-     * Cancels any task that may have been scheduled to deliver an async
-     * timeout event.
-     */
-    void cancelAsyncTimeoutTask() {
-        if (asyncTimeoutTask != null) {
-            if (!asyncTimeoutTask.isDone()) {
-                asyncTimeoutTask.cancel(false);
-            }
-            asyncTimeoutTask = null;
         }
     }
 
