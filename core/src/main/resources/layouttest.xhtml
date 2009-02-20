@@ -4,10 +4,10 @@
       xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
       template="/layout.xhtml">
 
-    <ui:param name="guiTitle" value="The Title" />
+    <ui:param name="guiTitle" value="#{param.page}" />
 
     <ui:define name="content">
-		It works?
+	<h2>The #{param.page} page has not yet been enabled.</h2>
     </ui:define>
 
 </ui:composition>

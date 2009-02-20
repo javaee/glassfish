@@ -67,6 +67,8 @@
 		Top Navigation Missing!
 	    </ui:insert>
         </div>
+
+	<!-- Content -->
         <div id="content" style="padding-left: 5px; padding-right: 5px;">
             <h:messages />
             <ui:insert name="guiTemplateContent">
@@ -74,7 +76,32 @@
 		    Content Missing!
 		</ui:insert>
             </ui:insert>
+	    <div class="yui-skin-sam">
+		<div id="top1"></div>
+		<div id="bottom1"></div>
+		<div id="left1"></div>
+		<div id="right1"></div>
+		<div id="center1"></div>
+	    </div>
+	    <script type="text/javascript" src="/jsft_resource.jsf?contentSourceId=resourceCS&amp;filename=/yui/yahoo/yahoo-min.js"></script>
+	    <script type="text/javascript" src="/jsft_resource.jsf?contentSourceId=resourceCS&amp;filename=/yui/event/event-min.js"></script>
+	    <script type="text/javascript">
+		Event.onDOMReady(function() {
+		    var layout = new YAHOO.widget.Layout({
+			units: [
+			    { position: 'top', height: 28, body: 'top1' },
+			    { position: 'right', header: 'Right', width: 300, resize: true, footer: 'Footer', collapse: true, scroll: true, body: 'right1', animate: true, gutter: '5' },
+			    { position: 'bottom', height: 30, body: 'bottom1' },
+			    { position: 'left', header: 'Left', width: 200, body: 'left1', gutter: '5' },
+			    { position: 'center', body: 'center1', gutter: '5 0' }
+			    ]});
+		    layout.render();
+		    });
+	    </script>
+
         </div>
+
+	<!-- Add Tag Panel -->
         <sc:panel id="addTagPanel" visible="false" modal="true" closable="true" fixedCenter="true">
             <h3>Tag the Current Page</h3>
             <h:form id="tagForm">
@@ -85,6 +112,13 @@
                 <h:inputText id="name" value="#{requestScope.tagName}"/>
                 <h:inputHidden id="url" value="#{requestScope.url}"/>
                 <br/>
+		<!--
+		    FIXME:
+		    1) Remove "Name" field.
+		    2) Provide a close button
+		    3) Show existing tags for this page.
+		    4) Rename "url" to "tagURL", figure out how tagURL is specified (i.e. hard-coded per page?  auto-generated based on viewId? etc)
+		-->
                 <h:commandButton id="addTagButton" value="Add Tag" onclick="submitTagForm(this); return false;">
                     <ui:event type="command">
                         saveTagInformation(tag="$attribute{tag}", name="$attribute{tagName}", url="#{requestScope.url}");
@@ -94,6 +128,8 @@
                 </h:commandButton>
             </h:form>
         </sc:panel>
+
+	<!-- Search Tags Panel -->
         <sc:panel id="searchTagsPanel" visible="false" modal="true" closable="true" fixedCenter="true" width="300px">
             <h3>Search Tags</h3>
                 <div style="width:40px; float: left">Tag:</div>
@@ -112,34 +148,6 @@
                     </h:dataTable>
                 </div>
         </sc:panel>
-        <script type="text/javascript">
-            function submitTagForm(el) {
-                YAHOO.util.Dom.get('tagForm:url').value = window.location;
-                DynaFaces.fireAjaxTransaction(el,
-                    {
-                        execute: 'tagForm:tag,tagForm:name,tagForm:url,'+el.id,
-                        inputs: 'tagForm:tag,tagForm:name,tagForm:url,'+el.id,
-                        render: 'tagForm:tag,tagForm:name,tagForm:url,'+el.id,
-                        postReplace: function() {
-                            YAHOO.util.Dom.get('tagForm:tag').value = '';
-                            YAHOO.util.Dom.get('tagForm:name').value = '';
-                            hidePanel('addTagPanel');
-                        }
-                    } );
-            }
-
-            function submitTagSearchForm(el) {
-                DynaFaces.fireAjaxTransaction(el,
-                    {
-                        execute: 'hits,tagSearch:tag,'+el.id,
-                        inputs: 'hits,tagSearch:tag,'+el.id,
-                        render: 'hits',
-                        postReplace: function(zone, html) {
-                            YAHOO.util.Dom.get('tagSearch:tag').value = '';
-                        }
-                    } );
-            }
-        </script>
 
 <!-- ###### Temporary Toggle Button Begin ##### -->
 <h:form>
@@ -161,7 +169,38 @@
     </sun:body>
 </sun:html>
 
+<!-- FIXME: this should be in adminjsf.js -->
 <script type="text/javascript">
+    function submitTagForm(el) {
+	YAHOO.util.Dom.get('tagForm:url').value = window.location;
+	DynaFaces.fireAjaxTransaction(el,
+	    {
+		execute: 'tagForm:tag,tagForm:name,tagForm:url,'+el.id,
+		inputs: 'tagForm:tag,tagForm:name,tagForm:url,'+el.id,
+		render: 'tagForm:tag,tagForm:name,tagForm:url,'+el.id,
+		postReplace: function() {
+		    YAHOO.util.Dom.get('tagForm:tag').value = '';
+		    YAHOO.util.Dom.get('tagForm:name').value = '';
+		    hidePanel('addTagPanel');
+		}
+	    } );
+    }
+    function submitTagSearchForm(el) {
+	DynaFaces.fireAjaxTransaction(el,
+	    {
+		execute: 'hits,tagSearch:tag,'+el.id,
+		inputs: 'hits,tagSearch:tag,'+el.id,
+		render: 'hits',
+		postReplace: function(zone, html) {
+		    YAHOO.util.Dom.get('tagSearch:tag').value = '';
+		}
+	    } );
+    }
+
+<!--
+    FIXME: I think this would be better implemented using Y!'s KeyListener:
+    http://developer.yahoo.com/yui/examples/container/keylistener.html
+-->
     function showSearchPanel(e) {
 	var result = true;
 	if ((e.charCode == 102) &amp;&amp; (e.ctrlKey == true)) {
