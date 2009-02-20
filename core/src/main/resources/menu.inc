@@ -105,8 +105,8 @@
     <sc:menuItem value="Configuration System Properties" url="#{request.contextPath}/layouttest.jsf?page=Configuration+System+Properties" />
     <sc:menuItem value="Custom MBeans" url="#{request.contextPath}/layouttest.jsf?page=Custom+MBeans" />
     <sc:subMenu value="Resources">
-	<sc:menuItem value="JDBC Resources" url="#{request.contextPath}/layouttest.jsf?page=JDBC+Resources" />
-	<sc:menuItem value="JDBC Connection Pools" url="#{request.contextPath}/layouttest.jsf?page=JDBC+Connection+Pools" />
+	<sc:menuItem value="JDBC Resources" url="#{request.contextPath}/jdbc/jdbcResources.jsf" />
+	<sc:menuItem value="JDBC Connection Pools" url="#{request.contextPath}/jdbc/jdbcConnectionPools.jsf" />
 	<sc:menuItem value="JMS Connection Factories" url="#{request.contextPath}/layouttest.jsf?page=JMS+Connection+Factories" />
 	<sc:menuItem value="JMS Destination Resources" url="#{request.contextPath}/layouttest.jsf?page=JMS+Destination+Resources" />
 	<sc:menuItem value="JavaMail Sessions" url="#{request.contextPath}/layouttest.jsf?page=JavaMail+Sessions" />
