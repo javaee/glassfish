@@ -35,12 +35,15 @@
 -->
 <!-- updateCenter/addOn.jsf -->
 
+<!initPage
+    setResourceBundle(key="i18nUC" bundle="org.glassfish.updatecenter.admingui.Strings");
+    setResourceBundle(key="help" bundle="org.glassfish.updatecenter.admingui.Helplinks");
+/>
 //<sun:page id="page1">
-<!composition template="/layout.xhtml">
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18nUC.updateCenter.addOn.pageTitle}">>
 <!define name="content">
     <event>
         <!beforeCreate
-            setResourceBundle(key="i18nUC" bundle="org.glassfish.updatecenter.admingui.Strings");
             setSessionAttribute(key="ucTabs" value="addOn");
             setPageSessionAttribute(key="buttonText" value="$resource{i18n.button.Install}");
             setPageSessionAttribute(key="action" value="install");
