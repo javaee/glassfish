@@ -69,7 +69,10 @@
 	<sc:menuItem value="Thread Pools" />
     </sc:subMenu>
     <sc:subMenu value="Service">
-	<sc:menuItem value="Web Container" />
+	<sc:menuItem value="Web Container" url="/web/configuration/webContainerSession.jsf" />
+    <sc:menuItem value="HTTP Service" url="/web/configuration/httpService.jsf" />
+    <sc:menuItem value="HTTP Listeners" url="/web/configuration/httpListeners.jsf" />
+    <sc:menuItem value="Virtual Servers" url="/web/configuration/virtualServers.jsf" />
 	<sc:menuItem value="EJB Container" />
 	<sc:menuItem value="JMS" />
 	<sc:menuItem value="Availability Service" />
@@ -81,10 +84,6 @@
 	    <sc:menuItem value="Realm" />
 	    <sc:menuItem value="JACC Provider" />
 	    <sc:menuItem value="Thread Pools" />
-	</sc:subMenu>
-	<sc:subMenu value="HTTP Service">
-	    <sc:menuItem value="HTTP Listeners" />
-	    <sc:menuItem value="Virtual Servers" />
 	</sc:subMenu>
 	<sc:subMenu value="Object Request Broker">
 	    <sc:menuItem value="IIOP Listeners" />
