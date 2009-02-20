@@ -303,8 +303,6 @@ final class StandardHostValve
             ServletResponse sresp = response.getResponse();
             sreq.setAttribute(Globals.DISPATCHER_REQUEST_PATH_ATTR,
                               errorPage.getLocation());
-            sreq.setAttribute(Globals.DISPATCHER_TYPE_ATTR,
-                              DispatcherType.ERROR);
             sreq.setAttribute
                 (Globals.STATUS_CODE_ATTR,
                  Integer.valueOf(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
@@ -414,8 +412,6 @@ final class StandardHostValve
             sreq.setAttribute(Globals.ERROR_MESSAGE_ATTR, message);
             sreq.setAttribute(Globals.DISPATCHER_REQUEST_PATH_ATTR,
                               errorPage.getLocation());
-            sreq.setAttribute(Globals.DISPATCHER_TYPE_ATTR,
-                              DispatcherType.ERROR);
              
             Wrapper wrapper = request.getWrapper();
             if (wrapper != null)
@@ -525,9 +521,9 @@ final class StandardHostValve
             // Forward control to the specified location
             ServletContext servletContext =
                 request.getContext().getServletContext();
-            RequestDispatcher rd =
+            ApplicationDispatcher dispatcher = (ApplicationDispatcher)
                 servletContext.getRequestDispatcher(errorPage.getLocation());
-            rd.forward(hreq, hres);
+            dispatcher.dispatch(hreq, hres, DispatcherType.ERROR);
 
             // If we forward, the response is suspended again
             response.setSuspended(false);

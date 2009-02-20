@@ -864,6 +864,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
                                String queryString) {
 
         specialAttributes = new HashMap(5);
+
         switch (dispatcherType) {
         case INCLUDE:
             specialAttributes.put(RequestDispatcher.INCLUDE_REQUEST_URI,
@@ -888,6 +889,18 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
             specialAttributes.put(RequestDispatcher.FORWARD_PATH_INFO,
                                   pathInfo);
             specialAttributes.put(RequestDispatcher.FORWARD_QUERY_STRING,
+                                  queryString);
+            break;
+        case ASYNC:
+            specialAttributes.put(AsyncContext.ASYNC_REQUEST_URI,
+                                  requestUri);
+            specialAttributes.put(AsyncContext.ASYNC_CONTEXT_PATH,
+                                  contextPath);
+            specialAttributes.put(AsyncContext.ASYNC_SERVLET_PATH,
+                                  servletPath);
+            specialAttributes.put(AsyncContext.ASYNC_PATH_INFO,
+                                  pathInfo);
+            specialAttributes.put(AsyncContext.ASYNC_QUERY_STRING,
                                   queryString);
             break;
         }

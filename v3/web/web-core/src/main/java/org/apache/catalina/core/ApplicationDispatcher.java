@@ -107,31 +107,34 @@ import org.apache.catalina.connector.ResponseFacade;
  * @version $Revision: 1.16 $ $Date: 2007/02/26 22:57:08 $
  */
 
-final class ApplicationDispatcher
+public final class ApplicationDispatcher
     implements RequestDispatcher {
 
-    protected class PrivilegedForward implements PrivilegedExceptionAction {
+    protected class PrivilegedDispatch implements PrivilegedExceptionAction {
+
         private ServletRequest request;
         private ServletResponse response;
+        private DispatcherType dispatcherType;
 
-        PrivilegedForward(ServletRequest request, ServletResponse response)
-        {
+        PrivilegedDispatch(ServletRequest request, ServletResponse response,
+                           DispatcherType dispatcherType) {
             this.request = request;
             this.response = response;
+            this.dispatcherType = dispatcherType;
         }
 
         public Object run() throws java.lang.Exception {
-            doForward(request,response);
+            doDispatch(request, response, dispatcherType);
             return null;
         }
     }
 
     protected class PrivilegedInclude implements PrivilegedExceptionAction {
+
         private ServletRequest request;
         private ServletResponse response;
 
-        PrivilegedInclude(ServletRequest request, ServletResponse response)
-        {
+        PrivilegedInclude(ServletRequest request, ServletResponse response) {
             this.request = request;
             this.response = response;
         }
@@ -304,16 +307,16 @@ final class ApplicationDispatcher
      * @param request The request to be forwarded
      * @param response The response to be forwarded
      *
-     * @exception IOException if an input/output error occurs
-     * @exception ServletException if a servlet exception occurs
+     * @throws IOException if an input/output error occurs
+     * @throws ServletException if a servlet exception occurs
      */
     public void forward(ServletRequest request, ServletResponse response)
             throws ServletException, IOException {
-        forward(request, response, true);
+        dispatch(request, response, DispatcherType.FORWARD);
     }
 
     /**
-     * Forwards the given request and response to the resource
+     * Dispatches the given request and response to the resource
      * for which this dispatcher was acquired.
      *
      * <p>Any runtime exceptions, IOException, or ServletException thrown
@@ -321,19 +324,30 @@ final class ApplicationDispatcher
      *
      * @param request The request to be forwarded
      * @param response The response to be forwarded
-     * @param isCommit true if the response is to be committed before
-     * the forward returns, false otherwise
+     * @param dispatcherType The type of dispatch to be performed
      *
-     * @exception IOException if an input/output error occurs
-     * @exception ServletException if a servlet exception occurs
+     * @throws IOException if an input/output error occurs
+     * @throws ServletException if a servlet exception occurs
+     * @throws IllegalArgumentException if the dispatcher type is different
+     * from FORWARD, ERROR, and ASYNC
      */
-    void forward(ServletRequest request, ServletResponse response,
-                 boolean isCommit)
+    public void dispatch(ServletRequest request, ServletResponse response,
+                  DispatcherType dispatcherType)
             throws ServletException, IOException {
+
+        if (!DispatcherType.FORWARD.equals(dispatcherType) &&
+                !DispatcherType.ERROR.equals(dispatcherType) &&
+                !DispatcherType.ASYNC.equals(dispatcherType)) {
+            throw new IllegalArgumentException("Illegal dispatcher type");
+        }
+
+        boolean isCommit = (DispatcherType.FORWARD.equals(dispatcherType) ||
+            DispatcherType.ERROR.equals(dispatcherType));
 
         if (Globals.IS_SECURITY_ENABLED) {
             try {
-                PrivilegedForward dp = new PrivilegedForward(request,response);
+                PrivilegedDispatch dp = new PrivilegedDispatch(
+                    request, response, dispatcherType);
                 AccessController.doPrivileged(dp);
                 // START SJSAS 6374990
                 if (isCommit) {
@@ -350,7 +364,7 @@ final class ApplicationDispatcher
                 throw (IOException) e;
             }
         } else {
-            doForward(request,response);
+            doDispatch(request, response, dispatcherType);
             // START SJSAS 6374990
             if (isCommit) {
                 ApplicationDispatcherForward.commit(
@@ -362,31 +376,30 @@ final class ApplicationDispatcher
         }
     }
 
-    private void doForward(ServletRequest request, ServletResponse response)
-        throws ServletException, IOException
-    {
-        
-        // Reset any output that has been buffered, but keep headers/cookies
-        if (response.isCommitted()) {
-            if (log.isLoggable(Level.FINE))
-                log.fine("  Forward on committed response --> ISE");
-            throw new IllegalStateException
-                (sm.getString("applicationDispatcher.forward.ise"));
-        }
-        try {
-            response.resetBuffer();
-        } catch (IllegalStateException e) {
-            if (log.isLoggable(Level.FINE))
-                log.fine("  Forward resetBuffer() returned ISE: " + e);
-            throw e;
+    private void doDispatch(ServletRequest request, ServletResponse response,
+                            DispatcherType dispatcherType)
+        throws ServletException, IOException {
+
+        if (!DispatcherType.ASYNC.equals(dispatcherType)) {
+            // Reset any output that has been buffered, but keep
+            // headers/cookies
+            if (response.isCommitted()) {
+                if (log.isLoggable(Level.FINE))
+                    log.fine("  Forward on committed response --> ISE");
+                throw new IllegalStateException
+                    (sm.getString("applicationDispatcher.forward.ise"));
+            }
+
+            try {
+                response.resetBuffer();
+            } catch (IllegalStateException e) {
+                if (log.isLoggable(Level.FINE))
+                    log.fine("  Forward resetBuffer() returned ISE: " + e);
+                throw e;
+            }
         }
 
         // Set up to handle the specified request and response
-        DispatcherType dispatcherType = (DispatcherType) request.getAttribute(
-            Globals.DISPATCHER_TYPE_ATTR);
-        if (!DispatcherType.ERROR.equals(dispatcherType)) {
-            dispatcherType = DispatcherType.FORWARD;
-        }
         State state = new State(request, response, dispatcherType);
 
         // Identify the HTTP-specific request and response objects (if any)
@@ -414,7 +427,6 @@ final class ApplicationDispatcher
 
         // Handle an HTTP named dispatcher forward
         else if ((servletPath == null) && (pathInfo == null)) {
-
             ApplicationHttpRequest wrequest = (ApplicationHttpRequest)
                 wrapRequest(state);
             wrequest.setRequestURI(hrequest.getRequestURI());
@@ -435,7 +447,8 @@ final class ApplicationDispatcher
                 wrapRequest(state);
             String contextPath = context.getPath();
 
-            if (hrequest.getAttribute(RequestDispatcher.FORWARD_REQUEST_URI) == null) { 
+            if (hrequest.getAttribute(RequestDispatcher.FORWARD_REQUEST_URI)
+                                                                == null) { 
                 wrequest.initSpecialAttributes(hrequest.getRequestURI(),
                                                hrequest.getContextPath(),
                                                hrequest.getServletPath(),
@@ -467,8 +480,8 @@ final class ApplicationDispatcher
      * @param request The servlet request we are processing
      * @param response The servlet response we are creating
      *
-     * @exception IOException if an input/output error occurs
-     * @exception ServletException if a servlet error occurs
+     * @throws IOException if an input/output error occurs
+     * @throws ServletException if a servlet error occurs
      */
     private void processRequest(ServletRequest request, 
                                 ServletResponse response,
@@ -515,8 +528,8 @@ final class ApplicationDispatcher
      * @param request The servlet request that is including this one
      * @param response The servlet response to be appended to
      *
-     * @exception IOException if an input/output error occurs
-     * @exception ServletException if a servlet exception occurs
+     * @throws IOException if an input/output error occurs
+     * @throws ServletException if a servlet exception occurs
      */
     public void include(ServletRequest request, ServletResponse response)
         throws ServletException, IOException
@@ -628,8 +641,8 @@ final class ApplicationDispatcher
      * @param request The servlet request we are processing
      * @param response The servlet response we are creating
      *
-     * @exception IOException if an input/output error occurs
-     * @exception ServletException if a servlet error occurs
+     * @throws IOException if an input/output error occurs
+     * @throws ServletException if a servlet error occurs
      */
     private void invoke(ServletRequest request, ServletResponse response,
                 State state)
@@ -676,8 +689,8 @@ final class ApplicationDispatcher
      * @param crossContext true if the request dispatch is crossing context
      * boundaries, false otherwise
      *
-     * @exception IOException if an input/output error occurs
-     * @exception ServletException if a servlet error occurs
+     * @throws IOException if an input/output error occurs
+     * @throws ServletException if a servlet error occurs
      */
     private void doInvoke(ServletRequest request, ServletResponse response,
                           boolean crossContext)

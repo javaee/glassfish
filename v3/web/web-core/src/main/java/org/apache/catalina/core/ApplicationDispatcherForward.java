@@ -241,9 +241,9 @@ class ApplicationDispatcherForward {
                 resetResponse(responseFacade);
             }
             ServletContext servletContext = context.getServletContext();
-            RequestDispatcher rd =
+            ApplicationDispatcher dispatcher = (ApplicationDispatcher)
                 servletContext.getRequestDispatcher(errorPage.getLocation());
-            rd.forward(request, response);
+            dispatcher.dispatch(request, response, DispatcherType.ERROR);
         } catch (IllegalStateException ise) {
             log.log(Level.WARNING, "Exception processing " + errorPage, ise);
         } catch (Throwable t) {
@@ -260,9 +260,6 @@ class ApplicationDispatcherForward {
                                                   String errorPageLocation,
                                                   int errorCode,
                                                   String errorMessage) {
-        request.setAttribute(Globals.DISPATCHER_TYPE_ATTR,
-                             DispatcherType.ERROR);
-
         request.setAttribute(Globals.EXCEPTION_PAGE_ATTR,
                              request.getRequestURI());
 

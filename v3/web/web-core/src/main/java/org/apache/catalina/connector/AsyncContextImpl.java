@@ -43,6 +43,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import org.apache.catalina.Globals;
 import org.apache.catalina.connector.*;
+import org.apache.catalina.core.*;
 
 public class AsyncContextImpl implements AsyncContext {
 
@@ -121,10 +122,12 @@ public class AsyncContextImpl implements AsyncContext {
         origRequest.cancelAsyncTimeoutTask();
         if (servletRequest instanceof HttpServletRequest) {
             String uri = ((HttpServletRequest)servletRequest).getRequestURI();
-            RequestDispatcher rd = servletRequest.getRequestDispatcher(uri);
-            if (rd != null) {
+            ApplicationDispatcher dispatcher = (ApplicationDispatcher)
+                servletRequest.getRequestDispatcher(uri);
+            if (dispatcher != null) {
                 origRequest.setOkToReinitializeAsync();
-                pool.execute(new Handler(rd, servletRequest, servletResponse));
+                pool.execute(new Handler(dispatcher, servletRequest,
+                                         servletResponse));
             } else {
                 log.warning("Unable to acquire RequestDispatcher for " +
                             "original request URI " + uri);
@@ -142,10 +145,12 @@ public class AsyncContextImpl implements AsyncContext {
         origRequest.setAttribute(Globals.DISPATCHER_TYPE_ATTR,
                                  DispatcherType.ASYNC);
         origRequest.cancelAsyncTimeoutTask();
-        RequestDispatcher rd = servletRequest.getRequestDispatcher(path);
-        if (rd != null) {
+        ApplicationDispatcher dispatcher = (ApplicationDispatcher)
+            servletRequest.getRequestDispatcher(path);
+        if (dispatcher != null) {
             origRequest.setOkToReinitializeAsync();
-            pool.execute(new Handler(rd, servletRequest, servletResponse));
+            pool.execute(new Handler(dispatcher, servletRequest,
+                                     servletResponse));
         } else {
             log.warning("Unable to acquire RequestDispatcher for " + path);
         }
@@ -159,10 +164,12 @@ public class AsyncContextImpl implements AsyncContext {
         origRequest.setAttribute(Globals.DISPATCHER_TYPE_ATTR,
                                  DispatcherType.ASYNC);
         origRequest.cancelAsyncTimeoutTask();
-        RequestDispatcher rd = context.getRequestDispatcher(path);
-        if (rd != null) {
+        ApplicationDispatcher dispatcher = (ApplicationDispatcher)
+            context.getRequestDispatcher(path);
+        if (dispatcher != null) {
             origRequest.setOkToReinitializeAsync();
-            pool.execute(new Handler(rd, servletRequest, servletResponse));
+            pool.execute(new Handler(dispatcher, servletRequest,
+                                     servletResponse));
         } else {
             log.warning("Unable to acquire RequestDispatcher for " + path +
                         "in servlet context " + context.getContextPath());
@@ -207,11 +214,11 @@ public class AsyncContextImpl implements AsyncContext {
 
     static class Handler implements Runnable {
 
-        private final RequestDispatcher dispatcher;
+        private final ApplicationDispatcher dispatcher;
         private final ServletRequest request;
         private final ServletResponse response;
 
-        Handler(RequestDispatcher dispatcher, ServletRequest request,
+        Handler(ApplicationDispatcher dispatcher, ServletRequest request,
                 ServletResponse response) {
             this.dispatcher = dispatcher;
             this.request = request;
@@ -220,7 +227,7 @@ public class AsyncContextImpl implements AsyncContext {
        
         public void run() {
             try {
-                dispatcher.forward(request, response);
+                dispatcher.dispatch(request, response, DispatcherType.ASYNC);
             } catch (Exception e) {
                 // Log warning
             }
