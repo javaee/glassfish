@@ -76,29 +76,6 @@
 		    Content Missing!
 		</ui:insert>
             </ui:insert>
-	    <div class="yui-skin-sam">
-		<div id="top1"></div>
-		<div id="bottom1"></div>
-		<div id="left1"></div>
-		<div id="right1"></div>
-		<div id="center1"></div>
-	    </div>
-	    <script type="text/javascript" src="/jsft_resource.jsf?contentSourceId=resourceCS&amp;filename=/yui/yahoo/yahoo-min.js"></script>
-	    <script type="text/javascript" src="/jsft_resource.jsf?contentSourceId=resourceCS&amp;filename=/yui/event/event-min.js"></script>
-	    <script type="text/javascript">
-		Event.onDOMReady(function() {
-		    var layout = new YAHOO.widget.Layout({
-			units: [
-			    { position: 'top', height: 28, body: 'top1' },
-			    { position: 'right', header: 'Right', width: 300, resize: true, footer: 'Footer', collapse: true, scroll: true, body: 'right1', animate: true, gutter: '5' },
-			    { position: 'bottom', height: 30, body: 'bottom1' },
-			    { position: 'left', header: 'Left', width: 200, body: 'left1', gutter: '5' },
-			    { position: 'center', body: 'center1', gutter: '5 0' }
-			    ]});
-		    layout.render();
-		    });
-	    </script>
-
         </div>
 
 	<!-- Add Tag Panel -->
