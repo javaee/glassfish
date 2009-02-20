@@ -18,7 +18,7 @@ public class EntityResolverImpl extends WebEntityResolver {
     public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
         String fileName = knownDTDs.get(publicId);
         if(fileName!=null) {
-            URL url = getClass().getResource("/glassfish/lib/dtds/"+fileName);
+            URL url = getClass().getResource("/glassfishv3-prelude/glassfish/lib/dtds/"+fileName);
             if(url!=null)
                 return new InputSource(url.toExternalForm());
         }
