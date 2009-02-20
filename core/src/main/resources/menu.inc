@@ -15,46 +15,6 @@
 
 </sc:subMenu>
 
-		<!--
-		<sc:subMenu value="Create" id="createMenu">
-		<sc:menuItem value="JDBC Resource" url="#" />
-		<sc:menuItem value="JDBC Connection Pool" url="#" />
-
-		<sc:subMenu value="JMS" id="jmsMenu">
-		<sc:menuItem value="JMS Connection Factory" url="#" />
-		<sc:menuItem value="JMS Destination Resource" url="#" />
-		<sc:menuItem value="JMS Host" url="#" />
-		<sc:menuItem value="JMS Physical Destination" url="#" />
-		</sc:subMenu>
-
-		<sc:menuItem value="JavaMail Session" url="#" />
-		<sc:menuItem value="JNDI Custom Resource" url="#" />
-		<sc:menuItem value="JNDI External Resource" url="#" />
-
-		<sc:subMenu value="Connectors" id="connectorsMenu">
-		<sc:menuItem value="Connection Resource" url="#" />
-		<sc:menuItem value="Connection Pool" url="#" />
-		<sc:menuItem value="Admin Object Resource" url="#" />
-		</sc:subMenu>
-
-		<sc:subMenu value="Security" id="securityMenu">
-		<sc:menuItem value="Realm" url="#" />
-		<sc:menuItem value="JACC Provider" url="#" />
-		<sc:menuItem value="Audit Module" url="#" />
-		<sc:menuItem value="Message Security Configuration" url="#" />
-		</sc:subMenu>
-
-		<sc:menuItem value="HTTP Listener" url="#" />
-		<sc:menuItem value="Virtual Server" url="#" />
-		<sc:menuItem value="IIOP Listener" url="#" />
-		<sc:menuItem value="Thread Pool" url="#" />
-		<sc:menuItem value="Management Rule" url="#" />
-		<sc:menuItem value="Node Agent Reference" url="#" />
-		<sc:menuItem value="Cluster" url="#" />
-		<sc:menuItem value="HTTP Load Balancer" url="#" />
-		</sc:subMenu>
-		-->
-
 <sc:subMenu value="Edit" id="editMenu">
     <sc:subMenu value="Applications" id="applications">
 	<sc:menuItem value="Enterprise Applications" url="#{request.contextPath}/layouttest.jsf?page=Enterprise+Applications" />
@@ -79,8 +39,10 @@
 	<sc:menuItem value="Connector Service" url="#{request.contextPath}/layouttest.jsf?page=Connector+Service" />
 	<sc:menuItem value="Diagnostic Service" url="#{request.contextPath}/layouttest.jsf?page=Diagnostic+Service" />
 	<sc:subMenu value="Security">
-	    <sc:menuItem value="Realm" url="#{request.contextPath}/layouttest.jsf?page=Realm" />
-	    <sc:menuItem value="JACC Provider" url="#{request.contextPath}/layouttest.jsf?page=JACC+Provider" />
+	    <sc:menuItem value="Security Settings" url="#{request.contextPath}/security/security.jsf" />
+	    <sc:menuItem value="Realms" url="#{request.contextPath}/security/realms.jsf" />
+	    <sc:menuItem value="Realms" url="#{request.contextPath}/layouttest.jsf?page=Realms" />
+	    <sc:menuItem value="JACC Providers" url="#{request.contextPath}/layouttest.jsf?page=JACC+Providers" />
 	    <sc:menuItem value="Thread Pools" url="#{request.contextPath}/layouttest.jsf?page=Thread+Pools" />
 	</sc:subMenu>
 	<sc:subMenu value="HTTP Service">
