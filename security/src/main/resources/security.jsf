@@ -34,27 +34,22 @@
  holder.
 -->
 
-<sun:page id="page1">
-    <!beforeCreate
-        setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
-        setResourceBundle(key="i18nSecurity" bundle="org.glassfish.security.admingui.Strings")
-        setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
-    />     
-   <event>
+<!initPage
+    setResourceBundle(key="i18nSecurity" bundle="org.glassfish.security.admingui.Strings")
+	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+/>
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18nSecurity.security.Security}" >
+<!define name="content">
+    <event>
         <!beforeCreate
-        setPageSessionAttribute(key="configName", value="$requestParameter{configName}");
+        getRequestValue(key="configName" value=>$page{configName}  default="server-config");
         getSecuritySettings(ConfigName="#{configName}", Audit=>$attribute{audit}, Principal=>$attribute{principal}, Password=>$attribute{password}, RoleMapping=>$attribute{roleMapping}, Mapped=>$attribute{mapped}, Realm=>$attribute{realm}, Module=>$attribute{module}, Jacc=>$attribute{jacc}, Properties=>$page{props});
         getTableList(Properties="#{props}", TableList=>$attribute{tableList});
         />   
     </event>   
     #include "/shared/restart.inc"
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18nSecurity.security.Security}" parseOnLoad="false">
-            <sun:script url="/resource/js/restart.js" />
-        </sun:head>
-        <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-#include "/shared/treeBreadcrumbs.inc"
+   #include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc"
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18nSecurity.security.Security}" 
@@ -136,7 +131,6 @@
                 </sun:title>
 	<sun:hidden id="helpKey" value="$resource{help.security}" />
             </sun:form>
-        </sun:body>
 #include "/shared/changeButtonsJS.inc"         
-    </sun:html>
-</sun:page>
+</define>
+</composition>
