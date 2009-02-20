@@ -35,11 +35,14 @@
 -->
 <!-- jdbc/jdbcConnectionPools.jsf -->
 
-<sun:page id="page1">
+<!initPage
+	setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings");
+    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+/>
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18njdbc.jdbcConnectionPools.pageTitle}" >
+<!define name="content">
+    <event>
     <!beforeCreate
-        setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
-        setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings");
-	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
         getJDBCConnectionPoolMaps(selectedRows="$attribute{selectedRows}"  result=>$attribute{listOfRows} );
         setPageSessionAttribute(key="resHeader" value="$resource{i18n.resourcesTable.colResType}");
         setPageSessionAttribute(key="extraInfoHeader" value="$resource{i18n.resourcesTable.colDatasource}");
@@ -48,15 +51,10 @@
         setPageSessionAttribute(key="listPageLink" value="/jdbc/jdbcConnectionPools.jsf");
         setPageSessionAttribute(key="resourceType" value="jdbcConnectionPool");
         />
+    </event>
 #include "/shared/restart.inc"        
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18njdbc.jdbcConnectionPools.pageTitle}" >
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>
-
-        <sun:body id="body3" onLoad="admingui.nav.refreshTree('form:tree:resources:JDBC:connectionPoolResources', 'jdbc/jdbcTreeNode.jsf', 'JDBC:connectionPoolResources'); synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-#include "/shared/treeBreadcrumbs.inc"
+   #include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc"
                  <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcConnectionPools.pageTitle}"
                  helpText="$resource{i18njdbc.jdbcConnectionPools.pageTitleHelp}"/>
@@ -64,7 +62,6 @@
 #include "poolTable.inc"
 	<sun:hidden id="helpKey" value="$resource{help.jdbcConnectionPools}" />
             </sun:form>
-        </sun:body>
 #include "/shared/changeButtonsJS.inc"        
-    </sun:html>
-</sun:page>
+</define>
+</composition>

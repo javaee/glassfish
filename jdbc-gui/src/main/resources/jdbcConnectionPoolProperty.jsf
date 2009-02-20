@@ -35,25 +35,25 @@
  holder.
 -->
 <!-- jdbc/jdbcConnectionPoolProperty.jsf -->
-<sun:page id="page1">
+<!initPage
+    setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings")
+	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+/>
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18njdbc.jdbcConnectionPool.propertyPageTitle}" >
+<!define name="content">
+    <event>
     <!beforeCreate
-        setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
-        setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings")
-	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
         getRequestValue(key="name" value=>$page{jndiName});
+        setSessionAttribute(key="jdbcPoolTabs" value="propertyTab");
         getJdbcConnectionPoolProperty(
                 jndiName = "#{jndiName}"
                 properties => $page{props} );
                 getTableList(Properties="$pageSession{props}", TableList=>$attribute{tableList}); 
         />
+    </event>
 #include "/shared/restart.inc"        
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18njdbc.jdbcConnectionPool.propertyPageTitle}" parseOnLoad="false" >
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>
-        <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-#include "/shared/treeBreadcrumbs.inc"
+   #include "/shared/treeBreadcrumbs.inc"
 #include "jdbcConnectionPoolTabs.inc"
 #include "/shared/alertMsg.inc"
                 <!-- Page Title -->
@@ -77,15 +77,19 @@
                         />
 
                     </sun:button>
+                    <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.Cancel}" >
+                        <!command
+                            redirect(page="#{request.contextPath}/jdbc/jdbcConnectionPools.jsf");
+                        />
+                    </sun:button>
                     </sun:panelGroup>
                     </facet>                     
                 </sun:title>
 #include "/shared/propertyTable.inc"
 	<sun:hidden id="helpKey" value="$resource{help.jdbcConnectionPoolProperty}" />
             </sun:form>
-        </sun:body>
 #include "/shared/changeButtonsJS.inc"
-    </sun:html>
-</sun:page>
+</define>
+</composition>
 
 

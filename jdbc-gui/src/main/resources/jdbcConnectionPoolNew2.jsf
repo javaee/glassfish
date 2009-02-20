@@ -45,33 +45,30 @@
 
 <!initPage
     setComponentRequired(id="form2:sheet:generalSheet:dsProp:datasource" required="$requestParameter{form2:validate}" )
+    setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings")
+    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
 />
 
-<sun:page id="page1">
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18njdbc.jdbcConnectionPool.Step2PageTitle}" >
+<!define name="content">
+
     <event>
         <!beforeEncode
             getUIComponent(clientId="$pageSession{tableTextField}" component=>$attribute{tableTextField});
             setDisableConnectionPoolTableField(tableField="$attribute{tableTextField}" methodValue="#{wizardPool.ConnectionValidationMethod}");
         />
     </event>
+    <event>
     <!beforeCreate
-    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
-    setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings")
-    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
-    getRequestValue(key="cancelPage" default="jdbc/jdbcConnectionPools.jsf" value=>$page{cancelPage});
-    setSessionAttribute(key="noValidation" value="#{null}")
-    getTableList(Properties="#{wizardPoolProperties}", TableList=>$attribute{tableList})
+        getRequestValue(key="cancelPage" default="jdbc/jdbcConnectionPools.jsf" value=>$page{cancelPage});
+        setSessionAttribute(key="noValidation" value="#{null}")
+        getTableList(Properties="#{wizardPoolProperties}", TableList=>$attribute{tableList})
     />
+    </event>
 
 #include "/shared/restart.inc"
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18njdbc.jdbcConnectionPool.Step2PageTitle}" parseOnLoad="false">
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>
-
-        <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="form2">
-#include "/shared/treeBreadcrumbs.inc"
+   #include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc"
             <sun:hidden id="validate"  value="TRUE" />
                 <!-- Page Title -->
@@ -175,7 +172,6 @@
                     </sun:title>
 	<sun:hidden id="helpKey" value="$resource{help.jdbcConnectionPoolNew2}" />
             </sun:form>
-        </sun:body>
 #include "/shared/changeButtonsJS.inc"
 
 <f:verbatim>
@@ -187,7 +183,7 @@
     </script>
 </f:verbatim>
 
-    </sun:html>
-</sun:page>
+</define>
+</composition>
 
 
