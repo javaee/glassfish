@@ -34,10 +34,14 @@
  holder.
 -->
 <!-- webApp/redeploy.jsf -->
-<sun:page id="page1" >
-    <!beforeCreate
-        setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
+<!initPage
+    setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
 	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+/>
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.redeploy.pageTitle}" guiTemplateOnLoad="uploadInit();">
+<!define name="content">
+    <event>
+    <!beforeCreate
         getRequestValue(key="appType" value=>$page{appType});
         getRequestValue(key="appName" value=>$page{appName});
         getRequestValue(key="nextPage" value=>$page{nextPage});
@@ -45,14 +49,10 @@
         setAttribute(key="keepSessions" value="$boolean{false}");
         getAppTypeForDisplay(appType="$pageSession{appType}" displayType=>$page{displayType});
     />
+    </event>
 #include "/shared/restart.inc"    
-<sun:html>
-	<sun:head id="propertyhead" title="$resource{i18n.redeploy.pageTitle}" parseOnLoad="false">
-                <sun:script url="/resource/js/adminjsf.js" />
-	</sun:head>
-		<sun:body onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}'); uploadInit(); ">
 	    	<sun:form id="form" method="POST" enctype="multipart/form-data">  
-#include "/shared/treeBreadcrumbs.inc"
+    #include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc"
                 <sun:title id="title" title="$resource{i18n.redeploy.pageTitle}" helpText="$resource{i18n.redeploy.pageTitleHelp}">
                     <!facet pageButtonsTop>
@@ -99,7 +99,6 @@
 #include "uploadComponent.inc"
 	<sun:hidden id="helpKey" value="$resource{help.redeploy}" />
 		</sun:form>           
-	</sun:body>
 #include "uploadJS.inc"          
-</sun:html>  
- </sun:page>
+ </define>
+</composition>

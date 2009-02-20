@@ -35,13 +35,14 @@
 -->
 <!-- applications/webApplications.jsf -->
 
+<!initPage
+    setResourceBundle(key="web" bundle="org.glassfish.web.admingui.Strings");
+/>
 //<sun:page id="page1">
-<!composition template="/layout.xhtml">
-<!define name="title">$resource{i18n.webAplications.title}</define>
+<!composition template="/layout.xhtml" guiTitle="$resource{i18n.webAplications.title}">
 <!define name="content">
     <event>
         <!beforeCreate
-            setResourceBundle(key="web" bundle="org.glassfish.web.admingui.Strings");
             getDeployedWebInfo(serverName='#{request.serverName}', result=>$attribute{listOfRows} );
             setPageSessionAttribute(key="tableTitle" value="$resource{i18n.deployTable.webApp}");
             setPageSessionAttribute(key="editLink" value="/web/webApp/webApplicationsEdit.jsf");

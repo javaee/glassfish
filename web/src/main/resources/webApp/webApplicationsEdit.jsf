@@ -34,14 +34,16 @@
  holder.
 -->
 <!-- webApp/webApplicationsEdit.jsf -->
-<!composition template="/layout.xhtml">
-//< ! define name="title">#{pageTitle}</define>
+<!initPage
+    setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
+	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+/>
+//<sun:page id="page1">
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.webApp.editPageTitle}" >
 <!define name="content">
     <event>
         <!beforeCreate
-        setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
         setSessionAttribute(key="appGeneralTabs" value="general");
-        setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
         setPageSessionAttribute(key="pageTitle" value="$resource{i18n.webApp.editPageTitle}");
         setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.webApp.editPageTitleHelp}");
         setPageSessionAttribute(key="hasJavaWebStart" value="#{false}");

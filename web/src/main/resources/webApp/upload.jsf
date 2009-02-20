@@ -34,11 +34,14 @@
  holder.
 -->
 <!-- upload.jsf -->
-<sun:page id="page1" >
-    <!beforeCreate
-        setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
-        setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
+<!initPage
+    setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
 	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+/>
+<!composition template="/layout.xhtml" guiTitle="$resource{i18n_web.war.deployTitle}"  guiTemplateOnLoad="uploadInit();"  >
+<!define name="content">
+    <event>
+    <!beforeCreate
         setPageSessionAttribute(key="displayVS" value="#{true}");
         if(! $session{supportCluster}){
             setPageSessionAttribute(key="helpid" value="$resource{help.uploadDev}");
@@ -57,15 +60,10 @@
             #getTargetsOptionsList(defaultTarget="$pageSession{target}"AvailableTargets=>$pageSession{availableTargets}, SelectedTargets=>$pageSession{selectedTargets});
         }
     />
+    </event>
 #include "/shared/restart.inc"  
-<sun:html>
-	<sun:head id="propertyhead" title="$resource{i18n_web.war.deployTitle}">
-                <sun:script url="/resource/js/adminjsf.js" />
-	</sun:head>
-
-		<sun:body onLoad="uploadInit(); " >
 	    	<sun:form id="form"> 
-#include "/shared/treeBreadcrumbs.inc"
+   #include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc"
                 <sun:title id="title" title="$resource{i18n_web.war.deployTitle}" helpText="$resource{i18n_web.war.deployTitleHelp}">
                  <!facet pageButtonsTop>
@@ -90,7 +88,6 @@
 </sun:title>
 	<sun:hidden id="helpKey" value="$pageSession{helpid}" />
 		</sun:form>           
-	</sun:body> 
 #include "uploadJS.inc"
-</sun:html>  
- </sun:page>
+ </define>
+</composition>

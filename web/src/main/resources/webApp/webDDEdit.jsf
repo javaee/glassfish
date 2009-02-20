@@ -35,8 +35,7 @@
 -->
 <!-- webApp/webDDEdit.jsf -->
 <!namespace sc="http://java.sun.com/mojarra/scales" />
-<!composition template="/layout.xhtml">
-<!define name="title">$resource{i18n.webApp.editDDPageTitle}</define>
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.webApp.editDDPageTitle}" >
 <!define name="content">
     <event>
         <!beforeCreate
@@ -46,9 +45,9 @@
             getDescriptors(appName="$pageSession{name}"  descriptors=>$attribute{descriptors});
         />
     </event>
-   #include "/shared/restart.inc"    
+#include "/shared/restart.inc"    
             <sun:form id="propertyForm">
- #include "/shared/treeBreadcrumbs.inc"
+   #include "/shared/treeBreadcrumbs.inc"
 #include "/web/webApp/appGeneralTabs.inc"         
 #include "/shared/alertMsg.inc"                
             <!-- Page Title -->
