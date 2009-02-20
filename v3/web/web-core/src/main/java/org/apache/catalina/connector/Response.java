@@ -1346,16 +1346,33 @@ public class Response
 
 
     /**
-     * Send a temporary redirect to the specified redirect location URL.
+     * Sends a temporary redirect to the specified redirect location URL.
      *
      * @param location Location URL to redirect to
      *
-     * @exception IllegalStateException if this response has
+     * @throws IllegalStateException if this response has
      *  already been committed
-     * @exception IOException if an input/output error occurs
+     * @throws IOException if an input/output error occurs
      */
-    public void sendRedirect(String location) 
-        throws IOException {
+    public void sendRedirect(String location) throws IOException {
+        sendRedirect(location, true);
+    }
+
+
+    /**
+     * Sends a temporary or permanent redirect to the specified redirect
+     * location URL.
+     *
+     * @param location Location URL to redirect to
+     * @param isTemporary true if the redirect is supposed to be temporary,
+     * false if permanent
+     *
+     * @throws IllegalStateException if this response has
+     *  already been committed
+     * @throws IOException if an input/output error occurs
+     */    
+    public void sendRedirect(String location, boolean isTemporary)
+            throws IOException {
 
         if (isCommitted())
             throw new IllegalStateException
@@ -1379,8 +1396,12 @@ public class Response
                 absolute = location;
             else
                 absolute = toAbsolute(location);
-            // END RIMOD 4642650   
-            setStatus(SC_FOUND);
+            // END RIMOD 4642650
+            if (isTemporary) {
+                setStatus(SC_MOVED_TEMPORARILY);
+            } else {
+                setStatus(SC_MOVED_PERMANENTLY);
+            }
             setHeader("Location", absolute);
 
             // According to RFC2616 section 10.3.3 302 Found,
