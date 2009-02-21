@@ -73,7 +73,7 @@
                     accessLogWriteInterval="#{accessLogWriteInterval}",
                     accessLoggingEnabled="#{accessLoggingEnabled}"
                 );
-                redirect(page="../configuration/httpService.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&configName=$pageSession{configName}");
+                redirect(page="#{request.contextPath}/web/configuration/httpService.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&configName=$pageSession{configName}");
                 />    
             </sun:button>
         </sun:panelGroup>

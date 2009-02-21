@@ -49,7 +49,8 @@
     getRequestValue(key="ssl2", value=>$page{ssl2});        
     getRequestValue(key="type", value=>$page{type});     
     setPageSessionAttribute(key="helpid" value="$resource{help.httpSSL}");
-        
+    setPageSessionAttribute(key="finalPage", value="#{request.contextPath}/web/configuration/httpListeners.jsf");
+    setSessionAttribute(key="listenersTab" value="sslTab");
     getRequestValue(key="editPage" value=>$page{editPage});        
     getRequestValue(key="pageTitle" value=>$page{pageTitle});   
     setAttribute(key="sslPageTitle" value="$resource{i18n.edJmxConnector.sslSettingsLabel}");

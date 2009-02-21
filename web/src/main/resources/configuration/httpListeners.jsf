@@ -45,9 +45,9 @@
     getRequestValue(key="configName" value=>$page{configName}  default="server-config");
     getHttpListenersList(ConfigName="$pageSession{configName}", Result=>$attribute{listOfRows} );
     setPageSessionAttribute(key="tableTitle" value="$resource{i18n.httpListeners.TableTitle}");
-    setPageSessionAttribute(key="listPageLink" value="httpListeners.jsf");
-    setPageSessionAttribute(key="createLink" value="httpListenerNew.jsf");
-    setPageSessionAttribute(key="editLink" value="/web/configuration/httpListenerEdit.jsf");
+    setPageSessionAttribute(key="listPageLink" value="#{request.contextPath}/web/configuration/httpListeners.jsf");
+    setPageSessionAttribute(key="createLink" value="#{request.contextPath}/web/configuration/httpListenerNew.jsf");
+    setPageSessionAttribute(key="editLink" value="#{request.contextPath}/web/configuration/httpListenerEdit.jsf");
     setPageSessionAttribute(key="hasDefVirtServer" value="#{true}");
     setPageSessionAttribute(key="type" value="httpListener");
     setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n.msg.JS.confirmDeleteHttpListener}");

@@ -33,6 +33,7 @@
  and therefore, elected the GPL Version 2 license, then the option applies
  only if the new code is made subject to such option by the copyright
  holder.
+
 -->
 <!-- configuration/listenersTab.inc -->
 
@@ -40,17 +41,17 @@
     <sun:tab id="listenersEdit" immediate="$boolean{true}" text="$resource{i18n.httpListeners.editTab}" >
         <!command
             setSessionAttribute(key="listenersTab" value="listenersEdit");
-	    urlencode(value="#{tabName}" value=>$page{tabName});
-            redirect(page="#{editPage}?configName=#{configName}&name=#{tabName}");
+            urlencode(value="#{tabName}" value=>$page{tabName});
+            redirect(page="#{request.contextPath}/web/configuration/httpListenerEdit.jsf?configName=#{configName}&name=#{tabName}");
         /> 
     </sun:tab>
     <sun:tab id="sslTab" immediate="$boolean{true}" text="$resource{i18n.httpListeners.editSSLTab}" >
         <!command
            setSessionAttribute(key="listenersTab" value="sslTab");
-	   urlencode(value="#{pageTitle}" value=>$page{pageTitle});
-	   urlencode(value="#{tabName}" value=>$page{tabName});
-	   urlencode(value="#{configName}" value=>$page{configName});
-           redirect(page="listenersSslTab.jsf?configName=#{configName}&name=#{tabName}&type=#{type}&pageTitle=#{pageTitle}&editPage=#{editPage}&ssl2=#{ssl2}");
+           urlencode(value="#{pageTitle}" value=>$page{pageTitle});
+           urlencode(value="#{tabName}" value=>$page{tabName});
+           urlencode(value="#{configName}" value=>$page{configName});
+           redirect(page="#{request.contextPath}/web/configuration/listenersSslTab.jsf?configName=#{configName}&name=#{tabName}&type=#{type}&pageTitle=#{pageTitle}&editPage=#{editPage}&ssl2=#{ssl2}");
         /> 
     </sun:tab>
 </sun:tabSet>

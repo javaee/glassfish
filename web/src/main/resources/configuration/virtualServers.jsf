@@ -48,9 +48,9 @@
     getRequestValue(key="configName" value=>$page{configName} default="server-config");
     getVirtualServerList(ConfigName="$pageSession{configName}", result=>$attribute{listOfRows} );
     setPageSessionAttribute(key="tableTitle" value="$resource{i18n.vs.TableTitle}");
-    setPageSessionAttribute(key="listPageLink" value="virtualServers.jsf");
-    setPageSessionAttribute(key="createLink" value="virtualServerNew.jsf");
-    setPageSessionAttribute(key="editLink" value="/web/configuration/virtualServerEdit.jsf");
+    setPageSessionAttribute(key="listPageLink" value="#{request.contextPath}/web/configuration/virtualServers.jsf");
+    setPageSessionAttribute(key="createLink" value="#{request.contextPath}/web/configuration/virtualServerNew.jsf");
+    setPageSessionAttribute(key="editLink" value="#{request.contextPath}/web/configuration/virtualServerEdit.jsf");
     setPageSessionAttribute(key="hasPort" value="#{false}");
     setPageSessionAttribute(key="hasClassname" value="#{false}");
     setPageSessionAttribute(key="hasState" value="#{true}");

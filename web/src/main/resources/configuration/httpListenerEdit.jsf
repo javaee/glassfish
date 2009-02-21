@@ -44,14 +44,14 @@
 <!define name="content">
     <event>
         <!beforeCreate
-    setSessionAttribute(key="listenersTab" value="listenersEdit");    
-    setSessionAttribute(key="ssl2" value="#{true}");
-    getRequestValue(key="configName" value=>$page{configName} default="server-config");
-    getRequestValue(key="name", value=>$page{tabName});        
-    setPageSessionAttribute(key="type" value="http");
-    setPageSessionAttribute(key="editPage" value="httpListenerEdit.jsf");
-    setPageSessionAttribute(key="pageTitle" value="$resource{i18n.headings.EditHttpListener}");
-    setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.httpListeners.EditHttpListenerInfo}");
+            setSessionAttribute(key="listenersTab" value="listenersEdit");
+            setSessionAttribute(key="ssl2" value="#{true}");
+            getRequestValue(key="configName" value=>$page{configName} default="server-config");
+            getRequestValue(key="name", value=>$page{tabName});
+            setPageSessionAttribute(key="type" value="http");
+            setPageSessionAttribute(key="editPage" value="#{request.contextPath}/web/configuration/httpListenerEdit.jsf");
+            setPageSessionAttribute(key="pageTitle" value="$resource{i18n.headings.EditHttpListener}");
+            setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.httpListeners.EditHttpListenerInfo}");
     />
     </event>
 #include "/shared/restart.inc"    
