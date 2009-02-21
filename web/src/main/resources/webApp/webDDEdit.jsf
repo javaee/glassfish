@@ -52,8 +52,9 @@
 #include "/shared/alertMsg.inc"                
             <!-- Page Title -->
             <sun:title id="propertyContentPage" title="$resource{i18n.webApp.editDDPageTitle}" helpText="$resource{i18n.webApp.editDDPageTitleHelp}" >
-                <!-- <!facet pageButtonsTop>
+                <!facet pageButtonsTop>
                     <sun:panelGroup id="topButtons">
+                        <!--
                         <sun:button id="saveButton" text="$resource{i18n.button.Save}" primary="#{true}">  
                             <!command
                             getUIComponent(clientId="$pageSession{editEnvTableRowGroupId}", component=>$attribute{envTableRowGroup});
@@ -80,9 +81,14 @@
                             prepareSuccessfulMsg();
                             />
                         </sun:button>
+                        -->
+                        <sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" primary="#{false}"  immediate="#{true}">
+                        <!command
+                            redirect(page="#{request.contextPath}/web/webApp/webApplications.jsf");
+                        />
+                    </sun:button>
                     </sun:panelGroup>
                 </facet> 
-                -->
             </sun:title>
             <!-- PropertySheet .... -->
             <sun:propertySheet id="propertySheet">			 
