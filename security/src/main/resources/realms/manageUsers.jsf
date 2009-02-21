@@ -34,32 +34,31 @@
  holder.
 -->
 
-<sun:page id="page1">
-    <!beforeCreate
-    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
+<!initPage
     setResourceBundle(key="i18nSecurity" bundle="org.glassfish.security.admingui.Strings")
-    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
-    getRequestValue(key="configName" value=>$page{configName});
+	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+/>
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18nSecurity.manageUsers.TablePageTitle}" >
+<!define name="content">
+    <event>
+    <!beforeCreate
+    getRequestValue(key="configName" value=>$page{configName} default="server-config");
     getRequestValue(key="name" value=>$page{name});
     getFileUsers(Realm="#{name}" result=>$attribute{listOfRows} );
     />
+    </event>
 #include "/shared/restart.inc"    
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18nSecurity.manageUsers.TablePageTitle}">
-            <sun:script url="/resource/js/restart.js" />
-            <sun:script url="/resource/js/adminjsf.js" />
-#include "/shared/alertMsg.inc"        
-        </sun:head>
-        <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}');  reloadHeaderFrame();">
+ 
             <sun:form id="propertyForm">
-#include "/shared/treeBreadcrumbs.inc"
+   #include "/shared/treeBreadcrumbs.inc"
+#include "/shared/alertMsg.inc"
                 <sun:title id="propertyContentPage" title="$resource{i18nSecurity.manageUsers.TablePageTitle}" 
                 helpText="$resource{i18nSecurity.manageUsers.TablePageHelp}">
                     <!facet pageButtonsTop>
                     <sun:panelGroup id="topButtons">
                         <sun:button id="cancelButton" immediate="#{true}" text="$resource{i18n.button.Back}" primary="#{false}">
                             <!command
-                            redirect(page="realmEdit.jsf?name=#{name}&configName=#{configName}");
+                            redirect(page="#{request.contextPath}/security/realms/realmEdit.jsf?name=#{name}&configName=#{configName}");
                             />
                         </sun:button>
 
@@ -79,7 +78,7 @@
                     <!facet actionsTop>
                     <sun:panelGroup id="topActionsGroup1">
                         <sun:button id="newButton" text="$resource{i18n.button.New}" >
-                            <!command redirect(page="manageUserNew.jsf?name=#{name}&configName=#{configName}"); />
+                            <!command redirect(page="#{request.contextPath}/security/realms/manageUserNew.jsf?name=#{name}&configName=#{configName}"); />
                         </sun:button>
 
                         <sun:button id="deleteButton" text="$resource{i18n.button.Delete}" disabled="#{false}" primary="#{false}"
@@ -96,7 +95,7 @@
 				redirect("#{request.contextPath}/index.jsf");
                             }
                             setAttribute(key="selectedRows" value="${selectedRows}");
-                            redirect(page="manageUsers.jsf?name=#{name}&configName=#{configName}");
+                            redirect(page="#{request.contextPath}/security/realms/manageUsers.jsf?name=#{name}&configName=#{configName}");
                             />            
                         </sun:button>
                     </sun:panelGroup>
@@ -123,6 +122,6 @@
                 </sun:table>
                 <sun:hidden id="helpKey" value="$resource{help.manageUsers}" />
             </sun:form>
-        </sun:body>
-    </sun:html>
-</sun:page>
+</define>
+</composition>
+

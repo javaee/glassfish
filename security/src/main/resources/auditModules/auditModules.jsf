@@ -35,29 +35,28 @@
  holder.
 -->
 
-<sun:page id="page1">
-    <!beforeCreate
-    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
+<!initPage
     setResourceBundle(key="i18nSecurity" bundle="org.glassfish.security.admingui.Strings")
-    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
-    getRequestValue(key="configName" value=>$page{configName});
+	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+/>
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18nSecurity.auditModule.PageTitle}" >
+<!define name="content">
+    <event>
+    <!beforeCreate
+    getRequestValue(key="configName" value=>$page{configName}  default="server-config");
     getAuditModuleList(ConfigName="$pageSession{configName}" result=>$attribute{listOfRows} );
     setPageSessionAttribute(key="tableTitle" value="$resource{i18nSecurity.auditModule.TableTitle}");
     setPageSessionAttribute(key="type" value="auditModules");
     setPageSessionAttribute(key="hasAuditColumn" value="$boolean{true}");
-    setPageSessionAttribute(key="listPageLink" value="auditModules.jsf");
-    setPageSessionAttribute(key="createLink" value="auditModuleNew.jsf");
-    setPageSessionAttribute(key="editLink" value="/security/auditModules/auditModuleEdit.jsf");
+    setPageSessionAttribute(key="listPageLink" value="#{request.contextPath}/security/auditModules/auditModules.jsf");
+    setPageSessionAttribute(key="createLink" value="#{request.contextPath}/security/auditModules/auditModuleNew.jsf");
+    setPageSessionAttribute(key="editLink" value="#{request.contextPath}/security/auditModules/auditModuleEdit.jsf");
     setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n.msg.JS.confirmDeleteAuditModules}");
     />
+    </event>
 #include "/shared/restart.inc"    
-    <sun:html id="html2">
-        <sun:head id="propertyhead"  title="$resource{i18nSecurity.auditModule.PageTitle}" parseOnLoad="false">
-            <sun:script url="/resource/js/restart.js" />
-        </sun:head>
-        <sun:body id="body3" onLoad="admingui.nav.refreshTree('form:tree:configuration:security', 'security/securityServiceNode.jsf', 'security'); synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-#include "/shared/treeBreadcrumbs.inc"
+  #include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc" 
                  <sun:title id="propertyContentPage" title="$resource{i18nSecurity.auditModule.PageTitle}"
                  helpText="$resource{i18nSecurity.auditModule.PageHelp}"/>
@@ -65,7 +64,6 @@
 #include "/security/configTable.inc"    
                 <sun:hidden id="helpKey" value="$resource{help.auditModules}" />
             </sun:form>
-        </sun:body>
 #include "/shared/changeButtonsJS.inc"  
-    </sun:html>
-</sun:page>
+</define>
+</composition>

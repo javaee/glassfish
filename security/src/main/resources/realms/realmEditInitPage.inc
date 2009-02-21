@@ -41,7 +41,7 @@
    # use own JS to check requird field.
 -->
 <!initPage
-
+    setResourceBundle(key="i18nSecurity" bundle="org.glassfish.security.admingui.Strings")
     setComponentRequired(id="form1:fileSection:jaax:jaax" required="$boolean{false}" );
     setComponentRequired(id="form1:fileSection:keyFile:keyFile" required="$boolean{false}" );
     setComponentRequired(id="form1:ldapSection:jaax:jaax" required="$boolean{false}" );

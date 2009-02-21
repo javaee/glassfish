@@ -37,20 +37,22 @@
 
 <!initPage 
     setAttribute(key="edit" value="#{true}" )
-/>
-<sun:page id="page2">
-    <!beforeCreate
-    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
     setResourceBundle(key="i18nSecurity" bundle="org.glassfish.security.admingui.Strings")
-    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
-    setPageSessionAttribute(key="configName", value="$requestParameter{configName}");
-    setPageSessionAttribute(key="name", value="$requestParameter{name}");        
+/>
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18nSecurity.auditModule.EditPageTitle}" >
+<!define name="content">
+    <event>
+    <!beforeCreate
+    getRequestValue(key="configName" value=>$page{configName}  default="server-config");
+    getRequestValue(key="name" value=>$page{name} );
     setPageSessionAttribute(key="pageTitle" value="$resource{i18nSecurity.auditModule.EditPageTitle}");
     setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18nSecurity.auditModule.EditPageTitleHelp}");
     setPageSessionAttribute(key="helpKey" value="$resource{help.auditModuleEdit}");
     />
+    </event>
 
 #include "/security/auditModules/auditModule.inc"               
 
-</sun:page>
+</define>
+</composition>
 

@@ -55,17 +55,8 @@
     />
 </event>
 
-<sun:html id="html">
-    <sun:head id="propertyhead" title="#{pageTitle}" parseOnLoad="false" parseOnLoad="false">
-        <sun:script url="/resource/js/selectElements.js" />
-        <sun:script url="/resource/js/adminjsf.js" />
-    </sun:head>
-
-    <sun:body id="body" 
-        onLoad="initClassname('#{myOption}'); synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
         <sun:form id="form1">
-
-#include "/shared/treeBreadcrumbs.inc"
+    #include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc"
         <!-- there seems to be a bug with the radio button component where if we switch from 'input' to 'predefine',
              the selected value will not get updated.  It will always stay as 'input'.
@@ -76,7 +67,7 @@
         <sun:title id="propertyContentPage" title="#{pageTitle}" helpText="#{pageTitleHelp}">
             <sun:button id="manageUsersButton" rendered="#{showUserButton}" immediate="#{true}" style="margin-left: 8pt"  text="$resource{i18n.button.ManageUsers}" >
                 <!command
-                    redirect(page="manageUsers.jsf?name=#{name}&configName=#{configName}");
+                    redirect(page="#{request.contextPath}/security/realms/manageUsers.jsf?name=#{name}&configName=#{configName}");
                 />
             </sun:button>
 
@@ -97,8 +88,5 @@
         <sun:hidden id="helpKey" value="#{helpKey}" />
     </sun:form>
     "<br/><br/>
-
-    </sun:body>
 #include "/security/realms/realmjs.inc"
 #include "/shared/changeButtonsJS.inc"
-</sun:html>

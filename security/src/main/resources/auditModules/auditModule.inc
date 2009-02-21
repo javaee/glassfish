@@ -35,14 +35,8 @@
 -->
 
 #include "/shared/restart.inc"    
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="#{pageTitle}" parseOnLoad="false">
-            <sun:script url="/resource/js/restart.js" />
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>
-        <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-#include "/shared/treeBreadcrumbs.inc"
+   #include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc"
 
     <!-- Page Title -->
@@ -82,12 +76,12 @@
                     Classname="#{classname}"
                     newProps="${newProps}"
                 );             
-                redirect(page="auditModules.jsf?configName=#{configName}")
+                redirect(page="#{request.contextPath}/security/auditModules/auditModules.jsf?configName=#{configName}")
             />
         </sun:button>
-        <sun:button id="cancelButton" rendered="#{!edit}" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.Cancel}" >
+        <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.Cancel}" >
             <!command
-                redirect(page="auditModules.jsf?configName=#{configName}");
+                redirect(page="#{request.contextPath}/security/auditModules/auditModules.jsf?configName=#{configName}");
             />
         </sun:button>
         </sun:panelGroup>
@@ -131,8 +125,6 @@
                 <sun:hidden id="helpKey" value="#{helpKey}" />
             </sun:form>
             "<br/><br/>
-        </sun:body>
 #include "/shared/changeButtonsJS.inc"         
-    </sun:html>
 
 
