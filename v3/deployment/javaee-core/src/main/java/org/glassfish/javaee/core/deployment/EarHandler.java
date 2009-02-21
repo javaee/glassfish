@@ -42,7 +42,9 @@ import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.api.deployment.archive.CompositeHandler;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.DeployCommandParameters;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.deployment.common.DeploymentUtils;
+import org.glassfish.deployment.common.DeploymentContextImpl;
 import org.glassfish.internal.deployment.Deployment;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
@@ -50,6 +52,7 @@ import org.jvnet.hk2.component.Habitat;
 import org.xml.sax.SAXParseException;
 import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import com.sun.enterprise.deployment.deploy.shared.Util;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.deployment.archivist.ApplicationArchivist;
 import com.sun.enterprise.deployment.Application;
@@ -84,6 +87,9 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
 
     @Inject
     ArchiveFactory archiveFactory;
+
+    @Inject
+    ServerEnvironment env;
     
     public String getArchiveType() {
         return "ear";
@@ -177,8 +183,24 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                 try {
                     ArchiveHandler handler = deployment.getArchiveHandler(sub);
                     if (handler!=null) {
-                        // todo : this is a hack, once again, the handler is assuming a file:// url
-                        DeploymentContext subContext = deployment.getContext(context.getLogger(), sub, context.getCommandParameters(DeployCommandParameters.class));
+                        // todo : this is a hack, once again, 
+                        // the handler is assuming a file:// url
+                        DeploymentContext subContext = 
+                            new DeploymentContextImpl(context.getLogger(), 
+                            sub, 
+                            context.getCommandParameters(
+                                DeployCommandParameters.class), env) {
+
+                            @Override
+                            public File getScratchDir(String subDirName) {
+                                String modulePortion = Util.getURIName(
+                                    getSource().getURI());
+                                return (new File(super.getScratchDir(
+                                    subDirName), modulePortion));
+                            }
+                        };
+
+
                         ClassLoader subCl = handler.getClassLoader(cl, subContext);
                         cl.addModuleClassLoader(md.getArchiveUri(), subCl);
                     }

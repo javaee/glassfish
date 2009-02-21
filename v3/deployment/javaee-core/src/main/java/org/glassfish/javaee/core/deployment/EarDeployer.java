@@ -53,6 +53,7 @@ import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import com.sun.enterprise.deployment.deploy.shared.Util;
 import com.sun.logging.LogDomains;
 
 import java.util.*;
@@ -313,6 +314,14 @@ public class EarDeployer implements Deployer {
                     @Override
                     public ReadableArchive getSource() {
                         return subArchive;
+                    }
+
+                    @Override
+                    public File getScratchDir(String subDirName) {
+                        String modulePortion = Util.getURIName(
+                            getSource().getURI());
+                        return (new File(super.getScratchDir(subDirName), 
+                            modulePortion));
                     }
 
                     @Override
