@@ -53,9 +53,8 @@ import java.util.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-//import com.sun.ejb.codegen.CMPGenerator;
-//import com.sun.ejb.codegen.EjbcContext;
-import com.sun.ejb.codegen.GeneratorException;
+import org.glassfish.api.deployment.DeploymentContext;
+import com.sun.jdo.spi.persistence.support.ejb.codegen.GeneratorException;
 
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.IASEjbCMPEntityDescriptor;
@@ -80,6 +79,7 @@ import com.sun.jdo.api.persistence.mapping.ejb.ConversionException;
 import com.sun.jdo.spi.persistence.support.ejb.enhancer.meta.EJBMetaDataModelImpl;
 import com.sun.jdo.spi.persistence.support.ejb.model.DeploymentDescriptorModel;
 import com.sun.jdo.spi.persistence.support.ejb.ejbqlc.EJBQLException;
+import com.sun.jdo.spi.persistence.support.ejb.codegen.CMPGenerator;
 
 import com.sun.jdo.api.persistence.support.JDOUserException;
 
@@ -101,7 +101,7 @@ import org.netbeans.modules.schema2beans.Schema2BeansException;
  * @author Marina Vatkina
  */
 public class JDOCodeGenerator 
-    implements /* CMPGenerator ,*/ DatabaseConstants {
+    implements CMPGenerator, DatabaseConstants {
 
     /**
      * Signature with CVS keyword substitution for identifying the generated code
@@ -118,9 +118,9 @@ public class JDOCodeGenerator
         I18NHelper.loadBundle(DeploymentDescriptorModel.class), 
         I18NHelper.loadBundle(Model.class));
 
-    private ArrayList files = new ArrayList();
+    private ArrayList<File> files = new ArrayList<File>();
 
-    //private EjbcContext ejbcContext = null;
+    private DeploymentContext ctx = null;
     private ClassLoader loader = null;
     private JDOConcreteBeanGenerator cmp11Generator;
     private JDOConcreteBeanGenerator cmp20Generator;
@@ -144,29 +144,27 @@ public class JDOCodeGenerator
     private static String signatures = null;
 
     /**
-     * @see CMPGenerator#init(EjbBundleDescriptor, EjbcContext, String)
+     * @see CMPGenerator#init(EjbBundleDescriptor, DeploymentContext, String)
      */
-/*
-    public void init(EjbBundleDescriptor bundle, EjbcContext ejbcContext,
+    public void init(EjbBundleDescriptor bundle, DeploymentContext ctx,
         String bundlePathName, String generatedXmlsPathName) 
         throws GeneratorException {
 
         if (logger.isLoggable(Logger.FINE))
             logger.fine("cmp gen init"); // NOI18N
 
-        this.ejbcContext = ejbcContext;
+        this.ctx = ctx;
         this.generatedXmlsPath = generatedXmlsPathName;
         this.inputFilesPath = bundlePathName;
-        this.classout = ejbcContext.getStubsDir(); 
+        this.classout = ctx.getScratchDir("ejb");
 
-        init(bundle, ejbcContext.getDescriptor().getClassLoader(), 
-            bundlePathName, false);
+        init(bundle, ctx.getClassLoader(), bundlePathName, false);
     }
-  */
+
     /**
      * @see CMPGenerator#init(EjbBundleDescriptor, ClassLoader, String)
      *
-     * This method should be merged with {@link #init(EjbBundleDescriptor, EjbcContext, String)}
+     * This method should be merged with {@link #init(EjbBundleDescriptor, DeploymentContext, String)}
      * when TestFramework is fixed for optional pm-descriptors and java2db support.
      *
      * @deprecated
@@ -378,7 +376,7 @@ public class JDOCodeGenerator
         }
 
         try {
-            Collection newfiles = null;
+            Collection<File> newfiles = null;
     
             if (!ejbcmp.isEJB20())
                 ejbcmp.setQueryParser(jdoqlParamDeclParser);
@@ -424,11 +422,11 @@ public class JDOCodeGenerator
     /** Generate PC class for the ConcreteImpl bean.
      * @see CMPGenerator#generate(IASEjbCMPEntityDescriptor, File, File)
      */
-    private Collection generatePC(IASEjbCMPEntityDescriptor ejbcmp,
+    private Collection<File> generatePC(IASEjbCMPEntityDescriptor ejbcmp,
         File srcout, File classout)
         throws IOException {
 
-        ArrayList fileList = new ArrayList();
+        ArrayList<File> fileList = new ArrayList<File>();
         Main gen = new Main(ejbModel, srcout);
         String className = nameMapper.getPersistenceClassForEjbName(ejbcmp.getName());
 
@@ -637,13 +635,12 @@ public class JDOCodeGenerator
     private void loadOrCreateMappingClasses(boolean ignoreSunDeploymentDescriptors) 
         throws IOException, GeneratorException {
 
-/*
         try {
             SchemaElement schema = mappingGenerator.generateMapping(
-                    ejbcContext, inputFilesPath, generatedXmlsPath, classout,
+                    ctx, inputFilesPath, generatedXmlsPath, classout,
                     ignoreSunDeploymentDescriptors);
             // If this is from verify, do not create DDL.
-            if (ejbcContext != null 
+            if (ctx != null 
                     && mappingGenerator.isJavaToDatabase()) {
                 createDDLs(schema, mappingGenerator.getDatabaseVendorName(), null);
             }
@@ -670,7 +667,6 @@ public class JDOCodeGenerator
             throw JDOCodeGeneratorHelper.createGeneratorException(
                     "CMG.MappingConversionException", bundle, ex); //NOI18N
         }
-*/        
     }
 
     /**

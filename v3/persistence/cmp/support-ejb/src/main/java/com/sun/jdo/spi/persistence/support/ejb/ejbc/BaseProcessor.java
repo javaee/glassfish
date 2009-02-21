@@ -324,6 +324,6 @@ abstract public class BaseProcessor
         if(null != this.appGeneratedLocation)
             return;
 //        this.appGeneratedLocation =
-//                info.getStubsDir().getAbsolutePath() + File.separator;
+//                info.getScratchDir("ejb").getAbsolutePath() + File.separator;
     }
 } 

@@ -45,8 +45,8 @@
         <version>3.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>ejb-mapping</artifactId>
-    <packaging>jar</packaging>
+    <artifactId>cmp-ejb-mapping</artifactId>
+    <packaging>hk2-jar</packaging>
     <name>ejb-mapping module for cmp</name>
 
     <developers>
@@ -69,11 +69,42 @@
                 </includes>
             </resource>
         </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                        <!-- embed schema2beans dependency -->
+                        <Embed-Dependency>org-netbeans-modules-schema2beans;scope=compile;inline=true</Embed-Dependency>
+                        <Export-Package>
+                            com.sun.jdo.api.persistence.mapping.ejb.*; version=${project.version},
+                            org.netbeans.modules.schema2beans.*
+                        </Export-Package>
+                    </instructions>
+                    <unpackBundle>true</unpackBundle>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>osgi-bundle</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>bundle</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
     <dependencies>
         <dependency>
             <groupId>org.glassfish.persistence.cmp</groupId>
-            <artifactId>generator-database</artifactId>
+            <artifactId>cmp-generator-database</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.persistence.cmp</groupId>
+            <artifactId>cmp-model</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

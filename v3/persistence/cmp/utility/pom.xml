@@ -44,8 +44,8 @@
         <version>3.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>utility</artifactId>
-    <packaging>jar</packaging>
+    <artifactId>cmp-utility</artifactId>
+    <packaging>hk2-jar</packaging>
     <name>utility module for cmp</name>
     
     <developers>

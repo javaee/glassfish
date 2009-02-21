@@ -131,6 +131,11 @@
            <version>${project.version}</version>
         </dependency>
         <dependency>
+           <groupId>org.glassfish.persistence.cmp</groupId>
+           <artifactId>cmp-support-ejb</artifactId>
+           <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.sun.corba</groupId>
             <artifactId>glassfish-corba-codegen</artifactId>
             <version>${glassfish-corba.version}</version>

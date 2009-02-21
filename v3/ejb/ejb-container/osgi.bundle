@@ -7,6 +7,7 @@
                         com.sun.ejb.containers.util; \
                         com.sun.ejb.containers.util.pool; \
                         com.sun.ejb.portable; \
+                        com.sun.ejb.spi.container; \
                         com.sun.ejb.spi.io; \
                         com.sun.ejb.spi.stats; \
                         com.sun.enterprise; \

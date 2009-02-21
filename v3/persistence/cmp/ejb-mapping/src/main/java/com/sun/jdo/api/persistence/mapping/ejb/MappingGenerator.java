@@ -135,7 +135,7 @@ public class MappingGenerator {
     /**
      * Create mapping classes and schema based on database vendor name.
      * @param dbName a string for database vendor name
-     * @param uniqueTableNames a string to determin if use unique table names
+     * @param uniqueTableNames a Boolean to determin if use unique table names
      * during database generation
      * @param userPolicy a property object holding user overrides
      * @param inputFilesPath a directory where sun-cmp-mappings.xml is located
@@ -146,7 +146,7 @@ public class MappingGenerator {
      * @throws ConversionException
      */
     public DatabaseGenerator.Results generateMappingClasses(String dbName,
-            String uniqueTableNames, Properties userPolicy,
+            Boolean uniqueTableNames, Properties userPolicy,
             String inputFilesPath)
             throws IOException, Schema2BeansException, ModelException,
             DBException, ConversionException {
@@ -159,8 +159,7 @@ public class MappingGenerator {
 
         List pcClasses = new ArrayList();
         sunCmpMappings = getPartialSunCmpMappings(
-                pcClasses, 
-                Boolean.valueOf(uniqueTableNames).booleanValue());
+                pcClasses, uniqueTableNames.booleanValue());
 
         // load real jdo model and fake mapping model in memory
         ddHelper.setEnsureValidation(false);
@@ -301,17 +300,16 @@ public class MappingGenerator {
      * @throws ModelException
      */
     private DatabaseGenerator.Results generateSchema(List pcClasses, 
-            String dbName, String useUniqueTableNames, 
+            String dbName, Boolean useUniqueTableNames, 
             Properties userPolicy) 
             throws IOException, DBException, ModelException {
 
         MappingPolicy mappingPolicy = MappingPolicy.getMappingPolicy(dbName);
         mappingPolicy.setUserPolicy(userPolicy);
 
-        if (isPropertyDefined(useUniqueTableNames)) {
+        if (useUniqueTableNames != null) {
             // It was explicitly set.
-            mappingPolicy.setUniqueTableName(
-                Boolean.valueOf(useUniqueTableNames).booleanValue());
+            mappingPolicy.setUniqueTableName(useUniqueTableNames.booleanValue());
         }
 
        return DatabaseGenerator.generate(

@@ -183,11 +183,11 @@ abstract class JDOConcreteBeanGenerator {
      * @param classout that path to the compiled class files.
      * @return a Collection of generated source files.
      */
-    Collection generate(AbstractMethodHelper methodHelper, String beanName,
+    Collection<File> generate(AbstractMethodHelper methodHelper, String beanName,
                        File srcout, File classout)
                        throws IOException {
 
-        Collection files = new ArrayList();
+        Collection<File> files = new ArrayList<File>();
 
         this.beanName = beanName;
         this.abstractBean = nameMapper.getAbstractBeanClassForEjbName(beanName);

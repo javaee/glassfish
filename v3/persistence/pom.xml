@@ -51,6 +51,7 @@
     <modules>
         <module>jpa-connector</module>
         <module>eclipselink-wrapper</module>
+        <module>cmp</module>
     </modules>
     <repositories>
         <repository>

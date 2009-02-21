@@ -45,8 +45,8 @@
         <version>3.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>support-sqlstore</artifactId>
-    <packaging>jar</packaging>
+    <artifactId>cmp-support-sqlstore</artifactId>
+    <packaging>hk2-jar</packaging>
     <name>support-sqlstore module for cmp</name>
 
     <developers>
@@ -93,12 +93,40 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <!-- Need special configuration of bundle-plugin, because
+                     the exported packages are not same as the value set
+                     in super POM -->
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                        <!-- embed antlr dependency -->
+                        <Embed-Dependency>antlr;scope=compile;inline=true</Embed-Dependency>
+                        <Export-Package>
+                            com.sun.jdo.api.persistence.support; version=${project.version},
+                            com.sun.jdo.spi.persistence.support.sqlstore.*; version=${project.version},
+                            antlr.*; version=${antlr.version}
+                        </Export-Package>
+                    </instructions>
+                    <unpackBundle>true</unpackBundle>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>osgi-bundle</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>bundle</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
     <dependencies>
         <dependency>
             <groupId>org.glassfish.persistence.cmp</groupId>
-            <artifactId>model</artifactId>
+            <artifactId>cmp-model</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

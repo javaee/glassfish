@@ -45,8 +45,8 @@
         <version>3.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>model</artifactId>
-    <packaging>jar</packaging>
+    <artifactId>cmp-model</artifactId>
+    <packaging>hk2-jar</packaging>
     <name>model module for cmp</name>
 
     <developers>
@@ -69,11 +69,43 @@
                 </includes>
             </resource>
         </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                        <!-- embed dbschema dependency -->
+                        <Embed-Dependency>org-netbeans-modules-dbschema;scope=compile;inline=true</Embed-Dependency>
+                        <Export-Package>
+                             com.sun.jdo.api.persistence.model.*; version=${project.version},
+                             org.netbeans.modules.dbschema.*
+                         </Export-Package>
+                         <Import-Package>
+                              org.openide.*;resolution:=optional,
+                              org.netbeans.lib.ddl.impl.*;resolution:=optional,
+                              org.netbeans.spi.*;resolution:=optional,
+                              org.netbeans.api.*;resolution:=optional,*
+                          </Import-Package>
+                    </instructions>
+                    <unpackBundle>true</unpackBundle>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>osgi-bundle</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>bundle</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
     <dependencies>
         <dependency>
             <groupId>org.glassfish.persistence.cmp</groupId>
-            <artifactId>utility</artifactId>
+            <artifactId>cmp-utility</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

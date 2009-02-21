@@ -381,7 +381,7 @@ public class EntityContainer
             poolProp.poolIdleTimeoutInSeconds, loader);
 
 
-	registerMonitorableComponents();
+	// TODO registerMonitorableComponents();
     }
 
     protected void registerMonitorableComponents() {

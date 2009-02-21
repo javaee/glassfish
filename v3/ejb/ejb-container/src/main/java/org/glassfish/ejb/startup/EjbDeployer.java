@@ -32,7 +32,9 @@ import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.OpsParams;
+import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
+import org.glassfish.ejb.spi.CMPDeployer;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
@@ -61,8 +63,9 @@ public class EjbDeployer
     @Inject
     protected Habitat habitat;
 
-    // protected ThreadLocal<Application> tldApp = new ThreadLocal<Application>();
+    protected CMPDeployer cmpDeployer;
 
+    // protected ThreadLocal<Application> tldApp = new ThreadLocal<Application>();
 
     /**
      * Constructor
@@ -119,6 +122,31 @@ public class EjbDeployer
     public void clean(DeploymentContext dc) {
         // Both undeploy and shutdown scenarios are
         // handled directly in EjbApplication.shutdown.
+    }
+
+    /**
+     * Use this method to generate CMP artifacts if any
+     */
+    @Override
+    protected void generateArtifacts(DeploymentContext dc) 
+            throws DeploymentException {
+
+        OpsParams params = dc.getCommandParameters(OpsParams.class);
+        if (params.origin != OpsParams.Origin.deploy) {
+            return;
+        }
+
+        EjbBundleDescriptor bundle = dc.getModuleMetaData(EjbBundleDescriptor.class);
+        if (bundle == null || !bundle.containsCMPEntity()) {
+            // bundle WAS null in a war file where we do not support CMPs
+            return;
+        }
+
+        cmpDeployer = habitat.getByContract(CMPDeployer.class);
+        if (cmpDeployer == null) {
+            throw new DeploymentException("No CMP Deployer is available to deploy this module");
+        }
+        cmpDeployer.deploy(dc);
     }
 }
 
