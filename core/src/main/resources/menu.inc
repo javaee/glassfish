@@ -26,11 +26,12 @@
     <sc:subMenu value="Application Server">
     <sc:menuItem value="General"  url="#{request.contextPath}/appServer/serverInstGeneralPe.jsf" />
 	<sc:menuItem value="JVM Settings" url="#{request.contextPath}/appServer/serverInstJvmGeneral.jsf" />
+    <sc:menuItem value="Advanced Settings" url="#{request.contextPath}/appServer/serverInstAppsConfig.jsf" />
 	<sc:menuItem value="Logger Settings" />
 	<sc:menuItem value="Thread Pools" />
     </sc:subMenu>
     <sc:subMenu value="Service">
-	<sc:menuItem value="Web Container" url="#{request.contextPath}/layouttest.jsf?page=Web+Container" />
+	<sc:menuItem value="Web Container" url="#{request.contextPath}/web/configuration/webContainerSession.jsf" />
 	<sc:menuItem value="EJB Container" url="#{request.contextPath}/layouttest.jsf?page=EJB+Container" />
 	<sc:menuItem value="JMS" url="#{request.contextPath}/layouttest.jsf?page=JMS" />
 	<sc:menuItem value="Availability Service" url="#{request.contextPath}/layouttest.jsf?page=Availability+Service" />
@@ -40,14 +41,15 @@
 	<sc:menuItem value="Diagnostic Service" url="#{request.contextPath}/layouttest.jsf?page=Diagnostic+Service" />
 	<sc:subMenu value="Security">
 	    <sc:menuItem value="Security Settings" url="#{request.contextPath}/security/security.jsf" />
-	    <sc:menuItem value="Realms" url="#{request.contextPath}/security/realms.jsf" />
-	    <sc:menuItem value="Realms" url="#{request.contextPath}/layouttest.jsf?page=Realms" />
+	    <sc:menuItem value="Realms" url="#{request.contextPath}/security/realms/realms.jsf" />
+	    <sc:menuItem value="Audit Modules" url="#{request.contextPath}/security/auditModules/auditModules.jsf" />
 	    <sc:menuItem value="JACC Providers" url="#{request.contextPath}/layouttest.jsf?page=JACC+Providers" />
 	    <sc:menuItem value="Thread Pools" url="#{request.contextPath}/layouttest.jsf?page=Thread+Pools" />
 	</sc:subMenu>
 	<sc:subMenu value="HTTP Service">
-	    <sc:menuItem value="HTTP Listeners" url="#{request.contextPath}/layouttest.jsf?page=HTTP+Listeners" />
-	    <sc:menuItem value="Virtual Servers" url="#{request.contextPath}/layouttest.jsf?page=Virtual+Servers" />
+        <sc:menuItem value="HTTP Service Settings" url="#{request.contextPath}/web/configuration/httpService.jsf" />
+	    <sc:menuItem value="HTTP Listeners" url="#{request.contextPath}/web/configuration/httpListeners.jsf" />
+	    <sc:menuItem value="Virtual Servers" url="#{request.contextPath}/web/configuration/virtualServers.jsf" />
 	</sc:subMenu>
 	<sc:subMenu value="Object Request Broker">
 	    <sc:menuItem value="IIOP Listeners" url="#{request.contextPath}/layouttest.jsf?page=IIOP+Listeners" />
