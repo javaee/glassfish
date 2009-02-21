@@ -46,9 +46,9 @@
         getJDBCConnectionPoolMaps(selectedRows="$attribute{selectedRows}"  result=>$attribute{listOfRows} );
         setPageSessionAttribute(key="resHeader" value="$resource{i18n.resourcesTable.colResType}");
         setPageSessionAttribute(key="extraInfoHeader" value="$resource{i18n.resourcesTable.colDatasource}");
-        setPageSessionAttribute(key="editLink" value="/jdbc/jdbcConnectionPoolEdit.jsf");
-        setPageSessionAttribute(key="createLink" value="jdbcConnectionPoolNew1.jsf");
-        setPageSessionAttribute(key="listPageLink" value="/jdbc/jdbcConnectionPools.jsf");
+        setPageSessionAttribute(key="editLink" value="#{request.contextPath}/jdbc/jdbcConnectionPoolEdit.jsf");
+        setPageSessionAttribute(key="createLink" value="#{request.contextPath}/jdbc/jdbcConnectionPoolNew1.jsf");
+        setPageSessionAttribute(key="listPageLink" value="#{request.contextPath}/jdbc/jdbcConnectionPools.jsf");
         setPageSessionAttribute(key="resourceType" value="jdbcConnectionPool");
         />
     </event>
