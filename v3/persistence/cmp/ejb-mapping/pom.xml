@@ -110,6 +110,7 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-modules-schema2beans</artifactId>
+            <optional>true</optional>
         </dependency>
 
     </dependencies>

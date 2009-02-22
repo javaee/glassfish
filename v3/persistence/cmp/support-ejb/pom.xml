@@ -122,5 +122,11 @@
             <artifactId>common-util</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>antlr</groupId>
+            <artifactId>antlr</artifactId>
+            <version>${antlr.version}</version>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 </project>
