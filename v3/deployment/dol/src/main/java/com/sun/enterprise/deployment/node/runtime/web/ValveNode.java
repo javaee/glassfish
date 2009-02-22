@@ -38,7 +38,6 @@ package com.sun.enterprise.deployment.node.runtime.web;
 
 import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.runtime.web.Valve;
-import com.sun.enterprise.deployment.runtime.web.WebProperty;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -87,6 +86,9 @@ public class ValveNode extends WebRuntimeNode {
 
         WebPropertyNode wpn = new WebPropertyNode();
 
+        // sub-element description?
+        appendTextChild(valve, RuntimeTagNames.DESCRIPTION, descriptor.getDescription());
+
         // sub-element property*
         wpn.writeDescriptor(valve, RuntimeTagNames.PROPERTY,
                             descriptor.getWebProperty());
@@ -98,5 +100,21 @@ public class ValveNode extends WebRuntimeNode {
             (String) descriptor.getAttributeValue(Valve.CLASS_NAME));
 
         return valve;
+    }
+
+    /**
+     * write the descriptor class to a DOM tree and return it
+     *
+     * @param parent node for the DOM tree
+     * @param node name for the descriptor
+     * @param the array of descriptors to write
+     */
+    public void writeDescriptor(Node parent, String nodeName, Valve[] valves) {
+        if (valves == null) {
+            return;
+        }
+        for (int i = 0; i < valves.length; i++) {
+            writeDescriptor(parent, nodeName, valves[i]);
+        }
     }
 }
