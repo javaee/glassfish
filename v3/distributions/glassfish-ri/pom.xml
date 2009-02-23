@@ -46,21 +46,9 @@
     <artifactId>glassfish-ri</artifactId>
     <name>Glassfish Reference Implementation Bundle</name>
     <packaging>distribution-base-zip</packaging>
-    <description>GlassFish source distribution</description>
+    <description>GlassFish RI source and binary distributions</description>
 
     <build>
-        <plugins>
-            <plugin>
-                <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
-                <artifactId>maven-antrun-extended-plugin</artifactId>
-                <configuration>
-                  <tasks>
-		    <property name="v3.dir" value="../.."/>
-                    <ant dir="." antfile="build.xml" target="create.ri"/>
-                  </tasks>
-                </configuration>
-             </plugin>
-        </plugins>
         <extensions>
             <extension>
                 <groupId>org.glassfish.build</groupId>
@@ -69,5 +57,266 @@
             </extension>
         </extensions>
     </build>
+
+    <profiles>
+        <profile>
+            <id>ri-source</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
+                        <artifactId>maven-antrun-extended-plugin</artifactId>
+                        <configuration>
+                            <tasks>
+	                        <property name="v3.dir" value="../.."/>
+                                <ant dir="." antfile="build.xml" target="create.ri"/>
+                           </tasks>
+                        </configuration>
+                     </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+	<profile>
+            <id>ri-binary</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
+                        <artifactId>maven-antrun-extended-plugin</artifactId>
+                        <configuration>
+                            <tasks>
+                                <ant dir="." antfile="build.xml" target="create.bundle"/>
+                            </tasks>
+                        </configuration>
+                   </plugin>
+                </plugins>
+            </build>
+            <dependencies>
+
+            <!-- base distribution image -->
+                <dependency>
+                    <groupId>org.glassfish.distributions</groupId>
+                    <artifactId>nucleus</artifactId>
+                    <version>${project.version}</version>
+                    <type>zip</type>
+                </dependency>
+
+        <!--
+          modules to be included in this bundle
+
+          As a general rule of thumb, this list should only include feature-level
+          modules. For one, all the modules that are transitively depended on are included
+          in the end, and more importantly, keeping this list short helps other people
+          (and us) to build custom distributions.
+        -->
+                <dependency>
+                    <groupId>org.glassfish.external</groupId>
+                    <artifactId>javadb</artifactId>
+                    <version>${project.version}</version>
+                    <type>distribution-fragment</type>
+                </dependency>
+                <dependency>
+                    <groupId>com.sun.enterprise</groupId>
+                    <artifactId>hk2</artifactId>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>javax.xml.stream</groupId>
+                            <artifactId>stax-api</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>woodstox</groupId>
+                            <artifactId>wstx-asl</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+                <dependency>
+                    <groupId>org.glassfish.web</groupId>
+                    <artifactId>webtier-all</artifactId>
+                    <version>${project.version}</version>
+                    <type>pom</type>
+                </dependency>
+                <dependency>
+                    <groupId>org.glassfish.security</groupId>
+                    <artifactId>security-all</artifactId>
+                    <version>${project.version}</version>
+                    <type>pom</type>
+                </dependency>
+                <dependency>
+                    <groupId>org.glassfish.admin</groupId>
+                    <artifactId>cli-optional</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.glassfish.scripting</groupId>
+                    <artifactId>jruby-all</artifactId>
+                    <version>${jruby-scripting.version}</version>
+                    <type>pom</type>
+                </dependency>
+                <dependency>
+                    <groupId>org.glassfish.jdbc.jdbc-ra.jdbc-ra-distribution</groupId>
+                    <artifactId>jdbc-ra</artifactId>
+                    <version>${project.version}</version>
+                    <type>distribution-fragment</type>
+                </dependency>
+                <dependency>
+                    <groupId>org.glassfish.connectors</groupId>
+                    <artifactId>gf-connectors-connector</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.glassfish.connectors</groupId>
+                    <artifactId>connectors-runtime</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.glassfish.connectors</groupId>
+                    <artifactId>work-management</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.glassfish.transaction</groupId>
+                    <artifactId>jta</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.glassfish.persistence</groupId>
+                    <artifactId>jpa-connector</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.glassfish.persistence</groupId>
+                    <artifactId>eclipselink-wrapper</artifactId>
+                    <version>${project.version}</version>
+                    <type>pom</type>
+                </dependency>
+                <dependency>
+                    <groupId>org.glassfish.deployment</groupId>
+                    <artifactId>deployment-client</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.glassfish.common</groupId>
+                    <artifactId>amx-impl</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.glassfish.deployment</groupId>
+                    <artifactId>dtds</artifactId>
+                    <version>${project.version}</version>
+                    <type>distribution-fragment</type>
+                </dependency>
+                <dependency>
+                    <groupId>org.glassfish.deployment</groupId>
+                    <artifactId>schemas</artifactId>
+                    <version>${project.version}</version>
+                    <type>distribution-fragment</type>
+                </dependency>
+                <dependency>
+                    <groupId>org.glassfish.flashlight</groupId>
+                    <artifactId>flashlight-framework</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.glassfish.flashlight</groupId>
+                    <artifactId>flashlight-agent</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.glassfish.jdbc</groupId>
+                    <artifactId>jdbc-admin</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.glassfish.connectors</groupId>
+                    <artifactId>connectors-admin</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.glassfish.external</groupId>
+                    <artifactId>ant</artifactId>
+                    <version>${project.version}</version>
+                    <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.ant</groupId>
+                        <artifactId>ant</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.ant</groupId>
+                        <artifactId>ant-launcher</artifactId>
+                    </exclusion>
+                </exclusions>
+                </dependency>
+        <!-- 
+             deployment/dol depends on javax.mail which in turn requires
+             javax.activation. So, we need this. Sahoo.
+        -->
+                <dependency>
+                    <groupId>org.glassfish</groupId>
+                    <artifactId>javax.activation</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.sun.grizzly</groupId>
+                    <artifactId>grizzly-cometd</artifactId>
+                    <scope>runtime</scope>
+                </dependency>
+
+        <!-- features in the glassfish bundle -->
+        
+                <dependency>
+                    <groupId>org.glassfish.ejb</groupId>
+                    <artifactId>ejb-all</artifactId>
+                    <version>${project.version}</version>
+                    <type>pom</type>
+                </dependency>
+   
+                <dependency>
+                    <groupId>org.glassfish.connectors</groupId>
+                    <artifactId>connectors-inbound-runtime</artifactId>
+                    <version>${project.version}</version>
+                    <!--<optional>true</optional>-->
+                </dependency>
+
+                <dependency>
+                    <groupId>org.glassfish.transaction</groupId>
+                    <artifactId>jts</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.sun.xml.ws</groupId>
+                    <artifactId>webservices</artifactId>
+                    <version>${webservices.version}</version>
+                    <classifier>osgi</classifier>
+                    <type>jar</type>
+                </dependency>
+                <dependency>
+                    <groupId>org.glassfish.webservices</groupId>
+                    <artifactId>jsr109-impl</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.sun.xml.bind</groupId>
+                    <artifactId>jaxb</artifactId>
+                    <version>${jaxb.version}</version>
+                    <classifier>osgi</classifier>
+                </dependency>
+                <dependency>
+                    <groupId>org.glassfish.security</groupId>
+                    <artifactId>webservices.security</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.sun.faces</groupId>
+                    <artifactId>jsf-api</artifactId>
+                </dependency>
+
+            </dependencies>
+	</profile>
+
+    </profiles>
+
 </project>
 
