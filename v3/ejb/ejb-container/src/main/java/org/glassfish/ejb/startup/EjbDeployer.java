@@ -35,6 +35,7 @@ import org.glassfish.api.deployment.OpsParams;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.glassfish.ejb.spi.CMPDeployer;
+import org.glassfish.ejb.spi.CMPService;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
@@ -88,6 +89,15 @@ public class EjbDeployer
         super.load(containerStarter, dc);
 
         EjbBundleDescriptor ejbBundle = dc.getModuleMetaData(EjbBundleDescriptor.class);
+
+        if (ejbBundle.containsCMPEntity()) {
+            CMPService cmpService = habitat.getByContract(CMPService.class);
+            if (cmpService == null) {
+                throw new RuntimeException("CMP Module is not available");
+            } else if (!cmpService.isReady()) {
+                throw new RuntimeException("CMP Module is not initialized");
+            }
+        }
 
         Collection<EjbDescriptor> ebds = (Collection<EjbDescriptor>) ejbBundle.getEjbs();
 

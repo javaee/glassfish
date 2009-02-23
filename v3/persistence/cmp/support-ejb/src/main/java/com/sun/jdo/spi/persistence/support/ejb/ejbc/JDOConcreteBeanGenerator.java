@@ -861,11 +861,15 @@ abstract class JDOConcreteBeanGenerator {
         } else {
             mformat = CMPROTemplateFormatter.jdolookuppmfformatter;
         }
-        CMPTemplateFormatter.addGenericMethod(
+        concreteImplWriter.addMethod(
                 CMPTemplateFormatter.jdoLookupPersistenceManagerFactory_, 
                 Modifier.PRIVATE + Modifier.STATIC + Modifier.SYNCHRONIZED, // modifiers
+                CMPTemplateFormatter.void_, // returnType
+                param0, // parameterNames
+                objectType, // parameterTypes
+                null,// exceptions
                 CMPTemplateFormatter.getBodyAsStrings(mformat.format(oneParam)), 
-                concreteImplWriter);
+                null);// comments
 
         // Add jdoGetInstance
         threeParams[0] = pkClass;
@@ -964,6 +968,16 @@ abstract class JDOConcreteBeanGenerator {
                 Modifier.PUBLIC, CMPTemplateFormatter.Object_, 
                 CMPTemplateFormatter.getContainerBody,
                 jdoHelperWriter);
+
+        // Add Helper.setContainer() method.
+        jdoHelperWriter.addMethod(CMPTemplateFormatter.setContainer_, // name
+                Modifier.PUBLIC + Modifier.STATIC, // modifiers
+                CMPTemplateFormatter.void_, // returnType
+                param0, // parameterNames
+                objectType, // parameterTypes
+                null,// exceptions
+                CMPTemplateFormatter.setContainerBody, // body
+                null); // comments
 
         // Add getPCCLass to the helper class
         oneParam[0] = concreteImplName;

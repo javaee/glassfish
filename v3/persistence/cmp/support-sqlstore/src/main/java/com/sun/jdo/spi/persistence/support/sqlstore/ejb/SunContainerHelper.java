@@ -82,7 +82,7 @@ import com.sun.jdo.spi.persistence.utility.I18NHelper;
 * TransactionHelper implementation must be done in the SunTransactionHelper.
 *
 */
-public class SunContainerHelper extends SunTransactionHelper //implements ContainerHelper
+public class SunContainerHelper extends SunTransactionHelper implements ContainerHelper
     {
 
     /** I18N message handler */
@@ -97,7 +97,7 @@ public class SunContainerHelper extends SunTransactionHelper //implements Contai
      * Registers itself during initial load
      */  
     static {
-//        CMPHelper.registerContainerHelper (new SunContainerHelper());
+        CMPHelper.registerContainerHelper (new SunContainerHelper());
     }
 
     /** Default constructor should not be public */
@@ -118,7 +118,7 @@ public class SunContainerHelper extends SunTransactionHelper //implements Contai
 //     * specific.
 //     * @return a Container helper instance as an Object.
 //     */
-//    public Object getContainer(Object info) {
+    public Object getContainer(Object info) {
 //
 //        Object[] params = (Object[])info;
 //        Class cls = (Class)params[0];
@@ -128,8 +128,10 @@ public class SunContainerHelper extends SunTransactionHelper //implements Contai
 //        EjbCMPEntityDescriptor desc = app.getCMPDescriptorFor((String)params[1]);
 //
 //        return reg.getContainer(desc);
-//    }
-//
+
+        throw new IllegalStateException();
+    }
+
     /** Get an EJBObject reference for this primary key and Container helper.
      * The Container instance is acquired via #getContainer(Object).
      * This is SunContainerHelper specific code.

@@ -42,20 +42,22 @@
  * Created on January 24, 2002
  */
 
-package com.sun.jdo.spi.persistence.support.sqlstore.ejb;
+package com.sun.jdo.spi.persistence.support.ejb.ejbc;
 
-//import com.sun.appserv.server.ServerLifecycleImpl;
 import com.sun.jdo.spi.persistence.utility.logging.LogHelper;
+import com.sun.jdo.spi.persistence.support.sqlstore.ejb.CMPHelper;
+import com.sun.jdo.spi.persistence.support.sqlstore.ejb.SunContainerHelper;
+import com.sun.jdo.spi.persistence.support.sqlstore.ejb.LoggerFactoryiAS;
 
+import org.jvnet.hk2.annotations.Service;
+import org.glassfish.ejb.spi.CMPService;
 
 /**
- * This class extends the default implementation of the ServerLifecycle 
- * interface and allows to load Sun specific implementation of the
- * TransactionHelper as a part of Sun - Server Lifecycle process. 
- * This class does not need to do any processing for the Server Lifecycle events 
- * other than load the necessary class.
+ * This class implements CMPService contract and allows to load Sun specific implementation of the
+ * ContainerHelper when loaded.
  */
-public class PersistenceManagerServiceImpl/* extends ServerLifecycleImpl */{
+@Service
+public class PersistenceManagerServiceImpl implements CMPService {
 
     // Initialize the appserver loggers.
     static {
@@ -68,8 +70,14 @@ public class PersistenceManagerServiceImpl/* extends ServerLifecycleImpl */{
 
     // Reference and force the initialization of the DeploymentEventListener
     // implementation.
+/**
     private static final Class listener = 
         forceInit("com.sun.jdo.spi.persistence.support.ejb.ejbc.DeploymentEventListenerImpl");
+**/
+
+    public boolean isReady() {
+        return CMPHelper.isContainerReady();
+    }
 
     /**
      * Forces the initialization of the class pertaining to the specified

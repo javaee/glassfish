@@ -215,7 +215,7 @@ final class EJBLocalHomeInvocationHandler
                         returnValue = ((EJBLocalObjectImpl)inv.ejbObject)
                             .getClientObject();
                     } 
-                } /*TODO else if (invInfo.startsWithFindByPrimaryKey) {
+                } else if (invInfo.startsWithFindByPrimaryKey) {
             EntityContainer entityContainer = (EntityContainer) container;
 		    returnValue = entityContainer.invokeFindByPrimaryKey(
 			invInfo.targetMethod1, inv, args);
@@ -229,7 +229,7 @@ final class EJBLocalHomeInvocationHandler
                     returnValue = container.invokeTargetBeanMethod(invInfo.targetMethod1,
                                       inv, inv.ejb, args, null);
 
-                }*/
+                }
             } catch(InvocationTargetException ite) {
                 inv.exception = ite.getCause();           
             } catch(Throwable c) {

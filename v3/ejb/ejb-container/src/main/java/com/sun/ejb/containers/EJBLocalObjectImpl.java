@@ -166,7 +166,6 @@ public abstract class EJBLocalObjectImpl
     public Object getPrimaryKey()
         throws EJBException
     {
-        /*TODO
         if ( container instanceof EntityContainer ) {
             container.authorizeLocalMethod(
                 BaseContainer.EJBLocalObject_getPrimaryKey);
@@ -174,6 +173,7 @@ public abstract class EJBLocalObjectImpl
             
             return primaryKey;
         }
+        /*TODO
         else {
             throw new EJBException(localStrings.getLocalString(
             "containers.invalid_operation",

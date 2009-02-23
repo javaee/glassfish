@@ -179,6 +179,7 @@ public class CMPTemplateFormatter extends JavaClassWriterHelper{
 
     public final static String getPCClass_                = "getPCClass"; // NOI18N
     public final static String getContainer_              = "getContainer"; // NOI18N
+    public final static String setContainer_              = "setContainer"; // NOI18N
     public final static String assertInstanceOfRemoteInterfaceImpl_
                                                           = "assertInstanceOfRemoteInterfaceImpl"; // NOI18N
     public final static String assertPKNotNull_           = "assertPKNotNull"; // NOI18N
@@ -284,6 +285,7 @@ public class CMPTemplateFormatter extends JavaClassWriterHelper{
     public static String[] jdoReleasePersistenceManager0Body = null;
     public static String[] setEntityContextBody = null;
     public static String[] getContainerBody = null;
+    public static String[] setContainerBody = null;
 
     /**
      * Constructs a new <code>CMPTemplateFormatter</code> instance.
@@ -427,6 +429,7 @@ public class CMPTemplateFormatter extends JavaClassWriterHelper{
         jdoReleasePersistenceManager0Body = getBodyAsStrings(helpers.getProperty(jdoReleasePersistenceManager0_));
         setEntityContextBody = getBodyAsStrings(helpers.getProperty(setEntityContext_));
         getContainerBody = getBodyAsStrings(helpers.getProperty(getContainer_));
+        setContainerBody = getBodyAsStrings(helpers.getProperty(setContainer_));
         assertPersistenceManagerIsNullBody = getBodyAsStrings(helpers.getProperty(assertPersistenceManagerIsNull_));
     }
 

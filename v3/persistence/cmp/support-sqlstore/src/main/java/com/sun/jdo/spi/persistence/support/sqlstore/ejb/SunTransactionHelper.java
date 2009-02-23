@@ -116,21 +116,14 @@ public class SunTransactionHelper extends TransactionHelperImpl
     // helper class for looking up the TransactionManager instances.
     static private class TransactionManagerFinder {
         
-        // JNDI name of the TransactionManager used for transaction synchronization.
-        static private final String PM_TM_NAME = "java:pm/TransactionManager"; //NOI18N
-
         // JNDI name of the TransactionManager used for managing local transactions.
         static private final String AS_TM_NAME = "java:appserver/TransactionManager"; //NOI18N
-
-        // TransactionManager instance used for transaction synchronization.
-        static TransactionManager tm = null;
 
         // TransactionManager instance used for managing local transactions.
         static TransactionManager appserverTM = null;
 
         static {
             try {
-                tm = (TransactionManager) (new InitialContext()).lookup(PM_TM_NAME);
                 appserverTM = (TransactionManager) (new InitialContext()).lookup(AS_TM_NAME);
             } catch (Exception e) {
                 throw new JDOFatalInternalException(e.getMessage());
@@ -141,7 +134,7 @@ public class SunTransactionHelper extends TransactionHelperImpl
     /** SunTransactionHelper specific code */
     public Transaction getTransaction(){
        try{
-            return TransactionManagerFinder.tm.getTransaction();
+            return TransactionManagerFinder.appserverTM.getTransaction();
         } catch (Exception e) {
             throw new JDOFatalInternalException(e.getMessage());
         } catch (ExceptionInInitializerError err) {

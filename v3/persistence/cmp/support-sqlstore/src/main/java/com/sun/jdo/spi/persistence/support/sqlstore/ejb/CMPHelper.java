@@ -337,6 +337,13 @@ public class CMPHelper {
         }
     }
 
+    /**
+     * @return true if the container had been registered correctly.
+     */
+    public static boolean isContainerReady() {
+        return (containerHelper != null);
+    }
+
     /** Returns a ContainerHelper instance that can be used to invoke
      * the corresponding method.
      * @return a ContainerHelper instance registered with this class.

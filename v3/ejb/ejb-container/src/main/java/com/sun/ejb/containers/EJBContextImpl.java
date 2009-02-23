@@ -327,7 +327,7 @@ public abstract class EJBContextImpl
         
         // Have to convert EJBLocalObjectImpl to the client-view of 
         // EJBLocalObject
-        return (EJBLocalObjectImpl) ejbLocalObjectImpl.getClientObject();
+        return (EJBLocalObject) ejbLocalObjectImpl.getClientObject();
     }
     
     /**
