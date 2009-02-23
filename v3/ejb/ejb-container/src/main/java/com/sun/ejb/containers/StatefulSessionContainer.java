@@ -351,7 +351,7 @@ public final class StatefulSessionContainer
 
     boolean isIdentical(EJBObjectImpl ejbo, EJBObject other)
             throws RemoteException {
-        /*TODO
+
         if (other == ejbo.getStub())
             return true;
         else {
@@ -367,8 +367,6 @@ public final class StatefulSessionContainer
                 throw new RemoteException("Error during isIdentical.", ex);
             }
         }
-        */
-        return false;
     }
 
     /**
@@ -787,7 +785,7 @@ public final class StatefulSessionContainer
     // called from createEJBObject and activateEJB and createEJBLocalObjectImpl
     private EJBObjectImpl createEJBObjectImpl(SessionContextImpl context)
             throws Exception {
-        /*TODO
+
         if (context.getEJBObjectImpl() != null)
             return context.getEJBObjectImpl();
 
@@ -826,13 +824,13 @@ public final class StatefulSessionContainer
                 createOptionalEJBLocalBusinessObjectImpl(context);
             }
         }
-        */
-        return null;
+
+        return ejbObjImpl;
     }
 
     private EJBObjectImpl createRemoteBusinessObjectImpl
             (SessionContextImpl context) throws Exception {
-        /*TODO
+
         if (context.getEJBRemoteBusinessObjectImpl() != null)
             return context.getEJBRemoteBusinessObjectImpl();
 
@@ -876,8 +874,6 @@ public final class StatefulSessionContainer
         }
 
         return ejbBusinessObjImpl;
-        */
-        return null;
     }
 
 
@@ -1022,7 +1018,7 @@ public final class StatefulSessionContainer
             sessionBeanCache.remove(sessionKey, sc.existsInStore());
 
             if (isRemote) {
-                /*TODO
+
                 if (hasRemoteHomeView) {
                     // disconnect the EJBObject from the context and vice versa
                     EJBObjectImpl ejbObjImpl = sc.getEJBObjectImpl();
@@ -1055,7 +1051,7 @@ public final class StatefulSessionContainer
                                                 (next.generatedRemoteIntf.getName()));
                     }
                 }
-                */
+
             }
 
             if (isLocal) {
@@ -1211,12 +1207,12 @@ public final class StatefulSessionContainer
 
     EJBObjectImpl getEJBObjectImpl(byte[] instanceKey) {
         SessionContextImpl sc = _getContextForInstance(instanceKey);
-        return null;//TODO return (sc != null) ? sc.getEJBObjectImpl() : null;
+        return (sc != null) ? sc.getEJBObjectImpl() : null;
     }
 
     EJBObjectImpl getEJBRemoteBusinessObjectImpl(byte[] instanceKey) {
         SessionContextImpl sc = _getContextForInstance(instanceKey);
-        return null;//TODO return (sc != null) ? sc.getEJBRemoteBusinessObjectImpl() : null;
+        return (sc != null) ? sc.getEJBRemoteBusinessObjectImpl() : null;
     }
 
     /**
@@ -1251,6 +1247,9 @@ public final class StatefulSessionContainer
     }
 
     EJBLocalObjectImpl getEJBLocalBusinessObjectImpl(Object sessionKey) {
+
+        // TODO Probably have to add something to handle no-interface
+        // view references here
 
         // Create an EJBLocalObject reference which
         // is *not* associated with a SessionContext.  That way, the
@@ -2473,7 +2472,7 @@ public final class StatefulSessionContainer
 
     public void undeploy(SessionContextImpl ctx) {
         if (ctx.getContainer() == this) {
-            /*TODO
+
             if (hasRemoteHomeView) {
                 EJBObjectImpl ejbObjectImpl = ctx.getEJBObjectImpl();
                 if (ejbObjectImpl != null) {
@@ -2496,7 +2495,7 @@ public final class StatefulSessionContainer
                     }
                 }
             }
-            */
+            
             sessionBeanCache.remove(ctx.getInstanceKey(), ctx.existsInStore());
             destroyExtendedEMsForContext(ctx);
             transactionManager.componentDestroyed(ctx);

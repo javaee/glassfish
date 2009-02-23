@@ -55,6 +55,7 @@ import org.glassfish.api.naming.GlassfishNamingManager;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.Habitat;
 
 import javax.transaction.RollbackException;
@@ -80,15 +81,16 @@ import java.lang.reflect.Method;
  */
 @Service
 public class EjbContainerUtilImpl
-    implements PostConstruct, EjbContainerUtil {
+    implements PostConstruct, PreDestroy, EjbContainerUtil {
 
     private Logger _logger = LogDomains.getLogger(EjbContainerUtilImpl.class, LogDomains.EJB_LOGGER);
 
-    // TODO Temporary thread pool for Timer Service.  We should probably use
+    // TODO Temporary thread pool for Timer Service. Also used by various
+    // container pools for periodic resize/cleanup tasks.  We should probably use
     // a common thread pool by default but allow configuration of a timer-service
     // specific one.  Should also consider using a distinct JDK timer for
-    // timer service than the one used by containers for periodic work. 
-    private ExecutorService timerExecutorService;
+    // timer service than the one used by containers for periodic work.
+    private ExecutorService executorService;
     
     @Inject
     private Habitat habitat;
@@ -152,7 +154,18 @@ public class EjbContainerUtilImpl
                         }
                     });
         }
+
+        ThreadFactory tf = new EjbTimerThreadFactory();
+        executorService = Executors.newCachedThreadPool(tf);
+
         _me = this;
+    }
+
+    public void preDestroy() {
+        if( executorService != null ) {
+            executorService.shutdown();
+            executorService = null;
+        }
     }
 
     public Habitat getDefaultHabitat() {
@@ -180,16 +193,6 @@ public class EjbContainerUtilImpl
 
     public  void setEJBTimerService(EJBTimerService es) {
         _ejbTimerService = es;
-
-        if( timerExecutorService != null ) {
-            timerExecutorService.shutdown();
-            timerExecutorService = null;
-        }
-
-        if( es != null ) {
-            ThreadFactory tf = new EjbTimerThreadFactory();
-            timerExecutorService = Executors.newCachedThreadPool(tf);
-        }
     }
 
     public  EJBTimerService getEJBTimerService() {
@@ -331,7 +334,7 @@ public class EjbContainerUtilImpl
 
     public void addWork(Runnable task) {
 
-        timerExecutorService.submit(task);
+        executorService.submit(task);
     }
 
     private static class EjbTimerThreadFactory

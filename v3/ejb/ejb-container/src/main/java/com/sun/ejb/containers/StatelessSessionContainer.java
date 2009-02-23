@@ -190,7 +190,7 @@ public class StatelessSessionContainer
         super.initializeHome();
 
         if ( isRemote ) {
-            /*TODO
+            
             if( hasRemoteHomeView ) {
                 // Create theEJBObjectImpl
                 theEJBObjectImpl = instantiateEJBObjectImpl();
@@ -226,7 +226,7 @@ public class StatelessSessionContainer
                 }
 
             }
-            */
+
         }
 
         if ( isLocal ) {
@@ -512,7 +512,7 @@ public class StatelessSessionContainer
             }
 
             if ( isRemote ) {
-                /*TODO
+
                 if( hasRemoteHomeView ) {
                     context.setEJBObjectImpl(theEJBObjectImpl);
                     context.setEJBStub(theEJBStub);
@@ -521,7 +521,7 @@ public class StatelessSessionContainer
                     context.setEJBRemoteBusinessObjectImpl
                         (theRemoteBusinessObjectImpl);
                 }
-                */
+
             }
             if ( isLocal ) {
                 if( hasLocalHomeView ) {
@@ -623,8 +623,7 @@ public class StatelessSessionContainer
     boolean isIdentical(EJBObjectImpl ejbo, EJBObject other)
         throws RemoteException
     {
-        return false;
-        /*TODO
+
         if ( other == ejbo.getStub() ) {
             return true;
         }else {
@@ -646,7 +645,7 @@ public class StatelessSessionContainer
                 throw new RemoteException("Error during isIdentical.", ex);
             }
         }
-        */
+
     }
 
     /**
@@ -712,7 +711,7 @@ public class StatelessSessionContainer
             }
             */
 
-            /*TODO
+
             if ( hasRemoteHomeView ) {
                     // destroy EJBObject refs
                     // XXX invocations still in progress will get exceptions ??
@@ -730,7 +729,7 @@ public class StatelessSessionContainer
                             (next.generatedRemoteIntf.getName()));
                 }
             }
-            */
+
 
             isPoolClosed = true;
 

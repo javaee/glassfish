@@ -71,16 +71,24 @@ public class EjbAsyncInvocationManager
         super.setThreadFactory(new EjbAsyncThreadFactory());
     }
 
-    public FutureTask createFuture(EjbInvocation inv) {
+    public Future createFuture(EjbInvocation inv) {
+        // Always create a Local future task that is associated with the
+        // invocation.
         EjbFutureTask futureTask = new EjbFutureTask(new EjbAsyncTask(), this);
+
+        // Assign a unique id to this async task
+        long invId = invCounter.incrementAndGet();
+        inv.setInvId(invId);
         inv.setEjbFutureTask(futureTask);
 
-        return futureTask;
+        // The returned value from this method is the object that gets passed
+        // back to the caller (unless the return type is void)
+        return (inv.isLocal) ?
+                futureTask : new EjbRemoteFutureTask(invId, null);
     }
 
     public Future submit(EjbInvocation inv) {
-        long invId = invCounter.incrementAndGet();
-        inv.setInvId(invId);
+
 
         //We need to clone this invocation as submitting
         //so that the inv is *NOT* shared between the
@@ -92,6 +100,10 @@ public class EjbAsyncInvocationManager
         //TODO: FIXME => We need to propogate SecurityPrincipal
         EjbFutureTask futureTask = asyncInv.getEjbFutureTask();
         futureTask.getEjbAsyncTask().initialize(asyncInv);
+
+        // TODO If this is a future task for a remote invocation
+        // and the method has Future<T> return type, add the
+        // task to the async map.  
 
         return super.submit(futureTask.getEjbAsyncTask());
     }
@@ -108,6 +120,8 @@ public class EjbAsyncInvocationManager
             EjbAsyncTask task = (EjbAsyncTask) callable;
             result = task.getFutureTask();
         } else {
+            // TODO Why would this even happen if we're only using this
+            // for our ejb async tasks??
             result = new FutureTask(callable);
         }
 

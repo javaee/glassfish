@@ -18,5 +18,9 @@ Import-Package: \
                         javax.xml.ws;resolution:=optional, \
                         javax.xml.ws.handler;resolution:=optional, \
                         com.sun.corba.ee.spi.orbutil.codegen;resolution:=optional, \
-                        !com.sun.corba.ee.impl.orbutil.codegen, \
+                        com.sun.corba.ee.impl.orbutil.codegen;resolution:=optional, \
+                        com.sun.corba.ee.spi.orbutil.copyobject;resolution:=optional, \
+                        com.sun.corba.ee.impl.orbutil.copyobject;resolution:=optional, \
+                        org.glassfish.enterprise.iiop.api;resolution:=optional, \
                         *
+

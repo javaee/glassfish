@@ -140,7 +140,16 @@
             <artifactId>glassfish-corba-codegen</artifactId>
             <version>${glassfish-corba.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.glassfish.orb</groupId>
+            <artifactId>orb-connector</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.orb</groupId>
+            <artifactId>orb-iiop</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>
 

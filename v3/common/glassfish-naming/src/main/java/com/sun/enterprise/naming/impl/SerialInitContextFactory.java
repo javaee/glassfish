@@ -64,7 +64,7 @@ public class SerialInitContextFactory implements InitialContextFactory {
 
     private boolean useS1ASCtxFactory;
 
-    private static boolean initialized = false;
+    private static AtomicBoolean initialized = new AtomicBoolean(false);
 
     /**
      * Default constructor. Creates an ORB if one is not already created.
@@ -80,17 +80,22 @@ public class SerialInitContextFactory implements InitialContextFactory {
 
         //Another Big TODO Sync with useS1ASCtxFactory
 
-        // this lock needs to be reentrant as the lookup of the NamingObjectsProvider
-        // will most likely trigger access to the naming manager and the serial init context.
-        synchronized(SerialInitContextFactory.class) {
-            if (!initialized) {
-                // this must be set first as we don't want to get into infinite loop while
-                // doing the first initialization
-                initialized=true;
+        // Use Atomic look to ensure only first thread does NamingObjectsProvider
+        // initialization.
+        // TODO Note that right now the 2nd, 3rd. etc. threads will proceed
+        // past here even if the first thread is still doing its getAllByContract
+        // work.  Should probably change the way this works to eliminate that
+        // time window where the objects registered by NamingObjectsProvider
+        // aren't available.
+        if( !initialized.get() ) {
+            boolean firstToInitialize = initialized.compareAndSet(false, true);
+            
+            if (firstToInitialize) {
 
                 // this should force the initialization of the resources providers
                 if (habitat!=null) {
-                    for (NamingObjectsProvider provider : habitat.getAllByContract(NamingObjectsProvider.class)) {
+                    for (NamingObjectsProvider provider :
+                            habitat.getAllByContract(NamingObjectsProvider.class)) {
                         // no-op
                     }
                 }

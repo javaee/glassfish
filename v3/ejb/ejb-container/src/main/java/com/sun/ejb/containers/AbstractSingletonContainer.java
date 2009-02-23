@@ -42,7 +42,6 @@ import com.sun.enterprise.config.serverbeans.EjbContainer;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import static com.sun.enterprise.deployment.LifecycleCallbackDescriptor.CallbackType;
-import com.sun.enterprise.deployment.runtime.BeanCacheDescriptor;
 import com.sun.enterprise.deployment.runtime.BeanPoolDescriptor;
 import com.sun.enterprise.deployment.runtime.IASEjbExtraDescriptors;
 import com.sun.enterprise.deployment.LifecycleCallbackDescriptor;
@@ -99,7 +98,6 @@ public abstract class AbstractSingletonContainer
     //TODO private EjbRuntimeEndpointInfo webServiceEndpoint;
 
     private IASEjbExtraDescriptors iased 	 = null;
-    private BeanCacheDescriptor beanCacheDes = null;
     private BeanPoolDescriptor beanPoolDes   = null;
     private Server svr 						 = null;
     private EjbContainer ejbContainer 		 = null;
@@ -229,7 +227,7 @@ public abstract class AbstractSingletonContainer
         super.initializeHome();
 
         if ( isRemote ) {
-            /*TODO
+
 
 
             if( hasRemoteBusinessView ) {
@@ -243,7 +241,7 @@ public abstract class AbstractSingletonContainer
                 for(RemoteBusinessIntfInfo next : 
                         remoteBusinessIntfInfo.values()) {
                     java.rmi.Remote stub = next.referenceFactory.
-                        createRemoteReference(statelessInstanceKey);
+                        createRemoteReference(singletonInstanceKey);
                     theRemoteBusinessStubs.put
                         (next.generatedRemoteIntf.getName(), stub);
                     theRemoteBusinessObjectImpl.setStub
@@ -251,7 +249,7 @@ public abstract class AbstractSingletonContainer
                 }
 
             }
-            */
+
         }
 
         if ( isLocal ) {
@@ -343,7 +341,7 @@ public abstract class AbstractSingletonContainer
     {
         // No access check since this is an internal operation.
 
-	statCreateCount++;
+	    statCreateCount++;
 
         return theRemoteBusinessObjectImpl;
     }
@@ -495,13 +493,13 @@ public abstract class AbstractSingletonContainer
             }
 
             if ( isRemote ) {
-                /*TODO
+
 
                 if( hasRemoteBusinessView ) {
                     context.setEJBRemoteBusinessObjectImpl
                         (theRemoteBusinessObjectImpl);
                 }
-                */
+
             }
             if ( isLocal ) {
                 
@@ -653,7 +651,7 @@ public abstract class AbstractSingletonContainer
             }
             */
 
-            /*TODO
+
            
             if ( hasRemoteBusinessView ) {
                 for(RemoteBusinessIntfInfo next : 
@@ -665,7 +663,7 @@ public abstract class AbstractSingletonContainer
                             (next.generatedRemoteIntf.getName()));
                 }
             }
-            */
+
 
         } finally {
 

@@ -55,15 +55,6 @@
             <artifactId>hk2</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.sun.corba</groupId>
-            <artifactId>glassfish-corba-orblib</artifactId>
-<!-- check with Mahesh
-	    <version>${glassfish-corba.version}</version>
--->
-	    <version>1.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.glassfish.security</groupId>
             <artifactId>security</artifactId>
             <version>${project.version}</version>
@@ -156,6 +147,12 @@
             <groupId>com.sun.corba</groupId>
             <artifactId>glassfish-corba-codegen</artifactId>
             <version>${glassfish-corba.version}</version>
+	    <optional>true</optional> 
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.orb</groupId>
+            <artifactId>orb-connector</artifactId>
+            <version>${project.version}</version>
 	    <optional>true</optional> 
         </dependency>
     </dependencies>

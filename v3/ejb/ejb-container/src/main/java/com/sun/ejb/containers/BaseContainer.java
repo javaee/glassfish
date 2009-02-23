@@ -63,6 +63,7 @@ import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.ejb.deployment.EjbSingletonDescriptor;
+import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -79,7 +80,7 @@ import java.lang.reflect.*;
 import java.rmi.AccessException;
 import java.rmi.RemoteException;
 import java.util.*;
-import java.util.concurrent.FutureTask;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -475,10 +476,7 @@ public abstract class BaseContainer
                              *   ejbClass = EJBUtils.loadGeneratedSerializableClass
                              *       (loader, ejbClass.getName());
                              * }
-                            */
-                            
-
-                           
+                             */
                         }
                     }
                     if ( sd.getTransactionType().equals("Bean") ) {
@@ -492,6 +490,7 @@ public abstract class BaseContainer
                 if ( ejbDescriptor.isRemoteInterfacesSupported() ) {
 
                     checkProtocolManager();
+
                     isRemote = true;
                     hasRemoteHomeView = true;
 
@@ -504,8 +503,8 @@ public abstract class BaseContainer
                     String id = 
                         Long.toString(ejbDescriptor.getUniqueId()) + "_RHome";
 
-                    remoteHomeRefFactory = 
-                        getProtocolManager().getRemoteReferenceFactory(this, true, id);
+                    // TODO remoteHomeRefFactory =
+                       // getProtocolManager().getRemoteReferenceFactory(this, true, id);
 
                 }
                 
@@ -547,8 +546,8 @@ public abstract class BaseContainer
                         String id = Long.toString(ejbDescriptor.getUniqueId()) 
                              + "_RBusiness" + "_" + genRemoteIntf.getName();
 
-                        info.referenceFactory = getProtocolManager().
-                            getRemoteReferenceFactory(this, false, id);
+                        // TODO info.referenceFactory = getProtocolManager().
+                        //    getRemoteReferenceFactory(this, false, id);
 
                         remoteBusinessIntfInfo.put(genRemoteIntf.getName(),
                                                    info);
@@ -712,7 +711,7 @@ public abstract class BaseContainer
     private void checkProtocolManager() {
         if (getProtocolManager() == null) {
             throw new RuntimeException("Protocol manager is null. "
-                     + "Possible cause is ORB not started");
+                     + "Possible cause is ORB not available");
         }
     }
     
@@ -962,8 +961,8 @@ public abstract class BaseContainer
                 // only when the actual invocation is made, so it's better to
                 // know at container initialization time if there is a problem.
                 //
-                checkProtocolManager();
-                getProtocolManager().validateTargetObjectInterfaces(this.ejbHome);
+
+                // TODO getProtocolManager().validateTargetObjectInterfaces(this.ejbHome);
 
                 // Unlike the Home, each of the concrete containers are
                 // responsible for creating the EJBObjects, so just create
@@ -971,22 +970,26 @@ public abstract class BaseContainer
                 EJBObjectImpl dummyEJBObjectImpl = instantiateEJBObjectImpl();
                 EJBObject dummyEJBObject = (EJBObject)
                     dummyEJBObjectImpl.getEJBObject();
-                getProtocolManager().validateTargetObjectInterfaces(dummyEJBObject);
+                // TODO getProtocolManager().validateTargetObjectInterfaces(dummyEJBObject);
 
                 // Remotereference factory needs instances of
                 // Home and Remote to get repository Ids since it doesn't have
                 // stubs and ties.  This must be done before any Home or Remote
                 // references are created.
-                remoteHomeRefFactory.setRepositoryIds(homeIntf, remoteIntf);
+                // TODO remoteHomeRefFactory.setRepositoryIds(homeIntf, remoteIntf);
                              
                 // get a remote ref for the EJBHome
-                ejbHomeStub = remoteHomeRefFactory.
-                    createHomeReference(homeInstanceKey);
+                // TODO ejbHomeStub = remoteHomeRefFactory.
+                 //   createHomeReference(homeInstanceKey);
+
+                intfsForPortableJndi.add(ejbDescriptor.getHomeClassName());
 
                 remoteHomeJndiName = ejbDescriptor.getJndiName();
 
                 namingManager.publishObject(remoteHomeJndiName,
-                                            ejbHomeStub, false);            
+                                            ejbHomeStub, false);
+
+
             }
 
             
@@ -1005,10 +1008,9 @@ public abstract class BaseContainer
                     
                 }
 
-                checkProtocolManager();
                 // RMI-IIOP validation
-                getProtocolManager().validateTargetObjectInterfaces
-                    (this.ejbRemoteBusinessHome);
+                // TODO getProtocolManager().validateTargetObjectInterfaces
+                    // (this.ejbRemoteBusinessHome);
 
                 for(RemoteBusinessIntfInfo next : 
                         remoteBusinessIntfInfo.values()) {
@@ -1023,16 +1025,16 @@ public abstract class BaseContainer
                     // Home and Remote to get repository Ids since it 
                     // doesn't have stubs and ties.  This must be done before 
                     // any Home or Remote references are created.
-                    next.referenceFactory.setRepositoryIds
-                        (remoteBusinessHomeIntf, next.generatedRemoteIntf);
+                    // TODO next.referenceFactory.setRepositoryIds
+                    //    (remoteBusinessHomeIntf, next.generatedRemoteIntf);
 
                     // Create home stub from the remote reference factory
                     // associated with one of the remote business interfaces.
                     // It doesn't matter which remote reference factory is
                     // selected, so just do it the first time through the loop.
                     if( ejbRemoteBusinessHomeStub == null ) {
-                        ejbRemoteBusinessHomeStub = next.referenceFactory.
-                            createHomeReference(homeInstanceKey);
+                        // TODO ejbRemoteBusinessHomeStub = next.referenceFactory.
+                           // createHomeReference(homeInstanceKey);
                     }
 
                 }
@@ -1046,7 +1048,7 @@ public abstract class BaseContainer
                     java.rmi.Remote dummyEJBObject = dummyEJBObjectImpl.
                         getEJBObject(next.generatedRemoteIntf.getName());
                         
-                    getProtocolManager().validateTargetObjectInterfaces(dummyEJBObject);
+                    // TODO getProtocolManager().validateTargetObjectInterfaces(dummyEJBObject);
 
                     next.jndiName = EJBUtils.getRemoteEjbJndiName
                         (true, next.remoteBusinessIntf.getName(), 
@@ -1062,15 +1064,14 @@ public abstract class BaseContainer
                          "com.sun.ejb.containers.RemoteBusinessObjectFactory",
                          null);
 
+                    intfsForPortableJndi.add(next.remoteBusinessIntf.getName());
+
                     namingManager.publishObject(next.jndiName, remoteBusRef,
                                                 false);
 
                     if( remoteBusinessJndiName != null ) {
                         namingManager.publishObject(remoteBusinessJndiName,
                                                     remoteBusRef, false);
-			_logger.log(Level.INFO, "**RemoteBusinessJndiName: "
-				+ remoteBusinessJndiName + "; remoteBusIntf: "
-				+ next.remoteBusinessIntf.getName());
                     }
 
                 }
@@ -1547,9 +1548,11 @@ public abstract class BaseContainer
             
             if ( !inv.isLocal ) {
 
-                // For remote business case, exception mapping is performed
-                // in client wrapper.  
-                //TODO inv.exception = getProtocolManager().mapException(inv.exception);
+                if( protocolMgr != null ) {
+                    // For remote business case, exception mapping is performed
+                    // in client wrapper.
+                    inv.exception = protocolMgr.mapException(inv.exception);
+                }
                     
                 // The most useful portion of the system exception is logged 
                 // above.  Only log mapped form when log level is FINE or 
@@ -3410,8 +3413,10 @@ public abstract class BaseContainer
                 });
             }
 
-            if (securityManager != null) securityManager.destroy();
-            // TODO securityManager.destroy();
+            if (securityManager != null) {
+                securityManager.destroy();
+            }
+
             
             if( !isMessageDriven ) {
                 // destroy home objref
@@ -3421,7 +3426,7 @@ public abstract class BaseContainer
                     }
                     if ( isRemote ) {
                        
-                        /*
+
                         if( hasRemoteHomeView ) {
                             try {
                                 namingManager.unpublishObject
@@ -3445,9 +3450,9 @@ public abstract class BaseContainer
                             // destroy the factory itself
                             remoteHomeRefFactory.destroy(); 
                         }
-                        */
 
-                        /*
+
+
                         if( hasRemoteBusinessView ) {
                             try {
                                 namingManager.unpublishObject
@@ -3518,7 +3523,7 @@ public abstract class BaseContainer
                                 next.referenceFactory.destroy(); 
                             }
 
-                        } */
+                        }
       
                     }
 
@@ -4444,7 +4449,7 @@ public abstract class BaseContainer
         if (inv.mustInvokeAsynchronously()) {
             EjbAsyncInvocationManager asyncManager =
                     ((EjbContainerUtilImpl) ejbContainerUtilImpl).getEjbAsyncInvocationManager();
-            FutureTask future = asyncManager.createFuture(inv);
+            Future future = asyncManager.createFuture(inv);
             result = (inv.invocationInfo.method.getReturnType() == void.class)
                     ? null : future;
         }  else {

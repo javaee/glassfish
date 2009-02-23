@@ -65,8 +65,6 @@ public class EjbDeployer
 
     protected CMPDeployer cmpDeployer;
 
-    // protected ThreadLocal<Application> tldApp = new ThreadLocal<Application>();
-
     /**
      * Constructor
      */
@@ -91,16 +89,7 @@ public class EjbDeployer
 
         EjbBundleDescriptor ejbBundle = dc.getModuleMetaData(EjbBundleDescriptor.class);
 
-        Collection<EjbDescriptor> ebds = null;
-
-        if( ejbBundle != null ) {
-
-            ebds = (Collection<EjbDescriptor>) ejbBundle.getEjbs();
-
-        } else {
-            Application app = dc.getModuleMetaData(Application.class);
-            ebds = (Collection<EjbDescriptor>) app.getEjbDescriptors();
-        }
+        Collection<EjbDescriptor> ebds = (Collection<EjbDescriptor>) ejbBundle.getEjbs();
 
         EjbApplication ejbApp = new EjbApplication(ebds, dc, dc.getClassLoader(), habitat);
 

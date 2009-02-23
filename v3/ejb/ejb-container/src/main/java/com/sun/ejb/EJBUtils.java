@@ -39,13 +39,18 @@ package com.sun.ejb;
 import com.sun.ejb.base.io.IOUtils;
 import com.sun.ejb.codegen.ClassGeneratorFactory;
 import com.sun.ejb.codegen.SerializableBeanGenerator;
+import com.sun.ejb.codegen.GenericHomeGenerator;
+import com.sun.ejb.codegen.Remote30WrapperGenerator;
+import com.sun.ejb.codegen.RemoteGenerator;
 import com.sun.ejb.containers.BaseContainer;
+import com.sun.ejb.containers.RemoteBusinessWrapperBase;
 import com.sun.ejb.containers.EjbContainerUtilImpl;
 import com.sun.ejb.containers.GenericEJBLocalHome;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbReferenceDescriptor;
 
 import javax.naming.NamingException;
+import javax.rmi.PortableRemoteObject;
 import java.io.*;
 import java.lang.reflect.*;
 import java.util.Collection;
@@ -298,14 +303,15 @@ public class EJBUtils {
             // corba interoperable name.  In that case,
             // the jndiObj refers to the internal Remote 3.0 Home so we
             // still need to create a remote 30 client wrapper object.
-
-            /*TODO
+	    
+	    /**
             if ( refDesc.isEJB30ClientView() &&
                  !(jndiObj instanceof RemoteBusinessWrapperBase) ) {
                 returnObject = EJBUtils.lookupRemote30BusinessObject
                     (jndiObj, refDesc.getEjbInterface());
             }
-            */
+	    **/
+
         }
 
         return returnObject;
@@ -318,7 +324,7 @@ public class EJBUtils {
         
     {
         Object returnObject = null;
-        /*TODO
+
         try {
             
             ClassLoader loader = 
@@ -359,7 +365,7 @@ public class EJBUtils {
                          e.getCause() : e);
             throw ne;
         }
-        */
+
         return returnObject;
                
     }
@@ -377,7 +383,7 @@ public class EJBUtils {
     public static void loadGeneratedRemoteBusinessClasses
         (ClassLoader appClassLoader, String businessInterfaceName) 
         throws Exception {
-        /*TODO
+
         String generatedRemoteIntfName = EJBUtils.
             getGeneratedRemoteIntfName(businessInterfaceName);
         
@@ -426,7 +432,7 @@ public class EJBUtils {
             generatedRemoteWrapper = generateAndLoad(gen, wrapperClassName,
                     appClassLoader, developerClass);
         }
-        */
+
     }
 
     public static Class loadGeneratedGenericEJBHomeClass
@@ -435,7 +441,7 @@ public class EJBUtils {
         String className = getGenericEJBHomeClassName();
 
         Class generatedGenericEJBHomeClass = null;
-        /*TODO
+
         try {
             generatedGenericEJBHomeClass = appClassLoader.loadClass(className);
         } catch(Exception e) {
@@ -449,7 +455,7 @@ public class EJBUtils {
             generatedGenericEJBHomeClass =generateAndLoad(gen, className,
                     appClassLoader, EJBUtils.class);
         }
-        */
+
         return generatedGenericEJBHomeClass;
     }
 
@@ -541,7 +547,7 @@ public class EJBUtils {
         return result;
     }
 
-    /*
+
     public static RemoteBusinessWrapperBase createRemoteBusinessObject
         (String businessInterface, java.rmi.Remote delegate) 
         throws Exception {
@@ -580,7 +586,7 @@ public class EJBUtils {
 
         return (RemoteBusinessWrapperBase) obj;
     }
-    */
+
 
     private static ClassLoader getBusinessIntfClassLoader
         (String businessInterface) throws Exception {
