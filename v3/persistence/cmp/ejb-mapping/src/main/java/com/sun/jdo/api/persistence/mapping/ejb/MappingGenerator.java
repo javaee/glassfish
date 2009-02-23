@@ -158,8 +158,8 @@ public class MappingGenerator {
         // to generate sun-cmp-mappings.xml, *.dbschema
 
         List pcClasses = new ArrayList();
-        sunCmpMappings = getPartialSunCmpMappings(
-                pcClasses, uniqueTableNames.booleanValue());
+        sunCmpMappings = getPartialSunCmpMappings(pcClasses, 
+                (uniqueTableNames != null)? uniqueTableNames.booleanValue() : false);
 
         // load real jdo model and fake mapping model in memory
         ddHelper.setEnsureValidation(false);
