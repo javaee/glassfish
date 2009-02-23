@@ -63,7 +63,9 @@ import com.sun.jdo.spi.persistence.utility.logging.Logger;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.connectors.ConnectorRuntime;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
+import org.glassfish.internal.api.Globals;
+import org.jvnet.hk2.component.Habitat;
 
 /** 
  * This class is used for static method invocations to avoid unnecessary
@@ -156,8 +158,8 @@ public class DeploymentHelper
 
     /** Get a Connection from the resource specified by the JNDI name 
      * of a CMP resource.
-     * This connection is aquired from a special PM resource which allows
-     * to use its connections outside of a business method invocation.
+     * This connection is aquired from a non-transactional resource which does not 
+     * go through transaction enlistment/delistment.
      * The deployment processing is required to use only those connections.
      *
      * @param name JNDI name of a cmp-resource for the connection.
@@ -170,8 +172,20 @@ public class DeploymentHelper
         if (logger.isLoggable(logger.FINE)) {
             logger.fine("ejb.DeploymentHelper.getconnection", name); //NOI18N
         }
-        //return ConnectorRuntime.getRuntime().getConnection(name);
-        return null;
+
+        // TODO - pass Habitat or ConnectorRuntime as an argument.
+
+        Habitat habitat = Globals.getDefaultHabitat();
+        DataSource ds = null;
+        try {
+            ConnectorRuntime connectorRuntime = habitat.getByContract(ConnectorRuntime.class);
+            ds = DataSource.class.cast(connectorRuntime.lookupNonTxResource(name, false));
+        } catch (Exception e) { 
+            throw new JDOFatalUserException(
+                I18NHelper.getMessage(messages,
+                        "ejb.jndi.lookupfailed", name)); //NOI18N
+        }
+        return ds.getConnection();
     }    
 
     /** Create a RuntimeException for unexpected instance returned
