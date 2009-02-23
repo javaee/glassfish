@@ -115,7 +115,7 @@ public class V2DottedNameSupport {
 
     public Map<String, String> getNodeAttributes(Dom node, String prefix) {
         Map<String, String> result = new  HashMap<String, String>();
-        for (String attrName : node.getAttributeNames()) {
+        for (String attrName : node.model.getAttributeNames()) {
             String value = (String) node.model.findIgnoreCase(attrName).get(node, String.class);
             if (value!=null) {
                 result.put(attrName, value);
@@ -126,11 +126,9 @@ public class V2DottedNameSupport {
             if (property==null) {
                 property = node.model.findIgnoreCase("*");
             }
-            if (property.isLeaf()) {
-                String value = node.leafElement(leafName);
-                if (value!=null) {
-                    result.put(leafName, value);
-                }
+            String value = node.leafElement(leafName);
+            if (value!=null) {
+                result.put(leafName, value);
             }
         }
         return result;
