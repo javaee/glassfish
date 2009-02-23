@@ -447,7 +447,7 @@ public class WebModule extends PwcWebModule {
 
     @Override
     public void setRealm(Realm realm) {
-        if (!(realm instanceof RealmAdapter)) {
+        if ((realm != null) && !(realm instanceof RealmAdapter)) {
             logger.log(Level.SEVERE,
                        "Realm " + realm.getClass().getName() +
                        " not an instance of " +
