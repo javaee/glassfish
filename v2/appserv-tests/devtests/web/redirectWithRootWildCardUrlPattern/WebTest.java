@@ -48,7 +48,8 @@ public class WebTest {
             conn.connect();
             responseCode = conn.getResponseCode();
             System.out.println("Response code: " + responseCode);
-            if (responseCode != HttpURLConnection.HTTP_MOVED_TEMP) {
+            if (responseCode != HttpURLConnection.HTTP_MOVED_TEMP &&
+                    responseCode != HttpURLConnection.HTTP_MOVED_PERM) {
                 fail = true;
             } else {
                 url = new URL(conn.getHeaderField("Location"));
