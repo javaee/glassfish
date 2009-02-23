@@ -1993,14 +1993,14 @@ public class WebappClassLoader
                         if (logger.isLoggable(Level.FINE)) {
                             logger.log(Level.FINE, "Failed to open JAR", e);
                         }
-                        if (jarFiles[i] != null) {
+                        for (int j = 0; j < i; j++) {
                             try {
-                                jarFiles[i].close();
+                                jarFiles[j].close();
                             } catch (Throwable t) {
                                 // Ignore
                             }
                         }
-                        return false;
+                        return false; 
                    }
                 }
             }

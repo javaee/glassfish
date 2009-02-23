@@ -69,8 +69,9 @@ public class JarURIPattern {
 
         // only look at jar file
         if (fileName != null && fileName.endsWith(".jar")) {
+            JarFile jarFile = null;
             try {
-                JarFile jarFile = new JarFile(new File(uri));
+                jarFile = new JarFile(new File(uri));
                 Enumeration<JarEntry> entries = jarFile.entries();
                 while (entries.hasMoreElements()) {
                     JarEntry entry = (JarEntry)entries.nextElement();
@@ -81,6 +82,14 @@ public class JarURIPattern {
                 }
             } catch(Exception ex) {
                 throw new RuntimeException(ex);
+            } finally {
+                if (jarFile != null) {
+                    try {
+                        jarFile.close();
+                    } catch (Throwable t) {
+                        // Ignore
+                    }
+                }
             }
         }
 
