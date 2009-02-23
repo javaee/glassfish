@@ -50,24 +50,21 @@
 <target name="build-deploy" depends="build,deploy" />
 
 <target name="build" depends="compile-tests">
-    <property name="war.file.ext" value="${war.file}.war"/>
-    <echo message="Now creating a war file ${dist.dir}/${war.file.ext}"/>
+    <echo message="Now creating a war file ${dist.dir}/${app.file.ext}"/>
 
     <delete dir="${dist.dir}"/>
     <mkdir dir="${dist.dir}"/>
-    <war destfile="${dist.dir}/${war.file.ext}" webxml="metadata/web.xml" manifest="metadata/MANIFEST.MF">
+    <war destfile="${dist.dir}/${app.file.ext}" webxml="metadata/web.xml" manifest="metadata/MANIFEST.MF">
         <fileset dir="web/jsp"/>
         <lib dir="${jsf_jar_path}">
             <include name="*.jar"/>
         </lib>
     </war>
-    <!-- copy file="${dist.dir}/${war.file.ext}" tofile="./${war.file.ext}"/ -->
+    <!-- copy file="${dist.dir}/${app.file.ext}" tofile="./${app.file.ext}"/ -->
 </target>
     
     <target name="deploy">
-        <antcall target="deploy-${deploy.platform}-impl">
-            <param name="deployed.app" value="${war.file}.war"/>
-        </antcall>
+        <antcall target="deploy-${deploy.platform}-impl"/>
     </target>
     
     <target  name="runtest"> 

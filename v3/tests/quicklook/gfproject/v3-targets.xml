@@ -38,8 +38,6 @@
     
     <property name="db.root" value="${glassfish.home}/javadb"/>
     <property name="db.classpath" value="${db.root}/lib"/>
-    <property name="war.file.ext" value="${war.file}.war"/>
-    <property name="deployed.app" value=""/>
     <property name="dist.dir" value="${ws.root}/dist/${testsuite.name}"/>
     <!--<property name="db.classpath" value="${db.root}/lib/derby.jar:${db.root}/lib/derbyclient.jar:${db.root}/lib/derbynet.jar"/>-->
 
@@ -172,7 +170,7 @@
     
       
 <target name="deploy-v3-impl" depends="setOSConditions">
-    <echo message="deploying ${war.file}"/>
+    <echo message="deploying ${app.file}"/>
     <antcall target="deploy-v3-impl-unix"/>
     <antcall target="deploy-v3-impl-windows"/>
 </target>
@@ -184,7 +182,7 @@
     <arg value="deploy"/>
     <arg value="--path"/>
     <arg value="--upload=false"/>
-    <arg line="${dist.dir}/${deployed.app}"/>   
+    <arg line="${dist.dir}/${app.file.ext}"/>   
    </exec>  
 </target>
   
@@ -192,12 +190,12 @@
   <exec executable="${glassfish.home}/bin/asadmin" failonerror="false">
     <arg value="deploy"/>
     <arg value="--path"/>
-    <arg line="${dist.dir}/${deployed.app}"/>
+    <arg line="${dist.dir}/${app.file.ext}"/>
   </exec>
 </target>
 
 <target name="undeploy-v3-impl" depends="setOSConditions">
-    <echo message="./${war.file}"/>
+    <echo message="./${app.file}"/>
     
     <antcall target="undeploy-v3-impl-unix"/>
     <antcall target="undeploy-v3-impl-windows"/>
@@ -208,14 +206,14 @@
     <arg value="/c"/>
     <arg value="${glassfish.home}\bin\asadmin.bat"/>
     <arg value="undeploy"/>    
-    <arg value="${war.file}"/>
+    <arg value="${app.file}"/>
   </exec>  
 </target>
   
 <target name="undeploy-v3-impl-unix" if="isUnix">
   <exec executable="${glassfish.home}/bin/asadmin">
     <arg value="undeploy"/>
-    <arg value="${war.file}"/>
+    <arg value="${app.file}"/>
   </exec>      
 </target>
 

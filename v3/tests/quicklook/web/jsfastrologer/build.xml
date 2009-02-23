@@ -50,14 +50,11 @@
     <target name="build-deploy" depends="build,deploy" />
     
     <target name="build" depends="compile-tests">
-         <property name="war.file.ext" value="${war.file}.war"/>
         <antcall target="build-impl"/>
     </target>
     
     <target name="deploy">
-        <antcall target="deploy-${deploy.platform}-impl">
-            <param name="deployed.app" value="${war.file}.war"/>
-        </antcall>
+        <antcall target="deploy-${deploy.platform}-impl"/>
     </target>
     
     <target  name="runtest"> 

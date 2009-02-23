@@ -78,7 +78,7 @@
     </target>
 
     <target name="create-war">
-        <war warfile="${war.file.ext}" webxml="metadata/web.xml">
+        <war warfile="${app.file.ext}" webxml="metadata/web.xml">
             <webinf dir="metadata" includes="sun-jaxws.xml"/>
             <zipfileset
                 dir="${basedir}/etc"
@@ -88,7 +88,7 @@
               <include name="**/jaxwsfromwsdl/server/**/*.class"/>
            </classes>
         </war>
-        <copy file="${war.file.ext}" tofile="${dist.dir}/${war.file.ext}"/>
+        <copy file="${app.file.ext}" tofile="${dist.dir}/${app.file.ext}"/>
     </target>
      
     <target name="generate-client" depends="declare-wsimport,build-setup" if="wsjar.available">
@@ -157,9 +157,7 @@
     </target>
 
     <target name="deploy">
-        <antcall target="deploy-${deploy.platform}-impl">
-            <param name="deployed.app" value="${war.file}.war"/>
-        </antcall>
+        <antcall target="deploy-${deploy.platform}-impl"/>
     </target>
 
     <target name="undeploy">
