@@ -252,5 +252,10 @@
             <artifactId>web-gui-plugin-common</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.security</groupId>
+            <artifactId>websecurity</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

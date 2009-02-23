@@ -70,6 +70,7 @@ import com.sun.enterprise.web.pwc.PwcWebModule;
 import com.sun.enterprise.web.session.PersistenceType;
 import com.sun.enterprise.web.session.SessionCookieConfig;
 import com.sun.logging.LogDomains;
+import com.sun.web.security.RealmAdapter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import org.apache.catalina.Container;
@@ -441,6 +442,20 @@ public class WebModule extends PwcWebModule {
      */
     public Object[] getCachedFindOperation(){
         return cachedFinds;
+    }
+
+
+    @Override
+    public void setRealm(Realm realm) {
+        if (!(realm instanceof RealmAdapter)) {
+            logger.log(Level.SEVERE,
+                       "Realm " + realm.getClass().getName() +
+                       " not an instance of " +
+                       RealmAdapter.class.getName() +
+                       ", and will be ignored");
+        } else {
+            super.setRealm(realm);
+        }
     }
 
 

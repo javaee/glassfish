@@ -56,11 +56,13 @@ import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 import com.sun.enterprise.web.session.SessionCookieConfig;
 import com.sun.enterprise.web.stats.PWCRequestStatsImpl;
 import com.sun.logging.LogDomains;
+import com.sun.web.security.RealmAdapter;
 import org.apache.catalina.Container;
 import org.apache.catalina.ContainerListener;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Pipeline;
+import org.apache.catalina.Realm;
 import org.apache.catalina.Valve;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.deploy.ErrorPage;
@@ -1789,6 +1791,20 @@ public class VirtualServer extends StandardHost {
             return globalAccessLoggingEnabled;
         } else {
             return ConfigBeansUtilities.toBoolean(prop.getValue());
+        }
+    }
+
+
+    @Override
+    public void setRealm(Realm realm) {
+        if (!(realm instanceof RealmAdapter)) {
+            _logger.log(Level.SEVERE,
+                        "Realm " + realm.getClass().getName() +
+                        " not an instance of " +
+                        RealmAdapter.class.getName() +
+                        ", and will be ignored");
+        } else {
+            super.setRealm(realm);
         }
     }
 
