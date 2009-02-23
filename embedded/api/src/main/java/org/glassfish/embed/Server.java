@@ -192,23 +192,6 @@ public class Server {
     }
     
     /**
-     * Sets the default web.xml to url.  The default url is located inside the
-     * Embedded GlassFish jars.
-     * @param url
-     */
-    public void setDefaultWebXml(URL url) {
-        this.defaultWebXml = url;
-    }
-
-    /**
-     * The default web.xml is inside the Embedded GlassFish jar.
-     * @return the default web.xml url
-     */
-    public URL getDefaultWebXml() {
-        return defaultWebXml;
-    }
-
-    /**
      * Returns an <code>org.apache.catalina.Engine</code> object
      * associated with this <code>Server</code> object.  Server must
      * be started before calling getEngine().  If it is not started EmbeddedException
@@ -225,24 +208,6 @@ public class Server {
         }
 
         return engine;
-    }
-
-    /**
-     * Returns a <code>com.sun.enterprise.web.EmbeddedWebContainer</code> object
-     * associated with this <code>Server</code> object.  Server must
-     * be started before calling getEmbeddedWebContainer().  If it is not started
-     * EmbeddedException is thrown.
-     * @return EmbeddedWebContainer
-     * @throws EmbeddedException
-     */
-    public EmbeddedWebContainer getEmbeddedWebContainer() throws EmbeddedException {
-        mustBeStarted("getEmbeddedWebContainer");
-
-        if (ewc == null) {
-            throw new EmbeddedException("bad_embedded_web_container");
-        }
-
-        return ewc;
     }
 
     /**
@@ -383,19 +348,6 @@ public class Server {
     }
 
 
-    /**
-     * Returns all virtual servers from this server's web container.
-     * @return this server's virtual servers
-     * @throws EmbeddedException
-     */
-    public Container[] getVirtualServers() throws EmbeddedException {
-        Container[] vss = getEngine().findChildren();
-
-        if (vss == null || vss.length <= 0)
-            throw new EmbeddedException("bad_virtual_servers");
-
-        return vss;
-    }
 
 
     /**
@@ -418,7 +370,11 @@ public class Server {
         return appLife;
     }
 
-    Habitat getHabitat() {
+    /**
+     * Returns the HK2 Habitat object used by this Server.
+     * @return the one and only Habitat
+     */
+    public Habitat getHabitat() {
         return habitat;
     }
 
@@ -443,6 +399,20 @@ public class Server {
      *************    private   ********************************
      ******************************************************************
      */
+
+    /**
+     * Returns all virtual servers from this server's web container.
+     * @return this server's virtual servers
+     * @throws EmbeddedException
+     */
+    private Container[] getVirtualServers() throws EmbeddedException {
+        Container[] vss = getEngine().findChildren();
+
+        if (vss == null || vss.length <= 0)
+            throw new EmbeddedException("bad_virtual_servers");
+
+        return vss;
+    }
 
     private void createAdminVirtualServer() throws EmbeddedException {
         mustNotBeStarted("createAdminVirtualServer");
