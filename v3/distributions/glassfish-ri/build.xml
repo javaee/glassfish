@@ -114,50 +114,43 @@
         </delete>
     </target>
 
+    <!-- import the bundle build script from the web module -->
+    <resolveArtifact artifactId="glassfish" classifier="build" type="xml" property="glassfish.build.xml"/>
+    <import file="${glassfish.build.xml}" />
+    <resolveArtifact artifactId="web" classifier="build" type="xml" property="web.build.xml"/>
+    <import file="${web.build.xml}" />
 
-
-    <target name="web.prepare">
-        <mkdir dir="target/stage"/>
-
-        <resolveArtifact artifactId="nucleus-base" property="nucleus-base.zip"/>
-    </target>
-
-    <!--
-        Define a dependency graph for the web modules,
-        and place the web modules into the modules/ dir.
-
-        This part will be reused by other bundles that build on the web module.
-    -->
-    <target name="web.moduleDef">
-        <moduleDef name="web" artifactId="webtier-all" />
-    </target>
-
-    <target name="ejb.moduleDef">
-        <moduleDef name="ejb" artifactId="ejb-all" />
-    </target>
-
-
-    <target name="create.bundle" depends="web.prepare, web.moduleDef, ejb.moduleDef">
+    <target name="create.bundle" depends="web.prepare, ejb.moduleDef, web.moduleDef">
         <resolveAll todir="target/stage/glassfish/modules" tolerateBrokenPOMs="true" stripVersion="true">
             <fullGraph />
-            <!-- then get rid of all the dependencies that are in the webtier -->
             <removeSpecificArtifacts>
                 <scope level="compile,runtime"/>
                 <artifact artifactId="webtier-all"/>
                 <artifact artifactId="ejb-all" />
+		<!--exclude admingui artifacts -->
+                <artifact artifactId="jsftemplating" />
+                <artifact artifactId="console-plugin-service" />
+                <artifact artifactId="dataprovider"/>
+                <artifact artifactId="console-common"/>
+                <artifact artifactId="console-security-plugin"/>
+                <artifact artifactId="console-jdbc-plugin"/>
+                <artifact artifactId="console-updatecenter-plugin"/>
+                <artifact artifactId="console-web-plugin"/>
+                <artifact artifactId="console-community-branding-plugin"/>
+                <artifact artifactId="dist-fragment" groupId="org.glassfish.admingui" />
+		<!-- exclude registration artifacts -->
+                <artifact artifactId="registration-impl"/>
+                <artifact artifactId="glassfish-registration"/>
+                <artifact artifactId="registration-api"/>
             </removeSpecificArtifacts>
         </resolveAll>
 
-	<delete dir="target/stage/glassfish/modules" includes="*.zip"/>
-	<delete dir="target/stage/glassfish/modules" includes="*.pom"/>
+	<delete dir="target/stage/glassfish/modules" includes="*.zip" />
+	<delete dir="target/stage/glassfish/modules" includes="*.pom" />
 
         <graphDef id="generate-picture" tolerateBrokenPOMs="true">
             <visualize file="modules.png">
-                <scope level="compile,runtime">
-                            <excludeArtifactsTransitively>
-                                <artifact groupId="com.sun.enterprise" artifactId="hk2" />
-                            </excludeArtifactsTransitively>
-                </scope>
+                <scope level="compile,runtime" />
                 <subGraph color="red">
                     <graphRef refid="web-modules"/>
                 </subGraph>
@@ -167,87 +160,11 @@
             </visualize>
         </graphDef>
 
-        <build-zip zipfile="target/glassfish-ri.zip" base="${nucleus-base.zip}"/>
+        <build-zip zipfile="target/glassfish-ri.zip" base="${nucleus-base.zip}" />
 
         <!-- this build script will be reused elsewhere -->
-        <attachArtifact file="build.xml" classifier="build"/>
+        <attachArtifact file="build.xml" classifier="build" />
     </target>
-
-
-    <!--
-        Macro for defining a module set rooted at the given node.
-    -->
-    <macrodef name="moduleDef">
-        <!--
-            The module subgraph will be placed under ID "<name>-modules",
-            and the module jars are placed under "modules/<name>" sub directory.
-        -->
-        <attribute name="name"/>
-        <!--
-            ArtifactId of the root module of this module set.
-        -->
-        <attribute name="artifactId" />
-        <sequential>
-            <!--
-              This filtering definition obtains a set of HK2 modules that are retained by webtier
-              (that is, set of modules that won't be in the dependency list if webtier is not a part of the dependency;
-              IOW, a dependency only reachable through webtier)
-
-              The formula to compute this is non-trivial. We first compute a subgraph X which represents
-              nodes that we *don't* want in webtier directory. That is, all dependencies that are reachable without going through
-              webtier.
-
-              We then finally compute the set of modules and jars that are not in X by one more subtraction.
-            -->
-            <graphDef id="@{name}-modules" tolerateBrokenPOMs="true">
-                <scope level="compile,runtime">
-                    <subtract>
-                        <subGraph artifactId="@{artifactId}" />
-                        <scope level="compile,runtime"><!-- = subgraph X -->
-                            <excludeArtifactsTransitively>
-                                <artifact artifactId="@{artifactId}" />
-                            </excludeArtifactsTransitively>
-                        </scope>
-                    </subtract>
-                </scope>
-            </graphDef>
-
-            <resolveAll todir="target/stage/glassfish/modules/@{name}" tolerateBrokenPOMs="true" stripVersion="true">
-                <graphRef refid="@{name}-modules"/>
-       	    </resolveAll>
-
-	    <delete dir="target/stage/glassfish/modules/@{name}" includes="*.zip"/>
-	    <delete dir="target/stage/glassfish/modules/@{name}" includes="*.pom"/>
-	    <delete dir="target/stage/glassfish/modules/@{name}" includes="*.war"/>
-        </sequential>
-    </macrodef>
-
-    <!--
-        build the final zip file and attach that to Maven
-    -->
-    <macrodef name="build-zip">
-        <attribute name="zipfile" />
-        <attribute name="base" />
-        <sequential>
-            <!-- find all fragments -->
-            <resolveAll todir="target/fragments" tolerateBrokenPOMs="true" stripVersion="true">
-                <fullGraph/>
-                <!-- now treat the full graph as the list and then do simple list filtering -->
-                <packaging value="distribution-fragment"/>
-            </resolveAll>
-            <unzip dest="target/stage">
-                <patternset>
-                    <exclude name="META-INF/**"/>
-                </patternset>
-                <fileset dir="target/fragments" includes="*.zip"/>
-            </unzip>
-
-            <zip file="@{zipfile}" basedir="target/stage">
-                <zipgroupfileset file="@{base}"/>
-            </zip>
-            <attachArtifact file="@{zipfile}"/>
-        </sequential>
-    </macrodef>
 
 </project>
 
