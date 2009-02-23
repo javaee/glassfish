@@ -32,14 +32,7 @@
     </sc:subMenu>
     <sc:subMenu value="Service">
 	<sc:menuItem value="Web Container" url="#{request.contextPath}/web/configuration/webContainerSession.jsf" />
-	<sc:menuItem value="EJB Container" url="#{request.contextPath}/layouttest.jsf?page=EJB+Container" />
-	<sc:menuItem value="JMS" url="#{request.contextPath}/layouttest.jsf?page=JMS" />
-	<sc:menuItem value="Availability Service" url="#{request.contextPath}/layouttest.jsf?page=Availability+Service" />
-	<sc:menuItem value="Transaction Service" url="#{request.contextPath}/layouttest.jsf?page=Transaction+Service" />
-	<sc:menuItem value="Admin Service" url="#{request.contextPath}/layouttest.jsf?page=Admin+Service" />
-	<sc:menuItem value="Connector Service" url="#{request.contextPath}/layouttest.jsf?page=Connector+Service" />
-	<sc:menuItem value="Diagnostic Service" url="#{request.contextPath}/layouttest.jsf?page=Diagnostic+Service" />
-	<sc:subMenu value="Security">
+    <sc:subMenu value="Security">
 	    <sc:menuItem value="Security Settings" url="#{request.contextPath}/security/security.jsf" />
 	    <sc:menuItem value="Realms" url="#{request.contextPath}/security/realms/realms.jsf" />
 	    <sc:menuItem value="Audit Modules" url="#{request.contextPath}/security/auditModules/auditModules.jsf" />
@@ -51,8 +44,29 @@
 	    <sc:menuItem value="HTTP Listeners" url="#{request.contextPath}/web/configuration/httpListeners.jsf" />
 	    <sc:menuItem value="Virtual Servers" url="#{request.contextPath}/web/configuration/virtualServers.jsf" />
 	</sc:subMenu>
+	<sc:menuItem value="EJB Container" url="#{request.contextPath}/layouttest.jsf?page=EJB+Container" />
+	<sc:menuItem value="JMS" url="#{request.contextPath}/layouttest.jsf?page=JMS" />
+	<sc:menuItem value="Availability Service" url="#{request.contextPath}/layouttest.jsf?page=Availability+Service" />
+	<sc:menuItem value="Transaction Service" url="#{request.contextPath}/layouttest.jsf?page=Transaction+Service" />
+	<sc:menuItem value="Admin Service" url="#{request.contextPath}/layouttest.jsf?page=Admin+Service" />
+	<sc:menuItem value="Connector Service" url="#{request.contextPath}/layouttest.jsf?page=Connector+Service" />
+	<sc:menuItem value="Diagnostic Service" url="#{request.contextPath}/layouttest.jsf?page=Diagnostic+Service" />
 	<sc:subMenu value="Object Request Broker">
 	    <sc:menuItem value="IIOP Listeners" url="#{request.contextPath}/layouttest.jsf?page=IIOP+Listeners" />
+	</sc:subMenu>
+    </sc:subMenu>
+    <sc:subMenu value="Resources">
+	<sc:menuItem value="JDBC Resources" url="#{request.contextPath}/jdbc/jdbcResources.jsf" />
+	<sc:menuItem value="JDBC Connection Pools" url="#{request.contextPath}/jdbc/jdbcConnectionPools.jsf" />
+	<sc:menuItem value="JMS Connection Factories" url="#{request.contextPath}/layouttest.jsf?page=JMS+Connection+Factories" />
+	<sc:menuItem value="JMS Destination Resources" url="#{request.contextPath}/layouttest.jsf?page=JMS+Destination+Resources" />
+	<sc:menuItem value="JavaMail Sessions" url="#{request.contextPath}/layouttest.jsf?page=JavaMail+Sessions" />
+	<sc:menuItem value="JNDI Custom Resources" url="#{request.contextPath}/layouttest.jsf?page=JNDI+Custom+Resources" />
+	<sc:menuItem value="JNDI External Resources" url="#{request.contextPath}/layouttest.jsf?page=JNDI+External+Resources" />
+	<sc:subMenu value="Connectors">
+	    <sc:menuItem value="Connector Resources" url="#{request.contextPath}/layouttest.jsf?page=Connector+Resources" />
+	    <sc:menuItem value="Connection Pools" url="#{request.contextPath}/layouttest.jsf?page=Connection+Pools" />
+	    <sc:menuItem value="Admin Object Resources" url="#{request.contextPath}/layouttest.jsf?page=Admin+Object+Resources" />
 	</sc:subMenu>
     </sc:subMenu>
     <sc:menuItem value="Clusters" url="#{request.contextPath}/layouttest.jsf?page=Clusters" />
@@ -68,20 +82,7 @@
     </sc:subMenu>
     <sc:menuItem value="Configuration System Properties" url="#{request.contextPath}/layouttest.jsf?page=Configuration+System+Properties" />
     <sc:menuItem value="Custom MBeans" url="#{request.contextPath}/layouttest.jsf?page=Custom+MBeans" />
-    <sc:subMenu value="Resources">
-	<sc:menuItem value="JDBC Resources" url="#{request.contextPath}/jdbc/jdbcResources.jsf" />
-	<sc:menuItem value="JDBC Connection Pools" url="#{request.contextPath}/jdbc/jdbcConnectionPools.jsf" />
-	<sc:menuItem value="JMS Connection Factories" url="#{request.contextPath}/layouttest.jsf?page=JMS+Connection+Factories" />
-	<sc:menuItem value="JMS Destination Resources" url="#{request.contextPath}/layouttest.jsf?page=JMS+Destination+Resources" />
-	<sc:menuItem value="JavaMail Sessions" url="#{request.contextPath}/layouttest.jsf?page=JavaMail+Sessions" />
-	<sc:menuItem value="JNDI Custom Resources" url="#{request.contextPath}/layouttest.jsf?page=JNDI+Custom+Resources" />
-	<sc:menuItem value="JNDI External Resources" url="#{request.contextPath}/layouttest.jsf?page=JNDI+External+Resources" />
-	<sc:subMenu value="Connectors">
-	    <sc:menuItem value="Connector Resources" url="#{request.contextPath}/layouttest.jsf?page=Connector+Resources" />
-	    <sc:menuItem value="Connection Pools" url="#{request.contextPath}/layouttest.jsf?page=Connection+Pools" />
-	    <sc:menuItem value="Admin Object Resources" url="#{request.contextPath}/layouttest.jsf?page=Admin+Object+Resources" />
-	</sc:subMenu>
-    </sc:subMenu>
+    
 </sc:subMenu>
 <!--
 <sc:subMenu value="View">
