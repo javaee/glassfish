@@ -58,7 +58,4 @@ public class EmbeddedException extends Exception {
     public EmbeddedException(String s, Object... objs) {
         super(StringHelper.get(s, objs));
     }
-    public EmbeddedException(Throwable cause, String s, Object... objs) {
-        super(StringHelper.get(s, objs) + " [" + cause.toString() + "] ", cause);
-    }
 }

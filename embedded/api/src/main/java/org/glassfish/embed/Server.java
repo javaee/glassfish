@@ -37,6 +37,7 @@
 package org.glassfish.embed;
 
 import org.glassfish.embed.util.LoggerHelper;
+import org.glassfish.embed.util.StringHelper;
 import java.io.*;
 import java.util.*;
 import java.net.*;
@@ -569,7 +570,7 @@ public class Server {
             copy(br, out);
         }
         catch(Exception e) {
-            throw new EmbeddedException(e, "bad_copy_welcome", out);
+            throw new EmbeddedException(StringHelper.get("bad_copy_welcome", out), e);
         }
     }
 

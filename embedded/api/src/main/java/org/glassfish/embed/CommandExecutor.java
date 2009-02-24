@@ -6,6 +6,7 @@
 package org.glassfish.embed;
 
 import org.glassfish.embed.util.LoggerHelper;
+import org.glassfish.embed.util.StringHelper;
 import com.sun.enterprise.v3.admin.CommandRunner;
 import com.sun.enterprise.v3.common.PropsFileActionReporter;
 import org.glassfish.api.ActionReport;
@@ -89,7 +90,7 @@ public class CommandExecutor {
             if (t == null) {
                 throw new EmbeddedException("command_failed", commandName);
             } else {
-                throw new EmbeddedException(t, "command_failed", commandName);
+                throw new EmbeddedException(StringHelper.get("command_failed", commandName), t);
             }
         }
     }
