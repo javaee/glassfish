@@ -123,7 +123,7 @@ public class EmbeddedDeployer {
         }
     }
     /**
-     * Convenience method to deploy a scattered war archive on a given virtual server
+     * Deploy a scattered war archive on a given virtual server
      * and using the specified context root.
      *
      * @param war           the scattered war
@@ -141,6 +141,30 @@ public class EmbeddedDeployer {
             params.put(ParameterNames.CONTEXT_ROOT, contextRoot);
         }
         deploy(war, params);
+    }
+    /**
+     * Convenience method to deploy a scattered war archive
+     * using the specified context root.  It will be deployed to the default
+     * virtual server
+     *
+     * @param war           the scattered war
+     * @param contextRoot   the context root to use
+     * @throws EmbeddedException
+     */
+    public void deployScattered(ScatteredWar war, String contextRoot) throws EmbeddedException {
+        deployScattered(war, contextRoot, null);
+    }
+
+    /**
+     * Convenience method to deploy a scattered war archive
+     * using the name of the app as the context root.
+     * It will be deployed to the default
+     * virtual server
+     * @param war           the scattered war
+     * @throws EmbeddedException
+     */
+    public void deployScattered(ScatteredWar war) throws EmbeddedException {
+        deployScattered(war, null, null);
     }
      /*
       * undeploy the app that was deployed by this deployer with the given name.

@@ -70,7 +70,6 @@ public class ScatteredWar extends ReadableArchiveAdapter {
             webXml = new File(resources,"WEB-INF/web.xml");
         this.webXml = webXml;
         this.classpath = classes;
-        java.io.BufferedInputStream bis = null;
     }
 
     /**
@@ -217,9 +216,9 @@ public class ScatteredWar extends ReadableArchiveAdapter {
     
     ///////////////////////////////////////////////////////////////////////////
     
-    private final File resources;       // Static resources, JSP, etc.
-    private final File webXml;          // Location of web.xml
-    private final Collection<URL> classpath;  // Classes and jar files
-    private final String name;
-    private static final Enumeration<String> EMPTY_ENUMERATOR = new Vector<String>().elements();
+    private final           File                    resources;  // Static resources, JSP, etc.
+    private final           File                    webXml;     // Location of web.xml
+    private final           Collection<URL>         classpath;  // Classes and jar files
+    private final           String                  name;
+    private static final    Enumeration<String>     EMPTY_ENUMERATOR = new Vector<String>().elements();
 }
