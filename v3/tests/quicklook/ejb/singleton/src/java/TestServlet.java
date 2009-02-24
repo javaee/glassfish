@@ -91,7 +91,7 @@ public class TestServlet extends HttpServlet {
               // app-name -- name of ear file (option)
               // module-name -- name of war or jar file
               // bean-name -- name of ejb
-	      BeanRoot root2 = (BeanRoot) ic.lookup("java:global/SingletonStartup/BeanRoot");
+	      BeanRoot root2 = (BeanRoot) ic.lookup("java:global/singleton/BeanRoot");
 
 	      // out.println("global root: " + root2);
 	      String hello2 = root2.sayHello();
@@ -112,7 +112,7 @@ public class TestServlet extends HttpServlet {
         } catch (Throwable th) {
             th.printStackTrace(out);
         } finally { 
-	    if (message != null && message.equals(EXPECTED_RESULT)){
+	    if (status){
 	      out.println("Test:Pass");
 	    } else {
 	      out.println("Test:Fail");

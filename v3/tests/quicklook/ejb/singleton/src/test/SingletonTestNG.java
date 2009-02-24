@@ -108,6 +108,7 @@ public class SingletonTestNG {
 	    String line = null;
 	    while ((line = input.readLine()) != null) {
 	      if (line.contains(EXPECTED_RESPONSE)) {
+                // System.out.println("line="+line);
                 result = true;
 		break;
 	      }
