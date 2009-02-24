@@ -56,7 +56,7 @@ import static org.glassfish.embed.util.ServerConstants.*;
  */
 public class EmbeddedInfo {
     /**
-     * Default constructor sets server name to "server" and HTTP port to "8888"
+     * Default constructor sets server name to "server" and HTTP port to "8080"
      * by default.
      */
     public EmbeddedInfo() {

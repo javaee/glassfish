@@ -82,7 +82,7 @@ import static org.glassfish.embed.util.ServerConstants.*;
  * A <code>Server</code> object is constructed using an <code>EmbeddedInfo</code>
  * object.  Information about the server such as server name or HTTP port may be
  * set on {@link EmbeddedInfo}.  If no information is set, defaults are used.
- * The default server name is "server".  The default HTTP port is "8888".
+ * The default server name is "server".  The default HTTP port is "8080".
  * <p/>
  * <p/>
  * After the <code>Server</code> has been created, the <code>Server</code> can
