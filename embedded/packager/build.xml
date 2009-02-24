@@ -67,14 +67,6 @@ own identifying information: Portions Copyright [yyyy]
         <taskdef name="rejar" classname="org.jvnet.maven.plugin.antrun.RejarTask" />
          <rejar destfile="${finaljar}">
             <zipgroupfileset dir="${jardir}" includes="**/*.jar"/>
-			<!-- This commented-out block used to add the dtds twice -- in different dirs.
-			Feel free to delete this block after HCF 2/27/09.
-			I'm just leaving it here for now just in case...
-            <fileset dir="${jardir}/">
-                <include name="**/lib/dtds/*.dtd"/>
-            </fileset>
-			-->
-
             <manifest>
                  <attribute name="Main-Class" value="org.glassfish.embed.EmbeddedMain"/>
              </manifest>
