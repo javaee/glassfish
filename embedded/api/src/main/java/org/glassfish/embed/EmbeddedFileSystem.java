@@ -47,15 +47,17 @@ import java.net.URL;
 import org.glassfish.embed.util.EmbeddedUtils;
 
 /**
- * There are currently some ugly things we MUST do:
+ * A class that is responsible for encapsulating all information having to do with
+ * the external filesystem.
  * <ul>
- * <li>write out our hard-wired domain.xml to disk for use by core V3
- * <li>write out magic JDBC xml files to disk
- * </ul>
- * We are concentrating these things here for ease of maintenance.
+ * <li>It maintains references to directories that GlassFish requires.
+ * <li>It sets up special files that GlassFish needs.
+ * <li>It is smart about initialization and state.  For instance, if you call a
+ * getter before initialization -- an {@link EmbeddedException} will be thrown.
  *
- * @author bnevins
+ * @author Byron Nevins
  */
+
 public final class EmbeddedFileSystem {
 
     /**

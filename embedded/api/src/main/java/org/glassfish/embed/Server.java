@@ -89,21 +89,13 @@ import static org.glassfish.embed.util.ServerConstants.*;
  * be started.
  * <xmp>
  * EmbeddedInfo info = new EmbeddedInfo();
- * info.setServerName("server");
- * info.setHttpPort("8080");
+ * info.setHttpPort("22222"); // example.  The default is 8080
  * Server server = new Server(info);
  * server.start();
  * </xmp>
  * <p/>
- * TODO: the way this is done today is that the embedded API wraps the ugliness
- * of the underlying GFv3 internal abstractions, but ideally, it should be the
- * other way around &mdash; this should be the native interface inside GlassFish,
- * and application server launcher and CLI commands should be the client of this
- * API. This is how all the other sensible containers do it, like Tomcat and Jetty.
- *
- * November 2008.  Supporting multiple servers in one JVM
  * @author Kohsuke Kawaguchi
- * @author bnevins
+ * @author Byron Nevins
  */
 public class Server {
 

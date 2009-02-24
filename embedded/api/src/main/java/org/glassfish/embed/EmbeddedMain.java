@@ -51,10 +51,73 @@ import java.util.logging.Logger;
 import org.glassfish.embed.util.StringUtils;
 import static org.glassfish.embed.util.ServerConstants.*;
 /**
- * 
- * @author bnevins
+ * The default main class for Embedded GlassFish. 
+ * The goal is to provide a very simple way to run Embedded GlassFish without
+ * having to write any code or compile anything.  You can use this class to:
+ * <ul>
+ * <li>Start a web server that will serve up static content.
+ * <li>Start a server and deploy one or more applications to it
+ * <li>Start a server, run asadmin commands to configure it and then use the domain.xml file
+ *  that is generated.
+ * <li>The possibilities are endless!
+ * </ul>
+ * The class can be run like so:
+ *
+ * <xmp>
+ * java -jar embedded-jar-file.jar  arg1 arg2...
+ * java -cp embedded-jar-file.jar:my-stuff.jar org.glassfish.embed.EmbeddedMain arg1 arg2...
+ * </xmp>
+ *
+ * The most popular API items are supported with command line arguments in this class.
+ * Simply enter the following to get documentation on the commands:
+ *
+ * <xmp>
+ * java -jar embedded-jar-file.jar --help
+ * </xmp>
+ *
+ * Here is the current output of the --help command:
+ *
+ * <xmp>
+ Welcome to Embedded GlassFish
+
+Below are a list of valid options.
+To use the longname, prepend it with '--'.
+To use a short name prepend it with '-'.
+The webapp war file names should be supplied after all the options.
+You can enter as many web apps as you like.
+
+Example to start an Embedded GlassFish Server with a web app packaged in a jar:
+
+java -jar glassfish-embedded-all-3.0-Prelude-SNAPSHOT.jar myapp.war
+
+Same example but listen at port 80 instead of the default 8080
+
+java -jar glassfish-embedded-all-3.0-Prelude-SNAPSHOT.jar -p 80 myapp.war
+
+
+Description                                    Long Name      Short Name   Default  Required
+
+HTTP Port                                      --port         -p           8080     true
+Filesystem Installation Directory              --installDir   -d                    false
+Filesystem Instance Directory                  --instanceDir  -i                    false
+domain.xml filename or URL                     --xml          -x                    false
+Admin HTTP                                     --adminport    -q           4848     true
+JMX System Connector Port                      --jmxport      -j           8686     true
+Help                                           --help         -h           false    true
+Turn on the AutoDeploy Service                 --autodeploy   -b           false    true
+Verbose Mode                                   --verbose      -v           true     true
+Send logging to instance-root/logs/server.log  --log          -l           true     true
+Automatically delete Filesystem                --autodelete   -a           true     true
+</xmp>
+ *
+ *
+ * @author Byron Nevins
  */
 public class EmbeddedMain {
+    /**
+     * The class' entry point.
+     * @param args the command line arguments
+     */
     public static void main(String[] args) {
         try {
             // parse commandline arguments

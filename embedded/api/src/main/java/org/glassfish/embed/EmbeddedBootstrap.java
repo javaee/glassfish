@@ -27,7 +27,7 @@ import org.jvnet.hk2.component.Inhabitants;
 
 /**
  * @author Kohsuke Kawaguchi
- * @author bnevins
+ * @author Byron Nevins
  */
 
 class EmbeddedBootstrap extends Main{

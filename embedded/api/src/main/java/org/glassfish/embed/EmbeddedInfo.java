@@ -52,7 +52,7 @@ import static org.glassfish.embed.util.ServerConstants.*;
  * system, {@link EmbeddedFileSystem}, used by <code>Server</code> can be
  * retrieved.
  * 
- * @author bnevins
+ * @author Byron Nevins
  */
 public class EmbeddedInfo {
     /**
@@ -133,9 +133,9 @@ public class EmbeddedInfo {
 
     /**
      * Turn on the autodeploy service.
-     * TODO also check that domain.xml has it enabled.
      */
     public void enableAutoDeploy() {
+        // TODO also check that domain.xml has it enabled.
         autoDeploy = true;
     }
     

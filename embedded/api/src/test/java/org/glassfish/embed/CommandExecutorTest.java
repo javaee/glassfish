@@ -163,7 +163,7 @@ public class CommandExecutorTest {
 
         try {
             Socket socket = new Socket("localhost", 4848);
-            Socket socket2 = new Socket("localhost", 8888);
+            Socket socket2 = new Socket("localhost", 8080);
             assertTrue(socket.isConnected());
             assertTrue(socket2.isConnected());
             socket.close();
