@@ -166,7 +166,7 @@ public final class ApplicationFilterFactory {
 
         // Add the relevant path-mapped filters to this filter chain
         for (int i = 0; i < filterMaps.length; i++) {
-            if (!matchDispatcher(filterMaps[i] ,dispatcher)) {
+            if (!filterMaps[i].getDispatcherTypes().contains(dispatcher)) {
                 continue;
             }
             /* SJSWS 6324431
@@ -195,7 +195,7 @@ public final class ApplicationFilterFactory {
 
         // Add filters that match on servlet name second
         for (int i = 0; i < filterMaps.length; i++) {
-            if (!matchDispatcher(filterMaps[i] ,dispatcher)) {
+            if (!filterMaps[i].getDispatcherTypes().contains(dispatcher)) {
                 continue;
             }
             if (!matchFiltersServlet(filterMaps[i], servletName))
@@ -315,70 +315,6 @@ public final class ApplicationFilterFactory {
             }
         }
 
-    }
-
-
-    /**
-     * Convienience method which returns true if  the dispatcher type
-     * matches the dispatcher types specified in the FilterMap
-     */
-    private boolean matchDispatcher(FilterMap filterMap,
-                                    DispatcherType dispatcher) {
-        switch (dispatcher) {
-            case FORWARD: {
-                if (filterMap.getDispatcherMapping() == FilterMap.FORWARD ||
-                    filterMap.getDispatcherMapping() == FilterMap.FORWARD_ERROR ||
-                    filterMap.getDispatcherMapping() == FilterMap.INCLUDE_FORWARD ||
-                    filterMap.getDispatcherMapping() == FilterMap.INCLUDE_ERROR_FORWARD ||
-                    filterMap.getDispatcherMapping() == FilterMap.REQUEST_FORWARD ||
-                    filterMap.getDispatcherMapping() == FilterMap.REQUEST_ERROR_FORWARD ||
-                    filterMap.getDispatcherMapping() == FilterMap.REQUEST_ERROR_FORWARD_INCLUDE ||
-                    filterMap.getDispatcherMapping() == FilterMap.REQUEST_FORWARD_INCLUDE) {
-                        return true;
-                }
-                break;
-            }
-            case INCLUDE: {
-                if (filterMap.getDispatcherMapping() == FilterMap.INCLUDE ||
-                    filterMap.getDispatcherMapping() == FilterMap.INCLUDE_ERROR ||
-                    filterMap.getDispatcherMapping() == FilterMap.INCLUDE_FORWARD ||
-                    filterMap.getDispatcherMapping() == FilterMap.INCLUDE_ERROR_FORWARD ||
-                    filterMap.getDispatcherMapping() == FilterMap.REQUEST_INCLUDE ||
-                    filterMap.getDispatcherMapping() == FilterMap.REQUEST_ERROR_INCLUDE ||
-                    filterMap.getDispatcherMapping() == FilterMap.REQUEST_ERROR_FORWARD_INCLUDE ||
-                    filterMap.getDispatcherMapping() == FilterMap.REQUEST_FORWARD_INCLUDE) {
-                        return true;
-                }
-                break;
-            }
-            case REQUEST: {
-                if (filterMap.getDispatcherMapping() == FilterMap.REQUEST ||
-                    filterMap.getDispatcherMapping() == FilterMap.REQUEST_ERROR ||
-                    filterMap.getDispatcherMapping() == FilterMap.REQUEST_INCLUDE ||
-                    filterMap.getDispatcherMapping() == FilterMap.REQUEST_ERROR_INCLUDE ||
-                    filterMap.getDispatcherMapping() == FilterMap.REQUEST_FORWARD ||
-                    filterMap.getDispatcherMapping() == FilterMap.REQUEST_ERROR_FORWARD ||
-                    filterMap.getDispatcherMapping() == FilterMap.REQUEST_FORWARD_INCLUDE ||
-                    filterMap.getDispatcherMapping() == FilterMap.REQUEST_ERROR_FORWARD_INCLUDE) {
-                        return true;
-                }
-                break;
-            }
-            case ERROR: {
-                if (filterMap.getDispatcherMapping() == FilterMap.ERROR ||
-                    filterMap.getDispatcherMapping() == FilterMap.FORWARD_ERROR || 
-                    filterMap.getDispatcherMapping() == FilterMap.INCLUDE_ERROR || 
-                    filterMap.getDispatcherMapping() == FilterMap.INCLUDE_ERROR_FORWARD || 
-                    filterMap.getDispatcherMapping() == FilterMap.REQUEST_ERROR ||
-                    filterMap.getDispatcherMapping() == FilterMap.REQUEST_ERROR_FORWARD ||
-                    filterMap.getDispatcherMapping() == FilterMap.REQUEST_ERROR_FORWARD_INCLUDE ||
-                    filterMap.getDispatcherMapping() == FilterMap.REQUEST_ERROR_INCLUDE) {
-                        return true;
-                }
-                break;
-            }
-        }
-        return false;
     }
 
 

@@ -2573,22 +2573,20 @@ public class StandardContext
      *  is malformed
      */
     public void addFilterMaps(FilterMaps filterMaps) {
-        int dispatcherMapping = filterMaps.getDispatcherMapping();
-        String filterName = filterMaps.getFilterName();
         String[] servletNames = filterMaps.getServletNames();
         String[] urlPatterns = filterMaps.getURLPatterns();
-        for(String servletName : servletNames) {
+        for (String servletName : servletNames) {
             FilterMap fmap = new FilterMap();
-            fmap.setFilterName(filterName);
+            fmap.setFilterName(filterMaps.getFilterName());
             fmap.setServletName(servletName);
-            fmap.setDispatcherMapping(dispatcherMapping);
+            fmap.setDispatcherTypes(filterMaps.getDispatcherTypes());
             addFilterMap(fmap);
         }
-        for(String urlPattern : urlPatterns) {
+        for (String urlPattern : urlPatterns) {
             FilterMap fmap = new FilterMap();
-            fmap.setFilterName(filterName);
+            fmap.setFilterName(filterMaps.getFilterName());
             fmap.setURLPattern(urlPattern);
-            fmap.setDispatcherMapping(dispatcherMapping);
+            fmap.setDispatcherTypes(filterMaps.getDispatcherTypes());
             addFilterMap(fmap);
         }
     }

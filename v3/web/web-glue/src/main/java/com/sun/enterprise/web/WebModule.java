@@ -819,16 +819,8 @@ public class WebModule extends PwcWebModule {
     void addFilterMap(ServletFilterMapping sfm) {
 
         FilterMaps filterMaps = new FilterMaps();
-
         filterMaps.setFilterName(sfm.getName());
-
-        Set<String> dispatchers = sfm.getDispatchers();
-        if (dispatchers != null) {
-            for (String dispatcher : dispatchers) {
-                filterMaps.setDispatcher(Enum.valueOf(DispatcherType.class,
-                                                      dispatcher));
-            }
-        }
+        filterMaps.setDispatcherTypes(sfm.getDispatchers());
         
         List<String> servletNames = sfm.getServletNames();
         if (servletNames != null) {

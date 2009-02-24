@@ -38,6 +38,7 @@ package com.sun.enterprise.deployment;
 import com.sun.enterprise.deployment.web.ServletFilterMapping;
 
 import java.util.*;
+import javax.servlet.DispatcherType;
 
 /**
  * Deployment object representing the servlet filter mapping spec
@@ -53,13 +54,7 @@ public final class ServletFilterMappingDescriptor
     public static final String TARGET_TYPE_SERVLET = 
 	ServletFilterMapping.TARGET_TYPE_SERVLET;
 
-    public static final String FORWARD = ServletFilterMapping.FORWARD;
-    public static final String INCLUDE = ServletFilterMapping.INCLUDE;
-    public static final String REQUEST = ServletFilterMapping.REQUEST;
-    public static final String ASYNC = ServletFilterMapping.ASYNC;
-    public static final String ERROR = ServletFilterMapping.ERROR;
-
-    private static Set allowed_dispatchers;
+    private static EnumSet allowed_dispatchers;
     
     /** target type ("URLPattern", "Servlet") */
     private String targetType = TARGET_TYPE_URLPATTERN;
@@ -67,7 +62,7 @@ public final class ServletFilterMappingDescriptor
     /** the target URL or Servlet name */
     private String target = "";
 
-    private Set dispatchers;
+    private EnumSet dispatchers;
     private List<String> servletNames;
     private List<String> urlPatterns;
 
@@ -81,7 +76,8 @@ public final class ServletFilterMappingDescriptor
         super(other);
         targetType = other.targetType;
         target = other.target;
-        dispatchers = (other.dispatchers != null)? new HashSet(other.dispatchers) : null;
+        dispatchers = (other.dispatchers != null)?
+            EnumSet.copyOf(other.dispatchers) : null;
     }
 
     /** constructor specifying the name & target */
@@ -160,33 +156,28 @@ public final class ServletFilterMappingDescriptor
 
     public void addDispatcher(String dispatcher) {
         if (dispatchers == null) {
-            dispatchers = new HashSet();
+            dispatchers = EnumSet.noneOf(DispatcherType.class);
         }
-        dispatchers.add(dispatcher);
+        dispatchers.add(Enum.valueOf(DispatcherType.class, dispatcher));
     }
     
     public void removeDispatcher(String dispatcher) {
         if (dispatchers == null) {
             return;
         }
-        dispatchers.remove(dispatcher);
+        dispatchers.remove(Enum.valueOf(DispatcherType.class, dispatcher));
     }
 
-    public Set getDispatchers() {
+    public Set<DispatcherType> getDispatchers() {
         if (dispatchers == null) {
-            dispatchers = new HashSet();
+            dispatchers = EnumSet.noneOf(DispatcherType.class);
         }
         return dispatchers;
     }
 
-    public static Set getAllowedDispatchers() {
+    public static Set<DispatcherType> getAllowedDispatchers() {
         if (allowed_dispatchers == null) {
-            allowed_dispatchers = new HashSet();
-            allowed_dispatchers.add(FORWARD);
-            allowed_dispatchers.add(INCLUDE);
-            allowed_dispatchers.add(REQUEST);
-            allowed_dispatchers.add(ASYNC);
-            allowed_dispatchers.add(ERROR);
+            allowed_dispatchers = EnumSet.allOf(DispatcherType.class);
         }
         return allowed_dispatchers;
     }

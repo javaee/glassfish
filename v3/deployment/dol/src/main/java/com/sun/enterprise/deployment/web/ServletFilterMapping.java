@@ -38,18 +38,13 @@ package com.sun.enterprise.deployment.web;
 
 import java.util.List;
 import java.util.Set;
+import javax.servlet.DispatcherType;
 
 /** Servlet filter objects */
 public interface ServletFilterMapping {
 
     public static String TARGET_TYPE_URLPATTERN = "URLPattern";
     public static String TARGET_TYPE_SERVLET    = "Servlet";
-
-    public static String FORWARD = "FORWARD";
-    public static String INCLUDE = "INCLUDE";
-    public static String REQUEST = "REQUEST";
-    public static String ASYNC = "ASYNC";
-    public static String ERROR = "ERROR";
 
     public void setName(String name);
     public String getName();
@@ -63,7 +58,7 @@ public interface ServletFilterMapping {
     public String getTarget();
 
     public void addDispatcher(String dispatcher);
-    public Set getDispatchers();
+    public Set<DispatcherType> getDispatchers();
 
     public void addURLPattern(String urlPattern);
     public List<String> getURLPatterns();

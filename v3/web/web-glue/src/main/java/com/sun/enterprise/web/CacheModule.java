@@ -35,6 +35,7 @@
  */
 package com.sun.enterprise.web;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -212,11 +213,18 @@ public final class CacheModule {
             filterMap.setURLPattern(mapping.getURLPattern());
             String[] dispatchers = mapConfig.getDispatcher();
             if (dispatchers != null) {
+                EnumSet<DispatcherType> dispatcherTypes = null;
                 for (String dispatcher : dispatchers) {
                     // calls to FilterMap.setDispatcher are cumulative
-                    filterMap.setDispatcher(Enum.valueOf(DispatcherType.class,
-                                                         dispatcher));
+                    if (dispatcherTypes == null) {
+                        dispatcherTypes = EnumSet.of(
+                            Enum.valueOf(DispatcherType.class, dispatcher));
+                    } else {
+                        dispatcherTypes.add(
+                            Enum.valueOf(DispatcherType.class, dispatcher));
+                    }
                 }
+                filterMap.setDispatcherTypes(dispatcherTypes);
             }
             filterMap.setFilterName(filterName);
             app.addFilterMap(filterMap);

@@ -52,12 +52,10 @@
  * limitations under the License.
  */
 
-
-
-
 package org.apache.catalina.deploy;
 
 import java.io.Serializable;
+import java.util.*;
 import javax.servlet.DispatcherType;
 import org.apache.catalina.util.RequestUtil;
 
@@ -73,38 +71,32 @@ import org.apache.catalina.util.RequestUtil;
 
 public class FilterMap implements Serializable {
 
-
-    // ------------------------------------------------------------- Properties
+    private static final EnumSet DEFAULT_DISPATCHER =
+        EnumSet.of(DispatcherType.REQUEST);
 
 
     /**
-     * The name of this filter to be executed when this mapping matches
-     * a particular request.
+     * The name of the filter with which this filter mapping is associated
      */
-    
-    public static final int ERROR = 1;
-    public static final int FORWARD = 2;
-    public static final int FORWARD_ERROR =3;  
-    public static final int INCLUDE = 4;
-    public static final int INCLUDE_ERROR  = 5;
-    public static final int INCLUDE_ERROR_FORWARD  =6;
-    public static final int INCLUDE_FORWARD  = 7;
-    public static final int REQUEST = 8;
-    public static final int REQUEST_ERROR = 9;
-    public static final int REQUEST_ERROR_FORWARD = 10;
-    public static final int REQUEST_ERROR_FORWARD_INCLUDE = 11;
-    public static final int REQUEST_ERROR_INCLUDE = 12;
-    public static final int REQUEST_FORWARD = 13;
-    public static final int REQUEST_INCLUDE = 14;
-    public static final int REQUEST_FORWARD_INCLUDE= 15;
-    
-    // represents nothing having been set. This will be seen 
-    // as equal to a REQUEST
-    private static final int NOT_SET = -1;
-    
-    private int dispatcherMapping = NOT_SET;
-    
     private String filterName = null;    
+
+    /**
+     * The servlet name for which this filter mapping applies
+     */
+    private String servletName = null;
+
+    /**
+     * The URL pattern for which this filter mapping applies
+     */
+    private String urlPattern = null;
+
+    /**
+     * The dispatcher types of this filter mapping
+     */
+    private Set<DispatcherType> dispatcherTypes;
+
+
+    // ------------------------------------------------------------- Properties
 
     public String getFilterName() {
         return (this.filterName);
@@ -114,12 +106,6 @@ public class FilterMap implements Serializable {
         this.filterName = filterName;
     }
 
-
-    /**
-     * The servlet name this mapping matches.
-     */
-    private String servletName = null;
-
     public String getServletName() {
         return (this.servletName);
     }
@@ -128,12 +114,6 @@ public class FilterMap implements Serializable {
         this.servletName = servletName;
     }
 
-
-    /**
-     * The URL pattern this mapping matches.
-     */
-    private String urlPattern = null;
-
     public String getURLPattern() {
         return (this.urlPattern);
     }
@@ -141,94 +121,20 @@ public class FilterMap implements Serializable {
     public void setURLPattern(String urlPattern) {
         this.urlPattern = RequestUtil.URLDecode(urlPattern);
     }
-
     
-    /**
-     * This method will be used to set the current state of the FilterMap
-     * representing the state of when filters should be applied:
-     *
-     *        ERROR
-     *        FORWARD
-     *        FORWARD_ERROR
-     *        INCLUDE
-     *        INCLUDE_ERROR
-     *        INCLUDE_ERROR_FORWARD
-     *        REQUEST
-     *        REQUEST_ERROR
-     *        REQUEST_ERROR_INCLUDE
-     *        REQUEST_ERROR_FORWARD_INCLUDE
-     *        REQUEST_INCLUDE
-     *        REQUEST_FORWARD,
-     *        REQUEST_FORWARD_INCLUDE
-     */
-    public void setDispatcher(DispatcherType dispatcher) {
-        if (dispatcher.equals(DispatcherType.FORWARD)) {
-
-            // apply FORWARD to the global dispatcherMapping.
-            switch (dispatcherMapping) {
-                case NOT_SET  :  dispatcherMapping = FORWARD; break;
-                case ERROR : dispatcherMapping = FORWARD_ERROR; break;
-                case INCLUDE  :  dispatcherMapping = INCLUDE_FORWARD; break;
-                case INCLUDE_ERROR  :  dispatcherMapping = INCLUDE_ERROR_FORWARD; break;
-                case REQUEST : dispatcherMapping = REQUEST_FORWARD; break;
-                case REQUEST_ERROR : dispatcherMapping = REQUEST_ERROR_FORWARD; break;
-                case REQUEST_ERROR_INCLUDE : dispatcherMapping = REQUEST_ERROR_FORWARD_INCLUDE; break;
-                case REQUEST_INCLUDE : dispatcherMapping = REQUEST_FORWARD_INCLUDE; break;
-            }
-        } else if (dispatcher.equals(DispatcherType.INCLUDE)) {
-            // apply INCLUDE to the global dispatcherMapping.
-            switch (dispatcherMapping) {
-                case NOT_SET  :  dispatcherMapping = INCLUDE; break;
-                case ERROR : dispatcherMapping = INCLUDE_ERROR; break;
-                case FORWARD  :  dispatcherMapping = INCLUDE_FORWARD; break;
-                case FORWARD_ERROR  :  dispatcherMapping = INCLUDE_ERROR_FORWARD; break;
-                case REQUEST : dispatcherMapping = REQUEST_INCLUDE; break;
-                case REQUEST_ERROR : dispatcherMapping = REQUEST_ERROR_INCLUDE; break;
-                case REQUEST_ERROR_FORWARD : dispatcherMapping = REQUEST_ERROR_FORWARD_INCLUDE; break;
-                case REQUEST_FORWARD : dispatcherMapping = REQUEST_FORWARD_INCLUDE; break;
-            }
-        } else if (dispatcher.equals(DispatcherType.REQUEST)) {
-            // apply REQUEST to the global dispatcherMapping.
-            switch (dispatcherMapping) {
-                case NOT_SET  :  dispatcherMapping = REQUEST; break;
-                case ERROR : dispatcherMapping = REQUEST_ERROR; break;
-                case FORWARD  :  dispatcherMapping = REQUEST_FORWARD; break;
-                case FORWARD_ERROR  :  dispatcherMapping = REQUEST_ERROR_FORWARD; break;
-                case INCLUDE  :  dispatcherMapping = REQUEST_INCLUDE; break;
-                case INCLUDE_ERROR  :  dispatcherMapping = REQUEST_ERROR_INCLUDE; break;
-                case INCLUDE_FORWARD : dispatcherMapping = REQUEST_FORWARD_INCLUDE; break;
-                case INCLUDE_ERROR_FORWARD : dispatcherMapping = REQUEST_ERROR_FORWARD_INCLUDE; break;
-            }
-        }  else if (dispatcher.equals(DispatcherType.ERROR)) {
-            // apply ERROR to the global dispatcherMapping.
-            switch (dispatcherMapping) {
-                case NOT_SET  :  dispatcherMapping = ERROR; break;
-                case FORWARD  :  dispatcherMapping = FORWARD_ERROR; break;
-                case INCLUDE  :  dispatcherMapping = INCLUDE_ERROR; break;
-                case INCLUDE_FORWARD : dispatcherMapping = INCLUDE_ERROR_FORWARD; break;
-                case REQUEST : dispatcherMapping = REQUEST_ERROR; break;
-                case REQUEST_INCLUDE : dispatcherMapping = REQUEST_ERROR_INCLUDE; break;
-                case REQUEST_FORWARD : dispatcherMapping = REQUEST_ERROR_FORWARD; break;
-                case REQUEST_FORWARD_INCLUDE : dispatcherMapping = REQUEST_ERROR_FORWARD_INCLUDE; break;
-            }
-        }
-    }
-    
-    public int getDispatcherMapping() {
-        // per the SRV.6.2.5 absence of any dispatcher elements is
+    public Set<DispatcherType> getDispatcherTypes() {
+        // Per the SRV.6.2.5 absence of any dispatcher elements is
         // equivelant to a REQUEST value
-        if (dispatcherMapping == NOT_SET) return REQUEST;
-        else return dispatcherMapping; 
+        return (dispatcherTypes == null || dispatcherTypes.isEmpty()) ?
+            DEFAULT_DISPATCHER : dispatcherTypes;
     }
 
-
-    public void setDispatcherMapping(int mapping) {
-        dispatcherMapping = mapping;
+    public void setDispatcherTypes(Set<DispatcherType> dispatcherTypes) {
+        this.dispatcherTypes = dispatcherTypes;
     }
 
 
     // --------------------------------------------------------- Public Methods
-
 
     /**
      * Render a String representation of this object.
@@ -248,7 +154,6 @@ public class FilterMap implements Serializable {
         }
         sb.append("]");
         return (sb.toString());
-
     }
 
 }
