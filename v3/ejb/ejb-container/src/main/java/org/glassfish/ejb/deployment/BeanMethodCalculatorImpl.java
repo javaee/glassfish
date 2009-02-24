@@ -189,7 +189,7 @@ public class BeanMethodCalculatorImpl implements BeanMethodCalculator {
                 Method[] busIntfMethods = businessIntf.getMethods();
                 for (Method next : busIntfMethods ) {
                     methods.add(new MethodDescriptor
-                                (next, MethodDescriptor.EJB_LOCAL_BEAN));
+                                (next, MethodDescriptor.EJB_LOCAL));
                 }
             }
 

@@ -57,6 +57,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.Habitat;
+import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
@@ -127,6 +128,9 @@ public class EjbContainerUtilImpl
     private EjbContainer ejbContainer;
 
     @Inject
+    private GlassFishORBHelper orbHelper;
+
+    @Inject
     private ServerEnvironmentImpl env;
 
     @Inject(optional=true)
@@ -166,6 +170,10 @@ public class EjbContainerUtilImpl
             executorService.shutdown();
             executorService = null;
         }
+    }
+
+    public GlassFishORBHelper getORBHelper() {
+        return orbHelper;
     }
 
     public Habitat getDefaultHabitat() {

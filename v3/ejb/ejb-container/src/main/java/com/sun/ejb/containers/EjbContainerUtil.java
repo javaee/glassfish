@@ -57,6 +57,8 @@ import java.util.Timer;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
+
 /**
  * @author Mahesh Kannan
  *         Date: Feb 10, 2008
@@ -64,6 +66,8 @@ import java.util.logging.Logger;
 @Contract
 public interface EjbContainerUtil {
 
+    public GlassFishORBHelper getORBHelper();
+    
     public Habitat getDefaultHabitat();
 
     public  Logger getLogger();

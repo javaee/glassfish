@@ -299,6 +299,11 @@
             <artifactId>ejb-container</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.orb</groupId>
+            <artifactId>orb-connector</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
          <dependency>
             <groupId>org.glassfish.external</groupId>

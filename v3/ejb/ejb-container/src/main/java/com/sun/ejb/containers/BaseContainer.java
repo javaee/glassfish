@@ -84,6 +84,8 @@ import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.jvnet.hk2.component.Habitat;
+
 /**
  * This class implements part of the com.sun.ejb.Container interface.
  * It implements the container's side of the EJB-to-Container
@@ -509,6 +511,10 @@ public abstract class BaseContainer
                 }
                 
                 if( ejbDescriptor.isRemoteBusinessInterfacesSupported() ) {
+
+
+                    //GlassFishORBHelper orbHelper = ejbContainerUtilImpl.getORBHelper();
+                    //orbHelper.getORB();
                     
                     checkProtocolManager();
                     
@@ -2249,7 +2255,14 @@ public abstract class BaseContainer
     }
 
     private InvocationInfo addInvocationInfo(Method method, String methodIntf,
-                                   Class originalIntf) 
+                                   Class originalIntf)
+        throws EJBException {
+
+        return addInvocationInfo(method, methodIntf, originalIntf, false);
+    }
+
+    private InvocationInfo addInvocationInfo(Method method, String methodIntf,
+                                   Class originalIntf, boolean optionalLocalBusView)
         throws EJBException
         
     {
@@ -2272,8 +2285,7 @@ public abstract class BaseContainer
                 info.interceptorChain = interceptorManager.getAroundInvokeChain(md, beanMethod);
             }
 
-            boolean isOptionalView = methodIntf.equals(MethodDescriptor.EJB_LOCAL_BEAN);
-            Method targetMethod = isOptionalView ? beanMethod : method;
+            Method targetMethod = optionalLocalBusView ? beanMethod : method;
             MethodDescriptor cachedMD = ejbDescriptor.getMethodDescriptorFor(targetMethod, methodIntf);
 
             if (cachedMD != null) {
@@ -2336,11 +2348,7 @@ public abstract class BaseContainer
             if( method.getDeclaringClass() != EJBObject.class ) {
                 setEJBObjectTargetMethodInfo(invInfo, false, originalIntf);
             }
-        } else if( methodIntf.equals(MethodDescriptor.EJB_LOCAL_BEAN) ) {
-            if( method.getDeclaringClass() != EJBLocalObject.class ) {
-                setEJBObjectTargetMethodInfo(invInfo, false, originalIntf);
-            }
-        }
+        } 
 
         MethodLockInfo lockInfo = null;
 
@@ -2724,8 +2732,8 @@ public abstract class BaseContainer
                     for ( int i=0; i<methods.length; i++ ) {
                         Method method = methods[i];
                         addInvocationInfo(method,
-                                          MethodDescriptor.EJB_LOCAL_BEAN,
-                                          ejbGeneratedOptionalLocalBusinessIntfClass);
+                                          MethodDescriptor.EJB_LOCAL,
+                                          ejbGeneratedOptionalLocalBusinessIntfClass, true);
                     }
 
                     // Process generated Optional Local Business interface

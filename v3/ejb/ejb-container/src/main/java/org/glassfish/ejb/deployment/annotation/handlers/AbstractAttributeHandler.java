@@ -235,7 +235,7 @@ public abstract class AbstractAttributeHandler extends AbstractHandler {
         if (ejbDesc.isLocalBean()) {
             methodAlls.add(
                     new MethodDescriptor(MethodDescriptor.ALL_METHODS,
-                    "", MethodDescriptor.EJB_LOCAL_BEAN));    
+                    "", MethodDescriptor.EJB_LOCAL));    
         }
 
         if (ejbDesc.hasWebServiceEndpointInterface()) {

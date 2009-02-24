@@ -21,6 +21,5 @@ Import-Package: \
                         com.sun.corba.ee.impl.orbutil.codegen;resolution:=optional, \
                         com.sun.corba.ee.spi.orbutil.copyobject;resolution:=optional, \
                         com.sun.corba.ee.impl.orbutil.copyobject;resolution:=optional, \
-                        org.glassfish.enterprise.iiop.api;resolution:=optional, \
                         *
 

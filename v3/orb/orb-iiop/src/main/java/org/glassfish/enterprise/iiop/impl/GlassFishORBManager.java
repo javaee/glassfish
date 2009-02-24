@@ -391,8 +391,11 @@ public final class GlassFishORBManager {
     private static void setFOLBProperties(Properties orbInitProperties) {
 
         orbInitProperties.put(ORBConstants.RFM_PROPERTY, "dummy");
+
+        /** TODO enable this
         orbInitProperties.put(SUN_ORB_SOCKET_FACTORY_CLASS_PROPERTY,
                 IIOP_SSL_SOCKET_FACTORY_CLASS);
+         */
 
         // ClientGroupManager.
         // Registers itself as
@@ -465,8 +468,12 @@ public final class GlassFishORBManager {
             orbInitProperties.put(ORBConstants.ORB_SERVER_ID_PROPERTY,
                     DEFAULT_SERVER_ID);
             orbInitProperties.put(OMG_ORB_CLASS_PROPERTY, ORB_CLASS);
+
+            /*   TODO -- what is this?
             orbInitProperties.put(
                     PI_ORB_INITIALIZER_CLASS_PREFIX + J2EE_INITIALIZER, "");
+                    */
+
 
             orbInitProperties.put(ORBConstants.ALLOW_LOCAL_OPTIMIZATION,
                     "true");

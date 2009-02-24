@@ -1841,7 +1841,7 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
 
             if (isLocalBean()) {
                 addAllInterfaceMethodsIn(methods, classLoader.loadClass(getEjbClassName()), 
-                        MethodDescriptor.EJB_LOCAL_BEAN);                    
+                        MethodDescriptor.EJB_LOCAL);                    
             }
         } catch (Throwable t) {
             _logger.log(Level.SEVERE, "enterprise.deployment.backend.methodClassLoadFailure", 

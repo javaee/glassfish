@@ -56,10 +56,8 @@ public final class MethodDescriptor extends Descriptor {
     public static final String EJB_LOCALHOME = "LocalHome";
     /** Represents the bean remote interface ejbClassSymbol.*/
     public static final String EJB_REMOTE = "Remote";
-    /** Represents the bean local interface ejbClassSymbol.*/
+    /** Represents the local interface and no-interface view ejbClassSymbol.*/
     public static final String EJB_LOCAL = "Local";
-    /** Represents the optional local interface */
-    public static final String EJB_LOCAL_BEAN = "LocalBean";
     /** Represents the web service interface ejbClassSymbol.*/
     public static final String EJB_WEB_SERVICE = "ServiceEndpoint";
     /** Represents the bean class ejbClassSymbol.*/
@@ -300,19 +298,17 @@ public final class MethodDescriptor extends Descriptor {
                     }
                 }
             }
-        else if ( ejbClassSymbol.equals(EJB_LOCAL_BEAN) ) {
-            if (ejbDescriptor.isLocalBean()) {
-                try {
-                    Class cl = classloader.loadClass(
-                            ejbDescriptor.getEjbClassName());
-                    method = TypeUtil.getMethod(cl, classloader,
-                            getName(), javaParamClassNames);
-                } catch (NoSuchMethodException nsme) {
-                }
-            }
-        }
         else if ( ejbClassSymbol.equals(EJB_LOCAL) ) {
-                if( ejbDescriptor.isLocalInterfacesSupported() ) {
+                if (ejbDescriptor.isLocalBean()) {
+                    try {
+                        Class cl = classloader.loadClass(
+                            ejbDescriptor.getEjbClassName());
+                        method = TypeUtil.getMethod(cl, classloader,
+                            getName(), javaParamClassNames);
+                    } catch (NoSuchMethodException nsme) {}
+                }
+
+                if( (method == null) && ejbDescriptor.isLocalInterfacesSupported() ) {
                     try {
                         Class cl = classloader.loadClass(
 				      ejbDescriptor.getLocalClassName());
