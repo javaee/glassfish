@@ -42,7 +42,7 @@ import com.sun.logging.LogDomains;
 import javax.resource.spi.BootstrapContext;
 import javax.resource.spi.XATerminator;
 import javax.resource.spi.work.WorkManager;
-import javax.resource.spi.work.InflowContext;
+import javax.resource.spi.work.WorkContext;
 import javax.transaction.TransactionSynchronizationRegistry;
 import javax.naming.InitialContext;
 import java.io.Serializable;
@@ -104,7 +104,8 @@ public final class BootstrapContextImpl implements BootstrapContext, Serializabl
         return new Timer("connectors-runtime-context");
     }
 
-    public boolean isContextSupported(Class<? extends InflowContext> inflowContextClass) {
+    public boolean isContextSupported(Class<? extends WorkContext> workContextClass) {
+        //TODO V3 implementation required
         return false;
     }
 

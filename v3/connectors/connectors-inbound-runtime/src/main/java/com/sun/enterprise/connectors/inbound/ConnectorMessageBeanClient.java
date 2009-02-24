@@ -435,4 +435,9 @@ public final class ConnectorMessageBeanClient
     public String toString() {
         return beanID_;
     }
+
+    public MessageEndpoint createEndpoint(XAResource xaResource, long timeout) throws UnavailableException {
+        //TODO V3 implementation required
+        return null;
+    }
 }
