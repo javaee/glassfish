@@ -10,7 +10,7 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
  * A <strong>lot</strong> of methods need to be written in order to implement
  * ReadableArchive.  The no-op methods are implemented here to make ScatteredWar
  * easier to understand.
- * @author bnevins
+ * @author Byron Nevins
  */
 abstract public class ReadableArchiveAdapter implements ReadableArchive{
 

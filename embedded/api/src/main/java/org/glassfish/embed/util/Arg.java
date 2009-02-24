@@ -39,7 +39,7 @@ import org.glassfish.embed.util.StringUtils;
 
 /**
  *
- * @author bnevins
+ * @author Byron Nevins
  */
 public class Arg {
     public Arg(String ln, String sn, String defaultValue, String desc) {

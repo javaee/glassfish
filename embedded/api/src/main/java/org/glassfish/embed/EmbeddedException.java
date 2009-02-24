@@ -43,7 +43,7 @@ import org.glassfish.embed.util.StringHelper;
  * Indicates a failure inside GlassFish.
  *
  * @author Kohsuke Kawaguchi
- * @author bnevins
+ * @author Byron Nevins
  */
 public class EmbeddedException extends Exception {
     public EmbeddedException(String message) {

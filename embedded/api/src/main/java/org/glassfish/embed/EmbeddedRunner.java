@@ -43,7 +43,7 @@ import java.util.*;
 
 /**
  *
- * @author bnevins
+ * @author Byron Nevins
  */
 
 class EmbeddedRunner {

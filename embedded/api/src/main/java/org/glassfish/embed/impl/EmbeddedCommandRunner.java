@@ -21,7 +21,7 @@ import org.glassfish.embed.util.EmbeddedUtils;
 
 /**
  *
- * @author bnevins
+ * @author Byron Nevins
  */
 public class EmbeddedCommandRunner extends CommandRunner{
 

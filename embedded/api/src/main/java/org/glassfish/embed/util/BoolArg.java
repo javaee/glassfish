@@ -37,7 +37,7 @@ package org.glassfish.embed.util;
 
 /**
  *
- * @author bnevins
+ * @author Byron Nevins
  */
 public class BoolArg extends Arg{
 

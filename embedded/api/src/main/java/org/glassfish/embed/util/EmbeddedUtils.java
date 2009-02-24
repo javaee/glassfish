@@ -17,7 +17,7 @@ import org.glassfish.embed.EmbeddedException;
  * privileges in Java yet.  We don't want to pollute the embedded package with this
  * sort of code.
  *
- * @author bnevins
+ * @author Byron Nevins
  */
 public class EmbeddedUtils {
     // this is too ghastly to type in all the time...

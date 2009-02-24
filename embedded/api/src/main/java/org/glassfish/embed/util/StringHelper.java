@@ -5,7 +5,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 /**
  *
- * @author bnevins
+ * @author Byron Nevins
  */
 public class StringHelper {
     public static String get(String index) {

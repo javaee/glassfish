@@ -10,7 +10,7 @@ import java.io.IOException;
 
 /**
  *
- * @author bnevins
+ * @author Byron Nevins
  */
 public class EmbeddedModulesRegistryImpl extends ModulesRegistryImpl {
 

@@ -43,7 +43,7 @@ import org.glassfish.embed.impl.EmbeddedServerEnvironment;
 
 /**
  *
- * @author bnevins
+ * @author Byron Nevins
  */
 public class ServerConstants {
      // Amazingly -- these 2 are not available as constants in V3

@@ -28,7 +28,7 @@ import org.jvnet.hk2.component.Habitat;
  * <code>Server</code> must be started before calling {@link getDeployer} on
  * <code>Server</code> to get an instance of <code>EmbeddedDeployer</code>.
  *
- * @author bnevins
+ * @author Byron Nevins
  */
 public class EmbeddedDeployer {
     EmbeddedDeployer(Server server) throws EmbeddedException {

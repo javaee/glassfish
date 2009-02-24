@@ -37,7 +37,7 @@
 
 /**
  *
- * @author bnevins
+ * @author Byron Nevins
  */
 
 package org.glassfish.embed.impl;

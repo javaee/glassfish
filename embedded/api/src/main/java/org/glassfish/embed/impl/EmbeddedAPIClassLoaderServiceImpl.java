@@ -5,7 +5,7 @@ import com.sun.enterprise.v3.server.APIClassLoaderServiceImpl;
 
 /**
  *
- * @author bnevins
+ * @author Byron Nevins
  */
 public class EmbeddedAPIClassLoaderServiceImpl extends APIClassLoaderServiceImpl{
 

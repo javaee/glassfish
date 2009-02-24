@@ -39,7 +39,7 @@ import java.util.*;
 
 /**
  *
- * @author bnevins
+ * @author Byron Nevins
  */
 public class ArgProcessor {
     public ArgProcessor (Arg[] myArgs, String[] cmdlineArgs) {
