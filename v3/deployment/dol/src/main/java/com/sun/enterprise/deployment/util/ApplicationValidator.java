@@ -103,6 +103,9 @@ public class ApplicationValidator extends EjbBundleValidator
      * @param descriptor the web bundle descriptor
      */
     public void accept(WebBundleDescriptor descriptor) {
+        if (descriptor.getSessionConfigDescriptor() == null) {
+            descriptor.setSessionConfigDescriptor(new SessionConfigDescriptor());
+        }
     }   
     
     /**

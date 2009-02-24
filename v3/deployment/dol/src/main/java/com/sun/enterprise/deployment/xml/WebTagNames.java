@@ -82,6 +82,13 @@ public interface WebTagNames extends TagNames {
     public static final String DISTRIBUTABLE = "distributable";    
     public static final String SESSION_CONFIG = "session-config";
     public static final String SESSION_TIMEOUT = "session-timeout";    
+    public static final String COOKIE_CONFIG = "cookie-config";    
+    public static final String DOMAIN = "domain";    
+    public static final String PATH = "path";    
+    public static final String COMMENT = "comment";    
+    public static final String HTTP_ONLY = "http-only";    
+    public static final String SECURE = "secure";    
+    public static final String TRACKING_MODE = "tracking-mode";    
     public static final String WELCOME_FILE_LIST = "welcome-file-list";
     public static final String WELCOME_FILE = "welcome-file";
     public static final String SERVLET_MAPPING = "servlet-mapping";    

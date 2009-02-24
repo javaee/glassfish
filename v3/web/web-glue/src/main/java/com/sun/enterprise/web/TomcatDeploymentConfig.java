@@ -905,7 +905,7 @@ public class TomcatDeploymentConfig{
             }
         }
        
-        webModule.setSessionTimeout(wmd.getSessionTimeout());
+        webModule.setSessionTimeout(wmd.getSessionConfigDescriptor().getSessionTimeout());
            
         enumeration = wmd.getWelcomeFiles();
         while (enumeration.hasMoreElements()){

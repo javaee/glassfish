@@ -138,6 +138,8 @@ public class DescriptorFactory {
         register(new XMLElement(WebTagNames.INIT_PARAM), EnvironmentProperty.class);        
         register(new XMLElement(WebTagNames.MIME_MAPPING), MimeMappingDescriptor.class);
         register(new XMLElement(WebTagNames.CONTEXT_PARAM), EnvironmentProperty.class);                
+        register(new XMLElement(WebTagNames.SESSION_CONFIG), SessionConfigDescriptor.class);                
+        register(new XMLElement(WebTagNames.COOKIE_CONFIG), CookieConfigDescriptor.class);                
         register(new XMLElement(WebTagNames.SECURITY_CONSTRAINT), SecurityConstraintImpl.class);
         register(new XMLElement(WebTagNames.USERDATA_CONSTRAINT), UserDataConstraintImpl.class);     
         register(new XMLElement(WebTagNames.AUTH_CONSTRAINT), AuthorizationConstraintImpl.class);

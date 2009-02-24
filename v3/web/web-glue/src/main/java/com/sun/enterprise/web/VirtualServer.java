@@ -572,7 +572,7 @@ public class VirtualServer extends StandardHost {
                 String location = ConfigBeansUtilities.getLocation(wmID);
                 if ((contextRoot!=null) && (location != null)) {
                     File docroot = new File(location);
-                    WebBundleDescriptor wbd = webArchivist.getDefaultBundleDescriptor();
+                    WebBundleDescriptor wbd = webArchivist.getValidatedDefaultBundleDescriptor();
                     wmInfo = new WebModuleConfig();
                     wbd.setName(Constants.DEFAULT_WEB_MODULE_NAME);
                     wbd.setContextRoot(contextRoot);
@@ -616,7 +616,7 @@ public class VirtualServer extends StandardHost {
         if (getDefaultWebModuleID() == null && (findChild("") == null)
                 && (docroot != null)) {
             
-            WebBundleDescriptor wbd = webArchivist.getDefaultBundleDescriptor();
+            WebBundleDescriptor wbd = webArchivist.getValidatedDefaultBundleDescriptor();
             wmInfo = new WebModuleConfig();
             wbd.setModuleID(Constants.DEFAULT_WEB_MODULE_NAME);
             wbd.setContextRoot("");

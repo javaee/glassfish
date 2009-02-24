@@ -86,6 +86,8 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
 
     private WebBundleDescriptor defaultBundleDescriptor = null;
 
+    private WebBundleDescriptor validatedDefaultBundleDescriptor = null;
+
     /**
      * @return the  module type handled by this archivist
      * as defined in the application DTD
@@ -147,34 +149,47 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
     public synchronized WebBundleDescriptor getDefaultBundleDescriptor() {
 
         if (defaultBundleDescriptor==null) {
-
-            defaultBundleDescriptor = new WebBundleDescriptor();
-            InputStream fis = null;
-
-            try {
-                // parse default-web.xml contents
-                URL defaultWebXml = getDefaultWebXML();
-                if (defaultWebXml!=null)  {
-                    fis = defaultWebXml.openStream();
-                    WebDeploymentDescriptorFile wddf =
-                        new WebDeploymentDescriptorFile();
-                    wddf.setXMLValidation(false);
-                    defaultBundleDescriptor.addWebBundleDescriptor(wddf.read(fis));
-                }
-            } catch (Exception e) {
-                LogDomains.getLogger(WebArchivist.class, LogDomains.WEB_LOGGER).
-                    warning("Error in parsing default-web.xml");
-            } finally {
-                try {
-                    if (fis != null) {
-                        fis.close();
-                    }
-                } catch (IOException ioe) {
-                    // do nothing
-                }
-            }
+            defaultBundleDescriptor = getDefaultWebBundleDescriptor();
         }
         return defaultBundleDescriptor;
+    }
+
+    public synchronized WebBundleDescriptor getValidatedDefaultBundleDescriptor() {
+        if (validatedDefaultBundleDescriptor == null) {
+            validatedDefaultBundleDescriptor = getDefaultWebBundleDescriptor();
+            ApplicationValidator validator = new ApplicationValidator();
+            validator.accept(validatedDefaultBundleDescriptor);
+        }
+        return validatedDefaultBundleDescriptor;
+    }
+
+    private WebBundleDescriptor getDefaultWebBundleDescriptor() {
+        WebBundleDescriptor defaultWebBundleDesc = new WebBundleDescriptor();
+        InputStream fis = null;
+
+        try {
+            // parse default-web.xml contents
+            URL defaultWebXml = getDefaultWebXML();
+            if (defaultWebXml!=null)  {
+                fis = defaultWebXml.openStream();
+                WebDeploymentDescriptorFile wddf =
+                    new WebDeploymentDescriptorFile();
+                wddf.setXMLValidation(false);
+                defaultWebBundleDesc.addWebBundleDescriptor(wddf.read(fis));
+            }
+        } catch (Exception e) {
+            LogDomains.getLogger(WebArchivist.class, LogDomains.WEB_LOGGER).
+                warning("Error in parsing default-web.xml");
+        } finally {
+            try {
+                if (fis != null) {
+                    fis.close();
+                }
+            } catch (IOException ioe) {
+                // do nothing
+            }
+        }
+        return defaultWebBundleDesc;
     }
 
     /**

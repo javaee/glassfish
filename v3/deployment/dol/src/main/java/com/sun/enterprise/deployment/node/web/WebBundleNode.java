@@ -204,6 +204,7 @@ public class WebBundleNode extends BundleNode<WebBundleDescriptor> {
         }
     }       
     
+
     /**
      * receives notiification of the value for a particular tag
      * 
@@ -211,17 +212,7 @@ public class WebBundleNode extends BundleNode<WebBundleDescriptor> {
      * @param value it's associated value
      */    
     public void setElementValue(XMLElement element, String value) {    
-        if (WebTagNames.SESSION_TIMEOUT.equals(element.getQName())) {
-            // if the session out value is already set
-            // which means there are multiple session-config elements
-            // throw an exception
-            if (descriptor.getSessionTimeout() != 
-                WebBundleDescriptor.SESSION_TIMEOUT_DEFAULT) {
-                throw new RuntimeException(
-                    "Has more than one session-config element!");
-            } 
-            descriptor.setSessionTimeout((Integer.valueOf(value.trim())).intValue());
-        } else if (WebTagNames.WELCOME_FILE.equals(element.getQName())) {
+        if (WebTagNames.WELCOME_FILE.equals(element.getQName())) {
             descriptor.addWelcomeFile(value);
         } else {
             super.setElementValue(element, value);
@@ -379,13 +370,6 @@ public class WebBundleNode extends BundleNode<WebBundleDescriptor> {
             }
         }
         
-        // session-config
-        if (webBundleDesc.getSessionTimeout() != webBundleDesc.SESSION_TIMEOUT_DEFAULT) {
-            Node config = appendChild(jarNode, WebTagNames.SESSION_CONFIG);
-            appendTextChild(config, WebTagNames.SESSION_TIMEOUT, 
-                                            String.valueOf(webBundleDesc.getSessionTimeout()));
-        }
-        
         // mime-mapping*
         MimeMappingNode mimeNode = new MimeMappingNode();
         for (Enumeration e = webBundleDesc.getMimeMappings();e.hasMoreElements();) {
@@ -490,6 +474,12 @@ public class WebBundleNode extends BundleNode<WebBundleDescriptor> {
 				WebTagNames.LOCALE_ENCODING_MAPPING_LIST,
 				lemDesc);
 	}           
+
+        if (webBundleDesc.getSessionConfigDescriptor() != null) {
+            SessionConfigNode scNode = new SessionConfigNode();
+            scNode.writeDescriptor(jarNode, WebTagNames.SESSION_CONFIG,
+                    webBundleDesc.getSessionConfigDescriptor());            
+        }
 
         return jarNode;
     }

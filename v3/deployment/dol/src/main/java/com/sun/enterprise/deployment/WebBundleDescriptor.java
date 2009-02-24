@@ -66,7 +66,7 @@ public class WebBundleDescriptor extends BundleDescriptor
 
 
     private Set<WebComponentDescriptor> webComponentDescriptors;
-    private int sessionTimeout;
+    private SessionConfigDescriptor sessionConfigDescriptor;
     private Set<MimeMapping> mimeMappings;
     private Set<String> welcomeFiles;
     private Set<ErrorPageDescriptor> errorPageDescriptors;
@@ -106,7 +106,7 @@ public class WebBundleDescriptor extends BundleDescriptor
     // name of metadata complete web fragment jars resided in WEB-INF/lib
     private Set<String> metadataCompleteWebFragments = new HashSet<String>();
 
-    public static final int SESSION_TIMEOUT_DEFAULT = 30;
+
     private final static String DEPLOYMENT_DESCRIPTOR_DIR = "WEB-INF";
 
     private static LocalStringManagerImpl localStrings =
@@ -118,7 +118,6 @@ public class WebBundleDescriptor extends BundleDescriptor
      * Constrct an empty web app [{0}].
      */
     public WebBundleDescriptor() {
-        sessionTimeout = SESSION_TIMEOUT_DEFAULT;
     }
 
     /**
@@ -191,6 +190,9 @@ public class WebBundleDescriptor extends BundleDescriptor
             thisWebServices.addWebService(new WebService(ws));
         }
 
+        if (getSessionConfigDescriptor() == null) {
+            setSessionConfigDescriptor(webBundleDescriptor.getSessionConfigDescriptor());
+        }
     }
 
     public boolean isEmpty() {
@@ -278,6 +280,14 @@ public class WebBundleDescriptor extends BundleDescriptor
         getWebComponentDescriptors().remove(webComponentDescriptor);
     }
 
+    public void setSessionConfigDescriptor(SessionConfigDescriptor sessionConfigDescriptor) {
+        this.sessionConfigDescriptor = sessionConfigDescriptor;
+    }
+
+    public SessionConfigDescriptor getSessionConfigDescriptor() {
+        return sessionConfigDescriptor;
+    }
+
     /**
      * WEB SERVICES REF APIS
      */
@@ -359,20 +369,6 @@ public class WebBundleDescriptor extends BundleDescriptor
         throw new IllegalArgumentException(localStrings.getLocalString(
                 "enterprise.deployment.exceptionwebapphasnojmsdestrefbyname",
                 "This web app [{0}] has no resource environment reference by the name of [{1}]", new Object[]{getName(), name}));
-    }
-
-    /**
-     * @return the value in seconds of when requests should time out.
-     */
-    public int getSessionTimeout() {
-        return sessionTimeout;
-    }
-
-    /**
-     * Sets thew value in seconds after sessions should timeout.
-     */
-    public void setSessionTimeout(int sessionTimeout) {
-        this.sessionTimeout = sessionTimeout;
     }
 
     private Set<MimeMapping> getMimeMappingsSet() {
@@ -1462,7 +1458,9 @@ public class WebBundleDescriptor extends BundleDescriptor
         toStringBuffer.append("\n");
         super.print(toStringBuffer);
         toStringBuffer.append("\n context root ").append(getContextRoot());
-        toStringBuffer.append("\n sessionTimeout ").append(sessionTimeout);
+        if (sessionConfigDescriptor != null) {
+            sessionConfigDescriptor.print(toStringBuffer);
+        }
         toStringBuffer.append("\n mimeMappings ").append(mimeMappings);
         toStringBuffer.append("\n welcomeFiles ").append(welcomeFiles);
         toStringBuffer.append("\n errorPageDescriptors ").append(errorPageDescriptors);
