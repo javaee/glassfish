@@ -78,4 +78,5 @@ public class ServerConstants {
     public static final String          WELCOME_FILE                        = "index.html";
     public static final String          EMBEDDED_LOGGER                     = "org.glassfish.embed";
     public static final String          GFV3_ROOT_LOGGER                    = "javax.enterprise";
+    public static final String          DTD_RESOURCE_LOCATION               = "/dtds";
 }
