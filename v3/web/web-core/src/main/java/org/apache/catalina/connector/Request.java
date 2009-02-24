@@ -525,7 +525,7 @@ public class Request
     // operation, in which case async operation will be disabled
     private boolean isAsyncSupported = true;
 
-    private boolean isAsyncStarted;
+    private boolean asyncStarted;
     private AsyncContextImpl asyncContext;
     private LinkedList<AsyncListenerHolder> asyncListenerHolders;
     private long asyncTimeoutMillis = -1L;
@@ -639,7 +639,7 @@ public class Request
         }
 
         isAsyncSupported = true;
-        isAsyncStarted = false;
+        asyncStarted = false;
         isAsyncComplete = false;
         isSetAsyncTimeoutCalled = false;
         isOkToReinitializeAsync = false;
@@ -3804,7 +3804,7 @@ public class Request
         } else {
             asyncContext = new AsyncContextImpl(this, servletRequest,
                 (Response) getResponse(), servletResponse);
-            isAsyncStarted = true;
+            asyncStarted = true;
             isOkToReinitializeAsync = false;
         }
 
@@ -3828,10 +3828,15 @@ public class Request
      * Checks whether async processing has started on this request.
      */
     public boolean isAsyncStarted() {
-        return isAsyncStarted;
+        return asyncStarted;
     }
 
 
+    void setAsyncStarted(boolean asyncStarted) {
+        this.asyncStarted = asyncStarted;
+    }
+
+ 
     /**
      * Disables async support for this request.
      *
@@ -3985,7 +3990,7 @@ public class Request
      */
     void asyncTimeout() {
         notifyAsyncListeners(AsyncEventType.TIMEOUT);
-        if (!isAsyncComplete) {
+        if (!isAsyncComplete && !isAsyncStarted()) {
             asyncComplete();
         }
     }
