@@ -66,9 +66,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Locale;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.*;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -169,7 +167,7 @@ public class ErrorReportValve
 
         ServletRequest sreq = (ServletRequest) request;
         Throwable throwable =
-            (Throwable) sreq.getAttribute(Globals.EXCEPTION_ATTR);
+            (Throwable) sreq.getAttribute(RequestDispatcher.ERROR_EXCEPTION);
 
         ServletResponse sresp = (ServletResponse) response;
         if (sresp.isCommitted()) {

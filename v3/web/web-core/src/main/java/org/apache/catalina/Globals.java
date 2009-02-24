@@ -138,38 +138,6 @@ public final class Globals {
 
 
     /**
-     * The request attribute under which we forward a Java exception
-     * (as an object of type Throwable) to an error page.
-     */
-    public static final String EXCEPTION_ATTR =
-        "javax.servlet.error.exception";
-
-
-    /**
-     * The request attribute under which we forward the request URI
-     * (as an object of type String) of the page on which an error occurred.
-     */
-    public static final String EXCEPTION_PAGE_ATTR =
-        "javax.servlet.error.request_uri";
-
-
-    /**
-     * The request attribute under which we forward a Java exception type
-     * (as an object of type Class) to an error page.
-     */
-    public static final String EXCEPTION_TYPE_ATTR =
-        "javax.servlet.error.exception_type";
-
-
-    /**
-     * The request attribute under which we forward an HTTP status message
-     * (as an object of type STring) to an error page.
-     */
-    public static final String ERROR_MESSAGE_ATTR =
-        "javax.servlet.error.message";
-
-
-    /**
      * The request attribute under which the Invoker servlet will store
      * the invoking servlet path, if it was used to execute a servlet
      * indirectly instead of through a servlet mapping.
@@ -220,14 +188,6 @@ public final class Globals {
 
 
     /**
-     * The request attribute under which we forward a servlet name to
-     * an error page.
-     */
-    public static final String SERVLET_NAME_ATTR =
-        "javax.servlet.error.servlet_name";
-
-
-    /**
      * The name of the cookie used to pass the session identifier back
      * and forth with the client.
      */
@@ -239,14 +199,6 @@ public final class Globals {
      * back and forth with the client.
      */
     public static final String SESSION_PARAMETER_NAME = "jsessionid";
-
-
-    /**
-     * The request attribute under which we forward an HTTP status code
-     * (as an object of type Integer) to an error page.
-     */
-    public static final String STATUS_CODE_ATTR =
-        "javax.servlet.error.status_code";
 
 
     /**
@@ -262,15 +214,6 @@ public final class Globals {
      */
     public static final String WELCOME_FILES_ATTR =
         "org.apache.catalina.WELCOME_FILES";
-
-
-    /**
-     * The servlet context attribute under which we store a temporary
-     * working directory (as an object of type File) for use by servlets
-     * within this web application.
-     */
-    public static final String WORK_DIR_ATTR =
-        "javax.servlet.context.tempdir";
 
 
     // START SJSAS

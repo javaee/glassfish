@@ -6453,8 +6453,8 @@ public class StandardContext
         dir.mkdirs();
 
         // Set the appropriate servlet context attribute
-        getServletContext().setAttribute(Globals.WORK_DIR_ATTR, dir);
-        context.setAttributeReadOnly(Globals.WORK_DIR_ATTR);
+        getServletContext().setAttribute(ServletContext.TEMPDIR, dir);
+        context.setAttributeReadOnly(ServletContext.TEMPDIR);
 
     }
 

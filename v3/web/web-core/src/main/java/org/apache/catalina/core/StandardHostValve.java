@@ -66,7 +66,7 @@ import java.io.Reader;
 import java.io.FileReader;
 import java.io.PrintWriter;
 import java.io.BufferedInputStream;
-import javax.servlet.ServletOutputStream;
+import javax.servlet.*;
 // END SJSAS 6324911
 
 import java.util.logging.*;
@@ -234,7 +234,8 @@ final class StandardHostValve
             // Error page processing
             response.setSuspended(false);
 
-            Throwable t = (Throwable) hreq.getAttribute(Globals.EXCEPTION_ATTR);
+            Throwable t = (Throwable) hreq.getAttribute(
+                RequestDispatcher.ERROR_EXCEPTION);
 
             if (t != null) {
                 throwable(request, response, t);
@@ -303,16 +304,15 @@ final class StandardHostValve
             ServletResponse sresp = response.getResponse();
             sreq.setAttribute(Globals.DISPATCHER_REQUEST_PATH_ATTR,
                               errorPage.getLocation());
-            sreq.setAttribute
-                (Globals.STATUS_CODE_ATTR,
-                 Integer.valueOf(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
-            sreq.setAttribute(Globals.ERROR_MESSAGE_ATTR,
+            sreq.setAttribute(RequestDispatcher.ERROR_STATUS_CODE,
+                Integer.valueOf(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
+            sreq.setAttribute(RequestDispatcher.ERROR_MESSAGE,
                               throwable.getMessage());
-            sreq.setAttribute(Globals.EXCEPTION_ATTR,
+            sreq.setAttribute(RequestDispatcher.ERROR_EXCEPTION,
                               realError);
             Wrapper wrapper = request.getWrapper();
             if (wrapper != null)
-                sreq.setAttribute(Globals.SERVLET_NAME_ATTR,
+                sreq.setAttribute(RequestDispatcher.ERROR_SERVLET_NAME,
                                   wrapper.getName());
             /* GlassFish 6386229
             if (sreq instanceof HttpServletRequest)
@@ -320,10 +320,10 @@ final class StandardHostValve
                                   ((HttpServletRequest) sreq).getRequestURI());
             */
             // START GlassFish 6386229
-            sreq.setAttribute(Globals.EXCEPTION_PAGE_ATTR,
+            sreq.setAttribute(RequestDispatcher.ERROR_REQUEST_URI,
                               ((HttpServletRequest) sreq).getRequestURI());
             // END GlassFish 6386229
-            sreq.setAttribute(Globals.EXCEPTION_TYPE_ATTR,
+            sreq.setAttribute(RequestDispatcher.ERROR_EXCEPTION_TYPE,
                               realError.getClass());
             if (custom(request, response, errorPage)) {
                 try {
@@ -404,21 +404,21 @@ final class StandardHostValve
             response.setAppCommitted(false);
             ServletRequest sreq = request.getRequest();
             ServletResponse sresp = response.getResponse();
-            sreq.setAttribute(Globals.STATUS_CODE_ATTR,
+            sreq.setAttribute(RequestDispatcher.ERROR_STATUS_CODE,
                               Integer.valueOf(statusCode));
             String message = RequestUtil.filter(hresponse.getMessage());
             if (message == null)
                 message = "";
-            sreq.setAttribute(Globals.ERROR_MESSAGE_ATTR, message);
+            sreq.setAttribute(RequestDispatcher.ERROR_MESSAGE, message);
             sreq.setAttribute(Globals.DISPATCHER_REQUEST_PATH_ATTR,
                               errorPage.getLocation());
              
             Wrapper wrapper = request.getWrapper();
             if (wrapper != null)
-                sreq.setAttribute(Globals.SERVLET_NAME_ATTR,
+                sreq.setAttribute(RequestDispatcher.ERROR_SERVLET_NAME,
                                   wrapper.getName());
             if (sreq instanceof HttpServletRequest)
-                sreq.setAttribute(Globals.EXCEPTION_PAGE_ATTR,
+                sreq.setAttribute(RequestDispatcher.ERROR_REQUEST_URI,
                                   ((HttpServletRequest) sreq).getRequestURI());
             if (custom(request, response, errorPage)) {
                 try {

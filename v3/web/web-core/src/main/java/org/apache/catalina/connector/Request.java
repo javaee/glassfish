@@ -1746,7 +1746,7 @@ public class Request
             } catch (Throwable t) {
                 log(sm.getString("coyoteRequest.attributeEvent"), t);
                 // Error valve will pick this execption up and display it to user
-                attributes.put( Globals.EXCEPTION_ATTR, t );
+                attributes.put(RequestDispatcher.ERROR_EXCEPTION, t);
             }
         }
     }
@@ -1822,7 +1822,7 @@ public class Request
             } catch (Throwable t) {
                 log(sm.getString("coyoteRequest.attributeEvent"), t);
                 // Error valve will pick this execption up and display it to user
-                attributes.put( Globals.EXCEPTION_ATTR, t );
+                attributes.put(RequestDispatcher.ERROR_EXCEPTION, t);
             }
         }
     }

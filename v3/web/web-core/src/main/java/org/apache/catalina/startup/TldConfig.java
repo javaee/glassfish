@@ -86,7 +86,7 @@ import javax.naming.NameClassPair;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
-import javax.servlet.ServletException;
+import javax.servlet.*;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Globals;
@@ -418,7 +418,8 @@ public final class TldConfig  {
         if ((context instanceof StandardContext) && isCacheListeners()) {
         // END CR 6402120   
             File workDir= (File)
-                ((StandardContext)context).getServletContext().getAttribute(Globals.WORK_DIR_ATTR);
+                ((StandardContext)context).getServletContext().getAttribute(
+                    ServletContext.TEMPDIR);
             tldCache=new File( workDir, "tldCache.ser");
         }
 

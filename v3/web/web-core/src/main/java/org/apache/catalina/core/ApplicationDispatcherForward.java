@@ -109,7 +109,8 @@ class ApplicationDispatcherForward {
 
         ResponseFacade responseFacade = getResponseFacade(response);
         int statusCode = responseFacade.getStatus();
-        Object exception = request.getAttribute(Globals.EXCEPTION_ATTR);
+        Object exception = request.getAttribute(
+            RequestDispatcher.ERROR_EXCEPTION);
         String errorReportValveClass = 
             ((StandardHost)(context.getParent())).getErrorReportValveClass();
 
@@ -260,22 +261,22 @@ class ApplicationDispatcherForward {
                                                   String errorPageLocation,
                                                   int errorCode,
                                                   String errorMessage) {
-        request.setAttribute(Globals.EXCEPTION_PAGE_ATTR,
+        request.setAttribute(RequestDispatcher.ERROR_REQUEST_URI,
                              request.getRequestURI());
 
         if (errorServlet != null) {
             // Save the logical name of the servlet in which the error occurred
-            request.setAttribute(Globals.SERVLET_NAME_ATTR,
+            request.setAttribute(RequestDispatcher.ERROR_SERVLET_NAME,
                                  errorServlet.getName());
         }
 
         request.setAttribute(Globals.DISPATCHER_REQUEST_PATH_ATTR,
                              errorPageLocation);
 
-        request.setAttribute(Globals.STATUS_CODE_ATTR,
+        request.setAttribute(RequestDispatcher.ERROR_STATUS_CODE,
                              Integer.valueOf(errorCode));
 
-        request.setAttribute(Globals.ERROR_MESSAGE_ATTR, errorMessage);
+        request.setAttribute(RequestDispatcher.ERROR_MESSAGE, errorMessage);
     }
 
     /**
