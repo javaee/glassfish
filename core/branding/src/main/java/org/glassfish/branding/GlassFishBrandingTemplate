@@ -68,49 +68,24 @@ public class GlassFishBranding implements Branding, PostConstruct {
     private String version_suffix        = "@VERSION_SUFFIX@";
 
     private boolean fullVersionSet = false;
+    private PropertyResourceBundle  bundle;
 
     public void postConstruct() {
-	    // check for resource bundle
-	    try {
-                PropertyResourceBundle vRes =
-                (PropertyResourceBundle)PropertyResourceBundle.getBundle("BrandingVersion");
-                String str = vRes.getString("product_name");
-                if ((str != null) && (str.length() > 0)) {
-	            product_name = str;
-                }
-                str = vRes.getString("abbrev_product_name");
-                if ((str != null) && (str.length() > 0)) {
-	            abbrev_product_name = vRes.getString("abbrev_product_name");
-                }
-	        str = vRes.getString("full_version");
-                if ((str != null) && (str.length() > 0)) {
-	            full_version = vRes.getString("full_version");
-                    fullVersionSet = true;
-                }
-	        str = vRes.getString("major_version");
-                if ((str != null) && (str.length() > 0)) {
-	            major_version = vRes.getString("major_version");
-                }
-	        str = vRes.getString("minor_version");
-                if ((str != null) && (str.length() > 0)) {
-	            minor_version = vRes.getString("minor_version");
-                }
-	        str = vRes.getString("build_id");
-                if ((str != null) && (str.length() > 0)) {
-	            build_id = vRes.getString("build_id");
-                }
-	        str = vRes.getString("version_prefix");
-                if ((str != null) && (str.length() > 0)) {
-	            version_prefix = vRes.getString("version_prefix");
-                }
-	        str = vRes.getString("version_suffix");
-                if ((str != null) && (str.length() > 0)) {
-	            version_suffix = vRes.getString("version_suffix");
-                }
-            } catch(MissingResourceException mre) {
-                // cannot use logger because this may have been called from logger itself
-                System.out.println("no resource bundle found for version, using default GlassFish version");
-            }
+        setup();
+
+        if(bundle == null) {
+            // no resources -- we are done!
+            return;
+        }
+
+        product_name        = get("product_name", product_name);
+        abbrev_product_name = get("abbrev_product_name", abbrev_product_name);
+        full_version        = get("full_version", full_version);
+        major_version       = get("major_version", major_version);
+        minor_version       = get("minor_version", minor_version);
+        build_id            = get("build_id", build_id);
+        version_prefix      = get("version_prefix", version_prefix);
+        version_suffix      = get("version_suffix", version_suffix);
 
         // construct full version
         if ((!fullVersionSet) && (minor_version != null) && (minor_version.length() > 0)) {
@@ -206,5 +181,23 @@ public class GlassFishBranding implements Branding, PostConstruct {
      */
     public String getAbbrevProductName() {
     	return abbrev_product_name;
+    }
+    private String get(String key, String defaultValue) {
+        try {
+            return bundle.getString(key);
+        }
+        catch(Exception e) {
+            return defaultValue;
+        }
+    }
+
+    private void setup() {
+        try {
+            bundle = (PropertyResourceBundle)PropertyResourceBundle.getBundle("BrandingVersion");
+        }
+        catch(Exception e) {
+            bundle = null; // just making it very very clear!
+            System.out.println("no resource bundle found for version, using default GlassFish version");
+        }
     }
 } 
