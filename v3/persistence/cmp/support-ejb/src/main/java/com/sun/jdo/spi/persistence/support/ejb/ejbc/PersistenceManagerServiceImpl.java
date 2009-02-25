@@ -76,6 +76,7 @@ public class PersistenceManagerServiceImpl implements CMPService {
 **/
 
     public boolean isReady() {
+        // Checks that SunContainerHelper regeistered with CMPHelper
         return CMPHelper.isContainerReady();
     }
 
@@ -90,16 +91,6 @@ public class PersistenceManagerServiceImpl implements CMPService {
     private static <T> Class<T> forceInit(Class<T> klass) {
         try {
             Class.forName(klass.getName(), true, klass.getClassLoader());
-        } catch (ClassNotFoundException e) {
-            throw new AssertionError(e);  // Can't happen
-        }
-        return klass;
-    }
-
-    private static <T> Class<T> forceInit(String klassName) {
-        Class klass;
-        try {
-            klass = Class.forName(klassName);
         } catch (ClassNotFoundException e) {
             throw new AssertionError(e);  // Can't happen
         }

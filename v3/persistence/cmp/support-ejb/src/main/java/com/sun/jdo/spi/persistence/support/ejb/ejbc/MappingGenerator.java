@@ -247,6 +247,7 @@ public class MappingGenerator extends
                 }
 
                 if (warning != null) {
+//TODO - Status reporting should be enabled. Hint - May be able to use Reporter from deploymen. Check with Jerome 
 /*
                     DeploymentStatus status =
                         ctx.getDeploymentRequest()
@@ -503,21 +504,6 @@ public class MappingGenerator extends
             }
         }
     }
-
-    /** 
-     * Returns <code>true</code> if the specified propertyValue represents
-     * a defined value, <code>false</code> otherwise.  This implementation 
-     * returns <code>true</code> if the value is not empty and does not equal 
-     * Constants.UNDEFINED.
-     * @param propertyValue the value to be tested for defined
-     * @return <code>true</code> if the specified propertyValue represents
-     * a defined value, <code>false</code> otherwise
-XXX - REMOVE - ? 
-    protected boolean isPropertyDefined(String propertyValue) {
-        return (super.isPropertyDefined(propertyValue) &&
-			!Constants.UNDEFINED.equals(propertyValue));
-    }
-     */
 
     /**
      * Contains the results of getDeploymentArguments()

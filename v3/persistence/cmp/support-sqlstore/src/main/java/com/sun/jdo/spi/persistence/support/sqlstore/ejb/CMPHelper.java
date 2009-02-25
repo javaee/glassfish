@@ -105,30 +105,10 @@ public class CMPHelper {
         return counter;
     }
 
-    /** Called in a CMP supported environment to get a Container instance that
-     * will be passed unchanged to the required methods.  In a non-managed environment
-     * throws JDOFatalInternalException.
-     * The info argument can be an array of Objects if necessary.
-     *   
-     * @see getEJBObject(Object, Object)
-     * @see getEJBLocalObject(Object, Object)
-     * @see getEJBLocalObject(Object, Object, EJBContext)
-     * @see removeByEJBLocalObject(EJBLocalObject, Object)
-     * @see removeByPK(Object, Object)
-     * @param info Object with the request information that is application server
-     * specific.
-     * @return a Container instance as an Object.
-     * @throws JDOFatalInternalException if ContainerHelper instance is not registered.
-     */  
-    public static Object getContainer(Object info) {
-        return getContainerHelper().getContainer(info); 
-    }
- 
     /** Called in a CMP supported environment to get an EJBObject reference for this
      * primary key instance and Container object. 
      * The Container instance is acquired via #getContainer(Object).
      *   
-     * @see getContainer(Object)
      * @param pk the primary key instance.
      * @param container a Container instance for the request.
      * @return a corresponding EJBObject (as an Object) to be used by
@@ -142,7 +122,6 @@ public class CMPHelper {
      * primary key instance and Container object. 
      * The Container instance is acquired via #getContainer(Object).
      *   
-     * @see getContainer(Object)
      * @param pk the primary key instance.
      * @param container a Container instance for the request.
      * @return a corresponding EJBLocalObject (as an Object) to be used by
@@ -158,7 +137,6 @@ public class CMPHelper {
      * that is part of a cascade-delete remove.
      * The Container instance is acquired via #getContainer(Object).
      *   
-     * @see getContainer(Object)
      * @param pk the primary key instance.
      * @param container a Container instance for the request.
      * @param context an EJBContext of the calling bean.
@@ -174,7 +152,6 @@ public class CMPHelper {
      * and Container instance.
      * The Container instance is acquired via #getContainer(Object).
      *   
-     * @see getContainer(Object)
      * @param ejb the EJBLocalObject for the bean to be removed.
      * @param container a Container instance for the request. 
      */  
@@ -186,7 +163,6 @@ public class CMPHelper {
      * and Container instance.
      * The Container instance is acquired via #getContainer(Object).
      *
-     * @see getContainer(Object)
      * @param pk the primary key for the bean to be removed.
      * @param container a Container instance for the request.
      */ 
@@ -211,7 +187,6 @@ public class CMPHelper {
      * referenced by this Container instance as the CMP resource.
      * The Container instance is acquired via #getContainer(Object).
      *
-     * @see getContainer(Object)
      * @param container a Container instance for the request.
      */  
     public static PersistenceManagerFactory getPersistenceManagerFactory(Object container) {
@@ -222,7 +197,6 @@ public class CMPHelper {
      * is of a valid local interface type.
      * The Container instance is acquired via #getContainer(Object).
      *
-     * @see getContainer(Object)
      * @param o the instance to validate.
      * @param container a Container instance for the request.
      */
@@ -234,7 +208,6 @@ public class CMPHelper {
      * is of a valid remote interface type.
      * The Container instance is acquired via #getContainer(Object).
      *
-     * @see getContainer(Object)
      * @param o the instance to validate.
      * @param container a Container instance for the request.
      */
@@ -246,7 +219,6 @@ public class CMPHelper {
      * ejbSelect had been called.
      * The Container instance is acquired via #getContainer(Object).
      *   
-     * @see getContainer(Object)
      * @param container a Container instance for the request.
      */  
     public static void preSelect(Object container) {
@@ -256,7 +228,6 @@ public class CMPHelper {
     /**
      * Called in CMP environment to get NumericConverter policy referenced
      * by this Container instance.
-     * @see getContainer(Object)
      * @param container a Container instance for the request
      * @return a valid NumericConverter policy type
      */

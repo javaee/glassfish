@@ -50,12 +50,6 @@ import java.util.ResourceBundle;
 import javax.transaction.*;
 import javax.naming.InitialContext;
 
-import javax.ejb.EJBObject;
-import javax.ejb.EJBLocalObject;
-import javax.ejb.EJBContext;
-import javax.ejb.EntityContext;
-
-//import com.sun.jts.jta.*;
 
 import com.sun.appserv.jdbc.DataSource;
 
@@ -63,14 +57,6 @@ import com.sun.jdo.api.persistence.support.JDOFatalInternalException;
 import com.sun.jdo.api.persistence.support.PersistenceManagerFactory;
 import com.sun.jdo.spi.persistence.utility.I18NHelper;
 
-import com.sun.enterprise.connectors.naming.ConnectorNamingEvent;
-import com.sun.enterprise.connectors.naming.ConnectorNamingEventListener;
-import com.sun.enterprise.connectors.ConnectorRuntime;
-//import com.sun.enterprise.resource.ResourceInstaller;
-//import com.sun.enterprise.server.event.ApplicationEvent;
-//import com.sun.enterprise.server.event.ApplicationLoaderEventListener;
-//import com.sun.enterprise.server.event.ApplicationLoaderEventNotifier;
-//import com.sun.enterprise.server.event.EjbContainerEvent;
 
 /** Sun specific implementation for TransactionHelper interface.
 * Though this class does not have special implementation for 
@@ -235,7 +221,7 @@ public class SunTransactionHelper extends TransactionHelperImpl
              applicationLifeCycleEventListeners.add(listener);
         }
     }
-    
+// TODO - Implement this clean up at unload to prevent leaks    
 //    //-------------------ApplicationLifeCycleEventListener Methods --------------//
 //
 //    /**

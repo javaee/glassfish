@@ -69,23 +69,6 @@ import com.sun.jdo.api.persistence.support.PersistenceManagerFactory;
      */
     public interface ContainerHelper {
 
-    /** Called in a CMP-supported environment to get a Container helper instance that
-     * will be passed unchanged to the required methods.  In a non-managed environment 
-     * should not be called and throws JDOFatalInternalException.
-     * The info argument can be an array of Objects if necessary.
-     *   
-     * @see getEJBObject(Object, Object)
-     * @see getEJBLocalObject(Object, Object)
-     * @see getEJBLocalObject(Object, Object, EJBContext)
-     * @see removeByEJBLocalObject(EJBLocalObject, Object)
-     * @see removeByPK(Object, Object)
-     * @param info Object with the request information that is application server
-     * specific.
-     * @throws JDOFatalInternalException.
-     * @return a Container instance as an Object.
-     */
-    Object getContainer(Object info);
-
     /** Called in a CMP-supported environment to get an EJBObject reference for this
      * primary key instance and Container instance. In a non-managed environment
      * is not called.

@@ -156,7 +156,7 @@ public class JDOCodeGenerator
         this.ctx = ctx;
         this.generatedXmlsPath = generatedXmlsPathName;
         this.inputFilesPath = bundlePathName;
-        this.classout = ctx.getScratchDir("ejb");
+        this.classout = ctx.getScratchDir("ejb"); // "generated/ejb" dir
 
         init(bundle, ctx.getClassLoader(), bundlePathName, false);
     }

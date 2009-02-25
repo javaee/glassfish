@@ -53,11 +53,9 @@ import com.sun.jdo.spi.persistence.support.ejb.ejbc.JDOCodeGenerator;
 import com.sun.jdo.spi.persistence.utility.I18NHelper;
 import com.sun.jdo.spi.persistence.utility.logging.Logger;
 
-import com.sun.logging.LogDomains;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.EjbCMPEntityDescriptor;
 
 import com.sun.enterprise.deployment.IASEjbCMPEntityDescriptor;
 
@@ -67,9 +65,7 @@ import org.jvnet.hk2.component.Habitat;
 
 import org.glassfish.ejb.spi.CMPDeployer;
 import org.glassfish.api.deployment.DeploymentContext;
-import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.deployment.common.DeploymentException;
-import org.glassfish.deployment.common.DeploymentUtils;
 import com.sun.enterprise.config.serverbeans.JavaConfig;
 import org.glassfish.loader.util.ASClassLoaderUtil;
 
@@ -80,7 +76,7 @@ import org.glassfish.loader.util.ASClassLoaderUtil;
  * @since  JDK 1.4
  */
 @Service
-public class CmpCompiler implements CMPDeployer {
+public class CMPDeployerImpl implements CMPDeployer {
 
     @Inject
     private JavaConfig javaConfig;
@@ -102,38 +98,21 @@ public class CmpCompiler implements CMPDeployer {
         EjbBundleDescriptor bundle = null;
 
         // ejb name
-        String beanName = null; 
+        String beanName = null;
 
         // GeneratorException message if any
         StringBuffer generatorExceptionMsg = null; 
 
         try {
-            // scratchpad variable
-            long time; 
+            CMPGenerator gen = new JDOCodeGenerator();
 
-            CMPGenerator gen = null;
-
-            try {
-                gen = new JDOCodeGenerator();
-            } catch (Throwable e) {
-                String msg = I18NHelper.getMessage(messages,
-                        "cmpc.cmp_generator_class_error",
-                        application.getRegistrationName(), 
-                        bundle.getModuleDescriptor().getArchiveUri());
-                _logger.log(Logger.SEVERE, msg, e);
-                generatorExceptionMsg = addGeneratorExceptionMessage(msg, 
-                        generatorExceptionMsg);
-
-                throw new DeploymentException(generatorExceptionMsg.toString());
-            }
-
-            // stubs dir for the current deployment 
-            File stubsDir = ctx.getScratchDir("ejb");
+            // stubs dir for the current deployment (generated/ejb)
+            File stubsDir = ctx.getScratchDir("ejb"); //NOI18N
 
             application = ctx.getModuleMetaData(Application.class);
 
             if (_logger.isLoggable(Logger.FINE)) {
-                _logger.fine( "cmpc.processing_cmp", 
+                _logger.fine( "cmpc.processing_cmp",  //NOI18N
                         application.getRegistrationName());
             }
 
@@ -142,19 +121,19 @@ public class CmpCompiler implements CMPDeployer {
 
             bundle = ctx.getModuleMetaData(EjbBundleDescriptor.class);
                 
-            // If it is a stand alone module then the srcDir is 
-            // the ModuleDirectory
+            // This gives the dir where application is exploded
             String archiveUri = ctx.getSource().getURI().getSchemeSpecificPart();
 
             if (_logger.isLoggable(Logger.FINE)) {
-                _logger.fine("[CMPC] Module Dir name is "
+                _logger.fine("[CMPC] Module Dir name is " //NOI18N
                         + archiveUri);
             }
 
+            // xml dir for the current deployment (generated/xml)
             String generatedXmlsPath = ctx.getScratchDir("xml").getCanonicalPath();
 
             if (_logger.isLoggable(Logger.FINE)) {
-                _logger.fine("[CMPC] Generated XML Dir name is "
+                _logger.fine("[CMPC] Generated XML Dir name is " //NOI18N
                         + generatedXmlsPath);
             }
 
@@ -169,7 +148,7 @@ public class CmpCompiler implements CMPDeployer {
                     beanName = desc.getName();
 
                     if (_logger.isLoggable(Logger.FINE)) {
-                        _logger.fine("[CMPC] Ejb Class Name: "
+                        _logger.fine("[CMPC] Ejb Class Name: " //NOI18N
                                            + desc.getEjbClassName());
                     }
     
@@ -181,11 +160,11 @@ public class CmpCompiler implements CMPDeployer {
     
                         if (_logger.isLoggable(Logger.FINE)) {
                             _logger.fine(
-                                    "[CMPC] Home Object Impl name  is "
+                                    "[CMPC] Home Object Impl name  is " //NOI18N
                                     + entd.getLocalHomeImplClassName());
                         }
     
-                        // generate persistent class
+                        // The classloader needs to be set else we fail down the road.
                         ClassLoader ocl = entd.getClassLoader();
                         entd.setClassLoader(jcl);
                     
@@ -208,8 +187,6 @@ public class CmpCompiler implements CMPDeployer {
                      * value
                      */
     
-                    } else if (desc instanceof EjbCMPEntityDescriptor ) {
-                            //RI code here
                     }
 
                 } // end while ejbs.hasNext()
@@ -229,6 +206,7 @@ public class CmpCompiler implements CMPDeployer {
 
             bundle = null; // Used in exception processing
 
+            // Compile the generated classes
             if (generatorExceptionMsg == null) {
 
                 long start = System.currentTimeMillis();
@@ -290,10 +268,10 @@ public class CmpCompiler implements CMPDeployer {
      *
      * @exception  GeneratorException  if an error while code compilation
      */
-    public void compileClasses(DeploymentContext ctx, List<File> files, 
+    private void compileClasses(DeploymentContext ctx, List<File> files, 
             String explodedDir, File destDir) throws GeneratorException {
 
-        if (files.size() <= 0) {
+        if (files.isEmpty() ) {
             return;
         }
 
@@ -302,14 +280,15 @@ public class CmpCompiler implements CMPDeployer {
         List<String> options    = javaConfig.getJavacOptionsAsList();
 
         StringBuffer msgBuffer = new StringBuffer();
+        boolean compilationResult = false;
         try {
             // add the rest of the javac options
             options.add("-d");
             options.add(destDir.toString());
             options.add("-classpath");
-            options.add(System.getProperty("java.class.path")
+            options.add(System.getProperty("java.class.path") //TODO do we need to add java.class.path for compilation?
                          + File.pathSeparator + classPath
-                         + File.pathSeparator + destDir
+                         + File.pathSeparator + destDir       //TODO do we need desDir for compilation?
                          + File.pathSeparator  + explodedDir);
 
             if (_logger.isLoggable(Logger.FINE)) {
@@ -325,6 +304,7 @@ public class CmpCompiler implements CMPDeployer {
                 _logger.fine("[CMPC] JAVAC OPTIONS: " + sbuf.toString());
             }
 
+            // Using Java 6 compiler API to compile the generated .java files
             JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
             DiagnosticCollector<JavaFileObject> diagnostics = 
                    new DiagnosticCollector<JavaFileObject>();
@@ -335,21 +315,23 @@ public class CmpCompiler implements CMPDeployer {
             long start = System.currentTimeMillis();
             long end = start;
 
-            boolean result = compiler.getTask(
+            compilationResult = compiler.getTask(
                     null, manager, diagnostics, options, null, compilationUnits).call();
 
             end = System.currentTimeMillis();
             _logger.fine("JAVA compile time (" + files.size()
                     + " files) = " + (end - start));
 
+            // Save compilation erros in msgBuffer to be used in case of failure
             for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
+                //Ignore NOTE about generated non safe code
                 if (diagnostic.getKind().equals(Diagnostic.Kind.NOTE)) {
                     if (_logger.isLoggable(Logger.FINE)) {
-                        msgBuffer.append("\n" + diagnostic.getMessage(null));
+                        msgBuffer.append("\n").append(diagnostic.getMessage(null));
                     }
                     continue;
                 }
-                msgBuffer.append("\n" + diagnostic.getMessage(null));
+                msgBuffer.append("\n").append(diagnostic.getMessage(null));
             }
 
             manager.close();
@@ -364,7 +346,7 @@ public class CmpCompiler implements CMPDeployer {
             throw ge;
         }
 
-        if (msgBuffer.length() > 0) {
+        if (!compilationResult) {
             // Log but throw an exception with a shorter message
             _logger.warning(I18NHelper.getMessage(messages, 
                     "cmpc.cmp_complilation_problems", msgBuffer.toString()));
@@ -392,6 +374,6 @@ public class CmpCompiler implements CMPDeployer {
 
     // ---- VARIABLE(S) - PRIVATE --------------------------------------
     private static final Logger _logger  = LogHelperCmpCompiler.getLogger();
-    private static final ResourceBundle messages = I18NHelper.loadBundle(CmpCompiler.class);
+    private static final ResourceBundle messages = I18NHelper.loadBundle(CMPDeployerImpl.class);
 
 }

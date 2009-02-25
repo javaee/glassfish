@@ -103,35 +103,6 @@ public class SunContainerHelper extends SunTransactionHelper implements Containe
     /** Default constructor should not be public */
     SunContainerHelper() { }
 
-//    /** Get a Container helper instance that will be passed unchanged to the
-//     * required methods.
-//     * This is SunContainerHelper specific code.
-//     *
-//     * The info argument is an Object array that consistes of a class to use
-//     * for the class loader and concreteImpl bean class name.
-//     * @see getEJBObject(Object, Object)
-//     * @see getEJBLocalObject(Object, Object)
-//     * @see getEJBLocalObject(Object, Object, EJBObject)
-//     * @see removeByEJBLocalObject(EJBLocalObject, Object)
-//     * @see removeByPK(Object, Object)
-//     * @param info Object with the request information that is application server
-//     * specific.
-//     * @return a Container helper instance as an Object.
-//     */
-    public Object getContainer(Object info) {
-//
-//        Object[] params = (Object[])info;
-//        Class cls = (Class)params[0];
-//
-//        ApplicationRegistry reg = ApplicationRegistry.getInstance();
-//        Application app = reg.getApplication(cls.getClassLoader());
-//        EjbCMPEntityDescriptor desc = app.getCMPDescriptorFor((String)params[1]);
-//
-//        return reg.getContainer(desc);
-
-        throw new IllegalStateException();
-    }
-
     /** Get an EJBObject reference for this primary key and Container helper.
      * The Container instance is acquired via #getContainer(Object).
      * This is SunContainerHelper specific code.
