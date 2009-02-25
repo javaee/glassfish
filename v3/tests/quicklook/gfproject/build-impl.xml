@@ -256,7 +256,7 @@
     srcdir="src/java"
     failonerror="false"
     destdir="${class.output}"/>
-    <war destfile="${dist.dir}/${app.file}.war" webxml="metadata/web.xml">
+    <war destfile="${dist.dir}/${app.file}Web.war" webxml="metadata/web.xml">
         <fileset dir="web/html"/>
         <fileset dir="web/jsp"/>
         <classes dir="${class.output}">
@@ -266,7 +266,7 @@
             <include name="**/web.xml"/>
         </webinf>
     </war>
-    <jar destfile="${dist.dir}/${app.file}.jar"
+    <jar destfile="${dist.dir}/${app.file}EJB.jar"
         basedir="${class.output}"
         excludes="**/*Servlet.class"/>
     <ear destfile="${dist.dir}/${app.file.ext}" appxml="metadata/application.xml">

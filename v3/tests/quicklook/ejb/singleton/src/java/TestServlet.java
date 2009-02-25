@@ -91,7 +91,7 @@ public class TestServlet extends HttpServlet {
               // app-name -- name of ear file (option)
               // module-name -- name of war or jar file
               // bean-name -- name of ejb
-	      BeanRoot root2 = (BeanRoot) ic.lookup("java:global/singleton/singleton/BeanRoot");
+	      BeanRoot root2 = (BeanRoot) ic.lookup("java:global/singleton/singletonEJB/BeanRoot");
 
 	      // out.println("global root: " + root2);
 	      String hello2 = root2.sayHello();
