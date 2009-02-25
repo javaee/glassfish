@@ -515,8 +515,17 @@ final class StandardHostValve
         ((HttpRequest) request).setPathInfo(errorPage.getLocation());
 
         try {
+            /*
+             * Reset the response, while keeping the real error code and
+             * message
+             */
             response.resetBuffer(true);
-
+            Integer statusCodeObj = (Integer) hreq.getAttribute(
+                RequestDispatcher.ERROR_STATUS_CODE);
+            int statusCode = statusCodeObj.intValue();
+            String message = (String) hreq.getAttribute(
+                RequestDispatcher.ERROR_MESSAGE);
+            hres.setStatus(statusCode, message);
 
             // Forward control to the specified location
             ServletContext servletContext =
