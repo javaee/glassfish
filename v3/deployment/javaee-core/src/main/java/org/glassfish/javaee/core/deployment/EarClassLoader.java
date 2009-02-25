@@ -74,6 +74,10 @@ public class EarClassLoader extends URLClassLoader {
         }
     }
 
+    public void addURL(URL url) {
+        super.addURL(url);
+    }
+
     public void addModuleClassLoader(String moduleName, ClassLoader cl) {
         delegates.add(new ClassLoaderHolder(moduleName, cl));
     }

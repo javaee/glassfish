@@ -81,8 +81,9 @@ public interface ArchiveHandler {
      * nothing at all.
      * @param source of the expanding
      * @param target of the expanding
+     * @param context
      */
-    public void expand(ReadableArchive source, WritableArchive target) throws IOException;
+    public void expand(ReadableArchive source, WritableArchive target, DeploymentContext context) throws IOException;
 
     /**
      * Returns the manifest file for this archive, this file is usually located at

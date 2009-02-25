@@ -38,27 +38,40 @@ package org.glassfish.loader.util;
 
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.util.io.FileUtils;
+import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.admin.ServerEnvironment;
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.List;
+import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.jar.Manifest;
+import java.util.jar.Attributes;
+import java.util.StringTokenizer;
 import java.util.Collection;
 
 public class ASClassLoaderUtil {
 
-    private static final Logger _logger = Logger.getAnonymousLogger();
+   final private static Logger _logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
 
     private static String modulesClassPath = null;
+
+    /** The manifest file name from an archive. */
+    private static final String MANIFEST_ENTRY  =
+                    "META-INF" + File.separator + "MANIFEST.MF";
 
     /**
      * Gets the classpath associated with a module, suffixing libraries
@@ -86,7 +99,7 @@ public class ASClassLoaderUtil {
         if (commonClassPath != null && commonClassPath.length() > 0) {
             classpath.append(commonClassPath).append(File.pathSeparator);
         }
-        addLibrariesForModule(classpath, moduleId, deploymentLibs, habitat);
+        addDeployTimeLibrariesForModule(classpath, moduleId, deploymentLibs, habitat);
         if (_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE, "Final classpath: " + classpath.toString());
         }
@@ -102,7 +115,7 @@ public class ASClassLoaderUtil {
     }
 
 
-    private static void addLibrariesForModule(StringBuilder sb, 
+    private static void addDeployTimeLibrariesForModule(StringBuilder sb, 
         String moduleId, String deploymentLibs, Habitat habitat) {
         if (deploymentLibs == null) {
             ApplicationInfo appInfo = 
@@ -188,6 +201,146 @@ public class ASClassLoaderUtil {
             }
         }
         return modulesClassPath;
+    }
+
+    /**
+     * Returns an array of urls that contains ..
+     * <pre>
+     *    i.   all the valid directories from the given directory (dirs) array
+     *    ii.  all jar files from the given directory (jarDirs) array
+     *    iii. all zip files from the given directory (jarDirs) array if
+     *         not ignoring zip file (ignoreZip is false).
+     * </pre>
+     *
+     * @param    dirs     array of directory path names
+     * @param    jarDirs  array of path name to directories that contains
+     *                    JAR & ZIP files.
+     * @param    ignoreZip whether to ignore zip files
+     * @return   an array of urls that contains all the valid dirs,
+     *           *.jar & *.zip
+     *
+     * @throws  IOException  if an i/o error while constructing the urls
+     */
+    public static URL[] getURLs(File[] dirs, File[] jarDirs,
+        boolean ignoreZip) throws IOException {
+        URL[] urls = new URL[0];
+        List<URL> list = new ArrayList<URL>();
+
+        // adds all directories
+        if (dirs != null) {
+            for (int i=0; i<dirs.length; i++) {
+                File dir = dirs[i];
+                if (dir.isDirectory() || dir.canRead()) {
+                    URL url = dir.toURI().toURL();
+                    list.add(url);
+
+                    if (_logger.isLoggable(Level.FINE)) {
+
+                       _logger.log(Level.FINE,
+                            "Adding directory to class path:" + url.toString());
+                    }
+                }
+            }
+        }
+
+        // adds all the jars
+        if (jarDirs != null) {
+            for (int i=0; i<jarDirs.length; i++) {
+                File jarDir =  jarDirs[i];
+
+                if (jarDir.isDirectory() || jarDir.canRead()) {
+                    File[] files = jarDir.listFiles();
+
+                    for (int j=0; j<files.length; j++) {
+                        File jar = files[j];
+
+                        if ( FileUtils.isJar(jar) ||
+                            (!ignoreZip && FileUtils.isZip(jar)) ) {
+                            list.add(jar.toURI().toURL());
+
+                            if (_logger.isLoggable(Level.FINE)) {
+                                _logger.log(Level.FINE,
+                                    "Adding jar to class path:" + jar.toURL());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // converts the list to an array
+        if (list.size() > 0) {
+            urls = new URL[list.size()];
+            urls = (URL[]) list.toArray(urls);
+        }
+
+        return urls;
+    }
+
+    /**
+     * get URL list from classpath
+     * @param classpath classpath string containing the classpaths
+     * @param delimiter delimiter to separate the classpath components 
+     *                  in the classpath string
+     * @param rootPath root path of the classpath if the paths are relative
+     
+     * @return urlList URL list from the given classpath
+     */
+    public static List<URL> getURLsFromClasspath(String classpath, 
+        String delimiter, String rootPath) {
+        final List<URL> urls  = new ArrayList<URL>();
+
+        if (classpath == null || classpath.length() == 0) {
+            return urls;
+        }
+
+        // tokenize classpath
+        final StringTokenizer st = new StringTokenizer(classpath, delimiter);
+        while (st.hasMoreTokens()) {
+            try {
+                String path = st.nextToken();
+                if (rootPath != null && rootPath.length() != 0) {
+                    path = rootPath + File.separator + path;
+                }
+                File f = new File(path);
+                urls.add(f.toURI().toURL());
+            } catch(Exception e) {
+                  _logger.log(Level.WARNING,
+                      "unexpected error in getting urls",e);
+            }
+        }
+        return urls;
+    }
+
+    /**
+     * Returns the class path (if any) from the given manifest file as an 
+     * URL list.
+     *
+     * @param    manifest    manifest file of an archive
+     * @param    rootPath    root path to the module
+     *
+     * @return   a list of URLs 
+     *           an empty list if given manifest is null
+     */
+    public static List<URL> getManifestClassPathAsURLs(Manifest manifest,
+            String rootPath) {
+        List<URL> urlList = new ArrayList<URL>();
+        if (manifest != null) {
+            Attributes mainAttributes  = manifest.getMainAttributes();
+
+            for (Iterator itr=mainAttributes.keySet().iterator();
+                itr.hasNext();) {
+
+                Attributes.Name next = (Attributes.Name) itr.next();
+
+                if (next.equals(Attributes.Name.CLASS_PATH)) {
+                    String classpathString = (String) mainAttributes.get(next);
+                    urlList = getURLsFromClasspath(classpathString, " ", 
+                        rootPath);
+                }
+            }
+        }
+        return urlList;
     }
 
 }

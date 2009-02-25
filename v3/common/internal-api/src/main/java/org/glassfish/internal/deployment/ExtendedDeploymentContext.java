@@ -37,6 +37,7 @@ package org.glassfish.internal.deployment;
 
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
+import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 
 import java.lang.instrument.ClassFileTransformer;
@@ -97,16 +98,16 @@ public interface ExtendedDeploymentContext extends DeploymentContext {
     public void setProps(Properties props);
 
     /**
-     * Returns the archive handler that's associated with this context
-     *
-     * @return archive handler
-     */
-    public ArchiveHandler getArchiveHandler();
-
-    /**
      * Sets the archive handler that's associated with this context
      *
      * @param archiveHandler
      */
     public void setArchiveHandler(ArchiveHandler archiveHandler);
+
+    /**
+     * Sets the source archive
+     *
+     * @param props
+     */
+    public void setSource(ReadableArchive source);
 }

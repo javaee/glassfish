@@ -97,6 +97,14 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
             cloader.setResources(r);
             cloader.addRepository("WEB-INF/classes/", new File(base, "WEB-INF/classes/"));
 
+            if (context.getArchiveHandler().getClass(
+                ).getAnnotation(Service.class).name().equals("ear")) {
+                // add libarries referenced from manifest
+                for (URL url : getManifestLibraries(context)) {
+                    cloader.addRepository(url.toString());
+                }
+            }
+
             configureLoaderAttributes(cloader, sunWebXmlParser, base);
             configureLoaderProperties(cloader, sunWebXmlParser, base);
             

@@ -41,7 +41,7 @@ public class Util {
     */
     public static String getURIName(URI uri) {
         String name = null;
-        String path = uri.getPath();
+        String path = uri.getSchemeSpecificPart();
         if (path != null) {
             /*
              * Strip the path up to and including the last slash, if there is one.

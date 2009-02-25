@@ -41,11 +41,12 @@ import org.jvnet.hk2.annotations.Service;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.DeploymentContext;
-
 import java.net.MalformedURLException;
 
 import com.sun.enterprise.loader.EJBClassLoader;
 import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
+
+import java.net.URL;
 
 /**
  * ArchiveHandler implementation for jar files
@@ -68,6 +69,13 @@ public class JarHandler extends AbstractArchiveHandler implements ArchiveHandler
         try {              
             cloader.addURL(context.getSource().getURI().toURL());
             cloader.addURL(context.getScratchDir("ejb").toURL());
+            if (context.getArchiveHandler().getClass(
+                ).getAnnotation(Service.class).name().equals("ear")) {
+                // add libarries referenced from manifest 
+                for (URL url : getManifestLibraries(context)) {
+                    cloader.addURL(url);
+                }
+            }
         } catch(MalformedURLException e) {
             return null;
         }

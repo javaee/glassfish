@@ -459,19 +459,6 @@ public class AppServer {
     public App deploy(File archive) throws IOException {
         start();
         ReadableArchive a = archiveFactory.openArchive(archive);
-
-        if (!archive.isDirectory()) {
-            // explode (if I don't, WarHandler won't work)
-            ArchiveHandler h = deployment.getArchiveHandler(a);
-
-            File tmpDir = new File(a.getName());
-            FileUtils.whack(tmpDir);
-            tmpDir.mkdirs();
-            h.expand(a, archiveFactory.createArchive(tmpDir));
-            a.close();
-            a = archiveFactory.openArchive(tmpDir);
-        }
-
         return deploy(a);
     }
 
@@ -513,10 +500,6 @@ public class AppServer {
 
         ArchiveHandler h = deployment.getArchiveHandler(a);
 
-        // now prepare sniffers
-
-        //is this required?
-        ClassLoader parentCL = createSnifferParentCL(null, snifMan.getSniffers());
         if (params==null) {
             params = new DeployCommandParameters();
         }
@@ -524,8 +507,25 @@ public class AppServer {
         params.enabled = true;
         params.origin = DeployCommandParameters.Origin.deploy;
 
-		final ExtendedDeploymentContext deploymentContext = deployment.getContext(Logger.getAnonymousLogger(), a, params);
+	final ExtendedDeploymentContext deploymentContext = deployment.getContext(Logger.getAnonymousLogger(), a, params);
+        deploymentContext.setArchiveHandler(h);
 
+        if (!(new File(a.getURI().getSchemeSpecificPart())).isDirectory()) {
+            // explode (if I don't, WarHandler won't work)
+            File tmpDir = new File(a.getName());
+            FileUtils.whack(tmpDir);
+            tmpDir.mkdirs();
+            h.expand(a, archiveFactory.createArchive(tmpDir), 
+                deploymentContext);
+            a.close();
+            a = archiveFactory.openArchive(tmpDir);
+            deploymentContext.setSource(a);
+        }
+
+        // now prepare sniffers
+
+        //is this required?
+        ClassLoader parentCL = createSnifferParentCL(null, snifMan.getSniffers());
         ClassLoader cl = h.getClassLoader(parentCL, deploymentContext);
         Collection<Sniffer> activeSniffers = snifMan.getSniffers(a, cl);
 

@@ -148,10 +148,21 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
 
             if (sourceFile.exists()) {
                 sourceFile = sourceFile.getAbsoluteFile();
-                if (!sourceFile.isDirectory()) {
+                ReadableArchive sourceArchive=null;
+                try {
+                    sourceArchive = archiveFactory.openArchive(sourceFile);
+
+                    DeployCommandParameters parameters = new DeployCommandParameters(sourceFile);
+                    parameters.name = sourceFile.getName();
+                    parameters.enabled = Boolean.TRUE;
+                    parameters.origin = DeployCommandParameters.Origin.deploy;
+
+                    ExtendedDeploymentContext depContext = deployment.getContext(logger, sourceArchive, parameters);
+                    ActionReport report = new HTMLActionReporter();
+
+                    if (!sourceFile.isDirectory()) {
 
                     // ok we need to explode the directory somwhere and remember to delete it on shutdown
-                    try {
                         final File tmpFile = File.createTempFile(sourceFile.getName(),"");
                         final String path = tmpFile.getAbsolutePath();
                         tmpFile.delete();
@@ -167,53 +178,36 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                             }
                         });
                         if (tmpDir.mkdirs()) {
-                            ReadableArchive sourceArchive=null;
-                            sourceArchive = archiveFactory.openArchive(sourceFile);
                             ArchiveHandler handler = deployment.getArchiveHandler(sourceArchive);
                             final String appName = handler.getDefaultApplicationName(sourceArchive);
-                            handler.expand(sourceArchive, archiveFactory.createArchive(tmpDir));
-                            sourceFile = tmpDir;
+                            handler.expand(sourceArchive, archiveFactory.createArchive(tmpDir), depContext);
+                            sourceArchive = 
+                                archiveFactory.openArchive(tmpDir);
+                            depContext.setSource(sourceArchive);
                             logger.info("Source is not a directory, using temporary location " + tmpDir.getAbsolutePath());
                             logger.warning("Using " + appName + " as context root for application");
                         }
-                    } catch (IOException e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                     }
+                    ApplicationInfo appInfo = deployment.deploy(depContext, report);
+                    if (appInfo==null) {
 
-
-                }
-                try {
-                    ReadableArchive sourceArchive=null;
-                    try {
-                        sourceArchive = archiveFactory.openArchive(sourceFile);
-
-                        DeployCommandParameters parameters = new DeployCommandParameters(sourceFile);
-                        parameters.name = sourceFile.getName();
-                        parameters.enabled = Boolean.TRUE;
-                        parameters.origin = DeployCommandParameters.Origin.deploy;
-
-                        ExtendedDeploymentContext depContext = deployment.getContext(logger, sourceArchive, parameters);
-
-                        ActionReport report = new HTMLActionReporter();
-                        ApplicationInfo appInfo = deployment.deploy(depContext, report);
-                        if (appInfo==null) {
-
-                            logger.severe("Cannot find the application type for the artifact at : "
-                                    + sourceFile.getAbsolutePath());
-                            logger.severe("Was the container or sniffer removed ?");
-                        }
-                    } finally {
-                        if (sourceArchive!=null) {
-                            sourceArchive.close();
-                        }
+                        logger.severe("Cannot find the application type for the artifact at : "
+                                + sourceFile.getAbsolutePath());
+                        logger.severe("Was the container or sniffer removed ?");
                     }
                 } catch(Exception e) {
-                    logger.log(Level.SEVERE, "IOException while opening deployed artifact", e);
-
+                    logger.log(Level.SEVERE, "IOException while deploying", e);
+                } finally {
+                    if (sourceArchive!=null) {
+                        try {
+                            sourceArchive.close();
+                        } catch (IOException ioe) {
+                            // ignore
+                        }
+                    }
                 }
             }
         }
-
     }
 
 

@@ -241,24 +241,17 @@ public class ApplicationArchivist extends Archivist<Application>
         return application;
     }
 
-    @Override
-    public Application readStandardDeploymentDescriptor(ReadableArchive archive) throws IOException, SAXParseException {
-
-        InputStream is = null;
-        try {
-            is = archive.getEntry(getStandardDDFile().getDeploymentDescriptorPath());
-            if (is != null) {
-                is.close();
-                is=null;
-                return super.readStandardDeploymentDescriptor(archive);
-            } else {
-                return getApplicationFromIntrospection(habitat, archive, archive instanceof FileArchive);
-            }
-        } finally {
-            if (is!=null) {
-                is.close();
-            }
-            
+    /**
+     * This method creates a top level Application object for an ear.
+     * @param archive the archive for the application
+     * @param directory whether the application is packaged as a directory
+     */
+    public Application createApplication(ReadableArchive archive,
+        boolean directory) throws IOException, SAXParseException {
+        if (hasStandardDeploymentDescriptor(archive) ) {
+            return readStandardDeploymentDescriptor(archive);
+        } else {
+            return getApplicationFromIntrospection(archive, directory);
         }
     }
 
@@ -270,9 +263,13 @@ public class ApplicationArchivist extends Archivist<Application>
      * @param archive   the archive representing the application root
      * @param directory whether this is a directory deployment
      */
-    private static Application getApplicationFromIntrospection(
-            Habitat habitat, ReadableArchive archive, boolean directory) {
+    private Application getApplicationFromIntrospection(
+            ReadableArchive archive, boolean directory) {
         String appRoot = archive.getURI().getSchemeSpecificPart(); //archive is a directory
+        if (appRoot.endsWith(File.separator)) {
+            appRoot = appRoot.substring(0, appRoot.length() - 1);
+        }
+
         Application app = new Application(habitat);
         app.setLoadedFromApplicationXml(false);
         app.setVirtual(false);
@@ -288,14 +285,7 @@ public class ApplicationArchivist extends Archivist<Application>
             ReadableArchive subArchive = null;
             try {
                 try {
-
-                    if (!directory) {
-                        subArchive = new InputJarArchive();
-                        subArchive.open(subModule.toURI());
-                    } else {
-                        subArchive = new FileArchive();
-                        subArchive.open(subModule.toURI());
-                    }
+                    subArchive = archiveFactory.openArchive(subModule);
                 } catch (IOException ex) {
                     logger.log(Level.WARNING, ex.getMessage());
                 }

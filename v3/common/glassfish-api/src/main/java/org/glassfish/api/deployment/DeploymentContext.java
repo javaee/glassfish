@@ -39,6 +39,7 @@ package org.glassfish.api.deployment;
 import org.glassfish.api.ExecutionContext;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.deployment.archive.ArchiveHandler;
 import java.io.File;
 import java.lang.instrument.ClassFileTransformer;
 import java.util.Properties;
@@ -158,4 +159,11 @@ public interface DeploymentContext extends ApplicationContext, ExecutionContext 
      * @return collection of metadata added to the context
      */
     public Collection<Object> getModuleMetadata();  
+
+    /**
+     * Returns the archive handler that's associated with this context
+     *
+     * @return archive handler
+     */
+    public ArchiveHandler getArchiveHandler();
 }

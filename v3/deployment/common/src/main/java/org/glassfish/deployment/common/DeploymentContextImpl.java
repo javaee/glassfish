@@ -55,7 +55,7 @@ import com.sun.enterprise.util.io.FileUtils;
 public class DeploymentContextImpl implements ExtendedDeploymentContext {
 
 
-    final ReadableArchive source;
+    ReadableArchive source;
     final OpsParams parameters;
     final Logger logger;
     final ServerEnvironment env;
@@ -84,6 +84,10 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
 
     public ReadableArchive getSource() {
         return source;
+    }
+
+    public void setSource(ReadableArchive source) {
+        this.source = source;
     }
 
     public <U extends OpsParams> U getCommandParameters(Class<U> commandParametersType) {

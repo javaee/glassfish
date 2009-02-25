@@ -806,7 +806,9 @@ public class ApplicationLifecycle implements Deployment {
     }
 
     public ExtendedDeploymentContext getContext(Logger logger, ReadableArchive source, OpsParams params) throws IOException {
+        ExtendedDeploymentContext context = new DeploymentContextImpl(logger, source, params, env);
         if (source != null && !(new File(source.getURI().getSchemeSpecificPart()).isDirectory())) {
+            // create a temporary deployment context
             File expansionDir = new File(domain.getApplicationRoot(), 
                 params.name());
             if (!expansionDir.mkdirs()) {
@@ -821,7 +823,7 @@ public class ApplicationLifecycle implements Deployment {
             try {
                 ArchiveHandler archiveHandler = getArchiveHandler(source);
                 Long start = System.currentTimeMillis();
-                archiveHandler.expand(source, archiveFactory.createArchive(expansionDir));
+                archiveHandler.expand(source, archiveFactory.createArchive(expansionDir), context);
                 System.out.println("Deployment expansion took " + (System.currentTimeMillis() - start));
 
                 // Close the JAR archive before losing the reference to it or else the JAR remains locked.
@@ -832,12 +834,13 @@ public class ApplicationLifecycle implements Deployment {
                     throw e;
                 }
                 source = archiveFactory.openArchive(expansionDir);
+                context.setSource(source);
             } catch(IOException e) {
                 logger.log(Level.SEVERE, localStrings.getLocalString("deploy.errorexpandingjar","Error while expanding archive file"),e);
                 throw e;
             }
         }
-        return new DeploymentContextImpl(logger, source, params, env);
+        return context;
     }
 }
 

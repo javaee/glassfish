@@ -41,6 +41,9 @@ import java.io.File;
 import java.net.URI;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
+import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.deployment.common.DeploymentUtils;
+import org.glassfish.loader.util.ASClassLoaderUtil;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.BufferedInputStream;
@@ -48,8 +51,14 @@ import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.jar.Manifest;
 import java.util.jar.JarFile;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+import java.net.URL;
 
 import com.sun.enterprise.util.io.FileUtils;
+import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 
 /**
@@ -59,6 +68,8 @@ import org.glassfish.api.deployment.archive.ArchiveHandler;
  */
 public abstract class AbstractArchiveHandler implements ArchiveHandler {
 
+    final protected Logger _logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
+
     /**
      * Prepares the jar file to a format the ApplicationContainer is
      * expecting. This could be just a pure unzipping of the jar or
@@ -66,8 +77,10 @@ public abstract class AbstractArchiveHandler implements ArchiveHandler {
      *
      * @param source of the expanding
      * @param target of the expanding
+     * @param context
      */
-    public void expand(ReadableArchive source, WritableArchive target) throws IOException {
+    public void expand(ReadableArchive source, WritableArchive target, 
+        DeploymentContext context) throws IOException {
 
         Enumeration<String> e = source.entries();
         while (e.hasMoreElements()) {
@@ -128,5 +141,17 @@ public abstract class AbstractArchiveHandler implements ArchiveHandler {
      */
     public Manifest getManifest(ReadableArchive archive) throws IOException {
         return archive.getManifest();                                      
+    }
+
+    public List<URL> getManifestLibraries(DeploymentContext context) {
+        try {
+            Manifest manifest = getManifest(context.getSource());
+            return ASClassLoaderUtil.getManifestClassPathAsURLs(manifest, 
+                context.getSourceDir().getParent());
+        }catch (IOException ioe) {
+            _logger.log(Level.WARNING, 
+                "Exception while getting manifest classpath: ", ioe);
+            return new ArrayList<URL>();
+        }
     }
 }

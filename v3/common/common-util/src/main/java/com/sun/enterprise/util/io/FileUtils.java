@@ -279,7 +279,32 @@ public class FileUtils {
         whack(parent);
     }
 
-    /////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+
+    public static boolean isJar(String filename)
+    {
+        return hasExtension(filename, ".jar");
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+
+    public static boolean isZip(String filename)
+    {
+        return hasExtensionIgnoreCase(filename, ".zip");
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+
+    public static boolean isJar(File f)
+    {
+        return hasExtension(f, ".jar");
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    public static boolean isZip(File f)
+    {
+        return hasExtensionIgnoreCase(f, ".zip");
+    }
 
     /**
      * Deletes a directory and its contents.
