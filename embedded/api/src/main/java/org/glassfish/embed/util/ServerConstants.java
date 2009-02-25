@@ -50,7 +50,6 @@ public class ServerConstants {
      //even though they are used in v3
     public static final String			INSTALL_ROOT_URI_PROPERTY           = "com.sun.aas.installRootURI";
     public static final String			INSTANCE_ROOT_URI_PROPERTY          = "com.sun.aas.instanceRootURI";
-
     public static final int             DEFAULT_HTTP_PORT                   =  8080;
     public static final String          DEFAULT_HTTP_LISTENER_NAME          = "http-listener-1";
     public static final String          DEFAULT_ADMIN_HTTP_LISTENER_NAME    = "admin-listener";
@@ -59,12 +58,10 @@ public class ServerConstants {
 	public static final String			LOGGING_RESOURCE_BUNDLE             = "org.glassfish.embed.LocalStrings";
 	public static final String			EXCEPTION_RESOURCE_BUNDLE           = "/org/glassfish/embed/LocalStrings.properties";
     public static final int             MIN_PORT                            = 1;
-    public static final int             MAX_PORT                         = (256 * 256) - 1;
+    public static final int             MAX_PORT                            = (256 * 256) - 1;
     public static final String          DEFAULT_SERVER_NAME                 = "server";
-    public static final String          DEFAULT_GFE_DIR                     = "gfe";
     public static final String          DEFAULT_PATH_TO_INSTANCE            = "domains/domain1";
     public static final URL             DEFAULT_DOMAIN_XML_URL              = ServerConstants.class.getResource("/org/glassfish/embed/domain.xml");
-    public static final String          DEFAULT_PATH_TO_DOMAIN_XML_IN_GFE   = DEFAULT_GFE_DIR + "/" + DEFAULT_PATH_TO_INSTANCE + "/" + DEFAULT_DOMAIN_XML_URL;
     public static final String          LOG_FILE_DIR                        = "logs";
     public static final String          LOG_FILE                            = "server.log";
     public static final int             DEFAULT_JMX_CONNECTOR_PORT          = 8686;
@@ -79,4 +76,6 @@ public class ServerConstants {
     public static final String          EMBEDDED_LOGGER                     = "org.glassfish.embed";
     public static final String          GFV3_ROOT_LOGGER                    = "javax.enterprise";
     public static final String          DTD_RESOURCE_LOCATION               = "/dtds";
+    public static final String          DEFAULT_INSTALL_DIR_PREFIX          = "embedded_";
+    public static final String          DEFAULT_INSTALL_DIR_SUFFIX          = "_glassfish";
 }
