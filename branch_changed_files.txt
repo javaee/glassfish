@@ -101,3 +101,8 @@ Jan 27, 2009  VERY IMPORTANT fix for IT 54:
 
 Index: src/main/java/com/sun/enterprise/universal/glassfish/GFLauncherUtils.java
 ===================================================================
+
+Feb 24, 2009
+Sending        branding\src\main\java\org\glassfish\branding\GlassFishBrandingTemplate
+Transmitting file data .
+Committed revision 24945.
