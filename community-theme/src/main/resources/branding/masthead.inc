@@ -25,13 +25,6 @@
                 />
         </sun:button>
     </facet>
-    <!facet search>
-        <h:panelGroup>
-        <sun:button value="Search Tags" onClick="showPanel('searchTagsPanel'); return false;"/>
-        "&#160;
-        <sun:button value="Add Tag" onClick="showPanel('addTagPanel'); return false;"/>
-        </h:panelGroup>
-    </facet>
     <!facet statusArea>
         <sun:panelGroup id="statusPanel" separator="">
             "<span style="margin: 5px 5px 0px 5px">
