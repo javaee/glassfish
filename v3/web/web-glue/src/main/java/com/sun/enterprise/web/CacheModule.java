@@ -203,8 +203,15 @@ public final class CacheModule {
             filterDef.setFilterName(filterName);
             filterDef.setFilterClass(CACHING_FILTER_CLASSNAME);
 
-            filterDef.addInitParameter("servletName", mapping.getServletName());
-            filterDef.addInitParameter("URLPattern", mapping.getURLPattern());
+            if (mapping.getServletName() != null) {
+                filterDef.addInitParameter("servletName",
+                                           mapping.getServletName());
+            }
+            if (mapping.getURLPattern() != null) {
+                filterDef.addInitParameter("URLPattern",
+                                           mapping.getURLPattern());
+            }
+
             app.addFilterDef(filterDef);
 
             // setup the mapping for the specified servlet-name or url-pattern
