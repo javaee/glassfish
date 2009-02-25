@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.deployment.node.web;
 
+import com.sun.enterprise.deployment.CookieConfigDescriptor;
 import com.sun.enterprise.deployment.SessionConfigDescriptor;
 import com.sun.enterprise.deployment.node.DisplayableComponentNode;
 import com.sun.enterprise.deployment.node.XMLElement;
@@ -105,12 +106,17 @@ public class SessionConfigNode extends DisplayableComponentNode {
             appendTextChild(myNode, WebTagNames.SESSION_TIMEOUT, 
                     String.valueOf(descriptor.getSessionTimeout()));
         }
-        CookieConfigNode cookieConfigNode = new CookieConfigNode();
-        cookieConfigNode.writeDescriptor(myNode, WebTagNames.COOKIE_CONFIG,
-                descriptor.getCookieConfigDescriptor());
+        CookieConfigDescriptor cookieConfigDesc = descriptor.getCookieConfigDescriptor();
+        if (cookieConfigDesc != null) {
+            CookieConfigNode cookieConfigNode = new CookieConfigNode();
+            cookieConfigNode.writeDescriptor(myNode, WebTagNames.COOKIE_CONFIG,
+                cookieConfigDesc);
+        }
 
-        for (Enum tmEnum : descriptor.getTrackingModes()) {
-            appendTextChild(myNode, WebTagNames.TRACKING_MODE, tmEnum.name());
+        if (descriptor.getTrackingModes().size() > 0) {
+            for (Enum tmEnum : descriptor.getTrackingModes()) {
+                appendTextChild(myNode, WebTagNames.TRACKING_MODE, tmEnum.name());
+            }
         }
         return myNode;
     }

@@ -107,7 +107,6 @@ public class CookieConfigNode extends DisplayableComponentNode {
      */
     public Node writeDescriptor(Node parent, String nodeName, CookieConfigDescriptor descriptor) {       
         Node myNode = appendChild(parent, nodeName);
-        writeDisplayableComponentInfo(myNode, descriptor);
         appendTextChild(myNode, WebTagNames.DOMAIN, descriptor.getDomain());         
         appendTextChild(myNode, WebTagNames.PATH, descriptor.getPath());     
         appendTextChild(myNode, WebTagNames.COMMENT, descriptor.getComment());     
