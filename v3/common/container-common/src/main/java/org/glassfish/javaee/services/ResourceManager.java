@@ -219,7 +219,7 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
                     } else if (ConnectorsUtil.isValidEventType(instance.getParent())) {
                         //Added in case of a property change
                         //check for validity of the property's parent and redeploy
-                        ResourceDeployer deployer = getResourceDeployer(instance);
+                        ResourceDeployer deployer = getResourceDeployer(instance.getParent());
                         if(deployer != null){
                             deployer.redeployResource(instance.getParent());
                         }else{
@@ -283,7 +283,7 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
                     } else if (ConnectorsUtil.isValidEventType(instance.getParent())) {
                         //Added in case of a property remove
                         //check for validity of the property's parent and redeploy
-                        ResourceDeployer deployer = getResourceDeployer(instance);
+                        ResourceDeployer deployer = getResourceDeployer(instance.getParent());
                         if(deployer != null){
                             deployer.redeployResource(instance.getParent());
                         }else{
