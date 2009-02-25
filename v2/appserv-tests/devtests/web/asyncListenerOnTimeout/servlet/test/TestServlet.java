@@ -25,16 +25,6 @@ public class TestServlet extends HttpServlet implements AsyncListener {
         } else {
             ac = req.startAsync();
         }
-
-        try {
-            Thread.currentThread().sleep(15000);
-        } catch (InterruptedException ie) {
-            throw new ServletException(ie);
-        }
-
-        if (!onTimeoutCalled) {
-            throw new ServletException("AsyncListener#onTimeout not called");
-        }
     }
 
 

@@ -47,6 +47,7 @@ public class WebTest {
         System.out.println("Connecting to: " + url.toString());
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setConnectTimeout(15 * 1000);
         conn.connect();
         int responseCode = conn.getResponseCode();
 
