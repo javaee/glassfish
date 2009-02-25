@@ -12,6 +12,7 @@
     <name>GlassFish Java EE Connector Architecture related modules</name>
     <modules>
         <module>javax.resource</module>
+        <module>descriptors</module>
         <module>connectors-connector</module>
         <module>connectors-internal-api</module>
         <module>connectors-runtime</module>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.glassfish.connectors</groupId>
+        <artifactId>connectors</artifactId>
+        <version>3.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <artifactId>descriptors</artifactId>
+    <packaging>distribution-fragment</packaging>
+    <name>Descriptors of Java EE Connector Architecture module</name>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
+                <artifactId>maven-antrun-extended-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <configuration>
+                            <tasks>
+                                <jar file="target/descriptors.jar">
+                                    <fileset dir="src/main/resources" />
+                                </jar>
+                                <attachArtifact file="target/descriptors.jar" type="jar" classifier="resources" />
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.glassfish.build</groupId>
+                <artifactId>maven-glassfish-plugin</artifactId>
+                <version>10.0-alpha-2</version>
+                <extensions>true</extensions>
+            </plugin>
+        </plugins>
+        <extensions>
+            <extension>
+                <groupId>org.glassfish.build</groupId>
+                <artifactId>maven-glassfish-extension</artifactId>
+                <version>10.0-alpha-2</version>
+            </extension>
+        </extensions>
+    </build>
+</project>
