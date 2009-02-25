@@ -1,24 +1,25 @@
 
 <sc:subMenu value="Deploy" id="deployMenu">
-<sc:menuItem value="Enterprise Application" url="#{request.contextPath}/layouttest.jsf?page=Enterprise+Application" />
 <sc:menuItem value="Web Application" url="#{request.contextPath}/web/webApp/upload.jsf?appType=webApp" />
+<sc:menuItem value="Enterprise Application" url="#{request.contextPath}/layouttest.jsf?page=Enterprise+Application" />
 <sc:menuItem value="EJB Module" url="#{request.contextPath}/layouttest.jsf?page=EJB+Module" />
 <sc:menuItem value="Connector Module" url="#{request.contextPath}/layouttest.jsf?page=Connector+Module" />
 <sc:menuItem value="Lifecycle Module" url="#{request.contextPath}/layouttest.jsf?page=Lifecycle+Module" />
 <sc:menuItem value="App Client Module" url="#{request.contextPath}/layouttest.jsf?page=App+Client+Module" />
 <sc:menuItem value="Custom MBean" url="#{request.contextPath}/layouttest.jsf?page=Custom+MBean" />
-
+<!--
 <sc:subMenu value="JBI" id="jbiMenu">
 <sc:menuItem value="Component" url="#{request.contextPath}/layouttest.jsf?page=Component" />
 <sc:menuItem value="Shared Library" url="#{request.contextPath}/layouttest.jsf?page=Shared+Library" />
 </sc:subMenu>
+-->
 
 </sc:subMenu>
 
 <sc:subMenu value="Configure" id="editMenu">
     <sc:subMenu value="Applications" id="applications">
+    <sc:menuItem value="Web Applications" url="#{request.contextPath}/web/webApp/webApplications.jsf" />
 	<sc:menuItem value="Enterprise Applications" url="#{request.contextPath}/layouttest.jsf?page=Enterprise+Applications" />
-	<sc:menuItem value="Web Applications" url="#{request.contextPath}/web/webApp/webApplications.jsf" />
 	<sc:menuItem value="EJB Modules" url="#{request.contextPath}/layouttest.jsf?page=EJB+Modules" />
 	<sc:menuItem value="Lifecycle Modules" url="#{request.contextPath}/layouttest.jsf?page=Lifecycle+Modules" />
 	<sc:menuItem value="Application Client Modules" url="#{request.contextPath}/layouttest.jsf?page=Application+Client+Modules" />
@@ -46,14 +47,16 @@
 	</sc:subMenu>
 	<sc:menuItem value="EJB Container" url="#{request.contextPath}/layouttest.jsf?page=EJB+Container" />
 	<sc:menuItem value="JMS" url="#{request.contextPath}/layouttest.jsf?page=JMS" />
+    <sc:menuItem value="Transaction Service" url="#{request.contextPath}/layouttest.jsf?page=Transaction+Service" />
+<!--
 	<sc:menuItem value="Availability Service" url="#{request.contextPath}/layouttest.jsf?page=Availability+Service" />
-	<sc:menuItem value="Transaction Service" url="#{request.contextPath}/layouttest.jsf?page=Transaction+Service" />
 	<sc:menuItem value="Admin Service" url="#{request.contextPath}/layouttest.jsf?page=Admin+Service" />
 	<sc:menuItem value="Connector Service" url="#{request.contextPath}/layouttest.jsf?page=Connector+Service" />
 	<sc:menuItem value="Diagnostic Service" url="#{request.contextPath}/layouttest.jsf?page=Diagnostic+Service" />
 	<sc:subMenu value="Object Request Broker">
 	    <sc:menuItem value="IIOP Listeners" url="#{request.contextPath}/layouttest.jsf?page=IIOP+Listeners" />
 	</sc:subMenu>
+-->
     </sc:subMenu>
     <sc:subMenu value="Resources">
 	<sc:menuItem value="JDBC Resources" url="#{request.contextPath}/jdbc/jdbcResources.jsf" />
@@ -69,8 +72,9 @@
 	    <sc:menuItem value="Admin Object Resources" url="#{request.contextPath}/layouttest.jsf?page=Admin+Object+Resources" />
 	</sc:subMenu>
     </sc:subMenu>
-    <sc:menuItem value="Clusters" url="#{request.contextPath}/layouttest.jsf?page=Clusters" />
     <sc:menuItem value="Management Rules" url="#{request.contextPath}/layouttest.jsf?page=Management+Rules" />
+<!--
+    <sc:menuItem value="Clusters" url="#{request.contextPath}/layouttest.jsf?page=Clusters" />
     <sc:menuItem value="Web Services" url="#{request.contextPath}/layouttest.jsf?page=Web+Services" />
     <sc:menuItem value="HTTP Load Balancers" url="#{request.contextPath}/layouttest.jsf?page=HTTP+Load+Balancers" />
     <sc:menuItem value="Stand-Alone Instances" url="#{request.contextPath}/layouttest.jsf?page=Stand-Alone Instances" />
@@ -82,7 +86,7 @@
     </sc:subMenu>
     <sc:menuItem value="Configuration System Properties" url="#{request.contextPath}/layouttest.jsf?page=Configuration+System+Properties" />
     <sc:menuItem value="Custom MBeans" url="#{request.contextPath}/layouttest.jsf?page=Custom+MBeans" />
-    
+-->
 </sc:subMenu>
 <!--
 <sc:subMenu value="View">
@@ -99,9 +103,11 @@
 </sc:subMenu>
 <sc:subMenu value="Monitor">
     <sc:menuItem value="Dashboard" url="#{request.contextPath}/layouttest.jsf?page=Dashboard" />
-    <sc:menuItem value="Web Service" url="#{request.contextPath}/layouttest.jsf?page=Web+Service" />
-    <sc:menuItem value="Call Flow" url="#{request.contextPath}/layouttest.jsf?page=Call+Flow" />
     <sc:menuItem value="Configure Monitoring" url="#{request.contextPath}/layouttest.jsf?page=Configure+Monitoring" />
+    <sc:menuItem value="Call Flow" url="#{request.contextPath}/layouttest.jsf?page=Call+Flow" />
+    <!--
+    <sc:menuItem value="Web Service" url="#{request.contextPath}/layouttest.jsf?page=Web+Service" />
+    -->
 </sc:subMenu>
 <!--
     Favorite Tags? Or do we want to bookmark a specific page? Both?
