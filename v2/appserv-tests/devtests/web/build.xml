@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="351"/>
+    <property name="TOTAL_EXPECTED" value="352"/>
 
     &commonSetup;
     &commonBuild;
@@ -167,6 +167,7 @@
         <ant dir="distributableWebappEnforceSerializableSessionAttrs" target="all"/>
         <ant dir="forwardWithQueryString" target="all"/>
         <ant dir="servletContextAddServletAndFilter" target="all"/>
+        <ant dir="servletContextAddServletAndFilterByClass" target="all"/>
         <ant dir="servletContextAttributeEventAttributeRemoved" target="all"/>
         <ant dir="servletGetServerPort" target="all"/>
         <ant dir="servletAnnotationPreDestroy" target="all"/>
