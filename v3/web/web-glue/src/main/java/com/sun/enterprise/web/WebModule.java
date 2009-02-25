@@ -869,7 +869,7 @@ public class WebModule extends PwcWebModule {
      * Configure the <code>WebModule</code> valves.
      */
     protected void configureValves(){
-        if (iasBean.getValve() != null && iasBean.sizeValve() > 0) {
+        if (iasBean != null && iasBean.getValve() != null && iasBean.sizeValve() > 0) {
             com.sun.enterprise.deployment.runtime.web.Valve[] valves = iasBean.getValve();
             for (com.sun.enterprise.deployment.runtime.web.Valve valve: valves) {
                 addValve(valve);
