@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.ejb;
+package org.glassfish.ejb.api;
 
 import java.io.PrintWriter;
 import java.io.PrintStream;

@@ -60,9 +60,9 @@ import javax.resource.spi.endpoint.MessageEndpointFactory;
 import javax.resource.spi.UnavailableException;
 import javax.transaction.xa.XAResource;
 
-import com.sun.ejb.MessageBeanProtocolManager;
-import com.sun.ejb.MessageBeanClient;
-import com.sun.ejb.MessageBeanListener;
+import org.glassfish.ejb.api.MessageBeanProtocolManager;
+import org.glassfish.ejb.spi.MessageBeanClient;
+import org.glassfish.ejb.api.MessageBeanListener;
 
 /**
  * Main helper implementation for message-beans associated with

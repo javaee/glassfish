@@ -46,8 +46,8 @@ import java.util.logging.Logger;
 
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
-import com.sun.ejb.MessageBeanListener;
-import com.sun.ejb.MessageBeanProtocolManager;
+import org.glassfish.ejb.api.MessageBeanListener;
+import org.glassfish.ejb.api.MessageBeanProtocolManager;
 
 /**
  * This class handles the implementation of two interfaces:

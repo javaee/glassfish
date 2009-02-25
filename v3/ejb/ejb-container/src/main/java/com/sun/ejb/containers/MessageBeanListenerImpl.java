@@ -36,8 +36,9 @@
 package com.sun.ejb.containers;
 
 import java.lang.reflect.Method;
-import com.sun.ejb.MessageBeanListener;
-import com.sun.enterprise.resource.ResourceHandle;
+import com.sun.appserv.connectors.internal.api.ResourceHandle;
+import org.glassfish.ejb.api.MessageBeanListener;
+
 
 /**
  *

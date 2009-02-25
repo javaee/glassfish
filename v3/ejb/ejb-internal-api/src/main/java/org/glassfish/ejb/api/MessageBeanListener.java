@@ -33,9 +33,9 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.ejb;
+package org.glassfish.ejb.api;
 
-import com.sun.enterprise.resource.ResourceHandle;
+import com.sun.appserv.connectors.internal.api.ResourceHandle;
 
 import java.lang.reflect.Method;
 

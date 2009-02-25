@@ -90,7 +90,7 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.ejb</groupId>
-            <artifactId>ejb-container</artifactId>
+            <artifactId>ejb-internal-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

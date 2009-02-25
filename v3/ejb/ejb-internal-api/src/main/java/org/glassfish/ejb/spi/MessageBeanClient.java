@@ -34,17 +34,40 @@
  * holder.
  */
 
-package com.sun.ejb;
 
-import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
+package org.glassfish.ejb.spi;
+
+import org.glassfish.ejb.api.MessageBeanProtocolManager;
 
 /*
- * A factory for creating MessageBeanClients.
+ * MessageBeanClient is an interface implemented by clients
+ * of the MessageBeanContainer.  It contains lifecycle methods 
+ * that allow the container to bootstrap the MessageBeanClient.
+ * A MessageBeanClient is some part of the container that needs
+ * to deliver messages to a message-driven bean.  
  *
  * @author Kenneth Saks
  */
-public interface MessageBeanClientFactory {
+public interface MessageBeanClient {
 
-    MessageBeanClient createMessageBeanClient(EjbMessageBeanDescriptor descriptor);
+    /**
+     * First method called by MessageBeanContainer during bootstrapping.
+     * Allow the MessageBeanClient to initialize itself.  Message delivery
+     * should not begin until start is called.  
+     *
+     * @param pm MessageBeanProtocolManager allows the MessageBeanClient to
+     * access the services provided by the MessageBeanContainer.
+     */
+    void setup(MessageBeanProtocolManager pm) throws Exception;
+
+    /**
+     * MessageBeanContainer calls this when it is ready handle message delivery.
+     */
+    void start() throws Exception;
+
+    /**
+     * MessageBeanContainer calls this to shutdown MessageBeanClient.
+     */
+    void close();
 
 }

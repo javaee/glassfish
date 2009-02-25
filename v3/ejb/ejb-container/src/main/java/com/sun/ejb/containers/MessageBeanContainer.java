@@ -51,7 +51,7 @@ import com.sun.ejb.containers.util.pool.NonBlockingPool;
 import com.sun.ejb.containers.util.pool.ObjectFactory;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.Utility;
-import com.sun.enterprise.resource.ResourceHandle;
+import com.sun.appserv.connectors.internal.api.ResourceHandle;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
@@ -59,6 +59,11 @@ import static com.sun.enterprise.deployment.LifecycleCallbackDescriptor.Callback
 import com.sun.enterprise.deployment.runtime.BeanPoolDescriptor;
 import com.sun.enterprise.config.serverbeans.MdbContainer;
 import com.sun.enterprise.admin.monitor.callflow.ComponentType;
+import org.glassfish.ejb.api.MessageBeanProtocolManager;
+import org.glassfish.ejb.api.ResourcesExceededException;
+import org.glassfish.ejb.api.MessageBeanListener;
+import org.glassfish.ejb.spi.MessageBeanClient;
+import org.glassfish.ejb.spi.MessageBeanClientFactory;
 
 import java.util.logging.*;
 
@@ -109,7 +114,7 @@ public final class MessageBeanContainer extends BaseContainer implements
 	// message delivery.
 	private static final String MESSAGE_BEAN_CLIENT_FACTORY_PROP = "com.sun.enterprise.MessageBeanClientFactory";
 
-	private static final String DEFAULT_MESSAGE_BEAN_CLIENT_FACTORY = "com.sun.enterprise.connectors.inbound.ConnectorMessageBeanClientFactory";
+	private static final String DEFAULT_MESSAGE_BEAN_CLIENT_FACTORY = "ConnectorMessageBeanClientFactory";
 
 	private static final int DEFAULT_RESIZE_QUANTITY = 1;
 	private static final int DEFAULT_STEADY_SIZE = 10;
@@ -157,16 +162,19 @@ public final class MessageBeanContainer extends BaseContainer implements
 			// a client factory that uses the S1AS 7 style JMS connection
 			// consumer contracts. This will be changed once the Connector 1.5
 			// implementation is ready.
-			String factoryClassName = System.getProperty(
-					MESSAGE_BEAN_CLIENT_FACTORY_PROP,
-					DEFAULT_MESSAGE_BEAN_CLIENT_FACTORY);
+			String factoryClassName = System.getProperty(MESSAGE_BEAN_CLIENT_FACTORY_PROP);
+            MessageBeanClientFactory clientFactory = null;
+            if(factoryClassName != null){
+                Class clientFactoryClass = loader.loadClass(factoryClassName);
+                clientFactory = (MessageBeanClientFactory) clientFactoryClass
+                        .newInstance();
+            } else {
+                clientFactory = EjbContainerUtilImpl.getInstance().getDefaultHabitat().getComponent(
+                        MessageBeanClientFactory.class, DEFAULT_MESSAGE_BEAN_CLIENT_FACTORY );
+            }
+            _logger.log(Level.FINE, "Using " + clientFactory.getClass().getName()
+                    + " for message bean client factory in " + appEJBName_);
 
-			Class clientFactoryClass = loader.loadClass(factoryClassName);
-			MessageBeanClientFactory clientFactory = (MessageBeanClientFactory) clientFactoryClass
-					.newInstance();
-
-			_logger.log(Level.FINE, "Using " + factoryClassName
-					+ " for message bean client factory in " + appEJBName_);
 
 			// Create message bean pool before calling setup on
 			// Message-bean client, since pool properties can be retrieved

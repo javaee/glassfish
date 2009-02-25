@@ -38,14 +38,16 @@
 package com.sun.enterprise.connectors.inbound;
 
 import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
-import com.sun.ejb.MessageBeanClientFactory;
-import com.sun.ejb.MessageBeanClient;
+import org.glassfish.ejb.spi.MessageBeanClientFactory;
+import org.glassfish.ejb.spi.MessageBeanClient;
+import org.jvnet.hk2.annotations.Service;
 
 /**
  * MessageBeanClientFactory for connector message bean clients.
  *
  * @author Qingqing Ouyang
  */
+@Service(name="ConnectorMessageBeanClientFactory") //name by which MDB container will refer connectors impl.
 public final class ConnectorMessageBeanClientFactory
         implements MessageBeanClientFactory {
 
