@@ -16,76 +16,102 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 /**
+ *  <p>	This class contains handlers for managing preferences.</p>
  *
  * @author jasonlee
+ * @author Ken Paulsen (ken.paulsen@sun.com)
  */
 public class PreferencesHandler {
 
-    @Handler(id = "saveTagInformation",
+    /**
+     *	<p> This handler should be used whenever you want to add a Tag to a
+     *	    page.  If the exact same Tag is added twice, it will be
+     *	    ignored.  If "user" is not specified the current principal user
+     *	    will be used for this value.</p>
+     */
+    @Handler(id = "gf.addTag",
         input = {
-            @HandlerInput(name = "tag", type = String.class, required = true),
-            @HandlerInput(name = "name", type = String.class, required = true),
-            @HandlerInput(name = "url", type = String.class, required = true)
+            @HandlerInput(name="tagName", type=String.class, required=true),
+            @HandlerInput(name="tagViewId", type=String.class, required=true),
+            @HandlerInput(name="displayName", type=String.class),
+            @HandlerInput(name="user", type=String.class)
         }
     )
     public static void saveTagInformation(HandlerContext handlerCtx) {
-        try {
-            String tag = (String) handlerCtx.getInputValue("tag");
-            String name = (String) handlerCtx.getInputValue("name");
-            String url = (String) handlerCtx.getInputValue("url");
-            String user = handlerCtx.getFacesContext().getExternalContext().getUserPrincipal().getName();
-            System.out.println("Adding the  '" + tag + "' ('" + name + "') for URL '" + url + "' on behalf of the user '" + user + "'.");
-
-            // Once we're happy with the functionality, we can revisit how we handle this part
-            Preferences tags = Preferences.userRoot().node(user).node("tags");
-            Preferences page = tags.node(tag).node(name);
-            page.put("url", url);
-            for (String child1 : tags.childrenNames()) {
-                Preferences node = tags.node(child1);
-                for (String child2 : node.childrenNames()) {
-                    System.out.println("Child the tag " + tag + ":  " + child2);
-                }
-            }
-        } catch (BackingStoreException ex) {
-            Logger.getLogger(PreferencesHandler.class.getName()).log(Level.SEVERE, null, ex);
-        }
+	String user = (String) handlerCtx.getInputValue("user");
+	if (user == null) {
+	    user = handlerCtx.getFacesContext().getExternalContext().
+		    getUserPrincipal().getName();
+	}
+	TagSupport.addTag(
+	    (String) handlerCtx.getInputValue("tagName"), 
+	    (String) handlerCtx.getInputValue("tagViewId"), 
+	    (String) handlerCtx.getInputValue("displayName"), 
+	    user);
     }
 
-    @Handler(id="searchTags",
-        input = { @HandlerInput(name="tag", type=String.class, required = true) },
-        output = { @HandlerOutput(name="hits", type=List.class)})
-    public static void searchTags(HandlerContext handlerCtx) throws BackingStoreException {
-        String tag = (String) handlerCtx.getInputValue("tag");
-        String user = handlerCtx.getFacesContext().getExternalContext().getUserPrincipal().getName();
-        Preferences tags = Preferences.userRoot().node(user).node("tags").node(tag);
-        List<Tag> hits = new ArrayList<Tag>();
-        for (String entry : tags.childrenNames()) {
-            Preferences child  = tags.node(entry);
-            hits.add(new Tag(child.get("url", ""), entry));
-        }
-        handlerCtx.setOutputValue("hits", hits);
+    /**
+     *	<p> This handler provides a way to search for tags.  All 3 properties
+     *	    are optional.  If none are specified, all tags will be returned.
+     *	    If more than one are specified, tags matching all specified
+     *	    criteria will be returned.</p>
+     */
+    @Handler(id="gf.queryTags",
+        input = {
+	    @HandlerInput(name="tagName", type=String.class),
+	    @HandlerInput(name="tagViewId", type=String.class),
+	    @HandlerInput(name="user", type=String.class)
+	    },
+        output = {
+	    @HandlerOutput(name="results", type=List.class) })
+    public static void searchTags(HandlerContext handlerCtx) {
+	// Perform Search
+	List<Tag> results = TagSupport.queryTags(
+	    (String) handlerCtx.getInputValue("tagName"),
+	    (String) handlerCtx.getInputValue("tagViewId"), 
+	    (String) handlerCtx.getInputValue("user"));
+
+	// Set the results...
+        handlerCtx.setOutputValue("results", results);
     }
 
-    public static void main(String... args) {
-        try {
-            Preferences base = Preferences.userRoot().node("anonymous.tags.foo");
-            Preferences page1 = base.node("This is the home page");
-            page1.put("url", "http://localhost:8080/admingui/layouttest.jsf");
-            Preferences page2 = base.node("This is the home page as well");
-            page2.put("url", "http://localhost:8080/admingui/layouttest.jsf");
-            
-            System.out.println("Loop #1");
-            for (String name : base.childrenNames()) {
-                System.out.println("Child node for foo: " + name);
-            }
-            base.removeNode();
-            base = Preferences.userRoot().node("anonymous.tags.foo");
-            System.out.println("Loop #2");
-            for (String name : base.childrenNames()) {
-                System.out.println("Child node for foo: " + name);
-            }
-        } catch (BackingStoreException ex) {
-            Logger.getLogger(PreferencesHandler.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    /**
+     *	<p> This handler provides a way to remove tags.  If the user is not
+     *	    specified, the current "principal user" will be used.</p>
+     */
+    @Handler(id="gf.removeTag",
+	input = {
+	    @HandlerInput(name="tagName", type=String.class, required=true),
+	    @HandlerInput(name="tagViewId", type=String.class, required=true),
+	    @HandlerInput(name="user", type=String.class) } )
+    public static void removeTag(HandlerContext handlerCtx) {
+	// Make sure we have the user...
+	String user = (String) handlerCtx.getInputValue("user");
+	if (user == null) {
+	    user = handlerCtx.getFacesContext().getExternalContext().
+		    getUserPrincipal().getName();
+	}
+
+	// Delete...
+	TagSupport.removeTag(
+	    (String) handlerCtx.getInputValue("tagName"),
+	    (String) handlerCtx.getInputValue("tagViewId"), 
+	    user);
+    }
+
+    /**
+     *	<p> This handler normalizes the given tagViewId.  This is required in
+     *	    order to ensure tagViewId's are compared the same way every
+     *	    time.</p>
+     */
+    @Handler(id="gf.normalizeTagViewId",
+        input = {
+	    @HandlerInput(name="tagViewId", type=String.class, required=true) },
+	output = {
+	    @HandlerOutput(name="tagViewId", type=String.class )})
+    public static void normalizeTagViewId(HandlerContext handlerCtx) {
+	handlerCtx.setOutputValue("tagViewId",
+	    TagSupport.normalizeTagViewId(
+		    (String) handlerCtx.getInputValue("tagViewId")));
     }
 }
