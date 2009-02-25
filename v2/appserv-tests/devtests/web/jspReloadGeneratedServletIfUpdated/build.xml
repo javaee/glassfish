@@ -83,6 +83,7 @@
     </target>
 
     <target name="update" depends="init-common">
+        <sleep seconds="1"/>
         <delete file="${env.S1AS_HOME}/domains/${admin.domain}/generated/jsp/web-jsp-reload-generated-servlet-if-updated-web/org/apache/jsp/jsp/test_jsp.class"/>
         <copy file="test_jsp.class"
             todir="${env.S1AS_HOME}/domains/${admin.domain}/generated/jsp/web-jsp-reload-generated-servlet-if-updated-web/org/apache/jsp/jsp"
