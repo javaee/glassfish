@@ -170,7 +170,7 @@
     
       
 <target name="deploy-v3-impl" depends="setOSConditions">
-    <echo message="deploying ${app.file}"/>
+    <echo message="deploying ${app.file.ext}"/>
     <antcall target="deploy-v3-impl-unix"/>
     <antcall target="deploy-v3-impl-windows"/>
 </target>
