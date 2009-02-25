@@ -34,7 +34,7 @@
  holder.
 -->
 
-#include "/homePage.jsf"
+#include "/commonTask.jsf"
 
 <!--  for v3-new-gui, we use the homePage as the index page
 <sun:page>
