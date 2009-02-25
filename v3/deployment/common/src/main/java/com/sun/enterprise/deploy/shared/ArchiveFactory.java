@@ -25,7 +25,9 @@ package com.sun.enterprise.deploy.shared;
 
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ContractProvider;
+import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.deployment.archive.ReadableArchiveFactory;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.jvnet.hk2.annotations.Inject;
@@ -39,6 +41,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -100,6 +103,36 @@ public class ArchiveFactory implements ContractProvider {
             logger.log(Level.SEVERE, "Cannot find an archive implementation for " + protocol, e);
             throw new MalformedURLException("Protocol not supported : " + protocol);
         }
+    }
+
+    /**
+     * It first consults {@link ReadableArchiveFactory} to get an archive, if it does not get then delegates to
+     * {@link #openArchive(java.net.URI)}.
+     * @param path Application archive, never null
+     * @param properties property bag, can contain for example deploy time properties. Never null
+     * @return Gives {@link ReadableArchive}.
+     * @throws IOException
+     */
+    public ReadableArchive openArchive(File path, DeployCommandParameters properties) throws IOException {
+        URI uri;
+        try {
+            uri = prepareArchiveURI(path);
+        } catch (URISyntaxException e) {
+            return null;
+        }
+        for (ReadableArchiveFactory fac : habitat.getAllByContract(ReadableArchiveFactory.class)) {
+            //get the first ReadableArchive and move
+            ReadableArchive archive=null;
+            try{
+                archive = fac.open(uri, properties);
+            }catch(Exception e){
+                //ignore?
+            }
+            if(archive == null)
+                continue;
+            return archive;
+        }
+        return openArchive(path);
     }
     
     /**

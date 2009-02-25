@@ -32,29 +32,25 @@
  */
 package org.glassfish.deployment.admin;
 
-import com.sun.enterprise.config.serverbeans.Application;
-import com.sun.enterprise.config.serverbeans.Applications;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
-import java.net.URI;
-import org.glassfish.internal.data.ApplicationInfo;
-import org.glassfish.internal.deployment.Deployment;
-import org.glassfish.internal.deployment.ExtendedDeploymentContext;
-import org.glassfish.internal.deployment.SnifferManager;
-import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
-import org.glassfish.server.ServerEnvironmentImpl;
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.ServerTags;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandRunner;
-import org.glassfish.api.deployment.archive.ArchiveHandler;
-import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.UndeployCommandParameters;
+import org.glassfish.api.deployment.archive.ArchiveHandler;
+import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.deployment.common.DeploymentProperties;
+import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.internal.deployment.Deployment;
+import org.glassfish.internal.deployment.ExtendedDeploymentContext;
+import org.glassfish.internal.deployment.SnifferManager;
+import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -62,11 +58,11 @@ import org.jvnet.hk2.component.PerLookup;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.net.URI;
+import java.util.Calendar;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.glassfish.deployment.common.DeploymentProperties;
 
 
 /**
@@ -136,7 +132,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
         ReadableArchive archive;
         try {
-            archive = archiveFactory.openArchive(file);
+            archive = archiveFactory.openArchive(file, this);
         } catch (IOException e) {
             if (logReportedErrors) {
                 report.failure(logger,"Error opening deployable artifact : " + file.getAbsolutePath(),e);

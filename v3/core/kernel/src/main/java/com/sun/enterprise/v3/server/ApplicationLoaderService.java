@@ -22,34 +22,41 @@
  */
 package com.sun.enterprise.v3.server;
 
-import com.sun.enterprise.v3.common.HTMLActionReporter;
-import org.glassfish.internal.data.*;
-import org.glassfish.internal.deployment.Deployment;
-import org.glassfish.internal.deployment.ExtendedDeploymentContext;
-import org.glassfish.internal.deployment.SnifferManager;
 import com.sun.enterprise.config.serverbeans.*;
-import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.v3.common.HTMLActionReporter;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Startup;
-import org.glassfish.api.event.*;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.container.Sniffer;
-import org.glassfish.api.deployment.*;
+import org.glassfish.api.deployment.DeployCommandParameters;
+import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.event.EventTypes;
+import org.glassfish.api.event.Events;
+import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.internal.data.ApplicationRegistry;
+import org.glassfish.internal.data.ContainerRegistry;
+import org.glassfish.internal.data.EngineInfo;
+import org.glassfish.internal.deployment.Deployment;
+import org.glassfish.internal.deployment.ExtendedDeploymentContext;
+import org.glassfish.internal.deployment.SnifferManager;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -243,10 +250,11 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                 ReadableArchive archive = null;
                 try {
 
-                    archive = archiveFactory.openArchive(sourceFile);
                     DeployCommandParameters deploymentParams =
                         app.getDeployParameters(appRef);
                     deploymentParams.origin = DeployCommandParameters.Origin.load;
+
+                    archive = archiveFactory.openArchive(sourceFile, deploymentParams);
 
                     ExtendedDeploymentContext depContext = deployment.getContext(logger, archive, deploymentParams);
 
