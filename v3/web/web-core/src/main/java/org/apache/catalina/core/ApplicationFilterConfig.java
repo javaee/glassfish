@@ -109,11 +109,11 @@ final class ApplicationFilterConfig implements FilterConfig, Serializable {
      *  instantiating the filter object
      * @exception ServletException if thrown by the filter's init() method
      */
-    public ApplicationFilterConfig(StandardContext context, FilterDef filterDef)
+    public ApplicationFilterConfig(StandardContext context,
+                                   FilterDef filterDef)
         throws ClassCastException, ClassNotFoundException,
                IllegalAccessException, InstantiationException,
                ServletException {
-
         super();
         this.context = context;
         setFilterDef(filterDef);
@@ -149,9 +149,7 @@ final class ApplicationFilterConfig implements FilterConfig, Serializable {
      * Return the name of the filter we are configuring.
      */
     public String getFilterName() {
-
         return (filterDef.getFilterName());
-
     }
 
 
@@ -187,13 +185,11 @@ final class ApplicationFilterConfig implements FilterConfig, Serializable {
      * @param name Name of the requested initialization parameter
      */
     public String getInitParameter(String name) {
-
         Map map = filterDef.getParameterMap();
         if (map == null)
             return (null);
         else
             return ((String) map.get(name));
-
     }
 
 
@@ -202,13 +198,11 @@ final class ApplicationFilterConfig implements FilterConfig, Serializable {
      * parameters for this Filter.
      */
     public Enumeration getInitParameterNames() {
-
         Map map = filterDef.getParameterMap();
         if (map == null)
             return (new Enumerator(new ArrayList()));
         else
             return (new Enumerator(map.keySet()));
-
     }
 
 
@@ -216,9 +210,7 @@ final class ApplicationFilterConfig implements FilterConfig, Serializable {
      * Return the ServletContext of our associated web application.
      */
     public ServletContext getServletContext() {
-
         return (this.context.getServletContext());
-
     }
 
 
@@ -226,15 +218,13 @@ final class ApplicationFilterConfig implements FilterConfig, Serializable {
      * Return a String representation of this object.
      */
     public String toString() {
-
         StringBuffer sb = new StringBuffer("ApplicationFilterConfig[");
         sb.append("name=");
         sb.append(filterDef.getFilterName());
         sb.append(", filterClass=");
-        sb.append(filterDef.getFilterClass());
+        sb.append(filterDef.getFilterClassName());
         sb.append("]");
         return (sb.toString());
-
     }
 
 
@@ -257,22 +247,27 @@ final class ApplicationFilterConfig implements FilterConfig, Serializable {
         IllegalAccessException, InstantiationException, ServletException {
 
         // Return the existing filter instance, if any
-        if (this.filter != null)
+        if (this.filter != null) {
             return (this.filter);
+        }
 
-        // Identify the class loader we will be using
-        String filterClass = filterDef.getFilterClass();
-        ClassLoader classLoader = null;
-        if (filterClass.startsWith("org.apache.catalina."))
-            classLoader = this.getClass().getClassLoader();
-        else
-            classLoader = context.getLoader().getClassLoader();
+        Class clazz = filterDef.getFilterClass();
+        if (clazz == null) {
+            // Identify the class loader we will be using
+            ClassLoader classLoader = null;
+            String filterClassName = filterDef.getFilterClassName();
+            if (filterClassName.startsWith("org.apache.catalina.")) {
+                classLoader = this.getClass().getClassLoader();
+            } else {
+                classLoader = context.getLoader().getClassLoader();
+            }
+            ClassLoader oldCtxClassLoader =
+                Thread.currentThread().getContextClassLoader();
 
-        ClassLoader oldCtxClassLoader =
-            Thread.currentThread().getContextClassLoader();
+            // Instantiate a new instance of this filter and return it
+            clazz = classLoader.loadClass(filterClassName);
+        }
 
-        // Instantiate a new instance of this filter and return it
-        Class clazz = classLoader.loadClass(filterClass);
         this.filter = (Filter) clazz.newInstance();
 
         // START PWC 1.2
@@ -293,7 +288,6 @@ final class ApplicationFilterConfig implements FilterConfig, Serializable {
         // END PWC 1.2
 
         return (this.filter);
-
     }
 
 
@@ -301,9 +295,7 @@ final class ApplicationFilterConfig implements FilterConfig, Serializable {
      * Return the filter definition we are configured for.
      */
     FilterDef getFilterDef() {
-
         return (this.filterDef);
-
     }
 
 
@@ -348,7 +340,6 @@ final class ApplicationFilterConfig implements FilterConfig, Serializable {
         }
 
         this.filter = null;
-
      }
 
 
@@ -399,13 +390,7 @@ final class ApplicationFilterConfig implements FilterConfig, Serializable {
 
             // Allocate a new filter instance
             Filter filter = getFilter();
-
         }
-
     }
-
-
-    // -------------------------------------------------------- Private Methods
-
 
 }

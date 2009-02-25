@@ -85,7 +85,7 @@ public class FilterDefDecorator extends FilterDef {
         return decoree.getDisplayName();
     }
   
-    public String getFilterClass() {
+    public String getFilterClassName() {
         return decoree.getClassName();
     }
   

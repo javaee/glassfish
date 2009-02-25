@@ -2667,14 +2667,38 @@ public class StandardContext
      * context.
      */
     public FilterRegistration addFilter(String filterName, String className) {
-        if (findFilterDef(filterName) == null) {
+        synchronized (filterDefs) {
+            if (findFilterDef(filterName) != null) {
+                return null;
+            }
+
             FilterDef filterDef = new FilterDef();
             filterDef.setFilterName(filterName);
-            filterDef.setFilterClass(className);
+            filterDef.setFilterClassName(className);
             addFilterDef(filterDef, true);
+
             return filterDef.getFilterRegistration();
-        } else {
-            return null;
+        }
+    }
+
+
+    /**
+     * Adds the filter with the given name and class type to this servlet
+     * context.
+     */
+    public FilterRegistration addFilter(String filterName,
+            Class <? extends Filter> filterClass) {
+        synchronized (filterDefs) {
+            if (findFilterDef(filterName) != null) {
+                return null;
+            }
+
+            FilterDef filterDef = new FilterDef();
+            filterDef.setFilterName(filterName);
+            filterDef.setFilterClass(filterClass);
+            addFilterDef(filterDef, true);
+
+            return filterDef.getFilterRegistration();
         }
     }
 
@@ -3117,19 +3141,31 @@ public class StandardContext
     /*
      * Adds the servlet with the given name and class name to this servlet
      * context.
-     *
-     * @param servletName the servlet name
-     * @param className the servlet class name
-     *     
-     * @return the ServletRegistration through which the servlet may be
-     * further configured
      */
     public ServletRegistration addServlet(String servletName,
                                           String className) {
         if (findChild(servletName) == null) {
             Wrapper wrapper = createWrapper();
             wrapper.setName(servletName);
-            wrapper.setServletClass(className);
+            wrapper.setServletClassName(className);
+            addChild(wrapper, true);
+            return wrapper.getServletRegistration();
+        } else {
+            return null;
+        }
+    }
+
+
+    /*
+     * Adds the servlet with the given name and class type to this servlet
+     * context.
+     */
+    public ServletRegistration addServlet(String servletName,
+            Class <? extends Servlet> servletClass) {
+        if (findChild(servletName) == null) {
+            Wrapper wrapper = createWrapper();
+            wrapper.setName(servletName);
+            wrapper.setServletClass(servletClass);
             addChild(wrapper, true);
             return wrapper.getServletRegistration();
         } else {
@@ -4833,12 +4869,14 @@ public class StandardContext
         boolean ok = true;
         synchronized (filterConfigs) {
             filterConfigs.clear();
-            for(String name : filterDefs.keySet()) {
+            for (String name : filterDefs.keySet()) {
                 if(log.isLoggable(Level.FINE)) {
                     log.fine(" Starting filter '" + name + "'");
                 }
                 try {
-                    filterConfigs.put(name, new ApplicationFilterConfig(this, filterDefs.get(name)));
+                    filterConfigs.put(name,
+                        new ApplicationFilterConfig(this,
+                                                    filterDefs.get(name)));
                 } catch(Throwable t) {
                     getServletContext().log
                         (sm.getString("standardContext.filterStart", name), t);
@@ -6071,7 +6109,7 @@ public class StandardContext
         Container[] wrappers = findChildren();
         String servletName;
         for(Container wrapper : wrappers) {
-            servletName = ((Wrapper)wrapper).getServletClass();
+            servletName = ((Wrapper)wrapper).getServletClassName();
             if(servletName == null) {
                 continue;
             }

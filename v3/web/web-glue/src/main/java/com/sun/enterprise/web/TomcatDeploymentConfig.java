@@ -872,11 +872,11 @@ public class TomcatDeploymentConfig{
                 }
 
                 if (webComponentDesc.isServlet()){
-                        wrapper.setServletClass(
-                                webComponentDesc.getWebComponentImplementation());
+                    wrapper.setServletClassName(
+                        webComponentDesc.getWebComponentImplementation());
                 } else {
-                    wrapper.setJspFile(webComponentDesc.
-                                                 getWebComponentImplementation());                
+                    wrapper.setJspFile(
+                        webComponentDesc.getWebComponentImplementation());
                 }
 
                 wrapper.setLoadOnStartup(webComponentDesc.getLoadOnStartUp());
@@ -1042,7 +1042,8 @@ public class TomcatDeploymentConfig{
             }
        
             if (defaultWrapper.getJspFile() == null){
-                wrapper.setServletClass(defaultWrapper.getServletClass());
+                wrapper.setServletClassName(
+                    defaultWrapper.getServletClassName());
             } else {
                 wrapper.setJspFile(defaultWrapper.getJspFile());
             }

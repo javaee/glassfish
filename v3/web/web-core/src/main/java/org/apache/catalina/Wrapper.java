@@ -161,15 +161,24 @@ public interface Wrapper extends Container {
     /**
      * Return the fully qualified servlet class name for this servlet.
      */
-    public String getServletClass();
+    public String getServletClassName();
 
 
     /**
      * Set the fully qualified servlet class name for this servlet.
      *
-     * @param servletClass Servlet class name
+     * @param className Servlet class name
      */
-    public void setServletClass(String servletClass);
+    public void setServletClassName(String className);
+
+
+    /**
+     * Sets the class object from which this servlet will be instantiated.
+     *
+     * @param servletClass the class object from which the servlet will be
+     * instantiated
+     */
+    public void setServletClass(Class <? extends Servlet> servletClass);
 
 
     /**

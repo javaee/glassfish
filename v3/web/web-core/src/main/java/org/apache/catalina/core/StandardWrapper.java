@@ -219,15 +219,23 @@ public class StandardWrapper
      */
     private String runAs = null;
 
+
     /**
      * The notification sequence number.
      */
     private long sequenceNumber = 0;
 
+
     /**
      * The fully qualified servlet class name for this servlet.
      */
-    private String servletClass = null;
+    private String servletClassName = null;
+
+
+    /**
+     * The class from which this servlet will be instantiated
+     */
+    private Class <? extends Servlet> servletClass = null;
 
 
     /**
@@ -301,18 +309,6 @@ public class StandardWrapper
     private static Class[] classTypeUsedInService = new Class[]{
                                                          ServletRequest.class,
                                                          ServletResponse.class};
-
-    /*
-     * true if this wrapper was initialized with a servlet instance
-     * (as opposed to a servlet class), false otherwise
-     */
-    private boolean isSetServletCalled = false;
-
-    /*
-     * true if this wrapper was initialized with a servlet class
-     * (as opposed to a servlet instance), false otherwise
-     */
-    private boolean isSetServletClassCalled = false;
 
 
     /**
@@ -651,50 +647,70 @@ public class StandardWrapper
     /**
      * Return the fully qualified servlet class name for this servlet.
      */
-    public String getServletClass() {
-        return (this.servletClass);
+    public String getServletClassName() {
+        return this.servletClassName;
     }
 
 
     /**
      * Set the fully qualified servlet class name for this servlet.
      *
-     * @param servletClass Servlet class name
+     * @param className Servlet class name
      */
-    public void setServletClass(String servletClass) {
-        if (isSetServletCalled) {
+    public void setServletClassName(String className) {
+        if (servletClassName != null) {
             throw new IllegalStateException(
-                "Wrapper already initialized with servlet instance");
+                "Wrapper already initialized with servlet instance, " +
+                "class, or name");
         }
-        isSetServletClassCalled = true;
-        String oldServletClass = this.servletClass;
-        this.servletClass = servletClass;
-        support.firePropertyChange("servletClass", oldServletClass,
-                                   this.servletClass);
-        if (Constants.JSP_SERVLET_CLASS.equals(servletClass)) {
+        String oldServletClassName = servletClassName;
+        servletClassName = className;
+        support.firePropertyChange("servletClassName", oldServletClassName,
+                                   servletClassName);
+        if (Constants.JSP_SERVLET_CLASS.equals(servletClassName)) {
             isJspServlet = true;
         }
     }
 
 
     /**
+     * Sets the class object from which this servlet will be instantiated.
+     *
+     * @param servletClass The class object from which this servlet will
+     * be instantiated
+     */
+    public void setServletClass(Class <? extends Servlet> servletClass) {
+        if (servletClassName != null) {
+            throw new IllegalStateException(
+                "Wrapper already initialized with servlet instance, " +
+                "class, or name");
+        }
+        this.servletClass = servletClass;
+        servletClassName = servletClass.getName();
+        if (Constants.JSP_SERVLET_CLASS.equals(servletClassName)) {
+            isJspServlet = true;
+        }
+    }
+
+    /**
      * Sets and initializes the servlet instance for this wrapper.
      *
      * @param instance the servlet instance
-     *
-     * @throws ServletException if the servlet fails to be initialized
      */
     public void setServlet(Servlet instance) throws ServletException {
         if (instance == null) {
             throw new IllegalArgumentException("Null servlet instance");
         }
-        if (isSetServletClassCalled) {
+        if (servletClassName != null) {
             throw new IllegalStateException(
-                "Wrapper already initialized with servlet class");
+                "Wrapper already initialized with servlet instance, " +
+                "class, or name");
         }
-        isSetServletCalled = true;
         this.instance = instance;
-        servletClass = instance.getClass().getName();
+        servletClassName = instance.getClass().getName();
+        if (Constants.JSP_SERVLET_CLASS.equals(servletClassName)) {
+            isJspServlet = true;
+        }
         instance.init(facade);
     }
 
@@ -1188,121 +1204,32 @@ public class StandardWrapper
     public synchronized Servlet loadServlet() throws ServletException {
 
         // Nothing to do if we already have an instance or an instance pool
-        if (!singleThreadModel && (instance != null))
+        if (!singleThreadModel && (instance != null)) {
             return instance;
+        }
 
         long t1 = System.currentTimeMillis();
-        // If this "servlet" is really a JSP file, get the right class.
-        // HOLD YOUR NOSE - this is a kludge that avoids having to do special
-        // case Catalina-specific code in Jasper - it also requires that the
-        // servlet path be replaced by the <jsp-file> element content in
-        // order to be completely effective
-        String actualClass = servletClass;
-        if ((actualClass == null) && (jspFile != null)) {
-            Wrapper jspWrapper = (Wrapper)
-                ((Context) getParent()).findChild(Constants.JSP_SERVLET_NAME);
-            if (jspWrapper != null) {
-                actualClass = jspWrapper.getServletClass();
-                // Merge init parameters
-                String paramNames[] = jspWrapper.findInitParameters();
-                for (String paramName : paramNames) {
-                    if (parameters.get(paramName) == null) {
-                        parameters.put(paramName,
-                                       jspWrapper.findInitParameter(paramName));
-                    }
-                }
-            }
-        }
 
-        // Complain if no servlet class has been specified
-        if (actualClass == null) {
-            unavailable(null);
-            throw new ServletException
-                (sm.getString("standardWrapper.notClass", getName()));
-        }
-
-        // Acquire an instance of the class loader to be used
-        Loader loader = getLoader();
-        if (loader == null) {
-            unavailable(null);
-            throw new ServletException
-                (sm.getString("standardWrapper.missingLoader", getName()));
-        }
-
-        ClassLoader classLoader = loader.getClassLoader();
-
-        // Special case class loader for a container provided servlet
-        //  
-        if (isContainerProvidedServlet(actualClass) && 
-                ! ((Context)getParent()).getPrivileged() ) {
-            // If it is a priviledged context - using its own
-            // class loader will work, since it's a child of the container
-            // loader
-            classLoader = this.getClass().getClassLoader();
-        }
-
-        // Load the specified servlet class from the appropriate class loader
-        Class classClass = null;
-        try {
-            if (SecurityUtil.isPackageProtectionEnabled()){
-                final ClassLoader fclassLoader = classLoader;
-                final String factualClass = actualClass;
-                try{
-                    classClass = (Class)AccessController.doPrivileged(
-                        new PrivilegedExceptionAction(){
-                            public Object run() throws Exception{
-                                if (fclassLoader != null) {
-                                    return fclassLoader.loadClass(factualClass);
-                                } else {
-                                    return Class.forName(factualClass);
-                                }
-                            }
-                    });
-                } catch(PrivilegedActionException pax){
-                    Exception ex = pax.getException();
-                    if (ex instanceof ClassNotFoundException){
-                        throw (ClassNotFoundException)ex;
-                    } else {
-                        getServletContext().log( "Error loading "
-                            + fclassLoader + " " + factualClass, ex );
-                    }
-                }
-            } else {
-                if (classLoader != null) {
-                    classClass = classLoader.loadClass(actualClass);
-                } else {
-                    classClass = Class.forName(actualClass);
-                }
-            }
-        } catch (ClassNotFoundException e) {
-            unavailable(null);
-            getServletContext().log("Error loading " + classLoader +
-                                    " " + actualClass, e );
-            throw new ServletException
-                (sm.getString("standardWrapper.missingClass", actualClass),
-                 e);
-        }
-
-        if (classClass == null) {
-            unavailable(null);
-            throw new ServletException
-                (sm.getString("standardWrapper.missingClass", actualClass));
+        if (servletClass == null) {
+            servletClass = loadServletClass();
         }
 
         // Instantiate and initialize an instance of the servlet class itself
         Servlet servlet = null;
         try {
-            servlet = (Servlet) classClass.newInstance();
+            servlet = (Servlet) servletClass.newInstance();
         } catch (ClassCastException e) {
             unavailable(null);
             // Restore the context ClassLoader
             throw new ServletException
-                (sm.getString("standardWrapper.notServlet", actualClass), e);
+                (sm.getString("standardWrapper.notServlet",
+                              servletClass.getName()), e);
         } catch (Throwable e) {
             unavailable(null);
             // Restore the context ClassLoader
             throw new ServletException
-                (sm.getString("standardWrapper.instantiate", actualClass), e);
+                (sm.getString("standardWrapper.instantiate",
+                              servletClass.getName()), e);
         }
 
         // Check if loading the servlet in this web application should be
@@ -1310,12 +1237,12 @@ public class StandardWrapper
         if (!isServletAllowed(servlet)) {
             throw new SecurityException
                 (sm.getString("standardWrapper.privilegedServlet",
-                              actualClass));
+                              servletClass.getName()));
         }
 
         // Special handling for ContainerServlet instances
         if ((servlet instanceof ContainerServlet) &&
-              (isContainerProvidedServlet(actualClass) ||
+              (isContainerProvidedServlet(servletClass.getName()) ||
                 ((Context)getParent()).getPrivileged() )) {
             ((ContainerServlet) servlet).setWrapper(this);
         }
@@ -1409,6 +1336,108 @@ public class StandardWrapper
         loadTime = System.currentTimeMillis() - t1;
 
         return servlet;
+    }
+
+
+    private Class loadServletClass() throws ServletException {
+        // If this "servlet" is really a JSP file, get the right class.
+        // HOLD YOUR NOSE - this is a kludge that avoids having to do special
+        // case Catalina-specific code in Jasper - it also requires that the
+        // servlet path be replaced by the <jsp-file> element content in
+        // order to be completely effective
+        String actualClass = servletClassName;
+        if ((actualClass == null) && (jspFile != null)) {
+            Wrapper jspWrapper = (Wrapper)
+                ((Context) getParent()).findChild(Constants.JSP_SERVLET_NAME);
+            if (jspWrapper != null) {
+                actualClass = jspWrapper.getServletClassName();
+                // Merge init parameters
+                String paramNames[] = jspWrapper.findInitParameters();
+                for (String paramName : paramNames) {
+                    if (parameters.get(paramName) == null) {
+                        parameters.put(paramName,
+                                       jspWrapper.findInitParameter(paramName));
+                    }
+                }
+            }
+        }
+
+        // Complain if no servlet class has been specified
+        if (actualClass == null) {
+            unavailable(null);
+            throw new ServletException
+                (sm.getString("standardWrapper.notClass", getName()));
+        }
+
+        // Acquire an instance of the class loader to be used
+        Loader loader = getLoader();
+        if (loader == null) {
+            unavailable(null);
+            throw new ServletException
+                (sm.getString("standardWrapper.missingLoader", getName()));
+        }
+
+        ClassLoader classLoader = loader.getClassLoader();
+
+        // Special case class loader for a container provided servlet
+        //  
+        if (isContainerProvidedServlet(actualClass) && 
+                ! ((Context)getParent()).getPrivileged() ) {
+            // If it is a priviledged context - using its own
+            // class loader will work, since it's a child of the container
+            // loader
+            classLoader = this.getClass().getClassLoader();
+        }
+
+        // Load the specified servlet class from the appropriate class loader
+        Class clazz = null;
+        try {
+            if (SecurityUtil.isPackageProtectionEnabled()){
+                final ClassLoader fclassLoader = classLoader;
+                final String factualClass = actualClass;
+                try{
+                    clazz = (Class)AccessController.doPrivileged(
+                        new PrivilegedExceptionAction(){
+                            public Object run() throws Exception{
+                                if (fclassLoader != null) {
+                                    return fclassLoader.loadClass(factualClass);
+                                } else {
+                                    return Class.forName(factualClass);
+                                }
+                            }
+                    });
+                } catch(PrivilegedActionException pax){
+                    Exception ex = pax.getException();
+                    if (ex instanceof ClassNotFoundException){
+                        throw (ClassNotFoundException)ex;
+                    } else {
+                        getServletContext().log( "Error loading "
+                            + fclassLoader + " " + factualClass, ex );
+                    }
+                }
+            } else {
+                if (classLoader != null) {
+                    clazz = classLoader.loadClass(actualClass);
+                } else {
+                    clazz = Class.forName(actualClass);
+                }
+            }
+        } catch (ClassNotFoundException e) {
+            unavailable(null);
+            getServletContext().log("Error loading " + classLoader +
+                                    " " + actualClass, e );
+            throw new ServletException
+                (sm.getString("standardWrapper.missingClass", actualClass),
+                 e);
+        }
+
+        if (clazz == null) {
+            unavailable(null);
+            throw new ServletException
+                (sm.getString("standardWrapper.missingClass", actualClass));
+        }
+
+        return clazz;
     }
 
 

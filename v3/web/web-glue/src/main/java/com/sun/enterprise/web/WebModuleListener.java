@@ -276,7 +276,7 @@ final class WebModuleListener
         if (wrapper == null)
             return;
 
-        String servletClass = wrapper.getServletClass();
+        String servletClass = wrapper.getServletClassName();
         // If the jsp maps to the default JspServlet, then add 
         // the init parameters
         if (servletClass != null
@@ -409,7 +409,7 @@ final class WebModuleListener
             return;
         }
 
-        String servletClass = wrapper.getServletClass();
+        String servletClass = wrapper.getServletClassName();
         if (servletClass == null
                 || !servletClass.equals(Globals.DEFAULT_SERVLET_CLASS_NAME)) {
             return;

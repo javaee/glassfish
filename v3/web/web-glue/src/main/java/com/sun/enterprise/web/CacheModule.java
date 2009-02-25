@@ -201,7 +201,7 @@ public final class CacheModule {
             // setup the ias CachingFilter definition with the context
             FilterDef filterDef = new FilterDef();
             filterDef.setFilterName(filterName);
-            filterDef.setFilterClass(CACHING_FILTER_CLASSNAME);
+            filterDef.setFilterClassName(CACHING_FILTER_CLASSNAME);
 
             if (mapping.getServletName() != null) {
                 filterDef.addInitParameter("servletName",

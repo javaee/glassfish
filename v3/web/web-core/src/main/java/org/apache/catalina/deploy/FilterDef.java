@@ -57,6 +57,7 @@ package org.apache.catalina.deploy;
 import java.util.HashMap;
 import java.util.Map;
 import java.io.Serializable;
+import javax.servlet.Filter;
 import javax.servlet.FilterRegistration;
 
 /**
@@ -82,7 +83,12 @@ public class FilterDef implements Serializable {
     /**
      * The fully qualified name of the Java class that implements this filter.
      */
-    private String filterClass = null;
+    private String filterClassName = null;
+
+    /*
+     * The class from which this filter will be instantiated
+     */
+    private Class <? extends Filter> filterClass;
 
     /**
      * The name of this filter, which must be unique among the filters
@@ -107,11 +113,14 @@ public class FilterDef implements Serializable {
     private Map<String,String> parameters = new HashMap();
 
     /**
-     * Async support
+     * True if this filter supports async operations, false otherwise
      */
     private boolean isAsyncSupported = false;
-    private long asyncTimeout;
 
+    /**
+     * The async timeout for this filter
+     */  
+    private long asyncTimeout;
 
     /**
      * The FilterRegistration object through which this FilterDef may be
@@ -164,13 +173,30 @@ public class FilterDef implements Serializable {
     }
 
 
-    public String getFilterClass() {
-        return (this.filterClass);
+    public String getFilterClassName() {
+        return (this.filterClassName);
     }
 
 
-    public void setFilterClass(String filterClass) {
+    public void setFilterClassName(String filterClassName) {
+        if (filterClass != null) {
+            throw new IllegalStateException("Filter class already set");
+        }
+        this.filterClassName = filterClassName;
+    }
+
+
+    public Class <? extends Filter> getFilterClass() {
+        return filterClass;
+    }
+
+
+    public void setFilterClass(Class <? extends Filter> filterClass) {
+        if (filterClassName != null) {
+            throw new IllegalStateException("Filter class name already set");
+        }
         this.filterClass = filterClass;
+        this.filterClassName = filterClass.getName();
     }
 
 
@@ -347,8 +373,8 @@ public class FilterDef implements Serializable {
         StringBuffer sb = new StringBuffer("FilterDef[");
         sb.append("filterName=");
         sb.append(this.filterName);
-        sb.append(", filterClass=");
-        sb.append(this.filterClass);
+        sb.append(", filterClassname=");
+        sb.append(this.filterClassName);
         sb.append("]");
         return (sb.toString());
 

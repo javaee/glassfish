@@ -851,7 +851,8 @@ public class WebModule extends PwcWebModule {
     private Wrapper createAdHocWrapper(AdHocServletInfo servletInfo) {
 
         Wrapper adHocWrapper = new StandardWrapper();
-        adHocWrapper.setServletClass(servletInfo.getServletClass().getName());
+        adHocWrapper.setServletClassName(
+            servletInfo.getServletClass().getName());
         adHocWrapper.setName(servletInfo.getServletName());
         Map<String,String> initParams = servletInfo.getServletInitParams();
         if (initParams != null && !initParams.isEmpty()) {

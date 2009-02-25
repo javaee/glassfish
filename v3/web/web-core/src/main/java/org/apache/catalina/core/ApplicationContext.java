@@ -1004,6 +1004,16 @@ public class ApplicationContext
     }
 
 
+    /*
+     * Adds the servlet with the given name and class type to this
+     * servlet context.
+     */
+    public ServletRegistration addServlet(String servletName,
+            Class <? extends Servlet> servletClass) {
+        return context.addServlet(servletName, servletClass);
+    }
+
+
     /**
      * Gets the ServletRegistration corresponding to the servlet with the
      * given <tt>servletName</tt>.
@@ -1021,6 +1031,16 @@ public class ApplicationContext
         return context.addFilter(filterName, className);
     }
     
+
+    /**
+     * Adds the filter with the given name and class type to this servlet
+     * context.
+     */
+    public FilterRegistration addFilter(String filterName,
+            Class <? extends Filter> filterClass) {
+        return context.addFilter(filterName, filterClass);
+    }
+
     
     /**
      * Gets the FilterRegistration corresponding to the filter with the

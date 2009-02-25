@@ -52,11 +52,7 @@
  * limitations under the License.
  */
 
-
-
-
 package org.apache.catalina.core;
-
 
 import java.io.InputStream;
 import java.io.File;
@@ -76,7 +72,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.naming.NamingException;
 import javax.naming.Binding;
 import javax.naming.directory.DirContext;
@@ -435,6 +432,21 @@ public final class ApplicationContextFacade
     }
 
 
+    /*
+     * Adds the servlet with the given name and class type to this
+     * servlet context.
+     */
+    public ServletRegistration addServlet(String servletName,
+            Class <? extends Servlet> servletClass) {
+        if (SecurityUtil.isPackageProtectionEnabled()) {
+            return (ServletRegistration) doPrivileged(
+                "addServlet", new Object[] {servletName, servletClass});
+        } else {
+            return context.addServlet(servletName, servletClass);
+        }
+    }
+
+
     /**
      * Gets the ServletRegistration corresponding to the servlet with the
      * given <tt>servletName</tt>.
@@ -462,6 +474,21 @@ public final class ApplicationContextFacade
         }
     }
     
+
+    /**
+     * Adds the filter with the given name and class type to this servlet
+     * context.
+     */
+    public FilterRegistration addFilter(String filterName,
+            Class <? extends Filter> filterClass) {
+        if (SecurityUtil.isPackageProtectionEnabled()) {
+            return (FilterRegistration) doPrivileged(
+                "addFilter", new Object[] {filterName, filterClass});
+        } else {
+            return context.addFilter(filterName, filterClass);
+        }
+    }
+
 
     /**
      * Gets the FilterRegistration corresponding to the filter with the
