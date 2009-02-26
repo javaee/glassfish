@@ -46,6 +46,7 @@ import com.sun.enterprise.deployment.node.runtime.common.SecurityRoleMappingNode
 import com.sun.enterprise.deployment.runtime.common.PrincipalNameDescriptor;
 import com.sun.enterprise.deployment.runtime.common.SecurityRoleMapping;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
+import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.deployment.xml.DTDRegistry;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import org.glassfish.security.common.Group;
@@ -164,7 +165,7 @@ public class ApplicationRuntimeNode extends RuntimeBundleNode<Application> {
                     throw new RuntimeException("No bundle in application with uri " + currentWebUri);
                 }
 		currentWebUri=null;
-		if (md.getModuleType().equals(ModuleType.WAR)) {
+		if (md.getModuleType().equals(XModuleType.WAR)) {
 		    md.setContextRoot(value);
 		} else {
 		    throw new RuntimeException(currentWebUri + " uri does not point to a web bundle");
@@ -218,7 +219,7 @@ public class ApplicationRuntimeNode extends RuntimeBundleNode<Application> {
 	
         // web*
 	for (ModuleDescriptor module : application.getModules()) {
-	    if (module.getModuleType().equals(ModuleType.WAR)) {
+	    if (module.getModuleType().equals(XModuleType.WAR)) {
 		Node web = appendChild(appNode, RuntimeTagNames.WEB);
 		appendTextChild(web, RuntimeTagNames.WEB_URI, module.getArchiveUri());
 		appendTextChild(web, RuntimeTagNames.CONTEXT_ROOT, module.getContextRoot());
