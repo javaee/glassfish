@@ -116,6 +116,7 @@ public class WebBundleNode extends BundleNode<WebBundleDescriptor> {
                                                             SecurityRoleNode.class, "addRole");            
         registerElementHandler(new XMLElement(WebTagNames.SERVLET), ServletNode.class);       
         registerElementHandler(new XMLElement(WebTagNames.SERVLET_MAPPING), ServletMappingNode.class);               
+        registerElementHandler(new XMLElement(WebTagNames.SESSION_CONFIG), SessionConfigNode.class, "setSessionConfigDescriptor");               
         registerElementHandler(new XMLElement(WebTagNames.MIME_MAPPING), 
                                                             MimeMappingNode.class, "addMimeMapping");
         registerElementHandler(new XMLElement(WebTagNames.CONTEXT_PARAM), 
