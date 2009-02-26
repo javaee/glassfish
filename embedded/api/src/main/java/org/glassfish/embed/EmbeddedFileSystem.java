@@ -76,7 +76,7 @@ public final class EmbeddedFileSystem {
      * The directory specified must exist.
      *
      * @param f install root directory
-     * @throws org.glassfish.embed.EmbeddedException
+     * @throws EmbeddedException
      */
     public void setInstallRoot(File f) throws EmbeddedException {
         mustNotBeInitialized("setInstallRoot");
@@ -92,7 +92,7 @@ public final class EmbeddedFileSystem {
      * The directory specified must exist.
      *
      * @param f instance root directory
-     * @throws org.glassfish.embed.EmbeddedException
+     * @throws EmbeddedException
      */
     public void setInstanceRoot(File f) throws EmbeddedException {
         mustNotBeInitialized("setInstanceRoot");
@@ -108,7 +108,7 @@ public final class EmbeddedFileSystem {
      * The target domain.xml is the output of the in-memory domain.xml
      *
      * @param f file that the server writes out to as domain.xml
-     * @throws org.glassfish.embed.EmbeddedException
+     * @throws EmbeddedException
      */
     public void setDomainXmlTarget(File f) throws EmbeddedException {
         mustNotBeInitialized("setDomainXmlTarget");
@@ -120,7 +120,7 @@ public final class EmbeddedFileSystem {
      * The source domain.xml is the input to the in-memory domain.xml
      *
      * @param url URL that is read in by the server as domain.xml
-     * @throws org.glassfish.embed.EmbeddedException
+     * @throws EmbeddedException
      */
     public void setDomainXmlSource(URL url) throws EmbeddedException {
         mustNotBeInitialized("setDomainXmlSource(URL)");
@@ -132,7 +132,7 @@ public final class EmbeddedFileSystem {
      * The source domain.xml is the input to the in-memory domain.xml.
      *
      * @param f file that is read in by the server as domain.xml
-     * @throws org.glassfish.embed.EmbeddedException
+     * @throws EmbeddedException
      */
     public void setDomainXmlSource(File f) throws EmbeddedException {
         mustNotBeInitialized("setDomainXmlSource(File)");
@@ -169,7 +169,7 @@ public final class EmbeddedFileSystem {
      *
      * @param b true - deletes the install root upon exit
      *          false - keeps the install root upon exit
-     * @throws org.glassfish.embed.EmbeddedException
+     * @throws EmbeddedException
      */
     public void setAutoDelete(boolean b) throws EmbeddedException {
         mustNotBeInitialized("setAutoDelete");
@@ -194,7 +194,7 @@ public final class EmbeddedFileSystem {
      * Returns the root directory of the Embedded GlassFish file system.
      *
      * @return install root directory
-     * @throws org.glassfish.embed.EmbeddedException
+     * @throws EmbeddedException if instance has not been initialized
      */
     public File getInstallRoot() throws EmbeddedException {
         mustBeInitialized("getInstallRoot");
@@ -205,7 +205,7 @@ public final class EmbeddedFileSystem {
      * Returns the root directory of the server instance
      *
      * @return instance root directory
-     * @throws org.glassfish.embed.EmbeddedException
+     * @throws EmbeddedException if instance has not been initialized
      */
     public File getInstanceRoot() throws EmbeddedException {
         mustBeInitialized("getInstanceRoot");
@@ -216,7 +216,7 @@ public final class EmbeddedFileSystem {
      * Returns the file that the server writes out to as domain.xml
      *
      * @return target domain.xml file
-     * @throws org.glassfish.embed.EmbeddedException
+     * @throws EmbeddedException if instance has not been initialized
      */
     public File getTargetDomainXml() throws EmbeddedException {
         mustBeInitialized("getTargetDomainXml");
@@ -227,7 +227,7 @@ public final class EmbeddedFileSystem {
      * Returns the URL that the server reads in as domain.xml
      *
      * @return source domain.xml URL
-     * @throws org.glassfish.embed.EmbeddedException
+     * @throws EmbeddedException if instance has not been initialized
      */
     public URL getSourceDomainXml() throws EmbeddedException {
         mustBeInitialized("getSourceDomainXml");
@@ -238,7 +238,7 @@ public final class EmbeddedFileSystem {
      * Returns the log file
      *
      * @return logfile
-     * @throws org.glassfish.embed.EmbeddedException
+     * @throws EmbeddedException if instance has not been initialized
      */
     public File getLogFile() throws EmbeddedException {
         mustBeInitialized("getLogFile");
@@ -249,6 +249,7 @@ public final class EmbeddedFileSystem {
      * Returns the applications directory of the Embedded GlassFish file system
      *
      * @return applications directory
+     * @throws EmbeddedException if instance has not been initialized
      */
     public File getApplicationsDir() throws EmbeddedException {
         return EmbeddedUtils.cloneAndVerifyFile(appsDir);
@@ -258,6 +259,7 @@ public final class EmbeddedFileSystem {
      * Returns the docroot directory of the Embedded GlassFish file system
      *
      * @return docroot directory
+     * @throws EmbeddedException if instance has not been initialized
      */
     public File getDocRootDir() throws EmbeddedException {
         mustBeInitialized("getDocRootDir");
@@ -269,12 +271,9 @@ public final class EmbeddedFileSystem {
      */
     
     @Override
-
     public String toString() {
         return ObjectAnalyzer.toString(this);
     }
-
-
 
     // ****************************************************
     // *************    package private. Think long and hard before making public!
@@ -285,8 +284,9 @@ public final class EmbeddedFileSystem {
      * @return fake modules directory.  This is for the benefit of StartupContext
      * which insists that the install root should be the PARENT of some other directory.
      * This is some other directory.
-     * @throws org.glassfish.embed.EmbeddedException
+     * @throws EmbeddedException
      */
+
     File getModulesDirectory() throws EmbeddedException {
         mustBeInitialized("getModulesDirectory");
         return modulesDir;
@@ -294,7 +294,6 @@ public final class EmbeddedFileSystem {
 
     void cleanup() throws EmbeddedException {
         mustBeInitialized("cleanup");
-        defaultsAreInUse = false;
         if (shouldCleanup()) {
             // note that Logger will not work now because the JVM has shut it down
             System.out.println("Cleaning up files");
@@ -353,7 +352,7 @@ public final class EmbeddedFileSystem {
      * The idea here is that the Url ALWAYS points at the source of data.
      * the File always points t where on disk the data will be written to (and
      * maybe is the source of data)
-     * @throws org.glassfish.embed.EmbeddedException
+     * @throws EmbeddedException
      */
     private void initializeDomainXml() throws EmbeddedException {
         initializeTargetDomainXml();
@@ -368,22 +367,17 @@ public final class EmbeddedFileSystem {
 
         /*
          * both are set to something, just return
+         * note that if they are set then they are already GUARANTEED to be kosher.
          */
         if(hasInstance && hasInstall) {
             return;
         }
 
-        if (defaultsAreInUse) {
-            throw new EmbeddedException("EFS_defaults_in_use");
-        }
-
-        defaultsAreInUse = true;
-
         /*
          * both are null -- use all defaults
          */
         if(!hasInstance && !hasInstall) {
-            setInstallRoot(defaultInstallRoot);
+            setInstallRoot(createDefaultInstallDir());
             setInstanceRoot(new File(installRoot, DEFAULT_PATH_TO_INSTANCE));
         }
 
@@ -391,7 +385,7 @@ public final class EmbeddedFileSystem {
          * instance but no install.
          */
         else if(hasInstance && !hasInstall) {
-            setInstallRoot(defaultInstallRoot);
+            setInstallRoot(createDefaultInstallDir());
         }
 
         /*
@@ -400,6 +394,26 @@ public final class EmbeddedFileSystem {
         else { // if(hasInstall && !hasInstance)
             setInstanceRoot(new File(installRoot, DEFAULT_PATH_TO_INSTANCE));
         }
+    }
+    
+    private File createDefaultInstallDir() throws EmbeddedException {
+        // note that we still hold a mutex here!
+        long num = System.currentTimeMillis();
+        File f = null;
+        int maxAttempts = 20; // prevents an infinite loop.
+
+        do {
+            String middle = Long.toString(num);
+            middle = middle.substring(middle.length() - 4); // last 4 digits
+            String filename = DEFAULT_INSTALL_DIR_PREFIX + middle + DEFAULT_INSTALL_DIR_SUFFIX;
+            f = new File(filename);
+            num++;
+        } while(!f.mkdir() && --maxAttempts > 0);    // it MUST not exist and it must have been created OK
+
+        if(maxAttempts <= 0)
+            throw new EmbeddedException("cant_create_dir", "install", f);
+
+        return f;
     }
 
     private void initializeLogFile() throws EmbeddedException {
@@ -439,28 +453,31 @@ public final class EmbeddedFileSystem {
     }
 
     private void initializeSourceDomainXml() throws EmbeddedException {
+        File dx = SmartFile.sanitize(new File(instanceRoot, DEFAULT_PATH_TO_DOMAIN_XML));
+
+        // case 1: they specified domain.xml somewhere, anywhere.
         if (domainXmlSource != null) {
             // they specified it -- insist that it be bonafide.
             if (!ok(domainXmlSource)) {
                 throw new EmbeddedException("EFS_bad_domain_xml_file", domainXmlTarget);
             }
-        } else {
-            File dx = SmartFile.sanitize(new File(instanceRoot, DEFAULT_PATH_TO_DOMAIN_XML));
-            File our_generated_dx = SmartFile.sanitize(new File(DEFAULT_PATH_TO_DOMAIN_XML_IN_GFE));
+        }
 
-            if (dx.isFile() && !dx.equals(our_generated_dx)) {
-                try {
-                    domainXmlSource = dx.toURI().toURL();
-                } catch (MalformedURLException ex) {
-                    throw new EmbeddedException(ex);
-                }
+        // case 2: There is a domain.xml in the correct place under the instance root
+        else if (dx.isFile()) {
+            try {
+                domainXmlSource = dx.toURI().toURL();
+                return;
+            } catch (MalformedURLException ex) {
+                throw new EmbeddedException(ex);
             }
-            else
-                domainXmlSource = DEFAULT_DOMAIN_XML_URL; // use the hard-wired file.
+        }
+
+        // case 3: We use the domain.xml inside this jar
+        else {
+            domainXmlSource = DEFAULT_DOMAIN_XML_URL; // use the hard-wired file.
         }
     }
-
-
  
     private File initializeDirectory(File parent, String filename, String messageName) throws EmbeddedException {
         File dir = new File(parent, filename);
@@ -509,9 +526,6 @@ public final class EmbeddedFileSystem {
         // TODO -- what else besides not null?
         return url != null;
     }
-    private static final File   defaultInstallRoot  = SmartFile.sanitize(new File(DEFAULT_GFE_DIR));
-    private static final File   defaultInstanceRoot = SmartFile.sanitize(new File(defaultInstallRoot, "domains/domain1"));
-    private static boolean      defaultsAreInUse    = false;
     private File                installRoot;
     private File                instanceRoot;
     private File                domainXmlTarget;
