@@ -297,7 +297,7 @@
 
             The valid values of default-content-type are those of the
             contentType page directive.  It specifies the default
-            response contnetType if the page directive does not include
+            response contentType if the page directive does not include
             a contentType attribute.
 
           </xsd:documentation>
