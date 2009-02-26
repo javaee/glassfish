@@ -9,7 +9,7 @@ TESTS INFO :
 2. ear/* are tests that deploy EAR module. Only ear with war tests are turned
    on now.
 
-3. In all totally 27 unit test cases will be executed.
+3. In all totally 28 unit test cases will be executed.
 
 
 FOR RUNNING THE DEPLOYMENT TESTS ON v3:
