@@ -16,8 +16,15 @@ public class StringHelper {
         return strings.get(index, objs);
     }
     
-    private static final LocalStringsImpl strings = new LocalStringsImpl(StringHelper.class);
-    
+    private static final LocalStringsImpl strings;
+
+    static {
+        strings = new LocalStringsImpl("org.glassfish.embed", "LocalStrings");
+
+        // sanity check
+        if("internal".equals(strings.get("internal")))
+            throw new RuntimeException("Internal Error: LocalStrings.properties not found.");
+    }
     private StringHelper() {
     }
 }
