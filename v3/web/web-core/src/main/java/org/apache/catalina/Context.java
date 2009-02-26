@@ -224,6 +224,13 @@ public interface Context extends Container {
 
 
     /**
+     * @return the name of the session tracking cookies created by this
+     * context (default: JSESSIONID)
+     */
+    public String getSessionCookieName();
+
+
+    /**
      * Checks whether the rewriting of URLs with the jsessionids of
      * HTTP sessions belonging to this context is enabled or not.
      *

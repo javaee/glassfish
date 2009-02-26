@@ -709,7 +709,7 @@ public class OutputBuffer extends Writer
         }
 
         // Create JSESSIONID cookie that includes jvmRoute
-        Cookie cookie = new Cookie(Globals.SESSION_COOKIE_NAME,
+        Cookie cookie = new Cookie(ctx.getSessionCookieName(),
                                    sess.getIdInternal() + "." +
                                    ctx.getJvmRoute());
         req.configureSessionCookie(cookie);

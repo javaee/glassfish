@@ -2924,7 +2924,8 @@ public class Request
                  */
                 if (jvmRoute == null) {
                     String id = session.getIdInternal();
-                    Cookie cookie = new Cookie(Globals.SESSION_COOKIE_NAME, id);
+                    Cookie cookie = new Cookie(
+                        getContext().getSessionCookieName(), id);
                     configureSessionCookie(cookie);
                     ((HttpServletResponse) response).addCookie(cookie);
                 }
@@ -2972,9 +2973,10 @@ public class Request
             cookie.setSecure(true);
         }
         
-        // Overridde the default config with servlet context sessionCookieConfig
-        if ((servletContext!=null) && 
-                (servletContext.getSessionCookieConfig()!=null)) {
+        // Overridde the default config with servlet context
+        // sessionCookieConfig
+        if ((servletContext != null) && 
+                (servletContext.getSessionCookieConfig() != null)) {
             SessionCookieConfig sessionCookieConfig = 
                                     servletContext.getSessionCookieConfig();
             if (sessionCookieConfig.getDomain()!=null) {
@@ -3639,9 +3641,13 @@ public class Request
             return;
         }
 
+        String sessionCookieName = Globals.SESSION_COOKIE_NAME;
+        if (context != null) {
+            sessionCookieName = context.getSessionCookieName();
+        }
         for (int i = 0; i < count; i++) {
             ServerCookie scookie = serverCookies.getCookie(i);
-            if (scookie.getName().equals(Globals.SESSION_COOKIE_NAME)) {
+            if (scookie.getName().equals(sessionCookieName)) {
                 // Override anything requested in the URL
                 if (!isRequestedSessionIdFromCookie()) {
                     // Accept only the first session id cookie

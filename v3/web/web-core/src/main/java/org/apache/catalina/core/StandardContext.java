@@ -783,6 +783,11 @@ public class StandardContext
 
     private EnumSet<SessionTrackingMode> sessionTrackingModes;
 
+    /**
+     * The name of the session tracking cookies created by this context
+     */
+    private String sessionCookieName = Globals.SESSION_COOKIE_NAME;
+
 
     /**
      * GMT timezone - all HTTP dates are on GMT
@@ -1887,9 +1892,7 @@ public class StandardContext
      * web application.
      */
     public int getSessionTimeout() {
-
         return (this.sessionTimeout);
-
     }
 
     /**
@@ -1925,7 +1928,6 @@ public class StandardContext
         //HERCULES:add
         sessionTimeoutOveridden = true;
         //end HERCULES:add
-
     }
 
 
@@ -1933,9 +1935,7 @@ public class StandardContext
      * Unpack WAR flag accessor.
      */
     public boolean getUnpackWAR() {
-
         return (unpackWAR);
-
     }
 
 
@@ -1943,19 +1943,16 @@ public class StandardContext
      * Unpack WAR flag mutator.
      */
     public void setUnpackWAR(boolean unpackWAR) {
-
         this.unpackWAR = unpackWAR;
-
     }
+
 
     /**
      * Return the Java class name of the Wrapper implementation used
      * for servlets registered in this Context.
      */
     public String getWrapperClass() {
-
         return (this.wrapperClassName);
-
     }
 
 
@@ -2734,6 +2731,9 @@ public class StandardContext
         }
 
         this.sessionCookieConfig = sessionCookieConfig;
+        if (sessionCookieConfig.getName() != null) {
+            sessionCookieName = sessionCookieConfig.getName();
+        }
     }
 
 
@@ -2751,10 +2751,20 @@ public class StandardContext
 
 
     /**
+     * @return the name of the session tracking cookies created by this
+     * context (default: JSESSIONID)
+     */
+    public String getSessionCookieName() {
+        return sessionCookieName;
+    }
+
+
+    /**
      * Sets the session tracking modes that are to become effective for this
      * <tt>ServletContext</tt>.
      */
-    public void setSessionTrackingModes(EnumSet<SessionTrackingMode> sessionTrackingModes) {
+    public void setSessionTrackingModes(
+            EnumSet<SessionTrackingMode> sessionTrackingModes) {
 
         if (sessionTrackingModes.contains(SessionTrackingMode.SSL)) {
             throw new IllegalArgumentException(
