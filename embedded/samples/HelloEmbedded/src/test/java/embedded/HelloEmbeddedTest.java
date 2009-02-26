@@ -1,5 +1,6 @@
+package embedded;
 
-package mygfe;
+
 
 /**
  *
@@ -9,27 +10,24 @@ package mygfe;
 
 import java.io.*;
 import java.net.*;
-import java.util.logging.*;
 import org.glassfish.embed.EmbeddedInfo;
 import org.glassfish.embed.Server;
-
+import org.junit.*;
+import static org.junit.Assert.*;
 
 /**
  * Hello world!
  *
  */
-public class HelloGFE {
-
-    public static void main(String[] args) {
-        HelloGFE app = new HelloGFE();
-    }
-
-    public HelloGFE() {
+public class HelloEmbeddedTest {
+    
+    @Test
+    public void hello() {
         try {
             int port = 7777;
             EmbeddedInfo info = new EmbeddedInfo();
             info.setHttpPort(port);
-            System.out.println("Starting GFE on port " + port);
+            System.out.println("Starting Embedded GlassFish on port " + port);
             File simpleWar = new File("simple.war");
 
             myGF = new Server(info);
@@ -40,6 +38,7 @@ public class HelloGFE {
         }
         catch (Exception e) {
             e.printStackTrace();
+            fail("error running Embedded GlassFish");
         }
     }
 
@@ -60,8 +59,8 @@ public class HelloGFE {
         }
         catch (Exception ex) {
             System.out.println("Error hitting: " + urlString);
+            fail("Error  hitting: " + urlString);
         }
     }
-
     private Server myGF;
 }
