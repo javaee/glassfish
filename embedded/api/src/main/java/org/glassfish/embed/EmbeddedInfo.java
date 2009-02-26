@@ -42,6 +42,7 @@ import com.sun.enterprise.util.diagnostics.ObjectAnalyzer;
 import java.io.*;
 import java.util.*;
 import java.net.*;
+import javax.net.ServerSocketFactory;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.embed.util.StringUtils;
 import static org.glassfish.embed.util.ServerConstants.*;
@@ -210,14 +211,36 @@ public class EmbeddedInfo {
     }
     
     private void validatePorts() throws EmbeddedException {
-        if(httpPort < MIN_PORT || httpPort > MAX_PORT
-                || adminHttpPort < MIN_PORT || adminHttpPort > MAX_PORT)
+        if(httpPort < MIN_PORT || httpPort > MAX_PORT) {
             throw new EmbeddedException("bad_port", MIN_PORT, MAX_PORT, httpPort);
+        }
+        if(adminHttpPort < MIN_PORT || adminHttpPort > MAX_PORT) {
+            throw new EmbeddedException("bad_port", MIN_PORT, MAX_PORT, adminHttpPort);
+        }
+        if (!isPortAvailable(adminHttpPort)) {
+            throw new EmbeddedException("port_in_use", Integer.toString(adminHttpPort));
+        }
+        if (!isPortAvailable(httpPort)) {
+            throw new EmbeddedException("port_in_use", Integer.toString(httpPort));
+        }
+        
         // todo TODO
         // todo TODO
         // TODO todo Here is where we can see if the port is in use and assign another
         // todo TODO
         // todo TODO
+    }
+
+    private boolean isPortAvailable(int port) {
+        boolean isAvailable = true;
+        try {
+          ServerSocket socket = ServerSocketFactory.getDefault().createServerSocket(port);
+          socket.close();
+          socket = null;
+        } catch (IOException ioe) {
+           isAvailable = false;
+        }
+        return isAvailable;
     }
 
     //////////////////////   private variables  ////////////////////////////////
