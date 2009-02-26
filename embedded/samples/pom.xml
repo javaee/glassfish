@@ -47,6 +47,7 @@
 
     <modules>
         <module>HelloEmbedded</module>
+        <module>SimpleMaven</module>
     </modules>
 
     <dependencies>
