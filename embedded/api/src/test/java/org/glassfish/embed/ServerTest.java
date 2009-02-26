@@ -204,6 +204,26 @@ public class ServerTest {
         }
     }
 
+    @Test(expected=EmbeddedException.class)
+    public void testPortInUse() throws Exception {
+        System.out.println("testPortInUse");
+        try {
+            server.start();
+
+            EmbeddedInfo info = new EmbeddedInfo();
+            info.setServerName("server2");
+            info.getFileSystem().setInstallRoot(new File("gfe_server2"));
+            Server server2 = new Server(info);
+
+        } catch(EmbeddedException ee) {
+            System.out.println("Expected Exception: " + ee);
+            throw ee;
+        } catch (Exception e) {
+            System.out.println("Unxpected Exception: " + e);
+            fail("failed test: testPortInUse");
+        }
+    }
+
 
     private static Server server;
 
