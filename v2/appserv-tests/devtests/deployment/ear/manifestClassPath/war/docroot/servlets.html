@@ -1,0 +1,137 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html">
+	<TITLE>Application Server i18n technology samples</TITLE>
+	<META NAME="GENERATOR" CONTENT="StarOffice 6.0  (Win32)">
+	<META NAME="CREATED" CONTENT="20020531;14081258">
+	<META NAME="CHANGEDBY" CONTENT="Chand Basha">
+	<META NAME="CHANGED" CONTENT="20020606;18564741">
+</HEAD>
+<BODY LANG="en-US">
+<P><FONT FACE="Times New Roman"><FONT SIZE=6><B>Servlet i18n samples</B></FONT></FONT></P>
+<FORM ACTION="/i18n-simple/SimpleI18nServlet" METHOD="POST">
+	<INPUT TYPE=HIDDEN NAME="func" VALUE="sendInput">
+	<TABLE WIDTH=489 BORDER=0 CELLPADDING=0 CELLSPACING=0>
+		<COL WIDTH=231>
+		<COL WIDTH=258>
+		<THEAD>
+			<TR VALIGN=TOP>
+				<TD WIDTH=231>
+					<P><FONT FACE="Times New Roman"><FONT SIZE=3 STYLE="font-size: 13pt"><B>Please
+					select Sample:</B></FONT></FONT></P>
+				</TD>
+				<TD WIDTH=258>
+					<P><SELECT NAME="action">
+						<OPTION VALUE="formatDate" SELECTED>Format Date as per browser's locale
+						<OPTION VALUE="includeServlet">Include a Servlet
+						<OPTION VALUE="forwardServlet">Forward Servlet
+						<!--
+						<OPTION VALUE="sendErrorMessage">Send Error Message
+						-->
+						<OPTION VALUE="setCharEncoding">Set Character Encoding
+						<OPTION VALUE="useResourceBundle">Use Resource Bundles
+						<OPTION VALUE="forwardJsp">Forward request to jsp</OPTION>
+					</SELECT></P>
+				</TD>
+			</TR>
+		</THEAD>
+		<TBODY>
+			<TR VALIGN=TOP>
+				<TD WIDTH=231>
+					<P><FONT FACE="Times New Roman"><FONT SIZE=3 STYLE="font-size: 13pt"><B>Please
+					select Encoding:</B></FONT></FONT></P>
+				</TD>
+				<TD WIDTH=258>
+					<P><SELECT NAME="charsetval">
+						<OPTION VALUE="ISO-8859-1">Western (ISO-8859-1)
+						<OPTION VALUE="ISO-8859-2">Central European (ISO-8859-2)
+						<OPTION VALUE="ISO-8859-5">Cyrillic (ISO-8859-5)
+						<OPTION VALUE="Shift_JIS">Japanese (Shift_JIS)
+						<OPTION VALUE="EUC_JP">Japanese (EUC-JP)
+						<OPTION VALUE="GB2312">Chinese (GB2312)
+						<OPTION VALUE="GB18030">Chinese (GB18030)
+						<OPTION VALUE="EUC-TW">Chinese (EUC-TW)
+						<OPTION VALUE="EUC-KR">Korean (EUC-KR)
+						<OPTION VALUE="UTF-8" SELECTED>Unicode (UTF-8)</OPTION>
+					</SELECT></P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=231>
+					<P><BR>
+					</P>
+				</TD>
+				<TD WIDTH=258>
+					<P><BR>
+					</P>
+				</TD>
+			</TR>
+			<TR>
+				<TD COLSPAN=2 WIDTH=489>
+					<DIV ALIGN=CENTER>
+						<P><INPUT TYPE=SUBMIT NAME="B1" VALUE="Submit"></P>
+					</DIV>
+				</TD>
+			</TR>
+		</TBODY>
+	</TABLE>
+</FORM>
+<P><FONT FACE="Thorndale, serif"><B><FONT SIZE=4><FONT SIZE=4 STYLE="font-size: 16pt"><BR></FONT>Details</FONT></B></FONT></P>
+<P><FONT FACE="Thorndale, serif"><B>Format Date as per browser's
+locale</B><BR>Gets the locale information from browser settings and
+sets the locale to response object using res.setLocale() method. To
+run this sample, select desired encoding for the characters you want
+to use and select &ldquo;Format Date as per browser's locale&rdquo;
+from the drop down list. Enter your name (in desired language) on the
+following screen and click Submit.</FONT></P>
+<P><FONT FACE="Thorndale, serif"><B>Including a servlet from another
+servlet</B><BR>Includes a servlet using RequestDispatcher's include
+method. To run this sample, select desired encoding for the
+characters you want to use and select &ldquo;Include a servlet&rdquo;
+from the drop down list. Enter your name (in desired language) on the
+following screen and click Submit.</FONT></P>
+<P><FONT FACE="Thorndale, serif"><B>Forwarding a request to servlet
+from another servlet</B><BR>Forwards a servlet using
+RequestDispatcher's forward method. To run this sample, select
+desired encoding for the characters you want to use and select
+&ldquo;Forward Servlet&rdquo; from the drop down list. Enter your
+name (in desired language) on the following screen and click Submit.</FONT></P>
+<P><FONT FACE="Thorndale, serif"><B>Send localized error message</B><BR>Send
+localized error messages using response's sendError method. To run
+this sample, select desired encoding for the characters you want to
+use and select &ldquo;Send error message&rdquo; from the drop down
+list. Enter your name (in desired language) on the following screen
+and click Submit. The entered characters appear in the error message.</FONT></P>
+<P><FONT FACE="Thorndale, serif"><B>Set character encoding</B><BR>Sets
+request's character encoding using setCharacterEncoding method of
+HttpServletRequest interface. This is a new functionality that is
+being added in Servlet 2.3 Specification . The method
+setCharacterEncoding is required by the web container to set the
+encoding for the request object. To run this sample, select desired
+encoding for the characters you want to use and select &ldquo;Set
+Character Encoding&rdquo; from the drop down list. Enter your name
+(in desired language) on the following screen and click Submit.</FONT></P>
+<P><FONT FACE="Thorndale, serif"><B>Using resource bundles</B><BR>Load
+resource bundle based on client's locale. This sample provides
+LocalStrings.properties and LocalStrings_ja.properties files. To
+verify that the LocalStrings_ja.properties file is loading properly,
+change your browser's language settings to &ldquo;ja&rdquo;. To run
+this sample, select desired encoding for the characters you want to
+use and select &ldquo;Using resource bundles&rdquo; from the drop
+down list. Enter your name (in desired language) on the following
+screen and click Submit.</FONT></P>
+<P><FONT FACE="Thorndale, serif"><B>Forwarding a request to
+jsp</B><BR>Forwards request from servlet to jsp using
+RequestDispatcher's forward method. To run this sample, select
+desired encoding for the characters you want to use and select
+&ldquo;Forward request to jsp&rdquo; from the drop down list. Enter
+your name (in desired language) on the following screen and click
+Submit.</FONT></P>
+<P><FONT FACE="Thorndale, serif"><A HREF="/i18n-simple">Back
+to sample home</A></FONT></P>
+<P STYLE="margin-bottom: 0cm"><FONT SIZE=1><FONT FACE="Verdana, Arial, Helvetica, sans-serif"><FONT COLOR="#000000">Copyright
+(c) 2003 Sun Microsystems, Inc. All rights reserved.</FONT></FONT></FONT>
+</P>
+</BODY>
+</HTML>
