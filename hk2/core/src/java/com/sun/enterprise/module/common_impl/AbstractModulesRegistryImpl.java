@@ -221,8 +221,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
      * constraints.
      *
      * @param name the module name
-     * @param version
-     *      the module version. Can be null if the caller doesn't care about the version.
+     * @param version the module version.
      * @return the module instance or null if none can be found
      * @throws ResolveError if the module dependencies cannot be resolved
      */
