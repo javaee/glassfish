@@ -201,6 +201,19 @@
     </xsd:annotation>
 
     <xsd:sequence>
+      <xsd:element name="name"
+                   type="javaee:cookie-nameType"
+                   minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>
+
+            The name that will be assigned to any session tracking
+            cookies created by this web application.
+            The default is JSESSIONID
+
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
       <xsd:element name="domain"
                    type="javaee:cookie-domainType"
                    minOccurs="0">
@@ -275,6 +288,26 @@
 
         The domain name that will be assigned to any session tracking
         cookies created by this web application.
+
+        Used in: cookie-config
+
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:simpleContent>
+      <xsd:extension base="javaee:nonEmptyStringType"/>
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="cookie-nameType">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        The name that will be assigned to any session tracking
+        cookies created by this web application.
+        The default is JSESSIONID
 
         Used in: cookie-config
 
