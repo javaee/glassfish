@@ -48,6 +48,7 @@
     <modules>
         <module>HelloEmbedded</module>
         <module>SimpleMaven</module>
+        <module>HelloPlugin</module>
     </modules>
 
     <dependencies>
@@ -86,6 +87,12 @@
                 <artifactId>maven-surefire-plugin</artifactId>
 				<!-- the version is critical.-->
                 <version> 2.4.3 </version>
+            </plugin>
+            <!-- Run the application using "mvn glassfish:run" -->
+            <plugin>
+                <groupId>org.glassfish</groupId>
+                <artifactId>maven-glassfish-plugin</artifactId>
+				<version>${project.version}</version>
             </plugin>
         </plugins>
     </build>
