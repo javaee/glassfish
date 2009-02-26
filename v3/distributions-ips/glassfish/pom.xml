@@ -144,29 +144,13 @@
             <type>zip</type>
         </dependency>
 
-        <!-- ejb package -->
+        <!-- ejb timer package -->
         <dependency>
             <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-ejb</artifactId>
+            <artifactId>glassfish-ejb-timer</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>     
-
-        <!-- jts package -->
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-jts</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-        </dependency>
-
-        <!-- corba package -->
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-corba-omgapi</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-        </dependency>
 
         <!-- metro package -->
         <dependency>
