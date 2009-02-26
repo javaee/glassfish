@@ -135,10 +135,4 @@ public class GenericHomeGenerator extends Generator
         return;
     }
     
-    public void generate(OutputStream out)
-	    throws GeneratorException, IOException
-    {
-        throw new IllegalStateException("not supported");
-    }
-
 }

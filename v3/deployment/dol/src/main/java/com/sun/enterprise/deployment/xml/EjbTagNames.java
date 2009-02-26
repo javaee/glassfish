@@ -52,6 +52,7 @@ public interface EjbTagNames extends TagNames {
     public final static String REMOTE = "remote";
     public final static String LOCAL_HOME = "local-home";
     public final static String LOCAL = "local";
+    public final static String LOCAL_BEAN = "local-bean";
     public final static String BUSINESS_LOCAL = "business-local";
     public final static String BUSINESS_REMOTE = "business-remote";
     public final static String EJB_CLASS = "ejb-class";

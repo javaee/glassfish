@@ -62,9 +62,6 @@ public abstract class Generator {
 
     public abstract String getGeneratedClass();
 
-    public abstract void generate(java.io.OutputStream out)
-        throws GeneratorException, java.io.IOException;
-
 
     /**
      * Get the package name from the class name.

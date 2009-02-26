@@ -158,48 +158,6 @@ public class SerializableBeanGenerator extends Generator
         return;
     }
 
-    
-    /**
-     * Generate the code to the specified output stream.
-     * @param the output stream
-     * @exception GeneratorException on a generation error
-     * @exception IOException on an IO error
-     */
-    public void generate(OutputStream out)
-	throws GeneratorException, IOException 
-    {
-    	IndentingWriter p = new IndentingWriter(new OutputStreamWriter(out));
-
-	    String packageName = getPackageName(generatedSerializableClassName);
-        String simpleName = getBaseName(generatedSerializableClassName);
-
-        p.pln("");
-
-	    if (packageName != null) {
-	        p.pln("package " + packageName + ";");
-        }
-
-        p.pln("");
-
-	    p.plnI("public class " + simpleName + " extends " + beanClass.getName()
-               + " implements java.io.Serializable { ");
-
-        p.pln("");
-
-        p.plnI("private void writeObject(java.io.ObjectOutputStream oos) throws java.io.IOException {");
-        p.pln("    com.sun.ejb.EJBUtils.serializeObjectFields(" +
-              beanClass.getName() + ".class, this, oos);");
-        p.pln("}");
-
-        p.plnI("private void readObject(java.io.ObjectInputStream ois) throws java.io.IOException, java.lang.ClassNotFoundException {");
-        p.pln("    com.sun.ejb.EJBUtils.deserializeObjectFields(" +
-              beanClass.getName() + ".class, this, ois);");
-        p.pln("}");
-
-	    p.pOln("}");
-	    p.close();
-    }
-
 
 
 }

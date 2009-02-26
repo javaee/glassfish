@@ -43,6 +43,7 @@ import com.sun.enterprise.deployment.node.MethodNode;
 import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.xml.EjbTagNames;
 import org.w3c.dom.Node;
+import org.xml.sax.Attributes;
 
 import java.util.Map;
 
@@ -101,6 +102,15 @@ public class EjbSessionNode  extends InterfaceBasedEjbNode {
         table.put(EjbTagNames.SESSION_TYPE, "setSessionType");
         table.put(EjbTagNames.TRANSACTION_TYPE, "setTransactionType");
         return table;
+    }
+
+    public void startElement(XMLElement element, Attributes attributes) {
+
+        if( EjbTagNames.LOCAL_BEAN.equals(element.getQName()) ) {
+            descriptor.setLocalBean(true);
+        }
+
+        super.startElement(element, attributes);
     }
     
     /**

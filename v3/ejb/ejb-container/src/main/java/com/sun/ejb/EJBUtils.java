@@ -488,6 +488,15 @@ public class EJBUtils {
         }
         return generatedSerializableClass;
     }
+
+    public static Class generateSEI(ClassGeneratorFactory cgf,
+                                    final String seiClassName,
+                                    final ClassLoader loader,
+                                    final Class beanClass) {
+        return generateAndLoad(cgf, seiClassName, loader, beanClass);
+
+    }
+
     
     private static Class generateAndLoad(ClassGeneratorFactory cgf,
                                          final String actualClassName,

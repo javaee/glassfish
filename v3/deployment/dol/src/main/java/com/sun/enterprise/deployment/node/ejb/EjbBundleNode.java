@@ -62,8 +62,9 @@ public class EjbBundleNode extends BundleNode<EjbBundleDescriptor> {
     public final static String SYSTEM_ID = "http://java.sun.com/dtd/ejb-jar_2_0.dtd";    
     public final static String SYSTEM_ID_12 = "http://java.sun.com/dtd/ejb-jar_1_1.dtd";
     public final static String SCHEMA_ID_21 = "ejb-jar_2_1.xsd";
-    public final static String SCHEMA_ID = "ejb-jar_3_0.xsd";
-    public final static String SPEC_VERSION = "3.0";
+    public final static String SCHEMA_ID_30 = "ejb-jar_3_0.xsd";
+    public final static String SCHEMA_ID = "ejb-jar_3_1.xsd";
+    public final static String SPEC_VERSION = "3.1";
     private final static List<String> systemIDs = initSystemIDs();
 
    /**
@@ -81,6 +82,7 @@ public class EjbBundleNode extends BundleNode<EjbBundleDescriptor> {
    private static List<String> initSystemIDs() {
         ArrayList<String> systemIDs = new ArrayList<String>();
         systemIDs.add(SCHEMA_ID);
+        systemIDs.add(SCHEMA_ID_30);
         systemIDs.add(SCHEMA_ID_21);
         return Collections.unmodifiableList(systemIDs);
    }

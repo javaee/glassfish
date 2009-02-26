@@ -37,15 +37,19 @@ package com.sun.ejb.containers;
 
 import com.sun.ejb.ComponentContext;
 import com.sun.ejb.EjbInvocation;
+import com.sun.ejb.EJBUtils;
 import com.sun.ejb.containers.util.pool.AbstractPool;
 import com.sun.ejb.containers.util.pool.NonBlockingPool;
 import com.sun.ejb.containers.util.pool.ObjectFactory;
+import com.sun.ejb.codegen.ServiceInterfaceGenerator;
 import com.sun.ejb.spi.stats.StatelessSessionBeanStatsProvider;
 import com.sun.enterprise.config.serverbeans.EjbContainer;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbSessionDescriptor;
 import static com.sun.enterprise.deployment.LifecycleCallbackDescriptor.CallbackType;
+import com.sun.enterprise.deployment.EjbBundleDescriptor;
+import com.sun.enterprise.deployment.WebServicesDescriptor;
 import com.sun.enterprise.deployment.runtime.BeanCacheDescriptor;
 import com.sun.enterprise.deployment.runtime.BeanPoolDescriptor;
 import com.sun.enterprise.deployment.runtime.IASEjbExtraDescriptors;
@@ -56,9 +60,12 @@ import javax.ejb.*;
 import javax.transaction.Status;
 import javax.transaction.Transaction;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.logging.Level;
 
 /** This class provides container functionality specific to stateless 
@@ -244,13 +251,13 @@ public class StatelessSessionContainer
         }
 
         if( isWebServiceEndpoint ) {
-            /*TODO
+
             EjbBundleDescriptor bundle = 
                 ejbDescriptor.getEjbBundleDescriptor();
             WebServicesDescriptor webServices = bundle.getWebServices();
             Collection myEndpoints = 
                 webServices.getEndpointsImplementedBy(ejbDescriptor);
-            //FindBugs [Deadstore] Long ejbId = new Long(ejbDescriptor.getUniqueId());
+            
             
             // An ejb can only be exposed through 1 web service endpoint
             Iterator iter = myEndpoints.iterator();
@@ -262,7 +269,8 @@ public class StatelessSessionContainer
 
             if (!serviceEndpointIntfClass.isInterface()) {
                 ServiceInterfaceGenerator generator = new ServiceInterfaceGenerator(loader, ejbClass);
-                serviceEndpointIntfClass = WsUtil.generateAndLoad(generator, loader);
+                serviceEndpointIntfClass = EJBUtils.generateSEI(generator,  generator.getGeneratedClass(),
+                        loader, this.ejbClass);
                 if (serviceEndpointIntfClass==null) {
                     throw new RuntimeException("Error generating the SEI");
                 }
@@ -271,9 +279,8 @@ public class StatelessSessionContainer
             Class tieClass=null;
             
             WebServiceInvocationHandler invocationHandler =
-                    new WebServiceInvocationHandler(ejbClass, next,
-                                                    serviceEndpointIntfClass,
-                    webServiceInvocationInfoMap);
+                    new WebServiceInvocationHandler(ejbClass, next, serviceEndpointIntfClass,
+                                                    ejbContainerUtilImpl,webServiceInvocationInfoMap);
             
             
             invocationHandler.setContainer(this);
@@ -285,12 +292,14 @@ public class StatelessSessionContainer
             if (next.getTieClassName()!=null) {                
                 tieClass = loader.loadClass(next.getTieClassName());                
             }
-                    
+
+            
+            /*
             webServiceEndpoint = WebServiceEjbEndpointRegistry.getRegistry().createEjbEndpointInfo(next, this, servant, tieClass);
                                            
             WebServiceEjbEndpointRegistry.getRegistry().
                 registerEjbWebServiceEndpoint(webServiceEndpoint);
-            */
+              */
         }
 
         createBeanPool();

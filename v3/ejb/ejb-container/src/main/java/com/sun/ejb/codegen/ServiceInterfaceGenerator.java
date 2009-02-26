@@ -33,38 +33,84 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.sun.ejb.codegen;
 
-import java.lang.reflect.Method;
-import java.io.*;
-import java.util.*;
-import com.sun.ejb.EJBUtils;
 
-import static java.lang.reflect.Modifier.*;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 import static com.sun.corba.ee.spi.orbutil.codegen.Wrapper.*;
 import com.sun.corba.ee.spi.orbutil.codegen.Type;
 
+import java.util.logging.Logger;
+
+import javax.jws.WebMethod;
+
+import static java.lang.reflect.Modifier.*;
+
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.logging.LogDomains;
 
 /**
- * This class is used to generate the RMI-IIOP version of a 
- * remote business interface.
+ * This class is responsible for generating the SEI when it is not packaged 
+ * by the application. 
+ *
+ * @author Jerome Dochez
  */
-
-public class RemoteGenerator extends Generator 
+public class ServiceInterfaceGenerator extends Generator 
     implements ClassGeneratorFactory {
 
     private static LocalStringManagerImpl localStrings =
-	new LocalStringManagerImpl(RemoteGenerator.class);
+	    new LocalStringManagerImpl(ServiceInterfaceGenerator.class);
+    private static Logger _logger=null;
+    static{
+       _logger=LogDomains.getLogger(ServiceInterfaceGenerator.class, LogDomains.DPL_LOGGER);
+    }
+ 
+    Class sib=null;
+    String serviceIntfName;
+    String packageName;
+    String serviceIntfSimpleName;
+    Method[] intfMethods;
+    
+   /**
+     * Construct the Wrapper generator with the specified deployment
+     * descriptor and class loader.
+     * @exception GeneratorException.
+     */
+    public ServiceInterfaceGenerator(ClassLoader cl, Class sib) 
+	    throws GeneratorException, ClassNotFoundException
+    {
+	    super();
 
+        this.sib = sib;
+        serviceIntfSimpleName = getServiceIntfName();
 
-    private Class businessInterface;
-    private Method[] bizMethods;
-    private String remoteInterfacePackageName;
-    private String remoteInterfaceSimpleName;
-    private String remoteInterfaceName;
-
+	    packageName = getPackageName();
+        serviceIntfName = packageName + "." + serviceIntfSimpleName;
+	
+        intfMethods = calculateMethods(sib, removeDups(sib.getMethods()));
+        
+        // NOTE : no need to remove ejb object methods because EJBObject
+        // is only visible through the RemoteHome view.
+    }    
+    
+    public String getServiceIntfName() {
+        String serviceIntfSimpleName = sib.getSimpleName();
+        if (serviceIntfSimpleName.endsWith("EJB")) {
+            return serviceIntfSimpleName.substring(0, serviceIntfSimpleName.length()-3);
+        } else {
+            return serviceIntfSimpleName+"SEI";
+        }
+    }
+    
+    public String getPackageName() {
+        return sib.getPackage().getName()+".internal.jaxws";
+    }
+    
     /**
      * Get the fully qualified name of the generated class.
      * Note: the remote/local implementation class is in the same package 
@@ -72,7 +118,7 @@ public class RemoteGenerator extends Generator
      * @return the name of the generated class.
      */
     public String getGeneratedClass() {
-        return remoteInterfaceName;
+        return serviceIntfName;
     }
 
     // For corba codegen infrastructure
@@ -80,60 +126,45 @@ public class RemoteGenerator extends Generator
         return getGeneratedClass();
     }
     
-    /**
-     * Construct the Wrapper generator with the specified deployment
-     * descriptor and class loader.
-     * @exception GeneratorException.
-     */
-    public RemoteGenerator(ClassLoader cl, String businessIntf) 
-	throws GeneratorException 
-    {
-	super();
+    private Method[] calculateMethods(Class sib, Method[] initialList) {
 
-	try {
-	    businessInterface = cl.loadClass(businessIntf);
-	} catch (ClassNotFoundException ex) {
-	    throw new InvalidBean(
-		localStrings.getLocalString(
-		"generator.remote_interface_not_found",
-		"Remote interface not found "));
-	}
-
-        remoteInterfaceName = EJBUtils.getGeneratedRemoteIntfName
-            (businessInterface.getName());
-
-	    remoteInterfacePackageName = getPackageName(remoteInterfaceName);
-        remoteInterfaceSimpleName = getBaseName(remoteInterfaceName);
-	
-	    bizMethods = removeDups(businessInterface.getMethods());
+        // we start by assuming the @WebMethod was NOT used on this class
+        boolean webMethodAnnotationUsed = false;
+        List<Method> list = new ArrayList<Method>();
         
-        // NOTE : no need to remove ejb object methods because EJBObject
-        // is only visible through the RemoteHome view.
+        for (Method m : initialList) {
+            WebMethod wm = m.getAnnotation(WebMethod.class);
+            if ( (wm != null) && !webMethodAnnotationUsed) {
+                webMethodAnnotationUsed=true;
+                // reset the list, this is the first annotated method we find
+                list.clear();
+            }
+            if (wm!=null) {
+                list.add(m);
+            } else {
+                if (!webMethodAnnotationUsed && !m.getDeclaringClass().equals(java.lang.Object.class)) {
+                    list.add(m);
+                }
+            }
+        }
+        return list.toArray(new Method[0]);
     }
-
 
     public void evaluate() {
 
         _clear();
 
-	    if (remoteInterfacePackageName != null) {
-	        _package(remoteInterfacePackageName);
-        } else {
-            // no-arg _package() call is required for default package
-            _package();
-        } 
+	    if (packageName != null) {
+	        _package(packageName);
+        }
 
-        _interface(PUBLIC, remoteInterfaceSimpleName,
-                   _t("java.rmi.Remote"), 
-                   _t("com.sun.ejb.containers.RemoteBusinessObject"));
+        _interface(PUBLIC, serviceIntfSimpleName);
 
-        for(int i = 0; i < bizMethods.length; i++) {
-	        printMethod(bizMethods[i]);
+        for(int i = 0; i < intfMethods.length; i++) {
+	        printMethod(intfMethods[i]);
 	    }
 
         _end();
-
-        _classGenerator() ;
 
         return;
 
@@ -155,18 +186,17 @@ public class RemoteGenerator extends Generator
             exceptionList.add(_t("java.rmi.RemoteException"));
         }
 
-        exceptionList.add(_t("com.sun.ejb.containers.InternalEJBContainerException"));
         _method( PUBLIC | ABSTRACT, Type.type(m.getReturnType()),
                  m.getName(), exceptionList);
 
         int i = 0;
+
         for(Class param : m.getParameterTypes()) {
             _arg(Type.type(param), "param" + i);
             i++;
-	}
+	    }
 
         _end();
     }
-
-
+    
 }

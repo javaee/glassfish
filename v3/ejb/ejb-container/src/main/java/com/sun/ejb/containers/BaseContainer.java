@@ -89,7 +89,7 @@ import org.jvnet.hk2.component.Habitat;
 /**
  * This class implements part of the com.sun.ejb.Container interface.
  * It implements the container's side of the EJB-to-Container
- * contract defined by the EJB 2.0 spec.
+ * contract definweed by the EJB 2.0 spec.
  * It contains code shared by SessionBeans, EntityBeans and MessageDrivenBeans.
  * Its subclasses provide the remaining implementation of the
  * container functionality.
@@ -513,8 +513,8 @@ public abstract class BaseContainer
                 if( ejbDescriptor.isRemoteBusinessInterfacesSupported() ) {
 
 
-                    //GlassFishORBHelper orbHelper = ejbContainerUtilImpl.getORBHelper();
-                    //orbHelper.getORB();
+                    GlassFishORBHelper orbHelper = ejbContainerUtilImpl.getORBHelper();
+                    orbHelper.getORB();
                     
                     checkProtocolManager();
                     
@@ -605,7 +605,7 @@ public abstract class BaseContainer
                     ejbGeneratedOptionalLocalBusinessIntfClass = optIntfClassLoader.loadClass(optIntfClassName);
                 }
 
-                /*TODO
+                // TODO support singleton webservice endpoints
                 if( isStatelessSession ) {
                     EjbBundleDescriptor bundle =
                         ejbDescriptor.getEjbBundleDescriptor();
@@ -613,7 +613,7 @@ public abstract class BaseContainer
                     Collection endpoints =
                         webServices.getEndpointsImplementedBy(ejbDescriptor);
                     // JSR 109 doesn't require support for a single ejb
-                    // implementing multiple port components.
+                    // implementing multiple port ex.
                     if( endpoints.size() == 1 ) {
                         WebServiceEndpoint endpoint = (WebServiceEndpoint)
                             endpoints.iterator().next();
@@ -622,7 +622,7 @@ public abstract class BaseContainer
                         isWebServiceEndpoint = true;
                     }
                 }
-                */
+
 
                 try{
                     // get Method objects for ejbPassivate/Activate/ejbRemove
