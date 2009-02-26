@@ -89,7 +89,7 @@
 
   <modules>
     <module>api</module>
-    <!-- it's too slow for developers -->
+    <module>samples</module>
   </modules>
 
 
