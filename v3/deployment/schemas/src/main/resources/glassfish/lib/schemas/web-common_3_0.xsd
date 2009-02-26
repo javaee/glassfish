@@ -107,7 +107,7 @@
   </xsd:annotation>
 
   <xsd:include schemaLocation="javaee_5.xsd"/>
-  <xsd:include schemaLocation="jsp_2_1.xsd"/>
+  <xsd:include schemaLocation="jsp_2_2.xsd"/>
 
 
 <!-- **************************************************** -->
