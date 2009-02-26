@@ -19,7 +19,6 @@
         <mkdir dir="${archivedir}/a/b"/>
         <property name="all.ear" value="${archivedir}/${testName}App.ear"/>
         <property name="misc.jar" value="${archivedir}/a/b/${testName}-misc.jar"/>
-        <property name="all.war" value="${archivedir}/${testName}.war"/>
     </target>
 
     <target name="compile" depends="prepare">
@@ -40,9 +39,10 @@
                      excludes="**/TestClient.class"/>
         </jar>
 
-        <jar destfile="${all.war}" manifest="manifest/MANIFEST.MF">
-            <fileset dir="war" includes="**/*"/>
-        </jar>
+        <ant dir="war" target="private-all">
+            <property name="build" value="${build}/war"/>
+            <property name="archivedir" value="${archivedir}"/>
+        </ant>
 
         <ear destfile="${all.ear}" basedir="${archivedir}"
             appxml="descriptor/application.xml" includes="**/*.jar, *.war">

@@ -26,6 +26,7 @@
                   <fileset dir="docroot" includes="*.jsp, *.html"/>
                 </copy>
 		<jar destfile="${archivedir}/i18n-simple.war" 
+                     manifest="../manifest/MANIFEST.MF"
                      basedir="${build}"/>
 	</target>
 
