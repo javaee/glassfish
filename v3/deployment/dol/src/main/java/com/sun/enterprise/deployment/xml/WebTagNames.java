@@ -83,6 +83,7 @@ public interface WebTagNames extends TagNames {
     public static final String SESSION_CONFIG = "session-config";
     public static final String SESSION_TIMEOUT = "session-timeout";    
     public static final String COOKIE_CONFIG = "cookie-config";    
+    public static final String COOKIE_NAME = "name";   // NAME is already defined in TagNames.java    
     public static final String DOMAIN = "domain";    
     public static final String PATH = "path";    
     public static final String COMMENT = "comment";    

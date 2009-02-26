@@ -38,7 +38,7 @@ package com.sun.enterprise.deployment.node.web;
 
 import com.sun.enterprise.deployment.CookieConfigDescriptor;
 import com.sun.enterprise.deployment.SessionConfigDescriptor;
-import com.sun.enterprise.deployment.node.DisplayableComponentNode;
+import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
 import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.xml.WebTagNames;
 
@@ -49,7 +49,7 @@ import org.w3c.dom.Node;
  * 
  * @author Shing Wai Chan
  */
-public class SessionConfigNode extends DisplayableComponentNode {
+public class SessionConfigNode extends DeploymentDescriptorNode {
     private SessionConfigDescriptor descriptor;
 
     public SessionConfigNode() {

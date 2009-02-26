@@ -39,7 +39,7 @@ package com.sun.enterprise.deployment.node.web;
 import java.util.Map;
 
 import com.sun.enterprise.deployment.CookieConfigDescriptor;
-import com.sun.enterprise.deployment.node.DisplayableComponentNode;
+import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
 import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.xml.WebTagNames;
 
@@ -50,7 +50,7 @@ import org.w3c.dom.Node;
  * 
  * @author Shing Wai Chan
  */
-public class CookieConfigNode extends DisplayableComponentNode {
+public class CookieConfigNode extends DeploymentDescriptorNode {
     private CookieConfigDescriptor descriptor;
 
     public CookieConfigNode() {
@@ -75,6 +75,7 @@ public class CookieConfigNode extends DisplayableComponentNode {
      */    
     protected Map getDispatchTable() {
         Map table = super.getDispatchTable();
+        table.put(WebTagNames.COOKIE_NAME, "setName");
         table.put(WebTagNames.DOMAIN, "setDomain");
         table.put(WebTagNames.PATH, "setPath");
         table.put(WebTagNames.COMMENT, "setComment");
@@ -107,6 +108,7 @@ public class CookieConfigNode extends DisplayableComponentNode {
      */
     public Node writeDescriptor(Node parent, String nodeName, CookieConfigDescriptor descriptor) {       
         Node myNode = appendChild(parent, nodeName);
+        appendTextChild(myNode, WebTagNames.COOKIE_NAME, descriptor.getName());         
         appendTextChild(myNode, WebTagNames.DOMAIN, descriptor.getDomain());         
         appendTextChild(myNode, WebTagNames.PATH, descriptor.getPath());     
         appendTextChild(myNode, WebTagNames.COMMENT, descriptor.getComment());     

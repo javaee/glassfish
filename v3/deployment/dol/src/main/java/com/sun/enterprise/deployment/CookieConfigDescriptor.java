@@ -89,6 +89,9 @@ public class CookieConfigDescriptor extends Descriptor {
     }
 
     public void print(StringBuffer toStringBuffer) {
+        if (getName() != null) {
+            toStringBuffer.append("\n cookie name ").append(getName());
+        }
         if (domain != null) {
             toStringBuffer.append("\n cookie domain ").append(domain);
         }
