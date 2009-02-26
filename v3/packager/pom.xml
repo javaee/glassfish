@@ -70,7 +70,9 @@
 	<module>glassfish-amx</module>
 	<module>glassfish-jca</module>
 	<module>glassfish-jpa</module>
+	<module>glassfish-corba-omgapi</module>
 	<module>glassfish-jta</module>
+	<module>glassfish-jts</module>
 	<module>glassfish-jsf</module>
 	<module>glassfish-web-management</module>
 	<module>glassfish-web</module>
@@ -80,9 +82,8 @@
 	<module>glassfish-web-gui</module>
 	<module>glassfish-jdbc-gui</module>
 	<module>glassfish-ejb</module>
+	<module>glassfish-ejb-timer</module>
 	<module>glassfish-scripting</module>
-	<module>glassfish-corba-omgapi</module>	
-	<module>glassfish-jts</module>	
 	<module>javadb</module>
 	<module>metro</module>	
 	<module>jersey</module>	
