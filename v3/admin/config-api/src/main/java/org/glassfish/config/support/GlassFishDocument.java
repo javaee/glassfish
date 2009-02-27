@@ -60,7 +60,6 @@ public class GlassFishDocument extends DomDocument {
 
         final DomDocument doc = this;
 
-        Transactions transactions = habitat.getComponent(Transactions.class);
         Transactions.get(executor).addTransactionsListener(new TransactionListener() {
             public void transactionCommited(List<PropertyChangeEvent> changes) {
                 for (ConfigurationPersistence pers : habitat.getAllByContract(ConfigurationPersistence.class)) {
