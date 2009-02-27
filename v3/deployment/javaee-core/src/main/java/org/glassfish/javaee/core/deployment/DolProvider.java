@@ -24,6 +24,7 @@ import com.sun.enterprise.deployment.archivist.ApplicationFactory;
 import com.sun.enterprise.deployment.archivist.ApplicationArchivist;
 import com.sun.enterprise.deployment.archivist.DescriptorArchivist;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import com.sun.enterprise.config.serverbeans.DasConfig;
 
 import java.util.Properties;
 import java.io.IOException;
@@ -56,6 +57,9 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
     @Inject
     Habitat habitat;
 
+    @Inject
+    DasConfig dasConfig;
+
     private static String WRITEOUT_XML = System.getProperty(
         "writeout.xml");
 
@@ -74,7 +78,11 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
         Archivist archivist = archivistFactory.getArchivist(
                 sourceArchive, cl);
         archivist.setAnnotationProcessingRequested(true);
-        archivist.setXMLValidation(false);
+        String xmlValidationLevel = dasConfig.getDeployXmlValidation();
+        archivist.setXMLValidationLevel(xmlValidationLevel);
+        if (xmlValidationLevel.equals("none")) {
+            archivist.setXMLValidation(false);
+        }
         archivist.setRuntimeXMLValidation(false);
 
         File deploymentPlan = params.deploymentplan;

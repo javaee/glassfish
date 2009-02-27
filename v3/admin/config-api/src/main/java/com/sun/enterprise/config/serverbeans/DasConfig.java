@@ -208,7 +208,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="true")
+    @Attribute (defaultValue="full")
     public String getDeployXmlValidation();
 
     /**

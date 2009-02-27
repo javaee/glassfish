@@ -59,6 +59,7 @@ import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.deployment.archivist.ApplicationArchivist;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
+import com.sun.enterprise.config.serverbeans.DasConfig;
 
 import java.io.*;
 import java.net.URL;
@@ -90,6 +91,9 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
 
     @Inject
     ServerEnvironment env;
+
+    @Inject
+    DasConfig dasConfig;
     
     public String getArchiveType() {
         return "ear";
@@ -103,27 +107,11 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
     public void expand(ReadableArchive source, WritableArchive target, DeploymentContext context) throws IOException {
         // expand the top level first so we could read application.xml
         super.expand(source, target, context);
-        ApplicationHolder holder = context.getModuleMetaData(ApplicationHolder.class);
-        if (holder==null || holder.app==null) {
-            try {
-                long start = System.currentTimeMillis();
-                ReadableArchive source2 = 
-                    archiveFactory.openArchive(target.getURI());
-                ApplicationArchivist archivist = habitat.getComponent(ApplicationArchivist.class);
-                holder = new ApplicationHolder(archivist.createApplication(
-                    source2, false));
-                System.out.println("time to read application.xml " + (System.currentTimeMillis() - start));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (SAXParseException e) {
-                throw new RuntimeException(e);
-            }
-            context.addModuleMetaData(holder);
-        }
 
-        if (holder.app==null) {
-            throw new RuntimeException("Cannot read application metadata");
-        }
+        ReadableArchive source2 = 
+            archiveFactory.openArchive(target.getURI());
+
+        ApplicationHolder holder = getApplicationHolder(source2, context);
 
         // now start to expand the sub modules 
         for (ModuleDescriptor md : holder.app.getModules()) {
@@ -153,25 +141,7 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
         final ReadableArchive archive  = context.getSource();
         EarClassLoader cl = new EarClassLoader(new URL[0], parent);
 
-        ApplicationHolder holder = context.getModuleMetaData(ApplicationHolder.class);
-        if (holder==null || holder.app==null) {
-            try {
-                long start = System.currentTimeMillis();
-                ApplicationArchivist archivist = habitat.getComponent(ApplicationArchivist.class);
-                holder = new ApplicationHolder(archivist.createApplication(
-                    archive, true));
-                System.out.println("time to read application.xml " + (System.currentTimeMillis() - start));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (SAXParseException e) {
-                throw new RuntimeException(e);
-            }
-            context.addModuleMetaData(holder);
-        }
-
-        if (holder.app==null) {
-            throw new RuntimeException("Cannot read application metadata");
-        }
+        ApplicationHolder holder = getApplicationHolder(archive, context);
 
         // add the libraries packaged in the application library directory
         try {
@@ -260,4 +230,36 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
             this.app = app;
         }
     }
-}
+
+    private ApplicationHolder getApplicationHolder(ReadableArchive source, 
+        DeploymentContext context) {
+        ApplicationHolder holder = context.getModuleMetaData(ApplicationHolder.class);
+        if (holder==null || holder.app==null) {
+            try {
+                long start = System.currentTimeMillis();
+                ApplicationArchivist archivist = habitat.getComponent(ApplicationArchivist.class);
+                archivist.setAnnotationProcessingRequested(true);
+
+                String xmlValidationLevel = dasConfig.getDeployXmlValidation();
+                archivist.setXMLValidationLevel(xmlValidationLevel);
+                if (xmlValidationLevel.equals("none")) {
+                    archivist.setXMLValidation(false);
+                }
+
+                holder = new ApplicationHolder(archivist.createApplication(
+                    source, false));
+                System.out.println("time to read application.xml " + (System.currentTimeMillis() - start));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (SAXParseException e) {
+                throw new RuntimeException(e);
+            }
+            context.addModuleMetaData(holder);
+        }
+
+        if (holder.app==null) {
+            throw new RuntimeException("Cannot read application metadata");
+        }
+        return holder;
+    }
+} 
