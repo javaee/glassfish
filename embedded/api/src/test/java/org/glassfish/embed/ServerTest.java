@@ -36,6 +36,7 @@ public class ServerTest {
 
         EmbeddedInfo info = new EmbeddedInfo();
         info.setServerName("server");
+        info.getFileSystem().setAutoDelete(true);
         server = Server.getServer(info.name);
 
         if(server == null)
@@ -207,19 +208,22 @@ public class ServerTest {
     @Test(expected=EmbeddedException.class)
     public void testPortInUse() throws Exception {
         System.out.println("testPortInUse");
+        File file = new File("gfe_server2");
         try {
             server.start();
 
             EmbeddedInfo info = new EmbeddedInfo();
             info.setServerName("server2");
-            info.getFileSystem().setInstallRoot(new File("gfe_server2"));
+            info.getFileSystem().setInstallRoot(file);
             Server server2 = new Server(info);
 
         } catch(EmbeddedException ee) {
             System.out.println("Expected Exception: " + ee);
+            file.delete();
             throw ee;
         } catch (Exception e) {
             System.out.println("Unxpected Exception: " + e);
+            file.delete();
             fail("failed test: testPortInUse");
         }
     }
