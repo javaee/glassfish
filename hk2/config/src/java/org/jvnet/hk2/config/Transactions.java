@@ -36,19 +36,15 @@
  */
 package org.jvnet.hk2.config;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.*;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import java.beans.PropertyChangeEvent;
 import java.lang.reflect.Proxy;
 import java.util.concurrent.*;
 
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.Habitat;
 
 /**
  * Transactions is a singleton service that receives transaction notifications and dispatch these
@@ -61,27 +57,51 @@ import org.jvnet.hk2.component.Habitat;
 public final class Transactions {
 
     private static Transactions singleton;
-    
-    // NOTE: synchronization on the object itself
-    List<ListenerInfo<TransactionListener>> listeners;
 
-    ExecutorService executor;
+    // each transaction listener has a notification pump.
+    private final List<ListenerNotifier<TransactionListener, ?, Void>> listeners =
+            new ArrayList<ListenerNotifier<TransactionListener, ?, Void>>();
+
+    private final ExecutorService executor;
+
+    // all configuration listeners are notified though one notifier.
+    private final ConfigListenerNotifier configListenerNotifier = new ConfigListenerNotifier();
+
+    public void postConstruct() {
+        singleton.configListenerNotifier.start();
+    }
+
+    /**
+     * Abstract notification pump, it adds jobs to the queue and process them in the order
+     * jobs were added.
+     *
+     * Jobs are just a wrapper for events of type <U> and a notification mechanism for
+     * completion notification
+     *
+     * @param <T> type of listener interface
+     * @param <U> type of events the listener methods are expecting
+     * @param <V> return type of the listener interface methods.
+     */
+    private abstract class Notifier<T, U, V> {
         
-    private ListenerInfo<Object> configListeners;
-    
-    private final class ListenerInfo<T> {
-        
-        private final T listener;
-        
-        private final BlockingQueue<Job> pendingJobs = new ArrayBlockingQueue<Job>(50);
+        private final BlockingQueue<FutureTask> pendingJobs = new ArrayBlockingQueue<FutureTask>(50);
         private CountDownLatch latch = new CountDownLatch(1);
-        
-        public ListenerInfo(T listener) {
-            this.listener = listener;
-            start();
-        }
-        
-        public void addTransaction(Job job) {
+
+        /**
+         * Creates the task that will notify the listeners of a particular job.
+         * @param job contains the specifics of the notification like the events that need to be notified.
+         * @return a task that can be run and return an optional value.
+         */
+        protected abstract FutureTask<V> prepare(final Job<T, U, V> job);
+
+        /**
+         * Adds a job to the notification pump. This job will be processed as soon as all other pending
+         * jobs have completed.
+         *
+         * @param job new notification job.
+         * @return a future on the return value.
+         */
+        public Future<V> add(final Job<T, U, V> job) {
                 
             // NOTE that this is put() which blocks, *not* add() which will not block and will
             // throw an IllegalStateException if the queue is full.
@@ -89,29 +109,24 @@ public final class Transactions {
                 throw new RuntimeException("TransactionListener is inactive, yet jobs are published to it");
             }
             try {
-                pendingJobs.put(job);
+                pendingJobs.put(prepare(job));
             } catch (InterruptedException e ) {
                 throw new RuntimeException(e);
-            }            
-            
+            }
+            return null;
         }
         
-        private void start() {
+        protected void start() {
 
             executor.submit(new Runnable() {
 
                 public void run() {
                     while (latch.getCount()>0) {
                         try {
-                            final Job job  = pendingJobs.take();
-                            try {
-                                if ( job.mEvents.size() != 0 ) {
-                                    job.process(listener);
-                               }
-                            } finally {
-                                job.releaseLatch();
-                            }
+                            final FutureTask job = pendingJobs.take();
+                            job.run();                            
                         }
+
                         catch (InterruptedException e) {
                             // do anything here?
                         }
@@ -124,19 +139,136 @@ public final class Transactions {
         void stop() {
             latch.countDown();
             // last event to force the close
-            pendingJobs.add(new TransactionListenerJob(new ArrayList<PropertyChangeEvent>(), null));
+            pendingJobs.add(prepare(new Job<T, U, V>(null, null) {
+                public V process(T target) {
+                    return null;
+                }
+            }));
         }
     }
+
+    /**
+     * Default listener notification pump. One thread per listener, jobs processed in
+     * the order it was received.
+     *
+     * @param <T> type of listener interface
+     * @param <U> type of events the listener methods are expecting
+     * @param <V> return type of the listener interface methods.
+     */
+    public class ListenerNotifier<T,U,V> extends Notifier<T,U,V> {
+        
+        final T listener;
+
+        public ListenerNotifier(T listener) {
+            this.listener = listener;
+            start();
+        }
+
+        protected FutureTask<V> prepare(final Job<T, U, V> job) {
+            return new FutureTask<V>(new Callable<V>() {
+                    public V call() throws Exception {
+                        try {
+                            if ( job.mEvents.size() != 0 ) {
+                                return job.process(listener);
+                           }
+                        } finally {
+                            job.releaseLatch();
+                        }
+                        return null;
+                    }
+                });
+        }   
+        
+    }
+
+    /**
+     * Configuration listener notification pump. All Listeners are notified within their own thread, only on thread
+     * takes care of the job pump.
+     * 
+     */
+    public class ConfigListenerNotifier extends Notifier<ConfigListener,PropertyChangeEvent,UnprocessedChangeEvents> {
+
+        protected FutureTask<UnprocessedChangeEvents>
+            prepare(final Job<ConfigListener, PropertyChangeEvent, UnprocessedChangeEvents> job) {
+
+        // first, calculate the recipients.
+        final Set<ConfigListener> configListeners = new HashSet<ConfigListener>();
+        for (PropertyChangeEvent event : job.mEvents) {
+            final Dom dom = (Dom) ((ConfigView) Proxy.getInvocationHandler(event.getSource())).getMasterView();
+            configListeners.addAll(dom.getListeners());
+
+            // we also notify the parent.
+            if (dom.parent()!=null) {
+                configListeners.addAll(dom.parent().getListeners());
+            }
+        }
+
+        return new FutureTask<UnprocessedChangeEvents>(new Callable<UnprocessedChangeEvents>() {
+            public UnprocessedChangeEvents call() throws Exception {
+
+                try {
+                    // temporary structure to store our future notifications
+                    List<Future<UnprocessedChangeEvents>> futures = new ArrayList<Future<UnprocessedChangeEvents>>();
+
+                    for (final ConfigListener listener : configListeners) {
+                        // each listener is notified in it's own thread.
+
+                        futures.add(executor.submit(new Callable<UnprocessedChangeEvents>() {
+                            public UnprocessedChangeEvents call() throws Exception {
+                                return job.process(listener);
+                            }
+                        }));
+                    }
+                    List<UnprocessedChangeEvents> unprocessed = new ArrayList<UnprocessedChangeEvents>(futures.size());
+                    for (Future<UnprocessedChangeEvents> future : futures) {
+                        try {
+                            UnprocessedChangeEvents result = future.get(200, TimeUnit.SECONDS);
+                            if (result.getUnprocessed()!=null && result.getUnprocessed().size()>0) {
+                                for (UnprocessedChangeEvent event : result.getUnprocessed()) {
+                                    Logger.getAnonymousLogger().log(Level.WARNING, "Unprocessed event : " + event);
+                                }
+                                unprocessed.add(result);
+                            }
+                        } catch (InterruptedException e) {
+                            Logger.getAnonymousLogger().log(Level.SEVERE, "Config Listener notification got interruped", e);
+                        } catch (ExecutionException e) {
+                            Logger.getAnonymousLogger().log(Level.SEVERE, "Config Listener notification got interruped", e);
+                        } catch (TimeoutException e) {
+                            Logger.getAnonymousLogger().log(Level.SEVERE, "Config Listener notification took too long", e);
+                        }
+                    }
+
+                    // all notification have been successful, I just need to notify the unprocessed events.
+                    // note these events are always synchronous so far.
+                    if (!unprocessed.isEmpty()) {
+                        Job unprocessedJob = new UnprocessedEventsJob(unprocessed, null);
+                        for (ListenerNotifier<TransactionListener, ?, Void> listener : Transactions.this.listeners) {
+                            listener.add(unprocessedJob);
+                        }
+                    }
+                } finally {
+                    job.releaseLatch();
+                }
+
+                // in theory I should aggregate my unprocessed events but nobody cares.
+                return null;
+            }
+        });
+    }
+
+    }
+
+
     /**
         A job contains an optional CountdownLatch so that a caller can learn when the
         transaction has "cleared" by blocking until that time.
      */
-    private abstract static class Job<T,U> {
+    private abstract static class Job<T,U,V> {
 
         private final CountDownLatch mLatch;
         protected final List<U> mEvents;
         
-        public Job(List events, final CountDownLatch latch ) {
+        public Job(List<U> events, final CountDownLatch latch ) {
             mLatch  = latch;
             mEvents = events;
         }
@@ -153,112 +285,57 @@ public final class Transactions {
             }
         }
         
-        public abstract void process(T target);
+        public abstract V process(T target);
     }
     
-    private static class TransactionListenerJob extends Job<TransactionListener, PropertyChangeEvent> {
+    private static class TransactionListenerJob extends Job<TransactionListener, PropertyChangeEvent, Void> {
 
         public TransactionListenerJob(List<PropertyChangeEvent> events, CountDownLatch latch) {
             super(events,  latch);
         }
         
         @Override
-        public void process(TransactionListener listener) {
+        public Void process(TransactionListener listener) {
             try {
                 listener.transactionCommited(mEvents);
             } catch(Exception e) {
                 e.printStackTrace();
-            }            
+            }
+            return null;
         }
     }
 
-    private static class UnprocessedEventsJob extends Job<TransactionListener, UnprocessedChangeEvents> {
+    private static class UnprocessedEventsJob extends Job<TransactionListener, UnprocessedChangeEvents, Void> {
 
         public UnprocessedEventsJob(List<UnprocessedChangeEvents> events, CountDownLatch latch) {
             super(events, latch);
         }
 
         @Override
-        public void process(TransactionListener listener) {
+        public Void process(TransactionListener listener) {
             try {
                 listener.unprocessedTransactedEvents(mEvents);
             } catch(Exception e) {
                 e.printStackTrace();
             }
+            return null;
+        }
+    }
+
+    public class ConfigListenerJob extends Job<ConfigListener, PropertyChangeEvent, UnprocessedChangeEvents> {
+
+        final PropertyChangeEvent[] eventsArray;
+
+        public ConfigListenerJob(List<PropertyChangeEvent> events, CountDownLatch latch) {
+            super(events, latch);
+            eventsArray = mEvents.toArray(new PropertyChangeEvent[mEvents.size()]);            
+        }
+
+        public UnprocessedChangeEvents process(ConfigListener target) {
+            return target.changed(eventsArray);
         }
     }
     
-    private   class ConfigListenerJob extends Job<Object, PropertyChangeEvent> {
-
-
-        public ConfigListenerJob(List events, CountDownLatch latch) {
-            super(events, latch);
-        }
-
-        @Override
-        public void process(Object target) {
-            Set<ConfigListener> notifiedListeners = new HashSet<ConfigListener>();
-            List<UnprocessedChangeEvents> unprocessedEvents  = new ArrayList<UnprocessedChangeEvents>();
-            for (final PropertyChangeEvent evt : mEvents) {
-                final Dom dom = (Dom) ((ConfigView) Proxy.getInvocationHandler(evt.getSource())).getMasterView();
-                if (dom.getListeners() != null && dom.getListeners().size() != 0 ) {
-                    List<ConfigListener> listeners = new ArrayList<ConfigListener>(dom.getListeners());
-                    for (final ConfigListener listener :listeners) {                       
-                        if (listener==null) {
-                            Logger.getAnonymousLogger().warning("Null config listener is registered to " + dom);
-                            continue;
-                        }
-                        if (!notifiedListeners.contains(listener)) {
-                            try {
-                                // create a new array each time to avoid any potential array changes?
-                                UnprocessedChangeEvents unprocessed = listener.changed(mEvents.toArray(new PropertyChangeEvent[mEvents.size()]));
-                                if (unprocessed != null && unprocessed.size() != 0 ) {
-                                    unprocessedEvents.add(unprocessed);
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        notifiedListeners.add(listener);
-                    }
-                }
-                // we notify the immediate parent.
-                // dochez : should we notify the parent chain up to the root or stop at the first parent.
-                if (dom.parent()!=null && dom.parent().getListeners()!=null) {
-                    List<ConfigListener> parentListeners = new ArrayList<ConfigListener>(dom.parent().getListeners());
-                    for (ConfigListener parentListener : parentListeners) {
-                        if (parentListener==null) {
-                            Logger.getAnonymousLogger().warning("Null config listener is registered to " + dom);
-                            continue;
-                        }
-                        if (!notifiedListeners.contains(parentListener)) {
-                            try {
-                                // create a new array each time to avoid any potential array changes?
-                                UnprocessedChangeEvents unprocessed = parentListener.changed(mEvents.toArray(new PropertyChangeEvent[mEvents.size()]));
-                                if (unprocessed != null && unprocessed.size() != 0 ) {
-                                    unprocessedEvents.add(unprocessed);
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            notifiedListeners.add(parentListener);
-                        }
-                    }
-                }
-            }
-            // all the config listeners have been notified, let's see if we have
-            // some unprocessed events to notifiy the transation listeners.
-            if (!unprocessedEvents.isEmpty()) {
-                synchronized(listeners) {
-                    UnprocessedEventsJob job = new UnprocessedEventsJob(unprocessedEvents, null);
-                    for (ListenerInfo listener : listeners) {
-                        listener.addTransaction(job);
-                    }
-                }
-            }
-        }        
-    }
-
     /**
      * add a new listener to all transaction events.
      *
@@ -266,7 +343,7 @@ public final class Transactions {
      */
     public void addTransactionsListener(TransactionListener listener) {
         synchronized(listeners) {
-            listeners.add(new ListenerInfo(listener));
+            listeners.add(new ListenerNotifier<TransactionListener, PropertyChangeEvent, Void>(listener));
         }
     }
 
@@ -277,7 +354,7 @@ public final class Transactions {
      */
     public boolean removeTransactionsListener(TransactionListener listener) {
         synchronized(listeners) {
-            for (ListenerInfo info : listeners) {
+            for (ListenerNotifier info : listeners) {
                 if (info.listener==listener) {
                     info.stop();
                     return listeners.remove(info);
@@ -290,7 +367,7 @@ public final class Transactions {
     public List<TransactionListener> currentListeners() {
         synchronized(listeners) {            
             List<TransactionListener> l = new ArrayList<TransactionListener>();
-            for (ListenerInfo<TransactionListener> info : listeners) {
+            for (ListenerNotifier<TransactionListener, ?, Void> info : listeners) {
                 l.add(info.listener);
             }
             return l;
@@ -298,9 +375,13 @@ public final class Transactions {
     }
 
 
-    /** maintains prior semantics of add, and return immediately */
+    /**
+     * Synchronous notification of a new transactional configuration change operation.
+     *
+     * @param events list of changes 
+     */
     void addTransaction( final List<PropertyChangeEvent> events) {
-        addTransaction(events, false);
+        addTransaction(events, true);
     }
         
     /**
@@ -309,28 +390,32 @@ public final class Transactions {
      * @param events accumulated list of changes
      * @param waitTillCleared  synchronous semantics; wait until all change events are sent
      */
+    @SuppressWarnings("cast")
     void addTransaction(
         final List<PropertyChangeEvent> events,
         final boolean waitTillCleared ) {
         
-        final List<ListenerInfo> listInfos = new ArrayList<ListenerInfo>();
+        final List<ListenerNotifier> listInfos = new ArrayList<ListenerNotifier>();
         listInfos.addAll(listeners);
         
         // create a CountDownLatch to implement waiting for events to actually be sent
-        final CountDownLatch latch = waitTillCleared ? new CountDownLatch(listInfos.size()+1) : null;
+        final Job<TransactionListener, ?, Void> job = new TransactionListenerJob( events,
+                                waitTillCleared ? new CountDownLatch(listInfos.size()) : null);
         
-        final Job job = new TransactionListenerJob( events, latch );
+        final ConfigListenerJob configJob = new ConfigListenerJob(events,
+                waitTillCleared? new CountDownLatch(1):null);
         
         // NOTE that this is put() which blocks, *not* add() which will not block and will
         // throw an IllegalStateException if the queue is full.
         try {
-            for (ListenerInfo listener : listInfos) {
-                listener.addTransaction(job);
+            for (ListenerNotifier listener : listInfos) {
+                listener.add(job);
             }
-            // the config listener job
-            configListeners.addTransaction(new ConfigListenerJob(events, latch));
-            
+
+            configListenerNotifier.add(configJob);
+
             job.waitForLatch();
+            configJob.waitForLatch();
         } catch (InterruptedException e ) {
             throw new RuntimeException(e);
         }
@@ -345,18 +430,18 @@ public final class Transactions {
     
     private Transactions(ExecutorService executor) {
         this.executor = executor;
-        listeners = new ArrayList<ListenerInfo<TransactionListener>>();
-        configListeners = new ListenerInfo<Object>(null);
     }
 
     public static synchronized Transactions get(ExecutorService executor) {
         if (singleton==null) {
             singleton=new Transactions(executor);
+            singleton.postConstruct();
         }
+
         return singleton;
     }
     
-    public static final Transactions get() {
+    public static Transactions get() {
         return singleton;
     }
 }
