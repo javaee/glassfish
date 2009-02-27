@@ -52,7 +52,6 @@
 	<welcome-file>hello.jsp</welcome-file>
     </welcome-file-list>
   <security-constraint>
-        <display-name>Constraint1</display-name>
         <web-resource-collection>
             <web-resource-name>secure</web-resource-name>
             <description/>
