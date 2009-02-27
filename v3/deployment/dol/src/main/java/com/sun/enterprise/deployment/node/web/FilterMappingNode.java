@@ -55,6 +55,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.DispatcherType;
+
 
 /**
  * This node handles all information relative to servlet-mapping xml tag
@@ -143,10 +145,8 @@ public class FilterMappingNode extends DeploymentDescriptorNode {
             appendTextChild(myNode, WebTagNames.URL_PATTERN, urlPattern);
         }
 
-        Set dispatchers = descriptor.getDispatchers();
-        for (Iterator i = dispatchers.iterator(); i.hasNext();) {
-            String dispatcher = (String) i.next();
-            appendTextChild(myNode, WebTagNames.DISPATCHER, dispatcher);
+        for (DispatcherType dispatcherType : descriptor.getDispatchers()) {
+            appendTextChild(myNode, WebTagNames.DISPATCHER, dispatcherType.name());
         }
         return myNode;
     }
