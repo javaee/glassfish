@@ -13,10 +13,7 @@ public class ConfigListener implements ServletContextListener {
      * @param sce The servlet context event
      */
     public void contextInitialized(ServletContextEvent sce) {
-        ServletContext sc = sce.getServletContext();
-        SessionCookieConfig scc = new SessionCookieConfig(
-            null, null, null, false, false, "MYJSESSIONID");
-        sc.setSessionCookieConfig(scc);
+        sce.getServletContext().getSessionCookieConfig().setName("MYJSESSIONID");
     }
 
     /**
