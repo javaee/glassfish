@@ -112,7 +112,7 @@ public class DomainXml implements Populator {
                 Logger.getAnonymousLogger().fine("Upgrading domain.xml with " + cu.getClass());
             }
         } catch (Exception e) {
-            // todo, some reporting facility would useful.
+            Logger.getAnonymousLogger().severe("Upgrading domain.xml failed " + e.getMessage());
         }
 
         habitat.addIndex(new ExistingSingletonInhabitant(habitat.getComponent(Server.class, env.getInstanceName())),
