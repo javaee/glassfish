@@ -24,40 +24,34 @@
 
 package com.sun.enterprise.v3.services.impl;
 
+import com.sun.enterprise.config.serverbeans.VirtualServer;
+import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.v3.server.HK2Dispatcher;
+import com.sun.grizzly.standalone.DynamicContentAdapter;
+import com.sun.grizzly.tcp.ActionCode;
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.tcp.Request;
 import com.sun.grizzly.tcp.Response;
-import com.sun.grizzly.tcp.ActionCode;
-import com.sun.grizzly.standalone.DynamicContentAdapter;
 import com.sun.grizzly.util.buf.ByteChunk;
-import com.sun.enterprise.module.common_impl.LogHelper;
-import com.sun.enterprise.config.serverbeans.VirtualServer;
-import com.sun.enterprise.v3.server.HK2Dispatcher;
-import com.sun.enterprise.util.StringUtils;
+import org.glassfish.api.content.FileServer;
+import org.glassfish.api.deployment.ApplicationContainer;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URLConnection;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.io.File;
-import java.io.IOException;
-import java.io.FileNotFoundException;
-import java.io.FileInputStream;
-import java.net.URLConnection;
-import java.text.SimpleDateFormat;
-import java.text.ParseException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-
-import org.glassfish.api.deployment.ApplicationContainer;
-import org.glassfish.api.content.FileServer;
 
 /**
  *  @author: Jerome Dochez
  */
 public class VsAdapter extends AbstractAdapter implements Adapter {
+    private final Logger logger = Logger.getLogger(VsAdapter.class.getName());
 
     private static final String RFC_2616_FORMAT = "EEE, d MMM yyyy HH:mm:ss z";
     
@@ -116,9 +110,7 @@ public class VsAdapter extends AbstractAdapter implements Adapter {
     public void service(Request req, Response res)
         throws Exception {
 
-        if (LogHelper.getDefaultLogger().isLoggable(Level.FINER)) {
-            LogHelper.getDefaultLogger().finer("Received something on " + req.requestURI());
-        }
+        logger.log(Level.FINE, "Received something on " + req.requestURI());
 
 
         String requestURI = req.requestURI().toString();
@@ -151,7 +143,7 @@ public class VsAdapter extends AbstractAdapter implements Adapter {
                         serviceFile(req, res, new File(docRoot, "/favicon.gif"));
                     } else {
                         // TODO : a better job at error reporting
-                        LogHelper.getDefaultLogger().info("No adapter registered for : "
+                        logger.info("No adapter registered for : "
                                 + requestURI);
                         sendError(res, "Glassfish v3 Error : NotFound : "
                                 + requestURI);
@@ -170,7 +162,7 @@ public class VsAdapter extends AbstractAdapter implements Adapter {
                     req.action( ActionCode.ACTION_POST_REQUEST , null);
                 }
             }catch (Throwable t) {
-                LogHelper.getDefaultLogger().log(Level.WARNING,"VsAdapter",t);
+                logger.log(Level.WARNING,"VsAdapter",t);
             }
 
             res.finish();
