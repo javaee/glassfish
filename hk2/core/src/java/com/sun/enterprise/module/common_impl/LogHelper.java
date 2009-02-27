@@ -47,8 +47,9 @@ import java.util.logging.Level;
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class LogHelper {
+    private static final Logger logger = Logger.getAnonymousLogger();
     public static Logger getDefaultLogger() {
-        return Logger.getAnonymousLogger();
+        return logger;
     }
 
     public static boolean isLoggable(Level level) {
