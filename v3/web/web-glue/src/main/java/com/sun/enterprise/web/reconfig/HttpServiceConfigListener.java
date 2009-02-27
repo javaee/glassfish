@@ -36,6 +36,7 @@
  */
 package com.sun.enterprise.web.reconfig;
 
+import com.sun.grizzly.util.http.mapper.Mapper;
 import java.beans.PropertyChangeEvent;
 import java.util.List;
 import java.util.logging.Level;
@@ -51,6 +52,7 @@ import com.sun.enterprise.config.serverbeans.KeepAlive;
 import org.glassfish.api.admin.config.Property; 
 import com.sun.enterprise.config.serverbeans.RequestProcessing;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
+import com.sun.enterprise.v3.services.impl.MapperUpdateListener;
 import com.sun.enterprise.web.WebContainer;
 
 import org.apache.catalina.LifecycleException;
@@ -64,7 +66,7 @@ import org.jvnet.hk2.annotations.Inject;
  *
  * @author amyroh
  */
-public class HttpServiceConfigListener implements ConfigListener {
+public class HttpServiceConfigListener implements ConfigListener, MapperUpdateListener {
 
     @Inject
     public HttpService httpService;
@@ -170,5 +172,9 @@ public class HttpServiceConfigListener implements ConfigListener {
         , logger);
          return unp;
     }
-    
+
+    public void update(HttpService httpService, HttpListener httpListener,
+            Mapper mapper) {
+        container.updateMapper(httpService, httpListener, mapper);
+    }
 }

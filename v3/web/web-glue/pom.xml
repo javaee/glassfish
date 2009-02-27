@@ -35,10 +35,11 @@
 * only if the new code is made subject to such option by the copyright 
 * holder. 
 */ 
---><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.glassfish.web</groupId>
-    	<artifactId>web</artifactId>
+        <artifactId>web</artifactId>
         <version>3.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -101,7 +102,7 @@
                 <role>developer</role>
             </roles>
         </developer>
-    </developers>  
+    </developers>
 
     <build>
         <resources>
@@ -115,17 +116,17 @@
         </resources>
     </build>
     <dependencies>
-         <dependency>
+        <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.servlet</artifactId>
             <version>${project.version}</version>
-         </dependency>
-         <dependency>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>web-cli</artifactId>
             <version>${project.version}</version>
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>org.glassfish.flashlight</groupId>
             <artifactId>flashlight-framework</artifactId>
             <version>${project.version}</version>
@@ -135,11 +136,11 @@
             <artifactId>hk2</artifactId>
         </dependency>
         
-		<dependency>
-			<groupId>org.glassfish.common</groupId>
-			<artifactId>stats77</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>stats77</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>war-util</artifactId>
@@ -219,7 +220,7 @@
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
-        </dependency>	 
+        </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>internal-api</artifactId>
@@ -242,14 +243,19 @@
         </dependency>
         <dependency>
             <!-- Needed to register URLStreamHandler -->
-          <groupId>org.osgi</groupId>
-          <artifactId>osgi_R4_core</artifactId>
-          <version>1.0</version>
-          <scope>provided</scope>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi_R4_core</artifactId>
+            <version>1.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>web-gui-plugin-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.core</groupId>
+            <artifactId>kernel</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

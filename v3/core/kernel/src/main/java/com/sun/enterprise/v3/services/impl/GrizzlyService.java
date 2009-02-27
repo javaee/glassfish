@@ -48,11 +48,13 @@ import com.sun.enterprise.v3.admin.AdminAdapter;
 import com.sun.enterprise.v3.admin.adapter.AdminConsoleAdapter;
 import com.sun.grizzly.Controller;
 import com.sun.grizzly.tcp.Adapter;
+import com.sun.grizzly.util.http.mapper.Mapper;
 import com.sun.hk2.component.ConstructorWomb;
 import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -102,6 +104,9 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     private ThreadPoolProbeProvider threadPoolProbeProvider;
 
     private DynamicConfigListener configListener;
+
+    ConcurrentLinkedQueue<MapperUpdateListener> mapperUpdateListeners =
+            new ConcurrentLinkedQueue<MapperUpdateListener>();
 
     public GrizzlyService() {
         futures = new ArrayList<Future<Result<Thread>>>();
@@ -171,6 +176,41 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
         return false;
     }
 
+    /**
+     * Adds {@link MapperUpdateListener} to listeners queue.
+     * 
+     * @param listener the listener to be added.
+     * @return <tt>true</tt>, if listener was successfully added,
+     * or <tt>false</tt> otherwise.
+     */
+    public boolean addMapperUpdateListener(MapperUpdateListener listener) {
+        return mapperUpdateListeners.add(listener);
+    }
+
+    /**
+     * Removes {@link MapperUpdateListener} to listeners queue.
+     *
+     * @param listener the listener to be removed.
+     * @return <tt>true</tt>, if listener was successfully removed,
+     * or <tt>false</tt> otherwise.
+     */
+    public boolean removeMapperUpdateListener(MapperUpdateListener listener) {
+        return mapperUpdateListeners.remove(listener);
+    }
+
+    /**
+     * Notify all {@link MapperUpdateListener}s about update happened.
+     * 
+     * @param httpService {@link HttpService}
+     * @param httpListener {@link HttpListener}, which {@link Mapper} got changed
+     * @param mapper new {@link Mapper} value
+     */
+    public void notifyMapperUpdateListeners(HttpService httpService,
+            HttpListener httpListener, Mapper mapper) {
+        for(MapperUpdateListener listener : mapperUpdateListeners) {
+            listener.update(httpService, httpListener, mapper);
+        }
+    }
 
     /**
      * Returns the controller

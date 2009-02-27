@@ -161,10 +161,12 @@ public class GrizzlyProxy implements NetworkProxy {
         geh.getContainerMapper().configureMapper();
 
         onePortMapper = new ExistingSingletonInhabitant<Mapper>(mapper);
-
+       
         grizzlyService.getHabitat().addIndex(
             onePortMapper, "com.sun.grizzly.util.http.mapper.Mapper",
             String.valueOf(portNumber));
+        
+        grizzlyService.notifyMapperUpdateListeners(httpService, httpListener, mapper);
     }
 
 

@@ -135,6 +135,7 @@ import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.ObservableBean;
 import org.xml.sax.EntityResolver;
+import com.sun.enterprise.v3.services.impl.GrizzlyService;
 
 /**
  * Web container service
@@ -230,6 +231,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     @Inject
     ClassLoaderHierarchy clh;
+
+    @Inject
+    GrizzlyService grizzlyService;
 
     @Inject
     JavaEEObjectStreamFactory javaEEObjectStreamFactory;
@@ -392,6 +396,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     // Indicates whether we are being shut down
     private boolean isShutdown = false;
 
+    private final Object mapperUpdateSync = new Object();
 
     /**
      * Static initialization
@@ -565,6 +570,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         events.register(this);
 
+        grizzlyService.addMapperUpdateListener(configListener);
+
         List<Config> configs = domain.getConfigs().getConfig();
         for (Config aConfig : configs) {
 
@@ -627,7 +634,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         }
         */
-
     }
 
 
@@ -3305,117 +3311,142 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                                 HttpService httpService)
             throws LifecycleException {
             
-        // Disable dynamic reconfiguration of the http listener at which
-        // the admin related webapps (including the admingui) are accessible.
-        // Notice that in GlassFish v3, we support a domain.xml configuration
-        // that does not declare any admin-listener, in which case the
-        // admin-related webapps are accessible on http-listener-1.
-        if (httpListener.getDefaultVirtualServer().equals(
+        synchronized(mapperUpdateSync) {
+            // Disable dynamic reconfiguration of the http listener at which
+            // the admin related webapps (including the admingui) are accessible.
+            // Notice that in GlassFish v3, we support a domain.xml configuration
+            // that does not declare any admin-listener, in which case the
+            // admin-related webapps are accessible on http-listener-1.
+            if (httpListener.getDefaultVirtualServer().equals(
                     VirtualServer.ADMIN_VS) ||
-                ("http-listener-1".equals(httpListener.getId()) &&
+                    ("http-listener-1".equals(httpListener.getId()) &&
                     connectorMap.get("admin-listener") == null)) {
-            return;
-        }
+                return;
+            }
 
-        WebConnector connector = connectorMap.get(httpListener.getId());
-        if (connector != null) {
-            deleteConnector(connector);
-        }
-        
-        if (!Boolean.valueOf(httpListener.getEnabled())) {
-            return;
-        }
+            WebConnector connector = connectorMap.get(httpListener.getId());
+            if (connector != null) {
+                deleteConnector(connector);
+            }
 
-        connector = addConnector(httpListener, httpService, false);
-        
-        // Update the list of ports of all associated virtual servers with
-        // the listener's new port number, so that the associated virtual
-        // servers will be registered with the listener's request mapper when
-        // the listener is started
-        ArrayList<VirtualServer> virtualServers =
-            getVirtualServersForHttpListenerId(httpService,
-                                               httpListener.getId());
-        if (virtualServers != null) {
-            Mapper mapper = connector.getMapper();
-            for (VirtualServer vs : virtualServers) {
-                boolean found = false;
-                int[] ports = vs.getPorts();
-                for (int i=0; i<ports.length; i++) {
-                    if (ports[i] == connector.getPort()) {
-                        found = true;
-                        break;
+            if (!Boolean.valueOf(httpListener.getEnabled())) {
+                return;
+            }
+
+            connector = addConnector(httpListener, httpService, false);
+
+            // Update the list of ports of all associated virtual servers with
+            // the listener's new port number, so that the associated virtual
+            // servers will be registered with the listener's request mapper when
+            // the listener is started
+            ArrayList<VirtualServer> virtualServers =
+                    getVirtualServersForHttpListenerId(httpService,
+                    httpListener.getId());
+            if (virtualServers != null) {
+                Mapper mapper = connector.getMapper();
+                for (VirtualServer vs : virtualServers) {
+                    boolean found = false;
+                    int[] ports = vs.getPorts();
+                    for (int i = 0; i < ports.length; i++) {
+                        if (ports[i] == connector.getPort()) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        int[] newPorts = new int[ports.length + 1];
+                        System.arraycopy(ports, 0, newPorts, 0, ports.length);
+                        newPorts[ports.length] = connector.getPort();
+                        vs.setPorts(newPorts);
+                    }
+
+                    // Check if virtual server has default-web-module configured,
+                    // and if so, configure the http listener's mapper with this
+                    // information
+                    String defaultWebModulePath = vs.getDefaultContextPath(
+                            habitat.getComponent(Domain.class),
+                            habitat.getComponent(WebDeployer.class));
+                    if (defaultWebModulePath != null) {
+                        try {
+                            mapper.setDefaultContextPath(vs.getName(),
+                                    defaultWebModulePath);
+                            vs.setDefaultContextPath(defaultWebModulePath);
+                        } catch (Exception e) {
+                            throw new LifecycleException(e);
+                        }
                     }
                 }
-                if (!found) {
-                    int[] newPorts = new int[ports.length + 1];
-                    System.arraycopy(ports, 0, newPorts, 0, ports.length);
-                    newPorts[ports.length] = connector.getPort();
-                    vs.setPorts(newPorts);
-                }
+            }
 
-                // Check if virtual server has default-web-module configured,
-                // and if so, configure the http listener's mapper with this
-                // information
-                String defaultWebModulePath = vs.getDefaultContextPath(
-                        habitat.getComponent(Domain.class), 
-                        habitat.getComponent(WebDeployer.class));
-                if (defaultWebModulePath != null) {
-                    try {
-                        mapper.setDefaultContextPath(vs.getName(),
-                                                     defaultWebModulePath);
-                        vs.setDefaultContextPath(defaultWebModulePath);
-                    } catch (Exception e) {
-                        throw new LifecycleException(e);
-                    }
-                }
-            }        
+            connector.start();
         }
-
-        connector.start();
     }
-  
-    
+      
+    /**
+     * Method gets called, when GrizzlyService changes HTTP Mapper, associated
+     * with specific port.
+     * 
+     * @param httpService {@link HttpService}
+     * @param httpListener {@link HttpListener}, which {@link Mapper} was changed
+     * @param mapper new {@link Mapper} value
+     */
+    public void updateMapper(HttpService httpService, HttpListener httpListener,
+            Mapper mapper) {
+        synchronized(mapperUpdateSync) {
+            WebConnector connector = connectorMap.get(httpListener.getId());
+            if (connector != null && connector.getMapper() != mapper) {
+                try {
+                    updateConnector(httpListener, httpService);
+                } catch (LifecycleException le) {
+                    _logger.log(Level.SEVERE, "Exception processing HttpService config change", le);
+                }
+            }
+        }
+    }
+
+
     public WebConnector addConnector(HttpListener httpListener,
                                      HttpService httpService,
                                      boolean start)
                 throws LifecycleException {
 
-        int port = Integer.parseInt(httpListener.getPort());
+        synchronized(mapperUpdateSync) {
+            int port = Integer.parseInt(httpListener.getPort());
 
-        // Add the port number of the new http-listener to its
-        // default-virtual-server, so that when the new http-listener
-        // and its MapperListener are started, they will recognize the
-        // default-virtual-server as one of their own, and add it to the
-        // Mapper
-        String virtualServerName = httpListener.getDefaultVirtualServer();
-        VirtualServer vs = (VirtualServer)
-            getEngine().findChild(virtualServerName);
-        int[] oldPorts = vs.getPorts();
-        int[] newPorts = new int[oldPorts.length+1];
-        System.arraycopy(oldPorts, 0, newPorts, 0, oldPorts.length);
-        newPorts[oldPorts.length] = port;
-        vs.setPorts(newPorts);
+            // Add the port number of the new http-listener to its
+            // default-virtual-server, so that when the new http-listener
+            // and its MapperListener are started, they will recognize the
+            // default-virtual-server as one of their own, and add it to the
+            // Mapper
+            String virtualServerName = httpListener.getDefaultVirtualServer();
+            VirtualServer vs =
+                    (VirtualServer) getEngine().findChild(virtualServerName);
+            int[] oldPorts = vs.getPorts();
+            int[] newPorts = new int[oldPorts.length + 1];
+            System.arraycopy(oldPorts, 0, newPorts, 0, oldPorts.length);
+            newPorts[oldPorts.length] = port;
+            vs.setPorts(newPorts);
 
-        Mapper mapper = null;
-        for (Mapper m : habitat.getAllByContract(Mapper.class)) {
-            if (m.getPort() == port) {
-                mapper = m;
-                break;
+            Mapper mapper = null;
+            for (Mapper m : habitat.getAllByContract(Mapper.class)) {
+                if (m.getPort() == port) {
+                    mapper = m;
+                    break;
+                }
             }
-        }
 
-        WebConnector connector = createHttpListener(httpListener, httpService,
-                                                    mapper);
+            WebConnector connector = createHttpListener(httpListener,
+                    httpService, mapper);
 
-        if (connector.getRedirectPort() == -1) {
-            connector.setRedirectPort(defaultRedirectPort);
-        }
-       
-        if (start) {
-            connector.start();
-        }
+            if (connector.getRedirectPort() == -1) {
+                connector.setRedirectPort(defaultRedirectPort);
+            }
 
-        return connector;
+            if (start) {
+                connector.start();
+            }
+            return connector;
+        }
     }
     
 
