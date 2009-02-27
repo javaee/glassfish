@@ -54,28 +54,9 @@
 
 package org.apache.catalina.core;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Stack;
-import java.util.TreeMap;
-import java.util.List;
-import java.util.EventListener;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.management.MBeanRegistrationException;
@@ -88,44 +69,8 @@ import javax.naming.directory.DirContext;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import org.apache.catalina.Auditor;// IASRI 4823322
-import org.apache.catalina.Container;
-import org.apache.catalina.ContainerEvent;
-import org.apache.catalina.ContainerListener;
-import org.apache.catalina.Context;
-import org.apache.catalina.Engine;
-import org.apache.catalina.Globals;
-import org.apache.catalina.Host;
-import org.apache.catalina.InstanceListener;
-import org.apache.catalina.Lifecycle;
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.LifecycleListener;
-import org.apache.catalina.Loader;
-//HERCULES:add
-import org.apache.catalina.Pipeline;
-//end HERCULES:add
-import org.apache.catalina.Server;
-import org.apache.catalina.ServerFactory;
-import org.apache.catalina.Session;
-import org.apache.catalina.Wrapper;
-import org.apache.catalina.deploy.ApplicationParameter;
-import org.apache.catalina.deploy.ContextEjb;
-import org.apache.catalina.deploy.ContextEnvironment;
-import org.apache.catalina.deploy.ContextLocalEjb;
-import org.apache.catalina.deploy.ContextResource;
-import org.apache.catalina.deploy.ContextResourceLink;
-import org.apache.catalina.deploy.ErrorPage;
-import org.apache.catalina.deploy.FilterDef;
-import org.apache.catalina.deploy.FilterMap;
-import org.apache.catalina.deploy.FilterMaps;
-import org.apache.catalina.deploy.LoginConfig;
-import org.apache.catalina.deploy.MessageDestination;
-import org.apache.catalina.deploy.MessageDestinationRef;
-import org.apache.catalina.deploy.NamingResources;
-import org.apache.catalina.deploy.ResourceParams;
-import org.apache.catalina.deploy.SecurityCollection;
-import org.apache.catalina.deploy.SecurityConstraint;
-import org.apache.catalina.deploy.ServletMap;
+import org.apache.catalina.*;
+import org.apache.catalina.deploy.*;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.mbeans.MBeanUtils;
 import org.apache.catalina.session.ManagerBase;
@@ -171,8 +116,26 @@ public class StandardContext
     private static final EnumSet<SessionTrackingMode> DEFAULT_SESSION_TRACKING_MODES =
         EnumSet.of(SessionTrackingMode.COOKIE);
 
-    // ----------------------------------------------------------- Constructors
+    /**
+     * Array containing the safe characters set.
+     */
+    protected static final URLEncoder urlEncoder;
 
+    /**
+     * GMT timezone - all HTTP dates are on GMT
+     */
+    static {
+        urlEncoder = new URLEncoder();
+        urlEncoder.addSafeCharacter('~');
+        urlEncoder.addSafeCharacter('-');
+        urlEncoder.addSafeCharacter('_');
+        urlEncoder.addSafeCharacter('.');
+        urlEncoder.addSafeCharacter('*');
+        urlEncoder.addSafeCharacter('/');
+    }
+
+
+    // ----------------------------------------------------------- Constructors
 
     /**
      * Create a new StandardContext component with the default basic Valve.
@@ -196,18 +159,15 @@ public class StandardContext
 
     // ----------------------------------------------------- Instance Variables
 
-
     /**
      * The alternate deployment descriptor name.
      */
     private String altDDName = null;
 
-
     /**
      * Associated host name.
      */
     private String hostName;
-
 
     /**
      * The set of application listener class names configured for this
@@ -215,13 +175,11 @@ public class StandardContext
      */
     private String applicationListeners[] = new String[0];
 
-
     /**
      * The set of instantiated application event listener objects</code>.
      */
     private transient Object applicationEventListenersObjects[] =
         new Object[0];
-
 
     /**
      * The set of instantiated application lifecycle listener objects</code>.
@@ -229,13 +187,11 @@ public class StandardContext
     private transient Object applicationLifecycleListenersObjects[] =
         new Object[0];
 
-
     /**
      * The set of application parameters defined for this application.
      */
     private ApplicationParameter applicationParameters[] =
         new ApplicationParameter[0];
-
 
     /**
      * The application available flag for this Context.
@@ -252,31 +208,26 @@ public class StandardContext
      */
     private transient CharsetMapper charsetMapper = null;
 
-
     /**
      * The Java class name of the CharsetMapper class to be created.
      */
     private String charsetMapperClass =
       "org.apache.catalina.util.CharsetMapper";
 
-
     /**
      * The path to a file to save this Context information.
      */
     private String configFile = null;
-
 
     /**
      * The "correctly configured" flag for this Context.
      */
     private boolean configured = false;
 
-
     /**
      * The security constraints for this web application.
      */
     private SecurityConstraint constraints[] = new SecurityConstraint[0];
-
 
     /**
      * The ServletContext implementation associated with this Context.
@@ -288,24 +239,20 @@ public class StandardContext
     protected transient ApplicationContext context = null;
     // END RIMOD 4894300
 
-
     /**
      *  Is the context initialized. 
      */
     private boolean isContextInitializedCalled = false;
-
 
     /**
      * Compiler classpath to use.
      */
     private String compilerClasspath = null;
 
-
     /**
      * Should we attempt to use cookies for session id communication?
      */
     private boolean cookies = true;
-
 
     /**
      * true if the rewriting of URLs with the jsessionids of HTTP
@@ -313,13 +260,11 @@ public class StandardContext
      */
     private boolean enableURLRewriting = true;
 
-
     /**
      * Should we allow the <code>ServletContext.getContext()</code> method
      * to access the context of other web applications in this server?
      */
     private boolean crossContext = false;
-
 
     /**
      * The "follow standard delegation model" flag that will be used to
@@ -327,12 +272,10 @@ public class StandardContext
      */
     private boolean delegate = false;
 
-
-     /**
+    /**
      * The display name of this web application.
      */
     private String displayName = null;
-
 
     /**
      * Override the default web xml location. ContextConfig is not configurable
@@ -340,18 +283,15 @@ public class StandardContext
      */
     private String defaultWebXml;
 
-
     /**
      * The distributable flag for this web application.
      */
     private boolean distributable = false;
 
-
     /**
      * The document root for this web application.
      */
     private String docBase = null;
-
 
     /**
      * The exception pages for this web application, keyed by fully qualified
@@ -359,13 +299,11 @@ public class StandardContext
      */
     private Map<String, ErrorPage> exceptionPages = new HashMap<String, ErrorPage>();
 
-
     /**
      * The set of filter configurations (and associated filter instances) we
      * have initialized, keyed by filter name.
      */
     private Map<String, FilterConfig> filterConfigs = new HashMap<String, FilterConfig>();
-
 
     /**
      * The set of filter definitions for this application, keyed by
@@ -373,20 +311,17 @@ public class StandardContext
      */
     private Map<String, FilterDef> filterDefs = new HashMap<String, FilterDef>();
 
-
     /**
      * The set of filter mappings for this application, in the order
      * they were defined in the deployment descriptor.
      */
     private FilterMap filterMaps[] = new FilterMap[0];
 
-
     /**
      * The descriptive information string for this implementation.
      */
     private static final String info =
         "org.apache.catalina.core.StandardContext/1.0";
-
 
     /**
      * The set of classnames of InstanceListeners that will be added
@@ -400,42 +335,35 @@ public class StandardContext
      */
     private List<InstanceListener> instanceListenerInstances = new ArrayList<InstanceListener>();
 
-
     /**
      * The login configuration descriptor for this web application.
      */
     private LoginConfig loginConfig = null;
-
 
     /**
      * The mapper associated with this context.
      */
     private transient Mapper mapper = new Mapper();
 
-
     /**
      * The naming context listener for this web application.
      */
     private transient NamingContextListener namingContextListener = null;
-
 
     /**
      * The naming resources for this web application.
      */
     private NamingResources namingResources = new NamingResources();
 
-
     /**
      * The message destinations for this web application.
      */
     private Map<String, MessageDestination> messageDestinations = new HashMap<String, MessageDestination>();
 
-
     /**
      * The MIME mappings for this web application, keyed by extension.
      */
     private HashMap<String,String> mimeMappings = new HashMap<String,String>();
-
 
     /**
      * The context initialization parameters for this web application,
@@ -443,12 +371,10 @@ public class StandardContext
      */
     private HashMap<String, String> parameters = new HashMap<String, String>();
 
-
     /**
      * The request processing pause flag (while reloading occurs)
      */
     private boolean paused = false;
-
 
     /**
      * The public identifier of the DTD for the web application deployment
@@ -457,36 +383,30 @@ public class StandardContext
      */
     private String publicId = null;
 
-
     /**
      * The reloadable flag for this web application.
      */
     private boolean reloadable = false;
-
 
     /**
      * Unpack WAR property.
      */
     private boolean unpackWAR = true;
 
-
     /**
      * The DefaultContext override flag for this web application.
      */
     private boolean override = false;
-
        
     /**
      * The original document root for this web application.
      */
     private String originalDocBase = null;
 
-
     /**
      * The privileged flag for this web application.
      */
     private boolean privileged = false;
-
 
     /**
      * Should the next call to <code>addWelcomeFile()</code> cause replacement
@@ -497,7 +417,6 @@ public class StandardContext
      */
     private boolean replaceWelcomeFiles = false;
 
-
     /**
      * With proxy caching disabled, setting this flag to true adds
      * Pragma and Cache-Control headers with "No-cache" as value.
@@ -506,26 +425,22 @@ public class StandardContext
      */
     private boolean securePagesWithPragma = true;
 
-
     /**
      * The security role mappings for this application, keyed by role
      * name (as used within the application).
      */
     private Map<String, String> roleMappings = new HashMap<String, String>();
 
-
     /**
      * The security roles for this application, keyed by role name.
      */
     private String securityRoles[] = new String[0];
-
 
     /**
      * The servlet mappings for this web application, keyed by
      * matching pattern.
      */
     private final Map<String, String> servletMappings = new HashMap<String, String>();
-
 
     /**
      * The session timeout (in minutes) for this web application.
@@ -550,24 +465,20 @@ public class StandardContext
      */
     private final Map<Integer, ErrorPage> statusPages = new HashMap<Integer, ErrorPage>();
 
-
     /**
      * The JSP tag libraries for this web application, keyed by URI
      */
     private final Map<String, String> taglibs = new HashMap<String, String>();
-
 
     /**
      * The watched resources for this application.
      */
     private String watchedResources[] = new String[0];
 
-
     /**
      * The welcome files for this application.
      */
     private String welcomeFiles[] = new String[0];
-
 
     /**
      * The set of classnames of LifecycleListeners that will be added
@@ -575,20 +486,17 @@ public class StandardContext
      */
     private String wrapperLifecycles[] = new String[0];
 
-
     /**
      * The set of classnames of ContainerListeners that will be added
      * to each newly created Wrapper by <code>createWrapper()</code>.
      */
     private String wrapperListeners[] = new String[0];
 
-
     /**
      * The pathname to the work directory for this context (relative to
      * the server's home if not absolute).
      */
     private String workDir = null;
-
 
     /**
      * Java class name of the Wrapper class implementation we use.
@@ -601,18 +509,15 @@ public class StandardContext
      */
     private boolean useNaming = true;
 
-
     /**
      * Filesystem based flag.
      */
     private boolean filesystemBased = false;
 
-
     /**
      * Name of the associated naming context.
      */
     private String namingContextName = null;
-
 
     /**
      * Frequency of the session expiration, and related manager operations.
@@ -622,45 +527,37 @@ public class StandardContext
      */
     private int managerChecksFrequency = 6;
 
-
     /**
      * Iteration count for background processing.
      */
     private int count = 0;
-
 
     /**
      * Caching allowed flag.
      */
     private boolean cachingAllowed = true;
 
-
     /**
      * Case sensitivity.
      */
     protected boolean caseSensitive = true;
-
 
     /**
      * Allow linking.
      */
     protected boolean allowLinking = false;
 
-
     /**
      * Cache max size in KB.
      */
     protected int cacheMaxSize = 10240; // 10 MB
-
 
     /**
      * Cache TTL in ms.
      */
     protected int cacheTTL = 5000;
 
-
     private boolean lazy=true;
-
 
     /**
      * Non proxied resources.
@@ -701,7 +598,6 @@ public class StandardContext
      */
     private boolean allowRelativeRedirect = false;
 
-
     // END RIMOD 4642650
 
     /** Name of the engine. If null, the domain is used.
@@ -739,36 +635,27 @@ public class StandardContext
     /**
      * Attribute value used to turn on/off XML namespace validation
      */
-     private boolean webXmlNamespaceAware = false;
-
+    private boolean webXmlNamespaceAware = false;
 
     /**
      * Attribute value used to turn on/off XML validation
      */
-     private boolean tldValidation = false;
-
+    private boolean tldValidation = false;
 
     /**
      * Attribute value used to turn on/off TLD XML namespace validation
      */
-     private boolean tldNamespaceAware = false;
-
-
-     /**
-      * Is the context contains the JSF servlet.
-      */
-     protected boolean isJsfApplication = false;
-
-
-     /**
-      * Should we save the configuration.
-      */
-     private boolean saveConfig = true;
+    private boolean tldNamespaceAware = false;
 
     /**
-     * Array containing the safe characters set.
+     * Is the context contains the JSF servlet.
      */
-    protected static final URLEncoder urlEncoder;
+    protected boolean isJsfApplication = false;
+
+    /**
+     * Should we save the configuration.
+     */
+    private boolean saveConfig = true;
 
     // START S1AS8PE 4965017
     private boolean isReload = false;
@@ -784,25 +671,6 @@ public class StandardContext
     private EnumSet<SessionTrackingMode> sessionTrackingModes;
 
     /**
-     * The name of the session tracking cookies created by this context
-     */
-    private String sessionCookieName = Globals.SESSION_COOKIE_NAME;
-
-
-    /**
-     * GMT timezone - all HTTP dates are on GMT
-     */
-    static {
-        urlEncoder = new URLEncoder();
-        urlEncoder.addSafeCharacter('~');
-        urlEncoder.addSafeCharacter('-');
-        urlEncoder.addSafeCharacter('_');
-        urlEncoder.addSafeCharacter('.');
-        urlEncoder.addSafeCharacter('*');
-        urlEncoder.addSafeCharacter('/');
-    }
-
-    /**
      * Encoded path.
      */
     private String encodedPath = null;
@@ -810,7 +678,15 @@ public class StandardContext
     /**
      * Session cookie config
      */
-    private SessionCookieConfig sessionCookieConfig = null;
+    private SessionCookieConfig sessionCookieConfig;
+
+    /**
+     * The name of the session tracking cookies created by this context
+     */
+    private String sessionCookieName = Globals.SESSION_COOKIE_NAME;
+
+    private boolean sessionCookieConfigInitialized = false;
+
 
     // ----------------------------------------------------- Context Properties
 
@@ -1895,15 +1771,14 @@ public class StandardContext
         return (this.sessionTimeout);
     }
 
+
     /**
      * Is the session timeout (in minutes) for this
      * web application over-ridden from the default
      * HERCULES:add
      */
     public boolean isSessionTimeoutOveridden() {
-
         return (this.sessionTimeoutOveridden);
-
     }
 
 
@@ -2714,45 +2589,50 @@ public class StandardContext
 
 
     /**
-     * Sets the session tracking cookie configuration for this
-     * <tt>ServletContext</tt>.
-     *
-     * <p>The given <tt>SessionCookieConfig</tt> replaces any
-     * session tracking cookie configuration that was previously set.
-     *
-     * @param sessionCookieConfig
-     * @throws IllegalStateException if this <tt>ServletContext</tt> has
-     * already been initialized
-     */
-    public void setSessionCookieConfig(SessionCookieConfig sessionCookieConfig) {
-        if (isContextInitializedCalled) {
-            throw new IllegalStateException(
-                sm.getString("applicationContext.sessionCookieConfig.initialized", getName()));
-        }
-
-        this.sessionCookieConfig = sessionCookieConfig;
-        if (sessionCookieConfig.getName() != null) {
-            sessionCookieName = sessionCookieConfig.getName();
-        }
-    }
-
-
-    /**
      * Gets the session tracking cookie configuration of this
      * <tt>ServletContext</tt>.
-     *
-     * @return the session tracking cookie configuration of this
-     * <tt>ServletContext</tt>, or <tt>null</tt> if no such configuration
-     * was ever set for this <tt>ServletContext</tt>
      */
-    public SessionCookieConfig getSessionCookieConfig() {
+    public synchronized SessionCookieConfig getSessionCookieConfig() {
+        if (sessionCookieConfig == null) {
+            sessionCookieConfig = new SessionCookieConfigImpl(this);
+        }
+
         return sessionCookieConfig;
     }
 
 
     /**
-     * @return the name of the session tracking cookies created by this
-     * context (default: JSESSIONID)
+     * @param initialized true if any of the setter methods have been
+     * called on the SessionCookieConfig object of this context, false
+     * otherwise
+     */
+    public void setSessionCookieConfigInitialized(boolean initialized) {
+        sessionCookieConfigInitialized = initialized;
+    }
+
+
+    /**
+     * @return true if any of the setter methods have been
+     * called on the SessionCookieConfig object of this context, false
+     * otherwise
+     */
+    public boolean isSessionCookieConfigInitialized() {
+        return sessionCookieConfigInitialized;
+    }
+
+
+    /**
+     * Sets the name that will be assigned to any session tracking
+     * cookies created on behalf of this context
+     */
+    void setSessionCookieName(String sessionCookieName) {
+        this.sessionCookieName = sessionCookieName;
+    }
+
+
+    /**
+     * Gets the name that will be assigned to any session tracking
+     * cookies created on behalf of this context
      */
     public String getSessionCookieName() {
         return sessionCookieName;

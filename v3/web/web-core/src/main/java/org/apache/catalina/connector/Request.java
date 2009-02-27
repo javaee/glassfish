@@ -2947,7 +2947,7 @@ public class Request
      * @param cookie The JSESSIONID cookie to be configured
      */
     protected void configureSessionCookie(Cookie cookie) {
-
+        Context context = getContext();
         cookie.setMaxAge(-1);
         String contextPath = null;
         // START GlassFish 1024
@@ -2955,10 +2955,10 @@ public class Request
             cookie.setPath("/");
         } else {
             // END GlassFish 1024
-            if (getContext() != null) {
+            if (context != null) {
                 // START OF SJSAS 6231069
                 // contextPath = getContext().getEncodedPath();
-                contextPath = getContext().getPath();
+                contextPath = context.getPath();
                 // END OF SJSAS 6231069
             }
             if ((contextPath != null) && (contextPath.length() > 0)) {
@@ -2975,17 +2975,17 @@ public class Request
         
         // Overridde the default config with servlet context
         // sessionCookieConfig
-        if ((servletContext != null) && 
-                (servletContext.getSessionCookieConfig() != null)) {
+        if (context != null && 
+                context.isSessionCookieConfigInitialized()) {
             SessionCookieConfig sessionCookieConfig = 
-                                    servletContext.getSessionCookieConfig();
-            if (sessionCookieConfig.getDomain()!=null) {
+                context.getSessionCookieConfig();
+            if (sessionCookieConfig.getDomain() != null) {
                 cookie.setDomain(sessionCookieConfig.getDomain());
             }
-            if (sessionCookieConfig.getPath()!=null) {
+            if (sessionCookieConfig.getPath() != null) {
                 cookie.setPath(sessionCookieConfig.getPath());
             }
-            if (sessionCookieConfig.getComment()!=null) {
+            if (sessionCookieConfig.getComment() != null) {
                 cookie.setVersion(1);
                 cookie.setComment(sessionCookieConfig.getComment());
             }

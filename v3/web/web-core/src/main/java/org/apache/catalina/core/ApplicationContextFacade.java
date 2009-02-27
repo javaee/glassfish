@@ -505,46 +505,16 @@ public final class ApplicationContextFacade
 
     
     /**
-     * Sets the session tracking cookie configuration for this 
-     * <tt>ServletContext</tt>.
-     *
-     * <p>The given <tt>SessionCookieConfig</tt> replaces any
-     * session tracking cookie configuration that was previously set.
-     *
-     * @param sessionCookieConfig 
-     * @throws IllegalStateException if this <tt>ServletContext</tt> has
-     * already been initialized
+     * Gets the <tt>SessionCookieConfig</tt> object through which various
+     * properties of the session tracking cookies created on behalf of this
+     * <tt>ServletContext</tt> may be configured.
      */
-    public void setSessionCookieConfig(
-            SessionCookieConfig sessionCookieConfig) {
-                        
-        if (SecurityUtil.isPackageProtectionEnabled()) {
-            doPrivileged("setSessionCookieConfig",
-                         new Object[] {sessionCookieConfig});
-        } else {
-            context.setSessionCookieConfig(sessionCookieConfig);
-        }
-        
-    }
- 
-     
-    /**
-     * Gets the session tracking cookie configuration of this 
-     * <tt>ServletContext</tt>.
-     *
-     * @return the session tracking cookie configuration of this 
-     * <tt>ServletContext</tt>, or <tt>null</tt> if no such configuration
-     * was ever set for this <tt>ServletContext</tt>
-     */
-    public SessionCookieConfig getSessionCookieConfig() {
-                
-        
+    public SessionCookieConfig getSessionCookieConfig() {        
         if (SecurityUtil.isPackageProtectionEnabled()) {
             return (SessionCookieConfig) doPrivileged("getSessionCookieConfig", null);
         } else {
             return context.getSessionCookieConfig();
         }
-        
     }
     
 

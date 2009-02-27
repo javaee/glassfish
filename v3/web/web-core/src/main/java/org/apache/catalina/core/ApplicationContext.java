@@ -1052,28 +1052,9 @@ public class ApplicationContext
 
 
     /**
-     * Sets the session tracking cookie configuration for this 
-     * <tt>ServletContext</tt>.
-     *
-     * <p>The given <tt>SessionCookieConfig</tt> replaces any
-     * session tracking cookie configuration that was previously set.
-     *
-     * @param sessionCookieConfig 
-     * @throws IllegalStateException if this <tt>ServletContext</tt> has
-     * already been initialized
-     */
-    public void setSessionCookieConfig(SessionCookieConfig sessionCookieConfig) {
-        context.setSessionCookieConfig(sessionCookieConfig);
-    }
- 
-     
-    /**
-     * Gets the session tracking cookie configuration of this 
-     * <tt>ServletContext</tt>.
-     *
-     * @return the session tracking cookie configuration of this 
-     * <tt>ServletContext</tt>, or <tt>null</tt> if no such configuration
-     * was ever set for this <tt>ServletContext</tt>
+     * Gets the <tt>SessionCookieConfig</tt> object through which various
+     * properties of the session tracking cookies created on behalf of this
+     * <tt>ServletContext</tt> may be configured.
      */
     public SessionCookieConfig getSessionCookieConfig() {
         return context.getSessionCookieConfig();        

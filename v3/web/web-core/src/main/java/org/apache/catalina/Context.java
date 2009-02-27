@@ -224,10 +224,25 @@ public interface Context extends Container {
 
 
     /**
-     * @return the name of the session tracking cookies created by this
-     * context (default: JSESSIONID)
+     * @return the name that will be assigned to any session tracking
+     * cookies created on behalf of this context
      */
     public String getSessionCookieName();
+
+
+    /**
+     * @return the session tracking cookie configuration of this
+     * <tt>ServletContext</tt>.
+     */
+    public SessionCookieConfig getSessionCookieConfig();
+
+
+    /**
+     * @return true if any of the setter methods have been
+     * called on the SessionCookieConfig object of this context, false
+     * otherwise
+     */
+    public boolean isSessionCookieConfigInitialized();
 
 
     /**
