@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
@@ -34,24 +33,22 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+ 
+<suite name="QuickLookTests" verbose="2" >
+  <parameter name="admin.url" value="http://localhost:4848/__asadmin"/>
+  <parameter name="admin.user" value="anonymous"/>
+  <parameter name="admin.password" value=""/>
+  <parameter name="admin.console.url" value="http://localhost:4848/"/>
+  <parameter name="resources.xml.relative.path" value="resources/resources.xml"/>
+  
+  <test name="asadmin_tests">
+    <classes>
+      <class name="test.admin.JvmOptionTests"/>
+      <class name="test.admin.JdbcConnectionPoolTests"/>
+      <class name="test.admin.WebtierTests"/>
+    </classes>
+  </test>
+ 
+</suite>
 
-<project name="admin" default="default" basedir=".">
-    <property file="build.properties"/>
-    <property file="${ws.root}/gfproject/${deploy.platform}-config.properties"/>
-    
-    <description>Builds, tests, and runs the project Hello JSP Application</description>
-    <import file="${ws.root}/gfproject/build-impl.xml"/>   
-    <import file="${ws.root}/gfproject/${deploy.platform}-targets.xml"/>
-    
-    <target name="all" depends="build,runtest"/>
-    <target name="build">
-      <antcall target="compile-tests">
-      </antcall>
-    </target>
-    
-    <target  name="runtest"> 
-        <antcall target="runtest-impl">
-          <param name="testng.test.name" value="${testng.test.name}"/>
-        </antcall>
-    </target>
-</project>
