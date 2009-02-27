@@ -50,11 +50,11 @@ import static org.junit.Assert.*;
 public class AppClientContainerTest {
 
     private static final String[] SERVER_SPECS = new String[] {"a","a:3701","b:3700"};
-    private static final ORBEndpoint[] SERVER_ANSWERS = new ORBEndpoint[] {
-            new ORBEndpoint("a", 3700),
-            new ORBEndpoint("a", 3701),
-            new ORBEndpoint("b", 3700)
-        };
+//    private static final ORBEndpoint[] SERVER_ANSWERS = new ORBEndpoint[] {
+//            new ORBEndpoint("a", 3700),
+//            new ORBEndpoint("a", 3701),
+//            new ORBEndpoint("b", 3700)
+//        };
 
     public AppClientContainerTest() {
     }
