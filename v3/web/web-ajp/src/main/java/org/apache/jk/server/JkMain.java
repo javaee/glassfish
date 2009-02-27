@@ -401,7 +401,7 @@ public class JkMain implements MBeanRegistration
     */
     public void setBeanProperty( Object target, String name, String val ) {
         if( val!=null )
-            val=IntrospectionUtils.replaceProperties( val, props, null );
+            val=IntrospectionUtils.replaceProperties( val, (Hashtable)props, null );
         if( log.isDebugEnabled())
             log.debug( "setProperty " + target + " " + name + "=" + val );
         

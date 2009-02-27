@@ -23,7 +23,7 @@
 package com.sun.enterprise.v3.services.impl;
 
 import com.sun.grizzly.ProtocolFilter;
-import com.sun.grizzly.http.DefaultProcessorTask;
+import com.sun.grizzly.http.ProcessorTask;
 import com.sun.grizzly.http.HttpWorkerThread;
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.tcp.Request;
@@ -489,12 +489,12 @@ public class ContainerMapper extends StaticResourcesAdapter{
     private void bindProcessorTask(Adapter adapter) {
         HttpWorkerThread workerThread =
                 (HttpWorkerThread) Thread.currentThread();
-        DefaultProcessorTask processorTask =
-                (DefaultProcessorTask) workerThread.getProcessorTask();
+        ProcessorTask processorTask =
+                (ProcessorTask) workerThread.getProcessorTask();
         if (processorTask == null) {
             try {
                 //TODO: Promote setAdapter to ProcessorTask?
-                processorTask = (DefaultProcessorTask) grizzlyEmbeddedHttp.getProcessorTask();
+                processorTask = (ProcessorTask) grizzlyEmbeddedHttp.getProcessorTask();
             } catch (ClassCastException ex) {
                 logger.log(Level.SEVERE,
                         "Invalid ProcessorTask instance", ex);

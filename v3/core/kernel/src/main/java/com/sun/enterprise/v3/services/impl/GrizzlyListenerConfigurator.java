@@ -308,24 +308,10 @@ public class GrizzlyListenerConfigurator {
                                    Integer.toString(maxConnections)});
                 logger.log(Level.WARNING, msg, ex);
             }
-
-            // thread-count
-            try {
-	        threadCount = Integer.parseInt(keepAlive.getThreadCount());
-            } catch (NumberFormatException ex) {
-                String msg = _rb.getString(
-                    "pewebcontainer.invalidKeepAliveThreadCount");
-                msg = MessageFormat.format(
-                    msg,
-                    new Object[] { keepAlive.getThreadCount(),
-                                   Integer.toString(threadCount)});
-                logger.log(Level.WARNING, msg, ex);
-            }
         }
         
         grizzlyEmbeddedHttp.setKeepAliveTimeoutInSeconds(timeoutInSeconds);
         grizzlyEmbeddedHttp.setMaxKeepAliveRequests(maxConnections);
-        grizzlyEmbeddedHttp.setKeepAliveThreadCount(threadCount);
     }
     
     /*

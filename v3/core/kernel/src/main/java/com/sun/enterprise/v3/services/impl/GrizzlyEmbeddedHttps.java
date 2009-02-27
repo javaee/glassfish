@@ -29,10 +29,9 @@ import com.sun.grizzly.SSLConfig;
 import com.sun.grizzly.TCPSelectorHandler;
 import com.sun.grizzly.filter.SSLReadFilter;
 import com.sun.grizzly.http.ProcessorTask;
-import com.sun.grizzly.http.SecureSelector;
 import com.sun.grizzly.ssl.SSLAsyncProcessorTask;
 import com.sun.grizzly.ssl.SSLAsyncProtocolFilter;
-import com.sun.grizzly.ssl.SSLDefaultProcessorTask;
+import com.sun.grizzly.ssl.SSLProcessorTask;
 import com.sun.grizzly.ssl.SSLDefaultProtocolFilter;
 import com.sun.grizzly.ssl.SSLSelectorThreadHandler;
 import com.sun.grizzly.util.net.SSLImplementation;
@@ -45,7 +44,7 @@ import javax.net.ssl.SSLContext;
  * @author Jeanfrancois Arcand
  * @author Alexey Stashok
  */
-public class GrizzlyEmbeddedHttps extends GrizzlyEmbeddedHttp implements SecureSelector<SSLImplementation> {
+public class GrizzlyEmbeddedHttps extends GrizzlyEmbeddedHttp {
 
     /**
      * The <code>SSLImplementation</code>
@@ -153,9 +152,9 @@ public class GrizzlyEmbeddedHttps extends GrizzlyEmbeddedHttp implements SecureS
      */
     @Override
     protected ProcessorTask newProcessorTask(boolean initialize){                                                      
-        SSLDefaultProcessorTask task = null;
+        SSLProcessorTask task = null;
         if (!asyncExecution) {
-            task = new SSLDefaultProcessorTask(initialize, getBufferResponse());
+            task = new SSLProcessorTask(initialize, getBufferResponse());
         } else {
             task = new SSLAsyncProcessorTask(initialize, getBufferResponse());
         }      

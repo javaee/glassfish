@@ -477,7 +477,6 @@ public class GrizzlyConnectorLauncher extends CoyoteConnectorLauncher {
      * @param threadCount Number of keep-alive threads
      */    
     public void setKeepAliveThreadCount(int threadCount) {
-        selectorThread.setKeepAliveThreadCount(threadCount);
     }
 
 
