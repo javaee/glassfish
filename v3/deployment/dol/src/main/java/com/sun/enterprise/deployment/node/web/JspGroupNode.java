@@ -80,6 +80,10 @@ public class JspGroupNode  extends DeploymentDescriptorNode {
             "setDeferredSyntaxAllowedAsLiteral");
         table.put(WebTagNames.TRIM_DIRECTIVE_WHITESPACES, 
             "setTrimDirectiveWhitespaces");
+        table.put(WebTagNames.DEFAULT_CONTENT_TYPE, "setDefaultContentType");
+        table.put(WebTagNames.BUFFER, "setBuffer");
+        table.put(WebTagNames.ERROR_ON_UNDECLARED_NAMESPACE,
+            "setErrorOnUndeclaredNamespace");
         return table;
     }    
     
@@ -116,6 +120,10 @@ public class JspGroupNode  extends DeploymentDescriptorNode {
         }
         appendTextChild(myNode, WebTagNames.DEFERRED_SYNTAX_ALLOWED_AS_LITERAL, descriptor.getDeferredSyntaxAllowedAsLiteral());
         appendTextChild(myNode, WebTagNames.TRIM_DIRECTIVE_WHITESPACES, descriptor.getTrimDirectiveWhitespaces());
+        appendTextChild(myNode, WebTagNames.DEFAULT_CONTENT_TYPE, descriptor.getDefaultContentType());
+        appendTextChild(myNode, WebTagNames.BUFFER, descriptor.getBuffer());
+        appendTextChild(myNode, WebTagNames.ERROR_ON_UNDECLARED_NAMESPACE,
+                Boolean.toString(descriptor.isErrorOnUndeclaredNamespace()));
         return myNode;
     }    
 }

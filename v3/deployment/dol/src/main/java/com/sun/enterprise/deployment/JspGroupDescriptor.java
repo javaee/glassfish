@@ -53,6 +53,9 @@ public class JspGroupDescriptor extends Descriptor {
     private Set includePreludes = null;
     private Set includeCodas = null;
     private String pageEncoding = null;
+    private String defaultContentType = null;
+    private String buffer = null;
+    private boolean errorOnUndeclaredNamespace = false;
     
     /**
      * Return the set of URL pattern aliases for this group.
@@ -302,23 +305,67 @@ public class JspGroupDescriptor extends Descriptor {
     }
 
     /**
+     * get defaultContentType
+     */
+    public String getDefaultContentType() {
+        return defaultContentType;
+    }
+
+    /**
+     * set defaultContentType
+     */
+    public void setDefaultContentType(String defaultContentType) {
+        this.defaultContentType = defaultContentType;
+    }
+
+    /**
+     * get buffer
+     */
+    public String getBuffer() {
+        return buffer;
+    }
+
+    /**
+     * set buffer
+     */
+    public void setBuffer(String buffer) {
+        this.buffer = buffer;
+    }
+
+    /**
+     * check if it is errorOnUndeclaredNamespace
+     */
+    public boolean isErrorOnUndeclaredNamespace() {
+        return errorOnUndeclaredNamespace;
+    }
+
+    /**
+     * set errorOnUndeclaredNamespace
+     */
+    public void setErrorOnUndeclaredNamespace(boolean errorOnUndeclaredNamespace) {
+        this.errorOnUndeclaredNamespace = errorOnUndeclaredNamespace;
+    }
+
+    /**
      * @return a string describing the values I hold
      */
     public void print(StringBuffer toStringBuffer) {
         toStringBuffer.append("\n JspGroupDescriptor");
-	toStringBuffer.append( "\n");
+        toStringBuffer.append( "\n");
         super.print(toStringBuffer);
-	toStringBuffer.append( "\n DisplayName:").append(this.getDisplayName());
-	toStringBuffer.append( "\n PageEncoding:").append(pageEncoding);
-	toStringBuffer.append( "\n El-Ignored:").append(elIgnored);
-	toStringBuffer.append( "\n Scripting Invalid:").append(scriptingInvalid);
-	toStringBuffer.append( "\n urlPatterns: ").append(urlPatterns);
-	toStringBuffer.append( "\n includePreludes: ").append(includePreludes);
-	toStringBuffer.append( "\n includeCoda: ").append(includeCodas);
-	toStringBuffer.append( "\n Is XML:").append(isXml);
-	toStringBuffer.append( "\n DeferredSyntaxAllowedAsLiteral: ").append(deferredSyntaxAllowedAsLiteral);
-	toStringBuffer.append( "\n TrimDirectiveWhitespaces:").append(trimDirectiveWhitespaces);
-
+        toStringBuffer.append( "\n DisplayName:").append(this.getDisplayName());
+        toStringBuffer.append( "\n PageEncoding:").append(pageEncoding);
+        toStringBuffer.append( "\n El-Ignored:").append(elIgnored);
+        toStringBuffer.append( "\n Scripting Invalid:").append(scriptingInvalid);
+        toStringBuffer.append( "\n urlPatterns: ").append(urlPatterns);
+        toStringBuffer.append( "\n includePreludes: ").append(includePreludes);
+        toStringBuffer.append( "\n includeCoda: ").append(includeCodas);
+        toStringBuffer.append( "\n Is XML:").append(isXml);
+        toStringBuffer.append( "\n DeferredSyntaxAllowedAsLiteral: ").append(deferredSyntaxAllowedAsLiteral);
+        toStringBuffer.append( "\n TrimDirectiveWhitespaces:").append(trimDirectiveWhitespaces);
+        toStringBuffer.append( "\n defaultContentType: ").append(defaultContentType);
+        toStringBuffer.append( "\n buffer: ").append(buffer);
+        toStringBuffer.append( "\n errorOnUndeclaredNamespace: ").append(errorOnUndeclaredNamespace);
     }
 
     private boolean getBoolean(String value) {

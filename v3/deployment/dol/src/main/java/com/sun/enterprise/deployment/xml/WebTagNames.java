@@ -128,6 +128,9 @@ public interface WebTagNames extends TagNames {
         "deferred-syntax-allowed-as-literal";
     public static final String TRIM_DIRECTIVE_WHITESPACES = 
         "trim-directive-whitespaces";
+    public static final String DEFAULT_CONTENT_TYPE = "default-content-type";
+    public static final String BUFFER = "buffer";
+    public static final String ERROR_ON_UNDECLARED_NAMESPACE = "error-on-undeclared-namespace";
     
     public static final String LOCALE_ENCODING_MAPPING_LIST = "locale-encoding-mapping-list";
     public static final String LOCALE_ENCODING_MAPPING = "locale-encoding-mapping";
