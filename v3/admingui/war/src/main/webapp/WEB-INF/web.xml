@@ -74,6 +74,10 @@
     <welcome-file-list>
         <welcome-file>index.jsf</welcome-file>
     </welcome-file-list>
+    <error-page>
+		<exception-type>javax.faces.application.ViewExpiredException</exception-type>
+        <location>/</location>
+    </error-page>
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>noaccess</web-resource-name>
@@ -130,8 +134,4 @@
     <security-role>
         <role-name>admin</role-name>
     </security-role>
-    <error-page>
-		<exception-type>javax.faces.application.ViewExpiredException</exception-type>
-        <location>/</location>
-    </error-page>
 </web-app>
