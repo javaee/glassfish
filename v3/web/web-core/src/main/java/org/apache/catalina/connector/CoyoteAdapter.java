@@ -201,7 +201,19 @@ public class CoyoteAdapter
 
         Request request = (Request) req.getNote(ADAPTER_NOTES);
         Response response = (Response) res.getNote(ADAPTER_NOTES);
-
+        
+        // Grizzly already parsed, decoded, and mapped the request.
+        // Let's re-use this info here, before firing the
+        // requestStartEvent probe, so that the mapping data will be
+        // available to any probe event listener via standard
+        // ServletRequest APIs (such as getContextPath())
+        MappingData md = (MappingData)req.getNote(MAPPING_DATA);
+        if (md == null){
+            v3Enabled = false;
+        } else {
+            v3Enabled = true;
+        }
+            
         if (request == null) {
 
             // Create objects
@@ -225,12 +237,6 @@ public class CoyoteAdapter
 
         String hostName = null;
         if (v3Enabled && !compatWithTomcat) {
-            // Grizzly already parsed, decoded, and mapped the request.
-            // Let's re-use this info here, before firing the
-            // requestStartEvent probe, so that the mapping data will be
-            // available to any probe event listener via standard
-            // ServletRequest APIs (such as getContextPath())
-            MappingData md = (MappingData)req.getNote(MAPPING_DATA);
             if (md != null) {
                 request.setMappingData(md);
                 hostName = ((Host) md.host).getName();

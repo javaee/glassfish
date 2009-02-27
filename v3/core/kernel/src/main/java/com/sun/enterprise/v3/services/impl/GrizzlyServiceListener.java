@@ -25,18 +25,10 @@ package com.sun.enterprise.v3.services.impl;
 
 import com.sun.grizzly.Controller;
 import com.sun.grizzly.ControllerStateListener;
-import com.sun.grizzly.http.portunif.HttpProtocolFinder;
-import com.sun.grizzly.portunif.PUPreProcessor;
-import com.sun.grizzly.portunif.ProtocolFinder;
-import com.sun.grizzly.portunif.ProtocolHandler;
-import com.sun.grizzly.portunif.TLSPUPreProcessor;
-import com.sun.grizzly.tcp.Adapter;
 import com.sun.enterprise.util.Result;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.net.InetAddress;
-import javax.net.ssl.SSLContext;
 
 /**
  * <p>The GrizzlyServiceListener is responsible of mapping incoming requests
@@ -108,40 +100,6 @@ public class GrizzlyServiceListener {
         embeddedHttp.setAddress(address);
     }
     
-    public void configurePortUnification() {
-        // [1] Detect TLS requests.
-        // If sslContext is null, that means TLS is not enabled on that port.
-        // We need to revisit the way GlassFish is configured and make
-        // sure TLS is always enabled. We can always do what we did for 
-        // GlassFish v2, which is to located the keystore/trustore by ourself.
-        // TODO: Enable TLS support on all ports using com.sun.Grizzly.SSLConfig
-        ArrayList<PUPreProcessor> puPreProcessors = new ArrayList<PUPreProcessor>();
-
-        WebProtocolHandler.Mode webProtocolHandlerMode;
-
-        if (isEmbeddedHttpSecured) {
-            SSLContext sslContext = ((GrizzlyEmbeddedHttps) embeddedHttp).getSSLContext();
-            PUPreProcessor preProcessor = new TLSPUPreProcessor(sslContext);
-            puPreProcessors.add(preProcessor);
-            webProtocolHandlerMode = WebProtocolHandler.Mode.HTTPS;
-        } else {
-            webProtocolHandlerMode = WebProtocolHandler.Mode.HTTP;
-        }
-
-        // [2] Add our supported ProtocolFinder. By default, we support http/sip
-        // TODO: The list of ProtocolFinder is retrieved using System.getProperties().
-        ArrayList<ProtocolFinder> protocolFinders = new ArrayList<ProtocolFinder>();
-        protocolFinders.add(new HttpProtocolFinder());
-
-        // [3] Add our supported ProtocolHandler. By default we support http/sip.
-        ArrayList<ProtocolHandler> protocolHandlers = new ArrayList<ProtocolHandler>();
-        WebProtocolHandler webProtocolHandler =
-                new WebProtocolHandler(webProtocolHandlerMode, embeddedHttp);
-        protocolHandlers.add(webProtocolHandler);
-
-        embeddedHttp.configurePortUnification(protocolFinders, protocolHandlers, puPreProcessors);
-    }
-
     public Controller getController() {
         return controller;
     }

@@ -154,10 +154,6 @@ public class GrizzlyListenerConfigurator {
                 && !httpListener.getId().equalsIgnoreCase("admin-listener")){       
             configureComet(grizzlyEmbeddedHttp);       
         }
-
-        if (!isWebProfile) {
-            grizzlyListener.configurePortUnification();
-        }
     }      
     
     

@@ -165,25 +165,6 @@ public class GrizzlyEmbeddedHttp extends SelectorThread
     }
     
     
-    protected Collection<ProtocolFilter> getDefaultHttpProtocolFilters() {
-        if (defaultHttpFilters == null) {
-            synchronized(this) {
-                if (defaultHttpFilters == null) {
-                    Collection<ProtocolFilter> tmpList = new ArrayList<ProtocolFilter>(4);
-                    if (rcmSupport) {
-                        tmpList.add(createRaFilter());
-                    }
-
-                    tmpList.add(createHttpParserFilter());
-                    defaultHttpFilters = tmpList;
-                }
-            }
-        }
-        
-        return defaultHttpFilters;
-    }
-    
-    
     /**
      * Create ReadFilter
      * @return read filter
@@ -193,27 +174,7 @@ public class GrizzlyEmbeddedHttp extends SelectorThread
         readFilter.setContinuousExecution(GlassfishProtocolChain.CONTINUOUS_EXECUTION);
         return readFilter;
     }
-    
-
-    /**
-     * Create the HttpProtocolFilter, 
-     * which is aware of EmbeddedHttp's context-root<->adapter map.
-     */
-    protected HttpProtocolFilter getHttpProtocolFilter() {
-        if (httpProtocolFilterWrapper == null) {
-            synchronized (this) {
-                if (httpProtocolFilterWrapper == null) {
-                    initAlgorithm();
-                    ProtocolFilter wrappedFilter = createHttpParserFilter();
-                    
-                    httpProtocolFilterWrapper = new HttpProtocolFilter(wrappedFilter, this);
-                }
-            }
-        }
-
-        return (HttpProtocolFilter) httpProtocolFilterWrapper;
-    }
-    
+        
     
     /**
      * Create <code>TCPSelectorHandler</code>

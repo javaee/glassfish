@@ -79,7 +79,12 @@ public class ContainerMapper extends StaticResourcesAdapter{
     
     private static byte[] errorBody =
             HttpUtils.getErrorPage("Glassfish/v3","HTTP Status 404");
-      
+
+    /**
+     * Are we running multiple {@ Adapter} or {@link GrizzlyAdapter}
+     */
+    private boolean mapMultipleAdapter = false;
+    
     public ContainerMapper(GrizzlyService grizzlyService, GrizzlyEmbeddedHttp grizzlyEmbeddedHttp) {
         this.grizzlyEmbeddedHttp = grizzlyEmbeddedHttp;
         this.grizzlyService = grizzlyService;
@@ -125,9 +130,30 @@ public class ContainerMapper extends StaticResourcesAdapter{
      * @throws IOException
      */
     @Override
-    public void service(Request req, Response res) throws IOException{
-        MappingData mappingData = null;
-        try{        
+    public void service(Request req, Response res) throws Exception{
+        try{
+            // If we have only one Adapter deployed, invoke that Adapter
+            // directly.
+            // TODO: Not sure that will works with JRuby.
+            if (!mapMultipleAdapter && mapper instanceof V3Mapper){
+                Adapter a = ((V3Mapper)mapper).getAdapter();
+                if (a != null){
+                    try{
+                        a.service(req, res);
+                    } finally {
+                        a.afterService(req, res);
+                    }
+                } else {
+                    try{
+                        super.service(req, res);
+                    } finally {
+                        super.afterService(req, res);
+                    }
+                }
+                return;
+            }
+
+            MappingData mappingData = null;
             MessageBytes decodedURI = req.decodedURI();
             decodedURI.duplicate(req.requestURI());
             mappingData = (MappingData)req.getNote(MAPPING_DATA);
@@ -308,6 +334,7 @@ public class ContainerMapper extends StaticResourcesAdapter{
             return;
         }
 
+        mapMultipleAdapter = true;
         for (String host : vs) {
             mapper.addContext(host, contextRoot,
                     new ContextRootInfo(adapter, container, contextProtocolFilters), new String[0], null);
