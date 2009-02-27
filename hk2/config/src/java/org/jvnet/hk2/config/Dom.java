@@ -47,6 +47,7 @@ import java.lang.reflect.*;
 import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.regex.Pattern;
+
 /**
  * {@link Inhabitant} that loads configuration from XML.
  *

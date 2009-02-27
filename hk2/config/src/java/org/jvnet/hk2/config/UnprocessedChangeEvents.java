@@ -38,6 +38,7 @@ package org.jvnet.hk2.config;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Collects change events that could not be processed.
@@ -53,6 +54,14 @@ public final class UnprocessedChangeEvents {
     public UnprocessedChangeEvents( final UnprocessedChangeEvent single ) {
         mUnprocessed = new ArrayList<UnprocessedChangeEvent>();
         mUnprocessed.add(single);
+    }
+
+    UnprocessedChangeEvents() {
+        mUnprocessed = new ArrayList<UnprocessedChangeEvent>();
+    }
+    
+    void addEvents(Collection<UnprocessedChangeEvent> events) {
+        mUnprocessed.addAll(events);
     }
 
     public List<UnprocessedChangeEvent> getUnprocessed() { return mUnprocessed;}
