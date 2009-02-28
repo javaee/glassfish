@@ -71,6 +71,12 @@
             <url>http://maven.glassfish.org/content/groups/glassfish/</url>
         </repository>
     </repositories>
+  <pluginRepositories>
+        <pluginRepository>
+            <id>glassfish-plugin-repo</id>
+            <url>http://maven.glassfish.org/content/groups/glassfish/</url>
+        </pluginRepository>
+    </pluginRepositories>
     <build>
         <defaultGoal>install</defaultGoal>
         <plugins>
