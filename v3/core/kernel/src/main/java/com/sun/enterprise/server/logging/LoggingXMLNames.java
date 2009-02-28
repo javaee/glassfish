@@ -63,7 +63,11 @@ public class LoggingXMLNames {
 
 //mapping of the names used in domain.xml to the names used in logging.properties
 
-	public static final Map<String , String> xmltoPropsMap =            new HashMap<String , String>() {{    put(logRotationLimitInBytes, LoggingPropertyNames.logRotationLimitInBytes);    put(logRotationTimelimitInMinutes, LoggingPropertyNames.logRotationTimelimitInMinutes);    put(file, LoggingPropertyNames.file);
+	public static final Map<String , String> xmltoPropsMap = 
+           new HashMap<String , String>() {{
+    put(logRotationLimitInBytes, LoggingPropertyNames.logRotationLimitInBytes);
+    put(logRotationTimelimitInMinutes, LoggingPropertyNames.logRotationTimelimitInMinutes);
+    put(file, LoggingPropertyNames.file);
     put(logFormatter, LoggingPropertyNames.logFormatter);
     put(logHandler, LoggingPropertyNames.logHandler);
     put(useSystemLogging, LoggingPropertyNames.useSystemLogging);
@@ -101,7 +105,8 @@ public class LoggingXMLNames {
   //  put(nodeAgent, LogDomains.
     put(selfManagement, LogDomains.SELF_MANAGEMENT_LOGGER);
   //  put(groupManagementService, LogDomains.
-  //  put(managementEvent, LogDomains.}};
+  //  put(managementEvent, LogDomains.
+}};
 	
 	}
 

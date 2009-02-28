@@ -43,9 +43,15 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
+import org.jvnet.hk2.config.DuckTyped;
+
 
 import java.beans.PropertyVetoException;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.StringTokenizer;
 
 import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
@@ -592,8 +598,53 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable, PropertyBa
      *              {@link String }
      */
     public void setManagementEvent(String value) throws PropertyVetoException;
-    
-    
+
+    /*
+     * Get all the log levels for all the modules.  
+     */
+    @DuckTyped
+    public Map<String, String> getAllLogLevels();
+
+    public class Duck {
+        public static Map<String, String> getAllLogLevels(ModuleLogLevels me) {
+
+            Map<String,String> moduleLevels = new HashMap<String, String>();
+            moduleLevels.put("root", me.getRoot());
+            moduleLevels.put("server", me.getServer());
+            moduleLevels.put("ejbContainer", me.getEjbContainer());
+            moduleLevels.put("webContainer", me.getWebContainer());
+            moduleLevels.put("cmpContainer", me.getCmpContainer());
+            moduleLevels.put("mdbContainer", me.getMdbContainer());
+            moduleLevels.put("classloader", me.getClassloader());
+            moduleLevels.put("configuration", me.getConfiguration());
+            moduleLevels.put("naming", me.getNaming());
+            moduleLevels.put("security", me.getSecurity());
+            moduleLevels.put("jts", me.getJts());
+            moduleLevels.put("jta", me.getJta());
+            moduleLevels.put("admin", me.getAdmin());
+            moduleLevels.put("deployment", me.getDeployment());
+            moduleLevels.put("verifier", me.getVerifier());
+            moduleLevels.put("jaxr", me.getJaxr());
+            moduleLevels.put("jaxrpc", me.getJaxrpc());
+            moduleLevels.put("saaj", me.getSaaj());
+            moduleLevels.put("corba", me.getCorba());
+            moduleLevels.put("javamail", me.getJavamail());
+            moduleLevels.put("jms", me.getJms());
+            moduleLevels.put("connector", me.getConnector());
+            moduleLevels.put("jdo", me.getJdo());
+            moduleLevels.put("cmp", me.getCmp());
+            moduleLevels.put("util", me.getUtil());
+            moduleLevels.put("resourceAdapter", me.getResourceAdapter());
+            moduleLevels.put("synchronization", me.getSynchronization());
+            moduleLevels.put("nodeAgent", me.getNodeAgent());
+            moduleLevels.put("selfManagement", me.getSelfManagement());
+            moduleLevels.put("groupManagementServices", me.getGroupManagementService());
+            moduleLevels.put("managementEvent", me.getManagementEvent());
+
+            return moduleLevels;
+        }
+    }
+
     /**
     	Properties as per {@link PropertyBag}
      */

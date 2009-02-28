@@ -47,33 +47,24 @@ public class UpgradeLogging implements ConfigurationUpgrade, PostConstruct {
     	if (logService == null )
     		return;
         try {
-            final Map<String, String> m = new HashMap<String, String>(){{
-            //get log-service elements and add to map so they will be set in
-            // logging.properties
-            put("file", logService.getFile());
-            put("use-system-logging", logService.getUseSystemLogging());
+
+            //Get the logLevels
+            ModuleLogLevels mll = logService.getModuleLogLevels();
+
+            Map logLevels = mll.getAllLogLevels();
+            logLevels.put("file", logService.getFile());
+            logLevels.put("use-system-logging", logService.getUseSystemLogging());
             //this can have multiple values so need to add
-                // check if handler or filter are null, as no default value 
-            put("log-handler", logService.getLogHandler());
-            put("log-filter", logService.getLogFilter());
-            put("log-to-console",logService.getLogToConsole());
-            put("log-rotation-limit-in-bytes",logService.getLogRotationLimitInBytes());
-            put("log-rotation-timelimit-in-minutes", logService.getLogRotationTimelimitInMinutes());
-            put("alarms", logService.getAlarms());
-            put("retain-error-statistics-for-hours", logService.getRetainErrorStatisticsForHours());
-                }};
-            //Get the logLevels too
-            /*
-            ModuleLogLevels logLevels = logService.getModuleLogLevels();
-            Properties p = logLevels.getProperty();
-            Enumeration e = p.propertyNames();
-            while (e.hasMoreElements()) {
-                    String key = (String)e.nextElement();
-                    //System.out.println("Debug "+key+ " " + p.getProperty(key));
-                    m.put(key, p.getProperty(key));
-            }
-            */
-            
+            logLevels.put("log-handler", logService.getLogHandler());
+            logLevels.put("log-filter", logService.getLogFilter());
+            logLevels.put("log-to-console",logService.getLogToConsole());
+            logLevels.put("log-rotation-limit-in-bytes",logService.getLogRotationLimitInBytes());
+            logLevels.put("log-rotation-timelimit-in-minutes", logService.getLogRotationTimelimitInMinutes());
+            logLevels.put("alarms", logService.getAlarms());
+            logLevels.put("retain-error-statistics-for-hours", logService.getRetainErrorStatisticsForHours());
+            final Map<String, String> m =  new HashMap<String,String>(logLevels);
+
+
 
             ConfigSupport.apply(new SingleConfigCode<Config>() {
                 public Object run(Config c) throws PropertyVetoException, TransactionFailure {
@@ -82,7 +73,7 @@ public class UpgradeLogging implements ConfigurationUpgrade, PostConstruct {
                         	//update logging.properties
                             logConfig.updateLoggingProperties(m);
                             
-                            c.setLogService(null);
+                            //c.setLogService(null);
                         } catch (IOException e) {
                         	Logger.getAnonymousLogger().log(Level.SEVERE, "Failure while upgrading log-service. Could not update logging.properties file. ", e);
                         }

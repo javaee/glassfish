@@ -229,6 +229,7 @@ public class LogDomains
      * Method getLogger
      *
      *
+     * @param clazz
      * @param name
      *
      * @return
