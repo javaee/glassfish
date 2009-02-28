@@ -139,18 +139,19 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
 
     public ClassLoader getClassLoader(ClassLoader parent, DeploymentContext context) {
         final ReadableArchive archive  = context.getSource();
-        EarClassLoader cl = new EarClassLoader(new URL[0], parent);
 
         ApplicationHolder holder = getApplicationHolder(archive, context);
 
+        EarClassLoader cl;
         // add the libraries packaged in the application library directory
         try {
-            for (URL url: getAppLibDirLibraries(context, holder.app)) {
-                cl.addURL(url);
-            }
+            cl = new EarClassLoader(getAppLibDirLibraries(context, holder.app), parent);
         } catch (IOException e) {
-            _logger.log(Level.FINE, "error in adding libraries in library directory" ,e);
+            _logger.log(Level.SEVERE, "error in adding libraries in library directory" ,e);
+            throw new RuntimeException(e);
         }
+
+
 
         for (ModuleDescriptor md : holder.app.getModules()) {
             ReadableArchive sub = null;

@@ -56,8 +56,12 @@ public class EarClassLoader extends URLClassLoader {
     private final Method findResources;
     private final Map<String, Class> classes = new HashMap<String, Class>();
 
+    // optimization flag to not check the parent if we don't have library jars
+    private final boolean checkParent;
+
     public EarClassLoader(URL[] urls, ClassLoader classLoader) {
         super(urls, classLoader);
+        checkParent = urls!=null && urls.length>0;
         try {
             findClass = ClassLoader.class.getDeclaredMethod("findClass", new Class[] {String.class});
             findClass.setAccessible(true);
@@ -72,10 +76,6 @@ public class EarClassLoader extends URLClassLoader {
             // this is impossible.
             throw new RuntimeException(e);
         }
-    }
-
-    public void addURL(URL url) {
-        super.addURL(url);
     }
 
     public void addModuleClassLoader(String moduleName, ClassLoader cl) {
@@ -93,9 +93,19 @@ public class EarClassLoader extends URLClassLoader {
 
     @Override
     protected Class<?> findClass(String s) throws ClassNotFoundException {
+        
         if (classes.containsKey(s)) {
             return classes.get(s);
         }
+        
+        if (checkParent) {
+            try {
+                return super.findClass(s);
+            } catch(ClassNotFoundException e) {
+                // ignore
+            }
+        }
+
         for (ClassLoaderHolder clh : delegates) {
             try {
                 Class<?> clazz = (Class<?>) findClass.invoke(clh.loader, s);
@@ -124,8 +134,14 @@ public class EarClassLoader extends URLClassLoader {
 
     @Override
     public URL findResource(String s) {
+        URL url = null;
+        if (checkParent) {
+            url = super.findResource(s);
+            if (url!=null) {
+                return url;
+            }
+        }
         for(ClassLoaderHolder clh : delegates) {
-            URL url = null;
             try {
                 url = (URL) findResource.invoke(clh.loader, s);
             } catch (IllegalAccessException e) {
@@ -142,6 +158,12 @@ public class EarClassLoader extends URLClassLoader {
 
     @Override
     public Enumeration<URL> findResources(String s) throws IOException {
+        if (checkParent) {
+            Enumeration<URL> result = super.findResources(s);
+            if (result!=null) {
+                return result;
+            }
+        }
         Vector<URL> urls = new Vector<URL>();
         for(ClassLoaderHolder clh : delegates) {
             try {
