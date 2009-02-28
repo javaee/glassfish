@@ -70,6 +70,12 @@
         <!--
           modules to be included in this bundle
 	  -->   
+         <dependency>
+            <groupId>org.glassfish.connectors</groupId>
+            <artifactId>descriptors</artifactId>
+            <version>${project.version}</version>
+            <type>distribution-fragment</type>
+        </dependency>
         <dependency>
            <groupId>org.glassfish.connectors</groupId>
            <artifactId>gf-connectors-connector</artifactId>
