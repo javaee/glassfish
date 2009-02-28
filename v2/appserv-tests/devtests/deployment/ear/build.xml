@@ -30,9 +30,11 @@
 		<ant dir="uniquecr" target="private-all">
 			<property name="build" value="${build}/uniquecr"/>
 		</ant>
+-->
 		<ant dir="libClassPath" target="private-all">
 			<property name="build" value="${build}/libClassPath"/>
 		</ant>
+<!--
                 
                 <ant dir="libclasspath2" target="private-all">
 			<property name="build" value="${build}/libclasspath2"/>
