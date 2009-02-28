@@ -39,6 +39,7 @@ package com.sun.enterprise.util.diagnostics;
 import java.io.*;
 import java.util.*;
 import com.sun.enterprise.util.Assertion;
+import com.sun.enterprise.util.ObjectAnalyzer;
 //Bug 4677074 begin
 import java.util.logging.Logger;
 import java.util.logging.Level;
