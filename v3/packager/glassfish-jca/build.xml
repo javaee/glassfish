@@ -135,6 +135,10 @@ own identifying information: Portions Copyright [yyyy]
             </visualize>
         </graphDef>
 
+        <resolveArtifact artifactId="descriptors" groupId="org.glassfish.connectors" property="descriptors.zip"/>
+        <unzip src="${descriptors.zip}" dest="target/stage/${install.dir.name}"/>
+        <delete dir="target/stage/${install.dir.name}/META-INF" /> 
+
 	<delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.zip" />   
 
         <if test="${compression}">
