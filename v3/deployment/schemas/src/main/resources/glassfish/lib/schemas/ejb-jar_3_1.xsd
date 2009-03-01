@@ -113,9 +113,6 @@
       </xsd:documentation>
     </xsd:annotation>
 
-      <xsd:element name="module-name"
-		   minOccurs="0"/>
-
     <xsd:key name="ejb-name-key">
       <xsd:annotation>
 	<xsd:documentation>
@@ -791,6 +788,8 @@ xpath=".//javaee:ejb-relationship-role/javaee:relationship-role-source"/>
 	    - an optional display name
 	    - an optional icon that contains a small and a large
 	      icon file name
+            - an optional module name. Only applicable to
+              stand-alone ejb-jars or ejb-jars packaged in an .ear.
 	    - structural information about all included
 	      enterprise beans that is not specified through
               annotations
@@ -806,6 +805,8 @@ xpath=".//javaee:ejb-relationship-role/javaee:relationship-role-source"/>
 
     <xsd:sequence>
       <xsd:group ref="javaee:descriptionGroup"/>
+      <xsd:element name="module-name"
+		   minOccurs="0"/>
       <xsd:element name="enterprise-beans"
 		   type="javaee:enterprise-beansType"
                    minOccurs="0"/>
@@ -2937,13 +2938,13 @@ xpath=".//javaee:ejb-relationship-role/javaee:relationship-role-source"/>
 		   type="javaee:transaction-typeType"
                    minOccurs="0"/>
       <xsd:element name="after-begin-method"
-                   type="javaee:session-synchronization-methodType"
-                   minOccurs="0"/>
-      <xsd:element name="after-completion-method"
-                   type="javaee:session-synchronization-methodType"
+                   type="javaee:named-methodType"
                    minOccurs="0"/>
       <xsd:element name="before-completion-method"
-                   type="javaee:session-synchronization-methodType"
+                   type="javaee:named-methodType"
+                   minOccurs="0"/>
+      <xsd:element name="after-completion-method"
+                   type="javaee:named-methodType"
                    minOccurs="0"/>
       <xsd:element name="around-invoke"
                    type="javaee:around-invokeType"
@@ -2975,15 +2976,6 @@ xpath=".//javaee:ejb-relationship-role/javaee:relationship-role-source"/>
     <xsd:attribute name="id" type="xsd:ID"/>
   </xsd:complexType>
 
-<!-- **************************************************** -->
-
-  <xsd:complexType name="session-synchronization-methodType">
-    <xsd:sequence>
-      <xsd:element name="method-name"
-		   type="javaee:string"/>
-    </xsd:sequence>
-    <xsd:attribute name="id" type="xsd:ID"/>
-  </xsd:complexType>
 
 <!-- **************************************************** -->
 
@@ -3049,11 +3041,12 @@ xpath=".//javaee:ejb-relationship-role/javaee:relationship-role-source"/>
 
 	    Days
 	    Hours
-	    Microseconds
-	    Milliseconds
 	    Minutes
-	    Nanoseconds
 	    Seconds
+	    Milliseconds
+	    Microseconds
+	    Nanoseconds
+
 
       </xsd:documentation>
     </xsd:annotation>
@@ -3061,11 +3054,11 @@ xpath=".//javaee:ejb-relationship-role/javaee:relationship-role-source"/>
       <xsd:restriction base="javaee:string">
 	<xsd:enumeration value="Days"/>
 	<xsd:enumeration value="Hours"/>
-	<xsd:enumeration value="Microseconds"/>
-	<xsd:enumeration value="Milliseconds"/>
 	<xsd:enumeration value="Minutes"/>
-	<xsd:enumeration value="Nanoseconds"/>
 	<xsd:enumeration value="Seconds"/>
+	<xsd:enumeration value="Milliseconds"/>
+	<xsd:enumeration value="Microseconds"/>
+	<xsd:enumeration value="Nanoseconds"/>
       </xsd:restriction>
     </xsd:simpleContent>
   </xsd:complexType>
@@ -3083,13 +3076,13 @@ xpath=".//javaee:ejb-relationship-role/javaee:relationship-role-source"/>
       <xsd:element name="hour"
 		   type="javaee:string"
 		   minOccurs="0"/>
-      <xsd:element name="dayOfMonth"
+      <xsd:element name="day-of-month"
 		   type="javaee:string"
 		   minOccurs="0"/>
       <xsd:element name="month"
 		   type="javaee:string"
 		   minOccurs="0"/>
-      <xsd:element name="dayOfWeek"
+      <xsd:element name="day-of-week"
 		   type="javaee:string"
 		   minOccurs="0"/>
       <xsd:element name="year"

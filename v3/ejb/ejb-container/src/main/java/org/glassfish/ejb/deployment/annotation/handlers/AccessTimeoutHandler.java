@@ -46,16 +46,14 @@ import java.util.ArrayList;
 import javax.ejb.*;
 
 import com.sun.enterprise.deployment.util.TypeUtil;
-import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.MethodDescriptor;
+import com.sun.enterprise.deployment.EjbSessionDescriptor;
 
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotatedElementHandler;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
-import org.glassfish.ejb.deployment.EjbSingletonDescriptor;
 import com.sun.enterprise.deployment.annotation.context.EjbContext;
-import org.glassfish.ejb.deployment.annotation.handlers.AbstractAttributeHandler;
 import com.sun.enterprise.deployment.annotation.handlers.PostProcessor;
 import org.jvnet.hk2.annotations.Service;
 
@@ -84,9 +82,15 @@ public class AccessTimeoutHandler extends AbstractAttributeHandler implements Po
         AccessTimeout timeout = (AccessTimeout) ainfo.getAnnotation();
 
         for (EjbContext ejbContext : ejbContexts) {
-            if (ejbContext.getDescriptor() instanceof EjbSingletonDescriptor) {
-                EjbSingletonDescriptor singletonDesc =
-                        (EjbSingletonDescriptor) ejbContext.getDescriptor();
+            if (ejbContext.getDescriptor() instanceof EjbSessionDescriptor) {
+
+                EjbSessionDescriptor sessionDesc =
+                        (EjbSessionDescriptor) ejbContext.getDescriptor();
+
+                // TODO handle stateful session beans
+                if( !sessionDesc.isSingleton() ) {
+                    continue;
+                }
 
                 if (ElementType.TYPE.equals(ainfo.getElementType())) {
                     // Delay processing Class-level default until after methods are processed
@@ -97,10 +101,10 @@ public class AccessTimeoutHandler extends AbstractAttributeHandler implements Po
                     // Only assign access timeout info if the method hasn't already
                     // been processed.  This correctly ignores superclass methods that
                     // are overridden and applies the correct .xml overriding semantics.
-                    if(!matchesExistingAccessTimeoutMethod(annMethod, singletonDesc)) {
+                    if(!matchesExistingAccessTimeoutMethod(annMethod, sessionDesc)) {
                       
                         MethodDescriptor newMethodDesc = new MethodDescriptor(annMethod);
-                        singletonDesc.addAccessTimeoutMethod(newMethodDesc, timeout.value(),
+                        sessionDesc.addAccessTimeoutMethod(newMethodDesc, timeout.value(),
                                                              timeout.unit());
                     }
                 }
@@ -133,7 +137,7 @@ public class AccessTimeoutHandler extends AbstractAttributeHandler implements Po
             AnnotatedElementHandler aeHandler)
             throws AnnotationProcessorException {
         EjbContext ejbContext = (EjbContext)aeHandler;
-        EjbSingletonDescriptor ejbDesc = (EjbSingletonDescriptor) ejbContext.getDescriptor();
+        EjbSessionDescriptor ejbDesc = (EjbSessionDescriptor) ejbContext.getDescriptor();
 
         // At this point, all method-level specific annotations have been processed.
         // For non-private methods, find the ones from the EjbContext's
@@ -172,7 +176,7 @@ public class AccessTimeoutHandler extends AbstractAttributeHandler implements Po
     }
 
     private boolean matchesExistingAccessTimeoutMethod(Method methodToMatch,
-                                                       EjbSingletonDescriptor desc) {
+                                                       EjbSessionDescriptor desc) {
 
         List<MethodDescriptor> timeoutMethods = desc.getAccessTimeoutMethods();
 

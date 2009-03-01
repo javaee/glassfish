@@ -55,6 +55,7 @@ public class EjbApplicationExceptionInfo implements Serializable
 
     private String exceptionClassName;
     private boolean rollback;
+    private boolean inherited;
 
     public void setExceptionClassName(String className) {
         exceptionClassName = className;
@@ -72,10 +73,19 @@ public class EjbApplicationExceptionInfo implements Serializable
         rollback = flag;
     }
 
+    public void setInherited(boolean flag) {
+        inherited = flag;
+    }
+
+    public boolean getInherited() {
+        return inherited;
+    }
+
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("exception class name = " + exceptionClassName + "\t");
         sb.append("rollback = " + rollback);
+        sb.append("inherited = " + inherited);
         return sb.toString();
     }
 }

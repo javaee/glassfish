@@ -120,7 +120,7 @@ public class StatelessHandler extends AbstractEjbHandler {
             throws AnnotationProcessorException {
 
         EjbSessionDescriptor ejbSessionDesc = (EjbSessionDescriptor)ejbDesc;
-        ejbSessionDesc.setStateless(true);
+        ejbSessionDesc.setSessionType(EjbSessionDescriptor.STATELESS);
 
         Stateless sless = (Stateless) ainfo.getAnnotation();
 

@@ -52,6 +52,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 
 import javax.naming.NamingException;
+import javax.naming.NameNotFoundException;
 import javax.naming.Context;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -397,6 +398,11 @@ public class ComponentEnvManagerImpl
                 result = ejbRefMgr.getEJBContextObject(contextType);    
             }
 
+            if( result == null ) {
+                throw new NameNotFoundException("Can not resolve EJB context of type " +
+                    contextType);
+            }
+
             return result;
         }
 
@@ -433,6 +439,11 @@ public class ComponentEnvManagerImpl
                 } else {
                     result = ejbRefMgr.resolveEjbReference(ejbRef, null);
                 }
+            }
+
+            if( result == null ) {
+                throw new NameNotFoundException("Can not resolve ejb reference " + ejbRef.getName() +
+                    " : " + ejbRef);
             }
 
             return result;

@@ -41,7 +41,6 @@ import org.jvnet.hk2.annotations.Service;
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
-import org.glassfish.ejb.deployment.annotation.handlers.AbstractEjbHandler;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbSessionDescriptor;
 
@@ -52,7 +51,6 @@ import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.ejb.DependsOn;
 
-import org.glassfish.ejb.deployment.EjbSingletonDescriptor;
 
 /**
  * This handler is responsible for handling the javax.ejb.Singleton
@@ -62,10 +60,8 @@ import org.glassfish.ejb.deployment.EjbSingletonDescriptor;
 @Service
 public class SingletonHandler extends AbstractEjbHandler {
 
-    /** Creates a new instance of StatelessHandler */
-    public SingletonHandler() {
-        System.out.println("Created SingletonHandler......");
-    }
+
+    public SingletonHandler() {}
 
     /**
      * @return the annoation type this annotation handler is handling
@@ -106,12 +102,12 @@ public class SingletonHandler extends AbstractEjbHandler {
 
         AnnotatedElement ae = ainfo.getAnnotatedElement();
         Class ejbClass = (Class)ae;
-        EjbSingletonDescriptor newDescriptor = new EjbSingletonDescriptor();
+        EjbSessionDescriptor newDescriptor = new EjbSessionDescriptor();
         newDescriptor.setName(elementName);
         newDescriptor.setEjbClassName(ejbClass.getName());
-        newDescriptor.setSingletonClass(ejbClass);
+        newDescriptor.setSessionType(EjbSessionDescriptor.SINGLETON);
 
-        doSingletonSpecificProcessing(newDescriptor);
+        doSingletonSpecificProcessing(newDescriptor, ejbClass);
 
         return newDescriptor;
     }
@@ -128,28 +124,31 @@ public class SingletonHandler extends AbstractEjbHandler {
             EjbDescriptor ejbDesc, AnnotationInfo ainfo)
             throws AnnotationProcessorException {
 
-        EjbSingletonDescriptor ejbSingletonDescriptor = (EjbSingletonDescriptor) ejbDesc;
+        EjbSessionDescriptor ejbSingletonDescriptor = (EjbSessionDescriptor) ejbDesc;
 
+        Class ejbClass = (Class) ainfo.getAnnotatedElement();
         Singleton singleton = (Singleton) ainfo.getAnnotation();
 
         doDescriptionProcessing(singleton.description(), ejbDesc);
         doMappedNameProcessing(singleton.mappedName(), ejbDesc);
 
-        doSingletonSpecificProcessing(ejbSingletonDescriptor);
+        doSingletonSpecificProcessing(ejbSingletonDescriptor, ejbClass);
 
         return setBusinessAndHomeInterfaces(ejbDesc, ainfo);
     }
 
-    private void doSingletonSpecificProcessing(EjbSingletonDescriptor desc) {
-        Class clz = desc.getSingletonClass();
+    private void doSingletonSpecificProcessing(EjbSessionDescriptor desc, Class ejbClass) {
+        Class clz = ejbClass;
+
         Startup st = (Startup) clz.getAnnotation(Startup.class);
         if (st != null) {
-            desc.setStartup();
+            // Only set if not explicitly set in .xml
+            desc.setInitOnStartupIfNotAlreadySet(true);
         }
 
         DependsOn dep = (DependsOn) clz.getAnnotation(DependsOn.class);
         if (dep != null) {
-            desc.setDepends(dep.value());
+            desc.setDependsOnIfNotSet(dep.value());
         }
     }
 }

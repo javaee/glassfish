@@ -56,6 +56,7 @@ import com.sun.enterprise.deployment.runtime.IASEjbExtraDescriptors;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.invocation.ComponentInvocation;
 
+import org.glassfish.ejb.api.EjbEndpointFacade;
 import javax.ejb.*;
 import javax.transaction.Status;
 import javax.transaction.Transaction;
@@ -293,7 +294,10 @@ public class StatelessSessionContainer
                 tieClass = loader.loadClass(next.getTieClassName());                
             }
 
-            
+            // Create a facade for container services to be used by web services runtime.
+            EjbEndpointFacade endpointFacade =
+                        new EjbEndpointFacadeImpl(this, ejbContainerUtilImpl);
+
             /*
             webServiceEndpoint = WebServiceEjbEndpointRegistry.getRegistry().createEjbEndpointInfo(next, this, servant, tieClass);
                                            

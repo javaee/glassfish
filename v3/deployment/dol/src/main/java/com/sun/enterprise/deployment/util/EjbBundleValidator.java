@@ -205,6 +205,9 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
         this.ejb =ejb;
         setDOLDefault(ejb);
         computeRuntimeDefault(ejb);
+        checkDependsOn(ejb);
+        processAsyncMethodsFromXml(ejb);
+        validateConcurrencyMetadata(ejb);
 
         try {
 
@@ -272,6 +275,72 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
     }    
         
     public void accept(WebService webService) {
+    }
+
+    private void processAsyncMethodsFromXml(EjbDescriptor ejb) {
+        if( ejb instanceof EjbSessionDescriptor ) {
+            ((EjbSessionDescriptor)ejb).processAsyncMethodsFromXml();
+        }
+    }
+
+
+    private void validateConcurrencyMetadata(EjbDescriptor ejb) {
+
+        if( ejb instanceof EjbSessionDescriptor ) {
+
+            EjbSessionDescriptor sessionDesc = (EjbSessionDescriptor) ejb;
+
+            List<EjbSessionDescriptor.AccessTimeoutHolder> accessTimeoutInfo =
+                    sessionDesc.getAccessTimeoutInfo();
+
+            for(EjbSessionDescriptor.AccessTimeoutHolder accessTimeoutHolder : accessTimeoutInfo) {
+                MethodDescriptor accessTimeoutMethodDesc = accessTimeoutHolder.method;
+                Method accessTimeoutMethod = accessTimeoutMethodDesc.getMethod(ejb);
+                if(accessTimeoutMethod == null) {
+                    throw new RuntimeException("Invalid AccessTimeout method signature "
+                            + accessTimeoutMethodDesc +
+                            " . Method could not be resolved to a bean class method for bean " +
+                            ejb.getName());
+                }
+            }
+
+            for(MethodDescriptor lockMethodDesc : sessionDesc.getReadAndWriteLockMethods()) {
+                Method readLockMethod = lockMethodDesc.getMethod(sessionDesc);
+                if( readLockMethod == null ) {
+                    throw new RuntimeException("Invalid Lock method signature "
+                            + lockMethodDesc +
+                            " . Method could not be resolved to a bean class method for bean " +
+                            ejb.getName());
+                }
+
+            }
+
+        }
+
+    }
+
+    private void checkDependsOn(EjbDescriptor ejb) {
+
+        if( ejb instanceof EjbSessionDescriptor ) {
+            EjbSessionDescriptor sessionDesc = (EjbSessionDescriptor) ejb;
+            if( sessionDesc.hasDependsOn()) {
+                if( !sessionDesc.isSingleton() ) {
+                    throw new RuntimeException("Illegal usage of DependsOn for EJB " +
+                        ejb.getName() + ". DependsOn is only supported for Singleton beans");
+                }
+                String[] dependsOn = sessionDesc.getDependsOn();
+                for(String ejbName : dependsOn) {
+                    // Make sure each ejb referred to by dependsOn exists
+                    // TODO support cross-jar syntax and new EJB 3.1 syntax
+                    EjbBundleDescriptor bundle = ejb.getEjbBundleDescriptor();
+                    if( !bundle.hasEjbByName(ejbName) ) {
+                        throw new RuntimeException("Invalid DependsOn dependency '" +
+                           ejbName + "' for EJB " + ejb.getName());
+                    }
+                }
+            }
+        }
+
     }
 
     /**

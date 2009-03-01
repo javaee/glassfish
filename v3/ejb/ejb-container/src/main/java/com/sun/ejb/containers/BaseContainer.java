@@ -62,7 +62,6 @@ import com.sun.enterprise.util.Utility;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.naming.GlassfishNamingManager;
-import org.glassfish.ejb.deployment.EjbSingletonDescriptor;
 import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 
 import javax.annotation.PostConstruct;
@@ -2350,17 +2349,31 @@ public abstract class BaseContainer
             }
         } 
 
+        setConcurrencyInvInfo(method, methodIntf, invInfo);
+
+        if( _logger.isLoggable(Level.FINE) ) {
+            _logger.log(Level.FINE, invInfo.toString());
+        }
+
+
+
+        return invInfo;
+    }
+
+    private void setConcurrencyInvInfo(Method invInfoMethod, String methodIntf,
+                                       InvocationInfo invInfo) {
+
         MethodLockInfo lockInfo = null;
 
         // Set locking info
         if( isSingleton ) {
-            EjbSingletonDescriptor singletonDesc = (EjbSingletonDescriptor) ejbDescriptor;
+            EjbSessionDescriptor singletonDesc = (EjbSessionDescriptor) ejbDescriptor;
             List<MethodDescriptor> readLockMethods = singletonDesc.getReadLockMethods();
             List<MethodDescriptor> writeLockMethods = singletonDesc.getWriteLockMethods();
 
             for(MethodDescriptor readLockMethodDesc : readLockMethods) {
                 Method readLockMethod = readLockMethodDesc.getMethod(singletonDesc);
-                if(implMethodMatchesInvInfoMethod(method, methodIntf, readLockMethod)) {
+                if(implMethodMatchesInvInfoMethod(invInfoMethod, methodIntf, readLockMethod)) {
 
                     lockInfo = new MethodLockInfo();
                     lockInfo.setLockType(LockType.READ);
@@ -2371,7 +2384,7 @@ public abstract class BaseContainer
             if( lockInfo == null ) {
                 for(MethodDescriptor writeLockMethodDesc : writeLockMethods) {
                     Method writeLockMethod = writeLockMethodDesc.getMethod(singletonDesc);
-                    if(implMethodMatchesInvInfoMethod(method, methodIntf, writeLockMethod)) {
+                    if(implMethodMatchesInvInfoMethod(invInfoMethod, methodIntf, writeLockMethod)) {
 
                         lockInfo = new MethodLockInfo();
                         lockInfo.setLockType(LockType.WRITE);
@@ -2384,15 +2397,15 @@ public abstract class BaseContainer
         // Set AccessTimeout info
         if( isSingleton ) {
             // @@@ need to do this for stateful session beans too
-            EjbSingletonDescriptor singletonDesc = (EjbSingletonDescriptor) ejbDescriptor;
-            List<EjbSingletonDescriptor.AccessTimeoutHolder> accessTimeoutInfo =
+            EjbSessionDescriptor singletonDesc = (EjbSessionDescriptor) ejbDescriptor;
+            List<EjbSessionDescriptor.AccessTimeoutHolder> accessTimeoutInfo =
                     singletonDesc.getAccessTimeoutInfo();
 
 
-            for(EjbSingletonDescriptor.AccessTimeoutHolder accessTimeoutHolder : accessTimeoutInfo) {
+            for(EjbSessionDescriptor.AccessTimeoutHolder accessTimeoutHolder : accessTimeoutInfo) {
                 MethodDescriptor accessTimeoutMethodDesc = accessTimeoutHolder.method;
                 Method accessTimeoutMethod = accessTimeoutMethodDesc.getMethod(singletonDesc);
-                if(implMethodMatchesInvInfoMethod(method, methodIntf, accessTimeoutMethod)) {
+                if(implMethodMatchesInvInfoMethod(invInfoMethod, methodIntf, accessTimeoutMethod)) {
 
                     if( lockInfo == null ) {
                         lockInfo = new MethodLockInfo();
@@ -2409,29 +2422,22 @@ public abstract class BaseContainer
             invInfo.methodLockInfo = lockInfo;
         }
 
-        if( _logger.isLoggable(Level.FINE) ) {
-            _logger.log(Level.FINE, invInfo.toString());
-        }
-
-
-
-        return invInfo;
     }
 
     private boolean implMethodMatchesInvInfoMethod
-            (Method m, String methodIntf, Method invInfoMethod) {
+            (Method invInfoMethod, String methodIntf, Method implMethod) {
 
         boolean match = false;
 
         if( methodIntf.equals(MethodDescriptor.EJB_BEAN) ) {
             // Declaring class must match in addition to signature
-            match = ( m.getDeclaringClass().equals(invInfoMethod.getDeclaringClass()) &&
-                      TypeUtil.sameMethodSignature(m, invInfoMethod) );
+            match = ( implMethod.getDeclaringClass().equals(invInfoMethod.getDeclaringClass()) &&
+                      TypeUtil.sameMethodSignature(implMethod, invInfoMethod) );
 
         } else {
-            match = Modifier.isPublic(m.getModifiers()) &&
+            match = Modifier.isPublic(implMethod.getModifiers()) &&
                     Modifier.isPublic(invInfoMethod.getModifiers()) &&
-                    TypeUtil.sameMethodSignature(m, invInfoMethod);
+                    TypeUtil.sameMethodSignature(implMethod, invInfoMethod);
         }
 
         return match;

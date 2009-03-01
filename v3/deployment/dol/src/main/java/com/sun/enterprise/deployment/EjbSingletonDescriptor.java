@@ -1,4 +1,3 @@
-
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
@@ -35,74 +34,17 @@
  * holder.
  */
 
-package org.glassfish.ejb.deployment;
+package com.sun.enterprise.deployment;
 
-import java.lang.reflect.Method;
-import java.util.concurrent.TimeUnit;
 
-import javax.ejb.LockType;
+
 
 /**
- * MethodLockInfo caches various attributes of lock attributes
- *
  * @author Mahesh Kannan
- * @author Marina Vatkina
  */
+// TODO Remove this. Merged into parent
+public class EjbSingletonDescriptor {}
 
-public class MethodLockInfo {
 
-    public static final int NO_TIMEOUT = -32767;
 
-    private LockType lockType;
 
-    private long timeout = NO_TIMEOUT;
-
-    private TimeUnit unit;
-
-    public MethodLockInfo(LockType lockType) {
-        this.lockType = lockType;
-    }
-
-    public MethodLockInfo(long timeout, TimeUnit unit) {
-        this.timeout = timeout;
-        this.unit = unit;
-    }
-
-    public MethodLockInfo(LockType lockType, long timeout, TimeUnit unit) {
-        this.lockType = lockType;
-        this.timeout = timeout;
-        this.unit = unit;
-    }
-
-    public LockType getLockType() {
-        return lockType;
-    }
-
-    void setLockType(LockType lockType) {
-        this.lockType = lockType;
-    }
-
-    public long getTimeout() {
-        return timeout;
-    }
-
-    void setTimeout(long timeout) {
-        this.timeout = timeout;
-    }
-
-    public TimeUnit getUnit() {
-        return unit;
-    }
-
-    void setUnit(TimeUnit unit) {
-        this.unit = unit;
-    }
-
-    public String toString() {
-        StringBuffer sb = new StringBuffer().
-        append("lock type = " + lockType + "\t").
-        append("timeout = " + timeout + "\t").
-        append("unit = " + unit + "\t");
-        return sb.toString();
-    }
-}

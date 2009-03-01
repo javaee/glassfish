@@ -84,7 +84,7 @@ public class AfterCompletionHandler extends AbstractAttributeHandler {
                 logger.fine("Setting AfterCompletion method " + annMethod);
             }
 
-            ejbDesc.setAfterCompletionMethod(annMethod);
+            ejbDesc.setAfterCompletionMethodIfNotSet(new MethodDescriptor(annMethod));
         }
 
         return getDefaultProcessedResult();

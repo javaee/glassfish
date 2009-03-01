@@ -55,20 +55,19 @@ import javax.ejb.LocalHome;
 import javax.ejb.Stateless;
 import javax.ejb.Asynchronous;
 
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.DummyEjbDescriptor;
-import com.sun.enterprise.deployment.EjbSessionDescriptor;
-import com.sun.enterprise.deployment.MethodDescriptor;
+import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.util.TypeUtil;
 
 import org.glassfish.apf.AnnotatedElementHandler;
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
+import org.glassfish.internal.api.Globals;
 import com.sun.enterprise.deployment.annotation.context.EjbBundleContext;
 import com.sun.enterprise.deployment.annotation.context.EjbContext;
 import com.sun.enterprise.deployment.annotation.handlers.AbstractHandler;
+
+
 
 /**
  * This is an abstract class for EJB annotation handler.
@@ -86,6 +85,10 @@ import com.sun.enterprise.deployment.annotation.handlers.AbstractHandler;
  * @author Shing Wai Chan
  */
 public abstract class AbstractEjbHandler extends AbstractHandler {
+
+    private AnnotationTypesProvider provider =
+            Globals.getDefaultHabitat().getComponent(AnnotationTypesProvider.class, "EJB");
+
     /**
      * Return the name attribute of given annotation.
      * @param annotation
@@ -389,7 +392,7 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
             } else {
 
                 if( (nonImplementsClauseBusinessInterfaceCount == 0) &&
-                    (localBeanAnn == null) ) {
+                    (!ejbDesc.isLocalBean()) ) {
 
                     // If there's an empty @Remote annotation on the class,
                     // it's treated as a remote business interface. Otherwise,
@@ -486,13 +489,21 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
             }
         }
 
+        // Web Service API might not be available so do a check before looking
+        // for @WebService on bean class
+        boolean canDoWebServiceAnnCheck = false;
+        try {
+            canDoWebServiceAnnCheck = (provider.getType("javax.jws.WebService") != null);
 
-        if( (localBeanAnn == null ) &&
+        } catch(Exception e) {
+            log(Level.FINE, ainfo, e.getMessage());
+        }
+
+        if( (!ejbDesc.isLocalBean()) &&
             (clientInterfaces.size() == 0) &&
-            !ejbDesc.hasWebServiceEndpointInterface()
-            // TODO temporarily comment out javax.jws dependency.  Will
-            // revisit when we enable EJB 3.1 Lite in Web Profile
-            /*(ejbClass.getAnnotation(javax.jws.WebService.class) == null)*/ ) {
+            !ejbDesc.hasWebServiceEndpointInterface() &&
+            ( canDoWebServiceAnnCheck &&
+              (ejbClass.getAnnotation(javax.jws.WebService.class) == null) ) ) {
             ejbDesc.setLocalBean(true);
         }
 

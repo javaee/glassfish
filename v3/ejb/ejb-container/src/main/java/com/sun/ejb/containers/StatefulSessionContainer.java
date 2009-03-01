@@ -222,18 +222,32 @@ public final class StatefulSessionContainer
 
             EjbSessionDescriptor sessionDesc = (EjbSessionDescriptor) ejbDescriptor;
 
-	        afterBeginMethod = sessionDesc.getAfterBeginMethod();
-            if( afterBeginMethod != null ) {
+	        MethodDescriptor afterBeginMethodDesc = sessionDesc.getAfterBeginMethod();
+            if( afterBeginMethodDesc != null ) {
+                afterBeginMethod = afterBeginMethodDesc.getMethod(sessionDesc);
+                if( afterBeginMethod == null ) {
+                    afterBeginMethod = ejbClass.getDeclaredMethod(afterBeginMethodDesc.getName());
+                }
                 processSessionSynchMethod(afterBeginMethod);
             }
 
-	        beforeCompletionMethod = sessionDesc.getBeforeCompletionMethod();
-            if( beforeCompletionMethod != null ) {
+	        MethodDescriptor beforeCompletionMethodDesc = sessionDesc.getBeforeCompletionMethod();
+            if( beforeCompletionMethodDesc != null ) {
+                beforeCompletionMethod = beforeCompletionMethodDesc.getMethod(sessionDesc);
+                if( beforeCompletionMethod == null ) {
+                    beforeCompletionMethod =
+                        ejbClass.getDeclaredMethod(beforeCompletionMethodDesc.getName());
+                }
                 processSessionSynchMethod(beforeCompletionMethod);
             }
             
-	        afterCompletionMethod = sessionDesc.getAfterCompletionMethod();
-            if( afterCompletionMethod != null ) {
+	        MethodDescriptor afterCompletionMethodDesc = sessionDesc.getAfterCompletionMethod();
+            if( afterCompletionMethodDesc != null ) {
+                afterCompletionMethod = afterCompletionMethodDesc.getMethod(sessionDesc);
+                if( afterCompletionMethod == null ) {
+                    afterCompletionMethod =
+                        ejbClass.getDeclaredMethod(afterCompletionMethodDesc.getName(), Boolean.TYPE);
+                }
                 processSessionSynchMethod(afterCompletionMethod);
             }
 

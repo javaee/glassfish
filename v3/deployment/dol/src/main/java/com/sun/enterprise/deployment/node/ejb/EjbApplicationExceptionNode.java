@@ -60,6 +60,7 @@ public class EjbApplicationExceptionNode extends DeploymentDescriptorNode {
 
         table.put(EjbTagNames.APP_EXCEPTION_CLASS, "setExceptionClassName");
         table.put(EjbTagNames.APP_EXCEPTION_ROLLBACK, "setRollback");
+        table.put(EjbTagNames.APP_EXCEPTION_INHERITED, "setInherited");
 
         return table;
     }    
@@ -81,6 +82,9 @@ public class EjbApplicationExceptionNode extends DeploymentDescriptorNode {
                         descriptor.getExceptionClassName());
         appendTextChild(appExceptionNode, EjbTagNames.APP_EXCEPTION_ROLLBACK,
                         Boolean.toString(descriptor.getRollback()));
+        appendTextChild(appExceptionNode, EjbTagNames.APP_EXCEPTION_INHERITED,
+                        Boolean.toString(descriptor.getInherited()));
+
 
         return appExceptionNode;
     }

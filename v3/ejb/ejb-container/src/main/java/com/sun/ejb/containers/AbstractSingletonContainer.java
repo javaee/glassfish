@@ -52,7 +52,6 @@ import org.glassfish.api.invocation.ResourceHandler;
 import org.glassfish.ejb.startup.SingletonLifeCycleManager;
 
 import javax.ejb.*;
-import javax.transaction.Status;
 import javax.transaction.Transaction;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
@@ -466,6 +465,11 @@ public abstract class AbstractSingletonContainer
         EjbInvocation ejbInv = null;
         SingletonContextImpl context;
 
+        // Track whether initialization got as far as preInvokeTx.
+        // Needed for adequate error handling in the face of an initialization
+        // exception.
+        boolean initGotToPreInvokeTx = false;
+
         try {
             // create new Singleton EJB
             Object ejb = ejbClass.newInstance();
@@ -517,6 +521,7 @@ public abstract class AbstractSingletonContainer
             // attribute must be set prior to calling preInvoke
             ejbInv.transactionAttribute = postConstructInvInfo.txAttr;
             ejbInv.invocationInfo = postConstructInvInfo;
+            initGotToPreInvokeTx = true;
             preInvokeTx(ejbInv);
 
             context.setInstanceKey(singletonInstanceKey);
@@ -536,7 +541,9 @@ public abstract class AbstractSingletonContainer
             if (ejbInv != null) {
                 invocationManager.postInvoke(ejbInv);
                 try {
-                    postInvokeTx(ejbInv);
+                    if( initGotToPreInvokeTx ) {
+                        postInvokeTx(ejbInv);
+                    }
                 } catch(Exception pie) {
                     ejbInv.exception = pie;
                     singletonInitializationFailed = true;

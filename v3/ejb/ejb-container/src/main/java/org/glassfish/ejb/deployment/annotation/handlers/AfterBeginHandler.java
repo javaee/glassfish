@@ -37,7 +37,6 @@ package org.glassfish.ejb.deployment.annotation.handlers;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.logging.Level;
 
 import javax.ejb.*;
@@ -84,7 +83,7 @@ public class AfterBeginHandler extends AbstractAttributeHandler {
                 logger.fine("Setting AfterBegin method " + annMethod);
             }
 
-            ejbDesc.setAfterBeginMethod(annMethod);
+            ejbDesc.setAfterBeginMethodIfNotSet(new MethodDescriptor(annMethod));
         }
 
         return getDefaultProcessedResult();

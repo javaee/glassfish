@@ -90,6 +90,7 @@ public class ApplicationExceptionHandler extends AbstractHandler {
             Class annotatedClass = (Class) ae;
             appExcInfo.setExceptionClassName(annotatedClass.getName());
             appExcInfo.setRollback(appExcAnn.rollback());
+            appExcInfo.setInherited(appExcAnn.inherited());
 
             // Set on descriptor unless the same application exception was defined
             // in ejb-jar.xml

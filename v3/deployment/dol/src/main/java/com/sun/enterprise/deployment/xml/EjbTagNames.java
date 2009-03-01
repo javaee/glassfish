@@ -89,6 +89,7 @@ public interface EjbTagNames extends TagNames {
     public final static String APPLICATION_EXCEPTION = "application-exception";
     public final static String APP_EXCEPTION_CLASS = "exception-class";
     public final static String APP_EXCEPTION_ROLLBACK = "rollback";
+    public final static String APP_EXCEPTION_INHERITED = "inherited";
 
     // ejb-entity-ref
     public final static String REMOTE_EJB_NAME = "remote-ejb-name";
@@ -104,6 +105,13 @@ public interface EjbTagNames extends TagNames {
     // session
     public final static String TRANSACTION_TYPE = "transaction-type";
     public final static String TRANSACTION_SCOPE = "transaction-scope";
+    public final static String CONCURRENCY_MANAGEMENT_TYPE = "concurrency-management-type";
+    public final static String ASYNC_METHOD = "async-method";
+    public final static String CONCURRENT_METHOD = "concurrent-method";
+    public final static String CONCURRENT_LOCK = "lock";
+    public final static String CONCURRENT_ACCESS_TIMEOUT = "access-timeout";
+    
+    
 
     // message-driven 
     public final static String ACTIVATION_CONFIG = "activation-config";
@@ -163,20 +171,49 @@ public interface EjbTagNames extends TagNames {
     public static final String AROUND_INVOKE_CLASS_NAME = "class";
     public static final String AROUND_INVOKE_METHOD_NAME = "method-name";
 
-    // stateful session callbacks
+    // stateful session
     public final static String POST_ACTIVATE_METHOD = "post-activate";
     public final static String PRE_PASSIVATE_METHOD = "pre-passivate";
-    
-    // stateful session methods
     public final static String INIT_METHOD = "init-method";
     public final static String INIT_CREATE_METHOD = "create-method";
     public final static String INIT_BEAN_METHOD = "bean-method";
     public final static String REMOVE_METHOD = "remove-method";
     public final static String REMOVE_BEAN_METHOD = "bean-method";
     public final static String REMOVE_RETAIN_IF_EXCEPTION = "retain-if-exception";
+    public final static String STATEFUL_TIMEOUT = "stateful-timeout";
+    public final static String AFTER_BEGIN_METHOD = "after-begin-method";
+    public final static String BEFORE_COMPLETION_METHOD = "before-completion-method";
+    public final static String AFTER_COMPLETION_METHOD = "after-completion-method";
+
+
+    // singleton
+    public final static String INIT_ON_STARTUP = "init-on-startup";
+    public final static String DEPENDS_ON = "depends-on";
+
+    // Common timeout value elements for STATEFUL_TIMEOUT, ACCESS_TIMEOUT
+    public final static String TIMEOUT_VALUE = "timeout";
+    public final static String TIMEOUT_UNIT = "unit";
+
 
     // timeout method
     public final static String TIMEOUT_METHOD = "timeout-method";
+    public final static String TIMER_SCHEDULE = "schedule";
+
+    public final static String TIMER = "timer";
+    public final static String TIMER_START = "start";
+    public final static String TIMER_END = "end";
+    public final static String TIMER_PERSISTENT = "persistent";
+    public final static String TIMER_TIMEZONE = "timezone";
+    public final static String TIMER_INFO = "info";
+    public final static String TIMER_SECOND = "second";
+    public final static String TIMER_MINUTE = "minute";
+    public final static String TIMER_HOUR = "hour";
+    public final static String TIMER_DAY_OF_MONTH = "day-of-month";
+    public final static String TIMER_MONTH = "month";
+    public final static String TIMER_DAY_OF_WEEK = "day-of-Week";
+    public final static String TIMER_YEAR = "year";
+
+
 
 
 }

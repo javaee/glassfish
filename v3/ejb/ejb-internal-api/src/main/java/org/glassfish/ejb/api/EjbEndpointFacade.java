@@ -34,17 +34,51 @@
  * holder.
  */
 
-package org.glassfish.ejb.deployment;
+package org.glassfish.ejb.api;
+
+
+import org.glassfish.api.invocation.ComponentInvocation;
 
 
 /**
- * THIS CLASS IS NOT USED YET.  IT'S A PLACEHOLDER FOR EVENTUALLY MOVING THE
- * EJB BUNDLE VALIDATOR TO THE EJB MODULE.  
+ * This interface provides services needed by the web services runtime
+ * to flow an invocation through the ejb container to an EJB
+ * web service endpoint.
+ *
+ * @author Kenneth Saks
  */
-public class EjbBundleValidator {
+
+
+public interface EjbEndpointFacade {
+
+
+    /**
+     * Returns the application class loader associated with this
+     * web service endpoint.  This class loader must be the
+     * Thread's context class loader when startInvocation() is called
+     * and must remain the Thread's context class loader until
+     * after endInvocation() returns.   
+     */
+    public ClassLoader getEndpointClassLoader();
+
+
+    /**
+     * Start an invocation for the EJB web service endpoint.
+     * Once startInvocation() is called, endInvocation() must be called
+     * at some later time on the same thread.  Interleaved invocations
+     * on the same thread are not allowed.
+     *
+     * @return A component invocation for this invocation.  Must be
+     *         passed to the corresponding endInvocation.
+     */
+    public ComponentInvocation startInvocation();
     
-    public EjbBundleValidator() {
-	throw new IllegalStateException("Wrong instance of EjbBundleValidator");
-    }
+
+    /**
+     * Perform post-processing for the web service endpoint invocation.
+     * @argument inv The ComponentInvocation returned from the original
+     *               startInvocation
+     */
+    public void endInvocation(ComponentInvocation inv);
 
 }

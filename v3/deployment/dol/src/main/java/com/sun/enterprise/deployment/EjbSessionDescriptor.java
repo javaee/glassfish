@@ -36,21 +36,23 @@
 package com.sun.enterprise.deployment;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.deployment.util.EjbVisitor;
 import org.glassfish.internal.api.Globals;
 
 import java.util.*;
 import java.lang.reflect.Method;
 
+import com.sun.enterprise.deployment.util.TypeUtil;
+
 import java.util.concurrent.TimeUnit;
 
 /**
     * Objects of this kind represent the deployment information describing a single 
-    * Session Ejb, either stateful or stateless.
+    * Session Ejb : { stateful , stateless, singleton }
     *@author Danny Coward
     */
 
 public class EjbSessionDescriptor extends EjbDescriptor {
-    private boolean isStateless = false;
 
 
     private Set<LifecycleCallbackDescriptor> postActivateDescs =
@@ -67,9 +69,9 @@ public class EjbSessionDescriptor extends EjbDescriptor {
     // business methods corresponding to Home/LocalHome create methods.
     private Set<EjbInitInfo> initMethods=new HashSet<EjbInitInfo>();
 
-    private Method afterBeginMethod = null;
-    private Method beforeCompletionMethod = null;
-    private Method afterCompletionMethod = null;
+    private MethodDescriptor afterBeginMethod = null;
+    private MethodDescriptor beforeCompletionMethod = null;
+    private MethodDescriptor afterCompletionMethod = null;
 
     // Holds @StatefulTimeout or stateful-timeout from
     // ejb-jar.xml.  Only applies to stateful session beans.
@@ -86,6 +88,28 @@ public class EjbSessionDescriptor extends EjbDescriptor {
     public final static String STATEFUL = "Stateful";
     
     public final static String SINGLETON = "Singleton";
+
+    private boolean isStateless = false;
+    private boolean isStateful  = false;
+    private boolean isSingleton = false;
+
+    private List<MethodDescriptor> readLockMethods = new ArrayList<MethodDescriptor>();
+    private List<MethodDescriptor> writeLockMethods = new ArrayList<MethodDescriptor>();
+    private List<AccessTimeoutHolder> accessTimeoutMethods =
+            new ArrayList<AccessTimeoutHolder>();
+
+    private List<MethodDescriptor> tempAsyncMethodsFromXml =
+        new ArrayList<MethodDescriptor>();
+
+    // Controls eager vs. lazy Singleton initialization
+    private Boolean initOnStartup = null;
+
+    private static final String[] _emptyDepends = new String[] {};
+
+    private String[] dependsOn = _emptyDepends;
+
+
+    private ConcurrencyManagementType concurrencyManagementType;
     
     private static LocalStringManagerImpl localStrings =
 	    new LocalStringManagerImpl(EjbSessionDescriptor.class); 
@@ -101,7 +125,7 @@ public class EjbSessionDescriptor extends EjbDescriptor {
 	* Returns the type of this bean - always "Session".
 	*/
     public String getType() {
-	return TYPE;
+	    return TYPE;
     }
     
     /**
@@ -110,37 +134,42 @@ public class EjbSessionDescriptor extends EjbDescriptor {
     **/
     
     public String getSessionType() {
-	if (this.isStateless()) {
-	    return STATELESS;
-	} else {
-	    return STATEFUL;
-	}
+	    if (this.isStateless()) {
+	        return STATELESS;
+	    } else if( isStateful() ){
+	        return STATEFUL;
+	    } else {
+            return SINGLETON;
+        }
     }
     
 	/** 
-	* Accepts the Strings STATELESS or STATEFUL.
+	* Accepts the Strings STATELESS / STATEFUL / SINGLETON
 	*/
     public void setSessionType(String sessionType) {
-	if (STATELESS.equals(sessionType)) {
-	    this.setStateless(true);
-	    return;
-	}
-	if (STATEFUL.equals(sessionType)) {
-	    this.setStateless(false);
-	    return;
-	}
-	if (this.isBoundsChecking()) {
-	    throw new IllegalArgumentException(localStrings.getLocalString(
-									   "enterprise.deployment.exceptionsessiontypenotlegaltype",
-									   "{0} is not a legal session type for session ejbs. The type must be {1} or {2}", new Object[] {sessionType, STATEFUL, STATELESS}));
-	}
+	    if (STATELESS.equals(sessionType)) {
+	       isStateless = true;
+	    } else if(STATEFUL.equals(sessionType)) {
+	       isStateful = true;
+        } else if(SINGLETON.equals(sessionType)){
+            isSingleton = true;
+        } else {
+            if (this.isBoundsChecking()) {
+	        throw new IllegalArgumentException(localStrings.getLocalString(
+		        "enterprise.deployment.exceptionsessiontypenotlegaltype",
+		        "{0} is not a legal session type for session ejbs. The type must be {1} or {2}",
+                new Object[] {sessionType, STATEFUL, STATELESS}));
+	        }
+
+	    }
+        return;
     }
     
 	/**
 	* Sets my type
 	*/
     public void setType(String type) {
-	throw new IllegalArgumentException(localStrings.getLocalString(
+	    throw new IllegalArgumentException(localStrings.getLocalString(
 								   "enterprise.deployment.exceptioncannotsettypeofsessionbean",
 								   "Cannot set the type of a session bean"));
     }
@@ -151,18 +180,18 @@ public class EjbSessionDescriptor extends EjbDescriptor {
 	*  Sets the transaction type for this bean. Must be either BEAN_TRANSACTION_TYPE or CONTAINER_TRANSACTION_TYPE.
 	*/
     public void setTransactionType(String transactionType) {
-	boolean isValidType = (BEAN_TRANSACTION_TYPE.equals(transactionType) ||
+	    boolean isValidType = (BEAN_TRANSACTION_TYPE.equals(transactionType) ||
 				CONTAINER_TRANSACTION_TYPE.equals(transactionType));
 				
-	if (!isValidType && this.isBoundsChecking()) {
-	    throw new IllegalArgumentException(localStrings.getLocalString(
+	    if (!isValidType && this.isBoundsChecking()) {
+	        throw new IllegalArgumentException(localStrings.getLocalString(
 									   "enterprise.deployment..exceptointxtypenotlegaltype",
 									   "{0} is not a legal transaction type for session beans", new Object[] {transactionType}));
-	} else {
-	    super.transactionType = transactionType;
-	    super.setMethodContainerTransactions(new Hashtable());
+	    } else {
+	        super.transactionType = transactionType;
+	        super.setMethodContainerTransactions(new Hashtable());
 
-	}
+	    }
     }
     
 	/**
@@ -173,19 +202,27 @@ public class EjbSessionDescriptor extends EjbDescriptor {
     }
     
     public boolean isStateful() {
-        return !isStateless();
+        return isStateful;
     }
 
     public boolean isSingleton() {
-        return false;
+        return isSingleton;
     }
-    
-	/**
-	* Sets the isStateless attribute of this session bean.
-	*/
-    public void setStateless(boolean isStateless) {
-	this.isStateless = isStateless;
 
+    public void addAsynchronousMethodFromXml(MethodDescriptor m) {
+
+        // Since asynchronous is represented as a flag on the actual
+        // client method descriptors, we need to delay the processing because
+        // those lists of client descriptors won't necessarily be available
+        // at the time this is called from the .xml.
+
+        // Keep in a temporary list for later processing
+        tempAsyncMethodsFromXml.add(m);
+    }
+
+    public void addStatefulTimeoutDescriptor(TimeoutValueDescriptor timeout) {
+        statefulTimeoutValue = timeout.getValue();
+        statefulTimeoutUnit  = timeout.getUnit();
     }
 
     public void setStatefulTimeout(Long value, TimeUnit unit) {
@@ -364,57 +401,260 @@ public class EjbSessionDescriptor extends EjbDescriptor {
         return txAttributes;
     }
 
+    public void addAfterBeginDescriptor(MethodDescriptor m) {
+        afterBeginMethod = m;
+    }
+
+    public void addBeforeCompletionDescriptor(MethodDescriptor m) {
+        beforeCompletionMethod = m;
+    }
+
+    public void addAfterCompletionDescriptor(MethodDescriptor m) {
+        afterCompletionMethod = m;
+    }
+
     /**
      * Set the Method annotated @AfterBegin.
      */
-    public void setAfterBeginMethod(Method m) {
-        afterBeginMethod = m;
+    public void setAfterBeginMethodIfNotSet(MethodDescriptor m) {
+        if( afterBeginMethod == null) {
+            afterBeginMethod = m;
+        }
     }
     
     /**
      * Returns the Method annotated @AfterBegin.
      */
-    public Method getAfterBeginMethod() {
+    public MethodDescriptor getAfterBeginMethod() {
         return afterBeginMethod;
     }
     
     /**
      * Set the Method annotated @BeforeCompletion.
      */
-    public void setBeforeCompletionMethod(Method m) {
-        beforeCompletionMethod = m;
+    public void setBeforeCompletionMethodIfNotSet(MethodDescriptor m) {
+        if( beforeCompletionMethod == null ) {
+            beforeCompletionMethod = m;
+        }
     }
     
     /**
      * Returns the Method annotated @AfterBegin.
      */
-    public Method getBeforeCompletionMethod() {
+    public MethodDescriptor getBeforeCompletionMethod() {
         return beforeCompletionMethod;
     }
     
     /**
      * Set the Method annotated @AfterCompletion.
      */
-    public void setAfterCompletionMethod(Method m) {
-        afterCompletionMethod = m;
+    public void setAfterCompletionMethodIfNotSet(MethodDescriptor m) {
+        if( afterCompletionMethod == null ) {
+            afterCompletionMethod = m;
+        }
     }
     
     /**
      * Returns the Method annotated @AfterCompletion.
      */
-    public Method getAfterCompletionMethod() {
+    public MethodDescriptor getAfterCompletionMethod() {
         return afterCompletionMethod;
     }
-    
-    
+
+
+    public boolean getInitOnStartup() {
+        return ( (initOnStartup != null) && initOnStartup );
+    }
+
+    public void setInitOnStartup(boolean flag) {
+        initOnStartup = new Boolean(flag);
+    }
+
+    public void setInitOnStartupIfNotAlreadySet(boolean flag) {
+        if( initOnStartup == null ) {
+            setInitOnStartup(flag);
+        }
+    }
+
+    public String[] getDependsOn() {
+        return dependsOn;
+    }
+
+    public boolean hasDependsOn() {
+        return (dependsOn.length > 0);
+    }
+
+    public void setDependsOn(String[] dep) {
+        dependsOn = (dep == null) ? _emptyDepends : dep;
+    }
+
+    public void setDependsOnIfNotSet(String[] dep) {
+        if( !hasDependsOn() ) {
+            setDependsOn(dep);
+        }
+    }
+
+    public ConcurrencyManagementType getConcurrencyManagementType() {
+        return (concurrencyManagementType != null) ? concurrencyManagementType :
+                ConcurrencyManagementType.Container;
+    }
+
+    public boolean hasContainerManagedConcurrency() {
+        return (getConcurrencyManagementType() == ConcurrencyManagementType.Container);
+    }
+
+    public boolean hasBeanManagedConcurrency() {
+        return (getConcurrencyManagementType() == ConcurrencyManagementType.Bean);
+    }
+
+    public boolean isConcurrencyProhibited() {
+        return (getConcurrencyManagementType() == ConcurrencyManagementType.NotAllowed);
+    }   
+
+
+    public void setConcurrencyManagementType(ConcurrencyManagementType type) {
+        concurrencyManagementType = type;
+    }
+
+    public void setConcurrencyManagementTypeIfNotSet(ConcurrencyManagementType type) {
+        if( concurrencyManagementType == null) {
+            setConcurrencyManagementType(type);
+        }
+    }
+
+    public void addConcurrentMethodFromXml(ConcurrentMethodDescriptor concMethod) {
+
+        // .xml must contain a method.  However, both READ/WRITE lock metadata
+        // and access timeout are optional.
+
+
+        MethodDescriptor methodDesc = concMethod.getConcurrentMethod();
+
+        if( concMethod.hasLockMetadata()) {
+
+            if( concMethod.isWriteLocked()) {
+                addWriteLockMethod(methodDesc);
+            } else {
+                addReadLockMethod(methodDesc);
+            }
+        }
+
+        if( concMethod.hasAccessTimeout() ) {
+
+            this.addAccessTimeoutMethod(methodDesc, concMethod.getAccessTimeoutValue(),
+                    concMethod.getAccessTimeoutUnit());    
+        }
+
+    }
+
+    public void addReadLockMethod(MethodDescriptor methodDescriptor) {
+        readLockMethods.add(methodDescriptor);
+    }
+
+    public void addWriteLockMethod(MethodDescriptor methodDescriptor) {
+        writeLockMethods.add(methodDescriptor);
+    }
+
+    public List<MethodDescriptor> getReadLockMethods() {
+        return new ArrayList<MethodDescriptor>(readLockMethods);
+    }
+
+    public List<MethodDescriptor> getWriteLockMethods() {
+        return new ArrayList<MethodDescriptor>(writeLockMethods);
+    }
+
+    public List<MethodDescriptor> getReadAndWriteLockMethods() {
+        List<MethodDescriptor> readAndWriteLockMethods = new ArrayList<MethodDescriptor>();
+        readAndWriteLockMethods.addAll(readLockMethods);
+        readAndWriteLockMethods.addAll(writeLockMethods);
+        return readAndWriteLockMethods;
+    }
+
+    public void addAccessTimeoutMethod(MethodDescriptor methodDescriptor, long value,
+                                       TimeUnit unit) {
+        accessTimeoutMethods.add(new AccessTimeoutHolder(value, unit, methodDescriptor));
+    }
+
+    public List<MethodDescriptor> getAccessTimeoutMethods() {
+        List<MethodDescriptor> methods = new ArrayList<MethodDescriptor>();
+        for(AccessTimeoutHolder holder : accessTimeoutMethods){
+            methods.add(holder.method);
+        }
+        return methods;
+    }
+
+    public List<AccessTimeoutHolder> getAccessTimeoutInfo() {
+        List<AccessTimeoutHolder> all = new ArrayList<AccessTimeoutHolder>();
+        for(AccessTimeoutHolder holder : accessTimeoutMethods){
+            all.add(holder);
+        }
+        return all;
+    }
+
+
+    public void processAsyncMethodsFromXml() {
+
+         // Now we can do any asynchronous method processing from .xml
+         for(MethodDescriptor next : tempAsyncMethodsFromXml) {
+            setMatchingAsyncMethods(next);
+         }
+
+         // Clear out temporary list
+         tempAsyncMethodsFromXml.clear();
+
+    }
+
+    private void setMatchingAsyncMethods(MethodDescriptor methodDescFromXml) {
+
+        String methodIntfTag = methodDescFromXml.getEjbClassSymbol();
+
+        Method methodFromXml = methodDescFromXml.getMethod(this);
+
+        if( methodFromXml == null ) {
+            throw new RuntimeException("Invalid Async method signature " + methodDescFromXml +
+                " . Method could not be resolved to a bean class method for bean " + this.getName());
+        }
+
+        for(Object o : getClientBusinessMethodDescriptors()) {
+            MethodDescriptor nextDesc = (MethodDescriptor) o;
+            Method next = nextDesc.getMethod(this);
+
+            if( TypeUtil.sameMethodSignature(methodFromXml, next)) {
+
+                if( methodIntfTag == null ) {
+                    nextDesc.setAsynchronous(true);
+                } else if ( methodIntfTag.equals(nextDesc.getEjbClassSymbol()) ) {
+                    nextDesc.setAsynchronous(true);
+                }
+            }
+
+        }
+
+    }
+
 	/**
 	* Returns a formatted String of the attributes of this object.
 	*/
     public void print(StringBuffer toStringBuffer) {
-	toStringBuffer.append("Session descriptor");
-	toStringBuffer.append("\n isStateless ").append(isStateless);
-	super.print(toStringBuffer);
+	    toStringBuffer.append("Session descriptor");
+	    toStringBuffer.append("\n sessionType ").append(getSessionType());
+	    super.print(toStringBuffer);
     }
 
+    public static class AccessTimeoutHolder {
+        public AccessTimeoutHolder(long v, TimeUnit u, MethodDescriptor m) {
+            value = v;
+            unit = u;
+            method = m;
+        }
+        public long value;
+        public TimeUnit unit;
+        public MethodDescriptor method;
+    }
 
+    public enum ConcurrencyManagementType {
+        Bean,
+        Container,
+        NotAllowed
+    }
 }

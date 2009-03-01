@@ -121,7 +121,7 @@ public class StatefulHandler extends AbstractEjbHandler {
             throws AnnotationProcessorException {
 
         EjbSessionDescriptor ejbSessionDesc = (EjbSessionDescriptor)ejbDesc;
-        ejbSessionDesc.setStateless(false);
+        ejbSessionDesc.setSessionType(EjbSessionDescriptor.STATEFUL);
 
         Stateful sful = (Stateful) ainfo.getAnnotation();
         doDescriptionProcessing(sful.description(), ejbDesc);

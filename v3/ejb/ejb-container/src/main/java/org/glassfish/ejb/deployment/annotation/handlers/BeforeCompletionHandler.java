@@ -84,7 +84,7 @@ public class BeforeCompletionHandler extends AbstractAttributeHandler {
                 logger.fine("Setting BeforeCompletion method " + annMethod);
             }
 
-            ejbDesc.setBeforeCompletionMethod(annMethod);
+            ejbDesc.setBeforeCompletionMethodIfNotSet(new MethodDescriptor(annMethod));
         }
 
         return getDefaultProcessedResult();

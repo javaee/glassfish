@@ -49,7 +49,6 @@ import com.sun.logging.LogDomains;
 
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.ejb.security.application.EJBSecurityManager;
-import org.glassfish.ejb.deployment.EjbSingletonDescriptor;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
@@ -89,15 +88,7 @@ public final class ContainerFactoryImpl implements ContainerFactory {
 
         try {
             // instantiate container class
-            if (ejbDescriptor instanceof EjbSingletonDescriptor) {
-                EjbSingletonDescriptor sd = (EjbSingletonDescriptor) ejbDescriptor;
-                
-                if (sd.isContainerManagedConcurrency()) {
-                    container = new CMCSingletonContainer(ejbDescriptor, loader);
-                } else {
-                    container = new BMCSingletonContainer(ejbDescriptor, loader);
-                }
-            } else if (ejbDescriptor instanceof EjbSessionDescriptor) {
+            if (ejbDescriptor instanceof EjbSessionDescriptor) {
                 EjbSessionDescriptor sd = (EjbSessionDescriptor)ejbDescriptor;
                 if ( sd.isStateless() ) {
                     if ((ejbDescriptor.getLocalClassName() != null) &&
@@ -107,11 +98,18 @@ public final class ContainerFactoryImpl implements ContainerFactory {
                     } else {
                         container = new StatelessSessionContainer(ejbDescriptor, loader);
                     }
-                } else {
+                } else if( sd.isStateful() ) {
                     StatefulContainerBuilder sfsbBuilder = habitat.getComponent(
                             StatefulContainerBuilder.class);
                     sfsbBuilder.buildContainer(ejbDescriptor, loader);
                     container = sfsbBuilder.getContainer();
+                } else {
+
+                    if (sd.hasContainerManagedConcurrency() ) {
+                        container = new CMCSingletonContainer(ejbDescriptor, loader);
+                    } else {
+                        container = new BMCSingletonContainer(ejbDescriptor, loader);
+                    }
                 }
             } else if ( ejbDescriptor instanceof EjbMessageBeanDescriptor) {
                 container = new MessageBeanContainer(ejbDescriptor, loader);

@@ -38,15 +38,12 @@ package org.glassfish.ejb.deployment.annotation.handlers;
 import java.lang.annotation.Annotation;
 import javax.ejb.StatefulTimeout;
 
-import java.util.concurrent.TimeUnit;
-
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbSessionDescriptor;
 
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
-import org.glassfish.ejb.deployment.EjbSingletonDescriptor;
 import com.sun.enterprise.deployment.annotation.context.EjbContext;
 import org.jvnet.hk2.annotations.Service;
 

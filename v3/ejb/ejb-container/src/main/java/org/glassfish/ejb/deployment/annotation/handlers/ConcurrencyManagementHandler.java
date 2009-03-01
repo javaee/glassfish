@@ -36,10 +36,7 @@
 package org.glassfish.ejb.deployment.annotation.handlers;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
 import javax.ejb.ConcurrencyManagement;
 import javax.ejb.ConcurrencyManagementType;
 
@@ -48,9 +45,9 @@ import com.sun.enterprise.deployment.EjbDescriptor;
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
-import org.glassfish.ejb.deployment.EjbSingletonDescriptor;
+import com.sun.enterprise.deployment.EjbSessionDescriptor;
+import com.sun.enterprise.deployment.EjbSessionDescriptor.ConcurrencyManagementType.*;
 import com.sun.enterprise.deployment.annotation.context.EjbContext;
-import org.glassfish.ejb.deployment.annotation.handlers.AbstractAttributeHandler;
 import org.jvnet.hk2.annotations.Service;
 
 /**
@@ -80,12 +77,32 @@ public class ConcurrencyManagementHandler extends AbstractAttributeHandler {
 
         for (EjbContext ejbContext : ejbContexts) {
             EjbDescriptor ejbDesc = ejbContext.getDescriptor();
-            if (ejbDesc instanceof EjbSingletonDescriptor) {
-                EjbSingletonDescriptor sDesc = (EjbSingletonDescriptor) ejbDesc;
-                // override by xml
-                if (sDesc.getCMCInXML() == null) {
-                    sDesc.setContainerManagedConcurrency(cmType == ConcurrencyManagementType.CONTAINER);
+            if (ejbDesc instanceof EjbSessionDescriptor) {
+
+                // TODO handle stateful session beans and CONCURRENCY_PROHIBITED
+                EjbSessionDescriptor.ConcurrencyManagementType descCMType;
+
+                switch(cmType) {
+                    case CONTAINER :
+                        descCMType = EjbSessionDescriptor.ConcurrencyManagementType.Container;
+                        break;
+                    case BEAN :
+                        descCMType = EjbSessionDescriptor.ConcurrencyManagementType.Bean;
+                        break;
+                    case CONCURRENCY_NOT_ALLOWED :
+                        descCMType = EjbSessionDescriptor.ConcurrencyManagementType.NotAllowed;
+                        break;
+                    default :
+                        throw new AnnotationProcessorException("Unsupported concurrency management " +
+                                "type = " + cmType);
+
                 }
+
+                EjbSessionDescriptor sDesc = (EjbSessionDescriptor) ejbDesc;
+
+                // Set value on descriptor unless it has been set by .xml
+                sDesc.setConcurrencyManagementTypeIfNotSet(descCMType);
+
             }
         }
 

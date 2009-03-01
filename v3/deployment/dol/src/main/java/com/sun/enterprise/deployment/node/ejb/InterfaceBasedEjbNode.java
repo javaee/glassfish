@@ -102,6 +102,10 @@ public abstract class InterfaceBasedEjbNode extends EjbNode {
             appendTextChild(ejbNode, EjbTagNames.BUSINESS_REMOTE, next);
         }
 
+        if( descriptor.isLocalBean()) {
+            appendChild(ejbNode, EjbTagNames.LOCAL_BEAN);
+        }
+
         appendTextChild(ejbNode, EjbTagNames.SERVICE_ENDPOINT_INTERFACE,
                         descriptor.getWebServiceEndpointInterfaceName());
         appendTextChild(ejbNode, EjbTagNames.EJB_CLASS, 

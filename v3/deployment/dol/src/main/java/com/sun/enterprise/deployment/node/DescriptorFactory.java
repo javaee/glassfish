@@ -113,6 +113,17 @@ public class DescriptorFactory {
                 InterceptorBindingDescriptor.class);
        register(new XMLElement(EjbTagNames.APPLICATION_EXCEPTION), 
                 EjbApplicationExceptionInfo.class);
+        register(new XMLElement(EjbTagNames.STATEFUL_TIMEOUT), TimeoutValueDescriptor.class);
+        register(new XMLElement(EjbTagNames.TIMER_SCHEDULE), ScheduledTimerDescriptor.class);
+        register(new XMLElement(EjbTagNames.AFTER_BEGIN_METHOD), MethodDescriptor.class);
+        register(new XMLElement(EjbTagNames.AFTER_COMPLETION_METHOD), MethodDescriptor.class);
+        register(new XMLElement(EjbTagNames.BEFORE_COMPLETION_METHOD), MethodDescriptor.class);
+        register(new XMLElement(EjbTagNames.CONCURRENT_METHOD), MethodDescriptor.class);
+        register(new XMLElement(EjbTagNames.CONCURRENT_ACCESS_TIMEOUT), TimeoutValueDescriptor.class);
+        register(new XMLElement(EjbTagNames.ASYNC_METHOD), MethodDescriptor.class);
+        
+        
+
 
 	//connector
 	register(new XMLElement(ConnectorTagNames.CONNECTOR), ConnectorDescriptor.class);

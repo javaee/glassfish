@@ -80,6 +80,7 @@ public class MessageDrivenBeanNode extends EjbNode {
 
         registerElementHandler(new XMLElement(EjbTagNames.TIMEOUT_METHOD), MethodNode.class, "setEjbTimeoutMethod");      
 
+         registerElementHandler(new XMLElement(EjbTagNames.TIMEOUT_METHOD), MethodNode.class, "setEjbTimeoutMethod");
     }
 
     /**
@@ -149,6 +150,15 @@ public class MessageDrivenBeanNode extends EjbNode {
                 (ejbNode, EjbTagNames.TIMEOUT_METHOD,
                  ejbDesc.getEjbTimeoutMethod());
         }
+
+        // TODO for each scheduled timer
+        /*
+
+           ScheduledTimerNode timerNode = new ScheduledTimerNode();
+           timerNode.writeDescriptor(ejbNode, EjbTagNames.TIMER, timerDesc);
+
+
+        */
 
         appendTextChild(ejbNode, EjbTagNames.TRANSACTION_TYPE, ejbDesc.getTransactionType());                   
 

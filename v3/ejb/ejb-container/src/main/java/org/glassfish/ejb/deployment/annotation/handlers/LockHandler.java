@@ -47,16 +47,14 @@ import java.util.ArrayList;
 import javax.ejb.*;
 
 import com.sun.enterprise.deployment.util.TypeUtil;
-import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.MethodDescriptor;
 
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotatedElementHandler;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
-import org.glassfish.ejb.deployment.EjbSingletonDescriptor;
+import com.sun.enterprise.deployment.EjbSessionDescriptor;
 import com.sun.enterprise.deployment.annotation.context.EjbContext;
-import org.glassfish.ejb.deployment.annotation.handlers.AbstractAttributeHandler;
 import com.sun.enterprise.deployment.annotation.handlers.PostProcessor;
 import org.jvnet.hk2.annotations.Service;
 
@@ -85,10 +83,15 @@ public class LockHandler extends AbstractAttributeHandler implements PostProcess
         Lock lockAnn = (Lock) ainfo.getAnnotation();
 
         for (EjbContext ejbContext : ejbContexts) {
-            if (ejbContext.getDescriptor() instanceof EjbSingletonDescriptor) {
-                EjbSingletonDescriptor singletonDesc = 
-                        (EjbSingletonDescriptor) ejbContext.getDescriptor();
+            if (ejbContext.getDescriptor() instanceof EjbSessionDescriptor) {
+                EjbSessionDescriptor singletonDesc =
+                        (EjbSessionDescriptor) ejbContext.getDescriptor();
                 LockType lockType = lockAnn.value();
+
+                if( !singletonDesc.isSingleton() ) {
+                    throw new AnnotationProcessorException("@Lock is only permitted for " +
+                            "singleton session beans");
+                }
 
                 if (ElementType.TYPE.equals(ainfo.getElementType())) {
                     // Delay processing Class-level default until after methods are processed
@@ -137,7 +140,7 @@ public class LockHandler extends AbstractAttributeHandler implements PostProcess
             AnnotatedElementHandler aeHandler)
             throws AnnotationProcessorException {
         EjbContext ejbContext = (EjbContext)aeHandler;
-        EjbSingletonDescriptor ejbDesc = (EjbSingletonDescriptor) ejbContext.getDescriptor();
+        EjbSessionDescriptor ejbDesc = (EjbSessionDescriptor) ejbContext.getDescriptor();
 
         Class classAn = (Class)ainfo.getAnnotatedElement();
         Lock lockAnn = (Lock) ainfo.getAnnotation();
@@ -178,7 +181,7 @@ public class LockHandler extends AbstractAttributeHandler implements PostProcess
     }
 
     private boolean matchesExistingReadOrWriteLockMethod(Method methodToMatch,
-                                                         EjbSingletonDescriptor desc) {
+                                                         EjbSessionDescriptor desc) {
 
         List<MethodDescriptor> lockMethods = desc.getReadAndWriteLockMethods();
 

@@ -193,15 +193,15 @@ public class EjbBundleNode extends BundleNode<EjbBundleDescriptor> {
         for (Iterator ejbs = ejbDesc.getEjbs().iterator();ejbs.hasNext();) {
             EjbDescriptor ejb = (EjbDescriptor) ejbs.next();
             if (EjbSessionDescriptor.TYPE.equals(ejb.getType())) {
-                EjbNode subNode = new EjbSessionNode();
+                EjbSessionNode subNode = new EjbSessionNode();
                 subNode.writeDescriptor(entrepriseBeansNode, 
                                                                             EjbTagNames.SESSION, ejb);
             }  else if (EjbEntityDescriptor.TYPE.equals(ejb.getType())) {
-                EjbNode subNode = new EjbEntityNode();
+                EjbEntityNode subNode = new EjbEntityNode();
                 subNode.writeDescriptor(entrepriseBeansNode, 
                                                                             EjbTagNames.ENTITY, ejb);
             } else if (EjbMessageBeanDescriptor.TYPE.equals(ejb.getType())) {
-                EjbNode subNode = new MessageDrivenBeanNode();
+                MessageDrivenBeanNode subNode = new MessageDrivenBeanNode();
                 subNode.writeDescriptor(entrepriseBeansNode, 
                                                                             EjbTagNames.MESSAGE_DRIVEN, ejb);
             }  else {

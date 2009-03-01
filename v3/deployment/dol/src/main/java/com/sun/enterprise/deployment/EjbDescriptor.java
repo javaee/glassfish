@@ -145,6 +145,10 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
     private ConcurrentMap<Method, List> schedules = 
             new ConcurrentHashMap<Method, List>();
 
+    private Map<MethodDescriptor, List<ScheduledTimerDescriptor>> timerSchedules =
+            new HashMap<MethodDescriptor, List<ScheduledTimerDescriptor>>();
+
+
     private ConcurrentMap<Method, MethodDescriptor> allMethodDescriptors = 
             new ConcurrentHashMap<Method, MethodDescriptor>();
 
@@ -349,6 +353,12 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
 
     public void setEjbTimeoutMethod(MethodDescriptor method) {
         timedObjectMethod = method;
+    }
+
+    public void addScheduledTimerDescriptor(ScheduledTimerDescriptor timer) {
+        List<ScheduledTimerDescriptor> list = new ArrayList<ScheduledTimerDescriptor>();
+        list.add(timer);
+        timerSchedules.put(timer.getTimeoutMethod(), list);
     }
 
     public void addSchedule(Method m, Object sch) {
@@ -1874,7 +1884,9 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
     protected void addAllInterfaceMethodsIn(Collection methodDescriptors, Class c, String methodIntf) {
         Method[] methods = c.getMethods();
         for (int i = 0; i < methods.length; i++) {
-            methodDescriptors.add(getMethodDescriptorFor(methods[i], methodIntf));
+            if( methods[i].getDeclaringClass() != java.lang.Object.class ) {
+                methodDescriptors.add(getMethodDescriptorFor(methods[i], methodIntf));
+            }
         }
     }
 

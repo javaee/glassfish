@@ -42,15 +42,13 @@ import com.sun.ejb.EjbInvocation;
 import com.sun.ejb.InvocationInfo;
 import com.sun.ejb.MethodLockInfo;
 
-import javax.ejb.ConcurrentAccessException;
 import javax.ejb.ConcurrentAccessTimeoutException;
 import javax.ejb.IllegalLoopbackException;
 import javax.ejb.LockType;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.TimeUnit;
 
-import org.glassfish.ejb.deployment.EjbSingletonDescriptor;
+
 
 /**
  * @author Mahesh Kannan

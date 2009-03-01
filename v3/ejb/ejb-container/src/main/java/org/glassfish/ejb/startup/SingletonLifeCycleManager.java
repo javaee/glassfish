@@ -1,8 +1,7 @@
 package org.glassfish.ejb.startup;
 
-import com.sun.ejb.Container;
 import com.sun.ejb.containers.AbstractSingletonContainer;
-import org.glassfish.ejb.deployment.EjbSingletonDescriptor;
+import com.sun.enterprise.deployment.EjbSessionDescriptor;
 
 import java.util.*;
 
@@ -41,11 +40,11 @@ public class SingletonLifeCycleManager {
 
     public void addSingletonContainer(AbstractSingletonContainer c) {
         c.setSingletonLifeCycleManager(this);
-        EjbSingletonDescriptor sdesc = (EjbSingletonDescriptor) c.getEjbDescriptor();
+        EjbSessionDescriptor sdesc = (EjbSessionDescriptor) c.getEjbDescriptor();
         String modName = sdesc.getEjbBundleDescriptor().getName();
         //System.out.println("BundleName: " + modName);
         String src = sdesc.getName();
-        String[] depends = sdesc.getDepends();
+        String[] depends = sdesc.getDependsOn();
         this.addDependency(src, depends);
 
         //TODO: names can be of the form jarName#beanName
@@ -56,18 +55,10 @@ public class SingletonLifeCycleManager {
         AbstractSingletonContainer[] partialOrder = this.getPartiallyOrderedSingletonDescriptors();
         int orderSz = partialOrder.length;
 
-        StringBuilder sb = new StringBuilder("[**]Singleton partial order: ");
-        for (int i=0; i<orderSz; i++) {
-            EjbSingletonDescriptor sdesc = (EjbSingletonDescriptor) partialOrder[i].getEjbDescriptor();
-            String name = sdesc.getName();
-            sb.append(name).append(sdesc.isStartup() ? "* " : " ");
-        }
-        System.out.println(sb.toString());
-
         for (int i = 0; i < orderSz; i++) {
-            EjbSingletonDescriptor sdesc = (EjbSingletonDescriptor) partialOrder[i].getEjbDescriptor();
+            EjbSessionDescriptor sdesc = (EjbSessionDescriptor) partialOrder[i].getEjbDescriptor();
             String s = sdesc.getName();
-            if (sdesc.isStartup()) {
+            if (sdesc.getInitOnStartup()) {
                 initializeSingleton(name2Container.get(s));
             }
         }

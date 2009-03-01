@@ -37,6 +37,7 @@
 package com.sun.enterprise.deployment.node.ejb;
 
 import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.EjbSessionDescriptor.ConcurrencyManagementType;
 import com.sun.enterprise.deployment.node.DescriptorFactory;
 import com.sun.enterprise.deployment.node.LifecycleCallbackNode;
 import com.sun.enterprise.deployment.node.MethodNode;
@@ -46,6 +47,8 @@ import org.w3c.dom.Node;
 import org.xml.sax.Attributes;
 
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * This class handles all information pertinent to session beans
@@ -56,6 +59,9 @@ import java.util.Map;
 public class EjbSessionNode  extends InterfaceBasedEjbNode {
     
     private EjbSessionDescriptor descriptor;
+
+    private boolean inDependsOn = false;
+    private List<String> dependsOn = null;
 
     public EjbSessionNode() {
        super();
@@ -76,7 +82,20 @@ public class EjbSessionNode  extends InterfaceBasedEjbNode {
        registerElementHandler(new XMLElement(EjbTagNames.INIT_METHOD), EjbInitNode.class, "addInitMethod");
 
        registerElementHandler(new XMLElement(EjbTagNames.REMOVE_METHOD), EjbRemoveNode.class, "addRemoveMethod");       
-   }  
+
+       registerElementHandler(new XMLElement(EjbTagNames.STATEFUL_TIMEOUT), TimeoutValueNode.class, "addStatefulTimeoutDescriptor");
+
+       registerElementHandler(new XMLElement(EjbTagNames.AFTER_BEGIN_METHOD), MethodNode.class, "addAfterBeginDescriptor");
+
+       registerElementHandler(new XMLElement(EjbTagNames.BEFORE_COMPLETION_METHOD), MethodNode.class, "addBeforeCompletionDescriptor");
+
+       registerElementHandler(new XMLElement(EjbTagNames.AFTER_COMPLETION_METHOD), MethodNode.class, "addAfterCompletionDescriptor");
+
+       registerElementHandler(new XMLElement(EjbTagNames.ASYNC_METHOD), MethodNode.class, "addAsynchronousMethodFromXml");
+
+       registerElementHandler(new XMLElement(EjbTagNames.CONCURRENT_METHOD), ConcurrentMethodNode.class,
+               "addConcurrentMethodFromXml");
+    }
         
    /**
     * @return the descriptor instance to associate with this XMLNode
@@ -101,6 +120,7 @@ public class EjbSessionNode  extends InterfaceBasedEjbNode {
         Map table = super.getDispatchTable();
         table.put(EjbTagNames.SESSION_TYPE, "setSessionType");
         table.put(EjbTagNames.TRANSACTION_TYPE, "setTransactionType");
+        table.put(EjbTagNames.INIT_ON_STARTUP, "setInitOnStartup");
         return table;
     }
 
@@ -108,9 +128,34 @@ public class EjbSessionNode  extends InterfaceBasedEjbNode {
 
         if( EjbTagNames.LOCAL_BEAN.equals(element.getQName()) ) {
             descriptor.setLocalBean(true);
+        } else if( EjbTagNames.DEPENDS_ON.equals(element.getQName())) {
+            inDependsOn = true;
+            dependsOn = new ArrayList<String>();
         }
 
         super.startElement(element, attributes);
+    }
+
+    public void setElementValue(XMLElement element, String value) {
+
+        if (inDependsOn && EjbTagNames.EJB_NAME.equals(element.getQName())) {
+            dependsOn.add(value);
+        } else if( EjbTagNames.CONCURRENCY_MANAGEMENT_TYPE.equals(element.getQName())) {
+            descriptor.setConcurrencyManagementType(ConcurrencyManagementType.valueOf(value));
+        } else {
+            super.setElementValue(element, value);
+        }
+    }
+
+    public boolean endElement(XMLElement element) {
+
+        if( EjbTagNames.DEPENDS_ON.equals(element.getQName())) {
+            inDependsOn = false;
+            descriptor.setDependsOn(dependsOn.toArray(new String[0]));
+            dependsOn = null;
+        }
+
+        return super.endElement(element);
     }
     
     /**
@@ -130,7 +175,18 @@ public class EjbSessionNode  extends InterfaceBasedEjbNode {
         Node ejbNode = super.writeDescriptor(parent, nodeName, descriptor);
         writeDisplayableComponentInfo(ejbNode, descriptor);
         writeCommonHeaderEjbDescriptor(ejbNode, ejbDesc);
-        appendTextChild(ejbNode, EjbTagNames.SESSION_TYPE, ejbDesc.getSessionType());                   
+        appendTextChild(ejbNode, EjbTagNames.SESSION_TYPE, ejbDesc.getSessionType());
+
+        if( ejbDesc.hasStatefulTimeout() ) {
+
+            TimeoutValueNode timeoutValueNode = new TimeoutValueNode();
+            TimeoutValueDescriptor timeoutDesc = new TimeoutValueDescriptor();
+            timeoutDesc.setValue(ejbDesc.getStatefulTimeoutValue());
+            timeoutDesc.setUnit(ejbDesc.getStatefulTimeoutUnit());
+            timeoutValueNode.writeDescriptor(ejbNode, EjbTagNames.STATEFUL_TIMEOUT,
+                timeoutDesc);
+            
+        }
 
         MethodNode methodNode = new MethodNode();
         
@@ -138,6 +194,52 @@ public class EjbSessionNode  extends InterfaceBasedEjbNode {
             methodNode.writeJavaMethodDescriptor
                 (ejbNode, EjbTagNames.TIMEOUT_METHOD,
                  ejbDesc.getEjbTimeoutMethod());
+        }
+
+        // TODO for each scheduled timer
+        /*
+
+           ScheduledTimerNode timerNode = new ScheduledTimerNode();
+           timerNode.writeDescriptor(ejbNode, EjbTagNames.TIMER, timerDesc);
+        
+
+        */
+
+        if( ejbDesc.isSingleton() ) {
+            appendTextChild(ejbNode, EjbTagNames.INIT_ON_STARTUP,
+                Boolean.toString(ejbDesc.getInitOnStartup()));
+        }
+
+        if( !ejbDesc.isStateless() ) {
+            appendTextChild(ejbNode, EjbTagNames.CONCURRENCY_MANAGEMENT_TYPE,
+                    ejbDesc.getConcurrencyManagementType().toString());
+        }
+
+        for(EjbSessionDescriptor.AccessTimeoutHolder next : ejbDesc.getAccessTimeoutInfo()) {
+            ConcurrentMethodDescriptor cDesc = new ConcurrentMethodDescriptor();
+            cDesc.setConcurrentMethod(next.method);
+            TimeoutValueDescriptor timeoutDesc = new TimeoutValueDescriptor();
+            timeoutDesc.setValue(next.value);
+            timeoutDesc.setUnit(next.unit);
+            cDesc.setAccessTimeout(timeoutDesc);
+
+            ConcurrentMethodNode cNode = new ConcurrentMethodNode();
+            cNode.writeDescriptor(ejbNode, EjbTagNames.CONCURRENT_METHOD, cDesc);
+        }
+
+        for(MethodDescriptor nextReadLock : ejbDesc.getReadLockMethods()) {
+            ConcurrentMethodDescriptor cDesc = new ConcurrentMethodDescriptor();
+            cDesc.setConcurrentMethod(nextReadLock);
+            cDesc.setWriteLock(false);
+            ConcurrentMethodNode cNode = new ConcurrentMethodNode();
+            cNode.writeDescriptor(ejbNode, EjbTagNames.CONCURRENT_METHOD, cDesc);
+        }
+
+        if( ejbDesc.hasDependsOn()) {
+            Node dependsOnNode = appendChild(ejbNode, EjbTagNames.DEPENDS_ON);
+            for(String depend : ejbDesc.getDependsOn()) {
+                appendTextChild(dependsOnNode, EjbTagNames.EJB_NAME, depend);
+            }
         }
 
         if( ejbDesc.hasInitMethods() ) {
@@ -156,8 +258,34 @@ public class EjbSessionNode  extends InterfaceBasedEjbNode {
             }
         }
 
+        for(Object o : ejbDesc.getClientBusinessMethodDescriptors()) {
+            MethodDescriptor nextDesc = (MethodDescriptor) o;
+            if( nextDesc.isAsynchronous() ) {
+                methodNode.writeDescriptor(ejbNode, EjbTagNames.ASYNC_METHOD, nextDesc,
+                        ejbDesc.getName());
+            }
+        }
 
-        appendTextChild(ejbNode, EjbTagNames.TRANSACTION_TYPE, ejbDesc.getTransactionType());                  
+        appendTextChild(ejbNode, EjbTagNames.TRANSACTION_TYPE, ejbDesc.getTransactionType());
+
+        MethodDescriptor afterBeginMethod = ejbDesc.getAfterBeginMethod();
+        if( afterBeginMethod != null ) {
+            methodNode.writeJavaMethodDescriptor(ejbNode, EjbTagNames.AFTER_BEGIN_METHOD,
+                afterBeginMethod);
+        }
+
+        MethodDescriptor beforeCompletionMethod = ejbDesc.getBeforeCompletionMethod();
+        if( beforeCompletionMethod != null ) {
+            methodNode.writeJavaMethodDescriptor(ejbNode, EjbTagNames.BEFORE_COMPLETION_METHOD,
+                beforeCompletionMethod);
+        }
+
+        MethodDescriptor afterCompletionMethod = ejbDesc.getAfterCompletionMethod();
+        if( afterCompletionMethod != null ) {
+            methodNode.writeJavaMethodDescriptor(ejbNode, EjbTagNames.AFTER_COMPLETION_METHOD,
+                afterCompletionMethod);
+        }
+
 
         //around-invoke-method
         writeAroundInvokeDescriptors(ejbNode, ejbDesc.getAroundInvokeDescriptors().iterator());
