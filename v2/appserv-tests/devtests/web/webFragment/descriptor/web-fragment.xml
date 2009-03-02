@@ -4,6 +4,7 @@
   <distributable></distributable>
   <servlet>
     <servlet-name>wftestServlet</servlet-name>
+    <servlet-class>wftest.WFTestServlet</servlet-class>
     <init-param>
       <param-name>mesg</param-name>
       <param-value>hello f</param-value>
