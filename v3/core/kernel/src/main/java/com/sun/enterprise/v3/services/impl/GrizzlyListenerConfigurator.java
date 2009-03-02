@@ -154,6 +154,11 @@ public class GrizzlyListenerConfigurator {
                 && !httpListener.getId().equalsIgnoreCase("admin-listener")){       
             configureComet(grizzlyEmbeddedHttp);       
         }
+
+        // Idle Threads cannot be alive more than 15 minutes....
+        // Must be 5 minutes, but until we officially supports that feature
+        // Set it to 15 minutes so debugging session are killed
+        grizzlyEmbeddedHttp.setTransactionTimeout(15 * 60 * 1000);
     }      
     
     
