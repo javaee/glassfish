@@ -106,6 +106,9 @@
         <ant dir="persistence/jpainjectemf" target="build-deploy"/>
         <ant dir="security/helloworld" target="build-deploy"/>
         <ant dir="security/basicauth" target="build-deploy"/>
+        <ant dir="ejb/singleton" target="build-deploy"/>
+        <ant dir="ejb/slsbnicmt" target="build-deploy"/>
+        <ant dir="ejb/sfulnoi" target="build-deploy"/>
         <!-- ant dir="web/strutsbasic" target="build"/ -->
         <!-- ant dir="persistence/servlet-jpa-app" target="build"/ -->
         <!--<ant dir="ejb30/hello" target="build"/>
@@ -115,9 +118,6 @@
 
     <target name="build-deploy-gd">
         <echo message="Glassfish Distribution Build Deploy"/>
-        <ant dir="ejb/singleton" target="build-deploy"/>
-        <ant dir="ejb/slsbnicmt" target="build-deploy"/>
-        <ant dir="ejb/sfulnoi" target="build-deploy"/>
         <ant dir="wsit/JaxwsFromWsdl" target="build-deploy"/>
         <!-- ant dir="wsit" target="build-deploy"/ -->
     </target>
