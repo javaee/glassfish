@@ -251,7 +251,7 @@
         </xsd:annotation>
       </xsd:element>
       <xsd:element name="http-only"
-                   type="javaee:javaee:true-falseType"
+                   type="javaee:true-falseType"
                    minOccurs="0">
         <xsd:annotation>
           <xsd:documentation>
@@ -263,7 +263,7 @@
         </xsd:annotation>
       </xsd:element>
       <xsd:element name="secure"
-                   type="javaee:javaee:true-falseType"
+                   type="javaee:true-falseType"
                    minOccurs="0">
         <xsd:annotation>
           <xsd:documentation>
@@ -556,13 +556,13 @@
 
 	  </xsd:documentation>
 	</xsd:annotation>
+      </xsd:element>
       <xsd:element name="async-supported"
 		   type="javaee:true-falseType"
 		   minOccurs="0"/>
       <xsd:element name="async-timeout"
 		   type="javaee:xsdIntegerType"
 		   minOccurs="0"/>
-      </xsd:element>
 
       <xsd:element name="init-param"
 		   type="javaee:param-valueType"
@@ -975,10 +975,10 @@
 	</xsd:annotation>
       </xsd:element>
       <xsd:element name="enabled"
-		   type="javaee:javaee:true-falseType"
+		   type="javaee:true-falseType"
 		   minOccurs="0"/>
       <xsd:element name="async-supported"
-		   type="javaee:javaee:true-falseType"
+		   type="javaee:true-falseType"
 		   minOccurs="0"/>
       <xsd:element name="async-timeout"
 		   type="javaee:xsdIntegerType"
