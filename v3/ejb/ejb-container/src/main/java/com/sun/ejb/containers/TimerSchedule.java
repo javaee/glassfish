@@ -41,6 +41,7 @@ import java.util.Collections;
 import java.util.BitSet;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 import java.util.HashSet;
 import java.util.HashMap;
 import java.util.List;
@@ -68,6 +69,8 @@ public class TimerSchedule implements Serializable {
     private String month_ = "*";
     private String dayOfWeek_ = "*";
     private String year_ = "*";
+    private String timezone_ = null;
+    private TimeZone tz_ = null;
 
     private Date start_ = null;
     private Date end_ = null;
@@ -103,6 +106,7 @@ public class TimerSchedule implements Serializable {
 
     private static final char rangeChar     = '-';
     private static final char incrementChar = '/';
+    private static final String TIMEZONE = "timezone";
     private static final String YEAR = "year";
     private static final String MONTH = "month";
     private static final String DAY_OF_MONTH = "dayOfMonth";
@@ -161,6 +165,7 @@ public class TimerSchedule implements Serializable {
         month(se.getMonth());
         dayOfWeek(se.getDayOfWeek());
         year(se.getYear());
+        timezone(se.getTimezone());
 
         // Create local copies
         start(se.getStart());
@@ -179,6 +184,7 @@ public class TimerSchedule implements Serializable {
         month(s.month());
         dayOfWeek(s.dayOfWeek());
         year(s.year());
+        timezone(s.timezone());
 
         methodName_ = methodName;
         paramCount_ = paramCount;
@@ -193,7 +199,7 @@ public class TimerSchedule implements Serializable {
     public TimerSchedule(String s) {
         String[] sp = s.split(" # ");
 
-        if (!(sp.length == 10 || sp.length == 12)) {
+        if (!(sp.length == 11 || sp.length == 13)) {
             throw new EJBException("Cannot construct TimerSchedule from " + s);
         }
 
@@ -204,20 +210,21 @@ public class TimerSchedule implements Serializable {
         month_ = sp[4];
         dayOfWeek_ = sp[5];
         year_ = sp[6];
-        start_ = (sp[7].equals("null")? null : new Date(Long.parseLong(sp[7])));
-        end_ = (sp[8].equals("null")? null : new Date(Long.parseLong(sp[8])));
-        automatic_ = Boolean.parseBoolean(sp[9]);
+        timezone_ = (sp[7].equals("null")? null : sp[7]);
+        start_ = (sp[8].equals("null")? null : new Date(Long.parseLong(sp[8])));
+        end_ = (sp[9].equals("null")? null : new Date(Long.parseLong(sp[9])));
+        automatic_ = Boolean.parseBoolean(sp[10]);
 
-        if (sp.length == 12) {
-            methodName_ = sp[10];
-            paramCount_ = Integer.parseInt(sp[11]);
+        if (sp.length == 13) {
+            methodName_ = sp[11];
+            paramCount_ = Integer.parseInt(sp[12]);
         }
 
         configure();
     }
 
     public TimerSchedule second(String s) {
-        assertNotNull(s, SECOND);
+        assertNotEmpty(s, SECOND);
         second_ = s.trim(); 
         return this;
     }
@@ -227,7 +234,7 @@ public class TimerSchedule implements Serializable {
     }
 
     public TimerSchedule minute(String m) {
-        assertNotNull(m, MINUTE);
+        assertNotEmpty(m, MINUTE);
         minute_ = m.trim();
         return this;
     }
@@ -237,7 +244,7 @@ public class TimerSchedule implements Serializable {
     }
 
     public TimerSchedule hour(String h) {
-        assertNotNull(h, HOUR);
+        assertNotEmpty(h, HOUR);
         hour_ = h.trim();
         return this;
     }
@@ -247,7 +254,7 @@ public class TimerSchedule implements Serializable {
     }
 
     public TimerSchedule dayOfMonth(String d) {
-        assertNotNull(d, DAY_OF_MONTH);
+        assertNotEmpty(d, DAY_OF_MONTH);
         dayOfMonth_ = d.trim();
         return this;
     }
@@ -257,7 +264,7 @@ public class TimerSchedule implements Serializable {
     }
 
     public TimerSchedule month(String m) {
-        assertNotNull(m, MONTH);
+        assertNotEmpty(m, MONTH);
         month_ = m.trim();
         return this;
     }
@@ -267,7 +274,7 @@ public class TimerSchedule implements Serializable {
     }
 
     public TimerSchedule dayOfWeek(String d) {
-        assertNotNull(d, DAY_OF_WEEK);
+        assertNotEmpty(d, DAY_OF_WEEK);
         dayOfWeek_ = d.trim();
         return this;
     }
@@ -277,13 +284,26 @@ public class TimerSchedule implements Serializable {
     }
 
     public TimerSchedule year(String y) {
-        assertNotNull(y, YEAR);
+        assertNotEmpty(y, YEAR);
         year_ = y.trim();
         return this;
     }
 
     public String getYear() {
         return year_;
+    }
+
+    public TimerSchedule timezone(String tz) {
+        timezone_ = (tz != null && tz.length() > 0)? tz.trim() : null;
+        return this;
+    }
+
+    public String getTimeZoneID() {
+        return timezone_;
+    }
+
+    public TimeZone getTimeZone() {
+        return tz_;
     }
 
     public TimerSchedule start(Date s) {
@@ -335,6 +355,7 @@ public class TimerSchedule implements Serializable {
                .append( month_).append(" # ") 
                .append( dayOfWeek_).append(" # ") 
                .append( year_).append(" # ") 
+               .append( timezone_).append(" # ") 
                .append(((start_ == null) ? null : start_.getTime()))
                .append(" # ") 
                .append(((end_ == null) ? null : end_.getTime()))
@@ -356,6 +377,7 @@ public class TimerSchedule implements Serializable {
                 month(month_).
                 dayOfWeek(dayOfWeek_).
                 year(year_).
+                timezone(timezone_).
                 start(start_).
                 end(end_);
 
@@ -401,6 +423,10 @@ public class TimerSchedule implements Serializable {
         }
 
         Calendar now = new GregorianCalendar();
+        if (tz_ != null) {
+            now.setTimeZone(tz_);
+        }
+
         int currYear = now.get(Calendar.YEAR);
 
         for(int year : years) {
@@ -440,6 +466,10 @@ public class TimerSchedule implements Serializable {
     private Calendar getNextTimeout(Calendar next) {
         if (!configured) {
             configure();
+        }
+
+        if (tz_ != null) {
+            next.setTimeZone(tz_);
         }
 
         if (start_ != null && next.getTimeInMillis() < start_.getTime()) {
@@ -592,6 +622,9 @@ public class TimerSchedule implements Serializable {
         parseNumbersOrNames(month_, months, 1, 12, false, MONTH);
         parseDaysOfMonth();
         parseYears();
+        if (timezone_ != null) {
+            tz_ = TimeZone.getTimeZone(timezone_);
+        }
 
         configured = true;
     }
@@ -863,14 +896,14 @@ public class TimerSchedule implements Serializable {
             }
         } else {
             Integer val = conversionTable.get(s.toLowerCase());
-            assertNotNull(val, s, field);
+            assertNotNull(val, field);
             i = val.intValue();
         }
 
         int result = i - start;
         if (isDayOfWeek(field)) {
             Integer val = conversionTable.get(i);
-            assertNotNull(val, s, field);
+            assertNotNull(val, field);
             result = val.intValue();
         }
         return result;
@@ -956,7 +989,7 @@ public class TimerSchedule implements Serializable {
             // Convert name of the day to a number, then number to the
             // Calendar's value for that day.
             Integer weekday = conversionTable.get(arr[1]);
-            assertNotNull(weekday, s, DAY_OF_MONTH);
+            assertNotNull(weekday, DAY_OF_MONTH);
              
             int day = conversionTable.get(weekday);
             return getDayForDayOfWeek(testdate, lastday, day, num);
@@ -1067,19 +1100,20 @@ public class TimerSchedule implements Serializable {
         }
     }
 
-    /** Checks that a value is not null.
+    /** Checks that a value is not null 
      */
-    private void assertNotNull(String s, String field) {
-        if (s == null || s.length() == 0) {
-            throw new IllegalArgumentException("Invalid " + field + " value: " + s);
+    private void assertNotNull(Object s, String field) {
+        if (s == null) {
+            throw new IllegalArgumentException("Field " + field + " cannot be null");
         }
     }
 
-    /** Checks that an intermediate Integer value is not null.
+    /** Checks that a value is not null and not an empty String.
      */
-    private void assertNotNull(Integer v, String s, String field) {
-        if (v == null) {
-            throw new IllegalArgumentException("Invalid " + field + " value: " + s);
+    private void assertNotEmpty(String s, String field) {
+        assertNotNull(s, field);
+        if (s.length() == 0) {
+            throw new IllegalArgumentException("Field " + field + " cannot be an empty String");
         }
     }
 
