@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="355"/>
+    <property name="TOTAL_EXPECTED" value="356"/>
 
     &commonSetup;
     &commonBuild;
@@ -319,6 +319,9 @@
         <ant dir="valveWithParams" target="all"/>
         <ant dir="webdavCopyDelete" target="all"/>
         <ant dir="useBundledJsf" target="all"/>
+        <!-- Uncomment once IT 7246 has been fixed
+        <ant dir="useBundledJsfWithTagCompilation" target="all"/>
+        -->
         <ant dir="embeddedAddServlet" target="all"/>
         <ant dir="largeCookieError" target="all"/>
     </target>

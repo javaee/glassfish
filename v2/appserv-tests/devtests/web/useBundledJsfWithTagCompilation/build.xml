@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
+<!ENTITY run SYSTEM "file:./../../../config/run.xml">
+<!ENTITY testproperties SYSTEM "file:./build.properties">
+]>
+
+<project name="webcontainer_unittest" default="all" basedir=".">
+
+    &commonSetup;
+    &commonBuild;
+    &testproperties;
+    &run;
+
+    <target name="all" depends="build,deploy,run,undeploy"/>
+
+    <target name="clean" depends="init-common">
+      <antcall target="clean-common"/>
+    </target>
+       
+    <target name="build" depends="init-common">
+        <property name="hasWebclient" value="yes"/>
+        <javac srcdir="." classpath="${env.APS_HOME}/lib/reporter.jar"
+               includes="WebTest.java"/>
+
+    </target>
+
+    <target name="deploy" depends="init-common">
+        <exec executable="${ASADMIN}" failonerror="false">
+            <arg line="deploy"/>
+            <arg line="${as.props}"/>
+            <arg line="--upload=true"/>
+            <arg line="--target ${appserver.instance.name}"/>
+            <arg line="jsf-cardemo.war"/>
+        </exec>
+    </target>
+    
+    <target name="run" depends="init-common">
+        <java classname="WebTest">
+            <arg value="${http.host}"/>
+            <arg value="${http.port}"/>
+            <arg value="${contextroot}"/>
+            <classpath>
+                <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
+                <pathelement location="."/>
+            </classpath>
+        </java>
+    </target>
+ 
+    <target name="undeploy" depends="init-common">
+        <exec executable="${ASADMIN}" failonerror="false">
+            <arg line="undeploy"/>
+            <arg line="${as.props}"/>
+            <arg line="jsf-cardemo"/>
+        </exec>
+    </target>   
+
+    <target name="usage">
+        <antcall target="usage-common"/>
+    </target>
+</project>
