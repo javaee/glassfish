@@ -17,6 +17,7 @@
                         org.apache.catalina.startup; \
                         org.apache.catalina.util; \
                         org.apache.catalina.valves; \
+                        org.apache.tomcat.util.modeler; \
                         org.glassfish.web.valve; version=${project.osgi.version}
 
 # Normally Import-Package is not required, as the default value of *
@@ -26,5 +27,5 @@
 # In this case, org.apache.jk.server is one such package. It is used
 # when mod_jk configuration is used. Since, it is not always needed,
 # the import has been marked as optional. By Sahoo.
-Import-Package: org.apache.jk.core; resolution:=optional, org.apache.jk.server; resolution:=optional, *
+Import-Package: org.apache.jk.core;org.apache.jk.server; resolution:=optional; password=GlassFish; version=${project.osgi.version}, *
 
