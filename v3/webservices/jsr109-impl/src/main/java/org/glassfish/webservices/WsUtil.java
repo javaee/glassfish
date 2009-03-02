@@ -59,9 +59,14 @@ import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.ws.handler.Handler;
 import javax.xml.ws.http.HTTPBinding;
 import javax.xml.namespace.QName;
+import javax.xml.soap.*;
+import javax.servlet.http.HttpServletResponse;
 
 import org.w3c.dom.*;
+import org.w3c.dom.Node;
+
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
 import java.lang.reflect.InvocationTargetException;
@@ -1215,7 +1220,7 @@ public class WsUtil {
             response.setHeader(header.getName(), header.getValue());
         }
     }
-    
+    */
     public static void raiseException(HttpServletResponse resp, String binding, String faultString) {
         
         resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -1315,9 +1320,9 @@ public class WsUtil {
 
     }
 
-    *//*
+    /*
      * Used to send back the message after a 4XX response code has been set
-     *//*
+     */
     private void setContentTypeAndFlush(HttpServletResponse response) 
         throws IOException {
         response.setContentType("text/xml");
@@ -1325,7 +1330,7 @@ public class WsUtil {
         response.getWriter().close();
     }
     
-    boolean hasSomeTextXmlContent(MimeHeaders headers) {
+    /*boolean hasSomeTextXmlContent(MimeHeaders headers) {
         return ( hasTextXmlContentType(headers) &&
                  (getContentLength(headers) > 0) );
     }

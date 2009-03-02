@@ -35,14 +35,31 @@
  */
 package org.glassfish.webservices;
 
-/*import com.sun.ejb.Invocation;
-import com.sun.enterprise.InvocationManager;
-import com.sun.enterprise.Switch;
-import com.sun.enterprise.deployment.backend.DeployableObjectType;
-import com.sun.enterprise.deployment.phasing.DeploymentServiceUtils;
-import com.sun.enterprise.instance.BaseManager;
-import com.sun.enterprise.webservice.monitoring.JAXWSEndpointImpl;
-*/
+import com.sun.enterprise.deployment.WebServiceEndpoint;
+import com.sun.logging.LogDomains;
+import org.glassfish.ejb.api.EjbEndpointFacade;
+
+import com.sun.xml.ws.transport.http.servlet.ServletAdapterList;
+import com.sun.xml.ws.transport.http.servlet.ServletAdapter;
+import com.sun.xml.ws.api.server.SDDocumentSource;
+import com.sun.xml.ws.api.server.Invoker;
+import com.sun.xml.ws.api.server.WSEndpoint;
+import com.sun.xml.ws.api.WSBinding;
+import com.sun.xml.ws.api.BindingID;
+
+import javax.xml.ws.WebServiceContext;
+import javax.xml.ws.soap.MTOMFeature;
+import java.util.ResourceBundle;
+import java.util.Collection;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+import java.io.File;
+
+import org.glassfish.api.invocation.ComponentInvocation;
+
+
+
+
 
 /**
  * Runtime dispatch information about one ejb web service
@@ -54,42 +71,39 @@ import com.sun.enterprise.webservice.monitoring.JAXWSEndpointImpl;
  */
 public class EjbRuntimeEndpointInfo {
 
-   /* protected Logger logger = LogDomains.getLogger(this.getClass(),LogDomains.WEBSERVICES_LOGGER);
+    protected Logger logger = LogDomains.getLogger(this.getClass(), LogDomains.WEBSERVICES_LOGGER);
 
     private ResourceBundle rb = logger.getResourceBundle()   ;
-    
+
     protected final WebServiceEndpoint endpoint;
 
-    protected final StatelessSessionContainer container;
+    protected final EjbEndpointFacade container;
 
     protected final Object webServiceEndpointServant;
-    
-    protected final InvocationManager invManager;
-    
+
+    private ComponentInvocation inv;
+
     // the variables below are access in non-thread-safe ways
     private ServletAdapter adapter = null;
     private ServletAdapterList adapterList = null;
-    
+
     private WebServiceContextImpl wsCtxt = null;
-    private boolean handlersConfigured = false;    
-    
+    private boolean handlersConfigured = false;
+
     protected EjbMessageDispatcher messageDispatcher = null;
 
     public EjbRuntimeEndpointInfo(WebServiceEndpoint webServiceEndpoint,
-                                  StatelessSessionContainer ejbContainer, 
+                                  EjbEndpointFacade ejbContainer,
                                   Object servant) {
-                                  
+
         endpoint = webServiceEndpoint;
         container  = ejbContainer;
         webServiceEndpointServant = servant;
 
-        Switch theSwitch = Switch.getSwitch();
-        invManager = theSwitch.getInvocationManager();
+
     }
 
-    public Container getContainer() {
-        return container;
-    }
+
 
     public WebServiceEndpoint getEndpoint() {
         return endpoint;
@@ -108,9 +122,9 @@ public class EjbRuntimeEndpointInfo {
 
         // For proper injection of handlers, we have to configure handler
         // after invManager.preInvoke but the Invocation.contextData has to be set
-        // before invManager.preInvoke. So the steps of configuring jaxws handlers and 
+        // before invManager.preInvoke. So the steps of configuring jaxws handlers and
         // init'ing jaxws is done here - this sequence is important
-        if (adapter==null) {
+        /*if (adapter==null) {
             synchronized(this) {
                 if(adapter == null) {
                     try {
@@ -119,13 +133,13 @@ public class EjbRuntimeEndpointInfo {
                         // that has to be used
                         Invocation tmpInv = new Invocation();
                         tmpInv.isWebService = true;
-                        tmpInv.container = container;                
+                        tmpInv.container = container;
                         tmpInv.transactionAttribute = Container.TX_NOT_INITIALIZED;
                         invManager.preInvoke(tmpInv);
                         EjbDescriptor ejbDesc = endpoint.getEjbComponentImpl();
                         Iterator<ResourceReferenceDescriptor> it = ejbDesc.getResourceReferenceDescriptors().iterator();
                         while(it.hasNext()) {
-                            ResourceReferenceDescriptor r = it.next();            
+                            ResourceReferenceDescriptor r = it.next();
                             if(r.isWebServiceContext()) {
                                 Iterator<InjectionTarget> iter = r.getInjectionTargets().iterator();
                                 boolean matchingClassFound = false;
@@ -154,38 +168,14 @@ public class EjbRuntimeEndpointInfo {
                         logger.severe("Cannot initialize endpoint " + endpoint.getName() + " : error is : " + t.getMessage());
                         return null;
                     } finally {
-                        invManager.postInvoke(invManager.getCurrentInvocation());                         
+                        invManager.postInvoke(invManager.getCurrentInvocation());
                     }
                 }
             }
-        }
-        
+        }*/
+
         if(doPreInvoke) {
-                // We need to split the preInvoke tasks into stages since handlers
-                // need access to java:comp/env and method authorization must take
-                // place before handlers are run.  Note that the application 
-                // classloader was set much earlier when the invocation first arrived
-                // so we don't need to set it here.
-                Invocation inv = new Invocation();
-
-                // Do the portions of preInvoke that don't need a Method object.
-                inv.isWebService = true;
-                inv.container = container;                
-                inv.transactionAttribute = Container.TX_NOT_INITIALIZED;
-
-                // If the endpoint has at least one handler, method
-                // authorization will be performed by a container-provided handler
-                // before any application handler handleRequest methods are called.
-                // Otherwise, the ejb container will do the authorization.
-                inv.securityPermissions =  Container.SEC_NOT_INITIALIZED;
-
-                // AS per latest spec change, the MessageContext object in WebSvcCtxt
-                // should be the same one as used in the ejb's interceptors'        
-                inv.setContextData(wsCtxt);
-                
-                // In all cases, the WebServiceInvocationHandler will do the
-                // remaining preInvoke tasks : getContext, preInvokeTx, etc.
-                invManager.preInvoke(inv);
+              inv =  container.startInvocation();
         }
 
         // Now process handlers and init jaxws RI
@@ -195,7 +185,7 @@ public class EjbRuntimeEndpointInfo {
                     try {
                         WsUtil wsu = new WsUtil();
                         String implClassName = endpoint.getEjbComponentImpl().getEjbClassName();
-                        Class clazz = container.getClassLoader().loadClass(implClassName);
+                        Class clazz = container.getEndpointClassLoader().loadClass(implClassName);
 
                         // Get the proper binding using BindingID
                         String givenBinding = endpoint.getProtocolBinding();
@@ -204,14 +194,18 @@ public class EjbRuntimeEndpointInfo {
                         SDDocumentSource primaryWsdl = null;
                         Collection docs = null;
                         if(endpoint.getWebService().hasWsdlFile()) {
-                            BaseManager mgr;
+
+                            //TODO BM handle this later
+                            /*BaseManager mgr;
                             if(endpoint.getBundleDescriptor().getApplication().isVirtual()) {
                                 mgr = DeploymentServiceUtils.getInstanceManager(DeployableObjectType.EJB);
                             } else {
                                 mgr = DeploymentServiceUtils.getInstanceManager(DeployableObjectType.APP);
                             }
-                            String deployedDir = 
+                            String deployedDir =
                                 mgr.getLocation(endpoint.getBundleDescriptor().getApplication().getRegistrationName());
+                                */
+                            String deployedDir= null;
                             File pkgedWsdl = null;
                             if(deployedDir != null) {
                                 if(endpoint.getBundleDescriptor().getApplication().isVirtual()) {
@@ -254,7 +248,7 @@ public class EjbRuntimeEndpointInfo {
                         } else {
                             binding = BindingID.parse(givenBinding).createBinding();
                         }
-                        wsu.configureJAXWSServiceHandlers(endpoint, 
+                        wsu.configureJAXWSServiceHandlers(endpoint,
                             endpoint.getProtocolBinding(), binding);
 
                         // Create the jaxws2.1 invoker and use this
@@ -287,7 +281,7 @@ public class EjbRuntimeEndpointInfo {
                     } catch (Throwable t) {
                         logger.severe("Cannot initialize endpoint " + endpoint.getName() + " : error is : " + t.getMessage());
                         t.printStackTrace();
-                        adapter = null;                    
+                        adapter = null;
                     }
                 }
             }
@@ -295,50 +289,29 @@ public class EjbRuntimeEndpointInfo {
         return adapter;
     }
 
-    *//**
+   /**
      * Force initialization of the endpoint runtime information  
      * as well as the handlers injection 
-     *//*
-    public void initRuntimeInfo(ServletAdapterList list) throws Exception{ 
+     */
+    public void initRuntimeInfo(ServletAdapterList list) throws Exception {
         try { 
             this.adapterList = list;
             prepareInvocation(true); 
         } finally { 
-            invManager.postInvoke(invManager.getCurrentInvocation()); 
+            //invManager.postInvoke(invManager.getCurrentInvocation());
+            releaseImplementor();
         } 
          
     } 
      
-    *//**
+    /**
      * Called after attempt to handle message.  This is coded defensively
      * so we attempt to clean up no matter how much progress we made in
      * getImplementor.  One important thing is to complete the invocation
      * manager preInvoke().
-     *//*
+     */
     public void releaseImplementor() {
-        try {
-            Invocation inv = (Invocation) invManager.getCurrentInvocation();
-
-            // Only use container version of postInvoke if we got past
-            // assigning an ejb instance to this invocation.  This is
-            // because the web service invocation does an InvocationManager
-            // preInvoke *before* assigning an ejb instance.  So, we need
-            // to ensure that InvocationManager.postInvoke is always
-            // called.  It was cleaner to keep this logic in this class
-            // and WebServiceInvocationHandler rather than change the
-            // behavior of BaseContainer.preInvoke and 
-            // BaseContainer.postInvoke.
-
-            if( inv != null ) {
-                if( inv.ejb != null ) {
-                    container.webServicePostInvoke(inv);
-                } else {
-                    invManager.postInvoke(inv);
-                }
-            }
-        } catch(Throwable t) {
-            logger.log(Level.FINE, "", t);
-        }
+        container.endInvocation(inv);
 
     }
     
@@ -347,6 +320,6 @@ public class EjbRuntimeEndpointInfo {
             messageDispatcher = new Ejb3MessageDispatcher();            
         }
         return messageDispatcher;
-    }*/
+    }
 
 }

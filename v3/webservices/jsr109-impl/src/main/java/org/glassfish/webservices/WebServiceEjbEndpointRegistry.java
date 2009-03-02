@@ -41,24 +41,27 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.text.MessageFormat;
 
-
-import com.sun.enterprise.deployment.WebServiceEndpoint;
-
-//import com.sun.ejb.containers.StatelessSessionContainer;
 import com.sun.logging.LogDomains;
-import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.xml.ws.transport.http.servlet.ServletAdapterList;
 import com.sun.xml.ws.transport.http.servlet.ServletAdapter;
+import com.sun.enterprise.deployment.WebServiceEndpoint;
+import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
 import org.glassfish.webservices.monitoring.WebServiceEngineImpl;
+import org.glassfish.ejb.spi.WSEjbEndpointRegistry;
+import org.glassfish.ejb.api.EjbEndpointFacade;
+
 
 /**
  * This class acts as a registry of all the webservice EJB end points
- * enabled in this application server. This a singleton class, use 
- * getRegistry() to obtain the registry instance
+ * enabled in this application server.
  *
- * @author  Jerome Dochez
+ * @author  Bhakti Mehta
  */
-public class WebServiceEjbEndpointRegistry {
+@Service
+@Scoped(Singleton.class)
+public class WebServiceEjbEndpointRegistry implements WSEjbEndpointRegistry {
     
     
     private Logger logger = LogDomains.getLogger(this.getClass(),LogDomains.WEBSERVICES_LOGGER);
@@ -82,9 +85,7 @@ public class WebServiceEjbEndpointRegistry {
     // This keeps the list for each service
     private HashMap adapterListMap = new HashMap();
     
-    /** Creates a new instance of WebServiceEjbEndpointRegistry */
-    private WebServiceEjbEndpointRegistry() {
-    }
+
     
     /**
      * @return the registry instance
@@ -93,16 +94,19 @@ public class WebServiceEjbEndpointRegistry {
         return registry;        
     }
     
-    public void registerEjbWebServiceEndpoint(EjbRuntimeEndpointInfo endpoint) throws Exception {
+    public void registerEndpoint(WebServiceEndpoint webserviceEndpoint,
+                                  EjbEndpointFacade ejbContainer,
+                                  Object servant, Class tieClass)  {
         String ctxtRoot;
+        EjbRuntimeEndpointInfo endpoint = createEjbEndpointInfo(webserviceEndpoint, ejbContainer,servant,tieClass);
         synchronized(webServiceEjbEndpoints) {
-            String uriRaw = null; /*TODO BM FIX me for EJBRRuntimeEndpointInfoendpoint.getEndpointAddressUri();*/
+            String uriRaw = endpoint.getEndpointAddressUri();
             String uri = (uriRaw.charAt(0)=='/') ? uriRaw.substring(1) : uriRaw;
             if (webServiceEjbEndpoints.containsKey(uri)) {
-                logger.log(Level.SEVERE, 
+                logger.log(Level.SEVERE,
                         format(rb.getString("enterprise.webservice.duplicateService"),
                         uri));
-            }            
+            }
             webServiceEjbEndpoints.put(uri, endpoint);
             regenerateEjbContextRoots();
             ctxtRoot = getContextRootForUri(uri);
@@ -111,6 +115,7 @@ public class WebServiceEjbEndpointRegistry {
                 adapterListMap.put(ctxtRoot, list);
             }
         }
+
         
         // notify monitoring layers that a new endpoint is being created.
         WebServiceEngineImpl engine = WebServiceEngineImpl.getInstance();
@@ -119,18 +124,23 @@ public class WebServiceEjbEndpointRegistry {
             engine.createHandler((com.sun.xml.rpc.spi.runtime.SystemHandlerDelegate)null, endpoint.getEndpoint());
         } else {
         */
-        /*TODOBM FIX ME FOR EJBRRuntimeEndpointInfo
+
         engine.createHandler(endpoint.getEndpoint());
         // Safe to assume that it's a JAXWS endpoint
-        endpoint.initRuntimeInfo((ServletAdapterList)adapterListMap.get(ctxtRoot));
-        */
+        try {
+            endpoint.initRuntimeInfo((ServletAdapterList)adapterListMap.get(ctxtRoot));
+        } catch (Exception e) {
+            logger.log(Level.WARNING,
+                       "Unexpected error in EJB WebService endpoint post processing", e);
+        }
+
         //}
     }
 
     public void unregisterEjbWebServiceEndpoint(String endpointAddressUri) {
-        
+
         EjbRuntimeEndpointInfo endpoint = null;
-        
+
         synchronized(webServiceEjbEndpoints) {
             String uriRaw = endpointAddressUri;
             String uri = (uriRaw.charAt(0)=='/') ? uriRaw.substring(1) : uriRaw;
@@ -144,16 +154,16 @@ public class WebServiceEjbEndpointRegistry {
             endpoint = (EjbRuntimeEndpointInfo) webServiceEjbEndpoints.remove(uri);
             regenerateEjbContextRoots();
         }
-        
+
         if (endpoint==null) {
             return;
         }
-        
+
         // notify the monitoring layers that an endpoint is destroyed
         WebServiceEngineImpl engine = WebServiceEngineImpl.getInstance();
-        /*TODO BM FIXME FOR EJBRRuntimeEndpointInfo
+
         engine.removeHandler(endpoint.getEndpoint());
-        */
+
     }
     
     /**
@@ -161,38 +171,38 @@ public class WebServiceEjbEndpointRegistry {
      * and version of the web service implementation.
      * @param   
      */
-   /* public EjbRuntimeEndpointInfo createEjbEndpointInfo(WebServiceEndpoint webServiceEndpoint,
-                                  StatelessSessionContainer ejbContainer, 
+  public EjbRuntimeEndpointInfo createEjbEndpointInfo(WebServiceEndpoint webServiceEndpoint,
+                                  EjbEndpointFacade ejbContainer,
                                   Object servant, Class tieClass) {
         EjbRuntimeEndpointInfo info = null;
-        *//*TODO FIXME FOR EJBRRuntimeEndpointInfo
+        //TODO FIXME FOR EJBRRuntimeEndpointInfo
         if ("1.1".compareTo(webServiceEndpoint.getWebService().getWebServicesDescriptor().getSpecVersion())>=0) {
             info = new Ejb2RuntimeEndpointInfo(webServiceEndpoint, ejbContainer, servant, tieClass);
         } else {
             info = new EjbRuntimeEndpointInfo(webServiceEndpoint, ejbContainer, servant);
         }
-        *//*
+
         return info;
-    }*/
+    }
 
     public EjbRuntimeEndpointInfo getEjbWebServiceEndpoint
         (String uriRaw, String method, String query) {
         EjbRuntimeEndpointInfo endpoint = null;
-        
+
         if (uriRaw==null || uriRaw.length()==0) {
             return null;
         }
-        
+
         // Strip off any leading slash.
         String uri = (uriRaw.charAt(0) == '/') ? uriRaw.substring(1) : uriRaw;
 
         synchronized(webServiceEjbEndpoints) {
 
             if( method.equals("GET") ) {
-                // First check for a context root match so we avoid iterating  
+                // First check for a context root match so we avoid iterating
                 // through all ejb endpoints.  This logic will be used for
                 // all HTTP GETs, so it's important to reduce the overhead in
-                // the likely most common case that the request is for a web 
+                // the likely most common case that the request is for a web
                 // component.
                 String contextRoot = getContextRootForUri(uri);
                 if( ejbContextRoots.contains(contextRoot) ) {
@@ -201,18 +211,18 @@ public class WebServiceEjbEndpointRegistry {
                     for(Iterator iter = values.iterator(); iter.hasNext();) {
                         EjbRuntimeEndpointInfo next = (EjbRuntimeEndpointInfo)
                             iter.next();
-                        /*TODO BM fix me for EJBRRuntimeEndpointInfo
+
                         if( next.getEndpoint().matchesEjbPublishRequest
                             (uri, query)) {
                             endpoint = next;
                             break;
-                        }       */
+                        }       
                     }
                 }
             } else {
                 // In this case the uri must match exactly to be an ejb web
                 // service invocation, so do a direct table lookup.
-                endpoint = (EjbRuntimeEndpointInfo) 
+                endpoint = (EjbRuntimeEndpointInfo)
                     webServiceEjbEndpoints.get(uri);
             }
         }
@@ -236,7 +246,7 @@ public class WebServiceEjbEndpointRegistry {
     private void regenerateEjbContextRoots() {
         synchronized(webServiceEjbEndpoints) {
             Set contextRoots = new HashSet();
-            for(Iterator iter = webServiceEjbEndpoints.keySet().iterator(); 
+            for(Iterator iter = webServiceEjbEndpoints.keySet().iterator();
                 iter.hasNext();) {
                 String uri = (String) iter.next();
                 String contextRoot = getContextRootForUri(uri);

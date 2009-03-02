@@ -36,6 +36,8 @@
 package org.glassfish.webservices;
 
 
+import com.sun.enterprise.deployment.WebServiceEndpoint;
+import org.glassfish.ejb.api.EjbEndpointFacade;
 
 
 /**
@@ -49,21 +51,21 @@ package org.glassfish.webservices;
 public class Ejb2RuntimeEndpointInfo extends EjbRuntimeEndpointInfo {
 
 
-   /* private Class tieClass;
+    private Class tieClass;
 
     // Lazily instantiated and cached due to overhead
     // of initialization.
-    private Tie tieInstance;
+    /*private Tie tieInstance;
 
-    private ServerAuthConfig serverAuthConfig;
+    private ServerAuthConfig serverAuthConfig;*/
 
 
     public Ejb2RuntimeEndpointInfo(WebServiceEndpoint webServiceEndpoint,
-                                  StatelessSessionContainer ejbContainer, 
+                                  EjbEndpointFacade ejbContainer,
                                   Object servant, Class tie) {
                                   
         super(webServiceEndpoint, ejbContainer, servant);
-        tieClass = tie;
+      /*  tieClass = tie;
 
 	try {
 	    // merge message security policy from domain.xml and sun-specific
@@ -75,10 +77,10 @@ public class Ejb2RuntimeEndpointInfo extends EjbRuntimeEndpointInfo {
 	} catch (com.sun.enterprise.security.jauth.AuthException ae) {
             logger.log(Level.SEVERE, 
 		       "EJB Webservice security configuration Failure", ae);
-	}
+	}*/
 
     }
-
+    /*
     public Handler getHandlerImplementor(MessageContext msgContext)
         throws Exception {
 
