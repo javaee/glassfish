@@ -1190,10 +1190,12 @@ public class WebappClassLoader
          * belongs to one of the packages that are part of the Java EE platform
          */
         if (delegate
-                || name.startsWith("javax")
+                || (name.startsWith("javax") &&
+                    (!name.startsWith("javax.faces") || !useMyFaces))
                 || name.startsWith("sun")
-                || (name.startsWith("com/sun/faces")
-                    && !name.startsWith("com/sun/faces/extensions"))
+                || (name.startsWith("com/sun/faces") &&
+                    !name.startsWith("com/sun/faces/extensions") &&
+                    !useMyFaces)
                 || name.startsWith("org/apache/taglibs/standard")) {
             if (logger.isLoggable(Level.FINER))
                 logger.finer("  Delegating to parent classloader " + parent);
@@ -1232,7 +1234,7 @@ public class WebappClassLoader
         }
 
         // (3) Delegate to parent unconditionally if not already attempted
-        if( !delegate ) {
+        if (!delegate) {
             ClassLoader loader = parent;
             if (loader == null)
                 loader = system;
