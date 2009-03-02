@@ -88,6 +88,7 @@ public class WebComponentDescriptor extends Descriptor {
 
     private RunAsIdentityDescriptor runAs;
     private WebBundleDescriptor webBundleDescriptor = null;
+    private boolean enabled = true;
     private Boolean asyncSupported = null;
     private Long asyncTimeout = null;
 
@@ -342,6 +343,14 @@ public class WebComponentDescriptor extends Descriptor {
 
     public void setServlet(boolean isServlet) {
         this.isServlet = isServlet;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public void setAsyncSupported(Boolean asyncSupported) {

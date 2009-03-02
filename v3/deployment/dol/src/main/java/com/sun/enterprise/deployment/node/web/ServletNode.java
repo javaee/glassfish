@@ -142,6 +142,8 @@ public class ServletNode extends DisplayableComponentNode {
             descriptor.setWebComponentImplementation(value);
         } else if (WebTagNames.LOAD_ON_STARTUP.equals(element.getQName())) {
             descriptor.setLoadOnStartUp(Integer.valueOf(value));
+        } else if (WebTagNames.ENABLED.equals(element.getQName())) {
+            descriptor.setEnabled(Boolean.parseBoolean(value));
         } else if (WebTagNames.ASYNC_SUPPORTED.equals(element.getQName())) {
             descriptor.setAsyncSupported(Boolean.valueOf(value));
         } else if (WebTagNames.ASYNC_TIMEOUT.equals(element.getQName())) {
@@ -176,6 +178,7 @@ public class ServletNode extends DisplayableComponentNode {
             appendTextChild(myNode, WebTagNames.LOAD_ON_STARTUP, String.valueOf(descriptor.getLoadOnStartUp()));
         }
 
+        appendTextChild(myNode, WebTagNames.ENABLED, String.valueOf(descriptor.isEnabled()));
         appendTextChild(myNode, WebTagNames.ASYNC_SUPPORTED, String.valueOf(descriptor.isAsyncSupported()));
         appendTextChild(myNode, WebTagNames.ASYNC_TIMEOUT, String.valueOf(descriptor.getAsyncTimeout()));
         
