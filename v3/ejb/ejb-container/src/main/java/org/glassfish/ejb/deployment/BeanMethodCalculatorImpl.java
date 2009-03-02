@@ -40,6 +40,9 @@ import java.util.*;
 import java.lang.reflect.*;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.util.BeanMethodCalculator;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.PerLookup;
 
 /**
  * Utility class to calculate the list of methods required  to have transaction
@@ -48,6 +51,8 @@ import com.sun.enterprise.deployment.util.BeanMethodCalculator;
  * @author  Jerome Dochez
  * @version 
  */
+@Service
+@Scoped(PerLookup.class)
 public class BeanMethodCalculatorImpl implements BeanMethodCalculator {
     
     

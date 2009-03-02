@@ -1,6 +1,7 @@
 package com.sun.enterprise.deployment.util;
 
 import com.sun.enterprise.deployment.EjbDescriptor;
+import org.jvnet.hk2.annotations.Contract;
 
 import java.util.Collection;
 import java.util.Vector;
@@ -12,6 +13,7 @@ import java.util.Vector;
  * @author Jerome Dochez
  * 
  */
+@Contract
 public interface BeanMethodCalculator {
 
     public Vector getPossibleCmpCmrFields(ClassLoader cl,
