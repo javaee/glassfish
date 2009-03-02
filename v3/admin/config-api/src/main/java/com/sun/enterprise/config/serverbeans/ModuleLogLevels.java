@@ -611,10 +611,10 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable, PropertyBa
             Map<String,String> moduleLevels = new HashMap<String, String>();
             moduleLevels.put("root", me.getRoot());
             moduleLevels.put("server", me.getServer());
-            moduleLevels.put("ejbContainer", me.getEjbContainer());
-            moduleLevels.put("webContainer", me.getWebContainer());
-            moduleLevels.put("cmpContainer", me.getCmpContainer());
-            moduleLevels.put("mdbContainer", me.getMdbContainer());
+            moduleLevels.put("ejb-container", me.getEjbContainer());
+            moduleLevels.put("web-container", me.getWebContainer());
+            moduleLevels.put("cmp-container", me.getCmpContainer());
+            moduleLevels.put("mdb-container", me.getMdbContainer());
             moduleLevels.put("classloader", me.getClassloader());
             moduleLevels.put("configuration", me.getConfiguration());
             moduleLevels.put("naming", me.getNaming());
@@ -634,12 +634,12 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable, PropertyBa
             moduleLevels.put("jdo", me.getJdo());
             moduleLevels.put("cmp", me.getCmp());
             moduleLevels.put("util", me.getUtil());
-            moduleLevels.put("resourceAdapter", me.getResourceAdapter());
+            moduleLevels.put("resource-adapter", me.getResourceAdapter());
             moduleLevels.put("synchronization", me.getSynchronization());
-            moduleLevels.put("nodeAgent", me.getNodeAgent());
-            moduleLevels.put("selfManagement", me.getSelfManagement());
-            moduleLevels.put("groupManagementServices", me.getGroupManagementService());
-            moduleLevels.put("managementEvent", me.getManagementEvent());
+            moduleLevels.put("node-agent", me.getNodeAgent());
+            moduleLevels.put("self-management", me.getSelfManagement());
+            moduleLevels.put("group-management-services", me.getGroupManagementService());
+            moduleLevels.put("management-event", me.getManagementEvent());
 
             return moduleLevels;
         }
