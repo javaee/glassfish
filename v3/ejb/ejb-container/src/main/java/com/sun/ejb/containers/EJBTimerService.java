@@ -1078,6 +1078,11 @@ public class EJBTimerService
             }
         }
 
+        if (timerConfig == null) {
+            // Easier create one than check everywhere for null...
+            timerConfig = new TimerConfig();
+        }
+
         RuntimeTimerState timerState = 
             new RuntimeTimerState(timerId, initialExpiration, 
                                   intervalDuration, container, 
