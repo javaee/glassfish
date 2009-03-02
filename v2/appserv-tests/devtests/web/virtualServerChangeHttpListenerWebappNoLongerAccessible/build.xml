@@ -77,7 +77,6 @@
             <param name="operand.props"
                    value="${appserver.instance.name}.http-service.virtual-server.myvs.http-listeners=http-listener-1"/>
         </antcall>
-        <sleep seconds="5"/>
     </target>
 
     <target name="build-publish-war" depends="build, publish-war-common" />

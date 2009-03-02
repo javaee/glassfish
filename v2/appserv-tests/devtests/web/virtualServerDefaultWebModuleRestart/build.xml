@@ -43,7 +43,6 @@
             <param name="operand.props"
                    value="--hosts 127.0.0.1 --defaultwebmodule ${appname}-web ${new-virtual-server}"/>
         </antcall>
-        <sleep seconds="5"/>
     </target>
 
     <target name="delete-vs" depends="init-common">

@@ -107,7 +107,6 @@
             <param name="operand.props"
                    value="${appserver.instance.name}.http-service.http-listener.http-listener-1.port=9999"/>
         </antcall>
-        <sleep seconds="5"/> 
     </target>
 
     <target name="restore-port" depends="init-common">
