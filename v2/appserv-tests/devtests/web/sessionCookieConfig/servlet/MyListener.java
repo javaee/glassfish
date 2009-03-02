@@ -30,12 +30,13 @@ public class MyListener implements ServletContextListener {
      * @param sce The servlet context event
      */
     public void contextInitialized(ServletContextEvent sce) {
-
-        ServletContext servletContext = sce.getServletContext();
-        SessionCookieConfig sessionCookieConfig =
-                new SessionCookieConfig(COOKIE_DOMAIN, COOKIE_PATH, COOKIE_COMMENT, true, true);
-        servletContext.setSessionCookieConfig(sessionCookieConfig);
-
+        SessionCookieConfig scc =
+            sce.getServletContext().getSessionCookieConfig();
+        scc.setPath(COOKIE_PATH);
+        scc.setDomain(COOKIE_DOMAIN);
+        scc.setComment(COOKIE_COMMENT);
+        scc.setSecure(true);
+        scc.setHttpOnly(true);
     }
 
 
