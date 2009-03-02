@@ -90,9 +90,9 @@ public class CookieConfigNode extends DeploymentDescriptorNode {
      */
     public void setElementValue(XMLElement element, String value) {
         if (WebTagNames.HTTP_ONLY.equals(element.getQName())) {
-            descriptor.setHttpOnly(Boolean.valueOf(value));
+            descriptor.setHttpOnly(Boolean.parseBoolean(value));
         } else if (WebTagNames.SECURE.equals(element.getQName())) {
-            descriptor.setSecure(Boolean.valueOf(value));
+            descriptor.setSecure(Boolean.parseBoolean(value));
         } else {
             super.setElementValue(element, value);
         }
