@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="356"/>
+    <property name="TOTAL_EXPECTED" value="357"/>
 
     &commonSetup;
     &commonBuild;
@@ -221,6 +221,7 @@
         <ant dir="asyncListenerOnTimeout" target="all"/>
         <ant dir="asyncSupportedTrue" target="all"/>
         <ant dir="asyncSupportedFalse" target="all"/>
+        <ant dir="asyncContextHasOriginalRequestAndResponse" target="all"/>
         <ant dir="servletRequestResponseWrapperIsWrapperFor" target="all"/>
         <ant dir="servletRequestDispatcherType" target="all"/>
     </target>
