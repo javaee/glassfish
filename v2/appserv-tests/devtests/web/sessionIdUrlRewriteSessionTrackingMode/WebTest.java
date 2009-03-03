@@ -12,14 +12,13 @@ public class WebTest {
 
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
-    private static final String TEST_NAME = "session-id-url-rewrite-session-tracking-mode";
 
-    private static final String EXPECTED = "MY_SESSION_ATTRIBUTE";
+    private static final String TEST_NAME =
+        "session-id-url-rewrite-session-tracking-mode";
 
     private String host;
     private String port;
     private String contextRoot;
-    private boolean fail = false;
 
     public WebTest(String[] args) {
         host = args[0];
@@ -35,21 +34,13 @@ public class WebTest {
     }
 
     public void doTest() {
-     
         try { 
             invokeServlet();
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             ex.printStackTrace();
             stat.addStatus(TEST_NAME, stat.FAIL);
         }
-
-        if (fail) {
-            stat.addStatus(TEST_NAME, stat.FAIL);
-        } else {
-            stat.addStatus(TEST_NAME, stat.PASS);
-        }
-
-        return;
     }
 
     private void invokeServlet() throws Exception {
@@ -78,23 +69,17 @@ public class WebTest {
         }
 
         if (cookieLine != null) {
-            System.err.println("Unexpected Set-Cookie response header");
-            fail = true;
-            return;
+            throw new Exception("Unexpected Set-Cookie response header");
         }
         
         if (redirectLine == null) {
-            System.err.println("Missing Location response header");
-            fail = true;
-            return;
+            throw new Exception("Missing Location response header");
         }
 
         int index = redirectLine.indexOf("http");
         if (index == -1) {
-            System.err.println(
+            throw new Exception(
                 "Missing http address in Location response header");
-            fail = true;
-            return;
         }
 
         String redirectTo = redirectLine.substring(index);
@@ -107,23 +92,8 @@ public class WebTest {
         conn.connect();
         int responseCode = conn.getResponseCode();
         if (responseCode != 200) { 
-            System.err.println("Wrong response code. Expected: 200"
-                               + ", received: " + responseCode);
-            fail = true;
-            return;
-        }
-
-        bis = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        while ((line = bis.readLine()) != null) {
-            if (line.equals(EXPECTED)) {
-                break;
-            }
-        }
-
-        if (line == null) {
-            System.err.println("Did not receive expected response data: "
-                               + EXPECTED);
-            fail = true;
+            throw new Exception("Wrong response code. Expected: 200" +
+                                ", received: " + responseCode);
         }
     }
 }

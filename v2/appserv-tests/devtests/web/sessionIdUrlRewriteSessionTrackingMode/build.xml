@@ -38,10 +38,6 @@
 
     <target name="build-publish-war" depends="build, publish-war-common" />
     
-    <target name="re-deploy" depends="init-common">
-        <antcall target="deploy-war-common"/>
-    </target>
-
     <target name="deploy" depends="init-common">
         <antcall target="deploy-war-common"/>
     </target>

@@ -10,8 +10,11 @@ public class RedirectTo extends HttpServlet {
             throws ServletException, IOException {
 
         HttpSession session = req.getSession(false);
-        if (session != null) {
-            res.getWriter().println(session.getAttribute("myname"));
+        if (session == null) {
+            throw new ServletException("Missing session");
+        }
+        if (session.getAttribute("myname") == null) {
+            throw new ServletException("Missing session attribute");
         }
     }
 }
