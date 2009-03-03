@@ -26,6 +26,7 @@ package com.sun.enterprise.v3.services.impl;
 import com.sun.enterprise.admin.monitor.callflow.Agent;
 import com.sun.enterprise.server.logging.FormatterDelegate;
 import com.sun.enterprise.server.logging.UniformLogFormatter;
+import com.sun.enterprise.server.logging.LoggingConfigImpl;
 import com.sun.enterprise.v3.logging.AgentFormatterDelegate;
 import com.sun.common.util.logging.LoggingOutputStream;
 import com.sun.logging.LogDomains;
@@ -46,6 +47,8 @@ import java.io.FileInputStream;
 import java.util.Properties;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -55,6 +58,7 @@ import java.util.logging.Logger;
  * Reinitialzie the log manager using our logging.properties file.
  *
  * @author Jerome Dochez
+ * @author Carla Mott
  */
 
 @Service
@@ -75,6 +79,9 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
 
     @Inject
     FileMonitoring fileMonitoring;
+
+    @Inject
+    LoggingConfigImpl loggingConfig;
 
     /**
      * Initialize the loggers
@@ -146,25 +153,20 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
             fileMonitoring.monitors(logging, new FileMonitoring.FileChangeListener() {
                 public void changed(File changedFile) {
                     try {
-                        Properties props = new java.util.Properties();
 
-                        FileInputStream fis = new java.io.FileInputStream (new java.io.File( logging.getAbsolutePath()));
-                        props.load(fis);
-                        //reseting the log levels if needed
-                        Enumeration<String> loggerNames = logMgr.getLoggerNames();
-                        while(loggerNames.hasMoreElements()) {
-                            String loggerName = loggerNames.nextElement();
-                            String level = props.getProperty(loggerName+".level");
-                            if ( level != null) {
-                                Level l = Level.parse(level);
-                                logMgr.getLogger(loggerName).setLevel(l);
-                                if (loggerName.equals(""))    loggerName = "rootLogger";
-                                logger.log(Level.INFO,"Updated level for "+loggerName +" to "+logMgr.getLogger(loggerName).getLevel().toString());
-                             }
+                        Map<String,String> props = loggingConfig.getLoggingProperties();
+                        Set<String> keys = props.keySet();
+                        for (String a : keys)   {
+                            if (a.endsWith(".level")) {
+                                Level l = Level.parse(props.get(a));
+                                if (logMgr.getLogger(a.substring(0,a.lastIndexOf(".level"))) != null) {
+                                    logMgr.getLogger(a.substring(0,a.lastIndexOf(".level"))).setLevel(l);
+                                }
 
+                            }
                         }
-                        fis.close();
-                        
+
+                        logger.log(Level.INFO,"Updated log levels for loggers.");                                                     
                     } catch (IOException e) {
                         logger.log(Level.SEVERE, "Cannot read logging.properties file : ", e);
                     }

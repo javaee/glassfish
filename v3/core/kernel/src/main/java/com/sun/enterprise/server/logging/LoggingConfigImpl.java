@@ -147,13 +147,14 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
                 
 	    	}
 			closePropFile();
-		
+		  /*
 			try {
            		logMgr.readConfiguration();
        		} catch(IOException e) {
             	logger.log(Level.SEVERE, "Cannot reconfigure LogManager : ", e);
             	throw new IOException();
         	}
+        	*/
 		} catch (IOException ex) {
 			throw ex;
 		} catch (Exception e) {
