@@ -57,6 +57,8 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.invocation.ComponentInvocation;
 
 import org.glassfish.ejb.api.EjbEndpointFacade;
+import org.glassfish.ejb.spi.WSEjbEndpointRegistry;
+import org.glassfish.internal.api.Globals;
 import javax.ejb.*;
 import javax.transaction.Status;
 import javax.transaction.Transaction;
@@ -298,12 +300,12 @@ public class StatelessSessionContainer
             EjbEndpointFacade endpointFacade =
                         new EjbEndpointFacadeImpl(this, ejbContainerUtilImpl);
 
-            /*
-            webServiceEndpoint = WebServiceEjbEndpointRegistry.getRegistry().createEjbEndpointInfo(next, this, servant, tieClass);
-                                           
-            WebServiceEjbEndpointRegistry.getRegistry().
-                registerEjbWebServiceEndpoint(webServiceEndpoint);
-              */
+
+            WSEjbEndpointRegistry wsejbEndpointRegistry = Globals.getDefaultHabitat().getComponent(
+                    WSEjbEndpointRegistry.class);
+            wsejbEndpointRegistry.registerEndpoint(next,endpointFacade,servant,tieClass);
+
+
         }
 
         createBeanPool();
