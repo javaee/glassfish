@@ -40,8 +40,6 @@ import org.glassfish.api.ActionReport;
 import org.jvnet.hk2.annotations.Contract;
 
 import java.util.Properties;
-import java.util.List;
-import java.io.File;
 
 /**
  * CommandRunner is a service that allow to run administrative commands.
@@ -79,16 +77,20 @@ public interface CommandRunner {
      * @param commandName the command to execute
      * @param parameters name/value pairs to be passed to the command
      * @param report will hold the result of the command's execution
-     * @param uploadedFiles files uploaded from the client
+     * @param inboundPayload incoming data accompanying the command request
+     * @param outboundPayload outgoing data to be returned to the admin client
      */
     public void doCommand(final String commandName, final Properties parameters,
-            final ActionReport report, List<File> uploadedFiles);
+            final ActionReport report,
+            final Payload.Inbound inboundPayload,
+            final Payload.Outbound outboundPayload);
 
     public ActionReport doCommand(
         final String commandName,
         final Object parameters,
         final ActionReport report,
-        final List<File> uploadedFiles);
+        final Payload.Inbound inboundPayload,
+        final Payload.Outbound outboundPayload);
 
     /**
      * Executes the provided command object.

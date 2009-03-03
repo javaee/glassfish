@@ -32,6 +32,7 @@
  */
 package org.glassfish.deployment.admin;
 
+import org.glassfish.admin.payload.PayloadFilesManager;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -60,6 +61,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -100,6 +102,9 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
     @Inject
     Domain domain;
 
+    private PayloadFilesManager.Temp payloadFilesMgr = null;
+    private List<File> payloadFiles = null;
+
     public DeployCommand() {
         origin = Origin.deploy;
     }
@@ -110,10 +115,24 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
      */
     public void execute(AdminCommandContext context) {
 
+      try {
         long operationStartTime = Calendar.getInstance().getTimeInMillis();
 
         final ActionReport report = context.getActionReport();
         final Logger logger = context.getLogger();
+
+        try {
+            payloadFilesMgr = new PayloadFilesManager.Temp(
+                    context.getActionReport(),
+                    logger);
+            payloadFiles = payloadFilesMgr.extractFiles(context.getInboundPayload());
+        } catch (Exception e) {
+            report.setFailureCause(e);
+            report.failure(logger, localStrings.getLocalString(
+                    "adapter.command.errorPrepUploadedFiles", 
+                    "Error preparing uploaded files"), e);
+            return;
+        }
 
         File file = choosePathFile(context);
         if (!file.exists()) {
@@ -134,10 +153,12 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
         try {
             archive = archiveFactory.openArchive(file, this);
         } catch (IOException e) {
+            final String msg = localStrings.getLocalString("deploy.errOpeningArtifact",
+                    "deploy.errOpeningArtifact", file.getAbsolutePath());
             if (logReportedErrors) {
-                report.failure(logger,"Error opening deployable artifact : " + file.getAbsolutePath(),e);
+                report.failure(logger, msg, e);
             } else {
-                report.setMessage("Error opening deployable artifact : " + file.getAbsolutePath() + e.toString());
+                report.setMessage(msg + file.getAbsolutePath() + e.toString());
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             }
             return;
@@ -231,45 +252,58 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
             }
         } catch(Exception e) {
-            report.failure(logger,"Error during deployment : "+e.getMessage(),e);
+            report.failure(logger,localStrings.getLocalString(
+                    "errDuringDepl", 
+                    "Error during deployment : ") + e.getMessage(),e);
         } finally {
             try {
                 archive.close();
             } catch(IOException e) {
-                logger.log(Level.INFO, "Error while closing deployable artifact : " + file.getAbsolutePath(), e);
+                logger.log(Level.INFO, localStrings.getLocalString(
+                        "errClosingArtifact", 
+                        "Error while closing deployable artifact : ",
+                        file.getAbsolutePath()), e);
             }
             if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
-                logger.info("Deployment of " + name + " done is "
-                        + (Calendar.getInstance().getTimeInMillis() - operationStartTime) + " ms");
+                logger.info(localStrings.getLocalString(
+                        "deploy.done", 
+                        "Deployment of {0} done is {1} ms",
+                        name,
+                        (Calendar.getInstance().getTimeInMillis() - operationStartTime)));
             } else {
                 if (expansionDir!=null) {
                    FileUtils.whack(expansionDir);
                 }
             }
         }
+      } finally {
+          if (payloadFilesMgr != null) {
+              payloadFilesMgr.cleanup();
+          }
+      }
     }
 
     private File choosePathFile(AdminCommandContext context) {
-        if (context.getUploadedFiles().size() >= 1) {
+        if (payloadFiles.size() >= 1) {
             /*
              * Use the uploaded file rather than the one specified by --path.
              */
-            return context.getUploadedFiles().get(0);
+            return payloadFiles.get(0);
         }
         return path;
     }
-    
+
     private File chooseDeploymentPlanFile(AdminCommandContext context) {
-        if (context.getUploadedFiles().size() >= 2) {
+        if (payloadFiles.size() >= 2) {
             /*
              * Use the uploaded file rather than the one specified by
              * --deploymentplan.
              */
-            return context.getUploadedFiles().get(1);
+            return payloadFiles.get(1);
         }
         return deploymentplan;
     }
-    
+
     /**
      *  Check if the application is deployed or not.
      *  If force option is true and appInfo is not null, then undeploy
@@ -310,7 +344,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 undeployParams.properties.put(DeploymentProperties.KEEP_SESSIONS, properties.getProperty(DeploymentProperties.KEEP_SESSIONS));
                 subReport.setExtraProperties(new Properties());
             }
-            commandRunner.doCommand("undeploy", undeployParams, subReport, null);
+            commandRunner.doCommand("undeploy", undeployParams, subReport, null, null);
             return subReport.getExtraProperties();
         }
         return null;

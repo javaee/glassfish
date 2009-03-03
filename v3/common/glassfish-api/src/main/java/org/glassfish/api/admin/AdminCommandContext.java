@@ -37,12 +37,8 @@
 package org.glassfish.api.admin;
 
 
-import java.io.File;
-import java.util.Collections;
-import java.util.List;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ExecutionContext;
-import java.util.Properties;
 import java.util.logging.Logger;
 
 /**
@@ -54,22 +50,22 @@ public class AdminCommandContext implements ExecutionContext {
     
     public  ActionReport report;
     public final Logger logger;
-    private List<File> uploadedFiles;
+    private final Payload.Inbound inboundPayload;
+    private final Payload.Outbound outboundPayload;
     
     public AdminCommandContext(Logger logger, ActionReport report) {
-        this(logger, report, null);
+        this(logger, report, null, null);
     }
     
     public AdminCommandContext(Logger logger, ActionReport report,
-            List<File> uploadedFiles) {
+            final Payload.Inbound inboundPayload,
+            final Payload.Outbound outboundPayload) {
         this.logger = logger;
         this.report = report;
-        this.uploadedFiles = (uploadedFiles == null) ? emptyFileList() : uploadedFiles;
+        this.inboundPayload = inboundPayload;
+        this.outboundPayload = outboundPayload;
     }
     
-    private static List<File> emptyFileList() {
-        return Collections.emptyList();
-    }
     /**
      * Returns the Reporter for this action
      * @return ActionReport implementation suitable for the client
@@ -92,12 +88,24 @@ public class AdminCommandContext implements ExecutionContext {
     public Logger getLogger() {
         return logger;
     }
-    
+
     /**
-     * Returns the uploaded files
-     * @return the uploaded files
+     * Returns the inbound payload, from the admin client, that accompanied
+     * the command request.
+     *
+     * @return the inbound payload
      */
-    public List<File> getUploadedFiles() {
-        return uploadedFiles;
+    public Payload.Inbound getInboundPayload() {
+        return inboundPayload;
+    }
+
+    /**
+     * Returns a reference to the outbound payload so a command implementation
+     * can populate the payload for return to the admin client.
+     *
+     * @return the outbound payload
+     */
+    public Payload.Outbound getOutboundPayload() {
+        return outboundPayload;
     }
 }

@@ -64,6 +64,7 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.InjectionManager;
 import org.jvnet.hk2.component.UnsatisfiedDepedencyException;
 import com.sun.enterprise.universal.BASE64Decoder;
+import org.glassfish.api.admin.Payload;
 /**
  * Encapsulates the logic needed to execute a server-side command (for example,  
  * a descendant of AdminCommand) including injection of argument values into the 
@@ -76,7 +77,7 @@ import com.sun.enterprise.universal.BASE64Decoder;
 public class CommandRunnerImpl implements CommandRunner {
     
     public final static LocalStringManagerImpl adminStrings = new LocalStringManagerImpl(CommandRunnerImpl.class);
-    public final static Logger logger = LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER);
+    public Logger logger = null;
 
     private static final String ASADMIN_CMD_PREFIX = "AS_ADMIN_";
     @Inject
@@ -85,6 +86,9 @@ public class CommandRunnerImpl implements CommandRunner {
     @Inject
     ClassLoaderHierarchy clh;
 
+    public void postConstruct() {
+         logger = LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER);
+    }
     /**
      * Returns a uninitialized action report
      * @param name action report type name
@@ -105,7 +109,7 @@ public class CommandRunnerImpl implements CommandRunner {
      */
     public void doCommand(final String commandName, final Properties parameters, final ActionReport report) {
 
-        doCommand(commandName, parameters, report, null);
+        doCommand(commandName, parameters, report, null, null);
     }
     
     /**
@@ -119,13 +123,13 @@ public class CommandRunnerImpl implements CommandRunner {
      * @param uploadedFiles files uploaded from the client
      */
     public void doCommand(final String commandName, final Properties parameters,
-            final ActionReport report, List<File> uploadedFiles) {
+            final ActionReport report, Payload.Inbound inboundPayload, Payload.Outbound outboundPayload) {
 
         final AdminCommand handler = getCommand(commandName, report, logger);
         if (handler==null) {
             return;
         }
-        doCommand(commandName, handler, parameters, report, uploadedFiles);
+        doCommand(commandName, handler, parameters, report, inboundPayload, outboundPayload);
     }
 
     /**
@@ -141,14 +145,15 @@ public class CommandRunnerImpl implements CommandRunner {
             final AdminCommand command, 
             final Properties parameters, 
             final ActionReport report) {
-        doCommand(commandName, command, parameters, report, null);
+        doCommand(commandName, command, parameters, report, null, null);
     }
 
     public ActionReport doCommand(
         final String commandName,
         final Object parameters,
         final ActionReport report,
-        final List<File> uploadedFiles) {
+        final Payload.Inbound inboundPayload,
+        final Payload.Outbound outboundPayload) {
 
         final AdminCommand command = getCommand(commandName, report, logger);
         if (command==null) {
@@ -192,7 +197,7 @@ public class CommandRunnerImpl implements CommandRunner {
                 return null;
             }
         };
-        return doCommand(commandName, command, injectionMgr, report, uploadedFiles);
+        return doCommand(commandName, command, injectionMgr, report, inboundPayload, outboundPayload);
 
     }
 
@@ -211,13 +216,14 @@ public class CommandRunnerImpl implements CommandRunner {
             final AdminCommand command,
             final InjectionManager<Param> injector,
             final ActionReport report,
-            final List<File> uploadedFiles) {
+            final Payload.Inbound inboundPayload,
+            final Payload.Outbound outboundPayload) {
 
         report.setActionDescription(commandName + " AdminCommand");
 
         final AdminCommandContext context = new AdminCommandContext(
                 LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER),
-                report, uploadedFiles);
+                report, inboundPayload, outboundPayload);
 
         LocalStringManagerImpl localStrings = new LocalStringManagerImpl(command.getClass());
 
@@ -345,7 +351,8 @@ public class CommandRunnerImpl implements CommandRunner {
             final AdminCommand command,
             final Properties parameters,
             final ActionReport report,
-            final List<File> uploadedFiles) {
+            final Payload.Inbound inboundPayload,
+            final Payload.Outbound outboundPayload) {
 
         if (parameters.get("help")!=null) {
             InputStream in = getManPage(commandName, command);
@@ -435,7 +442,7 @@ public class CommandRunnerImpl implements CommandRunner {
             }
         };
 
-        return doCommand(commandName, command, injectionMgr, report, uploadedFiles);
+        return doCommand(commandName, command, injectionMgr, report, inboundPayload, outboundPayload);
 
     }
 

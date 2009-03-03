@@ -27,12 +27,12 @@ import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.common_impl.LogHelper;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.util.io.FileUtils;
 import com.sun.grizzly.tcp.Request;
 import com.sun.logging.LogDomains;
-import java.io.BufferedInputStream;
-import java.io.InputStream;
+import java.io.ByteArrayOutputStream;
+import org.glassfish.admin.payload.PayloadImpl;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.Payload;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.container.Adapter;
@@ -42,8 +42,6 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Properties;
@@ -62,13 +60,9 @@ import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 import com.sun.hk2.component.ConstructorWomb;
-import java.io.BufferedOutputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
+import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.RestrictTo;
 import org.glassfish.internal.api.ServerContext;
@@ -86,12 +80,10 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
     public final static String PREFIX_URI = "/" + VS_NAME;
     public final static Logger logger = LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER);
     public final static LocalStringManagerImpl adminStrings = new LocalStringManagerImpl(AdminAdapter.class);
-    public final static String GFV3 = "gfv3";
     private final static String GET = "GET";
     private final static String POST = "POST";
     private static final BASE64Decoder decoder = new BASE64Decoder();
     private static final String BASIC = "Basic ";
-    private static final String UPLOAD_DIR_PREFIX = "upl-";
 
     private static final String QUERY_STRING_SEPARATOR = "&";
 
@@ -168,6 +160,8 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
             requestURI = requestURI.substring(0, requestURI.indexOf('.'));
         }
 
+        Payload.Outbound outboundPayload = PayloadImpl.Outbound.newInstance();
+
         try {
             if (!latch.await(20L, TimeUnit.SECONDS)) {
                 report = this.getClientActionReport(req.getRequestURI(), req);
@@ -176,7 +170,7 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
             } else {
                 if (!authenticate(req, report, res))
                     return;
-                report = doCommand(requestURI, req, report);
+                report = doCommand(requestURI, req, report, outboundPayload);
             }
         } catch(InterruptedException e) {
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -188,11 +182,26 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
         
         try {
             res.setStatus(200);
-            res.setContentType(report.getContentType());
-            report.writeReport(res.getOutputStream());
+            /*
+             * Format the command result report into the first part (part #0) of
+             * the outbound payload and set the response's content type based
+             * on the payload's.  If the report is the only part then the
+             * stream will be written as content type text/something and
+             * will contain only the report.  If the payload already has
+             * content - such as files to be downloaded, for example - then the
+             * content type of the payload reflects its multi-part nature and
+             * an implementation-specific content type will be set in the response.
+             */
+            ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
+            report.writeReport(baos);
+            ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+            outboundPayload.addPart(0, report.getContentType(), "report", 
+                    null /* no special props for report */, bais);
+            res.setContentType(outboundPayload.getContentType());
+            outboundPayload.writeTo(res.getOutputStream());
             res.getOutputStream().flush();
             res.finishResponse();
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -256,7 +265,8 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
         return report;
     }
 
-    private ActionReport doCommand(String requestURI, GrizzlyRequest req, ActionReport report) {
+    private ActionReport doCommand(String requestURI, GrizzlyRequest req, ActionReport report,
+            Payload.Outbound outboundPayload) {
 
         if (!requestURI.startsWith(PREFIX_URI)) {
             String msg = adminStrings.getLocalString("adapter.panic",
@@ -273,20 +283,22 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
             command = requestURI.substring(PREFIX_URI.length() + 1);
 
         final Properties parameters = extractParameters(req.getQueryString());
-        UploadedFilesInfo uploadedFilesInfo = null;
         try {
+            Payload.Inbound inboundPayload = PayloadImpl.Inbound.newInstance(
+                    req.getContentType(), req.getInputStream());
             if (req.getMethod().equalsIgnoreCase(GET)) {
                 logger.fine("***** AdminAdapter GET  *****");
-                commandRunner.doCommand(command, parameters, report);
+                commandRunner.doCommand(command, parameters, report, inboundPayload, outboundPayload);
             } 
             else if (req.getMethod().equalsIgnoreCase(POST)) {
                 logger.fine("***** AdminAdapter POST *****");
                 /*
                  * Extract any uploaded files from the POST payload.
                  */
-                uploadedFilesInfo = new UploadedFilesInfo(req.getInputStream(), report);
+//                uploadedFilesInfo = new UploadedFilesInfo(req.getInputStream(), report);
+//                uploadedFilesInfo = new UploadedFilesInfo(inboundPayload, report);
                 
-                commandRunner.doCommand(command, parameters, report, uploadedFilesInfo.getFiles());
+                commandRunner.doCommand(command, parameters, report, inboundPayload, outboundPayload);
             }
         } catch (Throwable t) {
             /*
@@ -297,10 +309,6 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
             report.setFailureCause(t);
             report.setMessage(t.getLocalizedMessage());
             report.setActionDescription("Last-chance AdminAdapter exception handler");
-        } finally {
-            if (uploadedFilesInfo != null) {
-                uploadedFilesInfo.cleanup();
-            }
         }
         return report;
     }
@@ -382,132 +390,6 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
         //the count-down does not start if any other event is received
     }
     
-    /**
-     * Manages all aspects of uploaded files delivered via an ZipInputStream.
-     * 
-     * This class constructs a unique temporary directory, then creates one
-     * temp file per ZipEntry in the stream to hold the uploaded content.  
-     */
-    private final class UploadedFilesInfo {
-        private File tempFolder = null;
-        private ArrayList<File> uploadedFiles;
-        
-        UploadedFilesInfo(final InputStream is, final ActionReport report) throws IOException {
-            uploadedFiles = extractUploadedFiles(is, report);
-        }
-        
-        private ArrayList<File> getFiles() {
-            return uploadedFiles;
-        }
-        
-        private void cleanup() {
-            if (tempFolder != null) {
-                FileUtils.whack(tempFolder);
-                tempFolder = null;
-            }
-        }
-        
-        /**
-         * uploads request from client and save the content in <os temp dir>/gfv3/<unique-dir>/<fileName>
-         * @param req to process
-         * @param report back to the client
-         * @return <os temp dir>/gfv3/<fileName> files
-         * @throws IOException if upload file cannot be created
-         */
-        private ArrayList<File> extractUploadedFiles(final InputStream is, final ActionReport report)
-                throws IOException 
-        {
-            final String localTmpDir = System.getProperty("java.io.tmpdir");
-            final File gfv3Folder = new File(localTmpDir, GFV3);
-            if (!gfv3Folder.exists()) {
-                gfv3Folder.mkdirs();
-            }
-
-            ArrayList<File> uploadedFiles = new ArrayList<File>();
-
-            /*
-             * Try to extract zip entries from the payload.
-             */
-            ZipInputStream zis = new ZipInputStream(new BufferedInputStream(is));
-            ZipEntry entry = null;
-            OutputStream os = null;
-
-            try {
-                tempFolder = createTempFolder(gfv3Folder);
-                StringBuilder uploadedEntryNames = new StringBuilder();
-                while ((entry = zis.getNextEntry()) != null) {
-                    String entryName = entry.getName();
-
-                    /*
-                     * Note: the client should name the entries using only the name and type; no paths.
-                     */
-                    File uploadFile = new File(tempFolder, entryName);
-                    //check for pre-existing file
-                    if (uploadFile.exists()) {
-                        if (!uploadFile.delete()) {
-                            logger.warning(adminStrings.getLocalString(
-                                    "adapter.command.overwrite",
-                                    "Overwriting previously-uploaded file because the attempt to delete it failed: {0}",
-                                    uploadFile.getAbsolutePath()));
-                        }
-                    }
-
-                    os = new BufferedOutputStream(new FileOutputStream(uploadFile));
-                    int bytesRead;
-                    byte[] buffer = new byte[1024 * 64];
-                    while ((bytesRead = zis.read(buffer)) != -1) {
-                        os.write(buffer, 0, bytesRead);
-                    }
-                    os.close();
-                    uploadedFiles.add(uploadFile);
-                    uploadedEntryNames.append(entryName).append(" ");
-                    logger.fine("Extracted uploaded entry " + entryName + " to " +
-                            uploadFile.getAbsolutePath());
-                }
-                report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-            } 
-            catch (Exception e) {
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                report.setMessage("Error extracting uploaded file " + (entry == null ? "" : entry.getName()));
-                report.setFailureCause(e);
-                throw new IOException(report.getMessage());
-            } 
-            finally {
-                if (os != null) {
-                    os.close();
-                }
-            }
-            return uploadedFiles;
-        }
-        
-        private File createTempFolder(File parent) throws IOException {
-            File result = File.createTempFile(UPLOAD_DIR_PREFIX, "", parent);
-            try {
-                if ( ! result.delete()) {
-                    throw new IOException(
-                            adminStrings.getLocalString(
-                                "adapter.command.errorDeletingTempFile",
-                                "Error deleting temporary file {0}",
-                                result.getAbsolutePath()));
-                }
-                if ( ! result.mkdir()) {
-                    throw new IOException(
-                            adminStrings.getLocalString(
-                                "adapter.command.errorCreatingDir",
-                                "Error creating directory {0}",
-                                result.getAbsolutePath()));
-                }
-                logger.fine("Created temporary upload folder " + result.getAbsolutePath());
-                return result;
-            } catch (Exception e) {
-                IOException ioe = new IOException(adminStrings.getLocalString(
-                        "adapter.command.errorCreatingUploadFolder", 
-                        "Error creating temporary upload folder"));
-                ioe.initCause(e);
-                throw ioe;
-            }
-        }
-   }
     
     public int getListenPort() {
         return epd.getListenPort();

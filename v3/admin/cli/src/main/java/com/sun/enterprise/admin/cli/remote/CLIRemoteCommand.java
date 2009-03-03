@@ -43,18 +43,26 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.FileUtils;
 import com.sun.enterprise.universal.io.SmartFile;
 import java.io.*;
+import java.io.File;
 import java.net.*;
 import java.util.*;
 import com.sun.enterprise.admin.cli.util.*;
 import com.sun.enterprise.cli.framework.*;
+import java.util.Iterator;
 import java.util.logging.Level;
 import com.sun.enterprise.universal.BASE64Encoder;
 import com.sun.enterprise.util.net.NetUtils;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
+import org.glassfish.admin.payload.PayloadFilesManager;
+import org.glassfish.admin.payload.PayloadImpl;
+import org.glassfish.api.admin.Payload;
 
 public class CLIRemoteCommand {    
-    
+
+    /** content-type used for each file-transfer part of a payload to or from the server*/
+    private static final String FILE_PAYLOAD_MIME_TYPE = "application/octet-stream";
+
+    private static final String LINE_SEP = System.getProperty("line.separator");
+
     public CLIRemoteCommand(String... args) throws CommandException {
         initialize(args);
     }
@@ -135,16 +143,45 @@ public class CLIRemoteCommand {
                 urlConnection.setRequestProperty("User-Agent", responseFormatType);
                 urlConnection.setRequestProperty(HttpConnectorAddress.AUTHORIZATION_KEY, url.getBasicAuthString());
                 urlConnection.setRequestMethod(chooseRequestMethod());
+                Payload.Outbound outboundPayload = PayloadImpl.Outbound.newInstance();
                 if (doUpload) {
+                    /*
+                     * If we are uploading anything then set the content-type
+                     * and add the uploaded part(s) to the payload.
+                     */
                     urlConnection.setChunkedStreamingMode(0); // use default value
+                    prepareUpload(outboundPayload);
+                    urlConnection.setRequestProperty("Content-Type", outboundPayload.getContentType());
                 }
                 urlConnection.connect();
                 if (doUpload) {
-                    upload(urlConnection);
+                    outboundPayload.writeTo(urlConnection.getOutputStream());
                 }
                 InputStream in = urlConnection.getInputStream();
-                handleResponse(params, in, urlConnection.getResponseCode(),
-                        userOut);
+
+                final String responseContentType = urlConnection.getContentType();
+
+                Payload.Inbound inboundPayload = PayloadImpl.Inbound.newInstance(
+                        responseContentType, in);
+                
+                boolean isReportProcessed = false;
+                PayloadFilesManager downloadedFilesMgr =
+                        new PayloadFilesManager.Perm();
+                for (Iterator<Payload.Part> partIt = inboundPayload.parts(); partIt.hasNext();) {
+                    /*
+                     * The report will always come first among the parts of the payload.
+                     * Be sure to process the report right away so any following
+                     * data parts will be accessible.
+                     */
+                    if ( ! isReportProcessed) {
+                        handleResponse(params, partIt.next().getInputStream(),
+                                urlConnection.getResponseCode(), userOut);
+                        isReportProcessed = true;
+                    } else {
+                        processDataPart(downloadedFilesMgr, partIt.next());
+                    }
+                }
+ 
             } catch(ConnectException ce) {
                 //this really means nobody was listening on the remote server end
                 //implementation note: ConnectException extends IOException and tells us more!
@@ -184,6 +221,30 @@ public class CLIRemoteCommand {
             logger.printExceptionStackTrace(e);
             throw new CommandException(e);
         }
+    }
+
+    private void processDataPart(
+            final PayloadFilesManager downloadedFilesMgr,
+            final Payload.Part part) throws URISyntaxException, FileNotFoundException, IOException {
+        /*
+         * Remaining parts are typically files to be downloaded.
+         */
+        Properties partProps = part.getProperties();
+        String dataRequestType = partProps.getProperty("data-request-type");
+        if (dataRequestType.equals("file-xfer")) {
+            /*
+             * Treat this part as a downloaded file.  The
+             * server is responsible for setting the part's file name
+             * to be a valid URI, relative to the file-xfer-root or absolute, that
+             * will deliver the file according to the user's
+             * wishes.
+             */
+            downloadedFilesMgr.extractFile(part);
+        }
+    }
+
+    private String writeExceptionMessages(final Throwable t) {
+        return t.getLocalizedMessage() + ((t.getCause() != null) ? LINE_SEP + "  " + writeExceptionMessages(t.getCause()) : "");
     }
 
     /**
@@ -243,51 +304,30 @@ public class CLIRemoteCommand {
      * @throws com.sun.enterprise.cli.framework.CommandException
      * @throws java.io.IOException
      */
-    private void upload(HttpURLConnection conn) throws CommandException, IOException {
+    private void prepareUpload(final Payload.Outbound payload) throws CommandException, IOException {
 
         /*
-         * Each file to be uploaded is added to the HTTP request payload as a ZipEntry.
+         * Each file to be uploaded is added to the HTTP request payload as a
+         * separate part.
          */
-        ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(conn.getOutputStream()));
+
         if (fileParameter != null) {
-            upload(zos, fileParameter);
+            payload.attachFile(FILE_PAYLOAD_MIME_TYPE,
+                    fileParameter.toURI(),
+                    "path",
+                    null, // attachFile sets the properties needed
+                    fileParameter);
         }
-        
+
         if (deploymentPlanParameter != null) {
-            upload(zos, deploymentPlanParameter);
+            payload.attachFile(FILE_PAYLOAD_MIME_TYPE,
+                    deploymentPlanParameter.toURI(),
+                    "deploymentPlan",
+                    null, // attachFile sets the properties needed
+                    deploymentPlanParameter);
         }
-        
-        zos.flush();
     }
     
-    /**
-     * Adds the specified file as a ZipEntry to the ZipOutputStream (already
-     * linked to the request's output stream).
-     * @param out ZipOutputStream to receive the file to be uploaded
-     * @param uploadFile the File to be uploaded
-     * @throws com.sun.enterprise.cli.framework.CommandException
-     */
-    private void upload(ZipOutputStream out, File uploadFile) throws CommandException {
-        ZipEntry entry = new ZipEntry(uploadFile.getName());
-        entry.setTime(uploadFile.lastModified());
-        
-        try {
-            out.putNextEntry(entry);
-            BufferedInputStream bis = new BufferedInputStream(new FileInputStream(uploadFile));
-
-            // write upload file data
-            byte[] buffer = new byte[1024 * 64];
-            for (int i = bis.read(buffer); i > 0; i = bis.read(buffer)) {
-                out.write(buffer, 0, i);
-            }
-            out.closeEntry();
-            bis.close();
-        }
-        catch (IOException ex) {
-            throw new CommandException(ex.getMessage());
-        }
-    }
-
     private void handleResponse(Map<String, String> params,
             InputStream in, int code, OutputStream userOut) throws IOException, CommandException {
         if (userOut == null) {
@@ -578,6 +618,7 @@ public class CLIRemoteCommand {
                 doUpload = Boolean.parseBoolean(upString);
         }
     }
+
 
     private void initializeAuth() throws CommandException {
         LoginInfo li = null;

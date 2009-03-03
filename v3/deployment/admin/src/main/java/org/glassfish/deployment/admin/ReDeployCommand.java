@@ -100,14 +100,8 @@ public class ReDeployCommand implements AdminCommand {
         params.properties = properties;
 
 
-        if (context.getUploadedFiles().size() >= 1) {
-            // in case of uploading files, pass the uploaded files 
-            // to the admin context for deploy command
-            commandRunner.doCommand("deploy", params, report,
-                context.getUploadedFiles());
-        } else {
-            commandRunner.doCommand("deploy", params, report, null); 
-        }
+        commandRunner.doCommand("deploy", params, report,
+                context.getInboundPayload(), context.getOutboundPayload());
     }
 
         /**
