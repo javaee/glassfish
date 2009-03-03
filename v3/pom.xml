@@ -309,6 +309,7 @@
 		<module>sun-glassfish/packager</module>
 		<module>sun-glassfish/distributions</module>
 		<module>sun-glassfish/installer</module>
+		<module>sun-glassfish/distributions/glassfish-ri</module>
             </modules>
         </profile>
     </profiles>
