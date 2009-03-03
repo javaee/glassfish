@@ -859,6 +859,9 @@ public class TomcatDeploymentConfig{
            while (iterator.hasNext()) {
 
                 webComponentDesc = (WebComponentDescriptor)iterator.next();
+                if (!webComponentDesc.isEnabled()) {
+                    continue;
+                }
 
                 wrapper = (StandardWrapper)webModule.createWrapper();
                 wrapper.setName(webComponentDesc.getCanonicalName());
