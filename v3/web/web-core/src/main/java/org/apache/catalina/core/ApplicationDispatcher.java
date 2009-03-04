@@ -447,8 +447,15 @@ public final class ApplicationDispatcher
                 wrapRequest(state);
             String contextPath = context.getPath();
 
-            if (hrequest.getAttribute(RequestDispatcher.FORWARD_REQUEST_URI)
-                                                                == null) { 
+            // If the request is being FORWARD- or ASYNC-dispatched for 
+            // the first time, initialize it with the required request
+            // attributes
+            if ((DispatcherType.FORWARD.equals(dispatcherType) &&
+                    hrequest.getAttribute(
+                        RequestDispatcher.FORWARD_REQUEST_URI) == null) ||
+                    (DispatcherType.ASYNC.equals(dispatcherType) &&
+                        hrequest.getAttribute(
+                            AsyncContext.ASYNC_REQUEST_URI) == null)) { 
                 wrequest.initSpecialAttributes(hrequest.getRequestURI(),
                                                hrequest.getContextPath(),
                                                hrequest.getServletPath(),
