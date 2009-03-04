@@ -549,6 +549,10 @@ public class Request
      * preparation for reuse of this object.
      */
     public void recycle() {
+
+        if (isAsyncStarted()) {
+            return;
+        }
         
         context = null;
         servletContext = null;

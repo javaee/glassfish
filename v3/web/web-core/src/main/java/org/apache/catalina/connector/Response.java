@@ -355,6 +355,10 @@ public class Response
      */
     public void recycle() {
 
+        if (request != null && request.isAsyncStarted()) {
+            return;
+        }
+
         context = null;
         outputBuffer.recycle();
         usingOutputStream = false;
