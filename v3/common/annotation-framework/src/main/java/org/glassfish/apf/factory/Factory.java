@@ -78,7 +78,7 @@ public abstract class Factory {
             skipAnnotationClassList = new HashSet<String>();
             InputStream is = null;
             try {
-                AnnotationProcessorImpl.class.getClassLoader().getResourceAsStream(SKIP_ANNOTATION_CLASS_LIST_URL);
+                is = AnnotationProcessorImpl.class.getClassLoader().getResourceAsStream(SKIP_ANNOTATION_CLASS_LIST_URL);
                 if (is==null) {
                     AnnotationUtils.getLogger().log(Level.FINE, "no annotation skipping class list found");
                     return;
