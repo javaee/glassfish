@@ -10,8 +10,8 @@
     <packaging>pom</packaging>
     <name>GlassFish Build Utilities</name>
     <modules>
-        <module>maven-glassfish-plugin</module>
-        <module>maven-glassfish-extension</module>
+        <module>maven-glassfishbuild-plugin</module>
+        <module>maven-glassfishbuild-extension</module>
     </modules>
     <distributionManagement>
         <repository>            

@@ -85,7 +85,7 @@
             </plugin>
             <plugin>
                 <groupId>org.glassfish.build</groupId>
-                <artifactId>maven-glassfish-plugin</artifactId>
+                <artifactId>maven-glassfishbuild-plugin</artifactId>
                 <executions>
                     <execution>
                         <id>dashboard</id>
