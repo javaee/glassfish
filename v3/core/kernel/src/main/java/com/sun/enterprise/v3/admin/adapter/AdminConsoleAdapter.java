@@ -488,7 +488,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      */
     private void setWarFileLocation(String value) {
         if ((value != null) && !("".equals(value))) {
-            warFile = new File(ipsRoot, value);
+            warFile = new File(value);
 //System.out.println("Admin Console will be downloaded to: " + warFile);
             if (log.isLoggable(Level.FINE)) {
                 log.fine("Admin Console will be downloaded to: "
