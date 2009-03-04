@@ -435,7 +435,7 @@
     </xsd:annotation>
 
     <xsd:sequence>
-      <xsd:choice>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
 	<xsd:element name="error-code"
 		     type="javaee:error-codeType"/>
 
