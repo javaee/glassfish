@@ -13,16 +13,22 @@
 
     <description>${project.name}</description>
     <build>
+        <resources>
+            <resource>
+                <directory>src/resources</directory>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>osgiversion-maven-plugin</artifactId>
             </plugin>
-            <plugin>
+            <!--plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>apt-maven-plugin</artifactId>
                 <inherited>false</inherited>                    
                 <configuration>
+                    <factory>com.sun.enterprise.tools.apt.MetainfServiceGenerator</factory>
                     <outputDirectory>${project.build.outputDirectory}</outputDirectory>
                 </configuration>
                 <dependencies>
@@ -39,7 +45,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
