@@ -32,6 +32,10 @@ import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.ejb.containers.EjbContainerUtil;
 import com.sun.ejb.containers.EjbContainerUtilImpl;
 import com.sun.ejb.containers.EJBTimerService;
+import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.EjbBundleDescriptor;
+import com.sun.enterprise.security.PolicyLoader;
+import com.sun.enterprise.security.SecurityUtil;
 import com.sun.enterprise.v3.common.PlainTextActionReporter;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.CommandRunner;
@@ -59,6 +63,9 @@ import org.jvnet.hk2.component.PerLookup;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import org.glassfish.api.deployment.DeployCommandParameters;
+import org.glassfish.api.deployment.OpsParams;
+import org.glassfish.deployment.common.DeploymentException;
 
 /**
  * Ejb container service
@@ -78,8 +85,9 @@ public class EjbApplication
     
     private Habitat habitat;
 
-    @Inject
     private EJBSecurityManagerFactory ejbSMF;
+     
+    private PolicyLoader policyLoader;
 
     private ContainerFactory ejbContainerFactory;
 
@@ -92,15 +100,18 @@ public class EjbApplication
 
     public EjbApplication(
             Collection<EjbDescriptor> bundleDesc, DeploymentContext dc,
-            ClassLoader cl, Habitat habitat) {
+            ClassLoader cl, Habitat habitat, PolicyLoader policyLoader, 
+            EJBSecurityManagerFactory ejbSecMgrFactory) {
         this.ejbs = bundleDesc;
         this.ejbAppClassLoader = cl;
         this.appName = ""; //TODO
         this.dc = dc;
         this.habitat = habitat;
         this.ejbContainerFactory = habitat.getByContract(ContainerFactory.class);
+        this.policyLoader = policyLoader;
+        this.ejbSMF = ejbSecMgrFactory;
     }
-
+    
     public Collection<EjbDescriptor> getDescriptor() {
         return ejbs;
     }
@@ -124,12 +135,22 @@ public class EjbApplication
         int counter = 0;
         boolean usesEJBTimerService = false;
         singletonLCM = new SingletonLifeCycleManager();
-
+        
+        DeployCommandParameters params = ((DeploymentContext) startupContext).getCommandParameters(DeployCommandParameters.class);
+         // If true the application is being deployed.  If false, it's
+        // an initialization after the app was already deployed.
+        boolean deploy = (params.origin == OpsParams.Origin.deploy);
+        policyLoader.loadPolicy();
+        String moduleName = null;
+        
         for (EjbDescriptor desc : ejbs) {
             desc.setUniqueId(getUniqueId(desc)); // XXX appUniqueID + (counter++));
+            EJBSecurityManager ejbSM = null;
 
             try {
-                EJBSecurityManager ejbSM = null;//ejbSMF.createManager(desc,true);
+                ejbSM = ejbSMF.createManager(desc, true);
+                moduleName = ejbSM.getContextID(desc);
+
                 Container container = ejbContainerFactory.createContainer(desc, ejbAppClassLoader,
                         ejbSM, dc);
                 containers.add(container);
@@ -141,6 +162,8 @@ public class EjbApplication
                 throw new RuntimeException("Error during EjbApplication.start() ", th);
             }
         }
+
+        generatePolicy(moduleName);
 
         // TODO: move restoreEJBTimers to correct location
         System.out.println("==> Uses Timers? == " + usesEJBTimerService);
@@ -167,7 +190,6 @@ public class EjbApplication
         // a shutdown without undeploy.
         boolean undeploy = (params.origin == OpsParams.Origin.undeploy );
 
-
         // First, shutdown any singletons that were initialized based
         // on a particular ordering dependency.
         // TODO Make sure this covers both eagerly and lazily initialized
@@ -177,6 +199,9 @@ public class EjbApplication
         for (Container container : containers) {
             if( undeploy ) {
                 container.undeploy();
+                if(container.getSecurityManager() != null) {
+                    container.getSecurityManager().destroy();
+                }
             } else {
                 container.onShutdown();
             }
@@ -284,4 +309,16 @@ public class EjbApplication
             }
         }
     }
+
+    private void generatePolicy(String moduleName) {
+        try {
+            SecurityUtil.generatePolicyFile(moduleName);
+        } catch (Exception se) {
+            String msg = "Error in generating security policy for " + appName;
+            throw new DeploymentException(msg, se);
+        }
+    }
+
+
+
 }

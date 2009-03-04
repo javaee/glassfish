@@ -155,7 +155,7 @@ public final class ContainerFactoryImpl implements ContainerFactory {
             	}
             }
 		
-            //container.setSecurityManager(sm);
+            container.setSecurityManager(sm);
             
             container.initializeHome();
 

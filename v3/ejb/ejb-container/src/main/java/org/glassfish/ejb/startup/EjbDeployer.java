@@ -27,6 +27,7 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.security.PolicyLoader;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -43,6 +44,7 @@ import org.jvnet.hk2.component.Habitat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.concurrent.ConcurrentHashMap;
+import org.glassfish.ejb.security.factory.EJBSecurityManagerFactory;
 
 /**
  * Ejb module deployer.
@@ -63,6 +65,12 @@ public class EjbDeployer
 
     @Inject
     protected Habitat habitat;
+    
+    @Inject
+    protected PolicyLoader policyLoader;
+    
+    @Inject
+    protected EJBSecurityManagerFactory ejbSecManagerFactory;
 
     protected CMPDeployer cmpDeployer;
 
@@ -89,7 +97,8 @@ public class EjbDeployer
         super.load(containerStarter, dc);
 
         EjbBundleDescriptor ejbBundle = dc.getModuleMetaData(EjbBundleDescriptor.class);
-
+        
+       
         if (ejbBundle.containsCMPEntity()) {
             CMPService cmpService = habitat.getByContract(CMPService.class);
             if (cmpService == null) {
@@ -100,8 +109,8 @@ public class EjbDeployer
         }
 
         Collection<EjbDescriptor> ebds = (Collection<EjbDescriptor>) ejbBundle.getEjbs();
-
-        EjbApplication ejbApp = new EjbApplication(ebds, dc, dc.getClassLoader(), habitat);
+        EjbApplication ejbApp = new EjbApplication(ebds, dc, dc.getClassLoader(), habitat,
+                                                    policyLoader, ejbSecManagerFactory);
 
         ejbApp.loadAndStartContainers(dc);
         return ejbApp;
@@ -112,40 +121,16 @@ public class EjbDeployer
         // unload from ejb container
     }
 
-    /**
+       /**
      * Clean any files and artifacts that were created during the execution
      * of the prepare method.
      *
      * @param dc deployment context
      */
     public void clean(DeploymentContext dc) {
-        // Both undeploy and shutdown scenarios are
-        // handled directly in EjbApplication.shutdown.
-    }
 
-    /**
-     * Use this method to generate CMP artifacts if any
-     */
-    @Override
-    protected void generateArtifacts(DeploymentContext dc) 
-            throws DeploymentException {
-
-        OpsParams params = dc.getCommandParameters(OpsParams.class);
-        if (params.origin != OpsParams.Origin.deploy) {
-            return;
-        }
-
-        EjbBundleDescriptor bundle = dc.getModuleMetaData(EjbBundleDescriptor.class);
-        if (bundle == null || !bundle.containsCMPEntity()) {
-            // bundle WAS null in a war file where we do not support CMPs
-            return;
-        }
-
-        cmpDeployer = habitat.getByContract(CMPDeployer.class);
-        if (cmpDeployer == null) {
-            throw new DeploymentException("No CMP Deployer is available to deploy this module");
-        }
-        cmpDeployer.deploy(dc);
+       // Both undeploy and shutdown scenarios are
+       // handled directly in EjbApplication.shutdown.
     }
 }
 

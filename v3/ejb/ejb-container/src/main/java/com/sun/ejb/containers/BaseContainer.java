@@ -3427,11 +3427,6 @@ public abstract class BaseContainer
                 });
             }
 
-            if (securityManager != null) {
-                securityManager.destroy();
-            }
-
-            
             if( !isMessageDriven ) {
                 // destroy home objref
                 try {
