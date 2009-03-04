@@ -36,6 +36,8 @@
  */
 package org.jvnet.hk2.config;
 
+import java.lang.reflect.Proxy;
+
 /**
  * Marker interface that signifies that the interface
  * is meant to be used as a strongly-typed proxy to
@@ -105,7 +107,13 @@ public interface ConfigBeanProxy {
         public static <T extends ConfigBeanProxy> T createChild(ConfigBeanProxy self, Class<T> c)
             throws TransactionFailure {
             
-            return ConfigSupport.createChildOf(self, c);
+             try {
+                 WriteableView bean = WriteableView.class.cast(Proxy.getInvocationHandler(Proxy.class.cast(self)));
+                 return bean.allocateProxy(c);
+             } catch (ClassCastException e) {
+                 throw new TransactionFailure("Must use a locked parent config object for instantiating new config object", e);
+             }
+
         }
 
     }

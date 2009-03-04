@@ -111,6 +111,9 @@ public class ConfigBean extends Dom implements ConfigView {
         });
     }
 
+    public Habitat getHabitat() {
+        return habitat;
+    }
 
     /**
      * Returns an optional feature of the ConfigBean. Optional features are implemented

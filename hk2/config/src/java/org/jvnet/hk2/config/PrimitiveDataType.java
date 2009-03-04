@@ -14,7 +14,6 @@ import org.jvnet.hk2.annotations.Service;
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  * @since hk2 0.3.10
  */
-@Service
 public final class PrimitiveDataType implements DataType {
 
     private final String realType;

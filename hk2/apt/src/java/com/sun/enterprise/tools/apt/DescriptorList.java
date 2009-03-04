@@ -88,6 +88,7 @@ final class DescriptorList {
 
     public void write(AnnotationProcessorEnvironment env) {
         String outDirectory = env.getOptions().get("-d");
+        if (outDirectory==null) outDirectory = env.getOptions().get("-s");
         if(outDirectory==null)  outDirectory = System.getProperty("user.home");
 
         for (Entry<String, InhabitantsDescriptor> e : descriptors.entrySet()) {

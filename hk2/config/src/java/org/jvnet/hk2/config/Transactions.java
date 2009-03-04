@@ -45,6 +45,11 @@ import java.lang.reflect.Proxy;
 import java.util.concurrent.*;
 
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.component.PreDestroy;
+import org.jvnet.hk2.component.PostConstruct;
 
 /**
  * Transactions is a singleton service that receives transaction notifications and dispatch these
@@ -54,21 +59,32 @@ import org.jvnet.hk2.annotations.Service;
  */
 
 @Service
-public final class Transactions {
-
-    private static Transactions singleton;
+@Scoped(Singleton.class)
+public final class Transactions implements PostConstruct, PreDestroy {
 
     // each transaction listener has a notification pump.
     private final List<ListenerNotifier<TransactionListener, ?, Void>> listeners =
             new ArrayList<ListenerNotifier<TransactionListener, ?, Void>>();
 
-    private final ExecutorService executor;
+    @Inject(name="transactions-executor", optional=true)
+    private ExecutorService executor;
 
     // all configuration listeners are notified though one notifier.
     private final ConfigListenerNotifier configListenerNotifier = new ConfigListenerNotifier();
 
     public void postConstruct() {
-        singleton.configListenerNotifier.start();
+        if (executor==null) {
+            executor = Executors.newCachedThreadPool();
+        }
+        configListenerNotifier.start();
+    }
+
+    public void preDestroy() {
+       for (ListenerNotifier<TransactionListener,  ?, Void> listener : listeners) {
+           listener.stop();
+       }
+       configListenerNotifier.stop();
+       executor.shutdown();
     }
 
     /**
@@ -426,24 +442,7 @@ public final class Transactions {
         // that all prior jobs have finished
         addTransaction( new ArrayList<PropertyChangeEvent>(), true );
         // at this point all prior transactions are guaranteed to have cleared
-    }
-    
-    private Transactions(ExecutorService executor) {
-        this.executor = executor;
-    }
-
-    public static synchronized Transactions get(ExecutorService executor) {
-        if (singleton==null) {
-            singleton=new Transactions(executor);
-            singleton.postConstruct();
-        }
-
-        return singleton;
-    }
-    
-    public static Transactions get() {
-        return singleton;
-    }
+    }    
 }
 
 

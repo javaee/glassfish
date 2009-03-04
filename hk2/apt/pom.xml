@@ -14,7 +14,7 @@
         <sourceDirectory>src/java</sourceDirectory>  
         <resources>
             <resource>
-                <directory>src/misc</directory>
+                <directory>src/resources</directory>
             </resource>
         </resources>
     </build>

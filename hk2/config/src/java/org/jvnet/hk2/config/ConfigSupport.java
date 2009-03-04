@@ -37,6 +37,10 @@
 package org.jvnet.hk2.config;
 
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.component.Habitat;
 
 import java.beans.PropertyVetoException;
 import java.beans.PropertyChangeEvent;
@@ -84,7 +88,11 @@ import org.jvnet.tiger_types.Types;
   * @author Jerome Dochez
   */
 @Service
+@Scoped(Singleton.class)
 public class ConfigSupport {
+
+    @Inject
+    Habitat habitat;
  
     /**
      * Execute� some logic on one config bean of type T protected by a transaction
@@ -105,28 +113,6 @@ public class ConfigSupport {
             }
         }), objects);
     }
-
-    /**
-     * Creates a new child of a parent configured object
-     *
-     * @param parent the parent configured object
-     * @param type type of the child
-     * @return new child instance of the provided type
-     * @throws TransactionFailure if the child cannot be created
-     */
-     public static <T extends ConfigBeanProxy> T createChildOf(Object parent, Class<T> type) throws TransactionFailure {
-         if (parent==null) {
-             throw new IllegalArgumentException("parent cannot be null");
-         }
-         try {
-             WriteableView bean = WriteableView.class.cast(Proxy.getInvocationHandler(Proxy.class.cast(parent)));
-             return bean.allocateProxy(type);
-         } catch (ClassCastException e) {
-             throw new TransactionFailure("Must use a locked parent config object for instantiating new config object", e);
-         }
-
-
-     }
     
     /**
      * Executes some logic on some config beans protected by a transaction.
@@ -139,7 +125,23 @@ public class ConfigSupport {
      */
     public static Object apply(ConfigCode code, ConfigBeanProxy... objects)
             throws TransactionFailure {
-        
+
+        ConfigBean source = (ConfigBean) ConfigBean.unwrap(objects[0]);
+        return source.getHabitat().getComponent(ConfigSupport.class)._apply(code, objects);
+    }
+
+    /**
+     * Executes some logic on some config beans protected by a transaction.
+     *
+     * @param code code to execute
+     * @param objects config beans participating to the transaction
+     * @return list of property change events
+     * @throws TransactionFailure when the code did run successfully due to a
+     * transaction exception
+     */    
+    public Object _apply(ConfigCode code, ConfigBeanProxy... objects)
+                throws TransactionFailure {
+
         // the fools think they operate on the "real" object while I am
         // feeding them with writeable view. Only if the transaction succeed
         // will I apply the "changes" to the real ones.
@@ -194,7 +196,7 @@ public class ConfigSupport {
 
     }
 
-    static <T extends ConfigBeanProxy> WriteableView getWriteableView(T s, ConfigBean sourceBean)
+    <T extends ConfigBeanProxy> WriteableView getWriteableView(T s, ConfigBean sourceBean)
         throws TransactionFailure {
 
         WriteableView f = new WriteableView(s);
@@ -209,22 +211,12 @@ public class ConfigSupport {
      * @param source the configured interface implementation
      * @return the new interface implementation providing write access
      */
-    public static <T extends ConfigBeanProxy> T getWriteableView(final T source)
+    public <T extends ConfigBeanProxy> T getWriteableView(final T source)
         throws TransactionFailure {
 
         ConfigView sourceBean = (ConfigView) Proxy.getInvocationHandler(source);
         WriteableView writeableView = getWriteableView(source, (ConfigBean) sourceBean.getMasterView());
         return (T) writeableView.getProxy(sourceBean.getProxyType());
-    }
-
-    /**
-     * Generic api to create a new view based on a transformer and a source object
-     * @param t transformer responsible for changing the source object into a new view.
-     * @param source the source object to adapt
-     * @return the adapted view of the source object
-     */
-    public static <T extends ConfigBeanProxy> T getView(Transformer t, T source) {
-        return t.transform(source);
     }
 
     /**
@@ -332,17 +324,18 @@ public class ConfigSupport {
 
     // kind of insane, just to get the proper return type for my properties.
     static private List<String> defaultPropertyValue() {
-        return null;    
+        return null;
     }
 
-    public static void apply(Map<ConfigBean, Map<String, String>> mapOfChanges) throws TransactionFailure {
+    public void apply(Map<ConfigBean, Map<String, String>> mapOfChanges) throws TransactionFailure {
+
 
         Transaction t = new Transaction();
         for (Map.Entry<ConfigBean, Map<String, String>> configBeanChange : mapOfChanges.entrySet()) {
 
             ConfigBean source = configBeanChange.getKey();
             ConfigBeanProxy readableView = source.getProxy(source.getProxyType());
-            WriteableView writeable = ConfigSupport.getWriteableView(readableView, source);
+            WriteableView writeable = getWriteableView(readableView, source);
             if (!writeable.join(t)) {
                 t.rollback();
                 throw new TransactionFailure("Cannot enlist " + source.getProxyType() + " in transaction",null);
@@ -408,7 +401,7 @@ public class ConfigSupport {
      * Returns the list of attributes names by the passed ConfigBean
      * @return array of String for all the attributes names
      */
-    public static String[] getAttributesNames(ConfigBean bean) {
+    public String[] getAttributesNames(ConfigBean bean) {
         return xmlNames(bean.model.attributes.values());
     }
 
@@ -417,11 +410,11 @@ public class ConfigSupport {
      * Returns the list of elements names by the passed ConfigBean
      * @return array of String for all the elements names
      */
-    public static String[] getElementsNames(ConfigBean bean) {
+    public String[] getElementsNames(ConfigBean bean) {
         return xmlNames(bean.model.elements.values());
     }
 
-    private static String[] xmlNames(Collection<? extends ConfigModel.Property> properties) {
+    private String[] xmlNames(Collection<? extends ConfigModel.Property> properties) {
 
         List<String> names = new ArrayList<String>();
         for (ConfigModel.Property attribute : properties) {
@@ -494,9 +487,20 @@ public class ConfigSupport {
                 final TransactionCallBack<WriteableView> runnable)
         throws TransactionFailure {
 
+        return parent.getHabitat().getComponent(ConfigSupport.class).
+                _createAndSet(parent, childType, attributes, runnable);
+    }
+
+    ConfigBean _createAndSet(
+                    final ConfigBean parent,
+                    final Class<? extends ConfigBeanProxy> childType,
+                    final List<AttributeChanges> attributes,
+                    final TransactionCallBack<WriteableView> runnable)
+            throws TransactionFailure {
+
         ConfigBeanProxy readableView = parent.getProxy(parent.getProxyType());
         ConfigBeanProxy readableChild = (ConfigBeanProxy)
-                ConfigSupport.apply(new SingleConfigCode<ConfigBeanProxy>() {
+                apply(new SingleConfigCode<ConfigBeanProxy>() {
             /**
              * Runs the following command passing the configration object. The code will be run
              * within a transaction, returning true will commit the transaction, false will abort
@@ -511,7 +515,7 @@ public class ConfigSupport {
             public Object run(ConfigBeanProxy param) throws PropertyVetoException, TransactionFailure {
 
                 // create the child
-                ConfigBeanProxy child = ConfigSupport.createChildOf(param, childType);
+                ConfigBeanProxy child = param.createChild(childType);
 
                 // add the child to the parent.
                 WriteableView writeableParent = (WriteableView) Proxy.getInvocationHandler(param);
@@ -599,7 +603,7 @@ public class ConfigSupport {
         return (ConfigBean) Dom.unwrap(readableChild);
     }
 
-    private static void applyProperties(WriteableView target, List<? extends AttributeChanges> changes)
+    private void applyProperties(WriteableView target, List<? extends AttributeChanges> changes)
             throws TransactionFailure {
 
         if (changes != null) {
@@ -658,7 +662,7 @@ public class ConfigSupport {
         return createAndSet(parent, childType, attributes, null);        
     }
 
-    public static ConfigBean createAndSet(
+    public ConfigBean createAndSet(
                 final ConfigBean parent,
                 final Class<? extends ConfigBeanProxy> childType,
                 final List<AttributeChanges> attributes)
@@ -676,7 +680,7 @@ public class ConfigSupport {
         ConfigBeanProxy readableView = parent.getProxy(parent.getProxyType());
         final Class<? extends ConfigBeanProxy> childType = child.getProxyType();
 
-        ConfigSupport.apply(new SingleConfigCode<ConfigBeanProxy>() {
+        apply(new SingleConfigCode<ConfigBeanProxy>() {
 
             /**
              * Runs the following command passing the configration object. The code will be run

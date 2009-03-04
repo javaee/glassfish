@@ -37,6 +37,8 @@
 package org.jvnet.hk2.config;
 
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 
 import java.beans.PropertyChangeEvent;
@@ -99,7 +101,13 @@ public class Transaction {
         for (Transactor t : participants) {
             transactionChanges.addAll(t.commit(this));            
         }
-        Transactions.get().addTransaction(transactionChanges);
+        // any ConfigBean in our transactor should result in sending transaction events, but only once.
+        for (Transactor t : participants) {
+            if (t instanceof WriteableView) {
+                ((WriteableView) t).getMasterView().getHabitat().getComponent(Transactions.class).addTransaction(transactionChanges);
+                break;
+            }
+        }
         return transactionChanges;
     }
 
