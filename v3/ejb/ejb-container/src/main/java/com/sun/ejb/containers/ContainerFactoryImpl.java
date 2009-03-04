@@ -154,8 +154,9 @@ public final class ContainerFactoryImpl implements ContainerFactory {
                         }
             	}
             }
-		
-            container.setSecurityManager(sm);
+
+            // Temporarily disabling until .war ejb regression is fixed
+            // container.setSecurityManager(sm);
             
             container.initializeHome();
 
