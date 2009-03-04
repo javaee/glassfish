@@ -518,11 +518,19 @@ public class TomcatDeploymentConfig{
             Vector includeCodas = null;
 
             String pageEncoding = jspGroup.getPageEncoding();
-            String scriptingInvalid = jspGroup.getScriptingInvalid();
-            String elIgnored = jspGroup.getElIgnored();
-            String isXml = jspGroup.getIsXml();
-            String trimSpaces = jspGroup.getTrimDirectiveWhitespaces();
-            String poundAllowed = jspGroup.getDeferredSyntaxAllowedAsLiteral();
+            String scriptingInvalid = jspGroup.isScriptingInvalid()?
+                                          "true": "false";
+            String elIgnored = jspGroup.isElIgnored()? "true": "false";
+            String isXml = (jspGroup.getIsXml()==null)? null:
+                               jspGroup.getIsXml().toString();
+            String trimSpaces = jspGroup.isTrimDirectiveWhitespaces()?
+                                    "true": "false";
+            String poundAllowed = jspGroup.isDeferredSyntaxAllowedAsLiteral()?
+                                    "true": "false";
+            String defaultContentType = jspGroup.getDefaultContentType();
+            String buffer = jspGroup.getBuffer();
+            String errorOnUndeclaredNamespace =
+                       jspGroup.isErrorOnUndeclaredNamespace()? "true": "false";
            
             // url-pattern
             Enumeration<String> e = jspGroup.getUrlPatterns();
@@ -571,7 +579,10 @@ public class TomcatDeploymentConfig{
                                             poundAllowed,
                                             pageEncoding,
                                             includePreludes,
-                                            includeCodas);
+                                            includeCodas,
+                                            defaultContentType,
+                                            buffer,
+                                            errorOnUndeclaredNamespace);
         }
     }
 
