@@ -419,11 +419,17 @@
     <xsd:annotation>
       <xsd:documentation>
 
-	The error-pageType contains a mapping between an error code
-	or exception type to the path of a resource in the web
-	application.
+        The error-pageType contains a mapping between an error code
+        or exception type to the path of a resource in the web
+        application.
 
-	Used in: web-app
+        Error-page declarations using the exception-type element in
+        the deployment descriptor must be unique up to the class name of
+        the exception-type. Similarly, error-page declarations using the
+        status-code element must be unique in the deployment descriptor
+        up to the status code.
+
+        Used in: web-app
 
       </xsd:documentation>
     </xsd:annotation>
