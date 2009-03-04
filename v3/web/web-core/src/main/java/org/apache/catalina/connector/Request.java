@@ -73,7 +73,6 @@ import java.net.URLDecoder;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.*;
 import java.util.logging.*;
 
 import java.security.AccessController;
@@ -3818,8 +3817,7 @@ public class Request
             isOkToReinitializeAsync = false;
         }
 
-        coyoteRequest.getResponse().suspend(asyncTimeoutMillis, this,
-            new CompletionHandler<Request>() {
+        CompletionHandler requestCompletionHandler =  new CompletionHandler<Request>() {
 
                 public void resumed(Request attachment) {
                     attachment.notifyAsyncListeners(AsyncEventType.COMPLETE);
@@ -3828,7 +3826,14 @@ public class Request
                 public void cancelled(Request attachment) {
                     attachment.asyncTimeout();
                 }
-        });
+        };
+
+        org.apache.catalina.connector.Response res = (org.apache.catalina.connector.Response) coyoteRequest.getResponse()
+                .getNote(CoyoteAdapter.ADAPTER_NOTES);
+        coyoteRequest.getResponse().suspend(asyncTimeoutMillis, 
+                this,requestCompletionHandler,
+                new RequestAttachment<org.apache.catalina.connector.Request>(asyncTimeoutMillis,
+                this, requestCompletionHandler , res));
 
         return asyncContext;
     }
@@ -4184,5 +4189,57 @@ public class Request
         public ServletResponse getResponse() {
             return response;
         }
+    }
+
+
+    /**
+     * This class will be invoked by Grizzly when a suspend operation is either
+     * {@link com.sun.grizzly.tcp.Response#resume} or when the response
+     * is idle for X time. More info can be found look at
+     * {@link com.sun.grizzly.tcp.Response#ResponseAttachment}
+     */
+    private static class RequestAttachment<A> extends com.sun.grizzly.tcp.Response.ResponseAttachment{
+        private Long expiration;
+        private org.apache.catalina.connector.Response res;
+
+        public RequestAttachment(Long timeout,A attachment,
+                CompletionHandler<? super A> completionHandler,  org.apache.catalina.connector.Response res){
+            super(timeout, attachment, completionHandler, res.getCoyoteResponse());
+            this.res = res;
+        }
+
+        @Override
+        public void resume(){
+            getCompletionHandler().resumed(getAttachment());
+            try{
+                if (log.isLoggable(Level.FINE)){
+                    log.log(Level.FINE, "RequestAttachement.resume: " + res);
+                }
+                res.finishResponse();
+            } catch (IOException ex){
+                log.log(Level.FINEST,"resume",ex);
+            }
+        }
+
+        @Override
+        public void timeout(boolean forceClose){
+            // If the buffers are empty, commit the response header
+            try{
+                if (log.isLoggable(Level.FINE)){
+                    log.log(Level.FINE, "RequestAttachement.timeout: " + res);
+                }
+                getCompletionHandler().cancelled(getAttachment());
+            } finally {
+                if (forceClose &&!res.isCommitted()){
+                    try{
+                        // This is the equivalent of invoking res.finishResponse();
+                        res.getStream().close();
+                    } catch (IOException ex){
+                        // Swallow?
+                    }
+                }
+            }
+        }
+
     }
 }

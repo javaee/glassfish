@@ -593,6 +593,8 @@ public class Response
     public void finishResponse() 
         throws IOException {
 
+        if (coyoteResponse.isSuspended()) return;
+
         // Writing leftover bytes
         try {
             outputBuffer.close();
