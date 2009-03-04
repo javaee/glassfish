@@ -50,8 +50,10 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
 import org.glassfish.api.ActionReport;
@@ -76,7 +78,8 @@ import org.glassfish.api.admin.Payload.Part;
  * <p>
  * <code>Temp</code> uses a unique temporary directory, then creates one
  * temp file for each part it is asked to deal with, either from an entire payload
- * (extractFiles) or a single part (extractFile).
+ * (extractFiles) or a single part (extractFile).  Recall that each part in the
+ * payload has a name which is a relative or absolute URI.
  * 
  * @author tjquinn
  */
@@ -86,7 +89,7 @@ public abstract class PayloadFilesManager {
     public final static LocalStringManagerImpl strings = new LocalStringManagerImpl(PayloadFilesManager.class);
 
     private final File targetDir;
-    private final Logger logger;
+    protected final Logger logger;
     private final ActionReport report;
 
     private PayloadFilesManager(
@@ -190,14 +193,13 @@ public abstract class PayloadFilesManager {
         }
 
         @Override
-        protected URI getOutputFileURI(Part part) throws IOException {
+        protected URI getOutputFileURI(Part part, String name) throws IOException {
             /*
              * The part name might have path elements using / as the
              * separator, so figure out the full path for the resulting
              * file.
              */
-            String outputName = part.getName();
-            URI targetURI = getParentURI(part).resolve(outputName);
+            URI targetURI = getParentURI(part).resolve(name);
             return targetURI;
         }
     }
@@ -212,6 +214,9 @@ public abstract class PayloadFilesManager {
 
         private static final String GFV3 = "gfv3";
         private boolean isCleanedUp = false;
+
+        /** maps payload part name paths (excluding name and type) to temp file subdirs */
+        private Map<String,File> pathToTempSubdir = new HashMap<String,File>();
 
         /**
          * Creates a new PayloadFilesManager for temporary files.
@@ -258,26 +263,53 @@ public abstract class PayloadFilesManager {
         }
 
         @Override
-        protected URI getOutputFileURI(Part part) throws IOException {
+        protected URI getOutputFileURI(Part part, String name) throws IOException {
 
-            String partPath = part.getName();
-
-            int lastSlash = partPath.lastIndexOf('/');
-            if (lastSlash != -1 && lastSlash < partPath.length()) {
-                partPath = partPath.substring(lastSlash + 1);
+            /*
+             * See if our map already has an entry for this part's parent path.
+             */
+            String parentPath = getParentPath(name);
+            File tempFile;
+            if (parentPath != null) {
+                URI parentURI = getTempSubDirForPath(parentPath);
+                tempFile = new File(new File(parentURI), getNameAndType(name));
+            } else {
+                tempFile = new File(getTargetDir(), getNameAndType(name));
             }
-            File tempFile = File.createTempFile(partPath, "", getTargetDir());
             return tempFile.toURI();
         }
 
+        private String getParentPath(final String partName) {
+            int lastSlash = partName.lastIndexOf('/');
+            if (lastSlash != -1) {
+                return partName.substring(0, lastSlash);
+            }
+            return null;
+        }
 
+        private URI getTempSubDirForPath(final String parentPath) throws IOException {
+            File tempSubDir = pathToTempSubdir.get(parentPath);
+            if (tempSubDir == null) {
+                /*
+                 * The extra dashes make sure the prefix meets createTempFile's reqts
+                 */
+                String tempDirPrefix = parentPath.replace('/', '-') + "---";
+                tempSubDir = createTempFolder(getTargetDir(), tempDirPrefix, super.logger);
+                pathToTempSubdir.put(parentPath, tempSubDir);
+            }
+            return tempSubDir.toURI();
+        }
 
+        private String getNameAndType(final String path) {
+            final int lastSlash = path.lastIndexOf('/');
+            return path.substring(lastSlash + 1);
+        }
 
     }
 
     protected abstract void postExtract(final File extractedFile);
 
-    protected abstract URI getOutputFileURI(final Payload.Part part) throws IOException;
+    protected abstract URI getOutputFileURI(final Payload.Part part, final String name) throws IOException;
 
     /**
      * Extract a file from the Part, using the name stored in the part and
@@ -313,7 +345,7 @@ public abstract class PayloadFilesManager {
 
 
         try {
-            File extractedFile = new File(getOutputFileURI(part));
+            File extractedFile = new File(getOutputFileURI(part, outputName));
 
             /*
              * Create the required directory tree under the temp directory.
@@ -438,9 +470,9 @@ public abstract class PayloadFilesManager {
      * @return the temporary folder
      * @throws java.io.IOException
      */
-    private static File createTempFolder(final File parent, final Logger logger) throws IOException {
+    private static File createTempFolder(final File parent, final String prefix, final Logger logger) throws IOException {
         ensureDirExists(parent);
-        File result = File.createTempFile(XFER_DIR_PREFIX, "", parent);
+        File result = File.createTempFile(prefix, "", parent);
         try {
             if ( ! result.delete()) {
                 throw new IOException(
@@ -465,6 +497,10 @@ public abstract class PayloadFilesManager {
             ioe.initCause(e);
             throw ioe;
         }
+    }
+
+    private static File createTempFolder(final File parent, final Logger logger) throws IOException {
+        return createTempFolder(parent, XFER_DIR_PREFIX, logger);
     }
 }
 
