@@ -16,7 +16,7 @@ public class TestServlet extends HttpServlet implements AsyncListener {
         }
 
         req.addAsyncListener(this);
-        req.setAsyncTimeout(10000);
+        req.setAsyncTimeout(5000);
 
         AsyncContext ac = null;
         boolean isWrap = Boolean.parseBoolean(req.getParameter("wrap"));
