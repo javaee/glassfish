@@ -42,8 +42,8 @@
         <extensions>
             <extension>
                 <groupId>org.glassfish.build</groupId>
-                <artifactId>maven-glassfishbuild-extension</artifactId>
-                <version>${project.version}</version>
+                <artifactId>maven-glassfish-extension</artifactId>
+                <version>10.0-alpha-2</version>
             </extension>
         </extensions>
     </build>
