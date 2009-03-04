@@ -53,7 +53,7 @@
     <distributionManagement>
         <!-- eventually find a better permanent home -->
         <site>
-            <url>java-net:/glassfish-svn/trunk/www/maven-glassfish-plugin/</url>
+            <url>java-net:/glassfish-svn/trunk/www/maven-glassfishbuild-plugin/</url>
         </site>
     </distributionManagement>
 
