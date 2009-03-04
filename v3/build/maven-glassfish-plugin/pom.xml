@@ -46,7 +46,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>maven-glassfishbuild-plugin</artifactId>
+    <artifactId>maven-glassfish-plugin</artifactId>
     <packaging>maven-plugin</packaging>
     <name>GlassFish v3 Maven2 plugin</name>
 

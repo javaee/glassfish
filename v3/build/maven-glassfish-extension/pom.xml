@@ -8,7 +8,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>maven-glassfishbuild-extension</artifactId>
+    <artifactId>maven-glassfish-extension</artifactId>
     <packaging>jar</packaging>
     <name>Maven extension for building GlassFish</name>
     <description>
