@@ -3120,6 +3120,18 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 loadStandaloneWebModule(virtualServer,wmc);
             }
         } 
+
+        /*
+         * Need to update connector and mapper restart is required when 
+         * virtual-server.http-listeners is changed dynamically
+         */
+        List<HttpListener> httpListeners = httpService.getHttpListener();
+        if (httpListeners != null) {
+            for (HttpListener httpListener : httpListeners) {
+                updateConnector(httpListener, httpService);
+            }
+        }
+
     }
     
     
@@ -3310,7 +3322,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     public void updateConnector(HttpListener httpListener,
                                 HttpService httpService)
             throws LifecycleException {
-            
+
         synchronized(mapperUpdateSync) {
             // Disable dynamic reconfiguration of the http listener at which
             // the admin related webapps (including the admingui) are accessible.
