@@ -43,10 +43,9 @@
      <jmx-connector accept-all="false" address="0.0.0.0" auth-realm-name="admin-realm" enabled="true" name="system" port="8686" protocol="rmi_jrmp" security-enabled="false"/>
      <!-- The JSR 160 "system-jmx-connector" -->
      <das-config dynamic-reload-enabled="true" dynamic-reload-poll-interval-in-seconds="2" autodeploy-enabled="true" autodeploy-polling-interval-in-seconds="2" autodeploy-dir="${com.sun.aas.instanceRoot}/autodeploy" autodeploy-verifier-enabled="false" autodeploy-jsp-precompilation-enabled="false" deploy-xml-validation="full" admin-session-timeout-in-minutes="60"/>
-       <property name="adminConsoleContextRoot" value="/admin"/>
-       <property name="adminConsoleDownloadLocation" value="http://download.java.net/glassfish/v3-tp2/admingui/gfv3-preview2-final-admingui.war"/>
-       <!-- change this to reflect the correct final download location -->
-       <property name="adminConsoleFolder" value="${com.sun.aas.installRoot}/lib/install/applications"/>
+       <property value="/admin" name="adminConsoleContextRoot" />
+        <property value="${com.sun.aas.installRoot}/lib/install/applications/admingui.war" name="adminConsoleDownloadLocation" />
+        <property value="${com.sun.aas.installRoot}/.." name="ipsRoot" />
    </admin-service>
 
    <web-container>
