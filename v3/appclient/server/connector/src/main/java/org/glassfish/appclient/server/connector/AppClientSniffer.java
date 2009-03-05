@@ -1,0 +1,94 @@
+/*
+ * The contents of this file are subject to the terms 
+ * of the Common Development and Distribution License 
+ * (the License).  You may not use this file except in
+ * compliance with the License.
+ * 
+ * You can obtain a copy of the license at 
+ * https://glassfish.dev.java.net/public/CDDLv1.0.html or
+ * glassfish/bootstrap/legal/CDDLv1.0.txt.
+ * See the License for the specific language governing 
+ * permissions and limitations under the License.
+ * 
+ * When distributing Covered Code, include this CDDL 
+ * Header Notice in each file and include the License file 
+ * at glassfish/bootstrap/legal/CDDLv1.0.txt.  
+ * If applicable, add the following below the CDDL Header, 
+ * with the fields enclosed by brackets [] replaced by
+ * you own identifying information: 
+ * "Portions Copyrighted [year] [name of copyright owner]"
+ * 
+ * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ */
+package org.glassfish.appclient.server.connector;
+
+import java.util.jar.Manifest;
+import org.glassfish.internal.deployment.GenericSniffer;
+
+import org.glassfish.api.deployment.archive.ReadableArchive;
+
+import org.glassfish.api.container.Sniffer;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Singleton;
+
+import java.io.IOException;
+
+@Service(name = "AppClient")
+@Scoped(Singleton.class)
+public class AppClientSniffer extends GenericSniffer implements Sniffer {
+    private static final String[] stigmas = {
+        "META-INF/application-client.xml", "META-INF/sun-application-client.xml"
+    };
+
+    private static final String[] containers = {"appclient"};
+
+    public AppClientSniffer() {
+        this(containers[0], stigmas[0], null);
+    }
+
+    public AppClientSniffer(String containerName, String appStigma, String urlPattern) {
+        super(containerName, appStigma, urlPattern);
+    }
+
+    public String[] getContainersNames() {
+        return containers;
+    }
+
+    /**
+     * Returns true if the passed file or directory is recognized by this
+     * instance.
+     *
+     * @param location the file or directory to explore
+     * @param loader class loader for this application
+     * @return true if this sniffer handles this application type
+     */
+    @Override
+    public boolean handles(ReadableArchive location, ClassLoader loader) {
+        for (String s : stigmas) {
+            try {
+                if (location.exists(s)) {
+                    return true;
+                }
+            } catch (IOException ignore) {
+            }
+        }
+
+        try {
+            Manifest manifest = location.getManifest();
+            if (manifest != null && manifest.getEntries().containsKey("Main-Class")) {
+                return true;
+            }
+        } catch (IOException ignore) {
+        }
+        return false;
+    }
+
+    /**
+     * @return whether this sniffer should be visible to user
+     */
+    @Override
+    public boolean isUserVisible() {
+        return true;
+    }
+}
