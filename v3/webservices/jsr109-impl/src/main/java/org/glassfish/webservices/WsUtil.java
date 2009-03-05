@@ -39,10 +39,7 @@ import com.sun.xml.ws.api.server.SDDocumentSource;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.logging.LogDomains;
-import com.sun.enterprise.deployment.WebServiceEndpoint;
-import com.sun.enterprise.deployment.WebServiceHandlerChain;
-import com.sun.enterprise.deployment.WebServiceHandler;
-import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
+import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.util.WebServerInfo;
 import com.sun.enterprise.deployment.util.VirtualServerInfo;
 import com.sun.enterprise.deployment.util.XModuleType;
@@ -52,8 +49,6 @@ import com.sun.enterprise.container.common.impl.util.InjectionManagerImpl;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import javax.xml.parsers.*;
 import javax.xml.ws.soap.SOAPBinding;
@@ -61,13 +56,18 @@ import javax.xml.ws.handler.Handler;
 import javax.xml.ws.http.HTTPBinding;
 import javax.xml.namespace.QName;
 import javax.xml.soap.*;
+import javax.xml.transform.Source;
+import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.servlet.http.HttpServletResponse;
 
 import org.w3c.dom.*;
 import org.w3c.dom.Node;
 
-import java.io.InputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
 import java.lang.reflect.InvocationTargetException;
@@ -90,7 +90,7 @@ public class WsUtil {
       "com.sun.enterprise.webservice.client.transport.log";
 
     // xslt processing parameters for final wsdl transformation
-   /* public static final String ENDPOINT_ADDRESS_PARAM_NAME =
+    public static final String ENDPOINT_ADDRESS_PARAM_NAME =
         "endpointAddressParam";
 
     public final String WSDL_IMPORT_NAMESPACE_PARAM_NAME = 
@@ -105,7 +105,7 @@ public class WsUtil {
     public static final String SCHEMA_IMPORT_LOCATION_PARAM_NAME = 
         "schemaImportLocationParam";    
     public static final String SCHEMA_INCLUDE_LOCATION_PARAM_NAME = 
-        "schemaIncludeLocationParam";    */
+        "schemaIncludeLocationParam";    
 
     // @@@ These are jaxrpc-implementation specific MessageContextProperties 
     // that should be added to jaxrpc spi
@@ -447,11 +447,11 @@ public class WsUtil {
      * endpoint address on which it will be listening.  
      * 
      */
-  /*  public void generateFinalWsdl(URL wsdlFileUrl, WebService webService, WebServerInfo wsi,
+    public void generateFinalWsdl(URL wsdlFileUrl, WebService webService, WebServerInfo wsi,
                                   File finalWsdlFile) throws Exception {
 
 
-        // Before generating final WSDL, ensure that the @WebService svcName/portName
+   /**     // Before generating final WSDL, ensure that the @WebService svcName/portName
         // attributes (if any) match with those in wsdl - lets do this only for jaxws ervices
         if(webService.getMappingFileUri() == null) {
             for(WebServiceEndpoint endpoint : webService.getEndpoints()) {
@@ -491,18 +491,15 @@ public class WsUtil {
         }
 */
         
-       /* OutputStream outputStream =
+       OutputStream outputStream =
             new BufferedOutputStream(new FileOutputStream(finalWsdlFile));
         generateFinalWsdl(wsdlFileUrl, webService, wsi, outputStream);
                                       
-    }*/
+    }
     
-   /* public void generateFinalWsdl(URL wsdlFileUrl, WebService webService, WebServerInfo wsi,
+    public void generateFinalWsdl(URL wsdlFileUrl, WebService webService, WebServerInfo wsi,
                                   OutputStream outputStream) throws Exception {
                                       
-        Switch theSwitch = Switch.getSwitch();
-
-        String webServiceName = webService.getName();
 
         Collection wsdlRelativeImports = new HashSet();
         Collection wsdlIncludes = new HashSet();
@@ -645,7 +642,7 @@ public class WsUtil {
             String endpointType = next.implementedByEjbComponent() ?
                 "EJB" : "Servlet";
 
-            deploymentLogger.log(Level.INFO,
+            logger.log(Level.INFO,
                                  "enterprise.deployment.endpoint.registration",
                        new Object[] { endpointType,
                                       next.getEndpointName(), actualAddress });
@@ -658,7 +655,7 @@ public class WsUtil {
         outputStream.close();
 
         return;
-    }*/
+    }
 
   /*  public HandlerInfo createHandlerInfo(WebServiceHandler handler,
                                          ClassLoader loader) 
@@ -794,7 +791,7 @@ public class WsUtil {
     /**
      * Create an xslt template for transforming the packaged webservice
      * WSDL to a final WSDL.
-     *//*
+     */
     private Templates createTemplatesFor(Collection endpoints,
                                          Collection wsdlRelativeImports,
                                          Collection wsdlIncludes,
@@ -942,13 +939,13 @@ public class WsUtil {
 
         Source stylesheetSource =
             new StreamSource(new ByteArrayInputStream(stylesheet));
-        TransformerFactory transformerFactory=TransformerFactory.newInstance();
+        TransformerFactory transformerFactory= TransformerFactory.newInstance();
         Templates templates = transformerFactory.newTemplates(stylesheetSource);
 
         return templates;
     }
 
-    *//**
+    /**
      * @return Set of service endpoint interface class names supported by
      * a generated service interface.
      *

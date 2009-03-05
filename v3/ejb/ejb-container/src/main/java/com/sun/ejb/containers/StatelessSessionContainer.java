@@ -59,6 +59,8 @@ import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.ejb.api.EjbEndpointFacade;
 import org.glassfish.ejb.spi.WSEjbEndpointRegistry;
 import org.glassfish.internal.api.Globals;
+import org.glassfish.deployment.common.DeploymentException;
+
 import javax.ejb.*;
 import javax.transaction.Status;
 import javax.transaction.Transaction;
@@ -303,7 +305,13 @@ public class StatelessSessionContainer
 
             WSEjbEndpointRegistry wsejbEndpointRegistry = Globals.getDefaultHabitat().getComponent(
                     WSEjbEndpointRegistry.class);
-            wsejbEndpointRegistry.registerEndpoint(next,endpointFacade,servant,tieClass);
+            if (wsejbEndpointRegistry != null ) {
+                wsejbEndpointRegistry.registerEndpoint(next,endpointFacade,servant,tieClass);
+            } else {
+                throw new DeploymentException("EJB based Webservice endpoint is detected but there is" +
+                        "no webservices module installed to handle it \n" );
+                        
+            }
 
 
         }

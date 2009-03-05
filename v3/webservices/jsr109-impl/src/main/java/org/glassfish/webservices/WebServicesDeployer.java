@@ -599,7 +599,7 @@ public class WebServicesDeployer extends WebDeployer {
          * JAXWS uses the System.getProperty(java.class.path) to pass on to apt during wsgen
          * In V2 this would have
          * tools.jar, webservices-rt and webservices-api.jar and webservices-tools.jar so there was no issue
-         * In V3 the apt cannot see JSR 250, JAXB api and JAXWS apis so I have to pass them
+         * In V3 the apt cannot see JSR 250, JAXB api and JAXWS apis and javax.ejb classes so I have to pass them
          * explicitly to apt using the classpath option
          * This will be changed after prelude once I move to asm as it is not thoroughly tested right now
          */
@@ -612,7 +612,7 @@ public class WebServicesDeployer extends WebDeployer {
         while(it.hasNext()){
             Module m = (Module) it.next();
             String name = m.getName();
-            if (name.equals("com.sun.xml.ws") || name.equals("com.sun.xml.bind") ){
+            if (name.equals("com.sun.xml.ws") || name.equals("com.sun.xml.bind") || name.equals("org.glassfish.javax.ejb") ){
                 ModuleDefinition modDef= m.getModuleDefinition();
                 java.net.URI[] location = modDef.getLocations();
                 classpath+=(File.pathSeparator + new File(location[0]).getAbsolutePath())  ;
@@ -787,6 +787,93 @@ public class WebServicesDeployer extends WebDeployer {
         for(Iterator<WebBundleDescriptor> iter = webBundles.iterator(); iter.hasNext(); ) {
             doWebServiceDeployment(iter.next());
         }
+
+        // Generate final wsdls for all web services and store them in
+        // the application repository directory.
+        for(Iterator<WebService> iter = webServices.iterator(); iter.hasNext(); ) {
+            WsUtil wsUtil = new WsUtil();
+            WebService next = iter.next();
+
+            // Endpoint with HTTP bindings need not have WSDLs; In which case
+            // there is no need for WSDL publishing
+            if( (next.getWsdlFileUrl() == null) &&
+                    (next.getMappingFileUri() == null) ) {
+                for(WebServiceEndpoint wsep : next.getEndpoints()) {
+                    /*if(!(HTTPBinding.HTTP_BINDING.equals(wsep.getProtocolBinding()))) {
+                        throw new Exception(
+                            localStrings.getStringWithDefault(
+                            "enterprise.webservice.noWsdlError",
+                            "Service {0} has an endpoint with non-HTTP binding but there is no WSDL; Deployment cannot proceed",
+                            new Object[] {next.getName()}));
+                    }*/
+                    //TODO check equivalent of wsUtil.getWebServerInfo(request)
+                    wsep.composeFinalWsdlUrl(wsUtil.getWebServerInfo().getWebServerRootURL(wsep.isSecure()));
+                }
+                continue;
+            }
+
+            URL clientPublishLocation = next.getClientPublishUrl();
+
+            // Even if deployer specified a wsdl file
+            // publish location, server can't assume it can access that
+            // file system.  Plus, it's cleaner to depend on a file stored
+            // within the application repository rather than one directly
+            // exposed to the deployer. Name of final wsdl is derived based
+            // on the location of its associated module.  This prevents us
+            // from having write the module to disk in order to store the
+            // modified runtime info.
+            URL url = next.getWsdlFileUrl();
+
+            // Create the generated WSDL in the generated directory; for that create the directories first
+            File genXmlDir =  dc.getScratchDir("xml");
+
+            //TODO BM Check this
+           /* if(request.isApplication()) {
+                // Add module name to the generated xml dir for apps
+                String subDirName = next.getBundleDescriptor().getModuleDescriptor().getArchiveUri();
+                genXmlDir = new File(genXmlDir, subDirName.replaceAll("\\.", "_"));
+            }*/
+            File genWsdlFile = null;
+
+            if (!next.hasWsdlFile()) {
+                // no wsdl file was specified at deployment or it was an http location
+                // we must have downloaded it or created one when
+                // deploying into the generated directory directly. pick it up from there,
+                // but generate it into a temp
+                genWsdlFile = new File(url.toURI());
+                genWsdlFile = File.createTempFile("gen_","", genWsdlFile.getParentFile());
+            } else {
+                String wsdlFileDir = next.getWsdlFileUri().substring(0, next.getWsdlFileUri().lastIndexOf('/'));
+                (new File(genXmlDir, wsdlFileDir)).mkdirs();
+                genWsdlFile = new File(genXmlDir, next.getWsdlFileUri());
+            }
+            wsUtil.generateFinalWsdl(url, next, wsUtil.getWebServerInfo(), genWsdlFile);
+
+            if (!next.hasWsdlFile()) {
+                // Two renaming operations followed by a delete
+                // are required because, on windows, a File.delete and
+                // a File.renameTo are not foolproof
+                File finalName = new File(url.toURI());
+                File tmpName = new File(genWsdlFile.getAbsolutePath() + ".TMP");
+                // Rename wsgen generated / downloaded WSDL to .TMP
+                boolean renameDone = finalName.renameTo(tmpName);
+                if(!renameDone) {
+                    // On windows rename operation fails occassionaly;
+                    // so use the iostream way to do the rename
+                    moveFile(finalName.getAbsolutePath(), tmpName.getAbsolutePath());
+                }
+                // Rename soap:address fixed WSDL to wsgen generated WSDL
+                renameDone = genWsdlFile.renameTo(finalName);
+                if(!renameDone) {
+                    // On windows rename operation fails occassionaly;
+                    // so use the iostream way to do the rename
+                    moveFile(genWsdlFile.getAbsolutePath(), finalName.getAbsolutePath());
+                }
+                // Remove the original WSDL file
+                tmpName.delete();
+            }
+
+        }
     }
 
     public void doWebServiceDeployment(WebBundleDescriptor web) throws DeploymentException, MalformedURLException {
@@ -850,6 +937,13 @@ public class WebServicesDeployer extends WebDeployer {
 
     private String format(String key, String ... values){
         return MessageFormat.format(key,values);
+    }
+
+
+    public static void moveFile(String sourceFile, String destFile)
+    throws IOException {
+        FileUtils.copy(sourceFile, destFile);
+        new File(sourceFile).delete();
     }
 
 }
