@@ -15,7 +15,7 @@ public class GrizzlyAdapterSniffer extends GenericSniffer implements Sniffer {
     final static private String[] containerNames = { "org.glassfish.extras.grizzly.GrizzlyContainer" };
 
     public GrizzlyAdapterSniffer() {
-        super("grizzly", "META-INF/grizzly.xml",null);
+        super("grizzly", GrizzlyModuleDescriptor.DescriptorPath ,null);
     }
 
     public String[] getContainersNames() {
