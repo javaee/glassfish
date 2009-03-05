@@ -276,7 +276,6 @@ final class StandardHostValve
             return;
         
         Throwable realError = throwable;
-        
         if (realError instanceof ServletException) {
             realError = ((ServletException) realError).getRootCause();
             if (realError == null) {
@@ -299,39 +298,8 @@ final class StandardHostValve
         }
 
         if (errorPage != null) {
-            response.setAppCommitted(false);
-            ServletRequest sreq = request.getRequest();
-            ServletResponse sresp = response.getResponse();
-            sreq.setAttribute(Globals.DISPATCHER_REQUEST_PATH_ATTR,
-                              errorPage.getLocation());
-            sreq.setAttribute(RequestDispatcher.ERROR_STATUS_CODE,
-                Integer.valueOf(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
-            sreq.setAttribute(RequestDispatcher.ERROR_MESSAGE,
-                              throwable.getMessage());
-            sreq.setAttribute(RequestDispatcher.ERROR_EXCEPTION,
-                              realError);
-            Wrapper wrapper = request.getWrapper();
-            if (wrapper != null)
-                sreq.setAttribute(RequestDispatcher.ERROR_SERVLET_NAME,
-                                  wrapper.getName());
-            /* GlassFish 6386229
-            if (sreq instanceof HttpServletRequest)
-                sreq.setAttribute(Globals.EXCEPTION_PAGE_ATTR,
-                                  ((HttpServletRequest) sreq).getRequestURI());
-            */
-            // START GlassFish 6386229
-            sreq.setAttribute(RequestDispatcher.ERROR_REQUEST_URI,
-                              ((HttpServletRequest) sreq).getRequestURI());
-            // END GlassFish 6386229
-            sreq.setAttribute(RequestDispatcher.ERROR_EXCEPTION_TYPE,
-                              realError.getClass());
-            if (custom(request, response, errorPage)) {
-                try {
-                    sresp.flushBuffer();
-                } catch (IOException e) {
-                    log("Exception Processing " + errorPage, e);
-                }
-            }
+            dispatchToErrorPage(request, response, errorPage, throwable,
+                                realError, 0);
         } else {
             // A custom error-page has not been defined for the exception
             // that was thrown during request processing. Check if an
@@ -374,18 +342,6 @@ final class StandardHostValve
      */
     protected void status(Request request, Response response) {
 
-        /* 6386229
-        // Do nothing on non-HTTP responses
-        if (!(response instanceof HttpResponse))
-            return;
-        */
-        HttpResponse hresponse = (HttpResponse) response;
-        /* 6386229
-        if (!(response.getResponse() instanceof HttpServletResponse))
-            return;
-        */
-        int statusCode = hresponse.getStatus();
-
         // Handle a custom error page for this status code
         Context context = request.getContext();
         if (context == null)
@@ -399,34 +355,11 @@ final class StandardHostValve
             return;
         }
 
+        int statusCode = ((HttpResponse) response).getStatus();
         ErrorPage errorPage = context.findErrorPage(statusCode);
         if (errorPage != null) {
-            response.setAppCommitted(false);
-            ServletRequest sreq = request.getRequest();
-            ServletResponse sresp = response.getResponse();
-            sreq.setAttribute(RequestDispatcher.ERROR_STATUS_CODE,
-                              Integer.valueOf(statusCode));
-            String message = RequestUtil.filter(hresponse.getMessage());
-            if (message == null)
-                message = "";
-            sreq.setAttribute(RequestDispatcher.ERROR_MESSAGE, message);
-            sreq.setAttribute(Globals.DISPATCHER_REQUEST_PATH_ATTR,
-                              errorPage.getLocation());
-             
-            Wrapper wrapper = request.getWrapper();
-            if (wrapper != null)
-                sreq.setAttribute(RequestDispatcher.ERROR_SERVLET_NAME,
-                                  wrapper.getName());
-            if (sreq instanceof HttpServletRequest)
-                sreq.setAttribute(RequestDispatcher.ERROR_REQUEST_URI,
-                                  ((HttpServletRequest) sreq).getRequestURI());
-            if (custom(request, response, errorPage)) {
-                try {
-                    sresp.flushBuffer();
-                } catch (IOException e) {
-                    log("Exception Processing " + errorPage, e);
-                }
-            }
+            dispatchToErrorPage(request, response, errorPage, null, null,
+                                statusCode);
         }
         // START SJSAS 6324911
         else {
@@ -687,5 +620,54 @@ final class StandardHostValve
         // END GlassFish Issue 1057
 
         return context;
+    }
+
+
+    private void dispatchToErrorPage(Request request, Response response,
+            ErrorPage errorPage, Throwable throwable, Throwable realError,
+            int statusCode) {
+
+        response.setAppCommitted(false);
+
+        ServletRequest sreq = request.getRequest();
+        ServletResponse sresp = response.getResponse();
+
+        sreq.setAttribute(Globals.DISPATCHER_REQUEST_PATH_ATTR,
+                          errorPage.getLocation());
+        sreq.setAttribute(RequestDispatcher.ERROR_REQUEST_URI,
+                          ((HttpServletRequest) sreq).getRequestURI());
+        Wrapper wrapper = request.getWrapper();
+        if (wrapper != null) {
+            sreq.setAttribute(RequestDispatcher.ERROR_SERVLET_NAME,
+                              wrapper.getName());
+        }
+
+        if (throwable != null) {
+            sreq.setAttribute(RequestDispatcher.ERROR_STATUS_CODE,
+                Integer.valueOf(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
+            sreq.setAttribute(RequestDispatcher.ERROR_MESSAGE,
+                              throwable.getMessage());
+            sreq.setAttribute(RequestDispatcher.ERROR_EXCEPTION,
+                              realError);
+            sreq.setAttribute(RequestDispatcher.ERROR_EXCEPTION_TYPE,
+                              realError.getClass());
+        } else {
+            sreq.setAttribute(RequestDispatcher.ERROR_STATUS_CODE,
+                              Integer.valueOf(statusCode));
+            String message = RequestUtil.filter(
+                ((HttpResponse) response).getMessage());
+            if (message == null) {
+                message = "";
+            }
+            sreq.setAttribute(RequestDispatcher.ERROR_MESSAGE, message);
+        }
+
+        if (custom(request, response, errorPage)) {
+            try {
+                sresp.flushBuffer();
+            } catch (IOException e) {
+                log("Exception Processing " + errorPage, e);
+            }
+        }
     }
 }
