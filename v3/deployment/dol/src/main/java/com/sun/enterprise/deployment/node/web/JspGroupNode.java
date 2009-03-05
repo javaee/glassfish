@@ -106,10 +106,16 @@ public class JspGroupNode  extends DeploymentDescriptorNode {
         for (Enumeration urlPatterns = descriptor.getUrlPatterns(); urlPatterns.hasMoreElements();) {
             appendTextChild(myNode, WebTagNames.URL_PATTERN, (String) urlPatterns.nextElement());
         }
-        appendTextChild(myNode, WebTagNames.EL_IGNORED, descriptor.getElIgnored());
+        appendTextChild(myNode, WebTagNames.EL_IGNORED,
+               Boolean.toString(descriptor.isElIgnored()));
         appendTextChild(myNode, WebTagNames.PAGE_ENCODING, descriptor.getPageEncoding());
-        appendTextChild(myNode, WebTagNames.SCRIPTING_INVALID, descriptor.getScriptingInvalid());
-        appendTextChild(myNode, WebTagNames.IS_XML, descriptor.getIsXml());
+        appendTextChild(myNode, WebTagNames.SCRIPTING_INVALID,
+               Boolean.toString(descriptor.isScriptingInvalid()));
+
+        Boolean isXml = descriptor.getIsXml();
+        String isXmlString = ((isXml != null) ? isXml.toString() : null);
+        appendTextChild(myNode, WebTagNames.IS_XML, isXmlString);
+
         // include-prelude*
         for (Enumeration includePreludes = descriptor.getIncludePreludes(); includePreludes.hasMoreElements();) {
             appendTextChild(myNode, WebTagNames.INCLUDE_PRELUDE, (String) includePreludes.nextElement());
@@ -118,8 +124,10 @@ public class JspGroupNode  extends DeploymentDescriptorNode {
         for (Enumeration includeCodas = descriptor.getIncludeCodas(); includeCodas.hasMoreElements();) {
             appendTextChild(myNode, WebTagNames.INCLUDE_CODA, (String) includeCodas.nextElement());
         }
-        appendTextChild(myNode, WebTagNames.DEFERRED_SYNTAX_ALLOWED_AS_LITERAL, descriptor.getDeferredSyntaxAllowedAsLiteral());
-        appendTextChild(myNode, WebTagNames.TRIM_DIRECTIVE_WHITESPACES, descriptor.getTrimDirectiveWhitespaces());
+        appendTextChild(myNode, WebTagNames.DEFERRED_SYNTAX_ALLOWED_AS_LITERAL,
+                Boolean.toString(descriptor.isDeferredSyntaxAllowedAsLiteral()));
+        appendTextChild(myNode, WebTagNames.TRIM_DIRECTIVE_WHITESPACES,
+                Boolean.toString(descriptor.isTrimDirectiveWhitespaces()));
         appendTextChild(myNode, WebTagNames.DEFAULT_CONTENT_TYPE, descriptor.getDefaultContentType());
         appendTextChild(myNode, WebTagNames.BUFFER, descriptor.getBuffer());
         appendTextChild(myNode, WebTagNames.ERROR_ON_UNDECLARED_NAMESPACE,

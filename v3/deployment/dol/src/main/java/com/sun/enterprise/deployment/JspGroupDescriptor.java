@@ -44,11 +44,11 @@ import java.util.Vector;
  */
 public class JspGroupDescriptor extends Descriptor {
     
-    private String elIgnored = "false";
-    private String scriptingInvalid = "false";
-    private String isXml = null;
-    private String deferredSyntaxAllowedAsLiteral = "false";
-    private String trimDirectiveWhitespaces = "false";
+    private boolean elIgnored = false;
+    private boolean scriptingInvalid = false;
+    private Boolean isXml = null;
+    private boolean deferredSyntaxAllowedAsLiteral = false;
+    private boolean trimDirectiveWhitespaces = false;
     private Set urlPatterns = null;
     private Set includePreludes = null;
     private Set includeCodas = null;
@@ -160,121 +160,69 @@ public class JspGroupDescriptor extends Descriptor {
     }
 
     /**
-     * expression evaluation
+     * elIgnored
      */
-    public void setElIngored(String value) {
+    public void setElIgnored(boolean value) {
         elIgnored = value;
     }
-
-    public void setElIgnored(boolean value) {
-        elIgnored = String.valueOf(value);
-    }
-
-    public String getElIgnored() {
-        return elIgnored;
-    }   
 
     /**
      */
     public boolean isElIgnored() {
-	return getBoolean(elIgnored);
+        return elIgnored;
     }
     
     /**
      * enable/disable scripting
      */
-    public void setScriptingEnabled(String value) {
+    public void setScriptingEnabled(boolean value) {
         scriptingInvalid = value;
     }
 
-    public void setScriptingInvalid(boolean value) {
-        scriptingInvalid = String.valueOf(value);
-    }
-
-    public String getScriptingInvalid() {
-	return scriptingInvalid;
-    }
-    
     /**
      * return if scripting is enabled.
      */
     public boolean isScriptingInvalid() {
-	return getBoolean(scriptingInvalid);
+        return scriptingInvalid;
     }
 
     /**
      * enable/disable xml 
      */
-    public void setIsXml(boolean value) {
-        isXml = String.valueOf(value);
-    }
-
-    /**
-     * enable/disable xml 
-     */
-    public void setIsXml(String value) {
+    public void setIsXml(Boolean value) {
         isXml = value;
     }
     
-    public String getIsXml() {
+    public Boolean getIsXml() {
         return isXml;
     }
     
     /**
-     * return if is xml.
-     */
-    public boolean isXml() {
-	return getBoolean(isXml);
-    }
-
-    /**
      * enable/disable deferredSyntaxAllowedAsLiteral
      */
     public void setDeferredSyntaxAllowedAsLiteral(boolean value) {
-        deferredSyntaxAllowedAsLiteral = String.valueOf(value);
-    }
-
-    /**
-     * enable/disable deferredSyntaxAllowedAsLiteral
-     */
-    public void setDeferredSyntaxAllowedAsLiteral(String value) {
         deferredSyntaxAllowedAsLiteral = value;
-    }
-
-    public String getDeferredSyntaxAllowedAsLiteral() {
-        return deferredSyntaxAllowedAsLiteral;
     }
 
     /**
      * return if is deferredSyntaxAllowedAsLiteral.
      */
     public boolean isDeferredSyntaxAllowedAsLiteral() {
-        return getBoolean(deferredSyntaxAllowedAsLiteral);
+        return deferredSyntaxAllowedAsLiteral;
     }
 
     /**
      * enable/disable trimDirectiveWhitespaces
      */
     public void setTrimDirectiveWhitespaces(boolean value) {
-        trimDirectiveWhitespaces = String.valueOf(value);
-    }
-
-    /**
-     * enable/disable trimDirectiveWhitespaces
-     */
-    public void setTrimDirectiveWhitespaces(String value) {
         trimDirectiveWhitespaces = value;
-    }
-
-    public String getTrimDirectiveWhitespaces() {
-        return trimDirectiveWhitespaces;
     }
 
     /**
      * return if is trimDirectiveWhitespaces.
      */
     public boolean isTrimDirectiveWhitespaces() {
-        return getBoolean(trimDirectiveWhitespaces);
+        return trimDirectiveWhitespaces;
     }
 
     
@@ -366,9 +314,5 @@ public class JspGroupDescriptor extends Descriptor {
         toStringBuffer.append( "\n defaultContentType: ").append(defaultContentType);
         toStringBuffer.append( "\n buffer: ").append(buffer);
         toStringBuffer.append( "\n errorOnUndeclaredNamespace: ").append(errorOnUndeclaredNamespace);
-    }
-
-    private boolean getBoolean(String value) {
-        return Boolean.valueOf(value).booleanValue();
     }
 }
