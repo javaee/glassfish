@@ -19,7 +19,7 @@
 
     <servlet-mapping>
         <servlet-name>DispatchTarget</servlet-name>
-        <url-pattern>/DispatchTarget</url-pattern>
+        <url-pattern>/DispatchTargetWithPath</url-pattern>
     </servlet-mapping>
 
 </web-app>

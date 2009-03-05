@@ -15,13 +15,14 @@ public class TestServlet extends HttpServlet {
         }
 
         final AsyncContext ac = req.startAsync();
+        final String target = req.getParameter("target");
 
         Timer asyncTimer = new Timer("TestTimer", true);
         asyncTimer.schedule(
             new TimerTask() {
                 @Override
                 public void run() {
-                    ac.dispatch("/DispatchTarget");
+                    ac.dispatch(target);
                 }
             },
 	    5000);
