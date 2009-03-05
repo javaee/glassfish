@@ -371,7 +371,7 @@ public final class StatefulSessionContainer
         else {
             try {
                 // other may be a stub for a remote object.
-                if (protocolMgr.isIdentical(ejbo.getStub(), other))
+                if (getProtocolManager().isIdentical(ejbo.getStub(), other))
                     return true;
                 else
                     return false;

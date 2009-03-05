@@ -404,7 +404,7 @@ public abstract class BaseContainer
 
     protected EjbInvocationFactory invFactory;
 
-    protected ProtocolManager protocolMgr;
+    private ProtocolManager protocolMgr;
 
     protected EjbContainerUtil ejbContainerUtilImpl = EjbContainerUtilImpl.getInstance();
 
@@ -490,10 +490,15 @@ public abstract class BaseContainer
                     }
 
                 }
-                
-                if ( ejbDescriptor.isRemoteInterfacesSupported() ) {
 
-                    checkProtocolManager();
+                if ( ejbDescriptor.isRemoteInterfacesSupported() ||
+                     ejbDescriptor.isRemoteBusinessInterfacesSupported() ) {
+
+                    initializeProtocolManager();
+
+                }
+
+                if ( ejbDescriptor.isRemoteInterfacesSupported() ) {
 
                     isRemote = true;
                     hasRemoteHomeView = true;
@@ -513,8 +518,6 @@ public abstract class BaseContainer
                 }
                 
                 if( ejbDescriptor.isRemoteBusinessInterfacesSupported() ) {
-                    
-                    checkProtocolManager();
                     
                     isRemote = true;
                     hasRemoteBusinessView = true;
@@ -711,12 +714,6 @@ public abstract class BaseContainer
     }
 
     protected ProtocolManager getProtocolManager() {
-        // Will be called during container initialization if bean has
-        // a remote view so no need to deal with concurrent access
-        if( protocolMgr == null ) {
-            GlassFishORBHelper orbHelper = ejbContainerUtilImpl.getORBHelper();
-            protocolMgr = orbHelper.getProtocolManager(ejbContainerUtilImpl);
-        }
     	return protocolMgr;
     }
     
@@ -735,12 +732,18 @@ public abstract class BaseContainer
         monitoredGeneratedClasses.add(generatedClass);
     }
     
-    private void checkProtocolManager() {
+    private void initializeProtocolManager() {
 
-        if (getProtocolManager() == null) {
-            throw new RuntimeException("Protocol manager is null. "
-                     + "Possible cause is ORB not available");
+        try {
+
+            GlassFishORBHelper orbHelper = ejbContainerUtilImpl.getORBHelper();
+            protocolMgr = orbHelper.getProtocolManager(ejbContainerUtilImpl);
+
+        } catch(Throwable t) {
+            throw new RuntimeException("IIOP Protocol Manager initialization failed.  " +
+            "Possible cause is that ORB is not available in this container", t );
         }
+
     }
     
     protected void preInitialize(EjbDescriptor ejbDesc, ClassLoader loader) {

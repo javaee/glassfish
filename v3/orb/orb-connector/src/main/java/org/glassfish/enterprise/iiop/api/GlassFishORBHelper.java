@@ -46,8 +46,11 @@ public class GlassFishORBHelper {
         if (protocolManager == null) {
             synchronized (this) {
                 if (protocolManager == null) {
-                    protocolManager = habitat.getByContract(ProtocolManager.class);
-                    protocolManager.initialize(getORB(), ejbService);
+                    ProtocolManager tempProtocolManager = 
+			habitat.getByContract(ProtocolManager.class);
+                    tempProtocolManager.initialize(getORB(), ejbService);
+                    // Everything succeeded.  Now set protocol manager
+                    protocolManager = tempProtocolManager;
                 }
             }
         }

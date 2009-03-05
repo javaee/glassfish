@@ -647,7 +647,7 @@ public class StatelessSessionContainer
                 // Although all stateless sessionbeans for a bean type
                 // are identical, we dont know whether other is of the
                 // same bean type as ejbo.
-                if ( protocolMgr.isIdentical(ejbo.getStub(), other) )
+                if ( getProtocolManager().isIdentical(ejbo.getStub(), other) )
                         return true;
                 else
                         return false;

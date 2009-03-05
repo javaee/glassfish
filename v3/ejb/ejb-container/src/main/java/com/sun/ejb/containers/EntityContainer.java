@@ -2282,7 +2282,7 @@ public class EntityContainer
             try {
                 // EJBObject may be a remote object.
                 // Compare homes. See EJB2.0 spec section 9.8.
-                if ( !protocolMgr.isIdentical(ejbHomeStub,
+                if ( !getProtocolManager().isIdentical(ejbHomeStub,
                                               other.getEJBHome()))
                     return false;
                 
