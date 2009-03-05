@@ -78,6 +78,7 @@ import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import org.glassfish.server.ServerEnvironmentImpl;
 
 import org.glassfish.api.invocation.ComponentInvocation;
+import com.sun.enterprise.deployment.ScheduledTimerDescriptor;
 
 import javax.transaction.TransactionManager;
 import javax.transaction.Transaction;
@@ -1145,7 +1146,7 @@ public class EJBTimerService
      * this PK times out.
      */
     Map<TimerPrimaryKey, Method> recoverAndCreateSchedules(
-            long containerId, Map<Method, List> schedules) {
+            long containerId, Map<Method, List<ScheduledTimerDescriptor>> schedules) {
 
         Map<TimerPrimaryKey, Method> result = new HashMap<TimerPrimaryKey, Method>();
         boolean skipPersistent = false;
@@ -1181,20 +1182,21 @@ public class EJBTimerService
             }
 
             for (Method m : schedules.keySet()) {
-                for (Object element : schedules.get(m)) {
-                    Schedule sch = (Schedule) element;
-                    if (sch.persistent() && skipPersistent) {
+                for (ScheduledTimerDescriptor sch : schedules.get(m)) {
+                    boolean persistent = sch.getPersistent();
+                    if (persistent && skipPersistent) {
                         continue;
                     }
 
-                    TimerSchedule ts = new TimerSchedule(sch, 
-                        m.getName(), m.getParameterTypes().length);
+                    TimerSchedule ts = new TimerSchedule(sch, m.getName(), 
+                            m.getParameterTypes().length);
 
                     TimerConfig tc = new TimerConfig();
-                    if (sch.info() != null && !sch.info().equals("")) {
-                        tc.setInfo(sch.info());
+                    String info = sch.getInfo();
+                    if (info != null && !info.equals("")) {
+                        tc.setInfo(info);
                     }
-                    tc.setPersistent(sch.persistent());
+                    tc.setPersistent(persistent);
                     result.put(createTimer(containerId, null, ts, tc), m);
                     if( logger.isLoggable(Level.FINE) ) {
                         logger.log(Level.FINE, "@@@ CREATED new schedule: " + 

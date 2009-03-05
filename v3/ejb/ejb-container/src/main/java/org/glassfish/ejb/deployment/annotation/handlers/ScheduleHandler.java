@@ -46,6 +46,7 @@ import javax.ejb.*;
 
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.MethodDescriptor;
+import com.sun.enterprise.deployment.ScheduledTimerDescriptor;
 import com.sun.ejb.containers.TimerSchedule;
 
 import org.glassfish.apf.AnnotationInfo;
@@ -90,22 +91,34 @@ public class ScheduleHandler extends AbstractAttributeHandler {
 
             if (ElementType.METHOD.equals(ainfo.getElementType())) {
                 Method annMethod = (Method) ainfo.getAnnotatedElement();
-                if (TimerSchedule.isValid(sch)) {
-                    ejbDesc.addSchedule(annMethod, sch);
 
-                    if (logger.isLoggable(Level.FINE)) {
-                        logger.fine("@@@ Found Schedule on " + annMethod);
-                        TimerSchedule ts = new TimerSchedule(sch, 
-                            annMethod.getName(), annMethod.getParameterTypes().length);
+                ScheduledTimerDescriptor sd = new ScheduledTimerDescriptor();
+                sd.setSecond(sch.second());
+                sd.setMinute(sch.minute());
+                sd.setHour(sch.hour());
+                sd.setDayOfMonth(sch.dayOfMonth());
+                sd.setMonth(sch.month());
+                sd.setDayOfWeek(sch.dayOfWeek());
+                sd.setYear(sch.year());
+                sd.setTimezone(sch.timezone());
+                sd.setPersistent(sch.persistent());
+                sd.setInfo(sch.info());
+                sd.setTimeoutMethod(new MethodDescriptor(annMethod));
 
-                        java.util.Calendar date = ts.getNextTimeout();
-                        logger.fine("@@@ First timeout: " + 
-                                ((ts.isValid(date))? date.getTime() : "NEVER"));
-                        logger.fine("@@@ Schedule : " + ts.getScheduleAsString());
-                        logger.fine("@@@ TimerConfig : " + 
-                                ((sch.info() != null && !sch.info().equals(""))? sch.info() : null) + 
-                                " # " + sch.persistent());
-                    }
+                ejbDesc.addScheduledTimerDescriptor(sd);
+
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.fine("@@@ Found Schedule on " + annMethod);
+                    TimerSchedule ts = new TimerSchedule(sd, 
+                        annMethod.getName(), annMethod.getParameterTypes().length);
+
+                    java.util.Calendar date = ts.getNextTimeout();
+                    logger.fine("@@@ First timeout: " + 
+                            ((ts.isValid(date))? date.getTime() : "NEVER"));
+                    logger.fine("@@@ Schedule : " + ts.getScheduleAsString());
+                    logger.fine("@@@ TimerConfig : " + 
+                            ((sd.getInfo() != null && !sd.getInfo().equals(""))? sd.getInfo() : null) + 
+                            " # " + sd.getPersistent());
                 }
             }
         }

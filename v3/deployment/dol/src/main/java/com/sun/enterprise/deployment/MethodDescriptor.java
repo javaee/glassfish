@@ -372,6 +372,46 @@ public final class MethodDescriptor extends Descriptor {
         }
     }
     
+    public Method getDeclaredMethod(EjbDescriptor ejbDescriptor)
+    {
+        ClassLoader classloader = ejbDescriptor.getEjbBundleDescriptor().getClassLoader();
+        try {
+            Class[] parameterTypes = TypeUtil.paramClassNamesToTypes(
+                    getJavaParameterClassNames(), classloader);
+
+            return getDeclaredMethod(ejbDescriptor, parameterTypes);
+        } catch(Exception e) {
+            _logger.log(Level.SEVERE,"enterprise.deployment.backend.methodClassLoadFailure",new Object[]{ejbDescriptor});
+        }
+
+        return null;
+    }
+    
+    public Method getDeclaredMethod(EjbDescriptor ejbDescriptor, Class[] javaParamClassNames)
+    {
+        try {
+            ClassLoader classloader = ejbDescriptor.getEjbBundleDescriptor().getClassLoader();
+            Class nextClass = classloader.loadClass(ejbDescriptor.getEjbClassName());
+            String mname = getName();
+
+            while((nextClass != Object.class) && (nextClass != null)) {
+                // Do not use TypeUtil not to spend time converting parameter 
+                // types for each call.
+                try {
+                    return nextClass.getDeclaredMethod(mname, javaParamClassNames);
+
+                } catch (NoSuchMethodException nsme) {
+                    nextClass = nextClass.getSuperclass();
+                }
+            }
+
+        } catch(Exception e) {
+            _logger.log(Level.SEVERE,"enterprise.deployment.backend.methodClassLoadFailure",new Object[]{ejbDescriptor});
+        }
+
+        return null;
+    }
+    
 	/**
 	* Performs a conversion from the style1 style2 and style3 (no interface symbol) to
 	* method descriptors of style3 with an interface symbol.

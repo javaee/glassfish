@@ -313,6 +313,8 @@ public abstract class BaseContainer
     protected Map<String, RemoteBusinessIntfInfo> remoteBusinessIntfInfo
         = new HashMap<String, RemoteBusinessIntfInfo>();
 
+    Map<Method, List<ScheduledTimerDescriptor>> schedules = null;
+
     //
     // END -- Data members for Remote views    
     // 
@@ -645,11 +647,28 @@ public abstract class BaseContainer
 
                     ejbTimeoutMethod = method;
                 }
-                for (Method method : ejbDescriptor.getSchedules().keySet()) {
+
+                schedules = new HashMap<Method, List<ScheduledTimerDescriptor>>();
+
+                for (ScheduledTimerDescriptor schd : ejbDescriptor.getScheduledTimerDescriptors()) {
+                    Method method = schd.getTimeoutMethod().getMethod(ejbDescriptor);
+                    if (method == null) {
+                        // This should've been caught in EjbBundleValidator
+                        throw new EJBException("Class " + ejbClass.getName() +
+                            " does not define timeout method " + schd.getTimeoutMethod().getFormattedString());
+                    }
+
                     if( _logger.isLoggable(Level.FINE) ) {
 	                _logger.log(Level.FINE, "... processing " + method );
                     }
                     processEjbTimeoutMethod(method);
+
+                    List<ScheduledTimerDescriptor> list = schedules.get(method);
+                    if (list == null) {
+                        list = new ArrayList<ScheduledTimerDescriptor>();
+                        schedules.put(method, list);
+                    }
+                    list.add(schd);
                 }
                 
             }
@@ -1380,7 +1399,7 @@ public abstract class BaseContainer
             }
 
             if (inv.method != ejbTimeoutMethod || 
-                    !ejbDescriptor.getSchedules().keySet().contains(inv.method)) {
+                    !schedules.keySet().contains(inv.method)) {
                 if (! authorize(inv)) {
                     throw new AccessLocalException(
                         "Client not authorized for this invocation.");
@@ -2790,26 +2809,12 @@ public abstract class BaseContainer
         }
         
         if( isTimedObject() ) {
-            Set<Method> timeoutMethods = new HashSet<Method>(
-                    ejbDescriptor.getSchedules().keySet());
             if (ejbTimeoutMethod != null) {
-                timeoutMethods.add(ejbTimeoutMethod);
+                processTxAttrForScheduledTimeoutMethod(ejbTimeoutMethod);
             }
 
-            for (Method m : timeoutMethods) {
-                int txAttr = findTxAttr(m, MethodDescriptor.EJB_BEAN);
-                if( isBeanManagedTran ||
-                    txAttr == TX_REQUIRED ||
-                    txAttr == TX_REQUIRES_NEW ||
-                    txAttr == TX_NOT_SUPPORTED ) {
-                    addInvocationInfo(m, MethodDescriptor.EJB_BEAN, null);
-                } else {
-                    throw new EJBException("Timeout method " + m +
-                                       "must have TX attribute of " +
-                                       "TX_REQUIRES_NEW or TX_REQUIRED or " +
-                                       "TX_NOT_SUPPORTED for ejb " +
-                                       ejbDescriptor.getName());
-                }
+            for (Method m : schedules.keySet()) {
+                processTxAttrForScheduledTimeoutMethod(m);
             }
         }
 
@@ -2882,6 +2887,26 @@ public abstract class BaseContainer
         }
 
         return txAttr;
+    }
+
+    /**
+     * Verify transaction attribute on the timeout or schedule method and process
+     * this method if it's correct.
+     */
+    private void processTxAttrForScheduledTimeoutMethod(Method m) {
+        int txAttr = findTxAttr(m, MethodDescriptor.EJB_BEAN);
+        if( isBeanManagedTran ||
+            txAttr == TX_REQUIRED ||
+            txAttr == TX_REQUIRES_NEW ||
+            txAttr == TX_NOT_SUPPORTED ) {
+            addInvocationInfo(m, MethodDescriptor.EJB_BEAN, null);
+        } else {
+            throw new EJBException("Timeout method " + m +
+                               "must have TX attribute of " +
+                               "TX_REQUIRES_NEW or TX_REQUIRED or " +
+                               "TX_NOT_SUPPORTED for ejb " +
+                               ejbDescriptor.getName());
+        }
     }
     
     // Check if the user has enabled flush at end of method flag
@@ -3224,7 +3249,7 @@ public abstract class BaseContainer
                 ejbContainerUtilImpl.getEJBTimerService();
             if( timerService != null ) {
                 scheduleIds = timerService.recoverAndCreateSchedules(
-                        getContainerId(), ejbDescriptor.getSchedules());
+                        getContainerId(), schedules);
             }
         }
 

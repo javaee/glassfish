@@ -228,7 +228,10 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
                                                  MethodDescriptor.EJB_BEAN);
                         ejb.setEjbTimeoutMethod(timedObjectMethod);
                     }
+                } else {
+                    throw new RuntimeException("Cannot find AnnotationTypesProvider named 'EJB'");
                 }
+
             } else {
                 // If timeout-method was only processed from the descriptor,
                 // we need to create a MethodDescriptor using the actual
@@ -236,32 +239,62 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
                 // timeout method can have any access type and be anywhere
                 // in the bean class hierarchy.
                 if (ejb.getEjbTimeoutMethod() != null) {
-                    String timeoutMethodName = ejb.getEjbTimeoutMethod().getName();
-                    MethodDescriptor timeoutMethodDesc = null;
-                    Class nextClass = ejbClass;
-                    while((nextClass != Object.class) && (nextClass != null) 
-                          && (timeoutMethodDesc == null) ) {
-                        Method[] methods = nextClass.getDeclaredMethods();
-                        for(Method m : methods) {
-                            if( (m.getName().equals(timeoutMethodName)) ) {
-                                Class[] params = m.getParameterTypes();
-                                AnnotationTypesProvider provider = Globals.getDefaultHabitat().getComponent(AnnotationTypesProvider.class, "EJB");
-                                if (provider!=null) {
-                                    Class timerClass = provider.getType("javax.ejb.Timer");
-                                    if( (params.length == 1) &&
-                                        (params[0] == timerClass) ) {
-                                        timeoutMethodDesc = new MethodDescriptor
-                                            (m, MethodDescriptor.EJB_BEAN);
-                                        ejb.setEjbTimeoutMethod(timeoutMethodDesc);
-                                        break;
-                                    }
-                                }
-                            }
+                    MethodDescriptor timeoutMethodDescOrig = ejb.getEjbTimeoutMethod();
+
+                    Method m = timeoutMethodDescOrig.getDeclaredMethod(ejb);
+                    if (m == null) {
+                       // In case deployment descriptor didn't specify "javax.ejb.Timer"
+                       // as the method-params, and we were not relying on it before,
+                       // check explicitly for a method with "javax.ejb.Timer" param type.
+                       AnnotationTypesProvider provider = Globals.getDefaultHabitat().
+                               getComponent(AnnotationTypesProvider.class, "EJB");
+                        Class[] params = new Class[1];
+                        if (provider!=null) {
+                            params[0] = provider.getType("javax.ejb.Timer");
+                        } else {
+                            throw new RuntimeException("Cannot find AnnotationTypesProvider named 'EJB'");
                         }
-                        nextClass = nextClass.getSuperclass();
+
+                        m = timeoutMethodDescOrig.getDeclaredMethod(ejb, params);
+                    }
+
+                    if (m != null) {
+                        MethodDescriptor timeoutMethodDesc = new MethodDescriptor(
+                                m, MethodDescriptor.EJB_BEAN);
+                        ejb.setEjbTimeoutMethod(timeoutMethodDesc);
+                    } else {
+                        throw new RuntimeException("Class " + ejbClass.getName() +
+                                " does not define timeout method " + 
+                                timeoutMethodDescOrig.getFormattedString());        
                     }
                 }
-                // XXX TODO - process schedule entries
+
+                ScheduledTimerValidator validator = Globals.getDefaultHabitat().
+                        getComponent(ScheduledTimerValidator.class);
+                for (ScheduledTimerDescriptor sd : ejb.getScheduledTimerDescriptors()) {
+                    if (validator != null) {
+                        try {
+                            validator.validateScheduledTimerDescriptor(sd);
+                        } catch (Exception e) {
+                            throw new RuntimeException(ejb.getName() + ": Invalid schedule " + 
+                                " defined on method " + sd.getTimeoutMethod().getFormattedString() + 
+                                ": " + e.getMessage());
+                        }
+                    }
+
+                    MethodDescriptor timeoutMethodDescOrig = sd.getTimeoutMethod();
+                    Method m = timeoutMethodDescOrig.getDeclaredMethod(ejb);
+                    if (m != null) {
+                        MethodDescriptor timeoutMethodDesc = new MethodDescriptor(
+                                m, MethodDescriptor.EJB_BEAN);
+                        sd.setTimeoutMethod(timeoutMethodDesc);
+                    } else {
+                        throw new RuntimeException("Class " + ejbClass.getName() +
+                                " does not define timeout method " + 
+                                timeoutMethodDescOrig.getFormattedString());        
+                    }
+                }
+
             }
 
         } catch(Exception e) {

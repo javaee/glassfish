@@ -132,5 +132,29 @@ public class EjbDeployer
        // Both undeploy and shutdown scenarios are
        // handled directly in EjbApplication.shutdown.
     }
-}
 
+    /**
+     * Use this method to generate CMP artifacts if any
+     */
+    @Override
+    protected void generateArtifacts(DeploymentContext dc)
+            throws DeploymentException {
+
+        OpsParams params = dc.getCommandParameters(OpsParams.class);
+        if (params.origin != OpsParams.Origin.deploy) {
+            return;
+        }
+
+        EjbBundleDescriptor bundle = dc.getModuleMetaData(EjbBundleDescriptor.class);
+        if (bundle == null || !bundle.containsCMPEntity()) {
+            // bundle WAS null in a war file where we do not support CMPs
+            return;
+        }
+
+        cmpDeployer = habitat.getByContract(CMPDeployer.class);
+        if (cmpDeployer == null) {
+            throw new DeploymentException("No CMP Deployer is available to deploy this module");
+        }
+        cmpDeployer.deploy(dc);
+    }
+}

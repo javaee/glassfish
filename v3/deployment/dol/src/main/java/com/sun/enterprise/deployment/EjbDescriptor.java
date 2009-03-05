@@ -142,11 +142,8 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
 
     private MethodDescriptor timedObjectMethod;
 
-    private ConcurrentMap<Method, List> schedules = 
-            new ConcurrentHashMap<Method, List>();
-
-    private Map<MethodDescriptor, List<ScheduledTimerDescriptor>> timerSchedules =
-            new HashMap<MethodDescriptor, List<ScheduledTimerDescriptor>>();
+    private List<ScheduledTimerDescriptor> timerSchedules =
+            new ArrayList<ScheduledTimerDescriptor>();
 
 
     private ConcurrentMap<Method, MethodDescriptor> allMethodDescriptors = 
@@ -221,7 +218,7 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
         this.ejbClassName = other.ejbClassName;
         this.usesCallerIdentity = other.usesCallerIdentity;
         this.bundleDescriptor = other.bundleDescriptor;
-        this.schedules = new ConcurrentHashMap(other.schedules);
+        this.timerSchedules = new ArrayList(other.timerSchedules);
         this.allMethodDescriptors = new ConcurrentHashMap(other.allMethodDescriptors);
     }
 
@@ -344,7 +341,7 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
     }
 
     public boolean isTimedObject() {
-        return (timedObjectMethod != null || schedules.size() > 0);
+        return (timedObjectMethod != null || timerSchedules.size() > 0);
     }
 
     public MethodDescriptor getEjbTimeoutMethod() {
@@ -355,29 +352,12 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
         timedObjectMethod = method;
     }
 
-    public void addScheduledTimerDescriptor(ScheduledTimerDescriptor timer) {
-        List<ScheduledTimerDescriptor> list = new ArrayList<ScheduledTimerDescriptor>();
-        list.add(timer);
-        timerSchedules.put(timer.getTimeoutMethod(), list);
+    public void addScheduledTimerDescriptor(ScheduledTimerDescriptor scheduleDescriptor) {
+        timerSchedules.add(scheduleDescriptor);
     }
 
-    public void addSchedule(Method m, Object sch) {
-        List l = schedules.get(m);
-        if (l == null) {
-            l = new ArrayList();
-            l.add(sch);
-            List l0 = schedules.putIfAbsent(m, l);
-            if (l0 != null) {
-                // Another thread already added its version
-                l0.add(sch);
-            }
-        } else {
-            l.add(sch);
-        }
-    }
-
-    public Map<Method, List> getSchedules() {
-        return schedules;
+    public List<ScheduledTimerDescriptor> getScheduledTimerDescriptors() {
+        return timerSchedules;
     }
 
     public Set<LifecycleCallbackDescriptor>

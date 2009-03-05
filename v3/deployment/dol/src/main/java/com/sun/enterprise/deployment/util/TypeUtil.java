@@ -532,4 +532,26 @@ public class TypeUtil {
 
     }
     
+   /**
+    * Convert String array of class names into array of Classes.
+    */
+    public static Class[] paramClassNamesToTypes(String[] paramClassNames, 
+            ClassLoader loader) throws Exception {
+
+        Class[] parameterTypes = null;
+        if (paramClassNames != null) {
+            parameterTypes = new Class[paramClassNames.length];
+            for(int pIndex = 0; pIndex < parameterTypes.length; pIndex++) {
+                String next = paramClassNames[pIndex];
+                if( primitiveClasses_.containsKey(next) ) {
+                    parameterTypes[pIndex] =
+                        (Class) primitiveClasses_.get(next);
+                } else {
+                    parameterTypes[pIndex] = Class.forName(next, true, loader);
+                }
+            }
+        }
+
+        return parameterTypes;
+    }
 }

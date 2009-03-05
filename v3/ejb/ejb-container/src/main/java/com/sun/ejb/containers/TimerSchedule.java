@@ -51,8 +51,9 @@ import java.util.regex.Pattern;
 import java.io.Serializable;
 
 import javax.ejb.ScheduleExpression;
-import javax.ejb.Schedule;
 import javax.ejb.EJBException;
+
+import com.sun.enterprise.deployment.ScheduledTimerDescriptor;
 
 /**
  * A runtime representation of the user-defined calendar-based 
@@ -176,15 +177,17 @@ public class TimerSchedule implements Serializable {
 
     /** Construct TimerSchedule instance from a given Schedule annotation.
       */
-    public TimerSchedule(Schedule s, String methodName, int paramCount) {
-        second(s.second());
-        minute(s.minute());
-        hour(s.hour());
-        dayOfMonth(s.dayOfMonth());
-        month(s.month());
-        dayOfWeek(s.dayOfWeek());
-        year(s.year());
-        timezone(s.timezone());
+    public TimerSchedule(ScheduledTimerDescriptor sd, String methodName, int paramCount) {
+        second(sd.getSecond());
+        minute(sd.getMinute());
+        hour(sd.getHour());
+        dayOfMonth(sd.getDayOfMonth());
+        month(sd.getMonth());
+        dayOfWeek(sd.getDayOfWeek());
+        year(sd.getYear());
+        timezone(sd.getTimezone());
+        start(sd.getStart());
+        end(sd.getEnd());
 
         methodName_ = methodName;
         paramCount_ = paramCount;
@@ -402,7 +405,7 @@ public class TimerSchedule implements Serializable {
      * Returns true if this Schedule can calculate its next timeout
      * without errors.
      */
-    public static boolean isValid(Schedule s) {
+    public static boolean isValid(ScheduledTimerDescriptor s) {
         TimerSchedule ts = new TimerSchedule(s, null, 0);
         ts.getNextTimeout();
 
@@ -896,14 +899,14 @@ public class TimerSchedule implements Serializable {
             }
         } else {
             Integer val = conversionTable.get(s.toLowerCase());
-            assertNotNull(val, field);
+            assertValid(val, s, field);
             i = val.intValue();
         }
 
         int result = i - start;
         if (isDayOfWeek(field)) {
             Integer val = conversionTable.get(i);
-            assertNotNull(val, field);
+            assertValid(val, s, field);
             result = val.intValue();
         }
         return result;
@@ -989,7 +992,7 @@ public class TimerSchedule implements Serializable {
             // Convert name of the day to a number, then number to the
             // Calendar's value for that day.
             Integer weekday = conversionTable.get(arr[1]);
-            assertNotNull(weekday, DAY_OF_MONTH);
+            assertValid(weekday, arr[1], DAY_OF_MONTH);
              
             int day = conversionTable.get(weekday);
             return getDayForDayOfWeek(testdate, lastday, day, num);
@@ -1114,6 +1117,14 @@ public class TimerSchedule implements Serializable {
         assertNotNull(s, field);
         if (s.length() == 0) {
             throw new IllegalArgumentException("Field " + field + " cannot be an empty String");
+        }
+    }
+
+    /** Checks that a conversion of a String to the internal representation was successful.
+     */
+    private void assertValid(Integer v, String s, String field) {
+        if (v == null) {
+            throw new IllegalArgumentException("Invalid " + field + " value: " + s);
         }
     }
 

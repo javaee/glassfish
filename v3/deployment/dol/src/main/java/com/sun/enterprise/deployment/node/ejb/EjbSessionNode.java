@@ -189,21 +189,20 @@ public class EjbSessionNode  extends InterfaceBasedEjbNode {
         }
 
         MethodNode methodNode = new MethodNode();
-        
+
         if( ejbDesc.isTimedObject() ) {
-            methodNode.writeJavaMethodDescriptor
-                (ejbNode, EjbTagNames.TIMEOUT_METHOD,
-                 ejbDesc.getEjbTimeoutMethod());
+            if (ejbDesc.getEjbTimeoutMethod() != null) {
+
+                methodNode.writeJavaMethodDescriptor
+                        (ejbNode, EjbTagNames.TIMEOUT_METHOD,
+                         ejbDesc.getEjbTimeoutMethod());
+            }
+
+            for ( ScheduledTimerDescriptor timerDesc : ejbDesc.getScheduledTimerDescriptors()) {
+                ScheduledTimerNode timerNode = new ScheduledTimerNode();
+                timerNode.writeDescriptor(ejbNode, EjbTagNames.TIMER, timerDesc);
+            }
         }
-
-        // TODO for each scheduled timer
-        /*
-
-           ScheduledTimerNode timerNode = new ScheduledTimerNode();
-           timerNode.writeDescriptor(ejbNode, EjbTagNames.TIMER, timerDesc);
-        
-
-        */
 
         if( ejbDesc.isSingleton() ) {
             appendTextChild(ejbNode, EjbTagNames.INIT_ON_STARTUP,

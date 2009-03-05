@@ -37,6 +37,7 @@ package com.sun.enterprise.deployment.node.ejb;
 
 import com.sun.enterprise.deployment.ScheduledTimerDescriptor;
 import com.sun.enterprise.deployment.Descriptor;
+import com.sun.enterprise.deployment.util.DOLUtils;
 
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
 import com.sun.enterprise.deployment.node.MethodNode;
@@ -47,7 +48,10 @@ import org.w3c.dom.Node;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 public class ScheduledTimerNode extends DeploymentDescriptorNode {
 
@@ -107,9 +111,27 @@ public class ScheduledTimerNode extends DeploymentDescriptorNode {
     public void setElementValue(XMLElement element, String value) {
 
         if (EjbTagNames.TIMER_START.equals(element.getQName())) {
-            System.out.println("Start Date = " + value);
+            try {
+                DatatypeFactory dFactory = DatatypeFactory.newInstance();
+
+                XMLGregorianCalendar xmlGreg = dFactory.newXMLGregorianCalendar(value);
+                GregorianCalendar cal = xmlGreg.toGregorianCalendar();
+                descriptor.setStart(cal.getTime());
+            } catch (Exception e) {
+                DOLUtils.getDefaultLogger().warning(e.getMessage());
+            }
+
         } else if(EjbTagNames.TIMER_END.equals(element.getQName())) {
-            System.out.println("End Date = " + value);
+            try {
+                DatatypeFactory dFactory = DatatypeFactory.newInstance();
+
+                XMLGregorianCalendar xmlGreg = dFactory.newXMLGregorianCalendar(value);
+                GregorianCalendar cal = xmlGreg.toGregorianCalendar();
+                descriptor.setEnd(cal.getTime());
+            } catch (Exception e) {
+                DOLUtils.getDefaultLogger().warning(e.getMessage());
+            }
+
         } else {
             super.setElementValue(element, value);
         }
@@ -144,9 +166,25 @@ public class ScheduledTimerNode extends DeploymentDescriptorNode {
         appendTextChild(scheduleNode, EjbTagNames.TIMER_DAY_OF_WEEK, desc.getDayOfWeek());
         appendTextChild(scheduleNode, EjbTagNames.TIMER_YEAR, desc.getYear());
 
-        // TODO start
+        try {
+            DatatypeFactory dFactory = DatatypeFactory.newInstance();
+            GregorianCalendar cal = new GregorianCalendar();
 
-        // TODO end
+            if (desc.getStart() != null) {
+                cal.setTime(desc.getStart());
+                XMLGregorianCalendar xmlGreg = dFactory.newXMLGregorianCalendar(cal);
+                appendTextChild(timerNode, EjbTagNames.TIMER_START, xmlGreg.toXMLFormat());
+            }
+
+            if (desc.getEnd() != null) {
+                cal.setTime(desc.getEnd());
+                XMLGregorianCalendar xmlGreg = dFactory.newXMLGregorianCalendar(cal);
+                appendTextChild(timerNode, EjbTagNames.TIMER_END, xmlGreg.toXMLFormat());
+            }
+        } catch (Exception e) {
+e.printStackTrace();
+            DOLUtils.getDefaultLogger().warning(e.getMessage());
+        }
 
         MethodNode methodNode = new MethodNode();
 
