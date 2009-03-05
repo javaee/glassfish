@@ -312,8 +312,8 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
         List<URI> libURIs = new ArrayList<URI>();
         if (parameters.libraries() != null) {
             URL[] urls = 
-                ASClassLoaderUtil.getLibrariesAsURLs(parameters.libraries(), 
-                    env);
+                ASClassLoaderUtil.getDeployParamLibrariesAsURLs(
+                    parameters.libraries(), env);
             for (URL url : urls) {
                 libURIs.add(url.toURI());
             }

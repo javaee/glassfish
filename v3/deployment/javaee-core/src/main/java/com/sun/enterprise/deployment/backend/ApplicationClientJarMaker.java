@@ -56,6 +56,7 @@ import org.glassfish.api.deployment.archive.WritableArchive;
 import com.sun.enterprise.deployment.backend.ClientJarMaker;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
+import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.util.zip.ZipItem;
 
 /**
@@ -131,8 +132,8 @@ class ApplicationClientJarMaker implements ClientJarMaker {
         Application app = Application.class.cast(descriptor);
         for (ModuleDescriptor md : app.getModules()) {
             //ignore the war and rar modules, include both appclient and ejb
-            if ( ! (md.getModuleType().equals(ModuleType.WAR) 
-                || md.getModuleType().equals(ModuleType.RAR)) ){
+            if ( ! (md.getModuleType().equals(XModuleType.WAR) 
+                || md.getModuleType().equals(XModuleType.RAR)) ){
 
                 ReadableArchive subSource = source.getSubArchive(md.getArchiveUri());
                 ReadableArchive subSource2 = null;

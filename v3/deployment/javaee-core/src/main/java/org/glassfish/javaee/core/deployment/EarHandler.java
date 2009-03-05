@@ -128,7 +128,6 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                     File origSubArchiveFile = new File(
                         target.getURI().getSchemeSpecificPart(), moduleUri);
                     origSubArchiveFile.delete();
-                    continue;
                 }
             } catch(IOException ioe) {
                 _logger.log(Level.FINE, "Exception while processing " + 
@@ -145,7 +144,7 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
         EarClassLoader cl;
         // add the libraries packaged in the application library directory
         try {
-            cl = new EarClassLoader(getAppLibDirLibraries(context, holder.app), parent);
+            cl = new EarClassLoader(ASClassLoaderUtil.getAppLibDirLibraries(context.getSourceDir(), holder.app.getLibraryDirectory()), parent);
         } catch (IOException e) {
             _logger.log(Level.SEVERE, "error in adding libraries in library directory" ,e);
             throw new RuntimeException(e);
@@ -198,25 +197,6 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
         }
         return cl;
     }
-
-    /**
-     * add all the libraries packaged in the application library directory
-     *
-     * @param context the deployment context
-     * @param app the Application object
-     * @return an array of URL
-     */
-    private URL[] getAppLibDirLibraries(DeploymentContext context,
-        Application app) throws IOException {
-        if (app.getLibraryDirectory() != null) {
-            String libPath =
-                app.getLibraryDirectory().replace('/', File.separatorChar);
-            return ASClassLoaderUtil.getURLs(null,
-                new File[] {new File(context.getSourceDir(), libPath)}, true);
-        }
-        return new URL[0];
-    }
-
 
     public boolean accept(ReadableArchive source, String entryName) {
         // I am hiding everything but the metadata.

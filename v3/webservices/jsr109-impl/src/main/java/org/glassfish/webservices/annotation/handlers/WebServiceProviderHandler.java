@@ -69,6 +69,7 @@ import com.sun.enterprise.deployment.WebService;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
+import com.sun.enterprise.deployment.util.XModuleType;
 
 import javax.xml.namespace.QName;
 
@@ -250,7 +251,7 @@ public class WebServiceProviderHandler extends AbstractHandler implements Annota
             endpoint.setServiceEndpointInterface(serviceEndpointIntf.getName());
         }
 
-        if (ModuleType.WAR.equals(bundleDesc.getModuleType())) {
+        if (XModuleType.WAR.equals(bundleDesc.getModuleType())) {
             if(endpoint.getServletImplClass() == null) {
                 // Set servlet impl class here
                 endpoint.setServletImplClass(((Class)annElem).getName());

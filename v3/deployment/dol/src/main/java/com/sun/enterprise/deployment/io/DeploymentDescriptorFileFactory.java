@@ -40,6 +40,7 @@ package com.sun.enterprise.deployment.io;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.node.SaxParserHandlerFactory;
 import com.sun.enterprise.deployment.xml.*;
+import com.sun.enterprise.deployment.util.XModuleType;
 import org.glassfish.api.ContractProvider;
 import org.jvnet.hk2.annotations.Service;
 import org.w3c.dom.Document;
@@ -92,23 +93,23 @@ public class DeploymentDescriptorFileFactory implements ContractProvider {
      * @param descriptor used to identify the associated DeploymentDescriptorFile
      * @return the created DeploymentDescriptorFile
      */
-    public static DeploymentDescriptorFile getDDFileFor(ModuleType type) {
+    public static DeploymentDescriptorFile getDDFileFor(XModuleType type) {
         if (type==null) {
             return null;
         }
-        if (type.equals(ModuleType.EAR)) {
+        if (type.equals(XModuleType.EAR)) {
             return new ApplicationDeploymentDescriptorFile();
         }
-        if (type.equals(ModuleType.EJB)) {
+        if (type.equals(XModuleType.EJB)) {
             return new EjbDeploymentDescriptorFile();
         }
-        if (type.equals(ModuleType.WAR)) {
+        if (type.equals(XModuleType.WAR)) {
             return new WebDeploymentDescriptorFile();
         }
-        if (type.equals(ModuleType.RAR)) {
+        if (type.equals(XModuleType.RAR)) {
             return new ConnectorDeploymentDescriptorFile();
         } 
-        if (type.equals(ModuleType.CAR)) {
+        if (type.equals(XModuleType.CAR)) {
             return new AppClientDeploymentDescriptorFile();
         }
         return null;

@@ -2,6 +2,7 @@ package com.sun.enterprise.v3.server;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.CompositeHandler;
+import com.sun.enterprise.deploy.shared.AbstractReadableArchive;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -14,7 +15,7 @@ import java.util.jar.Manifest;
  *
  * @author Jerome Dochez
  */
-public class CompositeArchive implements ReadableArchive {
+public class CompositeArchive extends AbstractReadableArchive {
 
     final ReadableArchive delegate;
     final CompositeHandler filter;

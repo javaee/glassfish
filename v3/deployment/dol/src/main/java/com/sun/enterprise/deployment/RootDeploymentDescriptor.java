@@ -392,11 +392,11 @@ public abstract class RootDeploymentDescriptor extends Descriptor {
             return true;
         } else {
             // we do not process annotations for earlier versions of DD
-            if ( (mType.equals(ModuleType.EJB) &&
+            if ( (mType.equals(XModuleType.EJB) &&
                   specVersion < ANNOTATION_EJB_VER) ||
-                 (mType.equals(ModuleType.WAR) &&
+                 (mType.equals(XModuleType.WAR) &&
                   specVersion < ANNOTATION_WAR_VER) ||
-                 (mType.equals(ModuleType.CAR) &&
+                 (mType.equals(XModuleType.CAR) &&
                   specVersion < ANNOTATION_CAR_VER) ) {
                 return true;
             } else {

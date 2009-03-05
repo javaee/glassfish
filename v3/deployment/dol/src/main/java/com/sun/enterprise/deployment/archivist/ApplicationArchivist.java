@@ -77,9 +77,6 @@ public class ApplicationArchivist extends Archivist<Application>
     implements CompositeArchivist {
 
     @Inject
-    ArchiveFactory archiveFactory;
-
-    @Inject
     Holder<ArchivistFactory> archivistFactory;
 
     @Inject
@@ -514,6 +511,7 @@ public class ApplicationArchivist extends Archivist<Application>
                 annotationProcessingRequested);
 
             ReadableArchive embeddedArchive = appArchive.getSubArchive(aModule.getArchiveUri());
+            embeddedArchive.setParentArchive(appArchive);
             if (aModule.getAlternateDescriptor()!=null) {
                 // the module use alternate deployement descriptor, ignore the
                 // DDs in the archive.
@@ -526,6 +524,7 @@ public class ApplicationArchivist extends Archivist<Application>
                 }
 
                 descriptor = (BundleDescriptor) ddFile.read(is);
+                ((BundleDescriptor)descriptor).setApplication(app);
                 is.close();
 
                 // TODO : JD need to be revisited for EAR files with Alternative descriptors, what does
@@ -573,7 +572,7 @@ public class ApplicationArchivist extends Archivist<Application>
             } else {
                 // open the subarchive to get the deployment descriptor...
                 if (embeddedArchive!=null) {
-                    descriptor = newArchivist.open(embeddedArchive);
+                    descriptor = newArchivist.open(embeddedArchive, app);
                 } else {
                     DOLUtils.getDefaultLogger().info(localStrings.getLocalString(
                         "enterprise.deployment.cannotfindmodule",

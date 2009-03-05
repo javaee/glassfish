@@ -41,6 +41,7 @@ import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.util.XModuleType;
 import org.glassfish.ejb.deployment.annotation.impl.EjbInWarScanner;
+import com.sun.enterprise.deployment.annotation.impl.ModuleScanner;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.DescriptorConstants;
 import com.sun.enterprise.deployment.io.EjbDeploymentDescriptorFile;
@@ -105,7 +106,7 @@ public class EjbInWarArchivist
      *
      */
     @Override
-    public Scanner getScanner() {
+    public ModuleScanner getScanner() {
         return scanner.get();
     }
 

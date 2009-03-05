@@ -50,14 +50,18 @@ import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.admin.ServerEnvironment;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.FileInputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.jar.Attributes;
 import java.util.StringTokenizer;
@@ -99,7 +103,7 @@ public class ASClassLoaderUtil {
         if (commonClassPath != null && commonClassPath.length() > 0) {
             classpath.append(commonClassPath).append(File.pathSeparator);
         }
-        addDeployTimeLibrariesForModule(classpath, moduleId, deploymentLibs, habitat);
+        addDeployParamLibrariesForModule(classpath, moduleId, deploymentLibs, habitat);
         if (_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE, "Final classpath: " + classpath.toString());
         }
@@ -115,7 +119,7 @@ public class ASClassLoaderUtil {
     }
 
 
-    private static void addDeployTimeLibrariesForModule(StringBuilder sb, 
+    private static void addDeployParamLibrariesForModule(StringBuilder sb, 
         String moduleId, String deploymentLibs, Habitat habitat) {
         if (deploymentLibs == null) {
             ApplicationInfo appInfo = 
@@ -127,7 +131,8 @@ public class ASClassLoaderUtil {
             }
             deploymentLibs = appInfo.getLibraries();
         }
-        final URL[] libs = getLibrariesAsURLs(deploymentLibs, habitat);
+        final URL[] libs = 
+            getDeployParamLibrariesAsURLs(deploymentLibs, habitat);
         if (libs != null) {
             for (final URL u : libs) {
                 sb.append(u.getPath());
@@ -136,11 +141,12 @@ public class ASClassLoaderUtil {
         }
     }
 
-    private static URL[] getLibrariesAsURLs(String librariesStr, 
+    private static URL[] getDeployParamLibrariesAsURLs(String librariesStr,
         Habitat habitat) {
-            return getLibrariesAsURLs(librariesStr, 
+            return getDeployParamLibrariesAsURLs(librariesStr,
                 habitat.getComponent(ServerEnvironment.class));
     }
+
 
     /**
      * converts libraries specified via the --libraries deployment option to
@@ -153,7 +159,7 @@ public class ASClassLoaderUtil {
      * @param env the server environment
      * @return array of URL
      */
-    public static URL[] getLibrariesAsURLs(String librariesStr,
+    public static URL[] getDeployParamLibrariesAsURLs(String librariesStr,
         ServerEnvironment env) {
         if(librariesStr == null)
             return null;
@@ -223,7 +229,6 @@ public class ASClassLoaderUtil {
      */
     public static URL[] getURLs(File[] dirs, File[] jarDirs,
         boolean ignoreZip) throws IOException {
-        URL[] urls = new URL[0];
         List<URL> list = new ArrayList<URL>();
 
         // adds all directories
@@ -267,13 +272,16 @@ public class ASClassLoaderUtil {
                 }
             }
         }
-
+        return convertURLListToArray(list);
+    }
+  
+    public static URL[] convertURLListToArray(List<URL> list) {
         // converts the list to an array
-        if (list.size() > 0) {
+        URL[] urls = new URL[0];
+        if (list != null && list.size() > 0) {
             urls = new URL[list.size()];
             urls = (URL[]) list.toArray(urls);
         }
-
         return urls;
     }
 
@@ -312,6 +320,50 @@ public class ASClassLoaderUtil {
         return urls;
     }
 
+   /**
+     * Returns the manifest file for the given root path.
+     *
+     * <xmp>
+     *    Example:
+     *     |--repository/
+     *     |   |--applications/
+     *     |        |--converter/
+     *     |            |--ejb-jar-ic_jar/        <---- rootPath
+     *     |                 |--META-INF/
+     *     |                     |--MANIFEST.MF
+     * </xmp>
+     *
+     * @param    rootPath    absolute path to the module
+     *
+     * @return   the manifest file for the given module
+     */
+    public static Manifest getManifest(String rootPath) {
+
+        InputStream in  = null;
+        Manifest mf     = null;
+
+        // gets the input stream to the MANIFEST.MF file
+        try {
+            in = new FileInputStream(rootPath+File.separator+MANIFEST_ENTRY);
+
+            if (in != null) {
+                mf = new Manifest(in);
+            }
+        } catch (IOException ioe) {
+            // ignore
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException ioe) {
+                    // Ignore
+                }
+            }
+        }
+        return mf;
+    }
+
+
     /**
      * Returns the class path (if any) from the given manifest file as an 
      * URL list.
@@ -343,4 +395,46 @@ public class ASClassLoaderUtil {
         return urlList;
     }
 
+    /**
+     * add all the libraries packaged in the application library directory
+     *
+     * @param appRoot the application root
+     * @param appLibDir the Application library directory
+     * @return an array of URL
+     */
+    public static URL[] getAppLibDirLibraries(File appRoot, String appLibDir) 
+        throws IOException {
+        return convertURLListToArray(
+            getAppLibDirLibrariesAsList(appRoot, appLibDir));
+    }
+
+    public static List<URL> getAppLibDirLibrariesAsList(File appRoot, String appLibDir)
+        throws IOException {
+        URL[] libDirLibraries = new URL[0];
+        // first get all the app lib dir libraries
+        if (appLibDir != null) {
+            String libPath = appLibDir.replace('/', File.separatorChar);
+            libDirLibraries =  getURLs(null,
+                new File[] {new File(appRoot, libPath)}, true);
+        }
+
+        // now also get the libraries referenced by lib dir library manifest
+        List<URL> allLibDirLibraries = new ArrayList<URL>();
+        for (URL url : libDirLibraries) {
+            allLibDirLibraries.add(url);
+            JarFile jarFile = null;
+            try {
+                jarFile = new JarFile(new File(url.toURI()));
+                allLibDirLibraries.addAll(getManifestClassPathAsURLs(
+                        jarFile.getManifest(), appLibDir));
+            } catch (URISyntaxException e) {
+                _logger.log(Level.WARNING, "Malformed URL: " + url, e);
+            } finally {
+                if (jarFile != null) {
+                    jarFile.close();
+                }
+            }
+        }
+        return allLibDirLibraries;
+    }
 }

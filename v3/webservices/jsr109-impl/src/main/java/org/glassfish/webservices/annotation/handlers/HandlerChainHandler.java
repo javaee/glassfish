@@ -70,6 +70,7 @@ import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.Descriptor; 
 import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
+import com.sun.enterprise.deployment.util.XModuleType;
 
 import com.sun.enterprise.deployment.xml.WebServicesTagNames;
 import com.sun.enterprise.deployment.types.HandlerChainContainer;
@@ -304,14 +305,14 @@ public class HandlerChainHandler extends AbstractHandler {
                 Descriptor jndiContainer=null; 
                 if (serviceSideChain) { 
                     WebServiceEndpoint endpoint = (WebServiceEndpoint) container; 
-                    if (ModuleType.WAR.equals(endpoint.getBundleDescriptor().getModuleType())) { 
+                    if (XModuleType.WAR.equals(endpoint.getBundleDescriptor().getModuleType())) { 
                         jndiContainer = endpoint.getBundleDescriptor();                 
                     } else {
                         jndiContainer = endpoint.getEjbComponentImpl();
                     }
                 } else { 
                     ServiceReferenceDescriptor ref = (ServiceReferenceDescriptor) container;
-                    if(ModuleType.EJB.equals(ref.getBundleDescriptor().getModuleType())) {
+                    if(XModuleType.EJB.equals(ref.getBundleDescriptor().getModuleType())) {
                         EjbBundleDescriptor ejbBundle = (EjbBundleDescriptor) ref.getBundleDescriptor();
                         Iterator<EjbDescriptor> ejbsIter = ejbBundle.getEjbs().iterator();
                         while(ejbsIter.hasNext()) {

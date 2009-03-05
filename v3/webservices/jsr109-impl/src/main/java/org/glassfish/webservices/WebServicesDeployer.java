@@ -28,6 +28,7 @@ import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.module.*;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.util.WebServerInfo;
+import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.web.WebDeployer;
 import com.sun.logging.LogDomains;
@@ -181,10 +182,10 @@ public class WebServicesDeployer extends WebDeployer {
 
                 File classesDir;
                 String webinfLibDir = null;
-                if (ModuleType.WAR.equals(bundle.getModuleType())) {
+                if (XModuleType.WAR.equals(bundle.getModuleType())) {
                     classesDir = new File(moduleDir, "WEB-INF"+File.separator+"classes");
                     webinfLibDir = moduleDir.getAbsolutePath() + File.separator + "WEB-INF"+File.separator+"lib";
-                } else if (ModuleType.EJB.equals(bundle.getModuleType())) {
+                } else if (XModuleType.EJB.equals(bundle.getModuleType())) {
                     classesDir = moduleDir;
                 } else {
                     // unknown module type with @WebService, just ignore...

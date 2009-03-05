@@ -97,4 +97,18 @@ public interface ReadableArchive extends Archive {
      * @param name the archive name
      */
     public boolean renameTo(String name);
+
+    /**
+     * set the parent archive for this archive
+     *
+     * @param parentArchive the parent archive
+     */
+    public void setParentArchive(ReadableArchive parentArchive);
+
+    /**
+     * get the parent archive of this archive
+     *
+     * @return the parent archive
+     */
+    public ReadableArchive getParentArchive();
 }

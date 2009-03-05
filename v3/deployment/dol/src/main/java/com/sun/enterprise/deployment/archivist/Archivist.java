@@ -40,6 +40,7 @@ import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.annotation.factory.AnnotatedElementHandlerFactory;
 import com.sun.enterprise.deployment.annotation.factory.SJSASFactory;
+import com.sun.enterprise.deployment.annotation.impl.ModuleScanner;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import static com.sun.enterprise.deployment.io.DescriptorConstants.PERSISTENCE_DD_ENTRY;
 import com.sun.enterprise.deployment.io.PersistenceDeploymentDescriptorFile;
@@ -50,6 +51,7 @@ import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.shared.ArchivistUtils;
 import org.glassfish.apf.*;
 import org.glassfish.apf.Scanner;
+import com.sun.enterprise.deployment.annotation.impl.ModuleScanner;
 import org.glassfish.apf.impl.DefaultErrorHandler;
 import org.glassfish.apf.impl.ProcessingResultImpl;
 import org.glassfish.api.deployment.archive.Archive;
@@ -203,10 +205,14 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
      */
     public T open(ReadableArchive archive)
             throws IOException, SAXParseException {
+        return open(archive, null);
+    }
 
+    public T open(ReadableArchive archive, Application app)
+            throws IOException, SAXParseException {
         setManifest(archive.getManifest());
 
-        T descriptor = readDeploymentDescriptors(archive);
+        T descriptor = readDeploymentDescriptors(archive, app);
         if (descriptor != null) {
             postOpen(descriptor, archive);
         }
@@ -300,9 +306,17 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
      */
     private T readDeploymentDescriptors(ReadableArchive archive)
             throws IOException, SAXParseException {
+        return readDeploymentDescriptors(archive, null);
+    }
+
+    private T readDeploymentDescriptors(ReadableArchive archive, 
+        Application app) throws IOException, SAXParseException {
 
         // read the standard deployment descriptors
         T descriptor = readStandardDeploymentDescriptor(archive);
+        if (descriptor instanceof BundleDescriptor) {
+            ((BundleDescriptor)descriptor).setApplication(app);
+        }
 
         ModuleDescriptor newModule = createModuleDescriptor(descriptor);
         newModule.setArchiveUri(archive.getURI().getSchemeSpecificPart());
@@ -405,19 +419,19 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
      * different version
      *
      */
-    public Scanner getScanner() {
+    public ModuleScanner getScanner() {
         
         Scanner scanner = null;
         try {
             scanner = habitat.getComponent(Scanner.class, getModuleType().toString());
-            if (scanner==null) {
-                logger.log(Level.SEVERE, "Cannot find scanner for " + this.getManifest());
+            if (scanner==null || !(scanner instanceof ModuleScanner)) {
+                logger.log(Level.SEVERE, "Cannot find module scanner for " + this.getManifest());
             }
         } catch (ComponentException e) {
             // XXX To do
             logger.log(Level.SEVERE, "Cannot find scanner for " + this.getModuleType(), e);
         }
-        return scanner;
+        return (ModuleScanner)scanner;
     }
 
     /**
@@ -425,7 +439,7 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
      * is dependent on the type of descriptor being passed.
      */
     public ProcessingResult processAnnotations(T bundleDesc,
-                                               Archive archive)
+                                               ReadableArchive archive)
             throws AnnotationProcessorException, IOException {
         
         return processAnnotations(bundleDesc, getScanner(), archive);
@@ -437,8 +451,8 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
      * is dependent on the type of descriptor being passed.
      */
     private ProcessingResult processAnnotations(RootDeploymentDescriptor bundleDesc,
-                                               Scanner scanner,
-                                               Archive archive)
+                                               ModuleScanner scanner,
+                                               ReadableArchive archive)
             throws AnnotationProcessorException, IOException {
 
         AnnotatedElementHandler aeHandler =
@@ -454,7 +468,7 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
             // the contract doesn't require that that is a file, and so this
             // is broken. For now, I work around that by ignoring this for non-file
             // URIs.
-            scanner.process(new File(archive.getURI()), bundleDesc, classLoader);
+            scanner.process(archive, bundleDesc, classLoader);
         }
 
         if (!scanner.getElements().isEmpty()) {

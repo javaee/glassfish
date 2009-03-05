@@ -44,6 +44,7 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 
 import javax.enterprise.deploy.shared.ModuleType;
 import com.sun.enterprise.deployment.util.XModuleType;
@@ -60,6 +61,9 @@ import java.io.OutputStream;
 public class DescriptorArchivist {
     @Inject
     protected ArchivistFactory archivistFactory;
+
+    @Inject
+    Habitat habitat;
 
     /**
      * writes an application deployment descriptors
@@ -127,7 +131,9 @@ public class DescriptorArchivist {
             }
             
             // now let's write the application descriptor
-            ApplicationArchivist archivist = new ApplicationArchivist();
+            ApplicationArchivist archivist = 
+                habitat.getComponent(ApplicationArchivist.class);
+
             archivist.setDescriptor(application);
             archivist.writeRuntimeDeploymentDescriptors(out); 
             if (application.isLoadedFromApplicationXml()) {   

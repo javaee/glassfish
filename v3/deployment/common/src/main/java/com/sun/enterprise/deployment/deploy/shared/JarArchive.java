@@ -26,6 +26,7 @@ package com.sun.enterprise.deployment.deploy.shared;
 
 import java.net.URI;
 import org.glassfish.api.deployment.archive.Archive;
+import org.glassfish.api.deployment.archive.ReadableArchive;
 import java.util.Enumeration;
 import java.util.Vector;
 import java.util.zip.ZipEntry;
@@ -40,6 +41,7 @@ import java.io.IOException;
  */
 public abstract class JarArchive implements Archive {
 
+    protected ReadableArchive parentArchive;
 
     /**
      * Returns an enumeration of the module file entries with the
@@ -112,5 +114,23 @@ public abstract class JarArchive implements Archive {
         int endOfName = (lastDot != -1) ? lastDot : path.length();
         String name = path.substring(0, endOfName);
         return name;
+    }
+
+    /**
+     * set the parent archive for this archive
+     *
+     * @param parentArchive the parent archive
+     */
+    public void setParentArchive(ReadableArchive parentArchive) {
+        this.parentArchive = parentArchive;
+    }
+
+    /**
+     * get the parent archive of this archive
+     *
+     * @return the parent archive
+     */
+    public ReadableArchive getParentArchive() {
+        return parentArchive;
     }
 }

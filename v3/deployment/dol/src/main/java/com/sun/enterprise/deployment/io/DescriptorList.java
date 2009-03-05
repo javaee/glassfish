@@ -37,6 +37,7 @@
 package com.sun.enterprise.deployment.io;
 
 import javax.enterprise.deploy.shared.ModuleType;
+import com.sun.enterprise.deployment.util.XModuleType;
 
 /**
  * Repository of descriptors
@@ -78,17 +79,17 @@ public class DescriptorList {
 		DescriptorConstants.S1AS_APP_CLIENT_DD_ENTRY
 	};
 
-	public final static String [] getDescriptorsList (ModuleType moduleType) {
+	public final static String [] getDescriptorsList (XModuleType moduleType) {
 		if (moduleType == null) return null;
-		if (moduleType == ModuleType.EAR) {
+		if (moduleType == XModuleType.EAR) {
 			return earList;
-		} else if (moduleType == ModuleType.EJB) {
+		} else if (moduleType == XModuleType.EJB) {
 			return ejbList;
-		} else if (moduleType == ModuleType.WAR) {
+		} else if (moduleType == XModuleType.WAR) {
 			return warList;
-		} else if (moduleType == ModuleType.RAR) {
+		} else if (moduleType == XModuleType.RAR) {
 			return rarList;
-		} else if (moduleType == ModuleType.CAR) {
+		} else if (moduleType == XModuleType.CAR) {
 			return carList;
 		}
 		return null;

@@ -38,11 +38,17 @@ package com.sun.enterprise.deployment.annotation.impl;
 import com.sun.enterprise.deployment.annotation.introspection.ClassFile;
 import com.sun.enterprise.deployment.annotation.introspection.ConstantPoolInfo;
 import com.sun.enterprise.deployment.annotation.introspection.DefaultAnnotationScanner;
+import com.sun.enterprise.deployment.BundleDescriptor;
+import com.sun.enterprise.deployment.Application;
+import com.sun.logging.LogDomains;
 import org.glassfish.apf.Scanner;
 import org.glassfish.apf.impl.AnnotationUtils;
 import org.glassfish.apf.impl.JavaEEScanner;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
+import org.glassfish.deployment.common.DeploymentUtils;
+import org.glassfish.loader.util.ASClassLoaderUtil;
+import org.glassfish.api.deployment.archive.ReadableArchive;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -52,16 +58,23 @@ import java.nio.channels.ReadableByteChannel;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.net.URL;
+import java.net.URISyntaxException;
+
 
 /**
  * This is an abstract class of the Scanner interface for J2EE module.
  *
  * @author Shing Wai Chan
  */
-abstract class ModuleScanner<T> extends JavaEEScanner implements Scanner<T>, PostConstruct {
+public abstract class ModuleScanner<T> extends JavaEEScanner implements Scanner<T>, PostConstruct {
 
     @Inject
     DefaultAnnotationScanner defaultScanner;
@@ -73,6 +86,16 @@ abstract class ModuleScanner<T> extends JavaEEScanner implements Scanner<T>, Pos
 
     
     private Set<String> entries = new HashSet<String>();
+
+    protected Logger logger = LogDomains.getLogger(DeploymentUtils.class, 
+        LogDomains.DPL_LOGGER);
+
+    public void process(ReadableArchive archiveFile, 
+            T bundleDesc, ClassLoader classLoader) throws IOException {
+        File file = new File(archiveFile.getURI()); 
+        process(file, bundleDesc, classLoader);
+        addLibraryJars(bundleDesc, archiveFile); 
+    }
 
     /**
      * The component has been injected with any dependency and
@@ -197,5 +220,33 @@ abstract class ModuleScanner<T> extends JavaEEScanner implements Scanner<T>, Pos
             }
         }
         return elements;
+    }
+
+    protected void addLibraryJars(T bundleDesc, 
+        ReadableArchive moduleArchive) throws IOException {
+        List<URL> libraryURLs = new ArrayList<URL>();
+        Application app = ((BundleDescriptor)bundleDesc).getApplication();
+        ReadableArchive appArchive = moduleArchive.getParentArchive();
+        if (app != null && appArchive != null) {
+            // ear case
+            File appRoot = new File(appArchive.getURI());
+
+            // add libraries jars inside application lib directory
+            libraryURLs.addAll(ASClassLoaderUtil.getAppLibDirLibrariesAsList(
+                appRoot, app.getLibraryDirectory()));
+            
+            // add libraries referenced through manifest
+            Manifest manifest = ASClassLoaderUtil.getManifest(moduleArchive.getURI().getPath());
+            libraryURLs.addAll(ASClassLoaderUtil.getManifestClassPathAsURLs(
+                manifest, appRoot.getPath()));
+        }
+
+        for (URL url : libraryURLs) {
+            try {
+                addScanJar(new File(url.toURI()));
+            } catch (URISyntaxException uriEx) {
+                logger.log(Level.WARNING, "Malform URL: " + url, uriEx);
+            }
+        }       
     }
 }

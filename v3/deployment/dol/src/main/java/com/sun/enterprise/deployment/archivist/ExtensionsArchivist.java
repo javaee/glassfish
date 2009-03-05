@@ -3,10 +3,10 @@ package com.sun.enterprise.deployment.archivist;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.util.XModuleType;
+import com.sun.enterprise.deployment.annotation.impl.ModuleScanner;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.DeploymentUtils;
-import org.glassfish.apf.Scanner;
 import org.xml.sax.SAXParseException;
 import org.jvnet.hk2.annotations.Contract;
 
@@ -40,7 +40,7 @@ public abstract class ExtensionsArchivist  {
 
     public abstract <T extends RootDeploymentDescriptor> T getDefaultDescriptor();
 
-    public Scanner getScanner() {
+    public ModuleScanner getScanner() {
         return null;
     }
 

@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.*;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import com.sun.enterprise.deploy.shared.AbstractReadableArchive;
+
 
 /**
  * A <strong>lot</strong> of methods need to be written in order to implement
@@ -12,7 +14,7 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
  * easier to understand.
  * @author bnevins
  */
-abstract class ReadableArchiveAdapter implements ReadableArchive{
+abstract class ReadableArchiveAdapter extends AbstractReadableArchive{
 
     public long getEntrySize(String arg0) {
         throw new UnsupportedOperationException("Not supported yet.");

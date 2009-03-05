@@ -46,7 +46,7 @@ import java.net.URI;
  */
 @Service(name="file")
 @Scoped(PerLookup.class)
-public class FileArchive implements ReadableArchive, WritableArchive {
+public class FileArchive extends AbstractReadableArchive implements WritableArchive {
 
     @Inject
     ArchiveFactory archiveFactory;
