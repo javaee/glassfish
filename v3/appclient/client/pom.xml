@@ -50,6 +50,7 @@
     <name>App Client - client-side modules</name>
     <modules>
         <module>acc</module>
+        <module>acc-standalone</module>
         <!--  JWS support is not separated out yet into its own module
         <module>jws</module>
         -->
