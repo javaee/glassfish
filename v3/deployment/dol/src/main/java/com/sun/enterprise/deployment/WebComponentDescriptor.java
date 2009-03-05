@@ -382,6 +382,9 @@ public class WebComponentDescriptor extends Descriptor {
         toStringBuffer.append("\n urlPatterns ").append(urlPatterns);
         toStringBuffer.append("\n canonicalName ").append(canonicalName);
         toStringBuffer.append("\n loadOnStartUp ").append(loadOnStartUp);
+        toStringBuffer.append("\n enabled ").append(enabled);
+        toStringBuffer.append("\n asyncSupported ").append(asyncSupported);
+        toStringBuffer.append("\n asyncTimeout ").append(asyncTimeout);
         toStringBuffer.append("\n securityRoleReferences ").append(securityRoleReferences);
         if (isServlet()) {
             toStringBuffer.append("\n servlet className ").append(getWebComponentImplementation());
