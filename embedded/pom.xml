@@ -89,7 +89,6 @@
 
   <modules>
     <module>api</module>
-    <module>samples</module>
   </modules>
 
 
@@ -102,6 +101,8 @@
             </activation>
             <modules>
 				<module>packager</module>
+				<!-- samples needs packager -->
+    			<module>samples</module>
             </modules>
         </profile>
 	</profiles>
