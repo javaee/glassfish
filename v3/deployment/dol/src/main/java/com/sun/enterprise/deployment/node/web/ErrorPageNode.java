@@ -79,7 +79,10 @@ public class ErrorPageNode extends DeploymentDescriptorNode {
         if (exceptionType!=null && exceptionType.length()!=0) {
             appendTextChild(myNode, WebTagNames.EXCEPTION_TYPE, exceptionType);
         } else {
-            appendTextChild(myNode, WebTagNames.ERROR_CODE, descriptor.getErrorSignifierAsString());
+            String errorSignifier = descriptor.getErrorSignifierAsString();
+            if (errorSignifier != null) {
+                appendTextChild(myNode, WebTagNames.ERROR_CODE, errorSignifier);
+            }
         }
         appendTextChild(myNode, WebTagNames.LOCATION, descriptor.getLocation());
         return myNode;

@@ -29,7 +29,7 @@ package com.sun.enterprise.deployment;
 */
 
 public class ErrorPageDescriptor implements java.io.Serializable{
-    private int errorCode;
+    private int errorCode = -1;  // none
     private String exceptionType;
     private String location;
     
@@ -58,12 +58,20 @@ public class ErrorPageDescriptor implements java.io.Serializable{
     public void setErrorCode(int errorCode) {
 	this.errorCode = errorCode;
     }
-	/** Return the error code as a string if there is no exception type, or the exception type if the error code is -1.*/
+	/**
+     *  If there is an exception type, then the exception type is returned.
+     *  Otherwise, if the error code is not -1, then the error code is returned as a string.
+     *  If the error code is -1, then nul is returned.
+     */
     public String getErrorSignifierAsString() {
-	if ("".equals(this.getExceptionType())) {
-	    return (new Integer(this.getErrorCode())).toString();
-	}
-	return this.getExceptionType();
+        if ("".equals(this.getExceptionType())) {
+           if (getErrorCode() == -1) {
+               return null;
+           } else {
+               return String.valueOf(this.getErrorCode());
+           }
+        }
+        return this.getExceptionType();
     }
     /**Sets the error code if the argument is parsable as an int, or the exception type else.*/
     public void setErrorSignifierAsString(String errorSignifier) {
