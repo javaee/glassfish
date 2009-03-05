@@ -47,7 +47,7 @@ public class WebTest {
         System.out.println("Connecting to: " + url.toString());
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setConnectTimeout(10000);
+        conn.setReadTimeout(10000);
         conn.connect();
         if (conn.getResponseCode() != 200) {
             throw new Exception("Unexpected return code: " +
