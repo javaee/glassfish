@@ -141,7 +141,11 @@ public class ServletNode extends DisplayableComponentNode {
             descriptor.setServlet(false);
             descriptor.setWebComponentImplementation(value);
         } else if (WebTagNames.LOAD_ON_STARTUP.equals(element.getQName())) {
-            descriptor.setLoadOnStartUp(Integer.valueOf(value));
+            if (value.trim().equals("")) {
+                descriptor.setLoadOnStartUp(new Integer(Integer.MAX_VALUE));
+            } else {
+                descriptor.setLoadOnStartUp(Integer.valueOf(value));
+            }
         } else if (WebTagNames.ENABLED.equals(element.getQName())) {
             descriptor.setEnabled(Boolean.parseBoolean(value));
         } else if (WebTagNames.ASYNC_SUPPORTED.equals(element.getQName())) {

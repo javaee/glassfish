@@ -556,6 +556,7 @@ public class SaxParserHandler extends DefaultHandler {
      * @return boolean indicating whether empty values should be recorded for this element
      */
     private boolean allowsEmptyValue(String elementName) {
-        return (elementName.equals(ApplicationTagNames.LIBRARY_DIRECTORY));
+        return (elementName.equals(ApplicationTagNames.LIBRARY_DIRECTORY) || 
+            elementName.equals(WebTagNames.LOAD_ON_STARTUP));
     }
 }
