@@ -62,7 +62,7 @@ public class PropertyChangeListenerTest  extends ConfigApiTest implements Config
             }
         }, prop);
 
-        Transactions.get().waitForDrain();
+        getHabitat().getComponent(Transactions.class).waitForDrain();
         assertTrue(result);
         ((ObservableBean) ConfigSupport.getImpl(target)).removeListener(this);
     }

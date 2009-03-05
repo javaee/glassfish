@@ -78,7 +78,7 @@ public final class AMXConfigLoader extends MBeanImplBase
     private final MBeanServer mMBeanServer;
     private volatile AMXConfigLoaderThread mLoaderThread;
     
-    private final Transactions  mTransactions = Transactions.get();
+    private final Transactions  mTransactions;
     private final Logger mLogger = ImplUtil.getLogger();
 
     private final PendingConfigBeans    mPendingConfigBeans;
@@ -86,8 +86,10 @@ public final class AMXConfigLoader extends MBeanImplBase
         public
     AMXConfigLoader(
         final MBeanServer mbeanServer,
-        final PendingConfigBeans pending )
+        final PendingConfigBeans pending,
+        final Transactions transactions)
     {
+        mTransactions = transactions;
         if ( mTransactions == null ) throw new IllegalStateException();
         
         mPendingConfigBeans = pending;

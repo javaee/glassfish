@@ -117,7 +117,7 @@ public class JDBCResourceManager implements ResourceManager {
 
                 public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
 
-                    JdbcResource newResource = ConfigSupport.createChildOf(param, JdbcResource.class);
+                    JdbcResource newResource = param.createChild(JdbcResource.class);
                     newResource.setJndiName(jndiName);//jdbcResource.getJndiName());
                     if (description != null) {
                         newResource.setDescription(description);
@@ -126,8 +126,7 @@ public class JDBCResourceManager implements ResourceManager {
                     newResource.setEnabled(enabled);
                     if (props != null) {
                         for ( java.util.Map.Entry e : props.entrySet()) {
-                            Property prop = ConfigSupport.createChildOf(newResource, 
-                                Property.class);
+                            Property prop = newResource.createChild(Property.class);
                             prop.setName((String)e.getKey());
                             prop.setValue((String)e.getValue());
                             newResource.getProperty().add(prop);

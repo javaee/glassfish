@@ -69,6 +69,9 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
     @Inject
     Domain domain;
 
+    @Inject
+    ConfigSupport config;
+
     @Param(primary = true)
     String target;
 
@@ -227,7 +230,7 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
         }
         if (!changes.isEmpty()) {
             try {
-                ConfigSupport.apply(changes);
+                config.apply(changes);
                 context.getActionReport().setActionExitCode(ActionReport.ExitCode.SUCCESS);                
             } catch (TransactionFailure transactionFailure) {
                 context.getActionReport().setActionExitCode(ActionReport.ExitCode.FAILURE);

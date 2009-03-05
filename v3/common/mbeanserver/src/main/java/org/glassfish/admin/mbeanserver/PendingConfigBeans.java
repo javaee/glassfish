@@ -41,6 +41,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.CountDownLatch;
 
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.CageBuilder;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.PostConstruct;
@@ -67,6 +68,9 @@ import java.beans.PropertyChangeEvent;
 @Service(name="PendingConfigBeans")
 public final class PendingConfigBeans implements CageBuilder, PostConstruct, TransactionListener
 {
+    @Inject
+    Transactions transactions;
+    
     private static void debug( final String s ) { System.out.println(s); }
     
     private final LinkedBlockingQueue<PendingConfigBeanJob> mJobs = new LinkedBlockingQueue<PendingConfigBeanJob>();
@@ -84,7 +88,7 @@ public final class PendingConfigBeans implements CageBuilder, PostConstruct, Tra
     public void postConstruct()
     {
         //debug( "PendingConfigBeans.postConstruct" );
-        Transactions.get().addTransactionsListener(this);
+        transactions.addTransactionsListener(this);
     }
     
     /**
@@ -212,8 +216,8 @@ public final class PendingConfigBeans implements CageBuilder, PostConstruct, Tra
     public synchronized void swapTransactionListener( final TransactionListener newListener )
     {
         //debug( "PendingConfigBeans.swapTransactionListener()" );
-        Transactions.get().addTransactionsListener(newListener);
-        Transactions.get().removeTransactionsListener(this);
+        transactions.addTransactionsListener(newListener);
+        transactions.removeTransactionsListener(this);
     }
     
     /**

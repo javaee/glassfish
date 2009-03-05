@@ -91,22 +91,24 @@ public class DirectCreationTest extends ConfigPersistence {
             throw new RuntimeException(e);
         }
 
+        ConfigSupport support = getHabitat().getComponent(ConfigSupport.class);
+
         for (Class<?> subType : subTypes) {
             if (subType.getName().endsWith("HttpListener")) {
                 Map<String, String> configChanges = new HashMap<String, String>();
                 configChanges.put("id", "funky-listener");
-                ConfigSupport.createAndSet(serviceBean, (Class<? extends ConfigBeanProxy>)subType, configChanges);
+                support.createAndSet(serviceBean, (Class<? extends ConfigBeanProxy>)subType, configChanges);
                 break;
             }
         }
 
-        ConfigSupport.createAndSet(serviceBean, AccessLog.class, (List) null);
+        support.createAndSet(serviceBean, AccessLog.class, (List) null);
 
         List<ConfigSupport.AttributeChanges> profilerChanges = new ArrayList<ConfigSupport.AttributeChanges>();
         String[] values = { "-Xmx512m", "-RFtrq", "-Xmw24" };
         ConfigSupport.MultipleAttributeChanges multipleChanges = new ConfigSupport.MultipleAttributeChanges("jvm-options", values );
         profilerChanges.add(multipleChanges);
-        ConfigSupport.createAndSet((ConfigBean) ConfigBean.unwrap(habitat.getComponent(JavaConfig.class))
+        support.createAndSet((ConfigBean) ConfigBean.unwrap(habitat.getComponent(JavaConfig.class))
                 , Profiler.class, profilerChanges);
     }
 
@@ -114,8 +116,8 @@ public class DirectCreationTest extends ConfigPersistence {
     public void directAttributeNameTest() throws ClassNotFoundException {
 
         boolean foundOne=false;
-        for (String attrName : ConfigSupport.getAttributesNames(
-                (ConfigBean) ConfigBean.unwrap(habitat.getComponent(JavaConfig.class)))) {
+        for (String attrName :
+                ((ConfigBean) ConfigBean.unwrap(habitat.getComponent(JavaConfig.class))).model.getAttributeNames()) {
             assertTrue(attrName!=null);
             foundOne=true;
         }

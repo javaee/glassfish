@@ -6,6 +6,7 @@ import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.impl.ModulesRegistryImpl;
 import com.sun.enterprise.module.impl.ModuleImpl;
+import com.sun.enterprise.module.impl.HK2Factory;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.hk2.component.InhabitantsParser;
 import com.sun.hk2.component.Holder;
@@ -71,6 +72,9 @@ public class ASMainStatic extends AbstractMain {
         // our unique class loader.
         ClassLoader singleClassLoader = null;
 
+        // initialize hk2
+        HK2Factory.initialize();
+
         // set up the cache.
         final File cacheDir = (System.getProperty("glassfish.static.cache.dir") != null)?new File(System.getProperty("glassfish.static.cache.dir"), "static-cache/gf/"):new File(domainDir, "static-cache/gf/");
         out = new File(cacheDir, "glassfish.jar");
@@ -114,6 +118,12 @@ public class ASMainStatic extends AbstractMain {
                 if (m == null)
                     return proxyMod[0];
                 return m;
+            }
+
+            @Override
+            public Collection<Module> getModules(String moduleName) {
+                // I could not care less about the modules names
+                return getModules();
             }
 
             @Override

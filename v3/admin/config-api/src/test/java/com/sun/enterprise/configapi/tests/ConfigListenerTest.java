@@ -69,6 +69,7 @@ public class ConfigListenerTest extends ConfigApiTest {
     @Test
     public void changedTest() throws TransactionFailure {
 
+        Transactions transactions = getHabitat().getComponent(Transactions.class);
 
         ConstructorWomb<HttpListenerContainer> womb = new ConstructorWomb<HttpListenerContainer>(HttpListenerContainer.class, habitat, null);
         HttpListenerContainer container = womb.get(null);
@@ -81,7 +82,7 @@ public class ConfigListenerTest extends ConfigApiTest {
             }
         }, container.httpListener);
 
-        Transactions.get().waitForDrain();
+        transactions.waitForDrain();
         assertTrue(container.received);
         ObservableBean bean = (ObservableBean) ConfigSupport.getImpl(container.httpListener);
         bean.removeListener(container);
@@ -99,6 +100,8 @@ public class ConfigListenerTest extends ConfigApiTest {
     @Test
     public void removeListenerTest() throws TransactionFailure {
 
+        Transactions transactions = getHabitat().getComponent(Transactions.class);
+        
         ConstructorWomb<HttpListenerContainer> womb = new ConstructorWomb<HttpListenerContainer>(HttpListenerContainer.class, habitat, null);
         HttpListenerContainer container = womb.get(null);
 
@@ -113,7 +116,7 @@ public class ConfigListenerTest extends ConfigApiTest {
             }
         }, container.httpListener);
 
-        Transactions.get().waitForDrain();
+        transactions.waitForDrain();
         assertFalse(container.received);
 
         // put back the right values in the domain to avoid test collisions        

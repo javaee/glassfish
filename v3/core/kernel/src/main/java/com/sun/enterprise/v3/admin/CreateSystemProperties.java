@@ -116,7 +116,7 @@ public class CreateSystemProperties implements AdminCommand {
                         }
                         
                         // create system-property
-                        SystemProperty newSysProp = ConfigSupport.createChildOf(param, SystemProperty.class);
+                        SystemProperty newSysProp = param.createChild(SystemProperty.class);
                         newSysProp.setName(propName);
                         newSysProp.setValue(properties.getProperty(propName));
                         param.getSystemProperty().add(newSysProp);                    

@@ -77,7 +77,7 @@ public class ConfigAttributeSetTest  extends ConfigApiTest implements ConfigList
         assertEquals(port, "8090");
 
         // ensure events are delivered.
-       Transactions.get().waitForDrain();
+        habitat.getComponent(Transactions.class).waitForDrain();
         
         // finally
         bean.removeListener(this);

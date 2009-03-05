@@ -148,7 +148,7 @@ public class CreateAdminObject implements AdminCommand {
 
                 public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
 
-                    AdminObjectResource newResource = ConfigSupport.createChildOf(param, AdminObjectResource.class);
+                    AdminObjectResource newResource = param.createChild(AdminObjectResource.class);
                     newResource.setJndiName(jndiName);
                     if (description != null) {
                         newResource.setDescription(description);
@@ -158,8 +158,7 @@ public class CreateAdminObject implements AdminCommand {
                     newResource.setEnabled(enabled.toString());
                     if (properties != null) {
                         for ( java.util.Map.Entry e : properties.entrySet()) {
-                            Property prop = ConfigSupport.createChildOf(newResource,
-                                Property.class);
+                            Property prop = newResource.createChild(Property.class);
                             prop.setName((String)e.getKey());
                             prop.setValue((String)e.getValue());
                             newResource.getProperty().add(prop);

@@ -79,7 +79,7 @@ public class ConcurrentModificationsTest extends ConfigApiTest {
             public Object run(Resources writeableResources) throws PropertyVetoException, TransactionFailure {
 
                 assertTrue(writeableResources!=null);
-                JdbcResource newResource = ConfigSupport.createChildOf(writeableResources, JdbcResource.class);
+                JdbcResource newResource = writeableResources.createChild(JdbcResource.class);
                 newResource.setJndiName("foo");
                 newResource.setDescription("Random ");
                 newResource.setPoolName("bar");

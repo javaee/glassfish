@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.After;
 import static org.junit.Assert.assertTrue;
 import org.jvnet.hk2.config.*;
+import org.jvnet.hk2.component.Habitat;
 import org.glassfish.tests.utils.Utils;
 import org.glassfish.config.support.GlassFishConfigBean;
 
@@ -31,15 +32,23 @@ public class TranslatedViewCreationTest extends ConfigApiTest {
 
     HttpService httpService = null;
     List<PropertyChangeEvent> events;
+    Habitat habitat;
 
     @Before
     public void setup() {
         System.setProperty(propName, "/foo/bar/docroot");
+        habitat = Utils.getNewHabitat(this);
+
+    }
+
+    @Override
+    public Habitat getHabitat() {
+        return habitat;
     }
 
     @Test
     public void createVirtualServerTest() throws TransactionFailure {
-        httpService = Utils.getNewHabitat(this).getComponent(HttpService.class);
+        httpService = getHabitat().getComponent(HttpService.class);
         final TransactionListener listener = new TransactionListener() {
                 public void transactionCommited(List<PropertyChangeEvent> changes) {
                     events = changes;
@@ -49,15 +58,17 @@ public class TranslatedViewCreationTest extends ConfigApiTest {
             }
         };
 
+        Transactions transactions = getHabitat().getComponent(Transactions.class);
+        
         try {
-            Transactions.get().addTransactionsListener(listener);
+            transactions.addTransactionsListener(listener);
             assertTrue(httpService!=null);
 
             logger.fine("Max connections = " + httpService.getKeepAlive().getMaxConnections());
             ConfigSupport.apply(new SingleConfigCode<HttpService>() {
 
                 public Object run(HttpService param) throws PropertyVetoException, TransactionFailure {
-                    VirtualServer newVirtualServer = ConfigSupport.createChildOf(param, VirtualServer.class);
+                    VirtualServer newVirtualServer = param.createChild(VirtualServer.class);
                     newVirtualServer.setDocroot("${"+propName+"}");
                     newVirtualServer.setId("translated-view-creation");
                     param.getVirtualServer().add(newVirtualServer);
@@ -71,7 +82,7 @@ public class TranslatedViewCreationTest extends ConfigApiTest {
             String docRoot = vs.getDocroot();
             assertTrue(docRoot.equals("/foo/bar/docroot"));
 
-            Transactions.get().waitForDrain();
+            transactions.waitForDrain();
 
             assertTrue(events!=null);
             logger.fine("Number of events " + events.size());
@@ -92,7 +103,7 @@ public class TranslatedViewCreationTest extends ConfigApiTest {
             assertTrue(false);
 
         } finally {
-            Transactions.get().removeTransactionsListener(listener);
+            transactions.removeTransactionsListener(listener);
         }
 
     }

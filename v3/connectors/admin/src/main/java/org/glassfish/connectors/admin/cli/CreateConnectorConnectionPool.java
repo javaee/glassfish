@@ -179,8 +179,7 @@ public class CreateConnectorConnectionPool implements AdminCommand {
 
                 public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
 
-                    ConnectorConnectionPool newResource =
-                            ConfigSupport.createChildOf(param, ConnectorConnectionPool.class);
+                    ConnectorConnectionPool newResource = param.createChild(ConnectorConnectionPool.class);
                     
                     newResource.setPoolResizeQuantity(poolresize);
                     newResource.setMaxWaitTimeInMillis(maxwait);
@@ -216,8 +215,7 @@ public class CreateConnectorConnectionPool implements AdminCommand {
                     newResource.setName(poolname);
                     if (properties != null) {
                         for ( java.util.Map.Entry e : properties.entrySet()) {
-                            Property prop = ConfigSupport.createChildOf(newResource,
-                                Property.class);
+                            Property prop = newResource.createChild(Property.class);
                             prop.setName((String)e.getKey());
                             prop.setValue((String)e.getValue());
                             newResource.getProperty().add(prop);

@@ -706,8 +706,7 @@ public class ApplicationLifecycle implements Deployment {
                         !propName.startsWith(
                             DeploymentProperties.APP_CONFIG))
                     {
-                        Property prop = ConfigSupport.createChildOf(app,
-                            Property.class);
+                        Property prop = app.createChild(Property.class);
                         app.getProperty().add(prop);
                         prop.setName(propName);
                         prop.setValue(moduleProps.getProperty(propName));
@@ -715,8 +714,7 @@ public class ApplicationLifecycle implements Deployment {
                 }
 
                 // adding the application-ref element
-                ApplicationRef appRef = ConfigSupport.createChildOf(
-                        params[1], ApplicationRef.class);
+                ApplicationRef appRef = params[1].createChild(ApplicationRef.class);
                 appRef.setRef(moduleProps.getProperty(ServerTags.NAME));
                 if (moduleProps.getProperty(
                     ServerTags.VIRTUAL_SERVERS) != null) {

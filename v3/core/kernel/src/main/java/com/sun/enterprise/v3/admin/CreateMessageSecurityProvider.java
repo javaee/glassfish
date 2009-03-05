@@ -199,8 +199,7 @@ public class CreateMessageSecurityProvider implements AdminCommand {
                 ConfigSupport.apply(new SingleConfigCode<MessageSecurityConfig>() {
                     public Object run(MessageSecurityConfig param) 
                     throws PropertyVetoException, TransactionFailure {                        
-                        ProviderConfig newPC = ConfigSupport.createChildOf(
-                                               param, ProviderConfig.class);
+                        ProviderConfig newPC = param.createChild(ProviderConfig.class);
                         populateProviderConfigElement(newPC);                    
                         param.getProviderConfig().add(newPC);
                         // Depending on the providerType of the new provider
@@ -243,14 +242,11 @@ public class CreateMessageSecurityProvider implements AdminCommand {
                 ConfigSupport.apply(new SingleConfigCode<SecurityService>() {
                     public Object run(SecurityService param) 
                     throws PropertyVetoException, TransactionFailure {                        
-                        MessageSecurityConfig newMSC = 
-                            ConfigSupport.createChildOf(param, 
-                                MessageSecurityConfig.class);
+                        MessageSecurityConfig newMSC = param.createChild(MessageSecurityConfig.class);
                         newMSC.setAuthLayer(authLayer);
                         param.getMessageSecurityConfig().add(newMSC);
 
-                        ProviderConfig newPC = ConfigSupport.createChildOf(
-                                               newMSC, ProviderConfig.class);
+                        ProviderConfig newPC = newMSC.createChild(ProviderConfig.class);
                         
                         populateProviderConfigElement(newPC);                    
                         newMSC.getProviderConfig().add(newPC);
@@ -297,16 +293,14 @@ public class CreateMessageSecurityProvider implements AdminCommand {
         
         // create a new RequestPolicy config and add as child of this 
         // new Provider Config
-        RequestPolicy reqPolicy = ConfigSupport.createChildOf(
-                                  newProviderConfig, RequestPolicy.class);        
+        RequestPolicy reqPolicy = newProviderConfig.createChild(RequestPolicy.class);
         reqPolicy.setAuthSource(requestAuthSource);
         reqPolicy.setAuthRecipient(requestAuthRecipient);        
         newProviderConfig.setRequestPolicy(reqPolicy);
         
         // create a new ResponsePolicy config and add as child of this 
         // new Provider Config
-        ResponsePolicy respPolicy = ConfigSupport.createChildOf(
-                                    newProviderConfig, ResponsePolicy.class);
+        ResponsePolicy respPolicy = newProviderConfig.createChild(ResponsePolicy.class);
         respPolicy.setAuthSource(responseAuthSource);
         respPolicy.setAuthRecipient(responseAuthRecipient);        
         newProviderConfig.setResponsePolicy(respPolicy);
@@ -314,8 +308,7 @@ public class CreateMessageSecurityProvider implements AdminCommand {
         // add properties
         if (properties != null) {
             for (Object propname: properties.keySet()) {
-                Property newprop = ConfigSupport.createChildOf(
-                                    newProviderConfig, Property.class);
+                Property newprop = newProviderConfig.createChild(Property.class);
                 newprop.setName((String) propname);
                 newprop.setValue(properties.getProperty((String) propname));            
                 newProviderConfig.getProperty().add(newprop);    

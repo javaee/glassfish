@@ -90,8 +90,10 @@ public abstract class ConfigPersistence extends ConfigApiTest {
 
             }
         };
+        Transactions transactions = getHabitat().getComponent(Transactions.class);
+        
         try {
-            Transactions.get().addTransactionsListener(testListener);
+            transactions.addTransactionsListener(testListener);
 
             doTest();
         } catch(TransactionFailure f) {
@@ -99,8 +101,8 @@ public abstract class ConfigPersistence extends ConfigApiTest {
             throw f;
 
         } finally {
-            Transactions.get().waitForDrain();
-            Transactions.get().removeTransactionsListener(testListener);
+            transactions.waitForDrain();
+            transactions.removeTransactionsListener(testListener);
         }
 
         // now check if we persisted correctly...

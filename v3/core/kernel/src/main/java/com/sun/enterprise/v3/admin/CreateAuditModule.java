@@ -131,8 +131,7 @@ public class CreateAuditModule implements AdminCommand {
 
                 public Object run(SecurityService param) 
                 throws PropertyVetoException, TransactionFailure {
-                AuditModule newAuditModule = ConfigSupport.createChildOf(
-                                            param, AuditModule.class);
+                AuditModule newAuditModule = param.createChild(AuditModule.class);
                     populateAuditModuleElement(newAuditModule);                    
                     param.getAuditModule().add(newAuditModule);
                     return newAuditModule;
@@ -157,7 +156,7 @@ public class CreateAuditModule implements AdminCommand {
         newAuditModule.setClassname(className);
         if (properties != null) {
             for (Object propname: properties.keySet()) {
-                Property newprop = ConfigSupport.createChildOf(newAuditModule, Property.class);
+                Property newprop = newAuditModule.createChild(Property.class);
                 newprop.setName((String) propname);
                 newprop.setValue(properties.getProperty((String) propname));            
                 newAuditModule.getProperty().add(newprop);    

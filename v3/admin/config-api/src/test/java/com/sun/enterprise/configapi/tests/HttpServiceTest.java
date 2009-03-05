@@ -79,7 +79,7 @@ public class HttpServiceTest extends ConfigApiTest {
 
         ConfigSupport.apply((new SingleConfigCode<HttpService>() {
             public Object run(HttpService okToChange) throws PropertyVetoException, TransactionFailure {
-                    KeepAlive newKeepAlive = ConfigSupport.createChildOf(okToChange, KeepAlive.class);
+                    KeepAlive newKeepAlive = okToChange.createChild(KeepAlive.class);
                 newKeepAlive.setMaxConnections(httpService.getKeepAlive().getMaxConnections());
                 newKeepAlive.setThreadCount("3");
                 newKeepAlive.setTimeoutInSeconds("65");
@@ -114,7 +114,7 @@ public class HttpServiceTest extends ConfigApiTest {
 
             ConfigSupport.apply((new SingleConfigCode<HttpService>() {
             public Object run(HttpService okToChange) throws PropertyVetoException, TransactionFailure {
-                KeepAlive newKeepAlive = ConfigSupport.createChildOf(okToChange,KeepAlive.class);
+                KeepAlive newKeepAlive = okToChange.createChild(KeepAlive.class);
                 newKeepAlive.setMaxConnections("500");
                 newKeepAlive.setThreadCount("5");
                 newKeepAlive.setTimeoutInSeconds("65");

@@ -251,7 +251,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
 
                     public Object run(Server param) throws PropertyVetoException, TransactionFailure {
 
-                        ResourceRef newResourceRef = ConfigSupport.createChildOf(param, ResourceRef.class);
+                        ResourceRef newResourceRef = param.createChild(ResourceRef.class);
                         newResourceRef.setEnabled(enabled);
                         newResourceRef.setRef(refName);
                         param.getResourceRef().add(newResourceRef);

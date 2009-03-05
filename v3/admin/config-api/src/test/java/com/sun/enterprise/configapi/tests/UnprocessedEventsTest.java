@@ -51,28 +51,33 @@ public class UnprocessedEventsTest  extends ConfigApiTest
         // Let's register a listener
         ObservableBean bean = (ObservableBean) ConfigSupport.getImpl(listener);
         bean.addListener(this);
-        Transactions.get().addTransactionsListener(this);
+        Transactions transactions = getHabitat().getComponent(Transactions.class);
 
-        ConfigSupport.apply(new SingleConfigCode<HttpListener>() {
-            public Object run(HttpListener param) throws PropertyVetoException, TransactionFailure {
-                param.setPort("8908");
-                return null;
-            }
-        }, listener);
+        try {
+            transactions.addTransactionsListener(this);
 
-        // check the result.
-        String port = listener.getPort();
-        assertEquals(port, "8908");
+            ConfigSupport.apply(new SingleConfigCode<HttpListener>() {
+                public Object run(HttpListener param) throws PropertyVetoException, TransactionFailure {
+                    param.setPort("8908");
+                    return null;
+                }
+            }, listener);
 
-        // ensure events are delivered.
-       Transactions.get().waitForDrain();
-        assertNotNull(unprocessed);
-        
-        // finally
-        bean.removeListener(this);
+            // check the result.
+            String port = listener.getPort();
+            assertEquals(port, "8908");
 
-        // check we recevied the event
-        Transactions.get().removeTransactionsListener(this);
+            // ensure events are delivered.
+            transactions.waitForDrain();
+            assertNotNull(unprocessed);
+
+            // finally
+            bean.removeListener(this);
+        } finally {
+
+            // check we recevied the event
+            transactions.removeTransactionsListener(this);
+        }
 
     }
 

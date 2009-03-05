@@ -781,7 +781,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             if (prop == null){
                 ConfigSupport.apply(new SingleConfigCode<AdminService>() {
                     public Object run(AdminService adminService) throws PropertyVetoException, TransactionFailure {
-                        Property newProp = ConfigSupport.createChildOf(adminService, Property.class);
+                        Property newProp = adminService.createChild(Property.class);
                         adminService.getProperty().add(newProp);
                         newProp.setName(ServerTags.ADMIN_CONSOLE_VERSION);
                         newProp.setValue(downloadedVersion);

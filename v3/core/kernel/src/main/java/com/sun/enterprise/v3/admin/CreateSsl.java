@@ -170,7 +170,7 @@ public class CreateSsl implements AdminCommand {
 
                 public Object run(IiopListener param) 
                 throws PropertyVetoException, TransactionFailure {                        
-                    Ssl newSsl = ConfigSupport.createChildOf(param, Ssl.class);
+                    Ssl newSsl = param.createChild(Ssl.class);
                     populateSslElement(newSsl);                    
                     param.setSsl(newSsl);
                     return newSsl;                }
@@ -214,7 +214,7 @@ public class CreateSsl implements AdminCommand {
 
                 public Object run(HttpListener param) 
                 throws PropertyVetoException, TransactionFailure {
-                Ssl newSsl = ConfigSupport.createChildOf(param, Ssl.class);
+                Ssl newSsl = param.createChild(Ssl.class);
                     populateSslElement(newSsl);                    
                     param.setSsl(newSsl);
                     return newSsl;

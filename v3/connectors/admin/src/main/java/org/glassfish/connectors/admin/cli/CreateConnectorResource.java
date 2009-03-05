@@ -136,7 +136,7 @@ public class CreateConnectorResource implements AdminCommand {
 
                 public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
 
-                    ConnectorResource newResource = ConfigSupport.createChildOf(param, ConnectorResource.class);
+                    ConnectorResource newResource = param.createChild(ConnectorResource.class);
                     newResource.setJndiName(jndiName);
                     if (description != null) {
                         newResource.setDescription(description);
@@ -145,9 +145,8 @@ public class CreateConnectorResource implements AdminCommand {
                     newResource.setEnabled(enabled.toString());
                     if (properties != null) {
                         for ( java.util.Map.Entry e : properties.entrySet()) {
-                            Property prop = ConfigSupport.createChildOf(newResource,
-                                Property.class);
-                            prop.setName((String)e.getKey());
+                            Property prop = newResource.createChild(Property.class);
+                            prop.setName((String)e.getKey());       
                             prop.setValue((String)e.getValue());
                             newResource.getProperty().add(prop);
                         }

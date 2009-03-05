@@ -31,6 +31,7 @@ import org.glassfish.admin.amx.util.SingletonEnforcer;
 import org.glassfish.admin.mbeanserver.AppserverMBeanServerFactory;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.config.Transactions;
 
 import javax.management.JMException;
 import javax.management.MBeanServer;
@@ -71,6 +72,9 @@ public final class AMXStartupService
     
     @Inject
     InjectedValues  mInjectedValues;
+
+    @Inject
+    Transactions mTransactions;
     
     @Inject//(name=AppserverMBeanServerFactory.OFFICIAL_MBEANSERVER)
     private MBeanServer mMBeanServer;
@@ -183,7 +187,7 @@ public final class AMXStartupService
             mJ2EELoader.start();
             
             // load config MBeans
-            mConfigLoader = new AMXConfigLoader(mMBeanServer, mPendingConfigBeans);
+            mConfigLoader = new AMXConfigLoader(mMBeanServer, mPendingConfigBeans, mTransactions);
             mConfigLoader.start();
             SingletonEnforcer.register( AMXConfigLoader.class, mConfigLoader );
             

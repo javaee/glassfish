@@ -133,8 +133,7 @@ public class JDBCConnectionPoolManager implements ResourceManager{
 
                 public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
 
-                    JdbcConnectionPool newResource = 
-                            ConfigSupport.createChildOf(param, JdbcConnectionPool.class);
+                    JdbcConnectionPool newResource = param.createChild(JdbcConnectionPool.class);
                     newResource.setWrapJdbcObjects(wrapJDBCObjects);
                     if (validationtable != null)
                         newResource.setValidationTableName(
@@ -189,8 +188,7 @@ public class JDBCConnectionPoolManager implements ResourceManager{
                     newResource.setName(jdbcconnectionpoolid);
                     if (props != null) {
                         for ( java.util.Map.Entry e : props.entrySet()) {
-                            Property prop = ConfigSupport.createChildOf(newResource, 
-                                Property.class);
+                            Property prop = newResource.createChild(Property.class);
                             prop.setName((String)e.getKey());
                             prop.setValue((String)e.getValue());
                             newResource.getProperty().add(prop);

@@ -43,7 +43,7 @@ public class ParentConfigListenerTest extends ConfigApiTest {
         ConfigSupport.apply(new SingleConfigCode<HttpService>() {
 
             public Object run(HttpService param) throws PropertyVetoException, TransactionFailure {
-                HttpListener newListener = ConfigSupport.createChildOf(param, HttpListener.class);
+                HttpListener newListener = param.createChild(HttpListener.class);
                 newListener.setId("Funky-Listener");
                 newListener.setPort("8078");
                 param.getHttpListener().add(newListener);
@@ -51,7 +51,7 @@ public class ParentConfigListenerTest extends ConfigApiTest {
             }
         }, container.httpService);
 
-        Transactions.get().waitForDrain();
+        getHabitat().getComponent(Transactions.class).waitForDrain();
         assertTrue(container.received);
         ObservableBean bean = (ObservableBean) ConfigSupport.getImpl(container.httpService);
         bean.removeListener(container);

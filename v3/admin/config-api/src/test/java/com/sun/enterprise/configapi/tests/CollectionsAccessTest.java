@@ -76,7 +76,7 @@ public class CollectionsAccessTest extends ConfigApiTest  {
             public Object run(Applications param) throws PropertyVetoException, TransactionFailure {
                 // this is the bug, we should not get the list from apps but from param.
                 List<Named> modules = apps.getModules();
-                EjbModule m = ConfigSupport.createChildOf(param, EjbModule.class);
+                EjbModule m = param.createChild(EjbModule.class);
                 modules.add(m); // should throw an exception
                 return m;
             }
@@ -90,7 +90,7 @@ public class CollectionsAccessTest extends ConfigApiTest  {
         ConfigSupport.apply(new SingleConfigCode<Applications>() {
             public Object run(Applications param) throws PropertyVetoException, TransactionFailure {
                 List<Named> modules = param.getModules();
-                EjbModule m = ConfigSupport.createChildOf(param, EjbModule.class);
+                EjbModule m = param.createChild(EjbModule.class);
                 modules.add(m);
                 modules.remove(m);
                 return m;

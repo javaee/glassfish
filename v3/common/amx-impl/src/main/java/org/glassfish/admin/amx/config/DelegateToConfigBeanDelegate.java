@@ -503,7 +503,8 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
            //     CollectionUtil.toString(amxAttrs.keySet()) + "} mapped to xml names {" + CollectionUtil.toString(xmlAttrs.keySet()) + "}");
             
             final MyTransactionListener  myListener = new MyTransactionListener( mConfigBean );
-            Transactions.get().addTransactionsListener(myListener);
+            final Transactions transactions = mConfigBean.getHabitat().getComponent(Transactions.class);
+            transactions.addTransactionsListener(myListener);
                 
             // results should contain only those that succeeded which will be all or none
             // depending on whether the transaction worked or not
@@ -522,9 +523,9 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
             }
             finally
             {
-                Transactions.get().waitForDrain();
+                transactions.waitForDrain();
 
-                Transactions.get().removeTransactionsListener(myListener);
+                transactions.removeTransactionsListener(myListener);
             }
         
             // determine later the best way to handle AttributeChangeNotification

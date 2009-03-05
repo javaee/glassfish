@@ -72,6 +72,7 @@ public class DirectAccessTest extends ConfigPersistence {
     public Habitat getHabitat() {
         return habitat;
     }
+        
 
     public void doTest() throws TransactionFailure {
         HttpService service = habitat.getComponent(HttpService.class);
@@ -92,7 +93,7 @@ public class DirectAccessTest extends ConfigPersistence {
         javaConfigChanges.put("jvm-options", "-XFooBar=false");
         changes.put(javaConfigBean, javaConfigChanges);
 
-        ConfigSupport.apply(changes);
+        getHabitat().getComponent(ConfigSupport.class).apply(changes);
     }
 
     public boolean assertResult(String s) {

@@ -75,8 +75,10 @@ public class TransactionListenerTest extends ConfigApiTest {
             }
         };
 
+        Transactions transactions = getHabitat().getComponent(Transactions.class);
+
         try {
-            Transactions.get().addTransactionsListener(listener);
+            transactions.addTransactionsListener(listener);
             assertTrue(httpService!=null);
 
             logger.fine("Max connections = " + httpService.getKeepAlive().getMaxConnections());
@@ -89,7 +91,7 @@ public class TransactionListenerTest extends ConfigApiTest {
             }, httpService.getKeepAlive());
             assertTrue(httpService.getKeepAlive().getMaxConnections().equals("500"));
 
-            Transactions.get().waitForDrain();
+            transactions.waitForDrain();
             
             assertTrue(events!=null);
             logger.fine("Number of events " + events.size());
@@ -99,7 +101,7 @@ public class TransactionListenerTest extends ConfigApiTest {
             assertTrue("500".equals(event.getNewValue().toString()));
             assertTrue("250".equals(event.getOldValue().toString()));
         } finally {
-            Transactions.get().removeTransactionsListener(listener);
+            transactions.removeTransactionsListener(listener);
         }
 
         // put back the right values in the domain to avoid test collisions

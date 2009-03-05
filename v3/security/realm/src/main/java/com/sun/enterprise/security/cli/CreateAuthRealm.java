@@ -138,8 +138,7 @@ public class CreateAuthRealm implements AdminCommand {
 
                 public Object run(SecurityService param) 
                 throws PropertyVetoException, TransactionFailure {
-                AuthRealm newAuthRealm = ConfigSupport.createChildOf(
-                                            param, AuthRealm.class);
+                AuthRealm newAuthRealm = param.createChild(AuthRealm.class);
                     populateAuthRealmElement(newAuthRealm);                    
                     param.getAuthRealm().add(newAuthRealm);
                     return newAuthRealm;
@@ -162,7 +161,7 @@ public class CreateAuthRealm implements AdminCommand {
         newAuthRealm.setClassname(className);
         if (properties != null) {
             for (Object propname: properties.keySet()) {
-                Property newprop = ConfigSupport.createChildOf(newAuthRealm, Property.class);
+                Property newprop = newAuthRealm.createChild(Property.class);
                 newprop.setName((String) propname);
                 newprop.setValue(properties.getProperty((String) propname));            
                 newAuthRealm.getProperty().add(newprop);    

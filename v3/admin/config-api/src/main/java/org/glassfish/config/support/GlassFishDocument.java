@@ -47,6 +47,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.io.IOException;
 
+import com.sun.hk2.component.ExistingSingletonInhabitant;
+
 /**
  * plug our Dom implementation
  *
@@ -58,9 +60,15 @@ public class GlassFishDocument extends DomDocument {
     public GlassFishDocument(final Habitat habitat, final ExecutorService executor) {
         super(habitat);
 
-        final DomDocument doc = this;
+        // todo, move this to an init service (Globals?)
+        ExistingSingletonInhabitant<ExecutorService> executorInhab =
+                new ExistingSingletonInhabitant<ExecutorService>(executor);
+        
+        habitat.addIndex(executorInhab, ExecutorService.class.getName(), "transaction-executor");
 
-        Transactions.get(executor).addTransactionsListener(new TransactionListener() {
+        final DomDocument doc = this;
+        
+        habitat.getComponent(Transactions.class).addTransactionsListener(new TransactionListener() {
             public void transactionCommited(List<PropertyChangeEvent> changes) {
                 for (ConfigurationPersistence pers : habitat.getAllByContract(ConfigurationPersistence.class)) {
                     try {

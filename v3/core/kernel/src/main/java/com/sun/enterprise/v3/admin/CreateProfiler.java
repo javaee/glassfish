@@ -110,15 +110,14 @@ public class CreateProfiler implements AdminCommand {
             ConfigSupport.apply(new SingleConfigCode<JavaConfig>() {
 
                 public Object run(JavaConfig param) throws PropertyVetoException, TransactionFailure {
-                    Profiler newProfiler = ConfigSupport.createChildOf(param, Profiler.class);
+                    Profiler newProfiler = param.createChild(Profiler.class);
                     newProfiler.setName(name);
                     newProfiler.setClasspath(classpath);
                     newProfiler.setEnabled(enabled.toString());
                     newProfiler.setNativeLibraryPath(nativeLibraryPath);
                     if (properties != null) {
                         for ( java.util.Map.Entry e : properties.entrySet()) {
-                            Property prop = ConfigSupport.createChildOf(newProfiler, 
-                                Property.class);
+                            Property prop = newProfiler.createChild(Property.class);
                             prop.setName((String)e.getKey());
                             prop.setValue((String)e.getValue());
                             newProfiler.getProperty().add(prop);

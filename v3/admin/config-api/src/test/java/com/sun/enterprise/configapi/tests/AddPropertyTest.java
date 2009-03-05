@@ -75,21 +75,24 @@ public class AddPropertyTest extends ConfigApiTest {
             }
         };
 
+        Transactions transactions = getHabitat().getComponent(Transactions.class);
+
         try {
-            Transactions.get().addTransactionsListener(listener);
+
+            transactions.addTransactionsListener(listener);
             assertTrue(domain!=null);
 
             ConfigSupport.apply(new SingleConfigCode<Domain>() {
 
                 public Object run(Domain domain) throws PropertyVetoException, TransactionFailure {
-                    Property prop = ConfigSupport.createChildOf(domain, Property.class);
+                    Property prop = domain.createChild(Property.class);
                     domain.getProperty().add(prop);
                     prop.setName("Jerome");
                     prop.setValue("was here");
                     return prop;
                 }
             }, domain);
-            Transactions.get().waitForDrain();
+            transactions.waitForDrain();
 
             assertTrue(events!=null);
             logger.fine("Number of events " + events.size());
@@ -105,7 +108,7 @@ public class AddPropertyTest extends ConfigApiTest {
             ConfigSupport.createAndSet(domainBean, Property.class, configChanges);
 
             
-            Transactions.get().waitForDrain();
+            transactions.waitForDrain();
 
             assertTrue(events!=null);
             logger.fine("Number of events " + events.size());
@@ -130,7 +133,7 @@ public class AddPropertyTest extends ConfigApiTest {
                 }
             }, logger);
         } finally {
-            Transactions.get().removeTransactionsListener(listener);
+            transactions.removeTransactionsListener(listener);
         }
     }    
 }

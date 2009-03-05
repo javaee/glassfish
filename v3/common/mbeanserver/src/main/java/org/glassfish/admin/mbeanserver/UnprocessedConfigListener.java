@@ -57,8 +57,10 @@ import java.util.Collections;
 @Async
 public final class UnprocessedConfigListener implements Startup, PostConstruct, TransactionListener {
     private static void debug( final String s ) { System.out.println( "### " + s); }
+
+    @Inject
+    private Transactions  mTransactions;
     
-    private final Transactions  mTransactions = Transactions.get();
     private final List<UnprocessedChangeEvents> mUnprocessedChangeEvents = new ArrayList();
     
     public UnprocessedConfigListener()

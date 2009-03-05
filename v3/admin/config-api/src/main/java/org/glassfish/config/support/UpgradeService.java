@@ -38,7 +38,7 @@ public class UpgradeService implements ConfigurationUpgrade, PostConstruct {
                 try {
                     ConfigSupport.apply(new SingleConfigCode<Application>() {
                         public Object run(Application application) throws PropertyVetoException, TransactionFailure {
-                            Module module = ConfigSupport.createChildOf(application, Module.class);
+                            Module module = application.createChild(Module.class);
                             module.setName(application.getName());
                             for (Engine engine : application.getEngine()) {
                                 module.getEngines().add(engine);

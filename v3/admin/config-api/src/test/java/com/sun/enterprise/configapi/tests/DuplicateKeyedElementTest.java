@@ -50,7 +50,7 @@ public class DuplicateKeyedElementTest  extends ConfigApiTest {
 
                 public Object run(VirtualServer param) throws PropertyVetoException, TransactionFailure {
                     // first one is fine...
-                    Property dupProp = ConfigSupport.createChildOf(param, Property.class);
+                    Property dupProp = param.createChild(Property.class);
                     dupProp.setName(prop.getName());
                     dupProp.setValue(prop.getValue().toUpperCase());
                     // this should fail...
@@ -85,12 +85,12 @@ public class DuplicateKeyedElementTest  extends ConfigApiTest {
 
                 public Object run(VirtualServer param) throws PropertyVetoException, TransactionFailure {
                     // first one is fine...
-                    Property firstProp = ConfigSupport.createChildOf(param, Property.class);
+                    Property firstProp = param.createChild(Property.class);
                     firstProp.setName("foo");
                     firstProp.setValue("bar");
                     param.getProperty().add(firstProp);
                     // this should fail...
-                    Property secondProp = ConfigSupport.createChildOf(param, Property.class);
+                    Property secondProp = param.createChild(Property.class);
                     secondProp.setName("foo");
                     secondProp.setValue("bar");
                     param.getProperty().add(secondProp);

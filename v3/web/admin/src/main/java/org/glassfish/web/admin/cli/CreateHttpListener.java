@@ -165,7 +165,7 @@ public class CreateHttpListener implements AdminCommand {
             ConfigSupport.apply(new SingleConfigCode<HttpService>() {
 
                 public Object run(HttpService param) throws PropertyVetoException, TransactionFailure {
-                    HttpListener newListener = ConfigSupport.createChildOf(param, HttpListener.class);
+                    HttpListener newListener = param.createChild(HttpListener.class);
                     newListener.setId(listenerId);
                     newListener.setAddress(listenerAddress);
                     newListener.setPort(listenerPort);
@@ -184,8 +184,7 @@ public class CreateHttpListener implements AdminCommand {
                     //add properties
                     if (properties != null) {
                         for ( java.util.Map.Entry entry : properties.entrySet()) {
-                            Property property = 
-                                ConfigSupport.createChildOf(newListener, Property.class);
+                            Property property = newListener.createChild(Property.class);
                             property.setName((String)entry.getKey());
                             property.setValue((String)entry.getValue());
                             newListener.getProperty().add(property);

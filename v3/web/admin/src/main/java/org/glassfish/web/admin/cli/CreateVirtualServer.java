@@ -126,7 +126,7 @@ public class CreateVirtualServer implements AdminCommand {
                     boolean docrootAdded = false;
                     boolean accessLogAdded = false;
                     
-                    VirtualServer newVirtualServer = ConfigSupport.createChildOf(param, VirtualServer.class);
+                    VirtualServer newVirtualServer = param.createChild(VirtualServer.class);
                     newVirtualServer.setId(virtualServerId);
                     newVirtualServer.setHosts(hosts);
                     newVirtualServer.setHttpListeners(httpListeners);
@@ -140,8 +140,7 @@ public class CreateVirtualServer implements AdminCommand {
                     //    values if the properties have not been specified.
                     if (properties != null) {
                         for (java.util.Map.Entry entry : properties.entrySet()) {
-                            Property property =
-                                ConfigSupport.createChildOf(newVirtualServer, Property.class);
+                            Property property = newVirtualServer.createChild(Property.class);
                             String pn = (String)entry.getKey();
                             property.setName(pn);
                             property.setValue((String)entry.getValue());
@@ -153,15 +152,14 @@ public class CreateVirtualServer implements AdminCommand {
                         }
                     }
                     if (!docrootAdded) {
-                        Property drp = ConfigSupport.createChildOf(newVirtualServer, Property.class);
+                        Property drp = newVirtualServer.createChild(Property.class);
                         drp.setName("docroot");
                         drp.setValue("${com.sun.aas.instanceRoot}/docroot");
                         newVirtualServer.getProperty().add(drp);
                     }
                     
                     if (!accessLogAdded) {
-                        Property alp = ConfigSupport.createChildOf(
-                                        newVirtualServer, Property.class);
+                        Property alp = newVirtualServer.createChild(Property.class);
                         alp.setName("accesslog");
                         alp.setValue("${com.sun.aas.instanceRoot}/logs/access");
                         newVirtualServer.getProperty().add(alp);
