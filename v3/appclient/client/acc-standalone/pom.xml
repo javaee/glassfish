@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+/* 
+* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER. 
+* 
+* Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+* 
+* The contents of this file are subject to the terms of either the GNU 
+* General Public License Version 2 only ("GPL") or the Common Development 
+* and Distribution License("CDDL") (collectively, the "License").  You 
+* may not use this file except in compliance with the License. You can obtain 
+* a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html 
+* or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific 
+* language governing permissions and limitations under the License. 
+* 
+* When distributing the software, include this License Header Notice in each 
+* file and include the License file at glassfish/bootstrap/legal/LICENSE.txt. 
+* Sun designates this particular file as subject to the "Classpath" exception 
+* as provided by Sun in the GPL Version 2 section of the License file that 
+* accompanied this code.  If applicable, add the following below the License 
+* Header, with the fields enclosed by brackets [] replaced by your own 
+* identifying information: "Portions Copyrighted [year] 
+* [name of copyright owner]" 
+* 
+* Contributor(s): 
+* 
+* If you wish your version of this file to be governed by only the CDDL or 
+* only the GPL Version 2, indicate your decision by adding "[Contributor] 
+* elects to include this software in this distribution under the [CDDL or GPL 
+* Version 2] license."  If you don't indicate a single choice of license, a 
+* recipient has the option to distribute your version of this file under 
+* either the CDDL, the GPL Version 2 or to extend the choice of license to 
+* its licensees as provided above.  However, if you add GPL Version 2 code 
+* and therefore, elected the GPL Version 2 license, then the option applies 
+* only if the new code is made subject to such option by the copyright 
+* holder. 
+*/ 
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <!--
+        This module builds the free-standing JAR file for the app client
+        container which can be run without using an OSGi implementation.
+
+        This module contains no source of its own but simply packages a JAR
+        with a manifest Class-Path that specifies all the OSGi JARs on which
+        it directly or indirectly depends.
+    -->
+    <parent>
+        <groupId>org.glassfish.appclient</groupId>
+        <artifactId>client</artifactId>
+        <version>3.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>gf-client</artifactId>
+    <packaging>jar</packaging>
+    <name>Client library (including ACC)</name>
+
+    <developers>
+      <developer>
+            <id>tjquinn</id>
+            <name>Tim Quinn</name>
+            <url>http://blogs.sun.com/quinn</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+		        <role>lead</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <repositories>
+        <repository>
+            <id>maven-repository</id>
+            <name>Maven repos for current archiver</name>
+            <url>http://repo1.maven.org/maven2</url>
+            <snapshots>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+    
+    <build>
+        <resources>
+            
+        </resources>
+
+        <plugins>
+
+<!--            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-archiver-plugin</artifactId>
+                <version>2.2</version>  
+            </plugin>
+-->
+            <!--
+                Creates a text file containing a -classpath string - might be
+                useful later for automating the construction of the Class-Path
+                in the JAR.
+            -->
+
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>build-classpath</id>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>build-classpath</goal>
+                </goals>
+                <configuration>
+                    <prefix>.</prefix>
+                    <stripVersion>true</stripVersion>
+                    <outputFile>standalone-cp.txt</outputFile>
+                    <outputFilterFile>true</outputFilterFile>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+
+<!--
+          <plugin>
+              <groupId>org.apache.maven</groupId>
+              <artifactId>maven-archiver</artifactId>
+              <version>2.4</version>
+          </plugin>
+-->
+
+<!--
+    Following says to use the JAR plug-in v2.2 which uses archiver 2.4
+    which is supposed to allow me to completely specify the format in which
+    Class-Path elements will be written in the manifest but it does not seem
+    to work as expected.
+-->
+
+
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+<!--
+
+            <version>2.2</version>
+-->
+
+<!--
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.maven</groupId>
+                    <artifactId>maven-archiver</artifactId>
+                    
+                    <version>2.4</version>
+                </dependency>
+            </dependencies>
+-->
+<!--
+            <executions>
+                <execution>
+                    <id>build-stand-alone-JAR</id>
+-->
+<!--
+                    <phase>package</phase>
+                    <goals>
+                        <goal>jar</goal>
+                    </goals>
+-->
+                    <configuration>
+            
+              <!--
+                  Excludes all content because the stand-alone JAR
+                  simply lists all the OSGi modules we use in the
+                  manifest's Class-Path element.
+              -->
+                        <excludes>
+                            <exclude>**/*</exclude>
+                        </excludes>
+                        <archive>
+
+                            <index>true</index>
+
+                            <manifest>
+                                <mainClass>org.glassfish.appclient.client.acc.AppClientCommand</mainClass>
+                                <packageName>org.glassfish.appclient.client.acc</packageName>
+<!--
+    Note that addClasspath builds the transitive closure correctly but includes
+    the version string (SNAPSHOT or actual version) while the GlassFish packaging
+    of distributions strips versions away.  So, for now, we can't use
+    addClasspath.
+-->
+
+<!--
+                                <addClasspath>true</addClasspath>
+-->
+<!-- This is avl in archiver plug-in 2.4 only; it doesn't seem to work -->
+<!--
+                                <classpathLayoutType>custom</classpathLayoutType>
+                                <customClasspathLayout>${artifact.artifactId}${dashClassifier?}.${artifact.extension}</customClasspathLayout>
+-->
+                            </manifest>
+<!--
+    Until we get the plug-ins to generate the correct class path we have
+    to hand-code this.  Ugly.
+-->
+                            <manifestEntries>
+                                <Class-Path>
+gf-client-module.jar hk2.jar hk2-core.jar config.jar auto-depends.jar tiger-types-osgi.jar common-util.jar glassfish-api.jar security.jar realms.jar securitycommon.jar config-api.jar dol.jar javax.servlet.jar javax.annotation.jar javax.transaction.jar javax.enterprise.deploy.jar javax.persistence.jar javax.resource.jar deployment-common.jar internal-api.jar grizzly-utils.jar annotation-framework.jar connectors-internal-api.jar transaction-internal-api.jar ldapbp-repackaged.jar javax.security.auth.message.jar javax.security.jacc.jar container-common.jar glassfish-naming.jar javax.mail.jar grizzly-http.jar grizzly-framework.jar grizzly-rcm.jar grizzly-portunif.jar grizzly-comet.jar webservices.security.jar kernel.jar asm-all-repackaged.jar pkg-client.jar flashlight-framework.jar flashlight-agent.jar webservices-osgi.jar jaxb-osgi.jar websecurity.jar web-core.jar apache-commons.jar war-util.jar javax.servlet.jsp.jar web-naming.jar jsr109-impl.jar web-glue.jar web-cli.jar monitoring-core.jar stats77.jar cli-framework.jar amx-api.jar admin-util.jar deployment-javaee-core.jar jsp-impl.jar servlet-api.jar jsp-api.jar el-api.jar el-impl.jar admin-core.jar web-gui-plugin-common.jar javax.ejb.jar ejb-internal-api.jar orb-connector.jar glassfish-corba-omgapi.jar glassfish-corba-orb.jar glassfish-corba-orbgeneric.jar glassfish-corba-dynamicany.jar glassfish-corba-naming.jar glassfish-corba-newtimer.jar glassfish-corba-codegen.jar glassfish-corba-asm.jar glassfish.jar
+                                </Class-Path>
+                            </manifestEntries>
+
+                        </archive>
+                    </configuration>
+<!--
+                </execution>
+            </executions>
+-->
+          </plugin>
+
+
+            <!--
+                Creates a zip file containing the stand-alone ACC JAR and all the
+                module JARs on which the ACC depends.
+            -->
+<!--
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.1</version>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/assemble/bundle.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>create-ACC-bundle</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+-->
+
+        </plugins>
+
+    </build>
+
+    <dependencies>
+        <!--
+            We only need to specify the ACC's OSGi JAR as the single dependency.
+            The maven-jar-plugin will do the work of finding the transitive
+            closure of it and the modules on which it depends to build the
+            accurate Class-Path for the manifest.
+        -->
+        <dependency>
+            <groupId>org.glassfish.appclient</groupId>
+            <artifactId>gf-client-module</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+   </dependencies>
+</project>
