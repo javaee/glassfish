@@ -50,6 +50,8 @@ import org.glassfish.api.naming.GlassfishNamingManager;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.component.Habitat;
 
+import org.glassfish.enterprise.iiop.spi.EjbService;
+
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
@@ -64,7 +66,7 @@ import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
  *         Date: Feb 10, 2008
  */
 @Contract
-public interface EjbContainerUtil {
+public interface EjbContainerUtil extends EjbService {
 
     public GlassFishORBHelper getORBHelper();
     
@@ -126,5 +128,7 @@ public interface EjbContainerUtil {
     public void addWork(Runnable task);
 
     public String getHAPersistenceType();
+
+    public EjbDescriptor ejbIdToDescriptor(long ejbId);
     
 }

@@ -33,12 +33,11 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise;
+package org.glassfish.enterprise.iiop.api;
 
-import java.util.Set;
 
 import java.rmi.Remote;
-import javax.ejb.EJBObject;
+
 import javax.ejb.EJBHome;
 
 /**

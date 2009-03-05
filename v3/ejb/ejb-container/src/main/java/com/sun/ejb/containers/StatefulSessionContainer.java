@@ -1538,7 +1538,7 @@ public final class StatefulSessionContainer
                 EjbRemovalInfo removeInfo = invInfo.removalInfo;
 
                 if (retainAfterRemoveMethod(inv, removeInfo)) {
-                    _logger.log(Level.INFO, "Skipping destruction of SFSB "
+                    _logger.log(Level.FINE, "Skipping destruction of SFSB "
                             + invInfo.ejbName + " after @Remove method "
                             + invInfo.method + " due to (retainIfException"
                             + " == true) and exception " + inv.exception);

@@ -35,43 +35,44 @@ import java.util.logging.Logger;
 
 
 /**
- * This is a JNDI Context implementation for storing serializable objects. This
- * is the default Context for the J2EE RI. Lookups of unqualified names (i.e.
+ * This context provides access to the app server naming service. This
+ * is the default Context for GlassFish. Lookups of unqualified names (i.e.
  * names not starting with "java:", "corbaname:" etc) are serviced by
- * SerialContext. The namespace is implemented in the J2EE server in the
- * SerialContextProviderImpl object, which is accessed over RMI-IIOP from
- * clients.
+ * SerialContext. The namespace is implemented in the
+ * SerialContextProviderImpl object,  which is accessed directly in the
+ * case that the client is collocated with the naming service impl or
+ * remotely via RMI-IIOP if not collocated.
  * <p/>
  * <b>NOT THREAD SAFE: mutable instance variables</b>
  */
 public class SerialContext implements Context {
 
-    private static Logger _logger = LogFacade.getLogger();
-
-    private static final NameParser myParser = new SerialNameParser();
-
-    private Hashtable myEnv = null; // THREAD UNSAFE
-
-    private SerialContextProvider provider; // THREAD UNSAFE
-
-    private static Hashtable providerCache = new Hashtable();
-
-    private final String myName;
-
-    private final JavaURLContext javaUrlContext;
 
     private static final String JAVA_URL = "java:";
 
     private static final String JAVA_GLOBAL_URL = "java:global";
 
+
+    private static Logger _logger = LogFacade.getLogger();
+
+    private static final NameParser myParser = new SerialNameParser();
+
+    private static Hashtable providerCache = new Hashtable();
+
+
+    private Hashtable myEnv = null; // THREAD UNSAFE
+
+    private SerialContextProvider provider; // THREAD UNSAFE
+
+    private final String myName;
+
+    private final JavaURLContext javaUrlContext;
+
+
     // private InitialContext cosContext;
-    private static final Boolean threadlock = new Boolean(true);
-
-    private static final ThreadLocal stickyContext = new ThreadLocal();
-
-    private final boolean isEE;
 
     private final Habitat habitat;
+
 
     /**
      * set and get methods for preserving stickiness. This is a temporary
@@ -85,22 +86,13 @@ public class SerialContext implements Context {
      * entire thread, its global only during the execution of the
      * SerialContext.lookup() method. bug 5050591 This will be cleaned for the
      * next release.
+     *
+     * NOTE: all stickyContext logic removed for initial V3 release.  We'll
+     * revisit the underlying issue when adding load-balancing support post-V3.
      */
-    public static void setSticky(ThreadLocalIC var) {
-        stickyContext.set(var);
-    }
 
-    public static ThreadLocalIC getSticky() {
-        return (ThreadLocalIC) stickyContext.get();
-    }
 
-    /**
-     * This method is called from SerialInitContextFactory & S1ASCtxFactory to
-     * check if sticky context is set.
-     */
-    public static Context getStickyContext() {
-        return getSticky().getStickyContext();
-    }
+
 
     private SerialContextProvider getProvider() throws NamingException {
 
@@ -123,10 +115,6 @@ public class SerialContext implements Context {
         myEnv = (environment != null) ? (Hashtable) (environment.clone())
                 : null;
 
-        // Dont initialize provider now, this throws an exception
-        // if J2EEServer is not yet started. Get it lazily when needed.
-        // provider = SerialContext.getProvider(myEnv);
-
         this.myName = name;
         if (_logger.isLoggable(Level.FINE))
             _logger.fine("SerialContext ==> SerialContext instance created : "
@@ -135,15 +123,15 @@ public class SerialContext implements Context {
         // using these two temp variables allows instance variables
         // to be 'final'.
         JavaURLContext urlContextTemp = null;
-        boolean isEETemp = false;
+
         if (myEnv.get("com.sun.appserv.ee.iiop.endpointslist") != null) {
-            isEETemp = true;
+
             urlContextTemp = new JavaURLContext(myEnv, this);
         } else {
             urlContextTemp = new JavaURLContext(myEnv, null);
         }
         javaUrlContext = urlContextTemp;
-        isEE = isEETemp;
+
     }
 
     /**
@@ -175,20 +163,6 @@ public class SerialContext implements Context {
     }
 
     /**
-     * method for checking the count and decrementing it also resets the sticky
-     * context to null if count is 0
-     */
-    private void resetSticky() {
-        if (getSticky() != null) {
-            getSticky().decrementCount();
-
-            if (getSticky().getStickyCount() == 0) {
-                setSticky(null);
-            }
-        }
-    }
-
-    /**
      * Lookup the specified name in the context. Returns the resolved object.
      *
      * @return the resolved object.
@@ -206,28 +180,27 @@ public class SerialContext implements Context {
          *
          */
         if (myEnv.get("com.sun.appserv.ee.iiop.endpointslist") != null) {
-            if (getSticky() == null) {
-                ThreadLocalIC threadLocal = new ThreadLocalIC(this, 1);
-                setSticky(threadLocal);
-            } else
-                getSticky().incrementCount();
+           // TODO post V3
         }
 
-        if (_logger.isLoggable(Level.FINE))
-            _logger.fine("SerialContext ==> doing lookup with " + this);
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine("SerialContext ==> lookup( " + name +")");
+        }
+
         if (name.equals("")) {
-            resetSticky();
             // Asking to look up this context itself. Create and return
             // a new instance with its own independent environment.
             return (new SerialContext(myName, myEnv, habitat));
         }
+
         name = getRelativeName(name);
-        if (_logger.isLoggable(Level.FINE))
-            _logger.fine("SerialContext ==> looking up : " + name);
+
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine("SerialContext ==> lookup relative name : " + name);
+        }
 
         try {
             if (isjavaURL(name)) {
-                resetSticky();
                 return javaUrlContext.lookup(name);
             } else {
                 Object obj = getProvider().lookup(name);
@@ -235,21 +208,17 @@ public class SerialContext implements Context {
                     return ((NamingObjectProxy) obj).create(this);
                 }
                 if (obj instanceof Context) {
-                    resetSticky();
                     return new SerialContext(name, myEnv, habitat);
                 }
                 Object retObj = javax.naming.spi.NamingManager
                         .getObjectInstance(obj, new CompositeName(name), null,
                                 myEnv);
-                resetSticky();
 
                 return retObj;
             }
         } catch (NamingException nnfe) {
-            setSticky(null);
             throw nnfe;
         } catch (Exception ex) {
-            setSticky(null);
             _logger.log(Level.SEVERE,
                     "enterprise_naming.serialctx_communication_exception", ex);
             // temp fix for 6320008
@@ -258,8 +227,8 @@ public class SerialContext implements Context {
             if (ex instanceof java.rmi.MarshalException
                     && ex.getCause() instanceof org.omg.CORBA.COMM_FAILURE) {
                 provider = null;
-                _logger
-                        .fine("Resetting provider to NULL. Will get new obj ref for provider since previous obj ref was stale...");
+                _logger.fine("Resetting provider to NULL. Will get new obj ref " +
+                             "for provider since previous obj ref was stale...");
                 return lookup(name);
             } else {
                 CommunicationException ce = new CommunicationException(
@@ -774,46 +743,4 @@ public class SerialContext implements Context {
         }
     }
 
-    /**
-     * This is a temporary solution to store
-     * the sticky context as a threadlocal variable. bug 5050591
-     * context is the sticky context
-     * count is needed to know how many times the lookup method is being called
-     * from within the user code's ic.lookup(). e.g. JMS resource lookups (via ConnectorObjectFactory)
-     */
-    class ThreadLocalIC {
-
-        Context ctx;
-
-        int count = 0;
-
-        public ThreadLocalIC(Context ctxIn, int countIn) {
-            ctx = ctxIn;
-            count = countIn;
-        }
-
-        public void setStickyContext(Context ctxIn) {
-            ctx = ctxIn;
-        }
-
-        public Context getStickyContext() {
-            return ctx;
-        }
-
-        public void setStickyCount(int countIn) {
-            count = countIn;
-        }
-
-        public int getStickyCount() {
-            return count;
-        }
-
-        public void incrementCount() {
-            count++;
-        }
-
-        public void decrementCount() {
-            count--;
-        }
-    }
 };

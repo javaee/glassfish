@@ -25,6 +25,11 @@
     </developers>
     <dependencies>
         <dependency>
+            <groupId>org.glassfish.deployment</groupId>
+            <artifactId>dol</artifactId>
+            <version>${pom.parent.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.sun.corba</groupId>
             <artifactId>glassfish-corba-omgapi</artifactId>
             <version>${glassfish-corba.version}</version>
@@ -67,6 +72,11 @@
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>internal-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.ejb</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

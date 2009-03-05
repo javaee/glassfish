@@ -43,8 +43,9 @@ import com.sun.ejb.portable.EJBMetaDataImpl;
 import com.sun.ejb.spi.io.IndirectlySerializable;
 import com.sun.ejb.spi.stats.EJBMethodStatsManager;
 import com.sun.ejb.spi.stats.EJBStatsProvider;
-import com.sun.enterprise.ProtocolManager;
-import com.sun.enterprise.RemoteReferenceFactory;
+import org.glassfish.enterprise.iiop.api.ProtocolManager;
+import org.glassfish.enterprise.iiop.api.RemoteReferenceFactory;
+import org.glassfish.enterprise.iiop.spi.EjbContainerFacade;
 import com.sun.enterprise.admin.monitor.callflow.Agent;
 import com.sun.enterprise.admin.monitor.callflow.CallFlowInfo;
 import com.sun.enterprise.admin.monitor.callflow.ComponentType;
@@ -96,7 +97,7 @@ import org.jvnet.hk2.component.Habitat;
  */
 
 public abstract class BaseContainer
-    implements Container, EJBStatsProvider
+    implements Container, EJBStatsProvider, EjbContainerFacade
 {
     public enum ContainerType {
         STATELESS, STATEFUL, SINGLETON, MESSAGE_DRIVEN, ENTITY, READ_ONLY
@@ -504,16 +505,12 @@ public abstract class BaseContainer
                     String id = 
                         Long.toString(ejbDescriptor.getUniqueId()) + "_RHome";
 
-                    // TODO remoteHomeRefFactory =
-                       // getProtocolManager().getRemoteReferenceFactory(this, true, id);
+                    remoteHomeRefFactory =
+                        getProtocolManager().getRemoteReferenceFactory(this, true, id);
 
                 }
                 
                 if( ejbDescriptor.isRemoteBusinessInterfacesSupported() ) {
-
-
-                    GlassFishORBHelper orbHelper = ejbContainerUtilImpl.getORBHelper();
-                    orbHelper.getORB();
                     
                     checkProtocolManager();
                     
@@ -551,8 +548,8 @@ public abstract class BaseContainer
                         String id = Long.toString(ejbDescriptor.getUniqueId()) 
                              + "_RBusiness" + "_" + genRemoteIntf.getName();
 
-                        // TODO info.referenceFactory = getProtocolManager().
-                        //    getRemoteReferenceFactory(this, false, id);
+                        info.referenceFactory = getProtocolManager().
+                            getRemoteReferenceFactory(this, false, id);
 
                         remoteBusinessIntfInfo.put(genRemoteIntf.getName(),
                                                    info);
@@ -695,6 +692,12 @@ public abstract class BaseContainer
     }
 
     protected ProtocolManager getProtocolManager() {
+        // Will be called during container initialization if bean has
+        // a remote view so no need to deal with concurrent access
+        if( protocolMgr == null ) {
+            GlassFishORBHelper orbHelper = ejbContainerUtilImpl.getORBHelper();
+            protocolMgr = orbHelper.getProtocolManager(ejbContainerUtilImpl);
+        }
     	return protocolMgr;
     }
     
@@ -714,6 +717,7 @@ public abstract class BaseContainer
     }
     
     private void checkProtocolManager() {
+
         if (getProtocolManager() == null) {
             throw new RuntimeException("Protocol manager is null. "
                      + "Possible cause is ORB not available");
@@ -967,7 +971,7 @@ public abstract class BaseContainer
                 // know at container initialization time if there is a problem.
                 //
 
-                // TODO getProtocolManager().validateTargetObjectInterfaces(this.ejbHome);
+                getProtocolManager().validateTargetObjectInterfaces(this.ejbHome);
 
                 // Unlike the Home, each of the concrete containers are
                 // responsible for creating the EJBObjects, so just create
@@ -975,17 +979,16 @@ public abstract class BaseContainer
                 EJBObjectImpl dummyEJBObjectImpl = instantiateEJBObjectImpl();
                 EJBObject dummyEJBObject = (EJBObject)
                     dummyEJBObjectImpl.getEJBObject();
-                // TODO getProtocolManager().validateTargetObjectInterfaces(dummyEJBObject);
+                getProtocolManager().validateTargetObjectInterfaces(dummyEJBObject);
 
                 // Remotereference factory needs instances of
                 // Home and Remote to get repository Ids since it doesn't have
                 // stubs and ties.  This must be done before any Home or Remote
                 // references are created.
-                // TODO remoteHomeRefFactory.setRepositoryIds(homeIntf, remoteIntf);
+                remoteHomeRefFactory.setRepositoryIds(homeIntf, remoteIntf);
                              
                 // get a remote ref for the EJBHome
-                // TODO ejbHomeStub = remoteHomeRefFactory.
-                 //   createHomeReference(homeInstanceKey);
+                ejbHomeStub = remoteHomeRefFactory.createHomeReference(homeInstanceKey);
 
                 intfsForPortableJndi.add(ejbDescriptor.getHomeClassName());
 
@@ -1014,8 +1017,8 @@ public abstract class BaseContainer
                 }
 
                 // RMI-IIOP validation
-                // TODO getProtocolManager().validateTargetObjectInterfaces
-                    // (this.ejbRemoteBusinessHome);
+                getProtocolManager().validateTargetObjectInterfaces
+                    (this.ejbRemoteBusinessHome);
 
                 for(RemoteBusinessIntfInfo next : 
                         remoteBusinessIntfInfo.values()) {
@@ -1030,16 +1033,16 @@ public abstract class BaseContainer
                     // Home and Remote to get repository Ids since it 
                     // doesn't have stubs and ties.  This must be done before 
                     // any Home or Remote references are created.
-                    // TODO next.referenceFactory.setRepositoryIds
-                    //    (remoteBusinessHomeIntf, next.generatedRemoteIntf);
+                    next.referenceFactory.setRepositoryIds
+                        (remoteBusinessHomeIntf, next.generatedRemoteIntf);
 
                     // Create home stub from the remote reference factory
                     // associated with one of the remote business interfaces.
                     // It doesn't matter which remote reference factory is
                     // selected, so just do it the first time through the loop.
                     if( ejbRemoteBusinessHomeStub == null ) {
-                        // TODO ejbRemoteBusinessHomeStub = next.referenceFactory.
-                           // createHomeReference(homeInstanceKey);
+                        ejbRemoteBusinessHomeStub = next.referenceFactory.
+                            createHomeReference(homeInstanceKey);
                     }
 
                 }
@@ -1053,7 +1056,7 @@ public abstract class BaseContainer
                     java.rmi.Remote dummyEJBObject = dummyEJBObjectImpl.
                         getEJBObject(next.generatedRemoteIntf.getName());
                         
-                    // TODO getProtocolManager().validateTargetObjectInterfaces(dummyEJBObject);
+                    getProtocolManager().validateTargetObjectInterfaces(dummyEJBObject);
 
                     next.jndiName = EJBUtils.getRemoteEjbJndiName
                         (true, next.remoteBusinessIntf.getName(), 
@@ -1556,6 +1559,8 @@ public abstract class BaseContainer
                 if( protocolMgr != null ) {
                     // For remote business case, exception mapping is performed
                     // in client wrapper.
+                    // TODO need extra logic to handle implementation-specific ejb exceptions
+                    // (ParallelAccessEXCeption etc. that used to be handled by iiop glue code
                     inv.exception = protocolMgr.mapException(inv.exception);
                 }
                     
@@ -1627,6 +1632,7 @@ public abstract class BaseContainer
         if ( !authorize(inv) ) {
             AccessException ex = new AccessException(
                 "Client is not authorized for this invocation.");
+            // TODO see note above about additional special exception handling needed
             Throwable t = getProtocolManager().mapException(ex);
             if ( t instanceof RuntimeException )
                 throw (RuntimeException)t;
@@ -1732,8 +1738,7 @@ public abstract class BaseContainer
             return true;
         }
        
-        boolean authorized = (securityManager != null)
-		? securityManager.authorize(inv) : true;
+        boolean authorized = (securityManager != null) ? securityManager.authorize(inv) : true;
         
         if( !authorized ) {
 
@@ -2286,12 +2291,14 @@ public abstract class BaseContainer
 
             Method targetMethod = optionalLocalBusView ? beanMethod : method;
             MethodDescriptor cachedMD = ejbDescriptor.getMethodDescriptorFor(targetMethod, methodIntf);
+         
+            if ( (cachedMD != null) && isEligibleForAsync(originalIntf, methodIntf) ) {
 
-            if (cachedMD != null) {
                 boolean isAsync = cachedMD.isAsynchronous();
-                info.setIsAsynchronous(cachedMD.isAsynchronous());
+                info.setIsAsynchronous(isAsync);
             }
         }
+        
         if( methodIntf.equals(MethodDescriptor.EJB_WEB_SERVICE) ) {
             webServiceInvocationInfoMap.put(method, info);
         } else {
@@ -2299,6 +2306,21 @@ public abstract class BaseContainer
         }
                 
         return info;
+    }
+
+    private boolean isEligibleForAsync(Class originalIntf, String methodIntf) {
+
+        boolean eligibleForAsync = false;
+
+        if( methodIntf.equals(MethodDescriptor.EJB_LOCAL) ||
+            methodIntf.equals(MethodDescriptor.EJB_REMOTE) ) {
+
+            boolean is2xClientView = (EJBObject.class.isAssignableFrom(originalIntf) ||
+                        EJBLocalObject.class.isAssignableFrom(originalIntf));
+            eligibleForAsync = !is2xClientView;
+        }
+
+        return eligibleForAsync;           
     }
 
     /**

@@ -52,6 +52,7 @@ import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.ApplicationContext;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.UndeployCommandParameters;
+import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.OpsParams;
 import org.glassfish.ejb.security.application.EJBSecurityManager;
 import org.glassfish.ejb.security.factory.EJBSecurityManagerFactory;
@@ -131,15 +132,18 @@ public class EjbApplication
         }
         */
 
-        //System.out.println("**CL => " + bundleDesc.getClassLoader());
+
+        DeployCommandParameters params = ((DeploymentContext)startupContext).
+            getCommandParameters(DeployCommandParameters.class);
+
+        // If true the application is being deployed.  If false, it's
+        // an initialization after the app was already deployed. 
+        boolean deploy = (params.origin == OpsParams.Origin.deploy );
+
         int counter = 0;
         boolean usesEJBTimerService = false;
         singletonLCM = new SingletonLifeCycleManager();
         
-        DeployCommandParameters params = ((DeploymentContext) startupContext).getCommandParameters(DeployCommandParameters.class);
-         // If true the application is being deployed.  If false, it's
-        // an initialization after the app was already deployed.
-        boolean deploy = (params.origin == OpsParams.Origin.deploy);
         policyLoader.loadPolicy();
         String moduleName = null;
         
@@ -314,7 +318,7 @@ public class EjbApplication
         try {
             SecurityUtil.generatePolicyFile(moduleName);
         } catch (Exception se) {
-            String msg = "Error in generating security policy for " + appName;
+            String msg = "Error in generating security policy for " + moduleName;
             throw new DeploymentException(msg, se);
         }
     }

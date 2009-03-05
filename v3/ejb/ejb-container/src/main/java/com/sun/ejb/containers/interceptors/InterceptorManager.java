@@ -402,7 +402,7 @@ public class InterceptorManager {
                         CallbackInterceptor meta = new BeanCallbackInterceptor(
                                 method);
                         metaArray[i].add(meta);
-                        _logger.log(Level.INFO,
+                        _logger.log(Level.FINE,
                                 "**##[ejbCreate] bean has 2.x style ejbCreate: " + meta);
                     }
                 } catch (NoSuchMethodException nsmEx) {

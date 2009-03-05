@@ -4,6 +4,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.omg.CORBA.ORB;
+import org.glassfish.enterprise.iiop.spi.EjbService;
 
 import java.util.Properties;
 
@@ -21,6 +22,8 @@ public class GlassFishORBHelper {
 
     private volatile ORB orb;
 
+    private volatile ProtocolManager protocolManager;
+
     public ORB getORB() {
         return getORB(EMPTY_PROPERTIES);
     }
@@ -37,6 +40,19 @@ public class GlassFishORBHelper {
         }
 
         return orb;
+    }
+
+    public ProtocolManager getProtocolManager(EjbService ejbService) {
+        if (protocolManager == null) {
+            synchronized (this) {
+                if (protocolManager == null) {
+                    protocolManager = habitat.getByContract(ProtocolManager.class);
+                    protocolManager.initialize(getORB(), ejbService);
+                }
+            }
+        }
+
+        return protocolManager;
     }
     
 }

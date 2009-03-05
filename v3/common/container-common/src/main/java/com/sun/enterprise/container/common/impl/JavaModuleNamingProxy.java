@@ -32,6 +32,7 @@ import com.sun.enterprise.deployment.*;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PostConstruct;
 
 import javax.naming.NamingException;
 
@@ -45,10 +46,20 @@ import java.util.logging.Logger;
 
 @Service
 public class JavaModuleNamingProxy
-        implements NamedNamingObjectProxy {
+        implements NamedNamingObjectProxy, PostConstruct {
 
     @Inject
     Habitat habitat;
+
+    private InitialContext ic;
+
+    public void postConstruct() {
+        try {
+            ic = new InitialContext();
+        } catch(NamingException ne) {
+            throw new RuntimeException("JavaModuleNamingProxy InitialContext creation failure", ne);
+        }
+    }
 
     private static final String JAVA_MODULE_CONTEXT
             = "java:module/";
@@ -133,7 +144,7 @@ public class JavaModuleNamingProxy
                     name);
         }
 
-        return new InitialContext().lookup(newName);
+        return ic.lookup(newName);
     }
 
 }

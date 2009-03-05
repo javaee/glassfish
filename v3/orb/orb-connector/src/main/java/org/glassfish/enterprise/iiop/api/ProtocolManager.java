@@ -33,11 +33,17 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise;
+package org.glassfish.enterprise.iiop.api;
 
 import java.rmi.*;
 
-import com.sun.ejb.Container;
+import org.glassfish.enterprise.iiop.spi.EjbContainerFacade;
+import org.glassfish.enterprise.iiop.spi.EjbService;
+
+import com.sun.enterprise.deployment.EjbDescriptor;
+
+import org.jvnet.hk2.annotations.Contract;
+import org.omg.CORBA.ORB;
 
 
 /**
@@ -48,13 +54,24 @@ import com.sun.ejb.Container;
  * RMI/JRMP, RMI/DCOM, RMI/HTTP ....
  * @author Vivek Nagar
  */
+
+@Contract
 public interface ProtocolManager {
 
+    void initialize(ORB o, EjbService ejbService);
+
+
+    public void initializePOAs() throws Exception;
+
+
+    public void initializeNaming(java.io.File dbDir, int orbInitialPort) throws Exception;
+
+    
     /**
      * Return a factory that can be used to create/destroy remote
      * references for a particular EJB type.
      */
-    RemoteReferenceFactory getRemoteReferenceFactory(Container container,
+    RemoteReferenceFactory getRemoteReferenceFactory(EjbContainerFacade container,
                                                      boolean remoteHomeView,
                                                      String id);
 
@@ -84,19 +101,12 @@ public interface ProtocolManager {
     void connectObject(Remote remoteObj) throws RemoteException;
 
 
+  
 
-    /* All these APIs are used by J2EEServer at startup *****************/
-    /* Not used any more - DHIRU
-    public void setPersistentServerId(int id);
-    public void setPersistentServerPort(int port);
-    public void initTransactionService(String jtsclass) ;
-    */
-    public void initializeNaming(java.io.File dbDir, int orbInitialPort) throws Exception;
-    /***********************************************************************
-    public void setDaemonPort(int port);
-    public void setLocator(com.sun.enterprise.activation.Locator locator);
-    public int getListenerPort(String type) ;
-    /***********************************************************************/
+
+
+    public EjbDescriptor getEjbDescriptor(byte[] ejbKey);
+
 
 }
     

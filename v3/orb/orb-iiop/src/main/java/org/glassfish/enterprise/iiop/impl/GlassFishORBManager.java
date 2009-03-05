@@ -462,7 +462,8 @@ public final class GlassFishORBManager {
             orbInitProperties.put(SUN_USER_CONFIGURATOR_PREFIX
                     + PEORB_CONFIG_CLASS, "dummy");
 
-            setFOLBProperties(orbInitProperties);
+            // TODO We'll handle FOLB later
+            // setFOLBProperties(orbInitProperties);
 
             // Standard OMG Properties.
             orbInitProperties.put(ORBConstants.ORB_SERVER_ID_PROPERTY,
@@ -539,9 +540,6 @@ public final class GlassFishORBManager {
             try {
                 Thread.currentThread().setContextClassLoader(GlassFishORBManager.class.getClassLoader());
                 orb = ORBFactory.create(args, orbInitProperties);
-                System.out.println("***********************");
-                System.out.println("*** ORB: " + orb + " ***");
-                System.out.println("***********************");
             } finally {
                 Thread.currentThread().setContextClassLoader(prevCL);
             }

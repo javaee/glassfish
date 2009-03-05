@@ -1195,10 +1195,9 @@ public final class MessageBeanContainer extends BaseContainer implements
 
 				// Log system exceptions by default and application exceptions
 				// only when log level is FINE or higher.
-				Level exLogLevel = isSystemUncheckedException(invocation.exception) ? Level.INFO
+				Level exLogLevel = isSystemUncheckedException(invocation.exception) ? Level.WARNING
 						: Level.FINE;
 
-				// START OF IASRI 4660565
 				_logger.log(exLogLevel, "containers.mdb.invocation_exception",
 						new Object[] { appEJBName_,
 								invocation.exception.toString() });

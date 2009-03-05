@@ -1,3 +1,4 @@
 -exportcontents: \
-    org.glassfish.enterprise.iiop.api
+    org.glassfish.enterprise.iiop.api, \
+    org.glassfish.enterprise.iiop.spi 
 
