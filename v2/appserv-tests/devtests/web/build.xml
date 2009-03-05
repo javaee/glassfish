@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="357"/>
+    <property name="TOTAL_EXPECTED" value="358"/>
 
     &commonSetup;
     &commonBuild;
@@ -217,6 +217,7 @@
         <ant dir="webFragment" target="all"/>
         <ant dir="multiWebFragments" target="all"/>
         <ant dir="asyncContextComplete" target="all"/>
+        <ant dir="asyncContextDispatch" target="all"/>
         <ant dir="asyncListenerOnComplete" target="all"/>
         <ant dir="asyncListenerOnTimeout" target="all"/>
         <ant dir="asyncSupportedTrue" target="all"/>
