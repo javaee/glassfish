@@ -62,10 +62,7 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import javax.servlet.DispatcherType;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletRequestWrapper;
+import javax.servlet.*;
 import org.apache.catalina.Globals;
 import org.apache.catalina.Request;
 import org.apache.catalina.util.Enumerator;
@@ -111,6 +108,11 @@ public class ApplicationRequest extends ServletRequestWrapper {
         specials.add(RequestDispatcher.FORWARD_SERVLET_PATH);
         specials.add(RequestDispatcher.FORWARD_PATH_INFO);
         specials.add(RequestDispatcher.FORWARD_QUERY_STRING);
+        specials.add(AsyncContext.ASYNC_REQUEST_URI);
+        specials.add(AsyncContext.ASYNC_CONTEXT_PATH);
+        specials.add(AsyncContext.ASYNC_SERVLET_PATH);
+        specials.add(AsyncContext.ASYNC_PATH_INFO);
+        specials.add(AsyncContext.ASYNC_QUERY_STRING);
     }
 
 
