@@ -89,23 +89,10 @@
 
   <modules>
     <module>api</module>
+    <module>packager</module>
+    <module>samples</module>
   </modules>
 
-
-    <profiles>
-        <profile>
-            <!-- Packaging is slow so it is turned off by default-->
-            <id>packaging</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <modules>
-				<module>packager</module>
-				<!-- samples needs packager -->
-    			<module>samples</module>
-            </modules>
-        </profile>
-	</profiles>
   <developers>
         <developer>
             <id>bnevins</id>
