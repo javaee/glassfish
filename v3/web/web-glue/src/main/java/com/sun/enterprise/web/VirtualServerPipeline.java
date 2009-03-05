@@ -238,6 +238,12 @@ public class VirtualServerPipeline extends StandardPipeline {
                             redirectMatch.from.length());
             if ("/".equals(redirectMatch.from)) {
                 uriSuffix = "/" + uriSuffix;
+                // START 6810361
+                if (redirectMatch.urlPrefixPath != null &&
+                        uriSuffix.startsWith(redirectMatch.urlPrefixPath)) {
+                    return false;
+                }
+                // END 6810361
             }
             if (redirectMatch.urlPrefix != null) {
                 // Replace 'from' URI prefix with URL prefix
@@ -309,8 +315,19 @@ public class VirtualServerPipeline extends StandardPipeline {
     static class RedirectParameters {
 
         private String from;
+
         private String url;
+
         private String urlPrefix;
+
+        // START 6810361
+        /*
+         * The path portion of the urlPrefix, in case urlPrefix is
+         * specified as an absolute URL (including protocol etc.)
+         */
+        private String urlPrefixPath;
+        // END 6810361
+
         private boolean isEscape;
 
         RedirectParameters(String from, String url, String urlPrefix,
@@ -319,6 +336,15 @@ public class VirtualServerPipeline extends StandardPipeline {
             this.url = url;
             this.urlPrefix = urlPrefix;
             this.isEscape = isEscape;
+
+            // START 6810361
+            try {
+                URL u = new URL(urlPrefix);
+                urlPrefixPath = u.getPath();
+            } catch (MalformedURLException e) {
+                urlPrefixPath = urlPrefix;
+            }
+            // END 6810361
         }
     }
 
