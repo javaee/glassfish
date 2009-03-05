@@ -631,16 +631,11 @@ public class Request
         /*
          * Clear and reinitialize all async related instance vars
          */
-        if (asyncContext != null) {
-            asyncContext.recycle();
-            asyncContext = null;
-        }
-
+        asyncContext = null;
         if (asyncListenerHolders != null) {
             asyncListenerHolders.clear();
             asyncListenerHolders = null;
         }
-
         isAsyncSupported = true;
         asyncStarted = false;
         isAsyncComplete = false;
@@ -3806,8 +3801,7 @@ public class Request
             if (!isOkToReinitializeAsync) {
                 throw new IllegalStateException("startAsync already called");
             } 
-            // Recycle and reinitialize existing AsyncContext
-            asyncContext.recycle();
+            // Reinitialize existing AsyncContext
             asyncContext.setServletRequest(servletRequest);
             asyncContext.setServletResponse(servletResponse);
         } else {
