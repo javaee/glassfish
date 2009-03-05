@@ -99,11 +99,8 @@ public final class EJBSecurityManager
     private static Logger _logger = null;
 
     static {
-        _logger = LogDomains.getLogger(EJBSecurityManager.class, LogDomains.SECURITY_LOGGER);
-    }
-
-    private static LocalStringManagerImpl localStrings =
-            new LocalStringManagerImpl(EJBSecurityManager.class);
+        _logger = LogDomains.getLogger(EJBSecurityManager.class, LogDomains.EJB_LOGGER);
+    } 
 
     private AuditManager auditManager;
 
@@ -159,8 +156,8 @@ public final class EJBSecurityManager
     /**
      * This method iniitalizes the EJBSecurityManager
      */
-    public EJBSecurityManager(EjbDescriptor ejbDescriptor, InvocationManager invMgr, EJBSecurityManagerFactory fact)
-            throws Exception {
+    public EJBSecurityManager(EjbDescriptor ejbDescriptor, InvocationManager invMgr,
+                                EJBSecurityManagerFactory fact) throws Exception {
 
         this.deploymentDescriptor = (EjbDescriptor) ejbDescriptor;
         this.invMgr = invMgr;
@@ -202,13 +199,13 @@ public final class EJBSecurityManager
                 }
             } catch (java.net.URISyntaxException use) {
                 // manually create the URL
-                _logger.log(Level.SEVERE, "JACC: Error Creating URI ", use);
+                _logger.log(Level.SEVERE, "JACC_createurierror", use);
                 throw new RuntimeException(use);
             }
 
         } catch (java.net.MalformedURLException mue) {
             // should never come here.
-            _logger.log(Level.SEVERE, "JACC: ejbsm.codesourceerror", mue);
+            _logger.log(Level.SEVERE, "JACC_ejbsm.codesourceerror", mue);
             throw new RuntimeException(mue);
         }
         return result;
@@ -913,8 +910,7 @@ public final class EJBSecurityManager
             roleMapperFactory.removeAppNameForContext(this.contextId);
 
         } catch (PolicyContextException pce) {
-            String msg = localStrings.getLocalString("ejbsm.could_not_delete",
-                    "Could not delete policy file during undeployment");
+            String msg = "ejbsm.could_not_delete";
             // Just log it.
             _logger.log(Level.WARNING, msg, pce);
         }
