@@ -138,17 +138,10 @@ public class ContainerMapper extends StaticResourcesAdapter{
             if (!mapMultipleAdapter && mapper instanceof V3Mapper){
                 Adapter a = ((V3Mapper)mapper).getAdapter();
                 if (a != null){
-                    try{
-                        a.service(req, res);
-                    } finally {
-                        a.afterService(req, res);
-                    }
+                    a.service(req, res);
+                    req.setNote(MAPPED_ADAPTER, a);
                 } else {
-                    try{
-                        super.service(req, res);
-                    } finally {
-                        super.afterService(req, res);
-                    }
+                    super.service(req, res);
                 }
                 return;
             }
@@ -291,7 +284,6 @@ public class ContainerMapper extends StaticResourcesAdapter{
             Adapter adapter = (Adapter)req.getNote(MAPPED_ADAPTER);
             if (adapter != null){
                 adapter.afterService(req, res);
-
             }
             super.afterService(req, res);
         } finally {
