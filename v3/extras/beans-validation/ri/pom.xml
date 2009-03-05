@@ -46,6 +46,26 @@
     
     <artifactId>gf-beans-validation-ri</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>Beans Validation Reference Implementation for Glassfish V3</name>
+    <name>Beans Validation RI for Glassfish V3</name>
+
+    <scm>
+        <connection>scm:svn:http://anonsvn.jboss.org/repos/hibernate/validator/trunk</connection>
+        <url>http://fisheye.jboss.com/browse/Hibernate/validator/</url>
+    </scm>
+
+    <build>
+        <defaultGoal>scm:checkout</defaultGoal>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-scm-plugin</artifactId>
+                <configuration>
+                    <connectionType>connection</connectionType>
+                    <revisionKey>16087</revisionKey>
+                    <workingDirectory>target</workingDirectory>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
