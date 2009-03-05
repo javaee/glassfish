@@ -98,7 +98,7 @@
             <plugin>
                 <groupId>org.glassfish</groupId>
                 <artifactId>maven-glassfish-plugin</artifactId>
-				<version>${project.version}</version>
+                <version>3.0-Prelude-Embedded-SNAPSHOT</version>
             </plugin>
         </plugins>
     </build>
