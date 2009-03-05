@@ -3,7 +3,7 @@
 /* 
 * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER. 
 * 
-* Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved. 
+* Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
 * 
 * The contents of this file are subject to the terms of either the GNU 
 * General Public License Version 2 only ("GPL") or the Common Development 
@@ -42,10 +42,10 @@
         <version>3.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>gf-acc</artifactId>
+    <artifactId>gf-client-module</artifactId>
     <packaging>hk2-jar</packaging> <!-- the main artifact is the OSGi module JAR -->
-    <name>App Client Container</name>
-
+    <name>Client OSGi module (including ACC)</name>
+    
     <!--
         This module creates the app client container in three artifacts:
             1. OSGi module for the ACC
@@ -70,7 +70,8 @@
 
         <acc.corba-version>3.0.0-b001</acc.corba-version>
 
-        <standalone.classifier>sa</standalone.classifier>
+        <standalone.classifier>lib</standalone.classifier>
+        <acc.osgi.module.classifier>module</acc.osgi.module.classifier>
 <!--
         <config-xsd-dir>src/main/resources</config-xsd-dir>
         <config-xsd-file>sun-application-client-container_1_2.xsd</config-xsd-file>
@@ -144,6 +145,7 @@
                 <artifactId>maven-jaxb2-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>JAXB-gen-for-sun-acc</id>
                         <goals>
                             <goal>generate</goal> <!-- must be before compile -->
                         </goals>
@@ -190,106 +192,107 @@
                   </filesets>
                 </configuration>
             </plugin>
-            
-            <!--
-                Creates the stand-alone (non-OSGi) JAR artifact.
-            -->
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-jar-plugin</artifactId>
-            <version>2.2</version>
-            <executions>
-                <execution>
-                    <id>create-stand-alone-JAR</id>
-                    <phase>package</phase>
-                    <goals>
-                        <goal>jar</goal>
-                    </goals>
-                    <configuration>
-                        <!--
-                            Uses a different classifier or we'd override the
-                            default usage of this plug-in as the main artifact
-                            was created, which would also overwrite the OSGi
-                            module JAR with this non-OSGi JAR.
-                        -->
-                        <classifier>${standalone.classifier}</classifier> <!-- sa = stand-alone (non-OSGi) -->
 
-                        <!--
-                            Excludes all content because the stand-alone JAR
-                            simply lists all the OSGi modules we use in the
-                            manifest's Class-Path element.
-                        -->
-                        <excludes>
-                            <exclude>**/*</exclude>
-                        </excludes>
-                        <archive>
-                            <manifest>
-                              <mainClass>org.glassfish.appclient.client.acc.AppClientCommand</mainClass>
-                              <packageName>org.glassfish.appclient.client.acc</packageName>
-                              <addClasspath>true</addClasspath>
-                            </manifest>
-                        </archive>
-                    </configuration>
-                </execution>
-            </executions>
-          </plugin>
-
-
-            <!--
-                Creates a zip file containing the stand-alone ACC JAR and all the
-                module JARs on which the ACC depends.
-            -->
             <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.1</version>
-                <configuration>
-                    <descriptors>
-                        <descriptor>src/assemble/bundle.xml</descriptor>
-                    </descriptors>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>create-ACC-bundle</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
 
 <!--
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.0.2</version>
-                <configuration>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>2.2</version>
-                <configuration>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
 -->
+
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
+<!--
+
+                <version>2.2</version>
+    -->
+<!--
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven</groupId>
+                        <artifactId>maven-archiver</artifactId>
+
+                        <version>2.4</version>
+                    </dependency>
+                </dependencies>
+-->
+<!--                <executions>
+                    <execution>
+                        <id>build-stand-alone-JAR</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+-->
+                    <configuration>
+
+                            <archive>
+
+                                <index>true</index>
+
+                                <manifest>
+                                    <mainClass>org.glassfish.appclient.client.acc.AppClientCommand</mainClass>
+<!--
+                                    <packageName>org.glassfish.appclient.client.acc</packageName>
+-->
+<!--
+                                    <addClasspath>true</addClasspath>
+-->
+
+    <!-- This is avl in archiver plug-in 2.4 only; it doesn't seem to work -->
+    <!--
+                                    <classpathLayoutType>custom</classpathLayoutType>
+                                    <customClasspathLayout>${artifact.artifactId}${dashClassifier?}.${artifact.extension}</customClasspathLayout>
+    -->
+                                </manifest>
+                                <!--
+                                    It's discouraging to have to specify the class path
+                                    manually.  Ideally the plug-in would do this
+                                    for us, but the jar plug-in uses the name
+                                    of the modules including the version strings;
+                                    when the GlassFish modules are packaged into
+                                    the distributions the version strings are
+                                    stripped off. 
+                                -->
+<!--
+                                <manifestEntries>
+                                    <Class-Path>hk2.jar common-util.jar security.jar container-common.jar dol.jar glassfish-api.jar webservices.security.jar web-naming.jar glassfish-corba-orb.jar</Class-Path>
+                                </manifestEntries>
+-->
+                            </archive>
+                        </configuration>
+<!--
+                    </execution>
+                </executions>
+-->
+            </plugin>
+
         </plugins>
     </build>
 
     <dependencies>
-<!--
         <dependency>
                 <groupId>com.sun.enterprise</groupId>
                 <artifactId>hk2</artifactId>
         </dependency>
+<!--
 	    <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
             <version>${project.version}</version>
         </dependency>
 -->
+        
+<!--
+        <dependency>
+            <groupId>com.sun.enterprise</groupId>
+            <artifactId>hk2-core</artifactId>
+        </dependency>
+-->
 
+        <!--
+            required for annotation processing support
+        -->
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>common-util</artifactId>
@@ -324,15 +327,6 @@
             <version>2.1</version>
         </dependency>
 -->
-        <!--
-            required for annotation processing support
-        -->
-        <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>common-util</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
         <!-- required for InjectionManager -->
         <dependency>
             <groupId>org.glassfish.common</groupId>
@@ -371,6 +365,18 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>glassfish-naming</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.glassfish.orb</groupId>
+            <artifactId>orb-connector</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!--
             Ken C. reports that eight ORB-related modules are needed, but
             the one "orb" module directly or indirectly depends on the others
@@ -381,6 +387,13 @@
             <artifactId>glassfish-corba-orb</artifactId>
             <version>${acc.corba-version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.core</groupId>
+            <artifactId>glassfish</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
 <!--
 <dependency>
             <groupId>org.glassfish.deployment</groupId>
