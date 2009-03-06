@@ -266,6 +266,9 @@
             <include name="**/web.xml"/>
         </webinf>
     </war>
+    <mkdir dir="${class.output}/META-INF"/>
+    <copy file="metadata/ejb-jar.xml" tofile="${class.output}/META-INF/ejb-jar.xml" failonerror="false"/>
+    <copy file="metadata/sun-ejb-jar.xml" tofile="${class.output}/META-INF/sun-ejb-jar.xml" failonerror="false"/>
     <jar destfile="${dist.dir}/${app.file}EJB.jar"
         basedir="${class.output}"
         excludes="**/*Servlet.class"/>

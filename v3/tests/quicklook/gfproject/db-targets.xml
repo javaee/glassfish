@@ -79,7 +79,7 @@
     
     <java classname="org.apache.derby.drda.NetworkServerControl"
           classpathref="db.class.path" fork="true" spawn="true">
-        <sysproperty key="derby.system.home" value="${derby.system.home}"/>
+        <sysproperty key="derby.system.home" value="${derby.home}"/>
         <arg line="-h localhost -p ${db.port} start"/>
     </java> 
     <echo message="Finished starting datbase"/>
@@ -90,21 +90,25 @@
     
     <java classname="org.apache.derby.drda.NetworkServerControl"
           classpathref="db.class.path" fork="true">
-        <sysproperty key="derby.system.home" value="${derby.system.home}"/>
+        <sysproperty key="derby.system.home" value="${derby.home}"/>
         <arg line="shutdown -h localhost -p ${db.port}"/>
     </java> 
     <echo message="Finished stopping datbase"/>
 </target>
 
-<target name="setup.toplink" if="v3">
-    <property name="download.dir" value="."/>
-         <echo message="as a temporary measure,toplink is checked in at ${basedir}/lib"/>
-         <copy todir="${glassfish.home}/lib" verbose="true">
-            <fileset dir="${basedir}/lib/toplink">
-                <include name="**/toplink*.jar"/>
-            </fileset>
-        </copy> 
-    
+<target name="sql-common" depends="initprop">
+  <echo message="sql.file = ${sql.file}"/>
+  <echo message="db.class.path = ${db.class.path}"/>
+  <sql
+    driver="${db.driver}"
+    url="${db.url}"
+    userid="${db.user}"
+    password="${db.pwd}"
+    src="${sql.file}"
+    onerror="continue"
+    print="yes"
+    classpath="${db.class.path}">
+  </sql> 
 </target>
 
 <target name="create-db" depends="initprop,delete-db"
@@ -155,12 +159,8 @@
 </target>
 
 <target name="initprop" >
-	<property name="db.root" value="${derby.system.home}"/>
-    <echo message="JavaDB Database Location: ${db.root}" />
-    <path id="db.class.path">
-        <fileset dir="${derby.system.home}/lib">
-            <include name="*.jar"/>
-        </fileset>
-    </path> 
+    <echo message="JavaDB Database Location : ${derby.home}" />
+    <property name="ips.derby" value="${glassfish.home}/../javadb"/>
+    <property name="db.class.path" value="${derby.home}/lib/derbyclient.jar:${ips.derby}/lib/derbyclient.jar"/>
 </target>
 </project>
