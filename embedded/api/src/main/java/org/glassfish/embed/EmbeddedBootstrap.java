@@ -95,7 +95,9 @@ class EmbeddedBootstrap extends Main{
         parser.replace(ServerEnvironmentImpl.class, EmbeddedServerEnvironment.class);
 
         {// adjustment for webtier only bundle
-            parser.drop(DecoratorForJ2EEInstanceListener.class);
+            // https://embedded-glassfish.dev.java.net/issues/show_bug.cgi?id=92
+            // Dropping the InstanceListener leads to big problems with JNDI etc...
+            // parser.drop(DecoratorForJ2EEInstanceListener.class);
 
             // in the webtier-only bundle, these components don't exist to begin with.
 
