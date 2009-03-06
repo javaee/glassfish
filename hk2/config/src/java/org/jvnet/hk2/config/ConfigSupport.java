@@ -541,7 +541,7 @@ public class ConfigSupport {
                     }
                     else if ( e.isCollection() ) {
                         try {
-                            final Class<?> tempClass = childType.getClassLoader().loadClass( elementModel.targetTypeName);
+                            final Class<?> tempClass = elementModel.classLoaderHolder.get().loadClass(elementModel.targetTypeName);
                             if ( tempClass.isAssignableFrom( childType ) ) {
                                 element = e;
                                 targetClass = tempClass;
