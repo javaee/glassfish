@@ -48,6 +48,7 @@ import java.util.HashMap;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Descriptor for a grizzly application.
@@ -56,9 +57,9 @@ import java.io.IOException;
  */
 public class GrizzlyModuleDescriptor {
 
-
     final static String DescriptorPath = "META-INF/grizzly-glassfish.xml";
     final Map<String, String> tuples = new HashMap<String, String>();
+    final Map<String, ArrayList<GrizzlyProperty>> adapterProperties = new HashMap<String,  ArrayList<GrizzlyProperty>>();
 
     GrizzlyModuleDescriptor(ReadableArchive source, Logger logger) {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -82,10 +83,25 @@ public class GrizzlyModuleDescriptor {
         for (int i=0;i<adapters.getLength();i++) {
             Node adapter = adapters.item(i);
             NamedNodeMap attrs = adapter.getAttributes();
-            addAdapter(attrs.getNamedItem("context-root").getNodeValue(),
-                    attrs.getNamedItem("class-name").getNodeValue());
+            NodeList properties = adapter.getChildNodes();
+            ArrayList<GrizzlyProperty> list = new ArrayList<GrizzlyProperty>();
+
+            // Read the properties to be set on a GrizzlyAdapter
+            for (int j=0; j < properties.getLength(); j++){
+                Node property = properties.item(j);
+                NamedNodeMap values = property.getAttributes();
+               if (values != null){
+                    list.add(new GrizzlyProperty(values.getNamedItem("name").getNodeValue(),
+                                          values.getNamedItem("value").getNodeValue()));
+                }
+            }
+
+            adapterProperties.put(attrs.getNamedItem("class-name").getNodeValue(), list);
+            if (attrs != null){
+                addAdapter(attrs.getNamedItem("context-root").getNodeValue(),
+                        attrs.getNamedItem("class-name").getNodeValue());
+            }
         }
-        
     }
 
     public void addAdapter(String contextRoot, String className) {
@@ -97,5 +113,24 @@ public class GrizzlyModuleDescriptor {
         
     public Map<String, String> getAdapters() {
         return tuples;
+    }
+
+    class GrizzlyProperty{
+
+        String name ="";
+        String value = "";
+
+        public GrizzlyProperty(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
+
+    }
+
+    /**
+     * Return the properties to be set on {@link Adapter}
+     */
+    Map<String,ArrayList<GrizzlyProperty>> getProperties(){
+        return adapterProperties;
     }
 }

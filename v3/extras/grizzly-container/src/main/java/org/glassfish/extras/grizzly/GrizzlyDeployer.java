@@ -37,18 +37,22 @@
  */
 package org.glassfish.extras.grizzly;
 
+import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
+import com.sun.grizzly.util.IntrospectionUtils;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.container.RequestDispatcher;
+import org.glassfish.extras.grizzly.GrizzlyModuleDescriptor.GrizzlyProperty;
 
 import java.util.Map;
 import java.util.LinkedList;
 import java.util.logging.Level;
 
 import com.sun.logging.LogDomains;
+import java.util.ArrayList;
 
 /**
  * @author Jerome Dochez
@@ -71,16 +75,34 @@ public class GrizzlyDeployer implements Deployer<GrizzlyContainer, GrizzlyApp> {
         return true;
     }
 
+    /**
+     * Deploy a {@link Adapter} pr {@link GrizzlyAdapter}.
+     * @param container
+     * @param context
+     * @return
+     */
     public GrizzlyApp load(GrizzlyContainer container, DeploymentContext context) {
 
         GrizzlyModuleDescriptor configs = context.getModuleMetaData(GrizzlyModuleDescriptor.class);
 
         LinkedList<GrizzlyApp.Adapter> modules = new LinkedList<GrizzlyApp.Adapter>();
+
+
+        Map<String,ArrayList<GrizzlyProperty>>
+                        properties = configs.getProperties();
         for (Map.Entry<String, String> config : configs.getAdapters().entrySet()) {
             com.sun.grizzly.tcp.Adapter adapter;
             try {
                 Class adapterClass = context.getClassLoader().loadClass(config.getValue());
                 adapter = com.sun.grizzly.tcp.Adapter.class.cast(adapterClass.newInstance());
+                ArrayList<GrizzlyProperty> list =
+                        properties.get(config.getValue());
+                for (GrizzlyProperty p: list){
+                    IntrospectionUtils.setProperty(adapter, p.name, p.value);
+                }
+                if (adapter instanceof GrizzlyAdapter){
+                    ((GrizzlyAdapter)adapter).start();
+                }
             } catch(Exception e) {
                 context.getLogger().log(Level.SEVERE, e.getMessage(),e);
                 return null;
