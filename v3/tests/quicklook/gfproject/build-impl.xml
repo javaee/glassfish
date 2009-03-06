@@ -270,6 +270,7 @@
     <copy file="metadata/ejb-jar.xml" tofile="${class.output}/META-INF/ejb-jar.xml" failonerror="false"/>
     <copy file="metadata/sun-ejb-jar.xml" tofile="${class.output}/META-INF/sun-ejb-jar.xml" failonerror="false"/>
     <copy file="metadata/sun-cmp-mappings.xml" tofile="${class.output}/META-INF/sun-cmp-mappings.xml" failonerror="false"/>
+    <copy file="metadata/${dbschema}" tofile="${class.output}/${dbschema}" failonerror="false"/>
     <jar destfile="${dist.dir}/${app.file}EJB.jar"
         basedir="${class.output}"
         excludes="**/*Servlet.class"/>
