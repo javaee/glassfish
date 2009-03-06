@@ -111,7 +111,8 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
         ReadableArchive source2 = 
             archiveFactory.openArchive(target.getURI());
 
-        ApplicationHolder holder = getApplicationHolder(source2, context);
+        ApplicationHolder holder = 
+            getApplicationHolder(source2, context, false);
 
         // now start to expand the sub modules 
         for (ModuleDescriptor md : holder.app.getModules()) {
@@ -124,10 +125,12 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                         FileUtils.makeFriendlyFilename(moduleUri));
                     subHandler.expand(subArchive, subTarget, context);
                     target.closeEntry(subTarget);
+/*
                     // delete the original module file
                     File origSubArchiveFile = new File(
                         target.getURI().getSchemeSpecificPart(), moduleUri);
                     origSubArchiveFile.delete();
+*/
                 }
             } catch(IOException ioe) {
                 _logger.log(Level.FINE, "Exception while processing " + 
@@ -139,7 +142,8 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
     public ClassLoader getClassLoader(ClassLoader parent, DeploymentContext context) {
         final ReadableArchive archive  = context.getSource();
 
-        ApplicationHolder holder = getApplicationHolder(archive, context);
+        ApplicationHolder holder = 
+            getApplicationHolder(archive, context, true);
 
         EarClassLoader cl;
         // add the libraries packaged in the application library directory
@@ -213,7 +217,7 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
     }
 
     private ApplicationHolder getApplicationHolder(ReadableArchive source, 
-        DeploymentContext context) {
+        DeploymentContext context, boolean isDirectory) {
         ApplicationHolder holder = context.getModuleMetaData(ApplicationHolder.class);
         if (holder==null || holder.app==null) {
             try {
@@ -228,7 +232,7 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                 }
 
                 holder = new ApplicationHolder(archivist.createApplication(
-                    source, false));
+                    source, isDirectory));
                 System.out.println("time to read application.xml " + (System.currentTimeMillis() - start));
             } catch (IOException e) {
                 throw new RuntimeException(e);
