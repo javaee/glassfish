@@ -63,7 +63,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
-import javax.security.auth.login.LoginException;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
@@ -211,10 +210,4 @@ public class StandardSessionFacade
     public boolean isNew() {
         return session.isNew();
     }
-
-
-    public void logout() throws LoginException {
-        session.logout();
-    }
-
 }
