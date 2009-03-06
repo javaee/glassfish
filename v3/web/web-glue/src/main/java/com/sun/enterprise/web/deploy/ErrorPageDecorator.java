@@ -35,13 +35,9 @@
  */
 package com.sun.enterprise.web.deploy;
 
-
 import org.apache.catalina.deploy.ErrorPage;
-
-
 import org.apache.catalina.util.RequestUtil;
 import com.sun.enterprise.deployment.ErrorPageDescriptor;
-
 
 /**
  * Decorator of class <code>org.apache.catalina.deploy.ErrorPage</code>
@@ -57,14 +53,13 @@ public class ErrorPageDecorator extends ErrorPage {
     
     public ErrorPageDecorator(ErrorPageDescriptor decoree){
         this.decoree = decoree;
-        setErrorCode(decoree.getErrorCode());
-         String  exceptionType = decoree.getExceptionType();
-        if (exceptionType.equals("")){
-            setExceptionType(null);
-        } else {
-            setExceptionType(exceptionType);
+        if (decoree.getErrorCode() > 0) {
+            setErrorCode(decoree.getErrorCode());
+        } else if (decoree.getExceptionType() != null &&
+                !"".equals(decoree.getExceptionType())) {
+            setExceptionType(decoree.getExceptionType());
         }
-        
+
         setLocation(RequestUtil.URLDecode(decoree.getLocation()));
     }
 }

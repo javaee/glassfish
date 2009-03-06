@@ -852,6 +852,17 @@ public interface Context extends Container {
     ErrorPage findErrorPage(String exceptionType);
 
 
+    /**
+     * Gets the default error page of this context.
+     *
+     * <p>A default error page is an error page that was declared without
+     * any exception-type and error-code.
+     *
+     * @return the default error page of this context, or null if this
+     * context does not have any default error page
+     */
+    public ErrorPage getDefaultErrorPage();
+
 
     /**
      * Return the set of defined error pages for all specified error codes

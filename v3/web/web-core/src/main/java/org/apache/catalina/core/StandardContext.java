@@ -297,13 +297,21 @@ public class StandardContext
      * The exception pages for this web application, keyed by fully qualified
      * class name of the Java exception.
      */
-    private Map<String, ErrorPage> exceptionPages = new HashMap<String, ErrorPage>();
+    private Map<String, ErrorPage> exceptionPages =
+        new HashMap<String, ErrorPage>();
+
+    /**
+     * The default error page (error page that was declared
+     * without any exception-type and error-code).
+     */
+    private ErrorPage defaultErrorPage;
 
     /**
      * The set of filter configurations (and associated filter instances) we
      * have initialized, keyed by filter name.
      */
-    private Map<String, FilterConfig> filterConfigs = new HashMap<String, FilterConfig>();
+    private Map<String, FilterConfig> filterConfigs =
+        new HashMap<String, FilterConfig>();
 
     /**
      * The set of filter definitions for this application, keyed by
@@ -1536,9 +1544,7 @@ public class StandardContext
      * Return the reloadable flag for this web application.
      */
     public boolean getReloadable() {
-
         return (this.reloadable);
-
     }
 
 
@@ -1546,9 +1552,7 @@ public class StandardContext
      * Return the DefaultContext override flag for this web application.
      */
     public boolean getOverride() {
-
         return (this.override);
-
     }
 
     
@@ -1558,9 +1562,7 @@ public class StandardContext
      * Is only set as deployment has change docRoot!
      */
     public String getOriginalDocBase() {
-
         return (this.originalDocBase);
-
     }
 
     
@@ -1571,7 +1573,6 @@ public class StandardContext
      * @param docBase The orginal document root
      */
     public void setOriginalDocBase(String docBase) {
-
         this.originalDocBase = docBase;
     }
 
@@ -1580,9 +1581,7 @@ public class StandardContext
      * Return the privileged flag for this web application.
      */
     public boolean getPrivileged() {
-
         return (this.privileged);
-
     }
 
 
@@ -1592,13 +1591,11 @@ public class StandardContext
      * @param privileged The new privileged flag
      */
     public void setPrivileged(boolean privileged) {
-
         boolean oldPrivileged = this.privileged;
         this.privileged = privileged;
         support.firePropertyChange("privileged",
                                    Boolean.valueOf(oldPrivileged),
                                    Boolean.valueOf(this.privileged));
-
     }
 
 
@@ -1608,13 +1605,11 @@ public class StandardContext
      * @param reloadable The new reloadable flag
      */
     public void setReloadable(boolean reloadable) {
-
         boolean oldReloadable = this.reloadable;
         this.reloadable = reloadable;
         support.firePropertyChange("reloadable",
                                    Boolean.valueOf(oldReloadable),
                                    Boolean.valueOf(this.reloadable));
-
     }
 
 
@@ -1624,13 +1619,11 @@ public class StandardContext
      * @param override The new override flag
      */
     public void setOverride(boolean override) {
-
         boolean oldOverride = this.override;
         this.override = override;
         support.firePropertyChange("override",
                                    Boolean.valueOf(oldOverride),
                                    Boolean.valueOf(this.override));
-
     }
 
     // START SJSAS 8.1 5049111
@@ -2392,7 +2385,7 @@ public class StandardContext
             synchronized (exceptionPages) {
                 exceptionPages.put(exceptionType, errorPage);
             }
-        } else {
+        } else if (errorPage.getErrorCode() > 0) {
             synchronized (statusPages) {
                 int errorCode = errorPage.getErrorCode();
                 if ((errorCode >= 400) && (errorCode < 600)) {
@@ -2402,6 +2395,8 @@ public class StandardContext
                         "standardContext.invalidErrorPageCode", errorCode));
                 }
             }
+        } else {
+            defaultErrorPage = errorPage;
         }
 
         if (notifyContainerListeners) {
@@ -2706,7 +2701,6 @@ public class StandardContext
      * @param listener Java class name of an InstanceListener class
      */
     public void addInstanceListener(String listener) {
-
         synchronized (instanceListeners) {
             String results[] =new String[instanceListeners.length + 1];
             for (int i = 0; i < instanceListeners.length; i++)
@@ -3441,6 +3435,20 @@ public class StandardContext
             return exceptionPages.get(exceptionType);
         }
 
+    }
+
+
+    /**
+     * Gets the default error page of this context.
+     *
+     * <p>A default error page is an error page that was declared without
+     * any exception-type and error-code.
+     *
+     * @return the default error page of this context, or null if this
+     * context does not have any default error page
+     */
+    public ErrorPage getDefaultErrorPage() {
+        return defaultErrorPage;
     }
 
 
