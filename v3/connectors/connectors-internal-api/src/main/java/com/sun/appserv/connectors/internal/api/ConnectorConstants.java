@@ -365,4 +365,9 @@ public interface ConnectorConstants {
     /** resource type residing in an external JNDI repository */
     public static final String EXT_JNDI_RES_TYPE = "external-jndi-resource";
 
+    // name by which connector's implemenation of message-bean-client-factory service is available.
+    // MDB-Container can use this constant to get connector's implementation of the factory
+    public static final String CONNECTOR_MESSAGE_BEAN_CLIENT_FACTORY="ConnectorMessageBeanClientFactory";
+
+    public static final String EXPLODED_EMBEDDED_RAR_EXTENSION="_rar";
 }

@@ -52,6 +52,7 @@ import com.sun.ejb.containers.util.pool.ObjectFactory;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.Utility;
 import com.sun.appserv.connectors.internal.api.ResourceHandle;
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
@@ -114,7 +115,8 @@ public final class MessageBeanContainer extends BaseContainer implements
 	// message delivery.
 	private static final String MESSAGE_BEAN_CLIENT_FACTORY_PROP = "com.sun.enterprise.MessageBeanClientFactory";
 
-	private static final String DEFAULT_MESSAGE_BEAN_CLIENT_FACTORY = "ConnectorMessageBeanClientFactory";
+	private static final String DEFAULT_MESSAGE_BEAN_CLIENT_FACTORY =
+            ConnectorConstants.CONNECTOR_MESSAGE_BEAN_CLIENT_FACTORY;
 
 	private static final int DEFAULT_RESIZE_QUANTITY = 1;
 	private static final int DEFAULT_STEADY_SIZE = 10;
