@@ -71,34 +71,13 @@ import java.security.Principal;
 import java.security.PrivilegedAction;
 import java.security.PrivilegedExceptionAction;
 import java.security.PrivilegedActionException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import javax.naming.NamingException;
 import javax.naming.Binding;
 import javax.naming.directory.DirContext;
-import javax.servlet.AsyncContext;
-import javax.servlet.AsyncListener;
-import javax.servlet.DispatcherType;
-import javax.servlet.FilterChain;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.Servlet;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextAttributeEvent;
-import javax.servlet.ServletContextAttributeListener;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import javax.security.auth.login.LoginException;
+import javax.servlet.*;
+import javax.servlet.http.*;
 
 import com.sun.grizzly.util.buf.MessageBytes;
 import org.apache.naming.resources.Resource;
@@ -385,7 +364,11 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
                                  ServletResponse servletResponse) {}
     public boolean isSetAsyncTimeoutCalled() { return false; }
     public void disableAsyncSupport() {}
-
+    public boolean login(HttpServletResponse response)
+        throws IOException, LoginException { return false; }
+    public void login(String username, String password)
+        throws LoginException {}
+    public void logout() throws LoginException {}
 
     // START CR 6415120
     /**

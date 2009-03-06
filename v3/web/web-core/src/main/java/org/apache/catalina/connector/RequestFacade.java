@@ -70,18 +70,9 @@ import java.util.Enumeration;
 import java.util.Map;
 import java.util.Locale;
 import java.net.Socket;
-import javax.servlet.AsyncContext;
-import javax.servlet.AsyncListener;
-import javax.servlet.DispatcherType;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import javax.security.auth.login.LoginException;
+import javax.servlet.*;
+import javax.servlet.http.*;
 
 import org.apache.catalina.Globals;
 import org.apache.catalina.session.StandardSessionFacade;
@@ -1151,6 +1142,35 @@ public class RequestFacade
                             sm.getString("requestFacade.nullRequest"));
         }
         request.setAsyncTimeout(timeout);
+    }
+
+
+    public boolean login(HttpServletResponse response)
+            throws IOException, LoginException {
+        if (request == null) {
+            throw new IllegalStateException(
+                            sm.getString("requestFacade.nullRequest"));
+        }
+        return request.login(response);
+    }
+
+
+    public void login(String username, String password)
+            throws LoginException {
+        if (request == null) {
+            throw new IllegalStateException(
+                            sm.getString("requestFacade.nullRequest"));
+        }
+        request.login(username, password);
+    }
+
+
+    public void logout() throws LoginException {
+        if (request == null) {
+            throw new IllegalStateException(
+                            sm.getString("requestFacade.nullRequest"));
+        }
+        request.logout();
     }
 
 
