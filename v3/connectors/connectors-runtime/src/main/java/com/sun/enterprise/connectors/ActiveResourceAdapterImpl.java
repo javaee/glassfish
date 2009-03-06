@@ -315,12 +315,12 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
             setMethodAction.run();
             _logger.log(Level.FINE, "Created MCF object : ", mcfClass);
             return mcf;
-        } catch (PrivilegedActionException ex) {
+        } /*catch (PrivilegedActionException ex) {
             _logger.log(Level.SEVERE, "rardeployment.privilegedaction_error",
                     new Object[]{mcfClass, ex.getException().getMessage()});
             _logger.log(Level.FINE, "rardeployment.privilegedaction_error", ex.getException());
             return null;
-        } catch (ClassNotFoundException Ex) {
+        } */catch (ClassNotFoundException Ex) {
             _logger.log(Level.SEVERE, "rardeployment.class_not_found", new Object[]{mcfClass, Ex.getMessage()});
             _logger.log(Level.FINE, "rardeployment.class_not_found", Ex);
             return null;
@@ -356,7 +356,7 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
         }
     }
 
-    private ManagedConnectionFactory instantiateMCF(String mcfClass, ClassLoader loader)
+    protected ManagedConnectionFactory instantiateMCF(String mcfClass, ClassLoader loader)
             throws Exception {
         ManagedConnectionFactory mcf = null;
 

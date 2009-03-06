@@ -39,6 +39,7 @@ package com.sun.enterprise.connectors.inbound;
 import com.sun.enterprise.connectors.ActiveOutboundResourceAdapter;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 
 import javax.resource.spi.ResourceAdapter;
 import java.util.Hashtable;
@@ -149,7 +150,9 @@ public class ActiveInboundResourceAdapter extends ActiveOutboundResourceAdapter 
      */
     public boolean handles(ConnectorDescriptor cd) {
         //TODO V3 right assumption ?
-        return cd.getInBoundDefined();
+        //TODO V3 ignore JMS-RA
+        //TODO V3 later multiple JMS Ras will be present (ignore all)
+        return (cd.getInBoundDefined() && !(ConnectorConstants.DEFAULT_JMS_ADAPTER.equals(moduleName_)));
     }
 
     /**
