@@ -174,6 +174,7 @@ public final class EmbeddedFileSystem {
     public void setAutoDelete(boolean b) throws EmbeddedException {
         mustNotBeInitialized("setAutoDelete");
         autoDelete = b;
+        autoDeleteWasExplicitlySet = true;
     }
 
     /**
@@ -379,6 +380,9 @@ public final class EmbeddedFileSystem {
         if(!hasInstance && !hasInstall) {
             setInstallRoot(createDefaultInstallDir());
             setInstanceRoot(new File(installRoot, DEFAULT_PATH_TO_INSTANCE));
+            
+            if(!autoDeleteWasExplicitlySet)
+                autoDelete = true;
         }
 
         /*
@@ -535,7 +539,18 @@ public final class EmbeddedFileSystem {
     private File                modulesDir;
     private File                logFile;
     private URL                 domainXmlSource;
-    private boolean             autoDelete          = true;
     private boolean             initialized         = false;
 
+    // bnevins -
+    // autoDelete is false by default.  If at init time it is discovered that the
+    // user set no dirs -- we automatically set this flag to true.
+    // If the user explicitly sets it to true -- then the dirs are deleted no matter
+    // if they are user-supplied or not.
+    // I.e. the user's files are safe if he specifies directory|ies AND he does not
+    // set autoDelete to true.
+
+    private boolean             autoDelete          = false;
+
+    // if the user explicitly sets it to true or false -- respect it!
+    private boolean             autoDeleteWasExplicitlySet = false;
 }
