@@ -38,16 +38,16 @@ package com.sun.enterprise.resource.recovery;
 import com.sun.enterprise.connectors.util.ResourcesUtil;
 import com.sun.enterprise.connectors.util.ConnectionPoolObjectsUtils;
 import com.sun.enterprise.connectors.*;
+import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.connectors.service.ConnectorAdminServiceUtils;
 import com.sun.enterprise.resource.deployer.ConnectorResourceDeployer;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.transaction.spi.RecoveryResourceHandler;
+import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
-import com.sun.appserv.connectors.internal.api.ConnectorConstants;
-import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
-import com.sun.appserv.connectors.internal.api.ConnectorsClassLoaderUtil;
+import com.sun.appserv.connectors.internal.api.*;
 
 import javax.naming.InitialContext;
 import javax.naming.NameNotFoundException;
@@ -62,10 +62,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.*;
 import java.security.Principal;
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.admin.config.Property;
+import org.glassfish.api.Startup;
 import org.glassfish.internal.api.ConnectorClassFinder;
 
 /**
@@ -82,6 +87,15 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
     @Inject
     private ConnectorsClassLoaderUtil cclUtil;
 
+    @Inject
+    private Habitat connectorRuntimeHabitat;
+
+    @Inject
+    private Habitat connectorResourceDeployerHabitat;
+
+    @Inject
+    private Habitat applicationLoaderServiceHabitat;
+
     private static Logger _logger = LogDomains.getLogger(ConnectorsRecoveryResourceHandler.class, LogDomains.RSR_LOGGER);
 
     /**
@@ -97,15 +111,16 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
                 if (isEnabled(connResource)) {
                     try {
                         ic.lookup(connResource.getJndiName());
-                    } catch (NameNotFoundException ne) {
+                    //} catch (NameNotFoundException ne) {
+                    } catch (NamingException ne) {
                         //If you are here then it is most probably an embedded RAR resource
                         //So we need to explicitly load that rar and create the resources
                         try {
                             com.sun.enterprise.config.serverbeans.ConnectorConnectionPool connConnectionPool =
                                     getConnectorConnectionPoolByName(connResource.getPoolName());
+                            //TODO V3 ideally this should not happen if connector modules (and embedded rars) are loaded before recovery
                             createActiveResourceAdapter(connConnectionPool.getResourceAdapterName());
-                            //TODO V3 use ResourceDeployer annotation
-                            (new ConnectorResourceDeployer()).deployResource(connResource);
+                            getConnectorResourceDeployer().deployResource(connResource);
                         } catch (Exception ex) {
                             _logger.log(Level.SEVERE, "error.loading.connector.resources.during.recovery", connResource.getJndiName());
                             if (_logger.isLoggable(Level.FINE)) {
@@ -130,6 +145,10 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
                 _logger.log(Level.FINE, ne.toString(), ne);
             }
         }
+    }
+
+    private ConnectorResourceDeployer getConnectorResourceDeployer() {
+        return connectorResourceDeployerHabitat.getComponent(ConnectorResourceDeployer.class);
     }
 
     /**
@@ -168,7 +187,14 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
 
         if (connectorResources == null || connectorResources.size() == 0) {
             return;
-        }                        
+        }
+
+        //TODO V3 done so as to initialize connectors-runtime before loading jdbc-resources. need a better way ?
+        ConnectorRuntime crt = connectorRuntimeHabitat.getComponent(ConnectorRuntime.class);
+
+        //TODO V3 done so as to load all connector-modules. need to load only connector-modules instead of all apps
+        applicationLoaderServiceHabitat.getComponent(Startup.class,"ApplicationLoaderService");
+
         List<ConnectorConnectionPool> connPools = new ArrayList<ConnectorConnectionPool>();
         for (Resource resource : connectorResources) {
             ConnectorResource connResource = (ConnectorResource) resource;
@@ -188,8 +214,7 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
         loadAllConnectorResources();
 
         _logger.log(Level.FINE, "Recovering pools : " + connPools.size());
-        ConnectorRuntime crt = ConnectorRuntime.getRuntime();
-        //for(int i = 0; i<connectorConnectionPools.length;++i) {
+
         for(ConnectorConnectionPool connPool : connPools){
             String poolName = connPool.getName();
             try {
@@ -218,6 +243,7 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
                             "datasource.xadatasource_nulluser_error", poolName);
                 }
                 String rarName = connPool.getResourceAdapterName();
+                //TODO V3 JMS-RA ??
                 if (ConnectorAdminServiceUtils.isJMSRA(rarName)) {
                     _logger.log(Level.FINE, "Performing recovery for JMS RA, poolName  " + poolName);
                     ManagedConnectionFactory[] mcfs =
@@ -391,29 +417,14 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
     private void createActiveResourceAdapter(String rarModuleName) throws ConnectorRuntimeException {
 
         ConnectorRuntime cr = ConnectorRuntime.getRuntime();
-        ResourcesUtil resutil = ResourcesUtil.createInstance();
         ConnectorRegistry creg = ConnectorRegistry.getInstance();
 
         if (creg.isRegistered(rarModuleName))
             return;
 
-        // If RA is embedded RA, find location of exploded rar.
         if (ConnectorAdminServiceUtils.isEmbeddedConnectorModule(rarModuleName)) {
-            throw new ConnectorRuntimeException("Embedded RA is not yet supported");
-            /* TODO V3 handle Embedded RA later
-                 String appName = ConnectorAdminServiceUtils.getApplicationName(rarModuleName);
-                 String rarFileName = ConnectorAdminServiceUtils
-                         .getConnectorModuleName(rarModuleName) + ".rar";
-                 ConnectorDescriptor cd = resutil.getConnectorDescriptorFromUri(appName, rarFileName);
-                 String loc = resutil.getApplicationDeployLocation(appName);
-                 loc = loc + File.separator + FileUtils.makeFriendlyFilename(rarFileName);
-
-                 // start RA
-                 cr.createActiveResourceAdapter(cd, rarModuleName, loc);
-            */
-
-            // else if RA is not embedded, it is already present in the
-            // ConnectorRegistry. Start it straight away.
+            // TODO V3 handle embedded rar later
+            // cr.createActiveResourceAdapterForEmbeddedRar(rarModuleName);
         } else {
             String moduleDir = ConfigBeansUtilities.getLocation(rarModuleName);
             ConnectorClassFinder loader = cclUtil.createRARClassLoader(moduleDir);

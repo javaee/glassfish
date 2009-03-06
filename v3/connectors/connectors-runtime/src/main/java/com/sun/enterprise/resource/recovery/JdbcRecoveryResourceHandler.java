@@ -147,7 +147,7 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
         }
 
         //TODO V3 done so as to initialize connectors-runtime before loading jdbc-resources. need a better way ?
-        ConnectorRuntime crt = connectorRuntimeHabitat.getComponent(ConnectorRuntime.class, null);
+        ConnectorRuntime crt = connectorRuntimeHabitat.getComponent(ConnectorRuntime.class);
 
         loadAllJdbcResources();
         // Read from the transaction-service , if the replacement of

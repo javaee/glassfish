@@ -65,7 +65,7 @@ import java.util.logging.Logger;
  *
  * @author Jerome Dochez
  */
-@Service
+@Service(name="ApplicationLoaderService")
 public class ApplicationLoaderService implements Startup, PreDestroy, PostConstruct {
 
     final Logger logger = LogDomains.getLogger(AppServerStartup.class, LogDomains.CORE_LOGGER);
