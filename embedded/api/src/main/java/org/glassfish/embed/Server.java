@@ -143,7 +143,17 @@ public class Server {
         writeXml();
         testDerby();
     }
-
+    /**
+     * Convenience method.  Creates a Server object with an HTTP Listener attached
+     * to the given port number.
+     *
+     * @param port The Http port number to listen to
+     * @throws EmbeddedException if any errors
+     */
+    public Server(int port) throws EmbeddedException {
+        this(new EmbeddedInfo(port));
+    }
+    
     /**
      * The name of the server is inside the contained EmbeddedInfo object
      * @return the name of this server
