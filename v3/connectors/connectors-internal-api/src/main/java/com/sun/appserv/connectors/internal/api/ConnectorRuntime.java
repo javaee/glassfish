@@ -64,7 +64,7 @@ import com.sun.corba.se.spi.orbutil.threadpool.NoSuchThreadPoolException;
  */
 
 @Contract
-public interface ConnectorRuntime {
+public interface ConnectorRuntime extends ConnectorConstants{
 
     /**
      * Creates Active resource Adapter which abstracts the rar module.
@@ -235,4 +235,10 @@ public interface ConnectorRuntime {
      */
     public ManagedConnectionFactory obtainManagedConnectionFactory(String poolName)
             throws ConnectorRuntimeException;
+
+    /**
+     * Indicates whether the execution environment is server or client
+     * @return ConnectorConstants.SERVER or ConnectorConstants.CLIENT
+     */
+    public int getEnvironment();
 }
