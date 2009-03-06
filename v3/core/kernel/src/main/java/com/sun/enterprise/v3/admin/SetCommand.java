@@ -195,7 +195,11 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
                         part.setMessage(node.getValue() + "." + name + "=" + value);
 
                         if (! isProperty) {
-                            attrChanges.put(name, value);
+                            if (value!=null && value.length()>0) {
+                                attrChanges.put(name, value);
+                            } else {
+                                attrChanges.put(name, null);
+                            }
                         }
 
                         if (delProperty) {

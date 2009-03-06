@@ -70,7 +70,7 @@ public class V2DottedNameSupport {
 
     protected void getAllSubDottedNames(String prefix, Dom parent,Map<Dom, String> result) {
 
-        Set<String> elementNames = parent.model.getElementNames();
+        Set<String> elementNames = parent.getElementNames();
 
         for (String childName : elementNames) {
 
@@ -276,7 +276,7 @@ public class V2DottedNameSupport {
         }
 
         // check for resources
-        if ((newPrefix != null) && (newPrefix.startsWith("resources"))) {
+        if ((name != null) && (name.startsWith("resources"))) {
             String relativeName = newPrefix;
             if (newPrefix.indexOf('.')!=-1) {
                 String str = newPrefix.substring(0, newPrefix.indexOf('.'));
