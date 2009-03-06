@@ -40,6 +40,7 @@ import javax.resource.spi.*;
 
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.enterprise.transaction.api.JavaEETransaction;
+import com.sun.enterprise.transaction.api.TransactionConstants;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.resource.allocator.ResourceAllocator;
 import com.sun.appserv.connectors.internal.api.PoolingException;
@@ -183,8 +184,7 @@ public class ConnectorXAResource implements XAResource {
     }        
 
     public int prepare(Xid xid) throws XAException {
-        //TODO V3 use Configuration.LAO_PREPARE_OK later
-        return 123456;
+        return TransactionConstants.LAO_PREPARE_OK;
     }
     
     public Xid[] recover(int flag) throws XAException {
