@@ -90,7 +90,6 @@
   <modules>
     <module>api</module>
     <module>packager</module>
-    <module>samples</module>
   </modules>
 
   <developers>
