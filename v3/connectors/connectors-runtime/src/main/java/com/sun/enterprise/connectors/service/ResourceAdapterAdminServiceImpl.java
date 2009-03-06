@@ -220,7 +220,8 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
             return;
         }
 
-/* TODO V3 not needed in v3 ?
+
+        //TODO V3 works fine ?
         if (loader == null) {
             try {
                 loader = connectorDescriptor.getClassLoader();
@@ -229,13 +230,15 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
                 loader = null;
             }
         }
-*/
+
         ModuleDescriptor moduleDescriptor = null;
         Application application = null;
         _logger.fine("ResourceAdapterAdminServiceImpl :: createActiveRA "
                 + moduleName + " at " + moduleDir + " loader :: " + loader);
         //class-loader can not be null for standalone rar as deployer should have provided one.
         //class-laoder can (may) be null for system-rars as they are not actually deployed.
+        //TODO V3 don't check for system-ra if the resource-adapters are not loaded before recovery
+        // (standalone + embedded) 
         if (loader == null && ConnectorsUtil.belongsToSystemRA(moduleName)) {
             if (environment == SERVER) {
                 loader = ConnectorRuntime.getRuntime().createConnectorClassLoader(moduleDir);
@@ -458,9 +461,10 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
 	 *
 	 * @param rarName
 	 */
-    public void deleteResourceAdapterConfig(String rarName) {
+    public void deleteResourceAdapterConfig(String rarName) throws ConnectorRuntimeException {
         if (rarName != null) {
             _registry.removeResourceAdapterConfig(rarName);
+            reCreateActiveResourceAdapter(rarName);
         }
     }
 
@@ -477,23 +481,27 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
 	 */
 
     public void reCreateActiveResourceAdapter(String moduleName)
-        throws ConnectorRuntimeException {
-        String moduleDir= null;
-        //TODO V3 is there a case where RAR is not deployed ?
-        if (isRarDeployed(moduleName)) {
-            ConnectorApplication app = _registry.getConnectorApplication(moduleName);
-            app.undeployResources();
-            stopAndRemoveActiveResourceAdapter(moduleName);
-            moduleDir= ConnectorsUtil.getLocation(moduleName);
-            createActiveResourceAdapter(moduleDir, moduleName, app.getClassLoader());
-            _registry.getConnectorApplication(moduleName).deployResources();
-        } else {
-            moduleDir= ConnectorsUtil.getLocation(moduleName);
-            if (moduleDir != null) {
+            throws ConnectorRuntimeException {
+
+        String moduleDir = ConnectorsUtil.getLocation(moduleName);
+        /* TODO V3 moduleDir=null can happen only for embedded rar,
+        need to decide whether it need to be handled or not */
+        if (moduleDir != null) {
+            //TODO V3 is there a case where RAR is not deployed ?
+            if (isRarDeployed(moduleName)) {
                 ConnectorApplication app = _registry.getConnectorApplication(moduleName);
+                app.undeployResources();
+                stopAndRemoveActiveResourceAdapter(moduleName);
                 createActiveResourceAdapter(moduleDir, moduleName, app.getClassLoader());
                 _registry.getConnectorApplication(moduleName).deployResources();
             }
+            //No need to deploy the .rar, it may be a case where rar is not deployed yet
+            //Also, when the rar is started, RA-Config is anyway used
+            /*else {
+                ConnectorApplication app = _registry.getConnectorApplication(moduleName);
+                createActiveResourceAdapter(moduleDir, moduleName, app.getClassLoader());
+                _registry.getConnectorApplication(moduleName).deployResources();
+            }*/
         }
     }
 }
