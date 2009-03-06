@@ -175,6 +175,7 @@ public class ConnectorDDTransformUtils {
      *                                   should not be  present.
      */
 
+    //TODO V3 with annotations, is it right a approach to load the descriptor using Archivist ?
     public static ConnectorDescriptor getConnectorDescriptor(String moduleDir)
             throws ConnectorRuntimeException {
 
