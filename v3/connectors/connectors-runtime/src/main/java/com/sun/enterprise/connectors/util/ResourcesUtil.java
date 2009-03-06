@@ -40,12 +40,22 @@ import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.connectors.DeferredResourceConfig;
+import com.sun.enterprise.connectors.ConnectorRuntime;
 import org.glassfish.internal.api.ServerContext;
+import org.glassfish.internal.data.ApplicationRegistry;
+import org.glassfish.internal.data.ApplicationInfo;
 import com.sun.enterprise.util.i18n.StringManager;
+import com.sun.enterprise.util.RelativePathResolver;
+import com.sun.enterprise.deployment.ConnectorDescriptor;
+import com.sun.enterprise.deployment.archivist.ApplicationArchivist;
+import com.sun.enterprise.deploy.shared.FileArchive;
 import com.sun.logging.LogDomains;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.util.logging.Logger;
+import java.util.List;
+import java.io.File;
+import java.net.URI;
 
 
 public class ResourcesUtil {
@@ -69,18 +79,62 @@ public class ResourcesUtil {
 
     protected Resources res = null;
 
+    private ConnectorRuntime runtime;
 
+    public ResourcesUtil(){
+        runtime = ConnectorRuntime.getRuntime();
+    }
     public static void setServerContext(ServerContext sc) {
         sc_ = sc;
     }
 
-    public boolean belongToStandAloneRar(String resourceAdapterName) {
+    private Applications getApplications(){
+        return runtime.getApplications();
+    }
 
-        /* TODO V3
-     Applications apps = dom.getApplications();
-     ConnectorModule connectorModule = apps.getConnectorModuleByName(resourceAdapterName);
-     return connectorModule != null;*/
-        return false;
+    private ConnectorModule getConnectorModuleByName(String name){
+        ConnectorModule module = null;
+        List<ConnectorModule> modules = getApplications().getModules(ConnectorModule.class);
+        for(ConnectorModule connectorModule : modules){
+            if(connectorModule.getName().equals(name)){
+                module = connectorModule;
+                break;
+            }
+        }
+        return module;
+    }
+
+
+    private Application getApplicationByName(String name){
+        Application application = null;
+        List<Application> apps = getApplications().getApplications();
+        for(Application app : apps){
+            if(app.getName().equals(name)){
+                application = app;
+                break;
+            }
+        }
+        return application;
+    }
+    /**
+     * Gets the deployment location for a J2EE application.
+     * @param appName application name
+     * @return application deploy location
+     */
+    public String getApplicationDeployLocation(String appName) {
+        String location = null;
+        Application app = getApplicationByName(appName);
+        if(app != null){
+            //TODO V3 with annotations, is this right location ?
+            location = RelativePathResolver.resolvePath(app.getLocation());
+        }
+        return location;
+    }
+
+
+    public boolean belongToStandAloneRar(String resourceAdapterName) {
+        ConnectorModule connectorModule = getConnectorModuleByName(resourceAdapterName);
+        return connectorModule != null;
     }
 
     public static ResourcesUtil createInstance() {
@@ -157,6 +211,7 @@ public class ResourcesUtil {
                 ConnectorConstants.RES_TYPE_CCP.equalsIgnoreCase(resType)) {
             ConnectorConnectionPool connPool = (ConnectorConnectionPool) pool;
             ConnectorResource connResource = (ConnectorResource) resource;
+            resourceAdapterName = connPool.getResourceAdapterName();
 
             //TODO V3 need to get AOR & RA-Config later
             resConfig = new DeferredResourceConfig(resourceAdapterName, null, connPool, connResource, null, null, null);
@@ -487,4 +542,21 @@ public class ResourcesUtil {
         return null;
     }
 
+    public ConnectorDescriptor getConnectorDescriptorFromUri(String rarName, String raLoc) {
+        try {
+            String appName = rarName.substring(0, rarName.indexOf(ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER));
+            //String actualRarName = rarName.substring(rarName.indexOf(ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER) + 1);
+            String appDeployLocation = ResourcesUtil.createInstance().getApplicationDeployLocation(appName);
+
+            FileArchive in = ConnectorRuntime.getRuntime().getFileArchive();
+            in.open(new URI(appDeployLocation));
+            ApplicationArchivist archivist = ConnectorRuntime.getRuntime().getApplicationArchivist();
+            com.sun.enterprise.deployment.Application application = archivist.open(in);
+            return application.getRarDescriptorByUri(raLoc);
+        } catch (Exception e) {
+            //TODO V3 log warning
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

@@ -42,22 +42,27 @@ import com.sun.enterprise.connectors.ConnectorRegistry;
 import com.sun.enterprise.connectors.DeferredResourceConfig;
 import com.sun.enterprise.connectors.util.ConnectorDDTransformUtils;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
-import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.connectors.util.ResourcesUtil;
-import com.sun.enterprise.deployment.ConnectorDescriptor;
+import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.archivist.ApplicationArchivist;
 import com.sun.enterprise.resource.pool.PoolManager;
 import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.deploy.shared.FileArchive;
+import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
 import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.xml.sax.SAXParseException;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import java.io.IOException;
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 
 /**
@@ -195,19 +200,50 @@ public class ConnectorService implements ConnectorConstants {
     }
 
 
-    public void loadDeferredResourceAdapter(String rarName)
+    public void loadDeferredResourceAdapter(String rarModuleName)
             throws ConnectorRuntimeException {
-        try {
-            //Do this only for System RA
-            if (ConnectorsUtil.belongsToSystemRA(rarName)) {
-                _runtime.createActiveResourceAdapter(ConnectorsUtil.getSystemModuleLocation(rarName), rarName, null);
+        //load the RA if its not already loaded
+        if (_registry.getActiveResourceAdapter(rarModuleName) == null) {
+            try {
+                //Do this only for System RA
+                if (ConnectorsUtil.belongsToSystemRA(rarModuleName)) {
+                    _runtime.createActiveResourceAdapter(ConnectorsUtil.getSystemModuleLocation(rarModuleName), rarModuleName, null);
+                } /* TODO V3 not needed as long as standalone + embedded rars are loaded before recovery
+                else if (rarModuleName.indexOf(ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER) != -1) {
+                    createActiveResourceAdapterForEmbeddedRar(rarModuleName);
+                } else{
+                    _runtime.createActiveResourceAdapter(ConnectorsUtil.getLocation(rarModuleName), rarModuleName, null);
+                }*/
+            } catch (Exception e) {
+                ConnectorRuntimeException ce =
+                        new ConnectorRuntimeException(e.getMessage());
+                ce.initCause(e);
+                throw ce;
             }
-        } catch (Exception e) {
-            ConnectorRuntimeException ce =
-                    new ConnectorRuntimeException(e.getMessage());
-            ce.initCause(e);
-            throw ce;
         }
+    }
+
+    public void createActiveResourceAdapterForEmbeddedRar(String rarModuleName) throws ConnectorRuntimeException {
+        ConnectorDescriptor cdesc = loadConnectorDescriptorForEmbeddedRAR(rarModuleName);
+        String appName = ConnectorAdminServiceUtils.getApplicationName(rarModuleName);
+        String rarFileName = ConnectorAdminServiceUtils
+                        .getConnectorModuleName(rarModuleName) + ".rar";
+        String loc = ResourcesUtil.createInstance().getApplicationDeployLocation(appName);
+        loc = loc + File.separator + FileUtils.makeFriendlyFilename(rarFileName);
+
+        String path = null;
+        try {
+            URI uri = new URI(loc);
+            path = uri.getPath();
+        } catch (URISyntaxException use) {
+            use.printStackTrace();
+            ConnectorRuntimeException cre = new ConnectorRuntimeException("Invalid path");
+            cre.setStackTrace(use.getStackTrace());
+            throw cre;
+            //TODO V3 log exception
+        }
+        // start RA
+        _runtime.createActiveResourceAdapter(cdesc, rarModuleName, path);
     }
 
 
@@ -220,9 +256,7 @@ public class ConnectorService implements ConnectorConstants {
             if (resource == null) {
                 continue;
             } else /* TODO V3 handle later once configBeans (resource.isEnabled()) is available
-                    if (resourceUtil.isEnabled(resource))*/ {
-                //  TODO V3 not needed ?
-                //  resourceType = resourceUtil.getResourceType(resource);
+                if (resourceUtil.isEnabled(resource))*/ {
                 try {
                     _runtime.getResourceDeployer(resource).deployResource(resource);
                 } catch (Exception e) {
@@ -256,6 +290,17 @@ public class ConnectorService implements ConnectorConstants {
             return desc;
         }
         String moduleDir;
+
+        //If the RAR is embedded try loading the descriptor directly
+        //using the applicationarchivist
+        if (rarName.indexOf(ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER) != -1){
+            try {
+                desc = loadConnectorDescriptorForEmbeddedRAR(rarName);
+                if (desc != null) return desc;
+            } catch (ConnectorRuntimeException e) {
+                throw e;
+            }
+        }
 
         if (ConnectorsUtil.belongsToSystemRA(rarName)) {
             moduleDir = ConnectorsUtil.getSystemModuleLocation(rarName);
@@ -335,5 +380,14 @@ public class ConnectorService implements ConnectorConstants {
         if(ConnectorsUtil.belongsToSystemRA(rarName)){
             loadDeferredResourceAdapter(rarName);
         }
+    }
+
+    //TODO V3 with annotations, is it right a approach to load the descriptor using Archivist ?
+    private ConnectorDescriptor loadConnectorDescriptorForEmbeddedRAR(String rarName) throws ConnectorRuntimeException {
+        //If the RAR is embedded try loading the descriptor directly
+        //using the applicationarchivist
+        ResourcesUtil resutil = ResourcesUtil.createInstance();
+        String rarFileName = ConnectorAdminServiceUtils.getConnectorModuleName(rarName) + ".rar";
+        return resutil.getConnectorDescriptorFromUri(rarName, rarFileName);
     }
 }

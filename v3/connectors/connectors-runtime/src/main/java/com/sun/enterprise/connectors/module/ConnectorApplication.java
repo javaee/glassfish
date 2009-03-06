@@ -62,16 +62,19 @@ import java.util.ArrayList;
 public class ConnectorApplication implements ApplicationContainer {
     private static Logger _logger = LogDomains.getLogger(ConnectorApplication.class, LogDomains.RSR_LOGGER);
     private String moduleName = "";
+    //indicates the "application" (ear) name if its embedded rar
+    private String applicationName = null;
     private ResourceManager resourceManager;
     private ClassLoader loader;
     private ConnectorRuntime runtime;
 
-    public ConnectorApplication(String moduleName, ResourceManager resourceManager, ClassLoader loader,
+    public ConnectorApplication(String moduleName, String appName, ResourceManager resourceManager, ClassLoader loader,
                                 ConnectorRuntime runtime) {
         this.setModuleName(moduleName);
         this.resourceManager = resourceManager;
         this.loader = loader;
         this.runtime = runtime;
+        this.applicationName = appName;
     }
 
     /**
@@ -109,6 +112,7 @@ public class ConnectorApplication implements ApplicationContainer {
      * deploy all resources/pools pertaining to this resource adapter
      */
     public void deployResources() {
+        //TODO V3 handle admin-object-resources also
         Resources allResources = resourceManager.getAllResources();
         //TODO V3 needed for redeploy of module, what happens to the listeners of these resources ?
         Collection<ConnectorConnectionPool> connectionPools =
@@ -122,6 +126,7 @@ public class ConnectorApplication implements ApplicationContainer {
      * undeploy all resources/pools pertaining to this resource adapter
      */
     public void undeployResources() {
+        //TODO V3 handle admin-object-resources also
         Resources allResources = resourceManager.getAllResources();
         Collection<ConnectorConnectionPool> connectionPools =
                 ConnectorsUtil.getAllPoolsOfModule(moduleName, allResources);
@@ -195,5 +200,9 @@ public class ConnectorApplication implements ApplicationContainer {
      */
     public void setModuleName(String moduleName) {
         this.moduleName = moduleName;
+    }
+
+    public String getApplicationName() {
+        return applicationName;
     }
 }

@@ -46,22 +46,23 @@ import com.sun.enterprise.connectors.naming.ConnectorNamingEventNotifier;
 import com.sun.enterprise.connectors.module.ConnectorApplication;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.JndiNameEnvironment;
+import com.sun.enterprise.deployment.archivist.ApplicationArchivist;
 import com.sun.enterprise.resource.pool.PoolManager;
 import com.sun.appserv.connectors.internal.api.*;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.ModuleDefinition;
-import com.sun.enterprise.module.Module;
+import com.sun.enterprise.deploy.shared.FileArchive;
 import com.sun.logging.LogDomains;
-import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
-import com.sun.corba.se.spi.orbutil.threadpool.ThreadPoolManager;
-import com.sun.corba.se.spi.orbutil.threadpool.NoSuchThreadPoolException;
 import com.sun.corba.se.impl.orbutil.threadpool.ThreadPoolManagerImpl;
+import com.sun.corba.se.spi.orbutil.threadpool.ThreadPoolManager;
+import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
+import com.sun.corba.se.spi.orbutil.threadpool.NoSuchThreadPoolException;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
+import org.glassfish.internal.data.ApplicationRegistry;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -98,7 +99,7 @@ import java.util.logging.Level;
 
 @Service
 @Scoped(Singleton.class)
-public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.connectors.internal.api.ConnectorRuntime,
+public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api.ConnectorRuntime,
         PostConstruct, PreDestroy {
 
     /* TODO V3 environment set to server as of today
@@ -150,6 +151,15 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
 
     @Inject
     private ActiveRAFactory activeRAFactory;
+
+    @Inject
+    private Applications applications;
+
+    @Inject
+    private ApplicationRegistry appRegistry;
+
+    @Inject
+    private Habitat habitat;
 
     private final Object getTimerLock = new Object();
     private Timer timer;
@@ -317,18 +327,32 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
         resourceAdapterAdmService.createActiveResourceAdapter(moduleDir, moduleName, loader);
     }
 
-/*
-    */
-/**
+    /** Creates Active resource Adapter which abstracts the rar module.
+     *  During the creation of ActiveResourceAdapter, default pools and
+     *  resources also are created.
+     *  @param connectorDescriptor object which abstracts the connector
+     *         deployment descriptor i.e rar.xml and sun-ra.xml.
+     *  @param moduleName Name of the module
+     *  @param moduleDir Directory where rar module is exploded.
+     *  @param writeSunDescriptor If true write the sun-ra.xml props to
+     *         domain.xml and if false it doesnot write to domain.xml
+     *  @throws ConnectorRuntimeException if creation fails.
+     */
+
+    public void  createActiveResourceAdapter( ConnectorDescriptor connectorDescriptor, String moduleName,
+            String moduleDir) throws ConnectorRuntimeException {
+        resourceAdapterAdmService.createActiveResourceAdapter(connectorDescriptor, moduleName, moduleDir, null);
+    }
+
+
+    /**
      * {@inheritDoc}
      */
-/*
-    public void createActiveResourceAdapter(String moduleDir,
+    /*public void createActiveResourceAdapter(String moduleDir,
                                             String moduleName
     ) throws ConnectorRuntimeException {
         resourceAdapterAdmService.createActiveResourceAdapter(moduleDir, moduleName, null);
-    }
-*/
+    }*/
 
     /**
      * {@inheritDoc}
@@ -777,7 +801,7 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
      *  @param rarName rarmodule
      */
 
-    public void deleteResourceAdapterConfig(String rarName) {
+    public void deleteResourceAdapterConfig(String rarName) throws ConnectorRuntimeException {
         resourceAdapterAdmService.deleteResourceAdapterConfig(rarName);
     }
 
@@ -818,4 +842,27 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
         return activeRAFactory;
     }
 
+    public Applications getApplications() {
+        return applications;
+    }
+
+    public ApplicationRegistry getAppRegistry() {
+        return appRegistry;
+    }
+
+    public ApplicationArchivist getApplicationArchivist(){
+        return habitat.getComponent(ApplicationArchivist.class);
+    }
+
+    public FileArchive getFileArchive(){
+        return habitat.getComponent(FileArchive.class);
+    }
+
+    public void createActiveResourceAdapterForEmbeddedRar(String rarModuleName) throws ConnectorRuntimeException {
+        connectorService.createActiveResourceAdapterForEmbeddedRar(rarModuleName);
+    }
+
+    public int getEnvironment(){
+        return environment;
+    }
 }

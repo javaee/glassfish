@@ -38,6 +38,7 @@ package com.sun.enterprise.connectors.service;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.PoolingException;
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import org.glassfish.api.admin.config.Property;
 import com.sun.enterprise.config.serverbeans.SecurityMap;
 import com.sun.enterprise.connectors.*;
@@ -855,8 +856,13 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
 
                 ConnectorConnectionPool connectorConnectionPool = getConnectorConnectionPool(poolName);
                 ActiveResourceAdapter activeResourceAdapter = getResourceAdapter(connectorConnectionPool);
-                ClassLoader loader = ConnectorRuntime.getRuntime().
-                        getConnectorClassLoader(activeResourceAdapter.getModuleName());
+                String rarName = activeResourceAdapter.getModuleName();
+
+                ClassLoader loader = null;
+                if(rarName.indexOf(ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER) == -1){
+                     loader = ConnectorRuntime.getRuntime().
+                            getConnectorClassLoader(activeResourceAdapter.getModuleName());
+                }
                 ManagedConnectionFactory mcf = activeResourceAdapter.
                         createManagedConnectionFactory(connectorConnectionPool, loader);
                 if (mcf != null) {
