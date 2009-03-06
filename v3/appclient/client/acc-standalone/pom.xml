@@ -179,8 +179,12 @@
                         </excludes>
                         <archive>
 
-                            <index>true</index>
+<!-- We need the index eventually but until the plug-in itself knows the correct
+classpath we must comment this out, or else the index reflects nothing in
+this or the downstream JARs and so attempts to find things fail.
 
+                        <index>true</index>
+-->
                             <manifest>
                                 <mainClass>org.glassfish.appclient.client.acc.AppClientCommand</mainClass>
                                 <packageName>org.glassfish.appclient.client.acc</packageName>
@@ -205,9 +209,7 @@
     to hand-code this.  Ugly.
 -->
                             <manifestEntries>
-                                <Class-Path>
-gf-client-module.jar hk2.jar hk2-core.jar config.jar auto-depends.jar tiger-types-osgi.jar common-util.jar glassfish-api.jar security.jar realms.jar securitycommon.jar config-api.jar dol.jar javax.servlet.jar javax.annotation.jar javax.transaction.jar javax.enterprise.deploy.jar javax.persistence.jar javax.resource.jar deployment-common.jar internal-api.jar grizzly-utils.jar annotation-framework.jar connectors-internal-api.jar transaction-internal-api.jar ldapbp-repackaged.jar javax.security.auth.message.jar javax.security.jacc.jar container-common.jar glassfish-naming.jar javax.mail.jar grizzly-http.jar grizzly-framework.jar grizzly-rcm.jar grizzly-portunif.jar grizzly-comet.jar webservices.security.jar kernel.jar asm-all-repackaged.jar pkg-client.jar flashlight-framework.jar flashlight-agent.jar webservices-osgi.jar jaxb-osgi.jar websecurity.jar web-core.jar apache-commons.jar war-util.jar javax.servlet.jsp.jar web-naming.jar jsr109-impl.jar web-glue.jar web-cli.jar monitoring-core.jar stats77.jar cli-framework.jar amx-api.jar admin-util.jar deployment-javaee-core.jar jsp-impl.jar servlet-api.jar jsp-api.jar el-api.jar el-impl.jar admin-core.jar web-gui-plugin-common.jar javax.ejb.jar ejb-internal-api.jar orb-connector.jar glassfish-corba-omgapi.jar glassfish-corba-orb.jar glassfish-corba-orbgeneric.jar glassfish-corba-dynamicany.jar glassfish-corba-naming.jar glassfish-corba-newtimer.jar glassfish-corba-codegen.jar glassfish-corba-asm.jar glassfish.jar
-                                </Class-Path>
+                                <Class-Path>gf-client-module.jar hk2.jar hk2-core.jar config.jar auto-depends.jar tiger-types-osgi.jar common-util.jar glassfish-api.jar security.jar realms.jar securitycommon.jar config-api.jar dol.jar javax.servlet.jar javax.annotation.jar javax.transaction.jar javax.enterprise.deploy.jar javax.persistence.jar javax.resource.jar deployment-common.jar internal-api.jar grizzly-utils.jar annotation-framework.jar connectors-internal-api.jar transaction-internal-api.jar ldapbp-repackaged.jar javax.security.auth.message.jar javax.security.jacc.jar container-common.jar glassfish-naming.jar javax.mail.jar grizzly-http.jar grizzly-framework.jar grizzly-rcm.jar grizzly-portunif.jar grizzly-comet.jar webservices.security.jar kernel.jar asm-all-repackaged.jar pkg-client.jar flashlight-framework.jar flashlight-agent.jar webservices-osgi.jar jaxb-osgi.jar websecurity.jar web-core.jar apache-commons.jar war-util.jar javax.servlet.jsp.jar web-naming.jar jsr109-impl.jar web-glue.jar web-cli.jar monitoring-core.jar stats77.jar cli-framework.jar amx-api.jar admin-util.jar deployment-javaee-core.jar jsp-impl.jar servlet-api.jar jsp-api.jar el-api.jar el-impl.jar admin-core.jar web-gui-plugin-common.jar javax.ejb.jar ejb-internal-api.jar orb-connector.jar glassfish-corba-omgapi.jar glassfish-corba-orb.jar glassfish-corba-orbgeneric.jar glassfish-corba-dynamicany.jar glassfish-corba-naming.jar glassfish-corba-newtimer.jar glassfish-corba-codegen.jar glassfish-corba-asm.jar glassfish.jar</Class-Path>
                             </manifestEntries>
 
                         </archive>
