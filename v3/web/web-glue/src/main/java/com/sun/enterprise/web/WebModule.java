@@ -1342,6 +1342,10 @@ public class WebModule extends PwcWebModule {
                     setUseMyFaces(ConfigBeansUtilities.toBoolean(value));
                 } else if(name.startsWith("alternatedocroot_")) {
                     parseAlternateDocBase(name, value);
+                } else if(name.startsWith("valve_") ||
+                        name.startsWith("listener_")) {
+                    // do nothing; these properties are dealt with
+                    // in configureCatalinaProperties()
                 } else {
                     Object[] params = {name, value};
                     logger.log(Level.WARNING, "webcontainer.invalidProperty",

@@ -335,12 +335,6 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
                             useBundledJSF = Boolean.valueOf(value);
                         } else if("useBundledJsf".equalsIgnoreCase(propName)) {
                             useBundledJSF = Boolean.valueOf(value);
-                        } else {
-                            Object[] params = { propName, value };
-                            if (logger.isLoggable(Level.WARNING)) {
-                                logger.log(Level.WARNING, "webcontainer.invalidProperty",
-                                           params);
-                            }
                         }
                     } else {
                         skipSubTree(name);
