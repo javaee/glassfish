@@ -127,13 +127,21 @@ public class Server {
 
         // only add listeners and virtual-servers when using *our* built-in
         // domain.xml.
+        // And then only add listeners/connectors where the ports have been
+        // explicitly set
 
         if (!efs.isUserDomainXml()) {
-            createHttpListener();
-            createVirtualServer();
-            createAdminHttpListener();
-            createAdminVirtualServer();
-            createJMXConnector();
+            if(getInfo().httpPort != DEFAULT_HTTP_PORT) {
+                createHttpListener();
+                createVirtualServer();
+            }
+            if(getInfo().adminHttpPort != DEFAULT_ADMIN_HTTP_PORT) {
+                createAdminHttpListener();
+                createAdminVirtualServer();
+            }
+            if(getInfo().jmxConnectorPort != DEFAULT_JMX_CONNECTOR_PORT) {
+                createJMXConnector();
+            }
         }
 
         copyWelcomeFile();

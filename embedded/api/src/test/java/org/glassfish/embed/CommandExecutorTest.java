@@ -38,6 +38,8 @@ public class CommandExecutorTest {
         if(myGF == null) {
             EmbeddedInfo ei = new EmbeddedInfo();
             ei.setServerName("server");
+            ei.setHttpPort(8080);
+            ei.setAdminHttpPort(4848);
             EmbeddedFileSystem efs = ei.getFileSystem();
             efs.setInstallRoot(new File("cetest"));
             efs.setAutoDelete(true);

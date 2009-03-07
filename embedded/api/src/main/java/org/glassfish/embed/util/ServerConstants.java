@@ -50,10 +50,10 @@ public class ServerConstants {
      //even though they are used in v3
     public static final String			INSTALL_ROOT_URI_PROPERTY           = "com.sun.aas.installRootURI";
     public static final String			INSTANCE_ROOT_URI_PROPERTY          = "com.sun.aas.instanceRootURI";
-    public static final int             DEFAULT_HTTP_PORT                   =  8080;
+    public static final int             DEFAULT_HTTP_PORT                   =  -1;
     public static final String          DEFAULT_HTTP_LISTENER_NAME          = "http-listener-1";
     public static final String          DEFAULT_ADMIN_HTTP_LISTENER_NAME    = "admin-listener";
-    public static final int             DEFAULT_ADMIN_HTTP_PORT             =  4848;
+    public static final int             DEFAULT_ADMIN_HTTP_PORT             =  -1;
     public static final String          DEFAULT_ADMIN_VIRTUAL_SERVER_ID     = "__asadmin";
 	public static final String			LOGGING_RESOURCE_BUNDLE             = "org.glassfish.embed.LocalStrings";
 	public static final String			EXCEPTION_RESOURCE_BUNDLE           = "/org/glassfish/embed/LocalStrings.properties";
@@ -64,7 +64,7 @@ public class ServerConstants {
     public static final URL             DEFAULT_DOMAIN_XML_URL              = ServerConstants.class.getResource("/org/glassfish/embed/domain.xml");
     public static final String          LOG_FILE_DIR                        = "logs";
     public static final String          LOG_FILE                            = "server.log";
-    public static final int             DEFAULT_JMX_CONNECTOR_PORT          = 8686;
+    public static final int             DEFAULT_JMX_CONNECTOR_PORT          = -1;
     public static final String          MODULES_DIR_NAME                    = "modules"; // install-root/modules
     public static final String          APPLICATIONS_DIR_NAME               = EmbeddedServerEnvironment.kRepositoryDirName;
     public static final String          GENERATED_DIR_NAME                  = EmbeddedServerEnvironment.kGeneratedDirName;

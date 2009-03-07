@@ -37,6 +37,8 @@ public class ServerTest {
         EmbeddedInfo info = new EmbeddedInfo();
         info.setServerName("server");
         info.getFileSystem().setAutoDelete(true);
+        info.setHttpPort(8080);
+        info.setAdminHttpPort(4848);
         server = Server.getServer(info.name);
 
         if(server == null)
@@ -215,6 +217,8 @@ public class ServerTest {
             EmbeddedInfo info = new EmbeddedInfo();
             info.setServerName("server2");
             info.getFileSystem().setInstallRoot(file);
+            info.setHttpPort(8080);
+            info.setAdminHttpPort(4848);
             Server server2 = new Server(info);
 
         } catch(EmbeddedException ee) {

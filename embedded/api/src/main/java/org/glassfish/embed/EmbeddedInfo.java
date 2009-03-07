@@ -219,17 +219,17 @@ public class EmbeddedInfo {
     }
     
     private void validatePorts() throws EmbeddedException {
-        if(httpPort < MIN_PORT || httpPort > MAX_PORT) {
-            throw new EmbeddedException("bad_port", MIN_PORT, MAX_PORT, httpPort);
+        if(httpPort != DEFAULT_ADMIN_HTTP_PORT) {
+            if(httpPort < MIN_PORT || httpPort > MAX_PORT)
+                throw new EmbeddedException("bad_port", MIN_PORT, MAX_PORT, httpPort);
+            if (!isPortAvailable(httpPort))
+                throw new EmbeddedException("port_in_use", Integer.toString(adminHttpPort));
         }
-        if(adminHttpPort < MIN_PORT || adminHttpPort > MAX_PORT) {
-            throw new EmbeddedException("bad_port", MIN_PORT, MAX_PORT, adminHttpPort);
-        }
-        if (!isPortAvailable(adminHttpPort)) {
-            throw new EmbeddedException("port_in_use", Integer.toString(adminHttpPort));
-        }
-        if (!isPortAvailable(httpPort)) {
-            throw new EmbeddedException("port_in_use", Integer.toString(httpPort));
+        if(adminHttpPort != DEFAULT_ADMIN_HTTP_PORT) {
+            if(adminHttpPort < MIN_PORT || adminHttpPort > MAX_PORT)
+                throw new EmbeddedException("bad_port", MIN_PORT, MAX_PORT, adminHttpPort);
+            if (!isPortAvailable(adminHttpPort))
+                throw new EmbeddedException("port_in_use", Integer.toString(httpPort));
         }
         
         // todo TODO
