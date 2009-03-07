@@ -23,11 +23,15 @@
                 <groupId>${project.groupId}</groupId>
                 <artifactId>osgiversion-maven-plugin</artifactId>
             </plugin>
-            <!--plugin>
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>apt-maven-plugin</artifactId>
                 <inherited>false</inherited>                    
                 <configuration>
+                    <!-- forking is necessary here, to avoid the class cast exception as described
+                    http://mail-archives.apache.org/mod_mbox/ant-dev/200411.mbox/%3C20041107045146.20929.qmail@nagoya.betaversion.org%3E
+                    -->
+                    <fork>true</fork>
                     <factory>com.sun.enterprise.tools.apt.MetainfServiceGenerator</factory>
                     <outputDirectory>${project.build.outputDirectory}</outputDirectory>
                 </configuration>
@@ -45,7 +49,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin-->
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
