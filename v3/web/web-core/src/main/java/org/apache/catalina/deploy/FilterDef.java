@@ -110,7 +110,7 @@ public class FilterDef implements Serializable {
      * The set of initialization parameters for this filter, keyed by
      * parameter name.
      */
-    private Map<String,String> parameters = new HashMap();
+    private Map<String, Object> parameters = new HashMap();
 
     /**
      * True if this filter supports async operations, false otherwise
@@ -302,7 +302,7 @@ public class FilterDef implements Serializable {
      * @return true if the init parameter with the given name and value
      * was set, false otherwise
      */
-    public boolean setInitParameter(String name, String value, 
+    public boolean setInitParameter(String name, Object value, 
                                     boolean override) {
         if (null == name || null == value) {
             throw new IllegalArgumentException(

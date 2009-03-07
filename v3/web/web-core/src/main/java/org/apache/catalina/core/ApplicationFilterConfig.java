@@ -186,10 +186,29 @@ final class ApplicationFilterConfig implements FilterConfig, Serializable {
      */
     public String getInitParameter(String name) {
         Map map = filterDef.getParameterMap();
-        if (map == null)
-            return (null);
-        else
-            return ((String) map.get(name));
+        if (map == null) {
+            return null;
+        }
+        Object value = map.get(name);
+        if (value instanceof String) {
+            return (String) value;
+        } else {
+            return null;
+        }
+    }
+
+
+    /*
+     * @return the value of the initialization parameter with the given
+     * name, or <tt>null</tt> if the filter does not have any
+     * initialization parameter with that name
+     */
+    public Object getInitParameterObject(String name) {
+        Map map = filterDef.getParameterMap();
+        if (map == null) {
+            return null;
+        }
+        return map.get(name);
     }
 
 

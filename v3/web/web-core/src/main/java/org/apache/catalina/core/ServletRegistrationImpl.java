@@ -86,7 +86,7 @@ public class ServletRegistrationImpl implements ServletRegistration {
     }
 
 
-    public boolean setInitParameter(String name, String value) {
+    public boolean setInitParameter(String name, Object value) {
         if (ctx.isContextInitializedCalled()) {
             throw new IllegalStateException(
                 sm.getString("servletRegistration.alreadyInitialized",

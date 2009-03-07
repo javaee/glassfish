@@ -87,7 +87,7 @@ public class FilterRegistrationImpl implements FilterRegistration {
     }
 
 
-    public boolean setInitParameter(String name, String value) {
+    public boolean setInitParameter(String name, Object value) {
         if (ctx.isContextInitializedCalled()) {
             throw new IllegalStateException(
                 sm.getString("filterRegistration.alreadyInitialized",
