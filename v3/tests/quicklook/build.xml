@@ -118,6 +118,7 @@
 
     <target name="build-deploy-gd">
         <echo message="Glassfish Distribution Build Deploy"/>
+        <ant dir="ejb/cmp" target="build-deploy"/>
         <ant dir="wsit/JaxwsFromWsdl" target="build-deploy"/>
         <!-- ant dir="wsit" target="build-deploy"/ -->
     </target>
@@ -133,15 +134,16 @@
         <ant dir="persistence/jpainjectemf" target="undeploy"/>
         <ant dir="security/helloworld" target="undeploy"/>
         <ant dir="security/basicauth" target="undeploy"/>
+        <ant dir="ejb/singleton" target="undeploy"/>
+        <ant dir="ejb/slsbnicmt" target="undeploy"/>
+        <ant dir="ejb/sfulnoi" target="undeploy"/>
         <!-- ant dir="web/strutsbasic" target="undeploy"/ -->
         <!-- ant dir="persistence/servlet-jpa-app" target="undeploy"/ -->   
         <record name="undeploy.output" action="stop"/>
     </target>
 
     <target name="undeploy-gd">
-        <ant dir="ejb/singleton" target="undeploy"/>
-        <ant dir="ejb/slsbnicmt" target="undeploy"/>
-        <ant dir="ejb/sfulnoi" target="undeploy"/>
+        <ant dir="ejb/cmp" target="undeploy"/>
         <ant dir="wsit/JaxwsFromWsdl" target="undeploy"/>
         <!-- ant dir="wsit" target="undeploy"/ -->
     </target>

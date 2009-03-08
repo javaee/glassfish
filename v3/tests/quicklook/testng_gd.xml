@@ -132,6 +132,11 @@
 	<class name="test.ejb.sfulnoi.SfulnoiTestNG" />
     </classes>
   </test> 
+  <test name="ejb_cmp">
+    <classes>
+        <class name="test.CmpRosterTestNG" />
+    </classes>
+  </test>
   <test name="asadmin_tests">
     <classes>
       <class name="test.admin.JvmOptionTests"/>
