@@ -993,7 +993,7 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
         return dependenciesSatisfied;
     }
 
-    public boolean supportsModuleType(ModuleType moduleType) {
+    public boolean supportsModuleType(XModuleType moduleType) {
         return getModuleType().equals(moduleType);
     }
 

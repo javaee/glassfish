@@ -511,7 +511,9 @@ public class ApplicationArchivist extends Archivist<Application>
                 annotationProcessingRequested);
 
             ReadableArchive embeddedArchive = appArchive.getSubArchive(aModule.getArchiveUri());
-            embeddedArchive.setParentArchive(appArchive);
+            if (embeddedArchive!=null) {
+                embeddedArchive.setParentArchive(appArchive);
+            }
             if (aModule.getAlternateDescriptor()!=null) {
                 // the module use alternate deployement descriptor, ignore the
                 // DDs in the archive.
