@@ -97,7 +97,7 @@ public class PayloadImpl implements Payload {
                 final URI fileURI,
                 final String dataRequestName,
                 final File file) throws IOException {
-            attachFile(contentType, fileURI, dataRequestName, file);
+            attachFile(contentType, fileURI, dataRequestName, null /* props */, file);
         }
 
         public void attachFile(
