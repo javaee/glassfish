@@ -35,14 +35,33 @@
  */
 package org.glassfish.appclient.client.acc;
 
+import com.sun.enterprise.glassfish.bootstrap.ProxyModule;
+import com.sun.enterprise.glassfish.bootstrap.ProxyModuleDefinition;
+import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.ModuleDefinition;
+import com.sun.enterprise.module.ModuleMetadata;
+import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.ResolveError;
+import com.sun.enterprise.module.bootstrap.BootException;
+import com.sun.enterprise.module.bootstrap.Main;
+import com.sun.enterprise.module.bootstrap.StartupContext;
+import com.sun.enterprise.module.impl.HK2Factory;
+import com.sun.enterprise.module.impl.ModulesRegistryImpl;
 import com.sun.enterprise.util.LocalStringManager;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.hk2.component.ExistingSingletonInhabitant;
+import com.sun.hk2.component.Holder;
+import com.sun.hk2.component.InhabitantsParser;
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -52,7 +71,12 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import org.glassfish.appclient.client.acc.config.ClientContainer;
+import org.glassfish.appclient.client.acc.config.Property;
+import org.glassfish.appclient.client.acc.config.Security;
 import org.glassfish.appclient.client.acc.config.TargetServer;
+import org.glassfish.enterprise.iiop.api.IIOPConstants;
+import org.glassfish.enterprise.iiop.impl.GlassFishORBManager;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * Implements the appclient command.
@@ -79,10 +103,14 @@ public class AppClientCommand {
     private static final String PASSWORD = "-password";
     private static final String PASSWORD_FILE = "-passwordfile";
     private static final String DASH = "-";
+    private static final String SERVER = "-server";
 
     private static final String lineSep = System.getProperty("line.separator");
 
-    private static final LocalStringManager localStrings = new LocalStringManagerImpl(AppClientCommand.class);
+    // XXX Replace with reference to v3 equiv of S1ASCtxFactory.IIOP_ENDPOINTS_PROPERTY
+    private static final String IIOP_ENDPOINTS_PROPERTY = "com.sun.appserv.iiop.endpoints";
+
+    private static LocalStringManager localStrings = new LocalStringManagerImpl(AppClientCommand.class);;
 
     private static final Logger _logger = Logger.getLogger(AppClientCommand.class.getName());
 
@@ -102,6 +130,13 @@ public class AppClientCommand {
     protected String username = null;
     protected char[] password = null;
 
+    protected String servers = null;
+
+    private ClientContainer clientContainerFromConfigFile = null;
+
+    /** loaded Class if user specified a .class file as the -client value */
+    private Class clientClass = null;
+
     /**
      * Main method for the command.
      *
@@ -118,18 +153,27 @@ public class AppClientCommand {
         }
     }
 
-    private AppClientCommand(String[] args) {
+
+
+    private AppClientCommand(String[] args) throws BootException, URISyntaxException {
         this.args = args;
     }
+
 
     private void run() throws UserError, FileNotFoundException, JAXBException {
         /*
          *Handle any command line arguments intended for the ACC (as opposed to
          *the client itself) and save the returned args intended for the client.
          */
-         String[] appArgs = processCommandLine(args);
+//         String[] appArgs = processCommandLine(args);
 
-         ClientContainer cc = processConfigFile();
+         clientContainerFromConfigFile = processConfigFile();
+
+         /*
+          * Choose the target servers to use in preparing the config.
+          */
+         final TargetServer[] targetServers = TargetServerHelper.targetServers(
+                 clientContainerFromConfigFile, servers);
 
          /*
           * Use the appropriate constructor based on how the user has indicated
@@ -139,16 +183,45 @@ public class AppClientCommand {
          /*
           * See if the user specified a .class file as the -client.
           */
-         AppClientContainer acc;
-         if (clientJarOrDirOrClassFile.endsWith(".class")) {
-             /*
-              * Try to load the class.
-              */
-
+         AppClientContainer.Configurator configurator;
+         if (isClientValueClassFile()) {
+             configurator = configureForClassFile(targetServers, clientJarOrDirOrClassFile);
+         } else {
+//             configurator = configureFor
          }
 
 
     }
+
+    private boolean isClientValueClassFile() {
+        return clientJarOrDirOrClassFile.endsWith(".class");
+    }
+
+    private AppClientContainer.Configurator configureForClassFile(
+            final TargetServer[] targetServers,
+            final String classFileName) throws UserError {
+        /*
+         * Try to load the class.
+         */
+        final String className = clientJarOrDirOrClassFile.substring(
+                0, clientJarOrDirOrClassFile.lastIndexOf(".class") + 1);
+        Class clientClass;
+        try {
+            clientClass = getClass().forName(className);
+        } catch (ClassNotFoundException ex) {
+            File classFile = new File(clientJarOrDirOrClassFile);
+            throw new UserError(localStrings.getLocalString(
+                    getClass(),
+                    "appclient.cannotFindClassFile",
+                    "Because -client did not appear, tried to use {0} as a class name but could not find {1}",
+                    new Object[] {className, classFile.getAbsolutePath()}));
+        }
+        AppClientContainer.Configurator config = AppClientContainer.newConfigurator(
+                targetServers, clientClass);
+
+        return config;
+    }
+
 
     /**
      *Processes any command-line arguments, setting up static variables for use
@@ -164,6 +237,7 @@ public class AppClientCommand {
      *<le>guiAuth
      *<le>runClient
      *<le>classFileFromCommandLine
+     *<le>servers
      *</ul>
      *@param args the command-line arguments passed to the ACC
      *@return arguments to be passed to the actual client (with ACC arguments removed)
@@ -234,6 +308,10 @@ public class AppClientCommand {
                                 "Error reading the password from the password file {0}",
                                  new Object[] {passwordFileValue}), ex);
                     }
+                } else if (arg.equals(SERVER)) {
+                    servers = getRequiredCommandOptionValue(args, SERVER, i,
+                            "appclient.serverWithoutValue",
+                            "The -server option must be followed by host:port[,...]");
                 } else {
                     clientArgs.add(arg);
                     logArgument(arg);
@@ -401,33 +479,12 @@ public class AppClientCommand {
     private String getUsage() {
         return getLocalString(
             "main.usage",
-            "appclient [ -client <appjar> | <classfile> ] [-mainclass <appClass-name>|-name <display-name>] [-xml <xml>] [-textauth] [-user <username>] [-password <password>|-passwordfile <password-file>] [app-args]");
+            "appclient [ -client <appjar> | -jar <appjar> | <classfile> ] [-mainclass <appClass-name>|-name <display-name>] [-xml <xml>] [-textauth] [-user <username>] [-password <password>|-passwordfile <password-file>] [app-args]");
     }
 
     private void usage() {
         System.out.println(getUsage());
         System.exit(1);
-    }
-
-    /**
-     * Selects the target endpoint(s) to use for bootstrapping to the server-
-     * side ORB(s).
-     * <p>
-     * The user can specify the set of targets in multiple ways.  In order of
-     * priority (that is, the first one in this list that the user specifies
-     * is used):
-     * <ol>
-     * <li>command-line <code>-server</code> option value(s)
-     * <li>ORB-related property settings in the <code><client-container></code>
-     * element of the configuration file
-     * <li>the <code>target-server</code> elements from the configuration file
-     * </ol>
-     * @param cc
-     * @return
-     */
-    private TargetServer[] selectEndpoints(ClientContainer cc) {
-        // XXX need to implement this
-        return null;
     }
 
     private static String getLocalString(final String key, final String defaultMsg,
@@ -436,6 +493,8 @@ public class AppClientCommand {
     }
 
     private static String getLocalString(final String key, final String defaultMsg) {
-        return getLocalString(key, defaultMsg);
+        return getLocalString(key, defaultMsg, new Object[0]);
     }
+
+
 }
