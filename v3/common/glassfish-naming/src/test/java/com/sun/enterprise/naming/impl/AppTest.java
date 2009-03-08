@@ -54,11 +54,16 @@ import javax.naming.spi.NamingManager;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.Properties;
+
 /**
  * Unit test for simple App.
  */
 public class AppTest
         extends TestCase {
+
+   private static final String INITIAL_CONTEXT_TEST_MODE = "com.sun.enterprise.naming.TestMode";
+
     /**
      * Create the test case
      *
@@ -84,7 +89,7 @@ public class AppTest
 
     public void testCreateNewInitialContext() {
         try {
-            new InitialContext();
+            newInitialContext();
             assert (true);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -96,9 +101,9 @@ public class AppTest
         GlassfishNamingManager nm = null;
         try {
             InvocationManager im = new InvocationManagerImpl();
-            nm = new GlassfishNamingManagerImpl();
+            InitialContext ic = newInitialContext();
+            nm = new GlassfishNamingManagerImpl(ic);
             nm.publishObject("foo", "Hello: foo", false);
-            InitialContext ic = new InitialContext();
             System.out.println("**lookup() ==> " + ic.lookup("foo"));
             assert (true);
         } catch (Exception ex) {
@@ -117,7 +122,7 @@ public class AppTest
         try {
             String name1 = "rmi://a//b/c/d/name1";
 
-            Context ctx = new InitialContext();
+            Context ctx = newInitialContext();
             ctx.bind(name1, "Name1");
 	
             String val = (String) ctx.lookup(name1);
@@ -135,9 +140,9 @@ public class AppTest
         GlassfishNamingManager nm = null;
         try {
             InvocationManager im = new InvocationManagerImpl();
-            nm = new GlassfishNamingManagerImpl();
+            InitialContext ic = newInitialContext();
+            nm = new GlassfishNamingManagerImpl(ic);
             nm.publishObject("foo", "Hello: foo", false);
-            InitialContext ic = new InitialContext();
             System.out.println("**lookup() ==> " + ic.lookup("foo"));
 
             NamingObjectFactory factory = new NamingObjectFactory() {
@@ -200,14 +205,15 @@ public class AppTest
         InvocationManager im = new InvocationManagerImpl();
         ComponentInvocation inv = null;
         try {
-            nm = new GlassfishNamingManagerImpl();
+            InitialContext ic = newInitialContext();
+            nm = new GlassfishNamingManagerImpl(ic);
             nm.setInvocationManager(im);
 
             inv = new ComponentInvocation("comp1",
                     ComponentInvocation.ComponentInvocationType.EJB_INVOCATION,
                     null, null, null);
             im.preInvoke(inv);
-            InitialContext ic = new InitialContext();
+
             Context ctx = (Context) ic.lookup("java:comp/env");
             System.out.println("**lookup(java:comp/env) ==> " + ctx);
             assert(true);
@@ -222,7 +228,8 @@ public class AppTest
         InvocationManager im = new InvocationManagerImpl();
         ComponentInvocation inv = null;
         try {
-            nm = new GlassfishNamingManagerImpl();
+            InitialContext ic = newInitialContext();
+            nm = new GlassfishNamingManagerImpl(ic);
             nm.setInvocationManager(im);
 
             List<Binding> bindings =
@@ -252,7 +259,7 @@ public class AppTest
                     ComponentInvocation.ComponentInvocationType.EJB_INVOCATION,
                     null, null, null);
             im.preInvoke(inv);
-            InitialContext ic = new InitialContext();
+           
             System.out.println("**lookup(java:comp/env/conf/area) ==> " + ic.lookup("java:comp/env/conf/area"));
             System.out.println("**lookup(java:comp/env/conf/location) ==> " + ic.lookup("java:comp/env/conf/location"));
 
@@ -302,6 +309,22 @@ public class AppTest
 
             }
         }
+    }
+
+    private InitialContext newInitialContext() throws NamingException {
+
+	// Create a special InitialContext for test purposes
+	// Can't just do a new no-arg InitialContext() since
+	// this code runs outside a managed environment and the
+	// normal behavior would be to try to contact a server.
+	// Instead, create an initialcontext with a special
+	// property to tell InitialContext to act as if it's
+	// running in the server.
+	Properties props = new Properties();
+	props.setProperty( SerialContext.INITIAL_CONTEXT_TEST_MODE, "true");
+	
+	return new InitialContext( props );
+
     }
 
 }

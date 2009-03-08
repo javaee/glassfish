@@ -40,13 +40,10 @@ import java.rmi.Remote;
 import java.util.*;
 import java.util.logging.*;
 
-
-
-import javax.rmi.CORBA.*;
-
-import javax.ejb.EJBHome;
-import javax.ejb.EJBObject;
 import javax.ejb.NoSuchObjectLocalException;
+
+import java.rmi.Remote;
+import javax.rmi.CORBA.*;
 
 import org.omg.CORBA.*;
 import org.omg.CORBA.portable.Delegate;
@@ -376,9 +373,9 @@ public final class POARemoteReferenceFactory extends org.omg.CORBA.LocalObject
     }
 
 
-    public EJBHome createHomeReference(byte[] homeKey)
+    public Remote createHomeReference(byte[] homeKey)
     {
-	    return (EJBHome) createRef(homeKey, ejbHomeReferenceFactory,
+	    return createRef(homeKey, ejbHomeReferenceFactory,
 	        ejbHomeStubFactory, ejbHomeRepositoryId ) ;
     }
 

@@ -141,10 +141,16 @@ public class EjbInvocation
     public EJBLocalRemoteObject ejbObject;
     
     /**
-     * Local flag: true if this invocation was made through an ejb local 
-     * interface or a local business interface.
+     * Local flag: true if this invocation was through the 2.x (or earlier)
+     * Local client view, the 3.x local client view or a no-interface client view.
      */
     public boolean isLocal=false;
+
+    /**
+     * True if this invocation was made through the 2.x (or earlier) Remote
+     * client view or the 3.x remote client view. 
+     */
+    public boolean isRemote=false;
     
     /**
      * InvocationInfo object caches information about the current method

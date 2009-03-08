@@ -279,6 +279,7 @@ public class StatelessSessionContainer
                 if (serviceEndpointIntfClass==null) {
                     throw new RuntimeException("Error generating the SEI");
                 }
+                
             }
             
             Class tieClass=null;
@@ -597,6 +598,7 @@ public class StatelessSessionContainer
     void doTimerInvocationInit(EjbInvocation inv, RuntimeTimerState timerState)
         throws Exception 
 	{
+        // TODO I don't understand this check.  What is ejbObject used for?
         if( isRemote ) {
             //TODO inv.ejbObject = theEJBObjectImpl;
             inv.isLocal = false;

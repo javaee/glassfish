@@ -219,7 +219,7 @@ public final class GlassFishORBManager {
      * Returns whether an adapterName (from ServerRequestInfo.adapter_name)
      * represents an EJB or not.
      */
-
+    /**   TODO Enable later
     public static boolean isEjbAdapterName(String[] adapterName) {
         boolean result = false;
         if (rfm != null)
@@ -227,6 +227,7 @@ public final class GlassFishORBManager {
 
         return result;
     }
+    **/
 
     /**
      * Returns whether the operationName corresponds to an "is_a" call
@@ -390,12 +391,13 @@ public final class GlassFishORBManager {
      */
     private static void setFOLBProperties(Properties orbInitProperties) {
 
-        orbInitProperties.put(ORBConstants.RFM_PROPERTY, "dummy");
+        // TODO orbInitProperties.put(ORBConstants.RFM_PROPERTY, "dummy");
 
         /** TODO enable this
+         
         orbInitProperties.put(SUN_ORB_SOCKET_FACTORY_CLASS_PROPERTY,
                 IIOP_SSL_SOCKET_FACTORY_CLASS);
-         */
+
 
         // ClientGroupManager.
         // Registers itself as
@@ -407,12 +409,14 @@ public final class GlassFishORBManager {
                         + "com.sun.corba.ee.impl.folb.ClientGroupManager",
                 "dummy");
 
-        /*TODO
+
         // This configurator registers the CSIv2SSLTaggedComponentHandler
         orbInitProperties.setProperty(
                 ORBConstants.USER_CONFIGURATOR_PREFIX
                         + CSIv2SSLTaggedComponentHandlerImpl.class.getName(),
-        */
+
+
+
         if (ASORBUtilities.isGMSAvailableAndClusterHeartbeatEnabled()) {
             if (logger.isLoggable(Level.FINE)) {
                 logger.log(Level.FINE, "GMS available and enabled - doing EE initialization");
@@ -435,14 +439,16 @@ public final class GlassFishORBManager {
                 logger.log(Level.FINE, "Doing PE initialization");
             }
 
-            /*TODO
+
             orbInitProperties.put(ORBConstants.PI_ORB_INITIALIZER_CLASS_PREFIX
                     + FailoverIORInterceptor.class.getName(), "dummy");
-            */
+
             if (logger.isLoggable(Level.FINE)) {
                 logger.log(Level.FINE, "Did PE property initialization");
             }
         }
+
+        */
     }
 
     private static void initORB(Properties props) {
@@ -462,7 +468,9 @@ public final class GlassFishORBManager {
             orbInitProperties.put(SUN_USER_CONFIGURATOR_PREFIX
                     + PEORB_CONFIG_CLASS, "dummy");
 
-            // TODO We'll handle FOLB later
+            // TODO We'll handle FOLB later but just do RFM_PROPERTY init
+            //
+            orbInitProperties.put(ORBConstants.RFM_PROPERTY, "dummy");
             // setFOLBProperties(orbInitProperties);
 
             // Standard OMG Properties.
@@ -561,10 +569,13 @@ public final class GlassFishORBManager {
             }
 
             //TODO: The following two statements can be moved to some GlassFishORBLifeCycleListeners
+
             rfm = (ReferenceFactoryManager) orb.resolve_initial_references(
                     ORBConstants.REFERENCE_FACTORY_MANAGER);
 
-            ASORBUtilities.initGIS(orb);
+            /** TODO
+            ASORBUtilities.initGIS(orb);            
+            **/
 
             // SeeBeyond fix for 6325988: needs testing.
             // Still do not know why this might make any difference.

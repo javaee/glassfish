@@ -271,9 +271,6 @@ public abstract class BaseContainer
     // RemoteReference Factory for RemoteHome view
     protected RemoteReferenceFactory remoteHomeRefFactory = null;
 
-    // Jndi-name under which the Remote Home is registered.
-    private String remoteHomeJndiName;
-
     //
     // Data members for 3.x Remote business view
     //
@@ -296,17 +293,7 @@ public abstract class BaseContainer
     // objects during lookups.
     protected EJBHome ejbRemoteBusinessHomeStub;
 
-    // Internal jndi name under which remote business home is registered
-    private String remoteBusinessHomeJndiName;
 
-    // Convenience location for common case of 3.0 session bean with only
-    // 1 remote business interface and no adapted remote home.  Allows a
-    // stand-alone client to access 3.0 business interface by using simple
-    // jndi name.  Each remote business interface is also always available
-    // at <jndi-name>#<business_interface_name>.  This is needed for the
-    // case where the bean has an adapted remote home and/or multiple business
-    // interfaces.
-    private String remoteBusinessJndiName;
 
     // Holds information such as remote reference factory that are associated
     // with a particular remote business interface
@@ -410,9 +397,25 @@ public abstract class BaseContainer
 
     protected ClassLoader optIntfClassLoader;
 
-    protected Set<String> publishedGlobalJndiNames = new HashSet<String>();
+    private Set<String> publishedPortableGlobalJndiNames = new HashSet<String>();
+
+    private Set<String> publishedNonPortableGlobalJndiNames = new HashSet<String>();
+
+    private Set<String> publishedInternalGlobalJndiNames = new HashSet<String>();
+
+
+    private Map<String, JndiInfo> jndiInfoMap = new HashMap<String, JndiInfo>();
 
     private String optIntfClassName;
+
+    // True if this container supports asynchronous invocations.
+    // Asynchronous session bean invocations are required to be allowed
+    // in a full EE 6 distribution.  Eventually we might want to allow async support
+    // to be opted-into in the Web Profile, but by default applications with async
+    // methods should result in a deployment error.
+    // TODO implement this check 
+    private boolean allowAsynchronousInvocations;
+
     /**
      * This constructor is called from ContainerFactoryImpl when an
      * EJB Jar is deployed.
@@ -475,12 +478,14 @@ public abstract class BaseContainer
                             /** TODO need to do this as part of enabling support for
                              *  passivation / activation.  Need to rewrite using ASM
                              *  to avoid corba codegen dependency in Web Profile
-                             *
-                             * if( !Serializable.class.isAssignableFrom(ejbClass) ) {
-                             *   ejbClass = EJBUtils.loadGeneratedSerializableClass
-                             *       (loader, ejbClass.getName());
-                             * }
                              */
+                             /*
+                            if( !Serializable.class.isAssignableFrom(ejbClass) ) {
+                                ejbClass = EJBUtils.loadGeneratedSerializableClass
+                                    (loader, ejbClass.getName());
+                              }
+                              */
+
                         }
                     }
                     if ( sd.getTransactionType().equals("Bean") ) {
@@ -737,7 +742,7 @@ public abstract class BaseContainer
         try {
 
             GlassFishORBHelper orbHelper = ejbContainerUtilImpl.getORBHelper();
-            protocolMgr = orbHelper.getProtocolManager(ejbContainerUtilImpl);
+            protocolMgr = orbHelper.getProtocolManager();
 
         } catch(Throwable t) {
             throw new RuntimeException("IIOP Protocol Manager initialization failed.  " +
@@ -964,9 +969,27 @@ public abstract class BaseContainer
     void initializeHome()
         throws Exception
     {
-        Set<String> intfsForPortableJndi = new HashSet<String>();
+        Map<String, Object> intfsForPortableJndi = new HashMap<String, Object>();
+
+        // Root of portable global JNDI name for this bean
+        String javaGlobalName = getJavaGlobalJndiNamePrefix();
 
         if (isRemote) {
+
+            // This is either the default glassfish-specific (non-portable)
+            // global JNDI name or the one specified via mappedName(), sun-ejb-jar.xml,
+            // etc.
+            String glassfishSpecificJndiName = ejbDescriptor.getJndiName();
+
+            // If the explicitly specified name is the same as the portable name,
+            // don't register any of the glassfish-specific names to prevent
+            // clashes. 
+            if( (glassfishSpecificJndiName != null) &&
+                    ( glassfishSpecificJndiName.equals("") ||
+                      glassfishSpecificJndiName.equals(javaGlobalName) ) ) {
+                glassfishSpecificJndiName = null;
+            }
+
             
             if( hasRemoteHomeView ) {
                 this.ejbHomeImpl = instantiateEJBHomeImpl();
@@ -1010,15 +1033,19 @@ public abstract class BaseContainer
                 remoteHomeRefFactory.setRepositoryIds(homeIntf, remoteIntf);
                              
                 // get a remote ref for the EJBHome
-                ejbHomeStub = remoteHomeRefFactory.createHomeReference(homeInstanceKey);
+                ejbHomeStub = (EJBHome) remoteHomeRefFactory.createHomeReference(homeInstanceKey);
 
-                intfsForPortableJndi.add(ejbDescriptor.getHomeClassName());
+                // Add 2.x Home for later portable JNDI name processing.
+                intfsForPortableJndi.put(ejbDescriptor.getHomeClassName(), ejbHomeStub);
 
-                remoteHomeJndiName = ejbDescriptor.getJndiName();
+                // If there's a glassfish-specific JNDI name, any 2.x Home object is always
+                // regsitered under that name.  This preserves backward compatibility since
+                // this was the original use of the jndi name.
+                if( glassfishSpecificJndiName != null ) {
 
-                namingManager.publishObject(remoteHomeJndiName,
-                                            ejbHomeStub, false);
-
+                    JndiInfo jndiInfo = JndiInfo.newNonPortableRemote(glassfishSpecificJndiName, ejbHomeStub);
+                    jndiInfoMap.put(jndiInfo.name, jndiInfo);
+                }
 
             }
 
@@ -1028,19 +1055,11 @@ public abstract class BaseContainer
                     instantiateEJBRemoteBusinessHomeImpl();
 
                 this.ejbRemoteBusinessHome = 
-                    ejbRemoteBusinessHomeImpl.getEJBHome();           
+                    ejbRemoteBusinessHomeImpl.getEJBHome();
 
-                remoteBusinessHomeJndiName = EJBUtils.getRemote30HomeJndiName
-                    (ejbDescriptor.getJndiName());
-
-                if(!hasRemoteHomeView && (remoteBusinessIntfInfo.size() == 1)){                    
-                    remoteBusinessJndiName = ejbDescriptor.getJndiName();
-                    
-                }
 
                 // RMI-IIOP validation
-                getProtocolManager().validateTargetObjectInterfaces
-                    (this.ejbRemoteBusinessHome);
+                getProtocolManager().validateTargetObjectInterfaces(this.ejbRemoteBusinessHome);
 
                 for(RemoteBusinessIntfInfo next : 
                         remoteBusinessIntfInfo.values()) {
@@ -1063,51 +1082,117 @@ public abstract class BaseContainer
                     // It doesn't matter which remote reference factory is
                     // selected, so just do it the first time through the loop.
                     if( ejbRemoteBusinessHomeStub == null ) {
-                        ejbRemoteBusinessHomeStub = next.referenceFactory.
+                        ejbRemoteBusinessHomeStub = (EJBHome) next.referenceFactory.
                             createHomeReference(homeInstanceKey);
                     }
 
                 }
 
-                EJBObjectImpl dummyEJBObjectImpl = 
-                    instantiateRemoteBusinessObjectImpl();
+                EJBObjectImpl dummyEJBObjectImpl = instantiateRemoteBusinessObjectImpl();
 
-                for(RemoteBusinessIntfInfo next : 
-                        remoteBusinessIntfInfo.values()) { 
+
+                // Internal jndi name under which remote business home is registered for
+                // glassfish-specific remote business JNDI names
+                String remoteBusinessHomeJndiName = null;
+
+                if( glassfishSpecificJndiName != null ) {
+
+                    remoteBusinessHomeJndiName =
+                        EJBUtils.getRemote30HomeJndiName(glassfishSpecificJndiName);
+                }
+
+                // Convenience location for common case of 3.0 session bean with only
+                // 1 remote business interface and no adapted remote home.  Allows a
+                // stand-alone client to access 3.0 business interface by using simple
+                // jndi name.  Each remote business interface is also always available
+                // at <jndi-name>#<business_interface_name>.  This is needed for the
+                // case where the bean has an adapted remote home and/or multiple business
+                // interfaces.
+                String simpleRemoteBusinessJndiName = null;
+
+                if( (glassfishSpecificJndiName != null) && !hasRemoteHomeView &&
+                        remoteBusinessIntfInfo.size() == 1) {
+
+                    simpleRemoteBusinessJndiName = glassfishSpecificJndiName;
+                }
+
+
+                // We need a separate name for the internal generated home object to
+                // support the portable global JNDI names for business interfaces.
+                // There won't necessarily be a glassfish-specific name specified so
+                // it's cleaner to just always use a separate ones.
+                String internalHomeJndiNameForPortableRemoteNames =
+                    EJBUtils.getRemote30HomeJndiName(javaGlobalName);
+
+
+                for(RemoteBusinessIntfInfo next : remoteBusinessIntfInfo.values()) {
 
                     java.rmi.Remote dummyEJBObject = dummyEJBObjectImpl.
                         getEJBObject(next.generatedRemoteIntf.getName());
                         
                     getProtocolManager().validateTargetObjectInterfaces(dummyEJBObject);
 
-                    next.jndiName = EJBUtils.getRemoteEjbJndiName
-                        (true, next.remoteBusinessIntf.getName(), 
-                         ejbDescriptor.getJndiName());
+                    if( glassfishSpecificJndiName != null ) {
 
-                    // Register an object factory that will retrieve 
-                    // the generic remote business home and create the
-                    // appropriate client business wrapper object for the
-                    // given business interface.  
-                    Reference remoteBusRef = new Reference
-                        (next.remoteBusinessIntf.getName(),
-                         new StringRefAddr("url", remoteBusinessHomeJndiName),
-                         "com.sun.ejb.containers.RemoteBusinessObjectFactory",
-                         null);
+                        next.jndiName = EJBUtils.getRemoteEjbJndiName
+                            (true, next.remoteBusinessIntf.getName(), glassfishSpecificJndiName);
 
-                    intfsForPortableJndi.add(next.remoteBusinessIntf.getName());
+                        Reference remoteBusRef = new Reference(next.remoteBusinessIntf.getName(),
+                            new StringRefAddr("url", remoteBusinessHomeJndiName),
+                            "com.sun.ejb.containers.RemoteBusinessObjectFactory", null);
 
-                    namingManager.publishObject(next.jndiName, remoteBusRef,
-                                                false);
 
-                    if( remoteBusinessJndiName != null ) {
-                        namingManager.publishObject(remoteBusinessJndiName,
-                                                    remoteBusRef, false);
+                        // Glassfish-specific JNDI name for fully-qualified 3.0 Remote business interface.
+                        JndiInfo jndiInfo = JndiInfo.newNonPortableRemote(next.jndiName, remoteBusRef);
+                        jndiInfoMap.put(jndiInfo.name, jndiInfo);
                     }
+
+                    if( simpleRemoteBusinessJndiName != null ) {
+
+                        Reference remoteBusRef = new Reference
+                            (next.remoteBusinessIntf.getName(),
+                            new StringRefAddr("url", remoteBusinessHomeJndiName),
+                            "com.sun.ejb.containers.RemoteBusinessObjectFactory", null);
+
+                        // Glassfish-specific JNDI name for simple 3.0 Remote business interface lookup.
+                        // Applicable when the bean exposes only a single Remote 3.x client view.
+                        JndiInfo jndiInfo = JndiInfo.newNonPortableRemote
+                                (simpleRemoteBusinessJndiName, remoteBusRef);
+                        jndiInfoMap.put(jndiInfo.name, jndiInfo);
+                    }
+
+                    Reference remoteBusRef = new Reference(next.remoteBusinessIntf.getName(),
+                            new StringRefAddr("url", internalHomeJndiNameForPortableRemoteNames),
+                            "com.sun.ejb.containers.RemoteBusinessObjectFactory", null);
+
+                    // Always register portable JNDI name for each remote business view
+                    intfsForPortableJndi.put(next.remoteBusinessIntf.getName(), remoteBusRef);
 
                 }
 
-                namingManager.publishObject(remoteBusinessHomeJndiName,
-                                            ejbRemoteBusinessHomeStub, false);
+
+                if( remoteBusinessHomeJndiName != null ) {
+                    // Glassfish-specific JNDI name for internal generated
+                    // home object used by container
+                    JndiInfo jndiInfo = JndiInfo.newNonPortableRemote
+                        (remoteBusinessHomeJndiName, ejbRemoteBusinessHomeStub);
+                    jndiInfo.setInternal(true);
+                    jndiInfoMap.put(jndiInfo.name, jndiInfo);
+                }
+
+                // Always registeer internal name for home in support of portable global
+                // remote business JNDI names.
+                JndiInfo jndiInfo = JndiInfo.newPortableRemote
+                        (internalHomeJndiNameForPortableRemoteNames, ejbRemoteBusinessHomeStub);
+                jndiInfo.setInternal(true);
+                jndiInfoMap.put(jndiInfo.name, jndiInfo);
+
+                // If there isn't any jndi name from the descriptor, set one so the
+                // lookup logic that depends on ejbDescriptor.getJndiName() will work.
+                if( glassfishSpecificJndiName == null ) {
+                    ejbDescriptor.setJndiName(javaGlobalName);
+                }
+
 
             }
             
@@ -1129,7 +1214,13 @@ public abstract class BaseContainer
                 ejbLocalObjectProxyCtor = ejbLocalObjectProxyClass.
                     getConstructor(new Class[] { InvocationHandler.class });
 
-                intfsForPortableJndi.add(localHomeIntf.getName());
+                // Portable JNDI name for EJB 2.x LocalHome.  We don't provide a
+                // glassfish-specific way of accessing Local EJBs.
+
+                JavaGlobalJndiNamingObjectProxy namingProxy =
+                    new JavaGlobalJndiNamingObjectProxy(this, localHomeIntf.getName());
+
+                intfsForPortableJndi.put(localHomeIntf.getName(), namingProxy);
             }
 
             if( hasLocalBusinessView ) {
@@ -1152,7 +1243,11 @@ public abstract class BaseContainer
                     getConstructor(new Class[] { InvocationHandler.class });
 
                 for (Class next : localBusinessIntfs) {
-                    intfsForPortableJndi.add(next.getName());
+                    // Portable JNDI name for EJB 3.x Local business interface.
+                    // We don't provide a glassfish-specific way of accessing Local EJBs.
+                    JavaGlobalJndiNamingObjectProxy namingProxy =
+                        new JavaGlobalJndiNamingObjectProxy(this, next.getName());
+                    intfsForPortableJndi.put(next.getName(), namingProxy);
                 }
 
             }
@@ -1160,7 +1255,7 @@ public abstract class BaseContainer
             if(hasOptionalLocalBusinessView) {
                 EJBLocalHomeImpl obj = instantiateEJBOptionalLocalBusinessHomeImpl();
                 ejbOptionalLocalBusinessHomeImpl = (EJBLocalHomeImpl) obj;
-                    //instantiateEJBOptionalLocalBusinessHomeImpl();
+
                 ejbOptionalLocalBusinessHome = (GenericEJBLocalHome)
                     ejbOptionalLocalBusinessHomeImpl.getEJBLocalHome();
 
@@ -1177,38 +1272,83 @@ public abstract class BaseContainer
                 ejbOptionalLocalBusinessObjectProxyCtor = proxyClass.
                     getConstructor(new Class[] { InvocationHandler.class });
 
-                intfsForPortableJndi.add(ejbClass.getName());
+                // Portable JNDI name for no-interface view.
+                // We don't provide a glassfish-specific way of accessing the
+                // no-interface view of a session bean.
+                JavaGlobalJndiNamingObjectProxy namingProxy =
+                    new JavaGlobalJndiNamingObjectProxy(this, ejbClass.getName());
+
+                intfsForPortableJndi.put(ejbClass.getName(), namingProxy);
 
             }
             
         }
 
-        // Register portable global JNDI names
-        String javaGlobalName = getJavaGlobalJndiNamePrefix();
-        for(String intf : intfsForPortableJndi) {
+
+
+        for(String intf : intfsForPortableJndi.keySet()) {
 
             String fullyQualifiedJavaGlobalName = javaGlobalName + "!" + intf;
-            JavaGlobalJndiNamingObjectProxy namingProxy =
-                new JavaGlobalJndiNamingObjectProxy(this, intf);
-            try {
+            Object namingProxy = intfsForPortableJndi.get(intf);
+            boolean local = (namingProxy instanceof JavaGlobalJndiNamingObjectProxy);
 
-                if (intfsForPortableJndi.size() == 1) {
-                    namingManager.publishObject(javaGlobalName, namingProxy, true);
-                    publishedGlobalJndiNames.add(javaGlobalName);
-                }
+            if (intfsForPortableJndi.size() == 1) {
 
-                namingManager.publishObject(fullyQualifiedJavaGlobalName, namingProxy, true);
-                publishedGlobalJndiNames.add(fullyQualifiedJavaGlobalName);
+                JndiInfo jndiInfo = local ?
+                    JndiInfo.newPortableLocal(javaGlobalName, namingProxy) :
+                    JndiInfo.newPortableRemote(javaGlobalName, namingProxy);
+                jndiInfoMap.put(jndiInfo.name, jndiInfo);
 
-            } catch (Exception ex) {
-                _logger.log(Level.WARNING, "Error while binding portable JNDI name for EJB : " +
-                            this.ejbDescriptor.getName(), ex);
+
             }
+
+            JndiInfo jndiInfo = local ?
+                JndiInfo.newPortableLocal(fullyQualifiedJavaGlobalName, namingProxy) :
+                JndiInfo.newPortableRemote(fullyQualifiedJavaGlobalName, namingProxy);
+            jndiInfoMap.put(jndiInfo.name, jndiInfo);
+
         }
 
-        if( !publishedGlobalJndiNames.isEmpty() ) {
+        for(Map.Entry<String, JndiInfo> entry : jndiInfoMap.entrySet()) {
+            JndiInfo jndiInfo = entry.getValue();
+
+            try {
+
+                jndiInfo.publish(this.namingManager);
+
+                if( jndiInfo.internal ) {
+                    publishedInternalGlobalJndiNames.add(jndiInfo.name);
+                } else {
+
+                    if( jndiInfo.portable ) {
+                        publishedPortableGlobalJndiNames.add(jndiInfo.name);
+                    }  else {
+                        publishedNonPortableGlobalJndiNames.add(jndiInfo.name);
+                    }
+                }
+
+
+            } catch(Exception e) {
+                throw new RuntimeException("Error while binding JNDI name " + jndiInfo.name +
+                    " for EJB : " + this.ejbDescriptor.getName(), e);
+
+            }
+           
+        }
+
+        if( !publishedPortableGlobalJndiNames.isEmpty() ) {
             _logger.log(Level.INFO, "Portable JNDI names for EJB " +
-                        this.ejbDescriptor.getName() + " : " + publishedGlobalJndiNames);
+                        this.ejbDescriptor.getName() + " : " + publishedPortableGlobalJndiNames);
+        }
+
+        if( !publishedNonPortableGlobalJndiNames.isEmpty() ) {
+            _logger.log(Level.INFO, "Glassfish-specific (Non-portable) JNDI names for EJB " +
+                        this.ejbDescriptor.getName() + " : " + publishedNonPortableGlobalJndiNames);
+        }
+
+        if( !publishedInternalGlobalJndiNames.isEmpty() ) {
+            _logger.log(Level.FINE, "Internal container JNDI names for EJB " +
+                        this.ejbDescriptor.getName() + " : " + publishedInternalGlobalJndiNames);
         }
         
         // create EJBMetaData
@@ -1576,7 +1716,7 @@ public abstract class BaseContainer
                                            ejbDescriptor.getName(), inv.exception);
             }
             
-            if ( !inv.isLocal ) {
+            if ( inv.isRemote ) {
 
                 if( protocolMgr != null ) {
                     // For remote business case, exception mapping is performed
@@ -3461,8 +3601,18 @@ public abstract class BaseContainer
         final Thread currentThread = Thread.currentThread();
         final ClassLoader previousClassLoader =
             currentThread.getContextClassLoader();
-       
 
+        // Unpublish all portable and non-portable JNDI names
+        for(Map.Entry<String, JndiInfo> entry : jndiInfoMap.entrySet()) {
+            JndiInfo jndiInfo = entry.getValue();
+
+            try {
+                jndiInfo.unpublish(this.namingManager);
+            } catch(Exception e) {
+                _logger.log(Level.FINE, "Error while unbinding JNDI name " + jndiInfo.name +
+                        " for EJB : " + this.ejbDescriptor.getName(), e);
+             }
+        }
 
         try {
             if(System.getSecurityManager() == null) {
@@ -3477,123 +3627,47 @@ public abstract class BaseContainer
                 });
             }
 
-            if( !isMessageDriven ) {
-                // destroy home objref
+            if ( isRemote ) {
                 try {
-                    if ( isLocal ) {
-                        // No specific undeploy steps
-                    }
-                    if ( isRemote ) {
-                       
 
-                        if( hasRemoteHomeView ) {
-                            try {
-                                namingManager.unpublishObject
-                                    (remoteHomeJndiName);
-                            } catch(NamingException ne) {
-                                _logger.log(Level.FINE, 
-                                            "ejb.undeploy_exception", 
-                                            logParams);
-                                _logger.log(Level.FINE, "", ne);
-                            }
+                    if( hasRemoteHomeView ) {
 
-                            remoteHomeRefFactory.destroyReference(ejbHomeStub, 
+                        remoteHomeRefFactory.destroyReference(ejbHomeStub,
                                                               ejbHome);
 
-                            // Hints to release stub-related meta-data in ORB
-                            remoteHomeRefFactory.cleanupClass(homeIntf);
-                            remoteHomeRefFactory.cleanupClass(remoteIntf);
-                            remoteHomeRefFactory.cleanupClass(ejbHome.getClass());
-                            remoteHomeRefFactory.cleanupClass(ejbObjectProxyClass);
+                        // Hints to release stub-related meta-data in ORB
+                        remoteHomeRefFactory.cleanupClass(homeIntf);
+                        remoteHomeRefFactory.cleanupClass(remoteIntf);
+                        remoteHomeRefFactory.cleanupClass(ejbHome.getClass());
+                        remoteHomeRefFactory.cleanupClass(ejbObjectProxyClass);
                         
-                            // destroy the factory itself
-                            remoteHomeRefFactory.destroy(); 
-                        }
-
-
-
-                        if( hasRemoteBusinessView ) {
-                            try {
-                                namingManager.unpublishObject
-                                    (remoteBusinessHomeJndiName);
-                            } catch(NamingException ne) {
-                                _logger.log(Level.FINE, 
-                                            "ejb.undeploy_exception", 
-                                            logParams);
-                                _logger.log(Level.FINE, "", ne);
-                            }
-
-                            if( remoteBusinessJndiName != null ) {
-                                try {
-                                    // Unbind object factory.  Avoid using
-                                    // NamingManager.unpublish() b/c that
-                                    // method has a side-effect which first
-                                    // does a lookup of the given name.
-                                    namingManager.getInitialContext().unbind
-                                        (remoteBusinessJndiName);
-                                } catch(NamingException ne) {
-                                    _logger.log(Level.FINE, 
-                                                "ejb.undeploy_exception", 
-                                                logParams);
-                                    _logger.log(Level.FINE, "", ne);
-                                }
-                            }
-
-
-
-                            // Home related cleanup
-                            RemoteReferenceFactory remoteBusinessRefFactory =
-                             remoteBusinessIntfInfo.values().iterator().
-                                next().referenceFactory;
-                            remoteBusinessRefFactory.destroyReference
-                                (ejbRemoteBusinessHomeStub, 
-                                 ejbRemoteBusinessHome);
-
-                            remoteBusinessRefFactory.cleanupClass
-                                (remoteBusinessHomeIntf);
-                            remoteBusinessRefFactory.cleanupClass
-                                (ejbRemoteBusinessHome.getClass());
-
-                            // Cleanup for each remote business interface
-                            for(RemoteBusinessIntfInfo next : 
-                                    remoteBusinessIntfInfo.values()) {
-
-                                try {
-                                    // Unbind object factory.  Avoid using
-                                    // NamingManager.unpublish() b/c that
-                                    // method has a side-effect which first
-                                    // does a lookup of the given name.
-                                    namingManager.getInitialContext().unbind
-                                        (next.jndiName);
-                                } catch(NamingException ne) {
-                                    _logger.log(Level.FINE, 
-                                                "ejb.undeploy_exception", 
-                                                logParams);
-                                    _logger.log(Level.FINE, "", ne);
-                                }
-
-                                next.referenceFactory.cleanupClass
-                                    (next.generatedRemoteIntf);
-
-                                next.referenceFactory.cleanupClass
-                                    (next.proxyClass);
-                        
-                                // destroy the factory itself
-                                next.referenceFactory.destroy(); 
-                            }
-
-                        }
-      
+                        // destroy the factory itself
+                        remoteHomeRefFactory.destroy();
                     }
 
-                    for (String globalName : publishedGlobalJndiNames) {
-                        try {
-                            namingManager.getInitialContext().unbind
-                                    (globalName);
-                        } catch (Exception ex) {
-                            _logger.log(Level.FINE, "Error during undind", ex);
+                    if( hasRemoteBusinessView ) {
 
+                        // Home related cleanup
+                        RemoteReferenceFactory remoteBusinessRefFactory =
+                        remoteBusinessIntfInfo.values().iterator().
+                            next().referenceFactory;
+                        remoteBusinessRefFactory.destroyReference
+                            (ejbRemoteBusinessHomeStub, ejbRemoteBusinessHome);
+
+                        remoteBusinessRefFactory.cleanupClass(remoteBusinessHomeIntf);
+                        remoteBusinessRefFactory.cleanupClass(ejbRemoteBusinessHome.getClass());
+
+                        // Cleanup for each remote business interface
+                        for(RemoteBusinessIntfInfo next : remoteBusinessIntfInfo.values()) {
+
+                            next.referenceFactory.cleanupClass(next.generatedRemoteIntf);
+
+                            next.referenceFactory.cleanupClass(next.proxyClass);
+                        
+                            // destroy the factory itself
+                            next.referenceFactory.destroy();
                         }
+      
                     }
                     
                 } catch ( Exception ex ) {
@@ -3603,17 +3677,18 @@ public abstract class BaseContainer
                 }
             }
 
-	    try {
-		    ejbContainerUtilImpl.getComponentEnvManager().unbindFromComponentNamespace(ejbDescriptor);
-	    } catch (javax.naming.NamingException namEx) {
-		    _logger.log(Level.FINE, "ejb.undeploy_exception",
+	        try {
+		        ejbContainerUtilImpl.getComponentEnvManager().
+                            unbindFromComponentNamespace(ejbDescriptor);
+	        } catch (javax.naming.NamingException namEx) {
+		        _logger.log(Level.FINE, "ejb.undeploy_exception",
                         logParams);
-		    _logger.log(Level.FINE, "", namEx);
-	    }
+		        _logger.log(Level.FINE, "", namEx);
+	        }
             
-	    registryMediator.undeploy();
-	    registryMediator = null;
-	    ejbMethodStatsManager = null;
+	        registryMediator.undeploy();
+	        registryMediator = null;
+	        ejbMethodStatsManager = null;
 
             
         } finally {
@@ -3716,7 +3791,7 @@ public abstract class BaseContainer
         boolean isNullTx = false;
         //if (!inv.isLocal && !inv.isMessageDriven && !inv.isWebService)
         if (!inv.isLocal) {
-            isNullTx = transactionManager.isNullTransaction();
+            isNullTx = false; // TODO enable after orb transaction work transactionManager.isNullTransaction();
         }
         
         int txAttr = getTxAttr(inv);
@@ -4705,6 +4780,82 @@ public abstract class BaseContainer
         toMonitorProps.incrementTimersDelivered();
     }
 
+    private static class JndiInfo {
+
+        private JndiInfo(String name, Object object) {
+            this.name = name;
+            this.object = object;
+        }
+
+        static JndiInfo newPortableLocal(String name, Object obj) {
+            JndiInfo jndiInfo = new JndiInfo(name, obj);
+            jndiInfo.local = true;
+            jndiInfo.portable = true;
+            return jndiInfo;
+        }
+
+        static JndiInfo newPortableRemote(String name, Object obj) {
+            JndiInfo jndiInfo = new JndiInfo(name, obj);
+            jndiInfo.local = false;
+            jndiInfo.portable = true;
+            jndiInfo.cosNaming = isCosNamingObject(obj);
+            return jndiInfo;
+        }
+
+        static JndiInfo newNonPortableRemote(String name, Object obj) {
+            JndiInfo jndiInfo = new JndiInfo(name, obj);
+            jndiInfo.local = false;
+            jndiInfo.portable = false;
+            jndiInfo.cosNaming = isCosNamingObject(obj);
+            return jndiInfo;
+        }
+
+
+
+        void publish(GlassfishNamingManager nm) throws NamingException {
+
+            // Publish with rebind = false to prevent stomping on pre-existing
+            // entries.
+            boolean rebind = false;
+
+            if( cosNaming ) {
+                nm.publishCosNamingObject(name, object, rebind);
+            } else {
+                nm.publishObject(name, object, rebind);
+            }
+
+        }
+
+        void unpublish(GlassfishNamingManager nm) throws NamingException {
+
+            if( cosNaming ) {
+                nm.unpublishCosNamingObject(name);   
+            } else {
+                nm.unpublishObject(name);
+            }
+        }
+
+        public void setInternal(boolean flag) {
+            internal = flag;
+
+        }
+
+        private static boolean isCosNamingObject(Object obj) {
+            return ((obj instanceof java.rmi.Remote) ||
+                    (obj instanceof org.omg.CORBA.Object));
+        }
+
+        String name;
+        Object object;
+        boolean local;
+        boolean cosNaming;
+        boolean portable;
+        boolean internal;
+
+
+    }
+
+
 } //BaseContainer{}
 
 final class CallFlowInfoImpl
@@ -4797,6 +4948,7 @@ final class RemoteBusinessIntfInfo {
     Constructor proxyCtor;
 
 }
+
 
 /**
  * PreInvokeException is used to wrap exceptions thrown

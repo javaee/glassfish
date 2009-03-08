@@ -899,6 +899,7 @@ public final class StatefulSessionContainer
         EjbInvocation ejbInv = super.createEjbInvocation();
         ejbInv.ejbObject = ejbo;
         ejbInv.isLocal = local;
+        ejbInv.isRemote = !local;
         ejbInv.method = removeMethod;
 
         // Method must be a remove method defined on one of :
@@ -2093,7 +2094,7 @@ public final class StatefulSessionContainer
                     createRemoteBusinessObjectImpl(context);
                 }
 
-            }/*TODO else if (ejbObject instanceof EJBObjectImpl) {
+            } else if (ejbObject instanceof EJBObjectImpl) {
 
                 EJBObjectImpl eo = (EJBObjectImpl) ejbObject;
                 ejbObject.setContext(context);
@@ -2145,7 +2146,7 @@ public final class StatefulSessionContainer
                         createOptionalEJBLocalBusinessObjectImpl(context);
                     }
                 }
-            }*/ else if (ejbObject instanceof EJBLocalObjectImpl) {
+            } else if (ejbObject instanceof EJBLocalObjectImpl) {
 
                 EJBLocalObjectImpl elo = (EJBLocalObjectImpl) ejbObject;
                 ejbObject.setContext(context);

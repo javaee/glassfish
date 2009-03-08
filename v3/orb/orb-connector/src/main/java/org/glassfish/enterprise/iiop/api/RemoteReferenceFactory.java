@@ -38,8 +38,6 @@ package org.glassfish.enterprise.iiop.api;
 
 import java.rmi.Remote;
 
-import javax.ejb.EJBHome;
-
 /**
  * The RemoteReferenceFactory interface provides methods to
  * create and destroy remote EJB references. Instances of the
@@ -81,7 +79,7 @@ public interface RemoteReferenceFactory {
      * @return the protocol-specific stub of the proper derived type.
      *       It should not be necessary to narrow this stub again.
      */
-    EJBHome createHomeReference(byte[] homeKey);
+    Remote createHomeReference(byte[] homeKey);
 
     /**
      * Destroy an EJBObject or EJBHome remote ref 

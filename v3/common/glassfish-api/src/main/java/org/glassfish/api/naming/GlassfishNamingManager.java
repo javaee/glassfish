@@ -38,9 +38,11 @@ package org.glassfish.api.naming;
 import org.jvnet.hk2.annotations.Contract;
 
 import javax.naming.Context;
+
 import javax.naming.Name;
 import javax.naming.NamingException;
 import java.util.Collection;
+import org.omg.CORBA.ORB;
 
 /**
  * The NamingManager provides an interface for various components to use naming
@@ -58,7 +60,7 @@ public interface GlassfishNamingManager {
     public Context getInitialContext();
 
     /**
-     * Publish a name in the naming service.
+     * Publish an object in the naming service.
      *
      * @param name   Object that needs to be bound.
      * @param obj    Name that the object is bound as.
@@ -70,7 +72,7 @@ public interface GlassfishNamingManager {
             throws NamingException;
 
     /**
-     * Publish a name in the naming service.
+     * Publish an object in the naming service.
      *
      * @param name   Object that needs to be bound.
      * @param obj    Name that the object is bound as.
@@ -79,6 +81,21 @@ public interface GlassfishNamingManager {
      */
 
     public void publishObject(Name name, Object obj, boolean rebind)
+            throws NamingException;
+
+    /**
+     * Publish a CosNaming object.  The object is published to both
+     * the server's CosNaming service and the global naming service.
+     * Objects published with this method must be unpublished via
+     * unpublishCosNamingObject.
+     *
+     * @param name   Object that needs to be bound.
+     * @param obj    Name that the object is bound as.
+     * @param rebind operation is a bind or a rebind.
+     * @throws Exception
+     */
+
+    public void publishCosNamingObject(String name, Object obj, boolean rebind)
             throws NamingException;
 
     /**
@@ -100,6 +117,16 @@ public interface GlassfishNamingManager {
     public void unpublishObject(String name) throws NamingException;
 
     /**
+     * Remove an object from the CosNaming service and global naming service.
+     *
+     * @param name Name that the object is bound as.
+     * @throws Exception
+     */
+    public void unpublishCosNamingObject(String name) throws NamingException;
+
+
+
+    /**
      * Remove an object from the naming service.
      *
      * @param name Name that the object is bound as.
@@ -116,4 +143,11 @@ public interface GlassfishNamingManager {
      */
     public Context restoreJavaCompEnvContext(String contextName)
             throws NamingException;
+
+    /**
+     * Initialize RMI-IIOP naming services 
+     * @param orb
+     */
+    public void initializeRemoteNamingSupport(ORB orb) throws NamingException;
+
 }

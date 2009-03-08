@@ -48,13 +48,19 @@ import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.api.naming.JNDIBinding;
 import org.glassfish.api.naming.NamingObjectProxy;
+import javax.naming.InitialContext;
 
 import com.sun.enterprise.naming.util.LogFacade;
+
+import org.omg.CORBA.ORB;
+import java.rmi.RemoteException;
 
 import javax.naming.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.*;
+
+
 
 /**
  * This is the manager that handles all naming operations including
@@ -76,7 +82,7 @@ public final class  GlassfishNamingManagerImpl
     InvocationManager invMgr;
 
     private InitialContext initialContext;
-    private InitialContext cosContext;
+    private Context cosContext;
 
     private NameParser nameParser = new SerialNameParser();
 
@@ -116,17 +122,36 @@ public final class  GlassfishNamingManagerImpl
         return nameParser;
     }
 
-    /**
-     * Get cosContext which is the root of the COSNaming namespace. Setting
-     * java.naming.corba.orb is necessary to prevent the COSNaming context from
-     * creating its own ORB instance.
-     */
+    
+    public void initializeRemoteNamingSupport(ORB orb) throws NamingException {
 
-    public void setCosContext(InitialContext cosCtx) {
-        this.cosContext = cosCtx;
+        try {
+            // Now that we have an ORB, initialize the CosNaming service
+            // and set it on the server's naming service.
+
+            Hashtable cosNamingEnv = new Hashtable();
+
+            cosNamingEnv.put("java.naming.factory.initial",
+                             "com.sun.jndi.cosnaming.CNCtxFactory");
+
+            cosNamingEnv.put("java.naming.corba.orb", orb);
+
+            cosContext = new InitialContext(cosNamingEnv);
+
+            ProviderManager pm = ProviderManager.getProviderManager();
+
+            // Initialize RemoteSerialProvider.  This allows access to the naming
+            // service from clients.
+            pm.initRemoteProvider(orb);
+
+        } catch(RemoteException re) {
+            NamingException ne = new NamingException("Exception during remote naming initialization");
+            ne.initCause(ne);
+            throw ne;
+        }
     }
 
-    public InitialContext getCosContext() {
+    private Context getCosContext() {
         return cosContext;
     }
 
@@ -157,33 +182,48 @@ public final class  GlassfishNamingManagerImpl
 
         Object serialObj = obj;
 
-        if (isCOSNamingObj(obj)) {
-
-            // Create any COS naming sub-contexts in name
-            // that don't already exist.
-            createSubContexts(name, getCosContext());
-
-            if (rebind) {
-                getCosContext().rebind(name, obj);
-            } else {
-                getCosContext().bind(name, obj);
-            }
-
-            // Bind a reference to it in the SerialContext using
-            // the same name. This is needed to allow standalone clients
-            // to lookup the object using the same JNDI name.
-            // It is also used from bindObjects while populating ejb-refs in
-            // the java:comp namespace.
-            serialObj = new Reference("reference",
-                    new StringRefAddr("url", name.toString()),
-                    IIOPOBJECT_FACTORY, null);
-        } // End if -- CORBA object
-
         if (rebind) {
             initialContext.rebind(name, serialObj);
         } else {
             initialContext.bind(name, serialObj);
         }
+    }
+
+   
+    public void publishCosNamingObject(String name, Object obj, boolean rebind)
+            throws NamingException {
+
+
+        Name nameObj = new CompositeName(name);
+
+        // Create any COS naming sub-contexts in name
+        // that don't already exist.
+        createSubContexts(nameObj, getCosContext());
+
+        if (rebind) {
+            getCosContext().rebind(name, obj);
+        } else {
+            getCosContext().bind(name, obj);
+        }
+
+        // Bind a reference to it in the SerialContext using
+        // the same name. This is needed to allow standalone clients
+        // to lookup the object using the same JNDI name.
+        // It is also used from bindObjects while populating ejb-refs in
+        // the java:comp namespace.
+        Object serialObj = new Reference("reference",
+                    new StringRefAddr("url", name.toString()),
+                    IIOPOBJECT_FACTORY, null);
+
+        publishObject(name, serialObj, rebind);
+
+    }
+
+    public void unpublishObject(String name)
+            throws NamingException {
+
+
+        initialContext.unbind(name);
     }
 
     /**
@@ -192,22 +232,16 @@ public final class  GlassfishNamingManagerImpl
      * @param name Name that the object is bound as.
      * @throws Exception
      */
-    public void unpublishObject(String name)
+    public void unpublishCosNamingObject(String name)
             throws NamingException {
 
-        /*
-        //Fixme once CosNaming is supported
-        Object obj = null;
+
         try {
-            initialContext.lookup(name);
-        } catch (Exception ex) {
-            _logger.log(Level.INFO, "**NMImpl::unpublishObject() " + ex);
+            getCosContext().unbind(name);
+        } catch(NamingException cne) {
+           _logger.log(Level.WARNING, "Error during CosNaming.unbind for " + name); 
         }
 
-        if (isCOSNamingObj(obj)) {
-            getCosContext().unbind(name);
-        }
-        */
 
         initialContext.unbind(name);
     }

@@ -412,8 +412,12 @@ public class ComponentEnvManagerImpl
 
         private volatile EjbNamingReferenceManager ejbRefMgr;
         private EjbReferenceDescriptor ejbRef;
-        private boolean isCacheable;
-        private transient Object cachedValue;
+
+        // Note : V2 had a limited form of ejb-ref caching.  It only applied
+        // to EJB 2.x Home references where the target lived in the same application
+        // as the client.  It's not clear how useful that even is and it's of limited
+        // value given the behavior is different for EJB 3.x references.  For now,
+        // all ejb-ref caching is turned off.
 
         EjbReferenceProxy(EjbNamingReferenceManager ejbRefMgr, EjbReferenceDescriptor ejbRef) {
             this.ejbRefMgr = ejbRefMgr;
@@ -430,15 +434,9 @@ public class ComponentEnvManagerImpl
             }
 
             if (ejbRefMgr != null) {
-                if (ejbRefMgr.isEjbReferenceCacheable(ejbRef)) {
-                    if (cachedValue == null) {
-                        cachedValue = ejbRefMgr.resolveEjbReference(ejbRef, null);
-                    }
 
-                    result = cachedValue;
-                } else {
-                    result = ejbRefMgr.resolveEjbReference(ejbRef, null);
-                }
+                result = ejbRefMgr.resolveEjbReference(ejbRef, ctx);
+
             }
 
             if( result == null ) {

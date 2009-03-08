@@ -94,6 +94,8 @@ public class EjbApplication
 
     private SingletonLifeCycleManager singletonLCM;
 
+    boolean usesEJBTimerService = false;
+
     // TODO: move restoreEJBTimers to correct location
     private static boolean restored = false;
     private static Object lock = new Object();
@@ -117,7 +119,24 @@ public class EjbApplication
         return ejbs;
     }
 
-    public boolean start(ApplicationContext startupContext) {
+    public boolean start(ApplicationContext startupContext) throws Exception {
+
+
+        // TODO: move restoreEJBTimers to correct location
+        System.out.println("==> Uses Timers? == " + usesEJBTimerService);
+        if (usesEJBTimerService) {
+            initEJBTimerService();
+        }
+        // TODO: move restoreEJBTimers to correct location
+
+        for (Container container : containers) {
+            container.doAfterApplicationDeploy();
+        }
+
+        // TODO handle singleton startup dependencies that refer to singletons in a different
+        // module within the application
+        singletonLCM.doStartup();
+
         return true;
     }
 
@@ -141,7 +160,7 @@ public class EjbApplication
         boolean deploy = (params.origin == OpsParams.Origin.deploy );
 
         int counter = 0;
-        boolean usesEJBTimerService = false;
+
         singletonLCM = new SingletonLifeCycleManager();
         
         policyLoader.loadPolicy();
@@ -151,6 +170,9 @@ public class EjbApplication
             desc.setUniqueId(getUniqueId(desc)); // XXX appUniqueID + (counter++));
             EJBSecurityManager ejbSM = null;
 
+            // Initialize each ejb container (setup component environment, register JNDI objects, etc.)
+            // Any instance instantiation , timer creation/restoration, message inflow is delayed until
+            // start phase.
             try {
                 ejbSM = ejbSMF.createManager(desc, true);
                 moduleName = ejbSM.getContextID(desc);
@@ -158,29 +180,20 @@ public class EjbApplication
                 Container container = ejbContainerFactory.createContainer(desc, ejbAppClassLoader,
                         ejbSM, dc);
                 containers.add(container);
+
+                // Used during later start phase to determine whether to start timer service
+                usesEJBTimerService = (usesEJBTimerService || container.isTimedObject());
+
                 if (container instanceof AbstractSingletonContainer) {
                     singletonLCM.addSingletonContainer((AbstractSingletonContainer) container);
                 }
-                usesEJBTimerService = (usesEJBTimerService || container.isTimedObject());
+
             } catch (Throwable th) {
                 throw new RuntimeException("Error during EjbApplication.start() ", th);
             }
         }
 
         generatePolicy(moduleName);
-
-        // TODO: move restoreEJBTimers to correct location
-        System.out.println("==> Uses Timers? == " + usesEJBTimerService);
-        if (usesEJBTimerService) {
-            initEJBTimerService();
-        }
-        // TODO: move restoreEJBTimers to correct location
-
-        for (Container container : containers) {
-            container.doAfterApplicationDeploy();
-        }
-
-        singletonLCM.doStartup();
         
         return true;
     }

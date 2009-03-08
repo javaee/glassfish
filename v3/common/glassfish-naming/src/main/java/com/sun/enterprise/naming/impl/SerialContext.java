@@ -33,6 +33,15 @@ import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.omg.CosNaming.NamingContext;
+import org.omg.CosNaming.NameComponent;
+import org.omg.CosNaming.NamingContextHelper;
+import javax.rmi.PortableRemoteObject;
+
+
+
+import org.omg.CORBA.ORB;
+
 
 /**
  * This context provides access to the app server naming service. This
@@ -53,11 +62,14 @@ public class SerialContext implements Context {
     private static final String JAVA_GLOBAL_URL = "java:global";
 
 
+    // Sets unmanaged SerialContext in test mode to prevent attempts to contact server. 
+    static final String INITIAL_CONTEXT_TEST_MODE = "com.sun.enterprise.naming.TestMode";
+
     private static Logger _logger = LogFacade.getLogger();
 
     private static final NameParser myParser = new SerialNameParser();
 
-    private static Hashtable providerCache = new Hashtable();
+    // TODO private static Hashtable providerCache = new Hashtable();
 
 
     private Hashtable myEnv = null; // THREAD UNSAFE
@@ -68,10 +80,13 @@ public class SerialContext implements Context {
 
     private final JavaURLContext javaUrlContext;
 
-
-    // private InitialContext cosContext;
+    private static final Boolean threadlock = new Boolean(true);
 
     private final Habitat habitat;
+
+    private boolean testMode = false;
+
+    private boolean inClient = false;
 
 
     /**
@@ -92,17 +107,6 @@ public class SerialContext implements Context {
      */
 
 
-
-
-    private SerialContextProvider getProvider() throws NamingException {
-
-        if (provider == null) {
-            provider = ProviderManager.getProviderManager().getLocalProvider();
-        }
-
-        return provider;
-    }
-
     /**
      * Constructor for the context. Initializes the object reference to the
      * remote provider object.
@@ -111,7 +115,7 @@ public class SerialContext implements Context {
             throws NamingException {
 
         this.habitat = habitat;
-        
+
         myEnv = (environment != null) ? (Hashtable) (environment.clone())
                 : null;
 
@@ -132,6 +136,22 @@ public class SerialContext implements Context {
         }
         javaUrlContext = urlContextTemp;
 
+
+        if( myEnv.get(INITIAL_CONTEXT_TEST_MODE) != null ) {
+            testMode = true;
+            System.out.println("SerialContext in test mode");
+        }
+
+        /** TODO use optionally set orb, host, port
+        orb = (ORB) myEnv.get(ORBManager.JNDI_CORBA_ORB_PROPERTY);
+        host = (String)myEnv.get(ORBManager.OMG_ORB_INIT_HOST_PROPERTY);
+        port = (String)myEnv.get(ORBManager.OMG_ORB_INIT_PORT_PROPERTY);
+         */
+
+        if( (habitat == null) && !testMode ) {
+            inClient = true;
+            System.out.println("SerialContext in client mode");
+        }
     }
 
     /**
@@ -141,6 +161,97 @@ public class SerialContext implements Context {
     public SerialContext(Hashtable env, Habitat habitat) throws NamingException {
         this("", env, habitat);
     }
+
+
+    private SerialContextProvider getProvider() throws NamingException {
+
+        if (provider == null) {
+
+            try {
+
+                if( inClient ) {
+                    provider = getRemoteProvider();
+                }  else {
+                    provider = ProviderManager.getProviderManager().getLocalProvider();
+                }
+
+            } catch(Exception e) {
+                NamingException ne = new NamingException("Unable to acquire SerialContextProvider");
+                ne.initCause(e);
+                throw ne;
+            }
+        }
+
+        return provider;
+    }
+
+    private SerialContextProvider getRemoteProvider() throws Exception {
+
+	    // Load-balancing is not supported yet.
+        // Simple initial implementation.
+        String host = "localhost";
+        String port = "3700";
+
+        /*
+	    if ( orb == null ) {
+
+	        if (host != null) {
+		        if (port == null) {
+		            //assume default port of 3700
+		            port = ORBManager.DEFAULT_ORB_INIT_PORT;
+		        }
+		    } else {
+		        if (port != null) {
+		            host = ORBManager.DEFAULT_ORB_INIT_HOST;
+		        } else {
+		            // both host and port are null and so is the orb
+		            // this can happen from appclient or standalone client
+		            // but for within the ejb container its already taken care of in getProvider()
+		        _logger.fine("host,port and orb are null");
+		        return getCachedProvider(ORBManager.getORB());
+		    }
+		}
+		*/
+
+
+        /**  TODO   How should we get the ORB?
+
+
+		ORB orb = orbHelper.getORB();
+
+
+		// provider = (SerialContextProvider) providerCache.get(host + ":" + port);
+
+
+		org.omg.CORBA.Object ref = orb.string_to_object("corbaloc:iiop:1.2@" +
+					       host + ":" + port + "/NameService");
+
+		return narrowProvider(ref);
+         */
+
+        return null;
+
+    }
+
+/**
+     * method to narrow down the provider.
+     * common code that is called from getProvider()
+     */
+    private SerialContextProvider narrowProvider(org.omg.CORBA.Object ref)
+                       throws Exception {
+
+        NamingContext nctx = NamingContextHelper.narrow(ref);
+	    NameComponent[] path =
+	        { new NameComponent("SerialContextProvider", "") };
+    
+	    synchronized (threadlock) {
+	        provider = (SerialContextProvider)
+	            PortableRemoteObject.narrow(nctx.resolve(path),
+					  SerialContextProvider.class);
+	    }
+	    return provider;
+    }
+
 
     /**
      * The getNameInNamespace API is not supported in this context.

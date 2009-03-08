@@ -1020,6 +1020,7 @@ public class EntityContainer
         EjbInvocation i = super.createEjbInvocation();
         i.ejbObject = ejbo;
         i.isLocal = local;
+        i.isRemote = !local;
         i.method = removeMethod;
         
         // Method must be a remove method defined on one of :
@@ -1180,6 +1181,7 @@ public class EntityContainer
         EjbInvocation inv = super.createEjbInvocation();
         inv.ejbObject = localRemoteObj;
         inv.isLocal = local;
+        inv.isRemote = !local;
         Method method=null;
         try {
             method = EJBLocalObject.class.getMethod("remove", NO_PARAMS);
@@ -2358,7 +2360,7 @@ public class EntityContainer
         Object primaryKey = timerState.getTimedObjectPrimaryKey();
         if( isRemote ) {
             inv.ejbObject = internalGetEJBObjectImpl(primaryKey, null);
-            inv.isLocal = false;
+            inv.isRemote = true;
         } else {
             inv.ejbObject = internalGetEJBLocalObjectImpl(primaryKey);
             inv.isLocal = true;
@@ -2404,7 +2406,7 @@ public class EntityContainer
             destroyReadyStoreOnUndeploy(); //cache must set the listern to null
             
             // destroy all EJB instances in ActiveTxCache
-	    /*
+	    /*  TODO
             synchronized ( incompleteTxStore ) {
                 Iterator beans = incompleteTxStore.values();
                 while ( beans.hasNext() ) {

@@ -27,9 +27,14 @@ import com.sun.enterprise.naming.util.NamingUtilsImpl;
 
 import javax.naming.NamingException;
 import javax.naming.Reference;
+import javax.naming.CompositeName;
 import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import java.util.Hashtable;
+import org.omg.CORBA.ORB;
+import org.glassfish.internal.api.Globals;
 
 
 /**
@@ -44,14 +49,13 @@ public class LocalSerialContextProviderImpl
 
     static Logger _logger = LogFacade.getLogger();
 
-    NamingUtilsImpl namingUtils = new NamingUtilsImpl();
+    private NamingUtilsImpl namingUtils = new NamingUtilsImpl();
 
-    LocalSerialContextProviderImpl(TransientContext rootContext) throws RemoteException {
+    private LocalSerialContextProviderImpl(TransientContext rootContext) throws RemoteException {
         super(rootContext);
     }
 
-    static LocalSerialContextProviderImpl getProvider(
-            TransientContext rootContext) {
+    static LocalSerialContextProviderImpl initProvider(TransientContext rootContext) {
         try {
             return new LocalSerialContextProviderImpl(rootContext);
         } catch (RemoteException re) {
@@ -72,7 +76,8 @@ public class LocalSerialContextProviderImpl
 
     public void bind(String name, Object obj)
             throws NamingException, RemoteException {
-        super.bind(name, obj);
+        Object copyOfObj = namingUtils.makeCopyOfObject(obj);
+        super.bind(name, copyOfObj);
     }
 
 
@@ -86,35 +91,45 @@ public class LocalSerialContextProviderImpl
 
     public void rebind(String name, Object obj)
             throws NamingException, RemoteException {
-
-        super.rebind(name, obj);
+        Object copyOfObj = namingUtils.makeCopyOfObject(obj);
+        super.rebind(name, copyOfObj);
     }
 
     public Object lookup(String name)
             throws NamingException, RemoteException {
         Object obj = super.lookup(name);
+        
         try {
             if (obj instanceof Reference) {
                 Reference ref = (Reference) obj;
-                /*
+
                 if (ref.getFactoryClassName().equals
                         (GlassfishNamingManagerImpl.IIOPOBJECT_FACTORY)) {
+
+                    ORB orb = ProviderManager.getProviderManager().getORB();
+
                     Hashtable env = new Hashtable();
-                    org.omg.CORBA.ORB orb = null;
-                    env.put("java.naming.corba.orb", orb);
-                    obj = javax.naming.spi.GlassfishNamingManagerImpl.getObjectInstance
+                    if( orb != null ) {
+
+                        env.put("java.naming.corba.orb", orb);
+
+                    }
+
+
+                    obj = javax.naming.spi.NamingManager.getObjectInstance
                             (obj, new CompositeName(name), null, env);
+                    // NOTE : No copy object performed in this case
                     return obj;
                 }
-                */
+
             }
-            return obj;
-        //} catch (RemoteException re) {
-            //throw re;
+       
         } catch (Exception e) {
             RemoteException re = new RemoteException("", e);
             throw re;
 
         }
+
+        return namingUtils.makeCopyOfObject(obj);
     }
 }

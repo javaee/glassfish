@@ -58,13 +58,13 @@ import org.omg.CORBA.ORB;
 @Contract
 public interface ProtocolManager {
 
-    void initialize(ORB o, EjbService ejbService);
+    void initialize(ORB o);
 
 
     public void initializePOAs() throws Exception;
 
 
-    public void initializeNaming(java.io.File dbDir, int orbInitialPort) throws Exception;
+    public void initializeNaming() throws Exception;
 
     
     /**
@@ -100,12 +100,6 @@ public interface ProtocolManager {
      */
     void connectObject(Remote remoteObj) throws RemoteException;
 
-
-  
-
-
-
-    public EjbDescriptor getEjbDescriptor(byte[] ejbKey);
 
 
 }

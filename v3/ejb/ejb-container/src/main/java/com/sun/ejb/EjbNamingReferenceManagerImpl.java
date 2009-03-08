@@ -46,8 +46,14 @@ import org.glassfish.api.invocation.InvocationManager;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
+import javax.naming.Context;
+
+import org.omg.CORBA.ORB;
+import java.util.Properties;
 
 import javax.naming.NamingException;
+import javax.naming.InitialContext;
+import java.util.logging.Level;
 
 /**
  * @author Mahesh Kannan
@@ -57,6 +63,9 @@ import javax.naming.NamingException;
 public class EjbNamingReferenceManagerImpl
     implements EjbNamingReferenceManager {
 
+    private static final String CORBANAME = "corbaname:";
+    private static final String IIOPURL = "iiop://";
+
     @Inject
     InvocationManager invMgr;
 
@@ -65,9 +74,38 @@ public class EjbNamingReferenceManagerImpl
 
     private volatile EjbContainerUtil ejbContainerUtil;
 
-    public Object resolveEjbReference(EjbReferenceDescriptor ejbRefDesc, Object jndiObject)
+    public Object resolveEjbReference(EjbReferenceDescriptor ejbRefDesc, Context context)
         throws NamingException {
-        return EJBUtils.resolveEjbRefObject(ejbRefDesc, jndiObject);
+
+        Object jndiObj = null;
+
+
+        /* For remote ejb refs, first lookup the target remote object
+         * and pass it to the next stage of ejb ref resolution. 
+         * If the string is a "corbaname:...." URL
+         * the lookup happens thru the corbanameURL context,
+         * else it happens thru the context provided by the NamingManager.
+         *
+         * NOTE : we might need some additional logic to handle cross-server
+         * MEJB resolution for cluster support post V3 FCS.
+         */
+        if( !ejbRefDesc.isLocal() ) {
+
+
+
+            // Get actual jndi-name from ejb module.
+            String remoteJndiName = EJBUtils.getRemoteEjbJndiName(ejbRefDesc);
+            
+
+            if (remoteJndiName.startsWith(CORBANAME)) {
+                ORB orb = ejbContainerUtil.getORBHelper().getORB();
+                jndiObj = (Object) orb.string_to_object(remoteJndiName);
+            } else {
+                jndiObj = context.lookup(remoteJndiName);
+            }
+        }
+
+        return EJBUtils.resolveEjbRefObject(ejbRefDesc, jndiObj);
     }
 
     public boolean isEjbReferenceCacheable(EjbReferenceDescriptor ejbRefDesc) {

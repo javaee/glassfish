@@ -41,6 +41,7 @@ import org.glassfish.api.naming.NamingObjectProxy;
 import javax.naming.Context;
 
 /**
+ * Used to register portable global JNDI names for LOCAL EJB 2.x / 3.x references.
  * @author Mahesh Kannan
  */
 public class JavaGlobalJndiNamingObjectProxy

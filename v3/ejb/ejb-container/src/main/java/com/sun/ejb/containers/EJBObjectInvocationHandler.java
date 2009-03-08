@@ -180,7 +180,7 @@ public final class EJBObjectInvocationHandler
             
             EjbInvocation inv = container.createEjbInvocation();
             
-            inv.isLocal   = false;
+            inv.isRemote  = true;
             inv.isHome    = false;
             inv.isBusinessInterface = !isRemoteHomeView();
             inv.ejbObject = this;

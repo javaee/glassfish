@@ -86,6 +86,15 @@ public class EJBUtils {
     // Initial portion of a corba interoperable naming syntax jndi name.
     private static final String CORBA_INS_PREFIX = "corbaname:";
 
+    // Prefix of portable global JNDI namespace
+    private static final String JAVA_GLOBAL_PREFIX = "java:global/";
+
+    // Separator between simple and fully-qualified portable ejb global JNDI names
+    private static final String PORTABLE_JNDI_NAME_SEP = "!";
+
+    // Separator between simple and fully-qualified glassfish-specific JNDI names
+    private static final String GLASSFISH_JNDI_NAME_SEP = "#";
+
     /**
      * Utility methods for serializing EJBs, primary keys and 
      * container-managed fields, all of which may include Remote EJB 
@@ -240,8 +249,11 @@ public class EJBUtils {
      */
     public static String getRemoteEjbJndiName(EjbReferenceDescriptor refDesc) {
 
+        String intf = refDesc.isEJB30ClientView() ?
+                refDesc.getEjbInterface() : refDesc.getHomeClassName();
+
         return getRemoteEjbJndiName(refDesc.isEJB30ClientView(),
-                                    refDesc.getEjbInterface(),
+                                    intf,
                                     refDesc.getJndiName());
     }
 
@@ -257,7 +269,9 @@ public class EJBUtils {
 
         if( businessView ) {
             if( jndiName.startsWith(CORBA_INS_PREFIX) ) {
-                
+
+                // TODO Might need special logic to deal with java:global names
+
                 // In the case of a corba interoperable naming string, we
                 // need to lookup the internal remote home.  We can't rely
                 // on our SerialContext Reference object
@@ -267,10 +281,21 @@ public class EJBUtils {
                 returnValue = getRemote30HomeJndiName(jndiName);
 
             } else {
-                if( !jndiName.endsWith("#" + interfaceName) ) {
-                    returnValue = jndiName + "#" + interfaceName;
+                if( jndiName.startsWith(JAVA_GLOBAL_PREFIX)) {
+                    if( !jndiName.endsWith(PORTABLE_JNDI_NAME_SEP + interfaceName) ) {
+                        returnValue = jndiName + PORTABLE_JNDI_NAME_SEP + interfaceName;
+                    }
+                } else if( !jndiName.endsWith(GLASSFISH_JNDI_NAME_SEP + interfaceName) ) {
+                    returnValue = jndiName + GLASSFISH_JNDI_NAME_SEP + interfaceName;
                 }
             }
+        } else {
+
+            if( jndiName.startsWith(JAVA_GLOBAL_PREFIX)) {
+                if( !jndiName.endsWith(PORTABLE_JNDI_NAME_SEP + interfaceName) ) {
+                    returnValue = jndiName + PORTABLE_JNDI_NAME_SEP + interfaceName;
+                }
+            }                      
         }
 
         return returnValue;
@@ -303,14 +328,38 @@ public class EJBUtils {
             // corba interoperable name.  In that case,
             // the jndiObj refers to the internal Remote 3.0 Home so we
             // still need to create a remote 30 client wrapper object.
-	    
-	    /**
+
             if ( refDesc.isEJB30ClientView() &&
                  !(jndiObj instanceof RemoteBusinessWrapperBase) ) {
                 returnObject = EJBUtils.lookupRemote30BusinessObject
                     (jndiObj, refDesc.getEjbInterface());
+            } else {
+
+                // TODO The jndiObj doesn't always have the correct classloader.
+                // This didn't happen in V2.  Need to investigate.  For now,
+                // do a PortableRemoteObject.narrow to convert it using the
+                // correct context classloader.
+                try {
+                    String intf = refDesc.isEJB30ClientView() ?
+                        refDesc.getEjbInterface() : refDesc.getHomeClassName();
+
+                    ClassLoader intfClassLoader = EJBUtils.getBusinessIntfClassLoader(intf);
+                    Class intfClass = intfClassLoader.loadClass(intf);
+
+                    if( !intfClass.isAssignableFrom(jndiObj.getClass()) ) {
+                        returnObject = PortableRemoteObject.narrow(jndiObj, intfClass);
+                    }
+
+                } catch(Exception e) {
+                    NamingException ne = new NamingException("Error doing context classloader conversion" +
+                        "for remote ejb reference");
+                    ne.initCause(e);
+                    throw ne;
+                }
+
+
             }
-	    **/
+	    
 
         }
 
@@ -329,7 +378,7 @@ public class EJBUtils {
             
             ClassLoader loader = 
                 getBusinessIntfClassLoader(businessInterface);
-            
+
             Class genericEJBHome = loadGeneratedGenericEJBHomeClass
                 (loader);
             
@@ -349,13 +398,24 @@ public class EJBUtils {
             Method createMethod = genericEJBHome.getMethod
                 ("create", String.class);
             
-            final java.rmi.Remote delegate = (java.rmi.Remote) 
+            java.rmi.Remote delegate = (java.rmi.Remote)
                 createMethod.invoke(genericHomeObj, 
                                     generatedRemoteIntfName);
+
+            // TODO The jndiObj doesn't always have the correct classloader.
+            // This didn't happen in V2.  Need to investigate.  For now,
+            // do a PortableRemoteObject.narrow to convert it using the
+            // correct context classloader.
+            Class generatedRemoteIntf = loader.loadClass(generatedRemoteIntfName);
+            delegate = (java.rmi.Remote) PortableRemoteObject.narrow(delegate, generatedRemoteIntf);
+                       
             
             returnObject = createRemoteBusinessObject
                 (loader, businessInterface, delegate);
-            
+
+
+            // TODO Bring over appclient security exception retry logic  CR 6620388
+
         } catch(Exception e) {
             NamingException ne = new NamingException
                 ("ejb ref resolution error for remote business interface" 
@@ -579,8 +639,30 @@ public class EJBUtils {
             (businessInterface);
 
         Class clientWrapperClass = loader.loadClass(wrapperClassName);
-        
-        Constructor ctors[] = clientWrapperClass.getConstructors();
+
+        Constructor ctors[] = null;
+
+        try {
+            ctors = clientWrapperClass.getConstructors();
+        } catch(Throwable t) {
+            System.out.println("corba codegen bug " + t.getMessage());
+
+
+        }
+
+        if( (ctors == null) || (ctors.length == 0) ) {
+             System.out.println("Retrying business interface wrapper loading with hand-coded wrapper");
+        Class busIntf = loader.loadClass(businessInterface);
+
+           
+            String handCodedWrapperClassName = clientWrapperClass.getPackage().getName() +
+                    "." + "HandCoded" +  busIntf.getSimpleName() + "Wrapper";
+            clientWrapperClass = loader.loadClass(handCodedWrapperClassName);
+            ctors = clientWrapperClass.getConstructors();
+        }
+
+
+
         
         Constructor ctor = null;
         for(Constructor next : ctors) {

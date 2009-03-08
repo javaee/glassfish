@@ -25,6 +25,12 @@ package com.sun.enterprise.naming.impl;
 import java.rmi.RemoteException;
 import java.util.logging.Logger;
 
+import org.omg.CORBA.ORB;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.Singleton;
+
+
 /**
  * This class is a facade for the remote and local SerialContextProvider The
  * need for this class arose from the fact that we wanted to have a way of
@@ -40,40 +46,46 @@ import java.util.logging.Logger;
 
 public class ProviderManager {
 
-    // This is a singleton.
-    private static final ProviderManager providerManager =
-            new ProviderManager();
+    private static ProviderManager providerManager;
 
     private TransientContext rootContext = new TransientContext();
 
     private SerialContextProvider localProvider;
 
-    private boolean initRemoteProviderDone = false;
+    // Set lazily once initRemoteProvider is called.  Only available
+    // in server.
+    private ORB orb;
 
-    static Logger _logger = null;
+    private ProviderManager() {}
 
-    public static ProviderManager getProviderManager() {
-        return providerManager;
+    public synchronized static ProviderManager getProviderManager() {
+	    if (providerManager  == null ) {
+	        providerManager = new ProviderManager();
+        }
+	    return providerManager;
     }
-
+    
     public TransientContext getTransientContext() {
         return rootContext;
     }
 
     public synchronized SerialContextProvider getLocalProvider() {
         if (localProvider == null) {
-            localProvider = LocalSerialContextProviderImpl
-                    .getProvider(rootContext);
+            localProvider = LocalSerialContextProviderImpl.initProvider(rootContext);
         }
         return localProvider;
     }
 
-    public synchronized void initRemoteProvider() throws RemoteException {
-        if (initRemoteProviderDone == false) {
-            //RemoteSerialContextProviderImpl
-            //      .initSerialContextProvider(rootContext);
-            initRemoteProviderDone = true;
-        }
+    public void initRemoteProvider(ORB orb) throws RemoteException {
+
+       RemoteSerialContextProviderImpl.initSerialContextProvider(orb, rootContext);
+       this.orb = orb;
+
     }
+
+    ORB getORB() {
+        return orb;
+    }
+
 
 }

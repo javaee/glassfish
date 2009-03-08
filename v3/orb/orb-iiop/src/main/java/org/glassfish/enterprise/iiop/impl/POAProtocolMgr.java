@@ -98,17 +98,15 @@ public final class POAProtocolMgr extends org.omg.CORBA.LocalObject
 
     private ORB orb;
 
-    private EjbService ejbService;
     private PresentationManager presentationMgr;
 
     public POAProtocolMgr() {}
 
-    public void initialize(ORB o, EjbService ejbService)
+    public void initialize(ORB o)
     {
 
         this.orb = (ORB)o;
 
-        this.ejbService = ejbService;
         this.presentationMgr = 
             ((com.sun.corba.ee.spi.orb.ORB) orb).getPresentationManager();
 
@@ -130,7 +128,7 @@ public final class POAProtocolMgr extends org.omg.CORBA.LocalObject
 
 
     // Called only in J2EE Server VM
-    public void initializeNaming(File dbDir, int orbInitialPort) throws Exception
+    public void initializeNaming() throws Exception
     {
 	    // NOTE: The TransientNameService reference is NOT HA.
         new TransientNameService((com.sun.corba.ee.spi.orb.ORB)orb);
@@ -235,6 +233,7 @@ public final class POAProtocolMgr extends org.omg.CORBA.LocalObject
      * Called from SecurityMechanismSelector for each objref creation
      */
 
+    /** TODO enable this when we get to security work
     public EjbDescriptor getEjbDescriptor(byte[] ejbKey)
     {
 	    EjbDescriptor result = null;
@@ -273,6 +272,8 @@ public final class POAProtocolMgr extends org.omg.CORBA.LocalObject
 
         return result;
    }
+
+     **/
 
 
 }

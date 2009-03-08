@@ -39,13 +39,14 @@ package com.sun.enterprise.container.common.spi;
 import com.sun.enterprise.deployment.EjbReferenceDescriptor;
 
 import javax.naming.NamingException;
+import javax.naming.Context;
 
 import org.jvnet.hk2.annotations.Contract;
 
 @Contract
 public interface EjbNamingReferenceManager {
 
-    public Object resolveEjbReference(EjbReferenceDescriptor ejbRefDesc, Object jndiObject)
+    public Object resolveEjbReference(EjbReferenceDescriptor ejbRefDesc, Context namingContext)
         throws NamingException;
 
     public boolean isEjbReferenceCacheable(EjbReferenceDescriptor ejbRefDesc);

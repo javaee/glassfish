@@ -214,7 +214,8 @@ final class EJBHomeInvocationHandler
                 
                 EjbInvocation inv = ((BaseContainer) getContainer()).createEjbInvocation();
                 
-                inv.isLocal = false;
+                
+                inv.isRemote = true;
                 inv.method  = method;
                 inv.isHome  = true;
                 
