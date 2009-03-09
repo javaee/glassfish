@@ -45,27 +45,16 @@
     </parent>
     
     <artifactId>gf-webbeans-spi</artifactId>
-    <packaging>hk2-jar</packaging>
-    <name>Webbeans SPI for Glassfish V3</name>
-
-    <scm>
-        <connection>scm:svn:http://anonsvn.jboss.org/repos/webbeans/ri/trunk/spi</connection>
-        <url>http://http://fisheye.jboss.com/browse/Webbeans</url>
-    </scm>
+    <packaging>pom</packaging>
+    <name>WebBeans SPI for Glassfish V3</name>
 
     <build>
-        <defaultGoal>scm:checkout</defaultGoal>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-scm-plugin</artifactId>
-                <configuration>
-                    <connectionType>connection</connectionType>
-                    <revisionKey>16087</revisionKey>
-                    <workingDirectory>target</workingDirectory>
-                </configuration>
-            </plugin>
-        </plugins>
+        <defaultGoal>install</defaultGoal>
     </build>
+
+    <modules>
+        <module>checkout</module>
+        <module>jboss-source</module>
+    </modules>
 
 </project>
