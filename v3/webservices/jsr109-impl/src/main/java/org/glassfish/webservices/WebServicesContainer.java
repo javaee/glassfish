@@ -35,14 +35,14 @@ import com.sun.enterprise.web.WebDeployer;
  *
  */
 @Service(name="org.glassfish.webservices.WebServicesContainer")
-public class WebServicesContainer extends WebContainer {
+public class WebServicesContainer implements Container {
 
     public String getName() {
         return "webservices";
     }
 
-    @Override
-    public Class<? extends WebDeployer> getDeployer() {
+   
+    public Class<? extends Deployer> getDeployer() {
         return WebServicesDeployer.class;
     }
 }

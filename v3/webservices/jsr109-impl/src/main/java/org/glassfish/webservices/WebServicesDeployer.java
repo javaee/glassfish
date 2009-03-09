@@ -25,22 +25,25 @@ package org.glassfish.webservices;
 
 
 import com.sun.enterprise.deployment.*;
-import com.sun.enterprise.module.*;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.util.WebServerInfo;
 import com.sun.enterprise.deployment.util.XModuleType;
+import com.sun.enterprise.module.*;
+import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.web.WebDeployer;
+import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
 import com.sun.tools.ws.spi.WSToolsObjectFactory;
 import com.sun.tools.ws.util.xml.XmlUtil;
 import com.sun.xml.bind.api.JAXBRIContext;
+import org.glassfish.api.deployment.ApplicationContainer;
+import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
-import com.sun.enterprise.util.io.FileUtils;
+import org.glassfish.api.container.Container;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.deployment.common.DeploymentUtils;
-import com.sun.enterprise.module.bootstrap.StartupContext;
+import org.glassfish.deployment.common.DummyApplication;
 import org.jvnet.hk2.annotations.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -49,31 +52,29 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import javax.enterprise.deploy.shared.ModuleType;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
-import java.net.URL;
 import java.net.MalformedURLException;
-import java.net.URI;
+import java.net.URL;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.text.MessageFormat;
 
 
 /**
- * Web module deployer. This is loaded from WebservicesContainer
+ * Webservices module deployer. This is loaded from WebservicesContainer
  *
  * @author Bhakti Mehta
  * 
  */
 @Service
-public class WebServicesDeployer extends WebDeployer {
+public class WebServicesDeployer implements Deployer<WebServicesContainer, DummyApplication> {
 
     protected Logger logger = LogDomains.getLogger(this.getClass(),LogDomains.WEBSERVICES_LOGGER);
 
@@ -112,7 +113,7 @@ public class WebServicesDeployer extends WebDeployer {
      * @return true if the prepare phase was successful
      *
      */
-    @Override
+   
     public boolean prepare(DeploymentContext dc) {
         try {
             Application app = dc.getModuleMetaData(Application.class);
@@ -128,7 +129,9 @@ public class WebServicesDeployer extends WebDeployer {
                           || (!app.getStandaloneBundleDescriptor().hasWebServices()) ) )
                     ) {
 
-                    super.generateArtifacts(dc);
+                    //do nothing let the WebDeployer handle this
+                    //since this is a JAXWS based application
+                    // super.generateArtifacts(dc);
 
             }   else {
                 //This is either a webapp with version 2.5 or EJB with webservices
@@ -336,7 +339,7 @@ public class WebServicesDeployer extends WebDeployer {
      *
      * @parameters type type of metadata that this deployer has declared providing.
      */
-    public <V> V loadMetaData(Class<V> type, DeploymentContext context) {
+    public Object loadMetaData(Class type, DeploymentContext context) {
         return null;
     }
 
@@ -945,6 +948,23 @@ public class WebServicesDeployer extends WebDeployer {
         FileUtils.copy(sourceFile, destFile);
         new File(sourceFile).delete();
     }
+
+    public void unload(DummyApplication application, DeploymentContext dc) {
+
+        // unload from webservices container
+    }
+
+     public void clean(DeploymentContext context) {
+       
+    }
+
+
+    public DummyApplication load(WebServicesContainer container, DeploymentContext context) {
+        return new DummyApplication();
+    }
+
+    
+
 
 }
 
