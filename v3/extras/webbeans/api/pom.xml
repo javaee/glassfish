@@ -48,21 +48,21 @@
     <packaging>hk2-jar</packaging>
     <name>Webbeans API for Glassfish V3</name>
 
+    <pre>
     <scm>
         <connection>scm:svn:http://anonsvn.jboss.org/repos/webbeans/ri/trunk/api</connection>
         <url>http://http://fisheye.jboss.com/browse/Webbeans</url>
     </scm>
-
+    </pre>
     <build>
-        <defaultGoal>scm:checkout</defaultGoal>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-scm-plugin</artifactId>
                 <configuration>
+                    <goals>install</goals>
                     <connectionType>connection</connectionType>
                     <revisionKey>16087</revisionKey>
-                    <workingDirectory>target</workingDirectory>
                 </configuration>
             </plugin>
         </plugins>
