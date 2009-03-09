@@ -93,34 +93,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <!-- Need special configuration of bundle-plugin, because
-                     the exported packages are not same as the value set
-                     in super POM -->
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <!-- embed antlr dependency -->
-                        <Embed-Dependency>antlr;scope=compile;inline=true</Embed-Dependency>
-                        <Export-Package>
-                            com.sun.jdo.api.persistence.support; version=${project.version},
-                            com.sun.jdo.spi.persistence.support.sqlstore.*; version=${project.version},
-                            antlr.*; version=${antlr.version}
-                        </Export-Package>
-                    </instructions>
-                    <unpackBundle>true</unpackBundle>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>osgi-bundle</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>bundle</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
     <dependencies>
@@ -130,10 +102,16 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>antlr-repackaged</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency> 
+        <!-- We depend on repackaged antlr, but antlr-maven-plugin checks for this dependency to be present -->
             <groupId>antlr</groupId>
             <artifactId>antlr</artifactId>
             <version>${antlr.version}</version>
-            <optional>true</optional>
+            <optional>true</optional> <!-- This ensures that antlr:antlr does not get packaged -->
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
@@ -150,21 +128,11 @@
             <artifactId>dol</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--<dependency>-->
-        <!--<groupId>org.glassfish.transaction</groupId>-->
-        <!--<artifactId>jts</artifactId>-->
-        <!--<version>${project.version}</version>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.glassfish.connectors</groupId>
-            <artifactId>connectors-runtime</artifactId>
+            <artifactId>connectors-internal-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--<dependency>-->
-        <!--<groupId>org.glassfish.connectors</groupId>-->
-        <!--<artifactId>connectors-internal-api</artifactId>-->
-        <!--<version>${project.version}</version>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.glassfish.ejb</groupId>
             <artifactId>ejb-container</artifactId>

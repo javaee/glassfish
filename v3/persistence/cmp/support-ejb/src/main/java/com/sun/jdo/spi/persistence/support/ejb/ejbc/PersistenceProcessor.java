@@ -36,7 +36,7 @@
 
 package com.sun.jdo.spi.persistence.support.ejb.ejbc;
 
-import com.sun.enterprise.connectors.ConnectorRuntime;
+//import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
@@ -48,7 +48,7 @@ import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.io.DescriptorConstants;
 //import com.sun.enterprise.loader.InstrumentableClassLoader;
 //import com.sun.enterprise.server.PersistenceUnitInfoImpl;
-import com.sun.enterprise.server.Constants;
+//import com.sun.enterprise.server.Constants;
 
 import com.sun.jdo.spi.persistence.support.sqlstore.ejb.EJBHelper;
 import com.sun.jdo.spi.persistence.utility.database.DatabaseConstants;

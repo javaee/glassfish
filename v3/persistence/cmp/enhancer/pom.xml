@@ -77,8 +77,8 @@
             <version>${project.version}</version>
             <exclusions>
                 <exclusion> <!-- does not depend on dbschema from model -->
-                    <groupId>org.netbeans.modules</groupId>
-                    <artifactId>org-netbeans-modules-dbschema</artifactId>
+                    <groupId>org.glassfish.external</groupId>
+                    <artifactId>dbschema-repackaged</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

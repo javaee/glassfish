@@ -123,10 +123,21 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>antlr-repackaged</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency> 
+        <!-- We depend on repackaged antlr, but antlr-maven-plugin checks for this dependency to be present -->
             <groupId>antlr</groupId>
             <artifactId>antlr</artifactId>
             <version>${antlr.version}</version>
-            <optional>true</optional>
+            <optional>true</optional> <!-- This ensures that antlr:antlr does not get packaged -->
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>schema2beans-repackaged</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

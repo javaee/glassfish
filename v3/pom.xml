@@ -144,6 +144,13 @@
         <webservices.version>1.4</webservices.version>
         <jaxb.version>2.1.9</jaxb.version>
         <javax-persistence-api.version>1.1.0-M8</javax-persistence-api.version>
+        <dbschema.version>RELEASE60</dbschema.version>
+        <!-- osgi version string must start with a number. Manually mapping above dbschema.version to osgi.version here -->
+        <dbschema.osgi.version>6.0</dbschema.osgi.version>
+        <schema2beans.version>RELEASE55</schema2beans.version>    
+        <!-- osgi version string must start with a number. Manually mapping above schema2beans.version to osgi.version here -->
+        <schema2beans.osgi.version>5.5</schema2beans.osgi.version>    
+        <antlr.version>2.7.6</antlr.version>
     </properties>
 
 
@@ -347,6 +354,15 @@
             <name>EclipseLink maven repo</name>
             <!-- <url>http://www.eclipse.org/downloads/download.php?r=1&amp;nf=1&amp;file=/technology/eclipselink/maven.repo</url> -->
              <url>http://download.eclipse.org/rt/eclipselink/maven.repo</url>
+            <snapshots>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+        </repository>
+        <repository>
+            <!-- Netbeans repository to pull schema2beans and dbschema -->
+            <id>Netbeans repo</id>
+            <name>Netbeans maven repo</name>
+            <url>http://deadlock.netbeans.org/maven2</url>
             <snapshots>
                 <updatePolicy>never</updatePolicy>
             </snapshots>
@@ -686,7 +702,25 @@
                 <artifactId>grizzly-messagesbus</artifactId>
                 <version>${grizzly.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.netbeans.modules</groupId>
+                <artifactId>org-netbeans-modules-dbschema</artifactId>
+                <version>${dbschema.version}</version>
+            </dependency>
 
+            <dependency>
+                <groupId>org.netbeans.api</groupId>
+                <artifactId>org-netbeans-modules-schema2beans</artifactId>
+                <version>${schema2beans.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>antlr</groupId>
+                <artifactId>antlr</artifactId>
+                <version>${antlr.version}</version>
+            </dependency>
+
+            
         </dependencies>
     </dependencyManagement>
     <!--  End:   		Dependency management 		-->

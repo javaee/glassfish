@@ -40,7 +40,6 @@ import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
 //import com.sun.enterprise.deployment.backend.DeploymentEventInfo;
 //import com.sun.enterprise.deployment.backend.DeploymentStatus;
-import com.sun.enterprise.server.Constants;
 
 import com.sun.jdo.spi.persistence.support.sqlstore.ejb.DeploymentHelper;
 import com.sun.jdo.spi.persistence.support.sqlstore.ejb.EJBHelper;

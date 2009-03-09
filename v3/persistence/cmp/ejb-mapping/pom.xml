@@ -69,32 +69,6 @@
                 </includes>
             </resource>
         </resources>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <!-- embed schema2beans dependency -->
-                        <Embed-Dependency>org-netbeans-modules-schema2beans;scope=compile;inline=true</Embed-Dependency>
-                        <Export-Package>
-                            com.sun.jdo.api.persistence.mapping.ejb.*; version=${project.version},
-                            org.netbeans.modules.schema2beans.*
-                        </Export-Package>
-                    </instructions>
-                    <unpackBundle>true</unpackBundle>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>osgi-bundle</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>bundle</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
     </build>
     <dependencies>
         <dependency>
@@ -108,9 +82,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-netbeans-modules-schema2beans</artifactId>
-            <optional>true</optional>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>schema2beans-repackaged</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
     </dependencies>
