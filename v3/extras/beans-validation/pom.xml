@@ -87,21 +87,12 @@
     </pluginRepositories>
 
     <build>
-      <defaultGoal>default</defaultGoal>
+      <defaultGoal>install</defaultGoal>
     </build>
 
-    <profiles>
-      <profile>
-	<id>default</id>
-	<activation>
-	  <activeByDefault>true</activeByDefault>
-	</activation>
-	<modules>
-	  <module>api</module>
-	  <module>ri</module>
-	</modules>
-      </profile>
-    </profiles>
-    
+    <modules>
+        <module>api</module>
+        <module>ri</module>
+    </modules>
 
 </project>
