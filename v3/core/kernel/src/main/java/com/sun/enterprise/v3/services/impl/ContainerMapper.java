@@ -38,7 +38,7 @@ import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.internal.grizzly.V3Mapper;
 import org.jvnet.hk2.component.Habitat;
-
+import com.sun.enterprise.v3.server.HK2Dispatcher;
 import com.sun.grizzly.util.http.mapper.Mapper;
 import com.sun.grizzly.util.http.mapper.MappingData;
 import com.sun.grizzly.util.http.HttpRequestURIDecoder;
@@ -79,6 +79,8 @@ public class ContainerMapper extends StaticResourcesAdapter{
     
     private static byte[] errorBody =
             HttpUtils.getErrorPage("Glassfish/v3","HTTP Status 404");
+
+    private HK2Dispatcher hk2Dispatcher = new HK2Dispatcher();
 
     /**
      * Are we running multiple {@ Adapter} or {@link GrizzlyAdapter}
@@ -197,7 +199,20 @@ public class ContainerMapper extends StaticResourcesAdapter{
                 }
 
                 req.setNote(MAPPED_ADAPTER, adapter);
-                adapter.service(req, res);
+
+                ContextRootInfo contextRootInfo = null;
+                if (mappingData.context != null && mappingData.context instanceof ContextRootInfo) {
+                    contextRootInfo = (ContextRootInfo) mappingData.context;
+                }
+                if (contextRootInfo == null){
+                    adapter.service(req, res);
+                } else {
+                    ClassLoader cl = null;
+                    if (contextRootInfo.getContainer() !=null) {
+                        cl = contextRootInfo.getContainer().getClassLoader();
+                    }
+                    hk2Dispatcher.dispath(adapter, cl, req, res);
+                }
             }
         } catch (Exception ex){
             try{

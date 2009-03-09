@@ -71,10 +71,6 @@ public class GrizzlyProxy implements NetworkProxy {
 
     final HttpService httpService;
 
-
-    private VirtualHostMapper vsMapper;
-
-
     private int portNumber;
 
 
@@ -91,19 +87,6 @@ public class GrizzlyProxy implements NetworkProxy {
     //TODO: This must be configurable.
     private final static boolean isWebProfile =
             Boolean.parseBoolean(System.getProperty("v3.grizzly.webProfile", "true"));
-
-
-    private static List<String> nvVsMapper = new ArrayList<String>();
-
-
-    // Those Adapter MUST not be mapped through a VirtualHostMapper, as our
-    // WebContainer already supports it.
-    static{
-        nvVsMapper.add("org.apache.catalina.connector.CoyoteAdapter");
-        nvVsMapper.add(com.sun.enterprise.v3.admin.AdminAdapter.class.getName());
-        nvVsMapper.add(com.sun.enterprise.v3.admin.adapter.AdminConsoleAdapter.class.getName());
-    }
-
 
     /**
      * TODO: We must configure Grizzly using the HttpService element,
@@ -206,13 +189,6 @@ public class GrizzlyProxy implements NetworkProxy {
             throw new EndpointRegistrationException("The endpoint adapter is null");
         }
 
-        // THis is a hack, but we don't want to add virtual server support
-        // for the Web Container as it already supports it.
-        if (!nvVsMapper.contains(endpointAdapter.getClass().getName())) {
-            vsMapper.registerEndpoint(contextRoot, vsServers, endpointAdapter, container);
-            endpointAdapter = vsMapper;
-        }
-
         grizzlyListener.getEmbeddedHttp().registerEndpoint(contextRoot,
                 vsServers, endpointAdapter, container);
     }
@@ -223,8 +199,7 @@ public class GrizzlyProxy implements NetworkProxy {
      */
     public void unregisterEndpoint(String contextRoot, ApplicationContainer app) throws EndpointRegistrationException {
         grizzlyListener.getEmbeddedHttp().unregisterEndpoint(contextRoot, app);
-        vsMapper.unregisterEndpoint(contextRoot, app);
-    }
+   }
 
 
     public Future<Result<Thread>> start() {
@@ -249,17 +224,6 @@ public class GrizzlyProxy implements NetworkProxy {
         logger.info("Listening on port " + grizzlyListener.getPort());
         return future;
     }
-
-
-    public void setVsMapper(VirtualHostMapper vsMapper) {
-        this.vsMapper = vsMapper;
-    }
-
-
-    public VirtualHostMapper getVsMapper() {
-        return vsMapper;
-    }
-
 
     public int getPort() {
         return portNumber;

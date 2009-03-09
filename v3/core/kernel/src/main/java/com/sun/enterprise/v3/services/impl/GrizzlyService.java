@@ -363,7 +363,6 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
 
         // create the proxy for the port.
         GrizzlyProxy proxy = new GrizzlyProxy(this, listener, httpService);
-        proxy.setVsMapper(new VirtualHostMapper(logger, listener));
       
         // attach all virtual servers to this port
         for (VirtualServer vs : httpService.getVirtualServer()) {
@@ -371,7 +370,6 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
                     StringUtils.parseStringList(vs.getHttpListeners(), " ,");
             if (vsListeners == null || vsListeners.size() == 0 || 
                     vsListeners.contains(listener.getId())) {
-                proxy.getVsMapper().addVirtualServer(vs);
                 if (!hosts.contains(vs.getId())){
                     hosts.add(vs.getId());
                 }
