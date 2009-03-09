@@ -87,7 +87,7 @@
     </pluginRepositories>
 
     <build>
-      <defaultGoal>install</defaultGoal>
+      <defaultGoal>default</defaultGoal>
     </build>
 
     <profiles>
@@ -97,7 +97,8 @@
 	  <activeByDefault>true</activeByDefault>
 	</activation>
 	<modules>
-<!--	  <module>api</module> -->
+	  <module>api</module>
+	  <module>ri</module>
 	</modules>
       </profile>
     </profiles>

@@ -44,7 +44,7 @@
         <version>3.0-SNAPSHOT</version>
     </parent>
     
-    <artifactId>gf-beans-validation-api-checkout</artifactId>
+    <artifactId>gf-beans-validation-ri-checkout</artifactId>
     <packaging>pom</packaging>
     <name>Beans Validation RI for Glassfish V3: checkout</name>
 
