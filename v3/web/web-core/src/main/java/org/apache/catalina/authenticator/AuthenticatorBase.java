@@ -682,12 +682,18 @@ public abstract class AuthenticatorBase
      * is used for request processing.
      */
     public void postInvoke(Request request, Response response) 
-	throws IOException, ServletException {
-	    Realm realm = this.context.getRealm();
-	    HttpRequest hrequest = (HttpRequest) request;
-	    HttpResponse hresponse = (HttpResponse) response;
-	    realm.invokePostAuthenticateDelegate
-		(hrequest, hresponse, context);
+            throws IOException, ServletException {
+        Realm realm = this.context.getRealm();
+        HttpRequest hrequest = (HttpRequest) request;
+        HttpResponse hresponse = (HttpResponse) response;
+        /*
+         * Check realm for null since app may have been undeployed by the
+         * time its pipeline is invoked on the way out, in which case its
+         * realm will have been set to null. See IT 6801
+         */
+        if (realm != null) {
+            realm.invokePostAuthenticateDelegate(hrequest, hresponse, context);
+        }
     }
     
     // ------------------------------------------------------ Protected Methods
