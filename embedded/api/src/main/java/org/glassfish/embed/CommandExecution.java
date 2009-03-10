@@ -13,12 +13,11 @@ import org.glassfish.api.ActionReport;
  * message.
  *
  * <xmp>
- * CommandExecution ce = server.getCommandExecutor();
+ * CommandExecution ce = server.execute("deploy", myWar);
  * ActionReport.ExitCode exitCode = ce.getExitCode();
  * String msg = ce.getMessage();
  * </xmp>
  * @author Jennifer
- * @see <a href="http://docs.sun.com/app/docs/doc/820-4495/gcode?a=view">CLI commands</a>
  */
 public class CommandExecution {
 
