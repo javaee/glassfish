@@ -69,6 +69,16 @@
 	    </snapshots>
         </repository>
         <repository>
+	    <id>jboss</id>
+	    <url>http://repository.jboss.org/maven2</url>
+	    <releases>
+	      <enabled>true</enabled>
+	    </releases>
+	    <snapshots>
+	      <enabled>false</enabled>
+	    </snapshots>
+        </repository>
+        <repository>
 	    <id>jboss-snapshot</id>
 	    <url>http://snapshots.jboss.org/maven2</url>
 	    <releases>
