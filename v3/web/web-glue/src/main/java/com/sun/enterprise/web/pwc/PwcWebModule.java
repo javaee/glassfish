@@ -109,15 +109,6 @@ public abstract class PwcWebModule extends StandardContext {
 
 
     /**
-     * Constructor
-     */
-    public PwcWebModule(String id) {
-        super();
-        _id = id;
-    }
-
-        
-    /**
      * Gets this web module's identifier.
      *
      * @return Web module identifier

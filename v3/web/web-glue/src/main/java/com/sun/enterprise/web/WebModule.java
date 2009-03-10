@@ -173,21 +173,12 @@ public class WebModule extends PwcWebModule {
     // web module was deployed
     private String vsId;
 
+
     /**
      * Constructor.
-     *
-     * @param webContainer Web container on which this web module is deployed
      */
-    public WebModule(String id, WebContainer webContainer) {
-        super(id);
-        this.webContainer = webContainer;
-        this.servletProbeProvider = webContainer.getServletProbeProvider();
-        this.sessionProbeProvider = webContainer.getSessionProbeProvider();
-        this.webModuleProbeProvider =
-            webContainer.getWebModuleProbeProvider();
-
-        this.javaEEObjectStreamFactory = webContainer.getJavaEEObjectStreamFactory();
-
+    public WebModule() {
+        super();
         this.adHocPaths = new HashMap<String,AdHocServletInfo>();
         this.adHocSubtrees = new HashMap<String,AdHocServletInfo>();
 
@@ -197,7 +188,7 @@ public class WebModule extends PwcWebModule {
         notifyContainerListeners = false;
     }
 
-    
+
     /**
      * set the sun-web.xml config bean
      */
@@ -221,6 +212,21 @@ public class WebModule extends PwcWebModule {
      */
     public WebContainer getWebContainer() {
         return webContainer;
+    }
+
+
+    /**
+     * Sets the web container in which this web module was loaded.
+     *
+     */
+    public void setWebContainer(WebContainer webContainer) {
+        this.webContainer = webContainer;
+        this.servletProbeProvider = webContainer.getServletProbeProvider();
+        this.sessionProbeProvider = webContainer.getSessionProbeProvider();
+        this.webModuleProbeProvider =
+            webContainer.getWebModuleProbeProvider();
+
+        this.javaEEObjectStreamFactory = webContainer.getJavaEEObjectStreamFactory();
     }
 
 

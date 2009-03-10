@@ -167,7 +167,9 @@ public final class EmbeddedWebContainer extends Embedded {
         if (!configFile.exists()) {
             configFile = new File(location, Constants.WEB_CONTEXT_XML);
         }
-        WebModule context = new WebModule(id, webContainer);
+        WebModule context = new WebModule();
+        context.setID(id);
+        context.setWebContainer(webContainer);
         context.setDebug(debug);
         context.setPath(ctxPath);
         context.setDocBase(location.getAbsolutePath());

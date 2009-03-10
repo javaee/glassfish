@@ -2803,7 +2803,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             String ctxtRoot,
             String appName) {
 
-        AdHocWebModule wm = new AdHocWebModule(id, this);
+        AdHocWebModule wm = new AdHocWebModule();
+        wm.setID(id);
+        wm.setWebContainer(this);
 
         wm.restrictedSetPipeline(new WebPipeline(wm));
 

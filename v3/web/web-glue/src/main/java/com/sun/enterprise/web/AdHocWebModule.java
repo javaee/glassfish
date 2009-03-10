@@ -44,13 +44,6 @@ import org.apache.catalina.core.StandardWrapper;
  */
 public class AdHocWebModule extends WebModule {
 
-    /*
-     * Constructor
-     */
-    public AdHocWebModule(String id, WebContainer webcontainer) {
-        super(id, webcontainer);
-    }
-
     public boolean getConfigured() {
         return true;
     }
