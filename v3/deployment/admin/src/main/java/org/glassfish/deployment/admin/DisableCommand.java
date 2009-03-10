@@ -34,6 +34,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.deployment.StateCommandParameters;
+import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
@@ -99,8 +100,13 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
         ApplicationInfo appInfo = deployment.get(name());
 
         try {
+            UndeployCommandParameters commandParams = 
+                new UndeployCommandParameters();
+            commandParams.origin = this.origin;
+            commandParams.name = this.name();
             final ExtendedDeploymentContext deploymentContext =
-                    deployment.getContext(logger, appInfo.getSource(), this);
+                    deployment.getContext(logger, appInfo.getSource(), 
+                        commandParams);
 
             appInfo.unload(deploymentContext, report);
 
