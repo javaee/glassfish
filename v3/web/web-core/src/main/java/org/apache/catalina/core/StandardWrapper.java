@@ -203,7 +203,14 @@ public class StandardWrapper
      * The initialization parameters for this servlet, keyed by
      * parameter name.
      */
-    private HashMap<String, Object> parameters = new HashMap<String, Object>();
+    private HashMap<String, String> parameters = new HashMap<String, String>();
+
+
+    /**
+     * The initialization attributes for this servlet, keyed by
+     * attribute name.
+     */
+    private HashMap<String, Object> attributes = new HashMap<String, Object>();
 
 
     /**
@@ -352,7 +359,9 @@ public class StandardWrapper
      * the servlet is currently available.
      */
     public long getAvailable() {
+
         return (this.available);
+
     }
 
 
@@ -366,12 +375,14 @@ public class StandardWrapper
      * @param available The new available date/time
      */
     public void setAvailable(long available) {
+
         long oldAvailable = this.available;
         if (available > System.currentTimeMillis())
             this.available = available;
         else
             this.available = 0L;
         support.firePropertyChange("available", oldAvailable, this.available);
+
     }
 
 
@@ -381,7 +392,9 @@ public class StandardWrapper
      * not implement <code>SingleThreadModel</code>.
      */
     public int getCountAllocated() {
+
         return (this.countAllocated);
+
     }
 
 
@@ -747,7 +760,6 @@ public class StandardWrapper
             return (false);
         } else
             return (true);
-
     }
 
 
@@ -882,7 +894,7 @@ public class StandardWrapper
      * @return true if the init parameter with the given name and value
      * was set, false otherwise
      */
-    public boolean setInitParameter(String name, Object value, 
+    public boolean setInitParameter(String name, String value, 
                                     boolean override) {
         if (null == name || null == value) {
             throw new IllegalArgumentException(
@@ -933,6 +945,47 @@ public class StandardWrapper
     }
 
 
+    public boolean setInitAttribute(String name, Object value) {
+        if (null == name || null == value) {
+            throw new IllegalArgumentException(
+                "Null servlet init attribute name or value");
+        }
+        synchronized (attributes) {
+            if (!attributes.containsKey(name)) {
+                attributes.put(name, value);
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+
+    public boolean setInitAttributes(Map<String, Object> initAttributes) {
+        if (null == initAttributes) {
+            throw new IllegalArgumentException("Null init attributes");
+        }
+
+        synchronized (attributes) {
+            for (Map.Entry<String,Object> e : initAttributes.entrySet()) {
+                if (e.getKey() == null || e.getValue() == null) {
+                    throw new IllegalArgumentException(
+                        "Null attribute name or value");
+                }
+                if (attributes.containsKey(e.getKey())) {
+                    return false;
+                }
+            }
+
+            for (Map.Entry<String,Object> e : initAttributes.entrySet()) {
+                setInitAttribute(e.getKey(), e.getValue());
+            }
+   
+            return true;
+        }
+    }
+
+
     /**
      * Add a new listener interested in InstanceEvents.
      *
@@ -949,7 +1002,6 @@ public class StandardWrapper
      * @param mapping The new wrapper mapping
      */
     public void addMapping(String mapping) {
-
         synchronized (mappings) {
             mappings.add(mapping);
         }
@@ -968,7 +1020,6 @@ public class StandardWrapper
      * @param link Role name used within the web application
      */
     public void addSecurityReference(String name, String link) {
-
         synchronized (references) {
             references.put(name, link);
         }
@@ -1085,7 +1136,6 @@ public class StandardWrapper
             instancePool.push(servlet);
             instancePool.notify();
         }
-
     }
 
 
@@ -1097,12 +1147,7 @@ public class StandardWrapper
      */
     public String findInitParameter(String name) {
         synchronized (parameters) {
-            Object value = parameters.get(name);
-            if (value instanceof String) {
-                return (String) value;
-            } else {
-                return null;
-            }
+            return ((String) parameters.get(name));
         }
     }
 
@@ -1670,18 +1715,6 @@ public class StandardWrapper
     }
 
 
-    /*
-     * @return the value of the initialization parameter with the given
-     * name, or <tt>null</tt> if the filter does not have any
-     * initialization parameter with that name
-     */
-    public Object getInitParameterObject(String name) {
-        synchronized (parameters) {
-            return parameters.get(name);
-        }
-    }
-
-
     /**
      * Return the set of initialization parameter names defined for this
      * servlet.  If none are defined, an empty Enumeration is returned.
@@ -1690,6 +1723,21 @@ public class StandardWrapper
         synchronized (parameters) {
             return (new Enumerator(parameters.keySet()));
         }
+
+    }
+
+
+    public Object getInitAttribute(String name) {
+        synchronized (attributes) {      
+            return attributes.get(name);
+        }
+    }
+
+
+    public Enumeration<String> getInitAttributeNames() {
+        synchronized (attributes) {
+            return (new Enumerator(attributes.keySet()));
+        }
     }
 
 
@@ -1697,12 +1745,14 @@ public class StandardWrapper
      * Return the servlet context with which this servlet is associated.
      */
     public ServletContext getServletContext() {
+
         if (parent == null)
             return (null);
         else if (!(parent instanceof Context))
             return (null);
         else
             return (((Context) parent).getServletContext());
+
     }
 
 

@@ -86,7 +86,7 @@ public class ServletRegistrationImpl implements ServletRegistration {
     }
 
 
-    public boolean setInitParameter(String name, Object value) {
+    public boolean setInitParameter(String name, String value) {
         if (ctx.isContextInitializedCalled()) {
             throw new IllegalStateException(
                 sm.getString("servletRegistration.alreadyInitialized",
@@ -100,6 +100,23 @@ public class ServletRegistrationImpl implements ServletRegistration {
 
     public boolean setInitParameters(Map<String, String> initParameters) {
         return wrapper.setInitParameters(initParameters);
+    }
+
+
+    public boolean setInitAttribute(String name, Object value) {
+        if (ctx.isContextInitializedCalled()) {
+            throw new IllegalStateException(
+                sm.getString("servletRegistration.alreadyInitialized",
+                             "init attribute", wrapper.getName(),
+                             ctx.getName()));
+        }
+
+        return wrapper.setInitAttribute(name, value);
+    }
+
+
+    public boolean setInitAttributes(Map<String, Object> initAttributes) {
+        return wrapper.setInitAttributes(initAttributes);
     }
 
 

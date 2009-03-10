@@ -130,14 +130,18 @@ public final class StandardWrapperFacade
     }
 
 
-    public Object getInitParameterObject(String name) {
-        return config.getInitParameterObject(name);
-    }
-
-
     public Enumeration getInitParameterNames() {
         return config.getInitParameterNames();
     }
 
+
+    public Object getInitAttribute(String name) {
+        return config.getInitAttribute(name);
+    }
+
+
+    public Enumeration<String> getInitAttributeNames() {
+        return config.getInitAttributeNames();
+    }
 
 }

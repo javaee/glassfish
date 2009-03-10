@@ -87,7 +87,7 @@ public class FilterRegistrationImpl implements FilterRegistration {
     }
 
 
-    public boolean setInitParameter(String name, Object value) {
+    public boolean setInitParameter(String name, String value) {
         if (ctx.isContextInitializedCalled()) {
             throw new IllegalStateException(
                 sm.getString("filterRegistration.alreadyInitialized",
@@ -101,6 +101,23 @@ public class FilterRegistrationImpl implements FilterRegistration {
 
     public boolean setInitParameters(Map<String, String> initParameters) {
         return filterDef.setInitParameters(initParameters);
+    }
+
+
+    public boolean setInitAttribute(String name, Object value) {
+        if (ctx.isContextInitializedCalled()) {
+            throw new IllegalStateException(
+                sm.getString("filterRegistration.alreadyInitialized",
+                             "init attribute", filterDef.getFilterName(),
+                             ctx.getName()));
+        }
+
+        return filterDef.setInitAttribute(name, value);
+    }
+
+
+    public boolean setInitAttributes(Map<String, Object> initAttributes) {
+        return filterDef.setInitAttributes(initAttributes);
     }
 
 
