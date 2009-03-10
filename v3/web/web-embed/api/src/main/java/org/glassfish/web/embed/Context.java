@@ -51,23 +51,6 @@ import org.apache.catalina.Valve;
 // Security realms support
 public interface Context extends ServletContext, Lifecycle {
 
-    /**
-     * Adds the given <tt>Servlet</tt> to this <tt>Context</tt>
-     * under the given <tt>servletName</tt>.
-     *
-     * @param servletName the <tt>Servlet</tt> name
-     * @param t the <tt>Servlet</tt> to be added
-     *
-     * @return a <tt>ServletRegistration</tt> object that may be used to
-     * further configure the registered <tt>Servlet</tt>, or <tt>null</tt>
-     * if this <tt>Context</tt> already contains a <tt>Servlet</tt> with a
-     * matching name
-     *
-     * @throws IllegalStateException if this context has already been
-     * initialized and started
-     */
-    public <T extends Servlet> ServletRegistration addServlet(
-        String servletName, T t);
 
     /**
      * Adds the given <tt>Valve</tt> to this <tt>Context</tt>.
