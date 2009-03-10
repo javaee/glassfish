@@ -3101,11 +3101,17 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             updateDefaultWebModule(virtualServer, oldPorts, null);
         }
 
-        // Add the new default web module
+        /*
+         * Add default web module if one has been configured for the
+         * virtual server. If the module declared as the default web module
+         * has already been deployed at the root context, we don't have
+         * to do anything.
+         */
         WebModuleConfig wmInfo = virtualServer.getDefaultWebModule(domain,
                             habitat.getComponent(WebArchivist.class) );
-        
-        if ( (wmInfo!=null) && (wmInfo.getContextPath()!=null)) {
+        if ((wmInfo != null) && (wmInfo.getContextPath() != null) &&
+                !"".equals(wmInfo.getContextPath()) &&
+                !"/".equals(wmInfo.getContextPath())) {
             // Remove dummy context that was created off of docroot, if such
             // a context exists
             removeDummyModule(virtualServer);
