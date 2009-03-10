@@ -106,3 +106,26 @@ Feb 24, 2009
 Sending        branding\src\main\java\org\glassfish\branding\GlassFishBrandingTemplate
 Transmitting file data .
 Committed revision 24945.
+
+====================================================================
+
+Mar 9, 2009 NOT FORWARD PORTED TO THE TRUNK YET - NEED TO VERIFY WITH JEROME IF IT'S OK
+
+Fix from Abhijit for IT 59 server.stop() does not shutdown properly.
+Non-deamon threads were still running after calling server.stop().
+This fix includes:
+- calling stop on AppServerStartup in server.stop()
+- declaring as deamon threads the following:
+     - ScheduledExecutorServicer
+     - ExecutorService
+     - RunnableBase
+- ConnectorStartupService implements PreDestroy
+
+Sending        embedded-glassfish_0106\embedded_v3_prelude_release\common\amx-api\src\main\java\com\sun\appserv\management\util\misc\RunnableBase.java
+Sending        embedded-glassfish_0106\embedded_v3_prelude_release\common\mbeanserver\src\main\java\org\glassfish\admin\mbeanserver\ConnectorStartupService.java
+Sending        embedded-glassfish_0106\embedded_v3_prelude_release\core\kernel\src\main\java\com\sun\enterprise\v3\server\ExecutorServiceFactory.java
+Sending        embedded-glassfish_0106\embedded_v3_prelude_release\core\kernel\src\main\java\com\sun\enterprise\v3\server\ScheduledExecutorServiceFactory.java
+Sending        embedded-glassfish_0106\embedded_v3_prelude_release\embedded\api\src\main\java\org\glassfish\embed\LocalStrings.properties
+Sending        embedded-glassfish_0106\embedded_v3_prelude_release\embedded\api\src\main\java\org\glassfish\embed\Server.java
+Transmitting file data ......
+Committed revision 25225.
