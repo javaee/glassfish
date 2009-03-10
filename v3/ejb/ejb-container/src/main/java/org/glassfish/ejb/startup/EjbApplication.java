@@ -23,30 +23,19 @@
 
 package org.glassfish.ejb.startup;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 import com.sun.ejb.Container;
 import com.sun.ejb.ContainerFactory;
 import com.sun.ejb.containers.AbstractSingletonContainer;
 import com.sun.enterprise.deployment.EjbDescriptor;
-
-// For auto-deploying EJBTimerService
-import com.sun.ejb.containers.EjbContainerUtil;
-import com.sun.ejb.containers.EjbContainerUtilImpl;
-import com.sun.ejb.containers.EJBTimerService;
-import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.security.PolicyLoader;
 import com.sun.enterprise.security.SecurityUtil;
-import com.sun.enterprise.v3.common.PlainTextActionReporter;
-import org.glassfish.api.ActionReport;
-import org.glassfish.api.admin.CommandRunner;
-import org.glassfish.internal.api.ServerContext;
-import org.glassfish.internal.deployment.Deployment;
-
-import java.io.File;
-import java.util.Properties;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-// For auto-deploying EJBTimerService
+import org.glassfish.ejb.security.application.EJBSecurityManager;
+import org.glassfish.ejb.security.factory.EJBSecurityManagerFactory;
 
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.ApplicationContext;
@@ -54,19 +43,27 @@ import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.OpsParams;
-import org.glassfish.ejb.security.application.EJBSecurityManager;
-import org.glassfish.ejb.security.factory.EJBSecurityManagerFactory;
+import org.glassfish.deployment.common.DeploymentException;
+
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import org.glassfish.api.deployment.DeployCommandParameters;
-import org.glassfish.api.deployment.OpsParams;
-import org.glassfish.deployment.common.DeploymentException;
+// For auto-deploying EJBTimerService
+import com.sun.ejb.containers.EjbContainerUtil;
+import com.sun.ejb.containers.EjbContainerUtilImpl;
+import com.sun.ejb.containers.EJBTimerService;
+import com.sun.enterprise.deployment.Application;
+import org.glassfish.api.ActionReport;
+import org.glassfish.internal.api.ServerContext;
+import org.glassfish.internal.deployment.Deployment;
+import org.glassfish.internal.deployment.ExtendedDeploymentContext;
+
+import java.io.File;
+import java.io.IOException;
+// For auto-deploying EJBTimerService
 
 /**
  * Ejb container service
@@ -295,8 +292,7 @@ public class EjbApplication
                 boolean isRegistered = deployment.isRegistered("ejb-timer-service-app");
 
                 if (isRegistered) {
-                    logger.log (Level.FINE, 
-                            "EJBTimerService is already deployed and will be loaded later.");
+                    logger.log (Level.WARNING, "EJBTimerService had been explicitly deployed.");
                     return;
                 }
 
@@ -304,24 +300,28 @@ public class EjbApplication
 
                 ServerContext sc = habitat.getByContract(ServerContext.class);
                 File root = sc.getInstallRoot();
-                File app = new File(root, 
+                File app = new File(root,
                         "lib/install/applications/ejb-timer-service-app.war");
+
+                ActionReport report = habitat.getComponent(ActionReport.class, "plain");
+                DeployCommandParameters params = new DeployCommandParameters(app);
+                params.name = "ejb-timer-service-app";
+
                 if (!app.exists()) {
                     throw new RuntimeException("Failed to deploy EJBTimerService: " + 
                             "required WAR file (ejb-timer-service-app.war) is not installed");
                 }
 
-                Properties params = new Properties();
-                params.put("path", app.getAbsolutePath()); 
+                try {
+                    ExtendedDeploymentContext dc = deployment.getContext(logger, app, params);
+                    deployment.deploy(dc, report);
 
-                ActionReport report = new PlainTextActionReporter();
-                CommandRunner cr = habitat.getComponent(CommandRunner.class);
-
-                cr.doCommand("deploy", params, report);
-
-                if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
-                    throw new RuntimeException("Failed to deploy EJBTimerService: " + 
-                            report.getFailureCause());
+                    if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
+                        throw new RuntimeException("Failed to deploy EJBTimerService: " +
+                                report.getFailureCause());
+                    }
+                } catch (IOException ioe) {
+                    throw new RuntimeException("Failed to deploy EJBTimerService: " + ioe);
                 }
             }
         }
