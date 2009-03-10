@@ -1,6 +1,0 @@
-<project>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>javax.transaction</groupId>
-  <artifactId>transaction-api</artifactId>
-  <version>@VERSION@</version>
-</project>
