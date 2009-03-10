@@ -88,7 +88,7 @@ public class Application extends RootDeploymentDescriptor
     private String generatedXMLDir;
 
     // Set of modules in this application
-    private Set<ModuleDescriptor<BundleDescriptor>> modules = new HashSet<ModuleDescriptor<BundleDescriptor>>();
+    private Set<ModuleDescriptor<BundleDescriptor>> modules = new OrderedSet<ModuleDescriptor<BundleDescriptor>>();
 
     // IASRI 4645310
     /**
@@ -377,7 +377,7 @@ public class Application extends RootDeploymentDescriptor
      */
     public Set<Role> getAppRoles() {
         if (this.appRoles == null) {
-            this.appRoles = new OrderedSet<Role>();
+            this.appRoles = new HashSet<Role>();
         }
         return this.appRoles;
     }
@@ -918,7 +918,7 @@ public class Application extends RootDeploymentDescriptor
         if (type == null) {
             return null;
         }
-        Set<T> bundleSet = new HashSet<T>();
+        Set<T> bundleSet = new OrderedSet<T>();
         for (ModuleDescriptor aModule : getModules()) {
             try {
                 T descriptor = type.cast(aModule.getDescriptor());
@@ -939,7 +939,7 @@ public class Application extends RootDeploymentDescriptor
      * @return the set of bundle descriptors
      */
     public Set<BundleDescriptor> getBundleDescriptors() {
-        Set<BundleDescriptor> bundleSet = new HashSet<BundleDescriptor>();
+        Set<BundleDescriptor> bundleSet = new OrderedSet<BundleDescriptor>();
         for (ModuleDescriptor<BundleDescriptor> aModule :  getModules()) {
             if (aModule.getDescriptor() != null) {
                 bundleSet.add(aModule.getDescriptor());
@@ -1262,7 +1262,7 @@ public class Application extends RootDeploymentDescriptor
      * AppCLient JAR).
      */
     public Set getArchivableDescriptors() {
-        Set archivableDescriptors = new HashSet();
+        Set archivableDescriptors = new OrderedSet();
         archivableDescriptors.addAll(getBundleDescriptors());
         return archivableDescriptors;
     }
