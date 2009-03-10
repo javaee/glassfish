@@ -131,7 +131,7 @@ public class EmbeddedDeployer {
      * @param virtualServer the virtual server ID
      * @throws EmbeddedException
      */
-    public void deployScattered(ScatteredWar war, String contextRoot, String virtualServer) throws EmbeddedException {
+    public void deploy(ReadableArchive war, String contextRoot, String virtualServer) throws EmbeddedException {
         Properties params = new Properties();
         if (virtualServer == null) {
             virtualServer = "server";
@@ -151,8 +151,8 @@ public class EmbeddedDeployer {
      * @param contextRoot   the context root to use
      * @throws EmbeddedException
      */
-    public void deployScattered(ScatteredWar war, String contextRoot) throws EmbeddedException {
-        deployScattered(war, contextRoot, null);
+    public void deploy(ReadableArchive war, String contextRoot) throws EmbeddedException {
+        deploy(war, contextRoot, null);
     }
 
     /**
@@ -163,9 +163,9 @@ public class EmbeddedDeployer {
      * @param war           the scattered war
      * @throws EmbeddedException
      */
-    public void deployScattered(ScatteredWar war) throws EmbeddedException {
-        deployScattered(war, null, null);
-    }
+    //public void deployScattered(ScatteredWar war) throws EmbeddedException {
+    //    deployScattered(war, null, null);
+    //}
      /*
       * undeploy the app that was deployed by this deployer with the given name.
       * @param name the name of the app

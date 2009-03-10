@@ -95,19 +95,19 @@ Same example but listen at port 80 instead of the default 8080
 java -jar glassfish-embedded-all-3.0-Prelude-SNAPSHOT.jar -p 80 myapp.war
 
 
-Description                                    Long Name      Short Name   Default  Required
+Description                                    Long Name      Short Name   Default
 
-HTTP Port                                      --port         -p           8080     true
-Filesystem Installation Directory              --installDir   -d                    false
-Filesystem Instance Directory                  --instanceDir  -i                    false
-domain.xml filename or URL                     --xml          -x                    false
-Admin HTTP                                     --adminport    -q           4848     true
-JMX System Connector Port                      --jmxport      -j           8686     true
-Help                                           --help         -h           false    true
-Turn on the AutoDeploy Service                 --autodeploy   -b           false    true
-Verbose Mode                                   --verbose      -v           true     true
-Send logging to instance-root/logs/server.log  --log          -l           true     true
-Automatically delete Filesystem                --autodelete   -a           true     true
+HTTP Port                                      --port         -p           8080
+Filesystem Installation Directory              --installDir   -d               
+Filesystem Instance Directory                  --instanceDir  -i               
+domain.xml filename or URL                     --xml          -x               
+Admin HTTP                                     --adminport    -q           4848
+JMX System Connector Port                      --jmxport      -j           8686
+Help                                           --help         -h           false
+Turn on the AutoDeploy Service                 --autodeploy   -b           false
+Verbose Mode                                   --verbose      -v           true 
+Send logging to instance-root/logs/server.log  --log          -l           true 
+Automatically delete Filesystem                --autodelete   -a           true 
 </xmp>
  *
  *

@@ -51,7 +51,6 @@ public class CommandExecutorTest {
         catch(Exception e) {
             // expected...
         }
-        ce = new CommandExecutor(myGF);
     }
 
     @AfterClass
@@ -67,18 +66,19 @@ public class CommandExecutorTest {
 
     @After
     public void tearDown() {
-        options.clear();
     }
 
     @Test
     public void testCreateJdbcConnectionPoolSuccess() {
-        options.setProperty("datasourceclassname", "org.apache.derby.jdbc.ClientDataSource");
-        options.setProperty("isisolationguaranteed", "false");
-        options.setProperty("restype", "javax.sql.DataSource");
-        options.setProperty("property", "PortNumber=1527:Password=APP:User=APP:serverName=localhost:DatabaseName=sun-appserv-samples:connectionAttributes=\\;create\\\\=true");
-        options.setProperty("DEFAULT", "DerbyPool");
+        CommandExecution ce = null;
+        CommandParameters cp = new CommandParameters();
+        cp.setOperand("DerbyPool");
+        cp.setOption("datasourceclassname", "org.apache.derby.jdbc.ClientDataSource");
+        cp.setOption("isisolationguaranteed", "false");
+        cp.setOption("restype", "javax.sql.DataSource");
+        cp.setOption("property", "PortNumber=1527:Password=APP:User=APP:serverName=localhost:DatabaseName=sun-appserv-samples:connectionAttributes=\\;create\\\\=true");
         try {
-            ce.execute("create-jdbc-connection-pool", options);
+            ce = myGF.execute("create-jdbc-connection-pool", cp);
         } catch (Exception ex) {
             LoggerHelper.severe("testCreateJdbcConnectionPoolSuccess failed");
             ex.printStackTrace();
@@ -89,10 +89,13 @@ public class CommandExecutorTest {
 
     @Test
     public void testCreateJdbcResourceSuccess() {
-        options.setProperty("connectionpoolid", "DerbyPool");
-        options.setProperty("DEFAULT", "jdbc/__default");
+        CommandExecution ce = null;
+        CommandParameters cp = new CommandParameters();
+        cp.setOperand("jdbc/__default");
+        cp.setOption("connectionpoolid", "DerbyPool");
+
         try {
-            ce.execute("create-jdbc-resource", options);
+            ce = myGF.execute("create-jdbc-resource", cp);
         } catch (Exception ex) {
             LoggerHelper.severe("testCreateJdbcResourceSuccess failed");
             ex.printStackTrace();
@@ -103,9 +106,11 @@ public class CommandExecutorTest {
 
     @Test
     public void testDeleteJdbcResourceSuccess() {
-        options.setProperty("DEFAULT", "jdbc/__default");
+        CommandExecution ce = null;
+        CommandParameters cp = new CommandParameters();
+        cp.setOperand("jdbc/__default");
         try {
-            ce.execute("delete-jdbc-resource", options);
+            ce = myGF.execute("delete-jdbc-resource", cp);
         } catch (Exception ex) {
             LoggerHelper.severe("testDeleteJdbcResourceSuccess failed");
             ex.printStackTrace();
@@ -116,9 +121,11 @@ public class CommandExecutorTest {
 
     @Test
     public void testDeleteJdbcConnectionPoolSuccess() {
-        options.setProperty("DEFAULT", "DerbyPool");
+        CommandExecution ce = null;
+        CommandParameters cp = new CommandParameters();
+        cp.setOperand("DerbyPool");
         try {
-            ce.execute("delete-jdbc-connection-pool", options);
+            ce = myGF.execute("delete-jdbc-connection-pool", cp);
         } catch (Exception ex) {
             LoggerHelper.severe("testDeleteJdbcConnectionPoolSuccess failed");
             ex.printStackTrace();
@@ -131,9 +138,11 @@ public class CommandExecutorTest {
     public void testCreateJdbcConnectionPoolFail() throws EmbeddedException {
         System.out.println("Negative Test: CommandExecutorTest testCreateJdbcConnectionPoolFail()");
         System.out.println("Severe messages expected...");
-        options.setProperty("DEFAULT", "poolA");
+        CommandExecution ce = null;
+        CommandParameters cp = new CommandParameters();
+        cp.setOperand("poolA");
         try {
-            ce.execute("create-jdbc-connection-pool", options);
+            ce = myGF.execute("create-jdbc-connection-pool", cp);
         } catch (EmbeddedException ee) {
             System.out.println("Expected Exception: " + ee.getLocalizedMessage());
             throw ee;
@@ -149,19 +158,25 @@ public class CommandExecutorTest {
         System.out.println("CommandExecutorTest testDeploySuccess()");
         File file = SmartFile.sanitize(new File("target/test-classes/simple.war"));
         assertTrue(file.exists());
+        CommandExecution ce = null;
+        CommandExecution ce2 = null;
         try {
-            options.setProperty("DEFAULT", file.getCanonicalPath());
-            options.setProperty("force", "true");
-            ce.execute("deploy", options);
-            options.clear();
-            options.setProperty("DEFAULT", "simple");
-            ce.execute("undeploy", options);
+            CommandParameters cp = new CommandParameters();
+            cp.setOperand(file.getCanonicalPath());
+            cp.setOption("force", "true");
+            ce = myGF.execute("deploy", cp);
+
+            CommandParameters cp2 = new CommandParameters();
+            cp2.setOperand("simple");
+            ce2 = myGF.execute("undeploy", cp2);
+            
         } catch (Exception ex) {
             LoggerHelper.severe("testDeploySuccess failed");
             ex.printStackTrace();
             fail();
         }
         assertEquals(ActionReport.ExitCode.SUCCESS, ce.getExitCode());
+        assertEquals(ActionReport.ExitCode.SUCCESS, ce2.getExitCode());
 
         try {
             Socket socket = new Socket("localhost", 4848);
@@ -181,9 +196,11 @@ public class CommandExecutorTest {
         System.out.println("Negative Test: CommandExecutorTest testDeployFail()");
         System.out.println("Severe messages expected...");
         String file = "foo";
-        options.setProperty("DEFAULT", file);
+        CommandExecution ce = null;
+        CommandParameters cp = new CommandParameters();
+        cp.setOperand(file);
         try {
-            ce.execute("deploy", options);
+            ce = myGF.execute("deploy", cp);
         } catch (EmbeddedException ee) {
             System.out.println("Expected Exception: " + ee.getLocalizedMessage());
             throw ee;
@@ -196,12 +213,16 @@ public class CommandExecutorTest {
 
     @Test
     public void testCreateSystemPropertiesSuccess() {
-        options.setProperty("DEFAULT", "HTTP_LISTENER_PORT=38080:HTTP_SSL_LISTENER_PORT=38181");
+        CommandExecution ce = null;
+        CommandParameters cp = new CommandParameters();
+        cp.setOperand("HTTP_LISTENER_PORT=38080:HTTP_SSL_LISTENER_PORT=38181");
+        
         try {
-            ce.execute("create-system-properties", options);
+            ce = myGF.execute("create-system-properties", cp);
             assertEquals(ActionReport.ExitCode.SUCCESS, ce.getExitCode());
-            options.clear();
-            ce.execute("list-system-properties", options);
+            
+            CommandExecution ce2 = myGF.execute("list-system-properties", new CommandParameters());
+            assertEquals(ActionReport.ExitCode.SUCCESS, ce2.getExitCode());
             //java.util.List<ActionReport.MessagePart> l = ce.getReport().getTopMessagePart().getChildren();
             //assertEquals("HTTP_LISTENER_PORT=38080",l.get(0).getMessage());
         } catch (Exception ex) {
@@ -209,10 +230,7 @@ public class CommandExecutorTest {
             ex.printStackTrace();
             fail();
         }
-        assertEquals(ActionReport.ExitCode.SUCCESS, ce.getExitCode());
     }
 
-    private Properties options = new Properties();
-    private static CommandExecutor ce;
     private static Server myGF;
 }

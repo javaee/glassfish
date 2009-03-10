@@ -58,6 +58,7 @@ import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
+import com.sun.enterprise.v3.admin.CommandRunner;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import com.sun.enterprise.web.EmbeddedWebContainer;
 import com.sun.enterprise.web.VirtualServer;
@@ -70,6 +71,7 @@ import org.apache.catalina.Engine;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.servlets.DefaultServlet;
 import org.glassfish.embed.impl.EmbeddedModulesRegistryImpl;
+import org.glassfish.api.ActionReport;
 import org.glassfish.api.Startup;
 import org.glassfish.internal.api.Init;
 import org.jvnet.hk2.component.Habitat;
@@ -189,18 +191,61 @@ public class Server {
         }
     }
 
-    /**
-     *
-     * @return A CommndExecutor instance ready for accepting commands.
-     * @throws EmbeddedException
-     * @see CommandExecutor
-     */
-    public synchronized CommandExecutor getCommandExecutor() throws EmbeddedException {
-        mustBeStarted("getCommandExecutor");
+   /**
+    * Executes the provided command.  If the command fails, EmbeddedException is thrown.
+    *
+    * <xmp>
+    *   String commandName = "create-jdbc-connection-pool"
+    *   Properties options = new Properties();
+    *   options.setProperty("datasourceclassname", "org.apache.derby.jdbc.ClientDataSource");
+    *   options.setProperty("isisolationguaranteed", "false");
+    *   options.setProperty("restype", "javax.sql.DataSource");
+    *   options.setProperty("property", "PortNumber=1527:Password=APP:User=APP:serverName=localhost:DatabaseName=sun-appserv-samples:connectionAttributes=\\;create\\\\=true");
+    *   options.setProperty("DEFAULT", "DerbyPool");
+    *
+    *   ce.execute(commandName, options);
+    *</xmp>
+    *
+    * @param commandName name of the command (e.g. "create-jdbc-resource")
+    * @param options name/value pairs of the command options (e.g. connectionpoolid=DerbyPool)
+    *  For operand use "DEFAULT" as the key name. (e.g. name of the JDBC resource, DEFAULT=jdbcA)
+    * @throws EmbeddedException
+    */
+    public CommandExecution execute(String commandName, CommandParameters params) throws EmbeddedException {
+        mustBeStarted("execute");
+    
+        CommandExecution ce = new CommandExecution();
+        ActionReport report = ce.getActionReport();
+        try {
+             
+             this.getHabitat().getComponent(CommandRunner.class).doCommand(commandName, params.getParams(), report);
+             
+        } catch (Throwable t) {
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setFailureCause(t);
+            report.setMessage(t.getLocalizedMessage());
+            report.setActionDescription("Last-chance CommandExecutor exception handler");
+        }
 
-        if(ce == null)
-            ce = new CommandExecutor(this);
+        ActionReport.ExitCode exitCode = report.getActionExitCode();
+        String msg = report.getMessage();
+        Throwable t  = report.getFailureCause();
 
+        if (exitCode.equals(exitCode.SUCCESS)) {
+            LoggerHelper.info("command_successful", commandName);
+            if (msg!=null)
+                LoggerHelper.info(msg);
+        } else if (exitCode.equals(exitCode.FAILURE)) {
+            LoggerHelper.severe("command_failed", commandName);
+            if (msg!=null)
+                LoggerHelper.severe(msg);
+
+            if (t == null) {
+                throw new EmbeddedException("command_failed", commandName);
+            } else {
+                throw new EmbeddedException(StringHelper.get("command_failed", commandName), t);
+            }
+        }
         return ce;
     }
     
@@ -212,7 +257,7 @@ public class Server {
      * @return Engine
      * @throws EmbeddedException
      */
-    public Engine getEngine() throws EmbeddedException {
+    Engine getEngine() throws EmbeddedException {
         mustBeStarted("getEngine");
         Engine engine = wc.getEngine();
 
@@ -743,7 +788,6 @@ public class Server {
     private Document                    domainXmlDocument;
     private EmbeddedFileSystem          efs;
     private EmbeddedInfo                info;
-    private CommandExecutor             ce;
     private static Map<String, Server>  servers         = new HashMap<String, Server>();
 }
 
