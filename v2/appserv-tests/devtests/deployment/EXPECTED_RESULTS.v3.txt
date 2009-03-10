@@ -1,7 +1,7 @@
 Results of deployment dev tests with v3
 ===========================================================
 
-PASS: 29
+PASS: 31
 FAIL: 0
 UNKNOWN: 0
 
@@ -32,7 +32,7 @@ UNKNOWN: 0
 [PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after redeploy
 [PASSED] earwithwar : ear/earwithwar Test asadmin deploy (server)
 [PASSED] earwithwar : ear/earwithwar Test asadmin redeploy (server)
+[PASSED] earwithwar : ear/earwithwar Test asadmin disable (server)  
+[PASSED] earwithwar : ear/earwithwar Test asadmin enable (server) 
 [PASSED] libClassPath : libClasspath Test asadmin deploy (server)
 [PASSED] manifestClassPath : libClasspath Test asadmin deploy (server)
-
-
