@@ -262,23 +262,21 @@ public class ApplicationLifecycle implements Deployment {
                 // now were falling back into the mainstream loading/starting sequence, at this
                 // time the containers are set up, all the modules have been prepared in their
                 // associated engines and the application info is created and registered
-                appInfo.setLibraries(commandParams.libraries());
-
-                try {
-                    appInfo.load(context, report, tracker);
-                } catch(Exception loadException) {
-                    report.failure(logger, "Exception while loading the app", loadException);
-                    tracker.actOn(logger);
-                    if (!alreadyRegistered) {
-                        appRegistry.remove(appName);    
-                    }
-                    return null;
-                }
-
-                // if enable attribute is set to true
-                // we start the application
+                 // if enable attribute is set to true
+                 // we load and start the application
                 if (commandParams.enabled) {
-                    appInfo.start(context, report, tracker);
+                    appInfo.setLibraries(commandParams.libraries());
+                    try {
+                        appInfo.load(context, report, tracker);
+                        appInfo.start(context, report, tracker);
+                    } catch(Exception loadException) {
+                        report.failure(logger, "Exception while loading the app", loadException);
+                        tracker.actOn(logger);
+                        if (!alreadyRegistered) {
+                            appRegistry.remove(appName);    
+                        }
+                        return null;
+                    }
                 }
                 return appInfo;
             } finally {
