@@ -45,6 +45,7 @@ import com.sun.grizzly.arp.DefaultAsyncHandler;
 import com.sun.grizzly.arp.AsyncHandler;
 import com.sun.grizzly.arp.AsyncFilter;
 import com.sun.logging.LogDomains;
+import java.lang.management.ManagementFactory;
 import java.util.LinkedList;
 
 import java.util.concurrent.TimeUnit;
@@ -155,10 +156,22 @@ public class GrizzlyListenerConfigurator {
             configureComet(grizzlyEmbeddedHttp);       
         }
 
-        // Idle Threads cannot be alive more than 15 minutes....
-        // Must be 5 minutes, but until we officially supports that feature
-        // Set it to 15 minutes so debugging session are killed
-        grizzlyEmbeddedHttp.setTransactionTimeout(15 * 60 * 1000);
+        List<String> l = ManagementFactory.getRuntimeMXBean().getInputArguments();
+        boolean debugMode = false;
+        for (String s: l){
+            if (s.trim().startsWith("-Xrunjdwp:")){
+                debugMode = true;
+                break;
+            }
+        }
+
+        if (!debugMode){
+            // Idle Threads cannot be alive more than 15 minutes by default
+            grizzlyEmbeddedHttp.setTransactionTimeout(15 * 60 * 1000);
+        } else {
+            // Disable the mechanism
+            grizzlyEmbeddedHttp.setTransactionTimeout(-1);
+        }
     }      
     
     
