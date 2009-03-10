@@ -73,8 +73,8 @@ public class EjbBundleDescriptor extends BundleDescriptor {
     private ResourceReferenceDescriptor cmpResourceReference;
 
     // Application exceptions defined for the ejbs in this module.
-    private Set<EjbApplicationExceptionInfo> applicationExceptions =
-        new HashSet<EjbApplicationExceptionInfo>();
+    private Map<String, EjbApplicationExceptionInfo> applicationExceptions =
+        new HashMap<String, EjbApplicationExceptionInfo>();
 
     private static LocalStringManagerImpl localStrings =
 	    new LocalStringManagerImpl(EjbBundleDescriptor.class);
@@ -149,11 +149,11 @@ public class EjbBundleDescriptor extends BundleDescriptor {
     }
 
     public void addApplicationException(EjbApplicationExceptionInfo appExc) {
-        applicationExceptions.add(appExc);
+        applicationExceptions.put(appExc.getExceptionClassName(), appExc);
     }
 
-    public Set<EjbApplicationExceptionInfo> getApplicationExceptions() {
-        return new HashSet<EjbApplicationExceptionInfo>(applicationExceptions);
+    public Map<String, EjbApplicationExceptionInfo> getApplicationExceptions() {
+        return new HashMap<String, EjbApplicationExceptionInfo>(applicationExceptions);
     }
      
     /**

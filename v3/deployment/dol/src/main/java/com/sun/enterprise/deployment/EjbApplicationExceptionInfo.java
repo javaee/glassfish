@@ -55,7 +55,7 @@ public class EjbApplicationExceptionInfo implements Serializable
 
     private String exceptionClassName;
     private boolean rollback;
-    private boolean inherited;
+    private boolean inherited = true;
 
     public void setExceptionClassName(String className) {
         exceptionClassName = className;

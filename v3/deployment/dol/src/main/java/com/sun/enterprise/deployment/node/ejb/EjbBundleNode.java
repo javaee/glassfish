@@ -323,7 +323,7 @@ public class EjbBundleNode extends BundleNode<EjbBundleDescriptor> {
        }
        
        for(EjbApplicationExceptionInfo next : 
-               bundleDescriptor.getApplicationExceptions()) {
+               bundleDescriptor.getApplicationExceptions().values()) {
 
            EjbApplicationExceptionNode node = new EjbApplicationExceptionNode();
            

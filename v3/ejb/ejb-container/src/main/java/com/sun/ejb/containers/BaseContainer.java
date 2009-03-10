@@ -4490,13 +4490,22 @@ public abstract class BaseContainer
                || exception instanceof Error
                || exception instanceof RemoteException ) ) {
 
-            String exceptionClassName = exception.getClass().getName();
-            for(EjbApplicationExceptionInfo excepInfo : ejbDescriptor.
-                    getEjbBundleDescriptor().getApplicationExceptions()) {
-                if( exceptionClassName.equals
-                    (excepInfo.getExceptionClassName()) ) {
-                    return false;
+            Class clazz = exception.getClass();
+            String exceptionClassName = clazz.getName();
+            Map<String, EjbApplicationExceptionInfo> appExceptions = 
+                    ejbDescriptor.getEjbBundleDescriptor().getApplicationExceptions();
+            while (clazz != null) {
+                String eClassName = clazz.getName();
+                if (appExceptions.containsKey(eClassName)) {
+                    if( exceptionClassName.equals(eClassName)) {
+                        // Exact exception is specified as an ApplicationException
+                        return false;
+                    } else {
+                        // Superclass exception is not inherited
+                        return !appExceptions.get(eClassName).getInherited();
+                    }
                 }
+                clazz = clazz.getSuperclass();
             }
 
             return true;
@@ -4516,14 +4525,22 @@ public abstract class BaseContainer
 
         if ( exception != null ) {
 
-            String exceptionClassName = exception.getClass().getName();
-            for(EjbApplicationExceptionInfo excepInfo : ejbDescriptor.
-                    getEjbBundleDescriptor().getApplicationExceptions()) {
-                if( exceptionClassName.equals
-                    (excepInfo.getExceptionClassName()) ) {
-                    appExceptionRequiringRollback = excepInfo.getRollback();
+            Class clazz = exception.getClass();
+            String exceptionClassName = clazz.getName();
+            Map<String, EjbApplicationExceptionInfo> appExceptions = 
+                    ejbDescriptor.getEjbBundleDescriptor().getApplicationExceptions();
+            while (clazz != null) {
+                String eClassName = clazz.getName();
+                if (appExceptions.containsKey(eClassName)) {
+                    if( exceptionClassName.equals(eClassName) ||
+                            appExceptions.get(eClassName).getInherited() == true) {
+                        // Exact exception is specified as an ApplicationException
+                        // or superclass exception is inherited
+                        appExceptionRequiringRollback = appExceptions.get(eClassName).getRollback();
+                    }
                     break;
                 }
+                clazz = clazz.getSuperclass();
             }
         }
 
