@@ -114,6 +114,23 @@ public class ScheduledTimerDescriptor extends DescribableDescriptor {
         return timeoutMethod_;
     }
 
+    public String toString() {
+        return "ScheduledTimerDescriptor [second=" + second_
+                + ";minute=" + minute_
+                + ";hour=" + hour_
+                + ";dayOfMonth=" + dayOfMonth_
+                + ";month=" + month_
+                + ";dayOfWeek=" + dayOfWeek_
+                + ";year=" + year_
+                + ";timezoneID=" + timezoneID_
+                + ";start=" + start_
+                + ";end=" + end_
+                + ";" + timeoutMethod_ //MethodDescriptor prints it's name
+                + ";persistent=" + persistent_ 
+                + ";info=" + info_ 
+                + "]";
+    }
+
 
     private String second_ = "0";
     private String minute_ = "0";
