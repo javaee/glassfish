@@ -83,13 +83,12 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
         final ActionReport report = context.getActionReport();
         final Logger logger = context.getLogger();
 
-        ApplicationInfo appInfo = deployment.get(name());
-        if (appInfo==null) {
+        if (!deployment.isRegistered(name())) {
             report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", name()));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
-        }
 
+        }
         // return if the application is already in disabled state
         if (!Boolean.valueOf(ConfigBeansUtilities.getEnabled(target,
             name()))) {
@@ -97,9 +96,11 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
             return;
         }
 
+        ApplicationInfo appInfo = deployment.get(name());
+
         try {
             final ExtendedDeploymentContext deploymentContext =
-                    deployment.getContext(logger, (ReadableArchive) null, this);
+                    deployment.getContext(logger, appInfo.getSource(), this);
 
             appInfo.unload(deploymentContext, report);
 
