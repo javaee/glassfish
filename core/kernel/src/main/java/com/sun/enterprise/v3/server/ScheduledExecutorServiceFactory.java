@@ -7,6 +7,7 @@ import org.jvnet.hk2.component.ComponentException;
 
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * Factory to create the scheduled executor service
@@ -18,6 +19,13 @@ import java.util.concurrent.Executors;
 public class ScheduledExecutorServiceFactory implements Factory {
     
     public Object getObject() throws ComponentException {
-        return Executors.newSingleThreadScheduledExecutor();
+        return Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+                        public Thread newThread(Runnable r) {
+                            Thread t = Executors.defaultThreadFactory().newThread(r);
+                            t.setDaemon(true);
+                            return t;
+                        }
+                    }
+                );
     }
 }

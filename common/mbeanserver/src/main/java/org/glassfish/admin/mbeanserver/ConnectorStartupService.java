@@ -52,6 +52,7 @@ import org.glassfish.api.Startup;
 import org.glassfish.api.Async;
 
 import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.annotations.Inject;
 
@@ -81,7 +82,7 @@ import java.io.IOException;
  */
 @Service
 @Async
-public final class ConnectorStartupService implements Startup, PostConstruct {
+public final class ConnectorStartupService implements Startup, PostConstruct, PreDestroy {
     private static void debug( final String s ) { System.out.println( "### " + s); }
     
     @Inject
@@ -94,6 +95,7 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
     Habitat mHabitat;
     
     private volatile Booter mBooter;
+    private JMXConnectorServer jmxServer;
 
     public ConnectorStartupService()
     {
@@ -110,8 +112,18 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
     
         final List<JmxConnector> configuredConnectors = mAdminService.getJmxConnector();
         
-        final ConnectorsStarterThread starter = new ConnectorsStarterThread( mMBeanServer, configuredConnectors, mBooter);
+        final ConnectorsStarterThread starter = new ConnectorsStarterThread( mMBeanServer, configuredConnectors, mBooter, this);
         starter.start();
+    }
+
+    public void preDestroy() {
+        if (jmxServer != null) {
+            try {
+                jmxServer.stop();
+            } catch (IOException ioe) {
+                Util.getLogger().log(java.util.logging.Level.INFO, "Unable to stop JMX connector server.", ioe);
+            }
+        }
     }
     
     /*
@@ -196,15 +208,18 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
         private final List<JmxConnector> mConfiguredConnectors;
         private final MBeanServer mMBeanServer;
         private final Booter      mAMXBooter;
+        private final ConnectorStartupService mService;
         
         public ConnectorsStarterThread(
             final MBeanServer mbs,
             final List<JmxConnector> configuredConnectors,
-            final Booter amxBooter)
+                        final Booter amxBooter,
+            final ConnectorStartupService service)
         {
             mMBeanServer = mbs;
             mConfiguredConnectors = configuredConnectors;
             mAMXBooter = amxBooter;
+            mService = service;
         }
         
         private static String toString( final JmxConnector c )
@@ -337,6 +352,7 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
                 try
                 {
                     final JMXConnectorServer server = startConnector(c);
+                    mService.jmxServer = server;
                 }
                 catch( final Throwable t )
                 {

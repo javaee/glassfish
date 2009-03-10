@@ -40,6 +40,7 @@ import com.sun.appserv.management.helper.AMXDebugHelper;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -118,7 +119,14 @@ public abstract class  RunnableBase<T> implements Runnable
         // Testing at startup shows that a thread pool equal in size to the number
         // of processors offers the best performance.  However, this can 'hang'
         // services that expect their threads to run once submitted.
-        return Executors.newCachedThreadPool();
+        return Executors.newCachedThreadPool(new ThreadFactory() {
+                        public Thread newThread(Runnable r) {
+                            Thread t = Executors.defaultThreadFactory().newThread(r);
+                            t.setDaemon(true);
+                            return t;
+                        }
+                    }
+                );
     }
     
     private static final ExecutorService   _DefaultExecutorService = createExecutorService();

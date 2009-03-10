@@ -57,11 +57,13 @@ import javax.xml.xpath.XPathFactory;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.bootstrap.StartupContext;
+import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import com.sun.enterprise.web.EmbeddedWebContainer;
 import com.sun.enterprise.web.VirtualServer;
 import com.sun.enterprise.web.WebContainer;
 import com.sun.enterprise.web.WebModule;
+import com.sun.hk2.component.LazyInhabitant;
 
 import org.apache.catalina.Container;
 import org.apache.catalina.Engine;
@@ -306,6 +308,17 @@ public class Server {
 
         for (Inhabitant<? extends Init> svc : habitat.getInhabitants(Init.class)) {
             svc.release();
+        }
+
+        // non-deamon threads still running, so call stop on AppServerStartup to stop server completely
+        Object svc = habitat.getInhabitantByType("com.sun.enterprise.v3.server.AppServerStartup");
+        if (svc instanceof LazyInhabitant) {
+            Object real = ((LazyInhabitant) svc).get((LazyInhabitant) svc);
+            if (real instanceof ModuleStartup) {
+                ((ModuleStartup) real).stop();
+            } else {
+                LoggerHelper.info("cant_stop_server", this.info.name);
+            }
         }
 
         started = false;
