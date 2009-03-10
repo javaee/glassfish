@@ -67,6 +67,20 @@
         </antcall>
     </target>
 
+    <target name="enable.asadmin">
+        <antcall target="common.enable.asadmin">
+            <param name="arg.list"
+                   value="${testName}"/>
+        </antcall>
+    </target>
+
+    <target name="disable.asadmin">
+        <antcall target="common.disable.asadmin">
+            <param name="arg.list"
+                   value="${testName}"/>
+        </antcall>
+    </target>
+
     <target name="deploy.jsr88" depends="prepare">
         <antcall target="common.deploy.jsr88">
             <param name="arg.list" value="${portable.ear} ${deployplan.jar}"/>
@@ -160,6 +174,19 @@
             <param name="log.id" value="2"/>
             <param name="desc" value="ear/earwithwar Test asadmin redeploy"/>
         </antcall>
+
+        <antcall target="disable.asadmin"/>
+        <antcall target="run.negative">
+            <param name="log.id" value="3"/>
+            <param name="desc" value="ear/earwithwar Test asadmin disable"/>
+        </antcall> 
+
+        <antcall target="enable.asadmin"/>
+        <antcall target="run.positive">
+            <param name="log.id" value="4"/>
+            <param name="desc" value="ear/earwithwar Test asadmin enable"/>
+        </antcall> 
+
         <antcall target="undeploy.asadmin"/>
 
 <!--
