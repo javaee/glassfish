@@ -86,15 +86,15 @@ import static org.glassfish.embed.util.ServerConstants.*;
  * <p/>
  * A <code>Server</code> object is constructed using an <code>EmbeddedInfo</code>
  * object.  Information about the server such as server name or HTTP port may be
- * set on {@link EmbeddedInfo}.  If no information is set, defaults are used.
- * The default server name is "server".  The default HTTP port is "8080".
+ * set on {@link EmbeddedInfo}.  If no information is set, "server" is the default
+ * server name, and no ports are set by default.
  * <p/>
  * <p/>
  * After the <code>Server</code> has been created, the <code>Server</code> can
  * be started.
  * <xmp>
  * EmbeddedInfo info = new EmbeddedInfo();
- * info.setHttpPort("22222"); // example.  The default is 8080
+ * info.setHttpPort("22222"); // example.
  * Server server = new Server(info);
  * server.start();
  * </xmp>
@@ -193,23 +193,27 @@ public class Server {
 
    /**
     * Executes the provided command.  If the command fails, EmbeddedException is thrown.
+    * Server must be started before executing commands on <code>Server</code>.
+    * Use <code>CommandParameters</code> to set the command operand and options.
+    * Use <code>CommandExecution</code> to get information about the execution,
+    * such as the exit code or message from the command execution.
     *
     * <xmp>
-    *   String commandName = "create-jdbc-connection-pool"
-    *   Properties options = new Properties();
-    *   options.setProperty("datasourceclassname", "org.apache.derby.jdbc.ClientDataSource");
-    *   options.setProperty("isisolationguaranteed", "false");
-    *   options.setProperty("restype", "javax.sql.DataSource");
-    *   options.setProperty("property", "PortNumber=1527:Password=APP:User=APP:serverName=localhost:DatabaseName=sun-appserv-samples:connectionAttributes=\\;create\\\\=true");
-    *   options.setProperty("DEFAULT", "DerbyPool");
-    *
-    *   ce.execute(commandName, options);
-    *</xmp>
+    * CommandParameters cp = new CommandParameters();
+    * cp.setOperand("DerbyPool");
+    * cp.setOption("datasourceclassname", "org.apache.derby.jdbc.ClientDataSource");
+    * cp.setOption("isisolationguaranteed", "false");
+    * cp.setOption("restype", "javax.sql.DataSource");
+    * cp.setOption("property", "PortNumber=1527:Password=APP:User=APP:serverName=localhost:DatabaseName=sun-appserv-samples:connectionAttributes=\\;create\\\\=true");
+    * CommandExecution ce = server.execute("create-jdbc-connection-pool", cp);
+    * </xmp>
     *
     * @param commandName name of the command (e.g. "create-jdbc-resource")
-    * @param options name/value pairs of the command options (e.g. connectionpoolid=DerbyPool)
-    *  For operand use "DEFAULT" as the key name. (e.g. name of the JDBC resource, DEFAULT=jdbcA)
+    * @param params <code>CommandParameters</code> with the command operand and
+    *  options set (e.g. setOption("connectionpoolid", "DerbyPool")).
+    *  For operand use <code>CommandParameters setOperand</code>. (e.g. name of the JDBC resource, setOperand("jdbcA"))
     * @throws EmbeddedException
+    * @see <a href="http://docs.sun.com/app/docs/doc/820-4495/gcode?a=view">asadmin commands</a>
     */
     public CommandExecution execute(String commandName, CommandParameters params) throws EmbeddedException {
         mustBeStarted("execute");
@@ -247,25 +251,6 @@ public class Server {
             }
         }
         return ce;
-    }
-    
-    /**
-     * Returns an <code>org.apache.catalina.Engine</code> object
-     * associated with this <code>Server</code> object.  Server must
-     * be started before calling getEngine().  If it is not started EmbeddedException
-     * is thrown.
-     * @return Engine
-     * @throws EmbeddedException
-     */
-    Engine getEngine() throws EmbeddedException {
-        mustBeStarted("getEngine");
-        Engine engine = wc.getEngine();
-
-        if (engine == null) {
-            throw new EmbeddedException("bad_engines");
-        }
-
-        return engine;
     }
 
     /**
@@ -461,6 +446,17 @@ public class Server {
         if (isStarted()) {
             throw new EmbeddedException("should_not_be_started", methodName);
         }
+    }
+    
+    Engine getEngine() throws EmbeddedException {
+        mustBeStarted("getEngine");
+        Engine engine = wc.getEngine();
+
+        if (engine == null) {
+            throw new EmbeddedException("bad_engines");
+        }
+
+        return engine;
     }
 
 

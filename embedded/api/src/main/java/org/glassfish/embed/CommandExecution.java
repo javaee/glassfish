@@ -5,40 +5,22 @@
 
 package org.glassfish.embed;
 
-import org.glassfish.embed.util.LoggerHelper;
-import org.glassfish.embed.util.StringHelper;
-import com.sun.enterprise.v3.admin.CommandRunner;
 import com.sun.enterprise.v3.common.PropsFileActionReporter;
 import org.glassfish.api.ActionReport;
-import java.util.Properties;
 
 /**
- * Generic API to execute asadmin CLI commands.
- * <p/>
- * <p/>
- * The {@link Server} must be started before constructing the <code>CommandExecution</code>
- * and executing commands.
+ * Holds information about the command execution, such as the exit code and
+ * message.
+ *
  * <xmp>
- * EmbeddedInfo ei = new EmbeddedInfo();
- * Server server = new Server(ei);
- * server.start();
  * CommandExecution ce = server.getCommandExecutor();
+ * ActionReport.ExitCode exitCode = ce.getExitCode();
+ * String msg = ce.getMessage();
  * </xmp>
  * @author Jennifer
  * @see <a href="http://docs.sun.com/app/docs/doc/820-4495/gcode?a=view">CLI commands</a>
  */
 public class CommandExecution {
-
-    /**
-     * Create <code>CommandExecution</code> object using a {@link Server} object
-     * that has already been started.
-     *
-     * @param server the server to execute commands on
-     * @throws org.glassfish.embed.EmbeddedException
-     */
-    CommandExecution() throws EmbeddedException {
-        report = new PropsFileActionReporter();
-    }
 
     /**
      * <code>org.glassfish.api.ActionReport</code> contains information about
@@ -68,8 +50,9 @@ public class CommandExecution {
 
     /**
      * Returns the exit code from the command execution.  This method is called
-     * after {@link execute} to retrieve an
-     * <code>org.glassfish.api.ActionReport.ExitCode</code> from the command.
+     * after <code>Server execute(String commandName, CommandParameters params)</code>
+     * to retrieve an <code>org.glassfish.api.ActionReport.ExitCode</code>
+     * from the command.
      * <ul>
      * <li>SUCCESS</li>
      * <li>FAILURE</li>
@@ -82,7 +65,8 @@ public class CommandExecution {
 
     /**
      * Returns the message if any from the command execution.  This method is
-     * called after {@link execute} to retrieve a message from the command.
+     * called after <code>Server execute(String commandName, CommandParameters params)</code>
+     * to retrieve a message from the command.
      * If this method returns an empty string, either no command was executed or
      * the command did not set any message on the <code>org.glassfish.api.ActionReport</code>
      *
@@ -106,5 +90,4 @@ public class CommandExecution {
     }
 
     private ActionReport report = new PropsFileActionReporter();
-    private ActionReport.ExitCode exitCode;
 }

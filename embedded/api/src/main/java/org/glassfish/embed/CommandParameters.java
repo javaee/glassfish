@@ -8,7 +8,7 @@ package org.glassfish.embed;
 import java.util.Properties;
 
 /**
- * Used in <code>Server.execute(String commandName, CommandParameters params)</code>
+ * Used in <code>Server execute(String commandName, CommandParameters params)</code>
  * to pass the <code>asadmin</code> command parameters.
  *
  * @author Jennifer
@@ -16,14 +16,21 @@ import java.util.Properties;
  */
 public class CommandParameters {
     /**
-     * Set the operand of an <code>asadmin</code> command to executed with
-     * <code>Server.execute(String commandName, CommandParameters params)</code>.
-     *
-     * For example, the operand of the <code>asadmin</code> command <code>create-jdbc-connection-pool</code>
-     * is <code>myConnPool</code>.  Call <code>setOperand("myConnPool")</code> to set the operand.
+     * Sets the operand of an <code>asadmin</code> command to be executed on
+     * <code>Server</code>.
      *
      * <xmp>
-     *  asadmin create-jdbc-connection-pool --datasourceclassname myDataSourceClass myConnPool
+     * CommandParameters cp = new CommandParameters();
+     * File myWar = new File("c:\samples\hello.war");
+     * cp.setOperand(myWar);
+     * CommandExecution ce = server.execute("deploy", cp);
+     * </xmp>
+     *
+     * The command is <code>deploy</code>. The operand is <code>myWar</code>
+     *
+     * <code>asadmin deploy</code> command:
+     * <xmp>
+     *  asadmin deploy c:\samples\hello.war
      * </xmp>
      * 
      * @param operand operand of an <code>asadmin</code> command
@@ -33,10 +40,16 @@ public class CommandParameters {
     }
 
     /**
-     * Set an option of an asadmin command to be executed with
-     * <code>Server.execute(String commandName, CommandParameters params)</code>.
+     * Set an option of an asadmin command to be executed on <code>Server</code>.
      *
-     * For example, an option of the <code>asadmin</code> command <code>create-jdbc-connection-pool</code>
+     * <xmp>
+     * CommandParameters cp = new CommandParameters();
+     * cp.setOperand("jdbc/__default");
+     * cp.setOption("connectionpoolid", "DerbyPool");
+     * ce = myGF.execute("create-jdbc-resource", cp);
+     * </xmp>
+     *
+     * An option of the <code>asadmin</code> command <code>create-jdbc-connection-pool</code>
      * is <code>datasourceclassname</code>.  Call <code>setOption("datasourceclassname", "myDataSourceClass")</code>
      * to set the <code>datasourceclassname</code> option.
      *
