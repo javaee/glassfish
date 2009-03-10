@@ -76,23 +76,31 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
 			FileOutputStream ois = new FileOutputStream ( new File(env.getConfigDirPath(), loggingPropertiesName));
 			props.store(ois,"GlassFish logging.properties list");
 			ois.close();
- //           fis.close();
 		} catch (FileNotFoundException e ) {
 			logger.log(Level.SEVERE, "Cannot close logging.properties file : ", e);
 			throw new IOException();
 		} catch (IOException e) {
-			System.out.println("some other exception");
+			//System.out.println("some other exception");
 			logger.log(Level.SEVERE, "Cannot close logging.properties file : ", e);
 			throw new IOException();			
 		}
 	}
+
+    private void setWebLoggers(String value) {
+        // set the rest of the web loggers to the same level
+        // these are only accessible via the web-container name so all values should be the same
+        String property= null;
+        property = (String) props.setProperty("org.apache.catalina.level", value);
+        property = (String) props.setProperty("org.apache.coyote.level", value);
+        property = (String) props.setProperty("org.apache.jasper.level", value);
+    }
 			
     /**
      *  setLoggingProperty() sets an existing propertyName to be propertyValue	
      *  if the property doesn't exist the property will be added.  The logManager 
 	 *  readConfiguration is not called in this method.
      
-     * @param propteryName Name of the property to set
+     * @param propertyName Name of the property to set
      * @param propertyValue  Value to set
      *
 	 * @throws  IOException     
@@ -109,6 +117,9 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
 		        key = propertyName;
             }
 			String property = (String) props.setProperty(key, propertyValue);
+            if (propertyName.equals(LoggingXMLNames.webcontainer)) {
+                setWebLoggers(propertyValue);
+            }
 	
 			closePropFile();
 			return  property;
@@ -120,9 +131,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
 	/* update the properties to new values.  properties is a Map of names of properties and 
 	 * their cooresponding value.  If the property does not exist then it is added to the
 	 * logging.properties file.  
-	 * 
-	 * The readConfiguration method is called on the logManager after updating the properties.  
-	 *	
+	 * 	 	
 	 * @param properties Map of the name and value of property to add or update
 	 *
 	 * @throws  IOException
@@ -142,19 +151,16 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
 					key = e.getKey();
                 }
     			String property = (String) props.setProperty(key, e.getValue());
+                if (e.getKey().equals(LoggingXMLNames.webcontainer)) {
+                    setWebLoggers(e.getValue());
+                }
+
     			//build Map of entries to return
                 m.put(key, property);
                 
 	    	}
 			closePropFile();
-		  /*
-			try {
-           		logMgr.readConfiguration();
-       		} catch(IOException e) {
-            	logger.log(Level.SEVERE, "Cannot reconfigure LogManager : ", e);
-            	throw new IOException();
-        	}
-        	*/
+
 		} catch (IOException ex) {
 			throw ex;
 		} catch (Exception e) {

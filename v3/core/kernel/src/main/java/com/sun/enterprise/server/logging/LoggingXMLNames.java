@@ -85,7 +85,7 @@ public class LoggingXMLNames {
     put(configuration, LogDomains.CONFIG_LOGGER+ ".level");
     put(naming, LogDomains.NAMING_LOGGER+ ".level");
     put(security, LogDomains.SECURITY_LOGGER+ ".level");
-  //  put(jts, LogDomains.
+    put(jts, LogDomains.TRANSACTION_LOGGER+".level");
     put(jta, LogDomains.JTA_LOGGER+ ".level");
     put(admin, LogDomains.ADMIN_LOGGER+ ".level");
     put(deployment, LogDomains.DPL_LOGGER+ ".level");

@@ -65,14 +65,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.*;
 
 /**
- * FileandSyslogHandler publishes formatted log Messages to a FILE.
+ * GFFileHandler publishes formatted log Messages to a FILE.
  * 
  * @AUTHOR: Jerome Dochez
+ * @AUTHOR: Carla Mott
  */
 @Service
 @Scoped(Singleton.class)
 @ContractProvided(java.util.logging.Handler.class)
-public class FileandSyslogHandler extends StreamHandler implements PostConstruct, PreDestroy {
+public class GFFileHandler extends StreamHandler implements PostConstruct, PreDestroy {
 
 
     @Inject
@@ -415,7 +416,7 @@ public class FileandSyslogHandler extends StreamHandler implements PostConstruct
      * when the limit is reached.
      */
     private void rotate( ) {
-        final FileandSyslogHandler thisInstance = this; 
+        final GFFileHandler thisInstance = this;
         java.security.AccessController.doPrivileged(
             new java.security.PrivilegedAction() {
                 public Object run( ) {

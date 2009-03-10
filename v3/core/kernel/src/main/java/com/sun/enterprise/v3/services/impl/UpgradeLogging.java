@@ -73,7 +73,8 @@ public class UpgradeLogging implements ConfigurationUpgrade, PostConstruct {
                         	//update logging.properties
                             logConfig.updateLoggingProperties(m);
                             
-                            //c.setLogService(null);
+                           // c.setLogService(null);
+
                         } catch (IOException e) {
                         	Logger.getAnonymousLogger().log(Level.SEVERE, "Failure while upgrading log-service. Could not update logging.properties file. ", e);
                         }
