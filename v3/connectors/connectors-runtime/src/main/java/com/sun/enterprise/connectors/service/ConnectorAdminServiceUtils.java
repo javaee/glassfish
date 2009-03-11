@@ -132,6 +132,7 @@ public class ConnectorAdminServiceUtils implements ConnectorConstants {
         return ((prefix == null) ? reservePrefixedJNDIName : reservePrefixedJNDIName.substring(prefix.length()));
     }
 
+    //TODO V3 is this right approach ? (just checking '#') ?
     public static boolean isEmbeddedConnectorModule(String moduleName) {
         return (moduleName.indexOf(ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER) != -1);
     }
