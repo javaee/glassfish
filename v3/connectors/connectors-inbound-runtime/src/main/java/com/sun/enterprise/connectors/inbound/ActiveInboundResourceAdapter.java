@@ -33,127 +33,17 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.connectors.inbound;
 
-import com.sun.enterprise.connectors.ActiveOutboundResourceAdapter;
-import com.sun.enterprise.deployment.ConnectorDescriptor;
+import com.sun.enterprise.connectors.ActiveResourceAdapter;
+import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
+import com.sun.enterprise.deployment.runtime.BeanPoolDescriptor;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
-import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 
-import javax.resource.spi.ResourceAdapter;
-import java.util.Hashtable;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.logging.Level;
-
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.PerLookup;
-
-/**
- * Represents the active (runtime) inbound resource-adapter
- */
-@Service
-@Scoped(PerLookup.class)
-public class ActiveInboundResourceAdapter extends ActiveOutboundResourceAdapter {
+import javax.resource.spi.ActivationSpec;
 
 
-    //beanID -> endpoint factory and its activation spec
-    private Hashtable<String, MessageEndpointFactoryInfo> factories_;
-
-
-    /**
-     * Creates an active inbound resource adapter. Sets all RA java bean
-     * properties and issues a start.
-     *
-     * @param ra         <code>ResourceAdapter<code> java bean.
-     * @param desc       <code>ConnectorDescriptor</code> object.
-     * @param moduleName Resource adapter module name.
-     * @param jcl        <code>ClassLoader</code> instance.
-     * @throws com.sun.appserv.connectors.internal.api.ConnectorRuntimeException
-     *          If there is a failure in loading
-     *          or starting the resource adapter.
-     */
-    public void init(ResourceAdapter ra, ConnectorDescriptor desc, String moduleName, ClassLoader jcl)
-            throws ConnectorRuntimeException {
-        super.init(ra, desc, moduleName, jcl);
-        this.factories_ = new Hashtable<String, MessageEndpointFactoryInfo>();
-    }
-
-    public ActiveInboundResourceAdapter() {
-    }
-
-    /**
-     * Destroys default pools and resources. Stops the Resource adapter
-     * java bean.
-     */
-    public void destroy() {
-        //it is possible that a 1.5 ra may not have connection-definition at all
-        if ((connectionDefs_ != null) && (connectionDefs_.length != 0)) {
-            deactivateEndPoints();
-            super.destroy();
-        }
-    }
-
-    private void deactivateEndPoints() {
-        if (resourceadapter_ != null) {
-            //deactivateEndpoints as well!
-            Iterator<MessageEndpointFactoryInfo> iter = getAllEndpointFactories().iterator();
-            while (iter.hasNext()) {
-                MessageEndpointFactoryInfo element = iter.next();
-                try {
-                    this.resourceadapter_.endpointDeactivation(
-                            element.getEndpointFactory(), element.getActivationSpec());
-                } catch (RuntimeException e) {
-                    _logger.warning(e.getMessage());
-                    _logger.log(Level.FINE, "Error during endpointDeactivation ", e);
-                }
-            }
-        }
-    }
-
-    /**
-     * Retrieves the information about all endpoint factories.
-     *
-     * @return a <code>Collection</code> of <code>MessageEndpointFactory</code>
-     *         objects.
-     */
-    public Collection<MessageEndpointFactoryInfo> getAllEndpointFactories() {
-        return factories_.values();
-    }
-
-
-    /**
-     * Returns information about endpoint factory.
-     *
-     * @param id Id of the endpoint factory.
-     * @return <code>MessageEndpointFactoryIndo</code> object.
-     */
-    public MessageEndpointFactoryInfo getEndpointFactoryInfo(String id) {
-        return factories_.get(id);
-    }
-
-    /*
-     * @return A set of Map.Entry that has the bean ID as the key
-     *         and the MessageEndpointFactoryInfo as value
-     *         A shallow copy only to avoid concurrency issues.
-     */
-    public Set getAllEndpointFactoryInfo() {
-        Hashtable infos = (Hashtable<String, MessageEndpointFactoryInfo>) factories_.clone();
-        return infos.entrySet();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public boolean handles(ConnectorDescriptor cd) {
-        //TODO V3 right assumption ?
-        //TODO V3 ignore JMS-RA
-        //TODO V3 later multiple JMS Ras will be present (ignore all)
-        return (cd.getInBoundDefined() && !(ConnectorConstants.DEFAULT_JMS_ADAPTER.equals(moduleName_)));
-    }
+public interface ActiveInboundResourceAdapter extends ActiveResourceAdapter {
 
     /**
      * Adds endpoint factory information.
@@ -161,10 +51,7 @@ public class ActiveInboundResourceAdapter extends ActiveOutboundResourceAdapter 
      * @param id   Unique identifier of the endpoint factory.
      * @param info <code>MessageEndpointFactoryInfo</code> object.
      */
-    public void addEndpointFactoryInfo(
-            String id, MessageEndpointFactoryInfo info) {
-        factories_.put(id, info);
-    }
+    public void addEndpointFactoryInfo(String id, MessageEndpointFactoryInfo info) ;
 
     /**
      * Removes information about an endpoint factory
@@ -172,8 +59,30 @@ public class ActiveInboundResourceAdapter extends ActiveOutboundResourceAdapter 
      * @param id Unique identifier of the endpoint factory to be
      *           removed.
      */
-    public void removeEndpointFactoryInfo(String id) {
-        factories_.remove(id);
-    }
+    public void removeEndpointFactoryInfo(String id);
 
+    /**
+     * Returns information about endpoint factory.
+     *
+     * @param id Id of the endpoint factory.
+     * @return <code>MessageEndpointFactoryIndo</code> object.
+     */
+    MessageEndpointFactoryInfo getEndpointFactoryInfo(String id);
+
+
+    /**
+     * update MDB container runtime properties
+     * @param descriptor_ MessageBean Descriptor
+     * @param poolDescriptor Bean pool descriptor
+     * @throws ConnectorRuntimeException
+     */
+    public void updateMDBRuntimeInfo(EjbMessageBeanDescriptor descriptor_,
+           BeanPoolDescriptor poolDescriptor) throws ConnectorRuntimeException ;
+
+
+    /**
+     * validate the activation-spec
+     * @param spec activation-spec
+     */
+    public void validateActivationSpec(ActivationSpec spec);
 }

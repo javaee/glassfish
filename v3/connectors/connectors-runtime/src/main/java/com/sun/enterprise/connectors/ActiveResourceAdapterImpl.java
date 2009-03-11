@@ -481,4 +481,14 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
     public ClassLoader getClassLoader() {
         return jcl_;
     }
+
+    /**
+     * Retrieves the resource adapter java bean.
+     *
+     * @return <code>ResourceAdapter</code>
+     */
+    public javax.resource.spi.ResourceAdapter getResourceAdapter() {
+        throw new UnsupportedOperationException("1.0 RA will not have ResourceAdapter bean");
+    }
+
 }

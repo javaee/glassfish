@@ -42,6 +42,7 @@ import com.sun.enterprise.deployment.MessageListener;
 import com.sun.enterprise.resource.ResourceHandle;
 import com.sun.enterprise.connectors.util.*;
 import com.sun.enterprise.connectors.*;
+import com.sun.enterprise.connectors.inbound.ActiveInboundResourceAdapter;
 import com.sun.logging.LogDomains;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
@@ -91,7 +92,6 @@ public final class ConnectorMessageBeanClient
 
     private final long WAIT_TIME = 60000;
 
-    //TODO V3 temporary
     private static final String RA_MID="com.sun.enterprise.connectors.inbound.ramid";
 
     //unique identify a message-driven bean
@@ -118,11 +118,7 @@ public final class ConnectorMessageBeanClient
 
         beanID_ = appName + ":" + moduleID + ":" + beanName;
 
-        try {
-            registry_ = ConnectorRegistry.getInstance();
-        } catch (Exception e) {
-        }
-
+        registry_ = ConnectorRegistry.getInstance();
     }
 
     /**
@@ -135,65 +131,98 @@ public final class ConnectorMessageBeanClient
      * <code>com.sun.enterprise.connector.system.ActiveJmsResourceAdapter
      * </code>
      *
-     * @param pm <code>MessageBeanProtocolManager</code> object.
+     * @param messageBeanPM <code>MessageBeanProtocolManager</code> object.
      */
-    public void setup(MessageBeanProtocolManager messageBeanPM)
-            throws Exception {
-        boolean d = true;
+    public void setup(MessageBeanProtocolManager messageBeanPM) throws Exception {
 
         messageBeanPM_ = messageBeanPM;
 
         String resourceAdapterMid = descriptor_.getResourceAdapterMid();
-        ActiveResourceAdapter activeRar = null;
 
         //TODO V3 temporary ? or right approach ?
         if (resourceAdapterMid == null) {
             resourceAdapterMid = System.getProperty(RA_MID);
-            if(resourceAdapterMid == null){
+            if (resourceAdapterMid == null) {
                 throw new ConnectorRuntimeException("No RA Mid specified in descriptor of application : "
-                    + descriptor_.getApplication().getName());
-                    }
+                        + descriptor_.getApplication().getName());
+            }
         }
 
-/* TODO V3
+        /* TODO V3
+        //Instead of assigning DEFAULT_JMS_ADAPTER by default, check whether the message-listener of
+        //the MDB is supported by JMS_ADAPTER and then assign it ?
+        
         if (resourceAdapterMid == null) {
             resourceAdapterMid = ConnectorRuntime.DEFAULT_JMS_ADAPTER;
         }
         */
-        activeRar = registry_.getActiveResourceAdapter(resourceAdapterMid);
-        /*
+        ActiveInboundResourceAdapter aira = getActiveResourceAdapter(resourceAdapterMid);
 
-                if(activeRar == null &&
-                      resourceAdapterMid.equals(ConnectorRuntime.DEFAULT_JMS_ADAPTER)) {
-                    ConnectorRuntime crt = ConnectorRuntime.getRuntime();
-                    crt.loadDeferredResourceAdapter(resourceAdapterMid);
-                    activeRar = registry_.getActiveResourceAdapter(resourceAdapterMid);
-                }
-        */
-
-        if (activeRar == null) {
-            String msg = "Resource adapter " + resourceAdapterMid + " is not deployed";
-            throw new ConnectorRuntimeException(msg);
-        }
-
-/*TODO V3
-        if (activeRar instanceof ActiveJmsResourceAdapter) {
-            ActiveJmsResourceAdapter jmsRa = (ActiveJmsResourceAdapter) activeRar;
-            jmsRa.updateMDBRuntimeInfo(descriptor_,
+        aira.updateMDBRuntimeInfo(descriptor_,
                                        messageBeanPM_.getPoolDescriptor());
-        }
-*/
-
-        if (!(activeRar instanceof ActiveInboundResourceAdapter)) {
-            throw new Exception("Resource Adapter selected doesn't support Inbound");
-        }
-        ActiveInboundResourceAdapter rar = (ActiveInboundResourceAdapter) activeRar;
 
         //the resource adapter this MDB client is deployed to
-        ResourceAdapter ra = rar.getResourceAdapter();
+        ResourceAdapter ra = aira.getResourceAdapter();
 
-        ConnectorDescriptor desc = rar.getDescriptor();
+        ConnectorDescriptor desc = aira.getDescriptor();
 
+        MessageListener msgListener = getMessageListener(desc);
+
+        String activationSpecClassName = null;
+        if (msgListener != null) {
+            activationSpecClassName = msgListener.getActivationSpecClass();
+        }
+
+        if (activationSpecClassName != null) {
+            if (logger.isLoggable(Level.FINEST)) {
+                String msg = "ActivationSpecClassName = " + activationSpecClassName;
+                logger.log(Level.FINEST, msg);
+            }
+
+            try {
+                ActivationSpec activationSpec = getActivationSpec(aira, activationSpecClassName);
+                activationSpec.setResourceAdapter(ra);
+
+                aira.validateActivationSpec(activationSpec);
+
+                myState = BLOCKED;
+
+                ra.endpointActivation(this, activationSpec);
+
+                aira.addEndpointFactoryInfo(beanID_,
+                        new MessageEndpointFactoryInfo(this, activationSpec));
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                throw (Exception) (new Exception()).initCause(ex);
+            }
+        } else {
+            //FIXME  throw some exception here.
+            throw new Exception("Unsupported message listener type");
+        }
+    }
+
+    private ActivationSpec getActivationSpec(ActiveInboundResourceAdapter aira, String activationSpecClassName)
+            throws Exception {
+        ClassLoader cl = aira.getClassLoader();
+        Class aClass = cl.loadClass(activationSpecClassName);
+
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.log(Level.FINEST, "classloader = "
+                    + aClass.getClassLoader());
+            logger.log(Level.FINEST, "classloader parent = "
+                    + aClass.getClassLoader().getParent());
+        }
+
+        ActivationSpec activationSpec =
+                (ActivationSpec) aClass.newInstance();
+        Set props = ConnectorsUtil.getMergedActivationConfigProperties(getDescriptor());
+
+        AccessController.doPrivileged(new SetMethodAction(activationSpec, props));
+        return activationSpec;
+    }
+
+    private MessageListener getMessageListener(ConnectorDescriptor desc) {
         String msgListenerType = getDescriptor().getMessageListenerType();
         if (msgListenerType == null || "".equals(msgListenerType))
             msgListenerType = "javax.jms.MessageListener";
@@ -207,76 +236,29 @@ public final class ConnectorMessageBeanClient
             if (msgListenerType.equals(msgListener.getMessageListenerType()))
                 break;
         }
+        return msgListener;
+    }
 
-        String activationSpecClassName = null;
-        if (msgListener != null) {
-            activationSpecClassName = msgListener.getActivationSpecClass();
+    private ActiveInboundResourceAdapter getActiveResourceAdapter(String resourceAdapterMid) throws Exception {
+        Object activeRar = registry_.getActiveResourceAdapter(resourceAdapterMid);
+
+        //TODO V3 no need to check DEFAULT_JMS_ADAPTER ?
+        if (activeRar == null /*&&
+                      resourceAdapterMid.equals(ConnectorRuntime.DEFAULT_JMS_ADAPTER)*/) {
+            ConnectorRuntime crt = ConnectorRuntime.getRuntime();
+            crt.loadDeferredResourceAdapter(resourceAdapterMid);
+            activeRar = registry_.getActiveResourceAdapter(resourceAdapterMid);
         }
 
-
-        if (activationSpecClassName != null) {
-            if (logger.isLoggable(Level.FINEST)) {
-                String msg =
-                        "ActivationSpecClassName = " + activationSpecClassName;
-                logger.log(Level.FINEST, msg);
-            }
-
-            try {
-                ClassLoader cl = rar.getClassLoader();
-                Class aClass = cl.loadClass(activationSpecClassName);
-
-                if (logger.isLoggable(Level.FINEST)) {
-                    logger.log(Level.FINEST, "classloader = "
-                            + aClass.getClassLoader());
-                    logger.log(Level.FINEST, "classloader parent = "
-                            + aClass.getClassLoader().getParent());
-                }
-
-                ActivationSpec activationSpec =
-                        (ActivationSpec) aClass.newInstance();
-                Set props = ConnectorsUtil.getMergedActivationConfigProperties(getDescriptor());
-
-                AccessController.doPrivileged
-                        (new SetMethodAction(activationSpec, props));
-
-                activationSpec.setResourceAdapter(ra);
-
-                /*
-                  AccessController.doPrivileged(new PrivilegedAction() {
-                  public java.lang.Object run() {
-                  activationSpec.setResourceAdapter(ra);
-                  return null;
-                  }
-                  });
-                */
-
-                boolean validate =
-                        "true".equals(System.getProperty("validate.jms.ra"));
-                if (validate) {
-                    try {
-                        activationSpec.validate();
-                    } catch (Exception ex) {
-                        logger.log(Level.SEVERE,
-                                "endpointfactory.as_validate_Failed", ex);
-                    }
-                }
-
-                myState = BLOCKED;
-                ra.endpointActivation(this, activationSpec);
-
-                rar.addEndpointFactoryInfo(beanID_,
-                        new MessageEndpointFactoryInfo(this, activationSpec));
-
-
-            } catch (Exception ex) {
-
-                ex.printStackTrace();
-                throw (Exception) (new Exception()).initCause(ex);
-            }
-        } else {
-            //FIXME  throw some exception here.
-            throw new Exception("Unsupported message listener type");
+        if (activeRar == null) {
+            String msg = "Resource adapter " + resourceAdapterMid + " is not deployed";
+            throw new ConnectorRuntimeException(msg);
         }
+
+        if (!(activeRar instanceof ActiveInboundResourceAdapter)) {
+            throw new Exception("Resource Adapter selected doesn't support Inbound");
+        }
+        return (ActiveInboundResourceAdapter) activeRar;
     }
 
     /**

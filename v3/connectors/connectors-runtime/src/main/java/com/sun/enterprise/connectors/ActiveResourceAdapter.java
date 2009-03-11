@@ -136,4 +136,10 @@ public interface ActiveResourceAdapter {
      *         connector module
      */
     public String getModuleName();
+
+    /**
+     * returns the resource-adapter bean
+     * @return resource-adapter bean
+     */
+    ResourceAdapter getResourceAdapter();
 }
