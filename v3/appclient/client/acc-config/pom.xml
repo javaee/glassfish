@@ -43,7 +43,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>acc-config</artifactId>
-    <packaging>hk2-jar</packaging> <!-- the main artifact is the OSGi module JAR -->
+    <packaging>hk2-jar</packaging>
     <name>ACC Config Classes (JAXB)</name>
     
     <!--

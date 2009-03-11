@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="client-container">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="target-server" maxOccurs="unbounded" />
+        <xs:element ref="auth-realm" minOccurs="0" />
+        <xs:element ref="client-credential" minOccurs="0" />
+        <xs:element ref="log-service" minOccurs="0" />
+        <xs:element ref="message-security-config" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="property" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
+      <xs:attribute name="send-password" use="optional" default="true">
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="yes" />
+            <xs:enumeration value="no" />
+            <xs:enumeration value="on" />
+            <xs:enumeration value="off" />
+            <xs:enumeration value="1" />
+            <xs:enumeration value="0" />
+            <xs:enumeration value="true" />
+            <xs:enumeration value="false" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="auth-realm">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="property" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
+      <xs:attribute name="name" type="xs:string" use="required" />
+      <xs:attribute name="classname" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="cert-db">
+    <xs:complexType>
+      <xs:attribute name="password" type="xs:string" use="required" />
+      <xs:attribute name="path" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="client-credential">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="property" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
+      <xs:attribute name="realm" type="xs:string" use="optional" />
+      <xs:attribute name="password" type="xs:string" use="required" />
+      <xs:attribute name="user-name" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="description">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="log-service">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="property" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
+      <xs:attribute name="file" type="xs:string" use="optional" />
+      <xs:attribute name="level" use="optional" default="SEVERE">
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="FINEST" />
+            <xs:enumeration value="FINER" />
+            <xs:enumeration value="FINE" />
+            <xs:enumeration value="CONFIG" />
+            <xs:enumeration value="INFO" />
+            <xs:enumeration value="WARNING" />
+            <xs:enumeration value="SEVERE" />
+            <xs:enumeration value="ALERT" />
+            <xs:enumeration value="FATAL" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="message-security-config">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="provider-config" maxOccurs="unbounded" />
+      </xs:sequence>
+      <xs:attribute name="auth-layer" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="SOAP" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="default-client-provider" type="xs:string" use="optional" />
+      <xs:attribute name="default-provider" type="xs:string" use="optional" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="property">
+    <xs:complexType>
+      <xs:attribute name="name" type="xs:string" use="required" />
+      <xs:attribute name="value" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="provider-config">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="request-policy" minOccurs="0" />
+        <xs:element ref="response-policy" minOccurs="0" />
+        <xs:element ref="property" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
+      <xs:attribute name="provider-type" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="client" />
+            <xs:enumeration value="server" />
+            <xs:enumeration value="client-server" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="class-name" type="xs:string" use="required" />
+      <xs:attribute name="provider-id" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="request-policy">
+    <xs:complexType>
+      <xs:attribute name="auth-recipient" use="optional">
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="before-content" />
+            <xs:enumeration value="after-content" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="auth-source" use="optional">
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="sender" />
+            <xs:enumeration value="content" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="response-policy">
+    <xs:complexType>
+      <xs:attribute name="auth-recipient" use="optional">
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="before-content" />
+            <xs:enumeration value="after-content" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="auth-source" use="optional">
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="sender" />
+            <xs:enumeration value="content" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="security">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="ssl" />
+        <xs:element ref="cert-db" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="ssl">
+    <xs:complexType>
+      <xs:attribute name="ssl3-tls-ciphers" type="xs:string" use="optional" />
+      <xs:attribute name="tls-rollback-enabled" type="xs:string" use="optional" default="true" />
+      <xs:attribute name="ssl3-enabled" type="xs:string" use="optional" default="true" />
+      <xs:attribute name="ssl2-ciphers" type="xs:string" use="optional" />
+      <xs:attribute name="ssl2-enabled" type="xs:string" use="optional" default="false" />
+      <xs:attribute name="cert-nickname" type="xs:string" use="optional" />
+      <xs:attribute name="tls-enabled" type="xs:string" use="optional" default="true" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="target-server">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="description" minOccurs="0" />
+        <xs:element ref="security" minOccurs="0" />
+      </xs:sequence>
+      <xs:attribute name="address" type="xs:string" use="required" />
+      <xs:attribute name="port" type="xs:string" use="required" />
+      <xs:attribute name="name" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>
