@@ -50,11 +50,38 @@
 
     <build>
         <defaultGoal>install</defaultGoal>
+        <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-clean-plugin</artifactId>
+            <configuration>
+                <filesets>
+                    <fileset>
+                        <directory>checkout-source</directory>
+                        <includes>
+                            <include>src/**</include>
+                            <include>tck-utils/impl/src/**</include>
+                            <include>tck-utils/api/src/**</include>
+                            <include>hibernate-validator/src/**</include>
+                            <include>hibernate-validator-legacy/src/**</include>
+                            <include>license.txt</include>
+                            <include>hibernate-validator/license.txt</include>
+                            <include>hibernate-validator/readme.txt</include>
+                            <include>hibernate-validator-legacy/license.txt</include>
+                            <include>hibernate-validator-legacy/changelog.txt</include>
+                            <include>hibernate-validator-legacy/readme.txt</include>
+                            <include>hibernate-validator-legacy/lgpl.txt</include>
+                        </includes>
+                    </fileset>
+                </filesets>
+            </configuration>
+        </plugin>
+        </plugins>
     </build>
 
     <modules>
         <module>checkout</module>
-        <module>jboss-source</module>
+        <module>checkout-source</module>
     </modules>
 
 </project>
