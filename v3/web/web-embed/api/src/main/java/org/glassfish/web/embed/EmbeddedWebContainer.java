@@ -39,6 +39,8 @@ package org.glassfish.web.embed;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Map;
+
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -62,11 +64,15 @@ public interface EmbeddedWebContainer extends Lifecycle {
      * resources, the <tt>Context</tt> must be started and registered
      * with a <tt>VirtualServer</tt>.
      *
+     * @param docroot
+     * @param contextRoot
+     * @param loader
      * @return the new <tt>Context</tt>
      *
      * @see VirtualServer#addContext
      */
-    public Context createContext();
+    public Context createContext(File docroot, String contextRoot, 
+                                 ClassLoader loader);
 
     /**
      * Creates a <tt>Context</tt> and configures it with the given
@@ -110,6 +116,9 @@ public interface EmbeddedWebContainer extends Lifecycle {
     public <T extends WebListener> T createWebListener(String id, Class<T> c)
         throws Exception;
 
+    public <T extends WebListener> T createWebListener(String id, Map<String, String> properties, Class<T> c)
+        throws Exception;
+
     /**
      * Finds the <tt>WebListener</tt> with the given id.
      *
@@ -151,6 +160,9 @@ public interface EmbeddedWebContainer extends Lifecycle {
     public VirtualServer createVirtualServer(String id,
         File docRoot, WebListener...  webListeners) throws Exception;
 
+    public VirtualServer createVirtualServer(String id,
+        File docRoot, Map<String, String> properties, WebListener...  webListeners) throws Exception;
+
     /**
      * Finds the <tt>VirtualServer</tt> with the given id.
      *
@@ -170,5 +182,9 @@ public interface EmbeddedWebContainer extends Lifecycle {
      * with this web container
      */
     public Collection<VirtualServer> getVirtualServers();
+
+    public void removeVirtualServer(VirtualServer virtualServer);
+
+    public <T extends WebListener> void removeWebListener(T t);
 
 }

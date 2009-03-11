@@ -40,6 +40,7 @@ package org.glassfish.web.embed;
 import java.util.*;
 import javax.servlet.*;
 import org.apache.catalina.Valve;
+import org.glassfish.web.embed.security.SecurityConfig;
 
 /**
  * Representation of a web application.
@@ -122,4 +123,7 @@ public interface Context extends ServletContext, Lifecycle {
      * <tt>Context</tt>, false otherwise
      */
     public void isDirectoryListing();
+
+    public SecurityConfig getSecurityConfig();
+
 }

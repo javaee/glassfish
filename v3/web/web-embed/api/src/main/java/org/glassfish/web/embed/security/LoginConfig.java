@@ -35,31 +35,26 @@
  *
  */
 
-package org.glassfish.web.embed;
+package org.glassfish.web.embed.security;
+
+import org.glassfish.web.embed.security.FormLoginConfig;
+import org.glassfish.web.embed.security.AuthMethod;
 
 /**
- * Interface for lifecycle events
+ * @author Rajiv Mordani
  */
-public interface Lifecycle {
+public class LoginConfig {
 
-    /**
-     * Starts this component.
-     * 
-     * @throws LifecycleException if an error occurs during the starting
-     * of this component
-     */
-    public void start() throws LifecycleException;
 
-    /**
-     * Stops this component.
-     * 
-     * @throws LifecycleException if an error occurs during the stopping
-     * of this component
-     */
-    public void stop() throws LifecycleException;
+    public void setAuthMethod(AuthMethod authMethod) {
 
-    public void enable() throws LifecycleException;
+    }
+    // TODO: Need to define a way to create realm. Using Strings for now.    
+    public void setRealmNames(String ... realms) {
 
-    public void disable() throws LifecycleException;
+    }
 
+    public void setFormLoginConfig(FormLoginConfig flc) {
+        
+    }
 }

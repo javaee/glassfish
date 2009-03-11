@@ -37,29 +37,52 @@
 
 package org.glassfish.web.embed;
 
+import java.io.File;
+import java.util.Set;
+
 /**
- * Interface for lifecycle events
+ * @author Rajiv Mordani
  */
-public interface Lifecycle {
+public final class SslConfig {
 
-    /**
-     * Starts this component.
-     * 
-     * @throws LifecycleException if an error occurs during the starting
-     * of this component
-     */
-    public void start() throws LifecycleException;
+    public void setKeyStore(String keyStore) {
 
-    /**
-     * Stops this component.
-     * 
-     * @throws LifecycleException if an error occurs during the stopping
-     * of this component
-     */
-    public void stop() throws LifecycleException;
+    }
 
-    public void enable() throws LifecycleException;
+    public void setTrustStore(File trustStore) {
 
-    public void disable() throws LifecycleException;
+    }
 
+    public void setKeyPassword(String password) {
+
+    }
+
+    public void setHandshakeTimeout(long timeoutMilliSeconds) {
+
+    }
+
+    public void setAlgorithms(Set<SslType> set) {
+
+    }
+
+    public String getKeyStore() {
+        return null;
+    }
+
+    public String getTrustStore() {
+        return null;
+    }
+
+
+    public String getKeyPassword() {
+        return null;
+    }
+
+    public long getHandshakeTimeout() {
+        return 0;
+    }
+
+    public Set<SslType> getAlgorithms() {
+        return null;
+    }
 }

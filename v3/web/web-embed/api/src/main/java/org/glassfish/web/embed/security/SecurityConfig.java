@@ -35,31 +35,32 @@
  *
  */
 
-package org.glassfish.web.embed;
+package org.glassfish.web.embed.security;
+
+import org.glassfish.web.embed.security.SecurityConstraint;
+import org.glassfish.web.embed.security.LoginConfig;
+
+import java.util.Set;
 
 /**
- * Interface for lifecycle events
+ * @author Rajiv Mordani
  */
-public interface Lifecycle {
+public class SecurityConfig {
 
-    /**
-     * Starts this component.
-     * 
-     * @throws LifecycleException if an error occurs during the starting
-     * of this component
-     */
-    public void start() throws LifecycleException;
+    public SecurityConfig() {
+        
+    }
+    
+    public void setSecurityConstraints(Set<SecurityConstraint> securityConstraints) {
 
-    /**
-     * Stops this component.
-     * 
-     * @throws LifecycleException if an error occurs during the stopping
-     * of this component
-     */
-    public void stop() throws LifecycleException;
+    }
 
-    public void enable() throws LifecycleException;
+    public void setLoginConfig(LoginConfig lc) {
 
-    public void disable() throws LifecycleException;
-
+    }
+    
+    public Set<SecurityConstraint> getSecurityConstraints() {
+        return null;
+    }
+    
 }

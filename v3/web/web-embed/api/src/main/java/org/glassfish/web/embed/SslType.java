@@ -38,28 +38,10 @@
 package org.glassfish.web.embed;
 
 /**
- * Interface for lifecycle events
+ * @author Rajiv Mordani
  */
-public interface Lifecycle {
-
-    /**
-     * Starts this component.
-     * 
-     * @throws LifecycleException if an error occurs during the starting
-     * of this component
-     */
-    public void start() throws LifecycleException;
-
-    /**
-     * Stops this component.
-     * 
-     * @throws LifecycleException if an error occurs during the stopping
-     * of this component
-     */
-    public void stop() throws LifecycleException;
-
-    public void enable() throws LifecycleException;
-
-    public void disable() throws LifecycleException;
-
+public enum SslType {
+    SSLv2,
+    SSLv3,
+    TLS
 }

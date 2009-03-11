@@ -103,15 +103,13 @@ public interface VirtualServer extends Lifecycle {
         throws Exception;
 
     /**
-     * Unregisters the <tt>Context</tt> at the given context root from 
+     * Unregisters the <tt>Context</tt> at the given context from 
      * this <tt>VirtualServer</tt>.
      *
-     * @param contextRoot the context root from which to unregister
+     * @param context the context root from which to unregister
      *
-     * @return the <tt>Context</tt> that was unregistered, or <tt>null</tt>
-     * if no <tt>Context</tt> was found at the given context root
      */
-    public Context removeContext(String contextRoot);
+    public void removeContext(Context context);
 
     /**
      * Finds the <tt>Context</tt> registered at the given context root.

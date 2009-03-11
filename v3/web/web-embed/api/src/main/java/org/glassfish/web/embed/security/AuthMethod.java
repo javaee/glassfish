@@ -35,31 +35,16 @@
  *
  */
 
-package org.glassfish.web.embed;
+package org.glassfish.web.embed.security;
 
 /**
- * Interface for lifecycle events
+ * @author Rajiv Mordani
  */
-public interface Lifecycle {
+public enum AuthMethod {
 
-    /**
-     * Starts this component.
-     * 
-     * @throws LifecycleException if an error occurs during the starting
-     * of this component
-     */
-    public void start() throws LifecycleException;
-
-    /**
-     * Stops this component.
-     * 
-     * @throws LifecycleException if an error occurs during the stopping
-     * of this component
-     */
-    public void stop() throws LifecycleException;
-
-    public void enable() throws LifecycleException;
-
-    public void disable() throws LifecycleException;
+    BASIC,
+    FORM,
+    SSL,
+    DIGEST
 
 }

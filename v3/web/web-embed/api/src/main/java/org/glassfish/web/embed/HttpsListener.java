@@ -37,31 +37,11 @@
 
 package org.glassfish.web.embed;
 
-import java.io.File;
-
 /**
  * @author Rajiv Mordani
  */
-//TODO: Need to have a way to provide ssl config - client certificate,
-//cipher suites etc
+
 public interface HttpsListener extends WebListener {
 
-    public void setKeyStore(String keyStore);
-
-    public void setTrustStore(File trustStore);
-
-    public void setKeyPassword(String password);
-
-    public void setHandshakeTimeout(int timeout);
-
-    public void setAlgorithm(String alogrithm); 
-
-    public String getKeyStore();
-
-    public String getTrustStore();
-
-    public String getKeyPassword();
-
-    public int getHandshakeTimeout();
-
+    public SslConfig getSslConfig();
 }

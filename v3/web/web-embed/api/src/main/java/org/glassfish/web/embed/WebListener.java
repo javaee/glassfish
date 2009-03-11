@@ -48,13 +48,6 @@ package org.glassfish.web.embed;
 public interface WebListener extends Lifecycle {
 
     /**
-     * Sets the id for this <tt>WebListener</tt>.
-     *
-     * @param id the id for this <tt>WebListener</tt>
-     */
-    public void setId(String id);
-
-    /**
      * Gets the id of this <tt>WebListener</tt>.
      *
      * @return the id of this <tt>WebListener</tt>
