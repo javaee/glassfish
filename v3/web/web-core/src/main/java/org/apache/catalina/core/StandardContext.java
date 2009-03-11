@@ -3138,9 +3138,9 @@ public class StandardContext
     public ServletRegistration addServlet(String servletName,
             Servlet instance, Map<String, String> initParams,
             String... urlPatterns) {
-        if (!(instance instanceof Servlet)) {
-            throw new IllegalArgumentException("Not an instance of " +
-                                               "javax.servlet.Servlet");
+        if (instance instanceof SingleThreadModel) {
+            throw new IllegalArgumentException("Servlet implements " +
+                SingleThreadModel.class.getName());
         }
 
         StandardWrapper wrapper = (StandardWrapper) createWrapper();
