@@ -551,7 +551,7 @@ public final class ApplicationContextFacade
      * Sets the session tracking modes that are to become effective for this
      * <tt>ServletContext</tt>.
      */
-    public void setSessionTrackingModes(EnumSet<SessionTrackingMode> sessionTrackingModes) {
+    public void setSessionTrackingModes(Set<SessionTrackingMode> sessionTrackingModes) {
         context.setSessionTrackingModes(sessionTrackingModes);
     }
 
@@ -560,10 +560,10 @@ public final class ApplicationContextFacade
      * Gets the session tracking modes that are supported by default for this
      * <tt>ServletContext</tt>.
      *
-     * @return enum set of the session tracking modes supported by default for
+     * @return set of the session tracking modes supported by default for
      * this <tt>ServletContext</tt>
      */
-    public EnumSet<SessionTrackingMode> getDefaultSessionTrackingModes() {
+    public Set<SessionTrackingMode> getDefaultSessionTrackingModes() {
         return context.getDefaultSessionTrackingModes();
     }
 
@@ -572,10 +572,10 @@ public final class ApplicationContextFacade
      * Gets the session tracking modes that are in effect for this
      * <tt>ServletContext</tt>.
      *
-     * @return enum set of the session tracking modes in effect for this
+     * @return set of the session tracking modes in effect for this
      * <tt>ServletContext</tt>
      */
-    public EnumSet<SessionTrackingMode> getEffectiveSessionTrackingModes() {
+    public Set<SessionTrackingMode> getEffectiveSessionTrackingModes() {
         return context.getEffectiveSessionTrackingModes();
     }
 

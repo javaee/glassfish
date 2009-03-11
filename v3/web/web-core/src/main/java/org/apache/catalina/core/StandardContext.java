@@ -113,7 +113,7 @@ public class StandardContext
     private static final ClassLoader standardContextClassLoader =
         StandardContext.class.getClassLoader();
 
-    private static final EnumSet<SessionTrackingMode> DEFAULT_SESSION_TRACKING_MODES =
+    private static final Set<SessionTrackingMode> DEFAULT_SESSION_TRACKING_MODES =
         EnumSet.of(SessionTrackingMode.COOKIE);
 
     /**
@@ -676,7 +676,7 @@ public class StandardContext
 
     private boolean useMyFaces;
 
-    private EnumSet<SessionTrackingMode> sessionTrackingModes;
+    private Set<SessionTrackingMode> sessionTrackingModes;
 
     /**
      * Encoded path.
@@ -2655,7 +2655,7 @@ public class StandardContext
      * <tt>ServletContext</tt>.
      */
     public void setSessionTrackingModes(
-            EnumSet<SessionTrackingMode> sessionTrackingModes) {
+            Set<SessionTrackingMode> sessionTrackingModes) {
 
         if (sessionTrackingModes.contains(SessionTrackingMode.SSL)) {
             throw new IllegalArgumentException(
@@ -2689,10 +2689,10 @@ public class StandardContext
      * Gets the session tracking modes that are supported by default for this
      * <tt>ServletContext</tt>.
      *
-     * @return enum set of the session tracking modes supported by default for
+     * @return set of the session tracking modes supported by default for
      * this <tt>ServletContext</tt>
      */
-    public EnumSet<SessionTrackingMode> getDefaultSessionTrackingModes() {
+    public Set<SessionTrackingMode> getDefaultSessionTrackingModes() {
         return DEFAULT_SESSION_TRACKING_MODES;
     }
 
@@ -2701,10 +2701,10 @@ public class StandardContext
      * Gets the session tracking modes that are in effect for this
      * <tt>ServletContext</tt>.
      *
-     * @return enum set of the session tracking modes in effect for this
+     * @return set of the session tracking modes in effect for this
      * <tt>ServletContext</tt>
      */
-    public EnumSet<SessionTrackingMode> getEffectiveSessionTrackingModes() {
+    public Set<SessionTrackingMode> getEffectiveSessionTrackingModes() {
         return (sessionTrackingModes != null ? sessionTrackingModes :
             DEFAULT_SESSION_TRACKING_MODES);
     }
