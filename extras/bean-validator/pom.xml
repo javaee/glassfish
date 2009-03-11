@@ -56,9 +56,26 @@
 
     <build>
       <defaultGoal>install</defaultGoal>
+      <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-clean-plugin</artifactId>
+            <configuration>
+                <filesets>
+                    <fileset>
+                        <directory>.</directory>
+                        <includes>
+                            <include>jboss-source/**</include>
+                        </includes>
+                    </fileset>
+                </filesets>
+            </configuration>
+        </plugin>
+      </plugins>   
     </build>
 
     <modules>
+        <module>svn-helpers</module>
         <module>api</module>
         <module>ri</module>
     </modules>
