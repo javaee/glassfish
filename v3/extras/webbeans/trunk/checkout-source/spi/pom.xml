@@ -1,0 +1,53 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <parent>
+      <artifactId>webbeans-parent</artifactId>
+      <groupId>org.jboss.webbeans</groupId>
+      <version>1.0.0-SNAPSHOT</version>
+   </parent>
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>org.jboss.webbeans</groupId>
+   <artifactId>webbeans-spi</artifactId>
+   <version>1.0.0-SNAPSHOT</version>
+   <name>Web Beans Service Provider Interfaces</name>
+   <dependencies>
+
+      <dependency>
+         <groupId>org.jboss.webbeans</groupId>
+         <artifactId>jsr299-api</artifactId>
+      </dependency>
+      
+      <dependency>
+         <groupId>javax.persistence</groupId>
+         <artifactId>persistence-api</artifactId>
+         <optional>true</optional>
+      </dependency>
+
+      <dependency>
+         <groupId>org.testng</groupId>
+         <artifactId>testng</artifactId>
+         <scope>test</scope>
+         <classifier>jdk15</classifier>
+         <exclusions>
+            <exclusion>
+               <groupId>junit</groupId>
+               <artifactId>junit</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+      
+      <dependency>
+         <groupId>javax.servlet</groupId>
+         <artifactId>servlet-api</artifactId>
+         <optional>true</optional>
+      </dependency>
+      <dependency>
+      	<groupId>javax.transaction</groupId>
+      	<artifactId>jta</artifactId>
+      </dependency>
+
+   </dependencies>
+
+   <build>
+   	<defaultGoal>install</defaultGoal>
+   </build>
+</project>

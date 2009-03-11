@@ -1,0 +1,50 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="Web Beans RI" verbose="1"  >
+
+   <test name="Web Beans RI">
+      <groups>
+         <run>
+<!--          
+            <exclude name="specialization" />
+            <exclude name="deployment" />
+            <exclude name="disposalMethod" />
+            
+            <exclude name="observerMethod" />
+            <exclude name="deferredEvent" />
+            <exclude name="ejb3" />
+            <exclude name="webservice" />
+            <exclude name="annotationDefinition" />
+            <exclude name="webbeansxml" />
+            <exclude name="el" />
+            <exclude name="jms" />
+            <exclude name="interceptors" />
+            <exclude name="decorators" />
+            <exclude name="servlet" />
+            
+            <exclude name="passivation" />
+            <exclude name="singletons" />
+            <exclude name="ejbjarxml" />
+            <exclude name="beanDestruction" />
+            <exclude name="commonAnnotations" />
+-->
+            <exclude name="stub" />
+            <exclude name="broken" />
+         </run>
+      </groups>
+      <packages>
+         <package name="org.jboss.webbeans.test.examples" />
+         <package name="org.jboss.webbeans.test.unit.bootstrap" />
+         <package name="org.jboss.webbeans.test.unit.context" />
+         <package name="org.jboss.webbeans.test.unit.definition" />
+         <package name="org.jboss.webbeans.test.unit.event" />
+         <package name="org.jboss.webbeans.test.unit.implementation" />
+         <package name="org.jboss.webbeans.test.unit.implementation.proxy" />
+         <package name="org.jboss.webbeans.test.unit.implementation.exceptions" />
+         <package name="org.jboss.webbeans.test.unit.lookup" />
+         <package name="org.jboss.webbeans.test.unit.lookup.circular" />
+         <package name="org.jboss.webbeans.test.unit.xml" />
+      </packages>
+   </test>
+   
+</suite>

@@ -1,0 +1,211 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>org.jboss.webbeans</groupId>
+   <artifactId>webbeans-parent</artifactId>
+   <packaging>pom</packaging>
+   <version>1.0.0-SNAPSHOT</version>
+   
+   <parent>
+      <groupId>org.jboss.webbeans</groupId>
+      <artifactId>webbeans-version-matrix</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+   <name>Web Beans, the reference implmentation of JSR-299</name>
+   <url>http://www.seamframework.org/WebBeans</url>
+
+   <description>
+      The reference implementation of JSR 299: Web Beans
+   </description>
+
+   <developers>
+      <developer>
+         <name>Pete Muir</name>
+         <roles>
+            <role>Project Lead</role>
+         </roles>
+         <email>pete.muir@jboss.org</email>
+         <organization>JBoss, a division of Red Hat</organization>
+         <url>http://in.relation.to/Bloggers/Pete</url>
+      </developer>
+
+      <developer>
+         <name>Shane Bryzak</name>
+         <organization>JBoss, a division of Red Hat</organization>
+      </developer>
+
+      <developer>
+         <name>David Allen</name>
+      </developer>
+      
+      <developer>
+         <name>Nicklas Karlsson</name>
+      </developer>
+   </developers>
+
+   <build>
+      <plugins>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
+               <execution>
+                  <id>attach-sources</id>
+                  <phase>verify</phase>
+                  <goals>
+                     <goal>jar</goal>
+                  </goals>
+               </execution>
+            </executions>
+         </plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-enforcer-plugin</artifactId>
+         </plugin>
+         <plugin>
+           <groupId>org.apache.maven.plugins</groupId>
+           <artifactId>maven-release-plugin</artifactId>
+           <version>2.0-beta-8</version>
+           <configuration>
+             <tagBase>https://svn.jboss.org/repos/webbeans/ri/tags</tagBase>
+             <autoVersionSubmodules>true</autoVersionSubmodules>
+           </configuration>
+         </plugin>
+      </plugins>
+      <defaultGoal>package</defaultGoal>
+
+      <pluginManagement>
+         <plugins>
+            <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-compiler-plugin</artifactId>
+               <configuration>
+                  <source>1.5</source>
+                  <target>1.5</target>
+               </configuration>
+            </plugin>
+            <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-jar-plugin</artifactId>
+               <configuration>
+                  <archive>
+                     <manifest>
+                        <addDefaultImplementationEntries>
+                           true
+                        </addDefaultImplementationEntries>
+                        <addDefaultSpecificationEntries>
+                           true
+                        </addDefaultSpecificationEntries>
+                     </manifest>
+                  </archive>
+               </configuration>
+            </plugin>
+            <plugin>
+               <groupId>org.codehaus.mojo</groupId>
+               <artifactId>emma-maven-plugin</artifactId>
+               <configuration>
+                  <forkMode>once</forkMode>
+                  <metadataFile>../target/coverage.em</metadataFile>
+                  <outputDirectory>${project.build.directory}/generated-classes</outputDirectory>
+               </configuration>
+            </plugin>
+         </plugins>
+      </pluginManagement>
+   </build>
+   
+   <profiles>
+      <profile>
+         <id>api-coverage</id>
+         <activation>
+            <property>
+               <name>apiCoverage</name>
+            </property>
+         </activation>
+         <build>
+            <plugins>
+               <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-surefire-plugin</artifactId>
+                  <inherited>true</inherited>
+                  <configuration>
+                     <forkMode>once</forkMode>
+                  </configuration>
+               </plugin>
+            </plugins>
+         </build>
+         <dependencies>
+            <dependency>
+               <groupId>emma</groupId>
+               <artifactId>emma</artifactId>
+               <version>2.0.5312</version>
+               <scope>test</scope>
+            </dependency>
+         </dependencies>
+      </profile>
+   </profiles>
+   
+   <ciManagement>
+      <system>Hudson</system>
+      <url />
+   </ciManagement>
+
+   <issueManagement>
+      <system>JIRA</system>
+      <url>http://jira.jboss.org/browse/WBRI</url>
+   </issueManagement>
+
+   <inceptionYear>2008</inceptionYear>
+
+   <licenses>
+      <license>
+         <name>Apache License, Version 2.0</name>
+         <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+      </license>
+      <license>
+         <name>Lesser Gnu Public License, Version 2.1</name>
+         <url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
+      </license>
+   </licenses>
+
+   <scm>
+      <connection>scm:svn:http://anonsvn.jboss.org/repos/webbeans/ri</connection>
+      <developerConnection>scm:svn:https://svn.jboss.org/repos/webbeans/ri</developerConnection>
+      <url>http://fisheye.jboss.org/browse/WebBeans/ri</url>
+   </scm>
+
+   <distributionManagement>
+      <repository>
+         <!-- Copy the dist to the local checkout of the JBoss maven2 repo ${maven.repository.root} -->
+         <!-- It is anticipated that ${maven.repository.root} be set in user's settings.xml -->
+         <!-- todo : replace this with direct svn access once the svnkit providers are available -->
+         <id>repository.jboss.org</id>
+         <url>file://${maven.repository.root}</url>
+      </repository>
+      <snapshotRepository>
+         <id>snapshots.jboss.org</id>
+         <name>JBoss Snapshot Repository</name>
+         <url>dav:https://snapshots.jboss.org/maven2</url>
+      </snapshotRepository>
+   </distributionManagement>
+
+   <reporting>
+      <plugins>
+         <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>cobertura-maven-plugin</artifactId>
+            <configuration>
+               <formats>
+                  <format>html</format>
+                  <format>xml</format>
+               </formats>
+               <instrumentation>
+                  <ignores>
+                     <ignore>javax.webbeans.*</ignore>
+                  </ignores>
+               </instrumentation>
+            </configuration>
+         </plugin>
+      </plugins>
+   </reporting>
+   
+</project>
