@@ -241,7 +241,7 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
         // (standalone + embedded) 
         if (loader == null && ConnectorsUtil.belongsToSystemRA(moduleName)) {
             if (environment == SERVER) {
-                loader = ConnectorRuntime.getRuntime().createConnectorClassLoader(moduleDir);
+                loader = ConnectorRuntime.getRuntime().createConnectorClassLoader(moduleDir, null);
                 if (loader == null) {
                     ConnectorRuntimeException cre =
                             new ConnectorRuntimeException("Failed to obtain the class loader");

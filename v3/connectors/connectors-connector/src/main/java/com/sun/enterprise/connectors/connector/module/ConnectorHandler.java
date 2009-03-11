@@ -36,6 +36,7 @@
 package com.sun.enterprise.connectors.connector.module;
 
 import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
+import com.sun.enterprise.deployment.Application;
 import com.sun.appserv.connectors.internal.api.ConnectorsClassLoaderUtil;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -76,6 +77,20 @@ public class ConnectorHandler extends AbstractArchiveHandler implements ArchiveH
      */
     public ClassLoader getClassLoader(ClassLoader parent, DeploymentContext context) {
         String moduleDir = context.getSource().getURI().getPath();
-        return loader.createRARClassLoader(moduleDir);
+        if(isEmbedded(context)){
+            return loader.createRARClassLoader(moduleDir, parent);
+        }else{
+            return loader.createRARClassLoader(moduleDir, null);
+        }
+    }
+
+    /**
+     * indicates whether the .rar being deployed is standalone or embedded
+     * @param context deployment context
+     * @return boolean indicating whether its embedded .rar
+     */
+    //TODO V3 this seems to return false even for embedded rar, need a different approach
+    private boolean isEmbedded(DeploymentContext context) {
+        return context.getModuleMetaData(Application.class) != null;
     }
 }

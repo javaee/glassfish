@@ -427,7 +427,7 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
             // cr.createActiveResourceAdapterForEmbeddedRar(rarModuleName);
         } else {
             String moduleDir = ConfigBeansUtilities.getLocation(rarModuleName);
-            ConnectorClassFinder loader = cclUtil.createRARClassLoader(moduleDir);
+            ClassLoader loader = cr.createConnectorClassLoader(moduleDir, null);
             cr.createActiveResourceAdapter(moduleDir, rarModuleName, loader);
         }
     }

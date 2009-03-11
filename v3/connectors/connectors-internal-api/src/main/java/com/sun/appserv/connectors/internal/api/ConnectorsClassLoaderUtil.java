@@ -60,13 +60,21 @@ public class ConnectorsClassLoaderUtil {
     @Inject
     private ClassLoaderHierarchy clh;
 
-    public ConnectorClassFinder createRARClassLoader(String moduleDir) {
+    public ConnectorClassFinder createRARClassLoader(String moduleDir, ClassLoader deploymentParent) {
 
-        ClassLoader parent;
+        ClassLoader parent = null;
 
+        //For standalone rar :
         //this is not a normal application and hence cannot use the provided parent during deployment.
         //setting the parent to connector-class-loader's parent as this is a .rar
-        parent = clh.getConnectorClassLoader(null).getParent();
+        //For embedded rar :
+        //use the deploymentParent as the class-finder created won't be part of connector class loader
+        //service hierarchy
+        if(deploymentParent == null){
+            parent = clh.getConnectorClassLoader(null).getParent();
+        }else{
+            parent = deploymentParent;
+        }
         return createRARClassLoader(parent, moduleDir);
     }
 
