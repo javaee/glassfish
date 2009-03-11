@@ -59,10 +59,8 @@
     </build>
 
     <modules>
-<!--
         <module>api</module>
         <module>ri</module>
--->
     </modules>
 
 </project>
