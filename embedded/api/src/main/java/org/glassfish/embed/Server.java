@@ -300,6 +300,9 @@ public class Server {
         if (started)
             throw new EmbeddedException("already_started");
 
+        if (this.getInfo().httpPort == DEFAULT_HTTP_PORT)
+            throw new EmbeddedException("cant_start_server", this.getServerName());
+
         started = true;
 
         try {

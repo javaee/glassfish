@@ -40,10 +40,8 @@ package org.glassfish.embed;
 import org.glassfish.embed.util.LoggerHelper;
 import com.sun.enterprise.util.diagnostics.ObjectAnalyzer;
 import java.io.*;
-import java.util.*;
 import java.net.*;
 import javax.net.ServerSocketFactory;
-import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.embed.util.StringUtils;
 import static org.glassfish.embed.util.ServerConstants.*;
 
@@ -52,6 +50,10 @@ import static org.glassfish.embed.util.ServerConstants.*;
  * name, port, logging, and autodeploy configuration may be set.  The file
  * system, {@link EmbeddedFileSystem}, used by <code>Server</code> can be
  * retrieved.
+ *
+ * If the HTTP port is not set, no default port will be used, and the HTTP listener
+ * will not be created.  In order to start the server the HTTP port must be set
+ * using <code>setHttpPort(int port)</code>
  * 
  * @author Byron Nevins
  */
@@ -219,17 +221,17 @@ public class EmbeddedInfo {
     }
     
     private void validatePorts() throws EmbeddedException {
-        if(httpPort != DEFAULT_ADMIN_HTTP_PORT) {
+        if(httpPort != DEFAULT_HTTP_PORT) {
             if(httpPort < MIN_PORT || httpPort > MAX_PORT)
                 throw new EmbeddedException("bad_port", MIN_PORT, MAX_PORT, httpPort);
             if (!isPortAvailable(httpPort))
-                throw new EmbeddedException("port_in_use", Integer.toString(adminHttpPort));
+                throw new EmbeddedException("port_in_use", Integer.toString(httpPort));
         }
         if(adminHttpPort != DEFAULT_ADMIN_HTTP_PORT) {
             if(adminHttpPort < MIN_PORT || adminHttpPort > MAX_PORT)
                 throw new EmbeddedException("bad_port", MIN_PORT, MAX_PORT, adminHttpPort);
             if (!isPortAvailable(adminHttpPort))
-                throw new EmbeddedException("port_in_use", Integer.toString(httpPort));
+                throw new EmbeddedException("port_in_use", Integer.toString(adminHttpPort));
         }
         
         // todo TODO

@@ -47,8 +47,8 @@ import java.util.*;
 import java.util.jar.Manifest;
 
 /**
- * {@link ReadableArchive} representation of an web application that
- * is not assembled into the canonical war format. 
+ * {@link ReadableArchive} representation of an application that
+ * is not assembled into the canonical WAR/JAR/RAR format.
  *
  * @author Kohsuke Kawaguchi
  * @author Byron Nevins

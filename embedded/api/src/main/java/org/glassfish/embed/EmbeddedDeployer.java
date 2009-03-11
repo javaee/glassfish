@@ -44,9 +44,9 @@ public class EmbeddedDeployer {
 
 
     /**
-     * Deploys a WAR to <code>Server</code>.
+     * Deploys an archive to <code>Server</code>.
      *
-     * @param archive pathname of WAR file or directory
+     * @param archive pathname of an archive file or directory
      * @throws EmbeddedException
      */
 
@@ -83,9 +83,39 @@ public class EmbeddedDeployer {
      * <p/>
      * <p/>
      * This overloaded version of the deploy method is for advanced users.
-     * It allows you specifying additional parameters to be passed to the deploy command
+     * It allows you to specify additional parameters to be passed to the deploy command.
+     * If you do not specify the virtual server, "server" is used is used as the default.
+     * If you do not specify the context root, application name is used as the default.
      *
-     * @param a WAR as a <code>ReadableArchive</code>
+     * <xmp>
+     * Collection<URL> coll = new java.util.ArrayList();
+     * coll.add(new URL("file:///C:\\samples\\hello\\WEB-INF\\classes"));
+     * ReadableArchive archive = (ReadableArchive)new ScatteredArchive("testwar", new File("C:\\samples\\hello"), null, coll);
+     * Properties params = new Properties();
+     * params.put(ParameterNames.VIRTUAL_SERVERS, "myServer");
+     * params.put(ParameterNames.CONTEXT_ROOT, "scatter");
+     * server.getDeployer().deploy(archive, params);
+     * </xmp>
+     *
+     *  List of parameters in <code>org.glassfish.api.admin.ParameterNames</code>:
+     *  
+     * <xmp>
+     * public static final String NAME = "name";
+     * public static final String COMPONENT = "component";
+     * public static final String VIRTUAL_SERVERS = "virtualservers";
+     * public static final String CONTEXT_ROOT = "contextroot";
+     * public static final String PREVIOUS_CONTEXT_ROOT = "previous_contextroot";
+     * public static final String LIBRARIES = "libraries";
+     * public static final String DIRECTORY_DEPLOYED = "directorydeployed";
+     * public static final String LOCATION = "location";
+     * public static final String ENABLED = "enabled";
+     * public static final String PRECOMPILE_JSP = "precompilejsp";
+     * public static final String DEPLOYMENT_PLAN = "deploymentplan";
+     * </xmp>
+     *
+     * For more information about the deploy options, see <a href="http://docs.sun.com/app/docs/doc/820-4497/deploy-1?a=view">deploy command</a>.
+     *
+     * @param a archive as a <code>ReadableArchive</code>
      * @param params parameters of the deploy command
      * @throws EmbeddedException
      */
@@ -123,15 +153,15 @@ public class EmbeddedDeployer {
         }
     }
     /**
-     * Deploy a scattered war archive on a given virtual server
+     * Deploy a scattered archive on a given virtual server
      * and using the specified context root.
      *
-     * @param war           the scattered war
+     * @param archive       the scattered archive
      * @param contextRoot   the context root to use
      * @param virtualServer the virtual server ID
      * @throws EmbeddedException
      */
-    public void deploy(ReadableArchive war, String contextRoot, String virtualServer) throws EmbeddedException {
+    void deploy(ReadableArchive archive, String contextRoot, String virtualServer) throws EmbeddedException {
         Properties params = new Properties();
         if (virtualServer == null) {
             virtualServer = "server";
@@ -140,19 +170,19 @@ public class EmbeddedDeployer {
         if (contextRoot != null) {
             params.put(ParameterNames.CONTEXT_ROOT, contextRoot);
         }
-        deploy(war, params);
+        deploy(archive, params);
     }
     /**
-     * Convenience method to deploy a scattered war archive
+     * Convenience method to deploy a scattered archive
      * using the specified context root.  It will be deployed to the default
      * virtual server
      *
-     * @param war           the scattered war
+     * @param archive       the scattered archive
      * @param contextRoot   the context root to use
      * @throws EmbeddedException
      */
-    public void deploy(ReadableArchive war, String contextRoot) throws EmbeddedException {
-        deploy(war, contextRoot, null);
+    void deploy(ReadableArchive archive, String contextRoot) throws EmbeddedException {
+        deploy(archive, contextRoot, null);
     }
 
     /**
@@ -193,7 +223,7 @@ public class EmbeddedDeployer {
      * undeploy all apps that were deployed by this deployer
      * @throws org.glassfish.embed.EmbeddedException
      */
-    public void undeploy() throws EmbeddedException {
+    public void undeployAll() throws EmbeddedException {
         for(Application anApp : appList) {
             anApp.undeploy();
         }
