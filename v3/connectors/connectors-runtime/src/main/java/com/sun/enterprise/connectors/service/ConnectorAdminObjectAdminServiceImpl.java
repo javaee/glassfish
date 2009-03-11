@@ -38,6 +38,7 @@ package com.sun.enterprise.connectors.service;
 
 import com.sun.enterprise.connectors.ActiveResourceAdapter;
 import com.sun.enterprise.connectors.ActiveOutboundResourceAdapter;
+import com.sun.enterprise.connectors.ConnectorRuntime;
 
 import java.util.*;
 import java.util.logging.*;
@@ -92,7 +93,7 @@ public class ConnectorAdminObjectAdminServiceImpl extends
             throws ConnectorRuntimeException {
 
         try {
-            InitialContext ic = new InitialContext();
+            Context ic = _runtime.getNamingManager().getInitialContext();
             ic.unbind(jndiName);
         }
         catch (NamingException ne) {
