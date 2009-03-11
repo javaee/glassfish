@@ -38,12 +38,9 @@
 --> 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.glassfish.extras</groupId>
-        <artifactId>extras</artifactId>
-        <version>3.0-SNAPSHOT</version>
-    </parent>
     
+    <groupId>org.glassfish.extras</groupId>
+    <version>3.0-SNAPSHOT</version>
     <artifactId>gf-beans-validation-preconditions</artifactId>
     <packaging>pom</packaging>
     <name>Beans Validation for Glassfish V3: preconditions</name>
@@ -51,23 +48,65 @@
     <build>
       <defaultGoal>install</defaultGoal>
 
-       <plugins>
-           <plugin>
-               <artifactId>maven-antrun-plugin</artifactId>
-               <executions>
-                   <execution>
-                       <id>preconditions</id>
-                       <phase>install</phase>
-                       <configuration>
-                           <tasks>
-                               <echo message="Beans Validation Preconditions"/>
-                           </tasks>
-                       </configuration>
-                       <goals>
-                           <goal>run</goal>
-                       </goals>
-                   </execution>
-               </executions>
+      <plugins>
+          <plugin>
+              <artifactId>maven-antrun-plugin</artifactId>
+              <executions>
+
+                  <execution>
+                      <id>preconditions</id>
+                      <phase>initialize</phase>
+                      <configuration>
+                          <tasks>
+                              <defaultexcludes remove="**/.svn/**"/>
+                              <echo message="Beans Validation Preconditions"/>
+                              <property name="target"
+                                        value="${project.build.directory}" />
+
+                              <!-- backup .svn files from jboss-source -->
+                              <mkdir dir="${target}/svn-backup" />
+                              <copy failonerror="false" todir="${target}/svn-backup">
+                                  <fileset dir="${project.build.directory}/../../jboss-source">
+                                      <exclude name="**/pom.xml" />
+                                  </fileset>
+                              </copy>
+                          </tasks>
+                      </configuration>
+                      <goals>
+                          <goal>run</goal>
+                      </goals>
+                  </execution>
+                  <execution>
+                      <id>postconditions</id>
+                      <phase>process-sources</phase>
+                      <configuration>
+                          <tasks>
+                              <defaultexcludes remove="**/.svn/**"/>
+                              <echo message="Beans Validation Preconditions"/>
+                              <property name="target"
+                                        value="${project.build.directory}" />
+
+                              <!-- delete checkoud out .svn files -->
+<echo message="${target}/../../jboss-source" />
+                              <delete failonerror="false" 
+                                      includeemptydirs="true">
+                                   <fileset dir="${target}/../../jboss-source" 
+                                            includes="**/.svn/**" 
+                                            defaultexcludes="false"/>
+                              </delete>                              
+
+                              <copy failonerror="false" 
+                                    todir="${target}/../../jboss-source">
+                                  <fileset dir="${target}/svn-backup"/>
+                              </copy>
+
+                          </tasks>
+                      </configuration>
+                      <goals>
+                          <goal>run</goal>
+                      </goals>
+                  </execution>
+              </executions>
           </plugin>
       </plugins>
     </build>

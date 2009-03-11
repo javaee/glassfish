@@ -50,6 +50,23 @@
 
     <build>
         <defaultGoal>install</defaultGoal>
+        <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-clean-plugin</artifactId>
+            <configuration>
+                <filesets>
+                    <fileset>
+                        <directory>jboss-source</directory>
+                        <includes>
+                            <include>src/**</include>
+                            <include>license.txt</include>
+                        </includes>
+                    </fileset>
+                </filesets>
+            </configuration>
+        </plugin>
+        </plugins>
     </build>
 
     <modules>
