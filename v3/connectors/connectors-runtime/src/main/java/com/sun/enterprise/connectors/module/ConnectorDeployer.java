@@ -151,7 +151,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
         String applicationName = null;
         Application application = context.getModuleMetaData(Application.class);
         if(application != null) {
-            applicationName = application.getName();
+            applicationName = application.getRegistrationName();
         }
         return applicationName;
     }
