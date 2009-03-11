@@ -100,8 +100,8 @@ import org.glassfish.web.valve.GlassFishValve;
  * @version $Revision: 1.12.2.1 $ $Date: 2008/04/17 18:37:09 $
  */
 public class StandardWrapper
-    extends ContainerBase
-    implements ServletConfig, Wrapper {
+        extends ContainerBase
+        implements ServletConfig, Wrapper {
 
     private static Logger log = Logger.getLogger(
         StandardWrapper.class.getName());
@@ -699,14 +699,15 @@ public class StandardWrapper
         }
     }
 
+
     /**
-     * Sets and initializes the servlet instance for this wrapper.
+     * Sets the servlet instance for this wrapper.
      *
      * @param instance the servlet instance
      */
-    public void setServlet(Servlet instance) throws ServletException {
+    public void setServlet(Servlet instance) {
         if (instance == null) {
-            throw new IllegalArgumentException("Null servlet instance");
+            throw new NullPointerException("Null servlet instance");
         }
         if (servletClassName != null) {
             throw new IllegalStateException(
@@ -718,7 +719,6 @@ public class StandardWrapper
         if (Constants.JSP_SERVLET_CLASS.equals(servletClassName)) {
             isJspServlet = true;
         }
-        instance.init(facade);
     }
 
 
@@ -732,20 +732,6 @@ public class StandardWrapper
      */
     public void setServletName(String name) {
         setName(name);
-    }
-
-
-    /**
-     * Return <code>true</code> if the servlet class represented by this
-     * component implements the <code>SingleThreadModel</code> interface.
-     */
-    public boolean isSingleThreadModel() {
-        try {
-            loadServlet();
-        } catch (Throwable t) {
-            ;
-        }
-        return (singleThreadModel);
     }
 
 
@@ -1047,28 +1033,37 @@ public class StandardWrapper
     public Servlet allocate() throws ServletException {
 
         // If we are currently unloading this servlet, throw an exception
-        if (unloading)
+        if (unloading) {
             throw new ServletException
               (sm.getString("standardWrapper.unloading", getName()));
+        }
 
         // If not SingleThreadedModel, return the same instance every time
         if (!singleThreadModel) {
 
             // Load and initialize our instance if necessary
-            if (instance == null) {
+            if (instance == null || instance.getServletConfig() == null) {
                 synchronized (this) {
                     if (instance == null) {
+                        // No instance. Instantiate and initialize
                         try {
                             if (log.isLoggable(Level.FINEST))
                                 log.finest("Allocating non-STM instance");
-
                             instance = loadServlet();
+                            initServlet(instance);
                         } catch (ServletException e) {
                             throw e;
                         } catch (Throwable e) {
                             throw new ServletException
                                 (sm.getString("standardWrapper.allocate"), e);
                         }
+                    } else {
+                        /*
+                         * Instance not yet initialized. This is the case
+                         * when the instance was registered via
+                         * ServletContext#addServlet
+                         */
+                        initServlet(instance);
                     }
                 }
             }
@@ -1079,7 +1074,6 @@ public class StandardWrapper
                 countAllocated++;
                 return (instance);
             }
-
         }
 
         synchronized (instancePool) {
@@ -1088,7 +1082,9 @@ public class StandardWrapper
                 // Allocate a new instance if possible, or else wait
                 if (nInstances < maxInstances) {
                     try {
-                        instancePool.push(loadServlet());
+                        Servlet servlet = loadServlet();
+                        initServlet(servlet);
+                        instancePool.push(servlet);
                         nInstances++;
                     } catch (ServletException e) {
                         throw e;
@@ -1104,13 +1100,12 @@ public class StandardWrapper
                     }
                 }
             }
-            if (log.isLoggable(Level.FINEST))
+            if (log.isLoggable(Level.FINEST)) {
                 log.finest("Returning allocated STM instance");
+            }
             countAllocated++;
             return (Servlet) instancePool.pop();
-
         }
-
     }
 
 
@@ -1209,10 +1204,10 @@ public class StandardWrapper
 
 
     /**
-     * Load and initialize an instance of this servlet, if there is not already
-     * at least one initialized instance.  This can be used, for example, to
-     * load servlets that are marked in the deployment descriptor to be loaded
-     * at server startup time.
+     * Loads and initializes an instance of the servlet, if there is not
+     * already at least one initialized instance.
+     * This can be used, for example, to load servlets that are marked in
+     * the deployment descriptor to be loaded at server startup time.
      * <p>
      * <b>IMPLEMENTATION NOTE</b>:  Servlets whose classnames begin with
      * <code>org.apache.catalina.</code> (so-called "container" servlets)
@@ -1227,16 +1222,15 @@ public class StandardWrapper
      */
     public synchronized void load() throws ServletException {
         instance = loadServlet();
+        initServlet(instance);
     }
 
 
     /**
-     * Load and initialize an instance of this servlet, if there is not already
-     * at least one initialized instance.  This can be used, for example, to
-     * load servlets that are marked in the deployment descriptor to be loaded
-     * at server startup time.
+     * Creates an instance of the servlet, if there is not already
+     * at least one initialized instance.
      */
-    public synchronized Servlet loadServlet() throws ServletException {
+    private synchronized Servlet loadServlet() throws ServletException {
 
         // Nothing to do if we already have an instance or an instance pool
         if (!singleThreadModel && (instance != null)) {
@@ -1247,7 +1241,7 @@ public class StandardWrapper
 
         loadServletClass();
 
-        // Instantiate and initialize an instance of the servlet class itself
+        // Instantiate the servlet class
         Servlet servlet = null;
         try {
             servlet = (Servlet) servletClass.newInstance();
@@ -1281,79 +1275,6 @@ public class StandardWrapper
         }
 
         classLoadTime = (int) (System.currentTimeMillis() -t1);
-        // Call the initialization method of this servlet
-        try {
-            instanceSupport.fireInstanceEvent(BEFORE_INIT_EVENT,servlet);
-
-            // START SJS WS 7.0 6236329
-            //if( System.getSecurityManager() != null) {
-            if ( SecurityUtil.executeUnderSubjectDoAs() ){
-            // END OF SJS WS 7.0 6236329
-                Object[] initType = new Object[1];
-                initType[0] = facade;
-                SecurityUtil.doAsPrivilege("init", servlet, classType,
-                                           initType);
-                initType = null;
-            } else {
-                servlet.init(facade);
-            }
-
-            // Invoke jspInit on JSP pages
-            if ((loadOnStartup >= 0) && (jspFile != null)) {
-                // Invoking jspInit
-                DummyRequest req = new DummyRequest();
-                req.setServletPath(jspFile);
-                req.setQueryString("jsp_precompile=true");
-
-                // START PWC 4707989
-                String allowedMethods = (String) parameters.get("httpMethods");
-                if (allowedMethods != null
-                        && allowedMethods.length() > 0) {
-                    String[] s = allowedMethods.split(",");
-                    if (s != null && s.length > 0) {
-                        req.setMethod(s[0].trim());
-                    }
-                }
-                // END PWC 4707989
-
-                DummyResponse res = new DummyResponse();
-
-                // START SJS WS 7.0 6236329
-                //if( System.getSecurityManager() != null) {
-                if ( SecurityUtil.executeUnderSubjectDoAs() ){
-                // END OF SJS WS 7.0 6236329
-                    Object[] serviceType = new Object[2];
-                    serviceType[0] = req;
-                    serviceType[1] = res;                
-                    SecurityUtil.doAsPrivilege("service", servlet,
-                                               classTypeUsedInService,
-                                               serviceType);
-                    serviceType = null;
-                } else {
-                    servlet.service(req, res);
-                }
-            }
-            instanceSupport.fireInstanceEvent(AFTER_INIT_EVENT,servlet);
-
-        } catch (UnavailableException f) {
-            instanceSupport.fireInstanceEvent(AFTER_INIT_EVENT,servlet, f);
-            unavailable(f);
-            throw f;
-
-        } catch (ServletException f) {
-            instanceSupport.fireInstanceEvent(AFTER_INIT_EVENT,servlet, f);
-            // If the servlet wanted to be unavailable it would have
-            // said so, so do not call unavailable(null).
-            throw f;
-
-        } catch (Throwable f) {
-            getServletContext().log("StandardWrapper.Throwable", f);
-            instanceSupport.fireInstanceEvent(AFTER_INIT_EVENT,servlet, f);
-            // If the servlet wanted to be unavailable it would have
-            // said so, so do not call unavailable(null).
-            throw new ServletException
-                (sm.getString("standardWrapper.initException", getName()), f);
-        }
 
         // Register our newly initialized instance
         singleThreadModel = servlet instanceof SingleThreadModel;
@@ -1372,6 +1293,9 @@ public class StandardWrapper
     }
 
 
+    /*
+     * Loads the servlet class
+     */
     private synchronized void loadServletClass() throws ServletException {
         if (servletClass != null) {
             return;
@@ -1471,6 +1395,89 @@ public class StandardWrapper
         }
 
         servletClass = clazz;
+    }
+
+
+    /**
+     * Initializes the given servlet instance, by calling its init method.
+     */
+    private void initServlet(Servlet servlet) throws ServletException {
+        if (servlet.getServletConfig() != null) {
+            // Servlet has already been initialized
+            return;
+        }
+
+        try {
+            instanceSupport.fireInstanceEvent(BEFORE_INIT_EVENT,servlet);
+            // START SJS WS 7.0 6236329
+            //if( System.getSecurityManager() != null) {
+            if ( SecurityUtil.executeUnderSubjectDoAs() ){
+            // END OF SJS WS 7.0 6236329
+                Object[] initType = new Object[1];
+                initType[0] = facade;
+                SecurityUtil.doAsPrivilege("init", servlet, classType,
+                                           initType);
+                initType = null;
+            } else {
+                servlet.init(facade);
+            }
+
+            // Invoke jspInit on JSP pages
+            if ((loadOnStartup >= 0) && (jspFile != null)) {
+                // Invoking jspInit
+                DummyRequest req = new DummyRequest();
+                req.setServletPath(jspFile);
+                req.setQueryString("jsp_precompile=true");
+
+                // START PWC 4707989
+                String allowedMethods = (String) parameters.get("httpMethods");
+                if (allowedMethods != null
+                        && allowedMethods.length() > 0) {
+                    String[] s = allowedMethods.split(",");
+                    if (s != null && s.length > 0) {
+                        req.setMethod(s[0].trim());
+                    }
+                }
+                // END PWC 4707989
+
+                DummyResponse res = new DummyResponse();
+
+                // START SJS WS 7.0 6236329
+                //if( System.getSecurityManager() != null) {
+                if ( SecurityUtil.executeUnderSubjectDoAs() ){
+                // END OF SJS WS 7.0 6236329
+                    Object[] serviceType = new Object[2];
+                    serviceType[0] = req;
+                    serviceType[1] = res;                
+                    SecurityUtil.doAsPrivilege("service", servlet,
+                                               classTypeUsedInService,
+                                               serviceType);
+                    serviceType = null;
+                } else {
+                    servlet.service(req, res);
+                }
+            }
+            instanceSupport.fireInstanceEvent(AFTER_INIT_EVENT,servlet);
+
+        } catch (UnavailableException f) {
+            instanceSupport.fireInstanceEvent(AFTER_INIT_EVENT,servlet, f);
+            unavailable(f);
+            throw f;
+
+        } catch (ServletException f) {
+            instanceSupport.fireInstanceEvent(AFTER_INIT_EVENT,servlet, f);
+            // If the servlet wanted to be unavailable it would have
+            // said so, so do not call unavailable(null).
+            throw f;
+
+        } catch (Throwable f) {
+            getServletContext().log("StandardWrapper.Throwable", f);
+            instanceSupport.fireInstanceEvent(AFTER_INIT_EVENT,servlet, f);
+            // If the servlet wanted to be unavailable it would have
+            // said so, so do not call unavailable(null).
+            throw new ServletException
+                (sm.getString("standardWrapper.initException", getName()), f);
+        }
     }
 
 

@@ -2072,12 +2072,10 @@ public class StandardContext
      * @param workDir The new work directory
      */
     public void setWorkDir(String workDir) {
-
         this.workDir = workDir;
-
-        if (started)
+        if (started) {
             postWorkDirectory();
-
+        }
     }
 
 
@@ -2538,10 +2536,28 @@ public class StandardContext
             if (findFilterDef(filterName) != null) {
                 return null;
             }
-
             FilterDef filterDef = new FilterDef();
             filterDef.setFilterName(filterName);
             filterDef.setFilterClassName(className);
+            addFilterDef(filterDef, true);
+
+            return filterDef.getFilterRegistration();
+        }
+    }
+
+
+    /*
+     * Registers the given filter instance with this ServletContext
+     * under the given <tt>filterName</tt>.
+     */
+    public FilterRegistration addFilter(String filterName, Filter filter) {
+        synchronized (filterDefs) {
+            if (findFilterDef(filterName) != null) {
+                return null;
+            }
+            FilterDef filterDef = new FilterDef();
+            filterDef.setFilterName(filterName);
+            filterDef.setFilter(filter);
             addFilterDef(filterDef, true);
 
             return filterDef.getFilterRegistration();
@@ -3041,6 +3057,20 @@ public class StandardContext
 
 
     /*
+     * Registers the given servlet instance with this ServletContext
+     * under the given <tt>servletName</tt>.
+     */
+    public ServletRegistration addServlet(String servletName,
+                                          Servlet servlet) {
+        if (findChild(servletName) == null) {
+            return addServlet(servletName, servlet, null, null);
+        } else {
+            return null;
+        }
+    }
+
+
+    /*
      * Adds the servlet with the given name and class type to this servlet
      * context.
      */
@@ -3085,8 +3115,7 @@ public class StandardContext
      * @throws ServletException if the servlet fails to be initialized
      */
     public ServletRegistration addServlet(String servletName,
-            Servlet instance, Map<String, String> initParams)
-                throws ServletException {
+            Servlet instance, Map<String, String> initParams) {
         return addServlet(servletName, instance, initParams, null);
     }
 
@@ -3108,7 +3137,7 @@ public class StandardContext
      */
     public ServletRegistration addServlet(String servletName,
             Servlet instance, Map<String, String> initParams,
-            String... urlPatterns) throws ServletException {
+            String... urlPatterns) {
         if (!(instance instanceof Servlet)) {
             throw new IllegalArgumentException("Not an instance of " +
                                                "javax.servlet.Servlet");

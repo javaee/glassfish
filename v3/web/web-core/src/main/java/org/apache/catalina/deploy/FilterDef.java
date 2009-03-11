@@ -90,6 +90,11 @@ public class FilterDef implements Serializable {
      */
     private Class <? extends Filter> filterClass;
 
+    /*
+     * The filter instance
+     */
+    private Filter filter;
+
     /**
      * The name of this filter, which must be unique among the filters
      * defined for a particular web application.
@@ -203,6 +208,23 @@ public class FilterDef implements Serializable {
         }
         this.filterClass = filterClass;
         this.filterClassName = filterClass.getName();
+    }
+
+
+    public Filter getFilter() {
+        return filter;
+    }
+
+
+    public void setFilter(Filter filter) {
+        if (filter == null) {
+            throw new NullPointerException("Null Filter instance");
+        }
+        if (filterClassName != null) {
+            throw new IllegalStateException("Filter class name already set");
+        }
+        this.filter = filter;
+        this.filterClassName = filter.getClass().getName();
     }
 
 

@@ -433,6 +433,21 @@ public final class ApplicationContextFacade
 
 
     /*
+     * Registers the given servlet instance with this ServletContext
+     * under the given <tt>servletName</tt>.
+     */
+    public ServletRegistration addServlet(String servletName,
+                                          Servlet servlet) {
+        if (SecurityUtil.isPackageProtectionEnabled()) {
+            return (ServletRegistration) doPrivileged(
+                "addServlet", new Object[] {servletName, servlet});
+        } else {
+            return context.addServlet(servletName, servlet);
+        }
+    }
+
+
+    /*
      * Adds the servlet with the given name and class type to this
      * servlet context.
      */
@@ -474,6 +489,20 @@ public final class ApplicationContextFacade
         }
     }
     
+
+    /*
+     * Registers the given filter instance with this ServletContext
+     * under the given <tt>filterName</tt>.
+     */
+    public FilterRegistration addFilter(String filterName, Filter filter) {
+        if (SecurityUtil.isPackageProtectionEnabled()) {
+            return (FilterRegistration) doPrivileged(
+                "addFilter", new Object[] {filterName, filter});
+        } else {
+            return context.addFilter(filterName, filter);
+        }
+    }
+
 
     /**
      * Adds the filter with the given name and class type to this servlet
