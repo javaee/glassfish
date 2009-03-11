@@ -1,5 +1,4 @@
 -exportcontents: \
                         org.glassfish.appclient.client.acc; \
-                        org.glassfish.appclient.client.acc.config; \
                         org.glassfish.appclient.client.jws.boot; \
                         org.glassfish.appclient.common; version=${project.osgi.version}

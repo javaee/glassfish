@@ -102,97 +102,6 @@
         </resources>
 
         <plugins>
-            <!--
-                Extracts the sun-application-client-container_x_y.dtd from the
-                deployment/dtds module into a temp file.
-                The "generate" phase will use it to create JAXB classes.
-            -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-
-                <executions>
-                  <execution>
-                    <id>unpack-dtd</id>
-                    <phase>initialize</phase> <!-- make sure this is before generate -->
-                    <goals>
-                      <goal>unpack</goal>
-                    </goals>
-                    <configuration>
-                      <artifactItems>
-                        <artifactItem>
-                          <groupId>org.glassfish.deployment</groupId>
-                          <artifactId>dtds</artifactId>
-                          <version>${project.version}</version>
-                          <type>zip</type>
-                          <includes>**/${config-dtd-file}</includes>
-                          <overWrite>true</overWrite>
-                          <outputDirectory>${extracted-dtd-root}</outputDirectory>
-                        </artifactItem>
-                      </artifactItems>
-                    </configuration>
-                  </execution>
-                </executions>
-
-
-            </plugin>
-
-            <!--
-                Generates JAXB classes based on the ACC configuration file DTD.
-            -->
-            <plugin>
-                <groupId>org.jvnet.jaxb2.maven2</groupId>
-                <artifactId>maven-jaxb2-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>JAXB-gen-for-sun-acc</id>
-                        <goals>
-                            <goal>generate</goal> <!-- must be before compile -->
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <schemaLanguage>DTD</schemaLanguage>
-                    <schemaDirectory>${extracted-dtd-directory}</schemaDirectory>
-<!--
-                    <schemaDirectory>${config-xsd-dir}</schemaDirectory>
--->
-                    <generatePackage>org.glassfish.appclient.client.acc.config</generatePackage>
-                    <schemaIncludes>
-                        <include>${config-dtd-file}</include>
-<!--
-                        <include>${config-xsd-file}</include>
--->
-                    </schemaIncludes>
-                    <bindingDirectory>src/main/resources</bindingDirectory>
-                    <bindingIncludes>
-                        <include>configBindings.xml</include>
-                    </bindingIncludes>
-                </configuration>
-            </plugin>
-
-
-            <!--
-                Adds the temp directory (which holds the extracted DTD) to the
-                directories cleaned by the 'clean' phase.
-            -->
-            <plugin>
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>2.2</version>
-                <executions>
-                    <execution>
-                        <id>clean-extracted-dtd</id>
-                    </execution>
-                </executions>
-                <configuration>
-                  <filesets>
-                    <fileset>
-                      <directory>${extracted-dtd-root}</directory>
-                    </fileset>
-                  </filesets>
-                </configuration>
-            </plugin>
-
             <plugin>
 
 <!--
@@ -386,6 +295,12 @@
             <groupId>com.sun.corba</groupId>
             <artifactId>glassfish-corba-orb</artifactId>
             <version>${acc.corba-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.orb</groupId>
+            <artifactId>orb-iiop</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
