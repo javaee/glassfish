@@ -73,6 +73,10 @@ own identifying information: Portions Copyright [yyyy]
         </rejar>
 
         <attachArtifact file="${finaljar}"/>
+
+	<!--unjar ${final.jar} so that maven reactor has reference to target/classes -->
+	<unjar src="${finaljar}" dest="${rootdir}/classes" />
+
    </target>
 </project>
 
