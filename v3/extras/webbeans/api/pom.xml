@@ -46,15 +46,32 @@
     
     <artifactId>gf-webbeans-api</artifactId>
     <packaging>pom</packaging>
-    <name>WebBeans API for Glassfish V3</name>
+    <name>WebBeans for Glassfish V3</name>
 
     <build>
         <defaultGoal>install</defaultGoal>
+        <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-clean-plugin</artifactId>
+            <configuration>
+                <filesets>
+                    <fileset>
+                        <directory>checkout-source</directory>
+                        <includes>
+                            <include>src/**</include>
+                            <include>license.txt</include>
+                        </includes>
+                    </fileset>
+                </filesets>
+            </configuration>
+        </plugin>
+        </plugins>
     </build>
 
     <modules>
         <module>checkout</module>
-        <module>jboss-source</module>
+        <module>checkout-source</module>
     </modules>
 
 </project>
