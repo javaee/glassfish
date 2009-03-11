@@ -235,43 +235,4 @@
             </plugin>
         </plugins>
     </reporting>
-
-    <repositories>
-        <repository>
-          <id>jboss</id>
-          <url>http://repository.jboss.com/maven2</url>
-          <releases>
-            <enabled>true</enabled>
-          </releases>
-          <snapshots>
-            <enabled>false</enabled>
-          </snapshots>
-        </repository>
-         <repository>
-           <id>jboss-snapshot</id>
-           <url>http://snapshots.jboss.org/maven2</url>
-           <releases>
-             <enabled>true</enabled>
-           </releases>
-           <snapshots>
-             <enabled>true</enabled>
-           </snapshots>
-         </repository>
-        <repository>
-	    <id>jboss</id>
-	    <url>http://repository.jboss.org/maven2</url>
-	    <releases>
-	      <enabled>true</enabled>
-	    </releases>
-	    <snapshots>
-	      <enabled>false</enabled>
-	    </snapshots>
-        </repository>
-      </repositories>
-      <pluginRepositories>
-        <pluginRepository>
-          <id>jboss-plugins</id>
-          <url>http://repository.jboss.com/maven2</url>
-        </pluginRepository>
-      </pluginRepositories>
 </project>
