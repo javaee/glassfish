@@ -36,6 +36,7 @@
 package com.sun.enterprise.resource.naming;
 
 import com.sun.enterprise.resource.beans.AdministeredObjectResource;
+import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.logging.LogDomains;
 
 import java.util.Hashtable;
@@ -43,6 +44,7 @@ import java.util.logging.Logger;
 import javax.naming.Context;
 import javax.naming.Name;
 import javax.naming.Reference;
+import javax.naming.NamingException;
 import javax.naming.spi.ObjectFactory;
 
 /**
@@ -77,9 +79,9 @@ public class AdministeredObjectFactory implements ObjectFactory {
 
         //If call fom application client, start resource adapter lazily.
         //todo: Similar code in ConnectorObjectFactory - to refactor.
-/* TODO V3 handle client later
-	ConnectorRuntime runtime = ConnectorRuntime.getRuntime();
 
+	ConnectorRuntime runtime = ConnectorRuntime.getRuntime();
+/* TODO V3 handle client later
         if(runtime.getEnviron() == ConnectorRuntime.CLIENT) {
             ConnectorDescriptor connectorDescriptor = null;
             try {
@@ -97,14 +99,13 @@ public class AdministeredObjectFactory implements ObjectFactory {
         }
 */
 
-/* TODO V3 handle embedded rar later
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         if (runtime.checkAccessibility(moduleName, loader) == false) {
 	    throw new NamingException("Only the application that has the embedded resource" +
 	                               "adapter can access the resource adapter");
 
 	}
-*/
+
 	logger.fine("[AdministeredObjectFactory] ==> Got AdministeredObjectResource = " + aor);
 
 	return aor.createAdministeredObject(null);

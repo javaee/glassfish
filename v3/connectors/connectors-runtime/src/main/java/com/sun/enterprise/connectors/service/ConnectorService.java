@@ -43,6 +43,7 @@ import com.sun.enterprise.connectors.DeferredResourceConfig;
 import com.sun.enterprise.connectors.util.ConnectorDDTransformUtils;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.enterprise.connectors.ConnectorRuntime;
+import com.sun.enterprise.connectors.ActiveResourceAdapter;
 import com.sun.enterprise.connectors.util.ResourcesUtil;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.archivist.ApplicationArchivist;
@@ -53,6 +54,7 @@ import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.xml.sax.SAXParseException;
+import org.glassfish.internal.api.ConnectorClassFinder;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -389,5 +391,50 @@ public class ConnectorService implements ConnectorConstants {
         ResourcesUtil resutil = ResourcesUtil.createInstance();
         String rarFileName = ConnectorAdminServiceUtils.getConnectorModuleName(rarName) + ".rar";
         return resutil.getConnectorDescriptorFromUri(rarName, rarFileName);
+    }
+
+    /**
+     * Check whether ClassLoader is permitted to access this resource adapter.
+     * If the RAR is deployed and is not a standalone RAR, then only the ClassLoader
+     * that loaded the archive (any of its child) should be able to access it. Otherwise everybody can
+     * access the RAR.
+     *
+     * @param rarName Resource adapter module name.
+     * @param loader  <code>ClassLoader</code> to verify.
+     */
+    public boolean checkAccessibility(String rarName, ClassLoader loader) {
+        ActiveResourceAdapter ar = _registry.getActiveResourceAdapter(rarName);
+        if (ar != null && loader != null) { // If RA is deployed
+
+            ClassLoader rarLoader = ar.getClassLoader();
+
+            //If the RAR is not standalone.
+            if (rarLoader != null && ConnectorAdminServiceUtils.isEmbeddedConnectorModule(rarName)
+                /*&& (!(rarLoader instanceof ConnectorClassFinder))*/) {
+                ClassLoader rarLoaderParent = rarLoader.getParent();
+                ClassLoader parent = loader;
+                while (true) {
+                    if (parent.equals(rarLoaderParent)) {
+                        return true;
+                    }
+
+                    final ClassLoader temp = parent;
+                    Object obj = AccessController.doPrivileged(new PrivilegedAction() {
+                        public Object run() {
+                            return temp.getParent();
+                        }
+                    });
+
+                    if (obj == null) {
+                        break;
+                    } else {
+                        parent = (ClassLoader) obj;
+                    }
+                }
+                // If no parent matches return false;
+                return false;
+            }
+        }
+        return true;
     }
 }

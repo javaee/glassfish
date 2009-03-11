@@ -37,6 +37,8 @@ package com.sun.enterprise.resource.naming;
 
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.connectors.ConnectionManagerImpl;
+import com.sun.enterprise.connectors.service.ConnectorAdminServiceUtils;
+import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
@@ -46,6 +48,7 @@ import org.glassfish.api.naming.NamingObjectProxy;
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.ConfigurationException;
+import javax.naming.InitialContext;
 import javax.resource.spi.ManagedConnectionFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -90,6 +93,31 @@ public class ConnectorObjectFactory implements NamingObjectProxy {
      * @return an object
      */
     public Object create(Context ic) throws NamingException {
+
+        /* TODO V3 handle client later
+        if (runtime.getEnviron() == ConnectorRuntime.CLIENT) {
+            ConnectorDescriptor connectorDescriptor = null;
+
+                String descriptorJNDIName = ConnectorAdminServiceUtils.
+                        getReservePrefixedJNDINameForDescriptor(moduleName);
+                connectorDescriptor = (ConnectorDescriptor) ic.lookup(descriptorJNDIName);
+            try {
+                runtime.createActiveResourceAdapter(connectorDescriptor,  moduleName, null);
+            } catch (ConnectorRuntimeException e) {
+                _logger.log(Level.FINE, "Failed to look up ConnectorDescriptor from JNDI", moduleName);
+                NamingException ne = new NamingException("Failed to look up ConnectorDescriptor from JNDI");
+                ne.setRootCause(e);
+                throw ne;
+            }
+        }
+        */
+
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        if (runtime.checkAccessibility(moduleName, loader) == false) {
+            throw new NamingException(
+                    "Only the application that has the embedded resource" +
+                            "adapter can access the resource adapter");
+        }
 
         Object cf = null;
         try {

@@ -102,7 +102,7 @@ import java.util.logging.Level;
 public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api.ConnectorRuntime,
         PostConstruct, PreDestroy {
 
-    /* TODO V3 environment set to server as of today
+    /* TODO V3 environment set to server as of now
     private volatile int environment = CLIENT;*/
     private volatile int environment = SERVER;
     private static ConnectorRuntime _runtime;
@@ -504,8 +504,6 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * will be placed into commission by the subsystem.
      */
     public void postConstruct() {
-
-
         ccPoolAdmService = (ConnectorConnectionPoolAdminServiceImpl)
                 ConnectorAdminServicesFactory.getService(ConnectorConstants.CCP);
         connectorResourceAdmService = (ConnectorResourceAdminServiceImpl)
@@ -771,8 +769,17 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
         return clh.getConnectorClassLoader(rarName);
     }
 
-    public ClassLoader createConnectorClassLoader(String moduleDirectory){
-        return cclUtil.createRARClassLoader(moduleDirectory);        
+    /**
+     * Given the module directory, creates a connector-class-finder (class-loader) for the module
+     * @param moduleDirectory rar module directory for which classloader is needed
+     * @param parent parent classloader<br>
+     * For standalone rars, pass null, as the parent should be common-class-loader
+     * that will be automatically taken care by ConnectorClassLoaderService.<br>
+     * For embedded rars, parent is necessary<br>
+     * @return classloader created for the module
+     */
+    public ClassLoader createConnectorClassLoader(String moduleDirectory, ClassLoader parent){
+        return cclUtil.createRARClassLoader(moduleDirectory, parent);
     }
 
     public ResourceDeployer getResourceDeployer(Object resource){
@@ -864,5 +871,23 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
 
     public int getEnvironment(){
         return environment;
+    }
+
+    /**
+     * Check whether ClassLoader is permitted to access this resource adapter.
+     * If the RAR is deployed and is not a standalone RAR, then only the ClassLoader
+     * that loaded the archive (any of its child) should be able to access it. Otherwise everybody can
+     * access the RAR.
+     *
+     * @param rarName Resource adapter module name.
+     * @param loader  <code>ClassLoader</code> to verify.
+     */
+    public boolean checkAccessibility(String rarName, ClassLoader loader) {
+        return connectorService.checkAccessibility(rarName, loader);
+    }
+
+    public void loadDeferredResourceAdapter(String rarName)
+                        throws ConnectorRuntimeException {
+        connectorService.loadDeferredResourceAdapter(rarName);
     }
 }
