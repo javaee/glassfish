@@ -54,7 +54,7 @@
     </scm>
 
     <build>
-        <defaultGoal>scm:checkout</defaultGoal>
+        <defaultGoal>process-sources</defaultGoal>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -71,7 +71,7 @@
                 <configuration>
                     <connectionType>connection</connectionType>
                     <revisionKey>16087</revisionKey>
-                    <checkoutDirectory>../jboss-source</checkoutDirectory>
+                    <checkoutDirectory>../checkout-source</checkoutDirectory>
                 </configuration>
             </plugin>
         </plugins>
