@@ -56,6 +56,7 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
 
 
     ReadableArchive source;
+    ReadableArchive originalSource;
     final OpsParams parameters;
     final Logger logger;
     final ServerEnvironment env;
@@ -72,6 +73,7 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
     /** Creates a new instance of DeploymentContext */
     public DeploymentContextImpl(Logger logger, ReadableArchive source,
                                  OpsParams params, ServerEnvironment env) {
+        this.originalSource = source;
         this.source = source;
         this.logger = logger;
         this.parameters = params;
@@ -348,4 +350,9 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
     public void setArchiveHandler(ArchiveHandler archiveHandler) {
         this.archiveHandler = archiveHandler;
     }
+
+    public ReadableArchive getOriginalSource() {
+        return originalSource;
+    }
+
 }

@@ -110,4 +110,14 @@ public interface ExtendedDeploymentContext extends DeploymentContext {
      * @param props
      */
     public void setSource(ReadableArchive source);
+
+    /**
+     * Gets the original source archive
+     * In case of archive deployment, this will return the archive before
+     * expanding. In case of directory deployment, this will return the same
+     * thing as getSource()
+     *
+     * @return the original source archive
+     */
+    public ReadableArchive getOriginalSource();
 }

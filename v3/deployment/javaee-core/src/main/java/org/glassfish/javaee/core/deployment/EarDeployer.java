@@ -317,6 +317,19 @@ public class EarDeployer implements Deployer {
                     }
 
                     @Override
+                    public ReadableArchive getOriginalSource() {
+                        try {
+                            File appRoot = context.getSourceDir();
+                            File origModuleFile = new File(appRoot, 
+                                bd.getModuleDescriptor().getArchiveUri()); 
+                            return archiveFactory.openArchive(
+                                origModuleFile);
+                        } catch (IOException ioe) {
+                            return null;
+                        }
+                    }
+
+                    @Override
                     public File getScratchDir(String subDirName) {
                         String modulePortion = Util.getURIName(
                             getSource().getURI());
