@@ -233,5 +233,11 @@
             <version>${project.version}</version>
             <type>zip</type>
         </dependency> 
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-orb</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
     </dependencies>
 </project>
