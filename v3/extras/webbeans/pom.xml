@@ -38,69 +38,44 @@
 --> 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.glassfish.extras</groupId>
-        <artifactId>extras</artifactId>
-        <version>3.0-SNAPSHOT</version>
-    </parent>
     
+    <groupId>org.glassfish.extras</groupId>
+    <version>3.0-SNAPSHOT</version>
     <artifactId>gf-webbeans</artifactId>
     <packaging>pom</packaging>
-    <name>Webbeans for Glassfish V3</name>
+    <name>WebBeans for Glassfish V3</name>
 
     <developers>
         <developer>
             <id>rogerk</id>
             <name>Roger Kitain</name>
-            <url></url>
             <organization>Sun Microsystems, Inc.</organization>
         </developer>
     </developers>
 
-    <repositories>
-        <repository>
-	    <id>jboss</id>
-	    <url>http://repository.jboss.com/maven2</url>
-	    <releases>
-	      <enabled>true</enabled>
-	    </releases>
-	    <snapshots>
-	      <enabled>false</enabled>
-	    </snapshots>
-        </repository>
-        <repository>
-	    <id>jboss-snapshot</id>
-	    <url>http://snapshots.jboss.org/maven2</url>
-	    <releases>
-	      <enabled>true</enabled>
-	    </releases>
-	    <snapshots>
-	      <enabled>true</enabled>
-	    </snapshots>
-        </repository>
-    </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-	    <id>jboss-plugins</id>
-	    <url>http://repository.jboss.com/maven2</url>
-        </pluginRepository>
-    </pluginRepositories>
-
     <build>
       <defaultGoal>install</defaultGoal>
+      <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-clean-plugin</artifactId>
+            <configuration>
+                <filesets>
+                    <fileset>
+                        <directory>.</directory>
+                        <includes>
+                            <include>checkout-source/**</include>
+                        </includes>
+                    </fileset>
+                </filesets>
+            </configuration>
+        </plugin>
+      </plugins>   
     </build>
 
-    <profiles>
-      <profile>
-	<id>default</id>
-	<activation>
-	  <activeByDefault>true</activeByDefault>
-	</activation>
-	<modules>
-<!--	  <module>api</module> -->
-	</modules>
-      </profile>
-    </profiles>
-    
+    <modules>
+        <module>svn-helpers</module>
+        <module>trunk</module>
+    </modules>
 
 </project>
