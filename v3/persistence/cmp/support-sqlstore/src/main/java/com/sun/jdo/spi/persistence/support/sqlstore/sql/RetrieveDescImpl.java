@@ -54,8 +54,8 @@ import com.sun.jdo.spi.persistence.support.sqlstore.sql.constraint.Constraint;
 import com.sun.jdo.spi.persistence.support.sqlstore.sql.constraint.ConstraintFieldName;
 import com.sun.jdo.spi.persistence.support.sqlstore.sql.generator.SelectQueryPlan;
 import com.sun.jdo.spi.persistence.utility.FieldTypeEnumeration;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
 import com.sun.jdo.spi.persistence.utility.ParameterInfo;
+import org.glassfish.persistence.common.I18NHelper;
 
 import java.util.ArrayList;
 import java.util.Iterator;

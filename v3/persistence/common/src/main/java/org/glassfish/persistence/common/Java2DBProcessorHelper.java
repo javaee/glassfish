@@ -34,17 +34,15 @@
  * holder.
  */
 
-package com.sun.jdo.spi.persistence.support.ejb.ejbc;
+package org.glassfish.persistence.common;
 
 import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.BundleDescriptor;
 //import com.sun.enterprise.deployment.backend.DeploymentEventInfo;
 //import com.sun.enterprise.deployment.backend.DeploymentRequest;
 //import com.sun.enterprise.deployment.backend.DeploymentStatus;
 //import com.sun.enterprise.deployment.backend.IASDeploymentException;
-
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
-import com.sun.jdo.spi.persistence.utility.database.DatabaseConstants;
-import com.sun.jdo.spi.persistence.utility.logging.Logger;
+import com.sun.logging.LogDomains;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -54,53 +52,61 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author pramodg
  */
-abstract public class BaseProcessor  
-        implements DatabaseConstants {
+public class Java2DBProcessorHelper { 
 
     /** The logger */
-    protected  static final Logger logger = LogHelperEJBCompiler.getLogger();
-    
-    /** I18N message handler */
-    protected  final static ResourceBundle messages = I18NHelper.loadBundle(
-        "com.sun.jdo.spi.persistence.support.ejb.ejbc.Bundle", // NOI18N
-        BaseProcessor.class.getClassLoader());
+    private final static Logger logger = LogDomains.getLogger(Java2DBProcessorHelper.class, LogDomains.DPL_LOGGER);
 
-    protected Application application;
-//    protected DeploymentEventInfo info;
-//    protected DeploymentStatus status;
+    /** I18N message handler */
+    private  final static ResourceBundle messages = logger.getResourceBundle();
+        // I18NHelper.loadBundle(
+        // logger.getResourceBundleName(), Java2DBProcessorHelper.class.getClassLoader());
+
+    /**
+     * Default DDL name prefix. Need to have something to avoid
+     * generating hidden names when a suffix is added to an empty string.
+     * E.g. <code>.dbschema</code> name can be difficult to find,
+     * while <code>default.dbschema</code> will signal that the default
+     * had been used.
+     **/
+    private final static String DEFAULT_NAME = "default"; // NOI18N
+    
+    private Application application;
+//    private DeploymentEventInfo info;
+//    private DeploymentStatus status;
     
     /**
      * True if this event results in creating new tables.
      */
-    protected  boolean create;
-    protected  String cliCreateTables;
-    protected  String cliDropAndCreateTables;
-    protected  String cliDropTables;
+    private  boolean create;
+    private  Boolean cliCreateTables;
+    private  Boolean cliDropAndCreateTables;
+    private  Boolean cliDropTables;
     /**
      * Name with which the application is registered.
      */
-    protected String appRegisteredName;
+    private String appRegisteredName;
     
-    protected String appDeployedLocation;
-    protected String appGeneratedLocation;
+    private String appDeployedLocation;
+    private String appGeneratedLocation;
     /**
      * The string name of the create jdbc ddl file.
      */
-    protected String createJdbcFileName;
+    private String createJdbcFileName;
     /**
      * The string name of the drop jdbc ddl file.
      */
-    protected String dropJdbcFileName;
+    private String dropJdbcFileName;
 
-    protected  boolean debug = logger.isLoggable(logger.FINE);     
-    
     /**
-     * Creates a new instance of BaseProcessor.
+     * Creates a new instance of Java2DBProcessorHelper.
      * @param info the deployment info object.
      * @param create true if this event results in creating new tables.
      * @param cliCreateTables the cli string related to creating tables
@@ -110,31 +116,27 @@ abstract public class BaseProcessor
      * @param cliDropTables the cli string to indicate that the tables
      * have to dropped at undeploy time.
      */
-/*
-    public BaseProcessor(DeploymentEventInfo info,
-            boolean create, String cliCreateTables,
-            String cliDropAndCreateTables, String cliDropTables) {
-        initializeVariables(info, create, cliCreateTables,
+    public Java2DBProcessorHelper(//DeploymentEventInfo info,
+            boolean create, Boolean cliCreateTables,
+            Boolean cliDropAndCreateTables, Boolean cliDropTables) {
+        initializeVariables(/** info, **/ create, cliCreateTables,
             cliDropAndCreateTables, cliDropTables);
     }
 
     private void initializeVariables(
-            DeploymentEventInfo info, boolean create, String cliCreateTables,
-            String cliDropAndCreateTables, String cliDropTables) {
-        this.info = info;
-        this.application = this.info.getApplicationDescriptor();
-        this.appRegisteredName = this.application.getRegistrationName();
-        this.status = 
-                this.info.getDeploymentRequest().getCurrentDeploymentStatus();
+            /** DeploymentEventInfo info, **/ boolean create, Boolean cliCreateTables,
+            Boolean cliDropAndCreateTables, Boolean cliDropTables) {
+        //this.info = info;
+        //this.application = this.info.getApplicationDescriptor();
+        //this.appRegisteredName = this.application.getRegistrationName();
+        //this.status = 
+                //this.info.getDeploymentRequest().getCurrentDeploymentStatus();
         
         this.create = create;
         this.cliCreateTables = cliCreateTables;
         this.cliDropAndCreateTables = cliDropAndCreateTables;
         this.cliDropTables = cliDropTables;  
     }
-  */
-    abstract protected void processApplication();
-
     
        /**
         * Read the ddl file from the disk location.
@@ -142,19 +144,19 @@ abstract public class BaseProcessor
         * @param create true if this event results in creating tables.
         * @return the jdbc ddl file.
         */
-    protected  File getDDLFile(String fileName, boolean create) {
+    public File getDDLFile(String fileName, boolean create) {
         File file = null;        
         try {
             file = new File(fileName);   
-            if (debug) {
-                logger.fine(
-                    ((create)? "ejb.BaseProcessor.createfilename" //NOI18N
-                    : "ejb.BaseProcessor.dropfilename"), //NOI18N
-                    file.getName());
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine(I18NHelper.getMessage(messages,
+                    ((create)? "Java2DBProcessorHelper.createfilename" //NOI18N
+                    : "Java2DBProcessorHelper.dropfilename"), //NOI18N
+                    file.getName()));
             }
         } catch (Exception e) {
             logI18NWarnMessage(
-                 "Exception caught in BaseProcessor.getDDLFile()", 
+                 "Exception caught in Java2DBProcessorHelper.getDDLFile()", 
                 appRegisteredName, null, e);
         }
         return file;        
@@ -167,7 +169,7 @@ abstract public class BaseProcessor
      * @param sql the Statement to use for execution.
      * @throws java.io.IOException if there is a problem with reading the file.
      */
-    protected  void executeDDLs(File f, Statement sql)
+    public void executeDDLs(File f, Statement sql)
             throws IOException {
 
         BufferedReader reader = null;
@@ -178,13 +180,13 @@ abstract public class BaseProcessor
             String s;
             while ((s = reader.readLine()) != null) {
                 try {
-                    if (debug) {
-                        logger.fine("ejb.BaseProcessor.executestatement", s); //NOI18N
+                    if (logger.isLoggable(Level.FINE)) {
+                        logger.fine(I18NHelper.getMessage(messages, "Java2DBProcessorHelper.executestatement", s)); //NOI18N
                     }
                     sql.execute(s);
 
                 } catch(SQLException ex) {
-                    String msg = getI18NMessage("ejb.BaseProcessor.sqlexception", 
+                    String msg = getI18NMessage("Java2DBProcessorHelper.sqlexception", 
                             s, null, ex);
                     logger.warning(msg);
                     warningBuf.append("\n\t").append(msg); // NOI18N
@@ -200,7 +202,7 @@ abstract public class BaseProcessor
             }
             if (warningBuf.length() > 0) {
                 String warning = 
-                        getI18NMessage("ejb.BaseProcessor.tablewarning");
+                        getI18NMessage("Java2DBProcessorHelper.tablewarning");
                 warnUser(warning + warningBuf.toString());
             }
         }
@@ -213,7 +215,7 @@ abstract public class BaseProcessor
      * @param msg Message for user.
      */
 
-    protected  void warnUser(String msg) {
+    public void warnUser(String msg) {
 /*
         status.setStageStatus(DeploymentStatus.WARNING);
         status.setStageStatusMessage(
@@ -229,15 +231,15 @@ abstract public class BaseProcessor
      * @param cmpResource For obtaining JNDI name
      * @param ex Exception which is cause for inability to connect.
      */
-    protected void cannotConnect(String connName, 
+    public void cannotConnect(String connName, 
             Throwable ex) {
-        logI18NWarnMessage( "ejb.BaseProcessor.cannotConnect",  
+        logI18NWarnMessage( "Java2DBProcessorHelper.cannotConnect",  
                 connName,  null, ex);
     }
     
-    protected void fileIOError(String regName, 
+    public void fileIOError(String regName, 
             Throwable ex) {
-        logI18NWarnMessage("ejb.BaseProcessor.ioexception",  
+        logI18NWarnMessage("Java2DBProcessorHelper.ioexception",  
                 regName,  null, ex);
     }
     
@@ -246,7 +248,7 @@ abstract public class BaseProcessor
      * to the database
      * @param conn the database connection.
      */
-    protected static void closeConn(Connection conn) {
+    public void closeConn(Connection conn) {
         if (conn != null) {
             try {
                 conn.close();
@@ -256,7 +258,7 @@ abstract public class BaseProcessor
         }
     }
     
-    protected void logI18NInfoMessage(
+    public void logI18NInfoMessage(
             String errorCode, String regName, 
             String fileName, Throwable ex) {
         String msg = getI18NMessage(errorCode, 
@@ -264,7 +266,7 @@ abstract public class BaseProcessor
         logger.info(msg);
     }
     
-    protected void logI18NWarnMessage(
+    public void logI18NWarnMessage(
             String errorCode, String regName, 
             String fileName, Throwable ex) {
         String msg = getI18NMessage(errorCode, 
@@ -278,12 +280,12 @@ abstract public class BaseProcessor
      * @param errorCode 
      * @return 
      */
-    protected String getI18NMessage(String errorCode) {
+    public String getI18NMessage(String errorCode) {
         return getI18NMessage(
              errorCode, null, null, null);
     }    
 
-    protected String getI18NMessage(
+    public String getI18NMessage(
             String errorCode, String regName, 
             String fileName, Throwable ex) {
         String msg = null;
@@ -305,7 +307,7 @@ abstract public class BaseProcessor
      * be the domains/domain1/applications directory. This information is obtained
      * from the DeploymentEventListener object that is passed in.
      */
-    protected void setApplicationLocation() {
+    public void setApplicationLocation() {
         if(null != this.appDeployedLocation)
             return;
         
@@ -320,10 +322,79 @@ abstract public class BaseProcessor
      * create or drop objects from the database. This information is obtained
      * from the DeploymentEventListener object that is passed in.
      */
-    protected void setGeneratedLocation() {
+    public void setGeneratedLocation() {
         if(null != this.appGeneratedLocation)
             return;
 //        this.appGeneratedLocation =
 //                info.getScratchDir("ejb").getAbsolutePath() + File.separator;
+    }
+
+    public String getGeneratedLocation() {
+        return appGeneratedLocation;
+    }
+
+    public String getDeployedLocation() {
+        return appDeployedLocation;
+    }
+
+    public String getAppRegisteredName() {
+        return appRegisteredName;
+    }
+
+    /**
+     * Returns createJdbcFileName
+     */
+    public String getCreateJdbcFileName() {
+        return createJdbcFileName;
+    }
+
+    /**
+     * Sets createJdbcFileName
+     */
+    public void setCreateJdbcFileName(String s) {
+        createJdbcFileName = s;
+    }
+
+    /**
+     * Returns dropJdbcFileName
+     */
+    public String getDropJdbcFileName() {
+        return dropJdbcFileName;
+    }
+
+    /**
+     * Sets dropJdbcFileName
+     */
+    public void setDropJdbcFileName(String s) {
+        dropJdbcFileName = s;
+    }
+
+    /**
+     * Returns name prefix for DDL files extracted from the info instance by the
+     * Sun-specific code.
+     *
+     * @param info the instance to use for the name generation.
+     * @return name prefix as String.
+     */
+    public static String getDDLNamePrefix(Object info) {
+        StringBuffer rc = new StringBuffer();
+
+        if (info instanceof BundleDescriptor) {
+            BundleDescriptor bundle = (BundleDescriptor)info;
+            rc.append(bundle.getApplication().getRegistrationName());
+
+            Application application = bundle.getApplication();
+            if (!application.isVirtual()) {
+                String modulePath = bundle.getModuleDescriptor().getArchiveUri();
+                int l = modulePath.length();
+
+                // Remove ".jar" from the module's jar name.
+                rc.append(DatabaseConstants.NAME_SEPARATOR).
+                    append(modulePath.substring(0, l - 4));
+            }
+
+        } // no other option is available at this point.
+
+        return (rc.length() == 0)? DEFAULT_NAME : rc.toString();
     }
 } 

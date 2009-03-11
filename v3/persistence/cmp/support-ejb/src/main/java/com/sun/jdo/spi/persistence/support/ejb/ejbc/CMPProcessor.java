@@ -38,12 +38,13 @@ package com.sun.jdo.spi.persistence.support.ejb.ejbc;
 
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
-//import com.sun.enterprise.deployment.backend.DeploymentEventInfo;
-//import com.sun.enterprise.deployment.backend.DeploymentStatus;
 
 import com.sun.jdo.spi.persistence.support.sqlstore.ejb.DeploymentHelper;
 import com.sun.jdo.spi.persistence.support.sqlstore.ejb.EJBHelper;
 import com.sun.jdo.api.persistence.support.JDOFatalUserException;
+import com.sun.jdo.spi.persistence.utility.logging.Logger;
+
+import org.glassfish.persistence.common.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,9 +60,15 @@ import java.util.Iterator;
  * in a deploy/undeploy case.
  * @author pramodg
  */
-public class CMPProcessor
-    extends BaseProcessor {
+public class CMPProcessor {
     
+    private static Logger logger = LogHelperEJBCompiler.getLogger();
+
+    // TODO
+    private boolean create;
+
+    private Java2DBProcessorHelper helper = null;
+
     /**
      * Creates a new instance of CMPProcessor
      * @param info the deployment info object.
@@ -72,8 +79,6 @@ public class CMPProcessor
      * old tables have to be dropped and new tables created.
      * @param cliDropTables the cli string to indicate that the tables
      * have to dropped at undeploy time.
-     */
-/*
     public CMPProcessor(
             DeploymentEventInfo info, boolean create, 
             String cliCreateTables, String cliDropAndCreateTables, String cliDropTables) {
@@ -86,25 +91,7 @@ public class CMPProcessor
      * any ejb bundle descriptors if defined 
      * for this application.
      */
-    protected void processApplication() {        
-        Collection bundleCollection = application.getEjbBundleDescriptors();
-        if ( bundleCollection  == null) {
-            return;
-        }
-        Iterator bundleItr = bundleCollection.iterator();
-
-        // Process only those Bundle descriptors that contain CMP beans.
-        while ( bundleItr.hasNext() ) {
-             processAppBundle((EjbBundleDescriptor)bundleItr.next()); 
-        } 
-    } 
-    
-    /**
-     * This method does all the work of checking
-     * and processing each ejb bundle descriptor. 
-     * @param bundle the ejb bundle descriptor that is being worked on.
-     */
-   private void processAppBundle(EjbBundleDescriptor bundle) {
+    protected void processApplication(EjbBundleDescriptor bundle) {
            if (!bundle.containsCMPEntity()) {
                 return;
             }
@@ -122,7 +109,7 @@ public class CMPProcessor
             boolean createTables = getCreateTablesValue(cmpResource) ;                   
             boolean dropTables = getDropTablesValue(cmpResource);
 
-            if (debug) {                
+            if (logger.isLoggable(logger.FINE)) {                
                 logger.fine("ejb.CMPProcessor.createanddroptables", //NOI18N
                     new Object[] {new Boolean(createTables), new Boolean(dropTables)});
             }
@@ -135,21 +122,21 @@ public class CMPProcessor
             // At this point of time we are sure that we would need to create 
             // the sql/jdbc files required to create or drop objects from the 
             // database. Hence setup the required directories from the info object.
-            setApplicationLocation();
-            setGeneratedLocation();
+            helper.setApplicationLocation();
+            helper.setGeneratedLocation();
             
             constructJdbcFileNames(bundle);
-            if (debug) {
+            if (logger.isLoggable(logger.FINE)) {
                 logger.fine("ejb.CMPProcessor.createanddropfilenames", 
-                    createJdbcFileName, dropJdbcFileName); //NOI18N            
+                    helper.getCreateJdbcFileName(), helper.getDropJdbcFileName()); //NOI18N            
             }            
 
             String resourceName = cmpResource.getJndiName();
             if (dropTables) {
-                executeStatements(dropJdbcFileName, resourceName);
+                executeStatements(helper.getDropJdbcFileName(), resourceName);
             } else { 
                 // else can only be createTables as otherwise we'll not reach here
-                executeStatements(createJdbcFileName, resourceName);
+                executeStatements(helper.getCreateJdbcFileName(), resourceName);
             }
    }    
 
@@ -212,8 +199,8 @@ public class CMPProcessor
     private void  constructJdbcFileNames(EjbBundleDescriptor ejbBundle) {
         String filePrefix = EJBHelper.getDDLNamePrefix(ejbBundle);
         
-        createJdbcFileName = filePrefix + CREATE_DDL_JDBC_FILE_SUFFIX;
-        dropJdbcFileName = filePrefix + DROP_DDL_JDBC_FILE_SUFFIX;
+        helper.setCreateJdbcFileName(filePrefix + DatabaseConstants.CREATE_DDL_JDBC_FILE_SUFFIX);
+        helper.setDropJdbcFileName(filePrefix + DatabaseConstants.DROP_DDL_JDBC_FILE_SUFFIX);
     }
     
     /**
@@ -225,15 +212,15 @@ public class CMPProcessor
      */
     private void executeStatements(
             String fileName, String resourceName) {
-        File file = getDDLFile(
-                appGeneratedLocation + fileName, false);
+        File file = helper.getDDLFile(
+                helper.getGeneratedLocation() + fileName, false);
         if (file.exists()) {
             executeDDLStatement(file, resourceName);
         } else {
-            logI18NWarnMessage(
+            helper.logI18NWarnMessage(
                  ((create)? "ejb.BaseProcessor.cannotcreatetables" //NOI18N
                  : "ejb.BaseProcessor.cannotdroptables"), //NOI18N
-                appRegisteredName, file.getName(), null);
+                helper.getAppRegisteredName(), file.getName(), null);
         }
     }
     
@@ -257,18 +244,18 @@ public class CMPProcessor
                     sql = conn.createStatement();
                     result = true;
                 } catch (SQLException ex) {
-                    cannotConnect(resourceName, ex);
+                    helper.cannotConnect(resourceName, ex);
                 } catch (JDOFatalUserException ex) {
-                    cannotConnect(resourceName, ex);
+                    helper.cannotConnect(resourceName, ex);
                 }
         
                 if(result) {               
-                    executeDDLs(fileName, sql);
+                    helper.executeDDLs(fileName, sql);
                 }
         } catch (IOException e) {
-            fileIOError(application.getRegistrationName(), e);            
+            helper.fileIOError(helper.getAppRegisteredName(), e);            
         } finally { 
-            closeConn(conn);
+            helper.closeConn(conn);
         }
         return result;        
     }

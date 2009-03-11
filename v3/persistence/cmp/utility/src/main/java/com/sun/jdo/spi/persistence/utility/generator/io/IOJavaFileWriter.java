@@ -45,7 +45,7 @@ package com.sun.jdo.spi.persistence.utility.generator.io;
 import java.io.*;
 import java.util.*;
 
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
+import org.glassfish.persistence.common.I18NHelper;
 import com.sun.jdo.spi.persistence.utility.generator.JavaFileWriter;
 import com.sun.jdo.spi.persistence.utility.generator.JavaClassWriter;
 

@@ -35,7 +35,7 @@
  */
 
 
-package com.sun.jdo.spi.persistence.utility.database;
+package org.glassfish.persistence.common;
 
 /** 
  * @author Marina Vatkina

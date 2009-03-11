@@ -39,7 +39,7 @@ package com.sun.jdo.api.persistence.enhancer.util;
 
 import java.util.ResourceBundle;
 
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
+import org.glassfish.persistence.common.I18NHelper;
 
 
 /**

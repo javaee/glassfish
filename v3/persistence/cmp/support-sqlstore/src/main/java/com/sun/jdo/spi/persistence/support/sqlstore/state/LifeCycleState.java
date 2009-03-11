@@ -41,9 +41,9 @@
 package com.sun.jdo.spi.persistence.support.sqlstore.state;
 
 import com.sun.jdo.api.persistence.support.JDOUserException;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
 import com.sun.jdo.spi.persistence.utility.logging.Logger;
 import com.sun.jdo.spi.persistence.support.sqlstore.LogHelperStateManager;
+import org.glassfish.persistence.common.I18NHelper;
 
 import java.util.ResourceBundle;
 

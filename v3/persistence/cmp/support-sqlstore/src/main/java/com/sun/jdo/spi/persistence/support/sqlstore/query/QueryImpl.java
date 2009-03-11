@@ -54,11 +54,11 @@ import com.sun.jdo.api.persistence.support.JDOQueryException;
 import com.sun.jdo.api.persistence.support.JDOUnsupportedOptionException;
 import com.sun.jdo.spi.persistence.support.sqlstore.PersistenceManager;
 import com.sun.jdo.spi.persistence.support.sqlstore.RetrieveDesc;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
 import com.sun.jdo.spi.persistence.utility.logging.Logger;
 import com.sun.jdo.spi.persistence.support.sqlstore.query.jqlc.JQLC;
 import com.sun.jdo.spi.persistence.support.sqlstore.query.jqlc.ParameterTable;
 import com.sun.jdo.spi.persistence.support.sqlstore.ValueFetcher;
+import org.glassfish.persistence.common.I18NHelper;
 
 /**
  *

@@ -46,7 +46,7 @@ import java.util.logging.FileHandler;
 import java.util.logging.SimpleFormatter;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
+import org.glassfish.persistence.common.I18NHelper;
 
 /**
  *

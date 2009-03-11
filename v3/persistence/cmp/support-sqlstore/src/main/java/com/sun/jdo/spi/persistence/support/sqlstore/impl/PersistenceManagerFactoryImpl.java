@@ -49,8 +49,8 @@ import javax.sql.DataSource;
 
 import com.sun.jdo.api.persistence.support.*;
 import com.sun.jdo.spi.persistence.support.sqlstore.RuntimeVersion;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
 import com.sun.jdo.spi.persistence.support.sqlstore.ejb.EJBHelper;
+import org.glassfish.persistence.common.I18NHelper;
 
 /**
  *

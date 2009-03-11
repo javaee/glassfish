@@ -47,7 +47,7 @@ import java.util.ResourceBundle;
 
 import com.sun.jdo.api.persistence.support.JDOFatalInternalException;
 import com.sun.jdo.spi.persistence.support.sqlstore.ValueFetcher;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
+import org.glassfish.persistence.common.I18NHelper;
 
 /**
  * Class wrapping the actual query parameters to make them

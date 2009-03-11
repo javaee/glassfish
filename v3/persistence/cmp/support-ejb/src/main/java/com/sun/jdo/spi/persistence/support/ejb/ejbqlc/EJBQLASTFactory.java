@@ -48,7 +48,7 @@ import antlr.collections.AST;
 import antlr.ASTFactory;
 
 import java.util.ResourceBundle;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
+import org.glassfish.persistence.common.I18NHelper;
 
 /** 
  * Factory to create and connect EJBQLAST nodes.

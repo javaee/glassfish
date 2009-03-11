@@ -53,7 +53,7 @@ header
     import antlr.TokenStreamRecognitionException;
     
     import java.util.ResourceBundle;
-    import com.sun.jdo.spi.persistence.utility.I18NHelper;
+    import org.glassfish.persistence.common.I18NHelper;
 }
 
 //===== Lexical Analyzer Class Definitions =====

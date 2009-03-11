@@ -63,10 +63,10 @@ import com.sun.enterprise.deployment.IASEjbCMPEntityDescriptor;
 import com.sun.enterprise.deployment.io.DescriptorConstants;
 import com.sun.enterprise.deployment.interfaces.QueryParser;
 
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
+import org.glassfish.persistence.common.I18NHelper;
 import com.sun.jdo.spi.persistence.utility.MergedBundle;
 import com.sun.jdo.spi.persistence.utility.logging.Logger;
-import com.sun.jdo.spi.persistence.utility.database.DatabaseConstants;
+import org.glassfish.persistence.common.DatabaseConstants;
 
 import com.sun.jdo.api.persistence.enhancer.generator.Main;
 

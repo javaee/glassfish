@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.jdo.spi.persistence.utility;
+package org.glassfish.persistence.common;
 
 import java.util.*;
 import java.text.MessageFormat;
@@ -77,8 +77,8 @@ public class I18NHelper {
 	 */
   	public static ResourceBundle loadBundle(Class classObject) {
 		return loadBundle(
-    		JavaTypeHelper.getPackageName(classObject.getName()) + bundleSuffix,
-    		classObject.getClassLoader());
+    			getPackageName(classObject.getName()) + bundleSuffix,
+    				classObject.getClassLoader());
 	}
 
   
@@ -152,5 +152,24 @@ public class I18NHelper {
     		Object []args = {String.valueOf(arg)};
     		return getMessage(messages, messageKey, args);
   	}
+
+        /**
+         * Returns the package portion of the specified class
+         * @param className the name of the class from which to extract the
+         * package
+         * @return package portion of the specified class
+         */
+        private static String getPackageName (final String className)
+        {
+                if (className != null)
+                {
+                        final int index = className.lastIndexOf('.');
+
+                        return ((index != -1) ?
+                                className.substring(0, index) : ""); // NOI18N
+                }
+
+                return null;
+    	}
 
 }

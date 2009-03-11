@@ -38,6 +38,7 @@
 package com.sun.jdo.spi.persistence.utility;
 
 import com.sun.jdo.spi.persistence.utility.logging.Logger;
+import org.glassfish.persistence.common.I18NHelper;
 
 import java.util.Properties;
 import java.util.ResourceBundle;

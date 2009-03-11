@@ -65,7 +65,7 @@ import com.sun.jdo.spi.persistence.support.sqlstore.utility.NumericConverter;
 import com.sun.jdo.spi.persistence.support.sqlstore.utility.NumericConverterFactory;
 
 import com.sun.jdo.spi.persistence.utility.logging.Logger;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
+import org.glassfish.persistence.common.I18NHelper;
 
 /*
  * This is an abstract class which is a generic implementation of the

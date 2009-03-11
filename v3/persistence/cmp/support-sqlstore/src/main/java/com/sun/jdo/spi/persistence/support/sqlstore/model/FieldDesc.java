@@ -49,9 +49,9 @@ import com.sun.jdo.api.persistence.support.JDOFatalUserException;
 import com.sun.jdo.spi.persistence.support.sqlstore.*;
 import com.sun.jdo.spi.persistence.support.sqlstore.sco.SqlTimestamp;
 import com.sun.jdo.spi.persistence.utility.FieldTypeEnumeration;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
 import com.sun.jdo.spi.persistence.utility.logging.Logger;
 import org.netbeans.modules.dbschema.ColumnElement;
+import org.glassfish.persistence.common.I18NHelper;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;

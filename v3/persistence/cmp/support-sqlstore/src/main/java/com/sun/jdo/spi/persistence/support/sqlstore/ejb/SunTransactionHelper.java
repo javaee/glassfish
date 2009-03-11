@@ -55,7 +55,7 @@ import com.sun.appserv.jdbc.DataSource;
 
 import com.sun.jdo.api.persistence.support.JDOFatalInternalException;
 import com.sun.jdo.api.persistence.support.PersistenceManagerFactory;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
+import org.glassfish.persistence.common.I18NHelper;
 
 
 /** Sun specific implementation for TransactionHelper interface.

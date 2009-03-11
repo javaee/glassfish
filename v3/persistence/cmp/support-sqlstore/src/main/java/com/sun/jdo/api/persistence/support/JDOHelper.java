@@ -45,7 +45,7 @@ package com.sun.jdo.api.persistence.support;
 import java.util.ResourceBundle;
 import java.util.Collection;
 
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
+import org.glassfish.persistence.common.I18NHelper;
 
 /**
  * @author Martin Zaun

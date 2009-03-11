@@ -46,7 +46,7 @@ package com.sun.jdo.spi.persistence.generator.database;
 import java.io.*;
 import java.sql.*;
 import java.util.ResourceBundle;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
+import org.glassfish.persistence.common.I18NHelper;
 import com.sun.jdo.spi.persistence.utility.logging.Logger;
 
 

@@ -56,7 +56,7 @@ import com.sun.jdo.api.persistence.support.JDOHelper;
 import com.sun.jdo.spi.persistence.support.sqlstore.ejb.CMPHelper;
 import com.sun.jdo.spi.persistence.support.sqlstore.ejb.JDOEJB20Helper;
 import com.sun.jdo.spi.persistence.utility.logging.Logger;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
+import org.glassfish.persistence.common.I18NHelper;
 
 
 /*

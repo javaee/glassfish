@@ -43,7 +43,7 @@
 package com.sun.jdo.spi.persistence.support.sqlstore;
 
 import com.sun.jdo.api.persistence.support.JDOException;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
+import org.glassfish.persistence.common.I18NHelper;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;

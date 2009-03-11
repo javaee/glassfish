@@ -54,7 +54,7 @@ header
     import com.sun.jdo.spi.persistence.support.sqlstore.RetrieveDesc;
     import com.sun.jdo.spi.persistence.support.sqlstore.StateManager;
 
-    import com.sun.jdo.spi.persistence.utility.I18NHelper; 
+    import org.glassfish.persistence.common.I18NHelper;
     import com.sun.jdo.spi.persistence.utility.FieldTypeEnumeration;
     import com.sun.jdo.spi.persistence.utility.logging.Logger;
 

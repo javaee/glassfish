@@ -55,13 +55,13 @@ import com.sun.jdo.api.persistence.support.JDOFatalUserException;
 import com.sun.jdo.api.persistence.support.PersistenceManagerFactory;
 import com.sun.jdo.spi.persistence.support.sqlstore.LogHelperPersistenceManager;
 
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
+import org.glassfish.persistence.common.I18NHelper;
+import org.glassfish.persistence.common.Java2DBProcessorHelper;
 import com.sun.jdo.spi.persistence.utility.StringHelper;
-import com.sun.jdo.spi.persistence.utility.database.DatabaseConstants;
 import com.sun.jdo.spi.persistence.utility.logging.Logger;
+import org.glassfish.persistence.common.DatabaseConstants;
 
 import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import org.glassfish.internal.api.Globals;
@@ -75,15 +75,6 @@ import org.jvnet.hk2.component.Habitat;
  */
 public class DeploymentHelper
     {
-
-    /** 
-     * Default DDL name prefix. Need to have something to avoid
-     * generating hidden names when a suffix is added to an empty string.
-     * E.g. <code>.dbschema</code> name can be difficult to find,
-     * while <code>default.dbschema</code> will signal that the default
-     * had been used.
-     **/
-    private final static String DEFAULT_NAME = "default"; // NOI18N
 
     /** I18N message handler */
     private final static ResourceBundle messages = I18NHelper.loadBundle(
@@ -101,25 +92,7 @@ public class DeploymentHelper
      * @return name prefix as String. 
      */   
     public static String getDDLNamePrefix(Object info) { 
-        StringBuffer rc = new StringBuffer();
-
-        if (info instanceof BundleDescriptor) {
-            BundleDescriptor bundle = (BundleDescriptor)info;
-            rc.append(bundle.getApplication().getRegistrationName());
-
-            Application application = bundle.getApplication();
-            if (!application.isVirtual()) {
-                String modulePath = bundle.getModuleDescriptor().getArchiveUri();
-                int l = modulePath.length();
-
-                // Remove ".jar" from the module's jar name.
-                rc.append(DatabaseConstants.NAME_SEPARATOR).
-                    append(modulePath.substring(0, l - 4));
-            }
-
-        } // no other option is available at this point.
-
-        return (rc.length() == 0)? DEFAULT_NAME : rc.toString();
+        return Java2DBProcessorHelper.getDDLNamePrefix(info);
     }
 
     /**

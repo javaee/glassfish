@@ -42,7 +42,7 @@ import antlr.ANTLRException;
 import antlr.collections.AST;
 import com.sun.enterprise.deployment.interfaces.QueryParser;
 import com.sun.jdo.api.persistence.support.JDOFatalInternalException;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
+import org.glassfish.persistence.common.I18NHelper;
 
 /** Helper class to support parsing of JDOQL parameter declarations.
  * 

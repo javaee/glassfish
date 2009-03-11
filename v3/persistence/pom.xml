@@ -49,6 +49,7 @@
     <packaging>pom</packaging>
     <name>GlassFish persistence related modules</name>  
     <modules>
+        <module>common</module>
         <module>jpa-connector</module>
         <module>eclipselink-wrapper</module>
         <module>cmp</module>

@@ -53,7 +53,7 @@ import com.sun.jdo.api.persistence.model.ModelException;
 import com.sun.jdo.api.persistence.model.ModelVetoException;
 import com.sun.jdo.api.persistence.model.mapping.MappingTableElement;
 import com.sun.jdo.api.persistence.model.mapping.MappingReferenceKeyElement;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
+import org.glassfish.persistence.common.I18NHelper;
 
 /** 
  *

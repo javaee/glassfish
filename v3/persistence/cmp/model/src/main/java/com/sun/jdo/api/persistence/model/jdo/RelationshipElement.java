@@ -44,7 +44,7 @@ package com.sun.jdo.api.persistence.model.jdo;
 
 import com.sun.jdo.api.persistence.model.Model;
 import com.sun.jdo.api.persistence.model.ModelException;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
+import org.glassfish.persistence.common.I18NHelper;
 
 /* TODO:
 	1. throw (Model or IllegalArgument)Exception on set illegal constant values?

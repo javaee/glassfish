@@ -47,7 +47,7 @@ package com.sun.jdo.spi.persistence.support.ejb.ejbqlc;
 import java.lang.reflect.Method;
 import java.util.ResourceBundle;
 
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
+import org.glassfish.persistence.common.I18NHelper;
 
 /** 
  * Helper class to handle EJBQL query parameters. 

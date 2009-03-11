@@ -57,7 +57,7 @@ import com.sun.jdo.spi.persistence.support.sqlstore.sql.constraint.ConstraintFie
 import com.sun.jdo.spi.persistence.support.sqlstore.sql.constraint.ConstraintNode;
 import com.sun.jdo.spi.persistence.support.sqlstore.sql.constraint.ConstraintOperation;
 import com.sun.jdo.spi.persistence.support.sqlstore.sql.constraint.ConstraintJoin;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
+import org.glassfish.persistence.common.I18NHelper;
 
 import java.util.ArrayList;
 import java.util.List;

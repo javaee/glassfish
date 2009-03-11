@@ -49,7 +49,7 @@ import com.sun.jdo.spi.persistence.support.ejb.codegen.GeneratorException;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
+import org.glassfish.persistence.common.I18NHelper;
 
 /*
  * This is the helper class for JDO code generation 

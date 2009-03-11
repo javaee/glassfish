@@ -48,7 +48,7 @@ header
     import java.util.ResourceBundle;
     import java.util.Collection;
     
-    import com.sun.jdo.spi.persistence.utility.I18NHelper;
+    import org.glassfish.persistence.common.I18NHelper;
 
     import com.sun.jdo.spi.persistence.support.sqlstore.query.util.type.TypeTable;
     import com.sun.jdo.spi.persistence.support.sqlstore.query.util.type.Type;

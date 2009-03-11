@@ -46,8 +46,8 @@ import java.util.ArrayList;
 
 import com.sun.jdo.api.persistence.model.Model;
 import com.sun.jdo.api.persistence.model.ModelException;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
 import com.sun.jdo.spi.persistence.utility.StringHelper;
+import org.glassfish.persistence.common.I18NHelper;
 
 /* TODO:
 	1. throw ModelException on add duplicate field or concurrency group (will 

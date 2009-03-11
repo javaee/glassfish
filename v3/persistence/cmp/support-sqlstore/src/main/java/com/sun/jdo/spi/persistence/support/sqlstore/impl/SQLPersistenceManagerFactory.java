@@ -42,8 +42,8 @@
 
 package com.sun.jdo.spi.persistence.support.sqlstore.impl;
 
+import org.glassfish.persistence.common.I18NHelper;
 import com.sun.jdo.api.persistence.support.*;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
 import com.sun.jdo.spi.persistence.support.sqlstore.PersistenceStore;
 import com.sun.jdo.spi.persistence.support.sqlstore.SQLStoreManager;
 import com.sun.jdo.spi.persistence.support.sqlstore.VersionConsistencyCache;

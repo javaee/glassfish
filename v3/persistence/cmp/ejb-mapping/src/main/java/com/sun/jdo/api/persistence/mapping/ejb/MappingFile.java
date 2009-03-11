@@ -67,7 +67,7 @@ import com.sun.jdo.api.persistence.model.mapping.impl.*;
 import com.sun.jdo.api.persistence.model.jdo.*;
 import com.sun.jdo.api.persistence.model.jdo.impl.*;
 import com.sun.jdo.spi.persistence.utility.logging.Logger;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
+import org.glassfish.persistence.common.I18NHelper;
 
 import org.netbeans.modules.schema2beans.Schema2BeansException;
 

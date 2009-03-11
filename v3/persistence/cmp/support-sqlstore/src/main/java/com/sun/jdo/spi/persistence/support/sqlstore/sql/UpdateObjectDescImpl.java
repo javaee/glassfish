@@ -50,8 +50,8 @@ import com.sun.jdo.spi.persistence.support.sqlstore.model.FieldDesc;
 import com.sun.jdo.spi.persistence.support.sqlstore.model.ForeignFieldDesc;
 import com.sun.jdo.spi.persistence.support.sqlstore.model.LocalFieldDesc;
 import com.sun.jdo.spi.persistence.support.sqlstore.sql.concurrency.Concurrency;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
 import com.sun.jdo.spi.persistence.utility.logging.Logger;
+import org.glassfish.persistence.common.I18NHelper;
 
 import java.util.*;
 

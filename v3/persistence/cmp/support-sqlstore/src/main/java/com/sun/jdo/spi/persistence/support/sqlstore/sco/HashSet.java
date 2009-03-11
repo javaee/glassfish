@@ -49,8 +49,8 @@ import com.sun.jdo.api.persistence.support.JDOUserException;
 import com.sun.jdo.spi.persistence.support.sqlstore.PersistenceCapable;
 import com.sun.jdo.spi.persistence.support.sqlstore.StateManager;
 import com.sun.jdo.spi.persistence.support.sqlstore.SCOCollection;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
 import com.sun.jdo.spi.persistence.support.sqlstore.PersistenceManager;
+import org.glassfish.persistence.common.I18NHelper;
 
 
 /**

@@ -59,6 +59,7 @@ import com.sun.jdo.api.persistence.model.mapping.MappingFieldElement;
 import com.sun.jdo.api.persistence.model.mapping.impl.MappingClassElementImpl;
 import com.sun.jdo.spi.persistence.utility.*;
 import com.sun.jdo.spi.persistence.utility.logging.Logger;
+import org.glassfish.persistence.common.I18NHelper;
 
 /* TODO:
 	1. think about moving illegal lists of static info out to a properties file

@@ -43,7 +43,7 @@
 package com.sun.jdo.spi.persistence.support.sqlstore.impl;
 
 import com.sun.jdo.api.persistence.support.*;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
+import org.glassfish.persistence.common.I18NHelper;
 
 import java.util.Collection;
 import java.util.Properties;

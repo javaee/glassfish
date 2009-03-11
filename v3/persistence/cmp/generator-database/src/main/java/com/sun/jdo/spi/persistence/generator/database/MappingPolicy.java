@@ -60,12 +60,13 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.sql.Types;
 
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
+import org.glassfish.persistence.common.I18NHelper;
 import com.sun.jdo.spi.persistence.utility.StringHelper;
 
 import com.sun.jdo.spi.persistence.utility.logging.Logger;
 
-import com.sun.jdo.spi.persistence.utility.database.*;
+import com.sun.jdo.spi.persistence.utility.database.DBVendorTypeHelper;
+import org.glassfish.persistence.common.DatabaseConstants;
 
 // XXX Capitalization of acronyms such as Jdbc vs. JDBC is inconsistent
 // throught out this package.

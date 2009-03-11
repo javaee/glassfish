@@ -47,8 +47,8 @@ import java.util.ResourceBundle;
 import com.sun.jdo.api.persistence.support.JDOQueryException;
 import com.sun.jdo.api.persistence.support.JDOFatalInternalException;
 import com.sun.jdo.api.persistence.support.JDOUnsupportedOptionException;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
 import com.sun.jdo.spi.persistence.utility.logging.Logger;
+import org.glassfish.persistence.common.I18NHelper;
 
 /** 
  *

@@ -51,8 +51,8 @@ import org.netbeans.modules.dbschema.util.NameUtil;
 import com.sun.jdo.api.persistence.model.*;
 import com.sun.jdo.api.persistence.model.mapping.*;
 import com.sun.jdo.api.persistence.model.jdo.PersistenceClassElement;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
 import com.sun.jdo.spi.persistence.utility.JavaTypeHelper;
+import org.glassfish.persistence.common.I18NHelper;
 
 /** 
  *

@@ -51,7 +51,7 @@ import java.lang.reflect.Method;
 
 import antlr.TokenBuffer;
 
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
+import org.glassfish.persistence.common.I18NHelper;
 import com.sun.jdo.api.persistence.model.Model;
 import com.sun.jdo.spi.persistence.support.ejb.model.util.NameMapper;
 import com.sun.jdo.spi.persistence.utility.logging.Logger;

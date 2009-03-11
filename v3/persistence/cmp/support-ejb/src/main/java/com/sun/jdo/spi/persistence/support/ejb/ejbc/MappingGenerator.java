@@ -91,11 +91,13 @@ import com.sun.jdo.api.persistence.model.ModelException;
 
 import com.sun.jdo.api.persistence.model.mapping.MappingClassElement;
 
+import org.glassfish.persistence.common.I18NHelper;
+
 import com.sun.jdo.spi.persistence.utility.StringHelper;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
 import com.sun.jdo.spi.persistence.utility.logging.Logger;
 import com.sun.jdo.spi.persistence.utility.database.DBVendorTypeHelper;
-import com.sun.jdo.spi.persistence.utility.database.DatabaseConstants;
+
+import org.glassfish.persistence.common.DatabaseConstants;
 
 import com.sun.jdo.spi.persistence.support.sqlstore.ejb.DeploymentHelper;
 

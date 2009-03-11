@@ -38,6 +38,7 @@ package com.sun.jdo.spi.persistence.utility;
 
 import java.util.ResourceBundle;
 import com.sun.jdo.spi.persistence.utility.logging.Logger;
+import org.glassfish.persistence.common.I18NHelper;
 
 
 /** Implements a simple semaphore.

@@ -52,11 +52,11 @@ import com.sun.jdo.spi.persistence.support.sqlstore.state.LifeCycleState;
 import com.sun.jdo.spi.persistence.support.sqlstore.state.PersistentNonTransactional;
 import com.sun.jdo.spi.persistence.support.sqlstore.state.PersistentClean;
 import com.sun.jdo.spi.persistence.support.sqlstore.state.Hollow;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
 import com.sun.jdo.spi.persistence.utility.NullSemaphore;
 import com.sun.jdo.spi.persistence.utility.Semaphore;
 import com.sun.jdo.spi.persistence.utility.SemaphoreImpl;
 import com.sun.jdo.spi.persistence.utility.logging.Logger;
+import org.glassfish.persistence.common.I18NHelper;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;

@@ -43,10 +43,10 @@ import com.sun.jdo.api.persistence.support.JDOUserException;
 import com.sun.jdo.api.persistence.support.SpecialDBOperation;
 import com.sun.jdo.spi.persistence.support.sqlstore.LogHelperSQLStore;
 import com.sun.jdo.spi.persistence.utility.FieldTypeEnumeration;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
 import com.sun.jdo.spi.persistence.utility.PropertyHelper;
 import com.sun.jdo.spi.persistence.utility.database.DBVendorTypeHelper;
 import com.sun.jdo.spi.persistence.utility.logging.Logger;
+import org.glassfish.persistence.common.I18NHelper;
 
 import java.io.IOException;
 import java.sql.SQLException;

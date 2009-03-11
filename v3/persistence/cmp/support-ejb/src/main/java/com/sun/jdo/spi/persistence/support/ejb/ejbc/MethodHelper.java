@@ -53,7 +53,7 @@ import com.sun.enterprise.deployment.IASEjbCMPEntityDescriptor;
 import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.enterprise.deployment.QueryDescriptor;
 
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
+import org.glassfish.persistence.common.I18NHelper;
 import com.sun.jdo.spi.persistence.utility.generator.JavaClassWriterHelper;
 
 /** This is a subclass of {@link AbstractMethodHelper} 

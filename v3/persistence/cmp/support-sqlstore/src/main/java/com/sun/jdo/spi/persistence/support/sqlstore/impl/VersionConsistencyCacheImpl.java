@@ -52,8 +52,8 @@ import com.sun.jdo.spi.persistence.support.sqlstore.StateManager;
 import com.sun.jdo.spi.persistence.support.sqlstore.VersionConsistencyCache;
 
 import com.sun.jdo.spi.persistence.utility.BucketizedHashtable;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
 import com.sun.jdo.spi.persistence.utility.logging.Logger;
+import org.glassfish.persistence.common.I18NHelper;
 
 
 /**

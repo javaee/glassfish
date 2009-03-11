@@ -60,7 +60,7 @@ import com.sun.jdo.spi.persistence.support.ejb.ejbqlc.EJBQLC;
 import com.sun.jdo.spi.persistence.support.ejb.ejbqlc.JDOQLElements;
 import com.sun.jdo.spi.persistence.support.ejb.ejbqlc.EJBQLException;
 
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
+import org.glassfish.persistence.common.I18NHelper;
 import com.sun.jdo.spi.persistence.utility.generator.*;
 import com.sun.jdo.spi.persistence.utility.logging.Logger;
  

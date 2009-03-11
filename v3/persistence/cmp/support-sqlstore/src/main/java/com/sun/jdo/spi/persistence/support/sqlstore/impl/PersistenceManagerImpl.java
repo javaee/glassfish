@@ -50,12 +50,12 @@ import com.sun.jdo.spi.persistence.support.sqlstore.PersistenceManager;
 import com.sun.jdo.spi.persistence.support.sqlstore.PersistenceManagerFactory;
 import com.sun.jdo.spi.persistence.support.sqlstore.ejb.EJBHelper;
 import com.sun.jdo.spi.persistence.support.sqlstore.query.QueryImpl;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
 import com.sun.jdo.spi.persistence.utility.NullSemaphore;
 import com.sun.jdo.spi.persistence.utility.Semaphore;
 import com.sun.jdo.spi.persistence.utility.SemaphoreImpl;
 import com.sun.jdo.spi.persistence.utility.logging.Logger;
 
+import org.glassfish.persistence.common.I18NHelper;
 import javax.transaction.Status;
 import java.io.File;
 import java.io.FilenameFilter;

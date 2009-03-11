@@ -46,7 +46,7 @@ import java.io.*;
 import java.util.*;
 import java.text.MessageFormat;
 
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
+import org.glassfish.persistence.common.I18NHelper;
 import com.sun.jdo.spi.persistence.utility.StringHelper;
 
 /** 

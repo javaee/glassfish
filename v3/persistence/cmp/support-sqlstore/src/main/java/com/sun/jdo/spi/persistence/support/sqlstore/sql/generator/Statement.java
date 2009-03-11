@@ -50,7 +50,7 @@ import com.sun.jdo.spi.persistence.support.sqlstore.ActionDesc;
 import com.sun.jdo.spi.persistence.support.sqlstore.database.DBVendorType;
 import com.sun.jdo.spi.persistence.support.sqlstore.model.LocalFieldDesc;
 import com.sun.jdo.spi.persistence.support.sqlstore.sql.constraint.*;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
+import org.glassfish.persistence.common.I18NHelper;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

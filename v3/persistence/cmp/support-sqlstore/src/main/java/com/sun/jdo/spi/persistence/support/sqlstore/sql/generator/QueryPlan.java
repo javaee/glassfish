@@ -50,7 +50,7 @@ import com.sun.jdo.spi.persistence.support.sqlstore.SQLStoreManager;
 import com.sun.jdo.spi.persistence.support.sqlstore.model.ClassDesc;
 import com.sun.jdo.spi.persistence.support.sqlstore.model.ReferenceKeyDesc;
 import com.sun.jdo.spi.persistence.support.sqlstore.model.TableDesc;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
+import org.glassfish.persistence.common.I18NHelper;
 
 import java.util.ArrayList;
 import java.util.ResourceBundle;

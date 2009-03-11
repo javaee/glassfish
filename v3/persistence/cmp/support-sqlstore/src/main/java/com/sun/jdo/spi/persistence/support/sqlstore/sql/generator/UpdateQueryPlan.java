@@ -52,7 +52,7 @@ import com.sun.jdo.spi.persistence.support.sqlstore.Transaction;
 import com.sun.jdo.spi.persistence.support.sqlstore.model.*;
 import com.sun.jdo.spi.persistence.support.sqlstore.sql.UpdateJoinTableDesc;
 import com.sun.jdo.spi.persistence.support.sqlstore.sql.UpdateObjectDescImpl;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
+import org.glassfish.persistence.common.I18NHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;

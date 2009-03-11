@@ -42,8 +42,8 @@
 
 package com.sun.jdo.spi.persistence.support.sqlstore.connection;
 
+import org.glassfish.persistence.common.I18NHelper;
 import com.sun.jdo.api.persistence.support.Transaction;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
 import com.sun.jdo.spi.persistence.utility.DoubleLinkedList;
 import com.sun.jdo.spi.persistence.utility.Linkable;
 import com.sun.jdo.spi.persistence.support.sqlstore.utility.StringScanner;

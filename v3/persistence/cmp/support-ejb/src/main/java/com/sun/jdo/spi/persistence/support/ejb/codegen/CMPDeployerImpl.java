@@ -50,7 +50,7 @@ import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
 import com.sun.jdo.spi.persistence.support.ejb.ejbc.JDOCodeGenerator;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
+import org.glassfish.persistence.common.I18NHelper;
 import com.sun.jdo.spi.persistence.utility.logging.Logger;
 
 import com.sun.enterprise.deployment.EjbDescriptor;

@@ -57,8 +57,8 @@ import com.sun.jdo.spi.persistence.support.sqlstore.query.util.type.WrapperClass
 import com.sun.jdo.spi.persistence.support.sqlstore.query.util.type.MathType;
 import com.sun.jdo.spi.persistence.support.sqlstore.query.util.type.DateType;
 
+import org.glassfish.persistence.common.I18NHelper;
 import com.sun.jdo.spi.persistence.support.sqlstore.ValueFetcher;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
 import com.sun.jdo.spi.persistence.utility.JavaTypeHelper;
 import com.sun.jdo.spi.persistence.utility.ParameterInfo;
 

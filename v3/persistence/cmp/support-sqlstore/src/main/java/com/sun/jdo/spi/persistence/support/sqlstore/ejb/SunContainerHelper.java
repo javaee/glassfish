@@ -73,7 +73,7 @@ import com.sun.jdo.spi.persistence.support.sqlstore.impl.PersistenceManagerFacto
 import com.sun.jdo.spi.persistence.support.sqlstore.LogHelperPersistenceManager;
 import com.sun.jdo.spi.persistence.support.sqlstore.utility.NumericConverter;
 import com.sun.jdo.spi.persistence.utility.logging.Logger;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
+import org.glassfish.persistence.common.I18NHelper;
 
 /** Implementation for Sun specific CMP and Container interactions as defined
 * by the ContainerHelper interface.

@@ -49,10 +49,10 @@ import java.util.*;
 import antlr.TokenBuffer;
 import antlr.ANTLRException;
 
+import org.glassfish.persistence.common.I18NHelper;
 import com.sun.jdo.api.persistence.support.JDOQueryException;
 import com.sun.jdo.api.persistence.support.JDOUnsupportedOptionException;
 import com.sun.jdo.api.persistence.support.JDOFatalInternalException;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
 import com.sun.jdo.spi.persistence.utility.StringHelper;
 import com.sun.jdo.spi.persistence.support.sqlstore.PersistenceManager;
 import com.sun.jdo.spi.persistence.support.sqlstore.RetrieveDesc;

@@ -44,7 +44,7 @@ package com.sun.jdo.spi.persistence.support.sqlstore.ejb;
 import java.util.ResourceBundle;
 
 import javax.transaction.*;
-import com.sun.jdo.spi.persistence.utility.I18NHelper;
+import org.glassfish.persistence.common.I18NHelper;
 import com.sun.jdo.api.persistence.support.PersistenceManagerFactory;
 import com.sun.jdo.api.persistence.support.JDOFatalInternalException;
 import com.sun.jdo.spi.persistence.utility.logging.Logger;
