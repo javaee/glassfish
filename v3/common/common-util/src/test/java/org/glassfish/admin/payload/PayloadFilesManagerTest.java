@@ -225,6 +225,39 @@ public class PayloadFilesManagerTest {
         }.run("testPathlessFile");
     }
 
+    @Test
+    public void testWindowsPath() throws Exception {
+        System.out.println("testWindowsPath");
+        testForBadChars("C:\\Program Files\\someDir");
+    }
+
+    @Test
+    public void testNonWindowsPath() throws Exception {
+        System.out.println("testNonWindowsPath");
+        testForBadChars("/Users/whoever/someDir");
+
+    }
+
+    private void testForBadChars(String initialPath) {
+        URI uri = null;
+        URI targetDirURI = null;
+        try {
+            PayloadFilesManager.Temp instance = new PayloadFilesManager.Temp(Logger.getAnonymousLogger());
+            uri = instance.getTempSubDirForPath(initialPath);
+            targetDirURI = instance.getTargetDir().toURI();
+
+            System.out.println("  " + initialPath + " -> " + uri.toASCIIString());
+            String uriString = targetDirURI.relativize(uri).toASCIIString();
+            
+            // trim the trailing slash for the directory
+            uriString = uriString.substring(0, uriString.length() - 1);
+            assertFalse("path " + uriString + " still contains bad character(s)",
+                    uriString.contains("/") ||
+                    uriString.contains("\\") ||
+                    uriString.contains(":"));        } catch (Exception e) {
+            fail("unexpected exception " + e.getLocalizedMessage());
+        }
+    }
     private abstract class CommonTest {
 
         private String payloadType = "application/zip";

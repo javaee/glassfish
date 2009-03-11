@@ -287,13 +287,18 @@ public abstract class PayloadFilesManager {
             return null;
         }
 
-        private URI getTempSubDirForPath(final String parentPath) throws IOException {
+        URI getTempSubDirForPath(final String parentPath) throws IOException {
             File tempSubDir = pathToTempSubdir.get(parentPath);
             if (tempSubDir == null) {
                 /*
-                 * The extra dashes make sure the prefix meets createTempFile's reqts
+                 * The extra dashes make sure the prefix meets createTempFile's reqts.
+                 * Replace slashes (forward or backward) that are directory
+                 * separators and replace colons (from Windows devices) with single
+                 * dashes.  This technique generates unique but flat directory
+                 * names so same-named files in different directories will
+                 * go to different directories.
                  */
-                String tempDirPrefix = parentPath.replace('/', '-') + "---";
+                String tempDirPrefix = parentPath.replaceAll("[/:\\\\]", "-") + "---";
                 tempSubDir = createTempFolder(getTargetDir(), tempDirPrefix, super.logger);
                 pathToTempSubdir.put(parentPath, tempSubDir);
             }
