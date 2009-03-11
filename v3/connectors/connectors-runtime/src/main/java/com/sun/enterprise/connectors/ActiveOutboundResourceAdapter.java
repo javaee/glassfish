@@ -77,7 +77,7 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
 
     protected String moduleName_;
 
-    protected static Logger _logger = LogDomains.getLogger(ActiveOutboundResourceAdapter.class, LogDomains.RSR_LOGGER);
+    protected static final Logger _logger = LogDomains.getLogger(ActiveOutboundResourceAdapter.class, LogDomains.RSR_LOGGER);
 
     private StringManager localStrings =
             StringManager.getManager(ActiveOutboundResourceAdapter.class);
