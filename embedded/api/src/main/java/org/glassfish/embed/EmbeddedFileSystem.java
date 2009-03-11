@@ -267,6 +267,23 @@ public final class EmbeddedFileSystem {
         return EmbeddedUtils.cloneAndVerifyFile(docRootDir);
     }
 
+    /**
+     * Sets the default web.xml to url.  The default url is located inside the
+     * Embedded GlassFish jars.
+     * @param url
+     */
+    public void setDefaultWebXml(URL url) {
+        this.defaultWebXml = url;
+    }
+
+    /**
+     * The default web.xml is inside the Embedded GlassFish jar.
+     * @return the default web.xml url
+     */
+    public URL getDefaultWebXml() {
+        return defaultWebXml;
+    }
+
     /*
      * Return a String representation.
      */
@@ -539,6 +556,7 @@ public final class EmbeddedFileSystem {
     private File                modulesDir;
     private File                logFile;
     private URL                 domainXmlSource;
+    private URL                 defaultWebXml;
     private boolean             initialized         = false;
 
     // bnevins -

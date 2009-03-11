@@ -779,7 +779,6 @@ public class Server {
 
     private Habitat                     habitat;
     private final XPath                 xpath           = XPathFactory.newInstance().newXPath();
-    private URL                         defaultWebXml;
     private boolean                     started;
     private ApplicationLifecycle        appLife;
     private WebContainer                wc;

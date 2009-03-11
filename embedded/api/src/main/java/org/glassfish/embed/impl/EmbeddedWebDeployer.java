@@ -21,7 +21,10 @@ public class EmbeddedWebDeployer extends WebDeployer {
     protected Server server;
 
      protected URL getDefaultWebXML() throws IOException {
-        URL url = getClass().getClassLoader().getResource("org/glassfish/embed/default-web.xml");
+        URL url = server.getFileSystem().getDefaultWebXml();
+        if (url == null) {
+            url = getClass().getClassLoader().getResource("org/glassfish/embed/default-web.xml");
+        }
 
         if(url==null)
              throw new AssertionError("default-web.xml is missing from resources");
