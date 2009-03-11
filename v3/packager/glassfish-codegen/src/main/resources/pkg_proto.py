@@ -41,22 +41,12 @@ import re
 
 conf = imp.load_source("pkg_conf", "../pkg_conf.py")
 
-# use regular expression to retrieve the version and build number from the jar file 
-# and convert it to IPS versioning.
-
-file = glob.glob('target/stage/glassfishv3/glassfish/modules/glassfish-corba-omgapi*')
-version =  re.compile('.*glassfish-corba-omgapi-(.*).jar').sub(r'\1', file[0])
-version_build = version.split('-', 2)
-version =  version_build[0]
-build =  re.compile('\w(\d*)').sub(r'\1', version_build[1])
-ips_version =  version+',0-'+build
-
 pkg = {
-    "name"          : "glassfish-corba-omgapi",
+    "name"          : "glassfish-codegen",
     "version"       : conf.corba_version,
     "attributes"    : {
-                        "pkg.summary" : "OMG CORBA APIs for GlassFish",
-                        "pkg.description" : "Implementation of Object Management Group (OMG) API for GlassFish.  "+conf.glassfish_description_long,
+                        "pkg.summary" : "CORBA Code Generation for GlassFish",
+                        "pkg.description" : "Library used for runtime Java class generation.  "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "dirtrees"      : [ "glassfish" ],

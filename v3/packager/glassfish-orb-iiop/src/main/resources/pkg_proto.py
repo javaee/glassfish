@@ -36,28 +36,22 @@
 # holder.
 #
 import imp
-import glob
-import re
 
 conf = imp.load_source("pkg_conf", "../pkg_conf.py")
 
-# use regular expression to retrieve the version and build number from the jar file 
-# and convert it to IPS versioning.
-
-file = glob.glob('target/stage/glassfishv3/glassfish/modules/glassfish-corba-omgapi*')
-version =  re.compile('.*glassfish-corba-omgapi-(.*).jar').sub(r'\1', file[0])
-version_build = version.split('-', 2)
-version =  version_build[0]
-build =  re.compile('\w(\d*)').sub(r'\1', version_build[1])
-ips_version =  version+',0-'+build
-
 pkg = {
-    "name"          : "glassfish-corba-omgapi",
-    "version"       : conf.corba_version,
+    "name"          : "glassfish-orb-iiop",
+    "version"       : conf.glassfish_version,
     "attributes"    : {
-                        "pkg.summary" : "OMG CORBA APIs for GlassFish",
-                        "pkg.description" : "Implementation of Object Management Group (OMG) API for GlassFish.  "+conf.glassfish_description_long,
+                        "pkg.summary" : "GlassFish ORB IIOP",
+                        "pkg.description" : "GlassFish ORB IIOP description placeholder. "
+			+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
+                      },
+    "depends"       : { 
+                        "pkg:/glassfish-corba" : {"type" : "require" },
+			"pkg:/glassfish-orb" : {"type" : "require" },
+			"pkg:/glassfish-ejb" : {"type" : "require" },
                       },
     "dirtrees"      : [ "glassfish" ],
     "licenses"      : {
