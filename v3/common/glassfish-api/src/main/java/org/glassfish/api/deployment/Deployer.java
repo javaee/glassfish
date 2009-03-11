@@ -49,8 +49,8 @@ import org.glassfish.api.container.Container;
  * with the application. In case the application is deployed to more than one container
  * the class loader can be shared and therefore should be retrieved from the ArchiveHandler 
  *
- * @param T is the container type associated with this deployer
- * @param U is the ApplicationContainer implementation for this deployer
+ * @param <T> is the container type associated with this deployer
+ * @param <U> is the ApplicationContainer implementation for this deployer
  * @author Jerome Dochez
  */
 public interface Deployer<T extends Container, U extends ApplicationContainer> {

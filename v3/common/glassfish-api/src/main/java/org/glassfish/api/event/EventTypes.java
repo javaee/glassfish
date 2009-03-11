@@ -65,7 +65,7 @@ public final class EventTypes<T> {
         return create(name, null);
     }
 
-    public static EventTypes create(String name, Class hookType) {
+    public static <T> EventTypes<T> create(String name, Class<T> hookType) {
         synchronized(EVENTS) {
             if (!EVENTS.containsKey(name)) {
                 EVENTS.put(name, new EventTypes(name, hookType));

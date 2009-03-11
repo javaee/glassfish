@@ -32,7 +32,7 @@ import com.sun.logging.LogDomains;
 import org.glassfish.api.Startup;
 import org.glassfish.api.Async;
 import org.glassfish.api.FutureProvider;
-import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.admin.*;
 import org.glassfish.api.branding.Branding;
 import org.glassfish.api.event.EventListener.Event;
 
@@ -166,6 +166,7 @@ public class AppServerStartup implements ModuleStartup {
         // prepare the global variables
         habitat.addComponent(null, systemRegistry);
         habitat.addComponent(LogDomains.CORE_LOGGER, logger);
+        habitat.addComponent(null, new ProcessEnvironment(ProcessEnvironment.ProcessType.Server));
 
         // run the init services
         for (Inhabitant<? extends Init> init : habitat.getInhabitants(Init.class)) {
