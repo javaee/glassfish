@@ -65,7 +65,7 @@
                     <fileset>
                         <directory>.</directory>
                         <includes>
-                            <include>jboss-source/**</include>
+                            <include>checkout-source/**</include>
                         </includes>
                     </fileset>
                 </filesets>

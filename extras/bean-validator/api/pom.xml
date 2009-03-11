@@ -57,7 +57,7 @@
             <configuration>
                 <filesets>
                     <fileset>
-                        <directory>jboss-source</directory>
+                        <directory>checkout-source</directory>
                         <includes>
                             <include>src/**</include>
                             <include>license.txt</include>
@@ -71,7 +71,7 @@
 
     <modules>
         <module>checkout</module>
-        <module>jboss-source</module>
+        <module>checkout-source</module>
     </modules>
 
 </project>

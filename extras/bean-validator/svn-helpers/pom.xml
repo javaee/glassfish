@@ -63,10 +63,10 @@
                               <property name="target"
                                         value="${project.build.directory}" />
 
-                              <!-- backup .svn files from jboss-source -->
+                              <!-- backup .svn files from checkout-source -->
                               <mkdir dir="${target}/svn-backup" />
                               <copy failonerror="false" todir="${target}/svn-backup">
-                                  <fileset dir="${project.build.directory}/../../jboss-source">
+                                  <fileset dir="${project.build.directory}/../../checkout-source">
                                       <exclude name="**/pom.xml" />
                                   </fileset>
                               </copy>
@@ -87,16 +87,16 @@
                                         value="${project.build.directory}" />
 
                               <!-- delete checkoud out .svn files -->
-<echo message="${target}/../../jboss-source" />
+<echo message="${target}/../../checkout-source" />
                               <delete failonerror="false" 
                                       includeemptydirs="true">
-                                   <fileset dir="${target}/../../jboss-source" 
+                                   <fileset dir="${target}/../../checkout-source" 
                                             includes="**/.svn/**" 
                                             defaultexcludes="false"/>
                               </delete>                              
 
                               <copy failonerror="false" 
-                                    todir="${target}/../../jboss-source">
+                                    todir="${target}/../../checkout-source">
                                   <fileset dir="${target}/svn-backup"/>
                               </copy>
 

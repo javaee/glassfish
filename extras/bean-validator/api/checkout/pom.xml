@@ -71,7 +71,7 @@
                 <configuration>
                     <connectionType>connection</connectionType>
                     <revisionKey>16087</revisionKey>
-                    <checkoutDirectory>../jboss-source</checkoutDirectory>
+                    <checkoutDirectory>../checkout-source</checkoutDirectory>
                 </configuration>
             </plugin>
         </plugins>
