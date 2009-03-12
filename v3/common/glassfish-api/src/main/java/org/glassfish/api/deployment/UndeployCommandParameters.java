@@ -53,7 +53,7 @@ public class UndeployCommandParameters extends OpsParams {
     @Param(optional=true, defaultValue="false")
     public Boolean keepreposdir;
 
-    @Param(optional=true, defaultValue="true")
+    @Param(optional=true)
     public Boolean droptables;
 
     @Param(optional=true)
