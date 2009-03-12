@@ -44,6 +44,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Properties;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -67,6 +68,12 @@ public class XMLTest {
     private static final String SECOND_HOST = "other.dev.java.net";
     private static final int SECOND_PORT = 4701;
 
+    private static final String FIRST_PROP_NAME = "firstProp";
+    private static final String FIRST_PROP_VALUE = "firstValue";
+
+    private static final String SECOND_PROP_NAME = "secondProp";
+    private static final String SECOND_PROP_VALUE = "secondValue";
+
     public XMLTest() {
     }
 
@@ -76,6 +83,15 @@ public class XMLTest {
 
     @AfterClass
     public static void tearDownClass() throws Exception {
+    }
+
+    @Test
+    public void testProps() throws Exception {
+        System.out.println("testProps");
+        ClientContainer cc = readConfig(SAMPLE_XML_PATH);
+        Properties props = XML.toProperties(cc.getProperty());
+        assertEquals("property value mismatch for first property", FIRST_PROP_VALUE, props.getProperty(FIRST_PROP_NAME));
+        assertEquals("property value mismatch for second property", SECOND_PROP_VALUE, props.getProperty(SECOND_PROP_NAME));
     }
 
     @Test

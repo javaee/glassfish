@@ -38,4 +38,6 @@
       <property name="security.config" value="/Users/dochez/java/cvs/v3/publish/lib/appclient/wss-client-config-1.0.xml"/> 
     </provider-config>
   </message-security-config>
+  <property name="firstProp" value="firstValue"/>
+  <property name="secondProp" value="secondValue"/>
 </client-container>
