@@ -455,6 +455,10 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
                                                ReadableArchive archive)
             throws AnnotationProcessorException, IOException {
 
+        if (scanner == null) {
+            return null;
+        }
+
         AnnotatedElementHandler aeHandler =
                 AnnotatedElementHandlerFactory.createAnnotatedElementHandler(
                         bundleDesc);
