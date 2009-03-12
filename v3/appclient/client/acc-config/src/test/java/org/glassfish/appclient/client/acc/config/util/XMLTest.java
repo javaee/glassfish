@@ -42,6 +42,7 @@ package org.glassfish.appclient.client.acc.config.util;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -50,6 +51,7 @@ import org.glassfish.appclient.client.acc.config.ClientContainer;
 import org.glassfish.appclient.client.acc.config.TargetServer;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -59,7 +61,7 @@ import static org.junit.Assert.*;
  */
 public class XMLTest {
 
-    private static final String SAMPLE_XML_PATH = "src/main/resources/sun-acc.xml";
+    private static final String SAMPLE_XML_PATH = "/sun-acc.xml";
     private static final String FIRST_HOST = "glassfish.dev.java.net";
     private static final int FIRST_PORT = 3701;
     private static final String SECOND_HOST = "other.dev.java.net";
@@ -94,13 +96,14 @@ public class XMLTest {
 
     private static ClientContainer readConfig(final String configPath) throws JAXBException, FileNotFoundException {
         ClientContainer result = null;
-        File configFile = new File(SAMPLE_XML_PATH);
-
+        InputStream is = XMLTest.class.getResourceAsStream(SAMPLE_XML_PATH);
+        if (is == null) {
+            fail("cannot locate test file " + SAMPLE_XML_PATH);
+        }
         JAXBContext jc = JAXBContext.newInstance(ClientContainer.class );
 
         Unmarshaller u = jc.createUnmarshaller();
-        result = (ClientContainer) u.unmarshal(
-            new FileInputStream(configFile) );
+        result = (ClientContainer) u.unmarshal(is);
 
         return result;
     }
