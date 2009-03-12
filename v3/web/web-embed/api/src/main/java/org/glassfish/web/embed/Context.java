@@ -40,7 +40,7 @@ package org.glassfish.web.embed;
 import java.util.*;
 import javax.servlet.*;
 import org.apache.catalina.Valve;
-import org.glassfish.web.embed.security.SecurityConfig;
+import org.glassfish.web.embed.config.SecurityConfig;
 
 /**
  * Representation of a web application.

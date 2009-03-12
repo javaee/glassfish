@@ -35,15 +35,66 @@
  *
  */
 
-package org.glassfish.web.embed.security;
+package org.glassfish.web.embed.config;
+
+import org.glassfish.web.embed.config.SslType;
+
+import java.io.File;
+import java.util.Set;
 
 /**
  * @author Rajiv Mordani
  */
-public enum AuthMethod {
+public final class SslConfig {
 
-    BASIC,
-    FORM,
-    SSL,
-    DIGEST
+    private String keyStore;
+    private File trustStore;
+    private String keyPassword;
+    private long timoutMilliSeconds;
+    private Set<SslType> algorithms;
+
+    public SslConfig() {
+        
+    }
+
+    public void setKeyStore(String keyStore) {
+        this.keyStore = keyStore;
+    }
+
+    public void setTrustStore(File trustStore) {
+        this.trustStore = trustStore;
+    }
+
+    public void setKeyPassword(String keyPassword) {
+        this.keyPassword = keyPassword;
+    }
+
+    public void setHandshakeTimeout(long timeoutMilliSeconds) {
+        this.timoutMilliSeconds = timoutMilliSeconds;
+    }
+
+    public void setAlgorithms(Set<SslType> algorithms) {
+        this.algorithms = algorithms;
+    }
+
+    public String getKeyStore() {
+        return this.keyStore;
+    }
+
+    public File getTrustStore() {
+        return this.trustStore;
+    }
+
+
+    public String getKeyPassword() {
+        return this.keyPassword;
+    }
+
+    public long getHandshakeTimeout() {
+        return this.timoutMilliSeconds;
+    }
+
+    public Set<SslType> getAlgorithms() {
+        return this.algorithms;
+    }
 }

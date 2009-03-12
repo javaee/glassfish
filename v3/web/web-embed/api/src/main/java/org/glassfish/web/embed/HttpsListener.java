@@ -37,6 +37,8 @@
 
 package org.glassfish.web.embed;
 
+import org.glassfish.web.embed.config.SslConfig;
+
 /**
  * @author Rajiv Mordani
  */

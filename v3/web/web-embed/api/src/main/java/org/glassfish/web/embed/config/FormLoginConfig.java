@@ -35,54 +35,27 @@
  *
  */
 
-package org.glassfish.web.embed;
-
-import java.io.File;
-import java.util.Set;
+package org.glassfish.web.embed.config;
 
 /**
  * @author Rajiv Mordani
  */
-public final class SslConfig {
+public class FormLoginConfig {
 
-    public void setKeyStore(String keyStore) {
+    private String loginPage;
+    private String errorPage;
 
-    }
-
-    public void setTrustStore(File trustStore) {
-
-    }
-
-    public void setKeyPassword(String password) {
-
-    }
-
-    public void setHandshakeTimeout(long timeoutMilliSeconds) {
-
-    }
-
-    public void setAlgorithms(Set<SslType> set) {
-
-    }
-
-    public String getKeyStore() {
-        return null;
-    }
-
-    public String getTrustStore() {
-        return null;
+    public FormLoginConfig(String loginPage, String errorPage) {
+        this.loginPage = loginPage;
+        this.errorPage = errorPage;
     }
 
 
-    public String getKeyPassword() {
-        return null;
+    public String getFormLoginPage() {
+        return this.loginPage;
     }
 
-    public long getHandshakeTimeout() {
-        return 0;
-    }
-
-    public Set<SslType> getAlgorithms() {
-        return null;
+    public String getFormErrorPage() {
+        return this.errorPage;
     }
 }

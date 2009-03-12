@@ -35,27 +35,15 @@
  *
  */
 
-package org.glassfish.web.embed.security;
+package org.glassfish.web.embed.config;
 
 /**
  * @author Rajiv Mordani
  */
-public class FormLoginConfig {
+public enum AuthMethod {
 
-    private String loginPage;
-    private String errorPage;
-
-    public FormLoginConfig(String loginPage, String errorPage) {
-        this.loginPage = loginPage;
-        this.errorPage = errorPage;
-    }
-
-
-    public String getFormLoginPage() {
-        return this.loginPage;
-    }
-
-    public String getFormErrorPage() {
-        return this.errorPage;
-    }
+    BASIC,
+    FORM,
+    SSL,
+    DIGEST
 }

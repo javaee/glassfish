@@ -35,46 +35,41 @@
  *
  */
 
-package org.glassfish.web.embed.security;
+package org.glassfish.web.embed.config;
 
-import org.glassfish.web.embed.security.FormLoginConfig;
-import org.glassfish.web.embed.security.AuthMethod;
+
+import org.glassfish.web.embed.config.LoginConfig;
+import org.glassfish.web.embed.security.SecurityConstraint;
+
+import java.util.Set;
 
 /**
  * @author Rajiv Mordani
  */
-public class LoginConfig {
+public class SecurityConfig {
 
-    private AuthMethod authMethod;
-    private FormLoginConfig flc;
+    private Set<SecurityConstraint> securityConstraints;
+    private LoginConfig lc;
 
-    public LoginConfig() {
+    public SecurityConfig() {
         
     }
-
-
-    public void setAuthMethod(AuthMethod authMethod) {
-        this.authMethod = authMethod;
+    
+    public void setSecurityConstraints(Set<SecurityConstraint> securityConstraints) {
+        this.securityConstraints = securityConstraints;
     }
 
-    public AuthMethod getAuthMethod() {
-        return this.authMethod;        
+    public void setLoginConfig(LoginConfig lc) {
+        this.lc = lc;
+    }
+    
+    public Set<SecurityConstraint> getSecurityConstraints() {
+        return this.securityConstraints;
     }
 
-    // TODO: Need to define a way to create realm. Using Strings for now.    
-    public void setRealmNames(String ... realms) {
-
+    public LoginConfig getLoginConfig() {
+        return this.lc;
     }
 
-    public String[] getRealmNames() {
-        return null;
-    }
-
-    public void setFormLoginConfig(FormLoginConfig flc) {
-        this.flc = flc;        
-    }
-
-    public FormLoginConfig getFormLoginConfig() {
-        return this.flc;        
-    }
+    
 }

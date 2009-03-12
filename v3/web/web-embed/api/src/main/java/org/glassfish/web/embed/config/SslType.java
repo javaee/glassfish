@@ -35,40 +35,13 @@
  *
  */
 
-package org.glassfish.web.embed.security;
-
-import org.glassfish.web.embed.security.SecurityConstraint;
-import org.glassfish.web.embed.security.LoginConfig;
-
-import java.util.Set;
+package org.glassfish.web.embed.config;
 
 /**
  * @author Rajiv Mordani
  */
-public class SecurityConfig {
-
-    private Set<SecurityConstraint> securityConstraints;
-    private LoginConfig lc;
-
-    public SecurityConfig() {
-        
-    }
-    
-    public void setSecurityConstraints(Set<SecurityConstraint> securityConstraints) {
-        this.securityConstraints = securityConstraints;
-    }
-
-    public void setLoginConfig(LoginConfig lc) {
-        this.lc = lc;
-    }
-    
-    public Set<SecurityConstraint> getSecurityConstraints() {
-        return this.securityConstraints;
-    }
-
-    public LoginConfig getLoginConfig() {
-        return this.lc;
-    }
-
-    
+public enum SslType {
+    SSLv2,
+    SSLv3,
+    TLS
 }
