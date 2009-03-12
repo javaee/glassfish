@@ -96,6 +96,13 @@
             <artifactId>orb-iiop</artifactId>
             <version>${project.version}</version>
         </dependency> 
+
+	<!-- temporarily going here, might need its own package -->
+        <dependency>
+            <groupId>org.glassfish.connectors</groupId>
+            <artifactId>connectors-inbound-runtime</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <profiles>
