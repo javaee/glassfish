@@ -299,9 +299,9 @@ public class Server {
     public void start() throws EmbeddedException {
         if (started)
             throw new EmbeddedException("already_started");
-
-        if (this.getInfo().httpPort == DEFAULT_HTTP_PORT)
-            throw new EmbeddedException("cant_start_server", this.getServerName());
+        //This breaks asadmin start-domain (for SQE)
+        //if (this.getInfo().httpPort == DEFAULT_HTTP_PORT)
+        //    throw new EmbeddedException("cant_start_server", this.getServerName());
 
         started = true;
 
