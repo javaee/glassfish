@@ -131,23 +131,6 @@
         </sc:panel>
 -->
 
-<!-- ###### Temporary Toggle Button Begin ##### -->
-<h:form>
-<h:commandButton value="Toggle Scheme" style="margin: 30px; padding: 5px;">
-    <ui:event type="command">
-	setAttribute(key="guiOldValue" value="#{sessionScope.guiNavScheme}");
-	if ("#{requestScope.guiOldValue}=menu") {
-	    setSessionAttribute(key="guiNavScheme" value="tree");
-	}
-	if ("#{requestScope.guiOldValue}=tree") {
-	    setSessionAttribute(key="guiNavScheme" value="menu");
-	}
-	redirect(page="#{request.requestURI}");
-    </ui:event>
-</h:commandButton>
-</h:form>
-<!-- ###### Temporary Toggle Button End ##### -->
-
     </sc:layoutUnit>
     <sc:layoutUnit position="left" width="250" gutter="5px" resize="true" header="Tree" collapse="true">
 	<ui:insert name="guiLeftNav" />
