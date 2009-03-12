@@ -136,6 +136,12 @@ public class SecurityCollection implements Serializable {
 
 
     /**
+     * The HTTP method omissions covered by this web resource collection.
+     */
+    private String methodOmissions[] = new String[0];
+
+
+    /**
      * The name of this web resource collection.
      */
     private String name = null;
@@ -214,6 +220,22 @@ public class SecurityCollection implements Serializable {
 
 
     /**
+     * Add an HTTP request method omission to be part of this web resource collection.
+     */
+    public void addMethodOmission(String methodOmission) {
+
+        if (methodOmission == null)
+            return;
+        String results[] = new String[methodOmissions.length + 1];
+        for (int i = 0; i < methodOmissions.length; i++)
+            results[i] = methodOmissions[i];
+        results[methodOmissions.length] = methodOmission;
+        methodOmissions = results;
+
+    }
+
+
+    /**
      * Add a URL pattern to be part of this web resource collection.
      */
     public void addPattern(String pattern) {
@@ -257,6 +279,36 @@ public class SecurityCollection implements Serializable {
     public String[] findMethods() {
 
         return (methods);
+
+    }
+
+
+    /**
+     * Return <code>true</code> if the specified HTTP request method omission is
+     * part of this web resource collection.
+     *
+     * @param method Request method to check
+     */
+    public boolean findMethodOmission(String methodOmission) {
+
+        if (methodOmissions.length == 0)
+            return (false);
+        for (int i = 0; i < methodOmissions.length; i++) {
+            if (methodOmissions[i].equals(methodOmission))
+                return (true);
+        }
+        return (false);
+
+    }
+
+
+    /**
+     * Return the set of HTTP request method omissions that are part of this web
+     * resource collection.
+     */
+    public String[] findMethodOmissions() {
+
+        return (methodOmissions);
 
     }
 
@@ -314,6 +366,36 @@ public class SecurityCollection implements Serializable {
                     results[j++] = methods[i];
             }
             methods = results;
+        }
+
+    }
+
+
+    /**
+     * Remove the specified HTTP request method omission from those that are part
+     * of this web resource collection.
+     *
+     * @param method Request method to be removed
+     */
+    public void removeMethodOmission(String methodOmission) {
+
+        if (methodOmission == null)
+            return;
+        int n = -1;
+        for (int i = 0; i < methodOmissions.length; i++) {
+            if (methodOmissions[i].equals(methodOmission)) {
+                n = i;
+                break;
+            }
+        }
+        if (n >= 0) {
+            int j = 0;
+            String results[] = new String[methodOmissions.length - 1];
+            for (int i = 0; i < methodOmissions.length; i++) {
+                if (i != n)
+                    results[j++] = methodOmissions[i];
+            }
+            methodOmissions = results;
         }
 
     }

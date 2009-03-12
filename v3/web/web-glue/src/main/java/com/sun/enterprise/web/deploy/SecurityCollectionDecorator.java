@@ -60,6 +60,10 @@ public class SecurityCollectionDecorator extends SecurityCollection {
         for (String httpMethod: decoree.getHttpMethods()) {
             addMethod(httpMethod);
         }                
+
+        for (String httpMethodOmission: decoree.getHttpMethodOmissions()) {
+            addMethodOmission(httpMethodOmission);
+        }                
    }
 
 
