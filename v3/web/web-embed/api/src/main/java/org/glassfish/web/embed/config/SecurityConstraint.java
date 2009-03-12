@@ -35,7 +35,7 @@
  *
  */
 
-package org.glassfish.web.embed.security;
+package org.glassfish.web.embed.config;
 
 /**
  * @author Rajiv Mordani
