@@ -40,7 +40,7 @@ package org.glassfish.web.embed;
 import java.io.File;
 import java.util.Collection;
 import java.util.Map;
-
+import org.glassfish.web.embed.config.*;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -116,7 +116,26 @@ public interface EmbeddedWebContainer extends Lifecycle {
     public <T extends WebListener> T createWebListener(String id, Class<T> c)
         throws Exception;
 
-    public <T extends WebListener> T createWebListener(String id, Map<String, String> properties, Class<T> c)
+    /**
+     * Creates a <tt>WebListener</tt> from the given class type and
+     * assigns the given id to it.
+     *
+     * <p>If this web container has already been started, the new
+     * <tt>WebListener</tt> will also be started (unless it was already
+     * started).
+     *
+     * @param id the id of the new <tt>WebListener</tt>
+     * @param c the class type of the new <tt>WebListener</tt>
+     * @param config the configuration to be applied to the
+     * <tt>WebListener</tt>
+     * 
+     * @return the new <tt>WebListener</tt>
+     *
+     * @throws Exception if a <tt>WebListener</tt> with the given id
+     * already exists in this web container
+     */
+    public <T extends WebListener> T createWebListener(String id,
+            Class<T> c, WebListenerConfig config)
         throws Exception;
 
     /**
@@ -160,8 +179,29 @@ public interface EmbeddedWebContainer extends Lifecycle {
     public VirtualServer createVirtualServer(String id,
         File docRoot, WebListener...  webListeners) throws Exception;
 
+    /**
+     * Creates a <tt>VirtualServer</tt> with the given id and docroot, and
+     * attaches it to the given <tt>WebListener</tt> instances.
+     * 
+     * <p>If this web container has already been started, the new
+     * <tt>VirtualServer</tt> will also be started (unless it was already
+     * started).
+     *
+     * @param id the id of the <tt>VirtualServer</tt>
+     * @param docRoot the docroot of the <tt>VirtualServer</tt>
+     * @param config the configuration to be applied to the
+     * <tt>VirtualServer</tt>
+     * @param webListeners the list of <tt>WebListener</tt> instances from 
+     * which the <tt>VirtualServer</tt> will receive requests
+     * 
+     * @return the new <tt>VirtualServer</tt>
+     *
+     * @throws Exception if a <tt>VirtualServer</tt> with the given id
+     * already exists in this web container
+     */
     public VirtualServer createVirtualServer(String id,
-        File docRoot, Map<String, String> properties, WebListener...  webListeners) throws Exception;
+        File docRoot, VirtualServerConfig config,
+        WebListener...  webListeners) throws Exception;
 
     /**
      * Finds the <tt>VirtualServer</tt> with the given id.

@@ -40,6 +40,7 @@ package org.glassfish.web.embed;
 import java.io.File;
 import java.util.Collection;
 import org.apache.catalina.Valve;
+import org.glassfish.web.embed.config.VirtualServerConfig;
 
 /**
  * Representation of a virtual server.
@@ -131,4 +132,19 @@ public interface VirtualServer extends Lifecycle {
      */
     public Collection<Context> getContexts();
 
+    /**
+     * Reconfigures this <tt>VirtualServer</tt> with the given configuration.
+     *
+     * @param config the configuration to be applied
+     */
+    public void setConfig(VirtualServerConfig config);
+
+    /**
+     * Gets the current configuration of this <tt>VirtualServer</tt>.
+     *
+     * @return the current configuration of this <tt>VirtualServer</tt>,
+     * or <tt>null</tt> if no special configuration was ever applied to this
+     * <tt>VirtualServer</tt>
+     */
+    public VirtualServerConfig getConfig();
 }

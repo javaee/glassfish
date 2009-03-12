@@ -35,55 +35,53 @@
  *
  */
 
-package org.glassfish.web.embed;
-
-import org.glassfish.web.embed.config.WebListenerConfig;
+package org.glassfish.web.embed.config;
 
 /**
- * Representation of a network listener for web requests.
+ * Class that is used for configuring VirtualServer instances.
  *
- * <p>Instances of <tt>WebListener</tt> may be in one of two states:
- * <i>stopped</i> or <i>started</i>.
- *
- * @author Rajiv Mordani
+ * @see org.glassfish.web.embed.VirtualServer
  */
-public interface WebListener extends Lifecycle {
+public class VirtualServerConfig {
+
+    private boolean ssoEnabled;
+    private boolean accessLoggingEnabled;
 
     /**
-     * Gets the id of this <tt>WebListener</tt>.
+     * Enables or disables Single-Sign-On.
      *
-     * @return the id of this <tt>WebListener</tt>
+     * @param ssoEnabled true if Single-Sign-On is to be enabled, false
+     * otherwise
      */
-    public String getId();
+    public void setSsoEnabled(boolean ssoEnabled) {
+        this.ssoEnabled = ssoEnabled;
+    }
 
     /**
-     * Sets the port number for this <tt>WebListener</tt>.
+     * Checks if Single-Sign-On is enabled or disabled.
      *
-     * @param port the port number for this <tt>WebListener</tt>
+     * @return true if Single-Sign-On is enabled, false otherwise
      */
-    public void setPort(int port);
+    public boolean isSsoEnabled() {
+        return ssoEnabled;
+    }
 
     /**
-     * Gets the port number of this <tt>WebListener</tt>.
+     * Enables or disables access logging.
      *
-     * @return the port number of this <tt>WebListener</tt>
+     * @param accessLoggingEnabled true if access logging is to be enabled,
+     * false otherwise
      */
-    public int getPort();
+    public void setAccessLoggingEnabled(boolean accessLoggingEnabled) {
+        this.accessLoggingEnabled = accessLoggingEnabled;
+    }
 
     /**
-     * Reconfigures this <tt>WebListener</tt> with the given configuration.
+     * Checks if access logging is enabled or disabled.
      *
-     * @param config the configuration to be applied
+     * @return true if access logging is enabled, false otherwise
      */
-    public void setConfig(WebListenerConfig config);
-
-    /**
-     * Gets the current configuration of this <tt>WebListener</tt>.
-     *
-     * @return the current configuration of this <tt>WebListener</tt>,
-     * or <tt>null</tt> if no special configuration was ever applied to this
-     * <tt>WebListener</tt>
-     */
-    public WebListenerConfig getConfig();
-
+    public boolean isAccessLoggingEnabled() {
+        return accessLoggingEnabled;
+    }
 }
