@@ -90,12 +90,11 @@ public class StartupContext {
     }
 
     /**
-     * Gets the "root" directory where the data files are stored.
+     * Gets the "root" directory where modules are installed
      *
      * <p>
      * This path is always absolutized.
      *
-     * TODO: in case of Glassfish, this is the domain directory?
      */
     public File getRootDirectory() {
         return root;
