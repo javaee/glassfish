@@ -57,14 +57,8 @@ package org.apache.catalina.core;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Enumeration;
-import java.util.HashMap;
-import javax.servlet.Servlet;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.SingleThreadModel;
-import javax.servlet.UnavailableException;
+import java.util.*;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletResponse;
 
 /**
