@@ -54,6 +54,7 @@ public class SessionCookieConfigImpl implements SessionCookieConfig {
     private boolean httpOnly;
     private boolean secure;
     private StandardContext ctx;
+    private int maxAge = -1;
 
 
     /**
@@ -247,4 +248,15 @@ public class SessionCookieConfigImpl implements SessionCookieConfig {
     public boolean isSecure() {
         return secure;
     }
+
+
+    public void setMaxAge(int maxAge) {
+        this.maxAge = maxAge;
+    }
+
+
+    public int getMaxAge() {
+        return maxAge;
+    }
+
 }

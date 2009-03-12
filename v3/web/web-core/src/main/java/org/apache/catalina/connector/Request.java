@@ -3009,6 +3009,7 @@ public class Request
             }
             cookie.setSecure(sessionCookieConfig.isSecure());
             cookie.setHttpOnly(sessionCookieConfig.isHttpOnly());
+            cookie.setMaxAge(sessionCookieConfig.getMaxAge());
         }
         
     }
