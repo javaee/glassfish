@@ -276,6 +276,19 @@
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
+      <xsd:element name="max-age"
+                   type="javaee:xsdIntegerType"
+                   minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>
+
+            The lifetime (in seconds) that will be assigned to any
+            session tracking cookies created by this web application.
+            Default is -1
+
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
     </xsd:sequence>
     <xsd:attribute name="id" type="xsd:ID"/>
   </xsd:complexType>
