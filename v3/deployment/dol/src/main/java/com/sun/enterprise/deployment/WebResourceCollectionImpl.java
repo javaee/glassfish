@@ -37,10 +37,8 @@ package com.sun.enterprise.deployment;
 
 import com.sun.enterprise.deployment.web.WebResourceCollection;
 
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Vector;
 
 /** 
  * This descriptor represents a description of a portion of a web app
@@ -54,15 +52,19 @@ import java.util.Vector;
 public class WebResourceCollectionImpl extends Descriptor 
 				implements WebResourceCollection 
 {
-    private Set urlPatterns;
-    private Set httpMethods;
+    private Set<String> urlPatterns;
+    private Set<String> httpMethods;
+    private Set<String> httpMethodOmissions;
     
     /** 
      * Return my urls patterns (String objects)
-     * @return the enumeration of the url patterns.
+     * @return the set of the url patterns.
      */
-    public Enumeration getUrlPatterns() {
-	return (new Vector(this.getUrlPatternsSet())).elements();
+    public Set<String> getUrlPatterns() {
+        if (this.urlPatterns == null) {
+            this.urlPatterns = new HashSet<String>();
+	    }
+        return this.urlPatterns;
     }
     
     /**
@@ -70,7 +72,7 @@ public class WebResourceCollectionImpl extends Descriptor
      * @param the url pattern to be added.
      */
     public void addUrlPattern(String urlPattern) {
-	this.getUrlPatternsSet().add(urlPattern);
+        this.getUrlPatterns().add(urlPattern);
     }
     
     /**
@@ -78,7 +80,7 @@ public class WebResourceCollectionImpl extends Descriptor
      * @param the url pattern to be removed.
      */
     public void removeUrlPattern(String urlPattern) {
-	this.getUrlPatternsSet().remove(urlPattern);
+        this.getUrlPatterns().remove(urlPattern);
     }
     
     /**
@@ -86,44 +88,40 @@ public class WebResourceCollectionImpl extends Descriptor
      * it with the given Set of (String) url patterns.
      * @param the url patterns to replace the current set. 
      */
-    public void setUrlPatterns(Set urlPatterns) {
-	this.urlPatterns = urlPatterns;
-    }
-    
-    private Set getHttpMethodsSet() {
-	if (this.httpMethods == null) {
-	    this.httpMethods = new HashSet();
-	}
-	return this.httpMethods;
+    public void setUrlPatterns(Set<String> urlPatterns) {
+        this.urlPatterns = urlPatterns;
     }
     
     /**
      * Return the enumeration of HTTP methods this collection has.
      * @return the enumeration of HTTP methods.
      */
-    public Enumeration getHttpMethods() {
-	return (new Vector(this.getHttpMethodsSet())).elements();
+    public Set<String> getHttpMethods() {
+        if (this.httpMethods == null) {
+            this.httpMethods = new HashSet<String>();
+        }    
+        return this.httpMethods;
     }
+
     /** 
      * Returns the HttpMethods this collection has in an array of strings
+     * This is added to speed up processing while creating webresource permissions
      * @return array of strings of HttpMethods
      */
-    /*
-     * added to speed up processing while creating webresource permissions
-     */
     public String[] getHttpMethodsAsArray(){
-	if(httpMethods == null){
-	    return (String[]) null;
-	}
-	String[] array = (String[])httpMethods.toArray(new String[0]);
-	return array;
+        if (httpMethods == null){
+            return (String[]) null;
+        }
+        String[] array = (String[])httpMethods.toArray(new String[0]);
+        return array;
     }
+
     /**
      * Sets the set of HTTP methods this collection has.
      * @param the set of HTTP methods.
      */
-    public void setHttpMethods(Set httpMethods) {
-	this.httpMethods = httpMethods;
+    public void setHttpMethods(Set<String> httpMethods) {
+        this.httpMethods = httpMethods;
     }
 
     /**
@@ -132,7 +130,7 @@ public class WebResourceCollectionImpl extends Descriptor
      * @param the HTTP method to be added.
      */
     public void addHttpMethod(String httpMethod) {
-	this.getHttpMethodsSet().add(httpMethod);
+        this.getHttpMethods().add(httpMethod);
     }
     
     /**
@@ -140,24 +138,65 @@ public class WebResourceCollectionImpl extends Descriptor
      * @param the HTTP method to be removed.
      */
     public void removeHttpMethod(String httpMethod) {
-	this.getHttpMethodsSet().remove(httpMethod);    
+        this.getHttpMethods().remove(httpMethod);    
+    }
+
+    /**
+     * Return the set of HTTP method omissions this collection has.
+     * @return the set of HTTP method omissions.
+     */
+    public Set<String> getHttpMethodOmissions() {
+        if (this.httpMethodOmissions == null) {
+            this.httpMethodOmissions = new HashSet<String>();
+        }
+        return this.httpMethodOmissions;
+    }
+
+    /** 
+     * Returns the HttpMethodOmissions this collection has in an array of strings
+     * This is added to speed up processing while creating webresource permissions
+     * @return array of strings of HttpMethodOmissions
+     */
+    public String[] getHttpMethodOmissionsAsArray(){
+        if (httpMethods == null){
+            return (String[]) null;
+        }
+        String[] array = (String[])httpMethods.toArray(new String[0]);
+        return array;
+    }
+    /**
+     * Sets the set of HTTP method omissions this collection has.
+     * @param the set of HTTP method omissions.
+     */
+    public void setHttpMethodOmissions(Set<String> httpMethodOmissions) {
+        this.httpMethodOmissions = httpMethodOmissions;
+    }
+
+    /**
+     * Adds the given HTTP method omission to the collection of http methods this
+     * collection has.
+     * @param the HTTP method to be added.
+     */
+    public void addHttpMethodOmission(String httpMethodOmission) {
+        this.getHttpMethodOmissions().add(httpMethodOmission);
     }
     
+    /**
+     * Removes the given HTTP method omission from the collection of http methods.
+     * @param the HTTP method to be removed.
+     */
+    public void removeHttpMethodOmission(String httpMethodOmission) {
+        this.getHttpMethodOmissions().remove(httpMethodOmission);    
+    }
+
     /**
      * A formatted string of the state.
      */
     public void print(StringBuffer toStringBuffer) {
-	toStringBuffer.append("WebresourceCollection: ");
-	toStringBuffer.append(" urlPatterns: ").append(this.urlPatterns);
-	toStringBuffer.append(" httpMethods ").append(this.httpMethods);
+        toStringBuffer.append("WebresourceCollection: ");
+        toStringBuffer.append(" urlPatterns: ").append(this.urlPatterns);
+        toStringBuffer.append(" httpMethods ").append(this.httpMethods);
+        toStringBuffer.append(" httpMethodOmissions ").append(this.httpMethodOmissions);
     }
-
-    private Set getUrlPatternsSet() {
-	if (this.urlPatterns == null) {
-	    this.urlPatterns = new HashSet();
-	}
-	return this.urlPatterns;
-    }
-
 }
 

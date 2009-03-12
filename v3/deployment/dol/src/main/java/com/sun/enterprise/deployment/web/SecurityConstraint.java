@@ -36,14 +36,14 @@
 
 package com.sun.enterprise.deployment.web;
 
-import java.util.Enumeration;
+import java.util.Set;
     /** Objects exhibiting this interface represent a security constraint on the web application
     * that owns them. */
 
 public interface SecurityConstraint {
 
 	/** The collection of URL pattern plus HTTP methods that are constrained. */
-    public Enumeration getWebResourceCollections();
+    public Set<WebResourceCollection> getWebResourceCollections();
     public void addWebResourceCollection(WebResourceCollection webResourceCollection);
 	/** The authorization constraint. */
     public AuthorizationConstraint getAuthorizationConstraint();

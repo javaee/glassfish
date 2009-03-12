@@ -80,6 +80,7 @@ public interface WebTagNames extends TagNames {
     public static final String WEB_RESOURCE_NAME = "web-resource-name";
     public static final String URL_PATTERN = "url-pattern";
     public static final String HTTP_METHOD = "http-method";    
+    public static final String HTTP_METHOD_OMISSION = "http-method-omission";    
     public static final String DISTRIBUTABLE = "distributable";    
     public static final String SESSION_CONFIG = "session-config";
     public static final String SESSION_TIMEOUT = "session-timeout";    

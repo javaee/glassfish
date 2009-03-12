@@ -155,21 +155,14 @@ public class WebPermissionUtil {
 	  UserDataConstraint udc = sc.getUserDataConstraint();
 
 	  // Enumerate over collections of URLPatterns within constraint
-	  Enumeration ewrc = sc.getWebResourceCollections();
-	  while (ewrc.hasMoreElements()) {
+	  for (WebResourceCollection wrc: sc.getWebResourceCollections()) {
 
 	      if(logger.isLoggable(Level.FINE)){
 		  logger.log(Level.FINE,"JACC: constraint translation: begin parsing web resource collection");
 	      }
 
-	      WebResourceCollection wrc = 
-		  (WebResourceCollection)ewrc.nextElement();
-
 	      // Enumerate over URLPatterns within collection
-	      Enumeration eurl = wrc.getUrlPatterns();
-	      while (eurl.hasMoreElements()) {
-
-		  String url = (String) eurl.nextElement();
+	      for (String url: wrc.getUrlPatterns()) {
                   if (url != null) {
  		      // FIX TO BE CONFIRMED: encode all colons
  		      url = url.replaceAll(":","%3A");

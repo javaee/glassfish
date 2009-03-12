@@ -36,7 +36,7 @@
 
 package com.sun.enterprise.deployment.web;
 
-import java.util.Enumeration;
+import java.util.Set;
 
     /** I am an interface representing the API to an object
     ** which represents the information about a web resource collection. 
@@ -45,9 +45,14 @@ import java.util.Enumeration;
 
 public interface WebResourceCollection extends WebDescriptor {
 
-    public Enumeration getUrlPatterns();
+    public Set<String> getUrlPatterns();
     public void addUrlPattern(String urlPattern);
-    public Enumeration getHttpMethods();
+
+    public Set<String> getHttpMethods();
     public void addHttpMethod(String httpMethod);
     public String[] getHttpMethodsAsArray();
+
+    public Set<String> getHttpMethodOmissions();
+    public void addHttpMethodOmission(String httpMethodOmission);
+    public String[] getHttpMethodOmissionsAsArray();
 }

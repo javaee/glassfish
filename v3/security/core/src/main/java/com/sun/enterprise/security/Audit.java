@@ -55,10 +55,10 @@ import com.sun.enterprise.deployment.EjbIORConfigurationDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.SecurityConstraintImpl;
 import com.sun.enterprise.deployment.AuthorizationConstraintImpl;
-import com.sun.enterprise.deployment.WebResourceCollectionImpl;
 import com.sun.enterprise.deployment.web.LoginConfiguration;
 import com.sun.enterprise.deployment.web.UserDataConstraint;
 import com.sun.enterprise.deployment.web.SecurityRole;
+import com.sun.enterprise.deployment.web.WebResourceCollection;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
 
 import com.sun.enterprise.deployment.Role;
@@ -667,26 +667,18 @@ public class Audit extends AuditModule
                 SecurityConstraintImpl sc =
                     (SecurityConstraintImpl)scEnum.nextElement();
 
-                Set wrcSet = sc.getWebResourceCollectionSet();
-                Iterator wrcIt = wrcSet.iterator();
-                while (wrcIt.hasNext()) {
-                    WebResourceCollectionImpl wrc =
-                        (WebResourceCollectionImpl)wrcIt.next();
-
+                for (WebResourceCollection wrc: sc.getWebResourceCollections()) {
                     // show list of methods for this collection
-                    Enumeration methEnum = wrc.getHttpMethods();
                     StringBuffer sbm = new StringBuffer();
-                    while (methEnum.hasMoreElements()) {
-                        sbm.append(methEnum.nextElement());
+                    for (String httpMethod: wrc.getHttpMethods()) {
+                        sbm.append(httpMethod);
                         sbm.append(" ");
                     }
                     logger.finest("     Using method: "+sbm.toString());
 
                     // and then list of url patterns
-                    Enumeration urlEnum = wrc.getUrlPatterns();
-                    while (urlEnum.hasMoreElements()) {
-                        logger.finest("       "+
-                                      urlEnum.nextElement().toString());
+                    for (String urlPattern: wrc.getUrlPatterns()) {
+                        logger.finest("       "+ urlPattern);
                     }
                 } // end res.collection iterator
 

@@ -88,6 +88,7 @@ public class WebResourceCollectionNode extends DeploymentDescriptorNode  {
         Map table = super.getDispatchTable();
         table.put(WebTagNames.WEB_RESOURCE_NAME, "setName");
         table.put(WebTagNames.HTTP_METHOD, "addHttpMethod");        
+        table.put(WebTagNames.HTTP_METHOD_OMISSION, "addHttpMethodOmission");        
         return table;
     }    
 
@@ -133,14 +134,19 @@ public class WebResourceCollectionNode extends DeploymentDescriptorNode  {
         writeLocalizedDescriptions(myNode, descriptor);
         
         // url-pattern*
-        for (Enumeration urlPatterns = descriptor.getUrlPatterns();urlPatterns.hasMoreElements();) {
-            appendTextChild(myNode, WebTagNames.URL_PATTERN, (String) urlPatterns.nextElement());
+        for (String urlPattern: descriptor.getUrlPatterns()) {
+            appendTextChild(myNode, WebTagNames.URL_PATTERN, urlPattern);
         }
                 
         // http-method*
-        for (Enumeration httpMethods = descriptor.getHttpMethods();httpMethods.hasMoreElements();) {
-            appendTextChild(myNode, WebTagNames.HTTP_METHOD, (String) httpMethods.nextElement());
+        for (String httpMethod: descriptor.getHttpMethods()) {
+            appendTextChild(myNode, WebTagNames.HTTP_METHOD, httpMethod);
         }        
+
+        // http-method-omission*
+        for (String httpMethodOmission: descriptor.getHttpMethodOmissions()) {
+            appendTextChild(myNode, WebTagNames.HTTP_METHOD_OMISSION, httpMethodOmission);
+        }
         return myNode;
     }
 }

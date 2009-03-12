@@ -48,6 +48,7 @@ import com.sun.enterprise.deployment.UserDataConstraintImpl;
 import com.sun.enterprise.deployment.WebResourceCollectionImpl;
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
 import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.web.WebResourceCollection;
 import com.sun.enterprise.deployment.xml.WebTagNames;
 import org.w3c.dom.Node;
 
@@ -100,10 +101,9 @@ public class SecurityConstraintNode extends DeploymentDescriptorNode {
         
         // web-resource-collection+
         WebResourceCollectionNode wrcNode = new WebResourceCollectionNode();
-        for (Enumeration webResources = descriptor.getWebResourceCollections(); 
-            webResources.hasMoreElements();) {
-                wrcNode.writeDescriptor(myNode, WebTagNames.WEB_RESOURCE_COLLECTION, 
-                    (WebResourceCollectionImpl) webResources.nextElement());
+        for (WebResourceCollection webResource: descriptor.getWebResourceCollections()) {
+                wrcNode.writeDescriptor(myNode, WebTagNames.WEB_RESOURCE_COLLECTION,
+                    (WebResourceCollectionImpl) webResource);
         }
         
         // auth-constaint?

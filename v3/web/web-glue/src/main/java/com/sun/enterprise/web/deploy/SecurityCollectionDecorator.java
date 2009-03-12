@@ -40,10 +40,6 @@ import com.sun.enterprise.deployment.web.WebResourceCollection;
 
 import org.apache.catalina.util.RequestUtil;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-
 /**
  * Decorator of class <code>org.apache.catalina.deploy.SecurityCollection</code>
  *
@@ -57,14 +53,12 @@ public class SecurityCollectionDecorator extends SecurityCollection {
    public SecurityCollectionDecorator(WebResourceCollection decoree){
         this.decoree = decoree;
         
-        Enumeration enumeration = decoree.getUrlPatterns();
-        while(enumeration.hasMoreElements()){
-            addPattern( (String)enumeration.nextElement() );
+        for (String urlPattern: decoree.getUrlPatterns()) {
+            addPattern(urlPattern);
         }
         
-        enumeration = decoree.getHttpMethods();
-        while(enumeration.hasMoreElements()){
-            addMethod( (String)enumeration.nextElement() );
+        for (String httpMethod: decoree.getHttpMethods()) {
+            addMethod(httpMethod);
         }                
    }
 

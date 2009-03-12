@@ -967,13 +967,8 @@ public class WebBundleDescriptor extends BundleDescriptor
         for (Iterator<SecurityConstraint> i = getSecurityConstraintsSet().iterator(); i.hasNext();) {
             SecurityConstraint next = i.next();
             boolean include = false;
-            for (Enumeration wrc = next.getWebResourceCollections();
-                 wrc.hasMoreElements();) {
-                WebResourceCollection nextCol = (WebResourceCollection)
-                        wrc.nextElement();
-                for (Enumeration up = nextCol.getUrlPatterns();
-                     up.hasMoreElements();) {
-                    String nextPattern = (String) up.nextElement();
+            for (WebResourceCollection nextCol: next.getWebResourceCollections()) {
+                for (String nextPattern: nextCol.getUrlPatterns()) {
                     if ((urlPattern != null) && urlPattern.equals(nextPattern)) {
                         include = true;
                         break;

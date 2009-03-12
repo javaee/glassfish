@@ -40,10 +40,8 @@ import com.sun.enterprise.deployment.web.SecurityConstraint;
 import com.sun.enterprise.deployment.web.UserDataConstraint;
 import com.sun.enterprise.deployment.web.WebResourceCollection;
 
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Vector;
 
 
     /** 
@@ -53,7 +51,7 @@ import java.util.Vector;
     */
 
 public class SecurityConstraintImpl extends Descriptor implements SecurityConstraint, java.io.Serializable {
-    private Set webResourceCollections;
+    private Set<WebResourceCollection> webResourceCollections;
     private AuthorizationConstraint authorizationConstraint;
     private UserDataConstraint userDataConstraint;
     
@@ -77,30 +75,25 @@ public class SecurityConstraintImpl extends Descriptor implements SecurityConstr
     
     /** Return all the web resource collection.
     */
-    public Set getWebResourceCollectionSet() {
+    public Set<WebResourceCollection> getWebResourceCollections() {
 	if (this.webResourceCollections == null) {
-	    this.webResourceCollections = new HashSet();
+	    this.webResourceCollections = new HashSet<WebResourceCollection>();
 	}
 	return this.webResourceCollections;
     }
     
-	/** The collection of URL pattern plus HTTP methods that are constrained. */
-    public Enumeration getWebResourceCollections() {
-	return (new Vector(this.getWebResourceCollectionSet())).elements();
-    }
-    
     /** Adds a web resource collection to this constraint.*/
     public void addWebResourceCollection(WebResourceCollection webResourceCollection) {
-	this.getWebResourceCollectionSet().add(webResourceCollection);
+        this.getWebResourceCollections().add(webResourceCollection);
     }
-    
+
     public void addWebResourceCollection(WebResourceCollectionImpl webResourceCollection) {    
         addWebResourceCollection((WebResourceCollection) webResourceCollection);
     }
-    
+
     /** Removes the given web resource collection from this constraint.*/
     public void removeWebResourceCollection(WebResourceCollection webResourceCollection) {
-	this.getWebResourceCollectionSet().remove(webResourceCollection);
+        this.getWebResourceCollections().remove(webResourceCollection);
     }
     
 	/** The authorization constraint. */

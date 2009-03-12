@@ -958,7 +958,6 @@ public class TomcatDeploymentConfig{
         Enumeration enumeration = wmd.getSecurityConstraints(); 
         SecurityConstraint securityConstraint;
         SecurityConstraintDecorator decorator;
-        Enumeration enumeration2;
         SecurityCollectionDecorator secCollDecorator;
         while (enumeration.hasMoreElements()){
             securityConstraint =(SecurityConstraint)enumeration.nextElement();
@@ -966,11 +965,10 @@ public class TomcatDeploymentConfig{
             decorator = new SecurityConstraintDecorator(securityConstraint,
                                                         webModule);
             
-            enumeration2 = securityConstraint.getWebResourceCollections();
-            while (enumeration2.hasMoreElements()){
-                secCollDecorator = new SecurityCollectionDecorator
-                            ((WebResourceCollection) enumeration2.nextElement());
+            for (WebResourceCollection wrc:
+                    securityConstraint.getWebResourceCollections()) {
                    
+                secCollDecorator = new SecurityCollectionDecorator(wrc);
                 decorator.addCollection(secCollDecorator);           
             }
             webModule.addConstraint(decorator);
