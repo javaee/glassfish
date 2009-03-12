@@ -78,9 +78,6 @@
         </div>
     </sc:layoutUnit>
 
-    <sc:layoutUnit position="right" width="250" gutter="5px" resize="true" header="Tags" collapse="true">
-	<ui:include src="/tagsPanel.jsf" />
-    </sc:layoutUnit>
     <sc:layoutUnit position="center" scroll="true" gutter="5px">
 	<ui:insert name="guiTopNav" />
 	<!-- Content -->
@@ -151,6 +148,12 @@
 </h:form>
 <!-- ###### Temporary Toggle Button End ##### -->
 
+    </sc:layoutUnit>
+    <sc:layoutUnit position="left" width="250" gutter="5px" resize="true" header="Tree" collapse="true">
+	<ui:insert name="guiLeftNav" />
+    </sc:layoutUnit>
+    <sc:layoutUnit position="right" width="250" gutter="5px" resize="true" header="Tags" collapse="true">
+	<ui:include src="/tagsPanel.jsf" />
     </sc:layoutUnit>
 </sc:layout>
     </sun:body>

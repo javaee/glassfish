@@ -20,9 +20,6 @@
 // 2) Limit result set to a reasonable # (or allow results to scroll)
 //	    gf.queryTags(results=>$session{tagResults});
 	}
-	if ("!#{sessionScope.tagResults}") {
-	    setSessionAttribute(key="tagResults" value={});
-	}
     />
     <h:inputHidden id="tagViewId" value="#{pageSession.tagViewId}" />
 
@@ -30,7 +27,7 @@
 "<h2>'#{guiTitle}' Page Tags</h2>
 
 "<ul class="tagList">
-    <foreach key="_tag" list="$pageSession{pageTags}">
+    <foreach key="_tag" list="#{pageSession.pageTags}">
 	<!-- FIXME: I need this to loop at create time, it's looping at render-time (messes up id's) -->
 	"<li>
 	<h:commandLink styleClass="tagLink" href="#{request.contextPath}/#{_tag.tagViewId}">
@@ -55,15 +52,6 @@
 
 "<p>&nbsp;</p>
 
-<!-- Search Results -->
-"<h2>Pages Tagged '#{sessionScope.queryTag}'</h2>
-"<ul class="tagList">
-    <foreach key="_tag" list="$session{tagResults}">
-	"<li><a href="#{request.contextPath}/#{_tag.tagViewId}" class="tagLink">#{_tag.displayName}</a></li>
-    </foreach>
-"</ul>
-"<p>&nbsp;</p>
-
 <!-- Add Tag -->
 <sun:textField id="newTagField" value="#{requestScope.newTagName}" columns="17" />
 <sun:button id="newTagButton" value="Add Tag">
@@ -76,6 +64,24 @@
 
 "<br /><p>&nbsp;</p>
 
+"<h2>Related Pages</h2>
+"<ul class="tagList">
+    <foreach key="_pageTag" list="#{pageSession.pageTags}">
+	<staticText value="">
+	    <!beforeEncode
+		gf.queryTags(tagName="#{_pageTag.tagName}", results=>$pageSession{relatedPages});
+		println("###########Encoding for #{_pageTag.tagName} results: $pageSession{relatedPages}");
+	    />
+	</staticText>
+	<!if "$pageSession{relatedPages}">
+	    <foreach key="_tag" list="#{pageSession.relatedPages}">
+		"<li><a href="#{request.contextPath}/#{_tag.tagViewId}" class="tagLink">#{_tag.displayName}</a></li>
+	    </foreach>
+	</if>
+    </foreach>
+"</ul>
+
+/*
 <!-- Search Tags -->
 <sun:textField id="queryTagField" value="#{sessionScope.queryTag}" columns="17" />
 <sun:button id="queryTagButton" value="Search">
@@ -93,7 +99,34 @@
 </sun:button>
 "<br />&nbsp;&nbsp;&nbsp;
 <sun:checkbox id="onlyMe" value="#{requestScope.queryMe}" label=" Query only my tags." />
+*/
 
+"<p>&nbsp;</p>
+
+<!-- Search Results -->
+<if condition="#{sessionScope.tagResults}">
+    "<h2>Pages Tagged "#{sessionScope.queryTag}"</h2>
+    "<ul class="tagList">
+	<foreach key="_tag" list="#{sessionScope.tagResults}">
+	    "<li><a href="#{request.contextPath}/#{_tag.tagViewId}" class="tagLink">#{_tag.displayName}</a></li>
+	</foreach>
+    "</ul>
+</if>
+"<p>&nbsp;</p>
+<sun:button id="queryTagButton" value="Show All Tags">
+    <!-- FIXME: Enable Ajax -->
+    <!command
+	if ("#{requestScope.queryMe}") {
+	    setAttribute(key="qUser", value="#{request.principalUser}");
+	}
+	if ("!#{requestScope.queryMe}") {
+	    setAttribute(key="qUser", value="#{null}");
+	}
+	setSessionAttribute(key="queryTag" value="(all)");
+	gf.queryTags(user="#{requestScope.qUser}", results=>$session{tagResults});
+	redirect("#{request.contextPath}/#{pageSession.tagViewId}");
+    />
+</sun:button>
 
 
 "</div>
