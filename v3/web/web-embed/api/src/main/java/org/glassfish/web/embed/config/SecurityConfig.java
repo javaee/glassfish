@@ -38,8 +38,6 @@
 package org.glassfish.web.embed.config;
 
 
-import org.glassfish.web.embed.config.LoginConfig;
-import org.glassfish.web.embed.config.SecurityConstraint;
 
 import java.util.Set;
 
