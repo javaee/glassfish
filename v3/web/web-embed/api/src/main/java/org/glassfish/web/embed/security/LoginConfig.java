@@ -45,16 +45,36 @@ import org.glassfish.web.embed.security.AuthMethod;
  */
 public class LoginConfig {
 
+    private AuthMethod authMethod;
+    private FormLoginConfig flc;
+
+    public LoginConfig() {
+        
+    }
+
 
     public void setAuthMethod(AuthMethod authMethod) {
-
+        this.authMethod = authMethod;
     }
+
+    public AuthMethod getAuthMethod() {
+        return this.authMethod;        
+    }
+
     // TODO: Need to define a way to create realm. Using Strings for now.    
     public void setRealmNames(String ... realms) {
 
     }
 
+    public String[] getRealmNames() {
+        return null;
+    }
+
     public void setFormLoginConfig(FormLoginConfig flc) {
-        
+        this.flc = flc;        
+    }
+
+    public FormLoginConfig getFormLoginConfig() {
+        return this.flc;        
     }
 }

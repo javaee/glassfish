@@ -42,11 +42,20 @@ package org.glassfish.web.embed.security;
  */
 public class FormLoginConfig {
 
-    public void setFormLoginPage(String loginPage) {
+    private String loginPage;
+    private String errorPage;
 
+    public FormLoginConfig(String loginPage, String errorPage) {
+        this.loginPage = loginPage;
+        this.errorPage = errorPage;
     }
 
-    public void setFormErrorPage(String errorPage) {
 
+    public String getFormLoginPage() {
+        return this.loginPage;
+    }
+
+    public String getFormErrorPage() {
+        return this.errorPage;
     }
 }

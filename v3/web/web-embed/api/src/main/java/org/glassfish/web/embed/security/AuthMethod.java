@@ -46,5 +46,4 @@ public enum AuthMethod {
     FORM,
     SSL,
     DIGEST
-
 }

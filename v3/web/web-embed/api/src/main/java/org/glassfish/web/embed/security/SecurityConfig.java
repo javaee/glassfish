@@ -47,20 +47,28 @@ import java.util.Set;
  */
 public class SecurityConfig {
 
+    private Set<SecurityConstraint> securityConstraints;
+    private LoginConfig lc;
+
     public SecurityConfig() {
         
     }
     
     public void setSecurityConstraints(Set<SecurityConstraint> securityConstraints) {
-
+        this.securityConstraints = securityConstraints;
     }
 
     public void setLoginConfig(LoginConfig lc) {
-
+        this.lc = lc;
     }
     
     public Set<SecurityConstraint> getSecurityConstraints() {
-        return null;
+        return this.securityConstraints;
     }
+
+    public LoginConfig getLoginConfig() {
+        return this.lc;
+    }
+
     
 }
