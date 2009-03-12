@@ -86,15 +86,29 @@
     </distributionManagement>
     <repositories>
         <repository>
-            <id>maven2-repository.dev.java.net</id>
-            <name>Java.net Repository for Maven</name>
-            <url>https://maven2-repository.dev.java.net/repository</url>
+            <id>glassfish-maven-repository</id>
+            <name>Glassfish repository</name>
+            <url>http://download.java.net/maven/glassfish/</url>
+            <snapshots>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
         </repository>
         <repository>
-            <id>maven-repository.dev.java.net</id>
-            <name>Java.net Repository for Maven</name>
+            <id>jvnet-maven2-repository</id>
+            <name>Java.net maven2 repository</name>
+            <url>http://download.java.net/maven/2/</url>
+            <snapshots>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>jvnet-maven1-repository</id>
+            <name>Java.net maven1 repository</name>
+            <url>http://download.java.net/maven/1/</url>
             <layout>legacy</layout>
-            <url>https://maven-repository.dev.java.net/repository</url>
+            <snapshots>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
         </repository>
     </repositories>
     <pluginRepositories>
@@ -102,11 +116,17 @@
             <id>glassfish-repository</id>
             <name>Glassfish repository</name>
             <url>http://download.java.net/maven/glassfish/</url>
+            <snapshots>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
         </pluginRepository>
         <pluginRepository>
-            <id>mavaen2-repository</id>
+            <id>jvnet-maven2-repository</id>
             <name>Java.net maven2 repository</name>
             <url>http://download.java.net/maven/2/</url>
+            <snapshots>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
         </pluginRepository>
     </pluginRepositories>
     <build>
