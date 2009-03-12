@@ -261,7 +261,7 @@ public class VirtualServerConfig {
      * expression patterns that the remote client's hostname
      * (as returned by java.net.Socket.getInetAddress().getHostName())
      * is compared to
-     *
+     */
     public void setDenyRemoteHost(String denyRemoteHost) {
         this.denyRemoteHost = denyRemoteHost;
     }
