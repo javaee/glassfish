@@ -91,6 +91,7 @@ public interface WebTagNames extends TagNames {
     public static final String COMMENT = "comment";    
     public static final String HTTP_ONLY = "http-only";    
     public static final String SECURE = "secure";    
+    public static final String MAX_AGE = "max-age";    
     public static final String TRACKING_MODE = "tracking-mode";    
     public static final String WELCOME_FILE_LIST = "welcome-file-list";
     public static final String WELCOME_FILE = "welcome-file";

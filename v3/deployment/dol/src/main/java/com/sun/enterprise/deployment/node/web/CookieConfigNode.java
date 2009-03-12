@@ -93,6 +93,8 @@ public class CookieConfigNode extends DeploymentDescriptorNode {
             descriptor.setHttpOnly(Boolean.parseBoolean(value));
         } else if (WebTagNames.SECURE.equals(element.getQName())) {
             descriptor.setSecure(Boolean.parseBoolean(value));
+        } else if (WebTagNames.MAX_AGE.equals(element.getQName())) {
+            descriptor.setMaxAge(Integer.parseInt(value));
         } else {
             super.setElementValue(element, value);
         }
@@ -114,6 +116,7 @@ public class CookieConfigNode extends DeploymentDescriptorNode {
         appendTextChild(myNode, WebTagNames.COMMENT, descriptor.getComment());     
         appendTextChild(myNode, WebTagNames.HTTP_ONLY, Boolean.toString(descriptor.isHttpOnly()));     
         appendTextChild(myNode, WebTagNames.SECURE, Boolean.toString(descriptor.isSecure()));     
+        appendTextChild(myNode, WebTagNames.MAX_AGE, Integer.toString(descriptor.getMaxAge()));     
         
         return myNode;
     }   

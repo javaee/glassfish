@@ -47,6 +47,7 @@ public class CookieConfigDescriptor extends Descriptor {
     private String comment = null;
     private boolean httpOnly = false;
     private boolean secure = false;
+    private int maxAge = -1;
 
     public String getDomain() {
         return domain;
@@ -88,6 +89,14 @@ public class CookieConfigDescriptor extends Descriptor {
         this.secure = secure;
     }
 
+    public int getMaxAge() {
+        return maxAge;
+    }
+
+    public void setMaxAge(int maxAge) {
+        this.maxAge = maxAge;
+    }
+
     public void print(StringBuffer toStringBuffer) {
         if (getName() != null) {
             toStringBuffer.append("\n cookie name ").append(getName());
@@ -103,5 +112,6 @@ public class CookieConfigDescriptor extends Descriptor {
         }
         toStringBuffer.append("\n cookie httpOnly ").append(httpOnly);
         toStringBuffer.append("\n cookie secure ").append(secure);
+        toStringBuffer.append("\n cookie maxAge ").append(maxAge);
     }
 }
