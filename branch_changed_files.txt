@@ -129,3 +129,11 @@ Sending        embedded-glassfish_0106\embedded_v3_prelude_release\embedded\api\
 Sending        embedded-glassfish_0106\embedded_v3_prelude_release\embedded\api\src\main\java\org\glassfish\embed\Server.java
 Transmitting file data ......
 Committed revision 25225.
+====================================================================
+Mar 13, 2009 - HAS NOT BEEN FORWARD PORTED TO THE TRUNK YET
+
+Remove camel case from --instanceDir and --installDir
+
+Sending        embedded-glassfish_0106\embedded_v3_prelude_release\admin\launcher\src\main\java\com\sun\enterprise\admin\launcher\GFEmbeddedLauncher.java
+Transmitting file data .
+Committed revision 25367.
