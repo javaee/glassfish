@@ -90,25 +90,28 @@ public interface VirtualServer extends Lifecycle {
      * Registers the given <tt>Context</tt> with this <tt>VirtualServer</tt>
      * at the given context root.
      *
-     * <p>If this <tt>VirtualServer</tt> has been started, the given
-     * <tt>Context</tt> will also be started (unless it was already
-     * started).
+     * <p>If this <tt>VirtualServer</tt> has already been started, the
+     * given <tt>context</tt> will be started as well.
      *
      * @param context the <tt>Context</tt> to register
      * @param contextRoot the context root at which to register
      *
-     * @throws Exception if a <tt>Context</tt> already exists at the given
-     * context root on this <tt>VirtualServer</tt>
+     * @throws DuplicateException if a <tt>Context</tt> already exists
+     * at the given context root on this <tt>VirtualServer</tt>
+     * @throws LifecycleException if the given <tt>context</tt> fails
+     * to be started
      */
     public void addContext(Context context, String contextRoot)
-        throws Exception;
+        throws DuplicateException, LifecycleException;
 
     /**
-     * Unregisters the <tt>Context</tt> at the given context from 
-     * this <tt>VirtualServer</tt>.
+     * Stops the given <tt>context</tt> and removes it from this
+     * <tt>VirtualServer</tt>.
      *
-     * @param context the context root from which to unregister
+     * @param context the <tt>Context</tt> to be stopped and removed
      *
+     * @throws LifecycleException if an error occurs during the stopping
+     * or removal of the given <tt>context</tt>
      */
     public void removeContext(Context context);
 
@@ -127,17 +130,25 @@ public interface VirtualServer extends Lifecycle {
      * Gets the collection of <tt>Context</tt> instances registered with
      * this <tt>VirtualServer</tt>.
      * 
-     * @return the collection of <tt>Context</tt> instances registered with
-     * this <tt>VirtualServer</tt>
+     * @return the (possibly empty) collection of <tt>Context</tt>
+     * instances registered with this <tt>VirtualServer</tt>
      */
     public Collection<Context> getContexts();
 
     /**
-     * Reconfigures this <tt>VirtualServer</tt> with the given configuration.
+     * Reconfigures this <tt>VirtualServer</tt> with the given
+     * configuration.
+     *
+     * <p>In order for the given configuration to take effect, this
+     * <tt>VirtualServer</tt> may be stopped and restarted.
      *
      * @param config the configuration to be applied
+     * 
+     * @throws LifecycleException if the configuration requires a restart,
+     * and this <tt>VirtualServer</tt> fails to be restarted
      */
-    public void setConfig(VirtualServerConfig config);
+    public void setConfig(VirtualServerConfig config)
+        throws LifecycleException;
 
     /**
      * Gets the current configuration of this <tt>VirtualServer</tt>.

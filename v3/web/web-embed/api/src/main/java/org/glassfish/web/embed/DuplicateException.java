@@ -37,61 +37,57 @@
 
 package org.glassfish.web.embed;
 
-import org.glassfish.web.embed.config.WebListenerConfig;
-
 /**
- * Representation of a network listener for web requests.
- *
- * <p>Instances of <tt>WebListener</tt> may be in one of two states:
- * <i>stopped</i> or <i>started</i>.
- *
- * @author Rajiv Mordani
+ * Exception thrown when a web container component fails to be registered
+ * due to its id (in the case of <tt>VirtualServer</tt> and
+ * <tt>WebListener</tt>) or context root (in the case of <tt>Context</tt>)
+ * clashing with that of an already registered component of the same type.
  */
-public interface WebListener extends Lifecycle {
+public class DuplicateException extends Exception {
 
     /**
-     * Gets the id of this <tt>WebListener</tt>.
-     *
-     * @return the id of this <tt>WebListener</tt>
+     * Constructs a <tt>DuplicateException</tt> with no detail message.
+     * The cause is not initialized, and may subsequently be
+     * initialized by a call to {@link #initCause(Throwable) initCause}.
      */
-    public String getId();
+    protected DuplicateException() { }
 
     /**
-     * Sets the port number for this <tt>WebListener</tt>.
+     * Constructs a <tt>DuplicateException</tt> with the specified detail
+     * message. The cause is not initialized, and may subsequently be
+     * initialized by a call to {@link #initCause(Throwable) initCause}.
      *
-     * @param port the port number for this <tt>WebListener</tt>
+     * @param message the detail message
      */
-    public void setPort(int port);
+    protected DuplicateException(String message) {
+        super(message);
+    }
 
     /**
-     * Gets the port number of this <tt>WebListener</tt>.
+     * Constructs a <tt>DuplicateException</tt> with the specified detail
+     * message and cause.
      *
-     * @return the port number of this <tt>WebListener</tt>
+     * @param  message the detail message
+     * @param  cause the cause (which is saved for later retrieval by the
+     *         {@link #getCause()} method)
      */
-    public int getPort();
+    public DuplicateException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
     /**
-     * Reconfigures this <tt>WebListener</tt> with the given
-     * configuration.
+     * Constructs a <tt>DuplicateException</tt> with the specified cause.
+     * The detail message is set to:
+     * <pre>
+     *  (cause == null ? null : cause.toString())</pre>
+     * (which typically contains the class and detail message of
+     * <tt>cause</tt>).
      *
-     * <p>In order for the given configuration to take effect, this
-     * <tt>WebListener</tt> may be stopped and restarted.
-     *
-     * @param config the configuration to be applied
-     * 
-     * @throws LifecycleException if the configuration requires a restart,
-     * and this <tt>WebListener</tt> fails to be restarted
+     * @param  cause the cause (which is saved for later retrieval by the
+     *         {@link #getCause()} method)
      */
-    public void setConfig(WebListenerConfig config)
-        throws LifecycleException;
-
-    /**
-     * Gets the current configuration of this <tt>WebListener</tt>.
-     *
-     * @return the current configuration of this <tt>WebListener</tt>,
-     * or <tt>null</tt> if no special configuration was ever applied to this
-     * <tt>WebListener</tt>
-     */
-    public WebListenerConfig getConfig();
+    public DuplicateException(Throwable cause) {
+        super(cause);
+    }
 
 }

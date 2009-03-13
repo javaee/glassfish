@@ -43,30 +43,33 @@ import org.glassfish.web.embed.config.*;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
- * Entry point to the web container, which allows users to create
- * HTTP listeners and virtual servers, and register web applications
- * and their static and dynamic resources into the URI namespace.
+ * Class representing an embedded web container, which supports the
+ * programmatic creation of different types of web protocol listeners
+ * and virtual servers, and the registration of static and dynamic
+ * web resources into the URI namespace.
  */
 @Contract
 public interface EmbeddedWebContainer {
 
     /**
-     * Starts this web container and all the <tt>WebListener</tt> and
-     * <tt>VirtualServer</tt> instances registered with it.
+     * Starts this <tt>EmbeddedWebContainer</tt> and any of the
+     * <tt>WebListener</tt> and <tt>VirtualServer</tt> instances
+     * registered with it.
      *
      * @throws Exception if an error occurs during the start up of this
-     * web container or any of its registered <tt>WebListener</tt> or
-     * <tt>VirtualServer</tt> instances 
+     * <tt>EmbeddedWebContainer</tt> or any of its registered
+     * <tt>WebListener</tt> or <tt>VirtualServer</tt> instances 
      */
     public void start() throws LifecycleException;
 
     /**
-     * Stops this web container and all the <tt>WebListener</tt> and
-     * <tt>VirtualServer</tt> instances registered with it.
+     * Stops this <tt>EmbeddedWebContainer</tt> and any of the
+     * <tt>WebListener</tt> and <tt>VirtualServer</tt> instances
+     * registered with it.
      *
      * @throws Exception if an error occurs during the shut down of this
-     * web container or any of its registered <tt>WebListener</tt> or
-     * <tt>VirtualServer</tt> instances 
+     * <tt>EmbeddedWebContainer</tt> or any of its registered
+     * <tt>WebListener</tt> or <tt>VirtualServer</tt> instances 
      */
     public void stop() throws LifecycleException;
 
@@ -79,9 +82,6 @@ public interface EmbeddedWebContainer {
      * resources are asked to process a request.
      * If a <tt>null</tt> classloader is passed, the classloader of the
      * class on which this method is called will be used.
-     *
-     * <p>In order to access the new <tt>Context</tt> or any of its 
-     * resources, the <tt>Context</tt> must be started.
      *
      * @param docRoot the docroot of the <tt>Context</tt>
      * @param contextRoot
@@ -151,19 +151,22 @@ public interface EmbeddedWebContainer {
         throws InstantiationException, IllegalAccessException;
 
     /**
-     * Adds the given <tt>WebListener</tt> to this web container.
+     * Adds the given <tt>WebListener</tt> to this
+     * <tt>EmbeddedWebContainer</tt>.
      *
-     * <p>If this web container has already been started, the
-     * <tt>WebListener</tt> will also be started.
+     * <p>If this <tt>EmbeddedWebContainer</tt> has already been started,
+     * the given <tt>webListener</tt> will be started as well.
      *
      * @param webListener the <tt>WebListener</tt> to add
      *
-     * @throws Exception if a <tt>WebListener</tt> with the same id
-     * has already been registered with this web container, or if the
-     * given <tt>webListener</tt> fails to be started
+     * @throws DuplicateException if a <tt>WebListener</tt> with the
+     * same id has already been registered with this
+     * <tt>EmbeddedWebContainer</tt>
+     * @throws LifecycleException if the given <tt>webListener</tt> fails
+     * to be started
      */
     public void addWebListener(WebListener webListener)
-        throws Exception;
+        throws DuplicateException, LifecycleException;
 
     /**
      * Finds the <tt>WebListener</tt> with the given id.
@@ -172,31 +175,31 @@ public interface EmbeddedWebContainer {
      *
      * @return the <tt>WebListener</tt> with the given id, or
      * <tt>null</tt> if no <tt>WebListener</tt> with that id has been
-     * registered with this web container
+     * registered with this <tt>EmbeddedWebContainer</tt>
      */
     public WebListener findWebListener(String id);
 
     /**
      * Gets the collection of <tt>WebListener</tt> instances registered
-     * with this web container.
+     * with this <tt>EmbeddedWebContainer</tt>.
      * 
      * @return the (possibly empty) collection of <tt>WebListener</tt>
-     * instances registered with this web container
+     * instances registered with this <tt>EmbeddedWebContainer</tt>
      */
     public Collection<WebListener> getWebListeners();
 
     /**
      * Stops the given <tt>webListener</tt> and removes it from this
-     * web container.
+     * <tt>EmbeddedWebContainer</tt>.
      *
      * @param webListener the <tt>WebListener</tt> to be stopped
      * and removed
      *
-     * @throws Exception if an error occurs during the stopping of the 
-     * given <tt>webListener</tt>
+     * @throws LifecycleException if an error occurs during the stopping
+     * or removal of the given <tt>webListener</tt>
      */
     public void removeWebListener(WebListener webListener)
-        throws Exception;
+        throws LifecycleException;
 
     /**
      * Creates a <tt>VirtualServer</tt> with the given id and docroot, and
@@ -213,19 +216,22 @@ public interface EmbeddedWebContainer {
         File docRoot, WebListener...  webListeners);
 
     /**
-     * Adds the given <tt>VirtualServer</tt> to this web container.
+     * Adds the given <tt>VirtualServer</tt> to this
+     * <tt>EmbeddedWebContainer</tt>.
      *
-     * <p>If this web container has already been started, the
-     * <tt>VirtualServer</tt> will also be started.
+     * <p>If this <tt>EmbeddedWebContainer</tt> has already been started,
+     * the given <tt>virtualServer</tt> will be started as well.
      *
      * @param virtualServer the <tt>VirtualServer</tt> to add
      *
-     * @throws Exception if a <tt>VirtualServer</tt> with the same id
-     * has already been registered with this web container, or if the
-     * given <tt>virtualServer</tt> fails to be started
+     * @throws DuplicateException if a <tt>VirtualServer</tt> with the
+     * same id has already been registered with this
+     * <tt>EmbeddedWebContainer</tt>
+     * @throws LifecycleException if the given <tt>virtualServer</tt> fails
+     * to be started
      */
     public void addVirtualServer(VirtualServer virtualServer)
-        throws Exception;
+        throws DuplicateException, LifecycleException;
 
     /**
      * Finds the <tt>VirtualServer</tt> with the given id.
@@ -233,31 +239,31 @@ public interface EmbeddedWebContainer {
      * @param id the id of the <tt>VirtualServer</tt> to find
      *
      * @return the <tt>VirtualServer</tt> with the given id, or
-     * <tt>null</tt> if no <tt>VirtualServer</tt> with that id exists
-     * in this web container
+     * <tt>null</tt> if no <tt>VirtualServer</tt> with that id has been
+     * registered with this <tt>EmbeddedWebContainer</tt>
      */
     public VirtualServer findVirtualServer(String id);
 
     /**
      * Gets the collection of <tt>VirtualServer</tt> instances registered
-     * with this web container.
+     * with this <tt>EmbeddedWebContainer</tt>.
      * 
      * @return the (possibly empty) collection of <tt>VirtualServer</tt>
-     * instances registered with this web container
+     * instances registered with this <tt>EmbeddedWebContainer</tt>
      */
     public Collection<VirtualServer> getVirtualServers();
 
     /**
      * Stops the given <tt>virtualServer</tt> and removes it from this
-     * web container.
+     * <tt>EmbeddedWebContainer</tt>.
      *
      * @param virtualServer the <tt>VirtualServer</tt> to be stopped
      * and removed
      *
-     * @throws Exception if an error occurs during the stopping of the 
-     * given <tt>virtualServer</tt>
+     * @throws LifecycleException if an error occurs during the stopping
+     * or removal of the given <tt>virtualServer</tt>
      */
     public void removeVirtualServer(VirtualServer virtualServer)
-        throws Exception;
+        throws LifecycleException;
 
 }
