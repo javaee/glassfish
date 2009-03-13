@@ -112,6 +112,10 @@ public class XML {
             pw = s.toCharArray();
         }
 
+        public Password(char[] pw) {
+            this.pw = pw;
+        }
+        
         public static Password parse(String s) {
             return new Password(s);
         }
