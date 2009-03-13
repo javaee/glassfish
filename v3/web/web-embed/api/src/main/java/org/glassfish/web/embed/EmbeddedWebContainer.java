@@ -39,7 +39,6 @@ package org.glassfish.web.embed;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.Map;
 import org.glassfish.web.embed.config.*;
 import org.jvnet.hk2.annotations.Contract;
 
@@ -48,31 +47,28 @@ import org.jvnet.hk2.annotations.Contract;
  * HTTP listeners and virtual servers, and register web applications
  * and their static and dynamic resources into the URI namespace.
  */
-
 @Contract
-public interface EmbeddedWebContainer extends Lifecycle {
+public interface EmbeddedWebContainer {
 
     /**
-     * Creates a <tt>Context</tt>.
+     * Starts this web container and all the <tt>WebListener</tt> and
+     * <tt>VirtualServer</tt> instances registered with it.
      *
-     * <p>The classloader of the class on which this method is called
-     * will be set as the thread's context classloader whenever the
-     * new <tt>Context</tt> or any of its resources are asked to process
-     * a request.
-     *
-     * <p>In order to access the new <tt>Context</tt> or any of its 
-     * resources, the <tt>Context</tt> must be started and registered
-     * with a <tt>VirtualServer</tt>.
-     *
-     * @param docroot
-     * @param contextRoot
-     * @param loader
-     * @return the new <tt>Context</tt>
-     *
-     * @see VirtualServer#addContext
+     * @throws Exception if an error occurs during the start up of this
+     * web container or any of its registered <tt>WebListener</tt> or
+     * <tt>VirtualServer</tt> instances 
      */
-    public Context createContext(File docroot, String contextRoot, 
-                                 ClassLoader loader);
+    public void start() throws LifecycleException;
+
+    /**
+     * Stops this web container and all the <tt>WebListener</tt> and
+     * <tt>VirtualServer</tt> instances registered with it.
+     *
+     * @throws Exception if an error occurs during the shut down of this
+     * web container or any of its registered <tt>WebListener</tt> or
+     * <tt>VirtualServer</tt> instances 
+     */
+    public void stop() throws LifecycleException;
 
     /**
      * Creates a <tt>Context</tt> and configures it with the given
@@ -85,8 +81,30 @@ public interface EmbeddedWebContainer extends Lifecycle {
      * class on which this method is called will be used.
      *
      * <p>In order to access the new <tt>Context</tt> or any of its 
-     * resources, the <tt>Context</tt> must be started and registered
-     * with a <tt>VirtualServer</tt>.
+     * resources, the <tt>Context</tt> must be started.
+     *
+     * @param docRoot the docroot of the <tt>Context</tt>
+     * @param contextRoot
+     * @param classLoader the classloader of the <tt>Context</tt>
+     *
+     * @return the new <tt>Context</tt>
+     */
+    public Context createContext(File docRoot, String contextRoot, 
+                                 ClassLoader classLoader);
+
+    /**
+     * Creates a <tt>Context</tt> and configures it with the given
+     * docroot and classloader.
+     *
+     * <p>The given classloader will be set as the thread's context
+     * classloader whenever the new <tt>Context</tt> or any of its
+     * resources are asked to process a request.
+     * If a <tt>null</tt> classloader is passed, the classloader of the
+     * class on which this method is called will be used.
+     *
+     * <p>In order to access the new <tt>Context</tt> or any of its 
+     * resources, the <tt>Context</tt> must be registered with a
+     * <tt>VirtualServer</tt> that has been started.
      *
      * @param docRoot the docroot of the <tt>Context</tt>
      * @param classLoader the classloader of the <tt>Context</tt>
@@ -101,41 +119,50 @@ public interface EmbeddedWebContainer extends Lifecycle {
      * Creates a <tt>WebListener</tt> from the given class type and
      * assigns the given id to it.
      *
-     * <p>If this web container has already been started, the new
-     * <tt>WebListener</tt> will also be started (unless it was already
-     * started).
-     *
      * @param id the id of the new <tt>WebListener</tt>
-     * @param c the class type of the new <tt>WebListener</tt>
-     * 
-     * @return the new <tt>WebListener</tt>
-     *
-     * @throws Exception if a <tt>WebListener</tt> with the given id
-     * already exists in this web container
-     */
-    public <T extends WebListener> T createWebListener(String id, Class<T> c)
-        throws Exception;
-
-    /**
-     * Creates a <tt>WebListener</tt> from the given class type and
-     * assigns the given id to it.
-     *
-     * <p>If this web container has already been started, the new
-     * <tt>WebListener</tt> will also be started (unless it was already
-     * started).
-     *
-     * @param id the id of the new <tt>WebListener</tt>
-     * @param c the class type of the new <tt>WebListener</tt>
-     * @param config the configuration to be applied to the
+     * @param c the class from which to instantiate the
      * <tt>WebListener</tt>
      * 
-     * @return the new <tt>WebListener</tt>
+     * @return the new <tt>WebListener</tt> instance
      *
-     * @throws Exception if a <tt>WebListener</tt> with the given id
-     * already exists in this web container
+     * @throws  IllegalAccessException if the given <tt>Class</tt> or
+     * its nullary constructor is not accessible.
+     * @throws  InstantiationException if the given <tt>Class</tt>
+     * represents an abstract class, an interface, an array class,
+     * a primitive type, or void; or if the class has no nullary
+     * constructor; or if the instantiation fails for some other reason.
+     * @throws ExceptionInInitializerError if the initialization
+     * fails
+     * @throws SecurityException if a security manager, <i>s</i>, is
+     * present and any of the following conditions is met:
+     *
+     * <ul>
+     * <li> invocation of <tt>{@link SecurityManager#checkMemberAccess
+     * s.checkMemberAccess(this, Member.PUBLIC)}</tt> denies
+     * creation of new instances of the given <tt>Class</tt>
+     * <li> the caller's class loader is not the same as or an
+     * ancestor of the class loader for the current class and
+     * invocation of <tt>{@link SecurityManager#checkPackageAccess
+     * s.checkPackageAccess()}</tt> denies access to the package
+     * of this class
+     * </ul>
      */
-    public <T extends WebListener> T createWebListener(String id,
-            Class<T> c, WebListenerConfig config)
+    public <T extends WebListener> T createWebListener(String id, Class<T> c)
+        throws InstantiationException, IllegalAccessException;
+
+    /**
+     * Adds the given <tt>WebListener</tt> to this web container.
+     *
+     * <p>If this web container has already been started, the
+     * <tt>WebListener</tt> will also be started.
+     *
+     * @param webListener the <tt>WebListener</tt> to add
+     *
+     * @throws Exception if a <tt>WebListener</tt> with the same id
+     * has already been registered with this web container, or if the
+     * given <tt>webListener</tt> fails to be started
+     */
+    public void addWebListener(WebListener webListener)
         throws Exception;
 
     /**
@@ -144,8 +171,8 @@ public interface EmbeddedWebContainer extends Lifecycle {
      * @param id the id of the <tt>WebListener</tt> to find
      *
      * @return the <tt>WebListener</tt> with the given id, or
-     * <tt>null</tt> if no <tt>WebListener</tt> with that id exists
-     * in this web container
+     * <tt>null</tt> if no <tt>WebListener</tt> with that id has been
+     * registered with this web container
      */
     public WebListener findWebListener(String id);
 
@@ -153,55 +180,52 @@ public interface EmbeddedWebContainer extends Lifecycle {
      * Gets the collection of <tt>WebListener</tt> instances registered
      * with this web container.
      * 
-     * @return the collection of <tt>WebListener</tt> instances registered
-     * with this web container
+     * @return the (possibly empty) collection of <tt>WebListener</tt>
+     * instances registered with this web container
      */
     public Collection<WebListener> getWebListeners();
 
     /**
-     * Creates a <tt>VirtualServer</tt> with the given id and docroot, and
-     * attaches it to the given <tt>WebListener</tt> instances.
-     * 
-     * <p>If this web container has already been started, the new
-     * <tt>VirtualServer</tt> will also be started (unless it was already
-     * started).
+     * Stops the given <tt>webListener</tt> and removes it from this
+     * web container.
      *
-     * @param id the id of the <tt>VirtualServer</tt>
-     * @param docRoot the docroot of the <tt>VirtualServer</tt>
-     * @param webListeners the list of <tt>WebListener</tt> instances from 
-     * which the <tt>VirtualServer</tt> will receive requests
-     * 
-     * @return the new <tt>VirtualServer</tt>
+     * @param webListener the <tt>WebListener</tt> to be stopped
+     * and removed
      *
-     * @throws Exception if a <tt>VirtualServer</tt> with the given id
-     * already exists in this web container
+     * @throws Exception if an error occurs during the stopping of the 
+     * given <tt>webListener</tt>
      */
-    public VirtualServer createVirtualServer(String id,
-        File docRoot, WebListener...  webListeners) throws Exception;
+    public void removeWebListener(WebListener webListener)
+        throws Exception;
 
     /**
      * Creates a <tt>VirtualServer</tt> with the given id and docroot, and
      * attaches it to the given <tt>WebListener</tt> instances.
      * 
-     * <p>If this web container has already been started, the new
-     * <tt>VirtualServer</tt> will also be started (unless it was already
-     * started).
-     *
      * @param id the id of the <tt>VirtualServer</tt>
      * @param docRoot the docroot of the <tt>VirtualServer</tt>
-     * @param config the configuration to be applied to the
-     * <tt>VirtualServer</tt>
      * @param webListeners the list of <tt>WebListener</tt> instances from 
      * which the <tt>VirtualServer</tt> will receive requests
      * 
-     * @return the new <tt>VirtualServer</tt>
-     *
-     * @throws Exception if a <tt>VirtualServer</tt> with the given id
-     * already exists in this web container
+     * @return the new <tt>VirtualServer</tt> instance
      */
     public VirtualServer createVirtualServer(String id,
-        File docRoot, VirtualServerConfig config,
-        WebListener...  webListeners) throws Exception;
+        File docRoot, WebListener...  webListeners);
+
+    /**
+     * Adds the given <tt>VirtualServer</tt> to this web container.
+     *
+     * <p>If this web container has already been started, the
+     * <tt>VirtualServer</tt> will also be started.
+     *
+     * @param virtualServer the <tt>VirtualServer</tt> to add
+     *
+     * @throws Exception if a <tt>VirtualServer</tt> with the same id
+     * has already been registered with this web container, or if the
+     * given <tt>virtualServer</tt> fails to be started
+     */
+    public void addVirtualServer(VirtualServer virtualServer)
+        throws Exception;
 
     /**
      * Finds the <tt>VirtualServer</tt> with the given id.
@@ -218,13 +242,22 @@ public interface EmbeddedWebContainer extends Lifecycle {
      * Gets the collection of <tt>VirtualServer</tt> instances registered
      * with this web container.
      * 
-     * @return the collection of <tt>VirtualServer</tt> instances registered
-     * with this web container
+     * @return the (possibly empty) collection of <tt>VirtualServer</tt>
+     * instances registered with this web container
      */
     public Collection<VirtualServer> getVirtualServers();
 
-    public void removeVirtualServer(VirtualServer virtualServer);
-
-    public <T extends WebListener> void removeWebListener(T t);
+    /**
+     * Stops the given <tt>virtualServer</tt> and removes it from this
+     * web container.
+     *
+     * @param virtualServer the <tt>VirtualServer</tt> to be stopped
+     * and removed
+     *
+     * @throws Exception if an error occurs during the stopping of the 
+     * given <tt>virtualServer</tt>
+     */
+    public void removeVirtualServer(VirtualServer virtualServer)
+        throws Exception;
 
 }

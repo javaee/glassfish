@@ -43,23 +43,17 @@ package org.glassfish.web.embed;
 public interface Lifecycle {
 
     /**
-     * Starts this component.
+     * Enables this component.
      * 
-     * @throws LifecycleException if an error occurs during the starting
-     * of this component
+     * @throws LifecycleException if this component fails to be enabled
      */
-    public void start() throws LifecycleException;
-
-    /**
-     * Stops this component.
-     * 
-     * @throws LifecycleException if an error occurs during the stopping
-     * of this component
-     */
-    public void stop() throws LifecycleException;
-
     public void enable() throws LifecycleException;
 
+    /**
+     * Disables this component.
+     * 
+     * @throws LifecycleException if this component fails to be disabled
+     */
     public void disable() throws LifecycleException;
 
 }
