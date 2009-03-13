@@ -116,6 +116,9 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer, Dummy
    
     public boolean prepare(DeploymentContext dc) {
         try {
+
+            dc.getScratchDir("ejb").mkdirs();
+
             Application app = dc.getModuleMetaData(Application.class);
 
             if (app==null) {
@@ -631,6 +634,10 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer, Dummy
         // Next add the jar files in the EAR level lib directory
         if(appLibDirPath != null) {
             classpath = addJarsToClassPath(classpath, appLibDirPath);
+            //This will add thelib folder at root of the ear file
+            if (dc.getSource().getParentArchive()!= null) {
+                classpath = addJarsToClassPath(classpath,new File(dc.getSource().getParentArchive().getURI().getSchemeSpecificPart(),"lib").getAbsolutePath());
+            }
             classpath = addJarsToClassPath(classpath,new File(appLibDirPath).getParentFile().getAbsolutePath());
         }
 
@@ -963,7 +970,7 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer, Dummy
         return new DummyApplication();
     }
 
-    
+
 
 
 }
