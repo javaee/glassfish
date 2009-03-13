@@ -42,26 +42,44 @@ import java.util.Set;
 /**
  * @author Rajiv Mordani
  */
+public class WebResourceCollection {
 
-//TODO: Need to think about if we want security to be pluggable. Need to talk to Ron.
-public final class SecurityConstraint {
-    private Set<WebResourceCollection> webResourceCollection;
-    private String[] roleNames;
-    private TransportGuarantee tg;
+    private String name;
+    private Set<String> urlPatterns;
+    private Set<String> httpMethods;
+    private Set<String> httpMethodOmissions;
 
-    public void setWebResourceCollection(Set<WebResourceCollection> webResourceCollection) {
-        this.webResourceCollection = webResourceCollection;
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    public String getName() {
+        return this.name;
     }
 
-    public Set<WebResourceCollection> getWebResourceCollection() {
-        return this.webResourceCollection;
+    public void setUrlPatterns(Set<String> urlPatterns) {
+        this.urlPatterns = urlPatterns;          
     }
 
-    public void setAuthConstraint(String... roleNames) {
-        this.roleNames = roleNames;
+    public Set<String> getUrlPatterns() {
+        return this.urlPatterns;
     }
 
-    public void setUserDataConstraint(TransportGuarantee tg) {
-        this.tg = tg;
+    public void setHttpMethods(Set<String> httpMethods) {
+        this.httpMethods = httpMethods;
     }
+
+    public Set<String> getHttpMethods() {
+        return this.httpMethods;
+    }
+
+    public void setHttpMethodOmissions(Set<String> httpMethodOmissions) {
+        this.httpMethodOmissions = httpMethodOmissions;
+    }
+
+    public Set<String> getHttpMethodOmissions() {
+        return this.httpMethodOmissions;
+    }
+
+
 }
