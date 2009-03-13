@@ -202,6 +202,7 @@ public class EventsTest extends ConfigApiTest {
     }
 
     @Test
+    @Ignore
     public void asynchronousEvents() {
         List<EventTypes> asyncEvents =  asynchonousEvents();
         Iterator<EventTypes> itr = asyncEvents.iterator();
