@@ -68,12 +68,12 @@ public interface Deployment {
      * This asynchronous event is sent when a new deployment or loading of an already deployed application start. It is invoked
      * once before any sniffer is invoked.
      */
-    public final EventTypes<ExtendedDeploymentContext> DEPLOYMENT_START = EventTypes.create("Deployment_Start", ExtendedDeploymentContext.class);
+    public final EventTypes<DeploymentContext> DEPLOYMENT_START = EventTypes.create("Deployment_Start", DeploymentContext.class);
     /**
      * This asynchronous event is sent when a deployment activity (first time deploy or loading of an already deployed application)
      * failed.
      */
-    public final EventTypes<ExtendedDeploymentContext> DEPLOYMENT_FAILURE = EventTypes.create("Deployment_Failed", ExtendedDeploymentContext.class);
+    public final EventTypes<DeploymentContext> DEPLOYMENT_FAILURE = EventTypes.create("Deployment_Failed", DeploymentContext.class);
 
     /**
      * This asynchronous event is sent when a deployment activity (first time deploy or loading of an already deployed application)
@@ -81,27 +81,43 @@ public interface Deployment {
      */
     public final EventTypes<ApplicationInfo> DEPLOYMENT_SUCCESS = EventTypes.create("Deployment_Success", ApplicationInfo.class);
 
+    /**
+     * This asynchronous event is sent when a new deployment or loading of an already deployed application start. It is invoked
+     * once before any sniffer is invoked.
+     */
+    public final EventTypes<ApplicationInfo> UNDEPLOYMENT_START = EventTypes.create("Undeployment_Start", ApplicationInfo.class);
+    /**
+     * This asynchronous event is sent when a deployment activity (first time deploy or loading of an already deployed application)
+     * failed.
+     */
+    public final EventTypes<DeploymentContext> UNDEPLOYMENT_FAILURE = EventTypes.create("Undeployment_Failed", DeploymentContext.class);
+
+    /**
+     * This asynchronous event is sent when a deployment activity (first time deploy or loading of an already deployed application)
+     * succeeded.
+     */
+    public final EventTypes<DeploymentContext> UNDEPLOYMENT_SUCCESS = EventTypes.create("Undeployment_Success", DeploymentContext.class);
 
     /**
      * The following synchronous events are sent after each change in a module state.
      */
-    public final EventTypes<ModuleInfo> MODULE_PREPARED = EventTypes.create("Module_Prepared", ModuleInfo.class);
+    public final EventTypes<DeploymentContext> MODULE_PREPARED = EventTypes.create("Module_Prepared", DeploymentContext.class);
     public final EventTypes<ModuleInfo> MODULE_LOADED = EventTypes.create("Module_Loaded", ModuleInfo.class);
-    public final EventTypes<ModuleInfo> MODULE_RUNNING = EventTypes.create("Module_Running", ModuleInfo.class);
+    public final EventTypes<ModuleInfo> MODULE_STARTED = EventTypes.create("Module_Running", ModuleInfo.class);
     public final EventTypes<ModuleInfo> MODULE_STOPPED = EventTypes.create("Module_Stopped", ModuleInfo.class);
     public final EventTypes<ModuleInfo> MODULE_UNLOADED = EventTypes.create("Module_Unloaded", ModuleInfo.class);
-    public final EventTypes<ModuleInfo> MODULE_CLEANED= EventTypes.create("Module_Cleaned", ModuleInfo.class);
+    public final EventTypes<DeploymentContext> MODULE_CLEANED= EventTypes.create("Module_Cleaned", DeploymentContext.class);
 
     /**
      * The following synchronous events are sent after each change in an application stated (An application contains
      * 1 to many modules)
      */
-    public final EventTypes<ApplicationInfo> APPLICATION_PREPARED = EventTypes.create("Application_Prepared", ApplicationInfo.class);
+    public final EventTypes<DeploymentContext> APPLICATION_PREPARED = EventTypes.create("Application_Prepared", DeploymentContext.class);
     public final EventTypes<ApplicationInfo> APPLICATION_LOADED = EventTypes.create("Application_Loaded", ApplicationInfo.class);
-    public final EventTypes<ApplicationInfo> APPLICATION_RUNNING = EventTypes.create("Application_Running", ApplicationInfo.class);
+    public final EventTypes<ApplicationInfo> APPLICATION_STARTED = EventTypes.create("Application_Running", ApplicationInfo.class);
     public final EventTypes<ApplicationInfo> APPLICATION_STOPPED = EventTypes.create("Application_Stopped", ApplicationInfo.class);
     public final EventTypes<ApplicationInfo> APPLICATION_UNLOADED = EventTypes.create("Application_Unloaded", ApplicationInfo.class);
-    public final EventTypes<ApplicationInfo> APPLICATION_CLEANED= EventTypes.create("Application_Cleaned", ApplicationInfo.class);
+    public final EventTypes<DeploymentContext> APPLICATION_CLEANED= EventTypes.create("Application_Cleaned", DeploymentContext.class);
 
 
     public ArchiveHandler getArchiveHandler(ReadableArchive archive) throws IOException;

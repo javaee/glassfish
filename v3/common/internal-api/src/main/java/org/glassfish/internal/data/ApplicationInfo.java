@@ -28,9 +28,12 @@ import org.glassfish.api.deployment.*;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.container.Container;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.event.*;
+import org.glassfish.api.event.EventListener;
+import org.glassfish.api.event.EventListener.Event;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
+import org.glassfish.internal.deployment.Deployment;
 import org.jvnet.hk2.config.TransactionFailure;
-import org.jvnet.hk2.annotations.Service;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -46,14 +49,12 @@ import com.sun.enterprise.config.serverbeans.Module;
  *
  * @author Jerome Dochez
  */
-@Service
 public class ApplicationInfo {
-
-    final static private Logger logger = LogDomains.getLogger(ApplicationInfo.class, LogDomains.CORE_LOGGER);
 
     final private Collection<ModuleInfo> modules = new LinkedList<ModuleInfo>();
     final private String name;
     final private ReadableArchive source;
+    final private Events events;
     final private Map<Class<? extends Object>, Object> metaData = new HashMap<Class<? extends Object>, Object>();
     private String libraries;
 
@@ -61,13 +62,15 @@ public class ApplicationInfo {
     /**
      * Creates a new instance of an ApplicationInfo
      *
+     * @param events
      * @param source the archive for this application
      * @param name name of the application
      */
-    public ApplicationInfo(ReadableArchive source,
+    public ApplicationInfo(Events events, ReadableArchive source,
                            String name) {
         this.name = name;
         this.source = source;
+        this.events = events;
     }
     
     public void addMetaData(Object o) {
@@ -97,7 +100,7 @@ public class ApplicationInfo {
 
     /**
      * Sets the deployment time libraries for this application
-     * @param the libraries
+     * @param libraries the libraries
      */
     public void setLibraries(String libraries) {
         this.libraries = libraries;
@@ -163,6 +166,9 @@ public class ApplicationInfo {
         for (ModuleInfo module : modules) {
             module.load(context, report, tracker);
         }
+        if (events!=null) {
+            events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_LOADED, this), false);
+        }        
     }
 
 
@@ -174,6 +180,9 @@ public class ApplicationInfo {
         for (ModuleInfo module : getModuleInfos()) {
             module.start(context, report, tracker);
         }
+        if (events!=null) {
+            events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_STARTED, this), false);
+        }
     }
 
     public void stop(ApplicationContext context, Logger logger) {
@@ -181,14 +190,20 @@ public class ApplicationInfo {
         for (ModuleInfo module : getModuleInfos()) {
             module.stop(context, logger);
         }
+        if (events!=null) {
+            events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_STOPPED, this), false);
+        }
         
     }
 
     public void unload(ExtendedDeploymentContext context, ActionReport report) {
+
         for (ModuleInfo module : getModuleInfos()) {
             module.unload(context, report);
         }
-
+        if (events!=null) {
+            events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_UNLOADED, this), false);
+        }
     }
 
     public boolean suspend(Logger logger) {
@@ -219,6 +234,9 @@ public class ApplicationInfo {
     public void clean(ExtendedDeploymentContext context) throws Exception {
         for (ModuleInfo info : modules) {
             info.clean(context);
+        }
+        if (events!=null) {
+            events.send(new EventListener.Event<DeploymentContext>(Deployment.APPLICATION_CLEANED, context), false);
         }
     }
     

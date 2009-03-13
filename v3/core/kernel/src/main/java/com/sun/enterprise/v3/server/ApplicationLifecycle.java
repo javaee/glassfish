@@ -45,11 +45,14 @@ import org.glassfish.deployment.common.DeploymentContextImpl;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.enterprise.v3.admin.AdminAdapter;
 import com.sun.logging.LogDomains;
+import com.sun.hk2.component.Holder;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.event.Events;
+import org.glassfish.api.event.*;
+import org.glassfish.api.event.EventListener.Event;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.container.Container;
 import org.glassfish.api.container.Sniffer;
+import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.api.deployment.*;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -109,9 +112,6 @@ public class ApplicationLifecycle implements Deployment {
 
     @Inject
     ModulesRegistry modulesRegistry;
-
-    @Inject
-    protected GrizzlyService adapter;
 
     @Inject
     protected ArchiveFactory archiveFactory;
@@ -177,7 +177,7 @@ public class ApplicationLifecycle implements Deployment {
 
     public ApplicationInfo deploy(Collection<Sniffer> sniffers, final ExtendedDeploymentContext context, final ActionReport report) {
 
-        events.send(new org.glassfish.api.event.EventListener.Event<ExtendedDeploymentContext>(Deployment.DEPLOYMENT_START, context));
+        events.send(new Event<DeploymentContext>(Deployment.DEPLOYMENT_START, context));
         
         ProgressTracker tracker = new ProgressTracker() {
             public void actOn(Logger logger) {
@@ -245,7 +245,7 @@ public class ApplicationLifecycle implements Deployment {
                     // is not a composite module.
                     appInfo=context.getModuleMetaData(ApplicationInfo.class);
                     if (appInfo==null) {
-                        appInfo = new ApplicationInfo(context.getSource(), appName);
+                        appInfo = new ApplicationInfo(events, context.getSource(), appName);
                         appInfo.addModule(moduleInfo);
 
                         for (Object m : context.getModuleMetadata()) {
@@ -257,6 +257,9 @@ public class ApplicationLifecycle implements Deployment {
                     appRegistry.add(appName, appInfo);
                 } else {
                     context.addModuleMetaData(appInfo);                    
+                }
+                if (events!=null) {
+                    events.send(new Event<DeploymentContext>(Deployment.APPLICATION_PREPARED, context), false);
                 }
 
                 // now were falling back into the mainstream loading/starting sequence, at this
@@ -289,9 +292,9 @@ public class ApplicationLifecycle implements Deployment {
             return null;
         } finally {
             if (appInfo==null) {
-                events.send(new org.glassfish.api.event.EventListener.Event<ExtendedDeploymentContext>(Deployment.DEPLOYMENT_FAILURE, context));
+                events.send(new Event<DeploymentContext>(Deployment.DEPLOYMENT_FAILURE, context));
             } else {
-                events.send(new org.glassfish.api.event.EventListener.Event<ApplicationInfo>(Deployment.DEPLOYMENT_SUCCESS, appInfo));
+                events.send(new Event<ApplicationInfo>(Deployment.DEPLOYMENT_SUCCESS, appInfo));
             }
         }
     }
@@ -403,7 +406,7 @@ public class ApplicationLifecycle implements Deployment {
             }
             Deployer deployer = getDeployer(engineInfo);
             if (deployer==null) {
-                report.failure(logger, "Got a null deployer out of the " + engineInfo.getContainer().getClass() + " container");
+                report.failure(logger, "Got a null deployer out of the " + engineInfo.getContainer().getClass() + " container, is it annotated with @Service ?");
                 return null;
             }
             containerInfosByDeployers.put(deployer, engineInfo);
@@ -552,7 +555,7 @@ public class ApplicationLifecycle implements Deployment {
 
                 // construct an incomplete EngineRef which will be later
                 // filled in at loading time
-                EngineRef engineRef = new EngineRef(engineInfo, adapter, null);
+                EngineRef engineRef = new EngineRef(engineInfo, null);
                 addedEngines.add(engineRef);
                 tracker.add("prepared", EngineRef.class, engineRef);
 
@@ -562,9 +565,12 @@ public class ApplicationLifecycle implements Deployment {
                 throw e;
             }
         }
+        if (events!=null) {
+            events.send(new Event<DeploymentContext>(Deployment.MODULE_PREPARED, context), false);
+        }
         // I need to create the application info here from the context, or something like this.
         // and return the application info from this method for automatic registration in the caller.
-        return new ModuleInfo(moduleName, addedEngines);
+        return new ModuleInfo(events, moduleName, addedEngines);
     }
 
     protected Collection<EngineInfo> setupContainer(Sniffer sniffer, Module snifferModule,  Logger logger, ActionReport report) {
@@ -624,6 +630,7 @@ public class ApplicationLifecycle implements Deployment {
             return null;
 
         }
+        info.stop(context, context.getLogger());
         info.unload(context, report);
         return info;
 
@@ -634,14 +641,30 @@ public class ApplicationLifecycle implements Deployment {
         if (report.getExtraProperties()!=null) {
             context.getProps().put("ActionReportProperties", report.getExtraProperties());
         }
-        
-        ApplicationInfo info = unload(appName, context, report);
+
+        ApplicationInfo info = appRegistry.get(appName);
+        if (info==null) {
+            report.failure(context.getLogger(), "Application " + appName + " not registered", null);
+            events.send(new Event(Deployment.UNDEPLOYMENT_FAILURE, context));
+            return;
+
+        }
+        events.send(new Event(Deployment.UNDEPLOYMENT_START, info));
+
+        unload(appName, context, report);
         try {
             info.clean(context);
         } catch(Exception e) {
             report.failure(context.getLogger(), "Exception while cleaning application artifacts", e);
+            events.send(new Event(Deployment.UNDEPLOYMENT_FAILURE, context));
             return;
         }
+        if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
+            events.send(new Event(Deployment.UNDEPLOYMENT_SUCCESS, context));
+        } else {            
+            events.send(new Event(Deployment.UNDEPLOYMENT_FAILURE, context));            
+        }
+        
         appRegistry.remove(appName);
     }
 

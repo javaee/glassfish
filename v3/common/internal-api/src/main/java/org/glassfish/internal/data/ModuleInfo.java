@@ -39,7 +39,10 @@ import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.container.Container;
 import org.glassfish.api.deployment.*;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.event.EventListener.Event;
+import org.glassfish.api.event.Events;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
+import org.glassfish.internal.deployment.Deployment;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.config.TransactionFailure;
 
@@ -50,7 +53,6 @@ import java.lang.instrument.ClassFileTransformer;
 import java.beans.PropertyVetoException;
 
 import com.sun.logging.LogDomains;
-import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.Engine;
 
@@ -66,9 +68,12 @@ public class ModuleInfo {
     
     private final Set<EngineRef> engines = new LinkedHashSet<EngineRef>();
     private final String name;
+    private final Events events;
+    private boolean started=false;
 
-    public ModuleInfo(String name, Collection<EngineRef> refs) {
+    public ModuleInfo(Events events, String name, Collection<EngineRef> refs) {
         this.name = name;
+        this.events = events;
         for (EngineRef ref : refs) {
             engines.add(ref);
         }
@@ -147,6 +152,9 @@ public class ModuleInfo {
                 Thread.currentThread().setContextClassLoader(currentClassLoader);
             }
         }
+        if (events!=null) {
+            events.send(new Event<ModuleInfo>(Deployment.MODULE_LOADED, this), false);
+        }
     }    
 
     /*
@@ -171,10 +179,13 @@ public class ModuleInfo {
     }
 
 
-    public void start(
+    public synchronized void start(
         DeploymentContext context,
         ActionReport report, ProgressTracker tracker) throws Exception {
 
+        if (started)
+            return;
+        
         // registers all deployed items.
         for (EngineRef engine : _getEngineRefs()) {
 
@@ -188,10 +199,17 @@ public class ModuleInfo {
                 throw e;
             }
         }
+        started=true;
+        if (events!=null) {
+            events.send(new Event<ModuleInfo>(Deployment.MODULE_STARTED, this), false);
+        }
     }
 
-    public void stop(ApplicationContext context, Logger logger) {
+    public synchronized void stop(ApplicationContext context, Logger logger) {
 
+        if (!started)
+            return;
+        
         for (EngineRef module : _getEngineRefs()) {
             try {
                 module.stop(context, logger);
@@ -200,11 +218,13 @@ public class ModuleInfo {
                         module.getContainerInfo().getSniffer().getModuleType(),e );
             }
         }
+        started=false;
+        if (events!=null) {
+            events.send(new Event<ModuleInfo>(Deployment.MODULE_STOPPED, this), false);
+        }
     }
 
     public void unload(ExtendedDeploymentContext context, ActionReport report) {
-
-        stop(context, logger);
 
         Set<ClassLoader> classLoaders = new HashSet<ClassLoader>();
         for (EngineRef engine : _getEngineRefs()) {
@@ -225,7 +245,11 @@ public class ModuleInfo {
             } catch (Exception e) {
                 // ignore, the class loader does not need to be explicitely stopped.
             }
-        }        
+        }
+        if (events!=null) {
+            events.send(new Event<ModuleInfo>(Deployment.MODULE_UNLOADED, this), false);
+        }
+
     }
 
     public void clean(ExtendedDeploymentContext context) throws Exception {
@@ -233,6 +257,9 @@ public class ModuleInfo {
         for (EngineRef ref : _getEngineRefs()) {
             ref.clean(context, logger);
         }
+        if (events!=null) {
+            events.send(new Event<DeploymentContext>(Deployment.MODULE_CLEANED,context), false);
+        }        
         
     }
 

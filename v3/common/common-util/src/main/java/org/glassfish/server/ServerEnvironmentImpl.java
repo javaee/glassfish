@@ -93,8 +93,14 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
         asenv = new ASenvPropertyReader(startupContext);
 
         // default
-        if(this.root==null)
-            this.root = new File(System.getProperty(INSTANCE_ROOT_PROP_NAME));
+        if(this.root==null) {
+            String envVar = System.getProperty(INSTANCE_ROOT_PROP_NAME);
+            if (envVar!=null) {
+                root = new File(envVar);
+            } else {
+                root = startupContext.getRootDirectory();
+            }
+        }
 
         asenv.getProps().put(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY, root.getAbsolutePath());
         for (Map.Entry<String, String> entry : asenv.getProps().entrySet()) {

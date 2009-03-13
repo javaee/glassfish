@@ -70,7 +70,7 @@ public interface EventListener {
         }
 
         public String name() {
-            return type.toString();
+            return type.type();
         }
 
         public boolean is(EventTypes type) {
@@ -79,6 +79,10 @@ public interface EventListener {
 
         public T hook() {
             return type.getHookType().cast(hook);
+        }
+
+        public EventTypes<T> type() {
+            return type;
         }
     }
 

@@ -44,9 +44,7 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.internal.deployment.SnifferManager;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 
 import com.sun.enterprise.module.impl.ClassLoaderProxy;
 
@@ -59,7 +57,7 @@ import com.sun.enterprise.module.impl.ClassLoaderProxy;
 public class SnifferManagerImpl implements SnifferManager {
     // I am not injecting the sniffers because this can rapidly become an expensive
     // operation especially when no application has been deployed.
-    volatile Collection<Sniffer> sniffers;
+    volatile List<Sniffer> sniffers;
 
     @Inject
     protected Habitat habitat;
@@ -71,7 +69,20 @@ public class SnifferManagerImpl implements SnifferManager {
      */
     public Collection<Sniffer> getSniffers() {
         if (sniffers==null) {
-            sniffers = habitat.getAllByContract(Sniffer.class);
+            // this is a little bit of a hack, sniffers are now ordered by their names
+            // which is useful since connector is before ejb which is before web so if
+            // a standalone module happens to implement the three types of components,
+            // they will be naturally ordered correctly. We might want to revisit this
+            // later and formalize the ordering of sniffers. The hard thing as usual
+            // is that sniffers are highly pluggable so you never know which sniffers
+            // set you are working with depending on the distribution
+            sniffers = new ArrayList<Sniffer>();
+            sniffers.addAll(habitat.getAllByContract(Sniffer.class));
+            Collections.sort(sniffers, new Comparator<Sniffer>() {
+                public int compare(Sniffer o1, Sniffer o2) {
+                    return o1.getModuleType().compareTo(o2.getModuleType());
+                }
+            });            
         }
         return sniffers;
     }
@@ -108,6 +119,8 @@ public class SnifferManagerImpl implements SnifferManager {
      */
     public Collection<Sniffer> getSniffers(ReadableArchive archive, ClassLoader cloader) {
 
+        // it is important to keep an ordered sequence here to keep sniffers
+        // in their natural order.
         List<Sniffer> appSniffers = new ArrayList<Sniffer>();
 
         // scan for registered annotations and retrieve applicable sniffers

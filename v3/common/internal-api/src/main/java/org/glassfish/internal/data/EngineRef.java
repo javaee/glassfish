@@ -54,6 +54,7 @@ import java.beans.PropertyVetoException;
 
 import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.Engine;
+import com.sun.hk2.component.Holder;
 
 /**
  * When a module is attached to a LoadedEngine, it creates an Engine reference. Each module
@@ -65,13 +66,11 @@ import com.sun.enterprise.config.serverbeans.Engine;
 public class EngineRef {
 
     final private EngineInfo ctrInfo;
-    final RequestDispatcher requestDispatcher;
 
     private ApplicationContainer appCtr;
 
-    public EngineRef(EngineInfo container, RequestDispatcher requestDispatcher, ApplicationContainer appCtr) {
+    public EngineRef(EngineInfo container,  ApplicationContainer appCtr) {
         this.ctrInfo = container;
-        this.requestDispatcher = requestDispatcher;
         this.appCtr = appCtr;
     }
 
@@ -116,14 +115,6 @@ public class EngineRef {
         }
 
         tracker.add("started", EngineRef.class, this);
-
-        // add the endpoint
-        try {
-            Adapter appAdapter = Adapter.class.cast(appCtr);
-            requestDispatcher.registerEndpoint(appAdapter.getContextRoot(), appAdapter,appCtr);
-        } catch (ClassCastException e) {
-            // ignore the application may not publish endpoints.
-        }
         return true;
     }
 
@@ -158,17 +149,6 @@ public class EngineRef {
      * @return
      */
     public boolean stop(ApplicationContext context,  Logger logger) {
-        // remove any endpoints if exists.
-        //@TODO change EndportRegistrationException processing if required
-        try {
-            final Adapter appAdapter = Adapter.class.cast(appCtr);
-            requestDispatcher.unregisterEndpoint(appAdapter.getContextRoot(), appCtr);
-        } catch (EndpointRegistrationException e) {
-            logger.log(Level.WARNING, "Exception during unloading module '" +
-                    this + "'", e);
-        } catch(ClassCastException e) {
-            // do nothing the application did not have an adapter
-        }
 
        return appCtr.stop(context);
     }

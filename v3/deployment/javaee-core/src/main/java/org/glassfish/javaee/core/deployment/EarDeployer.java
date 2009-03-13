@@ -39,6 +39,7 @@ import org.glassfish.api.deployment.*;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.container.Container;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.event.Events;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
@@ -58,7 +59,6 @@ import com.sun.logging.LogDomains;
 
 import java.util.*;
 import java.util.logging.Logger;
-import java.util.logging.Level;
 import java.io.IOException;
 import java.io.File;
 
@@ -86,6 +86,9 @@ public class EarDeployer implements Deployer {
 
     @Inject
     ArchiveFactory archiveFactory;
+
+    @Inject
+    Events events;
 
 
     final static Logger logger = LogDomains.getLogger(EarDeployer.class, LogDomains.DPL_LOGGER);
@@ -137,7 +140,7 @@ public class EarDeployer implements Deployer {
         Application application=null;
 
         private CompositeApplicationInfo(ReadableArchive source, String name) {
-            super(source, name);            
+            super(events, source, name);
         }
 
         @Override

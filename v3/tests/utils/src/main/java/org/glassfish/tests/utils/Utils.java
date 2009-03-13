@@ -37,12 +37,15 @@
 package org.glassfish.tests.utils;
 
 import com.sun.enterprise.module.bootstrap.Populator;
+import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.hk2.component.Holder;
 import com.sun.hk2.component.InhabitantsParser;
 import com.sun.hk2.component.InhabitantsScanner;
+import com.sun.hk2.component.ExistingSingletonInhabitant;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigParser;
 import org.jvnet.hk2.config.DomDocument;
+import org.glassfish.api.admin.ServerEnvironment;
 
 import java.net.URL;
 import java.util.Enumeration;
@@ -80,42 +83,11 @@ public class Utils {
 
     public static synchronized Habitat getNewHabitat(final ConfigApiTest test) {
 
+        final Habitat habitat = getNewHabitat();
+
         final String fileName = test.getFileName();
 
-        Holder<ClassLoader> holder = new Holder<ClassLoader>() {
-            public ClassLoader get() {
-                return getClass().getClassLoader();
-            }
-        };
 
-        Enumeration<URL> resources = null;
-        try {
-            resources = Utils.class.getClassLoader().getResources(inhabitantPath + "/" + habitatName);
-        } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        if (resources == null) {
-            System.out.println("Cannot find any inhabitant file in the classpath");
-            return null;
-        }
-
-        final Habitat habitat = new Habitat();
-
-        while (resources.hasMoreElements()) {
-            URL resource = resources.nextElement();
-            InhabitantsScanner scanner = null;
-            try {
-                scanner = new InhabitantsScanner(resource.openConnection().getInputStream(), habitatName);
-            } catch (IOException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
-            InhabitantsParser inhabitantsParser = new InhabitantsParser(habitat);
-            try {
-                inhabitantsParser.parse(scanner, holder);
-            } catch (IOException e1) {
-                e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
-        }
         ConfigParser configParser = new ConfigParser(habitat);
 
         (new Populator() {
@@ -173,6 +145,8 @@ public class Utils {
                 e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
         }
+        habitat.addIndex(new ExistingSingletonInhabitant(new SingleModulesRegistry(Utils.class.getClassLoader())), ModulesRegistry.class.getName(), null);
+        habitat.addIndex(new ExistingSingletonInhabitant(Logger.getAnonymousLogger()), Logger.class.getName(), null);        
         return habitat;        
     }
 }
