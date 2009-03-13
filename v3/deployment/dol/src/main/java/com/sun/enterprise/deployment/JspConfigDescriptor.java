@@ -44,7 +44,7 @@ import java.util.*;
 public class JspConfigDescriptor extends Descriptor {
 
     private Set list = null;
-    private Vector jspGroups = null;
+    private Vector<JspGroupDescriptor> jspGroups = null;
 
     /**
      * return the set of tag lib elements
@@ -80,9 +80,9 @@ public class JspConfigDescriptor extends Descriptor {
     /**
      * return the set of jsp-group elements
      */
-    public Collection getJspGroupSet() {
+    public Collection<JspGroupDescriptor> getJspGroupSet() {
         if (jspGroups == null) {
-            jspGroups = new Vector();
+            jspGroups = new Vector<JspGroupDescriptor>();
         }
         return jspGroups;
     }
@@ -90,7 +90,7 @@ public class JspConfigDescriptor extends Descriptor {
     /**
      * return the enumeration of jsp-group elements
      */
-    public Enumeration getJspGroups() {
+    public Enumeration<JspGroupDescriptor> getJspGroups() {
         return (new Vector(getJspGroupSet())).elements();
     }
 

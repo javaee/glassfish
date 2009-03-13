@@ -718,7 +718,7 @@ public class WebBundleDescriptor extends BundleDescriptor
      * Return my set of environment properties.
      */
 
-    public Set getEnvironmentProperties() {
+    public Set<EnvironmentEntry> getEnvironmentProperties() {
         return getEnvironmentEntrySet();
     }
 

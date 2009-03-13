@@ -4749,11 +4749,8 @@ public class StandardContext
 
         long result = 0;
 
-        Container[] children = findChildren();
-        if (children != null) {
-            for(Container aChildren : children) {
-                result += ((StandardWrapper)aChildren).getProcessingTimeMillis();
-            }
+        for (Container child : findChildren()) {
+            result += ((StandardWrapper)child).getProcessingTimeMillis();
         }
 
         return result;
@@ -5515,10 +5512,9 @@ public class StandardContext
                     ((Lifecycle) resources).start();
 
                 // Start our child containers, if any
-                Container children[] = findChildren();
-                for(Container aChildren : children) {
-                    if(aChildren instanceof Lifecycle) {
-                        ((Lifecycle)aChildren).start();
+                for (Container child : findChildren()) {
+                    if(child instanceof Lifecycle) {
+                        ((Lifecycle)child).start();
                     }
                 }
 
@@ -5781,12 +5777,10 @@ public class StandardContext
         ClassLoader oldCCL = bindThread();
 
         try {
-
             // Stop our child containers, if any
-            Container[] children = findChildren();
-            for(Container aChildren : children) {
-                if(aChildren instanceof Lifecycle) {
-                    ((Lifecycle)aChildren).stop();
+            for (Container child : findChildren()) {
+                if(child instanceof Lifecycle) {
+                    ((Lifecycle)child).stop();
                 }
             }
 
@@ -6033,9 +6027,8 @@ public class StandardContext
      * Java Server Faces.
      */
     private boolean isJsfServletDefined(){
-        Container[] wrappers = findChildren();
         String servletName;
-        for(Container wrapper : wrappers) {
+        for(Container wrapper : findChildren()) {
             servletName = ((Wrapper)wrapper).getServletClassName();
             if(servletName == null) {
                 continue;
@@ -6766,9 +6759,8 @@ public class StandardContext
                     broadcaster.sendNotification(notification);
                 }
             }
-            Container children[] = findChildren();
-            for (int i=0; children!=null && i<children.length; i++) {
-                ((StandardWrapper)children[i]).registerJMX( this );
+            for (Container child : findChildren()) {
+                ((StandardWrapper)child).registerJMX( this );
             }
         } catch (Exception ex) {
             log.log(Level.INFO,

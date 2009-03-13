@@ -40,6 +40,7 @@ import java.util.*;
 import java.util.logging.*;
 import javax.servlet.*;
 import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.types.EjbReference;
 import com.sun.enterprise.deployment.web.*;
 import com.sun.enterprise.web.WebModule;
 import com.sun.enterprise.web.deploy.*;
@@ -82,34 +83,19 @@ public class TomcatDeploymentConfig{
      */
     public static void configureWebModule(WebModule webModule,
                                           WebModule defaultWebModule){ 
-                                              
         configureStandardContext(webModule,defaultWebModule);
-        
         configureContextParam(webModule,defaultWebModule);
-
         configureApplicationListener(webModule,defaultWebModule);
-        
         configureEjbReference(webModule,defaultWebModule);
- 
         configureContextEnvironment(webModule,defaultWebModule);
-        
         configureErrorPage(webModule,defaultWebModule);
-
         configureFilterDef(webModule,defaultWebModule);
-
         configureFilterMap(webModule,defaultWebModule);
-        
         configureLoginConfig(webModule,defaultWebModule);
-        
         configureMimeMapping(webModule,defaultWebModule);
-        
         configureResourceRef(webModule,defaultWebModule);
-
         configureMessageDestination(webModule,defaultWebModule); 
-        
-        configureMessageRef(webModule,defaultWebModule); 
-        
- 
+        configureMessageRef(webModule,defaultWebModule);  
     }
     
     
@@ -156,33 +142,27 @@ public class TomcatDeploymentConfig{
      */
     protected static void configureEjbReference(WebModule webModule,
                                          WebBundleDescriptor wmd) {
-                                                        
-       Set set = wmd.getEjbReferenceDescriptors();
-       Iterator iterator =  set.iterator();
-       
-       EjbReferenceDescriptor ejbDescriptor;
-       while( iterator.hasNext() ){
-            
-           ejbDescriptor = (EjbReferenceDescriptor)iterator.next();
-           if ( ejbDescriptor.isLocal() ){
-                configureContextLocalEjb(webModule,ejbDescriptor);
-           } else {
-                configureContextEjb(webModule,ejbDescriptor);               
-           }           
-       }                                                        
+        for (EjbReference ejbDescriptor :
+                wmd.getEjbReferenceDescriptors()) {
+            if (ejbDescriptor.isLocal()) {
+                configureContextLocalEjb(webModule,
+                    (EjbReferenceDescriptor) ejbDescriptor);
+            } else {
+                configureContextEjb(webModule,
+                    (EjbReferenceDescriptor) ejbDescriptor);
+            }           
+        }                                                        
     }
     
      
-    /**:q
-     *
+    /**
      * Configures EJB resource reference for a web application, as
      * represented in a <code>&lt;ejb-ref&gt;</code> and 
      * <code>&lt;ejb-local-ref&gt;</code>element in the
      * deployment descriptor.
      */
     protected static void configureEjbReference(WebModule webModule,
-                                                WebModule defaultWebModule) { 
-         
+                                                WebModule defaultWebModule) {
         ContextLocalEjb[] localEjbs = (ContextLocalEjb[])
                             defaultWebModule.getCachedFindOperation()
                                         [WebModuleContextConfig.LOCAL_EJBS];   
@@ -220,10 +200,8 @@ public class TomcatDeploymentConfig{
      */    
     protected static void configureContextEjb(WebModule webModule,
                                        EjbReferenceDescriptor ejbDescriptor) {
-                                         
         ContextEjbDecorator decorator = new ContextEjbDecorator(ejbDescriptor);
-        webModule.addEjb(decorator);
-        
+        webModule.addEjb(decorator);        
     }
 
     
@@ -233,16 +211,9 @@ public class TomcatDeploymentConfig{
      */
     protected static void configureContextEnvironment(WebModule webModule,
                                                  WebBundleDescriptor wmd) {
-                                                        
-        Set set = wmd.getContextParametersSet();
-        Iterator iterator = set.iterator();
-          
-        ContextEnvironmentDecorator decorator;
-        EnvironmentProperty envRef;
-        while (iterator.hasNext()){
-            envRef = (EnvironmentProperty)iterator.next();
-            decorator = new ContextEnvironmentDecorator(envRef);
-            webModule.addEnvironment(decorator);
+        for (ContextParameter envRef : wmd.getContextParametersSet()) {
+            webModule.addEnvironment(new ContextEnvironmentDecorator(
+                (EnvironmentProperty) envRef));
         }
     }
 
@@ -255,12 +226,12 @@ public class TomcatDeploymentConfig{
                                     WebModule webModule,
                                     WebModule defaultWebModule) { 
                                                         
-       ContextEnvironment[] contextEnvironment = (ContextEnvironment[])
+        ContextEnvironment[] contextEnvironment = (ContextEnvironment[])
                     defaultWebModule.getCachedFindOperation()
                                         [WebModuleContextConfig.ENVIRONMENTS];
-       for(int i=0; i < contextEnvironment.length; i++){
+        for(int i=0; i < contextEnvironment.length; i++){
             webModule.addEnvironment(contextEnvironment[i]);
-       }
+        }
     }
     
     
@@ -272,16 +243,11 @@ public class TomcatDeploymentConfig{
     protected static void configureErrorPage(WebModule webModule,
                                       WebBundleDescriptor wmd) {
             
-       Enumeration enumeration = wmd.getErrorPageDescriptors();
-       
-       ErrorPageDescriptor errorPageDesc;
-       ErrorPageDecorator decorator;
-       while (enumeration.hasMoreElements()){
-            errorPageDesc = (ErrorPageDescriptor)enumeration.nextElement();
-            decorator = new ErrorPageDecorator(errorPageDesc);
-            webModule.addErrorPage(decorator);
-       }
-                                             
+        Enumeration<ErrorPageDescriptor> e =
+            wmd.getErrorPageDescriptors();
+        while (e.hasMoreElements()){
+            webModule.addErrorPage(new ErrorPageDecorator(e.nextElement()));
+        }                                     
     }
     
     
@@ -448,15 +414,7 @@ public class TomcatDeploymentConfig{
             }
         }
        
-        Collection set = jspConfig.getJspGroupSet();
-        if (set.isEmpty()) {
-            return;
-        }
-
-        Iterator<JspGroupDescriptor> jspPropertyGroups = set.iterator();
-        while (jspPropertyGroups.hasNext()){
-
-            JspGroupDescriptor jspGroup = jspPropertyGroups.next();
+        for (JspGroupDescriptor jspGroup : jspConfig.getJspGroupSet()) {
 
             Vector urlPatterns = null;
             Vector includePreludes = null;
@@ -610,19 +568,9 @@ public class TomcatDeploymentConfig{
      */
     protected static void configureResourceRef(WebModule webModule,
                                                WebBundleDescriptor wmd) {
-        Set set = wmd.getEnvironmentProperties();
-        if ( set.isEmpty() ){
-           return;
-        }
-        Iterator iterator = set.iterator();
-        
-        EnvironmentEntry envEntry;
-        while(iterator.hasNext()){
-            envEntry = (EnvironmentEntry)iterator.next();
-            
+        for (EnvironmentEntry envEntry : wmd.getEnvironmentProperties()) {
             webModule.addResourceEnvRef(envEntry.getName(), 
                                         envEntry.getType());
-                       
         }                                                                     
     }
     
@@ -647,19 +595,9 @@ public class TomcatDeploymentConfig{
      */
     protected static void configureContextParam(WebModule webModule,
                                                 WebBundleDescriptor wmd) {
-        
-       Set set = wmd.getContextParametersSet();
-       if ( set.isEmpty() ){
-           return;
-       }
-       Iterator iterator = set.iterator();
-       
-       ContextParameter ctxParam;
-       while(iterator.hasNext()){
-           ctxParam = (ContextParameter)iterator.next();
-           
-           webModule.addParameter(ctxParam.getName(), ctxParam.getValue());
-       }
+        for (ContextParameter ctxParam : wmd.getContextParametersSet()) {
+            webModule.addParameter(ctxParam.getName(), ctxParam.getValue());
+        }
     }
     
     
@@ -686,22 +624,11 @@ public class TomcatDeploymentConfig{
      */    
     protected static void configureMessageDestination(WebModule webModule,
                                                       WebBundleDescriptor wmd) {
-                                                        
-        Set set = wmd.getMessageDestinations();
-        if ( set.isEmpty() ){
-            return;
-        }
-        Iterator iterator = set.iterator();
-        
-        MessageDestinationDescriptor msgDrd = null;
-        MessageDestinationDecorator decorator;
-        while(iterator.hasNext()){
-            msgDrd = (MessageDestinationDescriptor)iterator.next();
-            decorator = new MessageDestinationDecorator(msgDrd);
-            
-            webModule.addMessageDestination(decorator);
-        }       
-                                                       
+        for (MessageDestinationDescriptor msgDrd :
+                wmd.getMessageDestinations()) {
+            webModule.addMessageDestination(
+                new MessageDestinationDecorator(msgDrd));
+        }                                              
     }
 
     
@@ -731,20 +658,10 @@ public class TomcatDeploymentConfig{
      */
     protected static void configureMessageDestinationRef(WebModule webModule,
                                                   WebBundleDescriptor wmd) {
-                                                        
-        Set set = wmd.getMessageDestinationReferenceDescriptors();
-        if ( set.isEmpty() ){
-            return;
-        }
-        Iterator iterator = set.iterator();
-        
-        MessageDestinationReferenceDescriptor msgDrd = null;
-        MessageDestinationRefDecorator decorator;
-        while(iterator.hasNext()){
-            msgDrd = (MessageDestinationReferenceDescriptor)iterator.next();
-            decorator = new MessageDestinationRefDecorator(msgDrd);
-            
-            webModule.addMessageDestinationRef(decorator);
+        for (MessageDestinationReferenceDescriptor msgDrd :
+                wmd.getMessageDestinationReferenceDescriptors()) {            
+            webModule.addMessageDestinationRef(
+                new MessageDestinationRefDecorator(msgDrd));
         }                                                             
     }
     
@@ -774,21 +691,10 @@ public class TomcatDeploymentConfig{
      */    
     protected static void configureContextResource(WebModule webModule,
                                                    WebBundleDescriptor wmd) {
-        Set set = wmd.getResourceReferenceDescriptors();
-        if ( set.isEmpty() ){
-            return;
+        for (ResourceReferenceDescriptor resRefDesc :
+                wmd.getResourceReferenceDescriptors()) {
+            webModule.addResource(new ContextResourceDecorator(resRefDesc)); 
         }
-        Iterator iterator = set.iterator();
-        
-        ResourceReferenceDescriptor resRefDesc;
-        ContextResourceDecorator decorator;
-        while(iterator.hasNext()){
-            resRefDesc = (ResourceReferenceDescriptor)iterator.next();
-            decorator = new ContextResourceDecorator(resRefDesc);
-                        
-            webModule.addResource(decorator);                      
-        }
-
     }
    
     
@@ -799,68 +705,56 @@ public class TomcatDeploymentConfig{
      */
     protected static void configureStandardContext(WebModule webModule,
                                                    WebBundleDescriptor wmd) {
-    
-       Set set = wmd.getWebComponentDescriptors();
-       StandardWrapper wrapper;    
-       WebComponentDescriptor webComponentDesc;
-       Enumeration enumeration;
-       SecurityRoleReference securityRoleReference;
+        StandardWrapper wrapper;    
+        Enumeration enumeration;
+        SecurityRoleReference securityRoleReference;
        
-       Set set2;
-       Iterator iterator2;
-       
-       if ( !set.isEmpty() ){
-           Iterator iterator = set.iterator();
+        for (WebComponentDescriptor webComponentDesc :
+                wmd.getWebComponentDescriptors()) {
 
-           while (iterator.hasNext()) {
+            if (!webComponentDesc.isEnabled()) {
+                continue;
+            }
 
-                webComponentDesc = (WebComponentDescriptor)iterator.next();
-                if (!webComponentDesc.isEnabled()) {
-                    continue;
-                }
+            wrapper = (StandardWrapper)webModule.createWrapper();
+            wrapper.setName(webComponentDesc.getCanonicalName());
+            webModule.addChild(wrapper);
 
-                wrapper = (StandardWrapper)webModule.createWrapper();
-                wrapper.setName(webComponentDesc.getCanonicalName());
-                webModule.addChild(wrapper);
+            enumeration = webComponentDesc.getInitializationParameters();
+            InitializationParameter initP = null;
+            while (enumeration.hasMoreElements()) {
+                initP = (InitializationParameter)enumeration.nextElement();
+                wrapper.addInitParameter(initP.getName(), initP.getValue());
+            }
 
-                enumeration = webComponentDesc.getInitializationParameters();
-                InitializationParameter initP = null;
-                while (enumeration.hasMoreElements()){
-                    initP = (InitializationParameter)enumeration.nextElement();
-                    wrapper.addInitParameter(initP.getName(), initP.getValue());
-                }
+            if (webComponentDesc.isServlet()){
+                wrapper.setServletClassName(
+                    webComponentDesc.getWebComponentImplementation());
+            } else {
+                wrapper.setJspFile(
+                    webComponentDesc.getWebComponentImplementation());
+            }
 
-                if (webComponentDesc.isServlet()){
-                    wrapper.setServletClassName(
-                        webComponentDesc.getWebComponentImplementation());
-                } else {
-                    wrapper.setJspFile(
-                        webComponentDesc.getWebComponentImplementation());
-                }
+            wrapper.setLoadOnStartup(webComponentDesc.getLoadOnStartUp());
+            wrapper.setIsAsyncSupported(webComponentDesc.isAsyncSupported());
+            wrapper.setAsyncTimeout(webComponentDesc.getAsyncTimeout());
 
-                wrapper.setLoadOnStartup(webComponentDesc.getLoadOnStartUp());
-                wrapper.setIsAsyncSupported(webComponentDesc.isAsyncSupported());
-                wrapper.setAsyncTimeout(webComponentDesc.getAsyncTimeout());
+            if (webComponentDesc.getRunAsIdentity() != null) {
+                wrapper.setRunAs(webComponentDesc.getRunAsIdentity().getRoleName());
+            }
 
-                if (webComponentDesc.getRunAsIdentity() != null)
-                    wrapper.setRunAs(webComponentDesc.getRunAsIdentity().getRoleName());
+            for (String pattern : webComponentDesc.getUrlPatternsSet()) {
+                webModule.addServletMapping(pattern,
+                    webComponentDesc.getCanonicalName());
+            }
 
-
-                set2 = webComponentDesc.getUrlPatternsSet();
-                iterator2 = set2.iterator();
-                while (iterator2.hasNext()){
-                    webModule.addServletMapping((String)iterator2.next(),
-                                                webComponentDesc.getCanonicalName());
-                }
-
-                enumeration = webComponentDesc.getSecurityRoleReferences();
-                while (enumeration.hasMoreElements()){
-                    securityRoleReference = 
-                                (SecurityRoleReference)enumeration.nextElement();
-                    wrapper.
-                        addSecurityReference(securityRoleReference.getRolename(),
-                             securityRoleReference.getSecurityRoleLink().getName());
-                }
+            enumeration = webComponentDesc.getSecurityRoleReferences();
+            while (enumeration.hasMoreElements()){
+                securityRoleReference = (SecurityRoleReference)
+                    enumeration.nextElement();
+                wrapper.addSecurityReference(
+                    securityRoleReference.getRolename(),
+                    securityRoleReference.getSecurityRoleLink().getName());
             }
         }
        
@@ -892,14 +786,10 @@ public class TomcatDeploymentConfig{
         LocaleEncodingMappingListDescriptor lemds = 
                             wmd.getLocaleEncodingMappingListDescriptor();
         if (lemds != null) {
-            set2 = lemds.getLocaleEncodingMappingSet();
-            iterator2 = set2.iterator();
-            LocaleEncodingMappingDescriptor lemd;
-            while (iterator2.hasNext()){
-                lemd = (LocaleEncodingMappingDescriptor) iterator2.next();
-                webModule.
-                    addLocaleEncodingMappingParameter(lemd.getLocale(),
-                                                      lemd.getEncoding());
+            for (LocaleEncodingMappingDescriptor lemd :
+                    lemds.getLocaleEncodingMappingSet()) { 
+                webModule.addLocaleEncodingMappingParameter(
+                    lemd.getLocale(), lemd.getEncoding());
             }
         }
     }
@@ -916,9 +806,8 @@ public class TomcatDeploymentConfig{
      * element in the deployment descriptor.
      *
      */
-    protected static void configureSecurityConstraint(WebModule webModule,
-                                                      WebBundleDescriptor wmd) {
-                                                   
+    protected static void configureSecurityConstraint(
+            WebModule webModule, WebBundleDescriptor wmd) {
         Enumeration<com.sun.enterprise.deployment.web.SecurityConstraint> enumeration = wmd.getSecurityConstraints(); 
         com.sun.enterprise.deployment.web.SecurityConstraint securityConstraint;
         SecurityConstraintDecorator decorator;
@@ -933,8 +822,7 @@ public class TomcatDeploymentConfig{
                 decorator.addCollection(secCollDecorator);           
             }
             webModule.addConstraint(decorator);
-        }
-                                                
+        }                                        
     }
     
     
@@ -963,8 +851,8 @@ public class TomcatDeploymentConfig{
             for (int j = 0; j < roles.length; j++) {
                 if (!"*".equals(roles[j]) &&
                     !webModule.findSecurityRole(roles[j])) {
-                    logger.log(
-                        Level.WARNING,"tomcatDeploymentConfig.role.auth", roles[j]);
+                    logger.log(Level.WARNING,
+                        "tomcatDeploymentConfig.role.auth", roles[j]);
                     webModule.addSecurityRole(roles[j]);
                 }
             }
@@ -976,16 +864,16 @@ public class TomcatDeploymentConfig{
             Wrapper wrapper = (Wrapper) wrappers[i];
             String runAs = wrapper.getRunAs();
             if ((runAs != null) && !webModule.findSecurityRole(runAs)) {
-                logger.log(
-                    Level.WARNING,"tomcatDeploymentConfig.role.runas", runAs);
+                logger.log(Level.WARNING,
+                    "tomcatDeploymentConfig.role.runas", runAs);
                 webModule.addSecurityRole(runAs);
             }
             String names[] = wrapper.findSecurityReferences();
             for (int j = 0; j < names.length; j++) {
                 String link = wrapper.findSecurityReference(names[j]);
                 if ((link != null) && !webModule.findSecurityRole(link)) {
-                    logger.log(
-                        Level.WARNING,"tomcatDeploymentConfig.role.link", link);
+                    logger.log(Level.WARNING,
+                        "tomcatDeploymentConfig.role.link", link);
                     webModule.addSecurityRole(link);
                 }
             }
@@ -993,9 +881,9 @@ public class TomcatDeploymentConfig{
 
     }
     
-    protected static void configureStandardContext(WebModule webModule,
-                                                   WebModule defaultWebModule) { 
-                                                      
+    protected static void configureStandardContext(
+            WebModule webModule, WebModule defaultWebModule) { 
+                     
         // 1. Add the default Wrapper
         Container wrappers[] = (Container[])
                             defaultWebModule.getCachedFindOperation()

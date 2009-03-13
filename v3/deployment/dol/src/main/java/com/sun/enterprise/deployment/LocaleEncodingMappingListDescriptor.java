@@ -41,7 +41,7 @@ import java.util.*;
  */
 public class LocaleEncodingMappingListDescriptor extends Descriptor {
     
-    private Set list = null;
+    private Set<LocaleEncodingMappingDescriptor> list = null;
         
     /*
      * standard constructor 
@@ -65,9 +65,9 @@ public class LocaleEncodingMappingListDescriptor extends Descriptor {
 	}
     }
 
-    public Set getLocaleEncodingMappingSet() {
+    public Set<LocaleEncodingMappingDescriptor> getLocaleEncodingMappingSet() {
 	if(list == null) {
-	    list = new HashSet();
+	    list = new HashSet<LocaleEncodingMappingDescriptor>();
 	}
 	return list;
     }
