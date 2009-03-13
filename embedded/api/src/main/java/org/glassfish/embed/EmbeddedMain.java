@@ -98,8 +98,8 @@ java -jar glassfish-embedded-all-3.0-Prelude-SNAPSHOT.jar -p 80 myapp.war
 Description                                    Long Name      Short Name   Default
 
 HTTP Port                                      --port         -p           8080
-Filesystem Installation Directory              --installDir   -d               
-Filesystem Instance Directory                  --instanceDir  -i               
+Filesystem Installation Directory              --installdir   -d
+Filesystem Instance Directory                  --instancedir  -i
 domain.xml filename or URL                     --xml          -x               
 Admin HTTP                                     --adminport    -q           4848
 JMX System Connector Port                      --jmxport      -j           8686
@@ -213,16 +213,18 @@ public class EmbeddedMain {
 
         ///////   dirs   /////////
 
-        String install = params.get("installDir");
+        String install = params.get("installdir");
 
         if(StringUtils.ok(install)) {
             efs.setInstallRoot(new File(install));
+            efs.setAutoDelete(false);
         }
 
-        String instance = params.get("instanceDir");
+        String instance = params.get("instancedir");
 
         if(StringUtils.ok(instance)) {
             efs.setInstanceRoot(new File(instance));
+            efs.setAutoDelete(false);
         }
 
         ////////  autodelete //////
@@ -332,16 +334,16 @@ public class EmbeddedMain {
         // EmbeddedMain is meant for quick and fast experiments.
         // So the highest level of verboseness is the default
 
-        //       longname       shortname   default or req                                     description
+        //       longname       shortname         default        required           description
         //new Arg("war",          "w",            false,                                       "War File"),
-        new Arg("port",             "p",            "" + DEFAULT_HTTP_PORT,        "HTTP Port"),
-        new Arg("installDir",       "d",            false,                                         "Filesystem Installation Directory"),
-        new Arg("instanceDir",      "i",            false,                                         "Filesystem Instance Directory"),
-        new Arg("xml",              "x",            false,                                         "domain.xml filename or URL"),
-        new Arg("adminport",        "q",           "" + DEFAULT_ADMIN_HTTP_PORT,   "Admin HTTP"),
-        new Arg("jmxport",          "j",           "" + DEFAULT_JMX_CONNECTOR_PORT,"JMX System Connector Port"),
-        new BoolArg("help",         "h",            false,                                         "Help"),
-        new BoolArg("autodeploy",   "b",            false,                                         "Turn on the AutoDeploy Service"),
+        new Arg("port",             "p",            "" + DEFAULT_HTTP_PORT, true,   "HTTP Port"),
+        new Arg("installdir",       "d",                         false,             "Filesystem Installation Directory"),
+        new Arg("instancedir",      "i",                         false,             "Filesystem Instance Directory"),
+        new Arg("xml",              "x",                         false,             "domain.xml filename or URL"),
+        new Arg("adminport",        "q",           "" + DEFAULT_ADMIN_HTTP_PORT,    "Admin HTTP"),
+        new Arg("jmxport",          "j",           "" + DEFAULT_JMX_CONNECTOR_PORT, "JMX System Connector Port"),
+        new BoolArg("help",         "h",            false,                          "Help"),
+        new BoolArg("autodeploy",   "b",            false,                          "Turn on the AutoDeploy Service"),
 
         // note that --autodelete and --log are NOT BoolArg's
         // TODO make BoolArg more sophisticated so that you can hve the default be false

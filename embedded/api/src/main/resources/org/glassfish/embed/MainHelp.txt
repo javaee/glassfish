@@ -17,3 +17,15 @@ Same example but listen at port 80 instead of the default 8888
 java -jar glassfish-embedded-all-3.0-Prelude-SNAPSHOT.jar -p 80 myapp.war
 
 
+The autodelete option specifies whether files that the embedded GlassFish
+server uses are deleted when the embedded GlassFish server is stopped.
+If this option is true, the files are deleted.
+If this option is false, the files are not deleted.
+
+The default behavior depends on whether the --installdir option or --instancedir option is set:
+
+    * If the --installdir option or --instancedir option is set, the default is false.
+    * If the --installdir option or --instancedir option is not set, the default is true.
+
+
+

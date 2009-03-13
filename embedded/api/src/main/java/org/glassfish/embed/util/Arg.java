@@ -43,14 +43,14 @@ import org.glassfish.embed.util.StringUtils;
  */
 public class Arg {
     public Arg(String ln, String sn, String defaultValue, String desc) {
-        this(ln, sn, defaultValue, true, desc);
+        this(ln, sn, defaultValue, false, desc);
     }
     
     public Arg(String ln, String sn, boolean required, String desc) {
         this(ln, sn, null, required, desc);
     }
     
-    private Arg(String ln, String sn, String defaultValue, boolean required, String desc) {
+    public Arg(String ln, String sn, String defaultValue, boolean required, String desc) {
         longName = ln;
         shortName = sn;
         this.defaultValue = defaultValue;
