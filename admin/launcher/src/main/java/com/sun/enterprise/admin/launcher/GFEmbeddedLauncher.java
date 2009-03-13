@@ -125,9 +125,9 @@ class GFEmbeddedLauncher extends GFLauncher {
         cmdLine.add(getClasspath());
         addDebug(cmdLine);
         cmdLine.add(getMainClass());
-        cmdLine.add("--installDir");
+        cmdLine.add("--installdir");
         cmdLine.add(installDir.getPath());
-        cmdLine.add("--instanceDir");
+        cmdLine.add("--instancedir");
         cmdLine.add(domainDir.getPath());
         cmdLine.add("--autodelete");
         cmdLine.add("false");
