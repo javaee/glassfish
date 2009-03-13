@@ -58,6 +58,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import org.glassfish.deployment.common.DownloadableArtifacts;
 
 /**
  * Undeploys applications.
@@ -76,6 +77,9 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
 
     @Inject
     ArchiveFactory archiveFactory;
+
+    @Inject
+    DownloadableArtifacts downloadableArtifacts;
 
     public UndeployCommand() {
         origin = Origin.undeploy;
@@ -168,6 +172,8 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
 
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         } // else a message should have been provided.
+
+        downloadableArtifacts.clearArtifacts(name);
 
     }
 }

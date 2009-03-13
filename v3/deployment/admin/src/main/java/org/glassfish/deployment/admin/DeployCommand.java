@@ -65,6 +65,9 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.api.ActionReport.ExitCode;
+import org.glassfish.api.admin.Payload;
+import org.glassfish.deployment.common.DownloadableArtifacts;
 
 
 /**
@@ -101,6 +104,9 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
     @Inject
     Domain domain;
+
+    @Inject
+    DownloadableArtifacts downloadableArtifacts;
 
     private PayloadFilesManager.Temp payloadFilesMgr = null;
     private List<File> payloadFiles = null;
@@ -251,6 +257,9 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 deployment.registerAppInDomainXML(appInfo, deploymentContext);
 
             }
+            if(retrieve != null) {
+                retrieveArtifacts(context);
+            }
         } catch(Exception e) {
             report.failure(logger,localStrings.getLocalString(
                     "errDuringDepl", 
@@ -348,6 +357,33 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             return subReport.getExtraProperties();
         }
         return null;
+    }
+
+    private void retrieveArtifacts(AdminCommandContext context) {
+        Logger logger = context.getLogger();
+        final ActionReport report = context.getActionReport();
+        report.setMessage("File download results");
+        try {
+            Payload.Outbound outboundPayload = context.getOutboundPayload();
+            Properties props = new Properties();
+            props.setProperty("file-xfer-root", retrieve);
+            for (DownloadableArtifacts.FullAndPartURIs uriPair : downloadableArtifacts.getArtifacts(name)) {
+                if(logger.isLoggable(Level.INFO)) {
+                    logger.log(Level.INFO, "About to download artifact " + uriPair.getFull());
+                }
+                outboundPayload.attachFile("application/octet-stream",
+                        uriPair.getPart(),"files",props,
+                        new File(uriPair.getFull().getSchemeSpecificPart()));
+                ActionReport subReport = report.addSubActionsReport();
+                subReport.setActionDescription("Downloading " + uriPair.getPart());
+                subReport.setMessage("Success");
+                subReport.setActionExitCode(ExitCode.SUCCESS);
+            }
+            report.setActionExitCode(ExitCode.SUCCESS);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Failed to download artifacts.", e);
+            report.setActionExitCode(ExitCode.FAILURE);
+        }
     }
 
     
