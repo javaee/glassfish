@@ -37,6 +37,7 @@ import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
+import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.deployment.common.DummyApplication;
@@ -98,7 +99,8 @@ public class AppClientDeployer
     @Override
     public void clean(DeploymentContext dc) {
         super.clean(dc);
-    //TODO: additional cleanup?
+        UndeployCommandParameters params = dc.getCommandParameters(UndeployCommandParameters.class);
+        downloadInfo.clearArtifacts(params.name);
     }
 
     @Override
