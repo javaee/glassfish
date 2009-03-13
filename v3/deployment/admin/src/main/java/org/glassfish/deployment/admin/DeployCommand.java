@@ -342,10 +342,11 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             // we save some of the old registration information in our deployment parameters
             settingsFromDomainXML(app);
 
-            //if applicaiton is already deployed and force=true,
+            //if application is already deployed and force=true,
             //then undeploy the application first.
             UndeployCommandParameters undeployParams = new UndeployCommandParameters(name);
             undeployParams.keepreposdir = keepreposdir;
+            undeployParams.droptables = dropandcreatetables;
 
             ActionReport subReport = report.addSubActionsReport();
             if (properties!=null && properties.containsKey(DeploymentProperties.KEEP_SESSIONS)) {
