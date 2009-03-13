@@ -103,9 +103,9 @@ public class XMLTest {
 
         assertTrue("target servers did not read correctly",
                 servers.get(0).getAddress().equals(FIRST_HOST) &&
-                servers.get(0).getport().equals(FIRST_PORT) &&
+                servers.get(0).getPort().equals(FIRST_PORT) &&
                 servers.get(1).getAddress().equals(SECOND_HOST) &&
-                servers.get(1).getport() == SECOND_PORT
+                servers.get(1).getPort() == SECOND_PORT
             );
 
     }

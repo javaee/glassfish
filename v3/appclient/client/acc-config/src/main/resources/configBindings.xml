@@ -27,19 +27,22 @@
         print="javax.xml.bind.DatatypeConverter.printInt"/>
 
     <conversion name="providerType" type="java.lang.String"
-        parse="org.glassfish.appclient.client.acc.config.util.XML.parseProviderType"
-        />
+        parse="org.glassfish.appclient.client.acc.config.util.XML.parseProviderType" />
+
+    <conversion name="password" type="org.glassfish.appclient.client.acc.config.util.XML.Password"
+        parse="org.glassfish.appclient.client.acc.config.util.XML.Password.parse"
+        print="org.glassfish.appclient.client.acc.config.util.XML.Password.print" />
 
     <element name="client-container" type="class" root="true">
-        <attribute name="send-password" property="sendPassword" convert="boolean"/>
+        <attribute name="send-password" property="SendPassword" convert="boolean"/>
         
     </element>
 
     <element name="ssl" type="class">
-        <attribute name="ssl2-enabled" property="ssl2Enabled" convert="boolean"/>
-        <attribute name="ssl3-enabled" property="ssl3Enabled" convert="boolean"/>
-        <attribute name="tls-enabled" property="tlsEnabled" convert="boolean"/>
-        <attribute name="tls-rollback-enabled" property="tlsRollbackEnabled" convert="boolean"/>
+        <attribute name="ssl2-enabled" property="Ssl2Enabled" convert="boolean"/>
+        <attribute name="ssl3-enabled" property="Ssl3Enabled" convert="boolean"/>
+        <attribute name="tls-enabled" property="TlsEnabled" convert="boolean"/>
+        <attribute name="tls-rollback-enabled" property="TlsRollbackEnabled" convert="boolean"/>
     </element>
 
     <!--
@@ -47,7 +50,7 @@
         port for the target server.
     -->
     <element name="target-server" type="class">
-        <attribute name="port" convert="int"/>
+        <attribute name="port" property="Port" convert="int"/>
         <constructor properties="address port"/>
     </element>
 
@@ -56,7 +59,7 @@
     </element>
 
     <element name="provider-config" type="class">
-        <attribute name="provider-type" property="providerType" convert="providerType"/>
+        <attribute name="provider-type" property="ProviderType" convert="providerType"/>
 
         <!--
             The next two lines are commented because each, separately, causes
@@ -69,6 +72,7 @@
 
     <element name="client-credential" type="class">
         <constructor properties="userName password realm"/>
+        <attribute name="password" property="Password" convert="password"/>
     </element>
 
 <!--

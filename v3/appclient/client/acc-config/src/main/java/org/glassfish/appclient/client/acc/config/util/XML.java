@@ -104,4 +104,24 @@ public class XML {
         }
         return result;
     }
+
+    public static class Password {
+        private char[] pw;
+
+        private Password(String s) {
+            pw = s.toCharArray();
+        }
+
+        public static Password parse(String s) {
+            return new Password(s);
+        }
+
+        public static String print(Password p) {
+            return new String(p.pw);
+        }
+
+        public char[] get() {
+            return pw;
+        }
+    }
 }
