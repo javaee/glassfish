@@ -36,58 +36,19 @@
 
 package com.sun.enterprise.web;
 
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.Vector;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-
+import java.util.*;
+import java.util.logging.*;
+import javax.servlet.*;
 import com.sun.enterprise.deployment.*;
-
-import com.sun.enterprise.deployment.web.AppListenerDescriptor;
-import com.sun.enterprise.deployment.web.ContextParameter;
-import com.sun.enterprise.deployment.web.EnvironmentEntry;
-import com.sun.enterprise.deployment.web.InitializationParameter;
-import com.sun.enterprise.deployment.web.LoginConfiguration;
-import com.sun.enterprise.deployment.web.MimeMapping;
-import com.sun.enterprise.deployment.web.ServletFilter;
-import com.sun.enterprise.deployment.web.ServletFilterMapping;
-import com.sun.enterprise.deployment.web.SecurityConstraint;
-import com.sun.enterprise.deployment.web.SecurityRoleReference;
-import com.sun.enterprise.deployment.web.WebResourceCollection;
-
+import com.sun.enterprise.deployment.web.*;
 import com.sun.enterprise.web.WebModule;
-import com.sun.enterprise.web.deploy.ContextEjbDecorator;
-import com.sun.enterprise.web.deploy.ContextEnvironmentDecorator;
-import com.sun.enterprise.web.deploy.ContextLocalEjbDecorator;
-import com.sun.enterprise.web.deploy.ContextResourceDecorator;
-import com.sun.enterprise.web.deploy.ErrorPageDecorator;
-import com.sun.enterprise.web.deploy.FilterDefDecorator;
-import com.sun.enterprise.web.deploy.LoginConfigDecorator;
-import com.sun.enterprise.web.deploy.MessageDestinationDecorator;
-import com.sun.enterprise.web.deploy.MessageDestinationRefDecorator;
-import com.sun.enterprise.web.deploy.SecurityConstraintDecorator;
-import com.sun.enterprise.web.deploy.SecurityCollectionDecorator;
-
+import com.sun.enterprise.web.deploy.*;
 import com.sun.logging.LogDomains;
-
 import org.apache.catalina.Container;
 import org.apache.catalina.Globals;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.core.StandardWrapper;
-import org.apache.catalina.deploy.ContextEjb;
-import org.apache.catalina.deploy.ContextLocalEjb;
-import org.apache.catalina.deploy.ContextEnvironment;
-import org.apache.catalina.deploy.ErrorPage;
-import org.apache.catalina.deploy.FilterDef;
-import org.apache.catalina.deploy.FilterMap;
-import org.apache.catalina.deploy.ContextResource;
-import org.apache.catalina.deploy.ApplicationParameter;
-import org.apache.catalina.deploy.MessageDestination;
-import org.apache.catalina.deploy.MessageDestinationRef;
-import org.apache.catalina.deploy.LoginConfig;
+import org.apache.catalina.deploy.*;
 import org.apache.catalina.util.CharsetMapper;
 import org.apache.jasper.compiler.JspConfig;
 
@@ -101,7 +62,8 @@ import org.apache.jasper.compiler.JspConfig;
  */
 public class TomcatDeploymentConfig{
 
-    private static final Logger logger = LogDomains.getLogger(TomcatDeploymentConfig.class, LogDomains.WEB_LOGGER);
+    private static final Logger logger = LogDomains.getLogger(
+        TomcatDeploymentConfig.class, LogDomains.WEB_LOGGER);
     
     
     /**
@@ -166,40 +128,23 @@ public class TomcatDeploymentConfig{
         
         webModule.setDisplayName(webModuleDescriptor.getDisplayName());
         webModule.setDistributable(webModuleDescriptor.isDistributable());
-        webModule.setReplaceWelcomeFiles(true);
-        
+        webModule.setReplaceWelcomeFiles(true);        
         configureStandardContext(webModule,webModuleDescriptor);
-        
         configureContextParam(webModule,webModuleDescriptor);
-
         configureApplicationListener(webModule,webModuleDescriptor);
-        
         configureEjbReference(webModule,webModuleDescriptor);
- 
         configureContextEnvironment(webModule,webModuleDescriptor);
-        
         configureErrorPage(webModule,webModuleDescriptor);
-
         configureFilterDef(webModule,webModuleDescriptor);
-
         configureFilterMap(webModule,webModuleDescriptor);
-        
         configureLoginConfig(webModule,webModuleDescriptor);
-        
         configureMimeMapping(webModule,webModuleDescriptor);
-        
         configureResourceRef(webModule,webModuleDescriptor);
-
         configureMessageDestination(webModule,webModuleDescriptor);
-
         configureContextResource(webModule,webModuleDescriptor);
-
         configureSecurityConstraint(webModule,webModuleDescriptor);
-        
         configureJspConfig(webModule,webModuleDescriptor);
-        
         configureSecurityRoles(webModule, webModuleDescriptor);
-
     }
 
     
@@ -919,8 +864,26 @@ public class TomcatDeploymentConfig{
             }
         }
        
-        webModule.setSessionTimeout(wmd.getSessionConfigDescriptor().getSessionTimeout());
-           
+        // <session-config>
+        SessionConfigDescriptor sessionConfigDesc = 
+            wmd.getSessionConfigDescriptor();
+        webModule.setSessionTimeout(sessionConfigDesc.getSessionTimeout());
+
+        // <session-config><cookie-config>
+        CookieConfigDescriptor cookieConfigDesc =
+            sessionConfigDesc.getCookieConfigDescriptor();
+        if (cookieConfigDesc != null) {
+            SessionCookieConfig cookieConfig =
+                webModule.getSessionCookieConfig();
+            cookieConfig.setName(cookieConfigDesc.getName());
+            cookieConfig.setDomain(cookieConfigDesc.getDomain());
+            cookieConfig.setPath(cookieConfigDesc.getPath());
+            cookieConfig.setComment(cookieConfigDesc.getComment());
+            cookieConfig.setHttpOnly(cookieConfigDesc.isHttpOnly());
+            cookieConfig.setSecure(cookieConfigDesc.isSecure());
+            cookieConfig.setMaxAge(cookieConfigDesc.getMaxAge());
+        }
+
         enumeration = wmd.getWelcomeFiles();
         while (enumeration.hasMoreElements()){
             webModule.addWelcomeFile((String)enumeration.nextElement());
@@ -948,26 +911,24 @@ public class TomcatDeploymentConfig{
      * the deployment descriptor.    
      *
      * Configure a web resource collection for a web application's security
-     * constraint, as represented in a <code>&lt;web-resource-collection&gt;</code>
+     * constraint, as represented in a
+     * <code>&lt;web-resource-collection&gt;</code>
      * element in the deployment descriptor.
      *
      */
     protected static void configureSecurityConstraint(WebModule webModule,
                                                       WebBundleDescriptor wmd) {
                                                    
-        Enumeration enumeration = wmd.getSecurityConstraints(); 
-        SecurityConstraint securityConstraint;
+        Enumeration<com.sun.enterprise.deployment.web.SecurityConstraint> enumeration = wmd.getSecurityConstraints(); 
+        com.sun.enterprise.deployment.web.SecurityConstraint securityConstraint;
         SecurityConstraintDecorator decorator;
         SecurityCollectionDecorator secCollDecorator;
         while (enumeration.hasMoreElements()){
-            securityConstraint =(SecurityConstraint)enumeration.nextElement();
-             
+            securityConstraint = enumeration.nextElement();
             decorator = new SecurityConstraintDecorator(securityConstraint,
                                                         webModule);
-            
             for (WebResourceCollection wrc:
                     securityConstraint.getWebResourceCollections()) {
-                   
                 secCollDecorator = new SecurityCollectionDecorator(wrc);
                 decorator.addCollection(secCollDecorator);           
             }
