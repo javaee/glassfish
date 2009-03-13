@@ -131,4 +131,5 @@ public interface EjbContainerUtil extends EjbService {
 
     public EjbDescriptor ejbIdToDescriptor(long ejbId);
     
+    public boolean isEJBLite();
 }

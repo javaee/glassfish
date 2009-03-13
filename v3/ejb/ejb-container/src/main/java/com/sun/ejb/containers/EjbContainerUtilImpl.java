@@ -58,6 +58,7 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
+import org.glassfish.ejb.spi.CMPDeployer;
 
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
@@ -351,6 +352,10 @@ public class EjbContainerUtilImpl
 
         throw new RuntimeException("Not supported yet");
 
+    }
+
+    public boolean isEJBLite() {
+        return (habitat.getByContract(CMPDeployer.class) == null);
     }
 
     private static class EjbTimerThreadFactory

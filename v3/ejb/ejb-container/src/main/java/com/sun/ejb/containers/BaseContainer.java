@@ -413,7 +413,6 @@ public abstract class BaseContainer
     // in a full EE 6 distribution.  Eventually we might want to allow async support
     // to be opted-into in the Web Profile, but by default applications with async
     // methods should result in a deployment error.
-    // TODO implement this check 
     private boolean allowAsynchronousInvocations;
 
     /**
@@ -2457,6 +2456,12 @@ public abstract class BaseContainer
             if ( (cachedMD != null) && isEligibleForAsync(originalIntf, methodIntf) ) {
 
                 boolean isAsync = cachedMD.isAsynchronous();
+                if (isAsync) {
+                    this.allowAsynchronousInvocations = !ejbContainerUtilImpl.isEJBLite();
+                    if (!allowAsynchronousInvocations) {
+                        throw new EJBException("Asynchronous invocations are not supported in EJB 3.1 Lite API");
+                    }
+                }
                 info.setIsAsynchronous(isAsync);
             }
         }
