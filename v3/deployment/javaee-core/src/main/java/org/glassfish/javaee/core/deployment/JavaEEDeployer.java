@@ -28,12 +28,8 @@ import org.glassfish.api.container.Container;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.ApplicationRegistry;
-import com.sun.enterprise.util.io.FileUtils;
-import com.sun.enterprise.util.zip.ZipItem;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.util.ApplicationVisitor;
-import com.sun.enterprise.deployment.backend.DeploymentImplConstants;
-import com.sun.enterprise.deployment.backend.ClientJarMakerThread;
 import org.glassfish.deployment.common.DeploymentException;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import org.jvnet.hk2.annotations.Inject;
@@ -58,9 +54,6 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
 
     @Inject(name="application_undeploy", optional=true)
     protected ApplicationVisitor undeploymentVisitor=null;
-
-    private static String CLIENT_JAR_MAKER_CHOICE = System.getProperty(
-        DeploymentImplConstants.CLIENT_JAR_MAKER_CHOICE);
 
     private static final String APPLICATION_TYPE = "Application-Type";
 
@@ -164,44 +157,6 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
 
     protected void generateArtifacts(DeploymentContext dc)
         throws DeploymentException {
-    }
-
-    // we need to figure out a good place to call this
-    // it should only be called once per application
-    protected final void createClientJar(DeploymentContext dc,
-        ZipItem[] clientStubs) throws DeploymentException {
-
-        DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
-
-        // destination file for the client jar file
-        File appDirectory = dc.getScratchDir("xml");
-
-        // upgrade scenario
-        if (!FileUtils.safeIsDirectory(dc.getScratchDir("xml"))) {
-            appDirectory = dc.getSourceDir();
-        }
-
-        File clientJar = new File(appDirectory, params.name()
-            + DeploymentImplConstants.ClientJarSuffix);
-
-        //XXX: do we need to worry about upgrade scenario where the jar
-        // will be stored in source dir
-
-        // now we look if the client jar file is being requested by the client
-        // tool
-        if (params.clientJarRequested) {
-
-            // the client jar file is requested upon deployment,
-            // we need to build synchronously
-            ClientJarMakerThread.createClientJar(dc,
-                clientJar, clientStubs, CLIENT_JAR_MAKER_CHOICE);
-
-        } else {
-            // the client jar file is not requested, we build it asynchronously.
-            Thread clientJarThread = new ClientJarMakerThread(dc,
-                clientJar, clientStubs, CLIENT_JAR_MAKER_CHOICE);
-            clientJarThread.start();
-        }
     }
 
 
