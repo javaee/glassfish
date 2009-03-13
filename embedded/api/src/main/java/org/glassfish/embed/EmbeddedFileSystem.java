@@ -164,8 +164,14 @@ public final class EmbeddedFileSystem {
 
     /**
      * Specifies whether to delete the Embedded file system after stopping Embedded
-     * GlassFish process.  If set to <code>true</code> the install root
+     * GlassFish process.  If set to <code>true</code> the installation directory
      * and all directories and files under it will be deleted upon exit.
+     * If set to <code>false</code>, the files are not deleted.
+     *
+     * The default depends on whether the installation or instance directory is set:
+     *
+     * If the installation or instance directory is set, the default is false.
+     * If the installation or instance direcotry is not set, the default is true.
      *
      * @param b true - deletes the install root upon exit
      *          false - keeps the install root upon exit

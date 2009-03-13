@@ -86,28 +86,49 @@ To use a short name prepend it with '-'.
 The webapp war file names should be supplied after all the options.
 You can enter as many web apps as you like.
 
-Example to start an Embedded GlassFish Server with a web app packaged in a jar:
+To start an embedded GlassFish server with a web application packaged in a WAR on port 8080:
 
-java -jar glassfish-embedded-all-3.0-Prelude-SNAPSHOT.jar myapp.war
+    java -jar glassfish-embedded-all-3.0-Prelude-SNAPSHOT.jar -p 8080 myapp.war
 
-Same example but listen at port 80 instead of the default 8080
+Files that the embedded GlassFish server uses are located in its installation and
+instance directories. If the installation or instance directories to be used are not specified,
+they will be created in the directory where you start embedded GlassFish server.
+    * default installation directory - embedded_####_glassfish
+    * default instance directory - embedded_####_glassfish\domains\domain1
 
-java -jar glassfish-embedded-all-3.0-Prelude-SNAPSHOT.jar -p 80 myapp.war
+The docroot is located under the instance directory:
+    <instance directory>\docroot
+
+To use as a lightweight web server, copy HTML pages to the docroot and start the server:
+
+    java -jar glassfish-embedded-all-3.0-Prelude-SNAPSHOT.jar -p 8080
+
+    http://localhost:8080/MyWebPage.html
+
+The autodelete option specifies whether files that the embedded GlassFish
+server uses are deleted when the embedded GlassFish server is stopped.
+If this option is true, the files are deleted.
+If this option is false, the files are not deleted.
+
+The default behavior depends on whether the --installdir option or --instancedir option is set:
+
+    * If the --installdir option or --instancedir option is set, the default is false.
+    * If the --installdir option or --instancedir option is not set, the default is true.
 
 
-Description                                    Long Name      Short Name   Default
+Description                                    Long Name      Short Name   Default  Required
 
-HTTP Port                                      --port         -p           8080
-Filesystem Installation Directory              --installdir   -d
-Filesystem Instance Directory                  --instancedir  -i
-domain.xml filename or URL                     --xml          -x               
-Admin HTTP                                     --adminport    -q           4848
-JMX System Connector Port                      --jmxport      -j           8686
-Help                                           --help         -h           false
-Turn on the AutoDeploy Service                 --autodeploy   -b           false
-Verbose Mode                                   --verbose      -v           true 
-Send logging to instance-root/logs/server.log  --log          -l           true 
-Automatically delete Filesystem                --autodelete   -a           true 
+HTTP Port                                      --port         -p           -1       true
+Filesystem Installation Directory              --installdir   -d                    false
+Filesystem Instance Directory                  --instancedir  -i                    false
+domain.xml filename or URL                     --xml          -x                    false
+Admin HTTP                                     --adminport    -q           -1       false
+JMX System Connector Port                      --jmxport      -j           -1       false
+Help                                           --help         -h           false    false
+Turn on the AutoDeploy Service                 --autodeploy   -b           false    false
+Verbose Mode                                   --verbose      -v           true     false
+Send logging to instance-root/logs/server.log  --log          -l           true     false
+Automatically delete Filesystem                --autodelete   -a           true     false
 </xmp>
  *
  *
