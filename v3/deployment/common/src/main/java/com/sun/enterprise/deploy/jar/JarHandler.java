@@ -68,7 +68,7 @@ public class JarHandler extends AbstractArchiveHandler implements ArchiveHandler
         EJBClassLoader cloader = new EJBClassLoader(parent);
         try {              
             cloader.addURL(context.getSource().getURI().toURL());
-            cloader.addURL(context.getScratchDir("ejb").toURL());
+            cloader.addURL(context.getScratchDir("ejb").toURI().toURL());
             if (context.getArchiveHandler().getClass(
                 ).getAnnotation(Service.class).name().equals("ear")) {
                 // add libarries referenced from manifest 
