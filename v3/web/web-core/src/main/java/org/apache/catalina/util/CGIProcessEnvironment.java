@@ -321,11 +321,11 @@ public class CGIProcessEnvironment extends ProcessEnvironment {
         int contentLength = req.getContentLength();
         String sContentLength = (contentLength <= 0 ? "" : (Integer.valueOf(contentLength)).toString());
         envp.put("CONTENT_LENGTH", sContentLength);
-        Enumeration headers = req.getHeaderNames();
+        Enumeration<String> headers = req.getHeaderNames();
         String header = null;
         while (headers.hasMoreElements()) {
             header = null;
-            header = ((String)headers.nextElement()).toUpperCase();
+            header = (headers.nextElement()).toUpperCase();
             //REMIND: rewrite multiple headers as if received as single
             //REMIND: change character set
             //REMIND: I forgot what the previous REMIND means

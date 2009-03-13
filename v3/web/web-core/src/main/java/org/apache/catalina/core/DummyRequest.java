@@ -271,7 +271,7 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
     public void setServerName(String name) {}
     public void setServerPort(int port) {}
     public Object getAttribute(String name) { return null; }
-    public Enumeration getAttributeNames() { return null; }
+    public Enumeration<String> getAttributeNames() { return null; }
     public String getCharacterEncoding() { return null; }
     public int getContentLength() { return -1; }
     public void setContentLength(int length) {}
@@ -280,7 +280,7 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
         return null;
     }
     public Locale getLocale() { return null; }
-    public Enumeration getLocales() { return null; }
+    public Enumeration<Locale> getLocales() { return null; }
     public String getProtocol() { return null; }
     public BufferedReader getReader() throws IOException { return null; }
     public String getRealPath(String path) { return null; }
@@ -324,8 +324,8 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
     public Cookie[] getCookies() { return null; }
     public long getDateHeader(String name) { return -1; }
     public String getHeader(String name) { return null; }
-    public Enumeration getHeaders(String name) { return null; }
-    public Enumeration getHeaderNames() { return null; }
+    public Enumeration<String> getHeaders(String name) { return null; }
+    public Enumeration<String> getHeaderNames() { return null; }
     public int getIntHeader(String name) { return -1; }
     /* START PWC 4707989
     public String getMethod() { return null; }

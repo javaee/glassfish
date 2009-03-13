@@ -389,31 +389,31 @@ public class FormAuthenticator
 
         // Modify our current request to reflect the original one
         request.clearCookies();
-        Iterator cookies = saved.getCookies();
+        Iterator<Cookie> cookies = saved.getCookies();
         while (cookies.hasNext()) {
-            request.addCookie((Cookie) cookies.next());
+            request.addCookie(cookies.next());
         }
         request.clearHeaders();
-        Iterator names = saved.getHeaderNames();
+        Iterator<String> names = saved.getHeaderNames();
         while (names.hasNext()) {
-            String name = (String) names.next();
-            Iterator values = saved.getHeaderValues(name);
+            String name = names.next();
+            Iterator<String> values = saved.getHeaderValues(name);
             while (values.hasNext()) {
-                request.addHeader(name, (String) values.next());
+                request.addHeader(name, values.next());
             }
         }
         request.clearLocales();
-        Iterator locales = saved.getLocales();
+        Iterator<Locale> locales = saved.getLocales();
         while (locales.hasNext()) {
-            request.addLocale((Locale) locales.next());
+            request.addLocale(locales.next());
         }
         request.clearParameters();
         if ("POST".equalsIgnoreCase(saved.getMethod())) {
-            Iterator paramNames = saved.getParameterNames();
+            Iterator<String> paramNames = saved.getParameterNames();
             while (paramNames.hasNext()) {
-                String paramName = (String) paramNames.next();
+                String paramName = paramNames.next();
                 String paramValues[] =
-                    (String[]) saved.getParameterValues(paramName);
+                    saved.getParameterValues(paramName);
                 request.addParameter(paramName, paramValues);
             }
         }

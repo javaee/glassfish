@@ -2189,10 +2189,8 @@ final class StandardSessionContext implements HttpSessionContext {
      *  This method must return an empty <code>Enumeration</code>
      *  and will be removed in a future version of the API.
      */
-    public Enumeration getIds() {
-
+    public Enumeration<String> getIds() {
         return (new Enumerator(dummy));
-
     }
 
 
@@ -2207,11 +2205,6 @@ final class StandardSessionContext implements HttpSessionContext {
      *  future version of the API.
      */
     public HttpSession getSession(String id) {
-
         return (null);
-
     }
-
-
-
 }

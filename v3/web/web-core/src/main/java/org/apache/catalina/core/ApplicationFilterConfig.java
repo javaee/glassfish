@@ -193,7 +193,7 @@ final class ApplicationFilterConfig implements FilterConfig, Serializable {
      * Return an <code>Enumeration</code> of the names of the initialization
      * parameters for this Filter.
      */
-    public Enumeration getInitParameterNames() {
+    public Enumeration<String> getInitParameterNames() {
         return filterDef.getInitParameterNames();
     }
 

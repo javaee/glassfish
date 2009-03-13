@@ -284,7 +284,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
      * Override the <code>getAttributeNames()</code> method of the wrapped
      * request.
      */
-    public Enumeration getAttributeNames() {
+    public Enumeration<String> getAttributeNames() {
         return (new AttributeNamesEnumerator());
     }
 
@@ -996,7 +996,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
      */
     protected class AttributeNamesEnumerator implements Enumeration {
 
-        protected Enumeration parentEnumeration = null;
+        protected Enumeration<String> parentEnumeration = null;
         protected String next = null;
         private Iterator<String> specialNames = null;
 
@@ -1031,7 +1031,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
         protected String findNext() {
             String result = null;
             while ((result == null) && (parentEnumeration.hasMoreElements())) {
-                String current = (String) parentEnumeration.nextElement();
+                String current = parentEnumeration.nextElement();
                 if (!ApplicationRequest.isSpecial(current) ||
                         (!dispatcherType.equals(DispatcherType.FORWARD) &&
                         current.startsWith("javax.servlet.forward") &&

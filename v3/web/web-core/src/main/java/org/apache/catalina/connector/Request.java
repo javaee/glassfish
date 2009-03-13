@@ -1322,7 +1322,7 @@ public class Request
      * headers that were encountered.  If the request did not specify a
      * preferred language, the server's default Locale is returned.
      */
-    public Enumeration getLocales() {
+    public Enumeration<Locale> getLocales() {
 
         if (!localesParsed)
             parseLocales();
@@ -1363,7 +1363,7 @@ public class Request
      * @return A <code>Map</code> containing parameter names as keys
      *  and parameter values as map values.
      */
-    public Map getParameterMap() {
+    public Map<String, String[]> getParameterMap() {
 
         if (parameterMap.isLocked())
             return parameterMap;
@@ -2372,7 +2372,7 @@ public class Request
      *
      * @param name Name of the requested header
      */
-    public Enumeration getHeaders(String name) {
+    public Enumeration<String> getHeaders(String name) {
         return coyoteRequest.getMimeHeaders().values(name);
     }
 
@@ -2380,7 +2380,7 @@ public class Request
     /**
      * Return the names of all headers received with this request.
      */
-    public Enumeration getHeaderNames() {
+    public Enumeration<String> getHeaderNames() {
         return coyoteRequest.getMimeHeaders().names();
     }
 
@@ -3221,10 +3221,9 @@ public class Request
 
         localesParsed = true;
 
-        Enumeration values = getHeaders("accept-language");
-
+        Enumeration<String> values = getHeaders("accept-language");
         while (values.hasMoreElements()) {
-            String value = values.nextElement().toString();
+            String value = values.nextElement();
             parseLocalesHeader(value);
         }
 

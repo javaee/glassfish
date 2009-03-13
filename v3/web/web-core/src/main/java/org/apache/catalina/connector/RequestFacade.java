@@ -472,7 +472,7 @@ public class RequestFacade
     }
 
 
-    public Map getParameterMap() {
+    public Map<String, String[]> getParameterMap() {
 
         if (request == null) {
             throw new IllegalStateException(
@@ -480,7 +480,7 @@ public class RequestFacade
         }
 
         if (SecurityUtil.isPackageProtectionEnabled()){
-            return (Map)AccessController.doPrivileged(
+            return (Map<String, String[]>)AccessController.doPrivileged(
                 new GetParameterMapPrivilegedAction());        
         } else {
             return request.getParameterMap();
@@ -603,7 +603,7 @@ public class RequestFacade
     }
 
 
-    public Enumeration getLocales() {
+    public Enumeration<Locale> getLocales() {
 
         if (request == null) {
             throw new IllegalStateException(
@@ -717,7 +717,7 @@ public class RequestFacade
     }
 
 
-    public Enumeration getHeaders(String name) {
+    public Enumeration<String> getHeaders(String name) {
 
         if (request == null) {
             throw new IllegalStateException(
@@ -725,7 +725,7 @@ public class RequestFacade
         }
 
         if (SecurityUtil.isPackageProtectionEnabled()){
-            return (Enumeration)AccessController.doPrivileged(
+            return (Enumeration<String>)AccessController.doPrivileged(
                 new GetHeadersPrivilegedAction(name));
         } else {
             return request.getHeaders(name);
@@ -733,7 +733,7 @@ public class RequestFacade
     }
 
 
-    public Enumeration getHeaderNames() {
+    public Enumeration<String> getHeaderNames() {
 
         if (request == null) {
             throw new IllegalStateException(
@@ -741,7 +741,7 @@ public class RequestFacade
         }
 
         if (SecurityUtil.isPackageProtectionEnabled()){
-            return (Enumeration)AccessController.doPrivileged(
+            return (Enumeration<String>)AccessController.doPrivileged(
                 new GetHeaderNamesPrivilegedAction());
         } else {
             return request.getHeaderNames();

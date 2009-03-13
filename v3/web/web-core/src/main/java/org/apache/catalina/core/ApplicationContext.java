@@ -154,13 +154,15 @@ public class ApplicationContext
     /**
      * The context attributes for this context.
      */
-    private Map attributes = new ConcurrentHashMap();
+    private Map<String, Object> attributes =
+        new ConcurrentHashMap<String, Object>();
 
 
     /**
      * List of read only attributes for this context.
      */
-    private HashMap readOnlyAttributes = new HashMap();
+    private HashMap<String, String> readOnlyAttributes =
+        new HashMap<String, String>();
 
 
     /**
@@ -244,7 +246,7 @@ public class ApplicationContext
      * @param name Name of the context attribute to return
      */
     public Object getAttribute(String name) {
-        return (attributes.get(name));
+        return attributes.get(name);
     }
 
 
@@ -252,7 +254,7 @@ public class ApplicationContext
      * Return an enumeration of the names of the context attributes
      * associated with this context.
      */
-    public Enumeration getAttributeNames() {
+    public Enumeration<String> getAttributeNames() {
         return new Enumerator(attributes.keySet(), true);
     }
 
@@ -350,7 +352,7 @@ public class ApplicationContext
      * Return the names of the context's initialization parameters, or an
      * empty enumeration if the context has no initialization parameters.
      */
-    public Enumeration getInitParameterNames() {
+    public Enumeration<String> getInitParameterNames() {
         mergeParameters();
         synchronized (parameters) {
            return (new Enumerator(parameters.keySet()));
@@ -686,7 +688,7 @@ public class ApplicationContext
      *
      * @param path Collection path
      */
-    public Set getResourcePaths(String path) {
+    public Set<String> getResourcePaths(String path) {
 
         // Validate the path argument
         if (path == null) {
@@ -732,8 +734,8 @@ public class ApplicationContext
      * @param resources Directory context to search
      * @param path Collection path
      */
-    private Set getResourcePathsInternal(DirContext resources, String path) {
-
+    private Set<String> getResourcePathsInternal(DirContext resources,
+                                                 String path) {
         ResourceSet set = new ResourceSet();
         try {
             listCollectionPaths(set, resources, path);
@@ -742,7 +744,6 @@ public class ApplicationContext
         }
         set.setLocked(true);
         return (set);
-
     }
 
 
@@ -750,9 +751,7 @@ public class ApplicationContext
      * Return the name and version of the servlet container.
      */
     public String getServerInfo() {
-
         return (ServerInfo.getServerInfo());
-
     }
 
 
@@ -760,9 +759,7 @@ public class ApplicationContext
      * @deprecated As of Java Servlet API 2.1, with no direct replacement.
      */
     public Servlet getServlet(String name) {
-
         return (null);
-
     }
 
 
@@ -770,16 +767,14 @@ public class ApplicationContext
      * Return the display name of this web application.
      */
     public String getServletContextName() {
-
         return (context.getDisplayName());
-
     }
 
 
     /**
      * @deprecated As of Java Servlet API 2.1, with no direct replacement.
      */
-    public Enumeration getServletNames() {
+    public Enumeration<String> getServletNames() {
         return (new Enumerator(empty));
     }
 
@@ -787,7 +782,7 @@ public class ApplicationContext
     /**
      * @deprecated As of Java Servlet API 2.1, with no direct replacement.
      */
-    public Enumeration getServlets() {
+    public Enumeration<Servlet> getServlets() {
         return (new Enumerator(empty));
     }
 
@@ -1281,12 +1276,12 @@ public class ApplicationContext
      * Set.
      */
     private static void listCollectionPaths
-        (Set set, DirContext resources, String path)
+        (Set<String> set, DirContext resources, String path)
         throws NamingException {
 
-        Enumeration childPaths = resources.listBindings(path);
+        Enumeration<Binding> childPaths = resources.listBindings(path);
         while (childPaths.hasMoreElements()) {
-            Binding binding = (Binding) childPaths.nextElement();
+            Binding binding = childPaths.nextElement();
             String name = binding.getName();
             StringBuffer childPath = new StringBuffer(path);
             if (!"/".equals(path) && !path.endsWith("/"))

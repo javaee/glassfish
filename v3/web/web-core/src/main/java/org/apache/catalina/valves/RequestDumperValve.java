@@ -167,20 +167,20 @@ public class RequestDumperValve
                 log("            cookie=" + cookies[i].getName() + "=" +
                     cookies[i].getValue());
         }
-        Enumeration hnames = hreq.getHeaderNames();
+        Enumeration<String> hnames = hreq.getHeaderNames();
         while (hnames.hasMoreElements()) {
-            String hname = (String) hnames.nextElement();
-            Enumeration hvalues = hreq.getHeaders(hname);
+            String hname = hnames.nextElement();
+            Enumeration<String> hvalues = hreq.getHeaders(hname);
             while (hvalues.hasMoreElements()) {
-                String hvalue = (String) hvalues.nextElement();
+                String hvalue = hvalues.nextElement();
                 log("            header=" + hname + "=" + hvalue);
             }
         }
         log("            locale=" + hreq.getLocale());
         log("            method=" + hreq.getMethod());
-        Enumeration pnames = hreq.getParameterNames();
+        Enumeration<String> pnames = hreq.getParameterNames();
         while (pnames.hasMoreElements()) {
-            String pname = (String) pnames.nextElement();
+            String pname = pnames.nextElement();
             String pvalues[] = hreq.getParameterValues(pname);
             StringBuffer result = new StringBuffer(pname);
             result.append('=');
@@ -227,13 +227,13 @@ public class RequestDumperValve
         log("          authType=" + hreq.getAuthType());
         log("     contentLength=" + hresponse.getContentLength());
         log("       contentType=" + hresponse.getContentType());
-        Cookie rcookies[] = hresponse.getCookies();
+        Cookie[] rcookies = hresponse.getCookies();
         for (int i = 0; i < rcookies.length; i++) {
             log("            cookie=" + rcookies[i].getName() + "=" +
                 rcookies[i].getValue() + "; domain=" +
                 rcookies[i].getDomain() + "; path=" + rcookies[i].getPath());
         }
-        String rhnames[] = hresponse.getHeaderNames();
+        String[] rhnames = hresponse.getHeaderNames();
         for (int i = 0; i < rhnames.length; i++) {
             String rhvalues[] = hresponse.getHeaderValues(rhnames[i]);
             for (int j = 0; j < rhvalues.length; j++)

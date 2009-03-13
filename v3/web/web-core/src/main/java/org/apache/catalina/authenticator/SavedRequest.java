@@ -91,13 +91,13 @@ public final class SavedRequest {
     /**
      * The set of Cookies associated with this Request.
      */
-    private ArrayList cookies = new ArrayList();
+    private ArrayList<Cookie> cookies = new ArrayList<Cookie>();
 
     public void addCookie(Cookie cookie) {
         cookies.add(cookie);
     }
 
-    public Iterator getCookies() {
+    public Iterator<Cookie> getCookies() {
         return (cookies.iterator());
     }
 
@@ -108,25 +108,26 @@ public final class SavedRequest {
      * values for this header.  The values are returned as an Iterator when
      * you ask for them.
      */
-    private HashMap headers = new HashMap();
+    private HashMap<String, ArrayList<String>> headers =
+        new HashMap<String, ArrayList<String>>();
 
     public void addHeader(String name, String value) {
-        ArrayList values = (ArrayList) headers.get(name);
+        ArrayList<String> values = (ArrayList<String>) headers.get(name);
         if (values == null) {
-            values = new ArrayList();
+            values = new ArrayList<String>();
             headers.put(name, values);
         }
         values.add(value);
     }
 
-    public Iterator getHeaderNames() {
+    public Iterator<String> getHeaderNames() {
         return (headers.keySet().iterator());
     }
 
-    public Iterator getHeaderValues(String name) {
-        ArrayList values = (ArrayList) headers.get(name);
+    public Iterator<String> getHeaderValues(String name) {
+        ArrayList<String> values = (ArrayList<String>) headers.get(name);
         if (values == null)
-            return ((new ArrayList()).iterator());
+            return ((new ArrayList<String>()).iterator());
         else
             return (values.iterator());
     }
@@ -135,13 +136,13 @@ public final class SavedRequest {
     /**
      * The set of Locales associated with this Request.
      */
-    private ArrayList locales = new ArrayList();
+    private ArrayList<Locale> locales = new ArrayList<Locale>();
 
     public void addLocale(Locale locale) {
         locales.add(locale);
     }
 
-    public Iterator getLocales() {
+    public Iterator<Locale> getLocales() {
         return (locales.iterator());
     }
 
@@ -166,18 +167,19 @@ public final class SavedRequest {
      * entry is keyed by the parameter name, pointing at a String array of
      * the corresponding values.
      */
-    private HashMap parameters = new HashMap();
+    private HashMap<String, String[]> parameters =
+        new HashMap<String, String[]>();
 
     public void addParameter(String name, String values[]) {
         parameters.put(name, values);
     }
 
-    public Iterator getParameterNames() {
+    public Iterator<String> getParameterNames() {
         return (parameters.keySet().iterator());
     }
 
     public String[] getParameterValues(String name) {
-        return ((String[]) parameters.get(name));
+        return parameters.get(name);
     }
 
 
