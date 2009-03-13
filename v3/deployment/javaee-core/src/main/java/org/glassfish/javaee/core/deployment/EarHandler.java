@@ -189,6 +189,8 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                         subContext.setArchiveHandler
                             (context.getArchiveHandler());
 
+                        sub.setParentArchive(context.getSource());
+
                         ClassLoader subCl = handler.getClassLoader(cl, subContext);
                         cl.addModuleClassLoader(md.getArchiveUri(), subCl);
                     }

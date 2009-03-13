@@ -288,6 +288,7 @@ public class EarDeployer implements Deployer {
                 final ReadableArchive subArchive;
                 try {
                     subArchive = context.getSource().getSubArchive(bd.getModuleDescriptor().getArchiveUri());
+                    subArchive.setParentArchive(context.getSource());
                 } catch(IOException ioe) {
                     ioe.printStackTrace();
                     return null;
