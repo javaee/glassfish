@@ -1740,9 +1740,9 @@ public class StandardWrapper
     }
 
 
-    public Iterator<String> getInitAttributeNames() {
+    public Iterable<String> getInitAttributeNames() {
         synchronized (attributes) {
-            return attributes.keySet().iterator();
+            return attributes.keySet();
         }
     }
 

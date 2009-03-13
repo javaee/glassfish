@@ -203,7 +203,7 @@ final class ApplicationFilterConfig implements FilterConfig, Serializable {
     }
 
 
-    public Enumeration getInitAttributeNames() {
+    public Iterable<String> getInitAttributeNames() {
         return filterDef.getInitAttributeNames();
     }
 
