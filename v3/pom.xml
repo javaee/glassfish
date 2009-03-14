@@ -194,6 +194,7 @@
                 <module>embedded</module>
                 <module>webservices</module>
                 <module>orb</module>
+                <module>appclient</module>
             </modules>
         </profile>
         <profile>
@@ -277,6 +278,7 @@
 		<module>sun-glassfish/packager</module>
 		<module>sun-glassfish/distributions</module>
                 <module>sun-glassfish/installer</module>
+                <module>appclient</module>
             </modules>
        </profile>
 
@@ -317,6 +319,7 @@
 		<module>sun-glassfish/distributions</module>
 		<module>sun-glassfish/installer</module>
 		<module>sun-glassfish/distributions/glassfish-ri</module>
+                <module>appclient</module>
             </modules>
         </profile>
     </profiles>
