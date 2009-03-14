@@ -45,7 +45,7 @@
     </parent>
 
     <groupId>org.glassfish.appclient.server</groupId>
-    <artifactId>gf-appclient-connector</artifactId>
+    <artifactId>appclient-connector</artifactId>
     <packaging>hk2-jar</packaging>
     <name>GlassFish AppClient Server-Side Connector</name>
     
