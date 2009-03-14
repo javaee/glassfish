@@ -85,7 +85,7 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.appclient.server</groupId>
-            <artifactId>gf-appclient-connector</artifactId>
+            <artifactId>appclient-connector</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
