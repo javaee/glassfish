@@ -276,7 +276,7 @@ public class V2DottedNameSupport {
         }
 
         // check for resources
-        if ((name != null) && (name.startsWith("resources"))) {
+        if ((newPrefix != null) && (newPrefix.startsWith("resources"))) {
             String relativeName = newPrefix;
             if (newPrefix.indexOf('.')!=-1) {
                 String str = newPrefix.substring(0, newPrefix.indexOf('.'));

@@ -52,6 +52,7 @@ import java.util.Properties;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.net.MalformedURLException;
+import java.net.URI;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -135,7 +136,19 @@ public abstract class ASMainOSGi extends AbstractMain {
         try {
             System.setProperty("org.jvnet.hk2.osgiadapter.contextrootdir",
                     new File(glassfishDir, "modules").getAbsolutePath());
-            setupLauncherClassLoader();
+
+            /* Set a system property called com.sun.aas.installRootURI.
+             * This property is used in felix/conf/config.properties to
+             * to auto-start some modules. We can't use com.sun.aas.installRoot
+             * because that com.sun.aas.installRoot is a directory path, where as
+             * we need a URI.
+             */
+            String installRoot = System.getProperty("com.sun.aas.installRoot");
+            URI installRootURI = new File(installRoot).toURI();
+            System.setProperty("com.sun.aas.installRootURI", installRootURI.toString());
+            String instanceRoot = System.getProperty("com.sun.aas.instanceRoot");
+            URI instanceRootURI = new File(instanceRoot).toURI();
+            System.setProperty("com.sun.aas.instanceRootURI", instanceRootURI.toString());            setupLauncherClassLoader();
             launchOSGiFW();
         } catch (Exception e) {
             throw new RuntimeException(e);

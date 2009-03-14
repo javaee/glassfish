@@ -52,9 +52,9 @@ public class EarClassLoader extends URLClassLoader {
 
     private final List<ClassLoaderHolder> delegates = new LinkedList<ClassLoaderHolder>();
     private final Method findClass;
+    private final Method findLoadedClass;
     private final Method findResource;
     private final Method findResources;
-    private final Map<String, Class> classes = new HashMap<String, Class>();
 
     // optimization flag to not check the parent if we don't have library jars
     private final boolean checkParent;
@@ -65,6 +65,10 @@ public class EarClassLoader extends URLClassLoader {
         try {
             findClass = ClassLoader.class.getDeclaredMethod("findClass", new Class[] {String.class});
             findClass.setAccessible(true);
+
+            findLoadedClass = ClassLoader.class.getDeclaredMethod("findLoadedClass", new Class[] {String.class});
+            findLoadedClass.setAccessible(true);
+
 
             findResource = ClassLoader.class.getDeclaredMethod("findResource", new Class[] {String.class});
             findResource.setAccessible(true);
@@ -94,8 +98,15 @@ public class EarClassLoader extends URLClassLoader {
     @Override
     protected Class<?> findClass(String s) throws ClassNotFoundException {
         
-        if (classes.containsKey(s)) {
-            return classes.get(s);
+        for (ClassLoaderHolder clh : delegates) {
+            try {
+                Class<?> clazz = (Class<?>) findLoadedClass.invoke(clh.loader, s);
+                if (clazz!=null) {
+                    return clazz;
+                }
+            } catch (IllegalAccessException e) {
+            } catch (InvocationTargetException e) {
+            }
         }
         
         if (checkParent) {
@@ -110,7 +121,6 @@ public class EarClassLoader extends URLClassLoader {
             try {
                 Class<?> clazz = (Class<?>) findClass.invoke(clh.loader, s);
                 if (clazz!=null) {
-                    classes.put(s, clazz);
                     return clazz;
                 }
             } catch(IllegalAccessException e) {
