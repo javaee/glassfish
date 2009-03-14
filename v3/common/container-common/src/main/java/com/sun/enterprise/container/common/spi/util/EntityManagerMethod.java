@@ -147,12 +147,36 @@ public enum EntityManagerMethod {
         }
     },
     
+    GET_LOCK_MODE {
+        public String toString() {
+            return "getLockMode()";
+        }
+    },
+
+    GET_PROPERTIES {
+        public String toString() {
+            return "getProperties())";
+        }
+    },
+
+    GET_SUPPORTED_PROPERTIES {
+        public String toString() {
+            return "getSupportedProperties())";
+        }
+    },
+
     CREATE_QUERY {
         public String toString() {
             return "createQuery(String qlString)";
         }
     },
     
+    CREATE_QUERY_QUERY_DEFINITION {
+        public String toString() {
+            return "createQuery(QueryDefinition definition)";
+        }
+    },
+
     CREATE_NAMED_QUERY {
         public String toString() {
             return "createNamedQuery(String name)";
@@ -205,6 +229,29 @@ public enum EntityManagerMethod {
         public String toString() {
             return "getTransaction()";
         }
+    },
+
+    GET_ENTITY_MANAGER_FACTORY {
+        public String toString() {
+            return "getEntityManagerFactory()";
+        }
+    },
+
+    GET_QUERY_BUILDER {
+        public String toString() {
+            return "getQueryBuilder()";
+        }
+    },
+
+    DETATCH {
+        public String toString() {
+            return "detatch()";
+        }
+    },
+
+    UNWRAP {
+        public String toString() {
+            return "unwrap()";
+        }
     }
-    
 }

@@ -38,9 +38,7 @@ package com.sun.enterprise.container.common.impl;
 
 import com.sun.enterprise.container.common.spi.util.CallFlowAgent;
 import com.sun.enterprise.container.common.spi.util.EntityManagerQueryMethod;
-import com.sun.enterprise.container.common.spi.util.ContainerUtil;
 import com.sun.enterprise.container.common.impl.util.DummyCallFlowAgentImpl;
-import org.jvnet.hk2.annotations.Inject;
 
 import javax.persistence.*;
 import java.util.*;
@@ -95,6 +93,7 @@ public class QueryWrapper implements Query {
     // State used to construct query delegate object itself.
     private QueryType queryType;
     private String queryString;
+    private QueryDefinition queryDefinition;
     private Class queryResultClass;
     private String queryResultSetMapping;
 
@@ -111,7 +110,7 @@ public class QueryWrapper implements Query {
 
         return new QueryWrapper(emf, emProperties, emDelegate,
                                 queryDelegate, QueryType.EJBQL,
-                                ejbqlString, null, null);
+                                ejbqlString, null, null, null);
     }
 
     public static Query createNamedQueryWrapper(EntityManagerFactory emf, 
@@ -121,7 +120,7 @@ public class QueryWrapper implements Query {
                                                 String name) {
         return new QueryWrapper(emf, emProperties, emDelegate,
                                 queryDelegate, QueryType.NAMED,
-                                name, null, null);
+                                name, null, null, null);
     }
 
     public static Query createNativeQueryWrapper(EntityManagerFactory emf, 
@@ -132,7 +131,7 @@ public class QueryWrapper implements Query {
 
         return new QueryWrapper(emf, emProperties, emDelegate,
                                 queryDelegate, QueryType.NATIVE,
-                                sqlString, null, null);
+                                sqlString, null, null, null);
         
     }
 
@@ -145,7 +144,7 @@ public class QueryWrapper implements Query {
 
         return new QueryWrapper(emf, emProperties, emDelegate,
                                 queryDelegate, QueryType.NATIVE,
-                                sqlString, resultClass, null);
+                                sqlString, null, resultClass, null);
         
     }
 
@@ -158,14 +157,26 @@ public class QueryWrapper implements Query {
 
         return new QueryWrapper(emf, emProperties, emDelegate,
                                 queryDelegate, QueryType.NATIVE,
-                                sqlString, null, resultSetMapping);
+                                sqlString, null, null, resultSetMapping);
         
-    } 
+    }
+
+    public static Query createQueryWrapper(EntityManagerFactory emf,
+                                           Map emProperties,
+                                           EntityManager emDelegate,
+                                           Query queryDelegate,
+                                           QueryDefinition queryDefinition) {
+
+        return new QueryWrapper(emf, emProperties, emDelegate,
+                                queryDelegate, QueryType.CRITERIA,
+                                null, queryDefinition, null, null);
+    }
+    
 
     private QueryWrapper(EntityManagerFactory emf, Map emProperties,
                          EntityManager emDelegate, Query qDelegate,
                          QueryType type, String query,
-                         Class resultClass, String resultSetMapping)
+                         QueryDefinition definition, Class resultClass, String resultSetMapping)
     {
         entityMgrFactory = emf;
         entityMgrProperties = emProperties;
@@ -175,6 +186,7 @@ public class QueryWrapper implements Query {
 
         queryType = type;
         queryString = query;
+        queryDefinition = definition; 
         queryResultClass = resultClass;
         queryResultSetMapping = resultSetMapping;
 
@@ -198,7 +210,7 @@ public class QueryWrapper implements Query {
         }
     }
 
-    public Object getSingleResult() {;
+    public Object getSingleResult() {
         try {
             if(callFlowAgent.isEnabled()) {
                 callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_SINGLE_RESULT);
@@ -246,6 +258,23 @@ public class QueryWrapper implements Query {
         return this;
     }
 
+    public int getMaxResults() {
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_MAX_RESULTS);
+            }
+
+            Query delegate = getQueryDelegate();
+            return delegate.getMaxResults();
+
+        } finally {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryEnd();
+            }
+        }
+    }
+
     public Query setFirstResult(int startPosition) {
         
         try {
@@ -271,6 +300,23 @@ public class QueryWrapper implements Query {
         return this;
     }
 
+    public int getFirstResult() {
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_FIRST_RESULT);
+            }
+
+            Query delegate = getQueryDelegate();
+            return delegate.getFirstResult();
+
+        } finally {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryEnd();
+            }
+        }
+    }
+
     public Query setHint(String hintName, Object value) {
         
         try {
@@ -289,6 +335,40 @@ public class QueryWrapper implements Query {
         }
         
         return this;
+    }
+
+    public Map<String, Object> getHints() {
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_HINTS);
+            }
+
+            Query delegate = getQueryDelegate();
+            return delegate.getHints();
+
+        } finally {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryEnd();
+            }
+        }
+    }
+
+    public Set<String> getSupportedHints() {
+        
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_SUPPORTED_HINTS);
+            }
+
+            Query delegate = getQueryDelegate();
+            return delegate.getSupportedHints();
+
+        } finally {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryEnd();
+            }
+        }
     }
 
     public Query setParameter(String name, Object value) {
@@ -416,6 +496,40 @@ public class QueryWrapper implements Query {
         return this;
     }
 
+    public Map<String, Object> getNamedParameters() {
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_NAMED_PARAMETERS);
+            }
+
+            Query delegate = getQueryDelegate();
+            return delegate.getNamedParameters();
+
+        } finally {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryEnd();
+            }
+        }
+    }
+
+    public List getPositionalParameters() {
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_POSITIONAL_PARAMETERS);
+            }
+
+            Query delegate = getQueryDelegate();
+            return delegate.getPositionalParameters();
+
+        } finally {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryEnd();
+            }
+        }
+    }
+
     public Query setFlushMode(FlushModeType flushMode) {
         
         try {
@@ -434,6 +548,23 @@ public class QueryWrapper implements Query {
         }
         
         return this;
+    }
+
+    public FlushModeType getFlushMode() {
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_FLUSH_MODE);
+            }
+
+            Query delegate = getQueryDelegate();
+            return delegate.getFlushMode();
+
+        } finally {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryEnd();
+            }
+        }
     }
 
     public Query setLockMode(LockModeType lockModeType) {
@@ -456,17 +587,37 @@ public class QueryWrapper implements Query {
     }
 
     public LockModeType getLockMode() {
-        LockModeType lockMode = null;
-        if(queryDelegate != null) {
-            lockMode = queryDelegate.getLockMode();
-        } else {
-            for (SetterData setterInvocation : setterInvocations) {
-                if(setterInvocation.type == SetterType.LOCK_MODE)
-                    // do not break. Let the last setterInvocation win
-                    lockMode = setterInvocation.lockMode;
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_LOCK_MODE);
+            }
+
+            Query delegate = getQueryDelegate();
+            return delegate.getLockMode();
+
+        } finally {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryEnd();
             }
         }
-        return lockMode;
+    }
+
+    public <T> T unwrap(Class<T> tClass) {
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.UNWRAP);
+            }
+
+            Query delegate = getQueryDelegate();
+            return delegate.unwrap(tClass);
+
+        } finally {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerQueryEnd();
+            }
+        }
     }
 
     private void clearDelegates() {
@@ -495,6 +646,12 @@ public class QueryWrapper implements Query {
                       entityManagerDelegate.createQuery(queryString);
                   break;
                   
+                case CRITERIA :
+
+                    queryDelegate =
+                        entityManagerDelegate.createQuery(queryDefinition);
+                    break;
+
               case NAMED :
 
                   queryDelegate = 
@@ -538,6 +695,7 @@ public class QueryWrapper implements Query {
     private enum QueryType {
 
         EJBQL,
+        CRITERIA,
         NAMED,
         NATIVE
 

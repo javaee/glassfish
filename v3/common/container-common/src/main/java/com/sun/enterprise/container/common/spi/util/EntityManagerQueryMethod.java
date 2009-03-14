@@ -69,18 +69,42 @@ public enum EntityManagerQueryMethod {
         }
     },
     
+    GET_MAX_RESULTS {
+        public String toString() {
+            return "getMaxResults()";
+        }
+    },
+
     SET_FIRST_RESULT {
         public String toString() {
             return "setFirstResult(int startPosition)";
         }
     },
-    
+
+    GET_FIRST_RESULT {
+        public String toString() {
+            return "getFirstResult()";
+        }
+    },
+
     SET_HINT {
         public String toString() {
             return "setHint(String hintName, Object value)";
         }
     },
     
+    GET_HINTS {
+        public String toString() {
+            return "getHints()";
+        }
+    },
+
+    GET_SUPPORTED_HINTS {
+        public String toString() {
+            return "getSupportedHints()";
+        }
+    },
+
     SET_PARAMETER_STRING_OBJECT {
         public String toString() {
             return "setParameter(String name, Object value)";
@@ -117,6 +141,24 @@ public enum EntityManagerQueryMethod {
         }
     },
     
+    GET_NAMED_PARAMETERS {
+        public String toString() {
+            return "getNamedParameters()";
+        }
+    },
+
+    GET_POSITIONAL_PARAMETERS {
+        public String toString() {
+            return "getPositionalParameters()";
+        }
+    },
+
+    GET_FLUSH_MODE {
+        public String toString() {
+            return "getFlushMode()";
+        }
+    },
+
     SET_FLUSH_MODE {
         public String toString() {
             return "setFlushMode(FlushModeType flushMode)";
@@ -127,5 +169,18 @@ public enum EntityManagerQueryMethod {
         public String toString() {
             return "setLock(LockModeType lockMode)";
         }
+    },
+
+    GET_LOCK_MODE {
+        public String toString() {
+            return "getLockMode()";
+        }
+    },
+
+    UNWRAP {
+        public String toString() {
+            return "unwrap()";
+        }
     }
+
 }

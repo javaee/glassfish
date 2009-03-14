@@ -54,6 +54,7 @@ import javax.transaction.TransactionManager;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -425,6 +426,38 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
         return returnValue;
     }
 
+    public Query createQuery(QueryDefinition queryDefinition) {
+        Query returnValue = null;
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodStart(EntityManagerMethod.CREATE_QUERY_QUERY_DEFINITION);
+            }
+            EntityManager delegate = _getDelegate();
+            returnValue = delegate.createQuery(queryDefinition);
+
+            if( nonTxEntityManager != null ) {
+                Query queryDelegate = returnValue;
+                returnValue = QueryWrapper.createQueryWrapper
+                    (entityManagerFactory, emProperties, delegate,
+                     queryDelegate, queryDefinition);
+                // It's now the responsibility of the QueryWrapper to
+                // close the non-tx EM delegate
+                nonTxEntityManager = null;
+            }
+        } catch(RuntimeException re) {
+            if( nonTxEntityManager != null ) {
+                cleanupNonTxEntityManager();
+            }
+            throw re;
+        } finally {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodEnd();
+            }
+        }
+        return returnValue;
+    }
+
     public Query createNamedQuery(String name) {
         Query returnValue = null;
 
@@ -625,6 +658,58 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
         }
     }
 
+    public LockModeType getLockMode(Object o) {
+
+        doTxRequiredCheck();
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodStart(EntityManagerMethod.GET_LOCK_MODE);
+            }
+            return _getDelegate().getLockMode(o);
+        } finally {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodEnd();
+            }
+        }
+
+        // tx is required so there's no need to do any non-tx cleanup
+    }
+
+    public Map<String, Object> getProperties() {
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodStart(EntityManagerMethod.GET_PROPERTIES);
+            }
+            return _getDelegate().getProperties();
+        } finally {
+            if( nonTxEntityManager != null ) {
+                cleanupNonTxEntityManager();
+            }
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodEnd();
+            }
+        }
+    }
+
+    public Set<String> getSupportedProperties() {
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodStart(EntityManagerMethod.GET_SUPPORTED_PROPERTIES);
+            }
+            return _getDelegate().getSupportedProperties();
+        } finally {
+            if( nonTxEntityManager != null ) {
+                cleanupNonTxEntityManager();
+            }
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodEnd();
+            }
+        }
+    }
+
     public void close() {
 
         if(callFlowAgent.isEnabled()) {
@@ -660,6 +745,45 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
                 callFlowAgent.entityManagerMethodEnd();
             }
         }
+    }
+
+    public EntityManagerFactory getEntityManagerFactory() {
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodStart(EntityManagerMethod.GET_ENTITY_MANAGER_FACTORY);
+            }
+            if( entityManagerFactory == null ) {
+                init();
+            }
+
+            // Spec requires to throw IllegalStateException if this em has been closed.
+            // No need to perform the check here as this can not happen for managed em.
+            // No need to go to delegate for this. 
+            return entityManagerFactory;
+        } finally {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodEnd();
+            }
+        }
+    }
+
+    public QueryBuilder getQueryBuilder() {
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodStart(EntityManagerMethod.GET_QUERY_BUILDER);
+            }
+            return _getDelegate().getQueryBuilder();
+        } finally {
+            if( nonTxEntityManager != null ) {
+                cleanupNonTxEntityManager();
+            }
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodEnd();
+            }
+        }
+
     }
 
     public void lock(Object entity, LockModeType lockMode) {
@@ -711,6 +835,26 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
                 callFlowAgent.entityManagerMethodEnd();
             }
         }
+    }
+
+    //TODO Rename this method in next integration when EL also renames it
+    public void clear(Object o) {
+
+        //TODO revisit this check once Linda confirms whether it is required or not.
+        doTransactionScopedTxCheck();
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodStart(EntityManagerMethod.DETATCH);
+            }
+            _getDelegate().clear(o);
+        } finally {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodEnd();
+            }
+        }
+
+        // tx is required so there's no need to do any non-tx cleanup
     }
 
     public Object getDelegate() {
@@ -782,6 +926,23 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
         // There's no point in calling anything on the physical 
         // entity manager since in all tx cases it will be
         // correctly associated with a tx already.
+    }
+
+    public <T> T unwrap(Class<T> tClass) {
+
+        try {
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodStart(EntityManagerMethod.UNWRAP);
+            }
+            return _getDelegate().unwrap(tClass);
+        } finally {
+            if( nonTxEntityManager != null ) {
+                cleanupNonTxEntityManager();
+            }
+            if(callFlowAgent.isEnabled()) {
+                callFlowAgent.entityManagerMethodEnd();
+            }
+        }
     }
 
 }

@@ -46,6 +46,7 @@ import org.glassfish.api.invocation.InvocationManager;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Cache;
+import javax.persistence.QueryBuilder;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
@@ -101,6 +102,18 @@ public class EntityManagerFactoryWrapper
 
     public EntityManager createEntityManager(Map map) {
         return getDelegate().createEntityManager(map);
+    }
+
+    public QueryBuilder getQueryBuilder() {
+        return getDelegate().getQueryBuilder();
+    }
+
+    public Map getProperties() {
+        return getDelegate().getProperties();
+    }
+
+    public Set<String> getSupportedProperties() {
+        return getDelegate().getSupportedProperties();
     }
 
     public void close() {
