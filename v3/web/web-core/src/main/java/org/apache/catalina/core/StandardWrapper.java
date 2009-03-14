@@ -349,7 +349,7 @@ public class StandardWrapper
         return servletRegistration;
     }
 
-
+  
     /**
      * Return the available date/time for this servlet, in milliseconds since
      * the epoch.  If this date/time is Long.MAX_VALUE, it is considered to mean
@@ -1014,6 +1014,15 @@ public class StandardWrapper
         if (notifyContainerListeners) {
             fireContainerEvent("addSecurityReference", name);
         }
+    }
+
+
+    /**
+     * @return the servlet instance, or null if no servlet instance was
+     * set or allocated
+     */
+    Servlet getServlet() {
+        return instance;
     }
 
 
@@ -1751,14 +1760,12 @@ public class StandardWrapper
      * Return the servlet context with which this servlet is associated.
      */
     public ServletContext getServletContext() {
-
         if (parent == null)
             return (null);
         else if (!(parent instanceof Context))
             return (null);
         else
             return (((Context) parent).getServletContext());
-
     }
 
 

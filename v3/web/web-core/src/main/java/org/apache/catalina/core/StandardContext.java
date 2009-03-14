@@ -2533,6 +2533,7 @@ public class StandardContext
      */
     public FilterRegistration addFilter(String filterName, String className) {
         synchronized (filterDefs) {
+            // Make sure filter name is unique for this context
             if (findFilterDef(filterName) != null) {
                 return null;
             }
@@ -2551,9 +2552,17 @@ public class StandardContext
      * under the given <tt>filterName</tt>.
      */
     public FilterRegistration addFilter(String filterName, Filter filter) {
+        if (filterName == null || filter == null) {
+            throw new NullPointerException("Null filter instance or name");
+        }
+
         synchronized (filterDefs) {
-            if (findFilterDef(filterName) != null) {
-                return null;
+            // Make sure filter name and instance are unique for this context
+            for (Map.Entry<String, FilterDef> e : filterDefs.entrySet()) {
+                if (filterName.equals(e.getKey()) ||
+                        filter == e.getValue().getFilter()) {
+                    return null;
+                }
             }
             FilterDef filterDef = new FilterDef();
             filterDef.setFilterName(filterName);
@@ -3062,11 +3071,7 @@ public class StandardContext
      */
     public ServletRegistration addServlet(String servletName,
                                           Servlet servlet) {
-        if (findChild(servletName) == null) {
-            return addServlet(servletName, servlet, null, null);
-        } else {
-            return null;
-        }
+        return addServlet(servletName, servlet, null, null);
     }
 
 
@@ -3076,6 +3081,7 @@ public class StandardContext
      */
     public ServletRegistration addServlet(String servletName,
             Class <? extends Servlet> servletClass) {
+        // Make sure servlet name is unique for this context
         if (findChild(servletName) == null) {
             Wrapper wrapper = createWrapper();
             wrapper.setName(servletName);
@@ -3132,37 +3138,49 @@ public class StandardContext
      *
      * @return the ServletRegistration through which the servlet may be
      * further configured
-     *
-     * @throws ServletException if the servlet fails to be initialized
      */
     public ServletRegistration addServlet(String servletName,
-            Servlet instance, Map<String, String> initParams,
+            Servlet servlet, Map<String, String> initParams,
             String... urlPatterns) {
-        if (instance instanceof SingleThreadModel) {
+        if (servletName == null || servlet == null) {
+            throw new NullPointerException("Null servlet instance or name");
+        }
+
+        if (servlet instanceof SingleThreadModel) {
             throw new IllegalArgumentException("Servlet implements " +
                 SingleThreadModel.class.getName());
         }
 
-        StandardWrapper wrapper = (StandardWrapper) createWrapper();
-
-        if (initParams != null) {
-            for (Map.Entry<String, String> e : initParams.entrySet()) {
-                wrapper.addInitParameter(e.getKey(), e.getValue());
+        // Make sure servlet name and instance are unique for this context
+        synchronized (children) {
+            for (Map.Entry<String, Container> e : children.entrySet()) {
+                if (servletName.equals(e.getKey()) ||
+                        servlet == ((StandardWrapper)e.getValue()).getServlet()) {
+                    return null;
+                }
             }
-        }
+             
+            StandardWrapper wrapper = (StandardWrapper) createWrapper();
 
-        wrapper.setName(servletName);
-        wrapper.setServlet(instance);
-
-        if (urlPatterns != null) {
-            for (String urlPattern : urlPatterns) {
-                wrapper.addMapping(urlPattern);
+            if (initParams != null) {
+                for (Map.Entry<String, String> e : initParams.entrySet()) {
+                    wrapper.addInitParameter(e.getKey(), e.getValue());
+                }
             }
+
+            wrapper.setName(servletName);
+            wrapper.setServlet(servlet);
+
+            if (urlPatterns != null) {
+                for (String urlPattern : urlPatterns) {
+                    wrapper.addMapping(urlPattern);
+                }
+            }
+
+            addChild(wrapper, true);
+
+            return wrapper.getServletRegistration();
         }
-
-        addChild(wrapper, true);
-
-        return wrapper.getServletRegistration();
     }
 
 
@@ -3512,11 +3530,9 @@ public class StandardContext
      * @param filterName Filter name to look up
      */
     public FilterDef findFilterDef(String filterName) {
-
         synchronized (filterDefs) {
             return filterDefs.get(filterName);
         }
-
     }
 
 
@@ -3524,12 +3540,10 @@ public class StandardContext
      * Return the set of defined filters for this Context.
      */
     public FilterDef[] findFilterDefs() {
-
         synchronized (filterDefs) {
             FilterDef results[] = new FilterDef[filterDefs.size()];
             return filterDefs.values().toArray(results);
         }
-
     }
 
 
@@ -3537,9 +3551,7 @@ public class StandardContext
      * Return the set of filter mappings for this Context.
      */
     public FilterMap[] findFilterMaps() {
-
         return (filterMaps);
-
     }
 
 
