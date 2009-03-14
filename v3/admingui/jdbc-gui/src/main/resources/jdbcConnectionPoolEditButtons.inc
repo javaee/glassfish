@@ -61,5 +61,9 @@
     );
     setAttribute(key="name" value="$pageSession{jndiName}");
     />
-
 </sun:button>
+<sun:button id="cancelButton" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.Cancel}" >
+        <!command
+            redirect(page="#{request.contextPath}/jdbc/jdbcConnectionPools.jsf");
+        />
+    </sun:button>

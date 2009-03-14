@@ -40,43 +40,43 @@
     <sun:tab id="httpService" immediate="$boolean{true}" text="$resource{i18n.http.HttpService}" >
     	    <!command
                 setSessionAttribute(key="httpServiceTabs" value="httpService");
-                redirect(page="httpService.jsf?configName=#{configName}");
+                redirect(page="#{request.contextPath}/web/configuration/httpService.jsf?configName=#{configName}");
 	    />       
     </sun:tab>
     <sun:tab id="accessLog" immediate="$boolean{true}" text="$resource{i18n.httpTabs.AccessLog}" >    
             <!command
                 setSessionAttribute(key="httpServiceTabs" value="accessLog");
-		redirect(page="accessLog.jsf?configName=#{configName}");
+		redirect(page="#{request.contextPath}/web/configuration/accessLog.jsf?configName=#{configName}");
 	    />       
     </sun:tab>    
     <sun:tab id="requestProcessing" immediate="$boolean{true}" text="$resource{i18n.httpTabs.RequestProcessing}" >
     	    <!command
                 setSessionAttribute(key="httpServiceTabs" value="requestProcessing");
-		redirect(page="requestProcessing.jsf?configName=#{configName}");
+		redirect(page="#{request.contextPath}/web/configuration/requestProcessing.jsf?configName=#{configName}");
 	    />       
     </sun:tab>
     <sun:tab id="keepAlive" immediate="$boolean{true}" text="$resource{i18n.httpTabs.KeepAlive}" >
     	    <!command
                 setSessionAttribute(key="httpServiceTabs" value="keepAlive");
-		redirect(page="keepAlive.jsf?configName=#{configName}");
+		redirect(page="#{request.contextPath}/web/configuration/keepAlive.jsf?configName=#{configName}");
 	    />       
     </sun:tab> 
    <sun:tab id="connectionPool" immediate="$boolean{true}" text="$resource{i18n.httpTabs.ConnectionPool}" >
     	    <!command
                 setSessionAttribute(key="httpServiceTabs" value="connectionPool");
-		redirect(page="connectionPool.jsf?configName=#{configName}");
+		redirect(page="#{request.contextPath}/web/configuration/connectionPool.jsf?configName=#{configName}");
 	    />       
     </sun:tab>    
    <sun:tab id="httpProtocol" immediate="$boolean{true}" text="$resource{i18n.httpTabs.HttpProtocol}" >
     	    <!command
                 setSessionAttribute(key="httpServiceTabs" value="httpProtocol");
-		redirect(page="httpProtocol.jsf?configName=#{configName}");
+		redirect(page="#{request.contextPath}/web/configuration/httpProtocol.jsf?configName=#{configName}");
 	    />       
     </sun:tab>
    <sun:tab id="fileCache" immediate="$boolean{true}" text="$resource{i18n.httpTabs.FileCache}" >
     	    <!command
                 setSessionAttribute(key="httpServiceTabs" value="fileCache");
-		redirect(page="httpFileCache.jsf?configName=#{configName}");
+		redirect(page="#{request.contextPath}/web/configuration/httpFileCache.jsf?configName=#{configName}");
 	    />       
     </sun:tab>        
 </sun:tabSet>

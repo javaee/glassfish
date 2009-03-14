@@ -37,42 +37,37 @@
 <!-- jdbc/jdbcResources.jsf -->
 
 <!initPage
-    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
     setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings");
     setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
 />
 
-<sun:page id="page1">
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18njdbc.jdbcResources.pageTitle}" >
+<!define name="content">
+    <event>
     <!beforeCreate
         getResourcesList(type="jdbcResource" selectedRows="$attribute{selectedRows}" result=>$attribute{listOfRows} );
         setPageSessionAttribute(key="tableTitle" value="$resource{i18n.resourcesTable.resources}");
-        setPageSessionAttribute(key="createLink" value="jdbcResourceNew.jsf");
-        setPageSessionAttribute(key="editLink" value="/jdbc/jdbcResourceEdit.jsf");
-        setPageSessionAttribute(key="editPoolLink" value="/jdbc/jdbcConnectionPoolEdit.jsf");
-        setPageSessionAttribute(key="listPageLink" value="/jdbc/jdbcResources.jsf");
-        setPageSessionAttribute(key="targetLink" value="/jdbc/jdbcResourceTargets.jsf");
+        setPageSessionAttribute(key="createLink" value="#{request.contextPath}/jdbc/jdbcResourceNew.jsf");
+        setPageSessionAttribute(key="editLink" value="#{request.contextPath}/jdbc/jdbcResourceEdit.jsf");
+        setPageSessionAttribute(key="editPoolLink" value="#{request.contextPath}/jdbc/jdbcConnectionPoolEdit.jsf");
+        setPageSessionAttribute(key="listPageLink" value="#{request.contextPath}/jdbc/jdbcResources.jsf");
+        setPageSessionAttribute(key="targetLink" value="#{request.contextPath}/jdbc/jdbcResourceTargets.jsf");
         setPageSessionAttribute(key="resourceType" value="jdbcResource");
         setPageSessionAttribute(key="hasPool" value="#{true}");
         setPageSessionAttribute(key="hasResType" value="#{false}");
         setPageSessionAttribute(key="viewKeyValue" value="jdbcResSummaryView");
 #include "/shared/viewSummaryDetail.inc"
     />
+    </event>
 #include "/shared/restart.inc"    
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18njdbc.jdbcResources.pageTitle}" >
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>
-
-        <sun:body id="body3" onLoad="admingui.nav.refreshTree('form:tree:resources:JDBC:jdbcResources', 'jdbc/jdbcTreeNode.jsf', 'JDBC:jdbcResources'); synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-#include "/shared/treeBreadcrumbs.inc"
+    #include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc"
                  <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcResources.pageTitle}" helpText="$resource{i18njdbc.jdbcResources.pageTitleHelp}"/>
 		 "<br /> <br />
 #include "resourcesTable.inc"
 	<sun:hidden id="helpKey" value="$resource{help.jdbcResources}" />
             </sun:form>
-        </sun:body>
 #include "/shared/changeButtonsJS.inc"        
-    </sun:html>
-</sun:page>
+</define>
+</composition>

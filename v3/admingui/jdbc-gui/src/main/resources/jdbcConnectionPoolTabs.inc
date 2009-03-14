@@ -39,19 +39,19 @@
         <sun:tab id="general" immediate="$boolean{true}" text="$resource{i18n.common.General}" >
                 <!command
                     setSessionAttribute(key="jdbcPoolTabs" value="general");
-                    redirect(page="jdbcConnectionPoolEdit.jsf?name=#{jndiName}");
+                    redirect(page="#{request.contextPath}/jdbc/jdbcConnectionPoolEdit.jsf?name=#{jndiName}");
                 />       
         </sun:tab>
         <sun:tab id="advanceTab" immediate="$boolean{true}" text="$resource{i18n.common.Advanced}">
             <!command
                 setSessionAttribute(key="jdbcPoolTabs" value="advanceTab");
-                redirect(page="jdbcConnectionPoolAdvance.jsf?name=#{jndiName}");
+                redirect(page="#{request.contextPath}/jdbc/jdbcConnectionPoolAdvance.jsf?name=#{jndiName}");
             />
         </sun:tab>
         <sun:tab id="propertyTab" immediate="$boolean{true}" text="$resource{i18n.common.AdditonalProperties}">
             <!command
                 setSessionAttribute(key="jdbcPoolTabs" value="propertyTab");
-                redirect(page="jdbcConnectionPoolProperty.jsf?name=#{jndiName}");
+                redirect(page="#{request.contextPath}/jdbc/jdbcConnectionPoolProperty.jsf?name=#{jndiName}");
             />
         </sun:tab>
 </sun:tabSet>

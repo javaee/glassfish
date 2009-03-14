@@ -70,12 +70,12 @@
                 attrMap="#{attrMap}",
                 newProps="${newProps}"
             );            
-            redirect(page="realms.jsf?configName=#{configName}")
+            redirect(page="#{request.contextPath}/security/realms/realms.jsf?configName=#{configName}")
         />
     </sun:button>
-    <sun:button id="cancelButton" rendered="#{!edit}" immediate="#{true}" text="$resource{i18n.button.Cancel}" primary="#{false}">
+    <sun:button id="cancelButton" immediate="#{true}" text="$resource{i18n.button.Cancel}" primary="#{false}">
         <!command
-            redirect(page="realms.jsf?configName=#{configName}");
+            redirect(page="#{request.contextPath}/security/realms/realms.jsf?configName=#{configName}");
         />
   </sun:button>
 

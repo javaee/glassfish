@@ -85,22 +85,24 @@
                 PoweredBy="#{poweredBy}"
                 Blocking="#{blocking}"
                 newProps="#{newProps}"
-            );           
+            );
+<!--
             setAttribute(key="configName", value="#{configName}");
             setAttribute(key="tabName", value="#{tabName}");
             setAttribute(key="type", value="http");
             setAttribute(key="sslPageTitle", value="#{step2PageTitle}");
-            setAttribute(key="prevPage", value="/web/configuration/httpListenerNew.jsf");
-            setAttribute(key="finalPage", value="httpListeners.jsf");
+            setAttribute(key="prevPage", value="#{request.contextPath}/web/configuration/httpListenerNew.jsf");
+            setAttribute(key="finalPage", value="#{request.contextPath}/web/configuration/httpListeners.jsf");
             setAttribute(key="ssl2", value="#{true}");
-            navigate(page="/web/configuration/listenersSslNew.jsf");
+-->
+            redirect(page="#{request.contextPath}/web/configuration/listenersSslNew.jsf?configName=#{configName}&tabName=#{tabName}&type=http&sslPageTitle=#{step2PageTitle}&prevPage=/web/configuration/httpListenerNew.jsf&finalPage=httpListeners.jsf&ssl2=true");
             />
         </sun:button>
-        <sun:button id="cancelButton" rendered="#{!edit}" immediate="#{true}" text="$resource{i18n.button.Cancel}" primary="#{false}">
+        <sun:button id="cancelButton"  immediate="#{true}" text="$resource{i18n.button.Cancel}" primary="#{false}">
             <!command
             setSessionAttribute(key="httpProps" value="#{null}")
             setSessionAttribute(key="sslProps" value="#{null}")
-            redirect(page="httpListeners.jsf?configName=#{configName}");
+            redirect(page="#{request.contextPath}/web/configuration/httpListeners.jsf?configName=#{configName}");
             />
         </sun:button>
         

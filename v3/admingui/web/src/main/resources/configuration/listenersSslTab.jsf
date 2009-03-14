@@ -33,32 +33,32 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!initPage 
-    setAttribute(key="edit" value="#{true}" )
-/>
 <!-- configuration/listenersSslTab.jsf -->
-<sun:page id="page1">
+
+<!initPage
+    setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
+	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+    setAttribute(key="edit" value="#{true}" );
+/>
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.edJmxConnector.sslSettingsLabel}" >
+<!define name="content">
+    <event>
   <!beforeCreate
-    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
-    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
-    getRequestValue(key="configName" value=>$page{configName});
+    getRequestValue(key="configName" value=>$page{configName}  default="server-config");
     getRequestValue(key="name", value=>$page{tabName});            
     getRequestValue(key="ssl2", value=>$page{ssl2});        
     getRequestValue(key="type", value=>$page{type});     
     setPageSessionAttribute(key="helpid" value="$resource{help.httpSSL}");
-        
+    setPageSessionAttribute(key="finalPage", value="#{request.contextPath}/web/configuration/httpListeners.jsf");
+    setSessionAttribute(key="listenersTab" value="sslTab");
     getRequestValue(key="editPage" value=>$page{editPage});        
     getRequestValue(key="pageTitle" value=>$page{pageTitle});   
     setAttribute(key="sslPageTitle" value="$resource{i18n.edJmxConnector.sslSettingsLabel}");
   />
+  </event>
 #include "/shared/restart.inc"  
-  <sun:html id="html2">
-        <sun:head id="propertyhead"  title="$resource{i18n.edJmxConnector.sslSettingsLabel}" parseOnLoad="false">
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>    
-        <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-#include "/shared/treeBreadcrumbs.inc"                
+    #include "/shared/treeBreadcrumbs.inc"
 #include "listenersTab.inc"       
 #include "/shared/alertMsg.inc"
 #include "/web/shared/sslProperties.inc"
@@ -69,7 +69,6 @@
                 </sun:title>
             <sun:hidden id="helpKey" value="$pageSession{helpid}" />
             </sun:form>
-        </sun:body>
 #include "/web/shared/sslValidationsJS.inc"  
-    </sun:html>
-</sun:page>
+</define>
+</composition>

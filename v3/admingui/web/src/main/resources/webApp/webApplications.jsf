@@ -35,38 +35,34 @@
 -->
 <!-- applications/webApplications.jsf -->
 
-<sun:page id="page1">
-    <!beforeCreate
-        setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
-        setResourceBundle(key="web" bundle="org.glassfish.web.admingui.Strings");
-        setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
-        getDeployedWebInfo(serverName='#{request.serverName}', result=>$attribute{listOfRows} );
-        setPageSessionAttribute(key="tableTitle" value="$resource{i18n.deployTable.webApp}");
-        setPageSessionAttribute(key="editLink" value="/web/webApp/webApplicationsEdit.jsf");
-        setPageSessionAttribute(key="targetLink" value="/web/webApp/webApplicationTargets.jsf");
-        setPageSessionAttribute(key="listPageLink" value="/web/webApp/webApplications.jsf");
-        setPageSessionAttribute(key="hasContextRoot" value="#{true}" );
-        setPageSessionAttribute(key="appType" value="webApp");
-        setPageSessionAttribute(key="viewKeyValue" value="webSummaryView");
-        
-   #include "/shared/viewSummaryDetail.inc"
-    />
-#include "/shared/restart.inc"    
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18n.webAplications.title}" >
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>
+<!initPage
+    setResourceBundle(key="web" bundle="org.glassfish.web.admingui.Strings");
+/>
+//<sun:page id="page1">
+<!composition template="/layout.xhtml" guiTitle="$resource{i18n.webAplications.title}">
+<!define name="content">
+    <event>
+        <!beforeCreate
+            getDeployedWebInfo(serverName='#{request.serverName}', result=>$attribute{listOfRows} );
+            setPageSessionAttribute(key="tableTitle" value="$resource{i18n.deployTable.webApp}");
+            setPageSessionAttribute(key="editLink" value="/web/webApp/webApplicationsEdit.jsf");
+            setPageSessionAttribute(key="targetLink" value="/web/webApp/webApplicationTargets.jsf");
+            setPageSessionAttribute(key="listPageLink" value="/web/webApp/webApplications.jsf");
+            setPageSessionAttribute(key="hasContextRoot" value="#{true}" );
+            setPageSessionAttribute(key="appType" value="webApp");
+            setPageSessionAttribute(key="viewKeyValue" value="webSummaryView");
 
-// This node doesn't exist yet...
-//  admingui.nav.refreshTree('form:tree:webServices', 'fixme', 'fixme');
-        <sun:body id="body3" onLoad="admingui.nav.refreshTree('form:tree:applications:webApplications', 'web/webApp/webAppNode.jsf', 'webApplications'); synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}');">
+       #include "/shared/viewSummaryDetail.inc"
+        />
+    </event>
+#include "/shared/restart.inc"    
             <sun:form id="propertyForm">
 <f:verbatim>
     <script type="text/javascript">
         admingui.nav.selectTreeNodeById('form:tree:applications:webApplications');
     </script>
 </f:verbatim>
-#include "/shared/treeBreadcrumbs.inc"
+ #include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc"
                 <!-- Page Title -->
                  <sun:title id="propertyContentPage" title="$resource{i18n.webAplications.title}" helpText="$resource{i18n.webAplications.titleHelp}"/>
@@ -74,7 +70,6 @@
 #include "deployTable.inc"
 	<sun:hidden id="helpKey" value="$resource{help.webApplications}" />
             </sun:form>
-        </sun:body>
 #include "/shared/changeButtonsJS.inc"
-    </sun:html>
-</sun:page>
+</define>
+</composition>

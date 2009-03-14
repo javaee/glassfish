@@ -37,16 +37,15 @@
 <!-- shared/jvmOptions_1.jsf -->
 <!-- when including this page, should followed by including jvmOptions_2.inc to make a complete page -->
 
-<sun:page id="page1">
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.jvmOptions.Title}" >
+<!define name="content">
+    <event>
     <!beforeCreate
-        setPageSessionAttribute(key="configName", value="$requestParameter{configName}");  
+        setSessionAttribute(key="serverInstTabs" value="jvmOptions");
+        getRequestValue(key="configName" value=>$page{configName}  default="server-config");
         getJvmOptions(ConfigName="#{configName}", JvmOptions=>$attribute{tableList});
     />
+    </event>
 #include "/shared/restart.inc"
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18n.jvmOptions.Title}" parseOnLoad="false" >
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>
-        <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')" >
          <sun:form id="propertyForm">
-#include "/shared/treeBreadcrumbs.inc"
+   #include "/shared/treeBreadcrumbs.inc"

@@ -35,35 +35,31 @@
 -->
 <!-- configuration/httpListenerNew.jsf -->
 <!initPage
-setAttribute(key="edit" value="#{false}" )
+    setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
+	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+    setAttribute(key="edit" value="#{false}" );
 />
-<sun:page id="page1">
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.httpListeners.step1PageTitle}" >
+<!define name="content">
+    <event>
     <!beforeCreate
-        setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
-        setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
         setPageSessionAttribute(key="pageTitle" value="$resource{i18n.httpListeners.step1PageTitle}");
         setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.httpListeners.NewPageHelp}");
         setPageSessionAttribute(key="step2PageTitle" value="$resource{i18n.httpListeners.step2PageTitle}");
-        getRequestValue(key="configName" value=>$page{configName});
+        getRequestValue(key="configName" value=>$page{configName} default="server-config");
         getRequestValue(key="fromStep2" value=>$page{fromStep2});
         getTableList(Properties="#{props}", TableList=>$attribute{tableList});        
     />
+    </event>
 #include "/shared/restart.inc"    
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="#{pageTitle}" parseOnLoad="false">
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>
-        <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-#include "/shared/treeBreadcrumbs.inc"
+   #include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc"
 #include "httpListener.inc" 
 #include "/shared/propertyTable.inc" 
                 <sun:hidden id="helpKey" value="$resource{help.httpListenerNew}" />
             </sun:form>
             "<br/><br/>
-        </sun:body>
 #include "/shared/changeButtonsJS.inc"         
-    </sun:html>
-
-</sun:page>
+</define>
+</composition>

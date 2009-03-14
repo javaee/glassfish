@@ -36,14 +36,14 @@
 <!-- commonTask.jsf -->
 
 <!initPage
-setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
-setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+<!--
+    Any page-specific I18N files can be included here, core.*
+    bundles are already included.
+-->
 #include "/sysnet/regInit.inc"
 />
-<sun:page>
-  <sun:html>
-    <sun:head id="propertyhead" title="$resource{i18n.commonTasks.title}">
-      <sun:script url="/resource/js/adminjsf.js" />
+<!composition template="/layout.xhtml" guiTitle="$resource{i18n.commonTasks.title}">
+<!define name="content">
       <sun:script>
         <f:verbatim>
           function showWindow() {
@@ -54,8 +54,6 @@ setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
           }
         </f:verbatim>
       </sun:script>
-    </sun:head>
-    <sun:body style="background:#B6C6D6" onLoad="admingui.nav.clearTreeSelection('form:tree'); admingui.nav.refreshTree('form:tree:registration');">
       <sun:form id="form"> 
         <!-- #include "/shared/treeBreadcrumbs.inc" -->
         <sun:commonTasksSection id="commonTasksSection" helpText="$resource{i18n.commonTasks.help}"  title="$resource{i18n.commonTasks.title}" columns="$int{2}" style="visibility: #{commonTaskVisibility}">
@@ -91,6 +89,5 @@ setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
 #include "/sysnet/regReminder.inc"
         <sun:hidden id="helpKey" value="$resource{help.commonTask}" />
       </sun:form>
-    </sun:body>
-  </sun:html>
-</sun:page>
+</define>
+</composition>

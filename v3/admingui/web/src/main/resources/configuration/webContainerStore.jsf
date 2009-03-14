@@ -34,23 +34,24 @@
  holder.
 -->
 <!-- configuration/webContainerStore.jsf -->
-<sun:page>
+<!initPage
+    setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
+/>
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.webContainer.storeProp}" >
+<!define name="content">
+    <event>
  <!beforeCreate
-     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
-     setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
-     setPageSessionAttribute(key="configName" value="$requestParameter{configName}");
+     getRequestValue(key="configName" value=>$page{configName} default="server-config");
+     setSessionAttribute(key="webContainerTabs" value="storeTab");
      getWebStoreProps(ConfigName="#{configName}", ReapInterval=>$attribute{reapInterval}, 
      Directory=>$attribute{directory}, Properties=>$page{props});
      getTableList(Properties="#{props}", TableList=>$attribute{tableList});          
  />
+     </event>
+
 #include "/shared/restart.inc" 
- <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18n.webContainer.storeProp}" parseOnLoad="false">
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>
-        <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-#include "/shared/treeBreadcrumbs.inc"
+     #include "/shared/treeBreadcrumbs.inc"
 #include "webContainerTabs.inc"            
 #include "/shared/alertMsg.inc"   
                 <!-- Page Title -->
@@ -94,7 +95,6 @@
                  
 	<sun:hidden id="helpKey" value="$resource{help.webContainerStore}" />
             </sun:form>
-        </sun:body>
 #include "/shared/changeButtonsJS.inc"         
-    </sun:html>
-</sun:page>
+</define>
+</composition>

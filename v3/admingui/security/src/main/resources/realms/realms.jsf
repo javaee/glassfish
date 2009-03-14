@@ -35,30 +35,28 @@
  holder.
 -->
 
-<sun:page id="page1">
+<!initPage
+    setResourceBundle(key="i18nSecurity" bundle="org.glassfish.security.admingui.Strings")
+	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+/>
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18nSecurity.realm.PageTitle}" >
+<!define name="content">
+    <event>
     <!beforeCreate
-    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
-	setResourceBundle(key="i18nSecurity" bundle="org.glassfish.security.admingui.Strings")
-    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
-    getRequestValue(key="configName" value=>$page{configName});
-    getRealmsList(ConfigName="$pageSession{configName}", result=>$attribute{listOfRows} );
-    setPageSessionAttribute(key="tableTitle" value="$resource{i18nSecurity.realm.TableTitle}");
-    setPageSessionAttribute(key="type" value="realms");
-    setPageSessionAttribute(key="hasAuditColumn" value="$boolean{false}");
-    setPageSessionAttribute(key="listPageLink" value="realms.jsf");
-    setPageSessionAttribute(key="createLink" value="realmNew.jsf");
-    setPageSessionAttribute(key="editLink" value="/security/realms/realmEdit.jsf");
-    setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n.msg.JS.confirmDeleteRealms}");
+        getRequestValue(key="configName" value=>$page{configName} default="server-config");
+        getRealmsList(ConfigName="$pageSession{configName}", result=>$attribute{listOfRows} );
+        setPageSessionAttribute(key="tableTitle" value="$resource{i18nSecurity.realm.TableTitle}");
+        setPageSessionAttribute(key="type" value="realms");
+        setPageSessionAttribute(key="hasAuditColumn" value="$boolean{false}");
+        setPageSessionAttribute(key="listPageLink" value="realms.jsf");
+        setPageSessionAttribute(key="createLink" value="realmNew.jsf");
+        setPageSessionAttribute(key="editLink" value="/security/realms/realmEdit.jsf");
+        setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n.msg.JS.confirmDeleteRealms}");
     />
+    </event>
 #include "/shared/restart.inc"    
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18nSecurity.realm.PageTitle}" >
-            <sun:script url="/resource/js/restart.js" />
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>
-        <sun:body id="body3" onLoad="admingui.nav.refreshTree('form:tree:configuration:security', 'security/securityServiceNode.jsf', 'security'); synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-#include "/shared/treeBreadcrumbs.inc"
+   #include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc"
                  <sun:title id="propertyContentPage" title="$resource{i18nSecurity.realm.PageTitle}" 
                  helpText="$resource{i18nSecurity.realm.PageHelp}"/>
@@ -66,7 +64,6 @@
 #include "/security/configTable.inc"    
              <sun:hidden id="helpKey" value="$resource{help.realms}" />
             </sun:form>
-        </sun:body>
 #include "/shared/changeButtonsJS.inc"        
-    </sun:html>
-</sun:page>
+</define>
+</composition>

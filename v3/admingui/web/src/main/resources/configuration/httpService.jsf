@@ -35,23 +35,24 @@
 -->
 <!-- configuration/httpService.jsf -->
 
-<sun:page id="page1">
-    <!beforeCreate
-    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
-    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
-    setSessionAttribute(key="httpServiceTabs" value="httpService");
-    getRequestValue(key="configName" value=>$page{configName});
-    />
+<!initPage
+    setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
+	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+/>
+//<sun:page id="page1">
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.http.HttpService}" >
+<!define name="content">
+    <event>
+        <!beforeCreate
+            setSessionAttribute(key="httpServiceTabs" value="httpService");
+            getRequestValue(key="configName" value=>$page{configName} default="server-config");
+        />
+    </event>
 
 #include "/shared/restart.inc"    
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18n.http.HttpService}" parseOnLoad="false">
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>
-
-        <sun:body id="body3" onLoad="synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
+    
             <sun:form id="form1">
-#include "/shared/treeBreadcrumbs.inc"
+    #include "/shared/treeBreadcrumbs.inc"
 #include "httpServiceTabs.inc"            
 #include "/shared/alertMsg.inc"
 
@@ -72,7 +73,7 @@
                     accessLogWriteInterval="#{accessLogWriteInterval}",
                     accessLoggingEnabled="#{accessLoggingEnabled}"
                 );
-                redirect(page="../configuration/httpService.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&configName=$pageSession{configName}");
+                redirect(page="#{request.contextPath}/web/configuration/httpService.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&configName=$pageSession{configName}");
                 />    
             </sun:button>
         </sun:panelGroup>
@@ -113,9 +114,6 @@
             </sun:title>
             </sun:form>
             "<br/>
-        </sun:body>
 #include "/shared/changeButtonsJS.inc" 
-
-    </sun:html>
-    
-</sun:page>
+</define>
+</composition>

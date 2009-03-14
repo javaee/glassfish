@@ -64,6 +64,11 @@
                 prepareSuccessfulMsg();
           />
           </sun:button>
+          <sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" primary="#{false}"  immediate="#{true}">
+            <!command
+                redirect(page="#{request.contextPath}/web/webApp/webApplications.jsf?name=#{name}");
+            />
+        </sun:button>
     </sun:panelGroup>
     </facet> 
  </sun:title>

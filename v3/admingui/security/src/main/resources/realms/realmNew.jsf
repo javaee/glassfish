@@ -41,6 +41,7 @@
     # use own JS to check requird field.
 -->
 <!initPage
+    setResourceBundle(key="i18nSecurity" bundle="org.glassfish.security.admingui.Strings")
     setComponentRequired(id="form1:fileSection:jaax:jaax" required="$boolean{false}" );
     setComponentRequired(id="form1:fileSection:keyFile:keyFile" required="$boolean{false}" );
     setComponentRequired(id="form1:ldapSection:jaax:jaax" required="$boolean{false}" );
@@ -56,22 +57,23 @@
     setComponentRequired(id="form1:jdbcSection:groupName:groupName" required="$boolean{false}" );
 />
     
-<sun:page id="page1">
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18nSecurity.realm.NewPageTitle}" guiOnLoad="initClassname('#{myOption}');" >
+<!define name="content">
+    <event>
     <!beforeCreate
-        setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
-	setResourceBundle(key="i18nSecurity" bundle="org.glassfish.security.admingui.Strings")
-	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
         setPageSessionAttribute(key="pageTitle" value="$resource{i18nSecurity.realm.NewPageTitle}");
         setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18nSecurity.realm.NewPageHelp}");
         setPageSessionAttribute(key="helpKey" value="$resource{help.realmNew}");
         setPageSessionAttribute(key="edit" value="#{false}" );
         setPageSessionAttribute(key="showUserButton" value="#{false}" )
-        getRequestValue(key="configName" value=>$page{configName});
+        getRequestValue(key="configName" value=>$page{configName}  default="server-config");
         getRealmAttrForCreate(attrMap=>$page{attrMap}, classnameOption=>$page{classnameOption}, realmClasses=>$page{realmClasses}, properties=>$page{props}  );
         getTableList(Properties="#{props}", TableList=>$attribute{tableList});
         setPageSessionAttribute(key="myOption" value="$pageSession{classnameOption}");
     />
+    </event>
     
 #include "/security/realms/realm.inc"
     
-</sun:page>
+</define>
+</composition>

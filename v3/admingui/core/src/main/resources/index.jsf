@@ -34,6 +34,9 @@
  holder.
 -->
 
+#include "/commonTask.jsf"
+
+<!--  for v3-new-gui, we use the homePage as the index page
 <sun:page>
    <!beforeCreate
 	setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
@@ -58,6 +61,10 @@
         />
        
 	<sun:head id="head" title="#{version} $resource{i18n.common.AdminConsole}" >
+            <!afterCreate
+                getClientId(component="$this{component}" clientId=>$attribute{formId})
+                includeIntegrations(type="org.glassfish.admingui:favicon" root="#{component}");
+            />
 	</sun:head>
 	<sun:frameSet id="outerFrameset" rows="$attribute{framesetRows}, *" frameborder="$boolean{true}" border="$int{1}" toolTip="#{version} $resource{i18n.common.AdminConsole}" title="$resource{i18n.common.AdminConsole}">
 	    <sun:frame name="header" title="#{version}" scrolling="no" url="/header.jsf" marginHeight="$int{0}" marginWidth="$int{0}" longdesc="" />
@@ -89,3 +96,4 @@
 	</sun:frameSet>
     </sun:html>
 </sun:page>
+-->

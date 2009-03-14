@@ -35,11 +35,15 @@
 -->
 <!-- updateCenter/update.jsf -->
 
-<sun:page id="page1">
+//<sun:page id="page1">
+<!initPage
+    setResourceBundle(key="i18nUC" bundle="org.glassfish.updatecenter.admingui.Strings");
+    setResourceBundle(key="help" bundle="org.glassfish.updatecenter.admingui.Helplinks");
+/>
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18nUC.updateCenter.update.pageTitle}">>
+<!define name="content">
+    <event>
     <!beforeCreate
-        setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
-        setResourceBundle(key="i18nUC" bundle="org.glassfish.updatecenter.admingui.Strings");
-        setResourceBundle(key="help" bundle="org.glassfish.updatecenter.admingui.Helplinks");
         setSessionAttribute(key="ucTabs" value="update");
         setPageSessionAttribute(key="buttonText" value="$resource{i18n.button.Install}");
         setPageSessionAttribute(key="action" value="install");
@@ -59,6 +63,7 @@
         getAuthority(result=>$attribute{authority});
         getUcList(state="update", result=>$attribute{listOfRows} );
     />
+    </event>
 #include "updateCenterContent.jsf"
-</sun:page>
-
+</define>
+</composition>

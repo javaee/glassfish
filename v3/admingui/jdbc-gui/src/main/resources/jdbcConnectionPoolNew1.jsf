@@ -35,25 +35,24 @@
 -->
 <!-- jdbc/jdbcConnectionPoolNew1.jsf -->
 
-<sun:page id="page1">
-    <!beforeCreate
-    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
-    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
+<!initPage
     setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings")
-    getRequestValue(key="cancelPage" default="jdbc/jdbcConnectionPools.jsf" value=>$page{cancelPage});
+	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+/>
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18njdbc.jdbcConnectionPool.step1PageTitle}" >
+<!define name="content">
+    <event>
+    <!beforeCreate
+    getRequestValue(key="cancelPage" default="#{request.contextPath}/jdbc/jdbcConnectionPools.jsf" value=>$page{cancelPage});
     getJDBCPoolWizard(fromStep2="$attribute{fromStep2}"
                 ResTypeList=>$attribute{ResTypeList}
                 DBVendorList=>$attribute{DBVendorList});
     
     />
+    </event>
 #include "/shared/restart.inc"    
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18njdbc.jdbcConnectionPool.step1PageTitle}" >
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>
-        <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-#include "/shared/treeBreadcrumbs.inc"
+   #include "/shared/treeBreadcrumbs.inc"
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcConnectionPool.step1PageTitle}"
                     helpText="$resource{i18njdbc.jdbcConnection.step1PageHelp}">
@@ -63,9 +62,7 @@
             onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
                             <!command
                                 updateJDBCPoolWizard();
-                                setAttribute(key="fromStep2" value="#{false}")
-                                setAttribute(key="cancelPage" value="$pageSession{cancelPage}");
-                                navigate(page="/jdbc/jdbcConnectionPoolNew2.jsf")
+                                redirect(page="#{request.contextPath}/jdbc/jdbcConnectionPoolNew2.jsf?fromStep2=false&cancelPage=$pageSession{cancelPage}")
                             />
                         </sun:button>
                         <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.Cancel}" > 
@@ -97,8 +94,7 @@
                 </sun:title>
 	<sun:hidden id="helpKey" value="$resource{help.jdbcConnectionPoolNew1}" />
             </sun:form>
-        </sun:body>
-    </sun:html>
-</sun:page>
+</define>
+</composition>
 
 

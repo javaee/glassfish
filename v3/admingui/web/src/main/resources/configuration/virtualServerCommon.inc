@@ -36,15 +36,9 @@
 <!-- configuration/virtualServerCommon.inc -->
 
 #include "/shared/restart.inc"    
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="#{pageTitle}" parseOnLoad="false">
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>
-
-        <sun:body id="body3" onLoad="synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="form1">
     # purposely to omit breadcrumb, including it causes syntax error, but only for this page
-#include "/shared/treeBreadcrumbs.inc"
+    #include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc"
 #include "virtualServerAttr.inc"               
 #include "/shared/propertyTable.inc"
@@ -53,8 +47,5 @@
             </sun:form>
             <!-- sun:title id="propertyContentPage" helpText="$resource{i18n.vs.PropsHelp}"/ --> 
             "<br/><br/>
-        </sun:body>
 #include "/shared/changeButtonsJS.inc" 
-
-</sun:html>
 

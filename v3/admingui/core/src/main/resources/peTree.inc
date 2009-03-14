@@ -1,0 +1,166 @@
+<!--
+ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ 
+ Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ 
+ The contents of this file are subject to the terms of either the GNU
+ General Public License Version 2 only ("GPL") or the Common Development
+ and Distribution License("CDDL") (collectively, the "License").  You
+ may not use this file except in compliance with the License. You can obtain
+ a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ language governing permissions and limitations under the License.
+ 
+ When distributing the software, include this License Header Notice in each
+ file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ Sun designates this particular file as subject to the "Classpath" exception
+ as provided by Sun in the GPL Version 2 section of the License file that
+ accompanied this code.  If applicable, add the following below the License
+ Header, with the fields enclosed by brackets [] replaced by your own
+ identifying information: "Portions Copyrighted [year]
+ [name of copyright owner]"
+ 
+ Contributor(s):
+ 
+ If you wish your version of this file to be governed by only the CDDL or
+ only the GPL Version 2, indicate your decision by adding "[Contributor]
+ elects to include this software in this distribution under the [CDDL or GPL
+ Version 2] license."  If you don't indicate a single choice of license, a
+ recipient has the option to distribute your version of this file under
+ either the CDDL, the GPL Version 2 or to extend the choice of license to
+ its licensees as provided above.  However, if you add GPL Version 2 code
+ and therefore, elected the GPL Version 2 license, then the option applies
+ only if the new code is made subject to such option by the copyright
+ holder.
+-->
+<!-- peTree.jsf -->
+
+<event>
+    <!beforeCreate
+	#getConfigNameOfTarget(target="server" configName=>$page{configName});
+	setPageSessionAttribute(key="configName" value="server-config");
+    />
+</event>
+ 
+
+//<sun:body  onLoad="fixTree(); setTreeWidth('#{treeId}');" >
+//    <sun:button id="update" visible="#{false}">
+//	<!-- KEEP THIS IN SYNCH WITH clusterProfileTree.jsf -->
+//	<!command
+//	    // Find the old component
+//	    getUIComponent("$requestParameter{updateTreeNode}" component=>$attribute{oldComp});
+//	    setAttribute(key="parent" value="#{oldComp.parent}");
+//
+//	    // Replace it with something temporary to hold position
+//	    // Needed, or it it will just find the old one vs. create it
+//	    createComponent(type="staticText" component=>$attribute{temp});
+//	    replaceUIComponent(old="${oldComp}" new="$attribute{temp}");
+//
+//	    // Rengenerate it
+//	    getLayoutComponent(
+//		viewId="$requestParameter{viewId}"
+//		clientId="$requestParameter{relId}"
+//		component=>$attribute{desc});
+//	    buildUIComponentTree(layoutElement="$attribute{desc}" parent="#{parent}" result=>$attribute{newComp});
+//	    replaceUIComponent(old="${temp}" new="$attribute{newComp}");
+//
+//	    // Ugly hack to make Tree work for now...
+//	    removeWidgetsFromTree(tree="#{requestScope.newComp}");
+//	/>
+//    </sun:button>
+  <sun:form id="treeForm">
+    <sun:tree id="tree" 
+	      text="$resource{i18n.tree.commonTasks}"
+	      url="/commonTask.jsf"
+	      imageURL="resource/images/common_tasks.gif"
+	      target="main"
+	      clientSide="#{true}">
+	  <!afterCreate
+	      getClientId(component="$this{component}" clientId=>$page{treeId});
+	  />
+
+	<!--  ===================================== Registration  ======================  -->
+	<sun:treeNode id="registration"
+	    rendered="$session{showRegistration}"
+	    text="#{registrationNodeText}"
+	    url="/sysnet/#{registrationNodePage}.jsf"
+	    target="main">
+	    <!facet image>
+		<sun:imageHyperlink imageURL="/resource/images/#{registrationNodePage}.png" url="/sysnet/#{registrationNodePage}.jsf" target="main" border="0" immediate="true" />
+	    </facet>
+	</sun:treeNode>
+
+	<!--  ===================================== Application Server  ======================  -->
+	<sun:treeNode id="applicationServer" 
+		      text="$resource{i18n.tree.appServer}"
+		      url="/appServer/serverInstGeneralPe.jsf?instanceName=server"
+		      imageURL="resource/images/instance.gif"
+		      target="main">
+	    <!facet image>
+		<sun:image id="xyz" url="/resource/images/instance.gif" />
+	    </facet>
+	   
+	</sun:treeNode>
+
+	<!--  ===================================== Applications ======================  -->
+			
+	<sun:treeNode id="applications"
+		    text="$resource{i18n.tree.applications}"
+		    url="/applications/applications.jsf"
+		    target="main"
+		    expanded="$boolean{true}" 
+		    >
+	    <!facet image>
+		<sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/applications/applications.jsf" target="main" border="$int{0}" immediate="$boolean{true}" />
+	    </facet>
+
+      </sun:treeNode>
+	    
+	<!--  ===================================== Resources ======================  -->
+
+	<sun:treeNode  id="resources"
+	    text="$resource{i18n.tree.resources}"
+	    url="/resourceNode/resources.jsf"
+	    target="main"
+	    imageURL="resource/images/resources.gif"
+	    expanded="$boolean{true}" 
+	    />
+	    
+	 <!--  ===================================== Configurations ======================  -->
+	 
+	 <sun:treeNode id="configuration" 
+	    text="$resource{i18n.tree.configuration}"
+	    url="/configuration/configuration.jsf?configName=server-config"
+	    imageURL="resource/images/configurations.gif"
+	    target="main"
+	    expanded="$boolean{true}"
+	    >
+	</sun:treeNode>
+    </sun:tree>
+    <event>
+	<!afterCreate
+	    getUIComponent(clientId="#{pageSession.treeId}"  component=>$attribute{component});
+	    includeIntegrations(type="org.glassfish.admingui:treeNode" root="#{component}");
+	    // This is a hack which modifies the rendererType
+	    // to ensure no "widget" renderers are used.
+	    removeWidgetsFromTree(tree="#{requestScope.component}");
+	/>
+    </event>
+  </sun:form>
+
+//</sun:body>
+
+<!-- We only want to set the width for IE browser only. -->
+"<SCRIPT language = "Javascript" >
+
+" function setTreeWidth(treeId) {\
+var version = navigator.appVersion;  \
+var ix = version.indexOf('MSIE');  \
+if (ix == -1){  \
+    return;  \
+}  \
+var foo = document.getElementById(treeId);  \
+foo.style.width="40em";  \
+}
+
+"</SCRIPT>

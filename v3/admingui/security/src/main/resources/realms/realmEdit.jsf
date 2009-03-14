@@ -37,17 +37,16 @@
 
 #include "/security/realms/realmEditInitPage.inc"
 
-<sun:page id="page1">
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18nSecurity.realm.EditPageTitle}"  guiOnLoad="initClassname('#{myOption}');" >
+<!define name="content">
+    <event>
     <!beforeCreate
-        setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
-	setResourceBundle(key="i18nSecurity" bundle="org.glassfish.security.admingui.Strings")
-	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
         setPageSessionAttribute(key="pageTitle" value="$resource{i18nSecurity.realm.EditPageTitle}");
         setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18nSecurity.realm.EditPageTitleHelp}");
         setPageSessionAttribute(key="helpKey" value="$resource{help.realmNew}");
         setPageSessionAttribute(key="edit" value="#{true}" )
         setPageSessionAttribute(key="nextPage" value="security/realms/realmEdit.jsf" )
-        getRequestValue(key="configName" value=>$page{configName});
+        getRequestValue(key="configName" value=>$page{configName}  default="server-config");
         getRequestValue(key="name" value=>$page{name});
         getRealmAttrForEdit(configName="#{configName}", realmName="#{name}", outName=>$page{name}, attrMap=>$page{attrMap}, classnameOption=>$page{classnameOption}, realmClasses=>$page{realmClasses}, properties=>$page{props} );
         setPageSessionAttribute(key="myOption" value="$pageSession{classnameOption}");
@@ -55,8 +54,8 @@
         hasManageUserButton(realmName="$pageSession{name}" result=>$page{showUserButton});
         #setPageSessionAttribute(key="showUserButton", value="#{showUserButton}");
     />
-    
+    </event>
 #include "/shared/restart.inc"
 #include "/security/realms/realm.inc"
-    
-</sun:page>
+</define>
+</composition>

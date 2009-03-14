@@ -34,39 +34,6 @@ import org.testng.annotations.Test;
 public class AdminConsoleTests extends BaseAdminConsoleTest {
 
     /**
-     * Request / and verify that the frameset was rendered.
-     * @throws java.lang.Exception
-     */
-    @Test
-    public void testFrameSet() throws Exception {
-        Assert.assertTrue(getUrlAndTestForStrings(this.adminUrl,
-                "frameset id=\"outerFrameset\""),
-                "The main frameset does not appear to have been rendered.");
-    }
-
-    /**
-     * Request /preTree.jsf and verify that the tree was rendered.
-     * @throws java.lang.Exception
-     */
-    @Test
-    public void testNavTree() throws Exception {
-        Assert.assertTrue(getUrlAndTestForStrings(this.adminUrl + "peTree.jsf",
-                "div id=\"form:tree\""),
-                "The navigation tree does not appear to have been rendererd.");
-    }
-
-    /**
-     * Request /header.jsf and verify that the form was rendered.
-     * @throws java.lang.Exception
-     */
-    @Test
-    public void testHeader() throws Exception {
-        Assert.assertTrue(getUrlAndTestForStrings(this.adminUrl + "header.jsf",
-                "form id=\"propertyForm\"", "propertyForm:Masthead:helpLink"), // Find all of these strings or fail
-                "The header does not appear to have been rendered.");
-    }
-
-    /**
      * Request /commonTask.jsf and verify that the common task page was rendered.
      * @throws java.lang.Exception
      */

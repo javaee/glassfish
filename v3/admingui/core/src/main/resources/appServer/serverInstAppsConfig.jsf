@@ -38,28 +38,24 @@
 
 
 <!initPage
-    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
-    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
     setAttribute(key="helpKey" value="$resource{help.serverInstAppsConfig}" );
 />
-
-<sun:page id="page1">
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.server.AppsConfigPageTitle}" >
+<!define name="content">
+    <event>
     <!beforeCreate
-        setPageSessionAttribute(key="configName", value="$requestParameter{configName}");  
+        getRequestValue(key="configName" value=>$page{configName}  default="server-config");
         setPageSessionAttribute(key="instanceName" value="server");       # we can hard code it here because this page is only for DAS                                   
-        getServerAppsConfigAttributes(ConfigName="#{configName}", Reload=>$attribute{reload}, ReloadInterval=>$attribute{reloadInterval}, 
+        setSessionAttribute(key="serverInstTabs" value="appConfig");
+        getServerAppsConfigAttributes(ConfigName="#{configName}", Reload=>$attribute{reload}, ReloadInterval=>$attribute{reloadInterval},
             AutoDeploy=>$attribute{autoDeploy}, AdminTimeout=>$attribute{adminTimeout}, AutoDeployInterval=>$attribute{autoDeployInterval}, AutoDeployTimeout=>$attribute{autoDeployTimeout}, 
             Verifier=>$attribute{verifier}, Precompile=>$attribute{precompile}, AutoDeployDirectory=>$attribute{autoDeployDirectory}, Properties=>$page{props});
         getTableList(Properties="#{props}", TableList=>$attribute{tableList});
-        />   
+        />
+    </event>
 #include "/shared/restart.inc"
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18n.server.AppsConfigPageTitle}" parseOnLoad="false">
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>
-        <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-#include "/shared/treeBreadcrumbs.inc"
+   #include "/shared/treeBreadcrumbs.inc"
 #include "serverInstTabs.inc"
 #include "/shared/appConfig_2.inc"
 

@@ -35,30 +35,36 @@
 -->
 <!-- updateCenter/addOn.jsf -->
 
-<sun:page id="page1">
-    <!beforeCreate
-        setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
-        setResourceBundle(key="i18nUC" bundle="org.glassfish.updatecenter.admingui.Strings");
-        setResourceBundle(key="help" bundle="org.glassfish.updatecenter.admingui.Helplinks");
-        setSessionAttribute(key="ucTabs" value="addOn");
-        setPageSessionAttribute(key="buttonText" value="$resource{i18n.button.Install}");
-        setPageSessionAttribute(key="action" value="install");
-        setAttribute(key="pageTitle" value="$resource{i18nUC.updateCenter.addOn.pageTitle}");
-        setAttribute(key="pageTitleHelp" value="$resource{i18nUC.updateCenter.addOn.pageTitleHelp}");
-        setAttribute(key="tableTitle" value="$resource{i18nUC.updateCenter.addOn.tableTitle}");
-        setPageSessionAttribute(key="fromPage" value="addOn.jsf");
-        setPageSessionAttribute(key="forInstall" value="true");
-        setPageSessionAttribute(key="showNewVersion" value="#{false}");
-        setPageSessionAttribute(key="doReloadHeader" value="false");
-        setPageSessionAttribute(key="versonColHeader" value="$resource{i18nUC.ucTable.version}");
-        setPageSessionAttribute(key="sizeColHeader" value="$resource{i18nUC.ucTable.installSize}");
-        setAttribute(key="helpKey" value="$resource{help.uc.addOn}");
-        setPageSessionAttribute(key="confirmMsg" value="$resource{i18nUC.msg.JS.confirmUpdateCenterInstall}");
-        setPageSessionAttribute(key="successMsg" value="$resource{i18nUC.msg.addOnSuccess}")
-        getInstalledPath(result=>$attribute{installedPath});
-        getAuthority(result=>$attribute{authority});
-        getUcList(state="addOn", result=>$attribute{listOfRows} );
-    />
+<!initPage
+    setResourceBundle(key="i18nUC" bundle="org.glassfish.updatecenter.admingui.Strings");
+    setResourceBundle(key="help" bundle="org.glassfish.updatecenter.admingui.Helplinks");
+/>
+//<sun:page id="page1">
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18nUC.updateCenter.addOn.pageTitle}">>
+<!define name="content">
+    <event>
+        <!beforeCreate
+            setSessionAttribute(key="ucTabs" value="addOn");
+            setPageSessionAttribute(key="buttonText" value="$resource{i18n.button.Install}");
+            setPageSessionAttribute(key="action" value="install");
+            setAttribute(key="pageTitle" value="$resource{i18nUC.updateCenter.addOn.pageTitle}");
+            setAttribute(key="pageTitleHelp" value="$resource{i18nUC.updateCenter.addOn.pageTitleHelp}");
+            setAttribute(key="tableTitle" value="$resource{i18nUC.updateCenter.addOn.tableTitle}");
+            setPageSessionAttribute(key="fromPage" value="addOn.jsf");
+            setPageSessionAttribute(key="forInstall" value="true");
+            setPageSessionAttribute(key="showNewVersion" value="#{false}");
+            setPageSessionAttribute(key="doReloadHeader" value="false");
+            setPageSessionAttribute(key="versonColHeader" value="$resource{i18nUC.ucTable.version}");
+            setPageSessionAttribute(key="sizeColHeader" value="$resource{i18nUC.ucTable.installSize}");
+            setAttribute(key="helpKey" value="$resource{help.uc.addOn}");
+            setPageSessionAttribute(key="confirmMsg" value="$resource{i18nUC.msg.JS.confirmUpdateCenterInstall}");
+            setPageSessionAttribute(key="successMsg" value="$resource{i18nUC.msg.addOnSuccess}")
+            getInstalledPath(result=>$attribute{installedPath});
+            getAuthority(result=>$attribute{authority});
+            getUcList(state="addOn", result=>$attribute{listOfRows} );
+        />
+    </event>
 #include "updateCenterContent.jsf"
-</sun:page>
-
+</define>
+</composition>
+//</sun:page>

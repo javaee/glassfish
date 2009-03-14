@@ -37,16 +37,20 @@
 <!-- configuration/virtualServers.jsf -->
 
 
-<sun:page id="page1">
+<!initPage
+    setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
+	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+/>
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.vs.ListPageTitle}" >
+<!define name="content">
+    <event>
     <!beforeCreate
-    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
-    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
-    getRequestValue(key="configName" value=>$page{configName});
+    getRequestValue(key="configName" value=>$page{configName} default="server-config");
     getVirtualServerList(ConfigName="$pageSession{configName}", result=>$attribute{listOfRows} );
     setPageSessionAttribute(key="tableTitle" value="$resource{i18n.vs.TableTitle}");
-    setPageSessionAttribute(key="listPageLink" value="virtualServers.jsf");
-    setPageSessionAttribute(key="createLink" value="virtualServerNew.jsf");
-    setPageSessionAttribute(key="editLink" value="/web/configuration/virtualServerEdit.jsf");
+    setPageSessionAttribute(key="listPageLink" value="#{request.contextPath}/web/configuration/virtualServers.jsf");
+    setPageSessionAttribute(key="createLink" value="#{request.contextPath}/web/configuration/virtualServerNew.jsf");
+    setPageSessionAttribute(key="editLink" value="#{request.contextPath}/web/configuration/virtualServerEdit.jsf");
     setPageSessionAttribute(key="hasPort" value="#{false}");
     setPageSessionAttribute(key="hasClassname" value="#{false}");
     setPageSessionAttribute(key="hasState" value="#{true}");
@@ -55,21 +59,17 @@
     setPageSessionAttribute(key="type" value="virtualServer");
     setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n.msg.JS.confirmDeleteVS}");
     />
+    </event>
 #include "/shared/restart.inc"    
-    <sun:html id="html2">
-        <sun:head id="propertyhead"  title="$resource{i18n.vs.ListPageTitle}">
-            <sun:script url="/resource/js/adminjsf.js" />
-#include "/shared/alertMsg.inc"        
-        </sun:head>
-        <sun:body id="body3" onLoad="admingui.nav.refreshTree('form:tree:configuration:httpService', 'web/configuration/webContainerNode.jsf', 'httpService'); synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
+
             <sun:form id="propertyForm">
-#include "/shared/treeBreadcrumbs.inc"
+   #include "/shared/treeBreadcrumbs.inc"
+#include "/shared/alertMsg.inc"
                  <sun:title id="propertyContentPage" title="$resource{i18n.vs.ListPageTitle}"
                  helpText="$resource{i18n.vs.ListPageHelp}" />
 		 "<br /> <br />
 #include "configsTable.inc"                 
 	<sun:hidden id="helpKey" value="$resource{help.virtualServers}" />
             </sun:form>
-        </sun:body>
-    </sun:html>
-</sun:page>
+</define>
+</composition>

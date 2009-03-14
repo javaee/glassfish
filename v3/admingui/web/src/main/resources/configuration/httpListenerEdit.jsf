@@ -34,31 +34,29 @@
  holder.
 -->
 <!-- configuration/httpListenerEdit.jsf -->
-
-<!initPage 
+<!initPage
+    setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
+	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
     setAttribute(key="edit" value="#{true}" )
 />
-<sun:page id="page1">
-    <!beforeCreate
-    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
-    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
-    setSessionAttribute(key="listenersTab" value="listenersEdit");    
-    setSessionAttribute(key="ssl2" value="#{true}");
-    getRequestValue(key="configName" value=>$page{configName});
-    getRequestValue(key="name", value=>$page{tabName});        
-    setPageSessionAttribute(key="type" value="http");
-    setPageSessionAttribute(key="editPage" value="httpListenerEdit.jsf");
-    setPageSessionAttribute(key="pageTitle" value="$resource{i18n.headings.EditHttpListener}");
-    setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.httpListeners.EditHttpListenerInfo}");
+//<sun:page id="page1">
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.headings.EditHttpListener}" >
+<!define name="content">
+    <event>
+        <!beforeCreate
+            setSessionAttribute(key="listenersTab" value="listenersEdit");
+            setSessionAttribute(key="ssl2" value="#{true}");
+            getRequestValue(key="configName" value=>$page{configName} default="server-config");
+            getRequestValue(key="name", value=>$page{tabName});
+            setPageSessionAttribute(key="type" value="http");
+            setPageSessionAttribute(key="editPage" value="#{request.contextPath}/web/configuration/httpListenerEdit.jsf");
+            setPageSessionAttribute(key="pageTitle" value="$resource{i18n.headings.EditHttpListener}");
+            setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.httpListeners.EditHttpListenerInfo}");
     />
+    </event>
 #include "/shared/restart.inc"    
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="#{pageTitle}" parseOnLoad="false">
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>
-        <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-#include "/shared/treeBreadcrumbs.inc"
+    #include "/shared/treeBreadcrumbs.inc"
 #include "listenersTab.inc"   
 #include "/shared/alertMsg.inc"              
 #include "httpListener.inc"  
@@ -66,8 +64,7 @@
                 <sun:hidden id="helpKey" value="$resource{help.httpListenerEdit}" />
             </sun:form>
              "<br/><br/>
-        </sun:body>
 #include "/shared/changeButtonsJS.inc"         
-    </sun:html>
-</sun:page>
+</define>
+</composition>
 

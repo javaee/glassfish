@@ -37,21 +37,20 @@
 <!-- when including this page, should followed by including jvmGeneral_2.inc to make a complete page -->
 
 
-<sun:page id="page1">
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.jvm.GeneralTitle}" >
+<!define name="content">
+    <event>
     <!beforeCreate
         # for EE, the following session attribute will just be ignored.
-        setSessionAttribute(key="eeJvmSettingsTab" value="eeJvmGeneral");  
-        setPageSessionAttribute(key="configName", value="$requestParameter{configName}");        
+        setSessionAttribute(key="eeJvmSettingsTab" value="eeJvmGeneral");
+        setSessionAttribute(key="serverInstTabs" value="jvmGeneral");
+        getRequestValue(key="configName" value=>$page{configName}  default="server-config");
         getServerJvmAttributes(ConfigName="#{configName}", JavaHome=>$attribute{javaHome}, 
                     JavacOptions=>$attribute{javacOptions}, DebugEnabled=>$attribute{debugEnabled},
                     DebugOptions=>$attribute{debugOptions}, RmicOptions=>$attribute{rmicOptions}, 
                     BytecodePreprocessor=>$attribute{bytecodePreprocessor});
     />
+    </event>
 #include "/shared/restart.inc"
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18n.jvm.GeneralTitle}">
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>
-        <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-#include "/shared/treeBreadcrumbs.inc"
+     #include "/shared/treeBreadcrumbs.inc"

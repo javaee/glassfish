@@ -36,18 +36,20 @@
 -->
 <!-- jdbc/jdbcConnectionPoolEdit.jsf -->
 
-<sun:page id="page1">
+<!initPage
+    setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings")
+	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+/>
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18njdbc.jdbcConnectionPool.editPageTitle}" >
+<!define name="content">
     <event>
     <!beforeEncode
         getUIComponent(clientId="$pageSession{tableTextField}" component=>$attribute{tableTextField});
         setDisableConnectionPoolTableField(tableField="$attribute{tableTextField}" methodValue="$attribute{connectionValidationMethod}");
     />
     </event>
-                                
+    <event>
     <!beforeCreate
-        setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
-        setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings")
-	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
         setSessionAttribute(key="jdbcPoolTabs" value="general");
         getRequestValue(key="name" value=>$page{jndiName});
         getJdbcConnectionPoolInfo(
@@ -69,14 +71,10 @@
                 transactionIsolationLevel => $attribute{transactionIsolationLevel}
                 isIsolationLevelGuaranteed => $attribute{isIsolationLevelGuaranteed});
         />
+        </event>
 #include "/shared/restart.inc"        
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18njdbc.jdbcConnectionPool.editPageTitle}" >
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>
-        <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-#include "/shared/treeBreadcrumbs.inc"
+   #include "/shared/treeBreadcrumbs.inc"
 #include "/jdbc/jdbcConnectionPoolTabs.inc"
 #include "/shared/alertMsg.inc"
                 <!-- Page Title -->
@@ -208,7 +206,6 @@
                 </sun:title>
 	<sun:hidden id="helpKey" value="$resource{help.jdbcConnectionPoolEdit}" />
             </sun:form>
-        </sun:body>
 #include "/shared/changeButtonsJS.inc"
 
 "<SCRIPT language = "Javascript" > \
@@ -221,8 +218,7 @@ function disableTableField() {  \
     } \
 } \
 </SCRIPT>
-
-    </sun:html>
-</sun:page>
+</define>
+</composition>
 
 

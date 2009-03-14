@@ -109,7 +109,7 @@
         redirect("#{finalPage}?configName=#{configName}");
     />              
   </sun:button>
-  <sun:button id="cancelButton" rendered="#{!edit}" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.Cancel}" > 
+  <sun:button id="cancelButton"  immediate="#{true}" primary="#{false}" text="$resource{i18n.button.Cancel}" > 
     <!command
         setSessionAttribute(key="httpProps" value="#{null}")
         setSessionAttribute(key="iiopProps" value="#{null}")

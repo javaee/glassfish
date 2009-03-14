@@ -34,6 +34,9 @@
  holder.
 -->
 
+#include "/commonTask.jsf"
+
+<!--  for v3-new-gui, we use the homePage as the index page
 <sun:page>
    <!beforeCreate
 	setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
@@ -93,3 +96,4 @@
 	</sun:frameSet>
     </sun:html>
 </sun:page>
+-->

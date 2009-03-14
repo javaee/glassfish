@@ -35,35 +35,33 @@
 -->
 <!-- configuration/httpListeners.jsf -->
 
-<sun:page id="page1">
+<!initPage
+    setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
+/>
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.httpListeners.ListPageTitle}" >
+<!define name="content">
+    <event>
     <!beforeCreate
-    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
-    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
-    getRequestValue(key="configName" value=>$page{configName});
+    getRequestValue(key="configName" value=>$page{configName}  default="server-config");
     getHttpListenersList(ConfigName="$pageSession{configName}", Result=>$attribute{listOfRows} );
     setPageSessionAttribute(key="tableTitle" value="$resource{i18n.httpListeners.TableTitle}");
-    setPageSessionAttribute(key="listPageLink" value="httpListeners.jsf");
-    setPageSessionAttribute(key="createLink" value="httpListenerNew.jsf");
-    setPageSessionAttribute(key="editLink" value="/web/configuration/httpListenerEdit.jsf");
+    setPageSessionAttribute(key="listPageLink" value="#{request.contextPath}/web/configuration/httpListeners.jsf");
+    setPageSessionAttribute(key="createLink" value="#{request.contextPath}/web/configuration/httpListenerNew.jsf");
+    setPageSessionAttribute(key="editLink" value="#{request.contextPath}/web/configuration/httpListenerEdit.jsf");
     setPageSessionAttribute(key="hasDefVirtServer" value="#{true}");
     setPageSessionAttribute(key="type" value="httpListener");
     setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n.msg.JS.confirmDeleteHttpListener}");
     />
+    </event>
 #include "/shared/restart.inc"    
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18n.httpListeners.ListPageTitle}" >
-            <sun:script url="/resource/js/adminjsf.js" />
-#include "/shared/alertMsg.inc"        
-        </sun:head>
-        <sun:body id="body3" onLoad="admingui.nav.refreshTree('form:tree:configuration:httpService', 'web/configuration/webContainerNode.jsf', 'httpService'); synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-#include "/shared/treeBreadcrumbs.inc"
+   #include "/shared/treeBreadcrumbs.inc"
+   #include "/shared/alertMsg.inc"
                  <sun:title id="propertyContentPage" title="$resource{i18n.httpListeners.ListPageTitle}"
                  helpText="$resource{i18n.httpListeners.ListPageHelp}"/>
 		 "<br /> <br />
 #include "listenersTable.inc" 
             <sun:hidden id="helpKey" value="$resource{help.httpListeners}" />
             </sun:form>
-        </sun:body>
-    </sun:html>
-</sun:page>
+</define>
+</composition>

@@ -61,7 +61,7 @@
             convertRowsToProperties(NewList="#{newList}", AddProps=>$attribute{addProps});
             setSessionAttribute(key="wizardPoolProperties", value="$attribute{addProps}");
             createJdbcConnectionPool();
-            redirect(page="jdbcConnectionPools.jsf")
+            redirect(page="#{request.contextPath}/jdbc/jdbcConnectionPools.jsf")
         />    
     </sun:button>
     <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.Cancel}" > 
@@ -69,7 +69,7 @@
             setSessionAttribute(key="wizardPool" value="#{null}")
             setSessionAttribute(key="wizardPoolExtra" value="#{null}")
             setSessionAttribute(key="wizardPoolProperties" value="#{null}")
-            redirect(page="../$pageSession{cancelPage}")
+            redirect(page="$pageSession{cancelPage}")
         />    
     </sun:button>
 </sun:panelGroup>

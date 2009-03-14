@@ -38,17 +38,23 @@
 	    missing Descrition link for logfile
 -->
 
-<sun:page id="page1">
+<!initPage
+    setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
+	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+/>
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.vs.EditTitle}" >
+<!define name="content">
+    <event>
     <!beforeCreate
-    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
-    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
     setAttribute(key="helpKey" value="$resource{help.virtualServerEdit}");
-    getRequestValue(key="configName", value=>$page{configName});
+    getRequestValue(key="configName", value=>$page{configName}  default="server-config");
     getRequestValue(key="name", value=>$page{name});
     setPageSessionAttribute(key="pageTitle" value="$resource{i18n.vs.EditTitle}");
     setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.vs.PageHelp}");
     setPageSessionAttribute(key="edit" value="#{true}" );
     />
+    </event>
 #include "virtualServerCommon.inc"    
-</sun:page>
+</define>
+</composition>
 
