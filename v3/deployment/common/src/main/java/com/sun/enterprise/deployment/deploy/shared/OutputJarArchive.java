@@ -124,7 +124,7 @@ public class OutputJarArchive extends JarArchive implements WritableArchive {
      * @return the manifest information for this abstract archive
      */
     public Manifest getManifest() throws IOException {
-        if (manifest != null) {
+        if (manifest == null) {
             manifest = new Manifest();
         }
         return manifest;

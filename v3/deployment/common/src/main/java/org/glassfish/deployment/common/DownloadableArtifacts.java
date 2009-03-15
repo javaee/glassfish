@@ -102,6 +102,11 @@ public class DownloadableArtifacts {
             this.part = part;
         }
 
+        public FullAndPartURIs(URI full, String part) {
+            this.full = full;
+            this.part = URI.create(part);
+        }
+
         public URI getFull() {
             return full;
         }
