@@ -36,6 +36,8 @@
 
 package com.sun.ejb.containers;
 
+import java.rmi.RemoteException;
+
 public class InternalEJBContainerException extends Exception {
 
     private static final long serialVersionUID = 0x7890;

@@ -190,8 +190,8 @@ public final class POAProtocolMgr extends org.omg.CORBA.LocalObject
      */
     public Throwable mapException(Throwable exception) {
 
-        boolean mapped = true;
-        Throwable mappedException = null;
+        boolean initCause = true;
+        Throwable mappedException = exception;
 
         if ( exception instanceof java.rmi.NoSuchObjectException
             || exception instanceof NoSuchObjectLocalException )
@@ -220,12 +220,14 @@ public final class POAProtocolMgr extends org.omg.CORBA.LocalObject
             mappedException = new INVALID_TRANSACTION(MAPEXCEPTION_CODE,
                 CompletionStatus.COMPLETED_MAYBE);
         } else {
-            mapped = false;
+            initCause = false;
+        }
+
+        if( initCause ) {
+            mappedException.initCause(exception);
         }
         
-        return (mapped) 
-            ? mappedException.initCause(exception)
-            : exception;
+        return mappedException;
     }
 
 

@@ -38,8 +38,24 @@ package com.sun.ejb.containers;
 
 import javax.ejb.EJBHome;
 import java.rmi.RemoteException;
-import java.rmi.Remote;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.TimeUnit;
 
 public interface GenericEJBHome extends EJBHome {
+
+    public RemoteAsyncResult get(long asyncTaskID) throws RemoteException;
+
+    // Need to pass TimeUnit as string due to RMI-IIOP enum marshalling problem
+    public RemoteAsyncResult getWithTimeout(long asyncTaskID, long timeoutValue, String timeoutUnit)
+            throws RemoteException, TimeoutException;
+
+    /**
+     * Remote Future.cancel() behavior.  If the task is already cancelled, the AsyncResult
+     * is returned.  Otherwise, returns null.
+     * @param asyncTaskID
+     * @return
+     * @throws RemoteException
+     */
+    public RemoteAsyncResult cancel(long asyncTaskID) throws RemoteException;
 
 }

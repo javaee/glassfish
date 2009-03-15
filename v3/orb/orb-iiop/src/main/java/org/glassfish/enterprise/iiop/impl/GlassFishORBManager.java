@@ -478,7 +478,7 @@ public final class GlassFishORBManager {
                     DEFAULT_SERVER_ID);
             orbInitProperties.put(OMG_ORB_CLASS_PROPERTY, ORB_CLASS);
 
-            /*   TODO -- what is this?
+            /*   TODO -- enable when we add tx / security interceptors
             orbInitProperties.put(
                     PI_ORB_INITIALIZER_CLASS_PREFIX + J2EE_INITIALIZER, "");
                     */

@@ -91,7 +91,7 @@ public class EjbSessionNode  extends InterfaceBasedEjbNode {
 
        registerElementHandler(new XMLElement(EjbTagNames.AFTER_COMPLETION_METHOD), MethodNode.class, "addAfterCompletionDescriptor");
 
-       registerElementHandler(new XMLElement(EjbTagNames.ASYNC_METHOD), MethodNode.class, "addAsynchronousMethodFromXml");
+       registerElementHandler(new XMLElement(EjbTagNames.ASYNC_METHOD), MethodNode.class, "addAsynchronousMethod");
 
        registerElementHandler(new XMLElement(EjbTagNames.CONCURRENT_METHOD), ConcurrentMethodNode.class,
                "addConcurrentMethodFromXml");
@@ -257,12 +257,11 @@ public class EjbSessionNode  extends InterfaceBasedEjbNode {
             }
         }
 
-        for(Object o : ejbDesc.getClientBusinessMethodDescriptors()) {
-            MethodDescriptor nextDesc = (MethodDescriptor) o;
-            if( nextDesc.isAsynchronous() ) {
-                methodNode.writeDescriptor(ejbNode, EjbTagNames.ASYNC_METHOD, nextDesc,
-                        ejbDesc.getName());
-            }
+        for(MethodDescriptor nextDesc : ejbDesc.getAsynchronousMethods()) {
+
+            methodNode.writeDescriptor(ejbNode, EjbTagNames.ASYNC_METHOD, nextDesc,
+                                       ejbDesc.getName());
+
         }
 
         appendTextChild(ejbNode, EjbTagNames.TRANSACTION_TYPE, ejbDesc.getTransactionType());

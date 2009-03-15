@@ -44,12 +44,15 @@ import java.util.concurrent.TimeUnit;
 
 import java.rmi.RemoteException;
 
+import java.io.Serializable;
+
+import javax.ejb.EJBException;
 
 /**
  * @author Ken Saks
  */
 public class EjbRemoteFutureTask<V>
-    implements Future<V> {
+    implements Future<V>, Serializable {
 
 
     private Long asyncId;
@@ -72,7 +75,6 @@ public class EjbRemoteFutureTask<V>
 
     }
 
-    @Override
     public boolean cancel(boolean mayInterruptIfRunning) {
 
         if( !cancelCalled ) {
@@ -83,7 +85,23 @@ public class EjbRemoteFutureTask<V>
             // has visibility to the fact that the caller called Future.cancel().
             if( mayInterruptIfRunning ) {
 
-                // TODO Call cancel(asyncId);
+                try {
+                    //GenericEJBHome server2 = (GenericEJBHome)
+                       //     javax.rmi.PortableRemoteObject.narrow(server, GenericEJBHome.class);
+                    RemoteAsyncResult result = server.cancel(asyncId);
+                    if( result != null ) {
+                        if( result.resultException != null ) {
+                            setResultException(result.resultException);
+                        } else {
+                            setResultValue((V) result.resultValue);
+                        }
+                    }
+
+                } catch(RemoteException re) {
+
+                    throw new EJBException("Exception during cancel operation", re);
+
+                }
 
             }
         }
@@ -93,7 +111,7 @@ public class EjbRemoteFutureTask<V>
         return false;
     }
 
-    @Override
+
     public V get() throws ExecutionException {
 
         // If get() has already been called, produce the same behavior
@@ -101,21 +119,36 @@ public class EjbRemoteFutureTask<V>
         // TimeoutException
 
         if( !complete ) {
-            /*
+
             try {
-               // TODO Call get(asyncId);
+                //GenericEJBHome server2 = (GenericEJBHome)
+                            //javax.rmi.PortableRemoteObject.narrow(server, GenericEJBHome.class);
+                RemoteAsyncResult result = server.get(asyncId);
+                if( result != null ) {
+                    if( result.resultException != null ) {
+                        setResultException(result.resultException);
+                    } else {
+                        setResultValue((V) result.resultValue);
+                    }
+                }
 
             } catch(RemoteException re) {
                 setResultException(re);
-            } */
+            }
         }
 
-        // TODO exception handling
+        if( resultException != null ) {
+            if( resultException instanceof ExecutionException ) {
+                throw (ExecutionException) resultException;
+            } else {
+            // TODO need to make sure the right exception is propagated
+                throw new ExecutionException(resultException);
+            }
+        }
 
         return resultValue;
     }
 
-    @Override
     public V get(long timeout, TimeUnit unit)
             throws InterruptedException, ExecutionException, TimeoutException {
 
@@ -124,31 +157,45 @@ public class EjbRemoteFutureTask<V>
         // TimeoutException        
 
         if( !complete ) {
-            /*
+
             try {
-                // TODO call getWithTimeout(asyncId, timeout, unit)
+
+                RemoteAsyncResult result = server.getWithTimeout(asyncId, timeout, unit.toString());
+                if( result != null ) {
+                    if( result.resultException != null ) {
+                        setResultException(result.resultException);
+                    } else {
+                        setResultValue((V) result.resultValue);
+                    }
+                }
 
             } catch(TimeoutException te) {
-
+                throw te;
             } catch(RemoteException re) {
                 setResultException(re);
-            } */
+            }
         }
 
-        // TODO exception handling
+        if( resultException != null ) {
+            if( resultException instanceof ExecutionException ) {
+                throw (ExecutionException) resultException;
+            } else {
+            // TODO need to make sure the right exception is propagated
+                throw new ExecutionException(resultException);
+            }
+        } 
 
         return resultValue;
-        
     }
 
-    @Override
+
     public boolean isCancelled() {
         // For now, we don't ever actually forcibly cancel a task
         // that hasn't executed.
         return false;
     }
 
-    @Override
+
     public boolean isDone() {
         // Per the Future javadoc.  It's a little odd that isDone()
         // is required to return true even if cancel() was called but
@@ -159,18 +206,11 @@ public class EjbRemoteFutureTask<V>
 
 
     private void setResultValue(V v) {
-        // EjbAsyncTask calls this directly.  That way
-        // we can return true from isDone() after completion of
-        // the task, even if get() was not called.
         resultValue = v;
         complete = true;
-
     }
 
     private void setResultException(Throwable t) {
-        // EjbAsyncTask calls this directly.  That way
-        // we can return true from isDone() after completion of
-        // the task, even if get() was not called.
         resultException = t;
         complete = true;
     }

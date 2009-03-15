@@ -159,7 +159,7 @@ public class EjbInvocation
     
     /**
      * True if this invocation was made through a local business interface or
-     * a remote business interface.
+     * bean local view or a remote business interface.
      */
     public boolean isBusinessInterface;
 
@@ -605,6 +605,37 @@ public class EjbInvocation
             interceptorIndex--;
         }
     }
+
+    /**
+     * Print most useful fields.  Don't do all of them (yet) since there
+     * are a large number. 
+     * @return
+     */
+    public String toString() {
+
+        StringBuffer sbuf = new StringBuffer();
+        sbuf.append("EjbInvocation  ");
+        sbuf.append("componentId="+getComponentId());
+        sbuf.append(",isLocal="+isLocal);
+        sbuf.append(",isRemote="+isRemote);
+        sbuf.append(",isBusinessInterface="+isBusinessInterface);
+        sbuf.append(",isWebService="+isWebService);
+        sbuf.append(",isMessageDriven="+isMessageDriven);
+        sbuf.append(",isHome="+isHome);
+        sbuf.append(",clientInterface="+clientInterface);
+        sbuf.append(",method="+method);
+        sbuf.append(",ejb="+ejb);
+        sbuf.append(",exception="+exception);
+        sbuf.append(",exceptionFromBeanMethod="+exceptionFromBeanMethod);
+        sbuf.append(",invId="+invId);
+        sbuf.append(",wasCancelCalled="+wasCancelCalled);
+        sbuf.append(",yetToSubmitStatus="+yetToSubmitStatus);
+
+        return sbuf.toString();
+    }
+
+        
+        
 
     /*********************************************************/
 

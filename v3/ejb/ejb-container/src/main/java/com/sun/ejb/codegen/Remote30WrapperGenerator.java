@@ -255,18 +255,17 @@ public class Remote30WrapperGenerator extends Generator
 
             _catch(_t("com.sun.ejb.containers.InternalEJBContainerException"),
                    "iejbcEx");
-            // There's only one kind of InternalEJBContainerException, so
-            // we know it's a ParallelAccessException
-            _define(_t("com.sun.ejb.containers.ParallelAccessException"),
-                    "paEx", 
-                    _cast(_t("com.sun.ejb.containers.ParallelAccessException"),
-                          _v("iejbcEx")));
-                    
-                _define(_t("javax.ejb.ConcurrentAccessException"), "r", _new(
-                        _t("javax.ejb.ConcurrentAccessException"), _s(_void())));
-                _expr(_call(_v("r"), "initCause", _s(_t("java.lang.Throwable"),
-                        _t("java.lang.Throwable")), _v("paEx")));
-                _throw(_v("r"));
+
+                // This wraps an EJBException. Pull out the cause and throw
+                // it as is.  
+                //_define( _t("java.lang.Throwable"), "r", _null());
+
+                         
+                // _throw(_cast(_t("javax.ejb.EJBException"), _v("r")));
+                _throw(_cast(_t("javax.ejb.EJBException"),
+                            _call( _v("iejbcEx"), "getCause",
+                              _s(_t("java.lang.Throwable")))));
+
 
             _catch( _t("java.rmi.RemoteException"), "re");
             

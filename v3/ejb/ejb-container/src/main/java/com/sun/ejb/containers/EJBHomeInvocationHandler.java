@@ -61,6 +61,8 @@ import com.sun.enterprise.deployment.EjbSessionDescriptor;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.Utility;
 
+import java.util.concurrent.TimeUnit;
+
 import com.sun.logging.LogDomains;
 
 /** 
@@ -90,6 +92,9 @@ final class EJBHomeInvocationHandler
     // overhead of building the method info each time a Home proxy
     // is created.  
     private MethodMap invocationInfoMap_;
+
+    private EjbContainerUtil ejbContainerUtil = EjbContainerUtilImpl.getInstance();
+
 
     EJBHomeInvocationHandler(EjbDescriptor ejbDescriptor,
                              Class homeIntfClass,
@@ -182,11 +187,39 @@ final class EJBHomeInvocationHandler
                 return invokeEJBHomeMethod(method.getName(), args);
                 
             } else if( GenericEJBHome.class.isAssignableFrom(methodClass) ) {
-                
-                // This is an internal creation request through the EJB 3.0
-                // client view, so just create an business object and return it
-                EJBObjectImpl busObjectImpl = createRemoteBusinessObjectImpl();
-                return busObjectImpl.getStub((String) args[0]);
+
+                if( method.getName().equals("create")) {
+                    // This is an internal creation request through the EJB 3.0
+                    // client view, so just create an business object and return it
+                    EJBObjectImpl busObjectImpl = createRemoteBusinessObjectImpl();
+                    return busObjectImpl.getStub((String) args[0]);
+                } else {
+
+                     EjbAsyncInvocationManager asyncManager =
+                        ((EjbContainerUtilImpl) ejbContainerUtil).
+                        getEjbAsyncInvocationManager();
+
+                    Long asyncTaskID = (Long) args[0];
+                    RemoteAsyncResult asyncResult = null;
+
+                    if( method.getName().equals("cancel")) {
+
+                        asyncResult = asyncManager.remoteCancel(asyncTaskID);
+
+                    } else if( method.getName().equals("get") ) {
+
+                        asyncResult = asyncManager.remoteGet(asyncTaskID);
+                    
+                    } else if( method.getName().equals("getWithTimeout")) {
+
+                        Long timeout = (Long) args[1];
+                        TimeUnit unit = TimeUnit.valueOf((String)args[2]);
+                        asyncResult = asyncManager.remoteGetWithTimeout(asyncTaskID, timeout, unit);
+                    }
+
+                    return asyncResult;
+
+                }
                 
             }                
             

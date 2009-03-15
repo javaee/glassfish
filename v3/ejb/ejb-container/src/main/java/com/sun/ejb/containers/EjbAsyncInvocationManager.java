@@ -38,6 +38,7 @@ package com.sun.ejb.containers;
 
 import com.sun.ejb.EjbInvocation;
 
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -48,6 +49,16 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.invocation.ComponentInvocation;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import com.sun.ejb.Container;
+import com.sun.logging.LogDomains;
+
+import java.lang.reflect.Method;
+
+import javax.ejb.EJBException;
+
 /**
  * @author Mahesh Kannan
  */
@@ -55,15 +66,13 @@ import org.glassfish.api.invocation.ComponentInvocation;
 public class EjbAsyncInvocationManager
     extends ThreadPoolExecutor {
 
+    private Logger _logger = LogDomains.getLogger(EjbAsyncInvocationManager.class, LogDomains.EJB_LOGGER);
+
     private AtomicLong invCounter = new AtomicLong();
 
-    // Only used to store Remote Future<> tasks.  Otherwise,
-    // there's no need to store it.
-    private ConcurrentHashMap<Long, EjbFutureTask> taskMap =
+    // Map of Remote Future<> tasks.
+    private ConcurrentHashMap<Long, EjbFutureTask> remoteTaskMap =
             new ConcurrentHashMap<Long, EjbFutureTask>();
-
-    @Inject
-    InvocationManager invMgr;
 
     public EjbAsyncInvocationManager() {
         //TODO get the paramters from ejb-container config
@@ -71,7 +80,37 @@ public class EjbAsyncInvocationManager
         super.setThreadFactory(new EjbAsyncThreadFactory());
     }
 
-    public Future createFuture(EjbInvocation inv) {
+
+    public Future createLocalFuture(EjbInvocation inv) {
+        return createFuture(inv);
+
+    }
+
+    public Future createRemoteFuture(EjbInvocation inv, Container container, GenericEJBHome ejbHome) {
+
+        // Create future but only use the local task to register in the
+        // remote task map. We'll be replacing the result value with a
+        // remote future task.
+        EjbFutureTask localFutureTask = (EjbFutureTask) createFuture(inv);
+
+        EjbRemoteFutureTask returnFuture = new EjbRemoteFutureTask(inv.getInvId(), ejbHome);
+
+        // If this is a future task for a remote invocation
+        // and the method has Future<T> return type, add the
+        // corresponding local task to the async map.
+        // TODO Need to work on cleanup logic.  Maybe we should store
+        // this in a per-container data structure so cleanup is automatic
+        // on container shutdown / undeployment.  Otherwise, we need a way to easily
+        // identify all tasks for a given container for cleanup.
+        Method m = inv.getMethod();
+        if( !(m.getReturnType().equals(Void.TYPE))) {
+            remoteTaskMap.put(inv.getInvId(), localFutureTask);
+        }
+
+        return returnFuture;
+    }
+
+    private Future createFuture(EjbInvocation inv) {
         // Always create a Local future task that is associated with the
         // invocation.
         EjbFutureTask futureTask = new EjbFutureTask(new EjbAsyncTask(), this);
@@ -81,14 +120,15 @@ public class EjbAsyncInvocationManager
         inv.setInvId(invId);
         inv.setEjbFutureTask(futureTask);
 
-        // The returned value from this method is the object that gets passed
-        // back to the caller (unless the return type is void)
-        return (inv.isLocal) ?
-                futureTask : new EjbRemoteFutureTask(invId, null);
+        if( _logger.isLoggable(Level.FINE) ) {          
+            _logger.log(Level.FINE, "Creating new async future task " + inv);
+        }
+
+        return futureTask;
     }
 
-    public Future submit(EjbInvocation inv) {
 
+    public Future submit(EjbInvocation inv) {
 
         //We need to clone this invocation as submitting
         //so that the inv is *NOT* shared between the
@@ -101,11 +141,42 @@ public class EjbAsyncInvocationManager
         EjbFutureTask futureTask = asyncInv.getEjbFutureTask();
         futureTask.getEjbAsyncTask().initialize(asyncInv);
 
-        // TODO If this is a future task for a remote invocation
-        // and the method has Future<T> return type, add the
-        // task to the async map.  
 
         return super.submit(futureTask.getEjbAsyncTask());
+    }
+
+    public void cleanupContainerTasks(Container container) {
+
+        Set<Map.Entry<Long, EjbFutureTask>> entrySet = remoteTaskMap.entrySet();
+        Iterator<Map.Entry<Long, EjbFutureTask>> iterator = entrySet.iterator();
+
+        List<Long> removedTasks = new ArrayList<Long>();
+
+        while(iterator.hasNext()) {
+
+            Map.Entry<Long, EjbFutureTask> next = iterator.next();
+
+            EjbAsyncTask task = next.getValue().getEjbAsyncTask();
+            if( task.getEjbInvocation().container == container ) {
+
+                removedTasks.add(task.getInvId());
+
+                if( _logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE, "Cleaning up async task " + task.getFutureTask());
+                }
+
+                // TODO Add some additional checking here for in-progress
+                // tasks.
+                iterator.remove();
+            }
+        }
+
+        _logger.log(Level.FINE, "Cleaning up " + removedTasks.size() + "async tasks for " +
+                   "EJB " + container.getEjbDescriptor().getName() + " .  Total of " +
+                   remoteTaskMap.size() + " remaining");
+
+        return;
+
     }
 
     /**
@@ -127,6 +198,146 @@ public class EjbAsyncInvocationManager
 
         return result;
     }
+
+
+    RemoteAsyncResult remoteCancel(Long asyncTaskID) {
+
+
+
+        EjbFutureTask task = getLocalTaskForID(asyncTaskID);
+
+        if( _logger.isLoggable(Level.FINE) ) {
+            EjbAsyncTask asyncTask = task.getEjbAsyncTask();
+            _logger.log(Level.FINE, "Enter remoteCancel for async task " + asyncTaskID +
+                    " : " + asyncTask.getEjbInvocation());
+        }
+
+        RemoteAsyncResult result = null;
+
+        if( task.isDone() ) {
+
+            // Since the task is done just return the result on this
+            // internal remote request.
+
+            result.resultException = task.getResultException();
+            result.resultValue = task.getResultValue();
+            result.asyncID = asyncTaskID;
+
+            // The client object won't make another request once it
+            // has the result so we can remove it from the container map.
+            remoteTaskMap.remove(asyncTaskID);
+
+        } else {
+
+            // Set flag on invocation so bean method has visibility to
+            // the fact that client called cancel()
+            EjbInvocation inv = task.getEjbAsyncTask().getEjbInvocation();
+            inv.setWasCancelCalled(true);
+
+        }
+
+        if( _logger.isLoggable(Level.FINE) ) {
+            _logger.log(Level.FINE, "Exit remoteCancel for async task " + asyncTaskID +
+                    " : " + task);
+        }
+
+        return result;
+    }
+
+    RemoteAsyncResult remoteGet(Long asyncTaskID) {
+
+
+        EjbFutureTask task = getLocalTaskForID(asyncTaskID);
+
+        if( _logger.isLoggable(Level.FINE) ) {
+            EjbAsyncTask asyncTask = task.getEjbAsyncTask();
+            _logger.log(Level.FINE, "Enter remoteGet for async task " + asyncTaskID +
+                    " : " + task.getEjbAsyncTask().getEjbInvocation());
+        }
+
+        RemoteAsyncResult result = new RemoteAsyncResult();
+        result.asyncID = asyncTaskID;
+
+        try {
+
+            result.resultValue = task.get();
+
+        } catch(Throwable t) {
+
+            result.resultException = t;
+        }
+
+        remoteTaskMap.remove(asyncTaskID);
+
+        if( _logger.isLoggable(Level.FINE) ) {
+            _logger.log(Level.FINE, "Exit remoteGet for async task " + asyncTaskID +
+                    " : " + task);
+        }
+
+        return result;
+    }
+
+    RemoteAsyncResult remoteGetWithTimeout(Long asyncTaskID, Long timeout, TimeUnit unit)
+            throws TimeoutException {
+
+        EjbFutureTask task = getLocalTaskForID(asyncTaskID);
+
+        if( _logger.isLoggable(Level.FINE) ) {
+            EjbAsyncTask asyncTask = task.getEjbAsyncTask();
+            _logger.log(Level.FINE, "Enter remoteGetWithTimeout for async task " + asyncTaskID +
+                    " timeout=" + timeout + " , unit=" + unit + " : " +
+                    task.getEjbAsyncTask().getEjbInvocation());
+        }
+
+        RemoteAsyncResult result = new RemoteAsyncResult();
+        result.asyncID = asyncTaskID;
+
+        try {
+
+            result.resultValue = task.get(timeout, unit);
+
+        } catch(TimeoutException to) {
+
+            if( _logger.isLoggable(Level.FINE) ) {
+                _logger.log(Level.FINE, "TimeoutException for async task " + asyncTaskID +
+                    " : " + task);
+            }   
+
+            throw to;
+
+        } catch(Throwable t) {
+
+            result.resultException = t;
+        }
+
+        // As long as we're not throwing a TimeoutException, just remove the task
+        // from the map.
+        remoteTaskMap.remove(asyncTaskID);
+
+        if( _logger.isLoggable(Level.FINE) ) {
+            _logger.log(Level.FINE, "Exit remoteGetWithTimeout for async task " + asyncTaskID +
+                    " : " + task);
+        }
+        
+        return result;
+    }
+
+
+    private EjbFutureTask getLocalTaskForID(Long asyncTaskID) {
+
+
+        EjbFutureTask task = remoteTaskMap.get(asyncTaskID);
+
+        if( task == null ) {
+            _logger.log(Level.FINE, "Could not find async task for ID " + asyncTaskID);
+
+            throw new EJBException("Could not find Local Async task corresponding to ID " +
+                asyncTaskID);                             
+        }
+        
+        return task;
+    }
+
 
     private static class EjbAsyncThreadFactory
         implements ThreadFactory {

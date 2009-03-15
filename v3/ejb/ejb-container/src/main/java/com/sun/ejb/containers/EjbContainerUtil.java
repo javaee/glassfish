@@ -130,6 +130,6 @@ public interface EjbContainerUtil extends EjbService {
     public String getHAPersistenceType();
 
     public EjbDescriptor ejbIdToDescriptor(long ejbId);
-    
+
     public boolean isEJBLite();
 }

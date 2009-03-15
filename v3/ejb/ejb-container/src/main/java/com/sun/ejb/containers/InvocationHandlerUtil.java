@@ -109,7 +109,7 @@ public final class InvocationHandlerUtil {
             (isDeclaredException(t, declaredExceptions)) ) {
             toThrow = t;
         } else {
-            toThrow = new EJBException();
+            toThrow = new EJBException(t.getMessage());
             toThrow.initCause(t);
         } 
         
@@ -128,7 +128,7 @@ public final class InvocationHandlerUtil {
             (isDeclaredException(t, declaredExceptions)) ) {
             toThrow = t;
         } else {
-            toThrow = new RemoteException("", t);
+            toThrow = new RemoteException(t.getMessage(), t);
         }
 
         throw toThrow;        

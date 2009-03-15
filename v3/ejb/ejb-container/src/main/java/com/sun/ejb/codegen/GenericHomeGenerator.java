@@ -104,32 +104,6 @@ public class GenericHomeGenerator extends Generator
 
         _end();
 
-
-        // Add methods for Remote Future capability.  This is part of a simple initial
-        // "pull" implementation.  Eventually, we'll need to change this so that
-        // the result value is delivered to the client as soon as the async task
-        // completes.
-
-        _method(PUBLIC | ABSTRACT, _t("com.sun.ejb.containers.RemoteAsyncResult"),
-                "get", _t("java.rmi.RemoteException"));
-        _arg(_long(), "asyncTaskId");
-        _end();
-
-        _method(PUBLIC | ABSTRACT, _t("com.sun.ejb.containers.RemoteAsyncResult"),
-                "getWithTimeout", _t("java.rmi.RemoteException"),
-                _t("java.util.concurrent.TimeoutException"));
-        _arg(_long(), "asyncTaskId");
-        _arg(_long(), "timeoutValue");
-        _arg(_t("java.util.concurrent.TimeUnit"), "timeoutUnit");
-        _end();
-
-        _method(PUBLIC | ABSTRACT, _t("com.sun.ejb.containers.RemoteAsyncResult"),
-                "cancel", _t("java.rmi.RemoteException"));
-        _arg(_long(), "asyncTaskId");
-        _end();
-
-        _end();
-
         _classGenerator() ;
 
         return;

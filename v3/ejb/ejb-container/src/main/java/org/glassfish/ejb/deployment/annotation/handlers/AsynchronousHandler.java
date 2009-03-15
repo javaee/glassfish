@@ -51,6 +51,7 @@ import javax.ejb.*;
 import com.sun.enterprise.deployment.util.TypeUtil;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.MethodDescriptor;
+import com.sun.enterprise.deployment.EjbSessionDescriptor;
 
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotatedElementHandler;
@@ -151,10 +152,18 @@ public class AsynchronousHandler extends AbstractAttributeHandler
                 // Check return type on the business method
                 checkValidReturnType(m);
 
-                if (logger.isLoggable(Level.FINE)) {
-                    logger.fine("Setting asynchronous flag on " + nextDesc);
+                if( !ejbDesc.getType().equals(EjbSessionDescriptor.TYPE)) {
+                    throw new AnnotationProcessorException("Invalid asynchronous method " + m +
+                        "@Asynchronous is only permitted for session beans");
                 }
-                nextDesc.setAsynchronous(true);
+
+                EjbSessionDescriptor sessionDesc = (EjbSessionDescriptor) ejbDesc;
+
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.fine("Adding asynchronous method " + nextDesc);
+                }
+                sessionDesc.addAsynchronousMethod(nextDesc);
+                
                 break;
             }
         }

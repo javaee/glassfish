@@ -97,9 +97,7 @@ public class EjbSessionDescriptor extends EjbDescriptor {
     private List<MethodDescriptor> writeLockMethods = new ArrayList<MethodDescriptor>();
     private List<AccessTimeoutHolder> accessTimeoutMethods =
             new ArrayList<AccessTimeoutHolder>();
-
-    private List<MethodDescriptor> tempAsyncMethodsFromXml =
-        new ArrayList<MethodDescriptor>();
+    private List<MethodDescriptor> asyncMethods = new ArrayList<MethodDescriptor>();
 
     // Controls eager vs. lazy Singleton initialization
     private Boolean initOnStartup = null;
@@ -209,15 +207,46 @@ public class EjbSessionDescriptor extends EjbDescriptor {
         return isSingleton;
     }
 
-    public void addAsynchronousMethodFromXml(MethodDescriptor m) {
+    public boolean hasAsynchronousMethods() {
+        return (asyncMethods.size() > 0);    
+    }
 
-        // Since asynchronous is represented as a flag on the actual
-        // client method descriptors, we need to delay the processing because
-        // those lists of client descriptors won't necessarily be available
-        // at the time this is called from the .xml.
+    public void addAsynchronousMethod(MethodDescriptor m) {
+        String methodIntf = m.getEjbClassSymbol();
+        if( methodIntf == null ) {
+            if( isLocalBean() || isLocalBusinessInterfacesSupported() ) {
+                MethodDescriptor localMethodDesc = new MethodDescriptor(m.getName(), "",
+                        m.getJavaParameterClassNames(), MethodDescriptor.EJB_LOCAL);
+                asyncMethods.add(localMethodDesc);
+            }
+            if( isRemoteBusinessInterfacesSupported() ) {
+                MethodDescriptor remoteMethodDesc = new MethodDescriptor(m.getName(), "",
+                        m.getJavaParameterClassNames(), MethodDescriptor.EJB_REMOTE);
+                asyncMethods.add(remoteMethodDesc);
+            }
+        } else {         
+            asyncMethods.add(m);
+        }
 
-        // Keep in a temporary list for later processing
-        tempAsyncMethodsFromXml.add(m);
+    }
+
+    public List<MethodDescriptor> getAsynchronousMethods() {
+        return new ArrayList<MethodDescriptor>(asyncMethods);
+    }
+
+    public boolean isAsynchronousMethod(Method m, String methodIntf) {
+
+        boolean async = false;
+        for(MethodDescriptor next : asyncMethods) {
+            Method nextMethod = next.getMethod(this);
+            if( (nextMethod != null)  &&
+                TypeUtil.sameMethodSignature(m, nextMethod) &&
+                methodIntf.equals(next.getEjbClassSymbol()) ) {
+                async = true;
+                break;
+            }
+        }
+        return async;
     }
 
     public void addStatefulTimeoutDescriptor(TimeoutValueDescriptor timeout) {
@@ -589,47 +618,6 @@ public class EjbSessionDescriptor extends EjbDescriptor {
             all.add(holder);
         }
         return all;
-    }
-
-
-    public void processAsyncMethodsFromXml() {
-
-         // Now we can do any asynchronous method processing from .xml
-         for(MethodDescriptor next : tempAsyncMethodsFromXml) {
-            setMatchingAsyncMethods(next);
-         }
-
-         // Clear out temporary list
-         tempAsyncMethodsFromXml.clear();
-
-    }
-
-    private void setMatchingAsyncMethods(MethodDescriptor methodDescFromXml) {
-
-        String methodIntfTag = methodDescFromXml.getEjbClassSymbol();
-
-        Method methodFromXml = methodDescFromXml.getMethod(this);
-
-        if( methodFromXml == null ) {
-            throw new RuntimeException("Invalid Async method signature " + methodDescFromXml +
-                " . Method could not be resolved to a bean class method for bean " + this.getName());
-        }
-
-        for(Object o : getClientBusinessMethodDescriptors()) {
-            MethodDescriptor nextDesc = (MethodDescriptor) o;
-            Method next = nextDesc.getMethod(this);
-
-            if( TypeUtil.sameMethodSignature(methodFromXml, next)) {
-
-                if( methodIntfTag == null ) {
-                    nextDesc.setAsynchronous(true);
-                } else if ( methodIntfTag.equals(nextDesc.getEjbClassSymbol()) ) {
-                    nextDesc.setAsynchronous(true);
-                }
-            }
-
-        }
-
     }
 
 	/**

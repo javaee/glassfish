@@ -208,5 +208,32 @@ public class EjbFutureTask<V>
         complete = true;
     }
 
+    // Internal method to retrieve any result value
+    V getResultValue() {
+        return resultValue;
+    }
 
+    Throwable getResultException() {
+        return resultException;
+    }
+
+    public String toString() {
+
+        StringBuffer sbuf = new StringBuffer();
+
+        sbuf.append("EjbFutureTask  ");
+        sbuf.append("taskId="+ejbAsyncTask.getInvId());
+        sbuf.append(",cancelCalled="+cancelCalled);
+        sbuf.append(",complete="+complete);
+        if( complete ) {
+            if( resultException == null ) {
+                sbuf.append(",resultValue="+resultValue);
+            } else {
+                sbuf.append(",resultException="+resultException);
+            }
+
+        }
+
+        return sbuf.toString();
+    }
 }

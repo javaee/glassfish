@@ -7,7 +7,7 @@ import com.sun.corba.ee.spi.folb.SocketInfo;
 import com.sun.corba.ee.spi.folb.GroupInfoServiceObserver;
 import com.sun.corba.ee.spi.orb.ORB;
 import com.sun.corba.ee.spi.orbutil.ORBConstants;
-import com.sun.corba.ee.spi.orbutil.misc.ORBClassLoader;
+//orbimport com.sun.corba.ee.spi.orbutil.misc.ORBClassLoader;
 import com.sun.enterprise.config.serverbeans.Cluster;
 
 import java.util.logging.Logger;
@@ -143,7 +143,10 @@ public class ASORBUtilities {
     }
 
     public static Class loadClass(String classname) {
+
         Class result = null;
+
+        /** TODO find replacement for ORBClassLoader api
         try {
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.log(Level.FINE, ".loadClass->: " + classname);
@@ -159,6 +162,8 @@ public class ASORBUtilities {
                         ".loadClass<-: " + classname + " " + result);
             }
         }
+
+         **/
         return result;
     }
 

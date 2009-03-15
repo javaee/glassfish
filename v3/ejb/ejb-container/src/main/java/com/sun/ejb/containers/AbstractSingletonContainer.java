@@ -107,6 +107,9 @@ public abstract class AbstractSingletonContainer
 
     protected AtomicBoolean singletonInitialized = new AtomicBoolean(false);
 
+    // used to protect against synchronous loopback calls during Singleton init
+    private boolean initializationInProgress = false;
+
     // Set to true if Singleton failed to complete its initialization successfully.
     // If true, Singleton is not accessible.
     protected boolean singletonInitializationFailed = false;
@@ -449,6 +452,16 @@ public abstract class AbstractSingletonContainer
             synchronized (this) {
                 if (! singletonInitialized.get()) {
 
+                    // All other locks must be grabbed first.  This check prevents
+                    // synchronous loopback attempts during Singleton PostConstruct
+                    if( initializationInProgress ) {
+                        throw new EJBException("Illegal synchronous loopback call during Singleton " +
+                            ejbDescriptor.getName() + " initialization would have resulted in deadlock");
+
+                    }
+
+                    initializationInProgress = true;
+
                     //The following may throw exception
                     singletonCtx = (ComponentContext) singletonCtxFactory.create(null);
                     singletonInitialized.set(true); //this allows _getContext() to proceed
@@ -538,6 +551,7 @@ public abstract class AbstractSingletonContainer
             creEx.initCause(th);
             throw creEx;
         } finally {
+            initializationInProgress = false;
             if (ejbInv != null) {
                 invocationManager.postInvoke(ejbInv);
                 try {

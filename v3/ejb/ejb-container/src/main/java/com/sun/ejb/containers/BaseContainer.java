@@ -408,12 +408,12 @@ public abstract class BaseContainer
 
     private String optIntfClassName;
 
-    // True if this container supports asynchronous invocations.
-    // Asynchronous session bean invocations are required to be allowed
-    // in a full EE 6 distribution.  Eventually we might want to allow async support
-    // to be opted-into in the Web Profile, but by default applications with async
-    // methods should result in a deployment error.
-    private boolean allowAsynchronousInvocations;
+    // Used to track whether we've done the base container cleanup (JNDI entries, etc.)
+    // Only.  Not applicable to concrete containers.
+    private boolean baseContainerCleanupDone = false;
+
+    // True if there is at least one asynchronous method exposed from the bean.
+    private boolean hasAsynchronousInvocations = false;
 
     /**
      * This constructor is called from ContainerFactoryImpl when an
@@ -446,6 +446,8 @@ public abstract class BaseContainer
 
             if( ejbDescriptor.getType().equals(EjbMessageBeanDescriptor.TYPE) )
             {
+                assertFullProfile("is a Message-Driven Bean");
+
                 isMessageDriven = true;
                 EjbMessageBeanDescriptor mdb =
                 (EjbMessageBeanDescriptor) ejbDescriptor;
@@ -460,11 +462,12 @@ public abstract class BaseContainer
             else {
                 
                 if(ejbDescriptor.getType().equals(EjbEntityDescriptor.TYPE)) {
+                    assertFullProfile("is an Entity Bean");
                     isEntity = true;
                 } else {
                     isSession = true;
-                    EjbSessionDescriptor sd =
-                        (EjbSessionDescriptor)ejbDescriptor;
+                    EjbSessionDescriptor sd = (EjbSessionDescriptor) ejbDescriptor;
+
                     if (sd.isSingleton()) {
                         isSingleton = true;
                     } else {
@@ -493,10 +496,19 @@ public abstract class BaseContainer
                         isBeanManagedTran = false;
                     }
 
+                    hasAsynchronousInvocations = sd.hasAsynchronousMethods();
+
+                    if( hasAsynchronousInvocations ) {
+                        assertFullProfile("defines asynchronous session bean methods");
+                    }
+
+
                 }
 
                 if ( ejbDescriptor.isRemoteInterfacesSupported() ||
                      ejbDescriptor.isRemoteBusinessInterfacesSupported() ) {
+
+                    assertFullProfile("exposes a Remote client view");
 
                     initializeProtocolManager();
 
@@ -620,6 +632,9 @@ public abstract class BaseContainer
                     // JSR 109 doesn't require support for a single ejb
                     // implementing multiple port ex.
                     if( endpoints.size() == 1 ) {
+
+                        assertFullProfile("is a Web Service Endpoint");
+
                         WebServiceEndpoint endpoint = (WebServiceEndpoint)
                             endpoints.iterator().next();
                         webServiceEndpointIntf = loader.loadClass
@@ -645,6 +660,9 @@ public abstract class BaseContainer
             }
             
             if ( ejbDescriptor.isTimedObject() ) {
+
+                assertFullProfile("uses the EJB Timer Service");
+
                 MethodDescriptor ejbTimeoutMethodDesc = 
                     ejbDescriptor.getEjbTimeoutMethod();
                 // Can be a @Timeout or @Schedule or TimedObject
@@ -961,7 +979,18 @@ public abstract class BaseContainer
             }
         }
     }
-    
+
+
+    private void assertFullProfile(String description) {
+
+        if( ejbContainerUtilImpl.isEJBLite() ) {
+            throw new RuntimeException("Invalid application.  EJB " +
+                    ejbDescriptor.getName() + " " + description
+                    + ". This feature is not part of the EJB 3.1 Lite API");
+        }
+    }
+
+
     /**
      * Called from the ContainerFactory during initialization.
      */
@@ -1510,6 +1539,11 @@ public abstract class BaseContainer
      * Set the EJB instance in the EjbInvocation.
      */
     public void preInvoke(EjbInvocation inv) {
+
+        if( _logger.isLoggable(Level.FINE) ) {
+            _logger.log(Level.FINE, "Entering BaseContainer::preInvoke : " + inv);
+        }
+
         try {
             if (containerState != CONTAINER_STARTED) {
                 throw new EJBException("Attempt to invoke when container is in "
@@ -1722,7 +1756,7 @@ public abstract class BaseContainer
                     // in client wrapper.
                     // TODO need extra logic to handle implementation-specific ejb exceptions
                     // (ParallelAccessEXCeption etc. that used to be handled by iiop glue code
-                    inv.exception = protocolMgr.mapException(inv.exception);
+                    inv.exception = mapRemoteException(inv);
                 }
                     
                 // The most useful portion of the system exception is logged 
@@ -1734,7 +1768,7 @@ public abstract class BaseContainer
 
                 if( inv.isBusinessInterface ) {
                     inv.exception = 
-                        mapBusinessInterfaceException(inv.exception);
+                        mapLocal3xException(inv.exception);
                 }
 
             }
@@ -1749,6 +1783,10 @@ public abstract class BaseContainer
 
         }
         */
+
+        if( _logger.isLoggable(Level.FINE) ) {
+            _logger.log(Level.FINE, "Leaving BaseContainer::postInvoke : " + inv);
+        }
     }
 
 
@@ -1794,7 +1832,7 @@ public abstract class BaseContainer
             AccessException ex = new AccessException(
                 "Client is not authorized for this invocation.");
             // TODO see note above about additional special exception handling needed
-            Throwable t = getProtocolManager().mapException(ex);
+            Throwable t = mapRemoteException(inv);
             if ( t instanceof RuntimeException )
                 throw (RuntimeException)t;
             else if ( t instanceof RemoteException )
@@ -1852,7 +1890,79 @@ public abstract class BaseContainer
             (InvocationInfo) invocationInfoMap.get(inv.method);        
     }
 
-    private Throwable mapBusinessInterfaceException(Throwable t) {
+    private Throwable mapRemoteException(EjbInvocation inv) {
+
+
+        Throwable originalException = inv.exception;
+        Throwable mappedException = originalException;
+
+        // If it's an asnyc invocation and we're mapping an exception it
+        // means this is the thread of execution.  The exception won't directly
+        // flow over the wire as a remote exception from the orb's perspective.
+        // If it's asychronous we know it's a remote business interface, not the
+        // 2.x client view.
+        if( inv.invocationInfo.isAsynchronous() ) {
+
+            // In the common case that the remote business interface is not a
+            // subtype of java.rmi.Remote, there's nothing more to do.  If it
+            // is, map the exception and make sure any EJBException is wrapped
+            // as a RemoteException.
+            if( java.rmi.Remote.class.isAssignableFrom(inv.clientInterface) ) {
+                mappedException = protocolMgr.mapException(originalException);
+
+                if( mappedException == originalException) {
+
+                    if( originalException instanceof EJBException ) {
+                        mappedException = new RemoteException
+                             (originalException.getMessage(),originalException);
+                    }
+
+                }
+            } else {
+
+                // TODO Need some additional logic to handle the mapping of
+                // 2.x style exceptions used by the container to 3.x client
+                // view (similar to mapLocal3xException()
+                
+            }
+
+        } else {
+
+            // Synchronous invocation.  First let the protocol manager perform
+            // its mapping.
+
+            mappedException = protocolMgr.mapException(originalException);
+
+            // If no mapping happened
+            if( mappedException == originalException) {
+
+                if( inv.isBusinessInterface ) {
+
+                    if(originalException instanceof EJBException) {
+                        mappedException = new InternalEJBContainerException
+                            (originalException.getMessage(), originalException);
+                    }
+
+                } else {
+                    mappedException = new RemoteException
+                            (originalException.getMessage(), originalException);
+                }
+            }
+            
+        }
+
+        if( _logger.isLoggable(Level.FINE)) {
+
+            _logger.log(Level.FINE, "Mapped original remote exception " +
+                    originalException + " to exception " + mappedException +
+                    " for " + inv);
+
+        }
+
+        return mappedException;
+    }
+
+    private Throwable mapLocal3xException(Throwable t) {
 
         Throwable mappedException = null;
 
@@ -2450,18 +2560,14 @@ public abstract class BaseContainer
                 info.interceptorChain = interceptorManager.getAroundInvokeChain(md, beanMethod);
             }
 
-            Method targetMethod = optionalLocalBusView ? beanMethod : method;
-            MethodDescriptor cachedMD = ejbDescriptor.getMethodDescriptorFor(targetMethod, methodIntf);
-         
-            if ( (cachedMD != null) && isEligibleForAsync(originalIntf, methodIntf) ) {
+            // Asynchronous method initialization        
+            if ( isEligibleForAsync(originalIntf, methodIntf) ) {
 
-                boolean isAsync = cachedMD.isAsynchronous();
-                if (isAsync) {
-                    this.allowAsynchronousInvocations = !ejbContainerUtilImpl.isEJBLite();
-                    if (!allowAsynchronousInvocations) {
-                        throw new EJBException("Asynchronous invocations are not supported in EJB 3.1 Lite API");
-                    }
-                }
+                Method targetMethod = optionalLocalBusView ? beanMethod : method;
+
+                boolean isAsync = ((EjbSessionDescriptor) ejbDescriptor).
+                        isAsynchronousMethod(targetMethod, methodIntf);
+
                 info.setIsAsynchronous(isAsync);
             }
         }
@@ -3553,6 +3659,7 @@ public abstract class BaseContainer
     
     /**
      * Undeploy event.
+     * 
      */
     public final void undeploy() {
         
@@ -3560,15 +3667,21 @@ public abstract class BaseContainer
             
             setUndeployedState();
 
+            // Shutdown with undeploy
             doConcreteContainerShutdown(true);
 
-            undeployRelatedCleanup();
+            // BaseContainer cleanup
+            doContainerCleanup();
         }
 
     }
 
     /**
-     * Called when server instance is shuting down.
+     * Container shutdown event. This happens for every kind of
+     * shutdown other than undeploy.  It could mean the server
+     * is shutting down or that the app has been disabled while
+     * the server is still running.  The two cases are handled
+     * the same.  
      */
     public final void onShutdown() {
 
@@ -3578,6 +3691,9 @@ public abstract class BaseContainer
 
            // Cleanup without undeploy
            doConcreteContainerShutdown(false);
+
+           // BaseContainer cleanup
+           doContainerCleanup();
         }
     }
 
@@ -3593,8 +3709,11 @@ public abstract class BaseContainer
      */
 
 
+    private void doContainerCleanup() {
 
-    private void undeployRelatedCleanup() {
+        if( baseContainerCleanupDone ) {
+            return;
+        }
 
         try {
            destroyTimers();
@@ -3602,7 +3721,15 @@ public abstract class BaseContainer
             _logger.log(Level.FINE, "Error destroying timers for " +
                         ejbDescriptor.getName(), e);
         }
+
+
+        if( hasAsynchronousInvocations ) {
+            EjbAsyncInvocationManager asyncManager =
+                ((EjbContainerUtilImpl) ejbContainerUtilImpl).getEjbAsyncInvocationManager();
+            asyncManager.cleanupContainerTasks(this);
+        }
         
+
         final Thread currentThread = Thread.currentThread();
         final ClassLoader previousClassLoader =
             currentThread.getContextClassLoader();
@@ -3710,6 +3837,9 @@ public abstract class BaseContainer
             }
         }
 
+
+        baseContainerCleanupDone = true;
+        
         _logger.log(Level.FINE, "**** [BaseContainer]: Successfully Undeployed " +
                     ejbDescriptor.getName() + " ...");
         
@@ -4605,7 +4735,9 @@ public abstract class BaseContainer
         if (inv.mustInvokeAsynchronously()) {
             EjbAsyncInvocationManager asyncManager =
                     ((EjbContainerUtilImpl) ejbContainerUtilImpl).getEjbAsyncInvocationManager();
-            Future future = asyncManager.createFuture(inv);
+            Future future = inv.isLocal ?
+                    asyncManager.createLocalFuture(inv) :
+                    asyncManager.createRemoteFuture(inv, this, (GenericEJBHome) ejbRemoteBusinessHomeStub );
             result = (inv.invocationInfo.method.getReturnType() == void.class)
                     ? null : future;
         }  else {

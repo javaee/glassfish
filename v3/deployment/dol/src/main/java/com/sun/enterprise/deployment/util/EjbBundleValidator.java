@@ -206,7 +206,7 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
         setDOLDefault(ejb);
         computeRuntimeDefault(ejb);
         checkDependsOn(ejb);
-        processAsyncMethodsFromXml(ejb);
+        
         validateConcurrencyMetadata(ejb);
 
         try {
@@ -308,12 +308,6 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
     }    
         
     public void accept(WebService webService) {
-    }
-
-    private void processAsyncMethodsFromXml(EjbDescriptor ejb) {
-        if( ejb instanceof EjbSessionDescriptor ) {
-            ((EjbSessionDescriptor)ejb).processAsyncMethodsFromXml();
-        }
     }
 
 

@@ -109,7 +109,8 @@ public class EjbNamingReferenceManagerImpl
     }
 
     public boolean isEjbReferenceCacheable(EjbReferenceDescriptor ejbRefDesc) {
-        return EJBUtils.isEjbRefCacheable(ejbRefDesc);
+        // caching not enabled.
+        return false;
     }
 
 

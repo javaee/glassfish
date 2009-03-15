@@ -145,10 +145,6 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
     private List<ScheduledTimerDescriptor> timerSchedules =
             new ArrayList<ScheduledTimerDescriptor>();
 
-
-    private ConcurrentMap<Method, MethodDescriptor> allMethodDescriptors = 
-            new ConcurrentHashMap<Method, MethodDescriptor>();
-
     //
     // The set of all interceptor classes applicable to this bean.  This 
     // includes any interceptor class that is present at *either* the class
@@ -219,7 +215,6 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
         this.usesCallerIdentity = other.usesCallerIdentity;
         this.bundleDescriptor = other.bundleDescriptor;
         this.timerSchedules = new ArrayList(other.timerSchedules);
-        this.allMethodDescriptors = new ConcurrentHashMap(other.allMethodDescriptors);
     }
 
     /**
@@ -1865,7 +1860,7 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
         Method[] methods = c.getMethods();
         for (int i = 0; i < methods.length; i++) {
             if( methods[i].getDeclaringClass() != java.lang.Object.class ) {
-                methodDescriptors.add(getMethodDescriptorFor(methods[i], methodIntf));
+                methodDescriptors.add(new MethodDescriptor(methods[i], methodIntf));
             }
         }
     }
@@ -1873,17 +1868,21 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
     /**
      * @return the MethodDescriptor for the given Method object
      */
-    public MethodDescriptor getMethodDescriptorFor(Method m, String methodIntf) {
-        MethodDescriptor result = allMethodDescriptors.get(m);
-        if (result == null) {
-            result = new MethodDescriptor(m, methodIntf);
-            MethodDescriptor md = allMethodDescriptors.putIfAbsent(m, result);
-            if (md != null) {
-                // Another thread already added its version
-                result = md;
+    public MethodDescriptor getBusinessMethodDescriptorFor(Method m, String methodIntf) {
+        Set businessMethodDescriptors = getBusinessMethodDescriptors();
+        MethodDescriptor methodDesc = new MethodDescriptor(m, methodIntf);
+
+        MethodDescriptor match = null;
+
+        for(Object next : businessMethodDescriptors) {
+            MethodDescriptor nextMethodDesc = (MethodDescriptor) next;
+            if( nextMethodDesc.equals(methodDesc)) {
+                match = nextMethodDesc;
+                break;
             }
         }
-        return result;
+
+        return match;
     }
 
     /**

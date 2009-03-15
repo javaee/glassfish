@@ -21,8 +21,6 @@ import java.util.Hashtable;
 @Service
 public class GlassFishORBHelper {
 
-    private static final Properties EMPTY_PROPERTIES = new Properties();
-
     @Inject
     Habitat habitat;
 

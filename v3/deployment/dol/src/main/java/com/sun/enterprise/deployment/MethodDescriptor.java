@@ -82,7 +82,6 @@ public final class MethodDescriptor extends Descriptor {
     private final int XML_FORMAT = -1;
     private final int XML_JAVA_FORMAT = 0;
     private boolean isExact = false;
-    private boolean asynchronous = false;
     
     /** 
     * Constructs a method descriptor corresponding to methods on the ejb class defined by the ejbClassSymbol (or home
@@ -515,14 +514,6 @@ public final class MethodDescriptor extends Descriptor {
     }
     public String[] getJavaParameterClassNames (){
 	return javaParameterClassNames;
-    }
-
-    public void setAsynchronous(boolean asynchronous) {
-        this.asynchronous = asynchronous;
-    }
-
-    public boolean isAsynchronous() {
-        return asynchronous;
     }
 
     private boolean stringArrayEquals(String[] s1, String[] s2) {

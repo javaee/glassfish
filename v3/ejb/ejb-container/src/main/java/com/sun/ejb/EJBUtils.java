@@ -62,14 +62,22 @@ import java.util.logging.Logger;
 
 
 import static com.sun.corba.ee.spi.orbutil.codegen.Wrapper.*;
+import com.sun.logging.LogDomains;
 
 /**
  * A handy class with static utility methods.
  *
+ * Note that much of this code has to execute in the client so
+ * it needs to be careful about which server-only resources it
+ * uses and in which code paths.  
+ *
  */
 public class EJBUtils {
+
+    //
     private static final Logger _logger =
-            EjbContainerUtilImpl.getInstance().getLogger();
+            LogDomains.getLogger(EJBUtils.class, LogDomains.EJB_LOGGER);
+
 
     // Internal property to force generated ejb container classes to
     // be created during deployment time instead of dynamically.  Note that
@@ -171,14 +179,6 @@ public class EJBUtils {
         
     }
 
-    public static boolean isEjbRefCacheable(EjbReferenceDescriptor refDesc) {
-
-        // Ejb-ref is only eligible for caching if it refers to the legacy
-        // Home view and it is resolved to an ejb within the same application.
-        return ( (!isEJB30Ref(refDesc)) && 
-                 (refDesc.getEjbDescriptor() != null) );
-    }
-
     private static String getClassPackageName(String intf) {
         int dot = intf.lastIndexOf('.');
         return (dot == -1) ? null : intf.substring(0, dot);
@@ -226,7 +226,7 @@ public class EJBUtils {
     }
 
     /**
-     * Actual jndi-name under which Remote ejb factory depends on
+     * Actual jndi-name under which Remote ejb factory lives depends on
      * whether it's a Remote Home view or Remote Business view.  This is
      * necessary since a single session bean can expose both views and
      * the resulting factory objects are different.  These semantics are
@@ -309,7 +309,8 @@ public class EJBUtils {
 
         if( refDesc.isLocal() ) {
 
-            EjbDescriptor target = refDesc.getEjbDescriptor();
+            EjbDescriptor target = refDesc.getEjbDescriptor();           
+
             BaseContainer container = EjbContainerUtilImpl.getInstance().getContainer(target.getUniqueId());
 
             if( refDesc.isEJB30ClientView() ) {
@@ -333,33 +334,7 @@ public class EJBUtils {
                  !(jndiObj instanceof RemoteBusinessWrapperBase) ) {
                 returnObject = EJBUtils.lookupRemote30BusinessObject
                     (jndiObj, refDesc.getEjbInterface());
-            } else {
-
-                // TODO The jndiObj doesn't always have the correct classloader.
-                // This didn't happen in V2.  Need to investigate.  For now,
-                // do a PortableRemoteObject.narrow to convert it using the
-                // correct context classloader.
-                try {
-                    String intf = refDesc.isEJB30ClientView() ?
-                        refDesc.getEjbInterface() : refDesc.getHomeClassName();
-
-                    ClassLoader intfClassLoader = EJBUtils.getBusinessIntfClassLoader(intf);
-                    Class intfClass = intfClassLoader.loadClass(intf);
-
-                    if( !intfClass.isAssignableFrom(jndiObj.getClass()) ) {
-                        returnObject = PortableRemoteObject.narrow(jndiObj, intfClass);
-                    }
-
-                } catch(Exception e) {
-                    NamingException ne = new NamingException("Error doing context classloader conversion" +
-                        "for remote ejb reference");
-                    ne.initCause(e);
-                    throw ne;
-                }
-
-
             }
-	    
 
         }
 
@@ -401,13 +376,6 @@ public class EJBUtils {
             java.rmi.Remote delegate = (java.rmi.Remote)
                 createMethod.invoke(genericHomeObj, 
                                     generatedRemoteIntfName);
-
-            // TODO The jndiObj doesn't always have the correct classloader.
-            // This didn't happen in V2.  Need to investigate.  For now,
-            // do a PortableRemoteObject.narrow to convert it using the
-            // correct context classloader.
-            Class generatedRemoteIntf = loader.loadClass(generatedRemoteIntfName);
-            delegate = (java.rmi.Remote) PortableRemoteObject.narrow(delegate, generatedRemoteIntf);
                        
             
             returnObject = createRemoteBusinessObject
@@ -640,29 +608,7 @@ public class EJBUtils {
 
         Class clientWrapperClass = loader.loadClass(wrapperClassName);
 
-        Constructor ctors[] = null;
-
-        try {
-            ctors = clientWrapperClass.getConstructors();
-        } catch(Throwable t) {
-            System.out.println("corba codegen bug " + t.getMessage());
-
-
-        }
-
-        if( (ctors == null) || (ctors.length == 0) ) {
-             System.out.println("Retrying business interface wrapper loading with hand-coded wrapper");
-        Class busIntf = loader.loadClass(businessInterface);
-
-           
-            String handCodedWrapperClassName = clientWrapperClass.getPackage().getName() +
-                    "." + "HandCoded" +  busIntf.getSimpleName() + "Wrapper";
-            clientWrapperClass = loader.loadClass(handCodedWrapperClassName);
-            ctors = clientWrapperClass.getConstructors();
-        }
-
-
-
+        Constructor ctors[] = clientWrapperClass.getConstructors();
         
         Constructor ctor = null;
         for(Constructor next : ctors) {
