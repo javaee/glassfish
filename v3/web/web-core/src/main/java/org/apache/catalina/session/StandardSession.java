@@ -1673,9 +1673,15 @@ public class StandardSession
         if ((unbound != null) &&
             (unbound instanceof HttpSessionBindingListener)) {
             try {
+                context.fireContainerEvent(
+                    ContainerEvent.BEFORE_SESSION_VALUE_UNBOUND, null);
                 ((HttpSessionBindingListener) unbound).valueUnbound
                     (new HttpSessionBindingEvent(getSession(), name));
+                context.fireContainerEvent(
+                    ContainerEvent.AFTER_SESSION_VALUE_UNBOUND, null);
             } catch (Throwable t) {
+                context.fireContainerEvent(
+                    ContainerEvent.AFTER_SESSION_VALUE_UNBOUND, null);
                 log(sm.getString("standardSession.bindingEvent"), t);
             }
         }
