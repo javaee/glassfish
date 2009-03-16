@@ -50,7 +50,7 @@ import java.util.logging.Level;
  *
  * @author Shing Wai Chan
  */
-@Service(name="appclient")
+@Service(name="car")
 @Scoped(PerLookup.class)
 public class AppClientScanner extends ModuleScanner<ApplicationClientDescriptor> {
     private ApplicationClientDescriptor descriptor;    
