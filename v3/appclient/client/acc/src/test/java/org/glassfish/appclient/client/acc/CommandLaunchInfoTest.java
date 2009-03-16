@@ -93,7 +93,6 @@ public class CommandLaunchInfoTest {
 
     }
 
-    @Ignore
     @Test
     public void testB() throws Exception, UserError {
         URL testFileURL = getClass().getResource(PASSWORDFILE_PATH);
