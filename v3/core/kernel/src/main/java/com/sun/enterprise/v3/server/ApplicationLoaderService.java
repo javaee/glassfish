@@ -329,6 +329,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
 
                 try {
                     ExtendedDeploymentContext depContext = deployment.getContext(logger, appInfo.getSource(), parameters);
+                    appInfo.stop(depContext, depContext.getLogger());
                     appInfo.unload(depContext, dummy);
                 } catch (IOException e) {
                     logger.log(Level.SEVERE, "Cannot create unloading context for " + app.getName(), e);

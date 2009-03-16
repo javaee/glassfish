@@ -108,6 +108,7 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
                     deployment.getContext(logger, appInfo.getSource(), 
                         commandParams);
 
+            appInfo.stop(deploymentContext, deploymentContext.getLogger());
             appInfo.unload(deploymentContext, report);
 
             if (report.getActionExitCode().equals(
