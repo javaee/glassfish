@@ -70,7 +70,8 @@
                 </executions>
                 <configuration>
                     <connectionType>connection</connectionType>
-                    <revisionKey>16087</revisionKey>
+                    <scmVersion>16087</scmVersion>
+                    <scmVersionType>revision</scmVersionType>
                     <checkoutDirectory>../checkout-source</checkoutDirectory>
                 </configuration>
             </plugin>
