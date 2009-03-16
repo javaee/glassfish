@@ -758,9 +758,10 @@ public class TomcatDeploymentConfig{
             }
         }
        
-        // <session-config>
         SessionConfigDescriptor sessionConfigDesc = 
             wmd.getSessionConfigDescriptor();
+
+        // <session-config><session-timeout>
         webModule.setSessionTimeout(sessionConfigDesc.getSessionTimeout());
 
         // <session-config><cookie-config>
@@ -777,6 +778,9 @@ public class TomcatDeploymentConfig{
             cookieConfig.setSecure(cookieConfigDesc.isSecure());
             cookieConfig.setMaxAge(cookieConfigDesc.getMaxAge());
         }
+
+        // <session-config><tracking-mode>
+        webModule.setSessionTrackingModes(sessionConfigDesc.getTrackingModes());
 
         enumeration = wmd.getWelcomeFiles();
         while (enumeration.hasMoreElements()){
