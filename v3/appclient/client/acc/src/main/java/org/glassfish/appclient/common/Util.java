@@ -148,10 +148,10 @@ public class Util {
      
      /**
       *Writes the provided text to a temporary file marked for deletion on exit.
-      *@param the content to be written
-      *@param prefix for the temp file, conforming to the File.createTempFile requirements
-      *@param suffix for the temp file
-      *@param whether to keep the file
+      *@param content the content to be written
+      *@param prefix prefix for the temp file, conforming to the File.createTempFile requirements
+      *@param suffix suffix for the temp file
+      *@param retainFile whether to keep the file
       *@return File object for the newly-created temp file
       *@throws IOException for any errors writing the temporary file
       *@throws FileNotFoundException if the temp file cannot be opened for any reason

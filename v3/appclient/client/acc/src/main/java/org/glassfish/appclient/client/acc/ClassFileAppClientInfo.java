@@ -36,9 +36,9 @@
 
 package org.glassfish.appclient.client.acc;
 
+import com.sun.enterprise.deploy.shared.FileArchive;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
-import com.sun.enterprise.deployment.archivist.Archivist;
-import com.sun.enterprise.deployment.RootDeploymentDescriptor;
+import com.sun.enterprise.deployment.archivist.AppClientArchivist;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -64,10 +64,9 @@ public class ClassFileAppClientInfo extends AppClientInfo {
      *@param classFileFromCommandLine the class file name from the command line arguments
      */
     protected ClassFileAppClientInfo(
-            boolean isJWS, Logger logger, File archive, 
-            Archivist archivist, String mainClassFromCommandLine, 
+            boolean isJWS, Logger logger, String mainClassFromCommandLine, 
             String classFileFromCommandLine) {
-        super(isJWS, logger, archive, archivist, mainClassFromCommandLine);
+        super(isJWS, logger, mainClassFromCommandLine);
         this.classFileFromCommandLine = classFileFromCommandLine;
     }
 
@@ -77,22 +76,23 @@ public class ClassFileAppClientInfo extends AppClientInfo {
     }
 
     @Override
-    protected void messageDescriptor(RootDeploymentDescriptor d, 
-        Archivist archivist, ReadableArchive archive)
+    protected void massageDescriptor()
             throws IOException, AnnotationProcessorException {
-        ApplicationClientDescriptor appClient = (ApplicationClientDescriptor)d;
+        ApplicationClientDescriptor appClient = getDescriptor();
         appClient.setMainClassName(classFileFromCommandLine);
         appClient.getModuleDescriptor().setStandalone(true);
-        archivist.processAnnotations(appClient, archive);
+        FileArchive fa = new FileArchive();
+        fa.open(new File(classFileFromCommandLine).toURI());
+        new AppClientArchivist().processAnnotations(appClient, fa);
     }
 
-    @Override
-    protected ReadableArchive expand(File file)
-        throws IOException, Exception {
-        return archiveFactory.openArchive(file);
-    }
+//    @Override
+//    protected ReadableArchive expand(File file)
+//        throws IOException, Exception {
+//        return archiveFactory.openArchive(file);
+//    }
 
-    protected boolean deleteAppClientDir() {
-        return false;
-    }
+//    protected boolean deleteAppClientDir() {
+//        return false;
+//    }
 }

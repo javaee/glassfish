@@ -35,7 +35,8 @@
 * only if the new code is made subject to such option by the copyright 
 * holder. 
 */ 
---><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.glassfish.appclient</groupId>
         <artifactId>client</artifactId>
@@ -252,6 +253,14 @@
         </dependency>
 
         <!--
+            Required for security.
+        -->
+        <dependency>
+            <groupId>org.glassfish.security</groupId>
+            <artifactId>appclient.security</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!--
             Required for InstrumentableClassLoader (persistence unit support)
         -->
         <dependency>
@@ -312,6 +321,12 @@
         <dependency>
             <groupId>org.glassfish.appclient</groupId>
             <artifactId>acc-config</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.admin</groupId>
+            <artifactId>config-api</artifactId>
             <version>${project.version}</version>
         </dependency>
 

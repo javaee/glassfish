@@ -51,8 +51,8 @@
     <modules>
         <module>appclient-scripts</module>
         <module>acc-config</module>
-<!--        <module>acc</module>
-        <module>acc-standalone</module> -->
+        <module>acc</module>
+        <module>acc-standalone</module>
         <!--  JWS support is not yet implemented
         <module>jws</module>
         -->

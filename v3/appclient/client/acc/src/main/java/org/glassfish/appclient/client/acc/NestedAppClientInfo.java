@@ -83,7 +83,8 @@ public class NestedAppClientInfo extends AppClientInfo {
             boolean isJWS, Logger logger, File archive, 
             Archivist archivist, String mainClassFromCommandLine, 
             String displayNameFromCommandLine) {
-        super(isJWS, logger, archive, archivist, mainClassFromCommandLine);
+//        super(isJWS, logger, archive, archivist, mainClassFromCommandLine);
+        super(isJWS, logger, mainClassFromCommandLine);
         this.displayNameFromCommandLine = displayNameFromCommandLine;
     }
 
@@ -243,59 +244,59 @@ public class NestedAppClientInfo extends AppClientInfo {
         return result;
     }
 
-    /**
-     *Expands the contents of the source archive into a temporary
-     *directory, using the same format as backend server expansions.
-     *@param file an archive file to be expanded
-     *@return an opened FileArchive for the expanded directory archive
-     *@exception IOException in case of errors during the expansion
-     */
-    @Override
-    protected ReadableArchive expand(File file)
-        throws IOException, Exception {
-
-        File tmpDir = createTmpArchiveDir(file);
-        _logger.fine("Expanding original archive " + file.getAbsolutePath() + 
-                " into " + tmpDir.getAbsolutePath());
-
-        // first explode the top level jar
-        ModuleExploder.explodeJar(file, tmpDir);
-
-        // now we need to load the application standard deployment descriptor.
-        ReadableArchive appArchive = archiveFactory.openArchive(tmpDir);
-
-        ApplicationArchivist archivist = new ApplicationArchivist();
-        if (archivist.hasStandardDeploymentDescriptor(appArchive)) {
-            appDesc = (Application) 
-            archivist.readStandardDeploymentDescriptor(appArchive);
-        } else {
-            appDesc = Application.createApplication(habitat, null, new ApplicationClientDescriptor().getModuleDescriptor());
-        }
-        
-        // explode the sub modules, skipping the ones that do not exist since
-        // the generated appclient jar files do not contain web content
-        for (ModuleDescriptor bundle : appDesc.getModules()) {
-
-            String moduleName = bundle.getArchiveUri();
-            File srcArchive = new File(tmpDir, moduleName);
-
-            if (srcArchive.exists()) {
-                String massagedModuleName =  
-                    FileUtils.makeFriendlyFilename(moduleName);
-                File moduleDir = 
-                    new File(tmpDir, massagedModuleName);
-                ModuleExploder.explodeJar(srcArchive, moduleDir);
-            
-                // delete the original module file
-                srcArchive.delete();
-            }
-        }
-
-        /*
-         *Leave the new archive open so the caller can use it directly.
-         */
-        return appArchive;
-    }
+//    /**
+//     *Expands the contents of the source archive into a temporary
+//     *directory, using the same format as backend server expansions.
+//     *@param file an archive file to be expanded
+//     *@return an opened FileArchive for the expanded directory archive
+//     *@exception IOException in case of errors during the expansion
+//     */
+//    @Override
+//    protected ReadableArchive expand(File file)
+//        throws IOException, Exception {
+//
+//        File tmpDir = createTmpArchiveDir(file);
+//        _logger.fine("Expanding original archive " + file.getAbsolutePath() +
+//                " into " + tmpDir.getAbsolutePath());
+//
+//        // first explode the top level jar
+//        ModuleExploder.explodeJar(file, tmpDir);
+//
+//        // now we need to load the application standard deployment descriptor.
+//        ReadableArchive appArchive = archiveFactory.openArchive(tmpDir);
+//
+//        ApplicationArchivist archivist = new ApplicationArchivist();
+//        if (archivist.hasStandardDeploymentDescriptor(appArchive)) {
+//            appDesc = (Application)
+//            archivist.readStandardDeploymentDescriptor(appArchive);
+//        } else {
+//            appDesc = Application.createApplication(habitat, null, new ApplicationClientDescriptor().getModuleDescriptor());
+//        }
+//
+//        // explode the sub modules, skipping the ones that do not exist since
+//        // the generated appclient jar files do not contain web content
+//        for (ModuleDescriptor bundle : appDesc.getModules()) {
+//
+//            String moduleName = bundle.getArchiveUri();
+//            File srcArchive = new File(tmpDir, moduleName);
+//
+//            if (srcArchive.exists()) {
+//                String massagedModuleName =
+//                    FileUtils.makeFriendlyFilename(moduleName);
+//                File moduleDir =
+//                    new File(tmpDir, massagedModuleName);
+//                ModuleExploder.explodeJar(srcArchive, moduleDir);
+//
+//                // delete the original module file
+//                srcArchive.delete();
+//            }
+//        }
+//
+//        /*
+//         *Leave the new archive open so the caller can use it directly.
+//         */
+//        return appArchive;
+//    }
 
     /**
      * Construct the classpaths.  The classpaths constructed here is

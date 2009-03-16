@@ -69,7 +69,7 @@ public class AppClientInfoFactory {
     /** access to the localizable strings */
     protected static final StringManager localStrings = 
                         StringManager.getManager(AppClientInfoFactory.class);
-    
+
     /**
      *Factory merhod that creates an object of the correct concrete type
      *for the given location and content.
@@ -102,8 +102,8 @@ public class AppClientInfoFactory {
             result = new ClassFileAppClientInfo(
                     isJWS, 
                     logger, 
-                    locationFile, 
-                    archivist,
+//                    locationFile,
+//                    archivist,
                     mainClassFromCommandLine, 
                     classFileFromCommandLine);
         } else {
@@ -125,8 +125,9 @@ public class AppClientInfoFactory {
                     result = new StandAloneAppClientInfo(
                             isJWS,
                             logger,
-                            locationFile,
-                            archivist,
+                            archive,
+//                            locationFile,
+//                            archivist,
                             mainClassFromCommandLine);
                 } else if (archivist instanceof ApplicationArchivist) {
                     /*
@@ -156,7 +157,7 @@ public class AppClientInfoFactory {
                 throw new UserError(localStrings.getString("appclient.invalidArchive", locationFile.getAbsolutePath()));
             }
         }
-        result.completeInit(persistenceURLs);
+        result.completeInit(/*persistenceURLs*/);
         if (logger.isLoggable(Level.FINE)) {
             logger.fine(result.toString());
         }

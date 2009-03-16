@@ -35,10 +35,17 @@
  */
 package org.glassfish.appclient.client.acc;
 
+import com.sun.enterprise.container.common.spi.util.InjectionException;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
 import com.sun.enterprise.security.webservices.ClientPipeCloser;
+import com.sun.enterprise.util.LocalStringManager;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
@@ -52,6 +59,7 @@ import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.appclient.client.acc.config.AuthRealm;
 import org.glassfish.appclient.client.acc.config.ClientCredential;
 import org.glassfish.appclient.client.acc.config.MessageSecurityConfig;
+import org.glassfish.appclient.client.acc.config.Property;
 import org.glassfish.appclient.client.acc.config.Security;
 import org.glassfish.appclient.client.acc.config.TargetServer;
 import org.jvnet.hk2.annotations.Inject;
@@ -65,14 +73,13 @@ import org.jvnet.hk2.component.PerLookup;
  * Allows Java programs to:
  * <ul>
  * <li>create a new configurator for an ACC (see {@link #newConfigurator} and {@link AppClientContainerConfigurator}),
- * <li>optionally modify the configuration represented by the configurator using various
- * methods (for example {@link AppClientContainerConfigurator#clientArgs}),
+ * <li>optionally modify the configuration by invoking various configurator methods,
  * <li>create an embedded instance of the ACC from the configuration using {@link AppClientContainerConfigurator#newContainer() },
- * <li>start the container using {@link #start()}, and
+ * <li>startClient the client using {@link #startClient(String[])}, and
  * <li>stop the container using {@link #stop()}.
  * </ul>
  * <p>
- * Each instance of the {@link TargetServer} class passed to the <code>newBuilder</code>
+ * Each instance of the {@link TargetServer} class passed to the <code>newConfigurator</code>
  * method represents one
  * server, conveying its host and port number, which the ACC can use to
  * "bootstrap" into the server-side ORB(s).  The calling
@@ -149,6 +156,7 @@ import org.jvnet.hk2.component.PerLookup;
  * AppClientContainerConfigurator accBuilder = AppClientContainer.newBuilder(...);<br>
  * accBuilder.clientCredentials(myUser, myPass).clientArgs(argsToClient);<br>
  * </code>
+ * «
  *
  * @author tjquinn
  */
@@ -160,94 +168,327 @@ public class AppClientContainer {
     /** Prop name for keeping temporary files */
     public static final String APPCLIENT_RETAIN_TEMP_FILES_PROPERTYNAME = "com.sun.aas.jws.retainTempFiles";
 
-    /**
-     * Creates a new ACC builder object for a client class that is inside
-     * an app client archive.
-     *
-     * @param targetServers server(s) to contact during ORB bootstrapping
-     * @param clientFile the <code>File</code> for the app client archive
-     * @return <code>AppClientContainerConfigurator</code> object
-     */
-    public static AppClientContainer.Configurator newConfigurator(
-            final TargetServer[] targetServers,
-            final URI clientURI) {
-        return new AppClientContainerConfigurator(targetServers, clientURI);
-    }
+    private static final LocalStringManager localStrings = new LocalStringManagerImpl(AppClientContainer.class);
 
     /**
-     * Creates a new ACC configurator object for an individual class to be run as a client
-     * (as opposed to the class residing inside an app client archive).
+     * Creates a new ACC configurator object, preset with the specified
+     * target servers.
      *
      * @param targetServers server(s) to contact during ORB bootstrapping
-     * @param mainClass the <code>Class</code> to be run as an app client
-     * @return <code>AppClientContainerConfigurator</code> object
+     * @return <code>AppClientContainer.Configurator</code> object
      */
     public static AppClientContainer.Configurator newConfigurator(
-            final TargetServer[] targetServers,
-            final Class mainClass) {
-        return new AppClientContainerConfigurator(targetServers, mainClass);
+            final TargetServer[] targetServers) {
+        return new AppClientContainerConfigurator(targetServers);
     }
 
-    public static AppClientContainer.Configurator newConfigurator() {
-        return new AppClientContainerConfigurator();
-    }
-    
+//    /**
+//     * Creates a new ACC configurator object.
+//     * <p>
+//     * This variant could be invoked, for example, from the main method of
+//     * our main class in the facade JAR file generated during deployment.  If
+//     * such a generated JAR is launched directly using a java command (and
+//     * not the appclient script) then that class would have no way to find
+//     * any configuration information.
+//     *
+//     * @return <code>AppClientContainer.Configurator</code> object
+//     */
+//    public static AppClientContainer.Configurator newConfigurator() {
+//        return new AppClientContainerConfigurator();
+//    }
+
+    private AppClientContainerSecurityHelper secHelper;
+
     @Inject
     private InjectionManager injectionManager;
 
     @Inject
     private InvocationManager invocationManager;
 
-    private Configurator builder;
+    private Configurator configurator;
     private Logger logger;
     private Cleanup cleanup = null;
 
-    private boolean isRunning = false;
+    private State state = State.INSTANTIATED; // HK2 will create the instance
 
-    void setConfig(final Configurator config) {
-        this.builder = config;
-        this.logger = config.getLogger();
+    private Class mainClass = null;
+
+    private ApplicationClientDescriptor descriptor = null;
+    
+
+    private ClientMainClassSetting clientMainClassSetting = null;
+//    private URI clientURI = null;
+
+    private ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+    private AppClientInfo appClientInfo = null;
+
+    private boolean isJWS = false;
+
+    private Launchable client = null;
+
+    private CallbackHandler callerSuppliedCallbackHandler = null;
+
+
+    /*
+     * ********************* ABOUT INITIALIZATION ********************
+     *
+     * Note that, internally, the AppClientContainerConfigurator's newContainer
+     * methods use HK2 to instantiate the AppClientContainer object (so we can
+     * inject references to various other services).
+     *
+     * The newContainer method then invokes one of the ACC's
+     * <code>prepare</code> methods to initialize the ACC fully.  All that is
+     * left at that point is for the client's main method to be invoked.
+     *
+     */
+
+    public void startClient(String[] args) throws Exception {
+        launch(args);
     }
 
-    public void start() throws NamingException {
-        if (isRunning) {
+    void setCallbackHandler(final CallbackHandler callerSuppliedCallbackHandler) {
+        this.callerSuppliedCallbackHandler = callerSuppliedCallbackHandler;
+    }
+
+    void setConfigurator(final Configurator configurator) {
+        this.configurator = configurator;
+    }
+
+    public void prepare() throws NamingException, IOException, InstantiationException, IllegalAccessException, InjectionException, ClassNotFoundException {
+        completePreparation();
+    }
+
+    void setClient(final Launchable client) {
+        this.client = client;
+    }
+    
+    protected Class loadClass(final String className) throws ClassNotFoundException {
+        return Class.forName(className, true, classLoader);
+    }
+
+    protected ClassLoader getClassLoader() {
+        return classLoader;
+    }
+    
+    /**
+     * Gets the ACC ready so the main class can run.
+     * This can be followed, immediately or after some time, by either an
+     * invocation of {@link #launch(java.lang.String[])  or
+     * by the JVM invoking the client's main method (as would happen during
+     * a <code>java -jar theClient.jar</code> launch.
+     *
+     * @throws java.lang.Exception
+     */
+    private void completePreparation() throws NamingException, IOException, InstantiationException, IllegalAccessException, InjectionException, ClassNotFoundException {
+        if (state != State.INSTANTIATED) {
             throw new IllegalStateException();
         }
-        isRunning = true;
 
-        cleanup = new Cleanup(logger);
+        /*
+         * Create the security helper and then register it with the habitat so
+         * the app client container can find it as the acc is instantiated and
+         * injected.  Do this before initializing
+         * naming so the ORB intialization side-effects of getting the
+         * InitialContext use the appropriate ORB settings.
+         */
+        secHelper = new AppClientContainerSecurityHelper(
+                configurator.getTargetServers(),
+                configurator.getContainerProperties(),
+                configurator.getClientCredential(),
+                callerSuppliedCallbackHandler,
+                null /* use current context class loader */,
+                client.getDescriptor(Thread.currentThread().getContextClassLoader()));
+
+        /*
+         * Initialize naming now to establish an InitialContext with the
+         * side-effect of initializing the ORB.
+         * correct Properties.  Then, when the habitat instantiates the
+         * container which injects some services that also use InitialContext
+         * the context created here will be reused by those other places.
+         * As an example, the container injects the InjectionManager which
+         * invokes new InitialContext().
+         */
+
+        initializeNaming(secHelper);
+
+
+
+       
+        /*
+         * Arrange for cleanup now instead of during launch() because in some use cases
+         * the JVM will invoke the client's main method itself and launch will
+         * be skipped.
+         */
+        cleanup = Cleanup.arrangeForShutdownCleanup(logger);
 
         prepareURLStreamHandling();
 
-        initACC();
-
-        // XXX actually invoke the client's main method here
-
-        isRunning = false;
+        state = State.PREPARED;
     }
 
-    private void initACC() throws NamingException {
-        AppClientContainerSecurityHelper secHelper =
-                new AppClientContainerSecurityHelper(
-                    builder.getTargetServers(),
-                    builder.getContainerProperties(),
-//                    user,
-//                    password,
-//                    realmName);
-                    builder.getClientCredential());
-//        InitialContext ic = new InitialContext(secHelper.getIIOPProperties());
+    void launch(String[] args) throws
+            NoSuchMethodException,
+            ClassNotFoundException,
+            IllegalAccessException,
+            IllegalArgumentException,
+            InvocationTargetException {
 
+        if (state != State.PREPARED) {
+            throw new IllegalStateException();
+        }
+        Method mainMethod = getMainMethod();
+	    // build args to the main and call it
+	    Object params [] = new Object [1];
+	    params[0] = args;
+	    mainMethod.invoke(null, params);
+        state = State.STARTED;
     }
 
+    private void initializeNaming(final AppClientContainerSecurityHelper secHelper) throws NamingException {
+        new InitialContext(secHelper.getIIOPProperties());
+    }
+
+   private Method getMainMethod() throws NoSuchMethodException, ClassNotFoundException {
+	    // determine the main method using reflection
+	    // verify that it is public static void and takes
+	    // String[] as the only argument
+	    Method result = null;
+
+        result = clientMainClassSetting.getClientMainClass(classLoader).getMethod("main",
+            new Class[] { String[].class } );
+
+	    // check modifiers: public static
+	    int modifiers = result.getModifiers ();
+	    if (!Modifier.isPublic (modifiers) ||
+		!Modifier.isStatic (modifiers))  {
+		    String err = localStrings.getLocalString(
+                    getClass(),
+                    "appclient.notPublicOrNotStatic",
+                    "The main method is either not public or not static");
+	    	    throw new NoSuchMethodException(err);
+	    }
+
+	    // check return type and exceptions
+	    if (!result.getReturnType().equals (Void.TYPE)) {
+            String err = localStrings.getLocalString(
+                getClass(),
+                "appclient.notVoid",
+                "The main method's return type is not void");
+            throw new NoSuchMethodException(err);
+	    }
+        return result;
+    }
+
+    
+    /**
+     * Stops the app client container.
+     * <p>
+     * Note that the calling program should not stop the ACC if there might be
+     * other threads running, such as the Swing event dispatcher thread.  Stopping
+     * the ACC can shut down various services that those continuing threads might
+     * try to use.
+     * <p>
+     * Also note that stopping the ACC will have no effect on any thread that
+     * the app client itself might have created.  If the calling program needs
+     * to control such threads it and the client code running in the threads
+     * should agree on how they will communicate with each other.  The ACC cannot
+     * help with this.
+     */
     public void stop() {
-        if ( ! isRunning) {
+        if ( state != State.STARTED) {
             throw new IllegalStateException();
         }
         cleanup.start();
-        isRunning = false;
+        state = State.STOPPED;
     }
 
-   /**
+    /**
+     * Records how the main class has been set - by name or by class - and
+     * encapsulates the retrieval of the main class.
+     */
+    enum ClientMainClassSetting {
+        BY_NAME,
+        BY_CLASS;
+
+        static protected String clientMainClassName;
+        static protected Class clientMainClass;
+
+        static ClientMainClassSetting set(final String name) {
+            clientMainClassName = name;
+            clientMainClass = null;
+            return BY_NAME;
+        }
+
+        static ClientMainClassSetting set(final Class cl) {
+            clientMainClass = cl;
+            clientMainClassName = null;
+            return BY_CLASS;
+        }
+
+        static Class getClientMainClass(final ClassLoader loader) throws ClassNotFoundException {
+            if (clientMainClass == null) {
+                if (clientMainClassName == null) {
+                    throw new IllegalStateException("neither client main class nor its class name has been set");
+                }
+                clientMainClass = Class.forName(clientMainClassName, true, loader);
+            }
+            return clientMainClass;
+        }
+    }
+
+    /**
+     * Records the current state of the ACC.
+     */
+    enum State {
+        /**
+         * HK2 has created the ACC instance
+         */
+        INSTANTIATED,
+
+        /**
+         * ACC is ready for the client to run
+         */
+        PREPARED,
+
+        /**
+         * the ACC has started the client.
+         * <p>
+         * Note that if the user launches the client JAR directly (using
+         * java -jar theClient.jar) the ACC will not be aware of this and
+         * so the state remains PREPARED.
+         */
+        STARTED,
+
+        /**
+         * the ACC has stopped in response to a request from the calling
+         * program
+         */
+        STOPPED;
+    }
+
+    /**
+     * Sets the name of the main class to be executed.
+     * <p>
+     * Normally the ACC reads the app client JAR's manifest to get the
+     * Main-Class attribute.  The calling program can override that value
+     * by invoking this method.  The main class name is also useful if
+     * the calling program provides an EAR that contains multiple app clients
+     * as submodules within it; the ACC needs the calling program to specify
+     * which of the possibly several app client modules is the one to execute.
+     *
+     * @param mainClassName
+     * @return
+     */
+    public void setClientMainClassName(final String clientMainClassName) throws ClassNotFoundException {
+        clientMainClassSetting = ClientMainClassSetting.set(clientMainClassName);
+    }
+
+    void setClientMainClass(final Class clientMainClass) {
+       clientMainClassSetting = ClientMainClassSetting.set(clientMainClass);
+    }
+
+    /**
      * Assigns the URL stream handler factory.
      * <p>
      * Needed for web services support.
@@ -264,11 +505,19 @@ public class AppClientContainer {
             });
     }
 
+    void setClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
+    }
+
     /**
      * Prescribes the exposed behavior of ACC configuration that can be
      * set up further, and can be used to newContainer an ACC.
      */
     public interface Configurator {
+
+        public AppClientContainer newContainer(URI archiveURI) throws Exception;
+
+        public AppClientContainer newContainer(Class mainClass) throws Exception;
 
         public TargetServer[] getTargetServers();
 
@@ -295,34 +544,24 @@ public class AppClientContainer {
 
         public AuthRealm getAuthRealm();
 
-        /**
-         * Sets the callback handler the ACC will use when authentication is
-         * required.  If the program does not invoke this method the ACC will use
-         * the callback handler specified in the client's deployment descriptor,
-         * if any.  Failing that, the ACC will use its own default callback handler
-         * to prompt for and collect information required during authentication.
-         * <p>
-         * A callback handler class set using this method overrides the
-         * callback handler setting from the client's descriptor, if any, or from
-         * any previous invocations of <code>callbackHandler</code>.
-         *
-         * @param callbackHandlerClassName fully-qualified name of the developer's
-         * callback handler class
-          * @return the <code>Configurator</code> instance
-        */
-        public Configurator callbackHandler(final Class<? extends CallbackHandler> callbackHandlerClass);
-
-        public Class<? extends CallbackHandler> getCallbackHandler();
-
-        /**
-         * Sets the arguments to be passed to the client's main method.
-         *
-         * @param clientArgs
-         * @return the <code>Configurator</code> instance
-         */
-        public Configurator clientArgs(final String[] clientArgs);
-
-        public String[] getClientArgs();
+//        /**
+//         * Sets the callback handler the ACC will use when authentication is
+//         * required.  If the program does not invoke this method the ACC will use
+//         * the callback handler specified in the client's deployment descriptor,
+//         * if any.  Failing that, the ACC will use its own default callback handler
+//         * to prompt for and collect information required during authentication.
+//         * <p>
+//         * A callback handler class set using this method overrides the
+//         * callback handler setting from the client's descriptor, if any, or from
+//         * any previous invocations of <code>callbackHandler</code>.
+//         *
+//         * @param callbackHandlerClassName fully-qualified name of the developer's
+//         * callback handler class
+//          * @return the <code>Configurator</code> instance
+//        */
+//        public Configurator callbackHandler(final Class<? extends CallbackHandler> callbackHandlerClass);
+//
+//        public Class<? extends CallbackHandler> getCallbackHandler();
 
         /**
          * Sets the optional client credentials to be used during authentication to the
@@ -330,7 +569,7 @@ public class AppClientContainer {
          * <p>
          * If the client does not invoke <code>clientCredentials</code> then the
          * ACC will use a {@link CallbackHandler} when it discovers that authentication
-         * is required.  See {@link #callbackHandler}.
+         * is required.  See {@link #callerSuppliedCallbackHandler}.
          *
          * @param username username valid in the default realm on the server
          * @param password password valid in the default realm on the server for the username
@@ -346,7 +585,7 @@ public class AppClientContainer {
          * <p>
          * If the client does not invoke <code>clientCredentials</code> then the
          * ACC will use a {@link CallbackHandler} when it discovers that authentication
-         * is required.  See {@link #callbackHandler}.
+         * is required.  See {@link #callerSuppliedCallbackHandler}.
          *
          * @param username username valid in the specified realm on the server
          * @param password password valid in the specified realm on the server for the username
@@ -356,14 +595,28 @@ public class AppClientContainer {
         public Configurator clientCredentials(final String user, final char[] password, final String realm);
 
         /**
-         * Sets the container-level Properties.  Most configuration is assigned
-         * using other parts of the config.
+         * Sets the container-level Properties.
          *
          * @param containerProperties
          * @return
          */
         public Configurator containerProperties(final Properties containerProperties);
 
+        /**
+         * Sets the container-level properties.
+         * <p>
+         * Typically used when setting the properties from the parsed XML config
+         * file.
+         *
+         * @param containerProperties Property objects to use in setting the properties
+         * @return
+         */
+        public Configurator containerProperties(final List<Property> containerProperties);
+
+        /**
+         * Returns the container-level Properties.
+         * @return container-level properties
+         */
         public Properties getContainerProperties();
 
         /**
@@ -387,26 +640,6 @@ public class AppClientContainer {
 
         public boolean getSendPassword();
 
-        public Configurator mainClass(final Class mainClass);
-        
-        public Class getMainClass();
-
-        /**
-         * Sets the name of the main class to be executed.
-         * <p>
-         * Normally the ACC reads the app client JAR's manifest to get the
-         * Main-Class attribute.  The calling program can override that value
-         * by invoking this method.  The main class name is also useful if
-         * the calling program provides an EAR that contains multiple app clients
-         * as submodules within it; the ACC needs the calling program to specify
-         * which of the possibly several app client modules is the one to execute.
-         *
-         * @param mainClassName
-         * @return
-         */
-        public Configurator mainClassName(final String mainClassName);
-
-        public String getMainClassName();
     }
 
 
@@ -426,9 +659,14 @@ public class AppClientContainer {
         private final Logger logger;
         private Thread cleanupThread = null;
 
-        public Cleanup(final Logger logger) {
+        static Cleanup arrangeForShutdownCleanup(final Logger logger) {
+            final Cleanup cu = new Cleanup(logger);
+            cu.enable();
+            return cu;
+        }
+
+        private Cleanup(final Logger logger) {
             this.logger = logger;
-            enable();
         }
 
         void setAppClientInfo(AppClientInfo info) {

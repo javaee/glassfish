@@ -185,7 +185,7 @@ public class AppClientCommand {
           */
          AppClientContainer.Configurator configurator;
          if (isClientValueClassFile()) {
-             configurator = configureForClassFile(targetServers, clientJarOrDirOrClassFile);
+//             configurator = configureForClassFile(targetServers, clientJarOrDirOrClassFile);
          } else {
 //             configurator = configureFor
          }
@@ -217,7 +217,7 @@ public class AppClientCommand {
                     new Object[] {className, classFile.getAbsolutePath()}));
         }
         AppClientContainer.Configurator config = AppClientContainer.newConfigurator(
-                targetServers, clientClass);
+                targetServers);
 
         return config;
     }
