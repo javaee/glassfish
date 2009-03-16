@@ -149,7 +149,7 @@ recordACCArg() {
 
         recordClientArg "$2"
     else
-        accArgs=$accArgs,arg=$1${2:+,arg=$2}
+        accArgs=$accArgs,arg=$1${2:+,arg=\"$2\"}
     fi
 }
 
@@ -254,7 +254,7 @@ for x do
             expectingArgType=JVM ;;
 
         # The next case must refer to all valid ACC options that expect a value
-        -client|-mainclass|-name|-xml|-configxml|-user|-password|-passwordfile|-server)
+        -client|-mainclass|-name|-xml|-configxml|-user|-password|-passwordfile|-servers)
             expecting=$x
             expectingArgType=ACC ;;
 

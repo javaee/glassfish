@@ -45,26 +45,15 @@ import org.glassfish.appclient.client.acc.AppClientContainer;
  *
  * @author tjquinn
  */
-public class AppClientFacade {
+public class AppClientFacadeInfo {
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        AppClientContainer acc = AppClientFacadeInfo.getACC();
-        if (acc == null) {
-            acc = prepareACC();
-        }
-        try {
-            acc.launch(args);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            System.exit(1);
-        }
+    private static AppClientContainer acc = null;
+
+    public static void setACC(final AppClientContainer acc) {
+        AppClientFacadeInfo.acc = acc;
     }
 
-    private static AppClientContainer prepareACC() {
-        // XXX Implement this to support java -jar launching.
-        return null;
+    static AppClientContainer getACC() {
+        return acc;
     }
 }

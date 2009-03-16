@@ -66,6 +66,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
+import org.xml.sax.SAXParseException;
 
 /**
  * Embeddable Glassfish app client container (ACC).
@@ -206,7 +207,7 @@ public class AppClientContainer {
     private InvocationManager invocationManager;
 
     private Configurator configurator;
-    private Logger logger;
+    private Logger logger = Logger.getLogger(AppClientContainer.class.getPackage().getName());
     private Cleanup cleanup = null;
 
     private State state = State.INSTANTIATED; // HK2 will create the instance
@@ -255,12 +256,13 @@ public class AppClientContainer {
         this.configurator = configurator;
     }
 
-    public void prepare() throws NamingException, IOException, InstantiationException, IllegalAccessException, InjectionException, ClassNotFoundException {
+    public void prepare() throws NamingException, IOException, InstantiationException, IllegalAccessException, InjectionException, ClassNotFoundException, SAXParseException {
         completePreparation();
     }
 
-    void setClient(final Launchable client) {
+    void setClient(final Launchable client) throws ClassNotFoundException {
         this.client = client;
+        clientMainClassSetting = ClientMainClassSetting.set(client.getMainClass());
     }
     
     protected Class loadClass(final String className) throws ClassNotFoundException {
@@ -280,7 +282,7 @@ public class AppClientContainer {
      *
      * @throws java.lang.Exception
      */
-    private void completePreparation() throws NamingException, IOException, InstantiationException, IllegalAccessException, InjectionException, ClassNotFoundException {
+    private void completePreparation() throws NamingException, IOException, InstantiationException, IllegalAccessException, InjectionException, ClassNotFoundException, SAXParseException {
         if (state != State.INSTANTIATED) {
             throw new IllegalStateException();
         }
@@ -327,7 +329,7 @@ public class AppClientContainer {
         state = State.PREPARED;
     }
 
-    void launch(String[] args) throws
+    public void launch(String[] args) throws
             NoSuchMethodException,
             ClassNotFoundException,
             IllegalAccessException,
@@ -704,7 +706,7 @@ public class AppClientContainer {
          * not Cleanup.run().
          */
         public void run() {
-            logger.info("Clean-up starting");
+            logger.fine("Clean-up starting");
             /*
              * Do not invoke disable from here.  The run method might execute
              * while the VM shutdown is in progress, and attempting to remove

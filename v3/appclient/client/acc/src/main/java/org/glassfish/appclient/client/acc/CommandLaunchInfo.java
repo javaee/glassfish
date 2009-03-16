@@ -131,6 +131,9 @@ public class CommandLaunchInfo {
     
     private ClientLaunchType saveArgInfo(
             final String agentArgs) throws UserError {
+        if (agentArgs == null){
+            return ClientLaunchType.UNKNOWN;
+        }
         ClientLaunchType result = null;
         List<String> appclientCommandArgs = new ArrayList<String>();
 
@@ -182,7 +185,8 @@ public class CommandLaunchInfo {
         JAR,
         DIR(true),
         CLASSFILE(true),
-        CLASS;
+        CLASS,
+        UNKNOWN;
 
         private final boolean usesAppClientCommandForMainProgram;
 
@@ -209,7 +213,7 @@ public class CommandLaunchInfo {
                     return t;
                 }
             }
-            return null;
+            return UNKNOWN;
         }
     }
 }

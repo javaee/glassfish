@@ -64,6 +64,7 @@ import java.util.logging.Logger;
 public class AppclientCommandArguments {
 
     private final static Logger logger = Logger.getLogger(AppclientCommandArguments.class.getName());
+    private final static String LINE_SEP = System.getProperty("line.separator");
 
     /*
      * names of appclient options.
@@ -80,11 +81,11 @@ public class AppclientCommandArguments {
     private final static String USER = "user";
     private final static String PASSWORD = "password";
     private final static String PASSWORDFILE = "passwordfile";
-    private final static String SERVER = "server";
+    private final static String SERVERS = "servers";
 
     /* names of options that take a value */
     private final static String[] valuedArgNames =
-            new String[] {MAINCLASS, NAME, XML, CONFIGXML, USER, PASSWORD, PASSWORDFILE, SERVER};
+            new String[] {MAINCLASS, NAME, XML, CONFIGXML, USER, PASSWORD, PASSWORDFILE, SERVERS};
 
     /* names of options that take no value */
     private final static String[] unvaluedArgNames =
@@ -170,7 +171,7 @@ public class AppclientCommandArguments {
     }
 
     public String getServer() {
-        return valuedArgs.get(SERVER).get();
+        return valuedArgs.get(SERVERS).get();
     }
 
     private String getXML() {
@@ -183,15 +184,15 @@ public class AppclientCommandArguments {
 
     public String chooseConfigFilePath() {
         String pathToUse = null;
-        boolean isFine = logger.isLoggable(Level.FINE);
+        boolean isConfig = logger.isLoggable(Level.CONFIG);
 
         if ((pathToUse = getXML()) != null) {
-            if (isFine) {
-                logger.fine("Choosing config from -xml option: " + pathToUse);
+            if (isConfig) {
+                logger.config("Choosing app client container config from -xml option: " + pathToUse);
             }
         } else if ((pathToUse = getConfigXML()) != null ) {
-            if (isFine) {
-                logger.fine("Choosing config from -configxml option: " + pathToUse);
+            if (isConfig) {
+                logger.config("Choosing app client container config from -configxml option: " + pathToUse);
             }
 //        } else if (isJWS) {
 //            /*
@@ -220,7 +221,9 @@ public class AppclientCommandArguments {
     }
 
     private void processAppclientArgs(final List<String> commandArgs) throws UserError {
-
+        final boolean isConfig = logger.isLoggable(Level.CONFIG);
+        final StringBuilder sb = (isConfig ?
+            new StringBuilder("Arguments from appclient command:" ) : null);
         for (int slot = 0; slot < commandArgs.size(); slot++) {
             String arg = commandArgs.get(slot);
             if (arg.charAt(0) == '-') {
@@ -228,8 +231,25 @@ public class AppclientCommandArguments {
                  if (valuedArgs.containsKey(arg)) {
                      if (slot < commandArgs.size()) {
                          String value = commandArgs.get(++slot);
+                         /*
+                          * The scripts might use " " to enclose argument values,
+                          * so if that's the case strip the quotes off.
+                          */
+                         if ((value.length() > 1) && 
+                                 (value.charAt(0) == '\"') &&
+                                 (value.charAt(value.length() - 1) == '\"')
+                             ) {
+                             value = value.substring(1, value.length() - 1);
+                         }
                          if (arg.equals(PASSWORD)) {
                              password = value.toCharArray();
+                             if (isConfig) {
+                                 sb.append(LINE_SEP).append("  ").append(arg).append("=???");
+                             }
+                         } else {
+                             if (isConfig) {
+                                 sb.append(LINE_SEP).append("  ").append(arg).append("=").append(value);
+                             }
                          }
                          valuedArgs.get(arg).set(value);
                          if (arg.equals(PASSWORDFILE)) {
@@ -240,6 +260,9 @@ public class AppclientCommandArguments {
                      }
                  } else if (unvaluedArgs.containsKey(arg)) {
                      unvaluedArgs.get(arg).set(Boolean.TRUE);
+                     if (isConfig) {
+                         sb.append(LINE_SEP).append("  ").append(arg);
+                     }
                  } else {
                      throw new IllegalArgumentException(arg);
                  }
@@ -247,7 +270,9 @@ public class AppclientCommandArguments {
                 throw new IllegalArgumentException(arg);
             }
         }
-
+        if (isConfig) {
+            logger.config(sb.toString());
+        }
         validateOptions();
     }
 

@@ -141,7 +141,7 @@ rem case !x! in
         )
 
 rem The next case must refer to all valid ACC options that expect a value
-        if NOT DEFINED matched for %%b in (-client -mainclass -name -xml -configxml -user -password -passwordfile -server) do if x%%b==x!x! (
+        if NOT DEFINED matched for %%b in (-client -mainclass -name -xml -configxml -user -password -passwordfile -servers) do if x%%b==x!x! (
             set matched=true
             set expecting=!x!
             set expectingArgType=ACC

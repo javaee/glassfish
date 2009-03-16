@@ -129,6 +129,7 @@ class AppClientContainerSecurityHelper {
                 callbackHandler = chooseDefaultCallbackHandler();
             }
         }
+        logger.config("Callback handler class = " + callbackHandler.getClass().getName());
         return callbackHandler;
     }
 
@@ -293,6 +294,7 @@ class AppClientContainerSecurityHelper {
 
         props.setProperty(ORB_INITIAL_HOST_PROPERTYNAME, targetServers[0].getAddress());
         props.setProperty(ORB_INITIAL_PORT_PROPERTYNAME, Integer.toString(targetServers[0].getPort()));
+        logger.config("Using endpoint address: " + targetServers[0].getAddress() + ":" + targetServers[0].getPort());
         return props;
 
     }

@@ -50,10 +50,12 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Date;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import org.glassfish.appclient.client.AppClientFacadeInfo;
 import org.glassfish.appclient.client.acc.ACCModulesManager;
 import org.glassfish.appclient.client.acc.AppClientCommand;
 import org.glassfish.appclient.client.acc.AppClientContainer;
@@ -100,51 +102,61 @@ public class AppClientContainerAgent {
 
     public static void premain(String agentArgs, Instrumentation inst) {
         try {
+            long now = System.currentTimeMillis();
+
             ACCModulesManager.initialize(AppClientContainerAgent.class);
             /*
              * Process the agent arguments which include most of the appclient script
              * arguments.
              */
             launchInfo = CommandLaunchInfo.newInstance(agentArgs);
-            appClientCommandArgs = launchInfo.getAppclientCommandArguments();
+            if (launchInfo.getClientLaunchType() != ClientLaunchType.UNKNOWN) {
+                appClientCommandArgs = launchInfo.getAppclientCommandArguments();
 
-            /*
-             * Load the ACC configuration XML file.
-             */
-            ClientContainer clientContainer = readConfig(appClientCommandArgs.chooseConfigFilePath());
+                /*
+                 * Load the ACC configuration XML file.
+                 */
+                ClientContainer clientContainer = readConfig(appClientCommandArgs.chooseConfigFilePath());
 
-            /*
-             * Decide what target servers to use.  This combines any
-             * specified on the command line with any in the config file's
-             * target-server elements as well as any set in the properties
-             * of the config file.
-             */
-            final TargetServer[] targetServers = TargetServerHelper.targetServers(
-                    clientContainer,
-                    appClientCommandArgs.getServer());
+                /*
+                 * Decide what target servers to use.  This combines any
+                 * specified on the command line with any in the config file's
+                 * target-server elements as well as any set in the properties
+                 * of the config file.
+                 */
+                final TargetServer[] targetServers = TargetServerHelper.targetServers(
+                        clientContainer,
+                        appClientCommandArgs.getServer());
 
-            /*
-             * Get the configurator.  Doing so correctly involves merging
-             * the configuration file data with some of the command line and
-             * agent arguments.
-             */
-            final AppClientContainer.Configurator configurator =
-                    createConfigurator(targetServers,
-                        appClientCommandArgs);
+                /*
+                 * Get the configurator.  Doing so correctly involves merging
+                 * the configuration file data with some of the command line and
+                 * agent arguments.
+                 */
+                final AppClientContainer.Configurator configurator =
+                        createConfigurator(targetServers,
+                            appClientCommandArgs);
 
-            /*
-             * Create the ACC.  Again, precisely how we create it depends on some
-             * of the command line arguments and agent arguments.
-             */
-            acc = createContainer(configurator,
-                    launchInfo);
+                /*
+                 * Create the ACC.  Again, precisely how we create it depends on some
+                 * of the command line arguments and agent arguments.
+                 */
+                acc = createContainer(configurator,
+                        launchInfo);
 
+                /*
+                 * Because the JMV might invoke the client's main class, the agent
+                 * needs to prepare the container.  (This is done as part of the
+                 * AppClientContainer.start() processing in the public API.
+                 */
+                acc.prepare();
+            }
+            
             /*
-             * Because the JMV might invoke the client's main class, the agent
-             * needs to prepare the container.  (This is done as part of the
-             * AppClientContainer.start() processing in the public API.
+             * Make the new ACC accessible to the facade main classes.
              */
-            acc.prepare();
+            AppClientFacadeInfo.setACC(acc);
+            logger.fine("AppClientContainerAgent finished after " + (System.currentTimeMillis() - now) + " ms");
 
         } catch (UserError ue) {
             ue.printStackTrace();
@@ -155,6 +167,8 @@ public class AppClientContainerAgent {
         }
 
     }
+
+    
 
     private static Configurator createConfigurator(
             final TargetServer[] targetServers,

@@ -56,6 +56,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.events.XMLEvent;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.appclient.client.acc.Launchable.Facade;
+import org.xml.sax.SAXParseException;
 
 /**
  * Something launchable by the ACC - an app client archive or a class.
@@ -72,7 +73,7 @@ interface Launchable {
      */
     Class getMainClass() throws ClassNotFoundException;
 
-    ApplicationClientDescriptor getDescriptor(ClassLoader loader) throws IOException;
+    ApplicationClientDescriptor getDescriptor(ClassLoader loader) throws IOException, SAXParseException;
 
 
     static class Util {
@@ -206,13 +207,15 @@ interface Launchable {
         }
 
         public Class getMainClass() throws ClassNotFoundException {
-            return Class.forName(mainClassNameToLaunch);
+            return Class.forName(mainClassNameToLaunch, true, Thread.currentThread().getContextClassLoader());
         }
 
-        public ApplicationClientDescriptor getDescriptor(final ClassLoader loader) throws IOException {
+        public ApplicationClientDescriptor getDescriptor(final ClassLoader loader) throws IOException, SAXParseException {
             if (acDesc == null) {
-                ArchivistFactory f = org.glassfish.appclient.client.acc.Util.getArchivistFactory();
-                AppClientArchivist archivist = (AppClientArchivist) f.getArchivist(clientRA, loader);
+//                ArchivistFactory f = org.glassfish.appclient.client.acc.Util.getArchivistFactory();
+//                AppClientArchivist archivist = (AppClientArchivist) f.getArchivist(clientRA, loader);
+                AppClientArchivist archivist = new AppClientArchivist();
+                archivist.open(clientRA);
                 acDesc = archivist.getDescriptor();
             }
             return acDesc;

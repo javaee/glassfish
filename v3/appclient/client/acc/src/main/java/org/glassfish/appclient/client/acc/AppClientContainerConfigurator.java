@@ -166,7 +166,7 @@ public class AppClientContainerConfigurator implements AppClientContainer.Config
     }
 
     private AppClientContainer createContainer(final Launchable client,
-            final CallbackHandler callerSuppliedCallbackHandler) throws BootException, BootException, URISyntaxException {
+            final CallbackHandler callerSuppliedCallbackHandler) throws BootException, BootException, URISyntaxException, ClassNotFoundException {
         AppClientContainer container = ACCModulesManager.getComponent(AppClientContainer.class);
         container.setClient(client);
         container.setCallbackHandler(callerSuppliedCallbackHandler);

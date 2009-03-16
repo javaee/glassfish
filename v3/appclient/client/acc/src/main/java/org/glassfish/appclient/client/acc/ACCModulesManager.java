@@ -106,7 +106,7 @@ public class ACCModulesManager implements ModuleStartup {
         habitat = prepareHabitat(
                 Logger.getLogger("org.glassfish.appclient.client"));
 //        habitat.addComponent("default", habitat);
-        habitat.getComponent(Globals.class);
+//        habitat.getComponent(Globals.class);
     }
 
 //    public synchronized static Habitat getHabitat(final ClassLoader classLoader, final Logger logger) throws
@@ -203,9 +203,9 @@ public class ACCModulesManager implements ModuleStartup {
                     for (final Module module : getModules())
                         parseInhabitants(module, name,parser);
 
-                    ConfigParser configParser = new ConfigParser(habitat);
-                    for( Populator p : habitat.getAllByContract(Populator.class) )
-                        p.run(configParser);
+//                    ConfigParser configParser = new ConfigParser(habitat);
+//                    for( Populator p : habitat.getAllByContract(Populator.class) )
+//                        p.run(configParser);
 
                     return habitat;
                 } catch (IOException e) {
