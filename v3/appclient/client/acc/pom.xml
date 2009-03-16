@@ -255,11 +255,13 @@
         <!--
             Required for security.
         -->
+<!--
         <dependency>
             <groupId>org.glassfish.security</groupId>
             <artifactId>appclient.security</artifactId>
             <version>${project.version}</version>
         </dependency>
+-->
         <!--
             Required for InstrumentableClassLoader (persistence unit support)
         -->
