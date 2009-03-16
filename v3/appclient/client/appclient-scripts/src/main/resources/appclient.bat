@@ -68,11 +68,9 @@ rem so using the fast feature that is built in to the java launcher.
 rem
 set AS_INSTALL=%~dp0..
 set AS_INSTALL_MOD=%AS_INSTALL%\modules
-set envFile="%AS_INSTALL%\config\asenv.bat"
-if EXIST %envFile% %envFile%
 
 rem Record the default ACC config file if possible
-call :recordACCArg -configxml %AS_ACC_CONFIG%
+call :recordACCArg -configxml %AS_INSTALL%\domains\domain1\config\sun-acc.xml
 
 set accJar="%AS_INSTALL_MOD%\gf-client.jar"
 
@@ -118,9 +116,8 @@ if NOT "%APPCPATH%"=="" (
     set accArgs=!accArgs!,appcpath="%APPCPATH%"
 )
 
-echo java -javaagent:%accJar%=mode=acscript%accArgs%,%accMainArgs% ^
-    -Djava.system.class.loader=org.glassfish.appclient.client.acc.ACCClassLoader ^
-    %jvmArgs% %jvmMainArgs% ^
+java %jvmArgs% -javaagent:%accJar%=mode=acscript%accArgs%,%accMainArgs% ^
+    %jvmMainArgs% ^
     %appArgs%
 
 goto :EOF

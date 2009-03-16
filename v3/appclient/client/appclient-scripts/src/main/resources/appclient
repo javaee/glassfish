@@ -1,4 +1,5 @@
 #!/bin/sh
+set -x
 #/*
 # * To change this template, choose Tools | Templates
 # * and open the template in the editor.
@@ -69,8 +70,6 @@
 #
 
 
-accJar=\"$AS_INSTALL_MOD/gf-client.jar\"
-
 # accMainArgs contains agent arguments that let the ACC know
 # how the java launcher chose which main class to start and ACC arguments
 # and options which are not passed on the resulting command line.
@@ -120,27 +119,27 @@ recordClientArg() {
 # determinant and extra ACC args
 # are to be treated as application arguments, control never reaches here.
 #
-    if [ ! $mainClassIdent -o "$mainClassIdent" = "tentative" ]; then
-        if [ -d "$1" ]; then
+    if [ ! $mainClassIdent -o "$mainClassIdent"="tentative" ]; then
+        if [ -d $1 ]; then
             # -client with a directory
             jvmMainArgs=-jar\ \$accJar
-            accMainArgs=client=dir=\"$1\"
+            accMainArgs=client=dir=$1
         else
             # -client with a non-directory, so
             # the client had better be a JAR
-            jvmMainArgs=-jar\ \"$1\"
-            accMainArgs=client=jar=\"$1\"
+            jvmMainArgs=-jar\ $1
+            accMainArgs=client=jar=$1
         fi
         mainClassIdent=tentative
     else
         recordAPPArg -client
-        recordAPPArg "$1"
+        recordAPPArg $1
     fi
 }
 
 recordACCArg() {
     if [ "$ACCArgType" = "APP" ]; then
-        recordAPPArg "$1" 
+        recordAPPArg "$1"
         if [ 2 ]; then
             recordAPPArg "$2"
         fi
@@ -150,15 +149,15 @@ recordACCArg() {
 
         recordClientArg "$2"
     else
-        accArgs=$accArgs,arg=$1${2:+,arg=\"$2\"}
+        accArgs=$accArgs,arg=$1${2:+,arg=$2}
     fi
 }
 
 recordMainClass() {
     case $1 in
         -jar)
-            jvmMainArgs=-jar\ \"$2\"
-            accMainArgs=client=jar=\"$2\"
+            jvmMainArgs=-jar\ $2
+            accMainArgs=client=jar=$2
             mainClassIdent=final ;;
 
         -client)
@@ -196,9 +195,9 @@ recordJVMArg() {
             recordAPPArg "$2"
         fi
     elif [ "$1" = "-jar" ]; then
-        recordMainClass -jar "$2"
+        recordMainClass -jar $2
     else
-        jvmArgs=$jvmArgs\ \"$1\"\ ${2:+\"$2\"}
+        jvmArgs=$jvmArgs\ $1\ ${2:+$2}
     fi
 }
 
@@ -241,16 +240,10 @@ JVMArgType=JVM
 
 AS_INSTALL=`dirname $0`/..
 AS_INSTALL_MOD=$AS_INSTALL/modules
-
-confFile=.$AS_INSTALL/config/asenv.conf
-if [ -x $confFile ]; then
-     . $confFile
-fi
+accJar=$AS_INSTALL_MOD/gf-client.jar
 
 # Record the default ACC config file if possible
-if [ $AS_ACC_CONFIG ]; then
-     recordACCArg -configxml $AS_ACC_CONFIG
-fi
+recordACCArg -configxml "$AS_INSTALL/domains/domain1/config/sun-acc.xml"
 
 for x do
     argType=APP  # unless we decide it is some other type later in the logic
@@ -285,7 +278,6 @@ done
 if [ "$APPCPATH" ]; then
     accArgs=$accArgs,appcpath=\"$APPCPATH\"
 fi
-echo exec java -javaagent:$accJar=mode=acscript${accArgs},$accMainArgs \
-    -Djava.system.class.loader=org.glassfish.appclient.client.acc.ACCClassLoader \
-    $jvmArgs $jvmMainArgs \
+exec java $jvmArgs -javaagent:$accJar=mode=acscript${accArgs},$accMainArgs \
+    $jvmMainArgs \
     $appArgs
