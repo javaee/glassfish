@@ -1,9 +1,7 @@
-REM DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-REM 
-REM Copyright 2004-2008 Sun Microsystems, Inc. All rights reserved.
-REM 
-REM Use is subject to License Terms
-REM 
+rem
+rem Copyright 2004-2005 Sun Microsystems, Inc. All rights reserved.
+rem Use is subject to license terms.
+rem
 
 set AS_ANT=..\lib\ant
 set AS_ANT_LIB=..\lib\ant\lib
@@ -26,5 +24,5 @@ set AS_NATIVE_LAUNCHER_LIB_PREFIX=\jre\bin\client
 set AS_WEBCONSOLE_LIB=../lib
 set AS_JATO_LIB=../lib
 set AS_HADB=%HADB_HOME%
-set AS_DERBY_INSTALL=..\..\javadb
+set AS_DERBY_INSTALL=..\javadb
 set AS_MFWK_HOME=%MFWK_HOME%

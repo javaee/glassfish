@@ -30,7 +30,12 @@
 
          <resolveAll todir="target/stage/glassfish/modules" tolerateBrokenPOMs="true" stripVersion="true">
 	    <scope level="compile,runtime" />
-         </resolveAll>	
+    </resolveAll>	
+
+    <!-- temporary workaround for MS1 mq integration since artifact
+    type is not being properly resolved as distribution-fragment -->
+
+	<resolveArtifact todir="target/fragments" groupID="org.glassfish" artifactID="mq-distribution" type="zip" />
 
 	<delete dir="target/stage/glassfish/modules" includes="*.zip" />
 	<delete dir="target/stage/glassfish/modules" includes="*.pom" />

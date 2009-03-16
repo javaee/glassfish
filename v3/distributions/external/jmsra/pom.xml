@@ -36,59 +36,39 @@
 * holder. 
 */ 
 --> 
-<!--
-  External repackaging modules.
-  
-  These modules are used to provide hk2 module 'facade' to external (possibly 3rd party) jar files.
--->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
     <parent>
-      <groupId>org.glassfish</groupId>
-      <artifactId>glassfish-parent</artifactId>
-      <version>3.0-SNAPSHOT</version>
+        <groupId>org.glassfish.external</groupId>
+        <artifactId>external</artifactId>
+        <version>3.0-SNAPSHOT</version>
     </parent>
-    
-    <packaging>pom</packaging>
-    <groupId>org.glassfish.external</groupId>
-    <artifactId>external</artifactId>
-    <name>Repackaged external modules</name>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>jmsra</artifactId>
+    <packaging>distribution-fragment</packaging>
+    <name>JMS GlassFish System RA Assembly</name>
 
-    <modules>
-        <module>ant</module>
-        <module>javadb</module>    
-        <module>apache-commons</module>
-        <module>jmxremote_optional</module>
-        <module>sysnet-registration</module>
-        <module>commons-codec</module>
-        <module>ldapbp</module>
-        <module>asm-all</module>
-        <module>dbschema</module>
-        <module>schema2beans</module>
-	<module>antlr</module>
-	<module>jmsra</module>
-    </modules>
     <build>
         <plugins>
             <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
+                <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
+                <artifactId>maven-antrun-extended-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>work-around</id>
-                        <phase>process-resources</phase>
+                        <phase>process-classes</phase>
                         <configuration>
                             <tasks>
-                                <!-- For whetever reason (I have to investigate further),
-                                     running mvn install subsequently adds a version attr
-                                     to all import headers. Since packages don't have matching
-                                     version, it fails. So, to simulate clean build, we clean
-                                     the outputDir. Sahoo.
-                                -->
-                                <delete dir="${project.build.outputDirectory}" quiet="true"/>
-                                <!-- Because, we inherit the plugin from parent and the parent
-                                     configures manifest task, it fails when classes dir does not
-                                     exist. So, we create one -->
-                                <mkdir dir="${project.build.outputDirectory}"/>
+                                <resolveArtifact artifactId="mq-distribution" property="mq-distribution.zip"/>
+				<mkdir dir="target/tmp"/>
+				<mkdir dir="target/classes/glassfish/lib/install/applications/jmsra"/>
+				<unzip src="${mq-distribution.zip}"
+					dest="target/tmp">
+                                    <patternset>
+					    <include name="mq/lib/imqjmsra.rar"/>
+				    </patternset>
+			        </unzip>
+				<unzip src="target/tmp/mq/lib/imqjmsra.rar"
+					dest="target/classes/glassfish/lib/install/applications/jmsra">
+                                </unzip>
                             </tasks>
                         </configuration>
                         <goals>
@@ -97,17 +77,29 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <!-- Enable it for jar type -->
-                    <supportedProjectTypes>
-                        <supportedProjectType>jar</supportedProjectType>
-                    </supportedProjectTypes>
-                </configuration>
-            </plugin>
         </plugins>
+        <extensions>
+            <extension>
+                <groupId>org.glassfish.build</groupId>
+                <artifactId>maven-glassfishbuild-extension</artifactId>
+                <version>${project.version}</version>
+            </extension>
+        </extensions>
     </build>
-</project>
 
+    <developers>
+        <developer>
+            <id>snjezana</id>
+            <name>Snjezana Sevo-Zenzerovic</name>
+            <organization>Sun Microsystems, Inc.</organization>
+        </developer>
+    </developers>
+    <dependencies>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>mq-distribution</artifactId>
+	    <version>4.4-003</version>
+	    <type>zip</type>
+        </dependency>
+    </dependencies>
+</project>

@@ -150,6 +150,19 @@
             <artifactId>orb-iiop</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>mq-distribution</artifactId>
+	    <version>${mq.version}</version>
+	    <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>jmsra</artifactId>
+            <version>${project.version}</version>
+            <type>distribution-fragment</type>
+        </dependency>
+
     </dependencies>
 </project>
 
