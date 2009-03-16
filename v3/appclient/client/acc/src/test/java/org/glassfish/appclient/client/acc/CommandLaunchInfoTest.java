@@ -42,6 +42,7 @@ package org.glassfish.appclient.client.acc;
 
 import java.io.File;
 import java.net.URL;
+import org.junit.Ignore;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
@@ -92,6 +93,7 @@ public class CommandLaunchInfoTest {
 
     }
 
+    @Ignore
     @Test
     public void testB() throws Exception, UserError {
         URL testFileURL = getClass().getResource(PASSWORDFILE_PATH);
