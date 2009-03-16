@@ -38,16 +38,14 @@
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
     setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
 />
-<sun:page>
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.server.AppsConfigPageTitle}" >
+<!define name="content">
+    <event>
     <!beforeCreate 
         getRequestValue(key="configName" value=>$page{configName});
     />
+    </event>
 #include "/shared/restart.inc"    
-    <sun:html>
-        <sun:head id="configHead" title="$resource{i18n.configuration.pageTitle}">
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>
-        <sun:body onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="configForm"> 
 #include "/shared/treeBreadcrumbs.inc"
                 <sun:title 
@@ -70,8 +68,7 @@
                     </event>
                 <sun:hidden id="helpKey" value="$resource{help.configuration}" />
             </sun:form>           
-        </sun:body> 
-    </sun:html>  
-</sun:page>
+</define>
+</composition>
 
 

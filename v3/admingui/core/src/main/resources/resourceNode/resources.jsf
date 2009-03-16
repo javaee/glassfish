@@ -39,14 +39,10 @@
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
     setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
 />
-<sun:page>
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.server.AppsConfigPageTitle}" >
+<!define name="content">
 #include "/shared/restart.inc"    
-    <sun:html>
-        <sun:head id="resourcesHead" title="$resource{i18n.resourcesPageTitle}">
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>
-        <sun:body onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
-            <sun:form id="resourcesForm"> 
+   <sun:form id="resourcesForm"> 
 #include "/shared/treeBreadcrumbs.inc"
                 <sun:title 
                 id="resourcesPageTitle" 
@@ -69,8 +65,6 @@
 
                 <sun:hidden id="helpKey" value="$resource{help.resources}" />
             </sun:form>           
-        </sun:body> 
-    </sun:html>  
-</sun:page>
-
+</define>
+</composition>
 
