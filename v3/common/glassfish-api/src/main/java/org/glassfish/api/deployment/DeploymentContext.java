@@ -44,6 +44,7 @@ import java.io.File;
 import java.lang.instrument.ClassFileTransformer;
 import java.util.Properties;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Useful services for Deployer service implementation
@@ -166,4 +167,22 @@ public interface DeploymentContext extends ApplicationContext, ExecutionContext 
      * @return archive handler
      */
     public ArchiveHandler getArchiveHandler();
+
+    /**
+     * Gets the original source archive
+     * In case of archive deployment, this will return the archive before
+     * expanding. In case of directory deployment, this will return the same
+     * thing as getSource()
+     *
+     * @return the original source archive
+     */
+    public ReadableArchive getOriginalSource();
+
+    /**
+     * Gets the module properties for modules
+     *
+     * @return a map containing module properties
+     */
+    public Map<String, Properties> getModulePropsMap();
+
 }

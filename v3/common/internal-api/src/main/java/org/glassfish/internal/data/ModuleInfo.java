@@ -41,6 +41,7 @@ import org.glassfish.api.deployment.*;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.event.EventListener.Event;
 import org.glassfish.api.event.Events;
+import org.glassfish.api.admin.config.Property;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.internal.deployment.Deployment;
 import org.jvnet.hk2.component.PreDestroy;
@@ -69,14 +70,17 @@ public class ModuleInfo {
     private final Set<EngineRef> engines = new LinkedHashSet<EngineRef>();
     private final String name;
     private final Events events;
+    private Properties moduleProps;
     private boolean started=false;
 
-    public ModuleInfo(Events events, String name, Collection<EngineRef> refs) {
+    public ModuleInfo(Events events, String name, Collection<EngineRef> refs, 
+        Properties moduleProps) {
         this.name = name;
         this.events = events;
         for (EngineRef ref : refs) {
             engines.add(ref);
         }
+        this.moduleProps = moduleProps;
     }
 
     public Set<EngineRef> getEngineRefs() {
@@ -306,6 +310,18 @@ public class ModuleInfo {
     public void save(Module module) throws TransactionFailure, PropertyVetoException {
 
         module.setName(name);
+
+        // write the module properties
+        // it will write both module level and app level ones except the 
+        // object-type
+        for (Iterator itr = moduleProps.keySet().iterator(); itr.hasNext();) {
+            String propName = (String) itr.next();
+            Property prop = module.createChild(Property.class);
+            module.getProperty().add(prop);
+            prop.setName(propName);
+            prop.setValue(moduleProps.getProperty(propName));
+        }
+
         for (EngineRef ref : _getEngineRefs()) {
             Engine engine = module.createChild(Engine.class);
             module.getEngines().add(engine);

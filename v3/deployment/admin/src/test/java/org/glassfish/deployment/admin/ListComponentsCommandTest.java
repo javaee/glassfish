@@ -50,6 +50,7 @@ import org.glassfish.api.deployment.DeployCommandParameters;
 
 import java.beans.PropertyVetoException;
 import java.util.List;
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.Properties;
 
@@ -174,6 +175,9 @@ public class ListComponentsCommandTest {
         public void setEngines(List<Engine> engines) {
             this.engineList = engines;
         }
+
+       public List<Property> getProperty() {return null;}
+
     }
         //mock-up Application object
     public class ApplicationTest extends RandomConfig implements Application {
@@ -205,6 +209,7 @@ public class ListComponentsCommandTest {
         public List<ApplicationConfig> getApplicationConfig(Class<?> type) {return null;}
         public <T extends ApplicationConfig> T getApplicationConfig(Class<T> type) {return null;}
         public List<ApplicationConfig> getApplicationConfigs() {return null;}
+        public Map<String, Properties> getModulePropertiesMap() {return null;}
 
         public Module getModule(String moduleName) {return null;}
         public List<Module> getModule() {

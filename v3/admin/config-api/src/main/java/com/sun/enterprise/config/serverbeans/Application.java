@@ -49,6 +49,8 @@ import java.beans.PropertyVetoException;
 import java.io.File;
 import java.util.List;
 import java.util.Properties;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.glassfish.api.admin.config.*;
 import org.glassfish.api.deployment.DeployCommandParameters;
@@ -295,6 +297,8 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
 
     @DuckTyped
     public DeployCommandParameters getDeployParameters(ApplicationRef appRef);    
+    @DuckTyped
+    public Map<String, Properties> getModulePropertiesMap();
 
     public class Duck {
         public static <T extends ApplicationConfig> T getApplicationConfig(Application me, Class<T> type) {
@@ -343,6 +347,23 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
             deploymentParams.libraries = app.getLibraries();
             deploymentParams.virtualservers = appRef.getVirtualServers();
             return deploymentParams;
+        }
+
+        public static Map<String, Properties> getModulePropertiesMap(
+            Application me) {
+            Map<String, Properties> modulePropertiesMap = 
+                new HashMap<String, Properties>();
+            for (Module module: me.getModule()) {
+                if (module.getProperty() != null) {
+                    Properties moduleProps = new Properties();
+                    for (Property property : module.getProperty()) {
+                        moduleProps.put(property.getName(), 
+                            property.getValue());
+                    }
+                    modulePropertiesMap.put(module.getName(), moduleProps);
+                }
+            }
+            return modulePropertiesMap;
         }
     }
     

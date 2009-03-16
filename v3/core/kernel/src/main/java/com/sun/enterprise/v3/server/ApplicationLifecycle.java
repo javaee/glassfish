@@ -235,6 +235,7 @@ public class ApplicationLifecycle implements Deployment {
                     ModuleInfo moduleInfo = null;
                     try {
                         moduleInfo = prepareModule(sortedEngineInfos, appName, context, report, tracker);
+
                     } catch(Exception prepareException) {
                         report.failure(logger, "Exception while preparing the app");
                         tracker.actOn(logger);
@@ -570,7 +571,8 @@ public class ApplicationLifecycle implements Deployment {
         }
         // I need to create the application info here from the context, or something like this.
         // and return the application info from this method for automatic registration in the caller.
-        return new ModuleInfo(events, moduleName, addedEngines);
+        return new ModuleInfo(events, moduleName, addedEngines, 
+            context.getProps());
     }
 
     protected Collection<EngineInfo> setupContainer(Sniffer sniffer, Module snifferModule,  Logger logger, ActionReport report) {
@@ -672,7 +674,7 @@ public class ApplicationLifecycle implements Deployment {
     public void registerAppInDomainXML(final ApplicationInfo
         applicationInfo, final DeploymentContext context)
         throws TransactionFailure {
-        final Properties moduleProps = context.getProps();
+        final Properties appProps = context.getProps();
         ConfigSupport.apply(new ConfigCode() {
             public Object run(ConfigBeanProxy... params) throws PropertyVetoException, TransactionFailure {
 
@@ -683,28 +685,28 @@ public class ApplicationLifecycle implements Deployment {
                 Application app = params[0].createChild(Application.class);
 
                 // various attributes
-                app.setName(moduleProps.getProperty(ServerTags.NAME));
-                app.setLocation(moduleProps.getProperty(
+                app.setName(appProps.getProperty(ServerTags.NAME));
+                app.setLocation(appProps.getProperty(
                     ServerTags.LOCATION));
-                app.setObjectType(moduleProps.getProperty(
+                app.setObjectType(appProps.getProperty(
                     ServerTags.OBJECT_TYPE));
                 // always set the enable attribute of application to true
                 app.setEnabled(String.valueOf(true));
-                if (moduleProps.getProperty(ServerTags.CONTEXT_ROOT) !=
+                if (appProps.getProperty(ServerTags.CONTEXT_ROOT) !=
                     null) {
-                app.setContextRoot(moduleProps.getProperty(
+                app.setContextRoot(appProps.getProperty(
                             ServerTags.CONTEXT_ROOT));
                 }
-                if (moduleProps.getProperty(ServerTags.LIBRARIES) !=
+                if (appProps.getProperty(ServerTags.LIBRARIES) !=
                     null) {
-                app.setLibraries(moduleProps.getProperty(
+                app.setLibraries(appProps.getProperty(
                             ServerTags.LIBRARIES));
                 }
-                app.setDirectoryDeployed(moduleProps.getProperty(
+                app.setDirectoryDeployed(appProps.getProperty(
                     ServerTags.DIRECTORY_DEPLOYED));
 
-                if (moduleProps.getProperty(ServerTags.DESCRIPTION) !=null) {
-                    app.setDescription(moduleProps.getProperty(
+                if (appProps.getProperty(ServerTags.DESCRIPTION) !=null) {
+                    app.setDescription(appProps.getProperty(
                             ServerTags.DESCRIPTION));
                 }
                 apps.getModules().add(app);
@@ -713,7 +715,7 @@ public class ApplicationLifecycle implements Deployment {
                 // property element
                 // trim the properties that have been written as attributes
                 // the rest properties will be written as property element
-                for (Iterator itr = moduleProps.keySet().iterator();
+                for (Iterator itr = appProps.keySet().iterator();
                     itr.hasNext();) {
                     String propName = (String) itr.next();
                     if (!propName.equals(ServerTags.NAME) &&
@@ -730,16 +732,16 @@ public class ApplicationLifecycle implements Deployment {
                         Property prop = app.createChild(Property.class);
                         app.getProperty().add(prop);
                         prop.setName(propName);
-                        prop.setValue(moduleProps.getProperty(propName));
+                        prop.setValue(appProps.getProperty(propName));
                     }
                 }
 
                 // adding the application-ref element
                 ApplicationRef appRef = params[1].createChild(ApplicationRef.class);
-                appRef.setRef(moduleProps.getProperty(ServerTags.NAME));
-                if (moduleProps.getProperty(
+                appRef.setRef(appProps.getProperty(ServerTags.NAME));
+                if (appProps.getProperty(
                     ServerTags.VIRTUAL_SERVERS) != null) {
-                    appRef.setVirtualServers(moduleProps.getProperty(
+                    appRef.setVirtualServers(appProps.getProperty(
                         ServerTags.VIRTUAL_SERVERS));
                 } else {
                     // deploy to all virtual-servers, we need to get the list.
@@ -756,11 +758,11 @@ public class ApplicationLifecycle implements Deployment {
                     }
                     appRef.setVirtualServers(sb.toString());
                 }
-                appRef.setEnabled(moduleProps.getProperty(
+                appRef.setEnabled(appProps.getProperty(
                     ServerTags.ENABLED));
 
                 List<ApplicationConfig> savedAppConfigs =
-                        (List<ApplicationConfig>) moduleProps.get(DeploymentProperties.APP_CONFIG);
+                        (List<ApplicationConfig>) appProps.get(DeploymentProperties.APP_CONFIG);
                 if (savedAppConfigs != null) {
                     for (ApplicationConfig ac : savedAppConfigs) {
                         app.getApplicationConfigs().add(ac);

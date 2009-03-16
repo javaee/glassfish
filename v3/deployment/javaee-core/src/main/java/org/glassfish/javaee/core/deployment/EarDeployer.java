@@ -286,16 +286,22 @@ public class EarDeployer implements Deployer {
     public Map<ModuleDescriptor, ExtendedDeploymentContext> initSubContext(final Application application, final DeploymentContext context) {
 
         Map<ModuleDescriptor, ExtendedDeploymentContext> results = new HashMap<ModuleDescriptor, ExtendedDeploymentContext>();
+
         for (final BundleDescriptor bd : application.getBundleDescriptors()) {
             if (!results.containsKey(bd.getModuleDescriptor())) {
+                final String moduleUri = 
+                    bd.getModuleDescriptor().getArchiveUri();
                 final ReadableArchive subArchive;
                 try {
-                    subArchive = context.getSource().getSubArchive(bd.getModuleDescriptor().getArchiveUri());
+                    subArchive = context.getSource().getSubArchive(moduleUri);
                     subArchive.setParentArchive(context.getSource());
                 } catch(IOException ioe) {
                     ioe.printStackTrace();
                     return null;
                 }
+                
+                final Properties moduleProps = 
+                    getModuleProps(context, moduleUri);
 
                 ExtendedDeploymentContext subContext = new DeploymentContextImpl(logger, context.getSource(),
                         context.getCommandParameters(OpsParams.class), env) {
@@ -304,7 +310,7 @@ public class EarDeployer implements Deployer {
                     public ClassLoader getClassLoader() {
                         try {
                             EarClassLoader appCl = EarClassLoader.class.cast(context.getClassLoader());
-                            return appCl.getModuleClassLoader(bd.getModuleDescriptor().getArchiveUri());
+                            return appCl.getModuleClassLoader(moduleUri);
                         } catch (ClassCastException e) {
                             return context.getClassLoader();
                         }                        
@@ -321,11 +327,15 @@ public class EarDeployer implements Deployer {
                     }
 
                     @Override
+                    public Properties getProps() {
+                        return moduleProps;
+                    }
+
+                    @Override
                     public ReadableArchive getOriginalSource() {
                         try {
                             File appRoot = context.getSourceDir();
-                            File origModuleFile = new File(appRoot, 
-                                bd.getModuleDescriptor().getArchiveUri()); 
+                            File origModuleFile = new File(appRoot, moduleUri); 
                             return archiveFactory.openArchive(
                                 origModuleFile);
                         } catch (IOException ioe) {
@@ -369,5 +379,17 @@ public class EarDeployer implements Deployer {
             }
         }
         return results;
+    }
+
+    private Properties getModuleProps(DeploymentContext context, 
+        String moduleUri) {
+        Map<String, Properties> modulePropsMap = context.getModulePropsMap();
+        Properties moduleProps = modulePropsMap.get(moduleUri);
+        if (moduleProps == null) {
+            moduleProps = new Properties();
+            modulePropsMap.put(moduleUri, moduleProps);
+        }
+
+        return moduleProps;
     }
 }

@@ -42,6 +42,7 @@ import org.glassfish.internal.api.ClassLoaderHierarchy;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.net.URISyntaxException;
 import java.net.MalformedURLException;
@@ -112,12 +113,10 @@ public interface ExtendedDeploymentContext extends DeploymentContext {
     public void setSource(ReadableArchive source);
 
     /**
-     * Gets the original source archive
-     * In case of archive deployment, this will return the archive before
-     * expanding. In case of directory deployment, this will return the same
-     * thing as getSource()
+     * Sets the module properties for modules
      *
-     * @return the original source archive
+     * @param modulePropsMap
      */
-    public ReadableArchive getOriginalSource();
+    public void setModulePropsMap(Map<String, Properties> modulePropsMap);
+
 }

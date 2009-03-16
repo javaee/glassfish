@@ -69,6 +69,7 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
     boolean finalClassLoaderAccessedDuringPrepare = false;
     boolean tempClassLoaderInvalidated = false;
     ClassLoader sharableTemp = null;
+    Map<String, Properties> modulePropsMap = new HashMap<String, Properties>();
 
     /** Creates a new instance of DeploymentContext */
     public DeploymentContextImpl(Logger logger, ReadableArchive source,
@@ -355,4 +356,21 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
         return originalSource;
     }
 
+    /**
+     * Gets the module properties for modules
+     *
+     * @return a map containing module properties
+     */
+    public Map<String, Properties> getModulePropsMap() {
+        return modulePropsMap;
+    }
+
+    /**
+     * Sets the module properties for modules
+     *
+     * @param modulePropsMap
+     */
+    public void setModulePropsMap(Map<String, Properties> modulePropsMap) {
+        this.modulePropsMap = modulePropsMap;
+    }
 }

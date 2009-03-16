@@ -39,6 +39,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.component.Injectable;
 import org.glassfish.api.admin.config.Named;
+import org.glassfish.api.admin.config.PropertyBag;
 
 import java.beans.PropertyVetoException;
 import java.util.List;
@@ -50,7 +51,7 @@ import java.util.List;
  */
 @org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ModuleConfig")
 @Configured
-public interface Module extends Named, ConfigBeanProxy {
+public interface Module extends Named, ConfigBeanProxy, PropertyBag {
 
     @Element("*")
     List<Engine> getEngines();

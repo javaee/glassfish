@@ -133,9 +133,15 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
+
+        deploymentContext.getProps().putAll(application.getDeployProperties());
+
         if (properties!=null) {
             deploymentContext.getProps().putAll(properties);
         }
+
+        deploymentContext.setModulePropsMap(
+            application.getModulePropertiesMap());
 
         if (info!=null) {
             deployment.undeploy(name, deploymentContext, report);
