@@ -227,7 +227,7 @@ this or the downstream JARs and so attempts to find things fail.
                 Creates a zip file containing the stand-alone ACC JAR and all the
                 module JARs on which the ACC depends.
             -->
-<!--
+
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.1</version>
@@ -246,7 +246,6 @@ this or the downstream JARs and so attempts to find things fail.
                     </execution>
                 </executions>
             </plugin>
--->
 
         </plugins>
 
