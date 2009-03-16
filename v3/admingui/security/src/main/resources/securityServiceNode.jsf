@@ -38,10 +38,9 @@
 <sun:treeNode id="security"
     text="$resource{i18n.tree.security}"
     url="/security/security.jsf?configName=#{configName}"
-    target="main"
     >
     <!facet image>
-	<sun:imageHyperlink imageURL="resource/security/images/security.gif" url="/security/security.jsf?configName=#{configName}" target="main" border="0" immediate="true" />
+	<sun:imageHyperlink imageURL="resource/security/images/security.gif" url="/security/security.jsf?configName=#{configName}"  border="0" immediate="true" />
     </facet>
     <dynamicTreeNode id="realms"
         treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
@@ -53,10 +52,9 @@
         childURL="/security/realms/realmEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
         text="$resource{i18n.tree.realms}"
         url="/security/realms/realms.jsf?configName=#{configName}"
-        target="main"
         >
         <!facet image>
-            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/security/realms/realms.jsf?configName=#{configName}" target="main" border="$int{0}" immediate="$boolean{true}" />
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/security/realms/realms.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
         </facet>
     </dynamicTreeNode>
     <dynamicTreeNode id="auditModules"
@@ -69,10 +67,9 @@
         childURL="/security/auditModules/auditModuleEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
         text="$resource{i18n.tree.auditModules}"
         url="/security/auditModules/auditModules.jsf?configName=#{configName}"
-        target="main"
         >
         <!facet image>
-            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/security/auditModules/auditModules.jsf?configName=#{configName}" target="main" border="$int{0}" immediate="$boolean{true}" />
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/security/auditModules/auditModules.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
         </facet>
     </dynamicTreeNode>
     
@@ -92,10 +89,9 @@
             childURL="configuration/jaccProviderEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"                    
             text="$resource{i18n.tree.jaccProviders}"
             url="/configuration/jaccProviders.jsf?configName=#{configName}"
-            target="main"
             >
             <!facet image>
-                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/configuration/jaccProviders.jsf?configName=#{configName}" target="main" border="$int{0}" immediate="$boolean{true}" />
+                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/configuration/jaccProviders.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
             </facet>
         </dynamicTreeNode>
 
@@ -114,10 +110,9 @@
             childURL="configuration/auditModuleEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
             text="$resource{i18n.tree.auditModules}"
             url="/configuration/auditModules.jsf?configName=#{configName}"
-            target="main"
             >
             <!facet image>
-                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/configuration/auditModules.jsf?configName=#{configName}" target="main" border="$int{0}" immediate="$boolean{true}" />
+                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/configuration/auditModules.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
             </facet>
         </dynamicTreeNode>
         -->

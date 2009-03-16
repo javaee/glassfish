@@ -2,4 +2,4 @@
 		text="$resource{i18n.tree.webContainer}"
 		url="monitor/webContainerPage.jsf"
 		imageURL="resource/images/container.gif" 
-                target="main" />
+ />

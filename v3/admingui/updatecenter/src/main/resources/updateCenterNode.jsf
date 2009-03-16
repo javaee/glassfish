@@ -43,6 +43,6 @@
                 text="$resource{i18n.tree.updateCenter}"
                 url="updateCenter/addOn.jsf"
                 imageURL="resource/updateCenter/images/updateCenter.png"
-                target="main">
+                >
 </sun:treeNode>
 

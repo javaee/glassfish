@@ -12,7 +12,7 @@
         imageURL="#{request.contextPath}/resource/updateCenter/images/updateCenter.png" 
         text="#{pageSession.linkMsg}"
         style="color:white; margin-left: 5px; text-decoration: none;"
-        target="main" rendered="#{pageSession.showUpdateMsg}"
+        rendered="#{pageSession.showUpdateMsg}"
     />
     <!afterCreate
 	setPageSessionAttribute(key="showUpdateMsg" value="false");

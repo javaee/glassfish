@@ -73,7 +73,6 @@
 	      text="$resource{i18n.tree.commonTasks}"
 	      url="/commonTask.jsf"
 	      imageURL="resource/images/common_tasks.gif"
-	      target="main"
 	      clientSide="#{true}">
 	  <!afterCreate
 	      getClientId(component="$this{component}" clientId=>$page{treeId});
@@ -84,9 +83,9 @@
 	    rendered="$session{showRegistration}"
 	    text="#{registrationNodeText}"
 	    url="/sysnet/#{registrationNodePage}.jsf"
-	    target="main">
+	    >
 	    <!facet image>
-		<sun:imageHyperlink imageURL="/resource/images/#{registrationNodePage}.png" url="/sysnet/#{registrationNodePage}.jsf" target="main" border="0" immediate="true" />
+		<sun:imageHyperlink imageURL="/resource/images/#{registrationNodePage}.png" url="/sysnet/#{registrationNodePage}.jsf"  border="0" immediate="true" />
 	    </facet>
 	</sun:treeNode>
 
@@ -95,7 +94,7 @@
 		      text="$resource{i18n.tree.appServer}"
 		      url="/appServer/serverInstGeneralPe.jsf?instanceName=server"
 		      imageURL="resource/images/instance.gif"
-		      target="main">
+		      >
 	    <!facet image>
 		<sun:image id="xyz" url="/resource/images/instance.gif" />
 	    </facet>
@@ -107,11 +106,10 @@
 	<sun:treeNode id="applications"
 		    text="$resource{i18n.tree.applications}"
 		    url="/applications/applications.jsf"
-		    target="main"
 		    expanded="$boolean{true}" 
 		    >
 	    <!facet image>
-		<sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/applications/applications.jsf" target="main" border="$int{0}" immediate="$boolean{true}" />
+		<sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/applications/applications.jsf"  border="$int{0}" immediate="$boolean{true}" />
 	    </facet>
 
       </sun:treeNode>
@@ -121,7 +119,6 @@
 	<sun:treeNode  id="resources"
 	    text="$resource{i18n.tree.resources}"
 	    url="/resourceNode/resources.jsf"
-	    target="main"
 	    imageURL="resource/images/resources.gif"
 	    expanded="$boolean{true}" 
 	    />
@@ -132,7 +129,6 @@
 	    text="$resource{i18n.tree.configuration}"
 	    url="/configuration/configuration.jsf?configName=server-config"
 	    imageURL="resource/images/configurations.gif"
-	    target="main"
 	    expanded="$boolean{true}"
 	    >
 	</sun:treeNode>

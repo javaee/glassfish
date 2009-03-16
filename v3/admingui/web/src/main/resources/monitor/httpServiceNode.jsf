@@ -2,4 +2,4 @@
 		text="$resource{i18n.tree.httpService}"
 		url="monitor/httpServicePage.jsf"
 		imageURL="resource/images/httpservice.gif"
-                target="main" />
+  />

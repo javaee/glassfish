@@ -40,7 +40,6 @@
     methodName="getApplicationConfigMap"
     text="$resource{i18n.tree.webApps}"
     url="/web/webApp/webApplications.jsf"
-    target="main"
     expanded="$boolean{false}"
     attributeName="name"
     childImageURL="resource/images/webModule.gif"
@@ -49,7 +48,7 @@
     childURL="/web/webApp/webApplicationsEdit.jsf?appName=#{$this{valueBinding}.text}"
 >
     <!facet image>
-        <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/webApp/webApplications.jsf" target="main" border="$int{0}" immediate="$boolean{true}" />
+        <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/webApp/webApplications.jsf"  border="$int{0}" immediate="$boolean{true}" />
     </facet>
     <!filterTree filterSystemApps(appType="web") />
 </dynamicTreeNode>

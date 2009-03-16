@@ -37,7 +37,6 @@
                                onMouseOut="window.status=''; return true"
                                onBlur="window.status=''; return true"
                                onFocus="window.status='$resource{i18n.masthead.restartStatusMsg}'; return true"
-                               target="main"
                                url="#{request.contextPath}/restart.jsf">
                 </sun:hyperlink>
             "</span>

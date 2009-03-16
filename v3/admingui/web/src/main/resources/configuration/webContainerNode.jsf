@@ -44,17 +44,15 @@
     text="$resource{i18n.tree.webContainer}"
     url="/web/configuration/webContainerGeneral.jsf?configName=server-config"
     imageURL="/resource/web/images/container.gif"
-    target="main"
 />
     
     <sun:treeNode id="httpService"
         text="$resource{i18n.tree.httpService}"
         url="/web/configuration/httpService.jsf?configName=#{configName}"
         imageURL="/resource/web/images/httpservice.gif"
-        target="main"
         >
 	<!facet image>
-	    <sun:imageHyperlink imageURL="/resource/web/images/httpservice.gif" url="/web/configuration/httpListeners.jsf?configName=#{configName}" target="main" border="$int{0}" immediate="$boolean{true}" />
+	    <sun:imageHyperlink imageURL="/resource/web/images/httpservice.gif" url="/web/configuration/httpListeners.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
 	</facet>
         <dynamicTreeNode id="httpListeners"
             treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
@@ -66,10 +64,9 @@
             childURL="/web/configuration/httpListenerEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"                        
             text="$resource{i18n.tree.httpListeners}"
             url="/web/configuration/httpListeners.jsf?configName=#{configName}"
-            target="main"
             >
             <!facet image>
-                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/configuration/httpListeners.jsf?configName=#{configName}" target="main" border="$int{0}" immediate="$boolean{true}" />
+                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/configuration/httpListeners.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
             </facet>
         </dynamicTreeNode>
     
@@ -83,10 +80,9 @@
             childURL="/web/configuration/virtualServerEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"                        
             text="$resource{i18n.tree.virtualServers}"
             url="/web/configuration/virtualServers.jsf?configName=#{configName}"
-            target="main"
             >
             <!facet image>
-                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/configuration/virtualServers.jsf?configName=#{configName}" target="main" border="$int{0}" immediate="$boolean{true}" />
+                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/configuration/virtualServers.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
             </facet>
         </dynamicTreeNode>
     </sun:treeNode>

@@ -2,5 +2,4 @@
 		text="$resource{i18n.tree.monitoring}"
 		url="/web/monitor/monitoringPage.jsf?configName=server-config"
 		imageURL="/resource/web/images/monitor.gif"
-                target="main"
-                expanded="$boolean{true}" />
+        expanded="$boolean{true}" />

@@ -1,7 +1,6 @@
 <sun:treeNode id="JDBC"
         text="$resource{i18n.tree.jdbc}"
         url="/jdbc/jdbc.jsf"
-        target="main"
         imageURL="resource/jdbc/images/JDBC.gif"
         >
         <dynamicTreeNode id="jdbcResources"
@@ -14,10 +13,9 @@
             childURL="jdbc/jdbcResourceEdit.jsf?name=#{$this{valueBinding}.text}"
             text="$resource{i18n.tree.jdbcResources}"
             url="/jdbc/jdbcResources.jsf"
-            target="main"
             >
             <!facet image>
-                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jdbc/jdbcResources.jsf" target="main" border="$int{0}" immediate="$boolean{true}" />
+                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jdbc/jdbcResources.jsf"  border="$int{0}" immediate="$boolean{true}" />
             </facet>
         </dynamicTreeNode>
         <dynamicTreeNode id="connectionPoolResources"
@@ -31,10 +29,9 @@
             childURL="jdbc/jdbcConnectionPoolEdit.jsf?name=#{$this{valueBinding}.text}"
             text="$resource{i18n.tree.connectionPools}"
             url="/jdbc/jdbcConnectionPools.jsf"
-            target="main"
             >
             <!facet image>
-                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jdbc/jdbcConnectionPools.jsf" target="main" border="$int{0}" immediate="$boolean{true}" />
+                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jdbc/jdbcConnectionPools.jsf"  border="$int{0}" immediate="$boolean{true}" />
             </facet>
         </dynamicTreeNode>
  </sun:treeNode>
