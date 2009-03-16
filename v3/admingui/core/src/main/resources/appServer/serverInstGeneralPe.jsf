@@ -44,10 +44,6 @@
         setPageSessionAttribute(key="instanceName" value="server");
         setSessionAttribute(key="serverInstTabs" value="general");
         setPageSessionAttribute(key="pageName" value="appServer/serverInstGeneralPe.jsf");
-    />
-    </event>
-    <event>
-        <!beforeEncode
         getInstanceGeneralAttributes(instanceName="#{instanceName}", hostName=>$attribute{hostName}, httpPorts=>$attribute{httpPorts},
                 iiopPorts=>$attribute{iiopPorts}, configDir=>$attribute{configDir}, 
                 version=>$attribute{version}, debugPort=>$attribute{debugPort});
