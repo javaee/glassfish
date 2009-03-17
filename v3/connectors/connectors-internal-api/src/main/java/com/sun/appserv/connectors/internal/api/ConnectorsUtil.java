@@ -316,6 +316,87 @@ public class ConnectorsUtil {
         return raName;
     }
 
+    public static AdminObjectResource[] getEnabledAdminObjectResources(String raName, Resources allResources, Server server)  {
+        List resourcesList = allResources.getResources();
+        int resourceCount = resourcesList.size();      //sizeAdminObjectResource();
+        if(resourceCount == 0) {
+            return null;
+        }
+        Vector<AdminObjectResource> allAdminObjectResourcesVector =
+                    new Vector<AdminObjectResource>();
+        for(int i=0; i< resourceCount; ++i) {
+             Resource resource = (Resource)resourcesList.get(i);
+
+            if(resource == null || !(resource instanceof AdminObjectResource))
+                continue;
+            AdminObjectResource adminObjectResource = (AdminObjectResource)resource;
+            String resourceAdapterName = adminObjectResource.getResAdapter();
+
+            if(resourceAdapterName == null)
+                continue;
+            if(raName!= null && !raName.equals(resourceAdapterName))
+                continue;
+
+
+            // skips the admin resource if it is not referenced by the server
+            if(!isEnabled(adminObjectResource, server))
+                continue;
+            allAdminObjectResourcesVector.add(adminObjectResource);
+        }
+        AdminObjectResource[] allAdminObjectResources =
+                    new AdminObjectResource[allAdminObjectResourcesVector.size()];
+       allAdminObjectResources =
+                    (AdminObjectResource[])allAdminObjectResourcesVector.toArray(
+                    allAdminObjectResources);
+            return allAdminObjectResources;
+}
+    
+     public static boolean isEnabled(AdminObjectResource aot, Server server) {
+        if(aot == null || !Boolean.parseBoolean(aot.getEnabled()))
+            return false;
+        if(!isResourceReferenceEnabled(aot.getJndiName(), server))
+            return false;
+
+        String raName = aot.getResAdapter();
+        return isRarEnabled(raName);
+    }
+
+     /**
+     * Checks if a resource reference is enabled
+     * @since SJSAS 8.1 PE/SE/EE
+     */
+    private static boolean isResourceReferenceEnabled(String resourceName, Server server) {
+
+        ResourceRef ref = server.getResourceRef(resourceName);
+
+        if (ref == null) {
+            _logger.fine("ResourcesUtil :: isResourceReferenceEnabled null ref");
+            //todo for V3
+            // if(isADeployEvent())
+                return true;
+            //else
+              //  return false;
+        }
+        _logger.fine("ResourcesUtil :: isResourceReferenceEnabled ref enabled ?" + Boolean.parseBoolean(ref.getEnabled()));
+        return  Boolean.parseBoolean(ref.getEnabled());
+    }
+
+     private static boolean isRarEnabled(String raName) {
+       //todo: for v3
+       return true;
+       /* if(raName == null || raName.length() == 0)
+            return false;
+        ConnectorModule module = dom.getApplications().getConnectorModuleByName(raName);
+        if(module != null) {
+            if(!module.isEnabled())
+                return false;
+            return isApplicationReferenceEnabled(raName);
+        } else if(belongToSystemRar(raName)) {
+            return true;
+        } else {
+            return belongToEmbeddedRarAndEnabled(raName);
+        }  */
+    }
 
     public static String getResourceType(Resource resource){
         if(resource instanceof JdbcResource){
