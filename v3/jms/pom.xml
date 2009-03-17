@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.glassfish</groupId>
+        <artifactId>glassfish-parent</artifactId>
+        <version>3.0-SNAPSHOT</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.glassfish.jms</groupId>
+    <artifactId>jms</artifactId>
+    <name>JMS Module</name>
+    <packaging>hk2-jar</packaging>
+    <version>3.0-SNAPSHOT</version>
+    
+   <build>
+   	<outputDirectory>target/classes</outputDirectory>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <plugins>
+	            <plugin>
+	                <groupId>org.glassfish.build</groupId>
+	                <artifactId>maven-glassfishbuild-plugin</artifactId>
+	                <configuration>
+	                    <!-- configuration for the run mojo -->
+	                    <distribution>
+	                        <groupId>org.glassfish.distributions</groupId>
+	                        <artifactId>glassfish</artifactId>
+	                        <version>${project.version}</version>
+	                    </distribution>
+	                </configuration>
+	            </plugin>
+	        </plugins>
+	        <extensions>
+	            <extension>
+	                <groupId>org.glassfish.build</groupId>
+	                <artifactId>maven-glassfishbuild-extension</artifactId>
+	                <version>${project.version}</version>
+	            </extension>
+	            <extension>
+	                <groupId>org.jvnet.wagon-svn</groupId>
+	                <artifactId>wagon-svn</artifactId>
+	                <version>1.8</version>
+	            </extension>
+        </extensions>
+  </build>
+  <dependencies>
+      <dependency>
+          <groupId>org.glassfish.connectors</groupId>
+          <artifactId>connectors-internal-api</artifactId>
+          <version>3.0-SNAPSHOT</version>
+      </dependency>		    
+         <dependency>
+             <groupId>org.glassfish.connectors</groupId>
+             <artifactId>connectors-inbound-runtime</artifactId>
+             <version>3.0-SNAPSHOT</version>
+         </dependency>
+         <dependency>
+	      <groupId>org.glassfish.connectors</groupId>
+	      <artifactId>connectors-runtime</artifactId>
+	      <version>3.0-SNAPSHOT</version>
+         </dependency>
+         <dependency>
+	 	<groupId>org.glassfish.admin</groupId>
+	 	<artifactId>admin-util</artifactId>
+	 	<version>3.0-SNAPSHOT</version>
+         </dependency>
+         
+   </dependencies>
+  
+</project>
