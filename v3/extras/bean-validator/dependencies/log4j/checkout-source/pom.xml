@@ -39,41 +39,49 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     
-    <groupId>org.glassfish.extras</groupId>
-    <version>3.0-SNAPSHOT</version>
-    <artifactId>gf-beans-validation-log4j-source</artifactId>
-    <packaging>pom</packaging>
+    <groupId>log4j</groupId>
+    <version>1.2.6</version>
+    <artifactId>log4j</artifactId>
+    <packaging>jar</packaging>
     <name>Bean Validator and WebBeans for Glassfish V3: log4j source</name>
 
     <build>
-      <defaultGoal>process-sources</defaultGoal>
+      <defaultGoal>install</defaultGoal>
+      <sourceDirectory>src/java</sourceDirectory>
 
       <plugins>
           <plugin>
-              <artifactId>maven-antrun-plugin</artifactId>
-              <executions>
-
-                  <execution>
-                      <id>postconditions</id>
-                      <phase>process-sources</phase>
-                      <configuration>
-                          <tasks>
-                              <echo message="Building log4j"/>
-                              <ant target="jar">
-                              </ant>
-                          </tasks>
-                      </configuration>
-                      <goals>
-                          <goal>run</goal>
-                      </goals>
-                  </execution>
-              </executions>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <configuration>
+                  <source>1.4</source>
+                  <target>1.4</target>
+                    <excludes>
+                        <exclude>org/apache/log4j/test/**/*.java</exclude>
+                        <exclude>org/apache/log4j/net/JMSAppender.java</exclude>
+                    </excludes>
+              </configuration>
           </plugin>
       </plugins>
     </build>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>3.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.extras</groupId>
+            <artifactId>gf-beans-validation-binary-dependencies</artifactId>
+            <version>3.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
     <properties>
-      <ant.build.javac.source>1.4</ant.build.javac.source>
+      <mvn.test.skip>true</mvn.test.skip>
     </properties>
 
 </project>

@@ -76,6 +76,7 @@
 
     <modules>
         <module>binary</module>
+        <module>log4j</module>
         <module>slf4j-api</module>
         <module>slf4j-log4j12</module>
     </modules>
