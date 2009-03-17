@@ -68,7 +68,6 @@
                             <include>docs/**</include>
                             <include>examples/**</include>
                             <include>packaging/**</include>
-                            <include>tests/**</include>
                             <include>BRANCHES</include>
                             <include>NOTICE</include>
                             <include>LICENSE</include>
