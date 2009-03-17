@@ -41,9 +41,9 @@
     
     <groupId>org.glassfish.extras</groupId>
     <version>3.0-SNAPSHOT</version>
-    <artifactId>gf-webbeans-svn-helpers</artifactId>
+    <artifactId>gf-beans-validation-svn-helpers</artifactId>
     <packaging>pom</packaging>
-    <name>WebBeans for Glassfish V3: svn helper scripts</name>
+    <name>Beans Validation for Glassfish V3: svn helper scripts</name>
 
     <build>
       <defaultGoal>install</defaultGoal>
@@ -59,7 +59,7 @@
                       <configuration>
                           <tasks>
                               <defaultexcludes remove="**/.svn/**"/>
-                              <echo message="WebBeans Preconditions"/>
+                              <echo message="Beans Validation Preconditions"/>
                               <property name="target"
                                         value="${project.build.directory}" />
 
@@ -82,7 +82,7 @@
                       <configuration>
                           <tasks>
                               <defaultexcludes remove="**/.svn/**"/>
-                              <echo message="WebBeans Preconditions"/>
+                              <echo message="Beans Validation Preconditions"/>
                               <property name="target"
                                         value="${project.build.directory}" />
 
