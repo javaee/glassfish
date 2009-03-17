@@ -175,6 +175,7 @@ public class JPAApplication implements ApplicationContainer {
                     applicationLocation);
         }
 
+        // XXX  - use DeploymentContext directly instead of creating helper instance first
         Java2DBProcessorHelper helper = new Java2DBProcessorHelper(
                 providerContainerContractInfo.getDeploymentContext());
 

@@ -95,6 +95,7 @@ public class Java2DBProcessorHelper {
     /**
      * Key prefixes for storing and retrieving corresponding values.
      */
+    private final static String PROCESSOR_TYPE = "org.glassfish.persistence.processor_type."; // NOI18N
     private final static String RESOURCE_JNDI_NAME = "org.glassfish.persistence.resource_jndi_name_property."; // NOI18N
     private final static String JDBC_FILE_LOCATION = "org.glassfish.persistence.jdbc_file_location_property."; // NOI18N
     private final static String CREATE_JDBC_FILE_NAME = "org.glassfish.persistence.create_jdbc_file_name_property."; // NOI18N
@@ -228,14 +229,20 @@ public class Java2DBProcessorHelper {
      * Iterate over all "create" or "drop" ddl files and execute them.
      * Skip processing if the boolean argument is false.
      */
-    public void createOrDropTablesInDB(boolean create) {
+    public void createOrDropTablesInDB(boolean create, String type) {
         for (String key : deploymentContextProps.stringPropertyNames()) {
-            if (key.startsWith(RESOURCE_JNDI_NAME)) {
+            if (key.startsWith(PROCESSOR_TYPE)) {
                 if (logger.isLoggable(Level.FINE)) {
                     logger.fine("---> key " + key);
                 }
-                String name = key.substring(RESOURCE_JNDI_NAME.length());
-                String jndiName = deploymentContextProps.getProperty(key);
+
+                if (!deploymentContextProps.getProperty(key).equals(type)) {
+                    // These set of properties were created by a different processor type
+                    continue;
+                }
+
+                String name = key.substring(PROCESSOR_TYPE.length());
+                String jndiName = deploymentContextProps.getProperty(RESOURCE_JNDI_NAME + name);
                 String fileName = null;
                 if (create) {
                     if (getCreateTables(name)) {
@@ -259,7 +266,8 @@ public class Java2DBProcessorHelper {
                     executeDDLStatement(file, jndiName);
                 } else {
                     logI18NWarnMessage(
-                            "Java2DBProcessorHelper.cannotcreatetables", //NOI18N
+                            (create)? "Java2DBProcessorHelper.cannotcreatetables" //NOI18N
+                                    : "Java2DBProcessorHelper.cannotdroptables", //NOI18N
                             appRegisteredName, fileName, null);
                 }
                 if (logger.isLoggable(Level.FINE)) {
@@ -399,6 +407,16 @@ public class Java2DBProcessorHelper {
         deploymentContextProps.setProperty(RESOURCE_JNDI_NAME + name, jndiName);
         if (logger.isLoggable(Level.FINE)) {
             logger.fine("---> " + RESOURCE_JNDI_NAME + name + " " + jndiName);
+        }
+    }
+
+    /**
+     * Sets this processor type
+     */
+    public void setProcessorType(String s, String name) {
+        deploymentContextProps.setProperty(PROCESSOR_TYPE + name, s);
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("---> " + PROCESSOR_TYPE + name + " " + s);
         }
     }
 

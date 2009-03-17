@@ -29,6 +29,7 @@ import com.sun.enterprise.deployment.PersistenceUnitDescriptor;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.InstrumentableClassLoader;
+import org.glassfish.api.deployment.OpsParams;
 import org.glassfish.deployment.common.SimpleDeployer;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.persistence.common.Java2DBProcessorHelper;
@@ -71,10 +72,13 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPAApplication> {
     }
 
     protected void cleanArtifacts(DeploymentContext dc) throws DeploymentException {
-        // Drop tables if needed.
-        Java2DBProcessorHelper helper = new Java2DBProcessorHelper(dc);
-        helper.init();
-        helper.createOrDropTablesInDB(false);
+        // Drop tables if needed on undeploy.
+        OpsParams params = dc.getCommandParameters(OpsParams.class);
+        if (params.origin == OpsParams.Origin.undeploy) {
+            Java2DBProcessorHelper helper = new Java2DBProcessorHelper(dc);
+            helper.init();
+            helper.createOrDropTablesInDB(false, "JPA"); // NOI18N
+        }
     }
 
     /**

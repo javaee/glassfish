@@ -94,6 +94,7 @@ public class CMPProcessor {
         helper.init();
 
         String resourceName = cmpResource.getJndiName();
+        helper.setProcessorType("CMP", bundle.getName()); // NOI18N
         helper.setJndiName(resourceName, bundle.getName());
 
         // If CLI options are not set, use value from the create-tables-at-deploy 
@@ -124,7 +125,7 @@ public class CMPProcessor {
         }            
 
         if (createTables) {
-            helper.createOrDropTablesInDB(true);
+            helper.createOrDropTablesInDB(true, "CMP"); // NOI18N
         }
     }    
 
@@ -135,7 +136,7 @@ public class CMPProcessor {
         helper = new Java2DBProcessorHelper(ctx);
         helper.init();
 
-        helper.createOrDropTablesInDB(false);
+        helper.createOrDropTablesInDB(false, "CMP"); // NOI18N
     }
       
     /**

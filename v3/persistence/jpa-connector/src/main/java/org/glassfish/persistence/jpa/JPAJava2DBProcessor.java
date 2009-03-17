@@ -134,9 +134,6 @@ public class JPAJava2DBProcessor {
     private static final String  FALSE = "false"; //NOI18N
 
     private static Logger logger = LogDomains.getLogger(JPAJava2DBProcessor.class, LogDomains.DPL_LOGGER);
-    private  final static ResourceBundle messages = I18NHelper.loadBundle(
-            "org.glassfish.persistence.jpa.LocalStrings", //NOI18N
-            JPAJava2DBProcessor.class.getClassLoader());
 
     /**
      * Holds name of provider specific properties.
@@ -198,9 +195,8 @@ public class JPAJava2DBProcessor {
                         || ddlMode.equals(DDL_BOTH_GENERATION));
 
         if (logger.isLoggable(Level.FINE)) {
-            logger.fine(I18NHelper.getMessage(messages,
-                "JPAJava2DBProcessor.createanddroptables", //NOI18N
-                new Object[] {createTables, userDropTables})); 
+            logger.fine("Processing request with create tables: " + createTables //NOI18N
+                    + ", drop tables: " + userDropTables); //NOI18N
         }
 
         if (!createTables && !userDropTables) {
@@ -219,6 +215,7 @@ public class JPAJava2DBProcessor {
             return false;
         }
 
+        helper.setProcessorType("JPA", bundle.getName()); // NOI18N
         helper.setDropTablesValue(userDropTables, bundle.getName());
         helper.setCreateTablesValue(userCreateTables && !ddlMode.equals(DDL_SQL_SCRIPT_GENERATION), 
                 bundle.getName());
@@ -226,10 +223,10 @@ public class JPAJava2DBProcessor {
         helper.setJndiName(bundle.getJtaDataSource(), bundle.getName()); // XXX FIX-IT for default and other logic
         constructJdbcFileNames(bundle);
         if (logger.isLoggable(Level.FINE)) {
-            logger.fine(I18NHelper.getMessage(messages,
-                    "JPAJava2DBProcessor.createanddropfilenames", //NOI18N
-                    helper.getCreateJdbcFileName(bundle.getName()), 
-                    helper.getDropJdbcFileName(bundle.getName()))); 
+            logger.fine("Processing request to create files - create file: " + //NOI18N
+                    helper.getCreateJdbcFileName(bundle.getName())
+                    + ", drop  file: " + //NOI18N
+                    helper.getDropJdbcFileName(bundle.getName())); 
         }
 
         addPropertiesToPU(bundle);
@@ -279,7 +276,7 @@ public class JPAJava2DBProcessor {
      * execute it against the database to have the required objects created.
      */
     public void createTablesInDB() {
-        helper.createOrDropTablesInDB(true);
+        helper.createOrDropTablesInDB(true, "JPA"); // NOI18N
     }
 
     /**
