@@ -76,6 +76,7 @@
 
     <modules>
         <module>svn-helpers</module>
+        <module>dependencies</module>
         <module>api</module>
         <module>ri</module>
     </modules>
