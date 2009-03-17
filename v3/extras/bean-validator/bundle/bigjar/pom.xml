@@ -1,0 +1,52 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.glassfish.extras</groupId>
+  <artifactId>gf-beans-validation-bigjar</artifactId>
+  <version>3.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <name>Group all the classfiles for bean validation and its dependencies into one jar</name>
+
+    <build>
+      <defaultGoal>install</defaultGoal>
+
+      <plugins>
+          <plugin>
+              <artifactId>maven-antrun-plugin</artifactId>
+              <executions>
+
+                  <execution>
+                      <id>postconditions</id>
+                      <phase>process-sources</phase>
+                      <configuration>
+                          <tasks>
+                              <echo message="Exploding binary dependencies"/>
+                              <mkdir dir="target/classes" />
+ <echo>
+                 settings.localRepository=${settings.localRepository}
+                </echo> 
+
+                              <unjar overwrite="true" src="${settings.localRepository}/org/glassfish/extras/gf-beans-validation-binary-dependencies/3.0-SNAPSHOT/gf-beans-validation-binary-dependencies-3.0-SNAPSHOT.jar" 
+                                     dest="target/classes" />
+                              <unjar overwrite="true" src="${settings.localRepository}/log4j/log4j/1.2.6/log4j-1.2.6.jar" 
+                                     dest="target/classes" />
+                              <unjar overwrite="true" src="${settings.localRepository}/org/slf4j/slf4j-api/1.4.2/slf4j-api-1.4.2.jar" 
+                                     dest="target/classes" />
+                              <unjar overwrite="true" src="${settings.localRepository}/org/slf4j/slf4j-log4j12/1.4.2/slf4j-log4j12-1.4.2.jar" 
+                                     dest="target/classes" />
+                              <unjar overwrite="true" src="${settings.localRepository}/javax/validation/validation-api/1.0.Beta4/validation-api-1.0.Beta4.jar" 
+                                     dest="target/classes" />
+                              <unjar overwrite="true" src="${settings.localRepository}/org/hibernate/hibernate-validator/4.0.0.Alpha3-SNAPSHOT/hibernate-validator-4.0.0.Alpha3-SNAPSHOT.jar" 
+                                     dest="target/classes" />
+                          </tasks>
+                      </configuration>
+                      <goals>
+                          <goal>run</goal>
+                      </goals>
+                  </execution>
+              </executions>
+          </plugin>
+      </plugins>
+    </build>
+</project>
