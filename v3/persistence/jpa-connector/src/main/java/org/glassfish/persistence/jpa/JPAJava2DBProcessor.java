@@ -39,7 +39,8 @@ package org.glassfish.persistence.jpa;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.PersistenceUnitsDescriptor;
 import com.sun.enterprise.deployment.PersistenceUnitDescriptor;
-import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
+import org.glassfish.api.deployment.DeploymentContext;
+
 import org.glassfish.persistence.common.*;
 
 import org.glassfish.internal.api.Globals;
@@ -102,7 +103,7 @@ public class JPAJava2DBProcessor {
     private static final String NONE                    = "none"; //NOI18N
     private static final String DDL_BOTH_GENERATION     = "both"; //NOI18N
     private static final String DDL_DATABASE_GENERATION = "database"; //NOI18N
-    private static final String DDL_SQL_SCRIPT_GENERATION = "sql-script";
+    private static final String DDL_SQL_SCRIPT_GENERATION = "sql-script"; //NOI18N
 
     // Constatns defined in oracle.toplink.essentials.config.TargetServer
     // and org.eclipse.persistence.jpa.config.TargetServer
@@ -132,164 +133,107 @@ public class JPAJava2DBProcessor {
 
     private static final String  FALSE = "false"; //NOI18N
 
+    private static Logger logger = LogDomains.getLogger(JPAJava2DBProcessor.class, LogDomains.DPL_LOGGER);
+    private  final static ResourceBundle messages = I18NHelper.loadBundle(
+            "org.glassfish.persistence.jpa.LocalStrings", //NOI18N
+            JPAJava2DBProcessor.class.getClassLoader());
+
     /**
      * Holds name of provider specific properties.
      */
     private ProviderPropertyNamesHolder providerPropertyNamesHolder;
 
-    /**
-     * The object that would be used by the
-     * toplink code when creating a container.
-     */
-    private PersistenceUnitInfo pi;
-
-    private static Logger logger = LogDomains.getLogger(JPAJava2DBProcessor.class, LogDomains.DPL_LOGGER);
-    private  final static ResourceBundle messages = logger.getResourceBundle();
-
-    // TODO
-    private boolean create;
+    private String ddlMode;
 
     private Java2DBProcessorHelper helper = null;
 
     /**
-     * Creates a new instance of PersistenceProcessor
-     * @param info the deployment info object.
-     * @param create true if tables are to be created as part of this event.
-     * @param cliCreateTables the cli string related to creating tables
-     * at deployment time.
-     * @param cliDropAndCreateTables the cli string that indicates that
-     * old tables have to be dropped and new tables created.
-     * @param cliDropTables the cli string to indicate that the tables
-     * have to dropped at undeploy time.
-    public JPAJava2DBProcessor(
-            DeploymentEventInfo info, boolean create,
-            String cliCreateTables, String cliDropAndCreateTables,
-            String cliDropTables) {
-        super(info, create, cliCreateTables,
-            cliDropAndCreateTables, cliDropTables);
-    }
+     * Creates a new instance of JPAJava2DBProcessor using Java2DBProcessorHelper
+     * @param helper the Java2DBProcessorHelper instance to be used
+     * with this processor.
      */
-
-    /**
-     * The entry point into this class. Process
-     * any persistence unit descriptors if
-     * found for this application.
-     */
-    protected void processApplication(PersistenceUnitDescriptor pu) {
-        helper.setApplicationLocation();
-        helper.setGeneratedLocation();
-
-        processAppBundle(pu);
+    public JPAJava2DBProcessor(Java2DBProcessorHelper helper) {
+        this.helper = helper;
+        this.helper.init();
     }
 
     /**
-     * This method does all the work of checking
-     * and processing each persistence unit
-     * descriptor.
+     * This method does parses all relevant info from the PU
      * @param bundle the persistence unit descriptor that is being worked on.
+     * @return true if this PU requires java2db processing
      */
-    private void processAppBundle(PersistenceUnitDescriptor bundle) {
+    public boolean isJava2DbPU(PersistenceUnitDescriptor bundle) {
         String providerClassName = getProviderClassName(bundle);
 
-        // Initialize with TLE names for each bundle to handle apps that have
+        // Initialize with EL names for each bundle to handle apps that have
         // multiple pus
         providerPropertyNamesHolder = new ProviderPropertyNamesHolder();
 
-        // Override with EclipseLink names if running against EclipseLink
-        if (ECLIPSELINK_PERSISTENCE_PROVIDER_CLASS_NAME.equals(providerClassName)) {
-            providerPropertyNamesHolder.appLocation       = ECLIPSELINK_APP_LOCATION;
-            providerPropertyNamesHolder.createJdbcDdlFile = ECLIPSELINK_CREATE_JDBC_DDL_FILE;
-            providerPropertyNamesHolder.dropJdbcDdlFile   = ECLIPSELINK_DROP_JDBC_DDL_FILE;
-            providerPropertyNamesHolder.ddlGeneration     = ECLIPSELINK_DDL_GENERATION;
-            providerPropertyNamesHolder.ddlGenerationMode = ECLIPSELINK_DDL_GENERATION_MODE;
-            providerPropertyNamesHolder.targetServer      = ECLIPSELINK_TARGET_SERVER;
-            providerPropertyNamesHolder.weaving           = ECLIPSELINK_WEAVING;
+        // Override with TLE names if running against TLE
+        if (TOPLINK_PERSISTENCE_PROVIDER_CLASS_NAME_NEW.equals(providerClassName) ||
+                TOPLINK_PERSISTENCE_PROVIDER_CLASS_NAME_OLD.equals(providerClassName)) {
+            // for backward compatibility
+            providerPropertyNamesHolder.appLocation       = TOPLINK_APP_LOCATION;
+            providerPropertyNamesHolder.createJdbcDdlFile = TOPLINK_CREATE_JDBC_DDL_FILE;
+            providerPropertyNamesHolder.dropJdbcDdlFile   = TOPLINK_DROP_JDBC_DDL_FILE;
+            providerPropertyNamesHolder.ddlGeneration     = TOPLINK_DDL_GENERATION;
+            providerPropertyNamesHolder.ddlGenerationMode = TOPLINK_DDL_GENERATION_MODE;
         }
 
-       String ddlGenerate = getPersistencePropVal(bundle,
+        String ddlGenerate = getPersistencePropVal(bundle,
                 providerPropertyNamesHolder.ddlGeneration, NONE);
-       String ddlMode = getPersistencePropVal(bundle,
+        ddlMode = getPersistencePropVal(bundle,
                 providerPropertyNamesHolder.ddlGenerationMode, DDL_BOTH_GENERATION);
-        boolean createTables =
-                getCreateTablesValue(ddlGenerate, ddlMode);
-        boolean dropTables =
-                getDropTablesValue(ddlGenerate, ddlMode);
+
+        // If CLI options are not set, use value from the the ddl-generate property
+        // if defined in persistence.xml
+        boolean userCreateTables = (ddlGenerate.equals(CREATE_ONLY)
+                || ddlGenerate.equals(DROP_AND_CREATE))
+                && !ddlMode.equals(NONE);
+
+        boolean createTables = helper.getCreateTables(userCreateTables);
+
+        boolean userDropTables = ddlGenerate.equals(DROP_AND_CREATE)
+                && (ddlMode.equals(DDL_DATABASE_GENERATION)
+                        || ddlMode.equals(DDL_BOTH_GENERATION));
 
         if (logger.isLoggable(Level.FINE)) {
             logger.fine(I18NHelper.getMessage(messages,
-                "PersistenceProcessor.createanddroptables", //NOI18N
-                new Object[] {createTables, dropTables}));
+                "JPAJava2DBProcessor.createanddroptables", //NOI18N
+                new Object[] {createTables, userDropTables})); 
         }
 
-        if (!createTables && !dropTables) {
+        if (!createTables && !userDropTables) {
             // Nothing to do.
-            return;
+            return false;
         }
 
+        if (! isSupportedPersistenceProvider(bundle)) {
+            // Persistence provider is not supported, hence exit from java2db code
+            if (helper.hasDeployCliOverrides()) {
+                helper.logI18NWarnMessage(
+                    "Java2DBProcessorHelper.nondefaultprovider",
+                    getProviderClassName(bundle),
+                    bundle.getName(), null);
+            }
+            return false;
+        }
+
+        helper.setDropTablesValue(userDropTables, bundle.getName());
+        helper.setCreateTablesValue(userCreateTables && !ddlMode.equals(DDL_SQL_SCRIPT_GENERATION), 
+                bundle.getName());
+
+        helper.setJndiName(bundle.getJtaDataSource(), bundle.getName()); // XXX FIX-IT for default and other logic
         constructJdbcFileNames(bundle);
         if (logger.isLoggable(Level.FINE)) {
             logger.fine(I18NHelper.getMessage(messages,
-               "PersistenceProcessor.createanddropfilenames", //NOI18N
-               helper.getCreateJdbcFileName(), helper.getDropJdbcFileName())); 
+                    "JPAJava2DBProcessor.createanddropfilenames", //NOI18N
+                    helper.getCreateJdbcFileName(bundle.getName()), 
+                    helper.getDropJdbcFileName(bundle.getName()))); 
         }
 
-        // These calls will be a no-op if it's not a corresponding event.
-        dropTablesFromDB(dropTables, bundle);
-        createTablesInDB(createTables, bundle, ddlMode);
-    }
-
-    /**
-     * We need to create tables only on deploy, and only
-     * if the CLI options cliCreateTables or cliDropAndCreateTables
-     * are not set to false. If those options are not set (UNDEFINED)
-     * the value is taken from the ddl-generate property if defined
-     * in persistence.xml.
-     * @param ddlGenerate the property name specified by the user.
-     * @param ddlMode the property value specified by the user.
-     * @return true if tables have to created.
-     */
-    protected boolean getCreateTablesValue(
-            String ddlGenerate, String ddlMode) {
-        boolean createTables =
-            create;
-/**
-                && (cliCreateTables.equals(Constants.TRUE)
-                    || (
-                        (ddlGenerate.equals(CREATE_ONLY)
-                            || ddlGenerate.equals(DROP_AND_CREATE))
-                        && !ddlMode.equals(NONE))
-                        && cliCreateTables.equals(Constants.UNDEFINED));
-**/
-        return createTables;
-    }
-
-    /**
-     * We need to drop tables on deploy and redeploy, if the
-     * corresponding CLI options cliDropAndCreateTables
-     * (for redeploy) or cliDropTables (for undeploy) are not
-     * set to false.
-     * If the corresponding option is not set (UNDEFINED)
-     * the value is taken from the ddl-generate property
-     * if defined in persistence.xml.
-     * @param ddlGenerate the property name specified by the user.
-     * @param ddlMode the property value specified by the user.
-     * @return true if the tables have to be dropped.
-     */
-    protected boolean getDropTablesValue(
-            String ddlGenerate, String ddlMode) {
-        boolean dropTables =
-            !create;
-/**
-                && (cliDropAndCreateTables.equals(Constants.TRUE)
-                    || cliDropTables.equals(Constants.TRUE)
-                    || ((ddlGenerate.equals(DROP_AND_CREATE)
-                        && (ddlMode.equals(DDL_DATABASE_GENERATION)
-                            || ddlMode.equals(DDL_BOTH_GENERATION))
-                        && cliDropAndCreateTables.equals(Constants.UNDEFINED)
-                        && cliDropTables.equals(Constants.UNDEFINED))));
-**/
-
-        return dropTables;
+        addPropertiesToPU(bundle);
+        return true;
     }
 
     /**
@@ -325,111 +269,18 @@ public class JPAJava2DBProcessor {
                 DatabaseConstants.DROP_DDL_JDBC_FILE_SUFFIX;
         }
 
-        helper.setCreateJdbcFileName(createJdbcFileName);
-        helper.setDropJdbcFileName(dropJdbcFileName);
+        helper.setCreateJdbcFileName(createJdbcFileName, parBundle.getName());
+        helper.setDropJdbcFileName(dropJdbcFileName, parBundle.getName());
     }
 
     /**
-     * We need to get the datasource  information if
-     * that has been defined  in the persistence.xml.
-     * Did not want to duplicate code here. So we
-     * create a persistence unit info object and get
-     * the nonJTADatasource from that object
-     * Then if the drop file is present, drop the tables
-     * from the database.
-     * If the user has specified a persistence provider other than the default
-     * toplink one, then java2db feature will not be a supported feature. In such
-     * cases the drop file would not be present.
-     *
-     * @param dropTables true if the table need to be dropped.
-     * @param bundle the persistence unit descriptor that is being worked on.
-     */
-    private void dropTablesFromDB(boolean dropTables,
-            PersistenceUnitDescriptor bundle) {
-        if(dropTables) {
-            File dropFile = getDDLFile(bundle, helper.getDropJdbcFileName(), false);
-            if (dropFile.exists()) {
-                PersistenceUnitInfo pi = new Java2DBPersistenceUnitInfoImpl(
-                    bundle,
-                    helper.getDeployedLocation(),
-                    null);
-                executeDDLStatement(dropFile, pi.getNonJtaDataSource());
-            } else if (isSupportedPersistenceProvider(bundle)){
-                helper.logI18NWarnMessage(
-                    "ejb.BaseProcessor.cannotdroptables", //NOI18N
-                    helper.getAppRegisteredName(), dropFile.getName(), null);
-            }
-
-        }
-    }
-
-    /**
-     * Currently java2db feature is supported for toplink persistence provider
-     * only, as toplink is the default persistence provider for glassfish.
-     * If the provider is toplink, call into toplink code to generate the ddl files.
-     * Once the jdbc files have been created, use the create jdbc ddl file and
+     * This method is called after the jdbc files have been created. 
+     * Iterate over all created jdbc ddl files and
      * execute it against the database to have the required objects created.
-     * @param createTables true if tables have to be created.
-     * @param bundle the persistence unit descriptor that is being worked on
-     * @param ddlMode the ddl-generate property value specified by the user.
      */
-    private void createTablesInDB(boolean createTables,
-            PersistenceUnitDescriptor bundle, String ddlMode) {
-        if(createTables) {
-            pi = loadPersistenceUnitBundle(bundle);
-
-            // if pi is null it means that the user has defined a persistence
-            // provider that is not supported. We should also skip DDL execution
-            // if the user chose only to create the files.
-            if ((null != pi)  && isDDLExecution(ddlMode)) {
-                File createFile = getDDLFile(bundle, helper.getCreateJdbcFileName(), true);
-                if(createFile.exists()) {
-                    executeDDLStatement(createFile, pi.getNonJtaDataSource());
-                } else {
-                    helper.logI18NWarnMessage(
-                        "ejb.BaseProcessor.cannotcreatetables", //NOI18N
-                        helper.getAppRegisteredName(), createFile.getName(), null);
-                }
-            }
-        }
+    public void createTablesInDB() {
+        helper.createOrDropTablesInDB(true);
     }
-
-
-    /**
-     * Get the ddl files eventually executed
-     * against the database. This method deals
-     * with both create and drop ddl files.
-     * @param fileName the create or drop jdbc ddl file.
-     * @param nonJtaDataSource the nonJtaDataSource
-     *    that is obtained from the persistence info object that we had created.
-     * @return true if the tables were successfully
-     *    created/dropped from the database.
-     */
-    private boolean executeDDLStatement(File fileName, DataSource nonJtaDataSource ) {
-        boolean result = false;
-        Connection conn = null;
-        Statement sql = null;
-        try {
-            try {
-                conn = nonJtaDataSource.getConnection();
-                sql = conn.createStatement();
-                result = true;
-            } catch (SQLException ex) {
-                helper.logI18NWarnMessage(
-                     "ejb.BaseProcessor.cannotConnect",
-                    helper.getAppRegisteredName(),  null, ex);
-            }
-            if(result) {
-                helper.executeDDLs(fileName, sql);
-            }
-        } catch (IOException e) {
-            helper.fileIOError(helper.getAppRegisteredName(), e);
-        } finally {
-            helper.closeConn(conn);
-        }
-        return result;
-    }
-
 
     /**
      * Since the ddl files are actually created
@@ -439,14 +290,12 @@ public class JPAJava2DBProcessor {
      * @param puDescriptor the persistence unit descriptor that is being worked on.
      */
     private void addPropertiesToPU(PersistenceUnitDescriptor puDescriptor) {
-        addPropertyToDescriptor(puDescriptor, providerPropertyNamesHolder.targetServer,
-                SunAS9);
         addPropertyToDescriptor(puDescriptor, providerPropertyNamesHolder.appLocation,
-                helper.getGeneratedLocation());
+                helper.getGeneratedLocation(puDescriptor.getName()));
         addPropertyToDescriptor(puDescriptor, providerPropertyNamesHolder.createJdbcDdlFile,
-                helper.getCreateJdbcFileName());
+                helper.getCreateJdbcFileName(puDescriptor.getName()));
         addPropertyToDescriptor(puDescriptor, providerPropertyNamesHolder.dropJdbcDdlFile,
-                helper.getDropJdbcFileName());
+                helper.getDropJdbcFileName(puDescriptor.getName()));
     }
 
     /**
@@ -461,90 +310,6 @@ public class JPAJava2DBProcessor {
         if(null == oldPropertyValue) {
             descriptor.addProperty(propertyName, propertyValue);
         }
-    }
-
-    /**
-     * Since the actual jdbc files are generated
-     * by the toplink code, we need to create
-     * a persistence unit info object and then
-     * call into the toplink code.
-     * @param persistenceUnitDescriptor the persistence unit descriptor that is
-     * being worked on.
-     * @return the persistence unit info object that
-     * would used by  provider code.
-     */
-    private PersistenceUnitInfo loadPersistenceUnitBundle(
-            PersistenceUnitDescriptor persistenceUnitDescriptor) {
-        logger.entering("loadPersistenceUnitBundle", "load",
-                new Object[]{persistenceUnitDescriptor});
-
-        if (! isSupportedPersistenceProvider(persistenceUnitDescriptor)) {
-            // Persistence provider is not supported, hence exit from java2db code
-/**
-            if (cliCreateTables.equals(Constants.TRUE) ||
-                    cliDropAndCreateTables.equals(Constants.TRUE)) {
-                helper.logI18NWarnMessage(
-                    "ejb.PersistenceProcessor.nondefaultprovider",
-                    getProviderClassName(persistenceUnitDescriptor),
-                    persistenceUnitDescriptor.getName(), null);
-            }
-**/
-            return null;
-        }
-
-        addPropertiesToPU(persistenceUnitDescriptor);
-
-        // We should not override some properties, but pass them as a Map instead.
-        Map<String, String> overrides = new HashMap<String, String>();
-        overrides.put(providerPropertyNamesHolder.ddlGeneration, DROP_AND_CREATE);
-
-        // Turn off enhancement during Java2DB. For details,
-        // refer to https://glassfish.dev.java.net/issues/show_bug.cgi?id=1646
-        overrides.put(providerPropertyNamesHolder.weaving, FALSE); 
-
-        // As part of the deployment cycle we set the DDL_GENERATION_MODE. This
-        // would ensure that the toplink code would create the required jdbc files,
-        // but won't execute DDLs themselves.
-        // As part of the normal application load we would set this property to a
-        // value of "NONE".
-        overrides.put(providerPropertyNamesHolder.ddlGenerationMode, DDL_SQL_SCRIPT_GENERATION);
-
-        final ClassLoader cl = persistenceUnitDescriptor.getClassLoader();
-        PersistenceUnitInfo pi = new Java2DBPersistenceUnitInfoImpl(
-                persistenceUnitDescriptor,
-                helper.getDeployedLocation(),
-                cl);
-
-        if(logger.isLoggable(Level.FINE))
-            logger.fine("PersistenceInfo for PU is :\n" + pi);
-
-        // Construct provider reflectively
-        String providerClassname = getProviderClassName(persistenceUnitDescriptor);
-        PersistenceProvider provider = null;
-        EntityManagerFactory emf = null;
-        try {
-            provider = PersistenceProvider.class.cast(
-                                        ClassLoader.class.cast(cl)
-                                        .loadClass(providerClassname)
-                                        .newInstance());
-            emf = provider.createContainerEntityManagerFactory(pi, overrides);
-            emf.createEntityManager();
-            if(logger.isLoggable(Level.FINE))
-                logger.fine(I18NHelper.getMessage(messages,
-                    "PersistenceProcessor", new Object[] {"loadPersistenceUnitBundle", // NOI18N
-                    "emf = {0}", emf})); // NOI18N
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } finally {
-            if(emf != null) {
-                emf.close();
-            }
-        }
-        return pi;
     }
 
     /**
@@ -595,9 +360,11 @@ public class JPAJava2DBProcessor {
         // deploy happened in the same VM as a redeploy or an undeploy.
         String appLocation = getPersistencePropVal(bundle,
                 providerPropertyNamesHolder.appLocation,
-                helper.getGeneratedLocation());
+                helper.getGeneratedLocation(bundle.getName()));
 
-        // Delegate the rest to the superclass.
+        helper.setGeneratedLocation(appLocation, bundle.getName());
+
+        // Delegate the rest to the helper instance.
         return helper.getDDLFile(appLocation + File.separator + fileName, create);
     }
 
@@ -615,83 +382,15 @@ public class JPAJava2DBProcessor {
      }
 
     /**
-     * Check if we should skip DDL execution which can be the case if the
-     * user chose only to create the files.
-     * @param ddlMode the ddl-generate property value specified by the user.
-     * @return true if the DDL need to be executed in the database.
-     */
-     private boolean isDDLExecution (String ddlMode) {
-         boolean rs = true;
-/**
-         if (cliCreateTables.equals(Constants.UNDEFINED)) {
-             rs = !ddlMode.equals(DDL_SQL_SCRIPT_GENERATION);
-         }
-**/
-
-         return rs;
-     }
-
-    /**
-     * Java2DB create/drop tables during deploy/undeploy needs access to jdbc
-     * resources in DAS <br>
-     * This class will use the special api of connector runtime to get access to<br>
-     * jdbc resources even if they are not enabled in DAS
-     */
-    class Java2DBPersistenceUnitInfoImpl extends PersistenceUnitInfoImpl {
-        public Java2DBPersistenceUnitInfoImpl(
-                PersistenceUnitDescriptor persistenceUnitDescriptor,
-                String applicationLocation,
-                ClassLoader classLoader) {
-            // XXX super(persistenceUnitDescriptor, applicationLocation, classLoader);
-            super(persistenceUnitDescriptor, null);
-        }
-
-        /**
-         * get resource of type "__PM", if the resource is enabled in DAS <br>
-         * <b>if the resource is available, and not enabled in DAS, resource without "__PM" capability will
-         * be returned</b>
-         *
-         * @param DSName resource name
-         * @return Object (datasource)  representing the resource
-         * @throws NamingException when the resource is not available
-         */
-        protected DataSource lookupPMDataSource(String DSName) throws NamingException {
-       	    // TODO - pass Habitat or ConnectorRuntime as an argument.
-            Habitat habitat = Globals.getDefaultHabitat();
-            DataSource ds = null;
-            ConnectorRuntime connectorRuntime = habitat.getByContract(ConnectorRuntime.class);
-            return (DataSource)connectorRuntime.lookupPMResource(DSName, true);
-        }
-
-        /**
-         * get resource of type "nontx"
-         *
-         * @param DSName resource name
-         * @return Object (datasource)  representing the resource
-         * @throws NamingException when the resource is not available
-         */
-        protected DataSource  lookupNonJtaDataSource(String DSName) throws NamingException {
-       	    // TODO - pass Habitat or ConnectorRuntime as an argument.
-            Habitat habitat = Globals.getDefaultHabitat();
-            DataSource ds = null;
-            ConnectorRuntime connectorRuntime = habitat.getByContract(ConnectorRuntime.class);
-            return (DataSource)connectorRuntime.lookupNonTxResource(DSName, true);
-        }
-    }
-
-    /**
      * Holds names of provider specific property
      */
     private static class ProviderPropertyNamesHolder {
-        // Initialize property names with TLE specific properties
-        // for backward compatibility
-        String appLocation       = TOPLINK_APP_LOCATION;
-        String createJdbcDdlFile = TOPLINK_CREATE_JDBC_DDL_FILE;
-        String dropJdbcDdlFile   = TOPLINK_DROP_JDBC_DDL_FILE;
-        String ddlGeneration     = TOPLINK_DDL_GENERATION;
-        String ddlGenerationMode = TOPLINK_DDL_GENERATION_MODE;
-        String targetServer      = TOPLINK_TARGET_SERVER;
-        String weaving           = TOPLINK_WEAVING;
+        // Initialize property names with EL specific properties
+            String appLocation       = ECLIPSELINK_APP_LOCATION;
+            String createJdbcDdlFile = ECLIPSELINK_CREATE_JDBC_DDL_FILE;
+            String dropJdbcDdlFile   = ECLIPSELINK_DROP_JDBC_DDL_FILE;
+            String ddlGeneration     = ECLIPSELINK_DDL_GENERATION;
+            String ddlGenerationMode = ECLIPSELINK_DDL_GENERATION_MODE;
     }
 
 }

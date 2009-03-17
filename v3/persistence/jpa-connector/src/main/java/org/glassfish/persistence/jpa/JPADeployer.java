@@ -31,6 +31,7 @@ import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.InstrumentableClassLoader;
 import org.glassfish.deployment.common.SimpleDeployer;
 import org.glassfish.deployment.common.DeploymentException;
+import org.glassfish.persistence.common.Java2DBProcessorHelper;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
@@ -70,7 +71,10 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPAApplication> {
     }
 
     protected void cleanArtifacts(DeploymentContext dc) throws DeploymentException {
-        // Noting to cleanup yet!!
+        // Drop tables if needed.
+        Java2DBProcessorHelper helper = new Java2DBProcessorHelper(dc);
+        helper.init();
+        helper.createOrDropTablesInDB(false);
     }
 
     /**
@@ -127,7 +131,9 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPAApplication> {
      */
     @Override public JPAApplication load(JPAContainer container, DeploymentContext context) {
         // Return the JPAApplication stored in DeploymentContext during prepaare phase
-        return context.getModuleMetaData(JPAApplication.class);
+        JPAApplication jpaApp = context.getModuleMetaData(JPAApplication.class);
+        jpaApp.doJava2DB(context);
+        return jpaApp; // XXX context.getModuleMetaData(JPAApplication.class);
     }
 
     private static class ProviderContainerContractInfoImpl
@@ -173,6 +179,10 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPAApplication> {
 
         public DataSource lookupNonTxDataSource(String dataSourceName) throws NamingException {
             return DataSource.class.cast(connectorRuntime.lookupNonTxResource(dataSourceName, false));
+        }
+
+        public DeploymentContext getDeploymentContext() {
+            return deploymentContext;
         }
 
     } // class ProviderContainerContractInfoImpl

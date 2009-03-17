@@ -122,7 +122,7 @@ public class EjbApplication
         // TODO: move restoreEJBTimers to correct location
         System.out.println("==> Uses Timers? == " + usesEJBTimerService);
         if (usesEJBTimerService) {
-            initEJBTimerService();
+            initEJBTimerService(startupContext);
         }
         // TODO: move restoreEJBTimers to correct location
 
@@ -278,7 +278,7 @@ public class EjbApplication
         return rc.toString().hashCode();
     }
 
-    private void initEJBTimerService() {
+    private void initEJBTimerService(ApplicationContext startupContext) {
         synchronized (lock) {
             EjbContainerUtil ejbContainerUtil = EjbContainerUtilImpl.getInstance();
 
@@ -306,6 +306,11 @@ public class EjbApplication
                 ActionReport report = habitat.getComponent(ActionReport.class, "plain");
                 DeployCommandParameters params = new DeployCommandParameters(app);
                 params.name = "ejb-timer-service-app";
+
+                DeployCommandParameters callerParams = ((DeploymentContext)startupContext).
+                    getCommandParameters(DeployCommandParameters.class);
+
+                params.origin = callerParams.origin;
 
                 if (!app.exists()) {
                     throw new RuntimeException("Failed to deploy EJBTimerService: " + 

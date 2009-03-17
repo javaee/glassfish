@@ -50,6 +50,7 @@ import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
 import com.sun.jdo.spi.persistence.support.ejb.ejbc.JDOCodeGenerator;
+import com.sun.jdo.spi.persistence.support.ejb.ejbc.CMPProcessor;
 import org.glassfish.persistence.common.I18NHelper;
 import com.sun.jdo.spi.persistence.utility.logging.Logger;
 
@@ -214,9 +215,18 @@ public class CMPDeployerImpl implements CMPDeployer {
                 long end = System.currentTimeMillis();
 
                 _logger.fine("Java Compilation: " + (end - start) + " msec");
+
+                 // Do Java2DB if needed
+                start = System.currentTimeMillis();
+
+                CMPProcessor processor = new CMPProcessor(ctx);
+                processor.process();
+
+                end = System.currentTimeMillis();
+                _logger.fine("Java2DB processing: " + (end - start) + " msec");
                 _logger.fine( "cmpc.done_processing_cmp", 
                         application.getRegistrationName());
-             }
+            }
 
         } catch (GeneratorException e) {
             _logger.warning(e.getMessage());
@@ -258,6 +268,14 @@ public class CMPDeployerImpl implements CMPDeployer {
         }
     }
 
+    /**
+     * Integration point for cleanup on undeploy or failed deploy.
+     */
+    public void clean(DeploymentContext ctx) {
+        CMPProcessor processor = new CMPProcessor(ctx);
+        processor.clean();
+    }
+        
     /**
      * Compile .java files.
      *

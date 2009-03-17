@@ -131,6 +131,15 @@ public class EjbDeployer
 
        // Both undeploy and shutdown scenarios are
        // handled directly in EjbApplication.shutdown.
+
+        // But CMP drop tables should be handled here.
+        OpsParams params = dc.getCommandParameters(OpsParams.class);
+        if (params.origin == OpsParams.Origin.undeploy) {
+            cmpDeployer = habitat.getByContract(CMPDeployer.class);
+            if (cmpDeployer != null) {
+                cmpDeployer.clean(dc);
+            }
+        }
     }
 
     /**

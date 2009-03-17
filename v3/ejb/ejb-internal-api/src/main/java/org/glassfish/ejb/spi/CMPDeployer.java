@@ -44,4 +44,6 @@ public interface CMPDeployer {
 
     void deploy(DeploymentContext ctx) throws DeploymentException;
 
+    void clean(DeploymentContext ctx);
+
 }

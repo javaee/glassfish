@@ -39,6 +39,8 @@ package org.glassfish.persistence.jpa;
 import javax.persistence.spi.ClassTransformer;
 import javax.sql.DataSource;
 import javax.naming.NamingException;
+import org.glassfish.api.deployment.DeploymentContext;
+
 
 /**
  * @author Mitesh Meswani
@@ -87,4 +89,9 @@ public interface ProviderContainerContractInfo {
      * @throws NamingException
      */
     DataSource lookupNonTxDataSource(String dataSourceName) throws NamingException;
+
+    /**
+     * @return DeploymentContext associated with this instance.
+     */
+    DeploymentContext getDeploymentContext();
 }

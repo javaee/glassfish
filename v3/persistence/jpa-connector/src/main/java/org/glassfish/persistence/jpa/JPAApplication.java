@@ -25,13 +25,16 @@ package org.glassfish.persistence.jpa;
 
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.ApplicationContext;
+import org.glassfish.api.deployment.DeploymentContext;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.PersistenceUnitDescriptor;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
+import org.glassfish.persistence.common.Java2DBProcessorHelper;
 import com.sun.logging.LogDomains;
 
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityManager;
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceProvider;
 import java.util.Map;
@@ -69,15 +72,34 @@ public class JPAApplication implements ApplicationContainer {
     Collection<EntityManagerFactory> loadedEMFs = new ArrayList<EntityManagerFactory>();
 
     /**
+     * All the EMFs loaded for this application
+     */
+    Collection<EntityManagerFactory> java2dbEMFs = new ArrayList<EntityManagerFactory>();
+
+    /**
+     * The processor instance for the Java2DB work.
+     */
+    JPAJava2DBProcessor processor;
+
+    /**
      * logger to log loader messages
      */
     private static Logger logger = LogDomains.getLogger(JPAApplication.class, LogDomains.LOADER_LOGGER);
 
     /**
-     * Default Integration properties for various providers
+     * Base Integration properties for various providers
      */
-    private static Map<String, String> integrationProperties;
+    private static Map<String, String> baseIntegrationProperties;
 
+    /**
+     * Integration properties that include Java2DB support
+     */
+    private static Map<String, String> integrationPropertiesWithJava2DB;
+
+    /**
+     * Integration properties for loading PUs for execution
+     */
+    private static Map<String, String> integrationPropertiesWithoutJava2DB;
     
    JPAApplication(Collection<PersistenceUnitDescriptor> allReferencedPus, ProviderContainerContractInfo providerContainerContractInfo) {
        this.referencedPus = allReferencedPus;
@@ -152,6 +174,15 @@ public class JPAApplication implements ApplicationContainer {
             logger.fine("Loading persistence units for application: " +
                     applicationLocation);
         }
+
+        Java2DBProcessorHelper helper = new Java2DBProcessorHelper(
+                providerContainerContractInfo.getDeploymentContext());
+
+        boolean isDeploy = helper.isDeploy();
+        if (isDeploy) {
+            processor = new JPAJava2DBProcessor(helper);
+        }
+
         for(PersistenceUnitDescriptor pu : referencedPus) {
             EntityManagerFactory emf = loadPU(pu);
             loadedEMFs.add(emf);
@@ -197,24 +228,71 @@ public class JPAApplication implements ApplicationContainer {
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+
+        boolean isJava2DB = (processor == null) ? false : processor.isJava2DbPU(pud);
+        Map<String, String> overrides = (isJava2DB)? integrationPropertiesWithJava2DB : 
+                integrationPropertiesWithoutJava2DB;
+
         EntityManagerFactory emf = provider.createContainerEntityManagerFactory(
-                pInfo, integrationProperties);
+                pInfo, overrides);
         logger.logp(Level.FINE, "JPAApplication", "loadPU", // NOI18N
                     "emf = {0}", emf); // NOI18N
 
         RootDeploymentDescriptor rootDD = pud.getParent().getParent();
-        Application application;
-        if (rootDD.isApplication()) {
-            application = Application.class.cast(rootDD);
-        } else {
-            application = BundleDescriptor.class.cast(rootDD).getApplication();
-        }
+        Application application = providerContainerContractInfo.getDeploymentContext()
+                .getModuleMetaData(Application.class);
         application.addEntityManagerFactory(pInfo.getPersistenceUnitName(), pud.getPuRoot(), emf);
 
+        if (isJava2DB) {
+            java2dbEMFs.add(emf);
+        }
 
         return emf;
     }
 
+    /**
+     * Called during load when the correct classloader and transformer had been
+     * already set.
+     * For all EMFs that require Java2DB, call createEntityManager() to populate
+     * the DDL files, then iterate over those files and execute each line in them.
+     */
+    protected void doJava2DB(DeploymentContext ctx) {
+        if (java2dbEMFs.size() == 0) {
+            // Nothing to do.
+            return;
+        }
+
+        final boolean fineMsgLoggable = logger.isLoggable(Level.FINE);
+        for (EntityManagerFactory emf : java2dbEMFs) {
+            EntityManager em = null;
+            try {
+                if(fineMsgLoggable) {
+                    logger.fine("<--- To Create EM"); // NOI18N
+                }
+
+                em = emf.createEntityManager();
+            } catch(Throwable e) {
+                logger.log(Level.WARNING, e.getMessage(), e);
+                // Log and ignore
+            } finally {
+                if(em != null) {
+                    em.close();
+                }
+            }
+            if(fineMsgLoggable) {
+                logger.fine("---> Done Create EM"); // NOI18N
+            }
+        }
+        if(fineMsgLoggable) {
+            logger.fine("<--- To Create Tables"); // NOI18N
+        }
+
+        processor.createTablesInDB();
+
+        if(fineMsgLoggable) {
+            logger.fine("---> Done Create Tables"); // NOI18N
+        }
+    }
 
     private void closeAllEMFs() {
         String applicationLocation = providerContainerContractInfo.getApplicationLocation();
@@ -255,6 +333,8 @@ public class JPAApplication implements ApplicationContainer {
          * (typically done using -D option in domain.xml).
          *
          */
+        // ------------------- The Base -------------------------
+
         Map<String, String> props = new HashMap<String, String>();
 
         final String ECLIPSELINK_SERVER_PLATFORM_CLASS_NAME_PROPERTY =
@@ -262,13 +342,6 @@ public class JPAApplication implements ApplicationContainer {
         props.put(ECLIPSELINK_SERVER_PLATFORM_CLASS_NAME_PROPERTY,
                 System.getProperty(ECLIPSELINK_SERVER_PLATFORM_CLASS_NAME_PROPERTY,
                         "SunAS9")); // NOI18N
-
-        // TODO Let eclipselink handle java2db till java2db is in place here
-//        final String ECLIPSELINK_DDL_GENERATION_MODE_PROPERTY =
-//                "eclipselink.ddl-generation.output-mode"; // NOI18N
-//        props.put(ECLIPSELINK_DDL_GENERATION_MODE_PROPERTY,
-//                System.getProperty(ECLIPSELINK_DDL_GENERATION_MODE_PROPERTY,
-//                        "none")); // NOI18N
 
 
         // TopLink specific properties:
@@ -279,14 +352,6 @@ public class JPAApplication implements ApplicationContainer {
                 System.getProperty(TOPLINK_SERVER_PLATFORM_CLASS_NAME_PROPERTY,
                         "SunAS9")); // NOI18N
 
-        // These constants are defined in the entity-persistence module. Redefining them for now.
-        // TODO Let toplink handle java2db till java2db is in place here
-//        final String TOPLINK_DDL_GENERATION_MODE_PROPERTY =
-//                "toplink.ddl-generation.output-mode"; // NOI18N
-//        props.put(TOPLINK_DDL_GENERATION_MODE_PROPERTY,
-//                System.getProperty(TOPLINK_DDL_GENERATION_MODE_PROPERTY,
-//                        "none")); // NOI18N
-
         // Hibernate specific properties:
         final String HIBERNATE_TRANSACTION_MANAGER_LOOKUP_CLASS_PROPERTY =
                 "hibernate.transaction.manager_lookup_class"; // NOI18N
@@ -296,7 +361,53 @@ public class JPAApplication implements ApplicationContainer {
 
         // use an unmodifiable map as we pass this to provider and we don't
         // provider to change this.
-        integrationProperties = Collections.unmodifiableMap(props);
+        baseIntegrationProperties = Collections.unmodifiableMap(props);
+
+        // ------------------- Java2DB -------------------------
+
+        // Create map for Java2DB that includes base properties 
+        // and Java2DB specific.
+        Map<String, String> java2dbProps = new HashMap(props);
+
+        final String DROP_AND_CREATE         = "drop-and-create-tables"; //NOI18N
+        final String TOPLINK_DDL_GENERATION     = "toplink.ddl-generation"; // NOI18N
+        java2dbProps.put(TOPLINK_DDL_GENERATION, DROP_AND_CREATE);
+
+        final String ECLIPSELINK_DDL_GENERATION = "eclipselink.ddl-generation"; // NOI18N
+        java2dbProps.put(ECLIPSELINK_DDL_GENERATION, DROP_AND_CREATE);
+
+        final String DDL_SQL_SCRIPT_GENERATION = "sql-script"; // NOI18N
+        final String TOPLINK_DDL_GENERATION_MODE     = "toplink.ddl-generation.output-mode"; // NOI18N
+        java2dbProps.put(TOPLINK_DDL_GENERATION_MODE, DDL_SQL_SCRIPT_GENERATION);
+
+        final String ECLIPSELINK_DDL_GENERATION_MODE = "eclipselink.ddl-generation.output-mode"; // NOI18N
+        java2dbProps.put(ECLIPSELINK_DDL_GENERATION_MODE, DDL_SQL_SCRIPT_GENERATION);
+
+        // use an unmodifiable map as we pass this to provider and we don't
+        // provider to change this.
+        integrationPropertiesWithJava2DB = Collections.unmodifiableMap(java2dbProps);
+        
+        // ------------------- Non-Java2DB -------------------------
+
+        // Create map for non-Java2DB case, which is the load or Java2DB is not specified.
+        Map<String, String> nonjava2dbProps = new HashMap(props);
+
+        final String ECLIPSELINK_DDL_GENERATION_MODE_PROPERTY =
+                "eclipselink.ddl-generation.output-mode"; // NOI18N
+        nonjava2dbProps.put(ECLIPSELINK_DDL_GENERATION_MODE_PROPERTY,
+                System.getProperty(ECLIPSELINK_DDL_GENERATION_MODE_PROPERTY,
+                        "none")); // NOI18N
+
+        // These constants are defined in the entity-persistence module. Redefining them for now.
+        final String TOPLINK_DDL_GENERATION_MODE_PROPERTY =
+                "toplink.ddl-generation.output-mode"; // NOI18N
+        nonjava2dbProps.put(TOPLINK_DDL_GENERATION_MODE_PROPERTY,
+                System.getProperty(TOPLINK_DDL_GENERATION_MODE_PROPERTY,
+                        "none")); // NOI18N
+
+        // use an unmodifiable map as we pass this to provider and we don't
+        // provider to change this.
+        integrationPropertiesWithoutJava2DB = Collections.unmodifiableMap(nonjava2dbProps);
     }
 
 

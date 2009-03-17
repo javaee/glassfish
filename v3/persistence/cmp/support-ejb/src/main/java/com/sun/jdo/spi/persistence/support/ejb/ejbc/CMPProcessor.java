@@ -36,11 +36,11 @@
 
 package com.sun.jdo.spi.persistence.support.ejb.ejbc;
 
+import org.glassfish.api.deployment.DeploymentContext;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
 
 import com.sun.jdo.spi.persistence.support.sqlstore.ejb.DeploymentHelper;
-import com.sun.jdo.spi.persistence.support.sqlstore.ejb.EJBHelper;
 import com.sun.jdo.api.persistence.support.JDOFatalUserException;
 import com.sun.jdo.spi.persistence.utility.logging.Logger;
 
@@ -64,129 +64,80 @@ public class CMPProcessor {
     
     private static Logger logger = LogHelperEJBCompiler.getLogger();
 
-    // TODO
-    private boolean create;
-
     private Java2DBProcessorHelper helper = null;
+
+    private DeploymentContext ctx;
 
     /**
      * Creates a new instance of CMPProcessor
-     * @param info the deployment info object.
-     * @param create true if tables must be created as part of this event
-     * @param cliCreateTables the cli string related to creating tables
-     * at deployment time.
-     * @param cliDropAndCreateTables the cli string that indicates that
-     * old tables have to be dropped and new tables created.
-     * @param cliDropTables the cli string to indicate that the tables
-     * have to dropped at undeploy time.
-    public CMPProcessor(
-            DeploymentEventInfo info, boolean create, 
-            String cliCreateTables, String cliDropAndCreateTables, String cliDropTables) {
-        super(info, create, cliCreateTables,
-            cliDropAndCreateTables, cliDropTables);
+     * @param ctx the deployment context object.
+     */
+    public CMPProcessor(DeploymentContext ctx) {
+        this.ctx = ctx;
     }
-  */
+
     /**
-     * The entry point into this class. Process
-     * any ejb bundle descriptors if defined 
-     * for this application.
+     * Create and execute the files.
      */
-    protected void processApplication(EjbBundleDescriptor bundle) {
-           if (!bundle.containsCMPEntity()) {
-                return;
-            }
-
-            ResourceReferenceDescriptor cmpResource = 
-                    bundle.getCMPResourceReference();
-
-            // If this bundle's beans are not created by Java2DB, then skip to
-            // next bundle.
-            if (!DeploymentHelper.isJavaToDatabase(
-                    cmpResource.getSchemaGeneratorProperties())) {
-                return;
-            }
+    public void process() {
       
-            boolean createTables = getCreateTablesValue(cmpResource) ;                   
-            boolean dropTables = getDropTablesValue(cmpResource);
+        EjbBundleDescriptor bundle = ctx.getModuleMetaData(EjbBundleDescriptor.class);
+        ResourceReferenceDescriptor cmpResource = bundle.getCMPResourceReference();
 
-            if (logger.isLoggable(logger.FINE)) {                
-                logger.fine("ejb.CMPProcessor.createanddroptables", //NOI18N
-                    new Object[] {new Boolean(createTables), new Boolean(dropTables)});
-            }
+        // If this bundle's beans are not created by Java2DB, there is nothing to do.
+        if (!DeploymentHelper.isJavaToDatabase(
+                cmpResource.getSchemaGeneratorProperties())) {
+            return;
+        }
 
-            if (!createTables && !dropTables) { 
-                // Nothing to do.
-                return;
-            }
-        
-            // At this point of time we are sure that we would need to create 
-            // the sql/jdbc files required to create or drop objects from the 
-            // database. Hence setup the required directories from the info object.
-            helper.setApplicationLocation();
-            helper.setGeneratedLocation();
-            
-            constructJdbcFileNames(bundle);
-            if (logger.isLoggable(logger.FINE)) {
-                logger.fine("ejb.CMPProcessor.createanddropfilenames", 
-                    helper.getCreateJdbcFileName(), helper.getDropJdbcFileName()); //NOI18N            
-            }            
+        helper = new Java2DBProcessorHelper(ctx);
+        helper.init();
 
-            String resourceName = cmpResource.getJndiName();
-            if (dropTables) {
-                executeStatements(helper.getDropJdbcFileName(), resourceName);
-            } else { 
-                // else can only be createTables as otherwise we'll not reach here
-                executeStatements(helper.getCreateJdbcFileName(), resourceName);
-            }
-   }    
+        String resourceName = cmpResource.getJndiName();
+        helper.setJndiName(resourceName, bundle.getName());
 
-   /**
-     * We need to create tables only on  deploy, and 
-     * only if the CLI options cliCreateTables or 
-     * cliDropAndCreateTables are not set to false. 
-     * If those options are not set (UNDEFINED)
-     * the value is taken from the 
-     * create-tables-at-deploy element of the
-     * sun-ejb-jar.xml 
-     * (cmpResource.isCreateTablesAtDeploy()).
-     * @param cmpResource the cmp resource reference descriptor.
-     * @return true if tables have to created.
-     */
-    protected boolean getCreateTablesValue(
-            ResourceReferenceDescriptor cmpResource) {
-            boolean createTables = 
-                create 
-/*
-                    && (cliCreateTables.equals(Constants.TRUE)
-                        || (cmpResource.isCreateTablesAtDeploy()
-                            && cliCreateTables.equals(Constants.UNDEFINED)))*/;
-            return createTables;
+        // If CLI options are not set, use value from the create-tables-at-deploy 
+        // or drop-tables-at-undeploy elements of the sun-ejb-jar.xml
+        boolean userCreateTables = cmpResource.isCreateTablesAtDeploy();
+        boolean createTables = helper.getCreateTables(userCreateTables);
+
+        boolean userDropTables = cmpResource.isDropTablesAtUndeploy();
+
+        if (logger.isLoggable(logger.FINE)) {                
+            logger.fine("ejb.CMPProcessor.createanddroptables", //NOI18N
+                new Object[] {new Boolean(createTables), new Boolean(userDropTables)});
+        }
+
+        if (!createTables && !userDropTables) {
+            // Nothing to do.
+            return;
+        }
+    
+        helper.setCreateTablesValue(userCreateTables, bundle.getName());
+        helper.setDropTablesValue(userDropTables, bundle.getName());
+
+        constructJdbcFileNames(bundle);
+        if (logger.isLoggable(logger.FINE)) {
+            logger.fine("ejb.CMPProcessor.createanddropfilenames", 
+                helper.getCreateJdbcFileName(bundle.getName()), 
+                helper.getDropJdbcFileName(bundle.getName())); 
+        }            
+
+        if (createTables) {
+            helper.createOrDropTablesInDB(true);
+        }
     }    
 
     /**
-     *  We need to drop tables on undeploy and redeploy, 
-     * if the corresponding CLI options cliDropAndCreateTables 
-     * (for redeploy) or cliDropTables (for undeploy) are 
-     * not set to false. 
-     * If the corresponding option is not set (UNDEFINED)
-     * the value is taken from the drop-tables-at-undeploy 
-     * element of the sun-ejb-jar.xml 
-     * (cmpResource.isDropTablesAtUndeploy()).
-     * @param cmpResource the cmp resource reference descriptor.
-     * @return true if the tables have to be dropped.
+     * Drop files on undeploy
      */
-    protected boolean getDropTablesValue(
-            ResourceReferenceDescriptor cmpResource) {
-        boolean dropTables = 
-            (!create 
-                /*&& (cliDropAndCreateTables.equals(Constants.TRUE)
-                    || cliDropTables.equals(Constants.TRUE) 
-                    || (cmpResource.isDropTablesAtUndeploy()
-                        && cliDropAndCreateTables.equals(Constants.UNDEFINED)
-                        && cliDropTables.equals(Constants.UNDEFINED)))*/);
-       return dropTables;
-    } 
-    
+    public void clean() {
+        helper = new Java2DBProcessorHelper(ctx);
+        helper.init();
+
+        helper.createOrDropTablesInDB(false);
+    }
+      
     /**
      * Construct the name of the create and 
      * drop jdbc ddl files that would be 
@@ -197,67 +148,12 @@ public class CMPProcessor {
      * @param ejbBundle the ejb bundle descriptor being worked on.
      */
     private void  constructJdbcFileNames(EjbBundleDescriptor ejbBundle) {
-        String filePrefix = EJBHelper.getDDLNamePrefix(ejbBundle);
-        
-        helper.setCreateJdbcFileName(filePrefix + DatabaseConstants.CREATE_DDL_JDBC_FILE_SUFFIX);
-        helper.setDropJdbcFileName(filePrefix + DatabaseConstants.DROP_DDL_JDBC_FILE_SUFFIX);
+        String filePrefix = DeploymentHelper.getDDLNamePrefix(ejbBundle);
+    
+        helper.setCreateJdbcFileName(filePrefix + DatabaseConstants.CREATE_DDL_JDBC_FILE_SUFFIX, 
+                ejbBundle.getName());
+        helper.setDropJdbcFileName(filePrefix + DatabaseConstants.DROP_DDL_JDBC_FILE_SUFFIX, 
+                ejbBundle.getName());
     }
     
-    /**
-     * If the file is present, execute the corresponding statements
-     * in the database.
-     * @param fileName the name of the file to execute.
-     * @param resourceName the jdbc resource name that would be used 
-     * to get a connection to the database.
-     */
-    private void executeStatements(
-            String fileName, String resourceName) {
-        File file = helper.getDDLFile(
-                helper.getGeneratedLocation() + fileName, false);
-        if (file.exists()) {
-            executeDDLStatement(file, resourceName);
-        } else {
-            helper.logI18NWarnMessage(
-                 ((create)? "ejb.BaseProcessor.cannotcreatetables" //NOI18N
-                 : "ejb.BaseProcessor.cannotdroptables"), //NOI18N
-                helper.getAppRegisteredName(), file.getName(), null);
-        }
-    }
-    
-    /**
-     * Get the ddl files eventually executed 
-     * against the database. This method deals 
-     * with both create and drop ddl files.
-     * @param fileName  the create or drop jdbc ddl file.
-     * @param resourceName the jdbc resource name that would be used 
-     * to get a connection to the database.
-     * @return true if the tables were successfully 
-     *    created/dropped from the database. 
-     */
-    private boolean executeDDLStatement(File fileName, String resourceName) {
-        boolean result = false;
-        Connection conn = null;
-        Statement sql = null;
-        try {
-            try {           
-                    conn = DeploymentHelper.getConnection(resourceName);
-                    sql = conn.createStatement();
-                    result = true;
-                } catch (SQLException ex) {
-                    helper.cannotConnect(resourceName, ex);
-                } catch (JDOFatalUserException ex) {
-                    helper.cannotConnect(resourceName, ex);
-                }
-        
-                if(result) {               
-                    helper.executeDDLs(fileName, sql);
-                }
-        } catch (IOException e) {
-            helper.fileIOError(helper.getAppRegisteredName(), e);            
-        } finally { 
-            helper.closeConn(conn);
-        }
-        return result;        
-    }
-        
 }

@@ -38,11 +38,16 @@ package org.glassfish.persistence.common;
 
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.BundleDescriptor;
-//import com.sun.enterprise.deployment.backend.DeploymentEventInfo;
-//import com.sun.enterprise.deployment.backend.DeploymentRequest;
-//import com.sun.enterprise.deployment.backend.DeploymentStatus;
-//import com.sun.enterprise.deployment.backend.IASDeploymentException;
+import org.glassfish.api.deployment.DeployCommandParameters;
+import org.glassfish.api.deployment.UndeployCommandParameters;
+import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.api.deployment.OpsParams;
+import org.glassfish.api.ActionReport;
 import com.sun.logging.LogDomains;
+
+import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
+import org.glassfish.internal.api.Globals;
+import org.jvnet.hk2.component.Habitat;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -51,7 +56,9 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.SQLException;
+import javax.sql.DataSource;
 import java.util.ResourceBundle;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -62,12 +69,13 @@ import java.util.logging.Logger;
 public class Java2DBProcessorHelper { 
 
     /** The logger */
-    private final static Logger logger = LogDomains.getLogger(Java2DBProcessorHelper.class, LogDomains.DPL_LOGGER);
+    private final static Logger logger = LogDomains.getLogger(
+            Java2DBProcessorHelper.class, LogDomains.DPL_LOGGER);
 
     /** I18N message handler */
-    private  final static ResourceBundle messages = logger.getResourceBundle();
-        // I18NHelper.loadBundle(
-        // logger.getResourceBundleName(), Java2DBProcessorHelper.class.getClassLoader());
+    private final static ResourceBundle messages = I18NHelper.loadBundle(
+        "org.glassfish.persistence.common.LogStrings", //NOI18N
+         Java2DBProcessorHelper.class.getClassLoader());
 
     /**
      * Default DDL name prefix. Need to have something to avoid
@@ -77,15 +85,37 @@ public class Java2DBProcessorHelper {
      * had been used.
      **/
     private final static String DEFAULT_NAME = "default"; // NOI18N
+    private final static String DEFAULT_RESOURCE_NAME = "jdbc/__default"; // NOI18N
+
+    /**
+     * Key for storing and retrieving corresponding values.
+     */
+    private final static String APPLICATION_NAME = "org.glassfish.persistence.app_name_property"; // NOI18N
+
+    /**
+     * Key prefixes for storing and retrieving corresponding values.
+     */
+    private final static String RESOURCE_JNDI_NAME = "org.glassfish.persistence.resource_jndi_name_property."; // NOI18N
+    private final static String JDBC_FILE_LOCATION = "org.glassfish.persistence.jdbc_file_location_property."; // NOI18N
+    private final static String CREATE_JDBC_FILE_NAME = "org.glassfish.persistence.create_jdbc_file_name_property."; // NOI18N
+    private final static String DROP_JDBC_FILE_NAME = "org.glassfish.persistence.drop_jdbc_file_name_property."; // NOI18N
+    private final static String CREATE_TABLE_VALUE = "org.glassfish.persistence.create_table_value_property."; // NOI18N
+    private final static String DROP_TABLE_VALUE = "org.glassfish.persistence.drop_table_value_property."; // NOI18N
     
-    private Application application;
-//    private DeploymentEventInfo info;
-//    private DeploymentStatus status;
+    private DeploymentContext ctx;
+    private Properties deploymentContextProps;
+    private ActionReport subReport;
     
     /**
-     * True if this event results in creating new tables.
+     * True if this is instance is created for deploy
      */
-    private  boolean create;
+    private  boolean deploy;
+
+    /**
+     * True if this is instance is created for undeploy
+     */
+    private  boolean undeploy;
+
     private  Boolean cliCreateTables;
     private  Boolean cliDropAndCreateTables;
     private  Boolean cliDropTables;
@@ -96,6 +126,7 @@ public class Java2DBProcessorHelper {
     
     private String appDeployedLocation;
     private String appGeneratedLocation;
+    private String jndiName;
     /**
      * The string name of the create jdbc ddl file.
      */
@@ -107,56 +138,156 @@ public class Java2DBProcessorHelper {
 
     /**
      * Creates a new instance of Java2DBProcessorHelper.
-     * @param info the deployment info object.
-     * @param create true if this event results in creating new tables.
-     * @param cliCreateTables the cli string related to creating tables
-     * at deployment time.
-     * @param cliDropAndCreateTables the cli string that indicates that
-     * old tables have to be dropped and new tables created.
-     * @param cliDropTables the cli string to indicate that the tables
-     * have to dropped at undeploy time.
+     * Do not parse all the data until it's requested in the #init() call.
+     * @param ctx the deployment context object.
      */
-    public Java2DBProcessorHelper(//DeploymentEventInfo info,
-            boolean create, Boolean cliCreateTables,
-            Boolean cliDropAndCreateTables, Boolean cliDropTables) {
-        initializeVariables(/** info, **/ create, cliCreateTables,
-            cliDropAndCreateTables, cliDropTables);
+    public Java2DBProcessorHelper(DeploymentContext ctx) {
+        this.ctx = ctx;
+
+        OpsParams params = ctx.getCommandParameters(OpsParams.class);
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("---> Origin: " + params.origin);
+        }
+
+        deploy = (params.origin == OpsParams.Origin.deploy);
+        undeploy = (params.origin == OpsParams.Origin.undeploy);
+
+        deploymentContextProps = ctx.getProps();
     }
 
-    private void initializeVariables(
-            /** DeploymentEventInfo info, **/ boolean create, Boolean cliCreateTables,
-            Boolean cliDropAndCreateTables, Boolean cliDropTables) {
-        //this.info = info;
-        //this.application = this.info.getApplicationDescriptor();
-        //this.appRegisteredName = this.application.getRegistrationName();
-        //this.status = 
-                //this.info.getDeploymentRequest().getCurrentDeploymentStatus();
+    /**
+     * Initializes the rest of the settings
+     */
+    public void init() {
+/** XXX Not ready yet
+        ActionReport report = ctx.getActionReport();
+        subReport = report.addSubActionsReport();
+        subReport.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+**/
         
-        this.create = create;
-        this.cliCreateTables = cliCreateTables;
-        this.cliDropAndCreateTables = cliDropAndCreateTables;
-        this.cliDropTables = cliDropTables;  
+        if (deploy) {
+            // DeployCommandParameters are available only on deploy or deploy
+            // part of redeploy
+            DeployCommandParameters cliOverrides = 
+                    ctx.getCommandParameters(DeployCommandParameters.class);
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine("---> cliOverrides " + cliOverrides);
+            }
+
+            cliCreateTables = cliOverrides.createtables;
+            cliDropAndCreateTables = cliOverrides.dropandcreatetables;
+
+            Application application = ctx.getModuleMetaData(Application.class);
+            appRegisteredName = application.getRegistrationName();
+            deploymentContextProps.setProperty(APPLICATION_NAME, appRegisteredName);
+
+        } else {
+            // UndeployCommandParameters are available only on undeploy or undeploy
+            // part of redeploy. In the latter case, cliOverrides.droptables
+            // is set from cliOverrides.dropandcreatetables passed to redeploy.
+            UndeployCommandParameters cliOverrides = 
+                    ctx.getCommandParameters(UndeployCommandParameters.class);
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine("---> cliOverrides " + cliOverrides);
+            }
+
+            cliDropTables = cliOverrides.droptables;
+            appRegisteredName = deploymentContextProps.getProperty(APPLICATION_NAME);
+        }
+
+        try {
+            appGeneratedLocation =
+                ctx.getScratchDir("ejb").getCanonicalPath() + File.separator;
+        } catch (Exception e) {
+            throw new RuntimeException(
+                I18NHelper.getMessage(messages,
+                "Java2DBProcessorHelper.generatedlocation", //NOI18N
+                appRegisteredName), e);
+        }
+
+        appDeployedLocation =
+            ctx.getSource().getURI().getSchemeSpecificPart() + File.separator;
+
     }
     
+    /**
+     * @return true if this instance was created for the deploy operation.
+     */
+    public boolean isDeploy() {
+        return deploy;
+    }
+
+    /**
+     * @return true if this instance was created for the undeploy operation.
+     */
+    public boolean isUndeploy() {
+        return undeploy;
+    }
+
+    /**
+     * Iterate over all "create" or "drop" ddl files and execute them.
+     * Skip processing if the boolean argument is false.
+     */
+    public void createOrDropTablesInDB(boolean create) {
+        for (String key : deploymentContextProps.stringPropertyNames()) {
+            if (key.startsWith(RESOURCE_JNDI_NAME)) {
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.fine("---> key " + key);
+                }
+                String name = key.substring(RESOURCE_JNDI_NAME.length());
+                String jndiName = deploymentContextProps.getProperty(key);
+                String fileName = null;
+                if (create) {
+                    if (getCreateTables(name)) {
+                        fileName = deploymentContextProps.getProperty(CREATE_JDBC_FILE_NAME + name);
+                    }
+                } else {
+                    if (getDropTables(name)) {
+                        fileName = deploymentContextProps.getProperty(DROP_JDBC_FILE_NAME + name);
+                    }
+                } 
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.fine("---> fileName " + fileName);
+                    logger.fine("---> jndiName " + jndiName);
+                }
+                if (fileName == null) {
+                        continue; // DDL execution is not required
+                }
+
+                File file = getDDLFile(getGeneratedLocation(name) + fileName, true);
+                if(file.exists()) {
+                    executeDDLStatement(file, jndiName);
+                } else {
+                    logI18NWarnMessage(
+                            "Java2DBProcessorHelper.cannotcreatetables", //NOI18N
+                            appRegisteredName, fileName, null);
+                }
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.fine("<---");
+                }
+            }
+        }
+    }
+
        /**
         * Read the ddl file from the disk location.
         * @param fileName the string name of the file.
         * @param create true if this event results in creating tables.
         * @return the jdbc ddl file.
         */
-    public File getDDLFile(String fileName, boolean create) {
+    public File getDDLFile(String fileName, boolean deploy) {
         File file = null;        
         try {
             file = new File(fileName);   
             if (logger.isLoggable(Level.FINE)) {
                 logger.fine(I18NHelper.getMessage(messages,
-                    ((create)? "Java2DBProcessorHelper.createfilename" //NOI18N
+                    ((deploy)? "Java2DBProcessorHelper.createfilename" //NOI18N
                     : "Java2DBProcessorHelper.dropfilename"), //NOI18N
                     file.getName()));
             }
         } catch (Exception e) {
             logI18NWarnMessage(
-                 "Exception caught in Java2DBProcessorHelper.getDDLFile()", 
+                 "Exception caught in Java2DBProcessorHelper.getDDLFile()", //NOI18N
                 appRegisteredName, null, e);
         }
         return file;        
@@ -181,12 +312,13 @@ public class Java2DBProcessorHelper {
             while ((s = reader.readLine()) != null) {
                 try {
                     if (logger.isLoggable(Level.FINE)) {
-                        logger.fine(I18NHelper.getMessage(messages, "Java2DBProcessorHelper.executestatement", s)); //NOI18N
+                        logger.fine(I18NHelper.getMessage(messages, 
+                        "Java2DBProcessorHelper.executestatement", s)); //NOI18N
                     }
                     sql.execute(s);
 
                 } catch(SQLException ex) {
-                    String msg = getI18NMessage("Java2DBProcessorHelper.sqlexception", 
+                    String msg = getI18NMessage("Java2DBProcessorHelper.sqlexception", //NOI18N
                             s, null, ex);
                     logger.warning(msg);
                     warningBuf.append("\n\t").append(msg); // NOI18N
@@ -208,131 +340,6 @@ public class Java2DBProcessorHelper {
         }
     }
 
-    /**
-     * Provide a warning message to the user.  The message is appended to any
-     * already-existing warning message text.
-     * @param status DeploymentStatus via which user is warned
-     * @param msg Message for user.
-     */
-
-    public void warnUser(String msg) {
-/*
-        status.setStageStatus(DeploymentStatus.WARNING);
-        status.setStageStatusMessage(
-                status.getStageStatusMessage() + "\n" + msg); // NOI18N
-  */
-    }
-
-    /**
-     * Provide a warning message to the user about inability to connect to the
-     * database.  The message is created from the cmpResource's JNDI name and
-     * the exception.
-     * @param status DeploymentStatus via which user is warned
-     * @param cmpResource For obtaining JNDI name
-     * @param ex Exception which is cause for inability to connect.
-     */
-    public void cannotConnect(String connName, 
-            Throwable ex) {
-        logI18NWarnMessage( "Java2DBProcessorHelper.cannotConnect",  
-                connName,  null, ex);
-    }
-    
-    public void fileIOError(String regName, 
-            Throwable ex) {
-        logI18NWarnMessage("Java2DBProcessorHelper.ioexception",  
-                regName,  null, ex);
-    }
-    
-    /**
-     * Close the connection that was opened
-     * to the database
-     * @param conn the database connection.
-     */
-    public void closeConn(Connection conn) {
-        if (conn != null) {
-            try {
-                conn.close();
-            } catch(SQLException ex) {
-                // Ignore.
-            }
-        }
-    }
-    
-    public void logI18NInfoMessage(
-            String errorCode, String regName, 
-            String fileName, Throwable ex) {
-        String msg = getI18NMessage(errorCode, 
-                regName, fileName, ex);
-        logger.info(msg);
-    }
-    
-    public void logI18NWarnMessage(
-            String errorCode, String regName, 
-            String fileName, Throwable ex) {
-        String msg = getI18NMessage(errorCode, 
-                regName, fileName, ex);
-        logger.warning(msg);
-        warnUser(msg);        
-    }
-    
-    /**
-     * 
-     * @param errorCode 
-     * @return 
-     */
-    public String getI18NMessage(String errorCode) {
-        return getI18NMessage(
-             errorCode, null, null, null);
-    }    
-
-    public String getI18NMessage(
-            String errorCode, String regName, 
-            String fileName, Throwable ex) {
-        String msg = null;
-        if(null != ex)
-               msg = I18NHelper.getMessage(
-                    messages, errorCode,  regName,  ex.toString());
-        else if(null != fileName )
-            msg = I18NHelper.getMessage(
-                    messages, errorCode,  regName,  fileName); 
-        else            
-             msg = I18NHelper.getMessage(messages, errorCode);
-        
-        return msg;
-    }
-
-
-    /**
-     * The location where the application has been deployed. This would ideally 
-     * be the domains/domain1/applications directory. This information is obtained
-     * from the DeploymentEventListener object that is passed in.
-     */
-    public void setApplicationLocation() {
-        if(null != this.appDeployedLocation)
-            return;
-        
-//        this.appDeployedLocation =
-//            info.getDeploymentRequest().getDeployedDirectory().getAbsolutePath()
-//            + File.separator;
-    }
-    
-    /**
-     * The location where files have been generated as part of the application 
-     * deployment cycle. This is where we write out the sql/jdbc files used to
-     * create or drop objects from the database. This information is obtained
-     * from the DeploymentEventListener object that is passed in.
-     */
-    public void setGeneratedLocation() {
-        if(null != this.appGeneratedLocation)
-            return;
-//        this.appGeneratedLocation =
-//                info.getScratchDir("ejb").getAbsolutePath() + File.separator;
-    }
-
-    public String getGeneratedLocation() {
-        return appGeneratedLocation;
-    }
-
     public String getDeployedLocation() {
         return appDeployedLocation;
     }
@@ -344,29 +351,163 @@ public class Java2DBProcessorHelper {
     /**
      * Returns createJdbcFileName
      */
-    public String getCreateJdbcFileName() {
-        return createJdbcFileName;
+    public String getCreateJdbcFileName(String name) {
+        return deploymentContextProps.getProperty(CREATE_JDBC_FILE_NAME + name);
     }
 
     /**
      * Sets createJdbcFileName
      */
-    public void setCreateJdbcFileName(String s) {
+    public void setCreateJdbcFileName(String s, String name) {
         createJdbcFileName = s;
+        deploymentContextProps.setProperty(CREATE_JDBC_FILE_NAME + name, createJdbcFileName);
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("---> " + CREATE_JDBC_FILE_NAME + name + " " + createJdbcFileName);
+        }
     }
 
     /**
      * Returns dropJdbcFileName
      */
-    public String getDropJdbcFileName() {
-        return dropJdbcFileName;
+    public String getDropJdbcFileName(String name) {
+        return deploymentContextProps.getProperty(DROP_JDBC_FILE_NAME + name);
     }
 
     /**
      * Sets dropJdbcFileName
      */
-    public void setDropJdbcFileName(String s) {
+    public void setDropJdbcFileName(String s, String name) {
         dropJdbcFileName = s;
+        deploymentContextProps.setProperty(DROP_JDBC_FILE_NAME + name, dropJdbcFileName);
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("---> " + DROP_JDBC_FILE_NAME + name + " " + dropJdbcFileName);
+        }
+    }
+
+    /**
+     * Returns jndiName
+     */
+    public String getJndiName(String name) {
+        return deploymentContextProps.getProperty(RESOURCE_JNDI_NAME + name);
+    }
+
+    /**
+     * Sets jndiName
+     */
+    public void setJndiName(String s, String name) {
+        jndiName = (s == null)? DEFAULT_RESOURCE_NAME : s;
+        deploymentContextProps.setProperty(RESOURCE_JNDI_NAME + name, jndiName);
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("---> " + RESOURCE_JNDI_NAME + name + " " + jndiName);
+        }
+    }
+
+    /**
+     * Returns appGeneratedLocation or user defined value if the latter is specified
+     */
+    public String getGeneratedLocation(String name) {
+        String userFileLocation = deploymentContextProps.getProperty(JDBC_FILE_LOCATION + name);
+        return (userFileLocation != null)? userFileLocation : appGeneratedLocation;
+    }
+
+    /**
+     * Sets the substitute for the internal location of the generated files
+     */
+    public void setGeneratedLocation(String s, String name) {
+        deploymentContextProps.setProperty(JDBC_FILE_LOCATION + name, s);
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("---> " + JDBC_FILE_LOCATION + name + " " + s);
+        }
+    }
+
+    /**
+     * @return true if cli overrides were set during deploy
+     */
+    public boolean hasDeployCliOverrides() {
+        return (cliCreateTables != null || cliDropAndCreateTables != null);
+    }
+
+    /**
+     * @return true if cli overrides were set during undeploy
+     */
+    public boolean hasUndeployCliOverrides() {
+        return (cliDropTables != null);
+    }
+
+    /**
+     * Create tables only on  deploy, and only if the CLI options cliCreateTables or
+     * cliDropAndCreateTables are not set to false.
+     * If those options are not set (null) the value is taken from the boolean parameter
+     * provided by the caller.
+     * @return true if tables are to be created.
+     */
+    public boolean getCreateTables(boolean param) {
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("---> param " + param);
+            logger.fine("---> cliCreateTables " + cliCreateTables);
+            logger.fine("---> cliDropAndCreateTables " + cliDropAndCreateTables);
+        }
+
+        boolean createTables =
+                (cliCreateTables != null && cliCreateTables.equals(Boolean.TRUE))
+                || (cliDropAndCreateTables != null && cliDropAndCreateTables.equals(Boolean.TRUE))
+                || (cliCreateTables == null && cliDropAndCreateTables == null && param);
+
+        return createTables;
+    }
+
+    /**
+     * Drop tables on undeploy and redeploy, if the corresponding CLI options 
+     * cliDropAndCreateTables (for redeploy) or cliDropTables (for undeploy) are
+     * not set to false.
+     * If the corresponding option is not set the value is taken from the boolean parameter
+     * provided by the caller.
+     * @return true if the tables have to be dropped.
+     */
+    public boolean getDropTables(boolean param) {
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("---> param " + param);
+            logger.fine("---> cliDropTables " + cliDropTables);
+        }
+        boolean dropTables =
+                (cliDropTables != null && cliDropTables.equals(Boolean.TRUE))
+                || (cliDropTables == null && param);
+
+       return dropTables;
+    }
+
+    /**
+     * Calculate createTables value based on the parameter stored on deploy
+     */
+    public boolean getCreateTables(String name) {
+        return getCreateTables(Boolean.valueOf(deploymentContextProps.getProperty(CREATE_TABLE_VALUE + name)));
+    }
+
+    /**
+     * Store user defined value for create tables for future reference.
+     */
+    public void setCreateTablesValue(boolean param, String name) {
+        deploymentContextProps.setProperty(CREATE_TABLE_VALUE + name, ""+param);
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("---> " + CREATE_TABLE_VALUE + name + " " + param);
+        }
+    }
+
+    /**
+     * Calculate dropTables value based on the parameter stored on deploy
+     */
+    public boolean getDropTables(String name) {
+        return getDropTables(Boolean.valueOf(deploymentContextProps.getProperty(DROP_TABLE_VALUE + name)));
+    }
+
+    /**
+     * Store user defined value for drop tables for future reference.
+     */
+    public void setDropTablesValue(boolean param, String name) {
+        deploymentContextProps.setProperty(DROP_TABLE_VALUE + name, ""+param);
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("---> " + DROP_TABLE_VALUE + name + " " + param);
+        }
     }
 
     /**
@@ -397,4 +538,156 @@ public class Java2DBProcessorHelper {
 
         return (rc.length() == 0)? DEFAULT_NAME : rc.toString();
     }
+
+    /**
+     * Get the ddl files eventually executed
+     * against the database. This method deals
+     * with both create and drop ddl files.
+     * @param fileName  the create or drop jdbc ddl file.
+     * @param resourceName the jdbc resource name that would be used
+     * to get a connection to the database.
+     * @return true if the tables were successfully
+     *    created/dropped from the database.
+     */
+    public boolean executeDDLStatement(File fileName, String resourceName) {
+        boolean result = false;
+        Connection conn = null;
+        Statement sql = null;
+        try {
+            try {
+                conn = getConnection(resourceName);
+                sql = conn.createStatement();
+                result = true;
+            } catch (Exception ex) {
+                cannotConnect(resourceName, ex);
+            }
+
+            if(result) {
+                executeDDLs(fileName, sql);
+            }
+        } catch (IOException e) {
+            fileIOError(appRegisteredName, e);
+        } finally {
+            closeConn(conn);
+        }
+        return result;
+    }
+
+    /** Get a Connection from the resource specified by the JNDI name
+     * of a resource.
+     * This connection is aquired from a non-transactional resource which does not
+     * go through transaction enlistment/delistment.
+     * The deployment processing is required to use only those connections.
+     *
+     * @param name JNDI name of a resource for the connection.
+     * @return a Connection.
+     * @throws SQLException if can not get a Connection.
+     */
+    public static Connection getConnection(String name) throws Exception {
+        // TODO - pass Habitat or ConnectorRuntime as an argument.
+        // TODO - remove duplication with DeploymentHelper
+
+        Habitat habitat = Globals.getDefaultHabitat();
+        ConnectorRuntime connectorRuntime = habitat.getByContract(ConnectorRuntime.class);
+        DataSource ds = DataSource.class.cast(connectorRuntime.lookupNonTxResource(name, false));
+        return ds.getConnection();
+    }
+
+    /**
+     * Provide a warning message to the user about inability to connect to the
+     * database.  The message is created from the cmpResource's JNDI name and
+     * the exception.
+     * @param connName the JNDI name for obtaining a connection
+     * @param ex Exception which is cause for inability to connect.
+     */
+    private void cannotConnect(String connName, Throwable ex) {
+        logI18NWarnMessage( "Java2DBProcessorHelper.cannotConnect",  
+                connName,  null, ex);
+    }
+    
+    /**
+     * Provide a warning message to the user about inability to read a DDL file.
+     */
+    private void fileIOError(String regName, Throwable ex) {
+        logI18NWarnMessage("Java2DBProcessorHelper.ioexception",  
+                regName,  null, ex);
+    }
+    
+    /**
+     * Close the connection that was opened to the database
+     * @param conn the database connection.
+     */
+    private void closeConn(Connection conn) {
+        if (conn != null) {
+            try {
+                conn.close();
+            } catch(SQLException ex) {
+                // Ignore.
+            }
+        }
+    }
+    
+    /** 
+     * Provide a generic warning message to the user.
+     */
+    public void logI18NInfoMessage(
+            String errorCode, String regName, 
+            String fileName, Throwable ex) {
+        String msg = getI18NMessage(errorCode, 
+                regName, fileName, ex);
+        logger.info(msg);
+    }
+    
+    /** 
+     * Provide a generic warning message to the user.
+     */
+    public void logI18NWarnMessage(
+            String errorCode, String regName, 
+            String fileName, Throwable ex) {
+        String msg = getI18NMessage(errorCode, 
+                regName, fileName, ex);
+        logger.warning(msg);
+        warnUser(msg);        
+    }
+    
+    /**
+     * Get the localized message for the error code.
+     * @param errorCode 
+     * @return 
+     */
+    public String getI18NMessage(String errorCode) {
+        return getI18NMessage(errorCode, null, null, null);
+    }    
+
+    /**
+     * Get a generic localized message.
+     */
+    public String getI18NMessage(
+            String errorCode, String regName, 
+            String fileName, Throwable ex) {
+        String msg = null;
+        if(null != ex)
+               msg = I18NHelper.getMessage(
+                    messages, errorCode,  regName,  ex.toString());
+        else if(null != fileName )
+            msg = I18NHelper.getMessage(
+                    messages, errorCode,  regName,  fileName); 
+        else            
+             msg = I18NHelper.getMessage(messages, errorCode);
+        
+        return msg;
+    }
+
+    /**
+     * Provide a warning message to the user.  The message is appended to any
+     * already-existing warning message text.
+     * @param msg Message for user.
+     */
+    public void warnUser(String msg) {
+/** XXX Not ready yet
+        subReport.setMessage(subReport.getMessage() + "\n" + msg); // NOI18N
+        subReport.setActionExitCode(ActionReport.ExitCode.WARNING);
+**/
+    }
+
 } 
