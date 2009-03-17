@@ -26,9 +26,10 @@ package com.sun.enterprise.v3.services.impl;
 import com.sun.enterprise.admin.monitor.callflow.Agent;
 import com.sun.enterprise.server.logging.FormatterDelegate;
 import com.sun.enterprise.server.logging.UniformLogFormatter;
-import com.sun.enterprise.server.logging.LoggingConfigImpl;
+import com.sun.common.util.logging.LoggingConfigImpl;
 import com.sun.enterprise.v3.logging.AgentFormatterDelegate;
 import com.sun.common.util.logging.LoggingOutputStream;
+
 import com.sun.logging.LogDomains;
 import org.glassfish.internal.api.Init;
 import org.glassfish.internal.api.Globals;
@@ -48,6 +49,7 @@ import java.util.Properties;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Set;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -111,6 +113,8 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
             agentDelegate = new AgentFormatterDelegate(agent);
 
         }
+        
+        final Map <String, Handler> gfHandlers = new HashMap <String,Handler>();
 
         Collection<Handler> handlers = habitat.getAllByContract(Handler.class);
         if (handlers!=null && handlers.size()>0) {
@@ -126,12 +130,13 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
                         }
                     }
                 }
-
                 // add the new handlers to the root logger
                 for (Handler handler : handlers) {
                     Logger rootLogger = Logger.global.getParent();
                     if (rootLogger!=null) {
                        rootLogger.addHandler(handler);
+                       String handlerName = handler.toString();
+                       gfHandlers.put(handlerName.substring(0, handlerName.indexOf("@")), handler);
                     }
                 }
 
@@ -158,9 +163,14 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
                         Set<String> keys = props.keySet();
                         for (String a : keys)   {
                             if (a.endsWith(".level")) {
+                                String n = a.substring(0,a.lastIndexOf(".level"));
                                 Level l = Level.parse(props.get(a));
-                                if (logMgr.getLogger(a.substring(0,a.lastIndexOf(".level"))) != null) {
-                                    logMgr.getLogger(a.substring(0,a.lastIndexOf(".level"))).setLevel(l);
+                                if (logMgr.getLogger(n) != null) {
+                                    logMgr.getLogger(n).setLevel(l);
+                                } else if (gfHandlers.containsKey(n)) {
+                                    // check if this is a handler
+                                    Handler h = (Handler) gfHandlers.get(n);
+                                    h.setLevel(l);
                                 }
 
                             }
@@ -174,6 +184,7 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
                 }
             });
         }
+        logger.log(Level.INFO, "Starting GlassFish Application Server.");
 
     }
 

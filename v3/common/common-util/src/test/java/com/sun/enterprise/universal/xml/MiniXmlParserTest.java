@@ -89,20 +89,24 @@ public class MiniXmlParserTest {
      * Test that the correct Exception is thrown for a null xml File
      * @throws com.sun.enterprise.universal.xml.MiniXmlParserException
      */
+
     @Test( expected=MiniXmlParserException.class)
     public void test2() throws MiniXmlParserException {
             MiniXmlParser instance = new MiniXmlParser(null, "server");
         
     }
+
     /**
      * Test that the correct Exception is thrown for a non-existing xml File
      * @throws com.sun.enterprise.universal.xml.MiniXmlParserException
      */
+
     @Test( expected=MiniXmlParserException.class)
     public void test3() throws MiniXmlParserException {
             MiniXmlParser instance = new MiniXmlParser(new File("."), "server");
         
     }
+    
     /**
      * Positive Test Case where configs appears after servers
      * @throws com.sun.enterprise.universal.xml.MiniXmlParserException
@@ -250,13 +254,15 @@ public class MiniXmlParserTest {
     }
      /*
      * Verify the right logfile name is returned.
-     */
+     * removed this test because logging config info in logging.properties and not in domain.xml
+
     @Test
     public void test11() throws MiniXmlParserException {
             MiniXmlParser instance = new MiniXmlParser(adminport, "server");
             assertEquals(instance.getLogFilename(), "${com.sun.aas.instanceRoot}/logs/server.log");
     }
-
+    */
+      
     /**
      * Test that the correct Exception is thrown for a "right-order"
      * xml that has no /domain  element in it 

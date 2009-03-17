@@ -1,4 +1,4 @@
-package com.sun.enterprise.server.logging;
+package com.sun.common.util.logging;
 
 import java.util.Map;
 import java.util.Set;

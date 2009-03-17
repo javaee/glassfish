@@ -1,9 +1,9 @@
 /*
- * 
+ *
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
+ *
  * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -11,7 +11,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -20,9 +20,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -59,15 +59,15 @@ public class GFLauncherTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         ClassLoader cl = GFLauncherTest.class.getClassLoader();
-        
+
         File asenv = new File(cl.getResource("config/asenv.bat").toURI());
         installDir = asenv.getParentFile().getParentFile();
         domainsDir = new File(installDir, "domains");
-        assertTrue("domain1 -- domain.xml is missing!!", 
+        assertTrue("domain1 -- domain.xml is missing!!",
                 new File(domainsDir, "domain1/config/domain.xml").exists());
-        assertTrue("domain2 -- domain.xml is missing!!", 
+        assertTrue("domain2 -- domain.xml is missing!!",
                 new File(domainsDir, "domain2/config/domain.xml").exists());
-        assertTrue("domain3 -- domain.xml is missing!!", 
+        assertTrue("domain3 -- domain.xml is missing!!",
                 new File(domainsDir, "domain3/config/domain.xml").exists());
     }
 
@@ -92,22 +92,24 @@ public class GFLauncherTest {
      * First Test -- Fake Launch the default domain in the default domain dir
      * Since we have more than 1 domain in there -- it should fail!
      */
-    @Test(expected=GFLauncherException.class)    
+    @Test(expected=GFLauncherException.class)
     public void test1() throws GFLauncherException, MiniXmlParserException {
         launcher.launch();
     }
     /**
      * Let's fake-launch domain1  -- which DOES have the jvm logging args
      */
+
     @Test
     public void test2() throws GFLauncherException, MiniXmlParserException {
         info.setDomainName("domain1");
         launcher.launch();
         List<String> cmdline = launcher.getCommandLine();
-        
+
         assertTrue(cmdline.contains("-XX:+UnlockDiagnosticVMOptions"));
         // 0 --> java, 1 --> "-cp" 2 --> the classpath, 3 -->first arg
         assertEquals(cmdline.get(3), "-XX:+UnlockDiagnosticVMOptions");
+        
         /* Too noisy, todo figure out how to get it into the test report
         System.out.println("COMMANDLINE:");
         for(String s : cmdline) {
@@ -115,9 +117,11 @@ public class GFLauncherTest {
         }
          */
     }
+
     /**
      * Let's fake-launch domain2 -- which does NOT have the jvm logging args
      */
+
     @Test
     public void test3() throws GFLauncherException, MiniXmlParserException {
         info.setDomainName("domain2");
@@ -132,6 +136,7 @@ public class GFLauncherTest {
         }
          */
     }
+
     /**
      * Let's fake-launch a domain that doesn't exist
      * it has an XML error in it.

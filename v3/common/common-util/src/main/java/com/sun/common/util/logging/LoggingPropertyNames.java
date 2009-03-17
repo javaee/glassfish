@@ -1,4 +1,4 @@
-package com.sun.enterprise.server.logging;
+package com.sun.common.util.logging;
 
 public class LoggingPropertyNames {
 	

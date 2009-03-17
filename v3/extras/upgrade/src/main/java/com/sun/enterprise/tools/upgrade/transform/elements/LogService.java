@@ -67,6 +67,7 @@ public class LogService extends BaseElement {
 
         logger.log(Level.FINE, stringManager.getString("upgrade.transform.transformingMSG", this.getClass().getName(), element.getTagName()));
         NodeList logServs = parentResult.getElementsByTagName("log-service");
+        if (logServs == null) return;
         Element logService = null;
         logger.log(Level.FINE, this.getClass().getName() +  ":: logServs.getLength() ", logServs.getLength());
         if(logServs.getLength() == 0){

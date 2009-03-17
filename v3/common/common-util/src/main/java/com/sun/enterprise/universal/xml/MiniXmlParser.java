@@ -24,6 +24,8 @@ package com.sun.enterprise.universal.xml;
 
 import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.common.util.logging.LoggingConfigImpl;
+import com.sun.common.util.logging.LoggingPropertyNames;
 import java.io.*;
 import java.util.*;
 import java.util.logging.Level;
@@ -44,6 +46,7 @@ public class MiniXmlParser {
     
     private static final String DEFAULT_ADMIN_VS_ID = "__asadmin";
     private static final String DEFAULT_VS_ID       = "server";
+    private LoggingConfigImpl loggingConfig = new LoggingConfigImpl();
     
     public MiniXmlParser(File domainXml) throws MiniXmlParserException {
         this(domainXml, "server");  // default for a domain
@@ -130,7 +133,19 @@ public class MiniXmlParser {
         return adminPorts;
     }
  
+    public void setupConfigDir(File configDir) {
+        loggingConfig.setupConfigDir(configDir);
+    }
+
     public String getLogFilename() {
+
+        try {
+            Map <String,String> map =loggingConfig.getLoggingProperties();
+            logFilename = map.get(LoggingPropertyNames.file);
+        } catch (IOException e){
+            // error message already sent to logfile.
+        }
+
         return logFilename;
     }
     ///////////////////////////////////////////////////////////////////////////
@@ -267,9 +282,6 @@ public class MiniXmlParser {
                 }
                 else if (name.equals("http-service")) {
                     parseHttpService();
-                }
-                else if (name.equals("log-service")) {
-                    parseLogService();
                 }
                 else {
                     skipTree(name);
@@ -553,16 +565,7 @@ public class MiniXmlParser {
         }
     }
 
-    
-    private void parseLogService() {
-        // cursor --> <log-service> in <config>
-        // currently I just need the 'file' attribute.
-        
-        Map<String,String> map = parseAttributes();
-        logFilename = map.get("file");
-    }
 
-    
     private void parseHttpService() throws XMLStreamException, EndDocumentException {
         // cursor --> <http-service> in <config>
         // we are looking for the virtual server: "DEFAULT_ADMIN_VS_ID".

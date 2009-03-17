@@ -11,8 +11,8 @@ import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.LogService;
 import com.sun.enterprise.config.serverbeans.ModuleLogLevels;
 
-import com.sun.enterprise.server.logging.LoggingConfigImpl;
-import com.sun.enterprise.server.logging.LoggingPropertyNames;
+import com.sun.common.util.logging.LoggingConfigImpl;
+import com.sun.common.util.logging.LoggingPropertyNames;
 
 import java.beans.PropertyVetoException;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package com.sun.enterprise.server.logging;
+package com.sun.common.util.logging;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -40,6 +40,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
 		FileInputStream fis;
 		String loggingPropertiesName;
 		LogManager logMgr = null;
+        File loggingConfigDir = null;
 
    /**
      * Constructor
@@ -47,41 +48,44 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
      */
 	
 	 public void postConstruct() { 
-		// set logging.properties filename
-		//loggingPropertiesName = "logging.properties";		
-				
-		logMgr = LogManager.getLogManager();
-        loggingPropertiesName = ServerEnvironmentImpl.kLoggingPropertiesFileNAme;
-  
+		// set logging.properties filename				
+        setupConfigDir(env.getConfigDirPath());
+          
 	}
+
+    // this is so the launcher can pass in where the dir is since 
+    public void setupConfigDir(File file){
+        loggingConfigDir=file;
+        loggingPropertiesName = ServerEnvironmentImpl.kLoggingPropertiesFileNAme;
+        logMgr = LogManager.getLogManager();
+    }
 	
 	private void openPropFile() throws IOException{
 		try {
-			fis = new java.io.FileInputStream (new File(env.getConfigDirPath(), loggingPropertiesName));
+			fis = new java.io.FileInputStream (new File(loggingConfigDir, loggingPropertiesName));
 			props = new java.util.Properties();
         	props.load(fis);
             fis.close();            
 		} catch (FileNotFoundException e ) {
-			logger.log(Level.SEVERE, "Cannot read logging.properties file : ", e);
+			Logger.getAnonymousLogger().log(Level.SEVERE, "Cannot read logging.properties file : ", e);
 			throw new IOException();
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, "Cannot read logging.properties file : ", e);
+			Logger.getAnonymousLogger().log(Level.SEVERE, "Cannot read logging.properties file : ", e);
 			throw new IOException();
 		}
-	
 	}
 	
 	private void closePropFile() throws IOException{
 		try {
-			FileOutputStream ois = new FileOutputStream ( new File(env.getConfigDirPath(), loggingPropertiesName));
+			FileOutputStream ois = new FileOutputStream ( new File(loggingConfigDir, loggingPropertiesName));
 			props.store(ois,"GlassFish logging.properties list");
 			ois.close();
 		} catch (FileNotFoundException e ) {
-			logger.log(Level.SEVERE, "Cannot close logging.properties file : ", e);
+			Logger.getAnonymousLogger().log(Level.SEVERE, "Cannot close logging.properties file : ", e);
 			throw new IOException();
 		} catch (IOException e) {
 			//System.out.println("some other exception");
-			logger.log(Level.SEVERE, "Cannot close logging.properties file : ", e);
+			Logger.getAnonymousLogger().log(Level.SEVERE, "Cannot close logging.properties file : ", e);
 			throw new IOException();			
 		}
 	}
@@ -218,7 +222,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
 	 				props.remove((String)p);
 	 			} catch (java.util.NoSuchElementException e) {
 	 				//System.out.println("Attempt to remove nonexistent property "+e);
-	 				logger.log(Level.WARNING, "Attempt to remove nonexistent property ", e);
+	 				Logger.getAnonymousLogger().log(Level.WARNING, "Attempt to remove nonexistent property ", e);
 					// continue;
 	 			}
 	 		}
@@ -227,7 +231,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
 			try {
 				logMgr.readConfiguration();
 			} catch (java.io.IOException e) {
-				logger.log(Level.SEVERE, "Cannot reconfigure LogManager : ", e);
+				Logger.getAnonymousLogger().log(Level.SEVERE, "Cannot reconfigure LogManager : ", e);
 				throw new IOException();
 			}
 		} catch (IOException ex) {
