@@ -272,7 +272,7 @@ public class AppClientDeployer
      * @return
      */
     private String getRelativePathToLib(String libDir, String modUri) {
-        String result = "../" + libDir + "/";
+        String result = libDir + "/";
         int pos = modUri.indexOf("/", 1);
         while(pos >= 1) {
             result = "../" + result;

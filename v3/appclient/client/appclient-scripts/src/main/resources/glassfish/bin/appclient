@@ -96,6 +96,8 @@ accMainArgs=
 # if any, was just processed and therefore what value we expect next.
 expecting=
 
+jvmArgs=-Djava.system.class.loader=org.glassfish.appclient.client.acc.agent.ACCAgentClassLoader
+
 # The environment variable extraACCArgsAsAppArgs will cause the script to
 # place ACC arguments that appear once the main class has been specified
 # as client arguments rather than redefinitions of the ACC arguments.  For
@@ -109,7 +111,7 @@ expecting=
 # extraACCArgsAsAppArgs=
 
 recordAPPArg() {
-    appArgs=$appArgs\ \"$1\"
+    appArgs=$appArgs\ $1
 }
 
 recordClientArg() {
@@ -139,17 +141,17 @@ recordClientArg() {
 
 recordACCArg() {
     if [ "$ACCArgType" = "APP" ]; then
-        recordAPPArg "$1"
+        recordAPPArg $1
         if [ 2 ]; then
-            recordAPPArg "$2"
+            recordAPPArg $2
         fi
     elif [ "$1" = "-client" ]; then
 
 #       -client is handled a little differently
 
-        recordClientArg "$2"
+        recordClientArg $2
     else
-        accArgs=$accArgs,arg=$1${2:+,arg=\"$2\"}
+        accArgs=$accArgs,arg=$1${2:+,arg=$2}
     fi
 }
 
@@ -190,9 +192,9 @@ recordMainClass() {
 
 recordJVMArg() {
     if [ "$JVMArgType" = "APP" ]; then
-        recordAPPArg "$1"
+        recordAPPArg $1
         if [ 2 ]; then
-            recordAPPArg "$2"
+            recordAPPArg $2
         fi
     elif [ "$1" = "-jar" ]; then
         recordMainClass -jar $2
@@ -221,7 +223,7 @@ recordLoneArg() {
         recordMainClass $1
     else
         # This must be an argument to the application client.
-        recordAPPArg "$1"
+        recordAPPArg $1
     fi
 }
 
@@ -268,9 +270,9 @@ for x do
 
         *)
             if [ $expecting ]; then
-                record${expectingArgType}Arg $expecting "$x"
+                record${expectingArgType}Arg $expecting $x
             else
-                recordLoneArg "$x"
+                recordLoneArg $x
             fi
             unset expecting ;;
     esac

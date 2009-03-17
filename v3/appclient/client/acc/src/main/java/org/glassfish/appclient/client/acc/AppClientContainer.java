@@ -222,7 +222,7 @@ public class AppClientContainer {
 
     private ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
-    private AppClientInfo appClientInfo = null;
+//    private AppClientInfo appClientInfo = null;
 
     private boolean isJWS = false;
 
@@ -518,6 +518,11 @@ public class AppClientContainer {
     public interface Configurator {
 
         public AppClientContainer newContainer(URI archiveURI) throws Exception;
+
+        public AppClientContainer newContainer(URI archiveURI,
+                CallbackHandler callbackHandler,
+                String mainClassName,
+                String appName) throws Exception;
 
         public AppClientContainer newContainer(Class mainClass) throws Exception;
 

@@ -85,7 +85,7 @@ rem can have the value "tentative" which means we have a candidate main class
 rem from a -client option but it could be overridden by a later -client appearance.
 rem And it can have the value "final."
 rem
-set jvmArgs=
+set jvmArgs=-Djava.system.class.loader=org.glassfish.appclient.client.acc.agent.ACCAgentClassLoader
 set accArgs=
 set appArgs=
 

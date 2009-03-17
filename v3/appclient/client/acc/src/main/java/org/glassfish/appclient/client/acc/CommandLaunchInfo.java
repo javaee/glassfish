@@ -68,6 +68,7 @@ public class CommandLaunchInfo {
     private static final String CLIENT_AGENT_ARG_NAME = "client=";
     private static final String COMMAND_AGENT_ARG = "arg=";
     private static final String MODE_AGENT_ARG = "mode=";
+    private static final String APPCPATH = "appcpath=";
 
     /* records the type of launch the user requested: jar, directory, class, or class file*/
     private ClientLaunchType clientLaunchType;
@@ -76,6 +77,8 @@ public class CommandLaunchInfo {
     private String clientName;
 
     private String mode = null;
+
+    private String appcPath = null;
 
 //    /*
 //     * main class as specified in the client=class=(class-name) or
@@ -128,6 +131,10 @@ public class CommandLaunchInfo {
     public AppclientCommandArguments getAppclientCommandArguments() {
         return appclientCommandLaunchInfo;
     }
+
+    public String getAppcPath() {
+        return appcPath;
+    }
     
     private ClientLaunchType saveArgInfo(
             final String agentArgs) throws UserError {
@@ -145,6 +152,8 @@ public class CommandLaunchInfo {
                 processAppclientArg(appclientCommandArgs, arg.substring(COMMAND_AGENT_ARG.length()));
             } else if (arg.startsWith(MODE_AGENT_ARG)) {
                 processMode(arg.substring(MODE_AGENT_ARG.length()));
+            } else if (arg.startsWith(APPCPATH)) {
+                processAppcPath(arg.substring(APPCPATH.length()));
             }
         }
         /*
@@ -176,6 +185,10 @@ public class CommandLaunchInfo {
 
     private void processAppclientArg(final List<String> commandArgs, String arg) {
         commandArgs.add(arg);
+    }
+
+    private void processAppcPath(final String appcPath) {
+        this.appcPath = appcPath;
     }
 
     /**

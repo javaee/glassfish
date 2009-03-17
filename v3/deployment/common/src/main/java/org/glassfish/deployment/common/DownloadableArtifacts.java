@@ -79,8 +79,24 @@ public class DownloadableArtifacts {
     }
 
     public synchronized Set<FullAndPartURIs> getArtifacts(String moduleName) {
-        Set<FullAndPartURIs> uriPairs = artifactsMap.get(moduleName);
-        if (uriPairs == null) {
+        /*
+         * A module with submodules should match both its own artifacts and
+         * its submodule artifacts.  This could be made faster with a two-level
+         * map, but for now this will work.
+         *
+         * Match any entry for which the key matches the moduleName or for which
+         * the key starts with the module name and the next character is a slash.
+         */
+        Set<FullAndPartURIs> uriPairs = new HashSet<FullAndPartURIs>();
+        for (Map.Entry<String,Set<FullAndPartURIs>> entry : artifactsMap.entrySet() ) {
+            final String key = entry.getKey();
+            if (key.equals(moduleName) ||
+                (key.startsWith(moduleName) && (key.charAt(moduleName.length())) == '/')) {
+                uriPairs.addAll(entry.getValue());
+            }
+        }
+
+        if (uriPairs.isEmpty()) {
             uriPairs = Collections.emptySet();
         }
         return uriPairs;

@@ -37,34 +37,49 @@
  * holder.
  */
 
-package org.glassfish.appclient.client;
+package org.glassfish.appclient.client.acc;
 
-import org.glassfish.appclient.client.acc.AppClientContainer;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.net.URLStreamHandlerFactory;
 
 /**
  *
  * @author tjquinn
  */
-public class AppClientGroupFacade {
+public class ACCClassLoader extends URLClassLoader {
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        AppClientContainer acc = AppClientFacadeInfo.getACC();
-        if (acc == null) {
-            acc = prepareACC();
+    private static ACCClassLoader instance = null;
+
+    public static ACCClassLoader newInstance(ClassLoader parent) {
+        if (instance != null) {
+            throw new IllegalStateException("already set");
         }
-        try {
-            acc.launch(args);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            System.exit(1);
-        }
+        instance = new ACCClassLoader(parent);
+        return instance;
     }
 
-    private static AppClientContainer prepareACC() {
-        // XXX Implement this to support java -jar launching.
-        return null;
+    public static ACCClassLoader instance() {
+        return instance;
+    }
+    
+    public ACCClassLoader(ClassLoader parent) {
+        super(new URL[0], parent);
+    }
+
+    public ACCClassLoader(URL[] urls) {
+        super(urls);
+    }
+
+    public ACCClassLoader(URL[] urls, ClassLoader parent) {
+        super(urls, parent);
+    }
+
+    public ACCClassLoader(URL[] urls, ClassLoader parent, URLStreamHandlerFactory factory) {
+        super(urls, parent, factory);
+    }
+
+    public void appendURL(final URL url) {
+        addURL(url);
     }
 }

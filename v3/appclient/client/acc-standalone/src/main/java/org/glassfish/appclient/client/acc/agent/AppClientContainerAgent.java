@@ -50,12 +50,12 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Date;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import org.glassfish.appclient.client.AppClientFacadeInfo;
+import org.glassfish.appclient.client.acc.ACCClassLoader;
 import org.glassfish.appclient.client.acc.ACCModulesManager;
 import org.glassfish.appclient.client.acc.AppClientCommand;
 import org.glassfish.appclient.client.acc.AppClientContainer;
@@ -110,6 +110,14 @@ public class AppClientContainerAgent {
              * arguments.
              */
             launchInfo = CommandLaunchInfo.newInstance(agentArgs);
+
+            setClassLoader(launchInfo.getAppcPath());
+
+            /*
+             * Handle the legacy env. variable APPCPATH.  The script will have
+             * set appcpath=value as a command launch argument.
+             */
+
             if (launchInfo.getClientLaunchType() != ClientLaunchType.UNKNOWN) {
                 appClientCommandArgs = launchInfo.getAppclientCommandArguments();
 
@@ -168,7 +176,16 @@ public class AppClientContainerAgent {
 
     }
 
-    
+    private static ACCClassLoader setClassLoader(final String appcPath) throws MalformedURLException {
+        ACCClassLoader newLoader = ACCClassLoader.newInstance(Thread.currentThread().getContextClassLoader());
+        if (appcPath != null) {
+            for (String elt : appcPath.split(File.pathSeparator)) {
+                newLoader.appendURL(new URL(elt));
+            }
+        }
+        Thread.currentThread().setContextClassLoader(newLoader);
+        return newLoader;
+    }
 
     private static Configurator createConfigurator(
             final TargetServer[] targetServers,
@@ -230,7 +247,11 @@ public class AppClientContainerAgent {
                  * The client name in the launch info is a file path for the
                  * directory or JAR to launch.
                  */
-                container = createContainerForAppClientArchiveOrDir(config, launchInfo.getClientName());
+                container = createContainerForAppClientArchiveOrDir(
+                        config,
+                        launchInfo.getClientName(),
+                        launchInfo.getAppclientCommandArguments().getMainclass(),
+                        launchInfo.getAppclientCommandArguments().getName());
                 break;
 
             case CLASS:
@@ -251,10 +272,12 @@ public class AppClientContainerAgent {
 
     private static AppClientContainer createContainerForAppClientArchiveOrDir(
             final Configurator config,
-            final String appClientPath) throws Exception {
+            final String appClientPath,
+            final String mainClassName,
+            final String clientName) throws Exception {
 
         URI uri = Util.getURI(new File(appClientPath));
-        return config.newContainer(uri);
+        return config.newContainer(uri, null /* callbackHandler */, mainClassName, clientName);
     }
 
     private static AppClientContainer createContainerForClassName(

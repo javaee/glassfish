@@ -42,11 +42,12 @@ package org.glassfish.appclient.client.acc;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.archivist.AppClientArchivist;
-import com.sun.enterprise.deployment.archivist.ArchivistFactory;
 import com.sun.enterprise.module.bootstrap.BootException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.jar.Attributes;
 import java.util.jar.Attributes.Name;
 import java.util.jar.Manifest;
@@ -84,8 +85,8 @@ interface Launchable {
             if (result != null) {
                 return result;
             }
-            // XXX add logic to handle raw ear and raw client cases
-            throw new IllegalArgumentException("not yet supported");
+            // XXX either the user did not choose an existing class or this is not a facade
+            throw new IllegalArgumentException("could not locate selected class");
         }
 
         static Launchable newLaunchable(final Class mainClass) {
@@ -130,6 +131,8 @@ interface Launchable {
         private final URI[] classPathURIs;
         private final ReadableArchive clientRA;
 
+        private URI facadeURI;
+
         private ApplicationClientDescriptor acDesc = null;
 
         /**
@@ -139,7 +142,8 @@ interface Launchable {
          */
         Facade(final Attributes mainAttrs,
                 final ReadableArchive facadeRA) throws IOException, URISyntaxException {
-            this(mainAttrs,
+            this(facadeRA.getURI(),
+                 mainAttrs,
                  openOriginalArchive(facadeRA, mainAttrs.getValue(GLASSFISH_APPCLIENT)),
                  mainAttrs.getValue(GLASSFISH_APPCLIENT_MAIN_CLASS));
         }
@@ -161,12 +165,18 @@ interface Launchable {
          * @param clientRA
          * @param mainClassNameToLaunch
          */
-        Facade(final Attributes mainAttrs,
+        Facade(final URI facadeURI,
+                final Attributes mainAttrs,
                 final ReadableArchive clientRA,
                 final String mainClassNameToLaunch) throws IOException {
+            this.facadeURI = facadeURI;
             this.mainClassNameToLaunch = mainClassNameToLaunch;
             this.clientRA = clientRA;
             this.classPathURIs = toURIs(mainAttrs.getValue(Name.CLASS_PATH));
+        }
+
+        URI getURI() {
+            return facadeURI;
         }
 
         protected URI[] toURIs(final String uriList) {
@@ -178,12 +188,12 @@ interface Launchable {
             return result;
         }
 
-        static Facade newFacade(final URI uri,
+        static Facade newFacade(final URI groupFacadeURI,
                 final String callerSuppliedMainClassName,
                 final String callerSuppliedAppName) throws IOException, BootException, URISyntaxException, XMLStreamException {
 
             ArchiveFactory af = ACCModulesManager.getComponent(ArchiveFactory.class);
-            ReadableArchive facadeRA = af.openArchive(uri);
+            ReadableArchive facadeRA = af.openArchive(groupFacadeURI);
             Manifest mf = facadeRA.getManifest();
 
             final Attributes mainAttrs = mf.getMainAttributes();
@@ -195,10 +205,15 @@ interface Launchable {
                 final String facadeGroupURIs = mainAttrs.getValue(GLASSFISH_APPCLIENT_GROUP);
                 if (facadeGroupURIs != null) {
                     result = selectFacadeFromGroup(
+                            groupFacadeURI,
                             af,
                             facadeGroupURIs,
                             callerSuppliedMainClassName,
                             callerSuppliedAppName);
+                    if (result != null) {
+                        URL clientFacadeURL = new URL("file:" + result.getURI().getSchemeSpecificPart()); // strip off the jar:
+                        ACCClassLoader.instance().appendURL(clientFacadeURL);
+                    }
                 } else {
                     return null;
                 }
@@ -226,6 +241,7 @@ interface Launchable {
         }
 
         private static Facade selectFacadeFromGroup(
+                final URI groupFacadeURI,
                 final ArchiveFactory af,
                 final String groupURIs,
                 final String callerSpecifiedMainClassName,
@@ -239,23 +255,29 @@ interface Launchable {
              * client name.
              */
             for (String uriText : archiveURIs) {
-                URI facadeURI = URI.create(uriText);
-                ReadableArchive facadeRA = af.openArchive(facadeURI);
-                Manifest facadeMF = facadeRA.getManifest();
+                URI clientFacadeURI = groupFacadeURI.resolve(uriText);
+                ReadableArchive clientFacadeRA = af.openArchive(clientFacadeURI);
+                Manifest facadeMF = clientFacadeRA.getManifest();
                 Attributes facadeMainAttrs = facadeMF.getMainAttributes();
-                facadeRA.close();
+                clientFacadeRA.close();
 
-                URI clientURI = URI.create(facadeMF.getMainAttributes().getValue(GLASSFISH_APPCLIENT));
+                URI clientURI = groupFacadeURI.resolve(facadeMF.getMainAttributes().getValue(GLASSFISH_APPCLIENT));
                 ReadableArchive clientRA = af.openArchive(clientURI);
                 /*
                  * Look for an entry corresponding to the
-                 * main class the caller requested.
+                 * main class or app name the caller requested.  Treat as a
+                 * special case if the user specifies no main class and no
+                 * app name - use the first app client present.
                  */
                 Facade facade = null;
-                if (Util.matchesMainClassName(clientRA, callerSpecifiedMainClassName)) {
-                    facade = new Facade(facadeMainAttrs, clientRA, callerSpecifiedMainClassName);
+                if (callerSpecifiedMainClassName == null &&
+                    callerSpecifiedAppClientName == null) {
+                    facade = new Facade(clientFacadeURI, facadeMainAttrs, clientRA,
+                            facadeMainAttrs.getValue(GLASSFISH_APPCLIENT_MAIN_CLASS));
+                } else if (Util.matchesMainClassName(clientRA, callerSpecifiedMainClassName)) {
+                    facade = new Facade(clientFacadeURI, facadeMainAttrs, clientRA, callerSpecifiedMainClassName);
                 } else if (Util.matchesName(clientRA, callerSpecifiedAppClientName)) {
-                    facade = new Facade(facadeMainAttrs, clientRA,
+                    facade = new Facade(clientFacadeURI, facadeMainAttrs, clientRA,
                             facadeMainAttrs.getValue(GLASSFISH_APPCLIENT_MAIN_CLASS));
                 }
                 return facade;

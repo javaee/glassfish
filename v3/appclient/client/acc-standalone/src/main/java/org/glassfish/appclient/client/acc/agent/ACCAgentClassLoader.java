@@ -37,34 +37,35 @@
  * holder.
  */
 
-package org.glassfish.appclient.client;
+package org.glassfish.appclient.client.acc.agent;
 
-import org.glassfish.appclient.client.acc.AppClientContainer;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.net.URLStreamHandlerFactory;
 
 /**
  *
  * @author tjquinn
  */
-public class AppClientGroupFacade {
+public class ACCAgentClassLoader extends URLClassLoader {
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        AppClientContainer acc = AppClientFacadeInfo.getACC();
-        if (acc == null) {
-            acc = prepareACC();
-        }
-        try {
-            acc.launch(args);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            System.exit(1);
-        }
+    public ACCAgentClassLoader(ClassLoader parent) {
+        super(new URL[0], parent);
+    }
+    
+    public ACCAgentClassLoader(URL[] urls) {
+        super(urls);
     }
 
-    private static AppClientContainer prepareACC() {
-        // XXX Implement this to support java -jar launching.
-        return null;
+    public ACCAgentClassLoader(URL[] urls, ClassLoader parent) {
+        super(urls, parent);
+    }
+
+    public ACCAgentClassLoader(URL[] urls, ClassLoader parent, URLStreamHandlerFactory factory) {
+        super(urls, parent, factory);
+    }
+
+    public void appendURL(final URL url) {
+        addURL(url);
     }
 }
