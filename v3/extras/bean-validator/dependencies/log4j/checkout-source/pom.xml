@@ -60,8 +60,6 @@
                           <tasks>
                               <echo message="Building log4j"/>
                               <ant target="jar">
-                                  <property name="ant.build.javac.source" 
-                                            value="1.4"/>
                               </ant>
                           </tasks>
                       </configuration>
@@ -73,5 +71,9 @@
           </plugin>
       </plugins>
     </build>
+
+    <properties>
+      <ant.build.javac.source>1.4</ant.build.javac.source>
+    </properties>
 
 </project>

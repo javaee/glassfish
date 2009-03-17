@@ -84,6 +84,7 @@
 
     <modules>
         <module>checkout</module>
+        <module>checkout-source</module>
     </modules>
 
 </project>
