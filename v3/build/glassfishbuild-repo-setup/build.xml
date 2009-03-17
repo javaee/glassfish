@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--
+The contents of this file are subject to the terms
+of the Common Development and Distribution License
+(the "License").  You may not use this file except
+in compliance with the License.
+
+You can obtain a copy of the license at
+glassfish/bootstrap/legal/CDDLv1.0.txt or
+https://glassfish.dev.java.net/public/CDDLv1.0.html.
+See the License for the specific language governing
+permissions and limitations under the License.
+
+When distributing Covered Code, include this CDDL
+HEADER in each file and include the License file at
+glassfish/bootstrap/legal/CDDLv1.0.txt.  If applicable,
+add the following below this CDDL HEADER, with the
+fields enclosed by brackets "[]" replaced with your
+own identifying information: Portions Copyright [yyyy]
+[name of copyright owner]
+-->
+<project name="IPS repository initial setup" default="default.target" basedir=".">
+    
+    <target name="default.target">
+	    <mkdir dir="target/source"/>
+	    <echo message="Populating IPS repository" />
+    </target>
+
+    <target name="copy.packages">
+
+	    <resolveArtifact artifactId="mq-distribution" groupId="org.glassfish" type="zip" classifier="repo" property="mqrepo.zip"/>
+   
+
+        <unzip src="${mqrepo.zip}" dest="target/source">   
+        </unzip>
+
+	<!-- copy over MQ packages -->
+	<exec dir="target/source" executable="copypkgs" failonerror="true">
+		<arg line="-s . -d ${target.repo.dir} mq-core" />
+	</exec>
+        <exec dir="target/source" executable="copypkgs" failonerror="true">
+		<arg line="-s . -d ${target.repo.dir} mq-server" />
+	</exec>
+	<exec dir="target/source" executable="copypkgs" failonerror="true">
+		<arg line="-s . -d ${target.repo.dir} mq-config-gf" />
+	</exec>
+        <exec dir="target/source" executable="copypkgs" failonerror="true">
+		<arg line="-s . -d ${target.repo.dir} mq-locale" />
+	</exec>
+
+    </target>
+</project>
+
