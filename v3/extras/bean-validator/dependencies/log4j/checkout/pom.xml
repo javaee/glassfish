@@ -49,8 +49,8 @@
     <name>Beans Validation API for Glassfish V3: log4j checkout</name>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/logging/log4j/tags/v1_2_6/</connection>
-        <url>http://svn.apache.org/viewvc/logging/log4j/tags/v1_2_6/</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/logging/log4j/tags/v1_2_15/</connection>
+        <url>http://svn.apache.org/viewvc/logging/log4j/tags/v1_2_15/</url>
     </scm>
 
     <build>
