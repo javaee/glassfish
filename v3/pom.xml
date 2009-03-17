@@ -196,6 +196,7 @@
                 <module>webservices</module>
                 <module>orb</module>
                 <module>appclient</module>
+                <module>jms</module>
             </modules>
         </profile>
         <profile>
@@ -259,6 +260,7 @@
               	<module>web</module>
                 <module>ejb</module>
               	<module>connectors</module>
+                <module>jms</module>
               	<module>jdbc</module>
               	<module>persistence</module>
               	<module>extras</module>
@@ -299,6 +301,7 @@
               	<module>web</module>
                 <module>ejb</module>
               	<module>connectors</module>
+                <module>jms</module>
               	<module>jdbc</module>
               	<module>persistence</module>
               	<module>extras</module>
@@ -506,7 +509,7 @@
 				<message>You need maven 2.0.9!</message>
                             </requireMavenVersion>
                             <requireJavaVersion>
-                                <version>[1.6.0-4,)</version>
+                                <version>[1.6.0_11,)</version>
 				<message>You need JDK 1.6.0_04 and above!</message>
                             </requireJavaVersion>
                         </rules>
@@ -702,9 +705,9 @@
             </dependency>
 
             <dependency>
-                <groupId>com.sun.grizzly</groupId>
-                <artifactId>grizzly-messagesbus</artifactId>
-                <version>${grizzly.version}</version>
+                <groupId>org.glassfish.jms</groupId>
+                <artifactId>jms</artifactId>
+                <version>3.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.netbeans.modules</groupId>
