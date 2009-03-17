@@ -67,7 +67,6 @@
                               <mkdir dir="${target}/svn-backup" />
                               <copy failonerror="false" todir="${target}/svn-backup">
                                   <fileset dir="${project.build.directory}/../../checkout-source">
-                                      <exclude name="**/pom.xml" />
                                   </fileset>
                               </copy>
                           </tasks>
