@@ -162,6 +162,47 @@
             <version>${project.version}</version>
             <type>distribution-fragment</type>
         </dependency>
+	<!-- following appclient modules should get replaced with appclient-all -->
+	<dependency>
+            <groupId>org.glassfish.appclient</groupId>
+            <artifactId>gf-client</artifactId>
+            <version>${project.version}</version>
+        </dependency> 
+        <dependency>
+            <groupId>org.glassfish.appclient</groupId>
+            <artifactId>gf-client-module</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.appclient</groupId>
+            <artifactId>gf-client</artifactId>
+	    <version>${project.version}</version>
+	    <classifier>bundle</classifier>
+	    <type>zip</type>
+        </dependency> 
+         <dependency>
+            <groupId>org.glassfish.appclient</groupId>
+            <artifactId>acc-config</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>appclient-scripts</artifactId>
+	    <version>${project.version}</version>
+	    <type>distribution-fragment</type>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.appclient.server</groupId>
+            <artifactId>appclient-connector</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.appclient.server</groupId>
+            <artifactId>appclient-server-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+       
+        
 
     </dependencies>
 </project>
