@@ -73,24 +73,24 @@
         <antcall target="asadmin-common">
             <param name="admin.command" value="set"/>
             <param name="operand.props"
-                   value="resources.connector-connection-pool.connector-connection-pool.serializable-test-ccp.property.User=pbpublic"/>
+                   value="${resources.dottedname.prefix}.connector-connection-pool.serializable-test-ccp.property.User=pbpublic"/>
         </antcall>
         <antcall target="asadmin-common">
             <param name="admin.command" value="set"/>
             <param name="operand.props"
-                   value="resources.connector-connection-pool.connector-connection-pool.serializable-test-ccp.property.Password=pbpublic"/>
-        </antcall>
-
-        <antcall target="asadmin-common">
-            <param name="admin.command" value="set"/>
-            <param name="operand.props"
-                   value="resources.connector-connection-pool.connector-connection-pool.serializable-test-ccp.property.booleanWithIsBooleanAccessor=true"/>
+                   value="${resources.dottedname.prefix}.connector-connection-pool.serializable-test-ccp.property.Password=pbpublic"/>
         </antcall>
 
         <antcall target="asadmin-common">
             <param name="admin.command" value="set"/>
             <param name="operand.props"
-                   value="resources.connector-connection-pool.connector-connection-pool.serializable-test-ccp.property.booleanWithGetBooleanAccessor=true"/>
+                   value="${resources.dottedname.prefix}.connector-connection-pool.serializable-test-ccp.property.booleanWithIsBooleanAccessor=true"/>
+        </antcall>
+
+        <antcall target="asadmin-common">
+            <param name="admin.command" value="set"/>
+            <param name="operand.props"
+                   value="${resources.dottedname.prefix}.connector-connection-pool.serializable-test-ccp.property.booleanWithGetBooleanAccessor=true"/>
         </antcall>
 
         <antcall target="deploy-common"/>
