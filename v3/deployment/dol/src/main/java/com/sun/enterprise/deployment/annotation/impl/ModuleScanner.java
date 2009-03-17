@@ -63,6 +63,7 @@ import java.util.ArrayList;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.zip.ZipException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.net.URL;
@@ -119,10 +120,11 @@ public abstract class ModuleScanner<T> extends JavaEEScanner implements Scanner<
      * @param jarFile
      */
     protected void addScanJar(File jarFile) throws IOException {
-        JarFile jf = new JarFile(jarFile);
+        JarFile jf = null;
         
 
         try {
+            jf = new JarFile(jarFile);
             Enumeration<JarEntry> entriesEnum = jf.entries();
             while(entriesEnum.hasMoreElements()) {
                 JarEntry je = entriesEnum.nextElement();
@@ -140,7 +142,12 @@ public abstract class ModuleScanner<T> extends JavaEEScanner implements Scanner<
                     }
                 }
             }
-        } finally {
+        } catch (ZipException ze) {
+            ZipException zeWithFilePath = new ZipException(ze.getMessage() + ": file path: " + jarFile.getPath());
+            zeWithFilePath.initCause(ze);
+            throw zeWithFilePath;
+        } 
+        finally {
             if (jf != null) {
                 jf.close();
             }
