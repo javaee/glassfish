@@ -62,7 +62,7 @@
 
     <modules>
         <module>bigjar</module>
-<!--        <module>osgi</module>-->
+        <module>osgi</module>
     </modules>
 
 </project>

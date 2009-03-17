@@ -59,6 +59,7 @@
                     <excludes>
                         <exclude>org/apache/log4j/test/**/*.java</exclude>
                         <exclude>org/apache/log4j/net/JMSAppender.java</exclude>
+                        <exclude>org/apache/log4j/jmx/T.java</exclude>
                     </excludes>
               </configuration>
           </plugin>

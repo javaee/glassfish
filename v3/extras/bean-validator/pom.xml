@@ -79,6 +79,7 @@
         <module>dependencies</module>
         <module>api</module>
         <module>ri</module>
+        <module>bundle</module>
     </modules>
 
 </project>
