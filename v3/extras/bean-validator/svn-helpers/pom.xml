@@ -94,7 +94,7 @@
                                             defaultexcludes="false"/>
                               </delete>                              
 
-                              <copy failonerror="false" 
+                              <copy overwrite="true" failonerror="false" 
                                     todir="${target}/../../checkout-source">
                                   <fileset dir="${target}/svn-backup"/>
                               </copy>
