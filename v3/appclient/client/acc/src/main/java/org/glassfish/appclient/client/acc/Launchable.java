@@ -280,7 +280,9 @@ interface Launchable {
                     facade = new Facade(clientFacadeURI, facadeMainAttrs, clientRA,
                             facadeMainAttrs.getValue(GLASSFISH_APPCLIENT_MAIN_CLASS));
                 }
-                return facade;
+                if (facade != null) {
+                    return facade;
+                }
             }
             return null;
         }
