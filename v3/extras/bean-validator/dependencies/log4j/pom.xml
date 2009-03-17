@@ -61,6 +61,19 @@
                         <includes>
                             <include>src/**</include>
                             <include>LICENSE.txt</include>
+                            <include>bin/**</include>
+                            <include>build/**</include>
+                            <include>contribs/**</include>
+                            <include>dist/**</include>
+                            <include>docs/**</include>
+                            <include>examples/**</include>
+                            <include>packaging/**</include>
+                            <include>tests/**</include>
+                            <include>BRANCHES</include>
+                            <include>INSTALL</include>
+                            <include>.cvsignore</include>
+                            <include>build.properties.sample</include>
+                            <include>build.xml</include>
                         </includes>
                     </fileset>
                 </filesets>
