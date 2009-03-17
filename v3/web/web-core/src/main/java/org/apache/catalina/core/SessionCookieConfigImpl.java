@@ -48,6 +48,7 @@ public class SessionCookieConfigImpl implements SessionCookieConfig {
     private static final StringManager sm =
         StringManager.getManager(Constants.Package);
 
+    private String name;
     private String domain;
     private String path;
     private String comment;
@@ -79,6 +80,7 @@ public class SessionCookieConfigImpl implements SessionCookieConfig {
                              "name", ctx.getName()));
         }
 
+        this.name = name;
         ctx.setSessionCookieName(name);
         ctx.setSessionCookieConfigInitialized(true);
     }
@@ -89,7 +91,7 @@ public class SessionCookieConfigImpl implements SessionCookieConfig {
      * <tt>JSESSIONID</tt> if {@link #setName} was never called
      */
     public String getName() {
-        return ctx.getSessionCookieName();
+        return name;
     }
 
 
