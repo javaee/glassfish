@@ -29,7 +29,7 @@
 
                               <unjar overwrite="true" src="${settings.localRepository}/org/glassfish/extras/gf-beans-validation-binary-dependencies/3.0-SNAPSHOT/gf-beans-validation-binary-dependencies-3.0-SNAPSHOT.jar" 
                                      dest="target/classes" />
-                              <unjar overwrite="true" src="${settings.localRepository}/log4j/log4j/1.2.6/log4j-1.2.6.jar" 
+                              <unjar overwrite="true" src="${settings.localRepository}/log4j/log4j/1.2.15/log4j-1.2.15.jar" 
                                      dest="target/classes" />
                               <unjar overwrite="true" src="${settings.localRepository}/org/slf4j/slf4j-api/1.4.2/slf4j-api-1.4.2.jar" 
                                      dest="target/classes" />

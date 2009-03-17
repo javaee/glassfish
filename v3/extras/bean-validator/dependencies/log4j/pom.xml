@@ -70,6 +70,11 @@
                             <include>packaging/**</include>
                             <include>tests/**</include>
                             <include>BRANCHES</include>
+                            <include>NOTICE</include>
+                            <include>LICENSE</include>
+                            <include>BUILD-INFO.txt</include>
+                            <include>KEYS</include>
+                            <include>doap_log4j.rdf</include>
                             <include>INSTALL</include>
                             <include>.cvsignore</include>
                             <include>build.properties.sample</include>

@@ -18,12 +18,29 @@
 
                   <execution>
                       <id>postconditions</id>
-                      <phase>process-sources</phase>
+                      <phase>initialize</phase>
                       <configuration>
                           <tasks>
                               <echo message="Exploding binary dependencies"/>
                               <mkdir dir="target/classes" />
                               <unjar src="lib/bean-validator-binary-dependencies.jar" dest="target/classes" />
+
+                              <echo message="Copying jms1.1 to local repo"/>
+                              <mkdir dir="${settings.localRepository}/javax/jms/jms/1.1" />
+                              <copy file="${settings.localRepository}/org/glassfish/javax.jms/3.0-SNAPSHOT/javax.jms-3.0-SNAPSHOT.jar"
+                                    tofile="${settings.localRepository}/javax/jms/jms/1.1/jms-1.1.jar" />
+                              
+                              <echo message="Copying jmxtools-1.2.1 to local repo"/>
+                              <mkdir dir="${settings.localRepository}/com/sun/jdmk/jmxtools/1.2.1" />
+                              <copy file="lib/jmxtools.jar"
+                                    tofile="${settings.localRepository}/com/sun/jdmk/jmxtools/1.2.1/jmxtools-1.2.1.jar" />
+                              
+                              <echo message="Copying jmxri-1.2.1 to local repo"/>
+                              <mkdir dir="${settings.localRepository}/com/sun/jmx/jmxri/1.2.1" />
+                              <copy file="lib/jmxri.jar"
+                                    tofile="${settings.localRepository}/com/sun/jmx/jmxri/1.2.1/jmxri-1.2.1.jar" />
+                              
+
                           </tasks>
                       </configuration>
                       <goals>
@@ -32,6 +49,7 @@
                   </execution>
               </executions>
           </plugin>
+
       </plugins>
     </build>
 </project>
