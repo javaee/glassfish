@@ -199,6 +199,14 @@
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
+
+     <!-- appclient package -->
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+	    <artifactId>glassfish-appclient</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
 </dependencies>
 
 </project>
