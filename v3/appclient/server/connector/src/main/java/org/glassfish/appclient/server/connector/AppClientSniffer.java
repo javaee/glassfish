@@ -33,6 +33,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Singleton;
 
 import java.io.IOException;
+import java.util.jar.Attributes;
 
 @Service(name = "AppClient")
 @Scoped(Singleton.class)
@@ -76,7 +77,8 @@ public class AppClientSniffer extends GenericSniffer implements Sniffer {
 
         try {
             Manifest manifest = location.getManifest();
-            if (manifest != null && manifest.getEntries().containsKey("Main-Class")) {
+            if (manifest != null && 
+                manifest.getMainAttributes().containsKey(Attributes.Name.MAIN_CLASS)) {
                 return true;
             }
         } catch (IOException ignore) {
