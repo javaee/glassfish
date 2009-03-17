@@ -75,7 +75,7 @@
     </build>
 
     <modules>
-        <module>log4j</module>
+        <module>binary</module>
         <module>slf4j-api</module>
         <module>slf4j-log4j12</module>
     </modules>

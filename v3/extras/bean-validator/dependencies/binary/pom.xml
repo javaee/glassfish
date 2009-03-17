@@ -1,0 +1,37 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.glassfish.extras</groupId>
+  <artifactId>gf-beans-validation-binary-dependencies</artifactId>
+  <version>3.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <name>Miscellaneous Binary Dependencies that have not yet been converted to source dependencies</name>
+
+    <build>
+      <defaultGoal>install</defaultGoal>
+
+      <plugins>
+          <plugin>
+              <artifactId>maven-antrun-plugin</artifactId>
+              <executions>
+
+                  <execution>
+                      <id>postconditions</id>
+                      <phase>process-sources</phase>
+                      <configuration>
+                          <tasks>
+                              <echo message="Exploding binary dependencies"/>
+                              <mkdir dir="target/classes" />
+                              <unjar src="lib/bean-validator-binary-dependencies.jar" dest="target/classes" />
+                          </tasks>
+                      </configuration>
+                      <goals>
+                          <goal>run</goal>
+                      </goals>
+                  </execution>
+              </executions>
+          </plugin>
+      </plugins>
+    </build>
+</project>
