@@ -35,16 +35,16 @@ own identifying information: Portions Copyright [yyyy]
         </unzip>
 
 	<!-- copy over MQ packages -->
-	<exec dir="target/source" executable="copypkgs" failonerror="true">
+	<exec dir="target/source" executable="copypkgs.sh" failonerror="true">
 		<arg line="-s . -d ${target.repo.dir} mq-core" />
 	</exec>
-        <exec dir="target/source" executable="copypkgs" failonerror="true">
+        <exec dir="target/source" executable="copypkgs.sh" failonerror="true">
 		<arg line="-s . -d ${target.repo.dir} mq-server" />
 	</exec>
-	<exec dir="target/source" executable="copypkgs" failonerror="true">
+	<exec dir="target/source" executable="copypkgs.sh" failonerror="true">
 		<arg line="-s . -d ${target.repo.dir} mq-config-gf" />
 	</exec>
-        <exec dir="target/source" executable="copypkgs" failonerror="true">
+        <exec dir="target/source" executable="copypkgs.sh" failonerror="true">
 		<arg line="-s . -d ${target.repo.dir} mq-locale" />
 	</exec>
 
