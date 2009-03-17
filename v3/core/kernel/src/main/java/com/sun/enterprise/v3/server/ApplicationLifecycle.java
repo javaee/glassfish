@@ -675,6 +675,7 @@ public class ApplicationLifecycle implements Deployment {
         applicationInfo, final DeploymentContext context)
         throws TransactionFailure {
         final Properties appProps = context.getProps();
+        final DeployCommandParameters deployParams = context.getCommandParameters(DeployCommandParameters.class);
         ConfigSupport.apply(new ConfigCode() {
             public Object run(ConfigBeanProxy... params) throws PropertyVetoException, TransactionFailure {
 
@@ -685,30 +686,28 @@ public class ApplicationLifecycle implements Deployment {
                 Application app = params[0].createChild(Application.class);
 
                 // various attributes
-                app.setName(appProps.getProperty(ServerTags.NAME));
+                app.setName(deployParams.name);
+                if (deployParams.libraries != null) {
+                    app.setLibraries(deployParams.libraries);
+                }
+                if (deployParams.description != null) {
+                    app.setDescription(deployParams.description);
+                }
+
+                if (appProps.getProperty(ServerTags.CONTEXT_ROOT) != null) {
+                    app.setContextRoot(appProps.getProperty(
+                        ServerTags.CONTEXT_ROOT));
+                }
                 app.setLocation(appProps.getProperty(
                     ServerTags.LOCATION));
                 app.setObjectType(appProps.getProperty(
                     ServerTags.OBJECT_TYPE));
-                // always set the enable attribute of application to true
-                app.setEnabled(String.valueOf(true));
-                if (appProps.getProperty(ServerTags.CONTEXT_ROOT) !=
-                    null) {
-                app.setContextRoot(appProps.getProperty(
-                            ServerTags.CONTEXT_ROOT));
-                }
-                if (appProps.getProperty(ServerTags.LIBRARIES) !=
-                    null) {
-                app.setLibraries(appProps.getProperty(
-                            ServerTags.LIBRARIES));
-                }
                 app.setDirectoryDeployed(appProps.getProperty(
                     ServerTags.DIRECTORY_DEPLOYED));
 
-                if (appProps.getProperty(ServerTags.DESCRIPTION) !=null) {
-                    app.setDescription(appProps.getProperty(
-                            ServerTags.DESCRIPTION));
-                }
+                // always set the enable attribute of application to true
+                app.setEnabled(String.valueOf(true));
+
                 apps.getModules().add(app);
                 applicationInfo.save(app);
 
@@ -718,13 +717,8 @@ public class ApplicationLifecycle implements Deployment {
                 for (Iterator itr = appProps.keySet().iterator();
                     itr.hasNext();) {
                     String propName = (String) itr.next();
-                    if (!propName.equals(ServerTags.NAME) &&
-                        !propName.equals(ServerTags.LOCATION) &&
-                        !propName.equals(ServerTags.ENABLED) &&
-                        !propName.equals(ServerTags.CONTEXT_ROOT) &&
-                        !propName.equals(ServerTags.LIBRARIES) &&
+                    if (!propName.equals(ServerTags.LOCATION) &&
                         !propName.equals(ServerTags.OBJECT_TYPE) &&
-                        !propName.equals(ServerTags.VIRTUAL_SERVERS) &&
                         !propName.equals(ServerTags.DIRECTORY_DEPLOYED) &&
                         !propName.startsWith(
                             DeploymentProperties.APP_CONFIG))
@@ -738,11 +732,9 @@ public class ApplicationLifecycle implements Deployment {
 
                 // adding the application-ref element
                 ApplicationRef appRef = params[1].createChild(ApplicationRef.class);
-                appRef.setRef(appProps.getProperty(ServerTags.NAME));
-                if (appProps.getProperty(
-                    ServerTags.VIRTUAL_SERVERS) != null) {
-                    appRef.setVirtualServers(appProps.getProperty(
-                        ServerTags.VIRTUAL_SERVERS));
+                appRef.setRef(deployParams.name);
+                if (deployParams.virtualservers != null) {
+                    appRef.setVirtualServers(deployParams.virtualservers);
                 } else {
                     // deploy to all virtual-servers, we need to get the list.
                     HttpService httpService = habitat.getComponent(HttpService.class);
@@ -758,8 +750,7 @@ public class ApplicationLifecycle implements Deployment {
                     }
                     appRef.setVirtualServers(sb.toString());
                 }
-                appRef.setEnabled(appProps.getProperty(
-                    ServerTags.ENABLED));
+                appRef.setEnabled(deployParams.enabled.toString());
 
                 List<ApplicationConfig> savedAppConfigs =
                         (List<ApplicationConfig>) appProps.get(DeploymentProperties.APP_CONFIG);

@@ -49,6 +49,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Map;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -105,6 +106,7 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
         ApplicationRef appRef = null;
         DeployCommandParameters commandParams=null;
         Properties contextProps = new Properties();
+        Map<String, Properties> modulePropsMap = null;
         try {
             Application app = null; 
             for (Named module : applications.getModules()) {
@@ -125,6 +127,7 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
                 commandParams.origin = Origin.load;
                 commandParams.target = target;
                 contextProps = app.getDeployProperties();
+                modulePropsMap = app.getModulePropertiesMap();
             }
             if (commandParams==null) {
                 report.setMessage(localStrings.getLocalString("bug",
@@ -156,6 +159,10 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
             final ExtendedDeploymentContext deploymentContext = deployment.getContext(logger, archive, commandParams);
 
             deploymentContext.getProps().putAll(contextProps);
+            if (modulePropsMap != null) {
+                deploymentContext.setModulePropsMap(modulePropsMap);
+            }
+
             deployment.deploy(deploymentContext, report);
 
             if (report.getActionExitCode().equals(

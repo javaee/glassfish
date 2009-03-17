@@ -56,6 +56,7 @@ import java.beans.PropertyVetoException;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.Engine;
+import com.sun.enterprise.config.serverbeans.ServerTags;
 
 /**
  * Each module of an application has an associated module info instance keeping
@@ -312,14 +313,21 @@ public class ModuleInfo {
         module.setName(name);
 
         // write the module properties
-        // it will write both module level and app level ones except the 
-        // object-type
+        // the app level properties will also be written at module level
+        // as they apply to module as well
         for (Iterator itr = moduleProps.keySet().iterator(); itr.hasNext();) {
             String propName = (String) itr.next();
-            Property prop = module.createChild(Property.class);
-            module.getProperty().add(prop);
-            prop.setName(propName);
-            prop.setValue(moduleProps.getProperty(propName));
+            if (!propName.equals(ServerTags.LOCATION) &&
+                !propName.equals(ServerTags.OBJECT_TYPE) &&
+                !propName.equals(ServerTags.DIRECTORY_DEPLOYED) &&
+                !propName.equals("isComposite") &&
+                !propName.startsWith("appConfig"))
+            {
+                Property prop = module.createChild(Property.class);
+                module.getProperty().add(prop);
+                prop.setName(propName);
+                prop.setValue(moduleProps.getProperty(propName));
+            }
         }
 
         for (EngineRef ref : _getEngineRefs()) {

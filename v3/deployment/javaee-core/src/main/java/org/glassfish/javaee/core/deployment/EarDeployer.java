@@ -496,6 +496,16 @@ public class EarDeployer implements Deployer {
             modulePropsMap.put(moduleUri, moduleProps);
         }
 
+        // add the properties from parent context if such property does not
+        // exist in current context properties
+        for (Enumeration e = context.getProps().keys(); e.hasMoreElements();) {
+            String propName = (String)e.nextElement();
+            if (moduleProps.contains(propName)) {
+                continue;
+            }
+            moduleProps.put(propName, context.getProps().get(propName));
+        }
+
         return moduleProps;
     }
 }

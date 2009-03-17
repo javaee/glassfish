@@ -217,8 +217,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             // clean up any generated files
             deploymentContext.clean();
 
-            Properties moduleProps = deploymentContext.getProps();
-            moduleProps.setProperty(ServerTags.NAME, name);
+            Properties appProps = deploymentContext.getProps();
             /*
              * If the app's location is within the domain's directory then
              * express it in the config as ${com.sun.aas.instanceRootURI}/rest-of-path
@@ -231,25 +230,14 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             String appLocation = (appURI.isAbsolute()) ?
                 appURI.toString() :
                 "${" + INSTANCE_ROOT_URI_PROPERTY_NAME + "}/" + appURI.toString();
-            moduleProps.setProperty(ServerTags.LOCATION, appLocation);
+            appProps.setProperty(ServerTags.LOCATION, appLocation);
             // set to default "user", deployers can override it
             // during processing
-            moduleProps.setProperty(ServerTags.OBJECT_TYPE, "user");
+            appProps.setProperty(ServerTags.OBJECT_TYPE, "user");
             if (contextRoot!=null) {
-                moduleProps.setProperty(ServerTags.CONTEXT_ROOT, contextRoot);
+                appProps.setProperty(ServerTags.CONTEXT_ROOT, contextRoot);
             }
-            if (libraries!=null) {
-                moduleProps.setProperty(ServerTags.LIBRARIES, libraries);
-            }
-            moduleProps.setProperty(ServerTags.ENABLED, enabled.toString());
-            moduleProps.setProperty(ServerTags.DIRECTORY_DEPLOYED, String.valueOf(isDirectoryDeployed));
-            if (virtualservers != null) {
-                moduleProps.setProperty(ServerTags.VIRTUAL_SERVERS,
-                    virtualservers);
-            }
-            if (description != null) {
-                moduleProps.setProperty(ServerTags.DESCRIPTION, description);
-            }
+            appProps.setProperty(ServerTags.DIRECTORY_DEPLOYED, String.valueOf(isDirectoryDeployed));
 
             ApplicationInfo appInfo = deployment.deploy(deploymentContext, report);
             if (report.getActionExitCode()==ActionReport.ExitCode.SUCCESS) {
