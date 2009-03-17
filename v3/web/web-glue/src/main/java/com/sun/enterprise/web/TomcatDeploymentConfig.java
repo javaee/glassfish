@@ -780,7 +780,10 @@ public class TomcatDeploymentConfig{
         }
 
         // <session-config><tracking-mode>
-        webModule.setSessionTrackingModes(sessionConfigDesc.getTrackingModes());
+        if (!sessionConfigDesc.getTrackingModes().isEmpty()) {
+            webModule.setSessionTrackingModes(
+                sessionConfigDesc.getTrackingModes());
+        }
 
         enumeration = wmd.getWelcomeFiles();
         while (enumeration.hasMoreElements()){
