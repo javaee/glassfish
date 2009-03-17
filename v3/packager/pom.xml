@@ -88,9 +88,10 @@
 	<module>glassfish-ejb-timer</module>
 	<module>glassfish-cmp</module>
 	<module>glassfish-orb-iiop</module>
+	<module>metro</module>	
+	<module>glassfish-appclient</module>
 	<module>glassfish-scripting</module>
 	<module>javadb</module>
-	<module>metro</module>	
 	<module>jersey</module>	
     </modules>
 
