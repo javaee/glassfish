@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
+ *
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -34,14 +34,14 @@
  * holder.
  */
 
-package com.sun.enterprise.connectors.util;
+package com.sun.enterprise.connectors.jms.util;
 
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.server.*;
 import com.sun.enterprise.deployment.*;
 
-import com.sun.enterprise.connectors.system.*;
-import com.sun.enterprise.connectors.inflow.*;
+import com.sun.enterprise.connectors.jms.system.*;
+import com.sun.enterprise.connectors.jms.inflow.*;
 import com.sun.enterprise.util.zip.*;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.logging.LogDomains;
@@ -58,7 +58,7 @@ import org.glassfish.internal.api.Globals;
 import org.glassfish.api.admin.config.Property;
 
 /**
- * 
+ *
  * @author
  */
 public class JmsRaUtil {
@@ -364,7 +364,7 @@ public class JmsRaUtil {
            + File.separator + SYSTEM_APP_DIR + File.separator
            + ConnectorConstants.DEFAULT_JMS_ADAPTER;
 
-        // If the Manifest entry has different versions, then attempt to 
+        // If the Manifest entry has different versions, then attempt to
         // explode the MQ resource adapter.
         if (!installedMqVersion.equals(deployedMqVersion)) {
            try {

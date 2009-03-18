@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
+ *
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -34,16 +34,16 @@
  * holder.
  */
 
-package com.sun.enterprise.connectors.inflow;
+package com.sun.enterprise.connectors.jms.inflow;
 
-/** 
+/**
  * Represents the properties of MDBContainer.
- * 
+ *
  * @author Binod P.G
  */
 public final class MdbContainerProps {
 
-    private static int cmtMaxRuntimeExceptions; 
+    private static int cmtMaxRuntimeExceptions;
     private static int reconnectDelayInSeconds;
     private static int reconnectMaxRetries;
     private static boolean reconnectEnabled;
@@ -60,14 +60,14 @@ public final class MdbContainerProps {
     /**
      * Retrives the max runtime exception that are allowed.
      *
-     * @return int value 
+     * @return int value
      */
     public synchronized static int getMaxRuntimeExceptions() {
         return cmtMaxRuntimeExceptions;
     }
 
     /**
-     * Sets the reconnect delay in seconds. 
+     * Sets the reconnect delay in seconds.
      *
      * @param v value.
      */
@@ -76,16 +76,16 @@ public final class MdbContainerProps {
     }
 
     /**
-     * Retrieves the reconnect delay in seconds. 
+     * Retrieves the reconnect delay in seconds.
      *
-     * @return int value 
+     * @return int value
      */
     public synchronized static int getReconnectDelay() {
         return reconnectDelayInSeconds;
     }
 
     /**
-     * Sets the reconnect max retries. 
+     * Sets the reconnect max retries.
      *
      * @param v value.
      */
@@ -94,9 +94,9 @@ public final class MdbContainerProps {
     }
 
     /**
-     * Gets the reconnect max retries. 
+     * Gets the reconnect max retries.
      *
-     * @return int value 
+     * @return int value
      */
     public synchronized static int getReconnectMaxRetries() {
         return reconnectMaxRetries;

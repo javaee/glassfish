@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
+ *
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -34,14 +34,14 @@
  * holder.
  */
 
-package com.sun.enterprise.connectors.system;
+package com.sun.enterprise.connectors.jms.system;
 
 import java.util.logging.Logger;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.i18n.StringManager;
 
 
-/** 
+/**
  * Represents one of the MQ address list elements.
  *
  * @author Binod P.G
@@ -56,7 +56,7 @@ public class MQUrl {
     private String id = null;
 
     /**
-     * Constructs the MQUrl with the id. Id is actually 
+     * Constructs the MQUrl with the id. Id is actually
      * the name of JmsHost element in the domain.xml.
      *
      * @param id Logical name of the MQUrl
@@ -134,7 +134,7 @@ public class MQUrl {
      */
     public boolean equals(Object obj) {
         if (obj instanceof MQUrl) {
-            return this.id.equals(((MQUrl)obj).id); 
+            return this.id.equals(((MQUrl)obj).id);
         } else {
             return false;
         }

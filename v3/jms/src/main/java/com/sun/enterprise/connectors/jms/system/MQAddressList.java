@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
+ *
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.connectors.system;
+package com.sun.enterprise.connectors.jms.system;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -43,14 +43,14 @@ import java.util.*;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.config.serverbeans.*;
-import com.sun.enterprise.connectors.util.JmsRaUtil;
+import com.sun.enterprise.connectors.jms.util.JmsRaUtil;
 import com.sun.enterprise.admin.util.AdminConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.internal.api.Globals;
 
 /**
- * Defines an MQ addressList. 
+ * Defines an MQ addressList.
  *
  * @author Binod P.G
  */
@@ -83,9 +83,9 @@ public class MQAddressList {
     }
 
     /**
-     * Creates an instance from jmsService and resolves 
+     * Creates an instance from jmsService and resolves
      * values using the provided target name
-     * @param targetName Represents the target for which the addresslist 
+     * @param targetName Represents the target for which the addresslist
      * needs to be created
      * @param service <code>JmsService</code> instance.
      */
@@ -320,6 +320,7 @@ public class MQAddressList {
      */
     private void defaultSetup() throws Exception {
         logFine("performing defaultsetup");
+        JmsService jmsService = Globals.get(JmsService.class);
         List hosts = jmsService.getJmsHost();
         for (int i=0; i < hosts.size(); i++) {
             MQUrl url = createUrl((JmsHost)hosts.get(i));
@@ -395,7 +396,7 @@ public class MQAddressList {
      * Creates a String representation of address list from
      * array list. In short, it is a comma separated list.
      * Actual syntax of an MQ url is inside MQUrl class.
-     * 
+     *
      * @return AddressList String
      * @see MQUrl
      */
@@ -464,7 +465,7 @@ public class MQAddressList {
         try {
         String name = host.getName();
         String hostName = host.getHost();
-        // For LOCAL/EMBEDDED Clustered instances and 
+        // For LOCAL/EMBEDDED Clustered instances and
         // standalone server instances, use
         // their nodeagent's hostname as the jms host name.
         ServerContext serverContext = Globals.get(ServerContext.class);
@@ -528,6 +529,8 @@ public class MQAddressList {
     private boolean isClustered() throws ConnectorRuntimeException {
         Domain domain = Globals.get(Domain.class);
         Clusters clusters = domain.getClusters();
+        if (clusters == null) return false;
+
         List clusterList = clusters.getCluster();
 
         return JmsRaUtil.isClustered(clusterList, myName);

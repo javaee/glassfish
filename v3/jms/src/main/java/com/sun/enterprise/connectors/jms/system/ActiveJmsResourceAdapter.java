@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.connectors.system;
+package com.sun.enterprise.connectors.jms.system;
 
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
@@ -43,12 +43,13 @@ import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.*;
 import com.sun.appserv.server.util.Version;
+import com.sun.enterprise.connectors.jms.util.JmsRaUtil;
 
 //import com.sun.enterprise.connectors.*;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 //import com.sun.enterprise.connectors.service.ConnectorAdminServiceUtils;
-import com.sun.enterprise.connectors.inflow.*;
-import com.sun.enterprise.connectors.util.JmsRaUtil;
+import com.sun.enterprise.connectors.jms.inflow.*;
+//import com.sun.enterprise.connectors.util.JmsRaUtil;
 import com.sun.enterprise.connectors.util.SetMethodAction;
 //import com.sun.enterprise.connectors.util.SetMethodAction;
 import com.sun.logging.LogDomains;
@@ -869,7 +870,12 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl {
     }
 
     public boolean handles(ConnectorDescriptor cd) {
-        return ConnectorConstants.DEFAULT_JMS_ADAPTER.equals(moduleName_);
+        //return ConnectorConstants.DEFAULT_JMS_ADAPTER.equals(moduleName_);
+       if(cd.getModuleID() != null) {
+            return
+            (cd.getModuleID().contains(ConnectorConstants.DEFAULT_JMS_ADAPTER));
+        }
+        return false;
     }
 
     public void validateActivationSpec(ActivationSpec spec) {
@@ -1058,6 +1064,8 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl {
     private static boolean isClustered() throws ConnectorRuntimeException {
         Domain domain = Globals.get(Domain.class);
         Clusters clusters = domain.getClusters();
+        if (clusters == null) return false;
+
         List clusterList = clusters.getCluster();
 
         ServerContext serverctx = Globals.get(ServerContext.class);
