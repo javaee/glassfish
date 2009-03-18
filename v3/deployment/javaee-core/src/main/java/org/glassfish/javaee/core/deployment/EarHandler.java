@@ -108,33 +108,47 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
         // expand the top level first so we could read application.xml
         super.expand(source, target, context);
 
-        ReadableArchive source2 = 
-            archiveFactory.openArchive(target.getURI());
+        ReadableArchive source2 = null;
+        try {
+            source2 = archiveFactory.openArchive(target.getURI());
 
-        ApplicationHolder holder = 
-            getApplicationHolder(source2, context, false);
+            ApplicationHolder holder = 
+                getApplicationHolder(source2, context, false);
 
-        // now start to expand the sub modules 
-        for (ModuleDescriptor md : holder.app.getModules()) {
-            String moduleUri = md.getArchiveUri();
-            try {
-                ReadableArchive subArchive = source.getSubArchive(moduleUri);
-                ArchiveHandler subHandler = deployment.getArchiveHandler(subArchive);
-                if (subHandler!=null) {
-                    WritableArchive subTarget = target.createSubArchive(
-                        FileUtils.makeFriendlyFilename(moduleUri));
-                    subHandler.expand(subArchive, subTarget, context);
-                    target.closeEntry(subTarget);
+            // now start to expand the sub modules 
+            for (ModuleDescriptor md : holder.app.getModules()) {
+                String moduleUri = md.getArchiveUri();
+                ReadableArchive subArchive = null;
+                WritableArchive subTarget = null;
+                try {
+                    subArchive = source.getSubArchive(moduleUri);
+                    ArchiveHandler subHandler = deployment.getArchiveHandler(subArchive);
+                    if (subHandler!=null) {
+                        subTarget = target.createSubArchive(
+                            FileUtils.makeFriendlyFilename(moduleUri));
+                        subHandler.expand(subArchive, subTarget, context);
 /*
-                    // delete the original module file
-                    File origSubArchiveFile = new File(
-                        target.getURI().getSchemeSpecificPart(), moduleUri);
-                    origSubArchiveFile.delete();
+                        // delete the original module file
+                        File origSubArchiveFile = new File(
+                            target.getURI().getSchemeSpecificPart(), moduleUri);
+                        origSubArchiveFile.delete();
 */
+                    }
+                } catch(IOException ioe) {
+                    _logger.log(Level.FINE, "Exception while processing " + 
+                        moduleUri, ioe);
+                } finally {
+                    if (subArchive != null) {
+                        subArchive.close();
+                    }
+                    if (subTarget != null) {
+                        subTarget.close();
+                    }
                 }
-            } catch(IOException ioe) {
-                _logger.log(Level.FINE, "Exception while processing " + 
-                    moduleUri, ioe);
+            }
+        } finally {
+            if (source2 != null) {
+                source2.close();
             }
         }
     }
