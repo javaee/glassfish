@@ -101,7 +101,13 @@
             <version>${project.version}</version>
             <!--<optional>true</optional>-->
         </dependency>
-
+	
+	<dependency>
+	            <groupId>org.glassfish.jms</groupId>
+	            <artifactId>jms</artifactId>
+	            <version>${project.version}</version>
+        </dependency>
+        
         <dependency>
             <groupId>org.glassfish.transaction</groupId>
             <artifactId>jts</artifactId>
