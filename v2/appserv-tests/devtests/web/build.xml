@@ -412,13 +412,13 @@
         
         <record name="web.output" action="start" />
         <antcall target="startDomain"/>
-        <antcall target="servlet"/>
         <antcall target="jsp"/>
         <antcall target="taglib"/>
         <antcall target="el"/>
         <antcall target="web-container"/>
         <antcall target="security"/>
         <antcall target="http-connector"/>
+        <antcall target="servlet"/>
         <antcall target="stopDomain"/>
         <record name="web.output" action="stop" />
 
