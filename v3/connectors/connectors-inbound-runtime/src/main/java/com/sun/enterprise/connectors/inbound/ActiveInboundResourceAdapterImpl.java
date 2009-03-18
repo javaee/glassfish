@@ -165,8 +165,18 @@ public class ActiveInboundResourceAdapterImpl extends ActiveOutboundResourceAdap
         //TODO V3 right assumption ?
         //TODO V3 ignore JMS-RA
         //TODO V3 later multiple JMS Ras will be present (ignore all)
-        return (cd.getInBoundDefined() && !(ConnectorConstants.DEFAULT_JMS_ADAPTER.equals(moduleName_)));
+       // return (cd.getInBoundDefined() && !(ConnectorConstants.DEFAULT_JMS_ADAPTER.equals(moduleName_)));
+        return (cd.getInBoundDefined() && !isJMSRA(cd));
+     }
+
+    protected boolean isJMSRA(ConnectorDescriptor cd) {
+        if(cd.getModuleID() != null) {
+            return
+            (cd.getModuleID().contains(ConnectorConstants.DEFAULT_JMS_ADAPTER));
+        }
+        return false;
     }
+
 
     /**
      * Adds endpoint factory information.
