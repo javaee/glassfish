@@ -1,0 +1,11 @@
+Apache Derby Network Server - 10.4.2.1 - (706043) started and ready to accept connections on port 1528 at 2009-03-18 12:48:26.083 GMT 
+----------------------------------------------------------------
+2009-03-18 12:48:37.550 GMT:
+ Booting Derby version The Apache Software Foundation - Apache Derby - 10.4.2.1 - (706043): instance a816c00e-0120-19a0-216b-0000304ecaa6
+on database directory /space/jagadish/workspaces/v3/feb10/v2/appserv-tests/devtests/connector/v3/SunRaXml/testdb  
+
+Database Class Loader started - derby.database.classpath=''
+
+2009-03-18 12:50:07.957 GMT:
+Shutting down instance a816c00e-0120-19a0-216b-0000304ecaa6
+----------------------------------------------------------------
