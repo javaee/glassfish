@@ -536,30 +536,37 @@ public class GFServerConfigProvider implements AuthConfigProvider {
         }
     }
 
-    static class InterceptEntry {
+    public static class InterceptEntry {
         String defaultClientID;
         String defaultServerID;
         HashMap idMap;
 
-        InterceptEntry(String defaultClientID,
+        public InterceptEntry(String defaultClientID,
                 String defaultServerID, HashMap idMap) {
             this.defaultClientID = defaultClientID;
             this.defaultServerID = defaultServerID;
             this.idMap = idMap;
+        }
+        
+        public HashMap getIdMap() {
+            return idMap;
+        }
+        public void setIdMap(HashMap map) {
+            idMap = map;
         }
     }
 
     /**
      * parsed ID entry
      */
-    static class IDEntry {
+    public static class IDEntry {
         private String type;  // provider type (client, server, client-server)
         private String moduleClassName;
         private MessagePolicy requestPolicy;
         private MessagePolicy responsePolicy;
         private Map options;
 
-        IDEntry(String type, String moduleClassName,
+        public IDEntry(String type, String moduleClassName,
                 MessagePolicy requestPolicy,
                 MessagePolicy responsePolicy,
                 Map options) {

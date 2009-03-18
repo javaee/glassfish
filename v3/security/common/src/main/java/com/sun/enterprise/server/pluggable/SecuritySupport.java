@@ -101,6 +101,4 @@ public interface SecuritySupport {
     public void synchronizeKeyFile(Object configContext, String fileRealmName)
         throws Exception;
     
-    //TODO V3: Temporary till we have AppContainer integration design sorted out
-    public CallbackHandler getAppContainerCallbackHandler();
 }

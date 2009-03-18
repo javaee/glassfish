@@ -45,6 +45,7 @@ package com.sun.enterprise.iiop.security;
  * @author: Nithya Subramanian
  */
 
+import com.sun.enterprise.common.iiop.security.SecurityContext;
 import org.omg.CORBA.*;
 import org.omg.PortableInterceptor.*;
 import org.omg.IOP.*;

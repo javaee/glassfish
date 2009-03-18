@@ -35,15 +35,15 @@
 * only if the new code is made subject to such option by the copyright 
 * holder. 
 */ 
---> 
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-         <groupId>org.glassfish.security</groupId>
+        <groupId>org.glassfish.security</groupId>
         <artifactId>securitymodule</artifactId>
         <version>3.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>        
-    </parent>    
+        <relativePath>../pom.xml</relativePath>
+    </parent>
     <groupId>org.glassfish.security</groupId>
     <artifactId>security</artifactId>
     <packaging>hk2-jar</packaging>
@@ -92,7 +92,7 @@
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
-        </dependency>   
+        </dependency>
         <dependency>
             <groupId>org.glassfish.deployment</groupId>
             <artifactId>dol</artifactId>
@@ -128,6 +128,11 @@
             <artifactId>javax.servlet</artifactId>
             <version>${project.version}</version>
             <!-- Don't set scope as provided. See issue #5992 -->
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>glassfish-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

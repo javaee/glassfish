@@ -35,6 +35,7 @@
  */
 package com.sun.enterprise.iiop.security;
 
+import com.sun.enterprise.common.iiop.security.SecurityContext;
 import java.net.Socket;
 import java.security.Principal;
 import java.security.ProtectionDomain;

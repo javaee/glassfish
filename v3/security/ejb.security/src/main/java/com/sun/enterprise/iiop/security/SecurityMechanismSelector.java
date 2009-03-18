@@ -37,35 +37,28 @@
 
 package com.sun.enterprise.iiop.security;
 
+import com.sun.enterprise.common.iiop.security.SecurityContext;
 import java.lang.InheritableThreadLocal;
-import java.io.IOException;
 import java.net.Socket;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.Properties;
-import java.net.InetAddress;
 import java.util.List;
 import java.util.ArrayList;
 
 import java.security.PrivilegedAction;
 import java.security.AccessController;
 import javax.security.auth.Subject;
-import javax.security.auth.login.LoginContext;
 import java.security.cert.X509Certificate;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 // GSS Related Functionality
-import org.ietf.jgss.*;
 
-import com.sun.enterprise.Switch;
 import com.sun.enterprise.ExecutionContext;
 import com.sun.enterprise.InvocationManager;
 import com.sun.enterprise.InvocationException;
 import com.sun.enterprise.appclient.AppContainer;
-import com.sun.enterprise.deployment.JndiNameEnvironment;
-import com.sun.enterprise.deployment.EjbReferenceDescriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbIORConfigurationDescriptor;
 import com.sun.enterprise.iiop.CSIV2TaggedComponentInfo;
@@ -87,12 +80,27 @@ import com.sun.corba.ee.spi.transport.SocketInfo;
 import com.sun.corba.ee.org.omg.CSI.*;
 import com.sun.corba.ee.org.omg.CSIIOP.*;
 
+import com.sun.corba.se.spi.ior.iiop.IIOPAddress;
+import com.sun.corba.se.spi.ior.iiop.IIOPProfileTemplate;
+import com.sun.corba.se.spi.transport.SocketInfo;
+import com.sun.enterprise.common.iiop.security.AnonCredential;
+import com.sun.enterprise.common.iiop.security.GSSUPName;
+import com.sun.enterprise.common.iiop.security.GSSUtils;
 import sun.security.x509.X500Name;
 import com.sun.enterprise.log.Log;
+import com.sun.enterprise.security.SecurityContext;
+import com.sun.enterprise.security.SecurityServicesUtil;
+import com.sun.enterprise.security.auth.login.LoginContextDriver;
+import com.sun.enterprise.security.ssl.SSLUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.java.util.jar.pack.Instruction.Switch;
+import com.sun.java.util.jar.pack.Instruction.Switch;
+import com.sun.java.util.jar.pack.Instruction.Switch;
 import java.util.logging.*;
 import com.sun.logging.*;
+import javax.resource.spi.security.PasswordCredential;
 import org.glassfish.api.invocation.ComponentInvocation;
+import org.omg.IOP.IOR;
 
 /** 
  * This class is responsible for making various decisions for selecting
@@ -128,9 +136,6 @@ public final class SecurityMechanismSelector {
     // A reference to POAProtocolMgr will be obtained dynamically
     // and set if not null. So set it to null here.
     private static POAProtocolMgr protocolMgr = null;
-
-   
-            
 
     /**
      * Read the client and server preferences from the config files.
@@ -181,14 +186,13 @@ public final class SecurityMechanismSelector {
     private CompoundSecMech mechanism = null;
     private ORB orb = null;
     private CSIV2TaggedComponentInfo ctc = null;
-
+    
     /**
      * Default constructor.
      */
     public SecurityMechanismSelector() {
         this.orb = ORBManager.getORB();
         this.ctc = new CSIV2TaggedComponentInfo(orb);
-
     }
 
     public static ServerConnectionContext getServerConnectionContext() {
@@ -469,13 +473,16 @@ public final class SecurityMechanismSelector {
         }
         boolean sslUsed = cc.getSSLUsed();
         boolean clientAuthOccurred = cc.getSSLClientAuthenticationOccurred();
-        InvocationManager im = Switch.getSwitch().getInvocationManager();
-        if(im == null) {
+        //TODO V3 : need to change this
+//        InvocationManager im = Switch.getSwitch().getInvocationManager();
+//       if(im == null) {
             // Standalone client
-            context = getSecurityContextForAppClient(null, sslUsed,
-clientAuthOccurred); 
-            return context;
-        }
+            if (SecurityServicesUtil.getInstance().isNotServerOrACC()) {
+                context = getSecurityContextForAppClient(
+                        null, sslUsed, clientAuthOccurred);
+                return context;
+            }
+//        }
 
         if (_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE, "SSL used:" + sslUsed + " SSL Mutual auth:" + clientAuthOccurred);
@@ -489,7 +496,7 @@ clientAuthOccurred);
             return null;
         }
         Object obj = ci.getContainerContext();
-        if(obj instanceof AppContainer) {
+        if(SecurityServicesUtil.getInstance().isACC()) {
             context = getSecurityContextForAppClient(ci, sslUsed, clientAuthOccurred);
         } else {
             context = getSecurityContextForWebOrEJB(ci, sslUsed, clientAuthOccurred);
@@ -791,14 +798,15 @@ localStrings.getLocalString("securitymechansimselector.runas_cannot_propagate_us
                 }
             } else {
                 Object obj = ci.getContainerContext();
-                if(obj instanceof AppContainer) {
+                //if(obj instanceof AppContainer) {
+                 if (SecurityServicesUtil.getInstance().isACC()) {
 		    // get the subject
                     com.sun.enterprise.security.ClientSecurityContext sc = 
                         com.sun.enterprise.security.ClientSecurityContext.getCurrent();
                     if(sc == null) {
 			s = LoginContextDriver.doClientLogin(
-                                AppContainer.USERNAME_PASSWORD,
-                                AppContainer.getCallbackHandler());
+                                SecurityConstants.U_P,
+                                SecurityServicesUtil.getInstance().getCallbackHandler());
                     } else {
                         s = sc.getSubject();
                     }

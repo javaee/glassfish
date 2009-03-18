@@ -102,8 +102,8 @@ public final class SSLUtils implements PostConstruct {
     private TrustManager trustManager = null;
     private KeyStore mergedTrustStore = null;
     private Date initDate;
-
-    //V3:Commented private static Ssl appclientSsl = null
+    private static AppClientSSL appclientSsl = null;
+    
     public void postConstruct() {
         try {
             initDate = new Date();
@@ -188,14 +188,14 @@ public final class SSLUtils implements PostConstruct {
         return new TrustManager[] { trustManager };
     }
 
-    /*V3:Commented
-    public static void setAppclientSsl(Ssl ssl){
+    
+    public void setAppclientSsl(AppClientSSL ssl){
         appclientSsl = ssl;
     }
 
-    public static Ssl getAppclientSsl() {
+    public  AppClientSSL getAppclientSsl() {
         return appclientSsl;
-    }*/
+    }
 
     public static String getKeyStorePass () {
         //XXX need to revisit if the value should be cached

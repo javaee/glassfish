@@ -36,7 +36,6 @@
 
 package com.sun.enterprise.security.provider;
 
-import javax.security.jacc.PolicyConfiguration;
 import javax.security.jacc.*;
 
 import java.util.concurrent.locks.Lock;
@@ -54,7 +53,6 @@ import java.lang.reflect.Constructor;
 import java.security.*;
 import javax.security.auth.Subject;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.FileWriter;
 

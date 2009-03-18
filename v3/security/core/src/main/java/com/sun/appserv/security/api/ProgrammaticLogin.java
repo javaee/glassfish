@@ -38,9 +38,7 @@
 package com.sun.appserv.security.api;
 
 import com.sun.enterprise.security.common.ProgrammaticLoginInterface;
-import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.security.SecurityServicesUtil;
-import com.sun.enterprise.security.SecurityUtil;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.security.AccessController;
@@ -62,6 +60,7 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 
 import com.sun.appserv.security.ProgrammaticLoginPermission;
+import com.sun.enterprise.security.common.SecurityConstants;
 
 /**
  * Implement programmatic login.
@@ -153,14 +152,13 @@ public class ProgrammaticLogin implements ProgrammaticLoginInterface
                     public java.lang.Object run() {
                     // if realm is null, LCD will log into the default realm
                         //V3:Commented if (isServer) {
-                        if (isServer()) {
+                        if (SecurityServicesUtil.getInstance().isServer()) {
                             LoginContextDriver.login(user, password, realm);
                         } else {
                             //TODO:V3 commented int type = AppContainer.USERNAME_PASSWORD;
-                            int type = SecurityUtil.APPCONTAINER_USERNAME_PASSWORD;
+                            int type = SecurityConstants.USERNAME_PASSWORD;
                             
                             //should not set realm here
-
                             // Bugfix# 6387278. The UsernamePasswordStore 
                             // abstracts the thread-local/global details
                             UsernamePasswordStore.set(user, password);
@@ -336,7 +334,7 @@ public class ProgrammaticLogin implements ProgrammaticLoginInterface
             AccessController.doPrivileged(new PrivilegedAction() {
                 public java.lang.Object run() {
                     //V3:Commentedif (isServer) {
-                    if (isServer()) {
+                    if (SecurityServicesUtil.getInstance().isServer()) {
                         LoginContextDriver.logout();
                     } else {
                         // Reset the username/password state on logout
@@ -464,18 +462,6 @@ public class ProgrammaticLogin implements ProgrammaticLoginInterface
         }
     }
     
-    private boolean isServer() {
-        try {
-            SecurityService securityService = (SecurityService) SecurityServicesUtil.getInstance().getHabitat().getComponent(SecurityService.class);
-            if (securityService != null) {
-                return true;
-            }
-        } catch (Exception e) {
-        //ignore
-        }
-        return false;
-    }
-
     private void resolveWebProgrammaticLogin() {
         Habitat habitat = SecurityServicesUtil.getInstance().getHabitat();
         this.webProgrammaticLogin = habitat.getComponent(WebProgrammaticLogin.class);

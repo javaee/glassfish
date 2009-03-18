@@ -61,12 +61,14 @@ public interface AppClientSecurityInfo {
      * @param appclientCredType The CredentialType of the Appclient
      * @param username the static username if any was configured
      * @param password the static password if any was configured
+     * @Param isJWS set to true if it is Java WebStart client
      */
     public void initializeSecurity(
             ClientContainer container,
             CallbackHandler handler,
             CredentialType appclientCredType,
-            String username, String password);
+            String username, String password, 
+            boolean isJWS);
 
     
     /**

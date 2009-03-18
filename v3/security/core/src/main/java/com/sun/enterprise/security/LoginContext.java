@@ -41,6 +41,7 @@ import java.security.PrivilegedAction;
 
 import com.sun.enterprise.security.auth.login.ClientPasswordLoginModule;
 import com.sun.enterprise.security.auth.login.LoginContextDriver;
+import com.sun.enterprise.security.common.SecurityConstants;
 import java.util.logging.*;
 import com.sun.logging.*;
 
@@ -65,8 +66,6 @@ import com.sun.logging.*;
  */
 
 public final class LoginContext {
-    //V3: APPContainer property copied for time being
-    public static final int USERNAME_PASSWORD = 1;
     
     private static Logger _logger=null;
     static{
@@ -105,7 +104,7 @@ public final class LoginContext {
 	    });
 	// Since this is  a private api and the user is not supposed to use
 	// this. We use the default the LoginCallbackHandler.
-	LoginContextDriver.doClientLogin(USERNAME_PASSWORD,handler);
+	LoginContextDriver.doClientLogin(SecurityConstants.USERNAME_PASSWORD,handler);
     }
     
     /** This method has been provided to satisfy the CTS Porting Package 

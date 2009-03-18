@@ -49,8 +49,6 @@ import javax.security.auth.message.config.ClientAuthContext;
 import javax.security.auth.message.config.ServerAuthConfig;
 import javax.security.auth.message.config.ServerAuthContext;
 import javax.xml.ws.WebServiceException;
-import com.sun.enterprise.util.io.FileUtils;
-//comment EJB realted stuff for now
 //import com.sun.ejb.Container;
 //import com.sun.ejb.Invocation;
 //import com.sun.enterprise.InvocationManager;
@@ -68,6 +66,8 @@ import com.sun.enterprise.security.audit.AuditManager;
 //import com.sun.enterprise.security.audit.AuditManagerFactory;
 import com.sun.enterprise.security.SecurityContext;
 import com.sun.enterprise.security.SecurityServicesUtil;
+import com.sun.enterprise.security.common.AppservAccessController;
+import com.sun.enterprise.security.common.ClientSecurityContext;
 import com.sun.enterprise.security.jmac.AuthMessagePolicy;
 import com.sun.enterprise.security.webservices.PipeConstants;
 //TODO: replace the one below with the one above later
@@ -85,6 +85,9 @@ import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Message;
 
+import java.security.AccessController;
+import org.glassfish.api.invocation.InvocationManager;
+
 
 public class PipeHelper extends ConfigHelper {
     private  AuditManager auditManager = null;
@@ -96,6 +99,7 @@ public class PipeHelper extends ConfigHelper {
     private boolean isEjbEndpoint;
     private SEIModel seiModel;
     private SOAPVersion soapVersion;
+    private InvocationManager invManager = null;
     
     public PipeHelper(String layer, Map map, CallbackHandler cbh) {
         init(layer, getAppCtxt(map), map, cbh);
@@ -111,6 +115,7 @@ public class PipeHelper extends ConfigHelper {
         }
         this.soapVersion = (binding != null) ? binding.getSOAPVersion(): SOAPVersion.SOAP_11;
         auditManager = SecurityServicesUtil.getInstance().getAuditManager();
+        invManager = SecurityServicesUtil.getInstance().getHabitat().getComponent(InvocationManager.class);
    }
 
     public ClientAuthContext getClientAuthContext(MessageInfo info, Subject s) 
@@ -136,20 +141,18 @@ public class PipeHelper extends ConfigHelper {
     public static Subject getClientSubject() {
 
 	Subject s = null;
-//TODO:V3 commented Appclient specific code
+
 //	if (Switch.getSwitch().getContainerType() == 
 //	    Switch.APPCLIENT_CONTAINER) {
-//
-//	    ClientSecurityContext sc = ClientSecurityContext.getCurrent();
-//	    if (sc != null) {
-//		s = sc.getSubject();
-//	    }
-//
-//	    if (s == null) {
-//		s = Subject.getSubject(AccessController.getContext());
-//	    }
-//
-//	} else {
+        if (SecurityServicesUtil.getInstance().isACC()) {
+	    ClientSecurityContext sc = ClientSecurityContext.getCurrent();
+	    if (sc != null) {
+		s = sc.getSubject();
+	    }
+	    if (s == null) {
+		s = Subject.getSubject(AccessController.getContext());
+	    }
+	} else {
 	    SecurityContext sc = SecurityContext.getCurrent();
 	    if (sc != null && !sc.didServerGenerateCredentials()) {
 		// make sure we don't use default unauthenticated subject, 
@@ -157,7 +160,7 @@ public class PipeHelper extends ConfigHelper {
 		// subject.
 		s = sc.getSubject();
 	    }
-//	}
+	}
 
 	if (s == null) {
 	    s = new Subject();
@@ -193,15 +196,12 @@ public class PipeHelper extends ConfigHelper {
 	// we should try to replace this endpoint specific
 	// authorization check with a generic web service message check
 	// and move the endpoint specific check down stream
-        /*TODO:V3 commented EJB endpoint sepcific code
-	if (isEjbEndpoint) {
-
-	    Switch theSwitch = Switch.getSwitch();
-	    InvocationManager invManager= theSwitch.getInvocationManager();
-	    Invocation inv= (Invocation) invManager.getCurrentInvocation();
+        
+	/*if (isEjbEndpoint) {
+	    ComponentInvocation inv= (ComponentInvocation) invManager.getCurrentInvocation();
             // one need to copy message here, otherwise the message may be
             // consumed
-            inv.setMessage(request.getMessage().copy());
+            inv.setMessage(request.getMessage());
 	    Exception ie = null;
             Method m = null;
             if (seiModel != null) {

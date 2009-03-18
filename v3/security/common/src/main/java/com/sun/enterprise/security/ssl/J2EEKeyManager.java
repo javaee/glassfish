@@ -53,8 +53,8 @@ import com.sun.enterprise.security.auth.login.common.X509CertificateCredential;
 import com.sun.enterprise.security.auth.login.common.LoginException;
 import com.sun.enterprise.security.auth.login.common.PasswordCredential;
 import com.sun.enterprise.security.common.AppservAccessController;
-import com.sun.enterprise.security.integration.SecurityConstants;
-import com.sun.enterprise.server.pluggable.SecuritySupport;
+import com.sun.enterprise.security.common.SecurityConstants;
+import com.sun.enterprise.security.common.Util;
 import org.jvnet.hk2.component.Habitat;
 
 import java.util.logging.*;
@@ -77,8 +77,6 @@ public final class J2EEKeyManager implements X509KeyManager {
         _logger=LogDomains.getLogger(J2EEKeyManager.class, LogDomains.SECURITY_LOGGER);
     }
 
-    
-    
     private X509KeyManager mgr = null; // delegate
     
     private String alias = null;
@@ -125,28 +123,26 @@ public final class J2EEKeyManager implements X509KeyManager {
         if(this.alias == null){
             //InvocationManager im = Switch.getSwitch().getInvocationManager();
             //if (im == null) {
-            if(!isAppClientContainer()) {
+            if(Util.getInstance().isNotServerORACC()) {
                 // standalone client
                 alias = mgr.chooseClientAlias(keyType, issuers, socket);
             } else {
                 //ComponentInvocation ci = im.getCurrentInvocation();
-                
                 //if (ci == null) {       // 4646060
                 //    throw new InvocationException();
                 //}
-                
                 //Object containerContext = ci.getContainerContext();
                 //if(containerContext != null &&
                 //(containerContext instanceof AppContainer)) {
-                    
+                   if (Util.getInstance().isACC()) {
                     ClientSecurityContext ctx = ClientSecurityContext.getCurrent();
                     Subject s = ctx.getSubject();
-                    if(s == null) {
+                    if (s == null) {
                         // pass the handler and do the login
                         //TODO V3: LoginContextDriver.doClientLogin(AppContainer.CERTIFICATE,
                         //AppContainer.getCallbackHandler());
-                        doClientLogin(SecurityConstants.APPCONTAINER_CERTIFICATE,
-                        habitat.getComponent(SecuritySupport.class).getAppContainerCallbackHandler());
+                        doClientLogin(SecurityConstants.CERTIFICATE,
+                                Util.getInstance().getCallbackHandler());
                         s = ctx.getSubject();
                     }
                     Iterator itr = s.getPrivateCredentials().iterator();
@@ -159,7 +155,7 @@ public final class J2EEKeyManager implements X509KeyManager {
                             break;
                         }
                     }
-                //}
+                }
             }
         }else{
             alias = this.alias;
@@ -272,11 +268,6 @@ public final class J2EEKeyManager implements X509KeyManager {
         }
         return keyMgr;
     }
-
-    //TODO: Code this correctly
-    private boolean isAppClientContainer() {
-        return true;
-    }
     
     //TODO:V3 copied all method(s)below from LoginContextDriver to break dependencies among modules
      private static final String CLIENT_JAAS_PASSWORD = "default";
@@ -302,13 +293,13 @@ public final class J2EEKeyManager implements X509KeyManager {
         // set security context. Thus, we have 2  credentials, one each for
         // the csiv2 layer and the other for the RI.
         final Subject subject = new Subject();
-        /*V3:Commented : TODO uncomment later for Appcontainer
-        if (type == AppContainer.USERNAME_PASSWORD){
+        //V3:Commented : TODO uncomment later for Appcontainer
+        if (type == SecurityConstants.USERNAME_PASSWORD){
             AppservAccessController.doPrivileged(new PrivilegedAction() {
                 public java.lang.Object run() {
                     try{
                         LoginContext lg = 
-                            new LoginContext(CLIENT_JAAS_PASSWORD, 
+                            new LoginContext(SecurityConstants.CLIENT_JAAS_PASSWORD, 
                                              subject, handler);
                         lg.login();
                     }catch(javax.security.auth.login.LoginException e){
@@ -321,12 +312,12 @@ public final class J2EEKeyManager implements X509KeyManager {
             });
             postClientAuth(subject, PasswordCredential.class);
             return subject;
-        } else if (type == AppContainer.CERTIFICATE){
+        } else if (type == SecurityConstants.CERTIFICATE){
             AppservAccessController.doPrivileged(new PrivilegedAction() {
                 public java.lang.Object run() {
                     try{
                         LoginContext lg = 
-                            new LoginContext(CLIENT_JAAS_CERTIFICATE,
+                            new LoginContext(SecurityConstants.CLIENT_JAAS_CERTIFICATE,
                                              subject, handler);
                         lg.login();
                     }catch(javax.security.auth.login.LoginException e){
@@ -339,15 +330,15 @@ public final class J2EEKeyManager implements X509KeyManager {
             });
             postClientAuth(subject, X509CertificateCredential.class);
             return subject;
-        } else if (type == AppContainer.ALL){
+        } else if (type == SecurityConstants.ALL){
             AppservAccessController.doPrivileged(new PrivilegedAction() {
                 public java.lang.Object run() {
                     try{
                         LoginContext lgup =
-                            new LoginContext(CLIENT_JAAS_PASSWORD,
+                            new LoginContext(SecurityConstants.CLIENT_JAAS_PASSWORD,
                                              subject, handler);
                         LoginContext lgc = 
-                            new LoginContext(CLIENT_JAAS_CERTIFICATE,
+                            new LoginContext(SecurityConstants.CLIENT_JAAS_CERTIFICATE,
                                                  subject, handler);
                         lgup.login();
                         postClientAuth(subject, PasswordCredential.class);
@@ -364,12 +355,12 @@ public final class J2EEKeyManager implements X509KeyManager {
                 }
             });
             return subject;
-        } else{ */
+        } else{ 
             AppservAccessController.doPrivileged(new PrivilegedAction() {
                 public java.lang.Object run() {
                     try{
                         LoginContext lg =
-                            new LoginContext(CLIENT_JAAS_PASSWORD, 
+                            new LoginContext(SecurityConstants.CLIENT_JAAS_PASSWORD, 
                                              subject, handler);
                         lg.login();
                         postClientAuth(subject, PasswordCredential.class);
@@ -381,7 +372,7 @@ public final class J2EEKeyManager implements X509KeyManager {
                 }
             });
             return subject;
-        /*}*/
+        }
     }
     
      /**

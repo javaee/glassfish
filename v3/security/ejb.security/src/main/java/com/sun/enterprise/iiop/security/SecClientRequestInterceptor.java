@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.iiop.security;
 
+import com.sun.enterprise.common.iiop.security.SecurityContext;
 import org.omg.CORBA.*;
 import org.omg.PortableInterceptor.*;
 import org.omg.IOP.*;
@@ -49,13 +50,12 @@ import com.sun.corba.ee.org.omg.CSI.*;
 import com.sun.corba.ee.org.omg.GSSUP.*;
 
 /* Import classes required for DER encoding and decoding */
-import com.sun.enterprise.config.serverbeans.SecurityService;
-import sun.security.util.DerInputStream;
+import com.sun.enterprise.common.iiop.security.AnonCredential;
+import com.sun.enterprise.common.iiop.security.GSSUPName;
 import sun.security.util.DerOutputStream;
 import sun.security.util.DerValue;
 
 import sun.security.x509.X500Name;
-import javax.security.auth.*;  // for JAAS subject
 
 import com.sun.enterprise.security.auth.login.common.PasswordCredential;
 import com.sun.enterprise.security.auth.login.common.X509CertificateCredential;

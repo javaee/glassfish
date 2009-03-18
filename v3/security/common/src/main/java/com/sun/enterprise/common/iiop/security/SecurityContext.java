@@ -37,7 +37,7 @@
  * @(#)SecurityContext.java	1.5 00/10/24
  */
 
-package com.sun.enterprise.iiop.security;
+package com.sun.enterprise.common.iiop.security;
 
 
 import javax.security.auth.*;

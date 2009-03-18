@@ -35,6 +35,7 @@
  */
 package com.sun.enterprise.security.auth.login;
 
+import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.security.auth.login.common.X509CertificateCredential;
 import java.util.Map;
 import java.util.Enumeration;
@@ -43,9 +44,10 @@ import java.security.cert.X509Certificate;
 import javax.security.auth.*;
 import javax.security.auth.callback.*;
 import javax.security.auth.login.LoginException;
-import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.spi.LoginModule;
 //V3:Commented import com.sun.enterprise.config.clientbeans.Ssl;
+import com.sun.enterprise.security.ssl.SSLUtils;
+import com.sun.enterprise.security.ssl.AppClientSSL;
 
 import org.glassfish.security.common.PrincipalImpl;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -98,6 +100,8 @@ public class ClientCertificateLoginModule implements LoginModule {
     // testUser's PrincipalImpl
     private PrincipalImpl userPrincipal;
 
+    private SSLUtils sslUtils;
+    
     /**
      * Initialize this <code>LoginModule</code>.
      *
@@ -126,6 +130,7 @@ public class ClientCertificateLoginModule implements LoginModule {
 
 	// initialize any configured options
 	debug = "true".equalsIgnoreCase((String)options.get("debug"));
+        sslUtils = SecurityServicesUtil.getInstance().getHabitat().getComponent(SSLUtils.class);
     }
 
 
@@ -250,11 +255,11 @@ public class ClientCertificateLoginModule implements LoginModule {
                                 "added PrincipalImpl to Subject");
                 }
 	    }
-            /*TODO:V3 Commented, uncomment later
-            Ssl ssl = new Ssl();
+            
+            AppClientSSL ssl = new AppClientSSL();
             ssl.setCertNickname(this.alias);
-            SSLUtils.setAppclientSsl(ssl);
-            */
+            sslUtils.setAppclientSsl(ssl);
+            
 	    String realm = LoginContextDriver.CERT_REALMNAME;
 	    X509Certificate[] certChain = new X509Certificate[1];
 	    certChain[0] = certificate;
@@ -318,7 +323,7 @@ public class ClientCertificateLoginModule implements LoginModule {
      */
     public boolean logout() throws LoginException {
 	// unset the alias
-        //TODO:V3 Commented, uncomment later SSLUtils.setAppclientSsl(null);
+        sslUtils.setAppclientSsl(null);
     
 	subject.getPrincipals().remove(userPrincipal);
 	succeeded = false;

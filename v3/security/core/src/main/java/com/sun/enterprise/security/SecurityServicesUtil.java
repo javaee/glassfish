@@ -53,11 +53,14 @@ import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.security.auth.callback.CallbackHandler;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.annotations.Scoped;
+import org.glassfish.api.admin.ProcessEnvironment;
+import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
 
 @Service
 @Scoped(Singleton.class)
@@ -74,7 +77,10 @@ public class SecurityServicesUtil {
     public static final SecureRandom secureRandom = new SecureRandom();
 
     @Inject
-    ServerEnvironment env;
+    private ProcessEnvironment processEnv;
+    
+    @Inject
+    private ServerEnvironment env;
 
     @Inject 
     private AuditManager auditManager;
@@ -83,6 +89,9 @@ public class SecurityServicesUtil {
         secureRandom.setSeed(System.currentTimeMillis());
     }
 
+    //the appclient CBH
+    private CallbackHandler callbackHandler;
+    
     /**
      * code moved from J2EEServer.run()
      */
@@ -163,4 +172,27 @@ public class SecurityServicesUtil {
         // return my singleton service
         return habitat.getComponent(SecurityServicesUtil.class);
     }
+
+    public ProcessEnvironment getProcessEnv() {
+        return processEnv;
+    }
+    
+    public boolean isACC() {
+        return processEnv.getProcessType().equals(ProcessType.ACC);
+    }
+    public boolean isServer() {
+        return processEnv.getProcessType().equals(ProcessType.Server);
+    }
+    public boolean isNotServerOrACC() {
+        return processEnv.getProcessType().equals(ProcessType.Other);
+    }
+
+    public CallbackHandler getCallbackHandler() {
+        return callbackHandler;
+    }
+
+    public void setCallbackHandler(CallbackHandler callbackHandler) {
+        this.callbackHandler = callbackHandler;
+    }
+    
 }

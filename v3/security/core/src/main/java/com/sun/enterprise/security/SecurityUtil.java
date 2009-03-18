@@ -54,11 +54,6 @@ import javax.security.auth.callback.CallbackHandler;
   */
 public class SecurityUtil{
 
-    //TODO V3: Temporary till we have AppContainer integration design sorted out
-    public static final int APPCONTAINER_USERNAME_PASSWORD = 1;
-    //public static final int APPCONTAINER_CERTIFICATE = 2;
-    //TODO  V3 -------------------------------------
-    
     private static final LocalStringManagerImpl localStrings =
 	new LocalStringManagerImpl(SecurityUtil.class);
     private static final Logger _logger =

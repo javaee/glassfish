@@ -42,6 +42,7 @@
 
 package com.sun.enterprise.security.jmac.callback;
 
+import com.sun.enterprise.security.SecurityServicesUtil;
 import java.io.IOException;
 
 import javax.security.auth.callback.Callback;
@@ -106,7 +107,7 @@ final class ClientContainerCallbackHandler
                         UsernamePasswordStore.set(loginName, password);
                     }
                     //TODO: V3 CallbackHandler callbackHandler = AppContainer.getCallbackHandler();
-                    CallbackHandler callbackHandler = secSup.getAppContainerCallbackHandler();
+                    CallbackHandler callbackHandler = SecurityServicesUtil.getInstance().getCallbackHandler();
                     if(loginName != null && password != null){
                         // username/password set already
                         for (Callback callback : callbacks) {

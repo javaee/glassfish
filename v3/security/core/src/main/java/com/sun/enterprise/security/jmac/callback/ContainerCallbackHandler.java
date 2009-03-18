@@ -42,6 +42,7 @@
 
 package com.sun.enterprise.security.jmac.callback;
 
+import com.sun.enterprise.security.SecurityServicesUtil;
 import java.io.IOException;
 
 import javax.security.auth.callback.Callback;
@@ -67,10 +68,9 @@ public final class ContainerCallbackHandler
     
     @Inject
     private InvocationManager invManager;
-     
+    
     public ContainerCallbackHandler() {
-        //V3:Commented if (Switch.getSwitch().getContainerType() == Switch.APPCLIENT_CONTAINER)
-        if (isAppclientContainer()) {
+        if (SecurityServicesUtil.getInstance().isACC()) {
             handler = new ClientContainerCallbackHandler();
         } else {
             handler = new ServerContainerCallbackHandler();
@@ -96,9 +96,10 @@ public final class ContainerCallbackHandler
         };
         ((BaseContainerCallbackHandler) handler).setHandlerContext(handlerContext);
     }
+    
     //TODO:V3 code this method correctly later
     private  boolean isAppclientContainer() {
         //return (ComponentInvocationType.APP_CLIENT_INVOCATION == invManager.getCurrentInvocation().getInvocationType());
-        return false;
+        return SecurityServicesUtil.getInstance().isACC();
     }
 }

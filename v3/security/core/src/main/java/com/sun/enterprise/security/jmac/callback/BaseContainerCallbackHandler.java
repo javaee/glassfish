@@ -84,7 +84,7 @@ import org.glassfish.security.common.Group;
 import org.glassfish.security.common.PrincipalImpl;
 import com.sun.enterprise.security.common.AppservAccessController;
 import com.sun.enterprise.security.SecurityContext;
-import com.sun.enterprise.security.SecurityUtil;
+import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.security.ssl.SSLUtils;
 import com.sun.enterprise.security.auth.login.LoginContextDriver;
 import com.sun.enterprise.security.auth.login.DistinguishedPrincipalCredential;
@@ -126,7 +126,10 @@ abstract class BaseContainerCallbackHandler
     // TODO: inject them once this class becomes a component
     protected final SSLUtils sslUtils = Globals.getDefaultHabitat().getComponent(SSLUtils.class);
     protected final SecuritySupport secSup = Globals.getDefaultHabitat().getByContract(SecuritySupport.class);
-
+    
+    protected BaseContainerCallbackHandler() {
+    }
+    
     public void setHandlerContext(HandlerContext handlerContext) {
         this.handlerContext = handlerContext;
     }
@@ -279,14 +282,15 @@ abstract class BaseContainerCallbackHandler
     private void processPasswordValidation(
             PasswordValidationCallback pwdCallback) {
 
-        /*V3:Commented
-        if (Switch.getSwitch().getContainerType() == Switch.APPCLIENT_CONTAINER) {
+
+        //if (Switch.getSwitch().getContainerType() == Switch.APPCLIENT_CONTAINER) {
+        if (SecurityServicesUtil.getInstance().isACC()) {
             if (_logger.isLoggable(Level.FINE)){
                 _logger.log(Level.FINE, "JMAC: In PasswordValidationCallback Processor for appclient - will do nothing");
             }
             pwdCallback.setResult(true);
             return;
-        }*/
+        }
         String username = pwdCallback.getUsername();
         String password = new String(pwdCallback.getPassword());
         if (_logger.isLoggable(Level.FINE)) {
@@ -608,17 +612,17 @@ abstract class BaseContainerCallbackHandler
         if (alias != null) {
             try {
                 PasswordAdapter passwordAdapter = null;
-                /*V3:Commented
-                if (Switch.getSwitch().getContainerType() ==
-                        Switch.APPCLIENT_CONTAINER) {
+                // (Switch.getSwitch().getContainerType() ==
+                  //    Switch.APPCLIENT_CONTAINER) {
+                if (SecurityServicesUtil.getInstance().isACC()) {
                     passwordAdapter = new PasswordAdapter(
                         System.getProperty(CLIENT_SECRET_KEYSTORE),
                         System.getProperty(CLIENT_SECRET_KEYSTORE_PASSWORD,
                             DEFAULT_CLIENT_SECRET_KEYSTORE_PASSWORD).toCharArray());
-                } else {*/
+                } else {
                     passwordAdapter = new PasswordAdapter(
                         IdentityManager.getMasterPassword().toCharArray());
-                /*}*/
+                }
 
                 secretKeyCallback.setKey(
                     passwordAdapter.getPasswordSecretKeyForAlias(alias));

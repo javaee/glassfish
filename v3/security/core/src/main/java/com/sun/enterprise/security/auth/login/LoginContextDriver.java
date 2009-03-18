@@ -35,7 +35,6 @@
  */
 package com.sun.enterprise.security.auth.login;
 import org.glassfish.security.common.Group;
-import com.sun.enterprise.security.auth.login.common.*;
 import java.util.Set;
 import java.util.Iterator;
 import java.util.Enumeration;
@@ -49,6 +48,7 @@ import sun.security.x509.X500Name;
 import com.sun.logging.*;
 import com.sun.enterprise.common.iiop.security.GSSUPName;
 import com.sun.enterprise.common.iiop.security.AnonCredential;
+import com.sun.enterprise.security.SecurityUtil;
 import com.sun.enterprise.security.common.AppservAccessController;
 //import com.sun.enterprise.security.SecurityContext;
 import com.sun.enterprise.security.auth.login.common.PasswordCredential;
@@ -67,9 +67,8 @@ import com.sun.enterprise.security.auth.realm.NoSuchUserException;
 import com.sun.enterprise.security.integration.AppServSecurityContext;
 import com.sun.enterprise.security.common.ClientSecurityContext;
 //import com.sun.enterprise.appclient.AppContainer;
+import com.sun.enterprise.security.common.SecurityConstants;
 import com.sun.enterprise.security.common.Util;
-import org.glassfish.internal.api.Globals;
-import org.jvnet.hk2.component.Habitat;
 
 
 /** 
@@ -91,8 +90,9 @@ public class LoginContextDriver  {
     private static final ServerLoginCallbackHandler
         dummyCallback = new ServerLoginCallbackHandler();
 
-    private static final String CLIENT_JAAS_PASSWORD = "default";
-    private static final String CLIENT_JAAS_CERTIFICATE = "certificate";
+    // moved to SecurityConstants.
+//    private static final String CLIENT_JAAS_PASSWORD = "default";
+//    private static final String CLIENT_JAAS_CERTIFICATE = "certificate";
 
     public static final String CERT_REALMNAME = "certificate";
   
@@ -783,13 +783,13 @@ public class LoginContextDriver  {
         // set security context. Thus, we have 2  credentials, one each for
         // the csiv2 layer and the other for the RI.
         final Subject subject = new Subject();
-        /*V3:Commented : TODO uncomment later for Appcontainer
-        if (type == AppContainer.USERNAME_PASSWORD){
+        
+        if (type == SecurityConstants.USERNAME_PASSWORD ){
             AppservAccessController.doPrivileged(new PrivilegedAction() {
                 public java.lang.Object run() {
                     try{
                         LoginContext lg = 
-                            new LoginContext(CLIENT_JAAS_PASSWORD, 
+                            new LoginContext(SecurityConstants.CLIENT_JAAS_PASSWORD, 
                                              subject, handler);
                         lg.login();
                     }catch(javax.security.auth.login.LoginException e){
@@ -802,12 +802,12 @@ public class LoginContextDriver  {
             });
             postClientAuth(subject, PasswordCredential.class);
             return subject;
-        } else if (type == AppContainer.CERTIFICATE){
+        } else if (type == SecurityConstants.CERTIFICATE){
             AppservAccessController.doPrivileged(new PrivilegedAction() {
                 public java.lang.Object run() {
                     try{
                         LoginContext lg = 
-                            new LoginContext(CLIENT_JAAS_CERTIFICATE,
+                            new LoginContext(SecurityConstants.CLIENT_JAAS_CERTIFICATE,
                                              subject, handler);
                         lg.login();
                     }catch(javax.security.auth.login.LoginException e){
@@ -820,15 +820,15 @@ public class LoginContextDriver  {
             });
             postClientAuth(subject, X509CertificateCredential.class);
             return subject;
-        } else if (type == AppContainer.ALL){
+        } else if (type == SecurityConstants.ALL){
             AppservAccessController.doPrivileged(new PrivilegedAction() {
                 public java.lang.Object run() {
                     try{
                         LoginContext lgup =
-                            new LoginContext(CLIENT_JAAS_PASSWORD,
+                            new LoginContext(SecurityConstants.CLIENT_JAAS_PASSWORD,
                                              subject, handler);
                         LoginContext lgc = 
-                            new LoginContext(CLIENT_JAAS_CERTIFICATE,
+                            new LoginContext(SecurityConstants.CLIENT_JAAS_CERTIFICATE,
                                                  subject, handler);
                         lgup.login();
                         postClientAuth(subject, PasswordCredential.class);
@@ -845,12 +845,12 @@ public class LoginContextDriver  {
                 }
             });
             return subject;
-        } else{ */
+        } else{ 
             AppservAccessController.doPrivileged(new PrivilegedAction() {
                 public java.lang.Object run() {
                     try{
                         LoginContext lg =
-                            new LoginContext(CLIENT_JAAS_PASSWORD, 
+                            new LoginContext(SecurityConstants.CLIENT_JAAS_PASSWORD, 
                                              subject, handler);
                         lg.login();
                         postClientAuth(subject, PasswordCredential.class);
@@ -862,7 +862,7 @@ public class LoginContextDriver  {
                 }
             });
             return subject;
-        /*}*/
+        }
     }
 
     /**
@@ -987,8 +987,7 @@ public class LoginContextDriver  {
      * @param Credentials the credentials that the server associated with it
      */
     private static void setClientSecurityContext(String username, 
-                                                 Subject subject) {
-                                                 
+                                                 Subject subject) {                                       
         ClientSecurityContext securityContext =
             new ClientSecurityContext(username, subject);
         ClientSecurityContext.setCurrent(securityContext);

@@ -33,54 +33,23 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.security.common;
 
-import javax.security.auth.callback.CallbackHandler;
-import org.glassfish.api.admin.ProcessEnvironment;
-import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
-import org.glassfish.internal.api.Globals;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
+package com.sun.enterprise.security.common;
 
 /**
  *
- * @author venu
- * TODO: need to change this class, it needs to be similar to SecurityServicesUtil
+ * @author Kumar
  */
-@Service
-public class Util {
-    private static Habitat habitat = Globals.getDefaultHabitat();
-    
-    @Inject 
-    private ProcessEnvironment penv;
-   
-    private CallbackHandler callbackHandler;
-    
-    public static Habitat getDefaultHabitat() {
-        return habitat;
-    }
-    
-    public static Util getInstance() {
-        // return my singleton service
-        return habitat.getComponent(Util.class);
-    }
-    
-    public boolean isACC() {
-        return penv.getProcessType().equals(ProcessType.ACC);
-    }
-    public boolean isServer() {
-        return penv.getProcessType().equals(ProcessType.Server);
-    }
-    public boolean isNotServerORACC() {
-        return penv.getProcessType().equals(ProcessType.Other);
-    }
+public interface SecurityConstants {
 
-    public CallbackHandler getCallbackHandler() {
-        return callbackHandler;
-    }
+    //copied from appclient.security to avoid dependency
+    public static final int USERNAME_PASSWORD = 1;
+    public static final int CERTIFICATE = 2;
+    // harry - added for LoginContextDriver access
+    public static final int ALL = 3;
+    
+    public static final String CLIENT_JAAS_PASSWORD = "default";
+    public static final String CLIENT_JAAS_CERTIFICATE = "certificate";
 
-    public void setCallbackHandler(CallbackHandler callbackHandler) {
-        this.callbackHandler = callbackHandler;
-    }
+    
 }
