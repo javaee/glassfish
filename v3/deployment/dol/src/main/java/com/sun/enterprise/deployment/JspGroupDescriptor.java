@@ -175,7 +175,7 @@ public class JspGroupDescriptor extends Descriptor {
     /**
      * enable/disable scripting
      */
-    public void setScriptingEnabled(boolean value) {
+    public void setScriptingInvalid(boolean value) {
         scriptingInvalid = value;
     }
 
