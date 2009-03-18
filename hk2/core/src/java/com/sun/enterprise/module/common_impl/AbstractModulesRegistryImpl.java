@@ -45,6 +45,7 @@ import com.sun.enterprise.module.Repository;
 import com.sun.enterprise.module.ResolveError;
 import com.sun.enterprise.module.bootstrap.Populator;
 import com.sun.hk2.component.InhabitantsParser;
+import com.sun.hk2.component.ExistingSingletonInhabitant;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigParser;
@@ -106,7 +107,10 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
      *
      */
     public Habitat newHabitat() throws ComponentException {
-        return new Habitat();
+        Habitat habitat = new Habitat();
+        habitat.addIndex(new ExistingSingletonInhabitant<Logger>(Logger.getAnonymousLogger()),
+                Logger.class.getName(), null);
+        return habitat;
     }
 
     /**
@@ -139,6 +143,10 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
             for( Populator p : habitat.getAllByContract(Populator.class) )
                 p.run(configParser);
 
+            // default modules registry is the one that created the habitat
+            habitat.addIndex(new ExistingSingletonInhabitant<ModulesRegistry>(this),
+                    ModulesRegistry.class.getName(), null);
+            
             return habitat;
         } catch (IOException e) {
             throw new ComponentException("Failed to create a habitat",e);
