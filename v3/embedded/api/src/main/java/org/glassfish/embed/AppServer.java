@@ -50,7 +50,7 @@ import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.v3.admin.adapter.AdminConsoleAdapter;
 import com.sun.enterprise.v3.server.APIClassLoaderServiceImpl;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
-import com.sun.enterprise.v3.server.DomainXml;
+import com.sun.enterprise.v3.server.GFDomainXml;
 import com.sun.enterprise.v3.server.DomainXmlPersistence;
 import com.sun.enterprise.v3.services.impl.LogManagerService;
 import com.sun.enterprise.web.WebDeployer;
@@ -256,7 +256,7 @@ public class AppServer {
 
         parser.replace(APIClassLoaderServiceImpl.class, EmbeddedAPIClassLoaderServiceImpl.class);
         // we don't really parse domain.xml from disk
-        parser.replace(DomainXml.class, EmbeddedDomainXml.class);
+        parser.replace(GFDomainXml.class, EmbeddedDomainXml.class);
 
         // ... and we don't persist it either. 
         parser.replace(DomainXmlPersistence.class, EmbeddedDomainXml.class);

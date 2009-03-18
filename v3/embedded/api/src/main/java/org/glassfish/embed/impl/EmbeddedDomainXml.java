@@ -45,7 +45,7 @@ import org.glassfish.config.support.ConfigurationPersistence;
 import org.glassfish.embed.AppServer;
 import org.jvnet.hk2.config.DomDocument;
 import org.jvnet.hk2.annotations.Inject;
-import com.sun.enterprise.v3.server.DomainXml;
+import com.sun.enterprise.v3.server.GFDomainXml;
 import org.glassfish.server.ServerEnvironmentImpl;
 
 
@@ -54,7 +54,7 @@ import org.glassfish.server.ServerEnvironmentImpl;
  * 
  * @author Kohsuke Kawaguchi
  */
-public class EmbeddedDomainXml extends DomainXml implements ConfigurationPersistence {
+public class EmbeddedDomainXml extends GFDomainXml implements ConfigurationPersistence {
     @Inject
     protected AppServer server;
  

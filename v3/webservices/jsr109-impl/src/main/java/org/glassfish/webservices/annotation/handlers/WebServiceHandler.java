@@ -45,26 +45,17 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.annotation.Annotation;
 import java.text.MessageFormat;
 
-import javax.enterprise.deploy.shared.ModuleType;
-
-import org.glassfish.apf.AnnotationHandler;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.AnnotatedElementHandler;
 import org.glassfish.apf.AnnotationInfo;
-import org.glassfish.apf.ProcessingContext;
 import org.glassfish.apf.ResultType;
 import org.glassfish.apf.HandlerProcessingResult;
-import org.glassfish.apf.AnnotationProcessorException;
 
-import org.glassfish.apf.impl.AnnotationUtils;
 import org.glassfish.apf.impl.HandlerProcessingResultImpl;
 
-import org.glassfish.apf.context.AnnotationContext;
-import org.glassfish.internal.api.Globals;
 import com.sun.enterprise.deployment.annotation.context.WebBundleContext;
 import com.sun.enterprise.deployment.annotation.context.WebComponentContext;
 import com.sun.enterprise.deployment.annotation.context.EjbContext;
-import com.sun.enterprise.deployment.annotation.context.EjbBundleContext;
 
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.util.XModuleType;
@@ -85,7 +76,6 @@ import org.jvnet.hk2.annotations.Service;
 @Service
 public class WebServiceHandler extends AbstractHandler {
 
-    private AnnotationTypesProvider provider = Globals.getDefaultHabitat().getComponent(AnnotationTypesProvider.class, "EJB");
     protected Logger logger = LogDomains.getLogger(this.getClass(),LogDomains.WEBSERVICES_LOGGER);
 
     private ResourceBundle rb = logger.getResourceBundle()   ;
@@ -177,7 +167,7 @@ public class WebServiceHandler extends AbstractHandler {
             }*/
 
             // let's see the type of web service we are dealing with...
-            if ((provider!= null) && provider.getType("javax.ejb.Stateless")!=null &&(annCtx
+            if ((ejbProvider!= null) && ejbProvider.getType("javax.ejb.Stateless")!=null &&(annCtx
                     instanceof EjbContext)) {
                 // this is an ejb !
                 EjbContext ctx = (EjbContext) annCtx;

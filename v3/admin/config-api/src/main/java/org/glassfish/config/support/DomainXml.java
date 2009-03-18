@@ -34,7 +34,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.v3.server;
+package org.glassfish.config.support;
 
 import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.module.bootstrap.Populator;
@@ -42,25 +42,22 @@ import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
-import org.glassfish.config.support.GlassFishDocument;
 import org.glassfish.api.admin.config.ConfigurationUpgrade;
-import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigParser;
+import org.jvnet.hk2.config.DomDocument;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamConstants;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.net.URL;
 
 
@@ -70,8 +67,7 @@ import java.net.URL;
  * @author Jerome Dochez
  * @author Kohsuke Kawaguchi
  */
-@Service
-public class DomainXml implements Populator {
+public abstract class DomainXml implements Populator {
 
     @Inject
     StartupContext context;
@@ -80,7 +76,7 @@ public class DomainXml implements Populator {
     Logger logger;
 
     @Inject
-    Habitat habitat;
+    protected Habitat habitat;
 
     @Inject
     ModulesRegistry registry;
@@ -133,18 +129,7 @@ public class DomainXml implements Populator {
     protected void parseDomainXml(ConfigParser parser, final URL domainXml, final String serverName) {
         try {
             DomainXmlReader xsr = new DomainXmlReader(domainXml, serverName);
-            parser.parse(xsr, new GlassFishDocument(habitat,
-                    Executors.newCachedThreadPool(new ThreadFactory() {
-
-                        public Thread newThread(Runnable r) {
-                            Thread t = Executors.defaultThreadFactory().newThread(r);
-                            t.setDaemon(true);
-                            t.setContextClassLoader(habitat.getComponent(ClassLoaderHierarchy.class).getCommonClassLoader());
-                            return t;
-                        }
-
-                    }
-                )));
+            parser.parse(xsr, getDomDocument());
             xsr.close();
             if(!xsr.foundConfig)
                 throw new RuntimeException("No <config> seen for name="+xsr.configName);
@@ -153,6 +138,8 @@ public class DomainXml implements Populator {
             throw new RuntimeException("Failed to parse "+domainXml,e);
         }
     }
+
+    protected abstract DomDocument getDomDocument();
 
     /**
      * {@link XMLStreamReader} that skips irrelvant &lt;config> elements that we shouldn't see.
@@ -229,10 +216,10 @@ public class DomainXml implements Populator {
                 XMLStreamReader xsr = xif.createXMLStreamReader(domainXml.toExternalForm(),stream);
                 while(configName==null) {
                     switch(xsr.next()) {
-                    case START_ELEMENT:
+                    case XMLStreamConstants.START_ELEMENT:
                         checkConfigRef(xsr);
                         break;
-                    case END_DOCUMENT:
+                    case XMLStreamConstants.END_DOCUMENT:
                         break;
                     }
                 }

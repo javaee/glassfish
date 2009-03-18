@@ -4,24 +4,16 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.*;
-import org.jvnet.hk2.config.DomDocument;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.TransactionFailure;
 import org.glassfish.api.admin.config.ConfigParser;
 import org.glassfish.api.admin.config.Container;
-import org.glassfish.config.support.GlassFishDocument;
 import org.glassfish.config.support.GlassFishConfigBean;
 
 import java.net.URL;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.beans.PropertyVetoException;
 
-import com.sun.hk2.component.InhabitantsScanner;
-import com.sun.hk2.component.InhabitantsParser;
-import com.sun.hk2.component.Holder;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.module.bootstrap.Populator;
 import com.sun.enterprise.config.serverbeans.Config;

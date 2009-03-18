@@ -63,7 +63,7 @@ public abstract class AbstractHandler implements AnnotationHandler {
     protected Logger logger = AnnotationUtils.getLogger();
 
     @Inject(name="EJB", optional=true)
-    AnnotationTypesProvider ejbProvider;
+    protected AnnotationTypesProvider ejbProvider;
 
     /**
      * @return an array of annotation types this annotation handler would

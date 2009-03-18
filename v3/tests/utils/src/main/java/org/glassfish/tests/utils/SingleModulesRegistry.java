@@ -9,6 +9,9 @@ import java.util.Collection;
 import java.util.ArrayList;
 import java.io.IOException;
 
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.ComponentException;
+
 /**
  * Created by IntelliJ IDEA.
  * User: dochez
@@ -76,4 +79,18 @@ public class SingleModulesRegistry extends ModulesRegistryImpl {
         for (ModuleMetadata.InhabitantsDescriptor d : proxyMod[0].getMetadata().getHabitats(name))
             inhabitantsParser.parse(d.createScanner(), holder);
     }
+
+    @Override
+    public Habitat createHabitat(String name, InhabitantsParser parser) throws ComponentException {
+        try {
+            Habitat habitat = parser.habitat;
+
+            for (final Module module : getModules())
+                parseInhabitants(module, name,parser);
+
+            return habitat;
+        } catch (IOException e) {
+            throw new ComponentException("Failed to create a habitat",e);
+        }
+    }    
 }
