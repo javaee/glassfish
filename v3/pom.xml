@@ -260,6 +260,7 @@
               	<module>web</module>
                 <module>ejb</module>
               	<module>connectors</module>
+		<module>jms</module>
               	<module>jdbc</module>
               	<module>persistence</module>
               	<module>extras</module>
