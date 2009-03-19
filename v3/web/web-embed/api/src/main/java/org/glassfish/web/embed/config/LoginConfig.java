@@ -47,6 +47,8 @@ public class LoginConfig {
 
     private AuthMethod authMethod;
     private FormLoginConfig flc;
+    String realmName;
+    RealmType realmType;
 
     public LoginConfig() {
         
@@ -60,14 +62,21 @@ public class LoginConfig {
     public AuthMethod getAuthMethod() {
         return this.authMethod;        
     }
-
-    // TODO: Need to define a way to create realm. Using Strings for now.    
-    public void setRealmName(String realm) {
-
+    
+    public void setRealmName(String realmName) {
+        this.realmName = realmName;
     }
 
     public String getRealmName() {
-        return null;
+        return this.realmName;
+    }
+
+    public void setRealmType(RealmType realmType) {
+        this.realmType = realmType;
+    }
+
+    public RealmType getRealmType() {
+        return this.realmType;
     }
 
     public void setFormLoginConfig(FormLoginConfig flc) {
