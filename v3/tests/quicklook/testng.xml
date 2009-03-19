@@ -121,17 +121,23 @@
        <class name="test.security.basicauth.BasicAuthTestNG" />
     </classes>
   </test>
+
+<!--
+Disable the test for M1 promotion - Jane
+
   <test name="ejb_singleton_ear">
     <classes>
         <class name="test.ejb.singleton.SingletonTestNG" />
     </classes>
   </test>
+-->
   <test name="ejb_stateful_cmt_ni_war">
     <classes>
         <class name="test.ejb.slsbnicmt.SlsbnicmtTestNG" />
         <class name="test.ejb.sfulnoi.SfulnoiTestNG" />
     </classes>
   </test>
+
   <test name="asadmin_tests">
     <classes>
       <class name="test.admin.JvmOptionTests"/>
