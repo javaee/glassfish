@@ -4,11 +4,11 @@ import com.sun.ejte.ccl.reporter.*;
 
 /*
  * Unit test for ServletContext#addServlet and ServletContext#addFilter
- * (Servlet 3.0 feature).
+ * using fully qualified servlet and filter class names (Servlet 3.0 feature).
  */
 public class WebTest {
 
-    private static final String TEST_NAME = "servlet-context-add-servlet-and-filter";
+    private static final String TEST_NAME = "servlet-context-add-servlet-and-filter-by-class-name";
 
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
