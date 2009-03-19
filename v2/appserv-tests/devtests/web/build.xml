@@ -46,7 +46,9 @@
         <ant dir="jspAttributeNameWithColonOrDot" target="all"/>
         <ant dir="jspcConfigure" target="all"/>
         <ant dir="jspScriptletDeclNestedInCustomAction" target="all"/>
+        <!-- XXX temporary commented out due to issue 7389
         <ant dir="jspScriptletSyntaxErrorCorrectErrorMessage" target="all"/>
+        -->
         <ant dir="jspCustomTagAttributeOfArrayType" target="all"/>
         <!-- EAR files not supported in GlassFish v3 Prelude
         <ant dir="jspCustomTaglibJarInsideEar" target="all"/>
@@ -139,8 +141,10 @@
         <ant dir="errorPageExceptionTypeWrapper" target="all"/>
         <ant dir="httpServletGetAllDeclaredMethods" target="all"/>
         <ant dir="getServerNameAndPort" target="all"/>
+        <!-- XXX temporary commented out due to issue 7390 
         <ant dir="sessionIdUrlRewrite" target="all"/>
         <ant dir="sessionIdUrlRewriteSessionTrackingMode" target="all"/>
+        -->
         <ant dir="sessionIdPresentInBothRewrittenUrlAndCookieByDefault" target="all"/>
         <ant dir="sessionIdPresentOnlyInCookieIfUrlRewritingDisabled" target="all"/>
         <ant dir="dirListing" target="all"/>
@@ -206,7 +210,9 @@
         <ant dir="servletEmptyLoadOnStartup" target="all"/>
         <ant dir="sessionExpired" target="all"/>
         <ant dir="servletSSLRequestAttributes" target="all"/>
+        <!-- XXX temporary commented out due to issue 7390
         <ant dir="servletRequestURIMultipleSemicolons" target="all"/>
+        -->
         <ant dir="sessionSetAttributeJavaxNamingContext" target="all"/>
         <ant dir="sessionCookieConfig" target="all"/>
         <ant dir="sessionCookieConfigDeclarative" target="all"/>
@@ -223,8 +229,10 @@
         <ant dir="asyncListenerOnComplete" target="all"/>
         <ant dir="asyncListenerOnTimeout" target="all"/>
         <ant dir="asyncSupportedTrue" target="all"/>
+        <!-- XXX temporary commented out due to issue 7387 
         <ant dir="asyncSupportedFalse" target="all"/>
         <ant dir="asyncContextHasOriginalRequestAndResponse" target="all"/>
+        -->
         <ant dir="servletRequestResponseWrapperIsWrapperFor" target="all"/>
         <ant dir="servletRequestDispatcherType" target="all"/>
     </target>
@@ -253,7 +261,9 @@
         <ant dir="relativeRedirectAllowed" target="all"/>
         <ant dir="invokerServletDisabled" target="all"/>
         <ant dir="jmxUndeployEvent" target="all"/>
+        <!-- XXX temporary commented out due to issue 7390
         <ant dir="jrouteIdInCookieOrURL" target="all"/>
+        -->
         <ant dir="formHintField" target="all"/>
         <ant dir="formHintFieldPostWithQueryParam" target="all"/>
         <ant dir="formHintFieldPostWithQueryParamPrecedence" target="all"/>
@@ -271,7 +281,9 @@
         <ant dir="serverRedirectWithQueryString" target="all"/>
         <ant dir="sessionIdCustomGenerator" target="all"/>
         <ant dir="sessionJvmRoute" target="all"/>
+        <!-- XXX temporary commented out due to issue 7390
         <ant dir="sessionPropertyEnableCookiesInstanceLevel" target="all"/>
+        -->
         <ant dir="sessionSerializeOnShutdownOnly" target="all"/>
         <ant dir="singleSignOnCookieSecure" target="all"/>
         <ant dir="singleSignOnHttpServiceDynamicReconfig" target="all"/>
@@ -315,7 +327,9 @@
         <ant dir="sessionMemoryPersist" target="all"/>
         <ant dir="sessionMemoryPersistPrimitiveClass" target="all"/>
         <ant dir="sessionPreserveAcrossRedeploy" target="all"/>
+        <!-- XXX temporary commented out due to issue 7391
         <ant dir="pipelineQueueFull" target="all"/>
+        -->
         <ant dir="ssiEscapeCharacter" target="all"/>
         <ant dir="ssiHtmlEntity" target="all"/>
         <ant dir="valveTomcatStyle" target="all"/>
