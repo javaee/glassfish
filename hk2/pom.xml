@@ -224,6 +224,7 @@
         <module>test-harness</module>
         <module>dependency-verifier</module>
         <module>osgiversion-maven-plugin</module>
+        <module>osgi-main</module>
     </modules>
 
     <dependencies>
