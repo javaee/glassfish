@@ -207,9 +207,11 @@
             <artifactId>appclient-server-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-       
-        
-
+       <dependency>
+            <groupId>org.glassfish.deployment</groupId>
+            <artifactId>deployment-javaee-full</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>
 

@@ -83,6 +83,13 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
     }
 
     public boolean handles(ReadableArchive archive) {
+        if (DeploymentUtils.isEAR(archive)) {
+            // I should not handle ear, so ear support must not be available
+            // in this distribution
+            throw new RuntimeException(
+                "no container associated with application of type : ear");
+        }
+
         return DeploymentUtils.isWebArchive(archive);
     }
 

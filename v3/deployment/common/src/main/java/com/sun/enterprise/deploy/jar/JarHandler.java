@@ -41,12 +41,14 @@ import org.jvnet.hk2.annotations.Service;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.deployment.common.DeploymentUtils;
 import java.net.MalformedURLException;
 
 import com.sun.enterprise.loader.EJBClassLoader;
 import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
 
 import java.net.URL;
+import java.lang.RuntimeException;
 
 /**
  * ArchiveHandler implementation for jar files
@@ -60,6 +62,12 @@ public class JarHandler extends AbstractArchiveHandler implements ArchiveHandler
     }
 
     public boolean handles(ReadableArchive archive) {
+        if (DeploymentUtils.isEAR(archive)) {
+            // I should not handle ear, so ear support must not be available
+            // in this distribution
+            throw new RuntimeException(
+                "no container associated with application of type : ear");
+        }
         // but I handle everything that looks like a jar...   
         return true;
     }

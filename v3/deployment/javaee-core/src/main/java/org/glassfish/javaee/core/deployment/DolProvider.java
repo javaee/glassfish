@@ -89,7 +89,7 @@ public class DolProvider implements ApplicationMetaDataProvider<Application> {
         handleDeploymentPlan(deploymentPlan, archivist, sourceArchive);
 
         long start = System.currentTimeMillis();
-        EarHandler.ApplicationHolder holder = dc.getModuleMetaData(EarHandler.ApplicationHolder.class);
+        ApplicationHolder holder = dc.getModuleMetaData(ApplicationHolder.class);
         Application application=null;
         if (holder!=null) {
             // this is the ear case

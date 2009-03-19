@@ -1,4 +1,4 @@
-package org.glassfish.javaee.core.deployment;
+package org.glassfish.javaee.full.deployment;
 
 import org.jvnet.hk2.annotations.Service;
 import org.glassfish.api.container.Sniffer;
@@ -20,7 +20,7 @@ public class EarSniffer extends GenericSniffer {
     }
 
     public String[] getContainersNames() {
-        return new String[] { "org.glassfish.javaee.core.deployment.EarContainer"};
+        return new String[] { "org.glassfish.javaee.full.deployment.EarContainer"};
     }                                                                              
     /**
      * Returns true if the passed file or directory is recognized by this

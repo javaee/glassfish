@@ -34,7 +34,7 @@
  * holder.
  */
 
-package org.glassfish.javaee.core.deployment;
+package org.glassfish.javaee.full.deployment;
 
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
@@ -47,6 +47,7 @@ import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.deployment.common.DeploymentContextImpl;
+import org.glassfish.javaee.core.deployment.ApplicationHolder;
 import org.glassfish.loader.util.ASClassLoaderUtil;
 import org.glassfish.internal.deployment.Deployment;
 import org.jvnet.hk2.annotations.Service;
@@ -226,14 +227,6 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
         // I am hiding everything but the metadata.
         return entryName.startsWith("META-INF");
 
-    }
-
-    public final class ApplicationHolder {
-        final Application app;
-
-        private ApplicationHolder(Application app) {
-            this.app = app;
-        }
     }
 
     private ApplicationHolder getApplicationHolder(ReadableArchive source, 
