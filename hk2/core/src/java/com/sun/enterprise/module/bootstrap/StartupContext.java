@@ -46,6 +46,8 @@
 package com.sun.enterprise.module.bootstrap;
 
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.Singleton;
 
 import java.io.File;
 import java.util.HashMap;
@@ -58,6 +60,7 @@ import java.util.Properties;
  */
 
 @Service
+@Scoped(Singleton.class)
 public class StartupContext {
 /*
  * January 27, 2009 -- bnevins -- important note.
@@ -71,6 +74,12 @@ public class StartupContext {
     final Properties args;
     final long timeZero;
     public final static String TIME_ZERO_NAME = "__time_zero";  //NO I18N
+
+    public StartupContext() {
+        this.root = new File(System.getProperty("user.dir"));
+        this.timeZero = System.currentTimeMillis();
+        args = new Properties();
+    }
 
     /** Creates a new instance of StartupContext */
     public StartupContext(File root, String[] args) {
