@@ -96,20 +96,20 @@ public interface HttpResponse
 
 
     /**
-     * Return an array of all the header names set for this response, or
-     * a zero-length array if no headers have been set.
+     * @return an Iterable over all the header names of this response,
+     * or an empty Iterable if no headers have been set on this response
      */
-    public String[] getHeaderNames();
+    public Iterable<String> getHeaderNames();
 
 
     /**
-     * Return an array of all the header values associated with the
-     * specified header name, or an zero-length array if there are no such
-     * header values.
+     * @param name the name of the response header whose values to return
      *
-     * @param name Header name to look up
+     * @return an Iterable over the values of the response header with
+     * the given name, or an empty Iterable if no header with the given name
+     * has been set on this response
      */
-    public String[] getHeaderValues(String name);
+    public Iterable<String> getHeaders(String name);
 
 
     /**

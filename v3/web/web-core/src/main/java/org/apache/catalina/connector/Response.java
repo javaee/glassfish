@@ -85,9 +85,7 @@ import org.apache.catalina.Session;
 import org.apache.catalina.HttpResponse;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.core.StandardContext;
-import org.apache.catalina.util.CharsetMapper;
-import org.apache.catalina.util.RequestUtil;
-import org.apache.catalina.util.StringManager;
+import org.apache.catalina.util.*;
 import org.apache.catalina.security.SecurityUtil;
 import com.sun.grizzly.util.buf.CharChunk;
 import com.sun.grizzly.util.buf.UEncoder;
@@ -992,39 +990,25 @@ public class Response
 
 
     /**
-     * Return an array of all the header names set for this response, or
-     * a zero-length array if no headers have been set.
+     * @return an Iterable over all the header names of this response,
+     * or an empty Iterable if no headers have been set on this response
      */
-    public String[] getHeaderNames() {
-
-        MimeHeaders headers = coyoteResponse.getMimeHeaders();
-        int n = headers.size();
-        String[] result = new String[n];
-        for (int i = 0; i < n; i++) {
-            result[i] = headers.getName(i).toString();
-        }
-        return result;
-
+    public Iterable<String> getHeaderNames() {
+        return new IterableAdapter(
+            coyoteResponse.getMimeHeaders().names());
     }
 
 
     /**
-     * Return an array of all the header values associated with the
-     * specified header name, or an zero-length array if there are no such
-     * header values.
+     * @param name the name of the response header whose values to return
      *
-     * @param name Header name to look up
+     * @return an Iterable over the values of the response header with
+     * the given name, or an empty Iterable if no header with the given name
+     * has been set on this response
      */
-    public String[] getHeaderValues(String name) {
-
-        Enumeration<String> e = coyoteResponse.getMimeHeaders().values(name);
-        Vector result = new Vector();
-        while (e.hasMoreElements()) {
-            result.addElement(e.nextElement());
-        }
-        String[] resultArray = new String[result.size()];
-        result.copyInto(resultArray);
-        return resultArray;
+    public Iterable<String> getHeaders(String name) {
+        return new IterableAdapter(
+            coyoteResponse.getMimeHeaders().values(name));
     }
 
 
@@ -1545,7 +1529,6 @@ public class Response
 
         coyoteResponse.setStatus(status);
         coyoteResponse.setMessage(message);
-
     }
 
 

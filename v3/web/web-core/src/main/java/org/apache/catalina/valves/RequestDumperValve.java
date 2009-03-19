@@ -233,15 +233,14 @@ public class RequestDumperValve
                 rcookies[i].getValue() + "; domain=" +
                 rcookies[i].getDomain() + "; path=" + rcookies[i].getPath());
         }
-        String[] rhnames = hresponse.getHeaderNames();
-        for (int i = 0; i < rhnames.length; i++) {
-            String rhvalues[] = hresponse.getHeaderValues(rhnames[i]);
-            for (int j = 0; j < rhvalues.length; j++)
-                log("            header=" + rhnames[i] + "=" + rhvalues[j]);
+        for (String rhname : hres.getHeaderNames()) {
+            for (String rhvalue : hres.getHeaders(rhname)) {
+                log("            header=" + rhname + "=" + rhvalue);
+            }
         }
         log("           message=" + hresponse.getMessage());
         log("        remoteUser=" + hreq.getRemoteUser());
-        log("            status=" + hresponse.getStatus());
+        log("            status=" + hres.getStatus());
         log("===============================================================");
 
     }

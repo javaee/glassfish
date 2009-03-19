@@ -754,6 +754,33 @@ public class ResponseFacade
     // END SJSAS 6374990
 
 
+    public String getHeader(String name) {
+        if (response == null) {
+            throw new IllegalStateException(
+                            sm.getString("responseFacade.nullResponse"));
+        }
+        return response.getHeader(name);
+    }
+
+
+    public Iterable<String> getHeaders(String name) {
+        if (response == null) {
+            throw new IllegalStateException(
+                            sm.getString("responseFacade.nullResponse"));
+        }
+        return response.getHeaders(name);
+    }
+    
+
+    public Iterable<String> getHeaderNames() {
+        if (response == null) {
+            throw new IllegalStateException(
+                            sm.getString("responseFacade.nullResponse"));
+        }
+        return response.getHeaderNames();
+    }
+
+
     //START S1AS 4703023
     /**
      * Return the original <code>CoyoteRequest</code> object.
@@ -772,4 +799,5 @@ public class ResponseFacade
         return response;
     }
     //START S1AS 4703023
+
 }

@@ -140,8 +140,8 @@ public class DummyResponse
 
     public Cookie[] getCookies() { return null; }
     public String getHeader(String name) { return null; }
-    public String[] getHeaderNames() { return null; }
-    public String[] getHeaderValues(String name) { return null; }
+    public Iterable<String> getHeaderNames() { return null; }
+    public Iterable<String> getHeaders(String name) { return null; }
     public String getMessage() { return null; }
     public int getStatus() { return -1; }
     public void reset(int status, String message) {}
@@ -165,6 +165,5 @@ public class DummyResponse
     public void setStatus(int status, String message) {}
     public void setDetailMessage(String msg) {}
     public String getDetailMessage() { return null; }
-
 
 }

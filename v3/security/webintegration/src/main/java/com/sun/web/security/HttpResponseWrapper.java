@@ -73,12 +73,12 @@ class HttpResponseWrapper extends HttpServletResponseWrapper
         return httpResponse.getHeader(name);
     }
     
-    public String[] getHeaderNames() {
+    public Iterable<String> getHeaderNames() {
         return httpResponse.getHeaderNames();
     }
     
-    public String[] getHeaderValues(String name) {
-        return httpResponse.getHeaderValues(name);
+    public Iterable<String> getHeaders(String name) {
+        return httpResponse.getHeaders(name);
     }
     
     public String getMessage() {
