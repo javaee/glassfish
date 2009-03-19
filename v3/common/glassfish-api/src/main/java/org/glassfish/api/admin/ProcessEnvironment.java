@@ -1,13 +1,26 @@
 package org.glassfish.api.admin;
 
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.Singleton;
+
 /**
  * Process environment allow access to information related to the execution or process.
  * This is a bit tricky to rely of @Contract/@Service service lookup for this API since
  * different implementations (server, clients, etc..) can be present of the classpath.
  *
- * @Author Jerome Dochez
+ * @author Jerome Dochez
  */
+@Service
+@Scoped(Singleton.class)
 public class ProcessEnvironment {
+
+    /**
+     * Default initialization is unkown process environment
+     */
+    public ProcessEnvironment() {
+        type = ProcessType.Other;
+    }
 
     /**
      * Enumeration of the supported process types
