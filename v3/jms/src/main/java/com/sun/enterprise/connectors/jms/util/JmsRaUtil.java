@@ -113,7 +113,7 @@ public class JmsRaUtil {
             if (js != null) {
             this.js = js;
             } else {
-                  js = (JmsService) Globals.get(JmsService.class);
+                  this.js = (JmsService) Globals.get(JmsService.class);
                 //sc = ApplicationServer.getServerContext();
                 //ctx = sc.getConfigContext();
                 //this.js = ServerBeansFactory.getJmsServiceBean(ctx);
