@@ -171,11 +171,13 @@ public class ApplicationLifecycle implements Deployment {
         return habitat.getComponent(ArchiveHandler.class, "DEFAULT");
     }
 
-    public ApplicationInfo deploy(final ExtendedDeploymentContext context, final ActionReport report) {
-        return deploy(null, context, report);
+    public ApplicationInfo deploy(final ExtendedDeploymentContext context) {
+        return deploy(null, context);
     }
 
-    public ApplicationInfo deploy(Collection<Sniffer> sniffers, final ExtendedDeploymentContext context, final ActionReport report) {
+    public ApplicationInfo deploy(Collection<Sniffer> sniffers, final ExtendedDeploymentContext context) {
+
+        final ActionReport report = context.getActionReport();
 
         events.send(new Event<DeploymentContext>(Deployment.DEPLOYMENT_START, context));
         
@@ -185,7 +187,7 @@ public class ApplicationLifecycle implements Deployment {
                     module.stop(context, logger);
                 }
                 for (EngineRef module : get("loaded", EngineRef.class)) {
-                    module.unload(context, report);
+                    module.unload(context);
                 }
                 for (EngineRef module : get("prepared", EngineRef.class)) {
                     module.clean(context, logger);
@@ -217,7 +219,7 @@ public class ApplicationLifecycle implements Deployment {
                 // containers that are started are not stopped even if the deployment fail, the main reason
                 // is that some container do not support to be restarted.
                 LinkedList<EngineInfo> sortedEngineInfos =
-                    setupContainerInfos(handler, sniffers, context, report);
+                    setupContainerInfos(handler, sniffers, context);
                 if (sortedEngineInfos ==null || sortedEngineInfos.isEmpty()) {
                     report.failure(logger, localStrings.getLocalString("unknowncontainertype","There is no installed container capable of handling this application {0}",context.getSource()));                    
                     tracker.actOn(logger);
@@ -234,7 +236,7 @@ public class ApplicationLifecycle implements Deployment {
                     // we need to create the application info
                     ModuleInfo moduleInfo = null;
                     try {
-                        moduleInfo = prepareModule(sortedEngineInfos, appName, context, report, tracker);
+                        moduleInfo = prepareModule(sortedEngineInfos, appName, context, tracker);
 
                     } catch(Exception prepareException) {
                         report.failure(logger, "Exception while preparing the app");
@@ -271,8 +273,8 @@ public class ApplicationLifecycle implements Deployment {
                 if (commandParams.enabled) {
                     appInfo.setLibraries(commandParams.libraries());
                     try {
-                        appInfo.load(context, report, tracker);
-                        appInfo.start(context, report, tracker);
+                        appInfo.load(context, tracker);
+                        appInfo.start(context, tracker);
                     } catch(Exception loadException) {
                         report.failure(logger, "Exception while loading the app", loadException);
                         tracker.actOn(logger);
@@ -334,17 +336,18 @@ public class ApplicationLifecycle implements Deployment {
         return isSuccess;
     }
 
-    public LinkedList<EngineInfo> setupContainerInfos(DeploymentContext context, ActionReport report)
+    public LinkedList<EngineInfo> setupContainerInfos(DeploymentContext context)
         throws Exception {
 
-        return setupContainerInfos(null, null, context, report);
+        return setupContainerInfos(null, null, context);
     }
 
     // set up containers and prepare the sorted ModuleInfos
     public LinkedList<EngineInfo> setupContainerInfos(final ArchiveHandler handler,
-            Collection<Sniffer> sniffers, DeploymentContext context,
-            ActionReport report) throws Exception {
+            Collection<Sniffer> sniffers, DeploymentContext context)
+             throws Exception {
 
+        final ActionReport report = context.getActionReport();
         if (sniffers==null) {
             ReadableArchive source=context.getSource();
             if (handler instanceof CompositeHandler) {
@@ -383,7 +386,7 @@ public class ApplicationLifecycle implements Deployment {
                 Collection<EngineInfo> containersInfo=null;
                 synchronized (containerRegistry) {
                     if (containerRegistry.getContainer(containerName) == null) {
-                        containersInfo = setupContainer(sniffer, snifferModule, logger, report);
+                        containersInfo = setupContainer(sniffer, snifferModule, logger, context);
                         if (containersInfo == null || containersInfo.size() == 0) {
                             String msg = "Cannot start container(s) associated to application of type : " + sniffer.getModuleType();
                             report.failure(logger, msg, null);
@@ -393,7 +396,7 @@ public class ApplicationLifecycle implements Deployment {
                 }
 
                 // now start all containers, by now, they should be all setup...
-                if (!startContainers(containersInfo, logger, report)) {
+                if (!startContainers(containersInfo, logger, context)) {
                     final String msg = "Aborting, Failed to start container " + containerName;
                     report.failure(logger, msg, null);
                     throw new Exception(msg);
@@ -542,9 +545,10 @@ public class ApplicationLifecycle implements Deployment {
 
     public ModuleInfo prepareModule(
         LinkedList<EngineInfo> sortedEngineInfos, String moduleName,
-        DeploymentContext context, ActionReport report,
+        DeploymentContext context,
         ProgressTracker tracker) throws Exception {
 
+        ActionReport report = context.getActionReport();
         List<EngineRef> addedEngines = new LinkedList<EngineRef>();
         for (EngineInfo engineInfo : sortedEngineInfos) {
 
@@ -575,7 +579,8 @@ public class ApplicationLifecycle implements Deployment {
             context.getProps());
     }
 
-    protected Collection<EngineInfo> setupContainer(Sniffer sniffer, Module snifferModule,  Logger logger, ActionReport report) {
+    protected Collection<EngineInfo> setupContainer(Sniffer sniffer, Module snifferModule,  Logger logger, DeploymentContext context) {
+        ActionReport report = context.getActionReport();
         ContainerStarter starter = habitat.getComponent(ContainerStarter.class);
         Collection<EngineInfo> containersInfo = starter.startContainer(sniffer, snifferModule);
         if (containersInfo == null || containersInfo.size()==0) {
@@ -585,7 +590,8 @@ public class ApplicationLifecycle implements Deployment {
         return containersInfo;
     }
 
-    protected boolean startContainers(Collection<EngineInfo> containersInfo, Logger logger, ActionReport report) {
+    protected boolean startContainers(Collection<EngineInfo> containersInfo, Logger logger, DeploymentContext context) {
+        ActionReport report = context.getActionReport();
         for (EngineInfo engineInfo : containersInfo) {
             Container container;
             try {
@@ -624,8 +630,8 @@ public class ApplicationLifecycle implements Deployment {
         }
     }
 
-    protected ApplicationInfo unload(String appName, ExtendedDeploymentContext context, ActionReport report) {
-
+    protected ApplicationInfo unload(String appName, ExtendedDeploymentContext context) {
+        ActionReport report = context.getActionReport();
         ApplicationInfo info = appRegistry.get(appName);
         if (info==null) {
             report.failure(context.getLogger(), "Application " + appName + " not registered", null);
@@ -633,13 +639,14 @@ public class ApplicationLifecycle implements Deployment {
 
         }
         info.stop(context, context.getLogger());
-        info.unload(context, report);
+        info.unload(context);
         return info;
 
     }
 
-    public void undeploy(String appName, ExtendedDeploymentContext context, ActionReport report) {
+    public void undeploy(String appName, ExtendedDeploymentContext context) {
 
+        ActionReport report = context.getActionReport();
         if (report.getExtraProperties()!=null) {
             context.getProps().put("ActionReportProperties", report.getExtraProperties());
         }
@@ -653,7 +660,7 @@ public class ApplicationLifecycle implements Deployment {
         }
         events.send(new Event(Deployment.UNDEPLOYMENT_START, info));
 
-        unload(appName, context, report);
+        unload(appName, context);
         try {
             info.clean(context);
         } catch(Exception e) {
@@ -718,6 +725,7 @@ public class ApplicationLifecycle implements Deployment {
                     itr.hasNext();) {
                     String propName = (String) itr.next();
                     if (!propName.equals(ServerTags.LOCATION) &&
+                        !propName.equals(ServerTags.CONTEXT_ROOT) &&
                         !propName.equals(ServerTags.OBJECT_TYPE) &&
                         !propName.equals(ServerTags.DIRECTORY_DEPLOYED) &&
                         !propName.startsWith(
@@ -804,7 +812,7 @@ public class ApplicationLifecycle implements Deployment {
         return appRegistry.get(appName);
     }
 
-    public ExtendedDeploymentContext getContext(Logger logger, File source, OpsParams params)
+    public ExtendedDeploymentContext getContext(Logger logger, File source, OpsParams params, ActionReport report)
         throws IOException {
 
         ReadableArchive archive = null;
@@ -814,11 +822,11 @@ public class ApplicationLifecycle implements Deployment {
                 throw new IOException("Invalid archive type : " + source.getAbsolutePath());
             }
         }
-        return getContext(logger, archive, params);
+        return getContext(logger, archive, params, report);
     }
 
-    public ExtendedDeploymentContext getContext(Logger logger, ReadableArchive source, OpsParams params) throws IOException {
-        ExtendedDeploymentContext context = new DeploymentContextImpl(logger, source, params, env);
+    public ExtendedDeploymentContext getContext(Logger logger, ReadableArchive source, OpsParams params, ActionReport report) throws IOException {
+        ExtendedDeploymentContext context = new DeploymentContextImpl(report, logger, source, params, env);
         if (source != null && !(new File(source.getURI().getSchemeSpecificPart()).isDirectory())) {
             // create a temporary deployment context
             File expansionDir = new File(domain.getApplicationRoot(), 

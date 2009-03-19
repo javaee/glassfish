@@ -24,7 +24,7 @@
 package org.glassfish.deployment.common;
 
 import java.lang.instrument.ClassFileTransformer;
-
+import org.glassfish.api.ActionReport;
 import org.glassfish.api.deployment.InstrumentableClassLoader;
 import org.glassfish.api.deployment.OpsParams;
 import org.glassfish.api.deployment.DeployCommandParameters;
@@ -59,6 +59,7 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
     ReadableArchive originalSource;
     final OpsParams parameters;
     final Logger logger;
+    final ActionReport actionReport;
     final ServerEnvironment env;
     ClassLoader cloader;
     ArchiveHandler archiveHandler;
@@ -72,11 +73,12 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
     Map<String, Properties> modulePropsMap = new HashMap<String, Properties>();
 
     /** Creates a new instance of DeploymentContext */
-    public DeploymentContextImpl(Logger logger, ReadableArchive source,
-                                 OpsParams params, ServerEnvironment env) {
+    public DeploymentContextImpl(ActionReport actionReport, Logger logger, 
+        ReadableArchive source, OpsParams params, ServerEnvironment env) {
         this.originalSource = source;
         this.source = source;
         this.logger = logger;
+        this.actionReport = actionReport;
         this.parameters = params;
         this.env = env;
     }
@@ -372,5 +374,14 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
      */
     public void setModulePropsMap(Map<String, Properties> modulePropsMap) {
         this.modulePropsMap = modulePropsMap;
+    }
+
+    /**
+     * Gets the action report for this context
+     *
+     * @return an action report
+     */
+    public ActionReport getActionReport() {
+        return actionReport;
     }
 }

@@ -250,7 +250,7 @@ public class EarDeployer implements Deployer {
         }
 
         @Override
-        public void load(ExtendedDeploymentContext context, ActionReport report, ProgressTracker tracker) throws Exception {
+        public void load(ExtendedDeploymentContext context, ProgressTracker tracker) throws Exception {
 
             application = context.getModuleMetaData(Application.class);
             final Map<ModuleDescriptor, ExtendedDeploymentContext> contextPerModules =
@@ -258,12 +258,12 @@ public class EarDeployer implements Deployer {
             
             for (ModuleInfo module : super.getModuleInfos()) {
                 final ModuleDescriptor md = application.getModuleDescriptorByUri(module.getName());
-                module.load(contextPerModules.get(md), report, tracker);
+                module.load(contextPerModules.get(md), tracker);
             }
         }
 
         @Override
-        public void start(DeploymentContext context, ActionReport report, ProgressTracker tracker) throws Exception {
+        public void start(DeploymentContext context, ProgressTracker tracker) throws Exception {
 
             if (application==null) {
                 return;
@@ -274,12 +274,12 @@ public class EarDeployer implements Deployer {
 
             for (ModuleInfo module : super.getModuleInfos()) {
                 final ModuleDescriptor md = application.getModuleDescriptorByUri(module.getName());
-                module.start(contextPerModules.get(md), report, tracker);
+                module.start(contextPerModules.get(md), tracker);
             }
         }
 
         @Override
-        public void unload(ExtendedDeploymentContext context, ActionReport report) {
+        public void unload(ExtendedDeploymentContext context) {
 
             if (application==null) {
                 return;
@@ -290,7 +290,7 @@ public class EarDeployer implements Deployer {
 
             for (ModuleInfo module : super.getModuleInfos()) {
                 final ModuleDescriptor md = application.getModuleDescriptorByUri(module.getName());
-                module.unload(contextPerModules.get(md), report);
+                module.unload(contextPerModules.get(md));
             }
 
         }
@@ -350,7 +350,6 @@ public class EarDeployer implements Deployer {
 
         LinkedList<EngineInfo> orderedContainers = null;
 
-        ActionReport report = habitat.getComponent(ActionReport.class, "hk2-agent");
         ProgressTracker tracker = new ProgressTracker() {
             public void actOn(Logger logger) {
                 for (EngineRef module : get("prepared", EngineRef.class)) {
@@ -363,11 +362,11 @@ public class EarDeployer implements Deployer {
 
         try {
             // let's get the list of containers interested in this module
-            orderedContainers = deployment.setupContainerInfos(bundleContext, report);
+            orderedContainers = deployment.setupContainerInfos(bundleContext);
         } catch(Exception e) {
             e.printStackTrace();
         }
-        return deployment.prepareModule(orderedContainers, md.getArchiveUri(), bundleContext, report, tracker);
+        return deployment.prepareModule(orderedContainers, md.getArchiveUri(), bundleContext, tracker);
     }
 
     public ApplicationContainer load(Container container, DeploymentContext context) {
@@ -409,7 +408,9 @@ public class EarDeployer implements Deployer {
                 final Properties moduleProps = 
                     getModuleProps(context, moduleUri);
 
-                ExtendedDeploymentContext subContext = new DeploymentContextImpl(logger, context.getSource(),
+                ActionReport subReport = 
+                    context.getActionReport().addSubActionsReport();
+                ExtendedDeploymentContext subContext = new DeploymentContextImpl(subReport, logger, context.getSource(),
                         context.getCommandParameters(OpsParams.class), env) {
 
                     @Override

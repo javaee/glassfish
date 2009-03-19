@@ -125,8 +125,9 @@ public class EngineRef {
      * @param report
      * @return
      */
-    public boolean unload(ExtendedDeploymentContext context, ActionReport report) {
+    public boolean unload(ExtendedDeploymentContext context) {
 
+        ActionReport report = context.getActionReport();
         // then remove the application from the container
         Deployer deployer = ctrInfo.getDeployer();
         try {

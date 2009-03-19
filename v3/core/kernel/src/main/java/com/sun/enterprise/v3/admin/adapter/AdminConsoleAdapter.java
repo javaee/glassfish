@@ -846,12 +846,12 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             UndeployCommandParameters parameters = new UndeployCommandParameters(ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_APP_NAME);
             parameters.origin = UndeployCommandParameters.Origin.unload;
             Deployment deployment = habitat.getComponent(Deployment.class);
-            ExtendedDeploymentContext context = deployment.getContext(logger, archive, parameters);
-            
             ActionReport report = new PlainTextActionReporter();
+            ExtendedDeploymentContext context = deployment.getContext(logger, archive, parameters, report);
+            
             ApplicationInfo info = appRegistry.get(ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_APP_NAME);
             if (info!=null) {
-                deployment.undeploy(ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_APP_NAME, context, report);
+                deployment.undeploy(ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_APP_NAME, context);
             } else {
                 // no need to worry, let's just delete all created metadata.
                 context.clean();

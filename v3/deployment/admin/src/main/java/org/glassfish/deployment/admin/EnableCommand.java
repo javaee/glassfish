@@ -156,14 +156,14 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
 
 
         try {
-            final ExtendedDeploymentContext deploymentContext = deployment.getContext(logger, archive, commandParams);
+            final ExtendedDeploymentContext deploymentContext = deployment.getContext(logger, archive, commandParams, report);
 
             deploymentContext.getProps().putAll(contextProps);
             if (modulePropsMap != null) {
                 deploymentContext.setModulePropsMap(modulePropsMap);
             }
 
-            deployment.deploy(deploymentContext, report);
+            deployment.deploy(deploymentContext);
 
             if (report.getActionExitCode().equals(
                 ActionReport.ExitCode.SUCCESS)) {

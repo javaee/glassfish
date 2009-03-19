@@ -36,6 +36,7 @@
 
 package org.glassfish.javaee.core.deployment;
 
+import org.glassfish.api.ActionReport;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
@@ -181,10 +182,13 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                 try {
                     ArchiveHandler handler = deployment.getArchiveHandler(sub);
                     if (handler!=null) {
+                        ActionReport subReport = 
+                            context.getActionReport().addSubActionsReport();
                         // todo : this is a hack, once again, 
                         // the handler is assuming a file:// url
                         ExtendedDeploymentContext subContext = 
-                            new DeploymentContextImpl(context.getLogger(), 
+                            new DeploymentContextImpl(subReport, 
+                            context.getLogger(), 
                             sub, 
                             context.getCommandParameters(
                                 DeployCommandParameters.class), env) {

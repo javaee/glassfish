@@ -200,7 +200,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             }
 
             // create the parent class loader
-            final ExtendedDeploymentContext deploymentContext = deployment.getContext(logger, archive, this);
+            final ExtendedDeploymentContext deploymentContext = deployment.getContext(logger, archive, this, report);
 
             // store the archive handler in the context
             deploymentContext.setArchiveHandler(archiveHandler);
@@ -239,7 +239,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             }
             appProps.setProperty(ServerTags.DIRECTORY_DEPLOYED, String.valueOf(isDirectoryDeployed));
 
-            ApplicationInfo appInfo = deployment.deploy(deploymentContext, report);
+            ApplicationInfo appInfo = deployment.deploy(deploymentContext);
             if (report.getActionExitCode()==ActionReport.ExitCode.SUCCESS) {
                 // register application information in domain.xml
                 deployment.registerAppInDomainXML(appInfo, deploymentContext);

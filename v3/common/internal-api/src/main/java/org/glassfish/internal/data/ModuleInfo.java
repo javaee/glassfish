@@ -113,8 +113,8 @@ public class ModuleInfo {
         return sniffers;
     }
 
-    public void load(ExtendedDeploymentContext context, ActionReport report, ProgressTracker tracker) throws Exception {
-
+    public void load(ExtendedDeploymentContext context, ProgressTracker tracker) throws Exception {
+        ActionReport report = context.getActionReport();
         context.setPhase(ExtendedDeploymentContext.Phase.LOAD);
 
         if (!context.getTransformers().isEmpty()) {
@@ -186,7 +186,9 @@ public class ModuleInfo {
 
     public synchronized void start(
         DeploymentContext context,
-        ActionReport report, ProgressTracker tracker) throws Exception {
+        ProgressTracker tracker) throws Exception {
+
+        ActionReport report = context.getActionReport();
 
         if (started)
             return;
@@ -229,7 +231,7 @@ public class ModuleInfo {
         }
     }
 
-    public void unload(ExtendedDeploymentContext context, ActionReport report) {
+    public void unload(ExtendedDeploymentContext context) {
 
         Set<ClassLoader> classLoaders = new HashSet<ClassLoader>();
         for (EngineRef engine : _getEngineRefs()) {
@@ -237,7 +239,7 @@ public class ModuleInfo {
                 classLoaders.add(engine.getApplicationContainer().getClassLoader());
             }
             try {
-                engine.unload(context, report);
+                engine.unload(context);
             } catch(Throwable e) {
                 logger.log(Level.SEVERE, "Failed to unload from container type : " +
                         engine.getContainerInfo().getSniffer().getModuleType(), e);
@@ -319,6 +321,7 @@ public class ModuleInfo {
             String propName = (String) itr.next();
             if (!propName.equals(ServerTags.LOCATION) &&
                 !propName.equals(ServerTags.OBJECT_TYPE) &&
+                !propName.equals(ServerTags.CONTEXT_ROOT) &&
                 !propName.equals(ServerTags.DIRECTORY_DEPLOYED) &&
                 !propName.equals("isComposite") &&
                 !propName.startsWith("appConfig"))

@@ -37,7 +37,7 @@
 package org.glassfish.api.deployment;
 
 import org.glassfish.api.ExecutionContext;
-
+import org.glassfish.api.ActionReport;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import java.io.File;
@@ -185,4 +185,10 @@ public interface DeploymentContext extends ApplicationContext, ExecutionContext 
      */
     public Map<String, Properties> getModulePropsMap();
 
+    /**
+     * Gets the action report for this context
+     *
+     * @return an action report
+     */
+    public ActionReport getActionReport();
 }

@@ -27,7 +27,6 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.*;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.container.Container;
-import org.glassfish.api.ActionReport;
 import org.glassfish.api.event.*;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventListener.Event;
@@ -159,12 +158,12 @@ public class ApplicationInfo {
         return refs;
     }
 
-    public void load(ExtendedDeploymentContext context, ActionReport report, ProgressTracker tracker)
+    public void load(ExtendedDeploymentContext context, ProgressTracker tracker)
             throws Exception {
 
         context.setPhase(ExtendedDeploymentContext.Phase.LOAD);
         for (ModuleInfo module : modules) {
-            module.load(context, report, tracker);
+            module.load(context, tracker);
         }
         if (events!=null) {
             events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_LOADED, this), false);
@@ -174,11 +173,11 @@ public class ApplicationInfo {
 
     public void start(
         DeploymentContext context,
-        ActionReport report, ProgressTracker tracker) throws Exception {
+        ProgressTracker tracker) throws Exception {
 
         // registers all deployed items.
         for (ModuleInfo module : getModuleInfos()) {
-            module.start(context, report, tracker);
+            module.start(context, tracker);
         }
         if (events!=null) {
             events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_STARTED, this), false);
@@ -196,10 +195,10 @@ public class ApplicationInfo {
         
     }
 
-    public void unload(ExtendedDeploymentContext context, ActionReport report) {
+    public void unload(ExtendedDeploymentContext context) {
 
         for (ModuleInfo module : getModuleInfos()) {
-            module.unload(context, report);
+            module.unload(context);
         }
         if (events!=null) {
             events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_UNLOADED, this), false);

@@ -126,7 +126,7 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
 
         ExtendedDeploymentContext deploymentContext = null;
         try {
-            deploymentContext = deployment.getContext(logger, source, this);
+            deploymentContext = deployment.getContext(logger, source, this, report);
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Cannot create context for undeployment ", e);
             report.setMessage(localStrings.getLocalString("undeploy.contextcreation.failed","Cannot create context for undeployment : {0} ", e.getMessage()));            
@@ -144,7 +144,7 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
             application.getModulePropertiesMap());
 
         if (info!=null) {
-            deployment.undeploy(name, deploymentContext, report);
+            deployment.undeploy(name, deploymentContext);
         }
 
         // check if it's directory deployment

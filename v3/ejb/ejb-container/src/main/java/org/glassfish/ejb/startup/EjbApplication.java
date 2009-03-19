@@ -318,8 +318,8 @@ public class EjbApplication
                 }
 
                 try {
-                    ExtendedDeploymentContext dc = deployment.getContext(logger, app, params);
-                    deployment.deploy(dc, report);
+                    ExtendedDeploymentContext dc = deployment.getContext(logger, app, params, report);
+                    deployment.deploy(dc);
 
                     if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
                         throw new RuntimeException("Failed to deploy EJBTimerService: " +

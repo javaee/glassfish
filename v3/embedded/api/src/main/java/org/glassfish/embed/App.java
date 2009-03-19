@@ -69,7 +69,7 @@ public final class App {
      */
     public void undeploy() {
         SilentActionReport r = new SilentActionReport();
-        owner.deployment.undeploy(app.getName(),deploymentContext, r);
+        owner.deployment.undeploy(app.getName(),deploymentContext);
         r.check();
     }
 }

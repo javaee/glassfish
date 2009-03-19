@@ -507,7 +507,9 @@ public class AppServer {
         params.enabled = true;
         params.origin = DeployCommandParameters.Origin.deploy;
 
-	final ExtendedDeploymentContext deploymentContext = deployment.getContext(Logger.getAnonymousLogger(), a, params);
+        SilentActionReport r = new SilentActionReport();
+
+	final ExtendedDeploymentContext deploymentContext = deployment.getContext(Logger.getAnonymousLogger(), a, params, r);
         deploymentContext.setArchiveHandler(h);
 
         if (!(new File(a.getURI().getSchemeSpecificPart())).isDirectory()) {
@@ -529,8 +531,7 @@ public class AppServer {
         ClassLoader cl = h.getClassLoader(parentCL, deploymentContext);
         Collection<Sniffer> activeSniffers = snifMan.getSniffers(a, cl);
 
-        SilentActionReport r = new SilentActionReport();
-        ApplicationInfo appInfo = deployment.deploy(activeSniffers, deploymentContext, r);
+        ApplicationInfo appInfo = deployment.deploy(activeSniffers, deploymentContext);
         r.check();
 
         return new App(this, appInfo, deploymentContext);

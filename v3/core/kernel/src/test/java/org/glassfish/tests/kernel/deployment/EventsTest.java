@@ -156,9 +156,9 @@ public class EventsTest extends ConfigApiTest {
         Deployment deployment = habitat.getByContract(Deployment.class);
         DeployCommandParameters params = new DeployCommandParameters(application);
         params.name = "fakeApplication";
-        ExtendedDeploymentContext dc = deployment.getContext(Logger.getAnonymousLogger(), application, params);
         ActionReport report = habitat.getComponent(ActionReport.class, "hk2-agent");
-        deployment.deploy(dc, report);
+        ExtendedDeploymentContext dc = deployment.getContext(Logger.getAnonymousLogger(), application, params, report);
+        deployment.deploy(dc);
         events.unregister(listener);
         Assert.assertEquals(report.getActionExitCode(), ActionReport.ExitCode.SUCCESS);
         for (EventTypes et : myTestEvents) {
@@ -181,9 +181,9 @@ public class EventsTest extends ConfigApiTest {
         events.register(listener);
         Deployment deployment = habitat.getByContract(Deployment.class);
         UndeployCommandParameters params = new UndeployCommandParameters("fakeApplication");
-        ExtendedDeploymentContext dc = deployment.getContext(Logger.getAnonymousLogger(), application, params);
         ActionReport report = habitat.getComponent(ActionReport.class, "hk2-agent");
-        deployment.undeploy("fakeApplication", dc, report);
+        ExtendedDeploymentContext dc = deployment.getContext(Logger.getAnonymousLogger(), application, params, report);
+        deployment.undeploy("fakeApplication", dc);
         Assert.assertEquals(report.getActionExitCode(), ActionReport.ExitCode.SUCCESS);
         for (EventTypes et : myTestEvents) {
             System.out.println("An expected event of type " + et.type() + " was not received");
@@ -195,9 +195,9 @@ public class EventsTest extends ConfigApiTest {
     public void badUndeployTest() throws Exception {
         Deployment deployment = habitat.getByContract(Deployment.class);
         UndeployCommandParameters params = new UndeployCommandParameters("notavalidname");
-        ExtendedDeploymentContext dc = deployment.getContext(Logger.getAnonymousLogger(), application, params);
         ActionReport report = habitat.getComponent(ActionReport.class, "hk2-agent");
-        deployment.undeploy("fakeApplication", dc, report);
+        ExtendedDeploymentContext dc = deployment.getContext(Logger.getAnonymousLogger(), application, params, report);
+        deployment.undeploy("fakeApplication", dc);
         Assert.assertEquals(report.getActionExitCode(), ActionReport.ExitCode.FAILURE);
     }
 

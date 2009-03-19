@@ -164,8 +164,8 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                     parameters.enabled = Boolean.TRUE;
                     parameters.origin = DeployCommandParameters.Origin.deploy;
 
-                    ExtendedDeploymentContext depContext = deployment.getContext(logger, sourceArchive, parameters);
                     ActionReport report = new HTMLActionReporter();
+                    ExtendedDeploymentContext depContext = deployment.getContext(logger, sourceArchive, parameters, report);
 
                     if (!sourceFile.isDirectory()) {
 
@@ -195,7 +195,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                             logger.warning("Using " + appName + " as context root for application");
                         }
                     }
-                    ApplicationInfo appInfo = deployment.deploy(depContext, report);
+                    ApplicationInfo appInfo = deployment.deploy(depContext);
                     if (appInfo==null) {
 
                         logger.severe("Cannot find the application type for the artifact at : "
@@ -256,12 +256,12 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
 
                     archive = archiveFactory.openArchive(sourceFile, deploymentParams);
 
-                    ExtendedDeploymentContext depContext = deployment.getContext(logger, archive, deploymentParams);
+                    ActionReport report = new HTMLActionReporter();
+                    ExtendedDeploymentContext depContext = deployment.getContext(logger, archive, deploymentParams, report);
 
                     depContext.getProps().putAll(app.getDeployProperties());
                     depContext.setModulePropsMap(app.getModulePropertiesMap());
 
-                    ActionReport report = new HTMLActionReporter();
 
                     List<Sniffer> sniffers = new ArrayList<Sniffer>();
                     if (!Boolean.valueOf(depContext.getProps().getProperty
@@ -283,7 +283,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                         // composite application.
                         sniffers=null;
                     }
-                    deployment.deploy(sniffers, depContext, report);
+                    deployment.deploy(sniffers, depContext);
                     if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
                         logger.info("Loading " + appName + " Application done is "
                                 + (Calendar.getInstance().getTimeInMillis() - operationStartTime) + " ms");
@@ -329,9 +329,9 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                 parameters.origin = UndeployCommandParameters.Origin.unload;
 
                 try {
-                    ExtendedDeploymentContext depContext = deployment.getContext(logger, appInfo.getSource(), parameters);
+                    ExtendedDeploymentContext depContext = deployment.getContext(logger, appInfo.getSource(), parameters, dummy);
                     appInfo.stop(depContext, depContext.getLogger());
-                    appInfo.unload(depContext, dummy);
+                    appInfo.unload(depContext);
                 } catch (IOException e) {
                     logger.log(Level.SEVERE, "Cannot create unloading context for " + app.getName(), e);
                 }

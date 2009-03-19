@@ -122,22 +122,22 @@ public interface Deployment {
 
     public ArchiveHandler getArchiveHandler(ReadableArchive archive) throws IOException;
 
-    public ExtendedDeploymentContext getContext(Logger logger, File source, OpsParams params)
+    public ExtendedDeploymentContext getContext(Logger logger, File source, OpsParams params, ActionReport report)
             throws IOException;
 
-    public ExtendedDeploymentContext getContext(Logger logger, ReadableArchive source, OpsParams params)
+    public ExtendedDeploymentContext getContext(Logger logger, ReadableArchive source, OpsParams params, ActionReport report)
             throws IOException;
 
 
     public ModuleInfo prepareModule(
         LinkedList<EngineInfo> sortedEngineInfos, String moduleName,
-        DeploymentContext context, ActionReport report,
+        DeploymentContext context,
         ProgressTracker tracker) throws Exception;
 
-    public ApplicationInfo deploy(final ExtendedDeploymentContext context, final ActionReport report);
-    public ApplicationInfo deploy(final Collection<Sniffer> sniffers, final ExtendedDeploymentContext context, final ActionReport report);
+    public ApplicationInfo deploy(final ExtendedDeploymentContext context);
+    public ApplicationInfo deploy(final Collection<Sniffer> sniffers, final ExtendedDeploymentContext context);
 
-    public void undeploy(String appName, ExtendedDeploymentContext context, ActionReport report);
+    public void undeploy(String appName, ExtendedDeploymentContext context);
 
     public void registerAppInDomainXML(final ApplicationInfo
         applicationInfo, final DeploymentContext context)
@@ -148,8 +148,7 @@ public interface Deployment {
     
 
     public LinkedList<EngineInfo> setupContainerInfos(
-            DeploymentContext context,
-            ActionReport report) throws Exception;
+            DeploymentContext context) throws Exception;
 
     public boolean isRegistered(String appName);
 

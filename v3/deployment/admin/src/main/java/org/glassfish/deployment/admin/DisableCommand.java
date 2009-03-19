@@ -108,7 +108,7 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
             commandParams.name = this.name();
             final ExtendedDeploymentContext deploymentContext =
                     deployment.getContext(logger, appInfo.getSource(), 
-                        commandParams);
+                        commandParams, report);
             Named module = ConfigBeansUtilities.getModule(name());
             Application application = null;
             if (module instanceof Application) {
@@ -122,7 +122,7 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
             }
 
             appInfo.stop(deploymentContext, deploymentContext.getLogger());
-            appInfo.unload(deploymentContext, report);
+            appInfo.unload(deploymentContext);
 
             if (report.getActionExitCode().equals(
                 ActionReport.ExitCode.SUCCESS)) {
