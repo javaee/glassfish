@@ -374,6 +374,19 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl {
 	}
         return mergedProps;
     }
+    //Overriding ActiveResourceAdapterImpl.setup() as a work around for
+    //this condition - connectionDefs_.length != 1
+    //Need to remove this once the original problem is fixed
+     public void setup() throws ConnectorRuntimeException {
+        //TODO NEED TO REMOVE ONCE THE ActiveResourceAdapterImpl.setup() is fixed
+        if (connectionDefs_ == null) {
+            throw new ConnectorRuntimeException("No Connection Defs defined in the RA.xml");
+        }
+        if (isServer() && !isSystemRar(moduleName_)) {
+            createAllConnectorResources();
+        }
+        _logger.log(Level.FINE, "Completed Active Resource adapter setup", moduleName_);
+    }
 
     /*
      * Set Availability related properties
@@ -1521,17 +1534,22 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl {
 
      protected ManagedConnectionFactory instantiateMCF(final String mcfClass, final ClassLoader loader)
             throws Exception {
+            ManagedConnectionFactory mcf = null;
             if (moduleName_.equals(ConnectorRuntime.DEFAULT_JMS_ADAPTER)) {
                 Object tmp = AccessController.doPrivileged(
                         new PrivilegedExceptionAction() {
                             public Object run() throws Exception{
-                                return instantiateMCF(mcfClass, loader);
+                                return instantiateManagedConnectionFactory(mcfClass, loader);
                             }
                         });
+                mcf = (ManagedConnectionFactory) tmp;
             }
-           return null;
+           return mcf;
      }
 
+    private ManagedConnectionFactory instantiateManagedConnectionFactory (final String mcfClass, final ClassLoader loader) throws Exception{
+        return  super.instantiateMCF(mcfClass, loader);
+    }
     /**
      * Creates ManagedConnection Factory instance. For any property that is
      * for supporting AS7 imq properties, resource adapter has a set method
