@@ -63,7 +63,9 @@ public class AsyncContextImpl implements AsyncContext {
     // The possibly wrapped response passed to ServletRequest.startAsync    
     private ServletResponse servletResponse;
 
-    private boolean hasOriginalRequestAndResponse = false;
+    private boolean isOriginalRequestAndResponse = false;
+
+    private String dispatchTargetURI = null;
 
 
     /**
@@ -74,17 +76,26 @@ public class AsyncContextImpl implements AsyncContext {
      * ServletRequest.startAsync
      * @param servletResponse the possibly wrapped response passed to
      * ServletRequest.startAsync
-     * @param hasOriginalRequestAndResponse XXX
+     * @param isOriginalRequestAndResponse true if the zero-arg version of
+     * startAsync was called, false otherwise
      */
     public AsyncContextImpl(Request origRequest,
                             ServletRequest servletRequest,
                             Response origResponse,
-                            ServletResponse servletResponse) {
+                            ServletResponse servletResponse,
+                            boolean isOriginalRequestAndResponse) {
         this.origRequest = origRequest;
         this.servletRequest = servletRequest;
         this.servletResponse = servletResponse;
-        if (origRequest == servletRequest && origResponse == servletResponse) {
-            hasOriginalRequestAndResponse = true;
+        this.isOriginalRequestAndResponse = isOriginalRequestAndResponse;
+        if (isOriginalRequestAndResponse) {
+            dispatchTargetURI = origRequest.getRequestURI();
+        } else if (servletRequest instanceof HttpServletRequest) {
+            dispatchTargetURI =
+                ((HttpServletRequest)servletRequest).getRequestURI();
+        } else {
+            log.warning("Unable to determine target of " +
+                        "zero-argument dispatch");
         }
     }
 
@@ -100,17 +111,18 @@ public class AsyncContextImpl implements AsyncContext {
 
 
     public boolean hasOriginalRequestAndResponse() {
-        return hasOriginalRequestAndResponse;
+        return isOriginalRequestAndResponse;
     }
 
 
     public void dispatch() {
-        origRequest.setAttribute(Globals.DISPATCHER_TYPE_ATTR,
-                                 DispatcherType.ASYNC);
-        if (servletRequest instanceof HttpServletRequest) {
-            String uri = ((HttpServletRequest)servletRequest).getRequestURI();
+        if (dispatchTargetURI == null) {
+            log.severe("Unable to determine target of zero-arg dispatch");
+        } else {
+            origRequest.setAttribute(Globals.DISPATCHER_TYPE_ATTR,
+                                     DispatcherType.ASYNC);
             ApplicationDispatcher dispatcher = (ApplicationDispatcher)
-                servletRequest.getRequestDispatcher(uri);
+                servletRequest.getRequestDispatcher(dispatchTargetURI);
             if (dispatcher != null) {
                 origRequest.setOkToReinitializeAsync();
                 origRequest.setAsyncStarted(false);
@@ -118,10 +130,8 @@ public class AsyncContextImpl implements AsyncContext {
                                          servletResponse));
             } else {
                 log.warning("Unable to acquire RequestDispatcher for " +
-                            "original request URI " + uri);
+                            dispatchTargetURI);
             }
-        } else {
-            log.warning("Unable to determine original request URI");
         }
     } 
 
@@ -180,18 +190,30 @@ public class AsyncContextImpl implements AsyncContext {
 
 
     /*
-     * Reinitializes this AsyncContext with the given request
+     * Reinitializes this AsyncContext with the given request and response.
+     *
+     * @param servletRequest the ServletRequest with which to initialize
+     * the AsyncContext
+     * @param servletResponse the ServletResponse with which to initialize
+     * the AsyncContext
+     * @param isOriginalRequestAndResponse true if the zero-arg version of
+     * startAsync was called, false otherwise
      */
-    void setServletRequest(ServletRequest servletRequest) {
+    void reinitialize(ServletRequest servletRequest,
+                      ServletResponse servletResponse,
+                      boolean isOriginalRequestAndResponse) {
         this.servletRequest = servletRequest;
-    }
-
-
-    /*
-     * Reinitializes this AsyncContext with the given response
-     */
-    void setServletResponse(ServletResponse servletResponse) {
         this.servletResponse = servletResponse;
+        this.isOriginalRequestAndResponse = isOriginalRequestAndResponse;
+        if (isOriginalRequestAndResponse) {
+            dispatchTargetURI = origRequest.getRequestURI();
+        } else if (servletRequest instanceof HttpServletRequest) {
+            dispatchTargetURI =
+                ((HttpServletRequest)servletRequest).getRequestURI();
+        } else {
+            log.warning("Unable to determine target of " +
+                        "zero-argument dispatch");
+        }
     }
 
 

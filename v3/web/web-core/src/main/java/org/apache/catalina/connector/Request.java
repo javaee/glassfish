@@ -3798,20 +3798,44 @@ public class Request
      * Starts async processing on this request.
      */
     public AsyncContext startAsync() throws IllegalStateException {
-        return startAsync(this, (Response) getResponse());
+        return startAsync(this, (Response) getResponse(), true);
     }
 
 
     /**
      * Starts async processing on this request.
+     *
+     * @param servletRequest the ServletRequest with which to initialize
+     * the AsyncContext
+     * @param servletResponse the ServletResponse with which to initialize
+     * the AsyncContext
      */
     public AsyncContext startAsync(ServletRequest servletRequest,
                                    ServletResponse servletResponse)
+            throws IllegalStateException {
+        return startAsync(servletRequest, servletResponse, false);
+    }
+
+
+    /**
+     * Starts async processing on this request.
+     *
+     * @param servletRequest the ServletRequest with which to initialize
+     * the AsyncContext
+     * @param servletResponse the ServletResponse with which to initialize
+     * the AsyncContext
+     * @param isOriginalRequestAndResponse true if the zero-arg version of
+     * startAsync was called, false otherwise
+     */
+    private AsyncContext startAsync(ServletRequest servletRequest,
+                                    ServletResponse servletResponse,
+                                    boolean isOriginalRequestAndResponse)
             throws IllegalStateException {
 
         if (servletRequest == null || servletResponse == null) {
             throw new IllegalArgumentException("Null request or response");
         }      
+
         if (!isAsyncSupported()) {
             throw new IllegalStateException("Async not supported for this " +
                                             "request");
@@ -3822,16 +3846,18 @@ public class Request
                 throw new IllegalStateException("startAsync already called");
             } 
             // Reinitialize existing AsyncContext
-            asyncContext.setServletRequest(servletRequest);
-            asyncContext.setServletResponse(servletResponse);
+            asyncContext.reinitialize(servletRequest, servletResponse,
+                isOriginalRequestAndResponse);
         } else {
             asyncContext = new AsyncContextImpl(this, servletRequest,
-                (Response) getResponse(), servletResponse);
+                (Response) getResponse(), servletResponse,
+                isOriginalRequestAndResponse);
             asyncStarted = true;
             isOkToReinitializeAsync = false;
         }
 
-        CompletionHandler requestCompletionHandler =  new CompletionHandler<Request>() {
+        CompletionHandler requestCompletionHandler =
+            new CompletionHandler<Request>() {
 
                 public void resumed(Request attachment) {
                     attachment.notifyAsyncListeners(AsyncEventType.COMPLETE);
