@@ -38,9 +38,7 @@
 
 package org.jvnet.hk2.osgiadapter;
 
-import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.Repository;
 import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
@@ -62,12 +60,7 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Dictionary;
-import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 
@@ -86,17 +79,6 @@ public class HK2Main extends Main implements
     private ModulesRegistry mr;
     private Habitat habitat;
 
-    private String repName = "modules";
-
-    private static final String CONTEXT_ROOT_DIR_PROP =
-            HK2Main.class.getPackage().getName() + ".contextrootdir";
-
-    /**
-     * Repository root directory.
-     * e.g., <tt>$GLASSFISH_HOME/modules</tt> directory.
-     */
-    private File contextRootDir;
-
     /**
      * The startup module service.
      * e.g., GlassFish Kernel's AppServerStartup instance
@@ -111,12 +93,10 @@ public class HK2Main extends Main implements
         logger.logp(Level.FINE, "HK2Main", "run", "this.getClass().getClassLoader() = {0}", this.getClass().getClassLoader());
         ctx.addBundleListener(this);
 
-        // Create StartupContext
-        contextRootDir = getContextRootDir(context);
-        logger.logp(Level.FINE, "HK2Main", "start", "contextRootDir = {0}", contextRootDir);
-
         // get the startup context from the System properties
-        String lineformat = System.getProperty("glassfish.startup.context");
+        String lineformat = System.getProperty("hk2.startup.context.args");
+        String contextRoot = System.getProperty("hk2.startup.context.root", "user.dir");
+        File contextRootDir = new File(contextRoot);
         StartupContext startupContext;
         if (lineformat != null) {
             Properties arguments = new Properties();
@@ -142,25 +122,7 @@ public class HK2Main extends Main implements
 
     protected ModulesRegistry createModulesRegistry() {
         ModulesRegistry mr = AbstractFactory.getInstance().createModulesRegistry();
-
-        Collection<? extends Repository> reps = createRepositories();
-
-        // don't add the repositories, just add all the modules from the repos.
-        // Later on, we use FileInstall bundle from Felix to monitor
-        // repositories.
-        for (Repository rep : reps) {
-            for (ModuleDefinition md : rep.findAll()) {
-                mr.add(md, false); // don't resolve the modules; just install
-            }
-        }
-
         return mr;
-    }
-
-    protected File getContextRootDir(BundleContext context) {
-        String prop = context.getProperty(CONTEXT_ROOT_DIR_PROP);
-        File f = (prop != null) ? new File(prop) : new File(System.getProperty("user.home"));
-        return f;
     }
 
     @Override
@@ -171,47 +133,6 @@ public class HK2Main extends Main implements
     private void createServiceTracker(Habitat habitat) {
         ServiceTracker st = new ServiceTracker(ctx, new NonHK2ServiceFilter(), new HK2ServiceTrackerCustomizer(habitat));
         st.open(true);
-    }
-
-    private Collection<? extends Repository> createRepositories() {
-        List<Repository> reps = new ArrayList<Repository>();
-
-        Repository rep = new OSGiDirectoryBasedRepository(
-                repName,
-                contextRootDir,
-                true); // spawn daemon threads as listeners
-        try {
-            rep.initialize();
-            reps.add(rep);
-        } catch (IOException e) {
-            try {
-                rep.shutdown();
-            } catch (IOException e1) {
-                // ignore as we are shutting down
-            }
-            throw new RuntimeException(e);
-        }
-        for (File dir : contextRootDir.listFiles(
-                new FileFilter() {
-                    public boolean accept(File pathname) {
-                        return pathname.isDirectory();
-                    }
-                })) {
-            rep = new OSGiDirectoryBasedRepository(dir.getName(), dir);
-            try {
-                rep.initialize();
-                reps.add(rep);
-            } catch (IOException e) {
-                try {
-                    rep.shutdown();
-                } catch (IOException e1) {
-                    // ignore as we are shutting down
-                }
-                logger.log(Level.SEVERE, "Cannot initialize repository at " + dir.getAbsolutePath(), e);
-            }
-        }
-        logger.exiting("HK2Main", "createRepositories", reps);
-        return reps;
     }
 
     public void stop(BundleContext context) throws Exception {
@@ -279,7 +200,6 @@ public class HK2Main extends Main implements
         }
 
         public void modifiedService(ServiceReference reference, Object service) {
-            //To change body of implemented methods use File | Settings | File Templates.
         }
 
         public void removedService(ServiceReference reference, Object service) {
