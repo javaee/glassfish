@@ -246,7 +246,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
             }
             if(retrieve != null) {
-                retrieveArtifacts(context);
+                retrieveArtifacts(context, name, retrieve, downloadableArtifacts);
             }
         } catch(Exception e) {
             report.failure(logger,localStrings.getLocalString(
@@ -348,15 +348,17 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
         return null;
     }
 
-    private void retrieveArtifacts(AdminCommandContext context) {
+    public static void retrieveArtifacts(AdminCommandContext context, String appName,
+            String targetLocalDir,
+            DownloadableArtifacts downloadableArtifacts) {
         Logger logger = context.getLogger();
         final ActionReport report = context.getActionReport();
         report.setMessage("File download results");
         try {
             Payload.Outbound outboundPayload = context.getOutboundPayload();
             Properties props = new Properties();
-            props.setProperty("file-xfer-root", retrieve);
-            for (DownloadableArtifacts.FullAndPartURIs uriPair : downloadableArtifacts.getArtifacts(name)) {
+            props.setProperty("file-xfer-root", targetLocalDir);
+            for (DownloadableArtifacts.FullAndPartURIs uriPair : downloadableArtifacts.getArtifacts(appName)) {
                 if(logger.isLoggable(Level.INFO)) {
                     logger.log(Level.INFO, "About to download artifact " + uriPair.getFull());
                 }

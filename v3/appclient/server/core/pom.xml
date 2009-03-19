@@ -84,6 +84,16 @@
             <artifactId>hk2</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.sun.enterprise</groupId>
+            <artifactId>auto-depends</artifactId>
+            <version>${hk2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.deployment</groupId>
+            <artifactId>deployment-admin</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.appclient.server</groupId>
             <artifactId>appclient-connector</artifactId>
             <version>${project.version}</version>
