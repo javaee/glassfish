@@ -64,4 +64,12 @@ public final class SecurityConstraint {
     public void setUserDataConstraint(TransportGuarantee tg) {
         this.tg = tg;
     }
+
+    public String[] getAuthConstraint() {
+        return this.roleNames;
+    }
+
+    public TransportGuarantee getDataConstraint() {
+        return this.tg;
+    }
 }
