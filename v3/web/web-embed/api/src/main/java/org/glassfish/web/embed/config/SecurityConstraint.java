@@ -44,7 +44,7 @@ import java.util.Set;
  */
 
 //TODO: Need to think about if we want security to be pluggable. Need to talk to Ron.
-public final class SecurityConstraint {
+public class SecurityConstraint {
 
     private Set<WebResourceCollection> webResourceCollection;
     private String[] roleNames;

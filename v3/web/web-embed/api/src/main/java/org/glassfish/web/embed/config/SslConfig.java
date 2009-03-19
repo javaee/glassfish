@@ -45,7 +45,7 @@ import java.util.Set;
 /**
  * @author Rajiv Mordani
  */
-public final class SslConfig {
+public class SslConfig {
 
     private String keyStore;
     private File trustStore;
