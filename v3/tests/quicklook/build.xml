@@ -258,10 +258,13 @@
         <tstamp>
            <format property="end.timestamp" pattern="EE MM/dd/yyyy HH:mm:ss zz" />
         </tstamp>
-        <echo file="quicklook_summary.txt" message="   ${end.timestamp} ${line.separator}" />
+        <echo file="quicklook_summary.txt" message="    Test completed: ${end.timestamp} ${line.separator}" />
         <loadfile srcfile="runtestng.output" property="testng_output">
            <filterchain>
               <tailfilter lines="4" skip="1"/>
+	      <tokenfilter>
+    		  <replacestring from="[testng]" to=""/>
+	      </tokenfilter>
            </filterchain>
         </loadfile>
         <echo file="quicklook_summary.txt" append="true" message="${testng_output}"/>

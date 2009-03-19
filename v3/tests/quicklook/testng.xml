@@ -72,25 +72,10 @@
         </classes>
   </test>
   <test name="web_jspservlet_war">
-  <!--<groups>
-      <run>
-	<include name="pulse"/>
-	</run>
-  </groups>-->
     <classes>
        <class name="test.web.jsp.hello.HelloJSPTestNG" />
     </classes>
   </test>
-  <!--test name="jpa_jspservlet_war">
-   <classes>
-       <class name="test.PersistenceTestNG" />
-    </classes>
-  </test -->
-  <!-- test name="web_struts_basic">
-    <classes>
-       <class name="test.web.strutsbasic.StrutsWebTestNG" />
-    </classes>
-  </test -->
   <test name="jsf_hello_world">
     <classes>
        <class name="test.jsf.astrologer.JSFWebTestNG" />
@@ -121,23 +106,12 @@
        <class name="test.security.basicauth.BasicAuthTestNG" />
     </classes>
   </test>
-
-<!--
-Disable the test for M1 promotion - Jane
-
-  <test name="ejb_singleton_ear">
-    <classes>
-        <class name="test.ejb.singleton.SingletonTestNG" />
-    </classes>
-  </test>
--->
   <test name="ejb_stateful_cmt_ni_war">
     <classes>
         <class name="test.ejb.slsbnicmt.SlsbnicmtTestNG" />
         <class name="test.ejb.sfulnoi.SfulnoiTestNG" />
     </classes>
   </test>
-
   <test name="asadmin_tests">
     <classes>
       <class name="test.admin.JvmOptionTests"/>
