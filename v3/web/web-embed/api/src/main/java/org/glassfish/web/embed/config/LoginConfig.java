@@ -62,11 +62,11 @@ public class LoginConfig {
     }
 
     // TODO: Need to define a way to create realm. Using Strings for now.    
-    public void setRealmNames(String ... realms) {
+    public void setRealmName(String realm) {
 
     }
 
-    public String[] getRealmNames() {
+    public String getRealmName() {
         return null;
     }
 
