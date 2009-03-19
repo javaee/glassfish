@@ -37,18 +37,58 @@ public class MyListener implements ServletContextListener {
         /*
          * Register servlet
          */
-        ServletRegistration sr = sc.addServlet("NewServlet",
-            (Class <? extends Servlet>) Thread.currentThread().getContextClassLoader().loadClass("test.NewServlet"));
-        sr.setInitParameter("servletInitName", "servletInitValue");
+        Servlet servlet = new NewServlet();
+        ServletRegistration sr = sc.addServlet("NewServlet", servlet);
+        sr.setInitParameter("servletInitParamName", "servletInitParamValue");
         sr.addMapping("/newServlet");
+
+        /*
+         * Make sure that if we register a different servlet instance
+         * under the same name, null is returned
+         */
+        if (sc.addServlet("NewServlet", new NewServlet()) != null) {
+            throw new RuntimeException(
+                "Duplicate servlet name not detected by " +
+                "ServletContext#addServlet");
+        }
+
+        /*
+         * Make sure that if we register the same servlet instance again
+         * (under a different name), null is returned
+         */
+        if (sc.addServlet("AgainServlet", servlet) != null) {
+            throw new RuntimeException(
+                "Duplicate servlet instance not detected by " +
+                "ServletContext#addServlet");
+        }
 
         /*
          * Register filter
          */
-        FilterRegistration fr = sc.addFilter("NewFilter",
-            (Class <? extends Filter>) Thread.currentThread().getContextClassLoader().loadClass("test.NewFilter"));
-        fr.setInitParameter("filterInitName", "filterInitValue");
+        Filter filter = new NewFilter();
+        FilterRegistration fr = sc.addFilter("NewFilter", filter);
+        fr.setInitParameter("filterInitParamName", "filterInitParamValue");
         fr.addMappingForServletNames(EnumSet.of(DispatcherType.REQUEST),
                                      true, "NewServlet"); 
+
+        /*
+         * Make sure that if we register a different filter instance
+         * under the same name, null is returned
+         */
+        if (sc.addFilter("NewFilter", new NewFilter()) != null) {
+            throw new RuntimeException(
+                "Duplicate filter name not detected by " +
+                "ServletContext#addFilter");
+        }
+
+        /*
+         * Make sure that if we register the same filter instance again
+         * (under a different name), null is returned
+         */
+        if (sc.addFilter("AgainFilter", filter) != null) {
+            throw new RuntimeException(
+                "Duplicate filter instance not detected by " +
+                "ServletContext#addFilter");
+        }
     }
 }

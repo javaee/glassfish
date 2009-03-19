@@ -7,16 +7,20 @@ import javax.servlet.http.*;
 
 public class NewServlet extends HttpServlet {
 
+    public void init() throws ServletException {
+        
+    }
+
     public void service(ServletRequest req, ServletResponse res)
             throws IOException, ServletException {
-        if (!"servletInitValue".equals(getServletConfig().getInitParameter(
-                        "servletInitName"))) {
+        if (!"servletInitParamValue".equals(
+                getServletConfig().getInitParameter("servletInitParamName"))) {
             throw new ServletException("Missing servlet init param");
         }
 
-        if (!"filterInitValue".equals(req.getAttribute("filterInitName"))) {
+        if (!"filterInitParamValue".equals(
+                req.getAttribute("filterInitParamName"))) {
             throw new ServletException("Missing filter init param");
         }
-
     }
 }
