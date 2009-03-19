@@ -348,7 +348,9 @@
         <ant dir="ssl" target="all"/>
         <ant dir="anonymousAccessForbidden" target="all"/>
         <ant dir="securityConstraintMapping" target="all"/>
+        <!-- XXX temporary commented out due to issue 7392
         <ant dir="sslCookie" target="all"/>
+        -->
         <ant dir="installationPathDisclosure" target="all"/>
         <ant dir="programmaticLogin" target="all"/>
         <ant dir="traceEnabled" target="all"/>
