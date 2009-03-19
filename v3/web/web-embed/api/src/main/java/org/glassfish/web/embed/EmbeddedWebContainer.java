@@ -56,11 +56,36 @@ public interface EmbeddedWebContainer {
      * <tt>WebListener</tt> and <tt>VirtualServer</tt> instances
      * registered with it.
      *
+     * <p>This method also creates and starts a default
+     * <tt>VirtualServer</tt> with id <tt>server</tt> and hostname
+     * <tt>localhost</tt>, as well as a default <tt>WebListener</tt>
+     * with id <tt>http-listener-1</tt> on port 8080.
+     * In order to change any of these default settings, 
+     * {@link #start(WebContainerConfig)} may be called.
+     * 
      * @throws Exception if an error occurs during the start up of this
      * <tt>EmbeddedWebContainer</tt> or any of its registered
      * <tt>WebListener</tt> or <tt>VirtualServer</tt> instances 
      */
     public void start() throws LifecycleException;
+
+    /**
+     * Starts this <tt>EmbeddedWebContainer</tt> and any of the
+     * <tt>WebListener</tt> and <tt>VirtualServer</tt> instances
+     * registered with it.
+     *
+     * <p>This method also creates and starts a default
+     * <tt>VirtualServer</tt> and <tt>WebListener</tt> with the
+     * configuration specified in the given <tt>config</tt> object.
+     *
+     * @param config the configuration for the default
+     * <tt>VirtualServer</tt> and <tt>WebListener</tt>
+     *
+     * @throws Exception if an error occurs during the start up of this
+     * <tt>EmbeddedWebContainer</tt> or any of its registered
+     * <tt>WebListener</tt> or <tt>VirtualServer</tt> instances 
+     */
+    public void start(WebContainerConfig config) throws LifecycleException;
 
     /**
      * Stops this <tt>EmbeddedWebContainer</tt> and any of the
@@ -74,8 +99,9 @@ public interface EmbeddedWebContainer {
     public void stop() throws LifecycleException;
 
     /**
-     * Creates a <tt>Context</tt> and configures it with the given
-     * docroot and classloader.
+     * Creates a <tt>Context</tt>, configures it with the given
+     * docroot and classloader, and registers it with the default
+     * <tt>VirtualServer</tt>.
      *
      * <p>The given classloader will be set as the thread's context
      * classloader whenever the new <tt>Context</tt> or any of its
@@ -159,14 +185,14 @@ public interface EmbeddedWebContainer {
      *
      * @param webListener the <tt>WebListener</tt> to add
      *
-     * @throws DuplicateException if a <tt>WebListener</tt> with the
+     * @throws ConfigException if a <tt>WebListener</tt> with the
      * same id has already been registered with this
      * <tt>EmbeddedWebContainer</tt>
      * @throws LifecycleException if the given <tt>webListener</tt> fails
      * to be started
      */
     public void addWebListener(WebListener webListener)
-        throws DuplicateException, LifecycleException;
+        throws ConfigException, LifecycleException;
 
     /**
      * Finds the <tt>WebListener</tt> with the given id.
@@ -203,7 +229,7 @@ public interface EmbeddedWebContainer {
 
     /**
      * Creates a <tt>VirtualServer</tt> with the given id and docroot, and
-     * attaches it to the given <tt>WebListener</tt> instances.
+     * maps it to the given <tt>WebListener</tt> instances.
      * 
      * @param id the id of the <tt>VirtualServer</tt>
      * @param docRoot the docroot of the <tt>VirtualServer</tt>
@@ -224,14 +250,14 @@ public interface EmbeddedWebContainer {
      *
      * @param virtualServer the <tt>VirtualServer</tt> to add
      *
-     * @throws DuplicateException if a <tt>VirtualServer</tt> with the
+     * @throws ConfigException if a <tt>VirtualServer</tt> with the
      * same id has already been registered with this
      * <tt>EmbeddedWebContainer</tt>
      * @throws LifecycleException if the given <tt>virtualServer</tt> fails
      * to be started
      */
     public void addVirtualServer(VirtualServer virtualServer)
-        throws DuplicateException, LifecycleException;
+        throws ConfigException, LifecycleException;
 
     /**
      * Finds the <tt>VirtualServer</tt> with the given id.

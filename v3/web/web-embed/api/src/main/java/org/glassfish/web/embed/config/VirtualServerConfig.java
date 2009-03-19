@@ -53,6 +53,7 @@ public class VirtualServerConfig {
     private String denyRemoteAddress;
     private String allowRemoteHost;
     private String denyRemoteHost;
+    private String[] hostNames;
 
     /**
      * Enables or disables Single-Sign-On.
@@ -281,4 +282,24 @@ public class VirtualServerConfig {
         return denyRemoteHost;
     }
 
+    /**
+     * Sets the host names that will be assigned to any
+     * <tt>VirtualServer</tt> configured via this
+     * <tt>VirtualServerConfig</tt>.
+     *
+     * @param hostNames the host names
+     */ 
+    public void setHostNames(String... hostNames) {
+        this.hostNames = hostNames;
+    }
+
+    /**
+     * Gets the host names assigned to any <tt>VirtualServer</tt> configured
+     * via this <tt>VirtualServerConfig</tt>.
+     *
+     * @return the host names
+     */
+    public String[] getHostNames() {
+        return hostNames;
+    }
 }

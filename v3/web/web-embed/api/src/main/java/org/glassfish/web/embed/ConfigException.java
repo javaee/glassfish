@@ -38,45 +38,46 @@
 package org.glassfish.web.embed;
 
 /**
- * Exception thrown when a web container component fails to be registered
- * due to its id (in the case of <tt>VirtualServer</tt> and
- * <tt>WebListener</tt>) or context root (in the case of <tt>Context</tt>)
- * clashing with that of an already registered component of the same type.
+ * Exception thrown when a web container component fails to be
+ * (re)configured, or if it fails to be registered with another web
+ * container component because its id (in the case of <tt>VirtualServer</tt>
+ * and <tt>WebListener</tt>) or context root (in the case of
+ * <tt>Context</tt>) is already taken.
  */
-public class DuplicateException extends Exception {
+public class ConfigException extends Exception {
 
     /**
-     * Constructs a <tt>DuplicateException</tt> with no detail message.
+     * Constructs a <tt>ConfigException</tt> with no detail message.
      * The cause is not initialized, and may subsequently be
      * initialized by a call to {@link #initCause(Throwable) initCause}.
      */
-    protected DuplicateException() { }
+    protected ConfigException() { }
 
     /**
-     * Constructs a <tt>DuplicateException</tt> with the specified detail
+     * Constructs a <tt>ConfigException</tt> with the specified detail
      * message. The cause is not initialized, and may subsequently be
      * initialized by a call to {@link #initCause(Throwable) initCause}.
      *
      * @param message the detail message
      */
-    protected DuplicateException(String message) {
+    protected ConfigException(String message) {
         super(message);
     }
 
     /**
-     * Constructs a <tt>DuplicateException</tt> with the specified detail
+     * Constructs a <tt>ConfigException</tt> with the specified detail
      * message and cause.
      *
      * @param  message the detail message
      * @param  cause the cause (which is saved for later retrieval by the
      *         {@link #getCause()} method)
      */
-    public DuplicateException(String message, Throwable cause) {
+    public ConfigException(String message, Throwable cause) {
         super(message, cause);
     }
 
     /**
-     * Constructs a <tt>DuplicateException</tt> with the specified cause.
+     * Constructs a <tt>ConfigException</tt> with the specified cause.
      * The detail message is set to:
      * <pre>
      *  (cause == null ? null : cause.toString())</pre>
@@ -86,7 +87,7 @@ public class DuplicateException extends Exception {
      * @param  cause the cause (which is saved for later retrieval by the
      *         {@link #getCause()} method)
      */
-    public DuplicateException(Throwable cause) {
+    public ConfigException(Throwable cause) {
         super(cause);
     }
 

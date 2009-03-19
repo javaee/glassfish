@@ -79,11 +79,11 @@ public interface WebListener extends Lifecycle {
      *
      * @param config the configuration to be applied
      * 
-     * @throws LifecycleException if the configuration requires a restart,
+     * @throws ConfigException if the configuration requires a restart,
      * and this <tt>WebListener</tt> fails to be restarted
      */
     public void setConfig(WebListenerConfig config)
-        throws LifecycleException;
+        throws ConfigException;
 
     /**
      * Gets the current configuration of this <tt>WebListener</tt>.

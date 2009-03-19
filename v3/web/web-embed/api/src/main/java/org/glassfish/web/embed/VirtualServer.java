@@ -96,13 +96,13 @@ public interface VirtualServer extends Lifecycle {
      * @param context the <tt>Context</tt> to register
      * @param contextRoot the context root at which to register
      *
-     * @throws DuplicateException if a <tt>Context</tt> already exists
+     * @throws ConfigException if a <tt>Context</tt> already exists
      * at the given context root on this <tt>VirtualServer</tt>
      * @throws LifecycleException if the given <tt>context</tt> fails
      * to be started
      */
     public void addContext(Context context, String contextRoot)
-        throws DuplicateException, LifecycleException;
+        throws ConfigException, LifecycleException;
 
     /**
      * Stops the given <tt>context</tt> and removes it from this
@@ -144,11 +144,11 @@ public interface VirtualServer extends Lifecycle {
      *
      * @param config the configuration to be applied
      * 
-     * @throws LifecycleException if the configuration requires a restart,
+     * @throws ConfigException if the configuration requires a restart,
      * and this <tt>VirtualServer</tt> fails to be restarted
      */
     public void setConfig(VirtualServerConfig config)
-        throws LifecycleException;
+        throws ConfigException;
 
     /**
      * Gets the current configuration of this <tt>VirtualServer</tt>.
