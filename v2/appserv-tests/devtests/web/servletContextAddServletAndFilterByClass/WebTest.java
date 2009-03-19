@@ -3,8 +3,8 @@ import java.net.*;
 import com.sun.ejte.ccl.reporter.*;
 
 /*
- * Unit test for ServletContext#add[Servlet|Filter] that take
- * [Servlet|Filter] Class objects (Servlet 3.0 feature).
+ * Unit test for ServletContext#add[Servlet|Filter] that takes
+ * [Servlet|Filter] Class object (Servlet 3.0 feature).
  */
 public class WebTest {
 
