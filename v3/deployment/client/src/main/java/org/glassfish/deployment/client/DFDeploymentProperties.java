@@ -256,16 +256,16 @@ public class DFDeploymentProperties extends Properties {
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<Object,Object> prop : props.entrySet()) {
             if (sb.length() > 0) {
-                sb.append(PROPERTIES_SEPARATOR);
+                sb.append(PROPERTY_SEPARATOR);
             }
             sb.append(prop.getKey()).append("=").append(prop.getValue());
         }
-        setProperty(PROPERTIES, sb.toString());
+        setProperty(PROPERTY, sb.toString());
     }
 
     public Properties getProperties() {
         Properties result = new Properties();
-        String[] settings = getProperty(PROPERTIES).split(PROPERTIES_SEPARATOR);
+        String[] settings = getProperty(PROPERTY).split(PROPERTY_SEPARATOR);
         for (String setting : settings) {
             int equals = setting.indexOf('=');
             if (equals != -1) {
@@ -309,8 +309,8 @@ public class DFDeploymentProperties extends Properties {
     public static final String DEFAULT_JAVA_WEB_START_ENABLED = "true";
     public static final String DEPLOYMENT_PLAN = "deploymentplan";
 
-    public static final String PROPERTIES = "properties";
-    private static final String PROPERTIES_SEPARATOR = ":";
+    public static final String PROPERTY = "property";
+    private static final String PROPERTY_SEPARATOR = ":";
     
     public static final String DEFAULT_UPLOAD = "true";
     public static final String DEFAULT_EXTERNALLY_MANAGED = "false";

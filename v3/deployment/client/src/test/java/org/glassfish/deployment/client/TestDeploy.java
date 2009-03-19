@@ -96,6 +96,7 @@ public class TestDeploy {
         options.setName(APP_NAME);
         Properties props = new Properties();
         props.setProperty("keepSessions", "true");
+        props.setProperty("foo", "bar");
         options.setProperties(props);
         DFProgressObject prog = df.deploy(
                 new Target[0] /* ==> deploy to the default target */, 

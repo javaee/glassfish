@@ -46,12 +46,13 @@ public class DFDeploymentPropertiesTest {
     public void testSetProperties() {
         Properties props = new Properties();
         props.setProperty("keepSessions", "true");
+        props.setProperty("foo", "bar");
 
         DFDeploymentProperties instance = new DFDeploymentProperties();
         instance.setProperties(props);
 
-        String storedProps = (String) instance.get(DFDeploymentProperties.PROPERTIES);
-        assertEquals(storedProps, "keepSessions=true");
+        String storedProps = (String) instance.get(DFDeploymentProperties.PROPERTY);
+        assertEquals(storedProps, "keepSessions=true:foo=bar");
     }
 
     /**
@@ -60,9 +61,10 @@ public class DFDeploymentPropertiesTest {
     @Test
     public void testGetProperties() {
         DFDeploymentProperties instance = new DFDeploymentProperties();
-        instance.put(DFDeploymentProperties.PROPERTIES, "keepSessions=true");
+        instance.put(DFDeploymentProperties.PROPERTY, "keepSessions=true:foo=bar");
         Properties expResult = new Properties();
         expResult.setProperty("keepSessions", "true");
+        expResult.setProperty("foo", "bar");
 
         Properties result = instance.getProperties();
         assertEquals(expResult, result);
