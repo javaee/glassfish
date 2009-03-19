@@ -38,6 +38,7 @@
 package org.glassfish.web.embed.config;
 
 /**
+ * An Enumeration of supported realm types
  * @author Rajiv Mordani
  */
 public enum RealmType {

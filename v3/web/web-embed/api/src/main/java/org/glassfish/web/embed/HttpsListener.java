@@ -42,8 +42,22 @@ import org.glassfish.web.embed.config.SslConfig;
 /**
  * @author Rajiv Mordani
  */
-
 public interface HttpsListener extends WebListener {
 
+    /**
+     * Sets the SSL configuration for this web listener
+     *
+     * @see org.glassfish.web.embed.config.SslConfig
+     *
+     * @param sslConfig the SSL configuration for this web listener
+     */
+    public void setSslConfig(SslConfig sslConfig);
+    /**
+     * Gets the SslConfig for this web listener
+     *
+     * @see org.glassfish.web.embed.config.SslConfig
+     *
+     * @return the SSL configuration for this listener
+     */
     public SslConfig getSslConfig();
 }

@@ -38,6 +38,12 @@
 package org.glassfish.web.embed.config;
 
 /**
+ * Class that is used for configuring form based login, when
+ * the authentication method is set to <tt>FORM</tt> in <tt>LoginConfig</tt>
+ *
+ * @see org.glassfish.web.embed.config.LoginConfig
+ * @see org.glassfish.web.embed.config.AuthMethod
+ *
  * @author Rajiv Mordani
  */
 public class FormLoginConfig {
@@ -48,6 +54,7 @@ public class FormLoginConfig {
     /**
      * Creates an instance of the <tt>FormLoginConfig</tt> with the specified <tt>loginPage</tt> and
      * <tt>errorPage</tt>
+     * 
      * @param loginPage
      * @param errorPage
      */
@@ -56,6 +63,11 @@ public class FormLoginConfig {
         this.errorPage = errorPage;
     }
 
+    /**
+     * Gets the login page
+     *
+     * @return the login page for form based authentication as a <tt>String</tt>
+     */
     public String getFormLoginPage() {
         return this.loginPage;
     }
@@ -63,7 +75,7 @@ public class FormLoginConfig {
     /**
      * Get the form error page
      *
-     * @return the error page as a <tt>String</tt>
+     * @return the error page for form based authentication as a <tt>String</tt>
      */
     public String getFormErrorPage() {
         return this.errorPage;

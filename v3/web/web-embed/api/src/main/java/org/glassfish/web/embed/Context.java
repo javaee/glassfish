@@ -49,7 +49,6 @@ import org.glassfish.web.embed.config.SecurityConfig;
  * @author Jan Luehe
  */
 // TODO: Add support for configuring environment entries
-// Security realms support
 public interface Context extends ServletContext, Lifecycle {
 
 
@@ -124,6 +123,22 @@ public interface Context extends ServletContext, Lifecycle {
      */
     public void isDirectoryListing();
 
+    /**
+     * Set the security related configuration for this context
+     *
+     * @see org.glassfish.web.embed.config.SecurityConfig
+     *
+     * @param config the security configuration for this context
+     */
+    public void setSecurityConfig(SecurityConfig config);
+
+    /**
+     * Gets the security related configuration for this context
+     *
+     * @see org.glassfish.web.embed.config.SecurityConfig
+     *
+     * @return the security configuration for this context
+     */
     public SecurityConfig getSecurityConfig();
 
 }

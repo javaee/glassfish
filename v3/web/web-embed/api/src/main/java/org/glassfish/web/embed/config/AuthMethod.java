@@ -38,10 +38,11 @@
 package org.glassfish.web.embed.config;
 
 /**
+ * Enumeration of supported authentication methods.
+ * 
  * @author Rajiv Mordani
  */
 public enum AuthMethod {
-
     BASIC,
     FORM,
     SSL,

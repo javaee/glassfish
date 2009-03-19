@@ -41,6 +41,12 @@ import org.glassfish.web.embed.config.FormLoginConfig;
 import org.glassfish.web.embed.config.AuthMethod;
 
 /**
+ * The class configures the authentication related parameters like,
+ * authentication method, form login configuration, if authentication method
+ * is form based authentication, the realm name and the realm type.
+ *
+ * @see org.glassfish.web.embed.config.SecurityConfig
+ *
  * @author Rajiv Mordani
  */
 public class LoginConfig {
@@ -50,39 +56,94 @@ public class LoginConfig {
     String realmName;
     RealmType realmType;
 
+    /**
+     * Create an instance of <tt>LoginConfig</tt>.
+     */
     public LoginConfig() {
-        
+
     }
 
-
+    /**
+     * Set the authentication scheme to be used for a given
+     * context
+     *
+     * @param authMethod one of the supported auth methods as
+     * defined in <tt>AuthMethod</tt> enumeration
+     */
     public void setAuthMethod(AuthMethod authMethod) {
         this.authMethod = authMethod;
     }
 
+    /**
+     * Gets the auth method for the context
+     * @return the authmethod for the context
+     */
     public AuthMethod getAuthMethod() {
         return this.authMethod;        
     }
-    
+
+    /**
+     * Sets the realm name to be used for the context
+     *
+     * @param realmName the realm name for the context
+     */
     public void setRealmName(String realmName) {
         this.realmName = realmName;
     }
 
+    /**
+     * Gets the realm name set for the context
+     *
+     * @return the realm name for the context
+     */
     public String getRealmName() {
         return this.realmName;
     }
 
+    /**
+     * Sets the realm type for the context. The realm type
+     * must be one of the supported realm types as defined in the
+     * <tt>RealmType</tt> enumeration
+     *
+     * @see org.glassfish.web.embed.config.RealmType
+     *
+     * @param realmType the realm type for the context
+     */
     public void setRealmType(RealmType realmType) {
         this.realmType = realmType;
     }
 
+    /**
+     * Gets the realm type for the context
+     *
+     * @see org.glassfish.web.embed.config.RealmType
+     * 
+     * @return the realm type for the context
+     */
     public RealmType getRealmType() {
         return this.realmType;
     }
 
+    /**
+     * Set the form login configuration, if the authentication
+     * method is form based authentication
+     *
+     * @see org.glassfish.web.embed.config.FormLoginConfig
+     * 
+     * @param flc form login configuration
+     */
     public void setFormLoginConfig(FormLoginConfig flc) {
         this.flc = flc;        
     }
 
+    /**
+     * Gets the form login config, or <tt>null</tt> if
+     * the authentication scheme is not form based login.
+     *
+     * @see org.glassfish.web.embed.config.FormLoginConfig
+     * 
+     * @return form login configuration
+     */
     public FormLoginConfig getFormLoginConfig() {
         return this.flc;        
     }

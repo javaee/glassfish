@@ -40,6 +40,8 @@ package org.glassfish.web.embed.config;
 import java.util.Set;
 
 /**
+ * This class represents a list of URL patterns and HTTP
+ * methods that describe a set of Web resources to be protected.
  * @author Rajiv Mordani
  */
 public class WebResourceCollection {
@@ -49,37 +51,71 @@ public class WebResourceCollection {
     private Set<String> httpMethods;
     private Set<String> httpMethodOmissions;
 
+    /**
+     * Sets the name of this collection
+     *
+     * @param name the name of this collection
+     */
     public void setName(String name) {
         this.name = name;
     }
-    
+
+    /**
+     * Gets the name of this collection
+     *
+     * @return the name of this collection
+     */
     public String getName() {
         return this.name;
     }
 
+    /**
+     * The set of url patterns that correspond to this
+     * web resource
+     * 
+     * @param urlPatterns
+     */
     public void setUrlPatterns(Set<String> urlPatterns) {
         this.urlPatterns = urlPatterns;          
     }
 
+    /**
+     *
+     * @return
+     */
     public Set<String> getUrlPatterns() {
         return this.urlPatterns;
     }
 
+    /**
+     *
+     * @param httpMethods
+     */
     public void setHttpMethods(Set<String> httpMethods) {
         this.httpMethods = httpMethods;
     }
 
+    /**
+     *
+     * @return
+     */
     public Set<String> getHttpMethods() {
         return this.httpMethods;
     }
 
+    /**
+     *
+     * @param httpMethodOmissions
+     */
     public void setHttpMethodOmissions(Set<String> httpMethodOmissions) {
         this.httpMethodOmissions = httpMethodOmissions;
     }
 
+    /**
+     *
+     * @return
+     */
     public Set<String> getHttpMethodOmissions() {
         return this.httpMethodOmissions;
     }
-
-
 }

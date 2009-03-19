@@ -53,47 +53,89 @@ public final class SslConfig {
     private long timoutMilliSeconds;
     private Set<SslType> algorithms;
 
+    /**
+     *
+     */
     public SslConfig() {
         
     }
 
+    /**
+     *
+     * @param keyStore
+     */
     public void setKeyStore(String keyStore) {
         this.keyStore = keyStore;
     }
 
+    /**
+     *
+     * @param trustStore
+     */
     public void setTrustStore(File trustStore) {
         this.trustStore = trustStore;
     }
 
+    /**
+     *
+     * @param keyPassword
+     */
     public void setKeyPassword(String keyPassword) {
         this.keyPassword = keyPassword;
     }
 
+    /**
+     *
+     * @param timeoutMilliSeconds
+     */
     public void setHandshakeTimeout(long timeoutMilliSeconds) {
         this.timoutMilliSeconds = timoutMilliSeconds;
     }
 
+    /**
+     *
+     * @param algorithms
+     */
     public void setAlgorithms(Set<SslType> algorithms) {
         this.algorithms = algorithms;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getKeyStore() {
         return this.keyStore;
     }
 
+    /**
+     *
+     * @return
+     */
     public File getTrustStore() {
         return this.trustStore;
     }
 
-
+    /**
+     *
+     * @return
+     */
     public String getKeyPassword() {
         return this.keyPassword;
     }
 
+    /**
+     *
+     * @return
+     */
     public long getHandshakeTimeout() {
         return this.timoutMilliSeconds;
     }
 
+    /**
+     *
+     * @return
+     */
     public Set<SslType> getAlgorithms() {
         return this.algorithms;
     }
