@@ -2,5 +2,6 @@
                             com.sun.enterprise.module; \
                             com.sun.enterprise.module.bootstrap; \
                             com.sun.enterprise.module.common_impl; \
+                            com.sun.enterprise.module.single; \
                             com.sun.enterprise.module.impl; version=${project.osgi.version}
 
