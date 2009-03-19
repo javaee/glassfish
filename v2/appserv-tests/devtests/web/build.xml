@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="358"/>
+    <property name="TOTAL_EXPECTED" value="359"/>
 
     &commonSetup;
     &commonBuild;
@@ -208,6 +208,7 @@
         <ant dir="servletRequestURIMultipleSemicolons" target="all"/>
         <ant dir="sessionSetAttributeJavaxNamingContext" target="all"/>
         <ant dir="sessionCookieConfig" target="all"/>
+        <ant dir="sessionCookieConfigDeclarative" target="all"/>
         <ant dir="sessionCookieCustomNameProgrammatic" target="all"/>
         <ant dir="sessionCookiePropertiesProgrammatic" target="all"/>
         <ant dir="webServletAnnotation" target="all"/>
