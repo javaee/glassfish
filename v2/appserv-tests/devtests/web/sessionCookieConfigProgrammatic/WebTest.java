@@ -3,14 +3,12 @@ import java.net.*;
 import com.sun.ejte.ccl.reporter.*;
 
 /*
- * Unit test for customizing all session tracking cookie properties
- * programmatically (from a ServletContextListener).
+ * Unit test for customizing complete list of session tracking cookie
+ * properties programmatically (from a ServletContextListener).
  */
 public class WebTest {
 
-    private static String TEST_NAME = "session-cookie-properties-programmatic";
-
-    private static final String MYJSESSIONID = "MYJSESSIONID";
+    private static String TEST_NAME = "session-cookie-config-programmatic";
 
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
@@ -27,8 +25,9 @@ public class WebTest {
     
     public static void main(String[] args) {
 
-        stat.addDescription("Unit test for customizing all session " +
-                            "tracking cookie properties");
+        stat.addDescription("Unit test for customizing complete list of " +
+                            "session tracking cookie properties " +
+                            "programmatically");
         WebTest webTest = new WebTest(args);
 
         try {
@@ -44,51 +43,56 @@ public class WebTest {
 
     public void run() throws Exception {
 
-        Socket sock = new Socket(host, new Integer(port).intValue());
-        OutputStream os = sock.getOutputStream();
-        String get = "GET " + contextRoot + "/CreateSession HTTP/1.0\n";
-        System.out.println(get);
-        os.write(get.getBytes());
-        os.write("\r\n".getBytes());
-        
-        InputStream is = sock.getInputStream();
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
-        String sessionCookie = null;
-        while ((sessionCookie = br.readLine()) != null) {
-            System.out.println(sessionCookie);
-            if (sessionCookie.startsWith("Set-Cookie:")
-                    || sessionCookie.startsWith("Set-cookie:")) {
-                break;
-            }
+        String url = "http://" + host + ":" + port + contextRoot
+                     + "/CreateSession";
+        HttpURLConnection conn = (HttpURLConnection)
+            (new URL(url)).openConnection();
+
+        int code = conn.getResponseCode();
+        if (code != 200) {
+            throw new Exception("Unexpected return code: " + code);
         }
+
+        String sessionCookie = conn.getHeaderField("Set-Cookie");
+        System.out.println("Response cookie: " + sessionCookie);
 
         if (sessionCookie == null) {
             throw new Exception("Missing Set-Cookie response header");
         }
 
+        // name
         if (sessionCookie.indexOf("MYJSESSIONID=") == -1) {
             throw new Exception("Missing session id");
         }
 
+        // comment
         if (sessionCookie.indexOf("Comment=myComment") == -1) {
             throw new Exception("Missing cookie comment");
         }      
 
+        // domain
         if (sessionCookie.indexOf("Domain=mydomain") == -1) {
             throw new Exception("Missing cookie domain");
         }      
 
+        // path
         if (sessionCookie.indexOf("Path=/myPath") == -1) {
             throw new Exception("Missing cookie path");
         }      
 
+        // secure
         if (sessionCookie.indexOf("Secure") == -1) {
             throw new Exception("Missing Secure attribute");
         }      
 
+        // http-only
         if (sessionCookie.indexOf("HttpOnly") == -1) {
             throw new Exception("Missing HttpOnly attribute");
         }      
 
+        // max-age
+        if (sessionCookie.indexOf("Max-Age=123") == -1) {
+            throw new Exception("Missing max-age");
+        }      
     }
 }

@@ -21,6 +21,7 @@ public class ConfigListener implements ServletContextListener {
         scc.setComment("myComment");
         scc.setSecure(true);
         scc.setHttpOnly(true);
+        scc.setMaxAge(123);
     }
 
     /**
