@@ -209,7 +209,6 @@ public class ConnectorRegistry {
      * @param poolName Name of the pool
      * @param pmd      MCF instance to be added.
      */
-    //TODO V3 why pool-meta-data is stored using addMCF() ??
     public void addManagedConnectionFactory(String poolName,
                                             PoolMetaData pmd) {
         factories.put(poolName, pmd);

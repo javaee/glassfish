@@ -139,7 +139,6 @@ public final class ConnectorMessageBeanClient
 
         String resourceAdapterMid = descriptor_.getResourceAdapterMid();
 
-        //TODO V3 temporary ? or right approach ?
         if (resourceAdapterMid == null) {
             resourceAdapterMid = System.getProperty(RA_MID);
             if (resourceAdapterMid == null) {
