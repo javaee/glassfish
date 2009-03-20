@@ -107,20 +107,18 @@ class ApplicationDispatcherForward {
                        Wrapper wrapper)
             throws IOException, ServletException {
 
-        ResponseFacade responseFacade = getResponseFacade(response);
-        int statusCode = responseFacade.getStatus();
+        int statusCode = response.getStatus();
         Object exception = request.getAttribute(
             RequestDispatcher.ERROR_EXCEPTION);
         String errorReportValveClass = 
             ((StandardHost)(context.getParent())).getErrorReportValveClass();
-
         if (errorReportValveClass != null && statusCode >= 400
                 && exception == null) {
-            boolean matchFound = status(request, response, responseFacade,
-                                        context, wrapper, statusCode);
+            boolean matchFound = status(request, response,
+                getResponseFacade(response), context, wrapper, statusCode);
             if (!matchFound) {
-                serveDefaultErrorPage(request, response, responseFacade,
-                                      statusCode);
+                serveDefaultErrorPage(request, response,
+                    getResponseFacade(response), statusCode);
             }
         }
 
