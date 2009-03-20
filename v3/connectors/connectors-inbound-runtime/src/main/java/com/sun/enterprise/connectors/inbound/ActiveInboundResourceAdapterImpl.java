@@ -42,6 +42,7 @@ import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
 import com.sun.enterprise.deployment.runtime.BeanPoolDescriptor;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 
 import javax.resource.spi.ResourceAdapter;
 import javax.resource.spi.ActivationSpec;
@@ -161,21 +162,10 @@ public class ActiveInboundResourceAdapterImpl extends ActiveOutboundResourceAdap
     /**
      * {@inheritDoc}
      */
-    public boolean handles(ConnectorDescriptor cd) {
-        //TODO V3 right assumption ?
-        //TODO V3 ignore JMS-RA
-        //TODO V3 later multiple JMS Ras will be present (ignore all)
-       // return (cd.getInBoundDefined() && !(ConnectorConstants.DEFAULT_JMS_ADAPTER.equals(moduleName_)));
-        return (cd.getInBoundDefined() && !isJMSRA(cd));
+    public boolean handles(ConnectorDescriptor cd, String moduleName) {
+        //TODO V3 later multiple JMS Ras will be present (need to ignore all)
+        return (cd.getInBoundDefined() && !ConnectorsUtil.isJMSRA(moduleName));
      }
-
-    protected boolean isJMSRA(ConnectorDescriptor cd) {
-        if(cd.getModuleID() != null) {
-            return
-            (cd.getModuleID().contains(ConnectorConstants.DEFAULT_JMS_ADAPTER));
-        }
-        return false;
-    }
 
 
     /**

@@ -124,7 +124,7 @@ public class ActiveRAFactory {
     private  ActiveResourceAdapter instantiateActiveResourceAdapter(ConnectorDescriptor cd,
                                                                     String moduleName, ClassLoader loader,
                                                                     ResourceAdapter ra) throws ConnectorRuntimeException {
-        ActiveResourceAdapter activeResourceAdapter = getActiveRA(cd);
+        ActiveResourceAdapter activeResourceAdapter = getActiveRA(cd, moduleName);
 
         if(activeResourceAdapter != null){
             activeResourceAdapter.init(ra, cd, moduleName, loader);            
@@ -132,15 +132,19 @@ public class ActiveRAFactory {
         return activeResourceAdapter;
     }
 
-    private ActiveResourceAdapter getActiveRA(ConnectorDescriptor cd){
+    private ActiveResourceAdapter getActiveRA(ConnectorDescriptor cd, String moduleName)
+            throws ConnectorRuntimeException{
         Collection<ActiveResourceAdapter> activeRAs =  activeRAHabitat.getAllByContract(ActiveResourceAdapter.class);
         for(ActiveResourceAdapter activeRA : activeRAs){
-            if(activeRA.handles(cd)){
-                //TODO V3 fine log indicating which ARA class is returned
+            if(activeRA.handles(cd, moduleName)){
+                if(_logger.isLoggable(Level.FINEST)){
+                    _logger.log(Level.FINEST,"found active-RA for the module [ "+moduleName+" ] " +
+                        activeRA.getClass().getName());
+                }
                 return activeRA;
             }
         }
         //could not fine any impl.
-        return null;
+        throw new ConnectorRuntimeException("Unable to get active RA for module " + moduleName);
     }
 }

@@ -269,7 +269,7 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
     /**
      * {@inheritDoc}
      */
-    public boolean handles(ConnectorDescriptor cd) {
+    public boolean handles(ConnectorDescriptor cd, String moduleName) {
         return "".equals(cd.getResourceAdapterClass());
     }
 
@@ -301,13 +301,9 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
             mcf = instantiateMCF(mcfClass, jcl);
 
             if (mcf instanceof ConfigurableTransactionSupport) {
-                TransactionSupport ts = ConnectionPoolObjectsUtils.getTransactionSupport(ccp.getTransactionSupport());
-                if(!TransactionSupport.XA_TRANSACTION.equals(ts) ){
-                    ((ConfigurableTransactionSupport) mcf).setTransactionSupport(ts);
-                }else{
-                    //TODO V3 handle XA transaction support later
-                    throw new UnsupportedOperationException("XA Transaction is not supported");
-                }
+                TransactionSupport ts = ConnectionPoolObjectsUtils.getTransactionSupport(
+                                ccp.getTransactionSupport());
+                ((ConfigurableTransactionSupport)mcf).setTransactionSupport(ts);
             }
 
             SetMethodAction setMethodAction = new SetMethodAction
@@ -315,12 +311,7 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
             setMethodAction.run();
             _logger.log(Level.FINE, "Created MCF object : ", mcfClass);
             return mcf;
-        } /*catch (PrivilegedActionException ex) {
-            _logger.log(Level.SEVERE, "rardeployment.privilegedaction_error",
-                    new Object[]{mcfClass, ex.getException().getMessage()});
-            _logger.log(Level.FINE, "rardeployment.privilegedaction_error", ex.getException());
-            return null;
-        } */catch (ClassNotFoundException Ex) {
+        } catch (ClassNotFoundException Ex) {
             _logger.log(Level.SEVERE, "rardeployment.class_not_found", new Object[]{mcfClass, Ex.getMessage()});
             _logger.log(Level.FINE, "rardeployment.class_not_found", Ex);
             return null;

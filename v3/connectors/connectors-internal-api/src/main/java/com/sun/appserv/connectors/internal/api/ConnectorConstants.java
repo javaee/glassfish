@@ -327,12 +327,6 @@ public interface ConnectorConstants {
 
     //TODO V3 should be taken from ResourceDeployEvent
     /**
-     * Constant to denote persistence manager factory resource type.
-     */
-    public static final String RES_TYPE_PMF = "pmf";
-
-    //TODO V3 should be taken from ResourceDeployEvent
-    /**
      * Constant to denote admin object resource type.
      */
     public static final String RES_TYPE_AOR = "aor";

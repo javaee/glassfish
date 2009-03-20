@@ -72,7 +72,6 @@ import java.util.logging.Logger;
 @Scoped(PerLookup.class)
 public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
 
-    //TODO V3 need to expose 1.5 related lifecycle methods via a contract so that ActiveJMSRA can utilize them
     protected ResourceAdapter resourceadapter_; //runtime instance
 
     protected String moduleName_;
@@ -140,7 +139,11 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
         }
     }
 
-    //TODO V3 let ActiveJMSRA override
+    /**
+     * called by connector runtime to start the resource-adapter java bean
+     * @param bootstrapContext BootstrapContext
+     * @throws ResourceAdapterInternalException 
+     */
     protected void startResourceAdapter(BootstrapContext bootstrapContext) throws ResourceAdapterInternalException {
         resourceadapter_.start(bootstrapContext);
     }
@@ -148,7 +151,7 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
     /**
      * {@inheritDoc}
      */
-    public boolean handles(ConnectorDescriptor cd) {
+    public boolean handles(ConnectorDescriptor cd, String moduleName) {
         boolean adminObjectsDefined = false;
         Set adminObjects = cd.getAdminObjects();
         if (adminObjects != null && adminObjects.size() > 0) {
@@ -176,11 +179,13 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
      * @throws ConnectorRuntimeException If there is a failure
      */
     public void setup() throws ConnectorRuntimeException {
-        //TODO V3 need for this check ?
         if (connectionDefs_ == null || connectionDefs_.length == 0) {
             return;
         }
-        super.setup();
+        if (isServer() && !isSystemRar(moduleName_)) {
+            createAllConnectorResources();
+        }
+        _logger.log(Level.FINE, "Completed Active Resource adapter setup", moduleName_);
     }
 
     /**
@@ -271,12 +276,19 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
         }
     }
 
+    /**
+     * merge RA bean configuration with resource-adapter-config properties
+     * Union of both.
+     * resource-adapter-config properties will override the values of resource-adapter bean's config
+     * @param raConfig resource-adapter-config
+     * @param raConfigProps resource-adapter bean configuration
+     * @return merged set of config properties
+     */
     protected Set mergeRAConfiguration(ResourceAdapterConfig raConfig, List<Property> raConfigProps) {
         Set mergedProps;
         if (raConfig != null) {
             raConfigProps = raConfig.getProperty();
         }
-        //TODO V3 handle JMS RA Hack
         mergedProps = ConnectorDDTransformUtils.mergeProps(raConfigProps, getDescriptor().getConfigProperties());
         return mergedProps;
     }

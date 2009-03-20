@@ -92,7 +92,7 @@ public interface ActiveResourceAdapter {
      * @param desc ConnectorDescriptor
      * @return boolean indiating whether a ActiveRA can handle the RAR
      */
-    public boolean handles(ConnectorDescriptor desc);
+    public boolean handles(ConnectorDescriptor desc, String moduleName);
 
     /**
      * Creates managed Connection factories corresponding to one pool.

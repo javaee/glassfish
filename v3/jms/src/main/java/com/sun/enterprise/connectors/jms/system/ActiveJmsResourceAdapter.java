@@ -882,13 +882,8 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl {
         return converted;
     }
 
-    public boolean handles(ConnectorDescriptor cd) {
-        //return ConnectorConstants.DEFAULT_JMS_ADAPTER.equals(moduleName_);
-       if(cd.getModuleID() != null) {
-            return
-            (cd.getModuleID().contains(ConnectorConstants.DEFAULT_JMS_ADAPTER));
-        }
-        return false;
+    public boolean handles(ConnectorDescriptor cd, String moduleName) {
+        return ConnectorsUtil.isJMSRA(moduleName);
     }
 
     public void validateActivationSpec(ActivationSpec spec) {
