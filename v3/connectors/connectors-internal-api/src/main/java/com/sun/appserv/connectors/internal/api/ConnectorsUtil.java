@@ -38,6 +38,7 @@ package com.sun.appserv.connectors.internal.api;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
 import com.sun.enterprise.deployment.EnvironmentProperty;
+import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import com.sun.logging.LogDomains;
 
@@ -171,7 +172,6 @@ public class ConnectorsUtil {
                 instance instanceof MailResource ||
                 instance instanceof ExternalJndiResource ||
                 instance instanceof CustomResource ||
-                instance instanceof PersistenceManagerFactoryResource ||
                 instance instanceof AdminObjectResource ||
                 instance instanceof ResourceAdapterConfig ) ;
     }
@@ -413,8 +413,6 @@ public class ConnectorsUtil {
             return ConnectorConstants.RES_TYPE_EXTERNAL_JNDI;
         } else if (resource instanceof CustomResource){
             return ConnectorConstants.RES_TYPE_CUSTOM;
-        } else if (resource instanceof PersistenceManagerFactoryResource){
-            return ConnectorConstants.RES_TYPE_PMF;
         } else if (resource instanceof AdminObjectResource){
             return ConnectorConstants.RES_TYPE_AOR;
         } else if (resource instanceof ResourceAdapterConfig){
@@ -489,5 +487,12 @@ public class ConnectorsUtil {
         }
 
         return mergedProps;
+    }
+    
+    public static boolean isJMSRA(String moduleName) {
+        if(ConnectorConstants.DEFAULT_JMS_ADAPTER.equals(moduleName)){
+            return true;
+        }
+        return false;
     }
 }
