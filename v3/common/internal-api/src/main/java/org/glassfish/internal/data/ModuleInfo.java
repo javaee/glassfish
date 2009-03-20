@@ -195,8 +195,10 @@ public class ModuleInfo {
         
         // registers all deployed items.
         for (EngineRef engine : _getEngineRefs()) {
-
+            ClassLoader currentClassLoader  = 
+                Thread.currentThread().getContextClassLoader();
             try {
+                Thread.currentThread().setContextClassLoader(context.getClassLoader());
                 if (!engine.start( context, tracker)) {
                     report.failure(logger, "Module not started " +  engine.getApplicationContainer().toString());
                     throw new Exception( "Module not started " +  engine.getApplicationContainer().toString());
@@ -204,6 +206,8 @@ public class ModuleInfo {
             } catch(Exception e) {
                 report.failure(logger, "Exception while invoking " + engine.getApplicationContainer().getClass() + " start method", e);
                 throw e;
+            } finally {
+                Thread.currentThread().setContextClassLoader(currentClassLoader);
             }
         }
         started=true;
