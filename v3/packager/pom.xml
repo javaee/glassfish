@@ -65,6 +65,7 @@
 	<module>glassfish-api</module>
 	<module>glassfish-nucleus</module>
 	<module>glassfish-common</module>
+	<module>glassfish-common-full</module>
 	<module>glassfish-registration</module>
 	<module>glassfish-management</module>
 	<module>glassfish-amx</module>
@@ -93,6 +94,7 @@
 	<module>glassfish-scripting</module>
 	<module>javadb</module>
 	<module>jersey</module>	
+	<!--module>glassfish-bean-validation</module-->
     </modules>
 
     <build>
