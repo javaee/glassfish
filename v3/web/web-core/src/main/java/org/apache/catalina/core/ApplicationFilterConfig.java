@@ -198,16 +198,6 @@ final class ApplicationFilterConfig implements FilterConfig, Serializable {
     }
 
 
-    public Object getInitAttribute(String name) {
-        return filterDef.getInitAttribute(name);
-    }
-
-
-    public Iterable<String> getInitAttributeNames() {
-        return filterDef.getInitAttributeNames();
-    }
-
-
     /**
      * Return the ServletContext of our associated web application.
      */

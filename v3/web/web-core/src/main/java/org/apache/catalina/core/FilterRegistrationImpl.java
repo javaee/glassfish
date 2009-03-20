@@ -104,23 +104,6 @@ public class FilterRegistrationImpl implements FilterRegistration {
     }
 
 
-    public boolean setInitAttribute(String name, Object value) {
-        if (ctx.isContextInitializedCalled()) {
-            throw new IllegalStateException(
-                sm.getString("filterRegistration.alreadyInitialized",
-                             "init attribute", filterDef.getFilterName(),
-                             ctx.getName()));
-        }
-
-        return filterDef.setInitAttribute(name, value);
-    }
-
-
-    public boolean setInitAttributes(Map<String, Object> initAttributes) {
-        return filterDef.setInitAttributes(initAttributes);
-    }
-
-
     public boolean setAsyncSupported(boolean isAsyncSupported) {
         if (ctx.isContextInitializedCalled()) {
             throw new IllegalStateException(

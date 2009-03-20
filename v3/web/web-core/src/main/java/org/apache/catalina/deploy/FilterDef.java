@@ -118,12 +118,6 @@ public class FilterDef implements Serializable {
     private Map<String, String> parameters = new HashMap<String, String>();
 
     /**
-     * The set of initialization attributes for this filter, keyed by
-     * attribute name.
-     */
-    private Map<String, Object> attributes = new HashMap<String, Object>();
-
-    /**
      * True if this filter supports async operations, false otherwise
      */
     private boolean isAsyncSupported = false;
@@ -398,62 +392,6 @@ public class FilterDef implements Serializable {
     public void removeInitParameter(String name) {
         synchronized (parameters) {
             parameters.remove(name);
-        }
-    }
-
-
-    public boolean setInitAttribute(String name, Object value) {
-        if (null == name || null == value) {
-            throw new IllegalArgumentException(
-                "Null filter init attribute name or value");
-        }
-
-        synchronized (attributes) {
-            if (!attributes.containsKey(name)) {
-                attributes.put(name, value);
-                return true;
-            } else {
-                return false;
-            }
-        }
-    }
-
-
-    public boolean setInitAttributes(Map<String, Object> initAttributes) {
-        if (null == initAttributes) {
-            throw new IllegalArgumentException("Null init attributes");
-        }
-
-        synchronized (attributes) {
-            for (Map.Entry<String, Object> e : initAttributes.entrySet()) {
-                if (e.getKey() == null || e.getValue() == null) {
-                    throw new IllegalArgumentException(
-                        "Null attribute name or value");
-                }
-                if (attributes.containsKey(e.getKey())) {
-                    return false;
-                }
-            }
-
-            for (Map.Entry<String, Object> e : initAttributes.entrySet()) {
-                setInitAttribute(e.getKey(), e.getValue());
-            }
-   
-            return true;
-        }
-    }
-
-
-    public Object getInitAttribute(String name) {
-        synchronized (attributes) {
-            return attributes.get(name);
-        }
-    }        
-
-
-    public Iterable<String> getInitAttributeNames() {
-        synchronized (attributes) {
-            return attributes.keySet();
         }
     }
 
