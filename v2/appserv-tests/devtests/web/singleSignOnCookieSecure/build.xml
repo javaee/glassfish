@@ -86,7 +86,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.virtual-server.server.property.sso-enabled="/>
+                   value="${appserver.instance.name}.http-service.virtual-server.server.property.sso-enabled=false"/>
         </antcall>
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
