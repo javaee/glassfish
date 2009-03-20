@@ -106,6 +106,10 @@
            <artifactId>osgi-adapter</artifactId>
        </dependency>
        <dependency>
+           <groupId>com.sun.enterprise</groupId>
+           <artifactId>osgi-main</artifactId>
+       </dependency>
+       <dependency>
            <groupId>org.glassfish.core</groupId>
            <artifactId>glassfish</artifactId>
            <version>${project.version}</version>

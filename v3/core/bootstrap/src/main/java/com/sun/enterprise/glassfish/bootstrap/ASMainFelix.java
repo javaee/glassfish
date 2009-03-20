@@ -40,7 +40,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URI;
 import java.util.logging.Logger;
 
 /**
@@ -76,8 +75,8 @@ public class ASMainFelix extends ASMainOSGi {
         String confFileURL = new File(fwDir, "conf/config.properties").toURI().toURL().toString();
         System.setProperty("felix.config.properties", confFileURL);
         File cacheProfileDir = new File(domainDir, "felix-cache/gf/");
-        setUpCache(bootstrapFile.getParentFile(), cacheProfileDir);
         System.setProperty("felix.cache.profiledir", cacheProfileDir.getCanonicalPath());
+        setUpCache(bootstrapFile.getParentFile(), cacheProfileDir);
         Class mc = launcherCL.loadClass(getFWMainClassName());
         final String[] args = new String[0];
         final Method m = mc.getMethod("main", new Class[]{args.getClass()});

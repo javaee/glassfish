@@ -6,15 +6,17 @@
        bin/
           felix.jar
        bundle/
-          org.apache.felix.shell.jar 
-	  org.apache.felix.shell.tui.jar 
-          org.apache.felix.shell.remote.jar 
        conf/
           config.properties
           system.properties
+  modules/
+       org.apache.felix.shell.jar 
+       org.apache.felix.shell.tui.jar 
+       org.apache.felix.shell.remote.jar 
 
-   This is exactly how the layout would look if one downloads the Felix
-   distribution from Felix project and installs.
+   This is more or less how the layout would look if one downloads the Felix
+   distribution from Felix project and installs. The only difference being we keep
+   the bundles in glassfish/modules dir as opposed to bundle dir in felix.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -34,6 +36,7 @@
     <packaging>distribution-fragment</packaging>
     <properties>
         <felix.outdir>${project.build.OutputDirectory}/glassfish/felix/</felix.outdir>
+        <glassfish.modulesdir>${project.build.OutputDirectory}/glassfish/modules/</glassfish.modulesdir>
     </properties>
     <build>
         <plugins>
@@ -64,21 +67,21 @@
                                <artifactId>org.apache.felix.shell</artifactId>
                                <version>1.0.2</version>
                                <type>jar</type>
-                               <outputDirectory>${felix.outdir}/bundle</outputDirectory>
+                               <outputDirectory>${glassfish.modulesdir}</outputDirectory>
                              </artifactItem>
                              <artifactItem>
                                <groupId>org.apache.felix</groupId>
                                <artifactId>org.apache.felix.shell.tui</artifactId>
                                <version>1.0.2</version>
                                <type>jar</type>
-                               <outputDirectory>${felix.outdir}/bundle</outputDirectory>
+                               <outputDirectory>${glassfish.modulesdir}</outputDirectory>
                              </artifactItem>
                              <artifactItem>
                                <groupId>org.apache.felix</groupId>
                                <artifactId>org.apache.felix.shell.remote</artifactId>
-                               <version>1.0.2</version>
+                               <version>1.0.4</version>
                                <type>jar</type>
-                               <outputDirectory>${felix.outdir}/bundle</outputDirectory>
+                               <outputDirectory>${glassfish.modulesdir}</outputDirectory>
                              </artifactItem>
                            </artifactItems>
                          </configuration>

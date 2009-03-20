@@ -200,9 +200,10 @@ public class ASMainHelper {
     }
 
     /**
-     * Determines the root directory of the domain that we'll start.
+     * Determines the root directory of the domain that we'll start and
+     * sets the system property called {@link #INSTANCE_ROOT_PROP_NAME}.
      */
-    /*package*/ void verifyDomainRoot(File domainRoot)
+    /*package*/ void verifyAndSetDomainRoot(File domainRoot)
     {
         String msg = null;
 

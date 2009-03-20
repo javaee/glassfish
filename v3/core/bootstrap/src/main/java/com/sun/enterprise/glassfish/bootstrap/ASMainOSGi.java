@@ -38,27 +38,23 @@ package com.sun.enterprise.glassfish.bootstrap;
 
 import com.sun.enterprise.module.bootstrap.ArgumentManager;
 import com.sun.enterprise.module.bootstrap.StartupContext;
-import com.sun.enterprise.module.bootstrap.Which;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectOutputStream;
 import java.util.Properties;
 import java.util.logging.Logger;
-import java.util.logging.Level;
 import java.net.MalformedURLException;
 import java.net.URI;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
+ * @author Jerome.Dochez@Sun.COM
  */
 public abstract class ASMainOSGi extends AbstractMain {
 
+    // TODO(Sahoo): Stop adding derby jars to classpath once
+    
     /**
      * The class loader used to intialize the OSGi platform.
      * This will also be the parent class loader of all the OSGi bundles.
@@ -68,8 +64,6 @@ public abstract class ASMainOSGi extends AbstractMain {
     protected Logger logger;
 
     protected ASMainHelper helper;
-
-    protected StartupContext context;
 
     protected File glassfishDir; // glassfish/
 
@@ -85,15 +79,23 @@ public abstract class ASMainOSGi extends AbstractMain {
     private String[] additionalJars = {
     };
 
-
     public ASMainOSGi(Logger logger, String... args) {
         this.logger = logger;
         glassfishDir = bootstrapFile.getParentFile().getParentFile(); //glassfish/
         helper = new ASMainHelper(logger);
+        helper.parseAsEnv(glassfishDir);
+        domainDir = helper.getDomainRoot(new StartupContext(bootstrapFile, args));
+        helper.verifyAndSetDomainRoot(domainDir);
+        setFwDir();
+        setStartupContextProperties(logger, args);
+    }
 
-        context = new StartupContext(bootstrapFile, args);
-        // we need to save the startup context as there is no easy way to pass it through felix
-        // to our bundles.
+    /**
+     * We need to save the startup context and context root dir
+     * as there is no easy way to pass it through OSGi to our bundles.
+     */
+    private void setStartupContextProperties(Logger logger, String... args)
+    {
 
         Properties properties = ArgumentManager.argsToMap(args);
         properties.put(StartupContext.TIME_ZERO_NAME, (new Long(System.currentTimeMillis())).toString());
@@ -110,13 +112,9 @@ public abstract class ASMainOSGi extends AbstractMain {
             logger.info("Could not save startup parameters, will start with none");
         }
         if (lineformat!=null) {
-            System.setProperty("glassfish.startup.context", lineformat); // NO I18N                            
+            System.setProperty("hk2.startup.context.args", lineformat); // NO I18N
         }
-
-        helper.parseAsEnv(glassfishDir);
-        domainDir = helper.getDomainRoot(context);
-        helper.verifyDomainRoot(domainDir);
-        setFwDir();
+        System.setProperty("hk2.startup.context.root", bootstrapFile.getParent());
     }
 
     protected abstract void setFwDir();
@@ -134,24 +132,43 @@ public abstract class ASMainOSGi extends AbstractMain {
 
     public void run() {
         try {
-            System.setProperty("org.jvnet.hk2.osgiadapter.contextrootdir",
-                    new File(glassfishDir, "modules").getAbsolutePath());
-
-            /* Set a system property called com.sun.aas.installRootURI.
-             * This property is used in felix/conf/config.properties to
-             * to auto-start some modules. We can't use com.sun.aas.installRoot
-             * because that com.sun.aas.installRoot is a directory path, where as
-             * we need a URI.
-             */
-            String installRoot = System.getProperty("com.sun.aas.installRoot");
-            URI installRootURI = new File(installRoot).toURI();
-            System.setProperty("com.sun.aas.installRootURI", installRootURI.toString());
-            String instanceRoot = System.getProperty("com.sun.aas.instanceRoot");
-            URI instanceRootURI = new File(instanceRoot).toURI();
-            System.setProperty("com.sun.aas.instanceRootURI", instanceRootURI.toString());            setupLauncherClassLoader();
+            setSystemProperties();
+            setupLauncherClassLoader();
             launchOSGiFW();
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    protected void setSystemProperties() throws MalformedURLException, Exception
+    {
+        /* Set a system property called com.sun.aas.installRootURI.
+         * This property is used in felix/conf/config.properties and possibly
+         * in other OSGi framework's config file to auto-start some modules.
+         * We can't use com.sun.aas.installRoot,
+         * because that com.sun.aas.installRoot is a directory path, where as
+         * we need a URI.
+         */
+        String installRoot = System.getProperty("com.sun.aas.installRoot");
+        URI installRootURI = new File(installRoot).toURI();
+        System.setProperty("com.sun.aas.installRootURI", installRootURI.toString());
+        String instanceRoot = System.getProperty("com.sun.aas.instanceRoot");
+        URI instanceRootURI = new File(instanceRoot).toURI();
+        System.setProperty("com.sun.aas.instanceRootURI", instanceRootURI.toString());
+        // Set the modules dir. This is used by our main bundle to locate all
+        // bundles and install them
+        System.setProperty("org.jvnet.hk2.osgimain.bundlesDir",
+                new File(glassfishDir, "modules/").getAbsolutePath());
+        // Set the autostart bundle list. This is used by bootstrap bundle to
+        // locate the bundles and start them. The path is relative to bundles dir
+        if (System.getProperty("org.jvnet.hk2.osgimain.autostartBundles") == null) {
+            final String bundlePaths =
+                    "org.apache.felix.shell.jar, " +
+                    "org.apache.felix.shell.remote.jar, " +
+                    "org.apache.felix.configadmin.jar, " +
+                    "org.apache.felix.fileinstall.jar, " +
+                    "osgi-adapter.jar";
+            System.setProperty("org.jvnet.hk2.osgimain.autostartBundles", bundlePaths);
         }
     }
 
@@ -172,7 +189,7 @@ public abstract class ASMainOSGi extends AbstractMain {
             addFrameworkJars(cpb);
             addJDKToolsJar(cpb);
             findDerbyClient(cpb);
-            File moduleDir = context.getRootDirectory().getParentFile();
+            File moduleDir = bootstrapFile.getParentFile();
             cpb.addGlob(moduleDir, additionalJars);
             this.launcherCL = cpb.create();
         } catch (IOException e) {

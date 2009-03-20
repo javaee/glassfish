@@ -5,7 +5,6 @@ import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.impl.ModulesRegistryImpl;
-import com.sun.enterprise.module.impl.ModuleImpl;
 import com.sun.enterprise.module.impl.HK2Factory;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.hk2.component.InhabitantsParser;
@@ -21,7 +20,6 @@ import java.util.logging.Level;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collection;
-import java.lang.reflect.InvocationTargetException;
 
 import org.jvnet.hk2.component.Habitat;
 
@@ -58,7 +56,7 @@ public class ASMainStatic extends AbstractMain {
         ASMainHelper helper = new ASMainHelper(Logger.getAnonymousLogger());
         helper.parseAsEnv(glassfishDir);
         File domainDir = helper.getDomainRoot(startupContext);
-        helper.verifyDomainRoot(domainDir);
+        helper.verifyAndSetDomainRoot(domainDir);
 
         System.setProperty("com.sun.aas.installRoot",glassfishDir.getAbsolutePath());
         // crazy. we need to do better 
