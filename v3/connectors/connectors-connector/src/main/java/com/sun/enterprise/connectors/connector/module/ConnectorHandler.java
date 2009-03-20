@@ -89,8 +89,8 @@ public class ConnectorHandler extends AbstractArchiveHandler implements ArchiveH
      * @param context deployment context
      * @return boolean indicating whether its embedded .rar
      */
-    //TODO V3 this seems to return false even for embedded rar, need a different approach
     private boolean isEmbedded(DeploymentContext context) {
-        return context.getModuleMetaData(Application.class) != null;
+        ReadableArchive archive = context.getSource();
+        return (archive != null && archive.getParentArchive() != null);
     }
 }

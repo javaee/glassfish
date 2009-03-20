@@ -45,6 +45,7 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.glassfish.javaee.services.ResourceManager;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
@@ -128,7 +129,6 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
                 }
 
             } catch (ConnectorRuntimeException cre) {
-                //TODO V3 log exception
                 _logger.log(Level.WARNING, " unable to load the resource-adapter [ " + moduleName + " ]", cre);
             }
         }
@@ -144,14 +144,15 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
     }
 
     private boolean isEmbedded(DeploymentContext context) {
-        return context.getModuleMetaData(Application.class) != null;    
+        ReadableArchive archive = context.getSource();
+        return (archive != null && archive.getParentArchive() != null);
     }
 
     private String getApplicationName(DeploymentContext context){
         String applicationName = null;
-        Application application = context.getModuleMetaData(Application.class);
-        if(application != null) {
-            applicationName = application.getRegistrationName();
+        ReadableArchive parentArchive = context.getSource().getParentArchive();
+        if(parentArchive != null){
+            applicationName = parentArchive.getName();
         }
         return applicationName;
     }
@@ -169,21 +170,18 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
         File sourceDir = context.getSourceDir();
         String moduleName = sourceDir.getName();
 
-        String applicationName = appContainer.getApplicationName();
-        //context will not provide metadata during undeploy, hence use applicationName from
-        //connector application. If its non-null, its embedded rar
         try {
-            if(applicationName != null){
+            if(isEmbedded(context)){
+                String applicationName = getApplicationName(context);
                 moduleName = getEmbeddedRarModuleName(applicationName, moduleName);
             }
             runtime.destroyActiveResourceAdapter(moduleName, true);
         } catch (ConnectorRuntimeException e) {
-            //TODO V3 log exception
             _logger.log(Level.WARNING, " unable to unload the resource-adapter [ " + moduleName + " ]", e);
         } finally {
 
             //remove it only if it is not embedded
-            if(applicationName == null){
+            if(!isEmbedded(context)){
                 //remove the class-finder (class-loader) from connector-class-loader chain
                 clh.getConnectorClassLoader(null).removeDelegate(ccf);
             }
