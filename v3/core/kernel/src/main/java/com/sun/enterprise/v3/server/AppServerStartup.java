@@ -29,6 +29,7 @@ import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.util.Result;
 import com.sun.enterprise.v3.common.PlainTextActionReporter;
 import com.sun.logging.LogDomains;
+import com.sun.hk2.component.ExistingSingletonInhabitant;
 import org.glassfish.api.Startup;
 import org.glassfish.api.Async;
 import org.glassfish.api.FutureProvider;
@@ -166,7 +167,11 @@ public class AppServerStartup implements ModuleStartup {
         // prepare the global variables
         habitat.addComponent(null, systemRegistry);
         habitat.addComponent(LogDomains.CORE_LOGGER, logger);
-        habitat.addComponent(null, new ProcessEnvironment(ProcessEnvironment.ProcessType.Server));
+        Inhabitant<ProcessEnvironment> inh = habitat.getInhabitantByType(ProcessEnvironment.class);
+        if (inh!=null) {
+            habitat.remove(inh);
+        }
+        habitat.add(new ExistingSingletonInhabitant<ProcessEnvironment>(new ProcessEnvironment(ProcessEnvironment.ProcessType.Server)));
 
         // run the init services
         for (Inhabitant<? extends Init> init : habitat.getInhabitants(Init.class)) {
