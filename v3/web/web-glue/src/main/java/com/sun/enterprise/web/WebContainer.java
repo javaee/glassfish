@@ -2366,15 +2366,15 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                      * those mappings must be preserved by registering an
                      * ad-hoc web module at the same context root
                      */
-                    if(context.hasAdHocPaths()
+                    if (context.hasAdHocPaths()
                             || context.hasAdHocSubtrees()) {
                         WebModule wm = createAdHocWebModule(
                             context.getID(),
                             host,
                             contextRoot,
                             context.getJ2EEApplication());
-                            wm.addAdHocPaths(context.getAdHocPaths());
-                            wm.addAdHocSubtrees(context.getAdHocSubtrees());
+                        wm.addAdHocPaths(context.getAdHocPaths());
+                        wm.addAdHocSubtrees(context.getAdHocSubtrees());
                     }
                     // START GlassFish 141
                     if(!dummy) {
@@ -2672,13 +2672,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * requests on the given path
      */
     public void registerAdHocPath(
-            String id,
             String path,
             String ctxtRoot,
             String appName,
             AdHocServletInfo servletInfo) {
 
-        registerAdHocPathAndSubtree(id, path, null, ctxtRoot, appName,
+        registerAdHocPathAndSubtree(path, null, ctxtRoot, appName,
                                     servletInfo);
     }
 
@@ -2695,7 +2694,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * requests on the given ad-hoc path and subtree
      */
     public void registerAdHocPathAndSubtree(
-            String id,
             String path,
             String subtree,
             String ctxtRoot,
@@ -2715,7 +2713,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
             wm = (WebModule) vs.findChild(ctxtRoot);
             if (wm == null) {
-                wm = createAdHocWebModule(id, vs, ctxtRoot, appName);
+                wm = createAdHocWebModule(vs, ctxtRoot, appName);
             }
             wm.addAdHocPathAndSubtree(path, subtree, servletInfo);
         }
@@ -2784,11 +2782,30 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
     }
 
+    /*
+     * Creates an ad-hoc web module and registers it on the given virtual
+     * server at the given context root.
+     *
+     * @param vs The virtual server on which to add the ad-hoc web module
+     * @param ctxtRoot The context root at which to register the ad-hoc
+     * web module
+     * @param appName The name of the application to which the ad-hoc module
+     * being generated belongs
+     *
+     * @return The newly created ad-hoc web module
+     */
+    private WebModule createAdHocWebModule(
+            VirtualServer vs,
+            String ctxtRoot,
+            String appName) {
+        return createAdHocWebModule(appName, vs, ctxtRoot, appName);
+    }
 
     /*
      * Creates an ad-hoc web module and registers it on the given virtual
      * server at the given context root.
      *
+     * @param id the id of the ad-hoc web module
      * @param vs The virtual server on which to add the ad-hoc web module
      * @param ctxtRoot The context root at which to register the ad-hoc
      * web module
