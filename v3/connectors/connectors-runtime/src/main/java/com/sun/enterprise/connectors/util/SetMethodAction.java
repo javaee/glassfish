@@ -217,14 +217,24 @@ public final class SetMethodAction implements PrivilegedExceptionAction {
     /**
      * Gets the accessor method for a property
      */
-    private Method getAccessorMethod(String propertyName) {
-        String getterName = "get" + getCamelCasedPropertyName(propertyName);
-        Method[] getterMethods = findMethod(getterName);
-        if (getterMethods.length > 0) {
-            return getterMethods[0];
-        } else {
-            return null;
-        }
+    private Method getAccessorMethod(String propertyName){
+       String getterName = "get" + getCamelCasedPropertyName(propertyName);
+       Method[] getterMethods = findMethod(getterName);
+       if (getterMethods.length > 0) {
+           return getterMethods[0];
+       } else {
+           getterName = "is"+getCamelCasedPropertyName(propertyName);
+           Method[] getterMethodsWithIsPrefix = findMethod(getterName);
+
+           if(getterMethodsWithIsPrefix.length > 0 &&
+                   (getterMethodsWithIsPrefix[0].getReturnType().equals(java.lang.Boolean.class) ||
+                   getterMethodsWithIsPrefix[0].getReturnType().equals(boolean.class))){
+
+               return getterMethodsWithIsPrefix[0];
+           }else{
+               return null;
+           }
+       }
     }
 
     /**
