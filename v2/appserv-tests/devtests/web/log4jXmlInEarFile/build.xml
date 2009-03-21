@@ -55,7 +55,12 @@
  
     <target name="undeploy-ear" depends="init-common">
 	<property name="deployedapp.name" value="${ear-component-name}" />
-	<ant target="undeploy-common" />
+        <exec executable="${ASADMIN}" failonerror="false">
+            <arg line="undeploy"/>
+            <arg line="${as.props}"/>    
+            <arg line="--target ${appserver.instance.name}"/>
+            <arg line="${deployedapp.name}"/>
+        </exec>
     </target>
 
     <target name="usage">

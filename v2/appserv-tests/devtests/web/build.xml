@@ -254,9 +254,7 @@
         <ant dir="jsfWithBundledOneDotOneJarFiles" target="all"/>
         <ant dir="commonsDigesterClassNotFoundException" target="all"/>
         <ant dir="log4jLocallyBundled" target="all"/>
-        <!-- EAR files not supported in GlassFish v3 Prelude
         <ant dir="log4jXmlInEarFile" target="all"/>
-        -->
         <ant dir="singleengine" target="all"/>
         <ant dir="relativeRedirectAllowed" target="all"/>
         <ant dir="invokerServletDisabled" target="all"/>
