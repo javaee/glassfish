@@ -248,7 +248,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             if(retrieve != null) {
                 retrieveArtifacts(context, name, retrieve, downloadableArtifacts);
             }
-        } catch(Exception e) {
+        } catch(Throwable e) {
             report.failure(logger,localStrings.getLocalString(
                     "errDuringDepl", 
                     "Error during deployment : ") + e.getMessage(),e);
