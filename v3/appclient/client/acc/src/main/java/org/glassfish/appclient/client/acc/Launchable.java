@@ -42,12 +42,13 @@ package org.glassfish.appclient.client.acc;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.archivist.AppClientArchivist;
+import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.module.bootstrap.BootException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.jar.Attributes;
 import java.util.jar.Attributes.Name;
 import java.util.jar.Manifest;
@@ -101,8 +102,11 @@ interface Launchable {
         private static boolean matchesName(final ReadableArchive archive, final String appClientName) throws IOException, XMLStreamException {
             XMLInputFactory f = XMLInputFactory.newInstance();
 
-
-            XMLStreamReader reader = f.createXMLStreamReader(archive.getEntry("META-INF/application-client.xml"));
+            InputStream descriptorStream = archive.getEntry("META-INF/application-client.xml");
+            if (descriptorStream == null) {
+                return false;
+            }
+            XMLStreamReader reader = f.createXMLStreamReader(descriptorStream);
             String displayName = null;
             while (displayName == null && reader.hasNext()) {
                 if ((reader.next() == XMLEvent.START_ELEMENT) &&
@@ -121,10 +125,23 @@ interface Launchable {
         }
     }
 
+    /**
+     * Represents a generated JAR created during deployment corresponding to
+     * the developer's original app client JAR or EAR.  Even if the facade object
+     * represents an EAR facade, it uses the caller-supplied main class name
+     * and/or caller-supplied app client name to select one of the app client
+     * facades listed in the group facade.  That is, once fully initialized,
+     * a given Facade instance represents the single app client to be launched.
+     */
     static class Facade implements Launchable {
 
+        /** name of a manifest entry in an EAR facade listing the URIs of the individual app client facades in the group */
         public static final Attributes.Name GLASSFISH_APPCLIENT_GROUP = new Attributes.Name("GlassFish-AppClient-Group");
+
+        /** name of a manifest entry in an app client facade indicating the app client's main class */
         public static final Attributes.Name GLASSFISH_APPCLIENT_MAIN_CLASS = new Attributes.Name("Glassfish-AppClient-Main-Class");
+
+        /** name of a manifest entry in an app client facade listing the URI of the developer's original app client JAR */
         public static final Attributes.Name GLASSFISH_APPCLIENT = new Attributes.Name("GlassFish-AppClient");
 
         private final String mainClassNameToLaunch;
@@ -137,7 +154,8 @@ interface Launchable {
 
         /**
          * Creates a new facade for an app client archive.
-         * @param mainAttrs
+         * @param mainAttrs main attributes from the facade's manifest
+         * @param facadeRA the readable archive already opened for this facade
          * @throws java.io.IOException
          */
         Facade(final Attributes mainAttrs,
@@ -161,8 +179,9 @@ interface Launchable {
         /**
          * Creates a new facade, primarily for an app client that had been
          * nested inside an EAR.
-         * @param mainAttrs
-         * @param clientRA
+         * @param facadeURI URI to the EAR facade
+         * @param mainAttrs main attributes from the EAR facade's manifest
+         * @param clientRA readable archive to the
          * @param mainClassNameToLaunch
          */
         Facade(final URI facadeURI,
@@ -188,6 +207,29 @@ interface Launchable {
             return result;
         }
 
+        /**
+         * Returns a Facade object for the specified app client group facade.
+         * <p>
+         * The caller-supplied information is used to select the first app client
+         * facade in the app client group that matches either the main class or
+         * the app client name.  If the caller-supplied values are both null then
+         * the method returns the first app client facade in the group.  If the
+         * caller passes at least one non-null selector (main class or app client
+         * name) but no app client matches, the method returns null.
+         *
+         * @param groupFacadeURI URI to the app client group facade
+         * @param callerSuppliedMainClassName main class name to find; null if
+         * the caller does not require selection based on the main class name
+         * @param callerSuppliedAppName (display) nane of the app client to find; null
+         * if the caller does not require selection based on display name
+         * @return a Facade object representing the selected app client facade;
+         * null if at least one of callerSuppliedMainClasName and callerSuppliedAppName
+         * is not null and no app client matched the selection criteria
+         * @throws java.io.IOException
+         * @throws com.sun.enterprise.module.bootstrap.BootException
+         * @throws java.net.URISyntaxException
+         * @throws javax.xml.stream.XMLStreamException
+         */
         static Facade newFacade(final URI groupFacadeURI,
                 final String callerSuppliedMainClassName,
                 final String callerSuppliedAppName) throws IOException, BootException, URISyntaxException, XMLStreamException {
@@ -199,8 +241,19 @@ interface Launchable {
             final Attributes mainAttrs = mf.getMainAttributes();
             Facade result = null;
             if (mainAttrs.containsKey(GLASSFISH_APPCLIENT)) {
+                /*
+                 * The facade contains the GlassFish-AppClient manifest entry
+                 * so it is an app client facade (as opposed to an app
+                 * client group facade).  Create an app client facade object.
+                 */
                 result = new Facade(mainAttrs, facadeRA);
             } else {
+                /*
+                 * The facade does not contain GlassFish-AppClient so if it is
+                 * a facade it must be an app client group facade.  Select
+                 * which app client facade within the group, if any, matches
+                 * the caller's selection criteria.
+                 */
                 facadeRA.close();
                 final String facadeGroupURIs = mainAttrs.getValue(GLASSFISH_APPCLIENT_GROUP);
                 if (facadeGroupURIs != null) {
@@ -211,6 +264,18 @@ interface Launchable {
                             callerSuppliedMainClassName,
                             callerSuppliedAppName);
                     if (result != null) {
+                        /*
+                         * Add the selected app client facade from the group
+                         * to the class path.
+                         * We don't need to do this in the earlier case - when
+                         * the facade is itself an app client facade - because
+                         * the facade is already on the system class path because
+                         * the app client was launched using a java command that
+                         * specified the app client facade JAR file or had the
+                         * app client facade in the class path (e.g., if the user
+                         * specified -classpath appClientFacade.jar).
+                         *
+                         */
                         URL clientFacadeURL = new URL("file:" + result.getURI().getSchemeSpecificPart()); // strip off the jar:
                         ACCClassLoader.instance().appendURL(clientFacadeURL);
                     }
@@ -286,5 +351,39 @@ interface Launchable {
             }
             return null;
         }
+    }
+
+    /**
+     * Represents a Launchable main class which the caller specifies by the
+     * main class itself, rather than a facade JAR or an original developer-provided
+     * JAR file.
+     */
+    static class MainClass implements Launchable {
+
+        private final Class mainClass;
+
+        private ApplicationClientDescriptor acDesc = null;
+
+        MainClass(final Class mainClass) {
+            this.mainClass = mainClass;
+        }
+
+        public Class getMainClass() throws ClassNotFoundException {
+            return mainClass;
+        }
+
+        public ApplicationClientDescriptor getDescriptor(ClassLoader loader) throws IOException, SAXParseException {
+            /*
+             * There is no developer-provided descriptor possible so just
+             * use a default one.
+             */
+            if (acDesc == null) {
+                acDesc = (ApplicationClientDescriptor) org.glassfish.appclient.client.acc.Util
+                        .getArchivistFactory().getArchivist(XModuleType.CAR)
+                        .getDefaultBundleDescriptor();
+            }
+            return acDesc;
+        }
+
     }
 }
