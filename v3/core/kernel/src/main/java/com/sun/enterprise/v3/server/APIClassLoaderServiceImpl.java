@@ -39,6 +39,7 @@ package com.sun.enterprise.v3.server;
 
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.common_impl.CompositeEnumeration;
 import com.sun.logging.LogDomains;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
@@ -47,6 +48,10 @@ import org.jvnet.hk2.component.PostConstruct;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.ArrayList;
+import java.net.URL;
 
 /**
  * This class is responsible for creating a ClassLoader that can
@@ -82,7 +87,67 @@ public class APIClassLoaderServiceImpl implements PostConstruct {
     private void createAPIClassLoader() throws IOException {
         APIModule = mr.getModules(APIExporterModuleName).iterator().next();
         assert(APIModule != null);
-        APIClassLoader = APIModule.getClassLoader();
+        final ClassLoader apiModuleLoader = APIModule.getClassLoader();
+        /*
+         * We don't directly retrun APIModule's class loader, because
+         * that class loader does not delegate to the parent. Instead, it
+         * relies on OSGi bundle to load the classes. That behavior is
+         * fine if we want to honor OSGi classloading semantics. APIClassLoader
+         * wants to use delegation model so that we don't have to set
+         * bootdelegation=* for OSGi bundles.
+         */
+        APIClassLoader = new ClassLoader(apiModuleLoader.getParent()) {
+            @Override
+            public Class<?> loadClass(String name) throws ClassNotFoundException
+            {
+                return loadClass(name, false);
+            }
+
+            @Override
+            protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException
+            {
+                // First, check if the class has already been loaded
+                Class c = findLoadedClass(name);
+                if (c == null) {
+                    if (!name.startsWith("java.")) { // java classes always come from parent
+                        try {
+                            c = apiModuleLoader.loadClass(name); // we ignore the resolution flag
+                        } catch (ClassNotFoundException cnfe) {
+                        }
+                    }
+                    if (c == null) {
+                        // Call super class implementation which takes care of
+                        // delegating to parent.
+                        c = super.loadClass(name, resolve);
+                    }
+                }
+                return c;
+            }
+
+            @Override
+            public URL getResource(String name)
+            {
+                URL url = null;
+                if (!name.startsWith("java/")) {
+                    url = apiModuleLoader.getResource(name);
+                }
+                if (url == null) {
+                    url = super.getResource(name);
+                }
+                return url;
+            }
+
+            @Override
+            public Enumeration<URL> getResources(String name) throws IOException
+            {
+                List<Enumeration<URL>> enumerators = new ArrayList<Enumeration<URL>>();
+                enumerators.add(super.getResources(name));
+                if (!name.startsWith("java/")) {
+                    enumerators.add(apiModuleLoader.getResources(name));
+                }
+                return new CompositeEnumeration(enumerators);
+            }
+        };
         logger.logp(Level.INFO, "APIClassLoaderService", "createAPIClassLoader",
                 "APIClassLoader = {0}", new Object[]{APIClassLoader});
     }
