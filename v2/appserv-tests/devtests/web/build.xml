@@ -50,9 +50,7 @@
         <ant dir="jspScriptletSyntaxErrorCorrectErrorMessage" target="all"/>
         -->
         <ant dir="jspCustomTagAttributeOfArrayType" target="all"/>
-        <!-- EAR files not supported in GlassFish v3 Prelude
         <ant dir="jspCustomTaglibJarInsideEar" target="all"/>
-        -->
         <ant dir="jspCommentedOutPageDirective" target="all"/>
         <ant dir="jspCommentedOutPageDirective1" target="all"/>
         <ant dir="jspScriptletAfterScriptlessTag" target="all"/>
