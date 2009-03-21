@@ -61,6 +61,7 @@
         <module>admin</module>
         <module>gf-web-connector</module>
         <module>javax.servlet</module>
+        <module>osgi-http</module>
     </modules>
 
 </project>

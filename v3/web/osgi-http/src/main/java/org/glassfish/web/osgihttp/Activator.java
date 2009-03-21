@@ -109,7 +109,8 @@ public class Activator implements BundleActivator {
         }
         // create a new context under which all OSGi HTTP wrappers
         // will be registered.
-        WebModule standardContext = new WebModule(contextPath, webContainer);
+        WebModule standardContext = new WebModule();
+        standardContext.setWebContainer(webContainer);
         standardContext.setName(contextPath);
         standardContext.setPath(contextPath);
         // TODO(Sahoo): Need to set proper values for these directories

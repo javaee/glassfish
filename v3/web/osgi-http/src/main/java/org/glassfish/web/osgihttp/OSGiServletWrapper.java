@@ -68,6 +68,7 @@ public class OSGiServletWrapper extends StandardWrapper implements Wrapper {
     public OSGiServletWrapper(String name, Servlet servlet, OSGiServletConfig config, String urlMapping) {
         this.servlet = servlet;
         this.config = config;
+        setServlet(servlet);
         setName(name);
         addMapping(urlMapping);
     }
@@ -116,11 +117,6 @@ public class OSGiServletWrapper extends StandardWrapper implements Wrapper {
     @Override
     public Servlet allocate() throws ServletException {
         return servlet;
-    }
-
-    @Override
-    public synchronized Servlet loadServlet() throws ServletException {
-        return servlet; // NOOP: We already have the Servlet instance.
     }
 
     @Override

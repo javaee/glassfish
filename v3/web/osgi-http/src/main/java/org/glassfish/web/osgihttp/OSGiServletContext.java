@@ -48,6 +48,7 @@ import javax.servlet.FilterRegistration;
 import javax.servlet.DispatcherType;
 import javax.servlet.SessionCookieConfig;
 import javax.servlet.SessionTrackingMode;
+import javax.servlet.Filter;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -233,5 +234,59 @@ public class OSGiServletContext implements ServletContext {
 
     public boolean setInitParameter(String name, String value) {
         return delegate.setInitParameter(name, value);
+    }
+
+    /*
+    * Adds the servlet with the given name and class type to this servlet
+    * context.
+    *
+    * <p>The registered servlet may be further configured via the returned
+    * {@link ServletRegistration} object.
+    *
+    * @param servletName the name of the servlet
+    * @param servletClass the class object from which the servlet will be
+    * instantiated
+    *
+    * @return a ServletRegistration object that may be used to further
+    * configure the registered servlet, or <tt>null</tt> if this
+    * ServletContext already contains a servlet with a matching name
+    * @throws IllegalStateException if this ServletContext has already
+    * been initialized
+    *
+    * @since 3.0
+    */
+    public ServletRegistration addServlet(String servletName, Class<? extends Servlet> servletClass)
+    {
+        return null;  //TODO(Sahoo): Not Yet Implemented
+    }
+
+    public ServletRegistration findServletRegistration(String servletName)
+    {
+        return null;  //TODO(Sahoo): Not Yet Implemented
+    }
+
+    public FilterRegistration addFilter(String filterName, Class<? extends Filter> filterClass)
+    {
+        return null;  //TODO(Sahoo): Not Yet Implemented
+    }
+
+    public FilterRegistration findFilterRegistration(String filterName)
+    {
+        return null;  //TODO(Sahoo): Not Yet Implemented
+    }
+
+    public ServletRegistration addServlet(String servletName, Servlet servlet)
+    {
+        return null;  //TODO(Sahoo): Not Yet Implemented
+    }
+
+    public FilterRegistration addFilter(String filterName, Filter filter)
+    {
+        return null;  //TODO(Sahoo): Not Yet Implemented
+    }
+
+    public void setSessionTrackingModes(Set<SessionTrackingMode> sessionTrackingModes)
+    {
+        //TODO(Sahoo): Not Yet Implemented
     }
 }

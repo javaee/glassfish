@@ -49,8 +49,6 @@ import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sun.enterprise.v3.services.impl.V3Mapper;
-
 /**
  * This contains most of the implementation of {@link org.osgi.service.http.HttpService}.
  *
