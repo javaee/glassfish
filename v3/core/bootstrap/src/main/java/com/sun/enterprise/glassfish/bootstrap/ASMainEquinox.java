@@ -96,13 +96,15 @@ public class ASMainEquinox extends ASMainOSGi {
          * Refer to http://help.eclipse.org/help32/index.jsp?topic=/org.eclipse.platform.doc.isv/reference/misc/index.html
          * for details about the configuration options used here.
          */
-        // Ideally this should be located in domain_dir, but for the moment, let's
-        // use a top level dir.
         System.setProperty("osgi.configuration.area",
                 new File(fwDir, "configuration").getCanonicalPath());
-//        System.setProperty("osgi.clean", "true"); // clean framework cache at startup
-        File cacheProfileDir = new File(domainDir, "equinox-cache/gf/");
-        setUpCache(bootstrapFile.getParentFile(), cacheProfileDir);
+        // Equinox does not allow us to provide a separate location for
+        // cache. The cache dir is always created in configuration area.
+        // So, for the moment, we don't try to reuse the cache during
+        // server restart.
+        System.setProperty("osgi.clean", "true"); // clean framework cache at startup
+//        File cacheProfileDir = new File(domainDir, "equinox-cache/gf/");
+//        setUpCache(bootstrapFile.getParentFile(), cacheProfileDir);
         Class mc = launcherCL.loadClass(getFWMainClassName());
         final String[] args = new String[0];
         final Method m = mc.getMethod("main", new Class[]{args.getClass()});
