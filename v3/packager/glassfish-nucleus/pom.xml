@@ -116,6 +116,10 @@
            <type>zip</type>
        </dependency>
        <dependency>
+           <groupId>com.sun.enterprise</groupId>
+           <artifactId>osgi-main</artifactId>
+       </dependency>
+       <dependency>
            <groupId>org.glassfish.docs</groupId>
            <artifactId>basedocs</artifactId>
            <version>3.0-Prelude</version>
