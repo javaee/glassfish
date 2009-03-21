@@ -28,14 +28,6 @@ public abstract class AbstractMain {
     }
 
     boolean isCacheOutdated(long lastModified, File cacheDir) {
-
-       // let's find our more recent entry, we'll need it anyway
-        long settingsLastModified = getSettingsLastModification();
-
-        if (settingsLastModified>lastModified) {
-            lastModified = settingsLastModified;
-        }
-
         Properties persistedInfo = loadCacheInformation(cacheDir);
         long recordedLastModified = parse(persistedInfo, "LastModified");
         // check that we have not moved our domain's directory, felix is sensitive to absolute path
@@ -51,12 +43,17 @@ public abstract class AbstractMain {
 
         // if the recordedLastModified is different than our most recent entry,
         // we flush the felix cache, otherwise we reuse it.
-        return (recordedLastModified!=lastModified);        
+        return (recordedLastModified!=lastModified);
     }
     
     void setUpCache(File sourceDir, File cacheDir) throws IOException  {
 
         long lastModified = getLastModified(sourceDir, 0);
+        long settingsLastModified = getSettingsLastModification();
+        if (settingsLastModified>lastModified) {
+            lastModified = settingsLastModified;
+        }
+
         if (isCacheOutdated(lastModified, cacheDir)) {
             flushAndCreate(cacheDir, lastModified);
         }
