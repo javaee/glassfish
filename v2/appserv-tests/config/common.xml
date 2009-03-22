@@ -1072,7 +1072,9 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
   <exec executable="${ASADMIN}" failonerror="false">
     <arg line="undeploy"/>
     <arg line="${as.props}"/>
-    <arg line="--type ${apptype}"/>
+<!--    
+<arg line=type ${apptype}/> 
+-->
     <arg line="--target ${appserver.instance.name}"/>	
 <!-- deployedapp.name defaults to {appname}App.declared in properties.xml-->
     <arg line="${deployedapp.name}"/>	
