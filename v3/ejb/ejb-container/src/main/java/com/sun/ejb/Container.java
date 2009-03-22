@@ -266,11 +266,13 @@ public interface Container {
 
     /**
      * Called after all the components in the container's application
-     * have deployed successfully.  Allows containers to delay 
-     * public access to their resources until the end of the deployment
-     * process.
+     * have loaded successfully.  Allows containers to delay
+     * any instance creation or external invocations until the second
+     * phase of deployment.  Note that this callback occurs at a point
+     * that is still considered within deployment.  Failures should still
+     * still be treated as a deployment error.
      */
-    void doAfterApplicationDeploy();
+    void startApplication();
 
     /** 
      * Called from EJB JarManager when an application is undeployed.

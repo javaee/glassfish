@@ -2802,7 +2802,8 @@ public abstract class BaseContainer
             
             if( (methodClass == localBusinessHomeIntf) ||
                 (methodClass == remoteBusinessHomeIntf) ||
-                (methodClass == ejbOptionalLocalBusinessHomeIntf) ) {
+                (methodClass == ejbOptionalLocalBusinessHomeIntf ||
+                (methodClass == GenericEJBHome.class)) ) {
                 // Not an error.  This is the case where the EJB 3.0
                 // client view is being used and there is no corresponding
                 // create/init method.
@@ -3493,7 +3494,7 @@ public abstract class BaseContainer
      * Called after all the components in the container's application
      * have deployed successfully.
      */
-    public void doAfterApplicationDeploy() {
+    public void startApplication() {
         _logger.log(Level.FINE,"Application deployment successful : " + 
                     this);
 
@@ -3659,19 +3660,28 @@ public abstract class BaseContainer
     
     /**
      * Undeploy event.
+     * Code must be able to gracefully handle redundant undeploy/shutdown
+     * calls for the same container intance.
      * 
      */
     public final void undeploy() {
+
+        try {
         
-        if ( !isUndeployed() ) {
+            if ( !isUndeployed() ) {
             
-            setUndeployedState();
+                setUndeployedState();
 
-            // Shutdown with undeploy
-            doConcreteContainerShutdown(true);
+                // Shutdown with undeploy
+                doConcreteContainerShutdown(true);
 
-            // BaseContainer cleanup
-            doContainerCleanup();
+                // BaseContainer cleanup
+                doContainerCleanup();
+            }
+        } catch(Throwable t) {
+            // Make sure we don't propagate an exception since that could
+            // prevent the cleanup of some other component.
+            _logger.log(Level.FINE, "BsaeContainer::undeploy exception", t);
         }
 
     }
@@ -3681,19 +3691,26 @@ public abstract class BaseContainer
      * shutdown other than undeploy.  It could mean the server
      * is shutting down or that the app has been disabled while
      * the server is still running.  The two cases are handled
-     * the same.  
+     * the same. We must be able to gracefully handle redundant
+     * shutdown calls for the same container intance.
      */
     public final void onShutdown() {
 
-        if ( !isStopped() ) {
+        try {
+            if ( !isStopped() ) {
             
-           setStoppedState();
+                setStoppedState();
 
-           // Cleanup without undeploy
-           doConcreteContainerShutdown(false);
+                // Cleanup without undeploy
+                doConcreteContainerShutdown(false);
 
-           // BaseContainer cleanup
-           doContainerCleanup();
+                // BaseContainer cleanup
+                doContainerCleanup();
+            }
+        } catch(Throwable t) {
+            // Make sure we don't propagate an exception since that could
+            // prevent the cleanup of some other component.
+            _logger.log(Level.FINE, "BsaeContainer::onShutdown exception", t);
         }
     }
 
@@ -4978,14 +4995,21 @@ public abstract class BaseContainer
                 nm.publishObject(name, object, rebind);
             }
 
+            publishedSuccessfully = true;
+
         }
 
         void unpublish(GlassfishNamingManager nm) throws NamingException {
 
-            if( cosNaming ) {
-                nm.unpublishCosNamingObject(name);   
+            if( publishedSuccessfully ) {
+                if( cosNaming ) {
+                    nm.unpublishCosNamingObject(name);
+                } else {
+                    nm.unpublishObject(name);
+                }
             } else {
-                nm.unpublishObject(name);
+                _logger.log(Level.FINE, "Skipping unpublish of " + name + " because it was " +
+                           "never published successfully in the first place");
             }
         }
 
@@ -5005,6 +5029,7 @@ public abstract class BaseContainer
         boolean cosNaming;
         boolean portable;
         boolean internal;
+        boolean publishedSuccessfully;
 
 
     }

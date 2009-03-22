@@ -8,11 +8,14 @@ import org.jvnet.hk2.component.Singleton;
 import org.omg.CORBA.ORB;
 import org.glassfish.enterprise.iiop.spi.EjbService;
 
-import javax.naming.InitialContext;
+import org.glassfish.api.admin.ProcessEnvironment;
+import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
+
+
 import org.glassfish.api.naming.GlassfishNamingManager;
 
 import java.util.Properties;
-import java.util.Hashtable;
+import java.rmi.Remote;
 
 /**
  * @author Mahesh Kannan
@@ -21,17 +24,28 @@ import java.util.Hashtable;
 @Service
 public class GlassFishORBHelper {
 
+    public static final String JNDI_CORBA_ORB_PROPERTY = "java.naming.corba.orb";
+    public static final String OMG_ORB_INIT_HOST_PROPERTY = "org.omg.CORBA.ORBInitialHost";
+    public static final String OMG_ORB_INIT_PORT_PROPERTY = "org.omg.CORBA.ORBInitialPort";
+
+    public static final String DEFAULT_ORB_INIT_HOST = "localhost";
+    public static final String DEFAULT_ORB_INIT_PORT = "3700";
+
     @Inject
-    Habitat habitat;
+    private Habitat habitat;
+
+    @Inject
+    private ProcessEnvironment processEnv;
 
     private volatile ORB orb;
 
     private volatile ProtocolManager protocolManager;
 
-    // @@@ Need a way to figure out if we're in server mode or not
-    // Right now only do server-specific processing when getProtocolManager
-    // is called (should only be called by ejb container
-
+    /**
+     * Get the default orb for this habitat. Habitat must have been created
+     * before this is called.
+     * @return
+     */
     public ORB getORB() {
 
         if (orb == null) {
@@ -47,6 +61,29 @@ public class GlassFishORBHelper {
                         Properties props = new Properties();
                         ORB tempOrb = factory.createORB(props);
 
+                        if( processEnv.getProcessType() == ProcessType.Server) {
+
+                            ProtocolManager tempProtocolManager =
+			                    habitat.getByContract(ProtocolManager.class);
+
+                            tempProtocolManager.initialize(tempOrb);
+
+                            tempProtocolManager.initializeNaming();
+
+                            tempProtocolManager.initializePOAs();
+
+                            GlassfishNamingManager namingManager =
+                                habitat.getByContract(GlassfishNamingManager.class);
+
+                            Remote remoteSerialProvider =
+                                namingManager.initializeRemoteNamingSupport(tempOrb);
+
+                            tempProtocolManager.initializeRemoteNaming(remoteSerialProvider);
+
+                            protocolManager = tempProtocolManager;
+
+                        }
+
                         orb = tempOrb;
 
                     } catch(Exception e) {
@@ -60,48 +97,14 @@ public class GlassFishORBHelper {
         return orb;
     }
 
+    /**
+     * Get a protocol manager for creating remote references.  This should only be called
+     * by the ejb container.
+     */
     public ProtocolManager getProtocolManager() {
 
-
         if (protocolManager == null) {
-
-            synchronized (this) {
-
-                if (protocolManager == null) {
-
-                    getORB();
-
-                    try {
-
-                        GlassFishORBFactory factory = habitat.getByContract(GlassFishORBFactory.class);
-
-                        Properties props = new Properties();
-                        ORB tempOrb = factory.createORB(props);
-
-
-                        ProtocolManager tempProtocolManager =
-			                habitat.getByContract(ProtocolManager.class);
-
-                        tempProtocolManager.initialize(orb);
-
-                        tempProtocolManager.initializeNaming();
-
-                        tempProtocolManager.initializePOAs();
-
-                        GlassfishNamingManager namingManager =
-                            habitat.getByContract(GlassfishNamingManager.class);
-
-                        namingManager.initializeRemoteNamingSupport(orb);
-
-                        protocolManager = tempProtocolManager;
-
-
-                    } catch(Exception e) {
-                        throw new RuntimeException("ProtocolManager initialization erorr", e);    
-                    }
-
-                }
-            }
+            getORB();
         }
 
         return protocolManager;

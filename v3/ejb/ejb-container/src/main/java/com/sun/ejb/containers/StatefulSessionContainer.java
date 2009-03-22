@@ -2353,9 +2353,9 @@ public final class StatefulSessionContainer
 
         ClassLoader origLoader = Utility.setContextClassLoader(loader);
 
-        _logger.log(Level.FINE, "Passivating SFSBs before container shutdown");
-
         try {
+
+            _logger.log(Level.FINE, "Passivating SFSBs before container shutdown");
 
             sessionBeanCache.shutdown();
 
@@ -2399,13 +2399,15 @@ public final class StatefulSessionContainer
 
     private void removeBeansOnUndeploy() {
 
-         _logger.log(Level.FINE, "Removing SFSBs during application undeploy");
-
-        long myContainerId = getContainerId();
-
-
         ClassLoader origLoader = Utility.setContextClassLoader(loader);
+
+        long myContainerId = 0;
+
         try {
+
+            myContainerId = getContainerId();
+
+            _logger.log(Level.FINE, "Removing SFSBs during application undeploy");
 
             sessionBeanCache.setUndeployedState();
 
@@ -2430,6 +2432,7 @@ public final class StatefulSessionContainer
             }
 
             sessionBeanCache.destroy();
+            
             try {
                 sfsbStoreManager.removeAll();
             } catch (SFSBStoreManagerException sfsbEx) {

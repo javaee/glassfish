@@ -30,6 +30,8 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.Singleton;
 
+import java.rmi.Remote;
+
 
 /**
  * This class is a facade for the remote and local SerialContextProvider The
@@ -76,10 +78,11 @@ public class ProviderManager {
         return localProvider;
     }
 
-    public void initRemoteProvider(ORB orb) throws RemoteException {
+    public Remote initRemoteProvider(ORB orb) throws RemoteException {
 
-       RemoteSerialContextProviderImpl.initSerialContextProvider(orb, rootContext);
-       this.orb = orb;
+        this.orb = orb;
+        return RemoteSerialContextProviderImpl.initSerialContextProvider(orb, rootContext);
+
 
     }
 

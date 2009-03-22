@@ -83,9 +83,9 @@ public class TimerBeanContainer
      * Called after all the components in the container's application
      * have deployed successfully.
      */
-    public void doAfterApplicationDeploy() {
+    public void startApplication() {
 
-        super.doAfterApplicationDeploy();    
+        super.startApplication();
 
         try {
 
@@ -175,7 +175,7 @@ public class TimerBeanContainer
 ** XXX **/
 
         } catch (Exception ex) {
-            _logger.log(Level.WARNING, "ejb.timer_service_init_error", 
+            _logger.log(Level.WARNING, "ejb.timer_service_init_error",
                         logParams);
             _logger.log(Level.WARNING, "", ex);
         } 
@@ -192,5 +192,5 @@ public class TimerBeanContainer
             ((TimerBean)ejb).setSessionContext(context);
         }
     }
-    
+
 } //TimerBeanContainer.java

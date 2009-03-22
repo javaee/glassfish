@@ -10,6 +10,9 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 import org.omg.CORBA.ORB;
 
+import org.glassfish.api.admin.ProcessEnvironment;
+import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -23,8 +26,10 @@ public class IIOPUtils
 
     private static IIOPUtils _me;
 
+    /* TODO
     @Inject
     ThreadPool[] threadPools;
+    */
 
     @Inject
     Habitat habitat;
@@ -33,13 +38,22 @@ public class IIOPUtils
     ClassLoaderHierarchy clHierarchy;
 
     @Inject
-    IiopService iiopService;
+    ProcessEnvironment processEnv;
 
+    /** TODO
+    @Inject
+    IiopService iiopService;
+    **/
+
+    /**
     @Inject
     ServerRef[] serverRefs;
+    **/
 
+    /**
     @Inject
     Configs configs;
+    **/
 
     private volatile ORB gfORB;
 
@@ -48,7 +62,7 @@ public class IIOPUtils
     }
 
     public ThreadPool[] getAllThreadPools() {
-        return threadPools;
+        return null; // TODO threadPools;
     }
 
     public static IIOPUtils getInstance() {
@@ -60,20 +74,15 @@ public class IIOPUtils
     }
 
     public IiopService getIiopService() {
-        return iiopService;
+        return null; // TODO iiopService;
     }
 
     public ServerRef[] getServerRefs() {
-        return serverRefs;
+        return null; // TODO serverRefs;
     }
 
     public List<IiopListener> getIiopListeners() {
-        return iiopService.getIiopListener();
-    }
-
-    //TODO
-    public boolean isAppClientContainer() {
-        return false;
+        return null; // TODO iiopService.getIiopListener();
     }
 
     public Collection<IIOPInterceptorFactory> getAllIIOPInterceptrFactories() {

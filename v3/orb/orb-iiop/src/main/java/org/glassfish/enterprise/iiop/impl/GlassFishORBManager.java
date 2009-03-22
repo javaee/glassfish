@@ -36,11 +36,13 @@
 package org.glassfish.enterprise.iiop.impl;
 
 import com.sun.corba.ee.spi.oa.rfm.ReferenceFactoryManager;
-import com.sun.corba.ee.spi.orb.ORBFactory;
+import com.sun.corba.ee.spi.osgi.ORBFactory;
 import com.sun.corba.ee.spi.orbutil.ORBConstants;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.admin.config.Property;
+import org.glassfish.api.admin.ProcessEnvironment;
+import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
 import org.glassfish.enterprise.iiop.api.GlassFishORBLifeCycleListener;
 import org.omg.CORBA.ORB;
 
@@ -52,6 +54,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.ModulesRegistry;
+
+import org.jvnet.hk2.component.Habitat;
+
 /**
  * This class initializes the ORB with a list of (standard) properties
  * and provides a few convenience methods to get the ORB etc.
@@ -60,7 +67,7 @@ import java.util.logging.Logger;
 public final class GlassFishORBManager {
     static Logger logger = LogDomains.getLogger(GlassFishORBManager.class, LogDomains.UTIL_LOGGER);
 
-    private static IIOPUtils iiopUtils = IIOPUtils.getInstance();
+    private static IIOPUtils iiopUtils;
 
     private static final boolean debug = true;
 
@@ -205,9 +212,13 @@ public final class GlassFishORBManager {
 
     private static Properties csiv2Props = new Properties();
 
+    private static ProcessType processType;
+
     private static final Properties EMPTY_PROPERTIES = new Properties();
 
     private static AtomicBoolean propsInitialized = new AtomicBoolean(false);
+
+    private static Habitat habitat;
 
     /**
      * don't want any subclassing of this class
@@ -243,7 +254,20 @@ public final class GlassFishORBManager {
      * with the standard server properties, which can be
      * overridden by Properties passed in the props argument.
      */
-    public static synchronized ORB getORB(Properties props) {
+    public static synchronized ORB getORB(Properties props, Habitat h) {
+
+        habitat = h;
+
+        // TODO this has to be available for other entry points as well.
+        // Should probably change this away from a static class.
+        iiopUtils = habitat.getComponent(IIOPUtils.class);
+
+        ProcessEnvironment processEnv = habitat.getComponent(ProcessEnvironment.class);
+
+        processType = processEnv.getProcessType();
+        processType = processEnv.getProcessType();
+
+
         try {
             if (logger.isLoggable(Level.FINEST)) {
                 logger.log(Level.FINEST, "GlassFishORBManager.getORB->: " + orb);
@@ -275,15 +299,21 @@ public final class GlassFishORBManager {
     }
 
     private static void initProperties() {
+
+        if( (processType == ProcessType.ACC) || (processType == ProcessType.Other) ) {
+            return;
+        }
+
         try {
             if (logger.isLoggable(Level.FINE)) {
                 logger.log(Level.FINE, "GlassFishORBManager.initProperties->: " + orb);
             }
 
+
             if (!propsInitialized.get()) {
                 synchronized (propsInitialized) {
                     if (!propsInitialized.get()) {
-                        IIOPUtils iiopUtils = IIOPUtils.getInstance();
+                        
                         iiopServiceBean = iiopUtils.getIiopService();
                         try {
 
@@ -529,7 +559,7 @@ public final class GlassFishORBManager {
             // is initialized based on configuration parameters found in
             // domain.xml. On the client side this is not done
 
-            if (!iiopUtils.isAppClientContainer()) {
+            if (processType == ProcessType.Server) {
                 PEORBConfigurator.setThreadPoolManager();
             }
 
@@ -547,7 +577,35 @@ public final class GlassFishORBManager {
             final ClassLoader prevCL = Thread.currentThread().getContextClassLoader();
             try {
                 Thread.currentThread().setContextClassLoader(GlassFishORBManager.class.getClassLoader());
-                orb = ORBFactory.create(args, orbInitProperties);
+
+                if( processType == ProcessType.Server) {
+
+                    // start glassfish-corba-orb bundle
+                    ModulesRegistry modulesRegistry = habitat.getComponent(ModulesRegistry.class);
+                    Module corbaOrbModule = null; // modulesRegistry.makeModuleFor("glassfish-corba-orb", null);
+                    for(Module m : modulesRegistry.getModules()) {
+                        if( m.getName().equals("glassfish-corba-orb") ) {
+                            corbaOrbModule = m;
+                            break;
+                        }
+                    }
+
+                    if( corbaOrbModule != null) {
+                        corbaOrbModule.start();
+                    }
+                }
+
+                // Set boolean useOSGI property to true.  If it's not an OSGI environment
+                // the ORB will just fall back to normal non-OSGI behavior.  This prevents
+                // us from having to figure out osgi vs. non-osgi ourselves.
+
+                //
+                // TODO @@@ ORB has a classloading dependency on OSGI classes so for now
+                // set osgi flag based on server vs. client
+                boolean useOSGI = (processType == ProcessType.Server);
+
+                orb = ORBFactory.create(args, orbInitProperties, useOSGI);
+
             } finally {
                 Thread.currentThread().setContextClassLoader(prevCL);
             }
@@ -561,17 +619,20 @@ public final class GlassFishORBManager {
                 logger.log(Level.SEVERE, "enterprise.orb_reference_exception", in);
             }
 
-            // J2EEServer's persistent server port is same as ORBInitialPort.
-            orbInitialPort = GlassFishORBManager.getORBInitialPort();
 
-            for (GlassFishORBLifeCycleListener listener : lcListeners) {
-                listener.orbCreated(orb);
+            if( processType == ProcessType.Server ) {
+                // J2EEServer's persistent server port is same as ORBInitialPort.
+                orbInitialPort = GlassFishORBManager.getORBInitialPort();
+
+                for (GlassFishORBLifeCycleListener listener : lcListeners) {
+                    listener.orbCreated(orb);
+                }
+
+                //TODO: The following two statements can be moved to some GlassFishORBLifeCycleListeners
+
+                rfm = (ReferenceFactoryManager) orb.resolve_initial_references(
+                        ORBConstants.REFERENCE_FACTORY_MANAGER);
             }
-
-            //TODO: The following two statements can be moved to some GlassFishORBLifeCycleListeners
-
-            rfm = (ReferenceFactoryManager) orb.resolve_initial_references(
-                    ORBConstants.REFERENCE_FACTORY_MANAGER);
 
             /** TODO
             ASORBUtilities.initGIS(orb);            
@@ -685,7 +746,7 @@ public final class GlassFishORBManager {
         // Done to initialize the Persistent Server Port, before any
         // POAs are created. This was earlier done in POAEJBORB
         // Do it only in the appserver, not on appclient
-        if (!iiopUtils.isAppClientContainer()) {
+        if (processType == ProcessType.Server) {
             props.setProperty(ORBConstants.PERSISTENT_SERVER_PORT_PROPERTY,
                     initialPort);
         }

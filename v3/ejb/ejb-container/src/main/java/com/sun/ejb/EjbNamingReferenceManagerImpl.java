@@ -91,17 +91,27 @@ public class EjbNamingReferenceManagerImpl
          */
         if( !ejbRefDesc.isLocal() ) {
 
-
-
             // Get actual jndi-name from ejb module.
             String remoteJndiName = EJBUtils.getRemoteEjbJndiName(ejbRefDesc);
-            
 
-            if (remoteJndiName.startsWith(CORBANAME)) {
-                ORB orb = ejbContainerUtil.getORBHelper().getORB();
-                jndiObj = (Object) orb.string_to_object(remoteJndiName);
-            } else {
-                jndiObj = context.lookup(remoteJndiName);
+            try {
+
+                if (remoteJndiName.startsWith(CORBANAME)) {
+                    if (ejbContainerUtil == null) {
+                        ejbContainerUtil = habitat.getByContract(EjbContainerUtil.class);
+                    }
+                    ORB orb = ejbContainerUtil.getORBHelper().getORB();
+                    jndiObj = (Object) orb.string_to_object(remoteJndiName);
+                } else {
+                    jndiObj = context.lookup(remoteJndiName);
+                }
+            } catch(Exception e) {
+                // Important to make the real underlying lookup name part of the exception.
+                NamingException ne = new NamingException("Exception resolving Ejb for '" +
+                    ejbRefDesc + "' .  Actual (possibly internal) Remote JNDI name used for lookup is '" +
+                    remoteJndiName + "'");
+                ne.initCause(e);
+                throw ne;
             }
         }
 

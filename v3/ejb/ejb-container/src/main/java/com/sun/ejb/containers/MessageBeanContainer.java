@@ -458,7 +458,7 @@ public final class MessageBeanContainer extends BaseContainer implements
 		throw new EJBException("preInvoke(Invocation) not supported");
 	}
 
-	private class MessageBeanContextFactory implements ObjectFactory {
+    private class MessageBeanContextFactory implements ObjectFactory {
 
 		public Object create(Object param) {
 			try {
@@ -765,21 +765,27 @@ public final class MessageBeanContainer extends BaseContainer implements
 	}
 
 	/**
-	 * Called when the application containing this message-bean has successfully
-	 * deployed.
+	 * Called when the application containing this message-bean has
+     * successfully gotten through the initial load phase of each
+     * module.  Now we can "turn on the spigot" and allow incoming
+     * requests, which could result in the creation of message-bean
+     * instances.
 	 */
-	public void doAfterApplicationDeploy() {
-		super.doAfterApplicationDeploy();
+	public void startApplication() {
+		super.startApplication();
 
 		// Start delivery of messages to message bean instances.
 		try {
+
 			messageBeanClient_.start();
 
 		} catch (Exception e) {
-			_logger.log(Level.SEVERE,
-					"containers.mdb.start_message_delivery_exception",
-					new Object[] { appEJBName_, e.toString() });
-			_logger.log(Level.SEVERE, e.getClass().getName(), e);
+
+            _logger.log(Level.FINE, e.getClass().getName(), e);
+
+            throw new RuntimeException("MessageBeanContainer.start failure for app " +
+                appEJBName_, e);
+
 		}
 	}
 

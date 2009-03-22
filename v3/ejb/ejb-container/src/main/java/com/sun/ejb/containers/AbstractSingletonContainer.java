@@ -47,6 +47,7 @@ import com.sun.enterprise.deployment.runtime.IASEjbExtraDescriptors;
 import com.sun.enterprise.deployment.LifecycleCallbackDescriptor;
 import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.Utility;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.ResourceHandler;
 import org.glassfish.ejb.startup.SingletonLifeCycleManager;
@@ -462,9 +463,21 @@ public abstract class AbstractSingletonContainer
 
                     initializationInProgress = true;
 
-                    //The following may throw exception
-                    singletonCtx = (ComponentContext) singletonCtxFactory.create(null);
-                    singletonInitialized.set(true); //this allows _getContext() to proceed
+                    ClassLoader originalCCL = null;
+                    try {
+                        // This may be happening on the base container initialization thread
+                        // rather than on an invocation thread so set the CCL
+                        originalCCL = Utility.setContextClassLoader(loader);
+
+                        //The following may throw exception
+                        singletonCtx = (ComponentContext) singletonCtxFactory.create(null);
+                        //this allows _getContext() to proceed
+                        singletonInitialized.set(true);
+                    } finally {
+                        if( originalCCL != null ) {
+                            Utility.setContextClassLoader(originalCCL);
+                        }
+                    }
                 }
             }
         }
@@ -649,12 +662,17 @@ public abstract class AbstractSingletonContainer
 
     protected void doConcreteContainerShutdown(boolean appBeingUndeployed) {
 
-        // Shutdown the singleton instance.
-        if (singletonCtxFactory != null) {
-            singletonCtxFactory.destroy(singletonCtx);
-        }
+        ClassLoader originalCCL = null;
 
         try {
+
+            originalCCL = Utility.setContextClassLoader(loader);
+
+            // Shutdown the singleton instance if it hasn't already been shutdown.
+            if (singletonCtxFactory != null) {
+                singletonCtxFactory.destroy(singletonCtx);
+            }
+
             /*TODO
             if( isWebServiceEndpoint && (webServiceEndpoint != null) ) {
                 String endpointAddress = 
@@ -686,10 +704,14 @@ public abstract class AbstractSingletonContainer
             }
 
 
+        } catch(Throwable t) {
+
+            _logger.log(Level.FINE, "Exception during Singleton shutdown", t);
+
         } finally {
-
+          
             singletonCtxFactory = null;
-
+            Utility.setContextClassLoader(originalCCL);
         }
     }
 

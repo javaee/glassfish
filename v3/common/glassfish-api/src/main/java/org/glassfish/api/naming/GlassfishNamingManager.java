@@ -44,6 +44,8 @@ import javax.naming.NamingException;
 import java.util.Collection;
 import org.omg.CORBA.ORB;
 
+import java.rmi.Remote;
+
 /**
  * The NamingManager provides an interface for various components to use naming
  * functionality. It provides methods for binding and unbinding environment
@@ -147,7 +149,8 @@ public interface GlassfishNamingManager {
     /**
      * Initialize RMI-IIOP naming services 
      * @param orb
+     * @return RemoteSerialProvider object instance
      */
-    public void initializeRemoteNamingSupport(ORB orb) throws NamingException;
+    public Remote initializeRemoteNamingSupport(ORB orb) throws NamingException;
 
 }

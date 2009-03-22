@@ -138,7 +138,7 @@
         <glassfish-jruby.version>RELEASE</glassfish-jruby.version>
 	<dataprovider.version>4.2</dataprovider.version>
 	<jsftemplating.version>1.2.7</jsftemplating.version>
-    	<glassfish-corba.version>3.0.0-b012</glassfish-corba.version>        
+    	<glassfish-corba.version>3.0.0-b018</glassfish-corba.version>        
 	<uc-pkg-client.version>1.0.7-15.1269</uc-pkg-client.version>
 	<ucbootstrap.version>0.0.0.15</ucbootstrap.version>
         <webservices.version>1.4</webservices.version>

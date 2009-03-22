@@ -47,7 +47,11 @@ import com.sun.corba.ee.spi.presentation.rmi.InvocationInterceptor;
 import com.sun.logging.LogDomains;
 import org.glassfish.enterprise.iiop.api.IIOPConstants;
 import org.glassfish.enterprise.iiop.util.S1ASThreadPoolManager;
-import org.omg.CORBA.TSIdentification;
+
+
+// TODO import org.omg.CORBA.TSIdentification;
+
+// TODO import com.sun.corba.ee.impl.txpoa.TSIdentificationImpl;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -61,13 +65,13 @@ public class PEORBConfigurator implements ORBConfigurator {
     private static final String OPT_COPIER_CLASS =
             "com.sun.corba.ee.spi.copyobject.OptimizedCopyobjectDefaults";
 
-    private static TSIdentification tsIdent;
+    // TODO private static TSIdentification tsIdent;
     private static ORB theORB;
     private static ThreadPoolManager threadpoolMgr = null;
     private static boolean txServiceInitialized = false;
 
     static {
-        tsIdent = null;//new TSIdentificationImpl();
+        // TODO tsIdent = new TSIdentificationImpl();
     }
 
     public void configure(DataCollector dc, ORB orb) {

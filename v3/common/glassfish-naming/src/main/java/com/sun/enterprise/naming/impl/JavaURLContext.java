@@ -41,18 +41,6 @@ public final class JavaURLContext implements Context, Cloneable {
 
     static Logger _logger = LogFacade.getLogger();
 
-    // Global objects in component namespace
-    private static final String ORB_STRING = "java:comp/ORB";
-    private static final String HANDLE_DELEGATE = "java:comp/HandleDelegate";
-    private static final String USER_TX = "java:comp/UserTransaction";
-    private static final String EJB_CONTEXT = "java:comp/EJBContext";
-    private static final String EJB_TIMER_SERVICE = "java:comp/TimerService";
-    private static final String TRANSACTION_SYNC_REGISTRY =
-            "java:comp/TransactionSynchronizationRegistry";
-    private static final String TRANSACTION_MGR = "java:pm/TransactionManager";
-    public static final String APPSERVER_TRANSACTION_MGR = "java:appserver/TransactionManager";
-
-
     private static final boolean debug = false;
 
     private static GlassfishNamingManagerImpl namingManager;
@@ -99,6 +87,7 @@ public final class JavaURLContext implements Context, Cloneable {
      * why clone() : to avoid the case of multiple threads modifying
      * the context returned for ctx.lookup("java:com/env/ejb")
      */
+    /**  STICKY context not enabled
     public JavaURLContext addStickyContext(SerialContext serialContext)
             throws NamingException {
         try {
@@ -112,6 +101,7 @@ public final class JavaURLContext implements Context, Cloneable {
             throw ne;
         }
     }
+    **/
 
     /**
      * Lookup an object in the serial context.

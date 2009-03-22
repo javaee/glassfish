@@ -70,7 +70,7 @@ public class SerialInitContextFactory implements InitialContextFactory {
      * Default constructor. Creates an ORB if one is not already created.
      */
     public SerialInitContextFactory() {
-        habitat = Globals.getDefaultHabitat();
+        habitat = Globals.getDefaultHabitat(); // TODO fix this
     }
     
     /**

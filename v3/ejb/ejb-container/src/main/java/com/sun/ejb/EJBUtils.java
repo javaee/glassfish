@@ -267,39 +267,82 @@ public class EJBUtils {
 
         String returnValue = jndiName;
 
+        String portableFullyQualifiedPortion = PORTABLE_JNDI_NAME_SEP + interfaceName;
+        String glassfishFullyQualifiedPortion = GLASSFISH_JNDI_NAME_SEP + interfaceName;
+
         if( businessView ) {
             if( jndiName.startsWith(CORBA_INS_PREFIX) ) {
 
-                // TODO Might need special logic to deal with java:global names
 
                 // In the case of a corba interoperable naming string, we
                 // need to lookup the internal remote home.  We can't rely
-                // on our SerialContext Reference object
-                // (com.sun.ejb.containers.RemoteBusinessObjectFactory)
+                // on our SerialContext Reference object (RemoteBusinessObjectFactory)
                 // to do the home lookup because we have to directly access
                 // the CosNaming service.
-                returnValue = getRemote30HomeJndiName(jndiName);
+
+                // First, strip off any fully-qualified portion since there's only
+                // one internal generic home object in CosNaming no matter how many
+                // remote business interfaces there are.
+
+                // Separate <jndi-name> portion from "corbaname:iiop:...#<jndi-name>
+                // We need to do this since we also use "#" in some glassfish-specific
+                // JNDI names
+                int indexOfCorbaNameSep = jndiName.indexOf("#");
+                String jndiNameMinusCorbaNamePortion = jndiName.substring(indexOfCorbaNameSep + 1);
+
+                // Make sure any of the resulting jndi names still have corbaname: prefix intact
+                String newJndiName = jndiName;
+
+                if( jndiNameMinusCorbaNamePortion.startsWith(JAVA_GLOBAL_PREFIX) ){
+
+                    newJndiName = stripFullyQualifiedJndiName(jndiName, portableFullyQualifiedPortion);
+
+                } else if( jndiNameMinusCorbaNamePortion.endsWith(glassfishFullyQualifiedPortion ) ){
+
+                    newJndiName = stripFullyQualifiedJndiName(jndiName, glassfishFullyQualifiedPortion);
+
+                }
+
+                returnValue = getRemote30HomeJndiName(newJndiName);
 
             } else {
+                // Convert to fully-qualified names
                 if( jndiName.startsWith(JAVA_GLOBAL_PREFIX)) {
-                    if( !jndiName.endsWith(PORTABLE_JNDI_NAME_SEP + interfaceName) ) {
-                        returnValue = jndiName + PORTABLE_JNDI_NAME_SEP + interfaceName;
-                    }
-                } else if( !jndiName.endsWith(GLASSFISH_JNDI_NAME_SEP + interfaceName) ) {
-                    returnValue = jndiName + GLASSFISH_JNDI_NAME_SEP + interfaceName;
+                    returnValue = checkFullyQualifiedJndiName(jndiName, portableFullyQualifiedPortion);
+                } else {
+                    returnValue = checkFullyQualifiedJndiName(jndiName, glassfishFullyQualifiedPortion);
                 }
             }
         } else {
 
+            // EJB 2.x Remote  Home
+
+            // Only in the portable global case, convert to a fully-qualified name
             if( jndiName.startsWith(JAVA_GLOBAL_PREFIX)) {
-                if( !jndiName.endsWith(PORTABLE_JNDI_NAME_SEP + interfaceName) ) {
-                    returnValue = jndiName + PORTABLE_JNDI_NAME_SEP + interfaceName;
-                }
+                returnValue = checkFullyQualifiedJndiName(jndiName, portableFullyQualifiedPortion);
             }                      
         }
 
         return returnValue;
     }
+
+    private static String checkFullyQualifiedJndiName(String origJndiName, String fullyQualifiedPortion) {
+        String returnValue = origJndiName;
+        if( !origJndiName.endsWith(fullyQualifiedPortion) ) {
+            returnValue = origJndiName + fullyQualifiedPortion;
+        }
+        return returnValue;
+    }
+
+    private static String stripFullyQualifiedJndiName(String origJndiName, String fullyQualifiedPortion) {
+        String returnValue = origJndiName;
+        if( origJndiName.endsWith(fullyQualifiedPortion) ) {
+            int portionLength = fullyQualifiedPortion.length();
+            returnValue = origJndiName.substring(0, origJndiName.length() - portionLength );
+        }
+        return returnValue;
+    }
+
 
     public static Object resolveEjbRefObject(EjbReferenceDescriptor refDesc,
                                              Object jndiObj) 

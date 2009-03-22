@@ -38,8 +38,8 @@ package com.sun.ejb.containers;
 
 public class InternalRemoteException extends java.rmi.RemoteException {
 
-    public InternalRemoteException(String msg, Throwable cause) {
-        super(msg, cause);
+    public InternalRemoteException(InternalEJBContainerException iece) {
+        super(iece.getMessage(), iece);
     }
 
 }

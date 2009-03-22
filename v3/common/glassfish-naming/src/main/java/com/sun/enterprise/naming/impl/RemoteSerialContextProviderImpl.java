@@ -35,26 +35,17 @@
  */
 package com.sun.enterprise.naming.impl;
 
-import javax.rmi.PortableRemoteObject;
-import java.rmi.*;
 
+import java.rmi.*;
 import javax.naming.*;
 
-import org.omg.CosNaming.NamingContext;
-import org.omg.CosNaming.NameComponent;
-import org.omg.CosNaming.NamingContextHelper;
-import org.omg.PortableServer.POA;
-import org.omg.PortableServer.Servant;
-import org.omg.PortableServer.LifespanPolicyValue;
-import org.omg.CORBA.Policy;
-import org.omg.CORBA.ORB;
-import org.omg.PortableServer.ImplicitActivationPolicyValue;
-import org.glassfish.internal.api.Globals;
 
-import javax.rmi.CORBA.Tie;
+import org.omg.CORBA.ORB;
 
 import java.util.logging.*;
 import java.util.Hashtable;
+
+import com.sun.enterprise.util.Utility;
 
 
 /**
@@ -78,57 +69,18 @@ public class RemoteSerialContextProviderImpl
 
         this.orb = orb;
 
-	    PortableRemoteObject.exportObject(this);
+
     }
+
 
    /**
      * Create the remote object and publish it in the CosNaming name service.
      */
-    static public void initSerialContextProvider(ORB orb, TransientContext rootContext)
+    static public Remote initSerialContextProvider(ORB orb, TransientContext rootContext)
 	    throws RemoteException {
+       
+       return new RemoteSerialContextProviderImpl(orb, rootContext);
 
-        try {
-	        SerialContextProviderImpl impl =
-		        new RemoteSerialContextProviderImpl(orb, rootContext);
-
-            Tie servantsTie = javax.rmi.CORBA.Util.getTie(impl);
-            
-            //servantsTie.orb(ORBManager.getORB());
-            //org.omg.CORBA.Object provider = servantsTie.thisObject());
-
-	        // Create a CORBA objref for SerialContextProviderImpl using a POA
-	        POA rootPOA = (POA) orb.resolve_initial_references("RootPOA");
-	    
-	        Policy[] policy = new Policy[2];
-	        policy[0] = rootPOA.create_implicit_activation_policy(
-			    ImplicitActivationPolicyValue.IMPLICIT_ACTIVATION);
-	        policy[1] = rootPOA.create_lifespan_policy(
-		    LifespanPolicyValue.PERSISTENT);
-
-	        POA poa = rootPOA.create_POA("SerialContextProviderPOA", null,
-					 policy);
-	        poa.the_POAManager().activate();
-	        org.omg.CORBA.Object provider = poa.servant_to_reference(
-							(Servant)servantsTie);
-            
-            // put object in NameService
-            org.omg.CORBA.Object objRef = orb.resolve_initial_references("NameService");
-            NamingContext ncRef = NamingContextHelper.narrow(objRef);
-            NameComponent nc = 
-                new NameComponent(SERIAL_CONTEXT_PROVIDER_NAME, "");
-            NameComponent path[] = {nc};
-            ncRef.rebind(path, provider);
-
-        } catch (Exception ex) {
-
-            _logger.log(Level.SEVERE,
-                 "enterprise_naming.excep_in_insertserialcontextprovider",ex);
-            
-            RemoteException re = 
-                new RemoteException("initSerialCtxProvider error");
-            re.initCause(ex);
-            throw re;
-        }
     }
         
     public Object lookup(String name) throws NamingException, RemoteException {
@@ -137,11 +89,17 @@ public class RemoteSerialContextProviderImpl
 
         // If CORBA object, resolve here in server to prevent a
 	    // another round-trip to CosNaming.
+
+        ClassLoader originalClassLoader = null;
+
 	    try {
 	        if( obj instanceof Reference ) {
 		        Reference ref = (Reference) obj;
-
+                         
 		        if( ref.getFactoryClassName().equals(GlassfishNamingManagerImpl.IIOPOBJECT_FACTORY) ) {
+
+                    // Set CCL to this CL so it's guaranteed to be able to find IIOPObjectFactory
+                    originalClassLoader = Utility.setContextClassLoader(getClass().getClassLoader());
 
                     Hashtable env = new Hashtable();
                     env.put("java.naming.corba.orb", orb);
@@ -154,6 +112,10 @@ public class RemoteSerialContextProviderImpl
 	    } catch(Exception e) {
 	        RemoteException re = new RemoteException("", e);
             throw re;
+        }  finally {
+            if( originalClassLoader != null ) {
+                Utility.setContextClassLoader(originalClassLoader);
+            }
         }
 
         return obj;

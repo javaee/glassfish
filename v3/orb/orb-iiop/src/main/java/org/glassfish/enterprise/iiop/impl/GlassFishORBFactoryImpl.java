@@ -29,7 +29,7 @@ public class GlassFishORBFactoryImpl
         if (gfORB == null) {
             synchronized (this) {
                 if (gfORB == null) {
-                    gfORB = GlassFishORBManager.getORB(props);
+                    gfORB = GlassFishORBManager.getORB(props, habitat);
                 }
             }
         }

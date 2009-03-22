@@ -40,6 +40,7 @@ import java.rmi.RemoteException;
 import java.io.File;
 
 import javax.rmi.CORBA.*;
+import javax.rmi.PortableRemoteObject;
 
 import org.glassfish.enterprise.iiop.api.ProtocolManager;
 import org.glassfish.enterprise.iiop.api.RemoteReferenceFactory;
@@ -59,6 +60,13 @@ import javax.ejb.ConcurrentAccessException;
 
 
 import org.omg.CORBA.*;
+import org.omg.PortableServer.POA;
+import org.omg.PortableServer.ImplicitActivationPolicyValue;
+import org.omg.PortableServer.LifespanPolicyValue;
+import org.omg.PortableServer.Servant;
+import org.omg.CosNaming.NamingContext;
+import org.omg.CosNaming.NamingContextHelper;
+import org.omg.CosNaming.NameComponent;
 
 
 import com.sun.corba.ee.spi.oa.rfm.ReferenceFactoryManager ;
@@ -126,10 +134,59 @@ public final class POAProtocolMgr extends org.omg.CORBA.LocalObject
 	    _logger.log(Level.FINE, "POAProtocolMgr.initializePOAs: RFM resolved and activated");
     }
 
+    public void initializeRemoteNaming(Remote remoteNamingProvider) throws Exception
+    {
+
+        try {
+
+            PortableRemoteObject.exportObject(remoteNamingProvider);
+
+            Tie servantsTie = javax.rmi.CORBA.Util.getTie(remoteNamingProvider);
+
+            // TODO -- check whether this was commented out in V2 also
+            //servantsTie.orb(ORBManager.getORB());
+            //org.omg.CORBA.Object provider = servantsTie.thisObject());
+
+	        // Create a CORBA objref for SerialContextProviderImpl using a POA
+	        POA rootPOA = (POA) orb.resolve_initial_references("RootPOA");
+
+	        Policy[] policy = new Policy[2];
+	        policy[0] = rootPOA.create_implicit_activation_policy(
+			    ImplicitActivationPolicyValue.IMPLICIT_ACTIVATION);
+	        policy[1] = rootPOA.create_lifespan_policy(
+		    LifespanPolicyValue.PERSISTENT);
+
+	        POA poa = rootPOA.create_POA("SerialContextProviderPOA", null,
+					 policy);
+	        poa.the_POAManager().activate();
+	        org.omg.CORBA.Object provider = poa.servant_to_reference(
+							(Servant)servantsTie);
+
+            // put object in NameService
+            org.omg.CORBA.Object objRef = orb.resolve_initial_references("NameService");
+            NamingContext ncRef = NamingContextHelper.narrow(objRef);
+            // TODO use constant for SerialContextProvider name
+            NameComponent nc = new NameComponent("SerialContextProvider", "");
+
+            NameComponent path[] = {nc};
+            ncRef.rebind(path, provider);
+
+        } catch (Exception ex) {
+
+            _logger.log(Level.SEVERE,
+                 "enterprise_naming.excep_in_insertserialcontextprovider",ex);
+
+            RemoteException re = new RemoteException("initSerialCtxProvider error");
+            re.initCause(ex);
+            throw re;
+        }
+
+    }
 
     // Called only in J2EE Server VM
     public void initializeNaming() throws Exception
     {
+
 	    // NOTE: The TransientNameService reference is NOT HA.
         new TransientNameService((com.sun.corba.ee.spi.orb.ORB)orb);
         _logger.log(Level.FINE, "POAProtocolMgr.initializeNaming: complete");

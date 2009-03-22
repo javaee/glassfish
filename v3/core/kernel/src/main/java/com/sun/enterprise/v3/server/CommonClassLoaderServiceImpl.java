@@ -142,7 +142,7 @@ public class CommonClassLoaderServiceImpl implements PostConstruct {
             commonClassLoader = new URLClassLoader(
                     urls.toArray(new URL[urls.size()]), APIClassLoader);
         } else {
-            logger.logp(Level.INFO, "CommonClassLoaderManager",
+            logger.logp(Level.FINE, "CommonClassLoaderManager",
                     "Skipping creation of CommonClassLoader " +
                             "as there are no libraries available",
                     "urls = {0}", new Object[]{urls});

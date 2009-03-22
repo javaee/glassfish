@@ -44,6 +44,7 @@ import com.sun.enterprise.deployment.EjbDescriptor;
 
 import org.jvnet.hk2.annotations.Contract;
 import org.omg.CORBA.ORB;
+import java.rmi.Remote;
 
 
 /**
@@ -66,7 +67,8 @@ public interface ProtocolManager {
 
     public void initializeNaming() throws Exception;
 
-    
+    public void initializeRemoteNaming(Remote remoteNamingProvider) throws Exception;
+
     /**
      * Return a factory that can be used to create/destroy remote
      * references for a particular EJB type.

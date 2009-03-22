@@ -2405,17 +2405,6 @@ public class EntityContainer
             // destroy all EJB instances in readyStore
             destroyReadyStoreOnUndeploy(); //cache must set the listern to null
             
-            // destroy all EJB instances in ActiveTxCache
-	    /*  TODO
-            synchronized ( incompleteTxStore ) {
-                Iterator beans = incompleteTxStore.values();
-                while ( beans.hasNext() ) {
-                    EJBContextImpl ctx = (EJBContextImpl)beans.next();
-                    transactionManager.ejbDestroyed(ctx);
-                }
-            }
-	    */
-            
             entityCtxPool.close();
             
             // stops the idle bean passivator and also removes the link

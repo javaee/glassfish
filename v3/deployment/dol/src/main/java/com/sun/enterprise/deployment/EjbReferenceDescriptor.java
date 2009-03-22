@@ -367,13 +367,26 @@ public class EjbReferenceDescriptor extends EnvironmentProperty implements com.s
     */
     
     public void print(StringBuffer toStringBuffer) {
-	if (ejbDescriptor!=null) {
-	    toStringBuffer.append("Resolved Ejb-Ref ").append(getName()).append("@jndi: ").append(getJndiName()).append( 
-                    " - > ").append(ejbDescriptor.getName());
-	} else {
-	    toStringBuffer.append("Unresolved Ejb-Ref ").append(getName()).append("@jndi: ").append(getJndiName()).append("@").append( 
-                getEjbHomeInterface()).append("@").append(getEjbInterface()).append("@").append(refType).append("@").append(ejbLink) ;
-	}	
+        String localVsRemote = isLocal() ? "Local" : "Remote";
+        toStringBuffer.append(localVsRemote + " ejb-ref ");
+        toStringBuffer.append("name="+getName());
+
+        if( isEJB30ClientView() ) {
+            toStringBuffer.append("," + localVsRemote + " 3.x business interface="+getEjbInterface());
+        } else {
+            toStringBuffer.append("," + localVsRemote + " 2.x home interface="+getEjbHomeInterface());
+            toStringBuffer.append("," + localVsRemote + " 2.x component interface="+getEjbInterface());
+        }
+
+        if( ejbDescriptor != null ) {
+            toStringBuffer.append("resolved to intra-app EJB with ejb-name="+ejbDescriptor.getName());
+        }
+
+        toStringBuffer.append(",ejb-link="+getLinkName());
+        toStringBuffer.append(",mappedName="+getJndiName());
+
+
+        toStringBuffer.append(",refType="+getType());
     }
     
     /* Equality on name. */

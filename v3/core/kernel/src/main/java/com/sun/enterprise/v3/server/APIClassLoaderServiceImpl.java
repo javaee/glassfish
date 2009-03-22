@@ -148,7 +148,7 @@ public class APIClassLoaderServiceImpl implements PostConstruct {
                 return new CompositeEnumeration(enumerators);
             }
         };
-        logger.logp(Level.INFO, "APIClassLoaderService", "createAPIClassLoader",
+        logger.logp(Level.FINE, "APIClassLoaderService", "createAPIClassLoader",
                 "APIClassLoader = {0}", new Object[]{APIClassLoader});
     }
 

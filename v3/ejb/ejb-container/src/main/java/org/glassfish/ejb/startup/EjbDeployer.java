@@ -98,7 +98,10 @@ public class EjbDeployer
 
         EjbBundleDescriptor ejbBundle = dc.getModuleMetaData(EjbBundleDescriptor.class);
         
-       
+        if( ejbBundle == null ) {
+            throw new RuntimeException("Null EjbBundleDescriptor in EjbDeployer.load()");
+        }
+
         if (ejbBundle.containsCMPEntity()) {
             CMPService cmpService = habitat.getByContract(CMPService.class);
             if (cmpService == null) {
@@ -112,7 +115,7 @@ public class EjbDeployer
         EjbApplication ejbApp = new EjbApplication(ebds, dc, dc.getClassLoader(), habitat,
                                                     policyLoader, ejbSecManagerFactory);
 
-        ejbApp.loadAndStartContainers(dc);
+        ejbApp.loadContainers(dc);
         return ejbApp;
     }
 

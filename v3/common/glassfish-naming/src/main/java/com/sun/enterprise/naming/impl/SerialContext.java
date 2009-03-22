@@ -23,9 +23,17 @@
 package com.sun.enterprise.naming.impl;
 
 import com.sun.enterprise.naming.util.LogFacade;
+import com.sun.enterprise.module.ModulesRegistry;
 import org.glassfish.api.naming.NamingObjectProxy;
 import org.jvnet.hk2.component.Habitat;
 
+import com.sun.hk2.component.ExistingSingletonInhabitant;
+
+import com.sun.enterprise.module.single.StaticModulesRegistry;
+import com.sun.enterprise.module.bootstrap.StartupContext;
+
+import org.glassfish.api.admin.ProcessEnvironment;
+import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
 import javax.naming.*;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
@@ -37,6 +45,8 @@ import org.omg.CosNaming.NamingContext;
 import org.omg.CosNaming.NameComponent;
 import org.omg.CosNaming.NamingContextHelper;
 import javax.rmi.PortableRemoteObject;
+
+import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 
 
 
@@ -74,7 +84,7 @@ public class SerialContext implements Context {
 
     private Hashtable myEnv = null; // THREAD UNSAFE
 
-    private SerialContextProvider provider; // THREAD UNSAFE
+    private SerialContextProvider provider;
 
     private final String myName;
 
@@ -82,14 +92,31 @@ public class SerialContext implements Context {
 
     private static final Boolean threadlock = new Boolean(true);
 
-    private final Habitat habitat;
+    private Habitat habitat;
 
     private boolean testMode = false;
 
-    private boolean inClient = false;
+    private ProcessType processType = ProcessType.Server;
+
+    private String targetHostFromEnv;
+    private String targetPortFromEnv;
+    private ORB orbFromEnv;
+
+    private String targetHost;
+    private String targetPort;
+    private ORB orb;
+
+    // True if we're running in the server and no orb,host, or port
+    // properties have been explicitly set in the properties
+    // Allows special optimized intra-server naming service access
+    private boolean intraServerLookups;
 
 
     /**
+     * NOTE: ALL "stickyContext" LOGIC REMOVED FOR INITIAL V3 RELEASE.  WE'LLl
+     * REVISIT THE UNDERLYING ISSUE WHEN ADDING LOAD-BALANCING / FAILOVER
+     * SUPPORT POST V3.  ORIGINAL COMMENT BLOCK PRESERVED HERE UNTIL THEN.
+     *
      * set and get methods for preserving stickiness. This is a temporary
      * solution to store the sticky IC as a thread local variable. This sticky
      * IC will be used by all classes that require a context object to do lookup
@@ -102,8 +129,7 @@ public class SerialContext implements Context {
      * SerialContext.lookup() method. bug 5050591 This will be cleaned for the
      * next release.
      *
-     * NOTE: all stickyContext logic removed for initial V3 release.  We'll
-     * revisit the underlying issue when adding load-balancing support post-V3.
+
      */
 
 
@@ -111,18 +137,54 @@ public class SerialContext implements Context {
      * Constructor for the context. Initializes the object reference to the
      * remote provider object.
      */
-    public SerialContext(String name, Hashtable environment, Habitat habitat)
+    public SerialContext(String name, Hashtable environment, Habitat h)
             throws NamingException {
 
-        this.habitat = habitat;
+        habitat = h;
 
         myEnv = (environment != null) ? (Hashtable) (environment.clone())
                 : null;
+
+        // TODO REMOVE when property stuff is figured out
+        myEnv.put("java.naming.factory.url.pkgs", "com.sun.enterprise.naming");
+        myEnv.put("java.naming.factory.state", "com.sun.corba.ee.impl.presentation.rmi.JNDIStateFactoryImpl" );
 
         this.myName = name;
         if (_logger.isLoggable(Level.FINE))
             _logger.fine("SerialContext ==> SerialContext instance created : "
                     + this);
+
+        if( myEnv.get(INITIAL_CONTEXT_TEST_MODE) != null ) {
+            testMode = true;
+            System.out.println("SerialContext in test mode");
+        }
+
+        if( (habitat == null) && !testMode ) {
+
+            // Bootstrap a hk2 environment.
+            // TODO This will need to be moved somewhere else.  Potentially any
+            // piece of glassfish code that can be an initial entry point from a
+            // Java SE client will need to make this happen.
+
+            ModulesRegistry registry = new StaticModulesRegistry(getClass().getClassLoader());
+            habitat = registry.createHabitat("default");
+           
+            StartupContext startupContext = new StartupContext();
+            habitat.add(new ExistingSingletonInhabitant(startupContext));
+
+            habitat.addComponent(null, new ProcessEnvironment(ProcessEnvironment.ProcessType.Other));
+        }
+        
+
+        if( testMode ) {
+            processType = ProcessType.Server;
+        } else {
+            ProcessEnvironment processEnv = habitat.getComponent(ProcessEnvironment.class);
+            processType = processEnv.getProcessType();
+            _logger.fine("Serial Context initializing with process environment " + processEnv);
+        }
+
+
 
         // using these two temp variables allows instance variables
         // to be 'final'.
@@ -137,21 +199,31 @@ public class SerialContext implements Context {
         javaUrlContext = urlContextTemp;
 
 
-        if( myEnv.get(INITIAL_CONTEXT_TEST_MODE) != null ) {
-            testMode = true;
-            System.out.println("SerialContext in test mode");
+        orbFromEnv  = (ORB) myEnv.get(GlassFishORBHelper.JNDI_CORBA_ORB_PROPERTY);
+        targetHostFromEnv = (String)myEnv.get(GlassFishORBHelper.OMG_ORB_INIT_HOST_PROPERTY);
+        targetPortFromEnv = (String)myEnv.get(GlassFishORBHelper.OMG_ORB_INIT_PORT_PROPERTY);
+
+        intraServerLookups = (processType == ProcessType.Server) && (orbFromEnv == null) &&
+                        (targetHostFromEnv == null) && (targetPortFromEnv == null);
+
+        // Set target host / port from env.  If only one of the two is set, fill in the
+        // other with the default.  
+        if( targetHostFromEnv != null ) {
+            targetHost = targetHostFromEnv;
+            if( targetPortFromEnv == null ) {
+                targetPort = GlassFishORBHelper.DEFAULT_ORB_INIT_PORT;
+            }
         }
 
-        /** TODO use optionally set orb, host, port
-        orb = (ORB) myEnv.get(ORBManager.JNDI_CORBA_ORB_PROPERTY);
-        host = (String)myEnv.get(ORBManager.OMG_ORB_INIT_HOST_PROPERTY);
-        port = (String)myEnv.get(ORBManager.OMG_ORB_INIT_PORT_PROPERTY);
-         */
-
-        if( (habitat == null) && !testMode ) {
-            inClient = true;
-            System.out.println("SerialContext in client mode");
+        if( targetPortFromEnv != null ) {
+            targetPort = targetPortFromEnv;
+            if( targetHostFromEnv == null ) {
+                targetHost = GlassFishORBHelper.DEFAULT_ORB_INIT_HOST;
+            }
         }
+
+        orb = orbFromEnv;
+
     }
 
     /**
@@ -165,77 +237,76 @@ public class SerialContext implements Context {
 
     private SerialContextProvider getProvider() throws NamingException {
 
+        SerialContextProvider returnValue = provider;
+
         if (provider == null) {
 
             try {
 
-                if( inClient ) {
-                    provider = getRemoteProvider();
+                if( intraServerLookups ) {
+
+                    returnValue = ProviderManager.getProviderManager().getLocalProvider();
+
                 }  else {
-                    provider = ProviderManager.getProviderManager().getLocalProvider();
+
+                    returnValue = getRemoteProvider();
                 }
 
             } catch(Exception e) {
-                NamingException ne = new NamingException("Unable to acquire SerialContextProvider");
+                NamingException ne =
+                        new NamingException("Unable to acquire SerialContextProvider for " + this);
                 ne.initCause(e);
                 throw ne;
             }
         }
 
-        return provider;
+        return returnValue;
     }
 
     private SerialContextProvider getRemoteProvider() throws Exception {
 
-	    // Load-balancing is not supported yet.
-        // Simple initial implementation.
-        String host = "localhost";
-        String port = "3700";
 
-        /*
-	    if ( orb == null ) {
-
-	        if (host != null) {
-		        if (port == null) {
-		            //assume default port of 3700
-		            port = ORBManager.DEFAULT_ORB_INIT_PORT;
-		        }
-		    } else {
-		        if (port != null) {
-		            host = ORBManager.DEFAULT_ORB_INIT_HOST;
-		        } else {
-		            // both host and port are null and so is the orb
-		            // this can happen from appclient or standalone client
-		            // but for within the ejb container its already taken care of in getProvider()
-		        _logger.fine("host,port and orb are null");
-		        return getCachedProvider(ORBManager.getORB());
-		    }
-		}
-		*/
+        if( provider == null ) {
 
 
-        /**  TODO   How should we get the ORB?
+            // TODO enable caching so that each InitialContext instance doesn't have to
+            // reacquire the top-level naming service.  For now, acquire the top-level
+            // server naming service reference once per InitialContext instance.
 
+            if( orb == null ) {
+                GlassFishORBHelper orbHelper = habitat.getComponent(GlassFishORBHelper.class);
+                orb = orbHelper.getORB();
+            }
 
-		ORB orb = orbHelper.getORB();
+            org.omg.CORBA.Object cosNamingServiceRef = null;
 
+            if( targetHost != null ) {
 
-		// provider = (SerialContextProvider) providerCache.get(host + ":" + port);
+                cosNamingServiceRef = orb.string_to_object("corbaloc:iiop:1.2@" +
+					       targetHost + ":" + targetPort + "/NameService");
+            } else {
 
+                cosNamingServiceRef = orb.resolve_initial_references("NameService");
+            }
 
-		org.omg.CORBA.Object ref = orb.string_to_object("corbaloc:iiop:1.2@" +
-					       host + ":" + port + "/NameService");
+            SerialContextProvider tmpProvider = narrowProvider(cosNamingServiceRef);
 
-		return narrowProvider(ref);
-         */
+            // Don't want to
+            synchronized( threadlock ) {
+                if( provider == null ) {
+                    provider = tmpProvider;
+                }
+            }
+                       
+        }
 
-        return null;
+		return provider;
 
     }
 
-/**
-     * method to narrow down the provider.
-     * common code that is called from getProvider()
+    /**
+     * Lookup object within server's CosNaming service that provides remote
+     * access to the app server's SerialContext naming service.
      */
     private SerialContextProvider narrowProvider(org.omg.CORBA.Object ref)
                        throws Exception {
@@ -243,13 +314,10 @@ public class SerialContext implements Context {
         NamingContext nctx = NamingContextHelper.narrow(ref);
 	    NameComponent[] path =
 	        { new NameComponent("SerialContextProvider", "") };
-    
-	    synchronized (threadlock) {
-	        provider = (SerialContextProvider)
-	            PortableRemoteObject.narrow(nctx.resolve(path),
-					  SerialContextProvider.class);
-	    }
-	    return provider;
+
+	    return (SerialContextProvider)
+	        PortableRemoteObject.narrow(nctx.resolve(path),
+					            SerialContextProvider.class);
     }
 
 
@@ -282,7 +350,11 @@ public class SerialContext implements Context {
     public Object lookup(String name) throws NamingException {
 
         // Before any lookup bind any NamedNamingObjectProxy
-        NamedNamingObjectManager.checkAndLoadProxies(habitat);
+        // Skip if in plain Java SE client
+        // TODO this should really be moved somewhere else
+        if( (processType == ProcessType.Server) || (processType == ProcessType.ACC) ) {
+            NamedNamingObjectManager.checkAndLoadProxies(habitat);
+        }
 
         /**
          * In case a user is creating an IC with env passed in constructor; env
@@ -343,7 +415,7 @@ public class SerialContext implements Context {
                 return lookup(name);
             } else {
                 CommunicationException ce = new CommunicationException(
-                        "serial context communication ex");
+                        "Communication exception for " + this);
                 ce.initCause(ex);
                 throw ce;
             }
@@ -852,6 +924,22 @@ public class SerialContext implements Context {
         public void close() throws NamingException {
             throw new OperationNotSupportedException("close() not implemented");
         }
+    }
+
+    public String toString() {
+
+        StringBuffer sb = new StringBuffer();
+        sb.append("SerialContext ");
+        if(testMode) {
+            sb.append("( IN TEST MODE ) ");
+        }
+        sb.append("targetHost="+targetHost);
+        sb.append(",targetPort="+targetPort);
+        sb.append(",orb="+orb);
+        sb.append(",provider="+provider);
+
+        return sb.toString();
+
     }
 
 };

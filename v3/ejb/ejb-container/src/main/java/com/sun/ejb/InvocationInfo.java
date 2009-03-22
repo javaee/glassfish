@@ -111,7 +111,7 @@ public class InvocationInfo {
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("Invocation Info for ejb " + ejbName + "\t");
-        sb.append("method = " + method + "\t");
+        sb.append("method=" + method + "\t");
         sb.append("methodIntf = " + methodIntf + "\t");
         sb.append("tx attr = " + Container.txAttrStrings[txAttr] + "\t");
         sb.append("Cached permission = " + cachedPermission + "\t");

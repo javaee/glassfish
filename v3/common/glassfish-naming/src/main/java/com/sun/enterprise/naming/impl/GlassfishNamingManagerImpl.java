@@ -54,6 +54,7 @@ import com.sun.enterprise.naming.util.LogFacade;
 
 import org.omg.CORBA.ORB;
 import java.rmi.RemoteException;
+import java.rmi.Remote;
 
 import javax.naming.*;
 import java.util.logging.Logger;
@@ -123,7 +124,9 @@ public final class  GlassfishNamingManagerImpl
     }
 
     
-    public void initializeRemoteNamingSupport(ORB orb) throws NamingException {
+    public Remote initializeRemoteNamingSupport(ORB orb) throws NamingException {
+
+        Remote remoteProvider = null;
 
         try {
             // Now that we have an ORB, initialize the CosNaming service
@@ -142,13 +145,15 @@ public final class  GlassfishNamingManagerImpl
 
             // Initialize RemoteSerialProvider.  This allows access to the naming
             // service from clients.
-            pm.initRemoteProvider(orb);
+            remoteProvider = pm.initRemoteProvider(orb);
 
         } catch(RemoteException re) {
             NamingException ne = new NamingException("Exception during remote naming initialization");
             ne.initCause(ne);
             throw ne;
         }
+
+        return remoteProvider;
     }
 
     private Context getCosContext() {

@@ -762,8 +762,8 @@ public class StatelessSessionContainer
                 pool.close();
             }
 
-        } finally {
-
+        } catch(Throwable t) {
+            _logger.log(Level.FINE, "Exception during conrete StatelessSessionBean cleanup", t);
         }
     }
 

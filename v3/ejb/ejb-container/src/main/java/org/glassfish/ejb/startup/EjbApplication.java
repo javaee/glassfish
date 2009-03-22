@@ -45,7 +45,6 @@ import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.OpsParams;
 import org.glassfish.deployment.common.DeploymentException;
 
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
@@ -55,7 +54,6 @@ import org.jvnet.hk2.component.PerLookup;
 import com.sun.ejb.containers.EjbContainerUtil;
 import com.sun.ejb.containers.EjbContainerUtilImpl;
 import com.sun.ejb.containers.EJBTimerService;
-import com.sun.enterprise.deployment.Application;
 import org.glassfish.api.ActionReport;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.internal.deployment.Deployment;
@@ -66,7 +64,8 @@ import java.io.IOException;
 // For auto-deploying EJBTimerService
 
 /**
- * Ejb container service
+ * This class represents a logical collection of EJB components contained in one ejb-jar
+ * or one .war.
  *
  * @author Mahesh Kannan
  */
@@ -118,26 +117,39 @@ public class EjbApplication
 
     public boolean start(ApplicationContext startupContext) throws Exception {
 
+        try {
+            // TODO: move restoreEJBTimers to correct location
+            System.out.println("==> Uses Timers? == " + usesEJBTimerService);
+            if (usesEJBTimerService) {
+                initEJBTimerService(startupContext);
+            }
+            // TODO: move restoreEJBTimers to correct location
 
-        // TODO: move restoreEJBTimers to correct location
-        System.out.println("==> Uses Timers? == " + usesEJBTimerService);
-        if (usesEJBTimerService) {
-            initEJBTimerService(startupContext);
+            for (Container container : containers) {
+                container.startApplication();
+            }
+
+            // TODO handle singleton startup dependencies that refer to singletons in a different
+            // module within the application
+            singletonLCM.doStartup();
+
+        } catch(Exception e) {
+            abortInitializationAfterException();
+            throw e;
         }
-        // TODO: move restoreEJBTimers to correct location
-
-        for (Container container : containers) {
-            container.doAfterApplicationDeploy();
-        }
-
-        // TODO handle singleton startup dependencies that refer to singletons in a different
-        // module within the application
-        singletonLCM.doStartup();
 
         return true;
     }
 
-    boolean loadAndStartContainers(ApplicationContext startupContext) {
+    /**
+     * Initial phase of continer initialization.  This creates the concrete container
+     * instance for each EJB component, registers JNDI entries, etc.  However, no
+     * EJB bean instances or invocations occur during this phase.  Those must be
+     * delayed until start() is called.  
+     * @param startupContext
+     * @return
+     */
+    boolean loadContainers(ApplicationContext startupContext) {
         /*
         Set<EjbDescriptor> descs = (Set<GEjbDescriptor>) bundleDesc.getEjbs();
 
@@ -159,18 +171,19 @@ public class EjbApplication
         int counter = 0;
 
         singletonLCM = new SingletonLifeCycleManager();
-        
-        policyLoader.loadPolicy();
-        String moduleName = null;
-        
-        for (EjbDescriptor desc : ejbs) {
-            desc.setUniqueId(getUniqueId(desc)); // XXX appUniqueID + (counter++));
-            EJBSecurityManager ejbSM = null;
 
-            // Initialize each ejb container (setup component environment, register JNDI objects, etc.)
-            // Any instance instantiation , timer creation/restoration, message inflow is delayed until
-            // start phase.
-            try {
+        try {
+            policyLoader.loadPolicy();
+            String moduleName = null;
+        
+            for (EjbDescriptor desc : ejbs) {
+                desc.setUniqueId(getUniqueId(desc)); // XXX appUniqueID + (counter++));
+                EJBSecurityManager ejbSM = null;
+
+                // Initialize each ejb container (setup component environment, register JNDI objects, etc.)
+                // Any instance instantiation , timer creation/restoration, message inflow is delayed until
+                // start phase.
+
                 ejbSM = ejbSMF.createManager(desc, true);
                 moduleName = ejbSM.getContextID(desc);
 
@@ -185,12 +198,14 @@ public class EjbApplication
                     singletonLCM.addSingletonContainer((AbstractSingletonContainer) container);
                 }
 
-            } catch (Throwable th) {
-                throw new RuntimeException("Error during EjbApplication.start() ", th);
             }
-        }
 
-        generatePolicy(moduleName);
+            generatePolicy(moduleName);
+
+        } catch(Throwable t) {
+            abortInitializationAfterException();
+            throw new RuntimeException("EJB Container initialization error", t);
+        }
         
         return true;
     }
@@ -278,7 +293,27 @@ public class EjbApplication
         return rc.toString().hashCode();
     }
 
+
+    /**
+     * Called when an exception is thrown from either the load phase or the start phase.
+     * In this case we can't guarantee that the deployment framework will give us an
+     * opportunity to clean up, especially if the EjbApplication object itself is never
+     * registered due to the exception.  The most important thing is to make sure
+     * global resources like JNDI names are cleaned up. Otherwise, subsequent deployment
+     * attempts might fail without a server restart.   The container instances
+     * themselves must be prepared to gracefully handle any case where undeploy/shutdown
+     * is called multiple times.
+     */
+    private void abortInitializationAfterException() {
+
+        for (Container container : containers) {
+            container.undeploy();
+        }
+
+    }
+
     private void initEJBTimerService(ApplicationContext startupContext) {
+
         synchronized (lock) {
             EjbContainerUtil ejbContainerUtil = EjbContainerUtilImpl.getInstance();
 

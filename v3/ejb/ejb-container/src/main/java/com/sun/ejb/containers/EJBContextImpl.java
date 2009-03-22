@@ -403,7 +403,9 @@ public abstract class EJBContextImpl
         checkAccessToCallerSecurity();
 
         com.sun.enterprise.security.SecurityManager sm = container.getSecurityManager();
-        return sm.getCallerPrincipal();
+
+        // TODO SecurityManager not enable yet
+        return (sm != null) ? sm.getCallerPrincipal() : null;
     }
     
     
@@ -435,7 +437,8 @@ public abstract class EJBContextImpl
         }
         
         com.sun.enterprise.security.SecurityManager sm = container.getSecurityManager();
-	return sm.isCallerInRole(roleRef);
+         // TODO SecurityManager not enable yet
+	    return (sm != null) ? sm.isCallerInRole(roleRef) : null;
     }
     
     /**
