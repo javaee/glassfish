@@ -2,6 +2,7 @@ package com.sun.s1asdev.ejb.ejb30.clientview.core.client;
 
 import java.io.*;
 import java.util.*;
+import javax.naming.InitialContext;
 import javax.ejb.EJB;
 import org.omg.CORBA.ORB;
 import com.sun.s1asdev.ejb.ejb30.clientview.core.*;
@@ -42,6 +43,18 @@ public class Client {
     public void doTest() {
 
         try {
+
+	    if( hr == null ) {
+
+		System.out.println("In stand-alone mode");
+		InitialContext ic = new InitialContext();
+		hr = (Hello) ic.lookup("ejb/ejb_ejb30_clientview_core_CoreApp");
+		bmpRemoteHome = (BmpRemoteHome) ic.lookup("ejb/ejb_ejb30_clientview_core_Bmp");
+		sfulRemoteHome = (SfulRemoteHome) ic.lookup("ejb/ejb_ejb30_clientview_core_Sful");
+		slessRemoteHome = (SlessRemoteHome) ic.lookup("ejb/ejb_ejb30_clientview_core_Sless");
+
+	    }
+
 
             System.out.println("testing injected BmpRemoteHome");
             BmpRemote bmpRemote = bmpRemoteHome.create("client1");

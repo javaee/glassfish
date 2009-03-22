@@ -12,9 +12,11 @@
     &reporting;
 
     <target name="all">
+        <antcall target="session"/>
+
+	<!-- gradually reenable as possible
         <antcall target="mdb"/>
         <antcall target="mdb2"/>
-        <antcall target="session"/>
         <antcall target="session2"/>
         <antcall target="session2full"/>
         <antcall target="session3"/>
@@ -22,6 +24,7 @@
         <antcall target="session5"/>
         <antcall target="nopkg"/>
         <antcall target="session_standalone"/>
+	-->
     </target>
 
     <target name="mdb">

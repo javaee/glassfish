@@ -12,10 +12,13 @@
     &reporting;
 
     <target name="all">
-        <antcall target="clientview"/>
         <antcall target="hello"/>
+
+	<!--- gradually reenable as possible
+        <antcall target="clientview"/>
         <antcall target="interceptors"/>
         <antcall target="persistence"/>
+	-->
     </target>
 
     <target name="clientview">

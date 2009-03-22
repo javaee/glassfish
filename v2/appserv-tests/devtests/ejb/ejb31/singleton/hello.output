@@ -1,0 +1,220 @@
+Warning: 'file:./../../../../../config/properties.xml' in /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/build.xml should be expressed simply as './../../../../../config/properties.xml' for compliance with other XML tools
+Warning: 'file:./../../../../../config/common.xml' in /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/build.xml should be expressed simply as './../../../../../config/common.xml' for compliance with other XML tools
+Warning: 'file:./build.properties' in /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/build.xml should be expressed simply as './build.properties' for compliance with other XML tools
+
+setOSConditions:
+
+setToolWin:
+
+setToolUnix:
+
+setToolProperty:
+
+setS1ASclassPath:
+
+init-common:
+
+clean:
+Warning: 'file:./../../../../../config/properties.xml' in /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/build.xml should be expressed simply as './../../../../../config/properties.xml' for compliance with other XML tools
+Warning: 'file:./../../../../../config/common.xml' in /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/build.xml should be expressed simply as './../../../../../config/common.xml' for compliance with other XML tools
+Warning: 'file:./build.properties' in /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/build.xml should be expressed simply as './build.properties' for compliance with other XML tools
+
+setOSConditions:
+
+setToolWin:
+
+setToolUnix:
+
+setToolProperty:
+
+setS1ASclassPath:
+
+init-common:
+
+clean-common:
+Warning: 'file:./../../../../../config/properties.xml' in /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/build.xml should be expressed simply as './../../../../../config/properties.xml' for compliance with other XML tools
+Warning: 'file:./../../../../../config/common.xml' in /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/build.xml should be expressed simply as './../../../../../config/common.xml' for compliance with other XML tools
+Warning: 'file:./build.properties' in /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/build.xml should be expressed simply as './build.properties' for compliance with other XML tools
+
+setOSConditions:
+
+setToolWin:
+
+setToolUnix:
+
+setToolProperty:
+
+setS1ASclassPath:
+
+init-common:
+
+clean-classes-common:
+   [delete] Deleting directory /Volumes/Fantom1/work/v2/appserv-tests/build/module
+Warning: 'file:./../../../../../config/properties.xml' in /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/build.xml should be expressed simply as './../../../../../config/properties.xml' for compliance with other XML tools
+Warning: 'file:./../../../../../config/common.xml' in /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/build.xml should be expressed simply as './../../../../../config/common.xml' for compliance with other XML tools
+Warning: 'file:./build.properties' in /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/build.xml should be expressed simply as './build.properties' for compliance with other XML tools
+
+setOSConditions:
+
+setToolWin:
+
+setToolUnix:
+
+setToolProperty:
+
+setS1ASclassPath:
+
+init-common:
+
+clean-jars-common:
+
+compile:
+Warning: 'file:./../../../../../config/properties.xml' in /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/build.xml should be expressed simply as './../../../../../config/properties.xml' for compliance with other XML tools
+Warning: 'file:./../../../../../config/common.xml' in /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/build.xml should be expressed simply as './../../../../../config/common.xml' for compliance with other XML tools
+Warning: 'file:./build.properties' in /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/build.xml should be expressed simply as './build.properties' for compliance with other XML tools
+
+setOSConditions:
+
+setToolWin:
+
+setToolUnix:
+
+setToolProperty:
+
+setS1ASclassPath:
+
+init-common:
+
+compile-common:
+    [mkdir] Created dir: /Volumes/Fantom1/work/v2/appserv-tests/build/module/classes
+    [javac] Compiling 2 source files to /Volumes/Fantom1/work/v2/appserv-tests/build/module/classes
+Warning: 'file:./../../../../../config/properties.xml' in /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/build.xml should be expressed simply as './../../../../../config/properties.xml' for compliance with other XML tools
+Warning: 'file:./../../../../../config/common.xml' in /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/build.xml should be expressed simply as './../../../../../config/common.xml' for compliance with other XML tools
+Warning: 'file:./build.properties' in /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/build.xml should be expressed simply as './build.properties' for compliance with other XML tools
+
+setOSConditions:
+
+setToolWin:
+
+setToolUnix:
+
+setToolProperty:
+
+setS1ASclassPath:
+
+init-common:
+
+compile-common:
+    [javac] Compiling 2 source files to /Volumes/Fantom1/work/v2/appserv-tests/build/module/classes
+
+build:
+Warning: 'file:./../../../../../config/properties.xml' in /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/build.xml should be expressed simply as './../../../../../config/properties.xml' for compliance with other XML tools
+Warning: 'file:./../../../../../config/common.xml' in /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/build.xml should be expressed simply as './../../../../../config/common.xml' for compliance with other XML tools
+Warning: 'file:./build.properties' in /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/build.xml should be expressed simply as './build.properties' for compliance with other XML tools
+
+setOSConditions:
+
+setToolWin:
+
+setToolUnix:
+
+setToolProperty:
+
+setS1ASclassPath:
+
+init-common:
+
+ejb-jar-common:
+    [mkdir] Created dir: /Volumes/Fantom1/work/v2/appserv-tests/build/module/archive
+Warning: 'file:./../../../../../config/properties.xml' in /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/build.xml should be expressed simply as './../../../../../config/properties.xml' for compliance with other XML tools
+Warning: 'file:./../../../../../config/common.xml' in /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/build.xml should be expressed simply as './../../../../../config/common.xml' for compliance with other XML tools
+Warning: 'file:./build.properties' in /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/build.xml should be expressed simply as './build.properties' for compliance with other XML tools
+
+package-ejbjar-common:
+    [mkdir] Created dir: /Volumes/Fantom1/work/v2/appserv-tests/build/module/classes/META-INF
+     [copy] Warning: Could not find file /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/${ejb-jar.xml} to copy.
+     [copy] Warning: Could not find file /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/${persistence-orm.xml} to copy.
+     [copy] Warning: Could not find file /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/${webservices.xml} to copy.
+     [copy] Warning: Could not find file /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/${sun-ejb-jar.xml} to copy.
+     [copy] Warning: Could not find file /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/${sun-cmp-mappings.xml} to copy.
+     [copy] Warning: Could not find file /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/${dbschema} to copy.
+      [jar] Building jar: /Volumes/Fantom1/work/v2/appserv-tests/build/module/archive/ejb-ejb31-singleton-hello-ejb.jar
+   [delete] Deleting directory /Volumes/Fantom1/work/v2/appserv-tests/build/module/classes/META-INF
+
+deploy:
+Warning: 'file:./../../../../../config/properties.xml' in /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/build.xml should be expressed simply as './../../../../../config/properties.xml' for compliance with other XML tools
+Warning: 'file:./../../../../../config/common.xml' in /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/build.xml should be expressed simply as './../../../../../config/common.xml' for compliance with other XML tools
+Warning: 'file:./build.properties' in /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/build.xml should be expressed simply as './build.properties' for compliance with other XML tools
+
+setOSConditions:
+
+setToolWin:
+
+setToolUnix:
+
+setToolProperty:
+
+setS1ASclassPath:
+
+init-common:
+
+deploy-jar-common:
+     [exec] deploy --echo=true --terse=true --port=4848 --host=localhost --passwordfile=/Volumes/Fantom1/work/v2/appserv-tests/config/adminpassword.txt --target=server --user=admin --upload=true 
+     [exec] 
+
+run:
+Warning: 'file:./../../../../../config/properties.xml' in /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/build.xml should be expressed simply as './../../../../../config/properties.xml' for compliance with other XML tools
+Warning: 'file:./../../../../../config/common.xml' in /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/build.xml should be expressed simply as './../../../../../config/common.xml' for compliance with other XML tools
+Warning: 'file:./build.properties' in /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/build.xml should be expressed simply as './build.properties' for compliance with other XML tools
+
+setOSConditions:
+
+setToolWin:
+
+setToolUnix:
+
+setToolProperty:
+
+setS1ASclassPath:
+
+init-common:
+
+run_se:
+     [java] Singleton says : hello, world!
+     [java] 
+     [java] Value of key is: main
+     [java] Generating report at 	/Volumes/Fantom1/work/v2/appserv-tests/test_results.xml
+     [java] 
+     [java] 
+     [java] -----------------------------------------
+     [java] -	  main: PASS	-
+     [java] -----------------------------------------
+     [java] Total PASS:	1
+     [java] Total FAIL:	0
+     [java] Total DID NOT RUN: 0
+     [java] -----------------------------------------
+     [java] in flushAll , creating new testSuiteHash
+     [java] in flushAll , creating new testSuiteHash
+
+undeploy:
+Warning: 'file:./../../../../../config/properties.xml' in /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/build.xml should be expressed simply as './../../../../../config/properties.xml' for compliance with other XML tools
+Warning: 'file:./../../../../../config/common.xml' in /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/build.xml should be expressed simply as './../../../../../config/common.xml' for compliance with other XML tools
+Warning: 'file:./build.properties' in /Volumes/Fantom1/work/v2/appserv-tests/devtests/ejb/ejb31/singleton/hello/build.xml should be expressed simply as './build.properties' for compliance with other XML tools
+
+setOSConditions:
+
+setToolWin:
+
+setToolUnix:
+
+setToolProperty:
+
+setS1ASclassPath:
+
+init-common:
+
+undeploy-jar-common:
+     [exec] undeploy --echo=true --terse=true --port=4848 --host=localhost --passwordfile=/Volumes/Fantom1/work/v2/appserv-tests/config/adminpassword.txt --target=server --user=admin ejb-ejb31-singleton-hello-ejb 
+     [exec] 
+
+all:

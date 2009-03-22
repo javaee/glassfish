@@ -21,10 +21,10 @@
            <fileset dir="." includes="*.output"/>
         </delete>
         <record name="ejb.output" action="start" />
+<!-- gradually reenable the existing tests as features come on line
         <ant dir="allowedmethods" target="all"/>
         <ant dir="bmp" target="all"/>  
         <ant dir="cmp" target="all"/>  
-        <ant dir="ejb30" target="all"/>  
         <ant dir="ejbc" target="all"/>  
         <ant dir="jms" target="all"/>  
         <ant dir="mdb" target="all"/> 
@@ -33,6 +33,9 @@
         <ant dir="txprop" target="all"/>
         <ant dir="sfsb" target="all"/>
         <ant dir="util" target="all"/>
+-->
+        <ant dir="ejb30" target="all"/>  
+        <ant dir="ejb31" target="all"/>
         <record name="ejb.output" action="stop" />
         <antcall target="report"/>
     </target>
@@ -65,6 +68,13 @@
         <record name="ejb30.output" action="start" />
             <ant dir="ejb30" target="all"/>
         <record name="ejb30.output" action="stop" />
+        <antcall target="report"/>
+    </target>
+
+    <target name="ejb31">
+        <record name="ejb31.output" action="start" />
+            <ant dir="ejb31" target="all"/>
+        <record name="ejb31.output" action="stop" />
         <antcall target="report"/>
     </target>
 
@@ -149,6 +159,8 @@
 			ant sfsb (Executes the ejb sfsb tests)
 			ant stress (Executes the ejb stress tests)
 			ant util (Executes the ejb util tests)
+			ant ejb30 (Executes the ejb30 tests)
+			ant ejb31 (Executes the ejb31 tests)
 	</echo>
     </target>
 </project>

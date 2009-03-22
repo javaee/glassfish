@@ -28,6 +28,7 @@ public class Client {
     }  
     
     public Client (String[] args) {
+
     }
     
     public void doTest() {
@@ -36,10 +37,19 @@ public class Client {
 
         try {
 
+	    String lookupStr = 
+		"java:comp/env/com.sun.s1asdev.ejb.ejb30.clientview.adapted.client.Client/hr";
+
+	    if( hr == null ) {
+		System.out.println("In stand-alone mode");
+		lookupStr = "ejb/ejb_ejb30_clientview_adapted_Hello";
+		hr = (Hello) new InitialContext().lookup(lookupStr);
+	    }
+
             hellos.add(hr);
             InitialContext ic = new InitialContext();
             for(int i = 0; i < NUM_EXTRA_HELLOS; i++) {
-                hellos.add( (Hello) ic.lookup("java:comp/env/com.sun.s1asdev.ejb.ejb30.clientview.adapted.client.Client/hr") );
+                hellos.add( (Hello) ic.lookup(lookupStr));
             }
 
             System.out.println("Sleeping to wait for passivation...");

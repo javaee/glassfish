@@ -37,7 +37,19 @@ public class Client {
 
         try {
 
-            hr.runAccessDeniedExceptionTest();
+	    if( hr == null ) {
+
+		System.out.println("In stand-alone mode");
+		InitialContext ic = new InitialContext();
+		hr = (Hello) ic.lookup("ejb/ejb_ejb30_clientview_exceptions_Hello");
+		sfulRemoteBusiness2 = (SfulRemoteBusiness2) ic.lookup("ejb/ejb_ejb30_clientview_exceptions_Sful#com.sun.s1asdev.ejb.ejb30.clientview.exceptions.SfulRemoteBusiness2");
+		slessRemoteBusiness2 = (SlessRemoteBusiness2) ic.lookup("ejb/ejb_ejb30_clientview_exceptions_Sless#com.sun.s1asdev.ejb.ejb30.clientview.exceptions.SlessRemoteBusiness2");
+		sfulRemoteBusiness = (SfulRemoteBusiness) ic.lookup("ejb/ejb_ejb30_clientview_exceptions_Sful#com.sun.s1asdev.ejb.ejb30.clientview.exceptions.SfulRemoteBusiness");
+		slessRemoteBusiness = (SlessRemoteBusiness) ic.lookup("ejb/ejb_ejb30_clientview_exceptions_Sless#com.sun.s1asdev.ejb.ejb30.clientview.exceptions.SlessRemoteBusiness");
+
+	    }
+
+	    // TODO enable when             hr.runAccessDeniedExceptionTest();
 
             hr.runTxRequiredTest();
 

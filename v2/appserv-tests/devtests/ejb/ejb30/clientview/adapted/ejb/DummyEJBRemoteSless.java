@@ -11,10 +11,10 @@ import javax.rmi.PortableRemoteObject;
 import java.rmi.RemoteException;
 import javax.annotation.Resource;
 
-@Stateful(mappedName="com.sun.s1asdev.ejb.ejb30.clientview.adapted.DummyRemoteEJB")
-@Remote({DummyRemote.class, DummyRemote2.class})
-public class DummyRemoteEJB
-    implements DummyRemote, DummyRemote2  {
+@Stateless(mappedName="com.sun.s1asdev.ejb.ejb30.clientview.adapted.DummyEJBRemoteSless")
+@Remote({DummySlessRemote.class, DummySlessRemote2.class})
+public class DummyEJBRemoteSless
+    implements DummySlessRemote, DummySlessRemote2  {
 
     public void dummy() {
     }
@@ -23,3 +23,4 @@ public class DummyRemoteEJB
     }
 
 }
+

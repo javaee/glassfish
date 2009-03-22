@@ -64,14 +64,15 @@ public class HelloEJB implements Hello {
             sfulRemote = sfulRemoteHome.createSful();
 	    System.out.println("Created loca/remote sful objs via homes.");
 
-            sless = slessHome.create();
-            slessRemote = slessRemoteHome.create();
-	    System.out.println("Created loca/remote sless objs via homes.");
-
             bmp = bmpHome.create(pkey);
             bmpRemote = (BmpRemote)
                 bmpRemoteHome.findByPrimaryKey(pkey);
 	    System.out.println("Created BMP bean.");
+
+            sless = slessHome.create();
+            slessRemote = slessRemoteHome.create();
+	    System.out.println("Created loca/remote sless objs via homes.");
+
 
             //            ut = context.getUserTransaction();
 	   	     
