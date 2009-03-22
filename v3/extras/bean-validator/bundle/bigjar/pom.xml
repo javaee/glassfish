@@ -39,10 +39,10 @@
                                      dest="target/classes" />
                               <unjar overwrite="true" src="${settings.localRepository}/org/hibernate/hibernate-validator/4.0.0.Alpha3-SNAPSHOT/hibernate-validator-4.0.0.Alpha3-SNAPSHOT.jar" 
                                      dest="target/classes" />
-<!--
-                              <copy overwrite="true" file="${settings.localRepository}/org/hibernate/hibernate-validator/4.0.0.Alpha3-SNAPSHOT/hibernate-validator-4.0.0.Alpha3-SNAPSHOT.jar" 
-                                    tofile="${settings.localRepository}/org/glassfish/extras/bean-validator/4.0.0.Alpha3/bean-validator-4.0.0.Alpha3-sources.jar" />
--->
+
+                              <unjar overwrite="true" src="${settings.localRepository}/com/googlecode/jtype/jtype/0.1.0/jtype-0.1.0.jar" 
+                                     dest="target/classes" />
+
                           </tasks>
                       </configuration>
                       <goals>

@@ -49,7 +49,7 @@
     <name>Beans Validation API for Glassfish V3: checkout</name>
 
     <scm>
-        <connection>scm:svn:http://anonsvn.jboss.org/repos/hibernate/beanvalidation/trunk/validation-api</connection>
+        <connection>scm:svn:http://anonsvn.jboss.org/repos/hibernate/beanvalidation/tags/v1_0_CR1/validation-api</connection>
         <url>http://fisheye.jboss.com/browse/Hibernate/beanvalidation/</url>
     </scm>
 
@@ -70,8 +70,6 @@
                 </executions>
                 <configuration>
                     <connectionType>connection</connectionType>
-                    <scmVersion>16087</scmVersion>
-                    <scmVersionType>revision</scmVersionType>
                     <checkoutDirectory>../checkout-source</checkoutDirectory>
                 </configuration>
             </plugin>

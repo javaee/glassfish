@@ -6,7 +6,7 @@
     
     <groupId>javax.validation</groupId>
     <artifactId>validation-api</artifactId>
-    <version>1.0.Beta4</version>
+    <version>1.0.CR1</version>
     <packaging>jar</packaging>
     <name>Bean Validation API</name>
     

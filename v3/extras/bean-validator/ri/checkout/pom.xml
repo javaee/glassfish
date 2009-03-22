@@ -50,7 +50,7 @@
     <name>Beans Validation RI for Glassfish V3: checkout</name>
 
     <scm>
-        <connection>scm:svn:http://anonsvn.jboss.org/repos/hibernate/validator/trunk</connection>
+        <connection>scm:svn:http://anonsvn.jboss.org/repos/hibernate/validator/tags/v4_0_0_Alpha3</connection>
         <url>http://fisheye.jboss.com/browse/Hibernate/validator/</url>
     </scm>
 
@@ -71,8 +71,6 @@
                 </executions>
                 <configuration>
                     <connectionType>connection</connectionType>
-                    <scmVersion>16087</scmVersion>
-                    <scmVersionType>revision</scmVersionType>
                     <checkoutDirectory>../checkout-source</checkoutDirectory>
                 </configuration>
             </plugin>

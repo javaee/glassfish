@@ -39,7 +39,25 @@
                               <mkdir dir="${settings.localRepository}/com/sun/jmx/jmxri/1.2.1" />
                               <copy file="lib/jmxri.jar"
                                     tofile="${settings.localRepository}/com/sun/jmx/jmxri/1.2.1/jmxri-1.2.1.jar" />
-                              
+
+                          </tasks>
+                      </configuration>
+                      <goals>
+                          <goal>run</goal>
+                      </goals>
+                  </execution>
+
+                  <execution>
+                      <id>rename-jars</id>
+                      <phase>verify</phase>
+                      <configuration>
+                          <tasks>
+                              <echo message="Renaming jars to be consistent with what JSR-303 expects"/>
+                              <echo message="Copying javax/persistence/jpa-api/2.0.Beta1-SNAPSHOT/jpa-api-2.0.Beta1-SNAPSHOT.jar in local repo"/>
+                              <mkdir dir="${settings.localRepository}/org/hibernate/java-persistence/jpa-api/2.0.Beta1" />
+                              <copy overwrite="true" file="${settings.localRepository}/javax/persistence/jpa-api/2.0.Beta1-SNAPSHOT/jpa-api-2.0.Beta1-SNAPSHOT.jar"
+                                    tofile="${settings.localRepository}/org/hibernate/java-persistence/jpa-api/2.0.Beta1/jpa-api-2.0.Beta1.jar"
+                                     /> 
 
                           </tasks>
                       </configuration>
@@ -52,4 +70,38 @@
 
       </plugins>
     </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.googlecode.jtype</groupId>
+            <artifactId>jtype</artifactId>
+            <version>0.1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>jpa-api</artifactId>
+            <version>2.0.Beta1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>jtype</id>
+            <name>JType Maven Repository</name>
+            <url>http://jtype.googlecode.com/svn/repository/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>jboss-jpa-api</id>
+            <name>JBoss Maven Repository</name>
+            <url>http://snapshots.jboss.org/maven2/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>    
+
 </project>
