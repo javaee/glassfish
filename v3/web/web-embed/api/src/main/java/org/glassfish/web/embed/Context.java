@@ -121,7 +121,7 @@ public interface Context extends ServletContext, Lifecycle {
      * @return true if directory listings are enabled on this 
      * <tt>Context</tt>, false otherwise
      */
-    public void isDirectoryListing();
+    public boolean isDirectoryListing();
 
     /**
      * Set the security related configuration for this context
