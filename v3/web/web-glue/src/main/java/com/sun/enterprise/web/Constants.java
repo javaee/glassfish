@@ -114,6 +114,8 @@ public final class Constants {
 
     public static final String SSO_ENABLED = "sso-enabled";
 
+    public static final String ERROR_REPORT_VALVE = "errorReportValve";
+
     // habitat attribute in ServletContext
     public static final String HABITAT_ATTRIBUTE = "org.glassfish.servlet.habitat";
 }

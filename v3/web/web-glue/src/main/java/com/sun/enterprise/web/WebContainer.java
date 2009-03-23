@@ -1444,6 +1444,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         vs.configureSingleSignOn(globalSSOEnabled, webContainerFeatureFactory);
         vs.configureRedirect();
         vs.configureErrorPage();
+        vs.configureErrorReportValve();
 
         return vs;
     }
@@ -3172,7 +3173,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                         
         VirtualServer vs = (VirtualServer)
             getEngine().findChild(vsBean.getId());
-        if (vs==null) {
+        if (vs == null) {
             return;
         }
         vs.setBean(vsBean);
@@ -3222,6 +3223,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             vs.configureAuthRealm(securityService);
         } else if (name.startsWith("send-error")) {
             vs.configureErrorPage();
+        } else if (Constants.ERROR_REPORT_VALVE.equals(name)) {
+            vs.setErrorReportValveClass(value);
         } else if (name.startsWith("redirect")) {
             vs.configureRedirect();
         } else if (name.startsWith("contextXmlDefault")) {

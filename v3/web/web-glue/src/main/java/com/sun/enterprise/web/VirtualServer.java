@@ -1868,4 +1868,23 @@ public class VirtualServer extends StandardHost {
         }
     }
 
+
+    /**
+     * Configures the error report valve of this VirtualServer.
+     *
+     * <p>The error report valve of a virtual server is specified through
+     * a property with name <i>errorReportValve</i>, whose value is the
+     * valve's fully qualified classname. A null or empty classname
+     * disables the error report valve and therefore the container's
+     * default error page mechanism for error responses.
+     */
+    void configureErrorReportValve() {
+        if (vsBean == null) {
+            return;
+        }
+        Property prop = vsBean.getProperty(Constants.ERROR_REPORT_VALVE);
+        if (prop != null) {
+            setErrorReportValveClass(prop.getValue());
+        }
+    }
 }
