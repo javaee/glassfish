@@ -222,6 +222,8 @@
         <ant dir="xmlOverrideAnnotation" target="all"/>
         <ant dir="webFragment" target="all"/>
         <ant dir="multiWebFragments" target="all"/>
+        <ant dir="servletRequestResponseWrapperIsWrapperFor" target="all"/>
+        <ant dir="servletRequestDispatcherType" target="all"/>
         <ant dir="asyncContextComplete" target="all"/>
         <ant dir="asyncContextDispatch" target="all"/>
         <ant dir="asyncListenerOnComplete" target="all"/>
@@ -231,10 +233,6 @@
         <ant dir="asyncSupportedFalse" target="all"/>
         <ant dir="asyncContextHasOriginalRequestAndResponse" target="all"/>
         -->
-<!-- XXX temporary commented out due to issue 7422
-        <ant dir="servletRequestResponseWrapperIsWrapperFor" target="all"/>
-        <ant dir="servletRequestDispatcherType" target="all"/>
--->
     </target>
 
     <target name="web-container">
