@@ -38,16 +38,16 @@ own identifying information: Portions Copyright [yyyy]
 
 	<!-- copy over MQ packages -->
 	<exec dir="target/source" executable="python" failonerror="true">
-		<arg line="${target.repo.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} mq-core" />
+		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} mq-core" />
 	</exec>
         <exec dir="target/source" executable="python" failonerror="true">
-		<arg line="${target.repo.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} mq-server" />
+		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} mq-server" />
 	</exec>
 	<exec dir="target/source" executable="python" failonerror="true">
-		<arg line="${target.repo.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} mq-config-gf" />
+		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} mq-config-gf" />
 	</exec>
         <exec dir="target/source" executable="python" failonerror="true">
-		<arg line="${target.repo.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} mq-locale" />
+		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} mq-locale" />
 	</exec>
 
     </target>
