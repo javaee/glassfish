@@ -231,8 +231,10 @@
         <ant dir="asyncSupportedFalse" target="all"/>
         <ant dir="asyncContextHasOriginalRequestAndResponse" target="all"/>
         -->
+<!-- XXX temporary commented out due to issue 7422
         <ant dir="servletRequestResponseWrapperIsWrapperFor" target="all"/>
         <ant dir="servletRequestDispatcherType" target="all"/>
+-->
     </target>
 
     <target name="web-container">
@@ -388,7 +390,9 @@
         <ant dir="readerThreadsConfig" target="all"/>
         <ant dir="readerSelectorsConfig" target="all"/>
         <ant dir="httpServletDoPost" target="all"/>
+<!-- XXX temporary commented out due to issue 7420 
         <ant dir="keepAliveTimeoutZero" target="all"/>
+-->
         <ant dir="keepAliveTimeoutZeroSSL" target="all"/>
         <ant dir="httpResponseServerHeader" target="all"/>
         <ant dir="defaultResponseType" target="all"/>
@@ -407,7 +411,9 @@
         <!-- Exclude for prelude, since port unification not supported
         <ant dir="wrongTransport" target="all"/>
         -->
+<!-- XXX temporary commented out due to issue 7420
         <ant dir="maxKeepAliveRequests" target="all"/>
+-->
         <ant dir="httpRequestWhitespaceTolerance" target="all"/>
         <ant dir="multiByteHttpRequestBuffer" target="all"/>
         <ant dir="readLineWithMaxLength" target="all"/>
