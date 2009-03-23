@@ -124,6 +124,50 @@
       </plugins>
     </pluginManagement>
     <plugins>
+          <plugin>
+              <artifactId>maven-antrun-plugin</artifactId>
+              <executions>
+
+                  <execution>
+                      <id>explode-bigjar</id>
+                      <phase>process-sources</phase>
+                      <configuration>
+                          <tasks>
+                              <echo message="Exploding binary dependencies"/>
+                              <mkdir dir="target/classes" />
+ <echo>
+                 settings.localRepository=${settings.localRepository}
+                </echo> 
+
+                              <unjar overwrite="true" src="${settings.localRepository}/org/glassfish/extras/gf-beans-validation-bigjar/3.0-SNAPSHOT/gf-beans-validation-bigjar-3.0-SNAPSHOT.jar" 
+                                     dest="target/classes" />
+                          </tasks>
+                      </configuration>
+                      <goals>
+                          <goal>run</goal>
+                      </goals>
+                  </execution>
+                  <execution>
+                      <id>copy-resources</id>
+                      <phase>verify</phase>
+                      <configuration>
+                          <tasks>
+                              <echo message="copying resources"/>
+                              <jar update="true"
+                                   destfile="target/${pom.artifactId}-${pom.version}.jar">
+                                <fileset dir="target/classes">
+                                    <include name="META-INF/services/*.*" />
+                                    <include name="*.xsd" />
+                                </fileset>
+                              </jar>
+                          </tasks>
+                      </configuration>
+                      <goals>
+                          <goal>run</goal>
+                      </goals>
+                  </execution>
+              </executions>
+          </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>2.0.2</version>
@@ -157,7 +201,7 @@
                         <!-- embed all compile and runtime scope dependencies -->
 			<Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>
 			<Export-Package>javax.validation.*</Export-Package>
-			<Private-Package>com.googlecode.*,org.hibernate.*,org.slf4j.*,org.apache.log4j.*,com.sun.jdmk.*,javax.jms.*</Private-Package>
+			<Private-Package>com.googlecode.*,com.sun.management.*,org.hibernate.*,org.slf4j.*,org.apache.log4j.*,com.sun.jdmk.*,javax.jms.*</Private-Package>
                     </instructions>
                 </configuration>
       </plugin>
@@ -212,13 +256,6 @@
       <url>http://repo1.maven.org/maven2</url>
     </pluginRepository>
   </pluginRepositories>
-  <dependencies>
-    <dependency>
-      <groupId>org.glassfish.extras</groupId>
-      <artifactId>gf-beans-validation-bigjar</artifactId>
-      <version>3.0-SNAPSHOT</version>
-    </dependency>
-  </dependencies>
   <distributionManagement>
     <repository>
       <id>java.net-m2-repository</id>
