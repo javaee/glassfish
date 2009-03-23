@@ -310,7 +310,6 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
                 final Property prop = (Property) instance;
                 np = new NotProcessed("ResourceManager: a property was added: " + prop.getName() + "=" + prop.getValue());
             } else if (instance instanceof ResourceRef) {
-                System.out.println("******** resource ref detected *********");
                 //TODO V3 : is this for asadmin create-resource-ref? 
             } else {
                 np = new NotProcessed("ResourceManager: configuration " +
