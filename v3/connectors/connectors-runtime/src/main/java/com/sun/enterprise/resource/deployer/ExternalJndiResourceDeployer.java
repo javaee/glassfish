@@ -49,6 +49,7 @@
  */
 package com.sun.enterprise.resource.deployer;
 
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.JavaEEResource;
 import com.sun.enterprise.resource.beans.ExternalJndiResource;
 import com.sun.appserv.connectors.internal.api.ResourcePropertyImpl;
@@ -113,8 +114,7 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
         com.sun.enterprise.config.serverbeans.ExternalJndiResource jndiRes =
             (com.sun.enterprise.config.serverbeans.ExternalJndiResource) resource;
 
-        // TODO V3 isEnabled() not available yet ?
-        // if (jndiRes.isEnabled()) {
+        if (ConnectorsUtil.parseBoolean(jndiRes.getEnabled())) {
             // converts the config data to j2ee resource
             JavaEEResource j2eeRes = toExternalJndiJavaEEResource(jndiRes);
 
@@ -129,11 +129,11 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
             // adds the resource to the resource collection
             //TODO V3 handle later ?
             //installer.addResource(j2eeRes);
-        /*} else {
+        } else {
             _logger.log(Level.INFO, "core.resource_disabled",
                 new Object[] {jndiRes.getJndiName(),
                               ConnectorConstants.EXT_JNDI_RES_TYPE});
-        }*/
+        }
 
     }
 
@@ -331,8 +331,8 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
         //jr.setDescription( rbean.getDescription() ); // FIXME: getting error
 
         // sets the enable flag
-        //TODO V3 handle later
-        //jr.setEnabled( rbean.isEnabled() );
+        //TODO V3 - DONE handle later
+        jr.setEnabled( ConnectorsUtil.parseBoolean(rbean.getEnabled()) );
 
         // sets the jndi look up name
         jr.setJndiLookupName( rbean.getJndiLookupName() );

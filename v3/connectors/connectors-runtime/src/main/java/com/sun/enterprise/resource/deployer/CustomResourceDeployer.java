@@ -49,6 +49,8 @@
  */
 package com.sun.enterprise.resource.deployer;
 
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.appserv.connectors.internal.api.JavaEEResource;
 import com.sun.enterprise.resource.beans.CustomResource;
 import com.sun.appserv.connectors.internal.api.ResourcePropertyImpl;
@@ -113,8 +115,7 @@ public class CustomResourceDeployer implements ResourceDeployer {
         com.sun.enterprise.config.serverbeans.CustomResource customRes =
             (com.sun.enterprise.config.serverbeans.CustomResource) resource;
 
-        //TODO V3 isEnabled() not available ?
-        //if (customRes.isEnabled()) {
+        if (ConnectorsUtil.parseBoolean(customRes.getEnabled())) {
             // converts the config data to j2ee resource
             JavaEEResource j2eeResource = toCustomJavaEEResource(customRes);
 
@@ -130,13 +131,12 @@ public class CustomResourceDeployer implements ResourceDeployer {
             // adds the resource to the resource collection
             //TODO V3 handle later ?
             //installer.addResource(j2eeResource);
-/*
+
         } else {
             _logger.log(Level.INFO, "core.resource_disabled",
                 new Object[] {customRes.getJndiName(),
-                              IASJ2EEResourceFactoryImpl.CUSTOM_RES_TYPE});
+                              ConnectorConstants.RES_TYPE_CUSTOM});
         }
-*/
     }
 
     /**
@@ -257,8 +257,7 @@ public class CustomResourceDeployer implements ResourceDeployer {
         //jr.setDescription(rbean.getDescription()); // FIXME: getting error
 
         // sets the enable flag
-        //TODO V3 setEnabled() not available ?
-        // jr.setEnabled( rbean.isEnabled() );
+        jr.setEnabled( ConnectorsUtil.parseBoolean(rbean.getEnabled()) );
 
         // sets the resource type
         jr.setResType( rbean.getResType() );

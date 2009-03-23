@@ -361,76 +361,70 @@ public class ResourcesUtil {
      *
      * @since 8.1 PE/SE/EE
      */
-/* TODO V3 enable once configBeans (resource.isEnabled()) is implemented
-    public boolean isEnabled(ConfigBeanProxy res) throws ConfigException {
+    public boolean isEnabled(ConfigBeanProxy res) /*throws ConfigException*/ {
         _logger.fine("ResourcesUtil :: isEnabled");
         if (res == null)
             return false;
-        if (res instanceof JdbcResource)
-            return isEnabled((JdbcResource) res);
-        else if (res instanceof ConnectorResource)
-            return isEnabled((ConnectorResource) res);
-        else if (res instanceof ConnectorConnectionPool)
-            return isEnabled((ConnectorConnectionPool) res);
-        else if (res instanceof JdbcConnectionPool)
-            //JDBC RA is system RA and is always enabled
-            return true;
+        if (res instanceof BindableResource) {
+            return isEnabled((BindableResource) res);
+        } else if(res instanceof ResourcePool) {
+            return isEnabled((ResourcePool) res);
+        }
 
         ResourceRef resRef = null;
-*/
-/*
-        TODO V3 handle arbitrary resource type
-        TODO V3 check whether the resource-ref is also enabled
-        if(!res.isEnabled())
-            return false;
 
-        Server server = ServerBeansFactory.getServerBean(configContext_);
+
+        //TODO V3 handle arbitrary resource type
+        //TODO V3 check whether the resource-ref is also enabled
+        /*Server server = ServerBeansFactory.getServerBean(configContext_);
 
         //using ServerTags, otherwise have to resort to reflection or multiple instanceof/casts
         resRef =  server.getResourceRefByRef(res.getAttributeValue(ServerTags.JNDI_NAME));*/
-/*
+
 
         if (resRef == null)
             return false;
 
-        return resRef.isEnabled();
+        return parseBoolean(resRef.getEnabled());
     }
-*/
 
-/* TODO V3 enable once configBeans (resource.isEnabled()) is implemented
-    public boolean isEnabled(ConnectorConnectionPool ccp) throws ConfigException {
-        if (ccp == null) {
+
+    public boolean isEnabled(ResourcePool pool) {
+        boolean enabled = true;
+        if(pool == null) {
             return false;
         }
-        String raName = ccp.getResourceAdapterName();
-        return isRarEnabled(raName);
+        if(pool instanceof JdbcConnectionPool) {
+            //JDBC RA is system RA and is always enabled
+            enabled = true;
+        } else if(pool instanceof ConnectorConnectionPool) {
+            ConnectorConnectionPool ccpool = (ConnectorConnectionPool) pool;
+            String raName = ccpool.getResourceAdapterName();
+            //TODO V3 : need to implement isRarEnabled after dom.getApps() done.
+            //enabled = isRarEnabled(raName);
+        }
+        return enabled;
     }
-*/
 
-/* TODO V3 enable once configBeans (resource.isEnabled()) is implemented
-    public boolean isEnabled(JdbcResource jr) throws ConfigException {
-
-        if (jr == null || !jr.isEnabled())
+    public boolean isEnabled(BindableResource br) {
+        boolean enabled = true;
+        //this cannot happen? need to remove later?
+        if (br == null) {
             return false;
-
-        // TODO V3 handle resource-ref later
-        //if(!isResourceReferenceEnabled(jr.getJndiName()))
-        //   return false;
-
-        return true;
-    }
-*/
-
-/* TODO V3 enable once configBeans (resource.isEnabled()) is implemented
-    public boolean isEnabled(ConnectorResource cr) throws ConfigException {
-
-        if (cr == null || !cr.isEnabled())
-            return false;
-
-//          TODO V3 handle resource-ref , ccp later
-//        if(!isResourceReferenceEnabled(cr.getJndiName()))
-//            return false;
-//
+        }
+        if(br instanceof JdbcResource) {
+            enabled = parseBoolean(((JdbcResource) br).getEnabled());
+            //TODO V3 : handle resource-ref
+            /*if(!isResourceReferenceEnabled(br.getJndiName()))
+                return false;
+             */
+        } else if(br instanceof ConnectorResource) {
+            ConnectorResource cr = (ConnectorResource) br;
+            enabled = parseBoolean(cr.getEnabled());
+            //TODO V3 : handle resource -ref and ccp
+            /*if(!isResourceReferenceEnabled(br.getJndiName()))
+                return false;
+             */
 //        String poolName = cr.getPoolName();
 //        ConnectorConnectionPool ccp = res.getConnectorConnectionPoolByName(poolName);
 //        if (ccp == null) {
@@ -438,12 +432,21 @@ public class ResourcesUtil {
 //        }
 //
 //        return isEnabled(ccp);
+        } else if(br instanceof MailResource) {
 
-        return true;
+        } else if(br instanceof ExternalJndiResource) {
+
+        } else if(br instanceof CustomResource) {
+
+        } else if(br instanceof PersistenceManagerFactoryResource) {
+
+        } else if(br instanceof AdminObjectResource) {
+            
+        }
+        return enabled;
     }
-*/
 
-/* TODO V3 enable once configBeans (dom.getApps().getConnectorModuleByName()) is implemented
+    /* TODO V3 enable once configBeans (dom.getApps().getConnectorModuleByName()) is implemented
     private boolean isRarEnabled(String raName) throws ConfigException {
         if (raName == null || raName.length() == 0)
             return false;
@@ -459,8 +462,8 @@ public class ResourcesUtil {
 //            return belongToEmbeddedRarAndEnabled(raName);
 //        }
         return false;
-    }
-*/
+    }*/
+
 
     /**
      * Checks if a resource reference is enabled
@@ -540,6 +543,10 @@ public class ResourcesUtil {
             return ConnectorConstants.RES_TYPE_JDBC;
         }
         return null;
+    }
+
+    private boolean parseBoolean(String enabled) {
+        return Boolean.parseBoolean(enabled);
     }
 
     public ConnectorDescriptor getConnectorDescriptorFromUri(String rarName, String raLoc) {

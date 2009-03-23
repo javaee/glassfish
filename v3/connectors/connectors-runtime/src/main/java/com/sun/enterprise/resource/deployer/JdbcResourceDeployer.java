@@ -49,6 +49,7 @@
  */
 package com.sun.enterprise.resource.deployer;
 
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
@@ -56,6 +57,7 @@ import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.config.serverbeans.JdbcResource;
 import com.sun.logging.LogDomains;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.jvnet.hk2.annotations.Service;
@@ -95,8 +97,7 @@ public class JdbcResourceDeployer implements ResourceDeployer {
         com.sun.enterprise.config.serverbeans.JdbcResource jdbcRes =
                 (com.sun.enterprise.config.serverbeans.JdbcResource) resource;
 
-        /*TODO V3 handle later
-        if (jdbcRes.isEnabled())*/
+        if (ConnectorsUtil.parseBoolean(jdbcRes.getEnabled()))
         {
             String jndiName = jdbcRes.getJndiName();
             String poolName = jdbcRes.getPoolName();
@@ -107,10 +108,10 @@ public class JdbcResourceDeployer implements ResourceDeployer {
                 runtime.createConnectorResource( ConnectorsUtil.getPMJndiName( jndiName), poolName, null);
             }
             _logger.finest("deployed resource " + jndiName);
-        } /*else {
+        } else {
             _logger.log(Level.INFO, "core.resource_disabled",
-                    new Object[]{jdbcRes.getJndiName(), ConnectorConstants.JDBC_RES_TYPE});
-        }*/
+                    new Object[]{jdbcRes.getJndiName(), ConnectorConstants.RES_TYPE_JDBC});
+        }
     }
 
     /**

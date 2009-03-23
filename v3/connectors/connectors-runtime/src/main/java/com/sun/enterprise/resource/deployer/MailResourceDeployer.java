@@ -43,6 +43,8 @@
  */
 package com.sun.enterprise.resource.deployer;
 
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.enterprise.resource.beans.MailResource;
 import com.sun.appserv.connectors.internal.api.JavaEEResource;
 
@@ -104,19 +106,18 @@ public class MailResourceDeployer extends GlobalResourceDeployer
         if (mailRes == null) {
             _logger.log(Level.INFO, "core.resourcedeploy_error");
         } else {
-            //TODO V3 isEnabled is not provided in config bean
-            //if (mailRes.isEnabled()) {
+            if (ConnectorsUtil.parseBoolean(mailRes.getEnabled())) {
             //registers the jsr77 object for the mail resource deployed
             //TODO V3 MOM is not available ?
             /*ManagementObjectManager mgr =
                 getAppServerSwitchObject().getManagementObjectManager();
             mgr.registerJavaMailResource(mailRes.getJndiName());*/
             installResource(mailRes);
-            /*} else {
+            } else {
                 _logger.log(Level.INFO, "core.resource_disabled",
                         new Object[] {mailRes.getJndiName(),
-                        IASJ2EEResourceFactoryImpl.MAIL_RES_TYPE});
-            } */
+                        ConnectorConstants.RES_TYPE_MAIL});
+            } 
         }
     }
 
@@ -239,7 +240,7 @@ public class MailResourceDeployer extends GlobalResourceDeployer
         com.sun.enterprise.resource.beans.MailResource jr = new MailResource(rbean.getJndiName());
 
         //jr.setDescription(rbean.getDescription()); // FIXME: getting error
-        //jr.setEnabled(rbean.isEnabled());TODO V3 setEnabled is not available ?
+        jr.setEnabled(ConnectorsUtil.parseBoolean(rbean.getEnabled()));
         jr.setStoreProtocol(rbean.getStoreProtocol());
         jr.setStoreProtocolClass(rbean.getStoreProtocolClass());
         jr.setTransportProtocol(rbean.getTransportProtocol());

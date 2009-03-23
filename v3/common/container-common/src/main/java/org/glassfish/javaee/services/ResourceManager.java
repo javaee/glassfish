@@ -82,8 +82,13 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
     
     private ConnectorRuntime runtime;
     
+    //Listen to config changes of resource refs.
+    @Inject
+    private ResourceRef[] resourceRefs;
+    
     public void postConstruct() {
         deployResources(allResources.getResources());
+        addListenerToResourceRefs();
     }
 
     /**
@@ -130,6 +135,7 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
         undeployResources(resources);
         getConnectorRuntime().shutdownAllActiveResourceAdapters(null);
         removeListenerFromResources();
+        removeListenerFromResourceRefs();
     }
 
 
@@ -169,137 +175,189 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
      * @param events list of changes
      */
     public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
-        final UnprocessedChangeEvents unprocessed = ConfigSupport.sortAndDispatch(events, new Changed() {
-            /**
-             * Notification of a change on a configuration object
-             *
-             * @param type            type of change : ADD mean the changedInstance was added to the parent
-             *                        REMOVE means the changedInstance was removed from the parent, CHANGE means the
-             *                        changedInstance has mutated.
-             * @param changedType     type of the configuration object
-             * @param changedInstance changed instance.
-             */
-            public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> changedType, T changedInstance) {
-                NotProcessed np = null;
-                switch (type) {
-                    case ADD:
-                        logger.fine("A new " + changedType.getName() + " was added : " + changedInstance);
-                        np = handleAddEvent(changedInstance);
-                        break;
-
-                    case CHANGE:
-                        logger.fine("A " + changedType.getName() + " was changed : " + changedInstance);
-                        np = handleChangeEvent(changedInstance);
-                        break;
-
-                    case REMOVE:
-                        logger.fine("A " + changedType.getName() + " was removed : " + changedInstance);
-                        np = handleRemoveEvent(changedInstance);
-                        break;
-
-                    default:
-                        np = new NotProcessed("Unrecognized type of change: " + type);
-                        break;
-                }
-                return np;
-            }
-
-            private <T extends ConfigBeanProxy> NotProcessed handleChangeEvent(T instance) {
-                NotProcessed np = null;
-                //TODO V3 handle enabled / disabled / resource-ref / redeploy ?
-                try {
-                    if (ConnectorsUtil.isValidEventType(instance)) {
-                        ResourceDeployer deployer = getResourceDeployer(instance);
-                        if(deployer != null){
-                            deployer.redeployResource(instance);
-                        }else{
-                            logger.warning("no deployer found for resource type [ "+ instance.getClass().getName() + "]");
-                            //TODO V3 log throw Exception
-                        }
-                    } else if (ConnectorsUtil.isValidEventType(instance.getParent())) {
-                        //Added in case of a property change
-                        //check for validity of the property's parent and redeploy
-                        ResourceDeployer deployer = getResourceDeployer(instance.getParent());
-                        if(deployer != null){
-                            deployer.redeployResource(instance.getParent());
-                        }else{
-                            logger.warning("no deployer found for resource type [ "+ instance.getClass().getName() + "]");
-                            //TODO V3 log throw Exception
-                        }
-                    }
-                } catch (Exception ex) {
-                    final String msg = ResourceManager.class.getName() + " : Error while handling change Event";
-                    logger.severe(msg);
-                    np = new NotProcessed(msg);
-                }
-                return np;
-            }
-
-            private <T extends ConfigBeanProxy> NotProcessed handleAddEvent(T instance) {
-                NotProcessed np = null;
-                //Add listener to the changed instance object
-                ResourceManager.this.addListenerToResource(instance);
-
-                if(instance instanceof BindableResource){
-                    resourcesBinder.deployResource(((BindableResource)instance).getJndiName(), (Resource)instance);
-                } else if(instance instanceof ResourcePool) {
-                    //TODO V3 handle - ccp, jdbc-cp
-                } else if( instance instanceof Resource) {
-                    //only resource type left is RAC
-                    try{
-                        getResourceDeployer(instance).deployResource(instance);
-                    }catch(Exception e){
-                        logger.log(Level.WARNING, "unable deploy resource : ", e);
-                    }
-                } else if (instance instanceof Property) {
-                    final Property prop = (Property) instance;
-                    np = new NotProcessed("ResourceManager: a property was added: " + prop.getName() + "=" + prop.getValue());
-                } else {
-                    np = new NotProcessed("ResourceManager: configuration " +
-                            Dom.unwrap(instance).getProxyType().getName() + " was added");
-                }
-                return np;
-            }
-
-            private <T extends ConfigBeanProxy> NotProcessed handleRemoveEvent(final T instance) {
-                ArrayList instancesToDestroy = new ArrayList();
-                NotProcessed np = null;
-                try {
-                    //this check ensures that a valid resource is handled
-                    if (ConnectorsUtil.isValidEventType(instance)) {
-                        instancesToDestroy.add(instance);
-                        //Remove listener from the removed instance
-                        ResourceManager.this.removeListenerFromResource(instance);
-
-                        //get appropriate deployer and unddeploy resource
-                        ResourceDeployer deployer = getResourceDeployer(instance);
-                        if(deployer != null){
-                            deployer.undeployResource(instance);
-                        }else{
-                            logger.warning("no deployer found for resource type [ "+ instance.getClass().getName() + "]");
-                            //TODO V3 log & throw Exception
-                        }
-
-                    } else if (ConnectorsUtil.isValidEventType(instance.getParent())) {
-                        //Added in case of a property remove
-                        //check for validity of the property's parent and redeploy
-                        ResourceDeployer deployer = getResourceDeployer(instance.getParent());
-                        if(deployer != null){
-                            deployer.redeployResource(instance.getParent());
-                        }else{
-                            logger.warning("no deployer found for resource type [ "+ instance.getClass().getName() + "]");
-                            //TODO V3 log & throw Exception
-                        }
-                    }
-                } catch (Exception ex) {
-                    final String msg = ResourceManager.class.getName() + " : Error while handling remove Event";
-                    logger.severe(msg);
-                    np = new NotProcessed(msg);
-                }
-                return np;
-            }
-        }, logger);
+        final UnprocessedChangeEvents unprocessed = 
+                ConfigSupport.sortAndDispatch(events, 
+                new PropertyChangeHandler(events), logger);
         return unprocessed;
+    }
+    
+    class PropertyChangeHandler implements Changed {
+        
+        PropertyChangeEvent[] events;
+
+        private PropertyChangeHandler(PropertyChangeEvent[] events) {
+            this.events = events;
+        }
+
+        /**
+         * Notification of a change on a configuration object
+         *
+         * @param type            type of change : ADD mean the changedInstance was added to the parent
+         *                        REMOVE means the changedInstance was removed from the parent, CHANGE means the
+         *                        changedInstance has mutated.
+         * @param changedType     type of the configuration object
+         * @param changedInstance changed instance.
+         */
+        public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> changedType, T changedInstance) {
+            NotProcessed np = null;
+            switch (type) {
+                case ADD:
+                    logger.fine("A new " + changedType.getName() + " was added : " + changedInstance);
+                    np = handleAddEvent(changedInstance);
+                    break;
+
+                case CHANGE:
+                    logger.fine("A " + changedType.getName() + " was changed : " + changedInstance);
+                    np = handleChangeEvent(changedInstance);
+                    break;
+
+                case REMOVE:
+                    logger.fine("A " + changedType.getName() + " was removed : " + changedInstance);
+                    np = handleRemoveEvent(changedInstance);
+                    break;
+
+                default:
+                    np = new NotProcessed("Unrecognized type of change: " + type);
+                    break;
+            }
+            return np;
+        }
+
+        private <T extends ConfigBeanProxy> NotProcessed handleChangeEvent(T instance) {
+            NotProcessed np = null;
+            //TODO V3 handle enabled / disabled / resource-ref / redeploy ?
+            try {
+                if (ConnectorsUtil.isValidEventType(instance)) {
+                    ResourceDeployer deployer = getResourceDeployer(instance);
+                    if (deployer != null) {
+                        deployer.redeployResource(instance);
+                    } else {
+                        logger.warning("no deployer found for resource type [ " + instance.getClass().getName() + "]");
+                    //TODO V3 log throw Exception
+                    }
+                } else if (ConnectorsUtil.isValidEventType(instance.getParent())) {
+                    //Added in case of a property change
+                    //check for validity of the property's parent and redeploy
+                    ResourceDeployer deployer = getResourceDeployer(instance.getParent());
+                    if (deployer != null) {
+                        deployer.redeployResource(instance.getParent());
+                    } else {
+                        logger.warning("no deployer found for resource type [ " + instance.getClass().getName() + "]");
+                    //TODO V3 log throw Exception
+                    }
+                } else if (instance instanceof ResourceRef) {
+                    ResourceRef ref = (ResourceRef) instance;
+                    ResourceDeployer deployer = null;
+                    String refName = ref.getRef();
+                    BindableResource bindableResource = null;
+
+                    for(PropertyChangeEvent event : events) {
+                        String propertyName = event.getPropertyName();
+                        //Depending on the type of event (disable/enable, invoke the 
+                        //method on deployer.
+                        if ("enabled".equalsIgnoreCase(propertyName)) {
+                            boolean newValue = ConnectorsUtil.parseBoolean(event.getNewValue().toString());
+                            boolean oldValue = ConnectorsUtil.parseBoolean(event.getOldValue().toString());
+                            for (Resource resource : allResources.getResources()) {
+                                if (resource instanceof BindableResource) {
+                                    bindableResource = (BindableResource) resource;
+                                    if (refName != null) {
+                                        if (refName.equals(bindableResource.getJndiName())) {
+                                            deployer = getResourceDeployer(bindableResource);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            if (deployer != null) {
+                                //both cannot be true or false
+                                if (!(newValue && oldValue)) {
+                                    if (newValue) {
+                                        deployer.enableResource(bindableResource);
+                                    } else {
+                                        deployer.disableResource(bindableResource);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (Exception ex) {
+                final String msg = ResourceManager.class.getName() + " : Error while handling change Event";
+                logger.severe(msg);
+                np = new NotProcessed(msg);
+            }
+            return np;
+        }
+
+        private <T extends ConfigBeanProxy> NotProcessed handleAddEvent(T instance) {
+            NotProcessed np = null;
+            //Add listener to the changed instance object
+            ResourceManager.this.addListenerToResource(instance);
+
+            if (instance instanceof BindableResource) {
+                resourcesBinder.deployResource(((BindableResource) instance).getJndiName(), (Resource) instance);
+            } else if (instance instanceof ResourcePool) {
+                //TODO V3 handle - ccp, jdbc-cp
+                } else if (instance instanceof Resource) {
+                //only resource type left is RAC
+                try {
+                    getResourceDeployer(instance).deployResource(instance);
+                } catch (Exception e) {
+                    logger.log(Level.WARNING, "unable deploy resource : ", e);
+                }
+            } else if (instance instanceof Property) {
+                final Property prop = (Property) instance;
+                np = new NotProcessed("ResourceManager: a property was added: " + prop.getName() + "=" + prop.getValue());
+            } else if (instance instanceof ResourceRef) {
+                System.out.println("******** resource ref detected *********");
+                //TODO V3 : is this for asadmin create-resource-ref? 
+            } else {
+                np = new NotProcessed("ResourceManager: configuration " +
+                        Dom.unwrap(instance).getProxyType().getName() + " was added");
+            }
+            return np;
+        }
+
+        private <T extends ConfigBeanProxy> NotProcessed handleRemoveEvent(final T instance) {
+            ArrayList instancesToDestroy = new ArrayList();
+            NotProcessed np = null;
+            try {
+                //this check ensures that a valid resource is handled
+                if (ConnectorsUtil.isValidEventType(instance)) {
+                    instancesToDestroy.add(instance);
+                    //Remove listener from the removed instance
+                    ResourceManager.this.removeListenerFromResource(instance);
+
+                    //get appropriate deployer and unddeploy resource
+                    ResourceDeployer deployer = getResourceDeployer(instance);
+                    if (deployer != null) {
+                        deployer.undeployResource(instance);
+                    } else {
+                        logger.warning("no deployer found for resource type [ " + instance.getClass().getName() + "]");
+                    //TODO V3 log & throw Exception
+                    }
+
+                } else if (ConnectorsUtil.isValidEventType(instance.getParent())) {
+                    //Added in case of a property remove
+                    //check for validity of the property's parent and redeploy
+                    ResourceDeployer deployer = getResourceDeployer(instance.getParent());
+                    if (deployer != null) {
+                        deployer.redeployResource(instance.getParent());
+                    } else {
+                        logger.warning("no deployer found for resource type [ " + instance.getClass().getName() + "]");
+                    //TODO V3 log & throw Exception
+                    }
+                } else if (instance instanceof ResourceRef) {
+                    //TODO V3: asadmin delete-resource-ref
+                }
+            } catch (Exception ex) {
+                final String msg = ResourceManager.class.getName() + " : Error while handling remove Event";
+                logger.severe(msg);
+                np = new NotProcessed(msg);
+            }
+            return np;
+        }
     }
 
 
@@ -315,6 +373,12 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
         }
     }
 
+    private void addListenerToResourceRefs() {
+        for (ResourceRef ref : resourceRefs) {
+            addListenerToResource(ref);
+        }
+    }
+    
     /**
      * Add listener to a generic resource
      * Used in the case of create asadmin command when listeners have to
@@ -326,6 +390,9 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
 
         //add listener to all types of Resource
         if(instance instanceof Resource){
+            bean = (ObservableBean) ConfigSupport.getImpl((ConfigBeanProxy)instance);
+            bean.addListener(this);
+        } else if(instance instanceof ResourceRef) {
             bean = (ObservableBean) ConfigSupport.getImpl((ConfigBeanProxy)instance);
             bean.addListener(this);
         }
@@ -344,6 +411,19 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
         if(instance instanceof Resource){
             bean = (ObservableBean) ConfigSupport.getImpl((ConfigBeanProxy)instance);
             bean.removeListener(this);
+        } else if(instance instanceof ResourceRef) {
+            bean = (ObservableBean) ConfigSupport.getImpl((ConfigBeanProxy) instance);
+            bean.removeListener(this);
+        }
+    }
+
+    /**
+     * Remove listener from all resource refs.
+     * Invoked from preDestroy().
+     */
+    private void removeListenerFromResourceRefs() {
+        for (ResourceRef ref : resourceRefs) {
+            removeListenerFromResource(ref);
         }
     }
 
