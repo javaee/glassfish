@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
+ *
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -35,54 +35,30 @@
  */
 
 package com.sun.enterprise.web;
-
-import java.util.Map;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
- * Implementation of AdHocServletInfo interface providing information 
- * specific to the ad-hoc servlet responsible for servicing HTTP requests
- * for EJB webservice endpoints.
+ * This interface provides the contract for the Listener for EJB webservice endpoint registrations and unregistrations.
  *
- * @author Jan Luehe
+ * Upon receiving an EJB webservice endpoint registration event, this
+ * listener will register the EJB webservice endpoint's path as an ad-hoc
+ * path with the web container, along with information about the
+ * ad-hoc servlet responsible for servicing any requests on this path.
+ *
+ * Upon receiving an EJB webservice endpoint unregistration event, this
+ * listener will unregister the EJB webservice endpoint's path as an
+ * ad-hoc path from the web container.
+ *
+ * This will be called from the WebContainer
+ *
+ * @author Bhakti Mehta
  */
-public class EjbWebServiceServletInfo implements AdHocServletInfo {
+@Contract
+public interface EjbWSRegistryListener {
 
-    public static final String EJB_SERVLET_NAME = "EjbWebServiceServlet";
+    public void register();
 
-    /**
-     * Returns the class type of the servlet that should be created to process
-     * requests.  Note that the class must represent a subclass of HttpServlet.
-     *
-     * @return The servlet class
-     */
-    public Class getServletClass() {
-        try {
-            return Thread.currentThread().getContextClassLoader().
-                    loadClass("org.glassfish.webservices.EjbWebServiceServlet");
-        } catch (ClassNotFoundException ex) {
-           
-        }
-        return null;
-    }
-    
-    /**
-     * Returns the name of the servlet that the container should assign when it
-     * adds a servlet to a web module.
-     *
-     * @return The servlet name
-     */
-    public String getServletName() {
-        return EJB_SERVLET_NAME;
-    }
-    
-    /**
-     * Returns a Map containing name and value pairs to be used in preparing
-     * the init params in the servlet's ServletConfig object.
-     *
-     * @return Map containing the servlet init parameters
-     */
-    public Map getServletInitParams() {
-        return null;
-    }
+    public void unregister();
 
+    public void setContainer(WebContainer wc);
 }

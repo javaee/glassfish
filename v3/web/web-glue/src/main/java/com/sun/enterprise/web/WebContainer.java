@@ -367,7 +367,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     protected boolean globalSSOEnabled = true;
 
-    //private EjbWebServiceRegistryListener ejbWebServiceRegistryListener;
+    private EjbWSRegistryListener ejbWebServiceRegistryListener;
 
     protected WebContainerFeatureFactory webContainerFeatureFactory;
 
@@ -452,16 +452,19 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         webContainerFeatureFactory = habitat.getComponent(
                 PEWebContainerFeatureFactoryImpl.class);
 
-        /* TODO : revisit later
-         ejbWebServiceRegistryListener = new EjbWebServiceRegistryListener(this);
-         try {
+
+         ejbWebServiceRegistryListener = habitat.getComponent(EjbWSRegistryListener.class);
+         if (ejbWebServiceRegistryListener != null){
+             ejbWebServiceRegistryListener.setContainer(this);
+         }
+         /*try {
             webModulesManager = new WebModulesManager(instance);
             appsManager = new AppsManager(instance);
         } catch (ConfigException cx) {
             _logger.log(Level.WARNING,
                 "Error in creating web modules manager: ", cx);
-        }
-         */
+        }  */
+
 
         Config cfg = habitat.getComponent(Config.class);
         serverConfigLookup = new ServerConfigLookup(cfg, clh);
@@ -551,8 +554,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
         //end HERCULES:mod
 
-        // TODO : revisit later
-        //ejbWebServiceRegistryListener.register(habitat);
+  
+
+        if (ejbWebServiceRegistryListener != null){
+            ejbWebServiceRegistryListener.register();
+         }
 
         ConstructorWomb<HttpServiceConfigListener> womb =
                 new ConstructorWomb<HttpServiceConfigListener>(
@@ -1507,9 +1513,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             String msg = rb.getString("webcontainer.notStarted");
             throw new LifecycleException(msg);
         }
-
-        //ejbWebServiceRegistryListener.unregister(habitat);
-
+        if (ejbWebServiceRegistryListener != null){
+            ejbWebServiceRegistryListener.unregister();
+        }
         //HERCULES:mod
         stopHealthChecker();
         WebContainerStartStopOperation startStopOperation =

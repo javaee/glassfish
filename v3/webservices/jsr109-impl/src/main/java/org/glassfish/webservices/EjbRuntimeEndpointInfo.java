@@ -322,4 +322,8 @@ public class EjbRuntimeEndpointInfo {
         return messageDispatcher;
     }
 
+    public EjbEndpointFacade getContainer() {
+        return container;
+    }
+
 }
