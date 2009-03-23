@@ -2,7 +2,8 @@ package com.sun.s1asdev.ejb.ejb30.hello.session.client;
 
 import java.io.*;
 import java.util.*;
-import javax.ejb.EJB;
+// import javax.ejb.EJB;
+import javax.naming.InitialContext;
 import com.sun.s1asdev.ejb.ejb30.hello.session.*;
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
@@ -21,13 +22,21 @@ public class Client {
     
     public Client (String[] args) {
     }
-    
+
+    /**    
     private static @EJB Sful sful;
     private static @EJB(mappedName="com.sun.s1asdev.ejb.ejb30.hello.session.Sless") Sless sless;
+    */
 
     public void doTest() {
 
         try {
+
+            System.out.println("Creating InitialContext()");
+	    InitialContext ic = new InitialContext();
+
+	    Sful sful = (Sful) ic.lookup("com.sun.s1asdev.ejb.ejb30.hello.session.Sful");
+	    Sless sless = (Sless) ic.lookup("com.sun.s1asdev.ejb.ejb30.hello.session.Sless");
 
             System.out.println("invoking stateful");
             sful.hello();

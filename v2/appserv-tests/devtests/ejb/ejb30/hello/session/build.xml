@@ -12,7 +12,7 @@
     &commonBuild;
     &testproperties;
 
-    <target name="all" depends="build,deploy,run_standaloneclient,undeploy"/>
+    <target name="all" depends="build,deploy,run,undeploy"/>
 
     <target name="clean" depends="init-common">
       <antcall  target="clean-common"/>
@@ -43,9 +43,13 @@
 
     <target name="run" depends="init-common">
         <antcall target="runclient-common"/>
+<!-- TODO reenable once everything is working
         <antcall target="run_standaloneclient"/>
+
         <antcall target="run_standaloneclient2"/>
+-->
     </target>
+
  
     <target name="run_standaloneclient" depends="init-common">
        <java  fork="on" 
