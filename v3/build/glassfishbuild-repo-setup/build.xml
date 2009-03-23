@@ -32,20 +32,22 @@ own identifying information: Portions Copyright [yyyy]
    
 
         <unzip src="${mqrepo.zip}" dest="target/source">   
-        </unzip>
+	</unzip>
+
+	<echo message="Target repo dir is ${target.repo.dir}" />
 
 	<!-- copy over MQ packages -->
-	<exec dir="target/source" executable="copypkgs.sh" failonerror="true">
-		<arg line="-s . -d ${target.repo.dir} mq-core" />
+	<exec dir="target/source" executable="python" failonerror="true">
+		<arg line="${target.repo.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} mq-core" />
 	</exec>
-        <exec dir="target/source" executable="copypkgs.sh" failonerror="true">
-		<arg line="-s . -d ${target.repo.dir} mq-server" />
+        <exec dir="target/source" executable="python" failonerror="true">
+		<arg line="${target.repo.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} mq-server" />
 	</exec>
-	<exec dir="target/source" executable="copypkgs.sh" failonerror="true">
-		<arg line="-s . -d ${target.repo.dir} mq-config-gf" />
+	<exec dir="target/source" executable="python" failonerror="true">
+		<arg line="${target.repo.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} mq-config-gf" />
 	</exec>
-        <exec dir="target/source" executable="copypkgs.sh" failonerror="true">
-		<arg line="-s . -d ${target.repo.dir} mq-locale" />
+        <exec dir="target/source" executable="python" failonerror="true">
+		<arg line="${target.repo.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} mq-locale" />
 	</exec>
 
     </target>
