@@ -752,6 +752,9 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
                     }
                 }
             }
+
+            // set jndi name in ejb ref 
+            ejbRef.setJndiName(ejbReferee.getJndiName());
         }
 
         if (type == null) { 
