@@ -488,6 +488,11 @@
             <artifactId>grizzly-cometd</artifactId>
             <scope>runtime</scope>
         </dependency>
+	<dependency>
+            <groupId>org.glassfish.extras</groupId>
+            <artifactId>bean-validator</artifactId>
+            <version>4.0.0.Alpha3</version>
+	</dependency>
     </dependencies>
 </project>
 

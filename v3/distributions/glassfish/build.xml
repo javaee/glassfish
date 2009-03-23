@@ -55,7 +55,7 @@
             </visualize>
         </graphDef>
 
-        <build-zip zipfile="target/glassfish-${version}.zip" base="${nucleus-base.zip}" />
+        <build-zip zipfile="target/glassfish.zip" base="${nucleus-base.zip}" />
 
         <!-- this build script will be reused elsewhere -->
         <attachArtifact file="build.xml" classifier="build" />
