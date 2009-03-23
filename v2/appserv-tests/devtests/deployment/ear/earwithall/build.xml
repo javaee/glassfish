@@ -26,10 +26,12 @@
     </target>
 	
     <target name="compile" depends="prepare">
-        <javac srcdir="statelesshello" destdir="${build}/ejb"
-			classpath="${inst}/lib/j2ee.jar"/>	
-		<javac srcdir="helloservice" destdir="${binary}"
-			classpath="${inst}/lib/j2ee.jar:${build}/ejb"/>
+        <javac srcdir="statelesshello" destdir="${build}/ejb">
+          <classpath refid="gfv3.classpath"/>
+        </javac>
+		<javac srcdir="helloservice" destdir="${binary}">
+                    <classpath refid="gfv3.classpath"/>
+                </javac>
 		<echo message="invoking wscompile to generate wsdl file"/>
 		<exec executable="${WSCOMPILE}">
 			<arg line="-define config-interface.xml  -d ${binary} -nd ${wsdl} -classpath ${binary} -mapping ${build}/mapping.xml"/>
@@ -195,11 +197,13 @@
         </antcall>
         <antcall target="undeploy.asadmin"/>
 
+<!--
         <antcall target="deploy.jsr88"/>
         <antcall target="run.positive">
             <param name="log.id" value="3"/>
             <param name="desc" value="ear/earwithall Test jsr88 deploy"/>
         </antcall>
+-->
 
         <!--antcall target="stop.jsr88"/>
         <antcall target="run.negative">
@@ -226,6 +230,9 @@
             <param name="log.id" value="7"/>
             <param name="desc" value="ear/earwithall Test jsr88 redeploy start"/>
         </antcall-->
+<!--
         <antcall target="undeploy.jsr88"/>
+-->
+
     </target>
 </project>

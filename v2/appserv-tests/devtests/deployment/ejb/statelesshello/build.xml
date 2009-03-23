@@ -19,9 +19,9 @@
 	</target>
 	
 	<target name="compile" depends="prepare">
-		<javac srcdir="statelesshello" destdir="${build}"
-			classpath="${inst}/lib/j2ee.jar"
-		/>		
+		<javac srcdir="statelesshello" destdir="${build}">
+                    <classpath refid="gfv3.classpath"/>
+	        </javac>		
 	</target>
 	
 	<target name="assemble" depends="compile">
@@ -145,8 +145,9 @@
     </target>
 
     <target name="runclient" depends="init, setOrbPort">
-        <javac srcdir="standaloneclient" destdir="${build}"
-               classpath="${inst}/lib/j2ee.jar"/>
+        <javac srcdir="standaloneclient" destdir="${build}">
+         <classpath refid="gfv3.classpath"/>
+        </javac>
         <javaWithResult
             fork="true"
             failonerror="false"
@@ -191,6 +192,7 @@
         </antcall>
         <antcall target="undeploy.asadmin"/>
 
+<!--
         <antcall target="deploy.jsr88"/>
         <antcall target="run.positive">
             <param name="log.id" value="3"/>
@@ -217,5 +219,6 @@
         </antcall>
 
         <antcall target="undeploy.jsr88"/>
+-->
     </target>
 </project>

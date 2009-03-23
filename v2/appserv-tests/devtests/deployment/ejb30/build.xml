@@ -9,9 +9,11 @@
 	&commonBuild;
 
 	<target name="private-all">
+<!--
 		<ant dir="ear" target="private-all">
 			<property name="build" value="${build}/ear"/>
 		</ant>
+-->
 		<ant dir="war" target="private-all">
 			<property name="build" value="${build}/war"/>
 		</ant>

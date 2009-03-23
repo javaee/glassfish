@@ -6,8 +6,7 @@ TESTS INFO :
 1. war/* are tests that deploy WAR module only. The name of directories indicate
    what kind of WAR each tests build for deployment. 
 
-2. ear/* are tests that deploy EAR module. Only ear with war tests are turned
-   on now.
+2. ear/* are tests that deploy EAR module.
 
 FOR RUNNING THE DEPLOYMENT TESTS ON v3:
 ----------------------------------------

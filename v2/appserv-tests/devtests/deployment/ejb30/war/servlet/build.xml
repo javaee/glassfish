@@ -19,10 +19,16 @@
 
     <target name="compile" depends="prepare">
         <javac srcdir="${basedir}" destdir="${build}" debug="on"
-            failonerror="true" classpath="${inst}/lib/j2ee.jar"
-            includes="WebTest.java"/>
+            failonerror="true"
+            includes="WebTest.java">
+            <classpath refid="gfv3.classpath"/>
+        </javac>
+
         <javac srcdir="${basedir}/web" destdir="${build}" debug="on"
-            failonerror="true" classpath="${inst}/lib/j2ee.jar"/>
+            failonerror="true">
+          <classpath refid="gfv3.classpath"/>
+        </javac>
+
     </target>
 
     <target name="create.user" depends="setAsadminArgsWithoutPassword">

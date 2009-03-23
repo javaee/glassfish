@@ -36,9 +36,11 @@
         <ant dir="annotation" target="private-all">
             <property name="build" value="${build}/annotation"/>
         </ant>
+-->
         <ant dir="ejb30" target="private-all">
             <property name="build" value="${build}/ejb30"/>
         </ant>
+<!--
         <ant dir="descriptor_free_zone" target="private-all">
             <property name="build" value="${build}/descriptor_free_zone"/>
         </ant>

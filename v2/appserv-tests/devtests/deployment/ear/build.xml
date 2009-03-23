@@ -23,14 +23,12 @@
 		<ant dir="earwithall" target="private-all">
 			<property name="build" value="${build}/earwithall"/>
 		</ant-->
-<!--
 		<ant dir="earwithall2" target="private-all">
 			<property name="build" value="${build}/earwithall2"/>
 		</ant>
 		<ant dir="uniquecr" target="private-all">
 			<property name="build" value="${build}/uniquecr"/>
 		</ant>
--->
 		<ant dir="libClassPath" target="private-all">
 			<property name="build" value="${build}/libClassPath"/>
 		</ant>

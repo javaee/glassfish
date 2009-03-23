@@ -20,9 +20,9 @@
     </target>
 	
     <target name="compile" depends="prepare">
-		<javac srcdir="helloservice" destdir="${build}"
-			classpath="${inst}/lib/j2ee.jar"
-		/>
+		<javac srcdir="helloservice" destdir="${build}">
+                 <classpath refid="gfv3.classpath"/>
+                </javac>
 		<echo message="invoking wscompile to generate wsdl file"/>
 		<exec executable="${WSCOMPILE}">
 			<arg line="-define config-interface.xml -d ${build} -nd ${wsdl} -classpath ${build} -mapping ${build}/mapping.xml"/>
@@ -166,6 +166,7 @@
         </antcall>
         <antcall target="undeploy.asadmin"/>
 
+<!--
         <antcall target="deploy.jsr88"/>
         <antcall target="run.positive">
             <param name="log.id" value="3"/>
@@ -190,6 +191,7 @@
             <param name="log.id" value="6"/>
             <param name="desc" value="ejb/webservice Test jsr88 redeploy stop"/>
         </antcall>
+-->
 
         <!--antcall target="start.jsr88"/>
             <param name="desc" value="ejb/webservice Test jsr88 stop-redeploy-start"/>
@@ -198,6 +200,8 @@
             <param name="desc" value="ejb/webservice Test jsr88 redeploy start"/>
         <antcall target="redeploy.jsr88"/>
         <antcall target="run.positive"/-->
+<!--
         <antcall target="undeploy.jsr88"/>
+-->
     </target>
 </project>

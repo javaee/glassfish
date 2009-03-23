@@ -27,7 +27,7 @@
                destdir="${build}"
                debug="on"
                failonerror="true">
-            <classpath refid="test.compile.classpath"/>
+            <classpath refid="gfv3.classpath"/>
         </javac>
     </target>
 
@@ -231,6 +231,7 @@
         </antcall>
         <antcall target="undeploy.asadmin"/>
 
+<!--
         <antcall target="deploy.jsr88"/>
         <antcall target="run.positive">
             <param name="desc" value="ear/earwithall2 Test jsr88 deploy"/>
@@ -270,6 +271,7 @@
             <param name="log.id" value="10"/>
         </antcall>
         <antcall target="undeploy-stream.jsr88"/>
+-->
 
     </target>
 

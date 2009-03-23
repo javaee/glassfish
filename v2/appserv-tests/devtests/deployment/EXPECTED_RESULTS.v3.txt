@@ -1,7 +1,7 @@
 Results of deployment dev tests with v3
 ===========================================================
 
-PASS: 31
+PASS: 39
 FAIL: 0
 UNKNOWN: 0
 
@@ -34,5 +34,13 @@ UNKNOWN: 0
 [PASSED] earwithwar : ear/earwithwar Test asadmin redeploy (server)
 [PASSED] earwithwar : ear/earwithwar Test asadmin disable (server)  
 [PASSED] earwithwar : ear/earwithwar Test asadmin enable (server) 
+[PASSED] earwithall2 : ear/earwithall2 Test asadmin deploy (server)
+[PASSED] earwithall2 : ear/earwithall2 Test asadmin disable (server)
+[PASSED] earwithall2 : ear/earwithall2 Test asadmin enable (server)
+[PASSED] earwithall2 : ear/earwithall2 Test asadmin redeploy (server)
 [PASSED] libClassPath : libClasspath Test asadmin deploy (server)
 [PASSED] manifestClassPath : libClasspath Test asadmin deploy (server)
+[PASSED] jsp : ejb30/war/jsp Test asadmin deploy
+[PASSED] jsp : ejb30/war/jsp Test asadmin redeploy
+[PASSED] servlet : ejb30/war/servlet Test asadmin deploy
+[PASSED] servlet : ejb30/war/servlet Test asadmin redeploy

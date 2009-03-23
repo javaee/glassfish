@@ -210,6 +210,7 @@
         </antcall>
         <antcall target="undeploy.asadmin"/>
 
+<!--
         <antcall target="deploy.jsr88"/>
         <antcall target="run.positive">
             <param name="log.id" value="3"/>
@@ -242,5 +243,6 @@
             <param name="description" value="ear/earwithejb Test jsr88 redeploy start"/>
         </antcall>
         <antcall target="undeploy.jsr88"/>
+-->
     </target>
 </project>

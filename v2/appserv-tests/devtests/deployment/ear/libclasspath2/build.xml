@@ -274,8 +274,9 @@
     </target>
 
     <target name="compile" depends="prepare">
-        <javac srcdir="." destdir="${build}" debug="on" failonerror="true"
-            classpath="${inst}/lib/j2ee.jar"/>
+        <javac srcdir="." destdir="${build}" debug="on" failonerror="true">
+          <classpath refid="gfv3.classpath"/>
+        </javac>
     </target>
 
     <target name="assemble" depends="makeEars"/>
