@@ -94,7 +94,7 @@
 	<module>glassfish-scripting</module>
 	<module>javadb</module>
 	<module>jersey</module>	
-	<!--module>glassfish-bean-validation</module-->
+	<module>glassfish-bean-validation</module>
     </modules>
 
     <build>
