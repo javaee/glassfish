@@ -83,13 +83,4 @@ public class OSGiServletConfig implements ServletConfig {
         return Collections.enumeration(initParams.keySet());
     }
 
-    public Object getInitAttribute(String name)
-    {
-        return null;  //TODO(Sahoo): Not Yet Implemented
-    }
-
-    public Iterable<String> getInitAttributeNames()
-    {
-        return null;  //TODO(Sahoo): Not Yet Implemented
-    }
 }
