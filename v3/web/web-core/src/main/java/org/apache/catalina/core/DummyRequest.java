@@ -342,6 +342,7 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
     public boolean isRequestedSessionIdFromURL() { return false; }
     public boolean isRequestedSessionIdFromUrl() { return false; }
     public boolean isRequestedSessionIdValid() { return false; }
+    public void setRequestedSessionCookiePath(String cookiePath) {}
     public boolean isUserInRole(String role) { return false; }
     public Principal getUserPrincipal() { return null; }
     public String getLocalAddr() { return null; }    
