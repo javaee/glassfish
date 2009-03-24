@@ -439,4 +439,10 @@ public interface Request {
      * (if setAsyncTimeout was not called, it will).
      */
     public boolean isSetAsyncTimeoutCalled();
+
+
+    /**
+     * Sets the requested session cookie path, see IT 7426
+     */
+    public void setRequestedSessionCookiePath(String cookiePath);
 }
