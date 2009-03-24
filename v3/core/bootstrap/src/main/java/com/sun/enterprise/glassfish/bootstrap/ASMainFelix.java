@@ -76,6 +76,9 @@ public class ASMainFelix extends ASMainOSGi {
         System.setProperty("felix.config.properties", confFileURL);
         File cacheProfileDir = new File(domainDir, "felix-cache/gf/");
         System.setProperty("felix.cache.profiledir", cacheProfileDir.getCanonicalPath());
+        // Starting with Felix 1.4.0, the cache dir is identified by
+        // property called org.osgi.framework.storage.
+        System.setProperty("org.osgi.framework.storage", cacheProfileDir.getCanonicalPath());
         setUpCache(bootstrapFile.getParentFile(), cacheProfileDir);
         Class mc = launcherCL.loadClass(getFWMainClassName());
         final String[] args = new String[0];
