@@ -142,6 +142,12 @@ final class ApplicationFilterConfig implements FilterConfig, Serializable {
     private FilterDef filterDef = null;
 
 
+    /**
+     * Does the filter instance need to be initialized?
+     */
+    private boolean needInitialize = true;
+
+
     // --------------------------------------------------- FilterConfig Methods
 
 
@@ -239,28 +245,30 @@ final class ApplicationFilterConfig implements FilterConfig, Serializable {
         IllegalAccessException, InstantiationException, ServletException {
 
         // Return the existing filter instance, if any
-        if (this.filter != null) {
-            return (this.filter);
+        if (filter != null && !needInitialize) {
+            return filter;
         }
 
-        Class clazz = filterDef.getFilterClass();
-        if (clazz == null) {
-            // Identify the class loader we will be using
-            ClassLoader classLoader = null;
-            String filterClassName = filterDef.getFilterClassName();
-            if (filterClassName.startsWith("org.apache.catalina.")) {
-                classLoader = this.getClass().getClassLoader();
-            } else {
-                classLoader = context.getLoader().getClassLoader();
+        if (filter == null) {
+            Class clazz = filterDef.getFilterClass();
+            if (clazz == null) {
+                // Identify the class loader we will be using
+                ClassLoader classLoader = null;
+                String filterClassName = filterDef.getFilterClassName();
+                if (filterClassName.startsWith("org.apache.catalina.")) {
+                    classLoader = this.getClass().getClassLoader();
+                } else {
+                    classLoader = context.getLoader().getClassLoader();
+                }
+                ClassLoader oldCtxClassLoader =
+                    Thread.currentThread().getContextClassLoader();
+
+                // Instantiate a new instance of this filter and return it
+                clazz = classLoader.loadClass(filterClassName);
             }
-            ClassLoader oldCtxClassLoader =
-                Thread.currentThread().getContextClassLoader();
 
-            // Instantiate a new instance of this filter and return it
-            clazz = classLoader.loadClass(filterClassName);
+            this.filter = (Filter) clazz.newInstance();
         }
-
-        this.filter = (Filter) clazz.newInstance();
 
         // START PWC 1.2
         if (context != null) {
@@ -271,6 +279,7 @@ final class ApplicationFilterConfig implements FilterConfig, Serializable {
         // END PWC 1.2
 
         filter.init(this);
+        needInitialize = false;
 
         // START PWC 1.2
         if (context != null) {
@@ -332,6 +341,7 @@ final class ApplicationFilterConfig implements FilterConfig, Serializable {
         }
 
         this.filter = null;
+        needInitialize = true;
      }
 
 
@@ -379,11 +389,7 @@ final class ApplicationFilterConfig implements FilterConfig, Serializable {
             this.filter = null;
 
         } else {
-            Filter filter = filterDef.getFilter();
-            if (filter == null) {
-                // Allocate a new filter instance
-                filter = getFilter();
-            }
+            filter = filterDef.getFilter();
         }
     }
 
