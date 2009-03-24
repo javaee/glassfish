@@ -228,8 +228,8 @@
         <ant dir="asyncContextDispatch" target="all"/>
         <ant dir="asyncListenerOnComplete" target="all"/>
         <ant dir="asyncListenerOnTimeout" target="all"/>
+        <!-- XXX temporary commented out due to issue 7387
         <ant dir="asyncSupportedTrue" target="all"/>
-        <!-- XXX temporary commented out due to issue 7387 
         <ant dir="asyncSupportedFalse" target="all"/>
         <ant dir="asyncContextHasOriginalRequestAndResponse" target="all"/>
         -->
