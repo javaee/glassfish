@@ -421,6 +421,9 @@ public class GrizzlyListenerConfigurator {
                 maxQueueSize = Integer.parseInt(cp.getQueueSizeInBytes());
             }
 
+            grizzlyEmbeddedHttp.setCoreThreads(minThreads);
+            grizzlyEmbeddedHttp.setMaxThreads(maxThreads);
+
             grizzlyEmbeddedHttp.setThreadPool(new GrizzlyProbeThreadPool(
                     minThreads, maxThreads, maxQueueSize,
                     GrizzlyProbeThreadPool.DEFAULT_IDLE_THREAD_KEEPALIVE_TIMEOUT,
