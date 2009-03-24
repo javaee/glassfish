@@ -54,5 +54,6 @@
 	<module>kernel</module>
         <module>branding</module>
         <module>api-exporter</module>
+        <module>extra-jre-packages</module>
     </modules>
 </project>
