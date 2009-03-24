@@ -294,9 +294,7 @@
         <ant dir="virtualServerDefaultWebModuleRequestDispatcher" target="all"/>
         <ant dir="virtualServerDefaultWebModuleFormLoginJSecurityCheckDirectAccess" target="all"/>
         <ant dir="virtualServerDefaultWebModuleRestart" target="all"/>
-        <!-- EAR files not supported in GlassFish v3 Prelude
         <ant dir="virtualServerEarWrappedDefaultWebModuleRestart" target="all"/>
-        -->
         <ant dir="virtualServerRedirectPropertyUrl" target="all"/>
         <ant dir="virtualServerDocrootDynamicReconfig" target="all"/>
         <ant dir="virtualServerStateDynamicReconfig" target="all"/>
