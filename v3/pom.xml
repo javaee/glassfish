@@ -121,7 +121,6 @@
         <commons.modeler.version>1.1</commons.modeler.version>
         <hk2.version>0.3.48</hk2.version>
         <hk2.plugin.version>0.3.48</hk2.plugin.version>
-
         <jsr223-api.version>1.0</jsr223-api.version>
         <phobos.version>0.5.10</phobos.version>
         <product.name>GlassFish</product.name>
@@ -152,6 +151,7 @@
         <schema2beans.osgi.version>5.5</schema2beans.osgi.version>    
 	<antlr.version>2.7.6</antlr.version>
 	<mq.version>4.4-003</mq.version>
+        <bean-validator.version>4.0.0.Alpha3</bean-validator.version>
     </properties>
 
 
