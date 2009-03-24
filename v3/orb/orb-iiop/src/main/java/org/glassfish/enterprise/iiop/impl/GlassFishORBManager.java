@@ -278,6 +278,8 @@ public final class GlassFishORBManager {
                 initORB(props);
             }
 
+            iiopUtils.setORB(orb);
+
             return orb;
         } finally {
             if (logger.isLoggable(Level.FINEST)) {

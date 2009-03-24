@@ -21,49 +21,47 @@ import java.util.List;
  *         Date: Jan 15, 2009
  */
 @Service
-public class IIOPUtils
-        implements PostConstruct {
+public class IIOPUtils implements PostConstruct {
 
     private static IIOPUtils _me;
 
-    /* TODO
-    @Inject
-    ThreadPool[] threadPools;
-    */
 
     @Inject
-    Habitat habitat;
+    private Habitat habitat;
 
     @Inject
-    ClassLoaderHierarchy clHierarchy;
+    private ClassLoaderHierarchy clHierarchy;
 
     @Inject
-    ProcessEnvironment processEnv;
+    private ProcessEnvironment processEnv;
 
-    /** TODO
-    @Inject
-    IiopService iiopService;
-    **/
+    private ProcessType processType;
 
-    /**
-    @Inject
-    ServerRef[] serverRefs;
-    **/
+    // The following info is only available for ProcessType.Server
+    private Collection<ThreadPool> threadPools;
+    private IiopService iiopService;
+    private Collection<ServerRef> serverRefs;
+    private Configs configs;
 
-    /**
-    @Inject
-    Configs configs;
-    **/
-
-    private volatile ORB gfORB;
+    // Set during init
+    private ORB defaultORB;
 
     public void postConstruct() {
         _me = this;
+
+        processType = processEnv.getProcessType();
+
+        if( processEnv.getProcessType() == ProcessType.Server) {
+
+            iiopService = habitat.getComponent(IiopService.class);
+            threadPools = habitat.getAllByContract(ThreadPool.class);
+            serverRefs  = habitat.getAllByContract(ServerRef.class);
+            configs     = habitat.getComponent(Configs.class);
+        }
+
     }
 
-    public ThreadPool[] getAllThreadPools() {
-        return null; // TODO threadPools;
-    }
+
 
     public static IIOPUtils getInstance() {
         return _me;
@@ -73,16 +71,30 @@ public class IIOPUtils
         return clHierarchy.getCommonClassLoader();
     }
 
-    public IiopService getIiopService() {
-        return null; // TODO iiopService;
+    private void assertServer() {
+        if ( processType != processType.Server ) {
+            throw new IllegalStateException("Only available in Server mode");
+        }
     }
 
-    public ServerRef[] getServerRefs() {
-        return null; // TODO serverRefs;
+    public IiopService getIiopService() {
+        assertServer();
+        return iiopService;
+    }
+
+    public Collection<ThreadPool> getAllThreadPools() {
+        assertServer();
+        return threadPools;
+    }
+
+    public Collection<ServerRef> getServerRefs() {
+        assertServer();
+        return serverRefs;
     }
 
     public List<IiopListener> getIiopListeners() {
-        return null; // TODO iiopService.getIiopListener();
+        assertServer();
+        return iiopService.getIiopListener();
     }
 
     public Collection<IIOPInterceptorFactory> getAllIIOPInterceptrFactories() {
@@ -93,13 +105,13 @@ public class IIOPUtils
         return habitat.getAllByContract(GlassFishORBLifeCycleListener.class);
     }
 
-    public ORB getORB() {
-        if (gfORB == null) {
-            synchronized (this) {
-                //GlassFishORBManager.getORB();
-            }
-        }
+    public void setORB(ORB orb) {
+        defaultORB = orb;
+    }
 
-        return gfORB;
+    // For internal use only.  All other modules should use orb-connector
+    // GlassFishORBHelper to acquire default ORB.
+    public ORB getORB() {
+        return defaultORB;
     }
 }

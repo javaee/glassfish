@@ -119,7 +119,7 @@ public abstract class EJBLocalHomeImpl
     public final void remove(Object primaryKey)
         throws RemoveException, EJBException
     {
-        if (container.getContainerType() == BaseContainer.ContainerType.ENTITY) {
+        if (container.getContainerType() != BaseContainer.ContainerType.ENTITY) {
             // Session beans dont have primary keys. EJB2.0 Section 6.6.
             throw new RemoveException("Attempt to call remove(Object primaryKey) on a session bean.");
         }

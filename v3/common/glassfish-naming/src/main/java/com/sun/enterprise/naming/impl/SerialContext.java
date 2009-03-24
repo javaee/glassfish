@@ -173,6 +173,8 @@ public class SerialContext implements Context {
             habitat.add(new ExistingSingletonInhabitant(startupContext));
 
             habitat.addComponent(null, new ProcessEnvironment(ProcessEnvironment.ProcessType.Other));
+
+	    SerialInitContextFactory.setDefaultHabitat(habitat);
         }
         
 
@@ -182,6 +184,7 @@ public class SerialContext implements Context {
             ProcessEnvironment processEnv = habitat.getComponent(ProcessEnvironment.class);
             processType = processEnv.getProcessType();
             _logger.fine("Serial Context initializing with process environment " + processEnv);
+
         }
 
 
@@ -400,7 +403,10 @@ public class SerialContext implements Context {
                 return retObj;
             }
         } catch (NamingException nnfe) {
-            throw nnfe;
+            NamingException ne = new NamingException
+                    ("Lookup failed for '" + name + "' in " + this);
+            ne.initCause(nnfe);
+            throw ne;
         } catch (Exception ex) {
             _logger.log(Level.SEVERE,
                     "enterprise_naming.serialctx_communication_exception", ex);
@@ -933,10 +939,12 @@ public class SerialContext implements Context {
         if(testMode) {
             sb.append("( IN TEST MODE ) ");
         }
-        sb.append("targetHost="+targetHost);
-        sb.append(",targetPort="+targetPort);
-        sb.append(",orb="+orb);
-        sb.append(",provider="+provider);
+        if( targetHost != null) {
+            sb.append("targetHost="+targetHost);
+        }
+        if( targetPort != null) {
+            sb.append(",targetPort="+targetPort);
+        }
 
         return sb.toString();
 

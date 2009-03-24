@@ -38,5 +38,10 @@
             <artifactId>dol</artifactId>
             <version>${pom.parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.ejb</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

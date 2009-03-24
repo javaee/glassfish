@@ -101,66 +101,21 @@ public class PEORBConfigurator implements ORBConfigurator {
     }
 
     private static void configureCopiers(ORB orb) {
-        ObjectCopierFactory stream;
+
         CopierManager cpm = orb.getCopierManager();
 
-        // Get the default copier factory
-        stream = CopyobjectDefaults.makeORBStreamObjectCopierFactory(orb);
-        cpm.registerObjectCopierFactory(stream,
-                IIOPConstants.PASS_BY_VALUE_ID);
-        cpm.setDefaultId(IIOPConstants.PASS_BY_VALUE_ID);
+        ObjectCopierFactory stream = CopyobjectDefaults.makeORBStreamObjectCopierFactory(orb) ;
+        ObjectCopierFactory reflect = CopyobjectDefaults.makeReflectObjectCopierFactory( orb ) ;
+        ObjectCopierFactory fallback = CopyobjectDefaults.makeFallbackObjectCopierFactory( reflect, stream ) ;
+        ObjectCopierFactory reference = CopyobjectDefaults.getReferenceObjectCopierFactory() ;
 
-        // Detect if the optimized copier class exists in the classpath
-        // or not. For the RI, one should get a ClassNotFoundException
-        try {
-            Class cls = Class.forName(OPT_COPIER_CLASS);
-            configureOptCopier(orb, cls, stream);
-        } catch (ClassNotFoundException cnfe) {
-            // Don't do anything. This is true for RI and the default
-            // stream copier is fine for that
-        }
+        cpm.registerObjectCopierFactory( fallback, IIOPConstants.PASS_BY_VALUE_ID ) ;
+        cpm.registerObjectCopierFactory( reference, IIOPConstants.PASS_BY_REFERENCE_ID ) ;
+        cpm.setDefaultId( IIOPConstants.PASS_BY_VALUE_ID ) ;
+       
     }
 
-    private static void configureOptCopier(ORB orb, Class cls,
-                                           ObjectCopierFactory stream) {
-        CopierManager cpm = orb.getCopierManager();
 
-        // Get the reference copier factory
-        ObjectCopierFactory reference = CopyobjectDefaults.
-                getReferenceObjectCopierFactory();
-
-        try {
-            Method m = cls.getMethod("makeReflectObjectCopierFactory",
-                    new Class[]{com.sun.corba.ee.spi.orb.ORB.class});
-            ObjectCopierFactory reflect =
-                    (ObjectCopierFactory) m.invoke(cls, new Object[]{orb});
-            ObjectCopierFactory fallback =
-                    CopyobjectDefaults.makeFallbackObjectCopierFactory(reflect, stream);
-            cpm.registerObjectCopierFactory(fallback,
-                    IIOPConstants.PASS_BY_VALUE_ID);
-            cpm.registerObjectCopierFactory(reference,
-                    IIOPConstants.PASS_BY_REFERENCE_ID);
-            cpm.setDefaultId(IIOPConstants.PASS_BY_VALUE_ID);
-        } catch (NoSuchMethodException e) {
-            logger.log(Level.FINE, "Caught NoSuchMethodException - " + e.getMessage());
-            logger.log(Level.FINE, "Proceeding with pass-by-value copier set to stream copier");
-        } catch (IllegalAccessException e) {
-            logger.log(Level.FINE, "Caught IllegalAccessException - " + e.getMessage());
-            logger.log(Level.FINE, "Proceeding with pass-by-value copier set to stream copier");
-        } catch (IllegalArgumentException e) {
-            logger.log(Level.FINE, "Caught IllegalArgumentException - " + e.getMessage());
-            logger.log(Level.FINE, "Proceeding with pass-by-value copier set to stream copier");
-        } catch (InvocationTargetException e) {
-            logger.log(Level.FINE, "Caught InvocationTargetException - " + e.getMessage());
-            logger.log(Level.FINE, "Proceeding with pass-by-value copier set to stream copier");
-        } catch (NullPointerException e) {
-            logger.log(Level.FINE, "Caught NullPointerException - " + e.getMessage());
-            logger.log(Level.FINE, "Proceeding with pass-by-value copier set to stream copier");
-        } catch (ExceptionInInitializerError e) {
-            logger.log(Level.FINE, "Caught ExceptionInInitializerError - " + e.getMessage());
-            logger.log(Level.FINE, "Proceeding with pass-by-value copier set to stream copier");
-        }
-    }
 
     // Called from GlassFishORBManager only when the ORB is running on server side
     public static void setThreadPoolManager() {

@@ -20,20 +20,8 @@ public class GlassFishORBFactoryImpl
     @Inject
     Habitat habitat;
 
-    @Inject
-    IIOPUtils iiopUtils;
-
-    private volatile ORB gfORB;
-
     public ORB createORB(Properties props) {
-        if (gfORB == null) {
-            synchronized (this) {
-                if (gfORB == null) {
-                    gfORB = GlassFishORBManager.getORB(props, habitat);
-                }
-            }
-        }
-
-        return gfORB;
+        // TODO change this to a create call
+       return GlassFishORBManager.getORB(props, habitat);
     }
 }

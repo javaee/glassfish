@@ -51,6 +51,8 @@ import java.util.List;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
+
 /**
  * Implements the JNDI SPI InitialContextFactory interface used to create
  * the InitialContext objects. It creates an instance of the serial context.
@@ -58,25 +60,37 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SerialInitContextFactory implements InitialContextFactory {
 
+    private static String defaultHost;
+    private static String defaultPort;
+    private static Habitat defaultHabitat;
 
     private Hashtable defaultEnv;
     private Habitat habitat;
+
 
     private boolean useS1ASCtxFactory;
 
     private static AtomicBoolean initialized = new AtomicBoolean(false);
 
-    /**
-     * Default constructor. Creates an ORB if one is not already created.
-     */
     public SerialInitContextFactory() {
-        habitat = Globals.getDefaultHabitat(); // TODO fix this
+        habitat = (defaultHabitat == null) ? Globals.getDefaultHabitat() : defaultHabitat;
     }
     
     /**
      * Create the InitialContext object.
      */
     public Context getInitialContext(Hashtable env) throws NamingException {
+
+        if( (defaultHost != null) &&
+            (env.get(GlassFishORBHelper.OMG_ORB_INIT_HOST_PROPERTY) == null)) {
+            env.put(GlassFishORBHelper.OMG_ORB_INIT_HOST_PROPERTY, defaultHost);
+        }
+
+        if( (defaultPort != null) &&
+            (env.get(GlassFishORBHelper.OMG_ORB_INIT_PORT_PROPERTY) == null)) {
+            env.put(GlassFishORBHelper.OMG_ORB_INIT_PORT_PROPERTY, defaultPort);    
+        }
+
 
         //Another Big TODO Sync with useS1ASCtxFactory
 
@@ -107,5 +121,18 @@ public class SerialInitContextFactory implements InitialContextFactory {
         } else {
             return new SerialContext(defaultEnv, habitat);
         }
+    }
+
+    static void setDefaultHost(String host) {
+        defaultHost = host;
+    }
+
+    static void setDefaultPort(String port) {
+        defaultPort = port;
+    }
+
+    static void setDefaultHabitat(Habitat h) {
+        defaultHabitat = h;
+
     }
 }

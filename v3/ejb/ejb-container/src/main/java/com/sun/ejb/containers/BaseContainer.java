@@ -745,7 +745,7 @@ public abstract class BaseContainer
 
 
     protected void doEJBHomeRemove(Object pk, Method m, boolean isLocal)
-        throws RemoteException {
+        throws RemoteException, RemoveException {
         throw new UnsupportedOperationException("EJBHome.remove() called on non entity container");
     }
 
@@ -1936,16 +1936,21 @@ public abstract class BaseContainer
             // If no mapping happened
             if( mappedException == originalException) {
 
+
                 if( inv.isBusinessInterface ) {
 
+                    // Wrap it up in a special exception so the
+                    // client can unwrap it and ensure that the client receives EJBException.
                     if(originalException instanceof EJBException) {
                         mappedException = new InternalEJBContainerException
                             (originalException.getMessage(), originalException);
                     }
 
                 } else {
-                    mappedException = new RemoteException
+                    if( originalException instanceof EJBException ) {
+                        mappedException = new RemoteException
                             (originalException.getMessage(), originalException);
+                    }                
                 }
             }
             

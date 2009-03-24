@@ -288,12 +288,12 @@ final class EJBHomeInvocationHandler
                         } 
                         
                     } else if (invInfo.startsWithFindByPrimaryKey) {
-                    	/*TODO
+
                         EntityContainer entityContainer = (EntityContainer) 
                             container;
                         returnValue = entityContainer.invokeFindByPrimaryKey
                             (invInfo.targetMethod1, inv, args);
-                        */                                                    
+                                                                           
                     } else if ( invInfo.startsWithFind ) {
                         
                         Object pKeys = container.invokeTargetBeanMethod

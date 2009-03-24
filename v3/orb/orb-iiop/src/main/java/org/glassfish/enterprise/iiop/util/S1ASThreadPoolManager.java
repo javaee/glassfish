@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Collection;
 
 public class S1ASThreadPoolManager implements ThreadPoolManager {
 
@@ -70,7 +71,11 @@ public class S1ASThreadPoolManager implements ThreadPoolManager {
 
         IIOPUtils iiopUtils = IIOPUtils.getInstance();
         try {
-            com.sun.enterprise.config.serverbeans.ThreadPool[] allThreadPools = iiopUtils.getAllThreadPools();
+            Collection<com.sun.enterprise.config.serverbeans.ThreadPool> tpCol =
+                    iiopUtils.getAllThreadPools();
+
+            com.sun.enterprise.config.serverbeans.ThreadPool[] allThreadPools =
+                    tpCol.toArray(new com.sun.enterprise.config.serverbeans.ThreadPool[tpCol.size()]);
             for (int i = 0; i < allThreadPools.length; i++) {
                 createThreadPools(allThreadPools[i], i);
             }

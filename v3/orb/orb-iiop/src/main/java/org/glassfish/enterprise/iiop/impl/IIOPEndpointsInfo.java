@@ -43,6 +43,7 @@ import com.sun.logging.LogDomains;
 import org.glassfish.enterprise.iiop.impl.IIOPUtils;
 
 import java.util.List;
+import java.util.Collection;
 import java.util.logging.Logger;
 
 /**
@@ -64,16 +65,20 @@ public class IIOPEndpointsInfo {
     private static final String baseMsg	= IIOPEndpointsInfo.class.getName();
 
 
-    public static ServerRef[] getServersInCluster() {
+    /**
+     * TODO implement post V3 FCS
+    public static Collection<ServerRef> getServersInCluster() {
     
         return iiopUtils.getServerRefs();
     }
 
     public static List<IiopListener> getListenersInCluster() {
  
-        //FIXME:
+
         return iiopUtils.getIiopListeners();
     }
+
+    **/
 
     /**
      * This method returns a list of SocketInfo objects for a particular 

@@ -153,7 +153,7 @@ public abstract class EJBHomeImpl
     public final void remove(Object primaryKey)
         throws RemoteException, RemoveException
     {
-        if (container.getContainerType() == BaseContainer.ContainerType.ENTITY) {
+        if (container.getContainerType() != BaseContainer.ContainerType.ENTITY) {
             // Session beans dont have primary keys. EJB2.0 Section 6.6
             throw new RemoveException("Invalid remove operation.");
         }

@@ -997,7 +997,7 @@ public class EntityContainer
     
     // Called from EJBHomeImpl.remove(primaryKey),
     // EJBLocalHomeImpl.remove(primaryKey)
-    protected void removeBean(Object primaryKey, Method removeMethod, 
+    protected void doEJBHomeRemove(Object primaryKey, Method removeMethod,
         boolean local)
         throws RemoveException, EJBException, RemoteException
     {
