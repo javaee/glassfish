@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="360"/>
+    <property name="TOTAL_EXPECTED" value="361"/>
 
     &commonSetup;
     &commonBuild;
@@ -331,6 +331,7 @@
         <ant dir="valveTomcatStyle" target="all"/>
         <ant dir="valveGlassFishStyleBackwardCompatible" target="all"/>
         <ant dir="valveWithParams" target="all"/>
+        <ant dir="contextValveSetRequestedSessionCookiePath" target="all"/>
         <ant dir="webdavCopyDelete" target="all"/>
         <ant dir="useBundledJsf" target="all"/>
         <!-- Uncomment once IT 7246 has been fixed
