@@ -144,6 +144,10 @@ class HttpRequestWrapper extends HttpServletRequestWrapper
         httpRequest.setRequestedSessionCookie(flag);
     }
 
+    public void setRequestedSessionCookiePath(String cookiePath) {
+        httpRequest.setRequestedSessionCookiePath(cookiePath);
+    }
+
     public void setRequestedSessionId(String id) {
         httpRequest.setRequestedSessionId(id);
     }
