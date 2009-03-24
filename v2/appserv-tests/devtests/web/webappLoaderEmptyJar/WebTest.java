@@ -5,7 +5,6 @@ import com.sun.ejte.ccl.reporter.*;
 /*
  * This unit test tests consistency of URL encoding and decoding between
  * sendDirect and jsp:forward.
- *
  */
 public class WebTest {
 
@@ -35,14 +34,12 @@ public class WebTest {
      
         try { 
             invokeJSP();
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             System.out.println(TEST_NAME + " test failed");
             stat.addStatus(TEST_NAME, stat.FAIL);
             ex.printStackTrace();
         }
-
-        // No exception therefore the test passes.
-        stat.addStatus(TEST_NAME, stat.PASS);
 
         return;
     }
