@@ -41,6 +41,7 @@ public class WebTest {
         try {
             webTest.doTest("/mywar/test.jsp");
             webTest.doTest("/test.jsp");
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             ex.printStackTrace();
             stat.addStatus(TEST_NAME, stat.FAIL);
@@ -57,9 +58,8 @@ public class WebTest {
         conn.connect();
         int responseCode = conn.getResponseCode();
         if (responseCode != 200) { 
-            System.err.println("Wrong response code. Expected: 200"
-                               + ", received: " + responseCode);
-            stat.addStatus(TEST_NAME, stat.FAIL);
+            throw new Exception("Wrong response code. Expected: 200" +
+                                ", received: " + responseCode);
         } else {
             BufferedReader bis = new BufferedReader(
                 new InputStreamReader(conn.getInputStream()));
@@ -71,11 +71,8 @@ public class WebTest {
                 }
             }
             if (line == null) {
-                System.err.println("Wrong response body. Could not find "
-                                   + "expected string: " + EXPECTED);
-                stat.addStatus(TEST_NAME, stat.FAIL);
-            } else {
-                stat.addStatus(TEST_NAME, stat.PASS);
+                throw new Exception("Wrong response body. Could not find " +
+                                    "expected string: " + EXPECTED);
             }
         }
     }
