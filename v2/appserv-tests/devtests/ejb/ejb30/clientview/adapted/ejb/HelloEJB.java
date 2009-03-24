@@ -587,6 +587,7 @@ public class HelloEJB implements Hello  {
         if( md == null ) {
             throw new EJBException("null md");
         }
+	System.out.println("md = " + md);
 
         HomeHandle hh = home.getHomeHandle();
         if( hh == null ) {

@@ -4,7 +4,8 @@ import javax.ejb.*;
 import javax.annotation.*;
 
 @Stateless
-public class HelloStateless {
+@LocalBean
+public class HelloStateless implements HelloRemote {
 
     @PostConstruct 
     private void init() {

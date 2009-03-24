@@ -25,6 +25,7 @@ public class HelloServlet extends HttpServlet {
 
     @EJB HelloSingleton singleton;
     @EJB Hello hello;
+    @EJB HelloRemote helloRemote;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -48,6 +49,9 @@ public class HelloServlet extends HttpServlet {
 	} catch(Exception e) {
 	    e.printStackTrace();
 	}
+
+	System.out.println("Remote intf bean says " +
+			   helloRemote.hello());
 
 	singleton.wait(10);
 

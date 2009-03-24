@@ -35,6 +35,8 @@ public class Client {
             System.out.println("Creating InitialContext()");
 	    InitialContext ic = new InitialContext();
 
+	    org.omg.CORBA.ORB orb = (org.omg.CORBA.ORB) ic.lookup("java:comp/ORB"); 
+
 	    Sful sful = (Sful) ic.lookup("com.sun.s1asdev.ejb.ejb30.hello.session.Sful");
 	    Sless sless = (Sless) ic.lookup("com.sun.s1asdev.ejb.ejb30.hello.session.Sless");
 
