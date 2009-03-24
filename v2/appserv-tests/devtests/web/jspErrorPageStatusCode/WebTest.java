@@ -28,31 +28,29 @@ public class WebTest {
     
     public static void main(String[] args) {
         stat.addDescription("Unit test for Bugtraq 5018291");
-        WebTest webTest = new WebTest(args);
-        webTest.doTest();
+        try {
+            new WebTest(args).doTest();
+            stat.addStatus(TEST_NAME, stat.PASS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            stat.addStatus(TEST_NAME, stat.FAIL);
+        }
+
 	stat.printSummary();
     }
 
-    public void doTest() {
+    public void doTest() throws Exception {
      
-        try { 
-            URL url = new URL("http://" + host  + ":" + port
-                              + contextRoot + "/foo.jsp");
-            System.out.println("Connecting to: " + url.toString());
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.connect();
-            int responseCode = conn.getResponseCode();
-            if (responseCode == 200) { 
-                System.err.println("Wrong response code. Expected: 500"
-                                   + ", received: " + responseCode);
-                stat.addStatus(TEST_NAME, stat.FAIL);
-            } else {
-                stat.addStatus(TEST_NAME, stat.PASS);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            stat.addStatus(TEST_NAME, stat.FAIL);
-        }
+        URL url = new URL("http://" + host  + ":" + port + contextRoot +
+                          "/foo.jsp");
+        System.out.println("Connecting to: " + url.toString());
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.connect();
+        int responseCode = conn.getResponseCode();
+        if (responseCode != 500) { 
+            throw new Exception("Wrong response code. Expected: 500" +
+                                ", received: " + responseCode);
+        }    
     }
 
 }

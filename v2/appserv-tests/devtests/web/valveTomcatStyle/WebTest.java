@@ -42,6 +42,7 @@ public class WebTest {
 
         try {
             webTest.doTest();
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             ex.printStackTrace();
             stat.addStatus(TEST_NAME, stat.FAIL);
@@ -61,19 +62,15 @@ public class WebTest {
         int responseCode = conn.getResponseCode();
 
         if (responseCode != 200) {
-            System.err.println("Unexpected return code: " + responseCode);
-            stat.addStatus(TEST_NAME, stat.FAIL);
-        } else {
-            InputStream is = conn.getInputStream();
-            BufferedReader input = new BufferedReader(new InputStreamReader(is));
-            String line = input.readLine();
-            if (EXPECTED_RESPONSE.equals(line)) {
-                stat.addStatus(TEST_NAME, stat.PASS);
-            } else {
-                System.err.println("Wrong response. Expected: " + 
-                                   EXPECTED_RESPONSE + ", received: " + line);
-                stat.addStatus(TEST_NAME, stat.FAIL);
-            }
-        }    
+            throw new Exception("Unexpected return code: " + responseCode);
+        }
+
+        InputStream is = conn.getInputStream();
+        BufferedReader input = new BufferedReader(new InputStreamReader(is));
+        String line = input.readLine();
+        if (!EXPECTED_RESPONSE.equals(line)) {
+            throw new Exception("Wrong response. Expected: " + 
+                                EXPECTED_RESPONSE + ", received: " + line);
+        }
     }
 }

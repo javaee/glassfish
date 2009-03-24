@@ -19,7 +19,6 @@ public class WebTest {
     private String host;
     private String port;
     private String contextRoot;
-    private boolean fail = false;
 
     public WebTest(String[] args) {
         host = args[0];
@@ -29,27 +28,20 @@ public class WebTest {
     
     public static void main(String[] args) {
         stat.addDescription("URL rewriting with session id");
-        WebTest webTest = new WebTest(args);
-        webTest.doTest();
-        stat.printSummary(TEST_NAME);
+        new WebTest(args).doTest();
     }
 
     public void doTest() {
      
         try { 
             invokeServlet();
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             ex.printStackTrace();
             stat.addStatus(TEST_NAME, stat.FAIL);
         }
 
-        if (fail) {
-            stat.addStatus(TEST_NAME, stat.FAIL);
-        } else {
-            stat.addStatus(TEST_NAME, stat.PASS);
-        }
-
-        return;
+        stat.printSummary(TEST_NAME);
     }
 
     private void invokeServlet() throws Exception {
@@ -78,28 +70,23 @@ public class WebTest {
         }
 
         if (cookieLine != null) {
-            System.err.println("Unexpected Set-Cookie response header");
-            fail = true;
-            return;
+            throw new Exception("Unexpected Set-Cookie response header");
         }
         
         if (redirectLine == null) {
-            System.err.println("Missing Location response header");
-            fail = true;
-            return;
+            throw new Exception("Missing Location response header");
         }
 
         int index = redirectLine.indexOf("http");
         if (index == -1) {
-            System.err.println(
+            throw new Exception(
                 "Missing http address in Location response header");
-            fail = true;
-            return;
         }
 
         String redirectTo = redirectLine.substring(index);
         if (redirectTo.indexOf(".") != -1){
-            redirectTo = redirectTo.replace("localhost.localdomain","localhost");
+            redirectTo = redirectTo.replace("localhost.localdomain",
+                                            "localhost");
         }   
         System.out.println("Redirect to: " + redirectTo);
         URL url = new URL(redirectTo);
@@ -107,10 +94,8 @@ public class WebTest {
         conn.connect();
         int responseCode = conn.getResponseCode();
         if (responseCode != 200) { 
-            System.err.println("Wrong response code. Expected: 200"
-                               + ", received: " + responseCode);
-            fail = true;
-            return;
+            throw new Exception("Wrong response code. Expected: 200" +
+                                ", received: " + responseCode);
         }
 
         bis = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -121,9 +106,8 @@ public class WebTest {
         }
 
         if (line == null) {
-            System.err.println("Did not receive expected response data: "
-                               + EXPECTED);
-            fail = true;
+            throw new Exception("Did not receive expected response data: " +
+                                EXPECTED);
         }
     }
 }

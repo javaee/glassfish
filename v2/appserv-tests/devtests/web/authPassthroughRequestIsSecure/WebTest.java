@@ -32,20 +32,16 @@ public class WebTest {
     
     public static void main(String[] args) {
         stat.addDescription("Unit test for 6397218");
-        WebTest webTest = new WebTest(args);
-        webTest.doTest();
-        stat.printSummary(TEST_NAME);
-    }
-
-    public void doTest() {
-     
-        try { 
-            invokeJsp();
-        } catch (Exception ex) {
+        try {
+            new WebTest(args).invokeJsp();
+            stat.addStatus(TEST_NAME, stat.PASS);
+        } catch (Exception e) {
             System.out.println(TEST_NAME + " test failed");
             stat.addStatus(TEST_NAME, stat.FAIL);
-            ex.printStackTrace();
+            e.printStackTrace();
         }
+
+        stat.printSummary(TEST_NAME);
     }
 
     private void invokeJsp() throws Exception {
@@ -69,13 +65,9 @@ public class WebTest {
             lastLine = line;
         }
 
-        if (EXPECTED_RESPONSE.equals(lastLine)) {
-            stat.addStatus(TEST_NAME, stat.PASS);
-        } else {
-            System.err.println("Unexpected response: Expected: "
-                               + EXPECTED_RESPONSE
-                               + ", received: " + lastLine);
-            stat.addStatus(TEST_NAME, stat.FAIL);
+        if (!EXPECTED_RESPONSE.equals(lastLine)) {
+            throw new Exception("Unexpected response: Expected: " +
+                                EXPECTED_RESPONSE + ", received: " + lastLine);
         }
     }
 }
