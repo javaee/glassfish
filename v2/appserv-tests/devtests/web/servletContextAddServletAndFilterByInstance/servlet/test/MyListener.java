@@ -37,7 +37,8 @@ public class MyListener implements ServletContextListener {
         /*
          * Register servlet
          */
-        Servlet servlet = new NewServlet();
+        NewServlet servlet = new NewServlet();
+        servlet.setMyParameter("myServletParamValue");
         ServletRegistration sr = sc.addServlet("NewServlet", servlet);
         sr.setInitParameter("servletInitParamName", "servletInitParamValue");
         sr.addMapping("/newServlet");
@@ -65,7 +66,8 @@ public class MyListener implements ServletContextListener {
         /*
          * Register filter
          */
-        Filter filter = new NewFilter();
+        NewFilter filter = new NewFilter();
+        filter.setMyParameter("myFilterParamValue");
         FilterRegistration fr = sc.addFilter("NewFilter", filter);
         fr.setInitParameter("filterInitParamName", "filterInitParamValue");
         fr.addMappingForServletNames(EnumSet.of(DispatcherType.REQUEST),

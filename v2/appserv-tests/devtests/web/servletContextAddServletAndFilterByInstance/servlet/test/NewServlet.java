@@ -6,15 +6,30 @@ import javax.servlet.http.*;
 
 public class NewServlet extends HttpServlet {
 
-    public void init() throws ServletException {
-        
+    private String initParamValue;
+    private String myParamValue;
+
+    public void setMyParameter(String value) {
+        myParamValue = value;
+    }
+
+    public void init(ServletConfig config) throws ServletException {
+        initParamValue = config.getInitParameter("servletInitParamName");
     }
 
     public void service(ServletRequest req, ServletResponse res)
             throws IOException, ServletException {
-        if (!"servletInitParamValue".equals(
-                getServletConfig().getInitParameter("servletInitParamName"))) {
+        if (!"myServletParamValue".equals(myParamValue)) {
+            throw new ServletException("Wrong servlet instance");
+        }
+
+        if (!"servletInitParamValue".equals(initParamValue)) {
             throw new ServletException("Missing servlet init param");
+        }
+
+        if (!"myFilterParamValue".equals(
+                req.getAttribute("myFilterParamName"))) {
+            throw new ServletException("Wrong filter instance");
         }
 
         if (!"filterInitParamValue".equals(
