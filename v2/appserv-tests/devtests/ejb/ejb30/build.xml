@@ -12,10 +12,11 @@
     &reporting;
 
     <target name="all">
-        <antcall target="hello"/>
+	<!--- currently use SE client . switch back to appclient -->
+        <antcall target="clientview"/>
 
 	<!--- gradually reenable as possible
-        <antcall target="clientview"/>
+        <antcall target="hello"/>
         <antcall target="interceptors"/>
         <antcall target="persistence"/>
 	-->

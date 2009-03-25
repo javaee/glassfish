@@ -6,13 +6,13 @@
 <!ENTITY testproperties SYSTEM "file:./build.properties">
 ]>
 
-<project name="ejb-ejb30-clientview-adapted-App" default="usage" basedir=".">
+<project name="ejb-ejb31-ejblite-javamodule-App" default="usage" basedir=".">
 
     &commonSetup;
     &commonBuild;
     &testproperties;
 
-    <target name="all" depends="build,deploy,run_se,undeploy"/>
+    <target name="all" depends="build,deploy,run,undeploy"/>
 
     <target name="clean" depends="init-common">
       <antcall  target="clean-common"/>
@@ -20,7 +20,7 @@
  
     <target name="compile" depends="clean">
         <antcall target="compile-common">
-            <param name="src" value="ejb"/>
+            <param name="src" value="war"/>
         </antcall>
         <antcall target="compile-common">
             <param name="src" value="client"/>
@@ -28,35 +28,33 @@
     </target>
 
     <target name="build" depends="compile">
-        <antcall target="build-ear-common">
-            <param name="ejbjar.classes" 
-              value="**/Common*.class,**/Dummy*.class,**/Hello*.class,**/Sful*.class,**/Sless*.class"/>
-            <param name="appclientjar.classes" 
-              value="**/Client.class,**/DummySless*.class,**/DummyRemote*.class,**/Hello.class,**/SfulRemoteHome.class,**/SlessRemoteHome.class"/>
-
+      <antcall target="webclient-war-common">
+          <param name="hasWebclient" value="false"/>
         </antcall>
     </target> 
     
     <target name="deploy" 
             depends="init-common">
-        <antcall target="deploy-common"/>
+        <antcall target="deploy-war-common"/>
     </target>
 
     <target name="run" depends="init-common">
-        <antcall target="runclient-common"/>
+        <antcall target="run_se"/>
     </target>
-
+ 
     <target name="run_se" depends="init-common">
        <java  fork="on" 
               failonerror="true"
               classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/modules/gf-client.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
               classname="${se.client}">
+           <arg line="${contextroot}"/>
+           <arg line="${http.host}"/>
+           <arg line="${http.port}"/>
         </java>
     </target>
 
- 
     <target name="undeploy" depends="init-common">
-        <antcall target="undeploy-common"/>
+        <antcall target="undeploy-war-common"/>
     </target>   
 
     <target name="usage">

@@ -33,9 +33,9 @@
         <ant dir="txprop" target="all"/>
         <ant dir="sfsb" target="all"/>
         <ant dir="util" target="all"/>
-        <ant dir="ejb30" target="all"/>
 -->
         <ant dir="ejb31" target="all"/>
+        <ant dir="ejb30" target="all"/>
         <record name="ejb.output" action="stop" />
         <antcall target="report"/>
     </target>

@@ -12,7 +12,14 @@
     &reporting;
 
     <target name="all">
+        <antcall target="javamodule"/>
         <antcall target="sinitcallejb"/>
+    </target>
+
+    <target name="javamodule">
+        <record name="javamodule.output" action="start" />
+            <ant dir="javamodule" target="all"/>
+        <record name="javamodule.output" action="stop" />
     </target>
 
     <target name="sinitcallejb">
