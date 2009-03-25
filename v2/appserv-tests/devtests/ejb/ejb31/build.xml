@@ -15,6 +15,7 @@
         <antcall target="ejblite"/>
         <antcall target="full"/>
         <antcall target="singleton"/>
+        <antcall target="asynchronous"/>
     </target>
 
     <target name="ejblite">
@@ -33,6 +34,12 @@
         <record name="singleton.output" action="start" />
             <ant dir="singleton" target="all"/>
         <record name="singleton.output" action="stop" />
+    </target>
+
+    <target name="asynchronous">
+        <record name="asynchronous.output" action="start" />
+            <ant dir="asynchronous" target="all"/>
+        <record name="asynchronous.output" action="stop" />
     </target>
 
     <target name="usage">
