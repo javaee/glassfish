@@ -81,6 +81,9 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
                 //this is an Application Prepare Completion Event
                 DeploymentContext dc = (DeploymentContext) event.hook();
                 OpsParams params = dc.getCommandParameters(OpsParams.class);
+                if (params.origin != OpsParams.Origin.deploy) {
+                    return;
+                }
                 String appName = params.name();
                 Application app = dc.getModuleMetaData(Application.class);
                 Set<WebBundleDescriptor> webDesc = app.getWebBundleDescriptors();
@@ -149,6 +152,9 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
     protected void generatePolicy(DeploymentContext dc)
             throws DeploymentException {
         OpsParams params = dc.getCommandParameters(OpsParams.class);
+        if (params.origin != OpsParams.Origin.deploy) {
+            return;
+        }
         String appName = params.name();
         try {
             //policyLoader.loadPolicy();
@@ -185,6 +191,9 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
     private void removePolicy(DeploymentContext dc) throws
             DeploymentException {
         OpsParams params = dc.getCommandParameters(OpsParams.class);
+        if (params.origin != OpsParams.Origin.undeploy) {
+            return;
+        }
         String appName = params.name();
 
         try {
