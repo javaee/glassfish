@@ -103,10 +103,15 @@
         </dependency>
 	
 	<dependency>
-	            <groupId>org.glassfish.jms</groupId>
-	            <artifactId>jms</artifactId>
-	            <version>${project.version}</version>
-        </dependency>
+	    <groupId>org.glassfish.jms</groupId>
+	    <artifactId>jms</artifactId>
+	    <version>${project.version}</version>
+	</dependency>
+	<dependency>
+            <groupId>org.glassfish</groupId>
+	    <artifactId>javax.jms</artifactId>
+            <version>${project.version}</version>
+       </dependency>
         
         <dependency>
             <groupId>org.glassfish.transaction</groupId>
