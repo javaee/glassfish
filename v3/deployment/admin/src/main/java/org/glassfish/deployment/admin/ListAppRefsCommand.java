@@ -40,6 +40,10 @@ import org.glassfish.api.Param;
 import org.jvnet.hk2.annotations.Service;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import com.sun.enterprise.config.serverbeans.Application;
+import com.sun.enterprise.config.serverbeans.Engine;
+import com.sun.enterprise.config.serverbeans.Module;
+import org.glassfish.api.admin.config.Named;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
@@ -51,6 +55,9 @@ public class ListAppRefsCommand implements AdminCommand {
 
     @Param(optional=true)
     String target = "server";
+
+    @Param(optional=true)
+    String type = null;
 
     @Param(optional=true, defaultValue="all")
     String state;
@@ -72,10 +79,44 @@ public class ListAppRefsCommand implements AdminCommand {
                 Boolean.valueOf(appRef.getEnabled())) ||
                (state.equals("non-running") && 
                 !Boolean.valueOf(appRef.getEnabled())) ) {
-                ActionReport.MessagePart childPart = part.addChild();
-                childPart.setMessage(appRef.getRef());
+                if (isApplicationOfThisType(appRef.getRef(), type)) {
+                    ActionReport.MessagePart childPart = part.addChild();
+                    childPart.setMessage(appRef.getRef());
+                }
             }
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
+
+
+    private boolean isApplicationOfThisType(String name, String type) {
+        if (type == null)  {
+            return true;
+        }
+
+        Named named = ConfigBeansUtilities.getModule(name);
+        Application app = null;
+        if (named instanceof Application) {
+            app = (Application) named;
+        }
+        if (app != null) {
+            if (Boolean.valueOf(app.getDeployProperties().getProperty("isComposite"))) {
+                if (type.equals("ear")) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            for (Module module : app.getModule()) {
+                final List<Engine> engineList = module.getEngines();
+                for (Engine engine : engineList) {
+                    if (engine.getSniffer().equals(type)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
 }

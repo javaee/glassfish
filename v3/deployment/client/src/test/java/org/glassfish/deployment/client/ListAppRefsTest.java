@@ -117,6 +117,31 @@ public class ListAppRefsTest {
                         tmidNonRunning.getModuleID());
             }
 
+            TargetModuleID[] resultsAllWithType =
+                    df.listAppRefs(new String[] {"server"}, "all", "web");
+            System.out.println("TargetModuleIDs returned for all web:");
+            for (TargetModuleID tmidAllWithType : resultsAllWithType) {
+                System.out.println(tmidAllWithType.getTarget().getName() + ":" +
+                        tmidAllWithType.getModuleID());
+            }
+
+            TargetModuleID[] resultsRunningWithType =
+                    df.listAppRefs(new String[] {"server"}, "running", "ear");
+            System.out.println("TargetModuleIDs returned for running ear:");
+            for (TargetModuleID tmidRunningWithType : resultsRunningWithType) {
+                System.out.println(tmidRunningWithType.getTarget().getName() + ":" +
+                        tmidRunningWithType.getModuleID());
+            }
+
+            TargetModuleID[] resultsNonRunningWithType =
+                    df.listAppRefs(new String[] {"server"}, "non-running", "ear");
+            System.out.println("TargetModuleIDs returned for nonrunning ear:");
+            for (TargetModuleID tmidNonRunningWithType : resultsNonRunningWithType) {
+                System.out.println(tmidNonRunningWithType.getTarget().getName() + ":" +
+                        tmidNonRunningWithType.getModuleID());
+            }
+
+
 
         } catch (Exception e) {
             fail("Failed due to exception " + e.getMessage());

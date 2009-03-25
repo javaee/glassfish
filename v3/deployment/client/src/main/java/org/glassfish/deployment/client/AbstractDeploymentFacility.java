@@ -385,6 +385,10 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
     }
 
     public TargetModuleID[] listAppRefs(String[] targets, String state) throws IOException {
+        return listAppRefs(targets, state, null);
+    }
+
+    public TargetModuleID[] listAppRefs(String[] targets, String state, String type) throws IOException {
         ensureConnected();
         String commandName = "list-app-refs";
         Target[] targetImpls = prepareTargets(createTargets(targets));
@@ -392,6 +396,9 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
         Map commandParams = new HashMap();
         commandParams.put("target", targetsParam);
         commandParams.put("state", state);
+        if (type != null) {
+            commandParams.put("type", type);
+        }
         DFDeploymentStatus mainStatus = null;
         Throwable commandExecutionException = null;
         try {

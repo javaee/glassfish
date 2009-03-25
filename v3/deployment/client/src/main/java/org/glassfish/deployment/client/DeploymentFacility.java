@@ -149,6 +149,11 @@ public interface DeploymentFacility {
     public TargetModuleID[] listAppRefs(String[] targets, String state) throws IOException;
 
     /**
+     * list all application refs that are present in the provided list of targets with the specified state and specified type
+     */
+    public TargetModuleID[] listAppRefs(String[] targets, String state, String type) throws IOException;
+
+    /**
      * list all targets
      */
     public Target[] listTargets() throws IOException;
