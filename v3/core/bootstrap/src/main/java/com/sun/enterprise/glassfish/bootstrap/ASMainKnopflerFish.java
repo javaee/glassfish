@@ -55,7 +55,7 @@ public class ASMainKnopflerFish extends ASMainOSGi {
     protected void setFwDir() {
         String fwPath = System.getenv("KNOPFLERFISH_HOME");
         if (fwPath == null) {
-            fwPath = new File(glassfishDir, "knopflerfish.org/osgi/").getAbsolutePath();
+            fwPath = new File(glassfishDir, "osgi/knopflerfish.org/osgi/").getAbsolutePath();
         }
         fwDir = new File(fwPath);
         if (!fwDir.exists()) {

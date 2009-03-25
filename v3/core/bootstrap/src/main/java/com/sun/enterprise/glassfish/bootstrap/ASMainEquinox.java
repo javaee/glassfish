@@ -63,11 +63,11 @@ public class ASMainEquinox extends ASMainOSGi {
     protected void setFwDir() {
         String fwPath = System.getenv("EQUINOX_HOME");
         if (fwPath == null) {
-            fwPath = new File(glassfishDir, "equinox").getAbsolutePath();
+            fwPath = new File(glassfishDir, "osgi/equinox").getAbsolutePath();
         }
         fwDir = new File(fwPath);
         if (!fwDir.exists()) {
-            fwDir = new File(glassfishDir, "eclipse");
+            fwDir = new File(glassfishDir, "osgi/eclipse");
             if (fwDir.exists()){//default Eclipse equinox structure from a equinoz zip distro
                 pluginsDir = new File(fwDir,"plugins");
                 if (!pluginsDir.exists()){

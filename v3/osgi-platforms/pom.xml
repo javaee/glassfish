@@ -54,6 +54,7 @@
     <name>Distribution Fragments for various OSGi platforms</name>
     <modules>
         <module>felix</module>
+        <module>equinox</module>
     </modules>
 </project>
 

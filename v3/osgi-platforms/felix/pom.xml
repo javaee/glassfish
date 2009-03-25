@@ -2,10 +2,10 @@
   This module is meant to create a distribution fragement that contains
   Apache Felix and associated configuration files and bundles.
   The layout relative to glassfish root looks like this:
-  felix/
+  osgi/
+    felix/
        bin/
           felix.jar
-       bundle/
        conf/
           config.properties
           system.properties
@@ -35,7 +35,7 @@
     -->
     <packaging>distribution-fragment</packaging>
     <properties>
-        <felix.outdir>${project.build.OutputDirectory}/glassfish/felix/</felix.outdir>
+        <felix.outdir>${project.build.OutputDirectory}/glassfish/osgi/felix/</felix.outdir>
         <glassfish.modulesdir>${project.build.OutputDirectory}/glassfish/modules/</glassfish.modulesdir>
     </properties>
     <build>

@@ -87,6 +87,12 @@
            <type>distribution-fragment</type>
        </dependency>
        <dependency>
+           <groupId>org.glassfish.osgi-platforms</groupId>
+           <artifactId>equinox</artifactId>
+           <version>${project.version}</version>
+           <type>distribution-fragment</type>
+       </dependency>
+       <dependency>
            <groupId>com.sun.enterprise</groupId>
            <artifactId>hk2</artifactId>
            <exclusions>

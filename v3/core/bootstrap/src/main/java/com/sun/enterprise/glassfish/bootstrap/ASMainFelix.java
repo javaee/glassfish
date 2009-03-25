@@ -57,7 +57,7 @@ public class ASMainFelix extends ASMainOSGi {
         if (fwPath == null) {
             // try system property, which comes from asenv.conf
             fwPath = System.getProperty(FELIX_HOME,
-                    new File(glassfishDir, "felix").getAbsolutePath());
+                    new File(glassfishDir, "osgi/felix").getAbsolutePath());
         }
         fwDir = new File(fwPath);
         if (!fwDir.exists()) {
