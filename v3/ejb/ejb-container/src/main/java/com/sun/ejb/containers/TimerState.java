@@ -261,7 +261,7 @@ public class TimerState implements Serializable {
         return schedule;
     }
 
-    public void setSchedule(String Schedule) {
+    public void setSchedule(String schedule) {
         this.schedule = schedule;
     }
 
