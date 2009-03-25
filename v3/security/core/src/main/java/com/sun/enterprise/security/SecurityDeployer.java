@@ -81,6 +81,7 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
                 //this is an Application Prepare Completion Event
                 DeploymentContext dc = (DeploymentContext) event.hook();
                 OpsParams params = dc.getCommandParameters(OpsParams.class);
+                //needed to prevent re-linking during appserver restart.
                 if (params.origin != OpsParams.Origin.deploy) {
                     return;
                 }
