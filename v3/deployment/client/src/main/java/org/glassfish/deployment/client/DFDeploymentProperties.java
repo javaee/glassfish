@@ -328,6 +328,11 @@ public class DFDeploymentProperties extends Properties {
     public static final String DEPLOY_OPTION_JAVA_WEB_START_ENABLED = "javaWebStartEnabled";
     public static final String DEPLOY_OPTION_LIBRARIES = "libraries";
 
+    // possible values for module state
+    public static final String ALL = "all";
+    public static final String RUNNING = "running";
+    public static final String NON_RUNNING = "non-running";
+
     public Map<String,String> asMap() {
         return new HashMap<String,String>();
     }

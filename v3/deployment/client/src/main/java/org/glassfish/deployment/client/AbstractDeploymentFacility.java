@@ -330,13 +330,68 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
         return connected;
     }
 
+    public Target[] listTargets() throws IOException {
+        ensureConnected();
+        String commandName = "list-targets";
+        Map commandParams = new HashMap();
+        DFDeploymentStatus mainStatus = null;
+        Throwable commandExecutionException = null;
+        try {
+            DFCommandRunner commandRunner = getDFCommandRunner(commandName, commandParams, null);
+            DFDeploymentStatus ds = commandRunner.run();
+            mainStatus = ds.getMainStatus();
+            List<Target> targets = new ArrayList<Target>();
+
+            if (mainStatus.getStatus() != DFDeploymentStatus.Status.FAILURE) {
+                for (Iterator subIter = ds.getSubStages(); subIter.hasNext();) {
+                    DFDeploymentStatus subStage =
+                        (DFDeploymentStatus) subIter.next();
+                    for (Iterator subIter2 = subStage.getSubStages() ; 
+                        subIter2.hasNext();) {
+                        DFDeploymentStatus subStage2 =
+                            (DFDeploymentStatus) subIter2.next();
+                        String targetName = subStage2.getStageStatusMessage();
+                        targets.add(createTarget(targetName));
+                    }
+                }
+                Target[] result =
+                    new Target[targets.size()];
+                return (Target[]) targets.toArray(result);
+            } else {
+                /*
+                 * We received a response from the server but the status was
+                 * reported as unsuccessful.  Because listTargets does not
+                 * return a ProgressObject which the caller could use to find
+                 * out about the success or failure, we must throw an exception
+                 * so the caller knows about the failure.
+                 */
+                commandExecutionException = new IOException(
+                        "remote command execution failed on the server");
+                commandExecutionException.initCause(
+                        new RuntimeException(mainStatus.getAllStageMessages()));
+                throw commandExecutionException;
+            }
+        } catch (Throwable ex) {
+            if (commandExecutionException == null) {
+                throw new RuntimeException("error submitting remote command", ex);
+            } else {
+                throw (IOException) ex;
+            }
+        }
+    }
+
     public TargetModuleID[] listAppRefs(String[] targets) throws IOException {
+        return listAppRefs(targets, DFDeploymentProperties.ALL);
+    }
+
+    public TargetModuleID[] listAppRefs(String[] targets, String state) throws IOException {
         ensureConnected();
         String commandName = "list-app-refs";
         Target[] targetImpls = prepareTargets(createTargets(targets));
         String targetsParam = createTargetsParam(targetImpls);
         Map commandParams = new HashMap();
         commandParams.put("target", targetsParam);
+        commandParams.put("state", state);
         DFDeploymentStatus mainStatus = null;
         Throwable commandExecutionException = null;
         try {
@@ -400,9 +455,6 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
                 throw commandExecutionException;
             }
         } catch (Throwable ex) {
-
-//           logger.log(Level.WARNING, "Error during getting application refs: ",                ex);
-//           ex);
             if (commandExecutionException == null) {
                 throw new RuntimeException("error submitting remote command", ex);
             } else {

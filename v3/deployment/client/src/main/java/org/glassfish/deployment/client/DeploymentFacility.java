@@ -142,6 +142,16 @@ public interface DeploymentFacility {
      * list all application refs that are present in the provided list of targets
      */
     public TargetModuleID[] listAppRefs(String[] targets) throws IOException;
+
+    /**
+     * list all application refs that are present in the provided list of targets with the specified state
+     */
+    public TargetModuleID[] listAppRefs(String[] targets, String state) throws IOException;
+
+    /**
+     * list all targets
+     */
+    public Target[] listTargets() throws IOException;
     
     /**
      * Downloads a particular file from the server repository. 

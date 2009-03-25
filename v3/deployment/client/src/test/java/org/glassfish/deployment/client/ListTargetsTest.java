@@ -47,12 +47,10 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- *
- * @author Tim
  */
-public class ListAppRefsTest {
+public class ListTargetsTest {
 
-    public ListAppRefsTest() {
+    public ListTargetsTest() {
     }
 
     @BeforeClass
@@ -73,8 +71,8 @@ public class ListAppRefsTest {
 
     @Ignore
     @Test
-    public void testListAppRefsTest() {
-        System.out.println("testListAppRefsTest");
+    public void testListTargetsTest() {
+        System.out.println("testListTargetsTest");
         DeploymentFacility df = DeploymentFacilityFactory.getDeploymentFacility();
         ServerConnectionIdentifier sci = new ServerConnectionIdentifier();
         sci.setHostName("localhost");
@@ -85,38 +83,11 @@ public class ListAppRefsTest {
         df.connect(sci);
 
         try {
-            TargetModuleID[] results =
-                    df.listAppRefs(new String[] {"server"});
-            System.out.println("TargetModuleIDs returned for default:");
-            for (TargetModuleID tmid : results) {
-                System.out.println(tmid.getTarget().getName() + ":" +
-                        tmid.getModuleID());
+            Target[] results = df.listTargets();
+            System.out.println("Targets returned:");
+            for (Target tid : results) {
+                System.out.println(tid.getName());
             }
-
-            TargetModuleID[] resultsAll =
-                    df.listAppRefs(new String[] {"server"}, "all");
-            System.out.println("TargetModuleIDs returned for all:");
-            for (TargetModuleID tmidAll : resultsAll) {
-                System.out.println(tmidAll.getTarget().getName() + ":" +
-                        tmidAll.getModuleID());
-            }
-
-            TargetModuleID[] resultsRunning =
-                    df.listAppRefs(new String[] {"server"}, "running");
-            System.out.println("TargetModuleIDs returned for running:");
-            for (TargetModuleID tmidRunning : resultsRunning) {
-                System.out.println(tmidRunning.getTarget().getName() + ":" +
-                        tmidRunning.getModuleID());
-            }
-
-            TargetModuleID[] resultsNonRunning =
-                    df.listAppRefs(new String[] {"server"}, "non-running");
-            System.out.println("TargetModuleIDs returned for nonrunning:");
-            for (TargetModuleID tmidNonRunning : resultsNonRunning) {
-                System.out.println(tmidNonRunning.getTarget().getName() + ":" +
-                        tmidNonRunning.getModuleID());
-            }
-
 
         } catch (Exception e) {
             fail("Failed due to exception " + e.getMessage());

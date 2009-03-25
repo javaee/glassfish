@@ -152,6 +152,12 @@ public final class ConfigBeansUtilities {
         return ( false );
     }
     
+    public static List<Server> getServers() {
+        if (domain == null || domain.getServers() == null )
+            throw new IllegalArgumentException ("Either domain is null or no <servers> element");
+        return domain.getServers().getServer();
+    }
+
     public static Server getServerNamed(String name) {
         if (domain == null || domain.getServers() == null || name == null)
             throw new IllegalArgumentException ("Either domain is null or no <servers> element");

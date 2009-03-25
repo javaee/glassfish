@@ -39,42 +39,28 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.Param;
 import org.jvnet.hk2.annotations.Service;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
-import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 import java.util.List;
 
-@Service(name="list-app-refs")
+@Service(name="list-targets")
 @Scoped(PerLookup.class)
-public class ListAppRefsCommand implements AdminCommand {
+public class ListTargetsCommand implements AdminCommand {
 
-    @Param(optional=true)
-    String target = "server";
-
-    @Param(optional=true, defaultValue="all")
-    String state;
-
-    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListAppRefsCommand.class);    
+    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListTargetsCommand.class);    
 
     public void execute(AdminCommandContext context) {
         
         final ActionReport report = context.getActionReport();
 
         ActionReport.MessagePart part = report.getTopMessagePart();
-        part.setMessage(target);
         part.setChildrenType("application");
-        List<ApplicationRef> appRefs = 
-            ConfigBeansUtilities.getApplicationRefsInServer(target);
-        for (ApplicationRef appRef : appRefs) {
-            if (state.equals("all") || 
-               (state.equals("running") && 
-                Boolean.valueOf(appRef.getEnabled())) ||
-               (state.equals("non-running") && 
-                !Boolean.valueOf(appRef.getEnabled())) ) {
-                ActionReport.MessagePart childPart = part.addChild();
-                childPart.setMessage(appRef.getRef());
-            }
+        List<Server> targets = ConfigBeansUtilities.getServers();
+        for (Server target: targets) {
+            ActionReport.MessagePart childPart = part.addChild();
+            childPart.setMessage(target.getName());
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
