@@ -38,10 +38,10 @@ public class WebTest {
 
         stat.addDescription("Unit test for resource injection into "
                             + "Servlet instance");
-        WebTest webTest = new WebTest(args);
 
         try {
-            webTest.doTest();
+            new WebTest(args).doTest();
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             ex.printStackTrace();
             stat.addStatus(TEST_NAME, stat.FAIL);
@@ -61,19 +61,15 @@ public class WebTest {
         int responseCode = conn.getResponseCode();
 
         if (responseCode != 200) {
-            System.err.println("Unexpected return code: " + responseCode);
-            stat.addStatus(TEST_NAME, stat.FAIL);
-        } else {
-            InputStream is = conn.getInputStream();
-            BufferedReader input = new BufferedReader(new InputStreamReader(is));
-            String line = input.readLine();
-            if (expectedResponse.equals(line)) {
-                stat.addStatus(TEST_NAME, stat.PASS);
-            } else {
-                System.err.println("Wrong response. Expected: " + 
-                                   expectedResponse + ", received: " + line);
-                stat.addStatus(TEST_NAME, stat.FAIL);
-            }
+            throw new Exception("Unexpected return code: " + responseCode);
+        }
+
+        InputStream is = conn.getInputStream();
+        BufferedReader input = new BufferedReader(new InputStreamReader(is));
+        String line = input.readLine();
+        if (!expectedResponse.equals(line)) {
+            throw new Exception("Wrong response. Expected: " + 
+                                expectedResponse + ", received: " + line);
         }    
     }
 }

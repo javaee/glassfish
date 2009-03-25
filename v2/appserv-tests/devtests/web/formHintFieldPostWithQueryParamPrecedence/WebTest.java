@@ -32,12 +32,11 @@ public class WebTest {
     }
     
     public static void main(String[] args) {
-
         stat.addDescription("Unit test for 6346738");
-        WebTest webTest = new WebTest(args);
 
         try {
-            webTest.doTest();
+            new WebTest(args).doTest();
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             ex.printStackTrace();
             stat.addStatus(TEST_NAME, stat.FAIL);
@@ -76,12 +75,9 @@ public class WebTest {
         }
 
         if (!EXPECTED_RESPONSE.equals(lastLine)) {
-            System.err.println("Wrong response. Expected: "
-                               + EXPECTED_RESPONSE
-                               + ", received: " + lastLine);
-            stat.addStatus(TEST_NAME, stat.FAIL);
-        } else {
-            stat.addStatus(TEST_NAME, stat.PASS);
+            throw new Exception("Wrong response. Expected: " +
+                                EXPECTED_RESPONSE + ", received: " +
+                                lastLine);
         }
     }
 }

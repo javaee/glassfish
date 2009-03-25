@@ -27,25 +27,20 @@ public class WebTest {
     
     public static void main(String[] args) {
         stat.addDescription("Unit test for GlassFish issue 1093");
-        WebTest webTest = new WebTest(args);
-        webTest.doTest();
-        stat.printSummary(TEST_NAME);
-    }
 
-    public void doTest() {
-     
-        try { 
-            invoke();
+        try {
+            new WebTest(args).doTest();
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             System.out.println(TEST_NAME + " test failed");
             stat.addStatus(TEST_NAME, stat.FAIL);
             ex.printStackTrace();
         }
 
-        return;
+        stat.printSummary(TEST_NAME);
     }
 
-    private void invoke() throws Exception {
+    private void doTest() throws Exception {
          
         Socket sock = new Socket(host, new Integer(port).intValue());
         OutputStream os = sock.getOutputStream();
@@ -65,12 +60,9 @@ public class WebTest {
             }
         }
 
-        if (count == 1) {
-            stat.addStatus(TEST_NAME, stat.PASS);
-        } else {
-            System.err.println("Expected one 'X-Powered-By: JSP' response "
-                               + "header, got: " + count);
-            stat.addStatus(TEST_NAME, stat.FAIL);
+        if (count != 1) {
+            throw new Exception("Expected one 'X-Powered-By: JSP' response " +
+                                "header, got: " + count);
         }
     }
 

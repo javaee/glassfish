@@ -29,21 +29,19 @@ public class WebTest {
     
     public static void main(String[] args) {
         stat.addDescription("Unit test for 6314912");
-        WebTest webTest = new WebTest(args);
-        webTest.doTest();
-        stat.printSummary(TEST_NAME);
-    }
 
-    public void doTest() {     
-        try { 
-            invokeServlet();
+        try {
+            new WebTest(args).doTest();
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             stat.addStatus(TEST_NAME, stat.FAIL);
             ex.printStackTrace();
         }
+
+        stat.printSummary(TEST_NAME);
     }
 
-    private void invokeServlet() throws Exception {
+    private void doTest() throws Exception {
  
         URL url = new URL("http://" + host + ":" + port + contextRoot
                           + "/TestServlet");
@@ -52,19 +50,15 @@ public class WebTest {
         conn.connect();
         int responseCode = conn.getResponseCode();
         if (responseCode != 200) {
-            System.err.println("Unexpected return code: " + responseCode);
-            stat.addStatus(TEST_NAME, stat.FAIL);
-        } else {
-            InputStream is = conn.getInputStream();
-            BufferedReader input = new BufferedReader(new InputStreamReader(is));
-            String line = input.readLine();
-            if (EXPECTED_RESPONSE.equals(line)) {
-                stat.addStatus(TEST_NAME, stat.PASS);
-            } else {
-                System.err.println("Wrong response. Expected: " + 
-                                   EXPECTED_RESPONSE + ", received: " + line);
-                stat.addStatus(TEST_NAME, stat.FAIL);
-            }
+            throw new Exception("Unexpected return code: " + responseCode);
+        }
+
+        InputStream is = conn.getInputStream();
+        BufferedReader input = new BufferedReader(new InputStreamReader(is));
+        String line = input.readLine();
+        if (!EXPECTED_RESPONSE.equals(line)) {
+            throw new Exception("Wrong response. Expected: " + 
+                                EXPECTED_RESPONSE + ", received: " + line);
         }    
     }
 }

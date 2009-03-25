@@ -32,13 +32,15 @@ public class WebTest {
     
     public static void main(String[] args) {
         stat.addDescription("Unit test for 4703023");
-        WebTest webTest = new WebTest(args);
+
         try {
-            webTest.doTest();
+            new WebTest(args).doTest();
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             stat.addStatus(TEST_NAME, stat.FAIL);
             ex.printStackTrace();
         }
+
 	stat.printSummary();
     }
 
@@ -51,21 +53,16 @@ public class WebTest {
         conn.connect();
         int responseCode = conn.getResponseCode();
         if (responseCode != 200) { 
-            System.err.println("Wrong response code. Expected: 200"
-                               + ", received: " + responseCode);
-            stat.addStatus(TEST_NAME, stat.FAIL);
-        } else {
-            InputStream is = conn.getInputStream();
-            BufferedReader input = new BufferedReader(new InputStreamReader(is));
-            String line = input.readLine();
-            if (!EXPECTED_RESPONSE.equals(line)) {
-                System.err.println("Wrong response. Expected: "
-                                   + EXPECTED_RESPONSE
-                                   + ", received: " + line);
-                stat.addStatus(TEST_NAME, stat.FAIL);
-            } else {
-                stat.addStatus(TEST_NAME, stat.PASS);
-            }
+            throw new Exception("Wrong response code. Expected: 200" +
+                                ", received: " + responseCode);
+        }
+
+        InputStream is = conn.getInputStream();
+        BufferedReader input = new BufferedReader(new InputStreamReader(is));
+        String line = input.readLine();
+        if (!EXPECTED_RESPONSE.equals(line)) {
+            throw new Exception("Wrong response. Expected: " +
+                EXPECTED_RESPONSE + ", received: " + line);
         }
     }
 

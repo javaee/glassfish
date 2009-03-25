@@ -34,23 +34,20 @@ public class WebTest {
     
     public static void main(String[] args) {
         stat.addDescription("Unit test for 6347215");
-        WebTest webTest = new WebTest(args);
-        webTest.doTest();
-        stat.printSummary(TEST_NAME);
-    }
 
-    public void doTest() {
-     
-        try { 
-            testRemoteAddress();
+        try {
+            new WebTest(args).doTest();
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             System.out.println(TEST_NAME + " test failed");
             stat.addStatus(TEST_NAME, stat.FAIL);
             ex.printStackTrace();
         }
+
+        stat.printSummary(TEST_NAME);
     }
 
-    private void testRemoteAddress() throws Exception {
+    private void doTest() throws Exception {
          
         Socket sock = new Socket(host, new Integer(port).intValue());
         OutputStream os = sock.getOutputStream();
@@ -70,13 +67,10 @@ public class WebTest {
             lastLine = line;
         }
 
-        if (EXPECTED_RESPONSE.equals(lastLine)) {
-            stat.addStatus(TEST_NAME, stat.PASS);
-        } else {
-            System.err.println("Wrong response. "
-                               + "Expected: " + EXPECTED_RESPONSE
-                               + ", received: " + lastLine);
-            stat.addStatus(TEST_NAME, stat.FAIL);
+        if (!EXPECTED_RESPONSE.equals(lastLine)) {
+            throw new Exception("Wrong response. " + "Expected: " +
+                                EXPECTED_RESPONSE + ", received: " +
+                                lastLine);
         }
     }
 }

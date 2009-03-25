@@ -28,21 +28,19 @@ public class WebTest {
     
     public static void main(String[] args) {
         stat.addDescription("Unit test for 6057385");
-        WebTest webTest = new WebTest(args);
-        webTest.doTest();
-        stat.printSummary(TEST_NAME);
-    }
 
-    public void doTest() {     
-        try { 
-            invokeJsp();
+        try {
+            new WebTest(args).doTest();
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             stat.addStatus(TEST_NAME, stat.FAIL);
             ex.printStackTrace();
         }
+
+        stat.printSummary(TEST_NAME);
     }
 
-    public void invokeJsp() throws Exception {
+    public void doTest() throws Exception {
      
         String url = "http://" + host + ":" + port + contextRoot
                     + "/TestServlet?param1=value1&param2=value2&param3=value3";
@@ -51,20 +49,15 @@ public class WebTest {
 
         int code = conn.getResponseCode();
         if (code != 200) {
-            System.err.println("Unexpected return code: " + code);
-            stat.addStatus(TEST_NAME, stat.FAIL);
-        } else {
-            InputStream is = conn.getInputStream();
-            BufferedReader input = new BufferedReader(new InputStreamReader(is));
-            String line = input.readLine();
-            if (!EXPECTED_RESPONSE.equals(line)) {
-                System.err.println("Wrong response. "
-                                   + "Expected: " + EXPECTED_RESPONSE
-                                   + ", received: " + line);
-                stat.addStatus(TEST_NAME, stat.FAIL);
-            } else {
-                stat.addStatus(TEST_NAME, stat.PASS);
-            }
+            throw new Exception("Unexpected return code: " + code);
+        } 
+
+        InputStream is = conn.getInputStream();
+        BufferedReader input = new BufferedReader(new InputStreamReader(is));
+        String line = input.readLine();
+        if (!EXPECTED_RESPONSE.equals(line)) {
+            throw new Exception("Wrong response. " + "Expected: " +
+                                EXPECTED_RESPONSE + ", received: " + line);
         }    
     }
 }
