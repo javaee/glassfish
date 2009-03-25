@@ -130,7 +130,11 @@
             <artifactId>appclient-server-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+        <dependency>
+            <groupId>org.glassfish.security</groupId>
+            <artifactId>appclient.security</artifactId>
+            <version>${project.version}</version>
+        </dependency> 
     </dependencies>
 
     <profiles>
