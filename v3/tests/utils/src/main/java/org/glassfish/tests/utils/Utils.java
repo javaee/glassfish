@@ -37,6 +37,7 @@
 package org.glassfish.tests.utils;
 
 import com.sun.enterprise.module.bootstrap.Populator;
+import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.single.StaticModulesRegistry;
 import com.sun.hk2.component.Holder;
@@ -52,6 +53,7 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.logging.Logger;
 import java.io.IOException;
+import java.io.File;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -112,7 +114,13 @@ public class Utils {
 
     public static Habitat getNewHabitat() {
 
+        File dir = new File(System.getProperty("java.io.tmpdir"));       
         ModulesRegistry registry = new StaticModulesRegistry(Utils.class.getClassLoader());
-        return  registry.createHabitat("default");
+
+        Habitat habitat = registry.createHabitat("default");
+        StartupContext startupContext = new StartupContext(dir, new String[0]);
+        habitat.add(new ExistingSingletonInhabitant(startupContext));
+
+        return  habitat;
     }
 }

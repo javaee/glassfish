@@ -39,7 +39,6 @@ import com.sun.enterprise.module.bootstrap.StartupContext;
 public class EventsTest extends ConfigApiTest {
 
     static Habitat habitat;
-    static File dir;
     static File application;
     static List<EventListener.Event> allEvents = new ArrayList<EventListener.Event>();
     static private EventListener listener = new EventListener() {
@@ -77,25 +76,19 @@ public class EventsTest extends ConfigApiTest {
             return;
         }
         habitat  = super.getHabitat();
-        habitat.addIndex(new ExistingSingletonInhabitant(habitat.getComponent(Server.class, "server")),
+        habitat.addIndex(new ExistingSingletonInhabitant<Server>(habitat.getComponent(Server.class, "server")),
                      Server.class.getName(), ServerEnvironment.DEFAULT_INSTANCE_NAME);
 
         try {
-            dir = File.createTempFile("glassfish", "kerneltests");
             application = File.createTempFile("kerneltest", "tmp");
         } catch (IOException e) {
             e.printStackTrace();
             throw e;
 
         }
-        dir.delete();
-        dir.mkdirs();
 
         application.delete();
         application.mkdirs();
-
-        StartupContext startupContext = new StartupContext(dir, new String[0]);
-        habitat.add(new ExistingSingletonInhabitant(startupContext));        
 
         Events events = habitat.getByContract(Events.class);
         events.register(listener);
@@ -103,7 +96,6 @@ public class EventsTest extends ConfigApiTest {
 
     @AfterClass
     public static void tearDown() {
-       dir.delete();
        application.delete();
 
     }
