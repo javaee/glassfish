@@ -91,6 +91,7 @@
 	<module>glassfish-orb-iiop</module>
 	<module>metro</module>	
 	<module>glassfish-appclient</module>
+	<module>glassfish-jms</module>
 	<module>glassfish-scripting</module>
 	<module>javadb</module>
 	<module>jersey</module>	
