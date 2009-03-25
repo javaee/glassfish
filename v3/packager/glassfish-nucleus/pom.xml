@@ -72,7 +72,13 @@
         <dependency>
            <groupId>com.sun.enterprise</groupId>
            <artifactId>osgi-adapter</artifactId>
-   	</dependency>
+       </dependency>
+       <dependency>
+           <groupId>org.glassfish.osgi-platforms</groupId>
+           <artifactId>equinox</artifactId>
+           <version>${project.version}</version>
+           <type>distribution-fragment</type>
+       </dependency>
         <dependency>
            <groupId>org.glassfish.core</groupId>
            <artifactId>api-exporter</artifactId>

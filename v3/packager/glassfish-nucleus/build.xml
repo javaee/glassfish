@@ -38,6 +38,10 @@ own identifying information: Portions Copyright [yyyy]
 	<unzip src="${docs.zip}" dest="target/stage/${install.dir.name}">
 	</unzip>
 
+	<resolveArtifact artifactId="equinox" property="equinox.zip"/>
+       
+	<unzip src="${equinox.zip}" dest="target/stage/${install.dir.name}">
+	</unzip>
 
 	<copy todir="target/stage/${install.dir.name}/bin">
 		<fileset dir="src/main/resources/bin"/>
