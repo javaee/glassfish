@@ -46,8 +46,9 @@ import org.jvnet.hk2.component.Habitat;
 @Service(name="com.sun.enterprise.security.SecurityContainer")
 public class SecurityContainer implements Container, PostConstruct{
 
-//    @Inject 
-//    private PolicyLoader policyLoader;
+    @Inject 
+    private PolicyLoader policyLoader;
+    
     @Inject
     private ServerContext serverContext;
 
@@ -95,7 +96,6 @@ public class SecurityContainer implements Container, PostConstruct{
             ClassLoader tcc = hierarchy.getCommonClassLoader();
             Thread.currentThread().setContextClassLoader(tcc);
             
-            PolicyLoader policyLoader = habitat.getComponent(PolicyLoader.class);
             policyLoader.loadPolicy();
             
             WebSecurityManagerFactory wsmf =habitat.getComponent(WebSecurityManagerFactory.class);

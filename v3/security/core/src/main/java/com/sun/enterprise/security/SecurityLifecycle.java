@@ -84,8 +84,8 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
     //@Inject 
     //private RealmConfig realmConfig;
     
-//    @Inject 
-//    private PolicyLoader policyLoader;
+    @Inject 
+    private PolicyLoader policyLoader;
     
     @Inject
     private SecurityServicesUtil secServUtil;
@@ -158,15 +158,14 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
             //registerPolicyHandlers();
             //V3:Commented PolicyLoader policyLoader = PolicyLoader.getInstance();
             //TODO:V3 check if the above singleton was a better way
-//            assert(policyLoader != null);
-            //policyLoader.loadPolicy();
+            // assert(policyLoader != null);
+            policyLoader.loadPolicy();
             // create realms rather than creating RemoteObject RealmManager
             // which will init ORB prematurely
             createRealms();
             // start the audit mechanism
             secServUtil.getAuditManager().loadAuditModules();
             
-
             // initRoleMapperFactory is in J2EEServer.java and not moved to here
             // this is because a DummyRoleMapperFactory is register due
             // to invocation of ConnectorRuntime.createActiveResourceAdapter

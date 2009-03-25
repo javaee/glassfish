@@ -66,7 +66,7 @@ import com.sun.enterprise.security.CachedPermission;
 import com.sun.enterprise.security.CachedPermissionImpl;
 import com.sun.enterprise.security.PermissionCache;
 import com.sun.enterprise.security.PermissionCacheFactory;
-import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.security.SecurityUtil;
 import java.util.logging.*;
 
 import com.sun.logging.LogDomains;
@@ -74,6 +74,7 @@ import com.sun.ejb.EjbInvocation;
 import com.sun.ejb.Container;
 
 import com.sun.enterprise.security.SecurityServicesUtil;
+import com.sun.enterprise.security.SecurityUtil;
 import java.security.*;
 
 import org.glassfish.api.invocation.ComponentInvocation;
@@ -258,17 +259,17 @@ public final class EJBSecurityManager
     }
 
     public static String getContextID(EjbDescriptor ejbDesc) {
-        return getContextID(ejbDesc.getEjbBundleDescriptor());
+        return SecurityUtil.getContextID(ejbDesc.getEjbBundleDescriptor());
     }
 
-    public static String getContextID(EjbBundleDescriptor ejbBundleDesc) {
-        String cid = null;
-        if (ejbBundleDesc != null) {
-            cid = ejbBundleDesc.getApplication().getRegistrationName() +
-                    '/' + ejbBundleDesc.getUniqueFriendlyId();
-        }
-        return cid;
-    }
+//    public static String getContextID(EjbBundleDescriptor ejbBundleDesc) {
+//        String cid = null;
+//        if (ejbBundleDesc != null) {
+//            cid = ejbBundleDesc.getApplication().getRegistrationName() +
+//                    '/' + ejbBundleDesc.getUniqueFriendlyId();
+//        }
+//        return cid;
+//    }
 
 
     private void initialize() throws Exception {

@@ -32,7 +32,6 @@ import com.sun.ejb.Container;
 import com.sun.ejb.ContainerFactory;
 import com.sun.ejb.containers.AbstractSingletonContainer;
 import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.security.PolicyLoader;
 import com.sun.enterprise.security.SecurityUtil;
 import org.glassfish.ejb.security.application.EJBSecurityManager;
 import org.glassfish.ejb.security.factory.EJBSecurityManagerFactory;
@@ -84,8 +83,6 @@ public class EjbApplication
 
     private EJBSecurityManagerFactory ejbSMF;
      
-    private PolicyLoader policyLoader;
-
     private ContainerFactory ejbContainerFactory;
 
     private SingletonLifeCycleManager singletonLCM;
@@ -99,7 +96,7 @@ public class EjbApplication
 
     public EjbApplication(
             Collection<EjbDescriptor> bundleDesc, DeploymentContext dc,
-            ClassLoader cl, Habitat habitat, PolicyLoader policyLoader, 
+            ClassLoader cl, Habitat habitat, 
             EJBSecurityManagerFactory ejbSecMgrFactory) {
         this.ejbs = bundleDesc;
         this.ejbAppClassLoader = cl;
@@ -107,7 +104,6 @@ public class EjbApplication
         this.dc = dc;
         this.habitat = habitat;
         this.ejbContainerFactory = habitat.getByContract(ContainerFactory.class);
-        this.policyLoader = policyLoader;
         this.ejbSMF = ejbSecMgrFactory;
     }
     
@@ -173,7 +169,7 @@ public class EjbApplication
         singletonLCM = new SingletonLifeCycleManager();
 
         try {
-            policyLoader.loadPolicy();
+            
             String moduleName = null;
         
             for (EjbDescriptor desc : ejbs) {
@@ -183,10 +179,8 @@ public class EjbApplication
                 // Initialize each ejb container (setup component environment, register JNDI objects, etc.)
                 // Any instance instantiation , timer creation/restoration, message inflow is delayed until
                 // start phase.
-
+                // create and register the security manager with the factory
                 ejbSM = ejbSMF.createManager(desc, true);
-                moduleName = ejbSM.getContextID(desc);
-
                 Container container = ejbContainerFactory.createContainer(desc, ejbAppClassLoader,
                         ejbSM, dc);
                 containers.add(container);
@@ -199,8 +193,6 @@ public class EjbApplication
                 }
 
             }
-
-            generatePolicy(moduleName);
 
         } catch(Throwable t) {
             abortInitializationAfterException();
@@ -366,16 +358,4 @@ public class EjbApplication
             }
         }
     }
-
-    private void generatePolicy(String moduleName) {
-        try {
-            SecurityUtil.generatePolicyFile(moduleName);
-        } catch (Exception se) {
-            String msg = "Error in generating security policy for " + moduleName;
-            throw new DeploymentException(msg, se);
-        }
-    }
-
-
-
 }

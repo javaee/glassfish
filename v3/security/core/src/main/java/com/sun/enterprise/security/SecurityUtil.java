@@ -36,16 +36,15 @@
 package com.sun.enterprise.security;
 
 import java.security.*;
-import java.lang.reflect.*;
 
 import javax.security.jacc.*;
 //import com.sun.ejb.Invocation; 
 import com.sun.enterprise.security.util.IASSecurityException;
-import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.logging.*;
 import java.util.logging.*;
-import javax.security.auth.callback.CallbackHandler;
+import com.sun.enterprise.deployment.EjbBundleDescriptor;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
 /** 
   * This utility class encloses all the calls to a ejb method
   * in a specified subject
@@ -202,21 +201,17 @@ public class SecurityUtil{
      *  throw an exception.
      */
     public static void generatePolicyFile(String name) throws IASSecurityException {
-
 	assert name != null;
-
 	if (name == null) {
 	    throw new IASSecurityException("Invalid Module Name");
-	}
-
+        }
+        
 	try {
 
 	    boolean inService = 
 		PolicyConfigurationFactory.getPolicyConfigurationFactory().
 		inService(name);
-
 	    if (!inService) {
-
 		// find the PolicyConfig using remove=false to ensure policy stmts 
 		// are retained.
 
@@ -229,18 +224,16 @@ public class SecurityUtil{
                     PolicyConfigurationFactory.getPolicyConfigurationFactory();
                 PolicyConfiguration pc =
 		    pcf.getPolicyConfiguration(name, false);
-                
 		pc.commit();
-
 		if (_logger.isLoggable(Level.FINE)){
 		    _logger.fine("JACC: committed policy for context: "+name);
 		}
 	    }
-     
+
 	    Policy.getPolicy().refresh();
 	} catch(java.lang.ClassNotFoundException cnfe){
-	    String msg = localStrings.getLocalString("enterprise.security.securityutil.classnotfound","Could not find PolicyConfigurationFactory class. Check javax.security.jacc.PolicyConfigurationFactory.provider property");
-	    throw new IASSecurityException(msg);
+	    //String msg = localStrings.getLocalString("enterprise.security.securityutil.classnotfound","Could not find PolicyConfigurationFactory class. Check javax.security.jacc.PolicyConfigurationFactory.provider property");
+	    throw new IASSecurityException(cnfe);
 	} catch(javax.security.jacc.PolicyContextException pce){
 	    throw new IASSecurityException(pce.toString());
 	}
@@ -256,29 +249,20 @@ public class SecurityUtil{
      * the corresponding policy context. The name shall not be null.
      */
     public static void removePolicy(String name) throws IASSecurityException {
-
 	assert name != null;
-
 	if (name == null) {
 	    throw new IASSecurityException("Invalid Module Name");
 	}
-
 	try {
-
 	    boolean wasInService = 
 		PolicyConfigurationFactory.getPolicyConfigurationFactory().
-		inService(name);
-	    
+		inService(name);	    
 	    // find the PolicyConfig and delete it.
-
 	    PolicyConfiguration pc = 
 		PolicyConfigurationFactory.getPolicyConfigurationFactory().
 		getPolicyConfiguration(name, false);
-
 	    pc.delete();
-
 	    // Only do refresh policy if the deleted context was in service
-
 	    if (wasInService) {
 		Policy.getPolicy().refresh();
 	    }
@@ -349,4 +333,21 @@ public class SecurityUtil{
         return rvalue;
     }
 
+    public static String getContextID(EjbBundleDescriptor ejbBundleDesc) {
+        String cid = null;
+        if (ejbBundleDesc != null) {
+            cid = ejbBundleDesc.getApplication().getRegistrationName() +
+                    '/' + ejbBundleDesc.getUniqueFriendlyId();
+        }
+        return cid;
+    }
+     public static String getContextID(WebBundleDescriptor wbd) {
+        String cid = null;
+        if (wbd != null ) {
+            String moduleId = wbd.getUniqueFriendlyId();
+            cid = wbd.getApplication().getRegistrationName() +
+                '/' + wbd.getUniqueFriendlyId();
+        }
+        return cid;
+    }
 }

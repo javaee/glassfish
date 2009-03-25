@@ -36,6 +36,7 @@
  */
 package com.sun.enterprise.security;
 
+import com.sun.enterprise.deployment.deploy.shared.Util;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.internal.deployment.GenericSniffer;
@@ -61,7 +62,7 @@ public class SecuritySniffer extends GenericSniffer {
     Habitat habitat;
     
     Inhabitant<SecurityLifecycle> lifecycle;
-
+    
     public SecuritySniffer() {
         super("security", "WEB-INF/web.xml", null);
     }
@@ -75,7 +76,8 @@ public class SecuritySniffer extends GenericSniffer {
      * @return true if this sniffer handles this application type
      */
     public boolean handles(ReadableArchive location, ClassLoader loader) {
-        return DeploymentUtils.isWebArchive(location);
+        return (DeploymentUtils.isWebArchive(location) || DeploymentUtils.isEAR(location) ||
+                isJar(location));
     }
 
     /**
@@ -120,5 +122,13 @@ public class SecuritySniffer extends GenericSniffer {
      */
     public String[] getContainersNames() {
         return containers;
+    }
+    
+    private boolean isJar(ReadableArchive location) {
+        if (Util.getURIName(location.getURI()).indexOf(".") == -1) {
+            //this is probably a jar
+            return true;
+        }
+        return false;
     }
 }

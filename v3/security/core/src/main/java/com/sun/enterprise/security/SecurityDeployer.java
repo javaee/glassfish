@@ -31,6 +31,7 @@ import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.deployment.common.SimpleDeployer;
 import org.glassfish.deployment.common.DummyApplication;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.security.util.IASSecurityException;
 import org.glassfish.internal.api.ServerContext;
@@ -40,16 +41,23 @@ import com.sun.logging.LogDomains;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.api.event.EventListener.Event;
+import org.glassfish.api.event.EventListener;
+import org.glassfish.api.event.EventTypes;
+import org.glassfish.api.event.Events;
+import org.glassfish.internal.deployment.Deployment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PostConstruct;
+
 
 /**
  * Security Deployer which generate and clean the security policies
  *
  */
 @Service
-public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApplication> {
+public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApplication> implements PostConstruct  {
 
     private static final Logger _logger = LogDomains.getLogger(SecurityDeployer.class, LogDomains.SECURITY_LOGGER);
     @Inject
@@ -60,12 +68,63 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
     
     @Inject 
     private PolicyLoader policyLoader;
+    
+    @Inject 
+    private WebSecurityManagerFactory wsmf;
+    
+    private EventListener listener = null;
+    
+    public static class AppDeployEventListener implements EventListener {
 
+        public void event(Event event) {
+            if (Deployment.APPLICATION_PREPARED.equals(event.type())) {
+                //this is an Application Prepare Completion Event
+                DeploymentContext dc = (DeploymentContext) event.hook();
+                OpsParams params = dc.getCommandParameters(OpsParams.class);
+                String appName = params.name();
+                Application app = dc.getModuleMetaData(Application.class);
+                Set<WebBundleDescriptor> webDesc = app.getWebBundleDescriptors();
+                Set<EjbBundleDescriptor> ejbDesc = app.getEjbBundleDescriptors();
+                try {
+                    // link with the ejb name                     
+                    String linkName = null;
+                    boolean lastInService = false;
+                    for (WebBundleDescriptor wbd : webDesc) {
+                        String name = SecurityUtil.getContextID(wbd);
+                        lastInService = SecurityUtil.linkPolicyFile(name, linkName, lastInService);
+                        linkName = name;
+                    }
+                    for (EjbBundleDescriptor ejbd : ejbDesc) {
+                        String name = SecurityUtil.getContextID(ejbd);
+                        //handle EJB's inside a WAR file
+                        if (!name.equals(linkName)) {
+                            lastInService = SecurityUtil.linkPolicyFile(name, linkName, lastInService);
+                            linkName = name;
+                        }
+                    }
+                    //generate policies
+                    for (WebBundleDescriptor wbd : webDesc) {
+                        String name = SecurityUtil.getContextID(wbd);
+                        SecurityUtil.generatePolicyFile(name);
+                    }
+                    for (EjbBundleDescriptor ejbd : ejbDesc) {
+                        String name = SecurityUtil.getContextID(ejbd);
+                        SecurityUtil.generatePolicyFile(name);
+                    }
+
+                } catch (IASSecurityException se) {
+                    String msg = "Error in generating security policy for " + appName;
+                    throw new DeploymentException(msg, se);
+                }
+            }
+        }
+    };
+   
     // creates security policy if needed
     @Override
     protected void generateArtifacts(DeploymentContext dc)
             throws DeploymentException {
-        generatePolicy(dc);
+         generatePolicy(dc);
     }
 
     // removes security policy if needed
@@ -74,7 +133,7 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
             throws DeploymentException {
         removePolicy(dc);
     }
-     
+
     @Override
     public DummyApplication load(SecurityContainer container, DeploymentContext context) {
         return new DummyApplication();
@@ -87,48 +146,48 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
     }
 
 
-    // TODO: need to add ear and standalone ejb module case
     protected void generatePolicy(DeploymentContext dc)
             throws DeploymentException {
         OpsParams params = dc.getCommandParameters(OpsParams.class);
         String appName = params.name();
         try {
-            policyLoader.loadPolicy();
+            //policyLoader.loadPolicy();
             Application app = dc.getModuleMetaData(Application.class);
-
             WebBundleDescriptor wbd = null;
-
             Set<WebBundleDescriptor> webDesc = app.getWebBundleDescriptors();
-            Iterator<WebBundleDescriptor> iter = webDesc.iterator();
-            //TODO V3: shouldn't i iterate over all WBD's ?.
-            if (iter.hasNext()) {
-                wbd =  iter.next();
+            if (webDesc == null) {
+                //we now register the security deployer for jar's and EAR's as well.
+                return;
             }
-
-            WebSecurityManagerFactory wsmf =habitat.getComponent(WebSecurityManagerFactory.class);
+            Iterator<WebBundleDescriptor> iter = webDesc.iterator();
+            if (!iter.hasNext()) {
+                //we now register the security deployer for jar's and EAR's as well.
+                return;
+            }
+            //TODO V3: shouldn't i iterate over all WBD's ?.
+            wbd =  iter.next();
+            
             // this should create all permissions
             wsmf.createManager(wbd,false,serverContext);
             // for an application the securityRoleMapper should already be
             // created. I am just creating the web permissions and handing
             // it to the security component.
-            String name = WebSecurityManager.getContextID(wbd);
-            SecurityUtil.generatePolicyFile(name);
+            //Policy File Generation is handled in the EventListener above
+            //String name = WebSecurityManager.getContextID(wbd);
+            //SecurityUtil.generatePolicyFile(name);
 
-        } catch (IASSecurityException se) {
+        } catch (Exception se) {
             String msg = "Error in generating security policy for " + appName;
             throw new DeploymentException(msg, se);
         }
     }
 
-    // TODO: need to add ear and standalone ejb module case
     private void removePolicy(DeploymentContext dc) throws
             DeploymentException {
         OpsParams params = dc.getCommandParameters(OpsParams.class);
         String appName = params.name();
 
         try {
-            WebSecurityManagerFactory wsmf =habitat.getComponent(WebSecurityManagerFactory.class);
-            // this should create all permissions
             String[] webcontexts = wsmf.getContextsForApp(appName, true);
             if (webcontexts != null) {
                   for (int i = 0; i < webcontexts.length; i++) {
@@ -196,10 +255,8 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
      * @param appName  the app name
      */
     private void cleanSecurityContext(String appName) {
-        WebSecurityManagerFactory wsmf =habitat.getComponent(WebSecurityManagerFactory.class);
 	ArrayList<WebSecurityManager> managers =
 	    wsmf.getManagersForApp(appName,true);
-
 	for (int i = 0; managers != null && i < managers.size(); i++) {
   
 	    try {
@@ -213,6 +270,19 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
 	}
     }
 
+    public static List<EventTypes> getDeploymentEvents() {
+        ArrayList<EventTypes> events = new ArrayList<EventTypes>();
+        events.add(Deployment.APPLICATION_PREPARED);
+        return events;
+    }
+
+    public void postConstruct() {
+        listener = new AppDeployEventListener();
+        Events events = habitat.getByContract(Events.class);
+        events.register(listener);
+    }
+    
+    
 //    private static void initRoleMapperFactory() //throws Exception
 //    {
 //        Object o = null;

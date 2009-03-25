@@ -49,7 +49,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.security.jacc.*;
 
 import java.util.logging.*; 
-import java.util.HashMap;
 
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
@@ -60,8 +59,6 @@ import com.sun.enterprise.security.PermissionCache;
 import com.sun.enterprise.security.PermissionCacheFactory;
 import com.sun.enterprise.security.SecurityContext;
 import com.sun.enterprise.security.audit.AuditManager;
-import com.sun.enterprise.security.authorize.PolicyContextHandlerImpl;
-//V3:Commented import com.sun.enterprise.web.VirtualServer;
 import com.sun.enterprise.deployment.runtime.common.SecurityRoleMapping;
 import org.glassfish.security.common.PrincipalImpl;
 import org.glassfish.security.common.Group;
@@ -72,7 +69,7 @@ import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 //import org.apache.catalina.Globals;
 import com.sun.enterprise.security.SecurityServicesUtil;
-import com.sun.enterprise.security.factory.SecurityManagerFactory;
+import com.sun.enterprise.security.SecurityUtil;
 import org.glassfish.internal.api.Globals;
 
 /**
@@ -192,13 +189,7 @@ public class WebSecurityManager  {
     // fix for CR 6155144
     // used to get the policy context id. Also used by the RealmAdapter
     public static String getContextID(WebBundleDescriptor wbd) {
-        String cid = null;
-        if (wbd != null ) {
-            String moduleId = wbd.getUniqueFriendlyId();
-            cid = wbd.getApplication().getRegistrationName() +
-                '/' + wbd.getUniqueFriendlyId();
-        }
-        return cid;
+        return SecurityUtil.getContextID(wbd);
    }
       
     private void initialise(String appName) throws PolicyContextException {
@@ -404,13 +395,9 @@ public class WebSecurityManager  {
     }    
 
     
-    // obtains PolicyConfigurationFactory once for class
-    // if not available in the habitat, delegate to JDK's system-wide factory
     private synchronized PolicyConfigurationFactory getPolicyFactory() 
 	throws PolicyContextException {
-        //using this might violate the JACC contract
-        //pcf = Globals.get(PolicyConfigurationFactory.class);
-	if (pcf == null) {
+    	if (pcf == null) {
             try {
 		pcf = PolicyConfigurationFactory.getPolicyConfigurationFactory();
 	    } catch(ClassNotFoundException cnfe){
@@ -554,10 +541,6 @@ public class WebSecurityManager  {
     
     public void destroy() throws PolicyContextException {
         boolean wasInService = getPolicyFactory().inService(CONTEXT_ID);
-//	if (pc == null) {
-//	    pc = getPolicyFactory().
-//		getPolicyConfiguration(CONTEXT_ID,false);
-//	}
         getPolicyFactory().getPolicyConfiguration(CONTEXT_ID,true);
         if (wasInService) {
             policy.refresh();
@@ -566,10 +549,7 @@ public class WebSecurityManager  {
             uncheckedPermissionCache = null;
         }
         factory.removeAppNameForContext(CONTEXT_ID);
-        // pc.delete() will be invoked during undeployment
-	//policyConfiguration.delete();
-        //WebSecurityManagerFactory.getInstance().removeWebSecurityManager(CONTEXT_ID);
-         wsmf.getManager(CONTEXT_ID,null,true);
+        wsmf.getManager(CONTEXT_ID,null,true);
     }
    
     private static String setPolicyContext(final String ctxID) throws Throwable {

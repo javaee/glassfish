@@ -113,7 +113,7 @@ public class EjbDeployer
 
         Collection<EjbDescriptor> ebds = (Collection<EjbDescriptor>) ejbBundle.getEjbs();
         EjbApplication ejbApp = new EjbApplication(ebds, dc, dc.getClassLoader(), habitat,
-                                                    policyLoader, ejbSecManagerFactory);
+                                                   ejbSecManagerFactory);
 
         ejbApp.loadContainers(dc);
         return ejbApp;
@@ -158,6 +158,13 @@ public class EjbDeployer
         }
 
         EjbBundleDescriptor bundle = dc.getModuleMetaData(EjbBundleDescriptor.class);
+        policyLoader.loadPolicy();
+        if (bundle != null) {
+            for (EjbDescriptor desc : bundle.getEjbs()) {
+                //create security manager for each EJB but don't register
+                this.ejbSecManagerFactory.createManager(desc, false);
+            }
+        }
         if (bundle == null || !bundle.containsCMPEntity()) {
             // bundle WAS null in a war file where we do not support CMPs
             return;
