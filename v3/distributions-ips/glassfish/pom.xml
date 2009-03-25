@@ -216,6 +216,15 @@
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
+
+        <!-- jms package -->
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+	    <artifactId>glassfish-jms</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+
 </dependencies>
 
 </project>
