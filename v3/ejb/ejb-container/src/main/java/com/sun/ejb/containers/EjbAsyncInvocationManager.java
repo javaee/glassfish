@@ -218,7 +218,8 @@ public class EjbAsyncInvocationManager
 
             // Since the task is done just return the result on this
             // internal remote request.
-
+            result = new RemoteAsyncResult();
+            
             result.resultException = task.getResultException();
             result.resultValue = task.getResultValue();
             result.asyncID = asyncTaskID;
