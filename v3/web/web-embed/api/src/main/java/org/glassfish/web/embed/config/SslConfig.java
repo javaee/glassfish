@@ -50,7 +50,7 @@ public class SslConfig {
     private String keyStore;
     private File trustStore;
     private String keyPassword;
-    private long timoutMilliSeconds;
+    private long timeoutMilliSeconds;
     private Set<SslType> algorithms;
 
     /**
@@ -89,7 +89,7 @@ public class SslConfig {
      * @param timeoutMilliSeconds
      */
     public void setHandshakeTimeout(long timeoutMilliSeconds) {
-        this.timoutMilliSeconds = timoutMilliSeconds;
+        this.timeoutMilliSeconds = timeoutMilliSeconds;
     }
 
     /**
@@ -129,7 +129,7 @@ public class SslConfig {
      * @return
      */
     public long getHandshakeTimeout() {
-        return this.timoutMilliSeconds;
+        return this.timeoutMilliSeconds;
     }
 
     /**
