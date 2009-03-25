@@ -98,7 +98,7 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
     private static final String LOGGING_MAX_HISTORY_FILES = "com.sun.enterprise.server.logging.max_history_files";
 
     // For now the mimimum rotation value is 0.5 MB.
-    private static final int MINIMUM_FILE_ROTATION_VALUE = 500000;
+    private static final int MINIMUM_FILE_ROTATION_VALUE = 5000000;
 
     // Initially the LogRotation will be off until the domain.xml value is read.
     private int limitForFileRotation = 0;
@@ -446,6 +446,7 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
                             fo.close( );
                         }
                         openFile(getLogFileName());
+                        absoluteFile = getLogFileName();                        
                         // This will ensure that the log rotation timer
                         // will be restarted if there is a value set
                         // for time based log rotation
@@ -487,7 +488,7 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
             // start fresh with a new file after renaming the old file.
             synchronized(rotationRequested) {
                 rotate( );
-                rotationRequested.set(true);
+                rotationRequested.set(false);
             }
         }
         if (record.getLevel().intValue()>=Level.WARNING.intValue()) {
@@ -514,7 +515,10 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
     }
 
     protected File getLogFileName() {
-        return new File(new File(serverContext.getInstallRoot(),LOGS_DIR),logFileName);
+        // do we really want to create the log dir at the top level?
+       // return new File(new File(serverContext.getInstallRoot(),LOGS_DIR),logFileName);
+        return new File(new File(env.getDomainRoot(),LOGS_DIR), logFileName);
+        
     }
 }
 
