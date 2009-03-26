@@ -53,7 +53,7 @@ import java.util.logging.Logger;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.message.config.AuthConfigFactory;
-import org.glassfish.appclient.client.acc.config.ClientContainer;
+import org.glassfish.appclient.client.acc.config.MessageSecurityConfig;
 import org.glassfish.appclient.client.acc.config.Security;
 import org.glassfish.appclient.client.acc.config.Ssl;
 import org.glassfish.appclient.client.acc.config.TargetServer;
@@ -76,11 +76,11 @@ public class AppClientSecurityInfoImpl implements AppClientSecurityInfo {
      private static final String DEFAULT_PARSER_CLASS =
         "com.sun.enterprise.security.appclient.ConfigXMLParser";
      
-    private ClientContainer clientContainer;
     private CallbackHandler callbackHandler;
     private CredentialType  appclientCredentialType;
     boolean isJWS;
-    
+    private List<TargetServer> targetServers;
+    private List<MessageSecurityConfig> msgSecConfigs;
     
     @Inject
     protected SSLUtils sslUtils;
@@ -91,7 +91,8 @@ public class AppClientSecurityInfoImpl implements AppClientSecurityInfo {
     
     
     public void initializeSecurity(
-            ClientContainer container, CallbackHandler handler, 
+            List<TargetServer> tServers,
+            List<MessageSecurityConfig> configs, CallbackHandler handler, 
             CredentialType credType, String username, 
             String password, boolean isJWS) {
        
@@ -99,7 +100,8 @@ public class AppClientSecurityInfoImpl implements AppClientSecurityInfo {
         this.isJWS = isJWS;
         this.appclientCredentialType = credType;
         this.callbackHandler = handler;
-        this.clientContainer = container;
+        this.targetServers = tServers;
+        this.msgSecConfigs = configs;
         
         SecurityManager secMgr = System.getSecurityManager();
         if (!isJWS && secMgr != null &&
@@ -138,9 +140,9 @@ public class AppClientSecurityInfoImpl implements AppClientSecurityInfo {
         //we have to make this workaround here.
         LoginContextDriver.AUDIT_MANAGER = secServUtil.getAuditManager();
 
-        secServUtil.initSecureSeed();
+        //secServUtil.initSecureSeed();
 
-        setSSLData(container);
+        setSSLData(this.getTargetServers());
         if (username != null || password != null) {
             UsernamePasswordStore.set(username, password);
         }
@@ -181,9 +183,8 @@ public class AppClientSecurityInfoImpl implements AppClientSecurityInfo {
         return appSSL;
     }
     
-    private void setSSLData(ClientContainer cc) {
+    private void setSSLData(List<TargetServer> tServers) {
         try {
-            List<TargetServer> tServers = cc.getTargetServer();
             // Set the SSL related properties for ORB
             TargetServer tServer = tServers.get(0);
             // TargetServer is required.
@@ -209,5 +210,13 @@ public class AppClientSecurityInfoImpl implements AppClientSecurityInfo {
 	} catch (Exception ex) {
 
         }
+    }
+
+    public List<TargetServer> getTargetServers() {
+        return targetServers;
+    }
+
+    public List<MessageSecurityConfig> getMsgSecConfigs() {
+        return msgSecConfigs;
     }
 }

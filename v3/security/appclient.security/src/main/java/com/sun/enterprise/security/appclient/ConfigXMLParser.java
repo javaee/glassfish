@@ -67,13 +67,13 @@ public class ConfigXMLParser implements ConfigParser {
     // configuration info
     private Map configMap = new HashMap();
     private Set<String> layersWithDefault = new HashSet<String>();
-    private ClientContainer container = null;
+    private List<MessageSecurityConfig> msgSecConfigs = null;
 
     ConfigXMLParser() throws IOException {
     }
 
-    public void initialize(ClientContainer container) throws IOException {
-            this.container = container;
+    public void initialize(List<MessageSecurityConfig> msgConfigs) throws IOException {
+            this.msgSecConfigs = msgConfigs;
             processClientConfigContext(configMap);
     }
 
@@ -82,7 +82,8 @@ public class ConfigXMLParser implements ConfigParser {
         // auth-layer
         String intercept = null;
 
-        List<MessageSecurityConfig> msgConfigs = container.getMessageSecurityConfig();
+        List<MessageSecurityConfig> msgConfigs = this.msgSecConfigs;
+        assert(msgConfigs != null);
         for (MessageSecurityConfig config : msgConfigs) {
             intercept = parseInterceptEntry(config, newConfig);
             List<ProviderConfig> pConfigs = config.getProviderConfig();

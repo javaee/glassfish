@@ -35,9 +35,11 @@
  */
 package com.sun.enterprise.security.appclient.integration;
 
+import java.util.List;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
-import org.glassfish.appclient.client.acc.config.ClientContainer;
+import org.glassfish.appclient.client.acc.config.MessageSecurityConfig;
+import org.glassfish.appclient.client.acc.config.TargetServer;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -64,7 +66,8 @@ public interface AppClientSecurityInfo {
      * @Param isJWS set to true if it is Java WebStart client
      */
     public void initializeSecurity(
-            ClientContainer container,
+            List<TargetServer> tServers,
+            List<MessageSecurityConfig> msgSecConfigs,
             CallbackHandler handler,
             CredentialType appclientCredType,
             String username, String password, 
