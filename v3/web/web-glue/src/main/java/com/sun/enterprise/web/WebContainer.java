@@ -121,6 +121,7 @@ import org.glassfish.api.event.Events;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.ServerContext;
+import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.web.admin.monitor.JspProbeProvider;
 import org.glassfish.web.admin.monitor.RequestProbeProvider;
 import org.glassfish.web.admin.monitor.ServletProbeProvider;
@@ -219,6 +220,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     @Inject
     ServerContext _serverContext;
+    
+    @Inject
+    public ApplicationRegistry appRegistry;
 
     @Inject
     ComponentEnvManager componentEnvManager;
@@ -1592,9 +1596,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     continue;
                 }
 
-                WebModuleConfig wmInfo = vs.getDefaultWebModule(domain,
-                        habitat.getComponent(
-                        WebArchivist.class) );
+                WebModuleConfig wmInfo = vs.getDefaultWebModule(domain, 
+                        habitat.getComponent(WebArchivist.class), 
+                        appRegistry);
                 if (wmInfo != null) {
                     defaultPath = wmInfo.getContextPath();
                     // Virtual server declares default-web-module
@@ -2067,7 +2071,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             defaultContextPath = "/" + defaultContextPath;
             wmInfo.getDescriptor().setContextRoot(defaultContextPath);
         }
-
+        
         Connector[] connectors = _embedded.findConnectors();
         for (int i=0; i<connectors.length; i++) {
             PECoyoteConnector conn = (PECoyoteConnector) connectors[i];
@@ -3040,8 +3044,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
          * has already been deployed at the root context, we don't have
          * to do anything.
          */
-        WebModuleConfig wmInfo = virtualServer.getDefaultWebModule(domain,
-                            habitat.getComponent(WebArchivist.class) );
+        WebModuleConfig wmInfo = virtualServer.getDefaultWebModule(domain, 
+                        habitat.getComponent(WebArchivist.class), 
+                        appRegistry);
         if ((wmInfo != null) && (wmInfo.getContextPath() != null) &&
                 !"".equals(wmInfo.getContextPath()) &&
                 !"/".equals(wmInfo.getContextPath())) {
@@ -3317,8 +3322,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     // and if so, configure the http listener's mapper with this
                     // information
                     String defaultWebModulePath = vs.getDefaultContextPath(
-                            habitat.getComponent(Domain.class),
-                            habitat.getComponent(WebDeployer.class));
+                            domain, appRegistry);
                     if (defaultWebModulePath != null) {
                         try {
                             mapper.setDefaultContextPath(vs.getName(),

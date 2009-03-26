@@ -3,7 +3,7 @@
  * 
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
  * 
- * The contents of this file are subject to the terms of either the GNU
+ * The contents of this file are subject to the terms of either the GNU 
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License. You can obtain
@@ -69,7 +69,10 @@ import org.apache.catalina.deploy.ErrorPage;
 import org.apache.catalina.logger.FileLogger;
 import org.apache.catalina.valves.RemoteAddrValve;
 import org.apache.catalina.valves.RemoteHostValve;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.internal.api.Globals;
+import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.web.loader.WebappClassLoader;
 import org.glassfish.web.valve.GlassFishValve;
 import javax.servlet.http.Cookie;
@@ -527,21 +530,21 @@ public class VirtualServer extends StandardHost {
      *              if there was an error loading its deployment descriptors.
      */
     protected String getDefaultContextPath(Domain domain, 
-            WebDeployer webDeployer) {
-
+            ApplicationRegistry appRegistry) {
+        
         String contextRoot = null;
-
         String wmID = getDefaultWebModuleID();
+        
         if (wmID != null) {
             // Check if the default-web-module is part of a
             // j2ee-application
             Applications appsBean = domain.getApplications();
-            WebModuleConfig wmInfo = findWebModuleInJ2eeApp(appsBean, wmID);
+            WebModuleConfig wmInfo = findWebModuleInJ2eeApp(appsBean, wmID, 
+                                                            appRegistry);
             if (wmInfo == null) {
                 contextRoot = ConfigBeansUtilities.getContextRoot(wmID);
             } else {
-                WebModule wm = wmInfo.getBean();
-                contextRoot = wm.getContextRoot();
+                contextRoot = wmInfo.getContextPath();
             }
 
             if (contextRoot == null) {
@@ -556,21 +559,20 @@ public class VirtualServer extends StandardHost {
     
     
     protected WebModuleConfig getDefaultWebModule(Domain domain, 
-            WebArchivist webArchivist) {
-
-        String contextRoot = null;
+            WebArchivist webArchivist, ApplicationRegistry appRegistry) {
+        
         WebModuleConfig wmInfo = null;
-
-        String wmID = getDefaultWebModuleID();
+        
+        String wmID = getDefaultWebModuleID();        
         if (wmID != null) {
             // Check if the default-web-module is part of a
             // j2ee-application
             Applications appsBean = domain.getApplications();
-            wmInfo = findWebModuleInJ2eeApp(appsBean, wmID);        
+            wmInfo = findWebModuleInJ2eeApp(appsBean, wmID, appRegistry);        
             if (wmInfo == null) {
-                contextRoot = ConfigBeansUtilities.getContextRoot(wmID);
+                String contextRoot = ConfigBeansUtilities.getContextRoot(wmID);
                 String location = ConfigBeansUtilities.getLocation(wmID);
-                if ((contextRoot!=null) && (location != null)) {
+                if ((contextRoot != null) && (location != null)) {
                     File docroot = new File(location);
                     WebBundleDescriptor wbd = webArchivist.getValidatedDefaultBundleDescriptor();
                     wmInfo = new WebModuleConfig();
@@ -776,9 +778,10 @@ public class VirtualServer extends StandardHost {
      * within a J2EE application.
      */
     protected WebModuleConfig findWebModuleInJ2eeApp(Applications appsBean,
-                                                   String id) {
+            String id, ApplicationRegistry appRegistry) {
+        
         WebModuleConfig wmInfo = null;
-        /*
+        
         int length = id.length();
         // Check for ':' separator
         int separatorIndex = id.indexOf(Constants.NAME_SEPARATOR);
@@ -789,60 +792,51 @@ public class VirtualServer extends StandardHost {
         if (separatorIndex != -1) {
             String appID = id.substring(0, separatorIndex);
             String moduleID = id.substring(separatorIndex + 1);
-            
-            J2EeApplication j2eeApp = ConfigBeansUtilities.getModule(J2EeApplication.class, appsBean, appID);
-            
-            if ((j2eeApp != null) && Boolean.valueOf(j2eeApp.getEnabled())) {
-                String location = j2eeApp.getLocation();
-                String moduleDir = FileUtils.makeFriendlyFilename(moduleID);
+
+            com.sun.enterprise.config.serverbeans.Application appBean = 
+                appsBean.getModule(
+                com.sun.enterprise.config.serverbeans.Application.class, appID);
                 
-                ApplicationRegistry registry = com.sun.enterprise.v3.server.Globals.getGlobals().getDefaultHabitat().getComponent(ApplicationRegistry.class);
-                ApplicationInfo appInfo = registry.get(appID);
-                
+            if ((appBean != null) && Boolean.valueOf(appBean.getEnabled())) {
+                String location = appBean.getLocation();
+                String moduleDir = DeploymentUtils.getRelativeEmbeddedModulePath(
+                                                            location, moduleID); 
+                    
+                ApplicationInfo appInfo = appRegistry.get(appID);
+                Application app = null;
                 if (appInfo != null) {
-                    Application appDesc = null;
-                    for (EngineRef info : appInfo.getModuleInfos()) {
-                        if (info.getContainerInfo().getSniffer().getModuleType().equals("web")) {
-                            appDesc = (Application) info.getDescriptor();
-                        }
-                    }
-                    if (appDesc != null) {
-                        Set wbds = appDesc.getWebBundleDescriptors();
-                        WebBundleDescriptor wbd = null;
-                        for (Iterator itr = wbds.iterator(); itr.hasNext(); ) {
-                            wbd = (WebBundleDescriptor) itr.next();
-                            String webUri = wbd.getModuleDescriptor().getArchiveUri();
-                            if (moduleID.equals(webUri)) {
-                                StringBuffer dir = new StringBuffer(location);
-                                dir.append(File.separator);
-                                dir.append(moduleDir);
-                                WebModule wm = new WebModule();
-                                try {
-                                wm.setName(moduleID);
-                                wm.setContextRoot(wbd.getContextRoot());
-                                wm.setLocation(dir.toString());
-                                wm.setEnabled(Boolean.TRUE.toString());
-                                } catch (PropertyVetoException pve) {
-                                    // XXX
-                                }
-                                String vsList = getVirtualServers(j2eeApp.getName());
-                                wmInfo = new WebModuleConfig();
-                                wmInfo.setBean(wm);
-                                wmInfo.setDescriptor(wbd);
-//                                wmInfo.setParentLoader(appLoader);
-                                wmInfo.setVirtualServers(vsList);
-                                break;
-                            }
-                        }
-                    }
+                    app = appInfo.getMetaData(Application.class);
+                } else {
+                    // XXX ApplicaionInfo is NULL after restart
+                    Object[] params = { id, getID() };
+                    _logger.log(Level.SEVERE, "vs.defaultWebModuleDisabled",
+                            params);
+                    return wmInfo;
                 }
+
+                WebBundleDescriptor wbd = app.getWebBundleDescriptorByUri(moduleID);
+                String webUri = wbd.getModuleDescriptor().getArchiveUri();
+                String contextRoot = wbd.getModuleDescriptor().getContextRoot();
+                if (moduleID.equals(webUri)) {
+                    StringBuffer dir = new StringBuffer(location);
+                    dir.append(File.separator);
+                    dir.append(moduleDir);
+                    File docroot = new File(dir.toString());
+                    wmInfo = new WebModuleConfig();
+                    wbd.setName(moduleID);
+                    wbd.setContextRoot(contextRoot);
+                    wmInfo.setDescriptor(wbd);
+                    wmInfo.setLocation(docroot);
+                    wmInfo.setParentLoader(EmbeddedWebContainer.class.getClassLoader());
+                    wmInfo.setAppClassLoader(new WebappClassLoader(wmInfo.getParentLoader()));
+                }                         
             } else {
                 Object[] params = { id, getID() };
                 _logger.log(Level.SEVERE, "vs.defaultWebModuleDisabled",
                             params);
             }
         }
-         */
+         
         return wmInfo;
     }
     
