@@ -209,18 +209,18 @@
         <ant dir="servletSSLRequestAttributes" target="all"/>
         <ant dir="servletRequestURIMultipleSemicolons" target="all"/>
         <ant dir="sessionSetAttributeJavaxNamingContext" target="all"/>
-        <ant dir="sessionCookieConfig" target="all"/>
-        <ant dir="sessionCookieConfigDeclarative" target="all"/>
-        <ant dir="sessionCookieConfigProgrammatic" target="all"/>
-        <ant dir="sessionCookieCustomNameProgrammatic" target="all"/>
+        <ant dir="servlet-3.0/sessionCookieConfig" target="all"/>
+        <ant dir="servlet-3.0/sessionCookieConfigDeclarative" target="all"/>
+        <ant dir="servlet-3.0/sessionCookieConfigProgrammatic" target="all"/>
+        <ant dir="servlet-3.0/sessionCookieCustomNameProgrammatic" target="all"/>
         <ant dir="webServletAnnotation" target="all"/>
         <ant dir="webFilterAnnotation" target="all"/>
         <ant dir="webListenerAnnotation" target="all"/>
         <ant dir="xmlOverrideAnnotation" target="all"/>
         <ant dir="webFragment" target="all"/>
         <ant dir="multiWebFragments" target="all"/>
-        <ant dir="servletRequestResponseWrapperIsWrapperFor" target="all"/>
-        <ant dir="servletRequestDispatcherType" target="all"/>
+        <ant dir="servlet-3.0/servletRequestResponseWrapperIsWrapperFor" target="all"/>
+        <ant dir="servlet-3.0/servletRequestDispatcherType" target="all"/>
         <ant dir="servlet-3.0/asyncContextComplete" target="all"/>
         <ant dir="servlet-3.0/asyncContextDispatch" target="all"/>
         <ant dir="servlet-3.0/asyncListenerOnComplete" target="all"/>
