@@ -167,9 +167,9 @@
         <ant dir="distributableWebappEnforceSerializableSessionAttrs" target="all"/>
         <ant dir="forwardWithQueryString" target="all"/>
         <ant dir="servlet-3.0/servletContextAddServletAndFilterByClassName" target="all"/>
-        <ant dir="servletContextAddServletAndFilterByClass" target="all"/>
-        <ant dir="servletContextAddServletAndFilterByInstance" target="all"/>
-        <ant dir="servletContextCreateServletAndFilter" target="all"/>
+        <ant dir="servlet-3.0/servletContextAddServletAndFilterByClass" target="all"/>
+        <ant dir="servlet-3.0/servletContextAddServletAndFilterByInstance" target="all"/>
+        <ant dir="servlet-3.0/servletContextCreateServletAndFilter" target="all"/>
         <ant dir="servletContextAttributeEventAttributeRemoved" target="all"/>
         <ant dir="servletGetServerPort" target="all"/>
         <ant dir="servletAnnotationPreDestroy" target="all"/>
