@@ -137,7 +137,7 @@ public class WebServiceEjbEndpointRegistry implements WSEjbEndpointRegistry {
         //}
     }
 
-    public void unregisterEjbWebServiceEndpoint(String endpointAddressUri) {
+    public void unregisterEndpoint(String endpointAddressUri) {
 
         EjbRuntimeEndpointInfo endpoint = null;
 

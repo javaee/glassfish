@@ -45,11 +45,8 @@ import com.sun.ejb.codegen.ServiceInterfaceGenerator;
 import com.sun.ejb.spi.stats.StatelessSessionBeanStatsProvider;
 import com.sun.enterprise.config.serverbeans.EjbContainer;
 import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.EjbSessionDescriptor;
 import static com.sun.enterprise.deployment.LifecycleCallbackDescriptor.CallbackType;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.WebServicesDescriptor;
+import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.runtime.BeanCacheDescriptor;
 import com.sun.enterprise.deployment.runtime.BeanPoolDescriptor;
 import com.sun.enterprise.deployment.runtime.IASEjbExtraDescriptors;
@@ -130,7 +127,11 @@ public class StatelessSessionContainer
     // Information about a web service ejb endpoint.  Used as a conduit
     // between webservice runtime and ejb container.  Contains a Remote
     // servant used by jaxrpc to call web service business method.
-    //TODO private EjbRuntimeEndpointInfo webServiceEndpoint;
+    private WebServiceEndpoint webServiceEndpoint;
+
+    //The Webservices Ejb Endpoint Registry contract
+    // used to register and unregister ejb webservices endpoints
+    private WSEjbEndpointRegistry wsejbEndpointRegistry;
 
 
 	private boolean isPoolClosed = false;    
@@ -266,11 +267,11 @@ public class StatelessSessionContainer
             
             // An ejb can only be exposed through 1 web service endpoint
             Iterator iter = myEndpoints.iterator();
-            com.sun.enterprise.deployment.WebServiceEndpoint next = 
+            webServiceEndpoint =
  					(com.sun.enterprise.deployment.WebServiceEndpoint) iter.next();
 
             Class serviceEndpointIntfClass = 
-                    loader.loadClass(next.getServiceEndpointInterface());            
+                    loader.loadClass(webServiceEndpoint.getServiceEndpointInterface());
 
             if (!serviceEndpointIntfClass.isInterface()) {
                 ServiceInterfaceGenerator generator = new ServiceInterfaceGenerator(loader, ejbClass);
@@ -285,7 +286,7 @@ public class StatelessSessionContainer
             Class tieClass=null;
             
             WebServiceInvocationHandler invocationHandler =
-                    new WebServiceInvocationHandler(ejbClass, next, serviceEndpointIntfClass,
+                    new WebServiceInvocationHandler(ejbClass, webServiceEndpoint, serviceEndpointIntfClass,
                                                     ejbContainerUtilImpl,webServiceInvocationInfoMap);
             
             
@@ -295,8 +296,8 @@ public class StatelessSessionContainer
                     invocationHandler);
             
             // starting in 2.0, there is no more generated Ties
-            if (next.getTieClassName()!=null) {                
-                tieClass = loader.loadClass(next.getTieClassName());                
+            if (webServiceEndpoint.getTieClassName()!=null) {
+                tieClass = loader.loadClass(webServiceEndpoint.getTieClassName());
             }
 
             // Create a facade for container services to be used by web services runtime.
@@ -304,10 +305,10 @@ public class StatelessSessionContainer
                         new EjbEndpointFacadeImpl(this, ejbContainerUtilImpl);
 
 
-            WSEjbEndpointRegistry wsejbEndpointRegistry = Globals.getDefaultHabitat().getComponent(
+            wsejbEndpointRegistry = Globals.getDefaultHabitat().getComponent(
                     WSEjbEndpointRegistry.class);
             if (wsejbEndpointRegistry != null ) {
-                wsejbEndpointRegistry.registerEndpoint(next,endpointFacade,servant,tieClass);
+                wsejbEndpointRegistry.registerEndpoint(webServiceEndpoint,endpointFacade,servant,tieClass);
             } else {
                 throw new DeploymentException("EJB based Webservice endpoint is detected but there is" +
                         "no webservices module installed to handle it \n" );
@@ -719,22 +720,25 @@ public class StatelessSessionContainer
     protected void doConcreteContainerShutdown(boolean appBeingUndeployed) {
 
         try {
-            /*TODO
+
             if( isWebServiceEndpoint && (webServiceEndpoint != null) ) {
                 String endpointAddress = 
                     webServiceEndpoint.getEndpointAddressUri();
-                WebServiceEjbEndpointRegistry.getRegistry().
-                    unregisterEjbWebServiceEndpoint(endpointAddress);
+                if (wsejbEndpointRegistry != null) {
+                    wsejbEndpointRegistry.unregisterEndpoint(endpointAddress);
+                }
             }
 
-            EjbBundleDescriptor desc = ejbDescriptor.getEjbBundleDescriptor();
+            //TODO work with Kumar to expose the ClientPipeCloser as a contract
+            //then use over here
+            /*EjbBundleDescriptor desc = ejbDescriptor.getEjbBundleDescriptor();
             if (desc != null && desc.getServiceReferenceDescriptors()!= null) {
                 for (Object srd : desc.getServiceReferenceDescriptors()) {
                     ClientPipeCloser.getInstance()
                     .cleanupClientPipe((ServiceReferenceDescriptor)srd);
                 }
-            }
-            */
+            }*/
+
 
 
             if ( hasRemoteHomeView ) {
