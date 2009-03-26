@@ -38,7 +38,9 @@
         redirect("registration.jsf");
     }
 />
-<sun:page id="page1">
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.support.PageTitle}" >
+<!define name="content">
+
 <!beforeCreate
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
     setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
@@ -46,8 +48,6 @@
     getIssueQueryString(query=>$page{IssueQuery});
 />
 
-<sun:html id="html2">
-<sun:head id="propertyhead" title="$resource{i18n.support.PageTitle}">
     <sun:script url="/resource/js/adminjsf.js" />
     <sun:script>
 	// Should move this to JS to our adminjsf.js file
@@ -74,9 +74,7 @@
 	    }
 	</f:verbatim>
     </sun:script>
-</sun:head>
 
-<sun:body id="body3" onLoad="resizeColumns(); admingui.nav.refreshTree('form:tree:registration'); synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
 <sun:form id="propertyForm">
 
 <!-- Bread Crumbs -->
@@ -463,6 +461,5 @@
 </div> 
 <p>
 </f:verbatim>
-</sun:body>
-</sun:html>
-</sun:page>
+   </define>
+</composition>
