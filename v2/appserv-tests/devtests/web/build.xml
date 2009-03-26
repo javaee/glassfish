@@ -213,10 +213,10 @@
         <ant dir="servlet-3.0/sessionCookieConfigDeclarative" target="all"/>
         <ant dir="servlet-3.0/sessionCookieConfigProgrammatic" target="all"/>
         <ant dir="servlet-3.0/sessionCookieCustomNameProgrammatic" target="all"/>
-        <ant dir="webServletAnnotation" target="all"/>
-        <ant dir="webFilterAnnotation" target="all"/>
-        <ant dir="webListenerAnnotation" target="all"/>
-        <ant dir="xmlOverrideAnnotation" target="all"/>
+        <ant dir="servlet-3.0/webServletAnnotation" target="all"/>
+        <ant dir="servlet-3.0/webFilterAnnotation" target="all"/>
+        <ant dir="servlet-3.0/webListenerAnnotation" target="all"/>
+        <ant dir="servlet-3.0/xmlOverrideAnnotation" target="all"/>
         <ant dir="webFragment" target="all"/>
         <ant dir="multiWebFragments" target="all"/>
         <ant dir="servlet-3.0/servletRequestResponseWrapperIsWrapperFor" target="all"/>
