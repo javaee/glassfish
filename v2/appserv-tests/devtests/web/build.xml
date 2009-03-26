@@ -123,7 +123,7 @@
         <ant dir="contentlength" target="all"/>
         <ant dir="sessionDestroyed" target="all"/>
         <ant dir="cookieProperties" target="all"/>  
-        <ant dir="cookieHttpOnly" target="all"/>  
+        <ant dir="servlet-3.0/cookieHttpOnly" target="all"/>  
         <ant dir="defaultCharset" target="all"/>
         <ant dir="reuseSessionId" target="all"/>
         <ant dir="queryString" target="all"/>
