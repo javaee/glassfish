@@ -226,9 +226,9 @@
         <ant dir="asyncListenerOnComplete" target="all"/>
         <ant dir="asyncListenerOnTimeout" target="all"/>
         <!-- XXX temporary commented out due to issue 7387
-        <ant dir="asyncSupportedTrue" target="all"/>
-        <ant dir="asyncSupportedFalse" target="all"/>
-        <ant dir="asyncContextHasOriginalRequestAndResponse" target="all"/>
+        <ant dir="servlet-3.0/asyncSupportedTrue" target="all"/>
+        <ant dir="servlet-3.0/asyncSupportedFalse" target="all"/>
+        <ant dir="servlet-3.0/asyncContextHasOriginalRequestAndResponse" target="all"/>
         -->
     </target>
 
