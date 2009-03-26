@@ -217,8 +217,8 @@
         <ant dir="servlet-3.0/webFilterAnnotation" target="all"/>
         <ant dir="servlet-3.0/webListenerAnnotation" target="all"/>
         <ant dir="servlet-3.0/xmlOverrideAnnotation" target="all"/>
-        <ant dir="webFragment" target="all"/>
-        <ant dir="multiWebFragments" target="all"/>
+        <ant dir="servlet-3.0/webFragment" target="all"/>
+        <ant dir="servlet-3.0/multiWebFragments" target="all"/>
         <ant dir="servlet-3.0/servletRequestResponseWrapperIsWrapperFor" target="all"/>
         <ant dir="servlet-3.0/servletRequestDispatcherType" target="all"/>
         <ant dir="servlet-3.0/asyncContextComplete" target="all"/>
