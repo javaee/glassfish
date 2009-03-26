@@ -327,9 +327,7 @@
         <ant dir="contextValveSetRequestedSessionCookiePath" target="all"/>
         <ant dir="webdavCopyDelete" target="all"/>
         <ant dir="useBundledJsf" target="all"/>
-        <!-- Uncomment once IT 7246 has been fixed
         <ant dir="useBundledJsfWithTagCompilation" target="all"/>
-        -->
         <ant dir="embeddedAddServlet" target="all"/>
         <ant dir="largeCookieError" target="all"/>
     </target>
