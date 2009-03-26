@@ -107,7 +107,6 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
 
     protected String resourceSelectionStrategyClass;
 
-    //TODO V3 need to have a registry so as to delegate listener calls to *multiple* listeners.
     protected PoolLifeCycleListener poolLifeCycleListener;
 
     //Gateway used to control the concurrency within the round-trip of resource access.
@@ -135,7 +134,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
 
     private boolean selfManaged_;
 
-
+    
     public ConnectionPool(String poolName) throws PoolingException {
         this.name = poolName;
         setPoolConfiguration();
@@ -492,9 +491,10 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
                             if (spec.isXA() || poolTxHelper.isNonXAResourceAndFree(j2eetran, h)) {
                                 if (matchConnections) {
                                     if (!alloc.matchConnection(h)) {
-                                        if (poolLifeCycleListener != null) {
+                                        //TODO V3 : enable connectionNotMatched
+                                        /*if (poolLifeCycleListener != null) {
                                             poolLifeCycleListener.connectionNotMatched();
-                                        }
+                                        }*/
                                         continue;
                                     }
                                     if (h.hasConnectionErrorOccurred()) {
@@ -508,9 +508,10 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
                                         iter.remove();
                                         continue;
                                     }
-                                    if (poolLifeCycleListener != null) {
+                                    //TODO V3 : enabled matched counter here
+                                    /*if (poolLifeCycleListener != null) {
                                         poolLifeCycleListener.connectionMatched();
-                                    }
+                                    }*/
                                 }
                                 if (state.isFree())
                                     setResourceStateToBusy(h);
@@ -592,13 +593,14 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
         boolean matched = true;
         if (matchConnections) {
             matched = alloc.matchConnection(resource);
-            if (poolLifeCycleListener != null) {
+            //TODO V3 : enabled matched/unmatched
+            /*if (poolLifeCycleListener != null) {
                 if (matched) {
                     poolLifeCycleListener.connectionMatched();
                 } else {
                     poolLifeCycleListener.connectionNotMatched();
                 }
-            }
+            }*/
         }
         return matched;
     }
@@ -944,7 +946,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
         if (poolLifeCycleListener != null) {
             poolLifeCycleListener.decrementConnectionUsed(false, steadyPoolSize);
         }
-
+        
         if (maxConnectionUsage_ > 0) {
             performMaxConnectionUsageOperation(resourceHandle);
         }
@@ -1005,7 +1007,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
         if (poolLifeCycleListener != null) {
             poolLifeCycleListener.connectionValidationFailed(ds.getResourcesSize());
         }
-
+        
         emptyPool();
         try {
             createResources(allocator, steadyPoolSize);
@@ -1419,8 +1421,8 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
             stackTrace.append("\n");
             stackTrace.append(msg);
             stackTrace.append("\n");
-            //TODO V3 need a way to get poolCounters value
-            //stackTrace.append(poolCounters.toString());
+            //TODO V3 : change toString() to a more specific method name
+            poolLifeCycleListener.toString(stackTrace);
         }
     }
 

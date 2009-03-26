@@ -99,19 +99,24 @@ public class AssocWithThreadResourcePool extends ConnectionPool {
                             //potentially usable
                             localResource.remove();
                             ar.setAssociated(false);
-                            if(poolLifeCycleListener != null){
+                            //TODO V3 : enabled matched/unmatched.
+                            /*if(poolLifeCycleListener != null){
                                 poolLifeCycleListener.connectionNotMatched();
-                            }
+                            }*/
                             return null;
                         }
-                        if(poolLifeCycleListener != null){
+                        //TODO V3 : enable matched/unmatched
+                        /*if(poolLifeCycleListener != null){
                             poolLifeCycleListener.connectionMatched();
-                        }
+                        }*/
                     }
 
                     setResourceStateToBusy(ar);
                     if (maxConnectionUsage_ > 0) {
                         ar.incrementUsageCount();
+                    }
+                    if(poolLifeCycleListener != null) {
+                        poolLifeCycleListener.connectionUsed();
                     }
                     return ar;
                 }

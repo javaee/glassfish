@@ -36,84 +36,12 @@
 package com.sun.enterprise.resource.listener;
 
 /**
- * Pool Life cycle listener that can be implemented by listeners for pool monitoring
- *
+ * Pool Life cycle listener that can be implemented by listeners for getting
+ * events on the pool's lifecycle like creation/destruction.
+ * 
  * @author Jagadish Ramu
  */
-public interface PoolLifeCycleListener {
-
-    /**
-     * Print stack trace in server.log
-     * @param stackTrace
-     */
-    void toString(StringBuffer stackTrace);
-    
-    /**
-     * indicates that a connection is acquired by application
-     */
-    void connectionAcquired();
-
-    /**
-     * indicates that a connection request is server in the time
-     * @param timeTakenInMillis time taken to serve a connection
-     */
-    void connectionRequestServed(long timeTakenInMillis);
-
-    /**
-     * indicates that a connection is timed-out
-     */
-    void connectionTimedOut();
-
-    /**
-     * indicates that a connection under test does not match the current request
-     */
-    void connectionNotMatched();
-
-    /**
-     * indicates that a connection under test matches the current request
-     */
-    void connectionMatched();
-
-    /**
-     * indicates that a connection is being used
-     */
-    void connectionUsed();
-
-    /**
-     * indicates that a connection is destroyed
-     */
-    void connectionDestroyed();
-
-    /**
-     * indicates that a connection is released
-     */
-    void connectionReleased();
-
-    /**
-     * indicates that a new connection is created
-     */
-    void connectionCreated();
-
-    /**
-     * indicates that a potential connection leak happened
-     */
-    void foundPotentialConnectionLeak();
-
-    /**
-     * indicates that a number of connections have failed validation
-     * @param count number of connections
-     */
-    void connectionValidationFailed(int count);
-
-    /**
-     * indicates the number of connections freed to pool
-     * @param count number of connections
-     */
-    void connectionsFreed(int count);
-
-    //TODO V3 interface mismatch.
-    void decrementConnectionUsed(boolean beingDestroyed, int steadyPoolSize);
-
-    //TODO V3 interface mismatch.
-    void decrementFreeConnectionsSize(int steadyPoolSize);    
+public interface PoolLifeCycle {
+    void poolCreated(String poolName);
+    void poolDestroyed(String poolName);
 }

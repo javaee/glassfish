@@ -47,6 +47,9 @@ public class TelemetryService implements Startup, PostConstruct, ConfigListener 
             if (!config.getHttpService().equals("OFF")) {
                 onLevelChange("http-service", config.getHttpService());
             }
+            if (!config.getJdbcConnectionPool().equals("OFF")) {
+                onLevelChange("jdbc-connection-pool", config.getJdbcConnectionPool());
+            }
         }
     }
 

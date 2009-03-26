@@ -59,6 +59,8 @@ import com.sun.corba.se.impl.orbutil.threadpool.ThreadPoolManagerImpl;
 import com.sun.corba.se.spi.orbutil.threadpool.ThreadPoolManager;
 import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
 import com.sun.corba.se.spi.orbutil.threadpool.NoSuchThreadPoolException;
+import com.sun.enterprise.resource.pool.monitor.ConnectionPoolProbeProviderUtil;
+import com.sun.enterprise.resource.pool.monitor.JdbcConnPoolProbeProvider;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
@@ -161,6 +163,9 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     @Inject
     private Habitat habitat;
 
+    @Inject
+    private ConnectionPoolProbeProviderUtil providerUtil;
+    
     private final Object getTimerLock = new Object();
     private Timer timer;
 
@@ -178,7 +183,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
         }
         return _runtime;
     }
-
+    
     /**
      * Private constructor. It is private as it follows singleton pattern.
      */
@@ -186,7 +191,14 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     public ConnectorRuntime() {
         _runtime = this;
     }
-
+    
+    /**
+     * Get probe provider for jdbc connection pool related events
+     * @return JdbcConnPoolProbeProvider
+     */
+    public JdbcConnPoolProbeProvider getJdbcConnPoolProvider() {
+        return providerUtil.getJdbcConnPoolProvider();
+    }
 
     /**
      * Initializes the execution environment. If the execution environment
@@ -504,6 +516,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * will be placed into commission by the subsystem.
      */
     public void postConstruct() {
+        providerUtil.createProbeProviders();
         ccPoolAdmService = (ConnectorConnectionPoolAdminServiceImpl)
                 ConnectorAdminServicesFactory.getService(ConnectorConstants.CCP);
         connectorResourceAdmService = (ConnectorResourceAdminServiceImpl)

@@ -62,6 +62,15 @@ public class CounterImpl extends AbstractTreeNode implements Counter {
         this.lastSampleTime.set(getSampleTime ());
     }
 
+    //automatically add the increment to cnt
+    public void  increment(long delta) {
+        long cnt = this.count.addAndGet(delta);
+        if(cnt > max) {
+            max = cnt;
+        }
+        this.lastSampleTime.set(getSampleTime());
+    }
+    
     public void decrement() {
         long cnt = this.count.decrementAndGet();
         if (cnt < min) {

@@ -27,4 +27,5 @@ public interface Counter extends TreeNode, CountStatistic{
 
     public void setReset(boolean reset);
     
+    public void increment(long delta);
 }

@@ -44,6 +44,7 @@ import com.sun.enterprise.resource.ClientSecurityInfo;
 import com.sun.enterprise.resource.ResourceHandle;
 import com.sun.enterprise.resource.ResourceSpec;
 import com.sun.enterprise.resource.allocator.ResourceAllocator;
+import com.sun.enterprise.resource.listener.PoolLifeCycle;
 import org.jvnet.hk2.annotations.Contract;
 
 import javax.resource.ResourceException;
@@ -148,5 +149,8 @@ public interface PoolManager extends TransactedPoolManager {
 
     public void lazyEnlist(ManagedConnection mc) throws ResourceException;
 
+    public void registerPoolLifeCycleListener(PoolLifeCycle poolListener);
+    
+    public void unregisterPoolLifeCycleListener();
 }
 

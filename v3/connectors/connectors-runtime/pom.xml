@@ -37,6 +37,18 @@
     </build>
     <dependencies>
 
+	<dependency>
+            <groupId>org.glassfish.flashlight</groupId>
+            <artifactId>flashlight-framework</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+	
+	<dependency>
+            <groupId>org.glassfish.admin</groupId>
+            <artifactId>monitoring-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.resource</artifactId>

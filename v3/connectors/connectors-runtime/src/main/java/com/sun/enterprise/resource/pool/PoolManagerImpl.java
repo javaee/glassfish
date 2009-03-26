@@ -55,6 +55,7 @@ import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.ComponentInvocationHandler;
 import com.sun.enterprise.connectors.ConnectorConnectionPool;
 
+import com.sun.enterprise.resource.listener.PoolLifeCycle;
 import javax.transaction.Transaction;
 import javax.transaction.Synchronization;
 import javax.transaction.xa.XAResource;
@@ -90,6 +91,7 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
     static {
         _logger = LogDomains.getLogger(PoolManagerImpl.class, LogDomains.RSR_LOGGER);
     }
+    private PoolLifeCycle listener;
 
     public PoolManagerImpl() {
         this.poolTable = new ConcurrentHashMap<String, ResourcePool>();
@@ -103,6 +105,13 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
                                           PoolType pt) throws PoolingException {
         //Create and initialise the connection pool
         createAndInitPool(poolName, pt);
+        if (listener != null) {
+            try {
+               listener.poolCreated(poolName);
+            } catch (Exception ex) {
+	        _logger.log(Level.FINE, "Exception thrown on pool listener");
+            }
+        }        
     }
 
     /**
@@ -333,6 +342,14 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
         rm.registerResource(h);
     }
 
+    public void registerPoolLifeCycleListener(PoolLifeCycle poolListener) {
+        listener = poolListener;
+    }
+
+    public void unregisterPoolLifeCycleListener() {
+        listener = null;
+    }
+    
     public void unregisterResource(com.sun.appserv.connectors.internal.api.ResourceHandle resource, int xaresFlag) {
         ResourceHandle h = (ResourceHandle)resource;
         ResourceManager rm = getResourceManager(h.getResourceSpec());
@@ -447,6 +464,8 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
 
             }
         }
+        if (listener != null)
+            listener.poolDestroyed(poolName);        
     }
 
     public ResourceReferenceDescriptor getResourceReference(String jndiName) {

@@ -59,10 +59,6 @@ public class UnpooledResource extends ConnectionPool{
     public UnpooledResource(String poolName) throws PoolingException {
         super(poolName);
 
-        //No monitoring data for this pool as pooling is switched off
-        //TODO V3
-        // monitoringEnabled = false;
-
         //No pool is being maintained, hence no pool cleanup is needed
         //in case of failure
         failAllConnections = false;

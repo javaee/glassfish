@@ -147,7 +147,6 @@ public class ConnectionLeakDetector {
         synchronized (connectionLeakLock) {
             if (connectionLeakThreadStackHashMap.containsKey(resourceHandle)) {
                 StackTraceElement[] threadStack = connectionLeakThreadStackHashMap.remove(resourceHandle);
-                printConnectionLeakTrace(threadStack);
                 connectionLeakTimerTaskHashMap.remove(resourceHandle);
                 if (connectionLeakReclaim) {
                     for (ConnectionLeakListener listener : listeners) {
@@ -157,6 +156,7 @@ public class ConnectionLeakDetector {
                 for (ConnectionLeakListener listener : listeners) {
                     listener.potentialConnectionLeakFound();
                 }
+                printConnectionLeakTrace(threadStack);
             }
         }
     }
