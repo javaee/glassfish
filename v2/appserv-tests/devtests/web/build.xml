@@ -166,7 +166,7 @@
         <ant dir="sessionSetMaxInactiveIntervalExpire" target="all"/>
         <ant dir="distributableWebappEnforceSerializableSessionAttrs" target="all"/>
         <ant dir="forwardWithQueryString" target="all"/>
-        <ant dir="servletContextAddServletAndFilterByClassName" target="all"/>
+        <ant dir="servlet-3.0/servletContextAddServletAndFilterByClassName" target="all"/>
         <ant dir="servletContextAddServletAndFilterByClass" target="all"/>
         <ant dir="servletContextAddServletAndFilterByInstance" target="all"/>
         <ant dir="servletContextCreateServletAndFilter" target="all"/>
