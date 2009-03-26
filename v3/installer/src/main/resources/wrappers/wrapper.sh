@@ -144,7 +144,7 @@ fi
 	esac
 shift
 done
-tmp=`mktemp -d -t install.XXXX`
+tmp=`mktemp -d -t install.XXXXXX`
 if [ $? -ne 0 ]; then
     echo "Unable to create temporary directory, exiting..."
     exit 1
