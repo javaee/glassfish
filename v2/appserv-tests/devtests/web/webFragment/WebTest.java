@@ -3,7 +3,7 @@ import java.net.*;
 import com.sun.ejte.ccl.reporter.*;
 
 /*
- * Unit test for @ServletFilter
+ * Unit test for web.xml fragments
  */
 public class WebTest {
 
