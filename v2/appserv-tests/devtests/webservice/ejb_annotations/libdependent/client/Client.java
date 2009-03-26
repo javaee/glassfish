@@ -17,8 +17,8 @@ public class Client {
         private static SimpleReporterAdapter stat =
                 new SimpleReporterAdapter("appserv-tests");
 
-        @WebServiceRef
-        static HelloImplService service;
+        //@WebServiceRef
+       // static HelloImplService service;
 
         public static void main(String[] args) {
 	    stat.addDescription("ejb-libdependent-service");
@@ -29,6 +29,7 @@ public class Client {
 
         public void doSyncTest() {
             try {
+                HelloImplService service = new HelloImplService();
                 HelloImpl port = service.getHelloImplPort();
                 RetVal ret = port.sayHello("Hi LibDependent");
 		if(ret.getRetVal().indexOf("LibDep") == -1) {
