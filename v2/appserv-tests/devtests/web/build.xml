@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="361"/>
+    <property name="TOTAL_EXPECTED" value="362"/>
 
     &commonSetup;
     &commonBuild;
@@ -169,6 +169,7 @@
         <ant dir="servletContextAddServletAndFilterByClassName" target="all"/>
         <ant dir="servletContextAddServletAndFilterByClass" target="all"/>
         <ant dir="servletContextAddServletAndFilterByInstance" target="all"/>
+        <ant dir="servletContextCreateServletAndFilter" target="all"/>
         <ant dir="servletContextAttributeEventAttributeRemoved" target="all"/>
         <ant dir="servletGetServerPort" target="all"/>
         <ant dir="servletAnnotationPreDestroy" target="all"/>
