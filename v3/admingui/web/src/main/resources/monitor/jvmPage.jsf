@@ -1,8 +1,19 @@
-<!composition template="webContainerTemplate.jsf" 
-    pageTitle="$resource{i18n_web.monitoring.webContainer.pageTitle}"
-    helpKey="$resource{help_web.monitorJvm}">
+<!initPage
+setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
+setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
+setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
+setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+getRequestValue(key="configName" value=>$page{configName});
+/>
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18n_web.monitoring.webContainer.pageTitle}" >
+<!define name="content">
+#include "/shared/restart.inc"
+            <sun:form id="propertyForm">
+#include "/shared/treeBreadcrumbs.inc"
+#include "/appServer/serverInstTabs.inc"
+#include "/shared/alertMsg.inc"      
         <!-- Buttons  -->
-        <!define name="title">
+        
         <sun:title id="propertyContentPage" title="$resource{i18n_web.monitoring.jvm.pageTitle}"
                     helpText="$resource{i18n_web.monitoring.webContainer.PageHelp}">
             <!facet pageButtonsTop>
@@ -19,9 +30,9 @@
                 </sun:panelGroup>
             </facet>
             </sun:title>
-        </define>
         
-        <!define name="table">
+        
+        
             "<table>
             "<tr>
             "<td width="1%"></td>
@@ -166,6 +177,8 @@
             "</td>
         "</tr>
     "</table>
-                
+<sun:hidden id="helpKey" value="$resource{help_web.monitorJvm}" />
+	
+         </sun:form>                
 	</define>
 </composition>
