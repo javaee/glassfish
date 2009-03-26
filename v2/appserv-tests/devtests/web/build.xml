@@ -221,7 +221,7 @@
         <ant dir="multiWebFragments" target="all"/>
         <ant dir="servletRequestResponseWrapperIsWrapperFor" target="all"/>
         <ant dir="servletRequestDispatcherType" target="all"/>
-        <ant dir="asyncContextComplete" target="all"/>
+        <ant dir="servlet-3.0/asyncContextComplete" target="all"/>
         <ant dir="asyncContextDispatch" target="all"/>
         <ant dir="asyncListenerOnComplete" target="all"/>
         <ant dir="asyncListenerOnTimeout" target="all"/>
