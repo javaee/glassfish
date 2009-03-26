@@ -1,0 +1,3 @@
+-exportcontents: \
+                        com.sun.enterprise.security.appclient; \
+			com.sun.enterprise.security.appclient.integration; version=${project.osgi.version}
