@@ -102,9 +102,8 @@ public class DomainConfig extends RepositoryConfig
             // net to get fully qualified host, not just hostname
             ASenvPropertyReader pr = new ASenvPropertyReader();
             Map<String, String> envProperties = pr.getProps();
-            put(K_HOST_NAME, 
-                envProperties.get(SystemPropertyConstants.INSTALL_ROOT_PROPERTY));
-                    //System.getProperty(SystemPropertyConstants.HOST_NAME_PROPERTY));
+            put(K_HOST_NAME,
+                envProperties.get(SystemPropertyConstants.HOST_NAME_PROPERTY));
         } catch (Exception ex) {
             throw new DomainException(ex);
         }
