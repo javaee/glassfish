@@ -466,6 +466,22 @@ public final class ApplicationContextFacade
 
 
     /**
+     * Instantiates the given Servlet class and performs any required
+     * resource injection into the new Servlet instance before returning
+     * it.
+     */
+    public <T extends Servlet> T createServlet(Class<T> c)
+            throws ServletException {
+        if (SecurityUtil.isPackageProtectionEnabled()) {
+            return (T) doPrivileged(
+                "createServlet", new Object[] {c});
+        } else {
+            return context.createServlet(c);
+        }
+    }
+
+
+    /**
      * Gets the ServletRegistration corresponding to the servlet with the
      * given <tt>servletName</tt>.
      */
@@ -518,6 +534,22 @@ public final class ApplicationContextFacade
                 "addFilter", new Object[] {filterName, filterClass});
         } else {
             return context.addFilter(filterName, filterClass);
+        }
+    }
+
+
+    /**
+     * Instantiates the given Filter class and performs any required
+     * resource injection into the new Filter instance before returning
+     * it.
+     */
+    public <T extends Filter> T createFilter(Class<T> c)
+            throws ServletException {
+        if (SecurityUtil.isPackageProtectionEnabled()) {
+            return (T) doPrivileged(
+                "createFilter", new Object[] {c});
+        } else {
+            return context.createFilter(c);
         }
     }
 

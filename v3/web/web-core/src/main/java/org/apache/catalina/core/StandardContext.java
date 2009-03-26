@@ -2596,6 +2596,34 @@ public class StandardContext
 
 
     /**
+     * Instantiates the given Filter class and performs any required
+     * resource injection into the new Filter instance before returning
+     * it.
+     */
+    public <T extends Filter> T createFilter(Class<T> c)
+            throws ServletException {
+        T filter = null;
+        boolean beforeInitCalled = false;
+        try {
+            filter = c.newInstance();
+            fireContainerEvent(ContainerEvent.BEFORE_FILTER_INITIALIZED,
+                filter);
+            beforeInitCalled = true;
+        } catch (Throwable t) {
+            throw new ServletException("Unable to create Filter from " +
+                                       "class " + c.getName(), t);
+        } finally {
+            if (beforeInitCalled) {
+                fireContainerEvent(ContainerEvent.AFTER_FILTER_INITIALIZED,
+                                   filter);
+            }
+        }
+
+        return filter;
+    }
+
+
+    /**
      * Gets the FilterRegistration corresponding to the filter with the
      * given <tt>filterName</tt>.
      */
@@ -2727,7 +2755,7 @@ public class StandardContext
      */
     public void addInstanceListener(String listener) {
         synchronized (instanceListeners) {
-            String results[] =new String[instanceListeners.length + 1];
+            String results[] = new String[instanceListeners.length + 1];
             for (int i = 0; i < instanceListeners.length; i++)
                 results[i] = instanceListeners[i];
             results[instanceListeners.length] = listener;
@@ -3095,16 +3123,6 @@ public class StandardContext
 
 
     /**
-     * Gets the ServletRegistration corresponding to the servlet with the
-     * given <tt>servletName</tt>.
-     */
-    public ServletRegistration findServletRegistration(String servletName) {
-        Wrapper wrapper = (Wrapper) findChild(servletName);
-        return (wrapper != null) ? wrapper.getServletRegistration() : null;
-    }
-
-
-    /**
      * Adds the given servlet instance with the given name to this servlet
      * context and initializes it.
      *
@@ -3181,6 +3199,47 @@ public class StandardContext
 
             return wrapper.getServletRegistration();
         }
+    }
+
+
+    /**
+     * Instantiates the given Servlet class and performs any required
+     * resource injection into the new Servlet instance before returning
+     * it.
+     */
+    public <T extends Servlet> T createServlet(Class<T> c)
+            throws ServletException {
+        T servlet = null;
+        boolean beforeInitCalled = false;
+        StandardWrapper wrapper = null;
+        try {
+            servlet = c.newInstance();
+            wrapper = (StandardWrapper) createWrapper();
+            wrapper.setServlet(servlet);
+            wrapper.getInstanceSupport().fireInstanceEvent(
+                InstanceEvent.EventType.BEFORE_INIT_EVENT, servlet);
+            beforeInitCalled = true;
+        } catch (Throwable t) {
+            throw new ServletException("Unable to create Servlet from " +
+                                       "class " + c.getName(), t);
+        } finally {
+            if (beforeInitCalled) {
+                wrapper.getInstanceSupport().fireInstanceEvent(
+                    InstanceEvent.EventType.AFTER_INIT_EVENT, servlet);
+            }
+        }
+
+        return servlet;
+    }
+
+
+    /**
+     * Gets the ServletRegistration corresponding to the servlet with the
+     * given <tt>servletName</tt>.
+     */
+    public ServletRegistration findServletRegistration(String servletName) {
+        Wrapper wrapper = (Wrapper) findChild(servletName);
+        return (wrapper != null) ? wrapper.getServletRegistration() : null;
     }
 
 
@@ -3317,7 +3376,7 @@ public class StandardContext
         }
 
         synchronized (instanceListeners) {
-            for(String instanceListener : instanceListeners) {
+            for (String instanceListener : instanceListeners) {
                 try {
                     Class clazz = Class.forName(instanceListener);
                     wrapper.addInstanceListener((InstanceListener)clazz.newInstance());

@@ -289,4 +289,17 @@ public class OSGiServletContext implements ServletContext {
     {
         //TODO(Sahoo): Not Yet Implemented
     }
+
+    public <T extends Servlet> T createServlet(Class<T> c)
+        throws ServletException
+    {
+        return null; //TODO(Sahoo): Not Yet Implemented
+    }
+
+    public <T extends Filter> T createFilter(Class<T> c)
+        throws ServletException
+    {
+        return null; //TODO(Sahoo): Not Yet Implemented
+    }
+
 }

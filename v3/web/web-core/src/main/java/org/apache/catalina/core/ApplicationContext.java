@@ -1020,6 +1020,17 @@ public class ApplicationContext
 
 
     /**
+     * Instantiates the given Servlet class and performs any required
+     * resource injection into the new Servlet instance before returning
+     * it.
+     */
+    public <T extends Servlet> T createServlet(Class<T> c)
+            throws ServletException {
+        return context.createServlet(c);
+    }
+
+
+    /**
      * Gets the ServletRegistration corresponding to the servlet with the
      * given <tt>servletName</tt>.
      */
@@ -1056,6 +1067,17 @@ public class ApplicationContext
     }
 
     
+    /**
+     * Instantiates the given Filter class and performs any required
+     * resource injection into the new Filter instance before returning
+     * it.
+     */
+    public <T extends Filter> T createFilter(Class<T> c)
+            throws ServletException {
+        return context.createFilter(c);
+    }
+
+
     /**
      * Gets the FilterRegistration corresponding to the filter with the
      * given <tt>filterName</tt>.
