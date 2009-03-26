@@ -14,7 +14,7 @@ public class LoggingXMLNames {
 	
 	public static final String logRotationTimelimitInMinutes ="log-rotation-timelimit-in-minutes";
 	
-	public static String logFormatter = "log-formatter";
+	public static final String logFormatter = "log-formatter";
 	
 	public static final String logHandler = "log-handler";
 	

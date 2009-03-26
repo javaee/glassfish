@@ -12,7 +12,7 @@ public class LoggingPropertyNames {
 	
 	public static final String file = GFFileHandler +"file";
 	
-	public static String logFormatter = GFFileHandler +"formatter";
+	public static final String logFormatter = GFFileHandler +"formatter";
 	
 	public static final String logHandler = "handlers";
 	
