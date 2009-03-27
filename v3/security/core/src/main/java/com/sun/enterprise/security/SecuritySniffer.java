@@ -36,7 +36,8 @@
  */
 package com.sun.enterprise.security;
 
-import com.sun.enterprise.deployment.deploy.shared.Util;
+import com.sun.enterprise.deployment.annotation.introspection.EjbComponentAnnotationScanner;
+import com.sun.enterprise.deployment.util.AnnotationDetector;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.internal.deployment.GenericSniffer;
@@ -49,6 +50,7 @@ import java.util.logging.Logger;
 import java.io.IOException;
 
 import com.sun.enterprise.module.Module;
+import java.lang.annotation.Annotation;
 
 /**
  * SecuritySniffer for security related activities
@@ -62,7 +64,11 @@ public class SecuritySniffer extends GenericSniffer {
     Habitat habitat;
     
     Inhabitant<SecurityLifecycle> lifecycle;
-    
+    private static final Class[] ejbAnnotations = new Class[]{
+        javax.ejb.Stateless.class, javax.ejb.Stateful.class,
+        javax.ejb.MessageDriven.class, javax.ejb.Singleton.class
+    };
+
     public SecuritySniffer() {
         super("security", "WEB-INF/web.xml", null);
     }
@@ -123,12 +129,26 @@ public class SecuritySniffer extends GenericSniffer {
     public String[] getContainersNames() {
         return containers;
     }
+
+    @Override
+    public Class<? extends Annotation>[] getAnnotationTypes() {
+        return ejbAnnotations;
+    }
     
     private boolean isJar(ReadableArchive location) {
-        if (Util.getURIName(location.getURI()).indexOf(".") == -1) {
-            //this is probably a jar
-            return true;
-        }
-        return false;
+        // check for ejb-jar.xml
+        boolean result = false;
+        try {
+                result = location.exists("META-INF/ejb-jar.xml");
+                if (result == false) {//Else scan for annotations
+                    AnnotationDetector detector =
+                           new AnnotationDetector(new EjbComponentAnnotationScanner());
+                    result = detector.hasAnnotationInArchive(location);
+                }
+            } catch (IOException ioEx) {
+                //TODO
+            }
+        return result;
     }
+     
 }

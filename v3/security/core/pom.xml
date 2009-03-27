@@ -134,5 +134,11 @@
             <artifactId>glassfish-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.ejb</artifactId>
+            <version>${project.version}</version>
+            <!-- Don't set scope as provided. See issue #5992 -->
+        </dependency>
     </dependencies>
 </project>
