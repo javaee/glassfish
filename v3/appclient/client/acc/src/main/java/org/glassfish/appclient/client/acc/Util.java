@@ -115,7 +115,8 @@ public class Util {
 
     public static URI getURI(final File f) throws URISyntaxException {
         URI uri = f.toURI();
-        if (f.isFile() && f.getName().endsWith(".jar")) {
+        if (f.isFile() && (f.getName().endsWith(".jar") ||
+                           f.getName().endsWith(".ear"))) {
             uri = new URI("jar:" + uri.getSchemeSpecificPart());
         }
         return uri;

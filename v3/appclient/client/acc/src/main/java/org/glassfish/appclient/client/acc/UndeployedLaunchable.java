@@ -89,6 +89,7 @@ public class UndeployedLaunchable implements Launchable {
              * Locate the app client submodule that matches the main class name
              * or the app client name.
              */
+
             Application app = (Application) archivist.open(ra);
             for (ModuleDescriptor<BundleDescriptor> md : app.getModules()) {
                 if ( ! md.getModuleType().equals(XModuleType.CAR)) {
@@ -103,10 +104,16 @@ public class UndeployedLaunchable implements Launchable {
                 ArchiveFactory archiveFactory = Util.getArchiveFactory();
                 ReadableArchive clientRA = archiveFactory.openArchive(ra.getURI().resolve(md.getArchiveUri()));
 
+                /*
+                 * Choose this nested app client if the caller-supplied name
+                 * matches, or if the caller-supplied main class matches, or
+                 * if neither was provided.  
+                 */
                 final boolean useThisClient =
                         (displayName != null && displayName.equals(callerSuppliedAppName))
                      || (appName != null && appName.equals(callerSuppliedAppName))
-                     || (clientRA.exists(classToResource(callerSuppliedMainClassName)));
+                     || (clientRA.exists(classToResource(callerSuppliedMainClassName))
+                     || (callerSuppliedAppName == null && callerSuppliedMainClassName == null));
 
                 if (useThisClient) {
                     return new UndeployedLaunchable(clientRA, acd, callerSuppliedMainClassName);
