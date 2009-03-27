@@ -85,7 +85,7 @@
 	    url="/sysnet/#{registrationNodePage}.jsf"
 	    >
 	    <!facet image>
-		<sun:imageHyperlink imageURL="/resource/images/#{registrationNodePage}.png" url="/sysnet/#{registrationNodePage}.jsf"  border="0" immediate="true" />
+		<sun:imageHyperlink imageURL="/resource/images/#{registrationNodePage}.gif" url="/sysnet/#{registrationNodePage}.jsf"  border="0" immediate="true" />
 	    </facet>
 	</sun:treeNode>
 
