@@ -265,10 +265,9 @@ public class DeploymentHandler {
 
         //appType can be one of the following: application,webApp,ejbModule,connector,appClient
         String appType = (String)handlerCtx.getInputValue("appType");
-        Properties dProps = null;
+        Properties dProps = new Properties();;
 
         if(appType.equals("connector")) {
-                dProps = new Properties();
                 //Default cascade is true. May be we can issue a warning,
                 //bcz undeploy will fail anyway if cascade is false.
                 dProps.put(DFDeploymentProperties.CASCADE, "true");
