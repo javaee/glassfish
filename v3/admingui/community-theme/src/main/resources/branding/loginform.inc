@@ -2,7 +2,7 @@
 <div style="height: 435px;background-image: url(#{request.contextPath}/resource/customTheme/images/login-backimage-open.png);background-repeat:no-repeat;background-position:left top; width: 720px; margin: auto;">
     <div style="width: 460px; padding-top: 160px; margin-left: 260px;">
 </f:verbatim>
-        <sun:image url="#{request.contextPath}/resource/customTheme/images/login-product_name_open.png" alt="Glassfish V3 Prelude" height="21" width="198" />
+        <sun:image url="#{request.contextPath}/resource/customTheme/images/login-product_name_open.png" alt="Glassfish v3 Administration Console" height="42" width="318" />
 <f:verbatim>
         <form method="POST" class="form" name="loginform" action="j_security_check">
         <table>
