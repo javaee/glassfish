@@ -230,6 +230,29 @@ public class ContextConfig
     private static boolean xmlNamespaceAware = false;
 
         
+    /**
+     * Static initializer
+     */
+    static {
+        authenticators = new Properties();
+        authenticators.setProperty(
+            "BASIC",
+            "org.apache.catalina.authenticator.BasicAuthenticator");
+        authenticators.setProperty(
+            "CLIENT-CERT",
+            "org.apache.catalina.authenticator.SSLAuthenticator");
+        authenticators.setProperty(
+            "FORM",
+            "org.apache.catalina.authenticator.FormAuthenticator");
+        authenticators.setProperty(
+            "NONE",
+            "org.apache.catalina.authenticator.NonLoginAuthenticator");
+        authenticators.setProperty(
+            "DIGEST",
+            "org.apache.catalina.authenticator.DigestAuthenticator");
+    }
+
+
     // ----------------------------------------------------------- Properties
 
 
@@ -556,29 +579,8 @@ public class ContextConfig
             }
             // END PWC 6392537
         }
-        if (authenticator == null) {
-            // Load our mapping properties if necessary
-            if (authenticators == null) {
-                try {
-                    InputStream is=this.getClass().getClassLoader().getResourceAsStream("org/apache/catalina/startup/Authenticators.properties");
-                    if( is!=null ) {
-                        authenticators = new Properties();
-                        authenticators.load(is);
-                    } else {
-                        log.log(Level.SEVERE,
-                                sm.getString("contextConfig.authenticatorResources"));
-                        ok=false;
-                        return;
-                    }
-                } catch (IOException e) {
-                    log.log(Level.SEVERE,
-                            sm.getString("contextConfig.authenticatorResources"),
-                            e);
-                    ok = false;
-                    return;
-                }
-            }
 
+        if (authenticator == null) {
             // Identify the class name of the Valve we should configure
             String authenticatorName = null;
 
