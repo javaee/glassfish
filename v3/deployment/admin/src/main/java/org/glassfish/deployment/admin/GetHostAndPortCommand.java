@@ -38,6 +38,7 @@ import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.Param;
 import org.jvnet.hk2.annotations.Service;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
@@ -86,12 +87,13 @@ public class GetHostAndPortCommand implements AdminCommand {
         HostAndPort hostAndPort = null;
 
         try {
-            Config config = configs.getConfigByName(target);
-
-            if (config == null) {
-                throw new Exception("Target config: " + target + 
-                    "-config does not exist");
+            Server server = ConfigBeansUtilities.getServerNamed(target);
+            if (server == null) {
+                throw new Exception("Target : " + target + 
+                    " does not exist");
             }
+            Config config = configs.getConfigByName(server.getConfigRef());
+
             httpService = config.getHttpService();
 
             if (httpService != null) {

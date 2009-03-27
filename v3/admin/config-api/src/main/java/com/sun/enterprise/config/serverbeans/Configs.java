@@ -92,7 +92,7 @@ public interface Configs extends ConfigBeanProxy, Injectable  {
     public class Duck {
         public static Config getConfigByName(Configs target, String name) {
             for (Config c : target.getConfig()) {
-                if (c.getName().equals(name + "-config")) {
+                if (c.getName().equals(name)) {
                     return c;
                 }
             }
