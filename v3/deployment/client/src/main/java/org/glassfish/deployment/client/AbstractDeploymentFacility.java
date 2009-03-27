@@ -418,8 +418,6 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
             DFCommandRunner commandRunner = getDFCommandRunner(commandName, commandParams, null);
             DFDeploymentStatus ds = commandRunner.run();
             mainStatus = ds.getMainStatus();
-            List<TargetModuleIDImpl> targetModuleIDList =
-                new ArrayList<TargetModuleIDImpl>();
 
             HostAndPort hap = null;
             if (mainStatus.getStatus() != DFDeploymentStatus.Status.FAILURE) {
