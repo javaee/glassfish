@@ -1618,6 +1618,25 @@ function getSelectedValue(field) {
     return selectedValue;
 }
 
+function getSelectedValue(theForm, field) {
+    var selectedValue = null;
+    var testField = null;
+    var name = null;
+    for (var i = 0; i < theForm.elements.length; i++) {
+        testField = theForm.elements[i];
+        name = testField.name;
+        if (name == null) {
+            continue;
+        }  
+        name = name.substr(name.lastIndexOf(".")+1);
+        if ((name == field) && testField.checked) {
+            selectedValue = testField.value;
+            break;
+        }
+    }
+    return selectedValue;
+}
+
 function checkForSelectedValue(fieldId) { 
     var field = document.getElementById(fieldId);  
     if (field.value == '' || isWhitespace(field.value)) { 

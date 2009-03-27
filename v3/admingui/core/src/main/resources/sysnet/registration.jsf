@@ -52,8 +52,10 @@
     setComponentRequired(id="form1:pSheet:pSection:country:country" required="$boolean{false}" );
 
 />  
-
-<sun:page id="page1">
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.reg.PageTitle}" >
+<!define name="content">
+<sun:script url="/resource/js/adminjsf.js" />
+    <event>
     <!beforeCreate
         setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
         setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
@@ -62,7 +64,7 @@
         setAttribute(key="samplePath" value="$attribute{contextRoot}/resource/sysnet/sample.html");
         setAttribute(key="PageTitleHelp" value="$resource{i18n.reg.PageTitleHelp, ${samplePath}}");
     />
-    <event>
+    
         <!beforeEncode
             # need to put back the required image if there is any error in processing and the page is refreshed.
             # we had turned off the requirement in initPage before.
@@ -78,11 +80,7 @@
         />
     </event>
 #include "/shared/restart.inc"    
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="$resource{i18n.reg.PageTitle}" >
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>
-        <sun:body id="body3" onLoad="admingui.nav.refreshTree('form:tree:registration'); showAccountSection('#{accountGroup}')" >
+
             <sun:form id="form1" >
 #include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc"                
@@ -256,7 +254,7 @@
                 <sun:panelGroup id="bottomButtons">
                     "<span style="left: 30px; position: absolute;"> $resource{i18n.reg.agree}</span>
                     <sun:button id="button2" text="$resource{i18n.button.register}" 
-                        onClick="if (validateRegisterField()){ return submitAndDisable(this, '$resource{i18n.button.Processing}'); } else{ return false;}" onKeyPress="javascript: return true;" > 
+                        onClick="if (validateRegisterField(this.form)){ return submitAndDisable(this, '$resource{i18n.button.Processing}'); } else{ return false;}" onKeyPress="javascript: return true;" > 
                         <!afterCreate
                             getClientId(component="$this{component}" clientId=>$page{button2Id});
                         />
@@ -276,7 +274,6 @@
         "<br />
 	<sun:hidden id="helpKey" value="$resource{help.registration}" />
             </sun:form>
-        </sun:body>
         
         
         <f:verbatim>
@@ -308,8 +305,8 @@
             }
             
             
-            function validateRegisterField(){
-                ss = getSelectedValue('accountGroup');
+            function validateRegisterField(form){
+                ss = getSelectedValue(form, 'accountGroup');
                 if( ss =='hasAccount'){
                     test= (checkRequired('#{userNameId}:userName', '#{reqMsg}') && checkRequired('#{pswdId}:pswdProp',  '#{reqMsg}') ) ;
                     if (!test){
@@ -351,6 +348,8 @@
             }
             
             function checkEmailAdr(componentId){
+                alert('here');
+                alert(componentId);
                 var component = document.getElementById(componentId);
                 var emailAdr = component.getProps().value;
                 if (( emailAdr.indexOf("@") == -1) || (emailAdr.indexOf("@") != emailAdr.lastIndexOf("@")) ||
@@ -387,6 +386,5 @@
                     
         </script>
 </f:verbatim>
-
-    </sun:html>
-</sun:page>
+   </define>
+</composition>

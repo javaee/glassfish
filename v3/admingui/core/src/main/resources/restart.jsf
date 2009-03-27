@@ -41,12 +41,14 @@
     }
 />
 <sun:page id="page">
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.common.restartRequired}" >
+<!define name="content">
+<sun:script url="/resource/js/adminjsf.js" />
+<sun:script url="/resource/js/restart.js" />
+    <event>    
     <!beforeCreate setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");/>
-
-<sun:html id="html">
-        <sun:head id="head" title="$resource{i18n.common.restartRequired}">
-            <sun:script url="/resource/js/adminjsf.js" />
-            <sun:script url="/resource/js/restart.js" />
+    </event>
+            
             <f:verbatim>
             <script type="text/javascript">
 			    var reasonsHidden = true;
@@ -65,8 +67,6 @@
                 }
             </script>
             </f:verbatim>
-        </sun:head>
-        <sun:body id="body" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="form">      
                 <!-- Page Title -->
 #include "/shared/alertMsg.inc"                
@@ -97,6 +97,5 @@
                     "</table>
                 "</div>
             </sun:form>
-        </sun:body>
-</sun:html>
-</sun:page>
+ </define>
+</composition>
