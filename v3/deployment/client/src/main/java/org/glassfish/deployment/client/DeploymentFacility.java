@@ -45,6 +45,8 @@ import javax.enterprise.deploy.spi.Target;
 import javax.enterprise.deploy.spi.TargetModuleID;
 import javax.enterprise.deploy.spi.status.DeploymentStatus;
 
+import com.sun.enterprise.util.HostAndPort;
+
 /**
  * This interface defines basic deployment related facilities 
  * such as deploying any j2ee modules on a Domain Admin Server
@@ -137,6 +139,28 @@ public interface DeploymentFacility {
      * remove the application ref for the provided list of targets.
      */
     public DFProgressObject deleteAppRef(Target[] targets, String moduleID, Map options);    
+
+    /**
+     * get the host and port information
+     */
+    public HostAndPort getHostAndPort() throws IOException;
+
+    /**
+     * get the host and port information with security enabled attribute
+     */
+    public HostAndPort getHostAndPort(boolean securityEnabled) throws IOException;
+
+    /**
+     * get the host and port information with the specified virtual server and
+     * security enabled attribute
+     */
+    public HostAndPort getVirtualServerHostAndPort(String virtualServer, boolean securityEnabled) throws IOException;
+
+   /**
+     * get the host and port information with the specified module id and 
+     * security enabled attribute
+     */
+    public HostAndPort getHostAndPort(String modID, boolean securityEnabled) throws IOException;
 
     /**
      * list all application refs that are present in the provided list of targets

@@ -56,6 +56,7 @@ import org.glassfish.deployapi.ProgressObjectImpl;
 import org.glassfish.deployapi.TargetImpl;
 import org.glassfish.deployapi.TargetModuleIDImpl;
 //import org.glassfish.deployment.common.DeploymentUtils;
+import com.sun.enterprise.util.HostAndPort;
 
 /**
  * Provides common behavior for the local and remote deployment facilities.
@@ -361,6 +362,80 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
                 /*
                  * We received a response from the server but the status was
                  * reported as unsuccessful.  Because listTargets does not
+                 * return a ProgressObject which the caller could use to find
+                 * out about the success or failure, we must throw an exception
+                 * so the caller knows about the failure.
+                 */
+                commandExecutionException = new IOException(
+                        "remote command execution failed on the server");
+                commandExecutionException.initCause(
+                        new RuntimeException(mainStatus.getAllStageMessages()));
+                throw commandExecutionException;
+            }
+        } catch (Throwable ex) {
+            if (commandExecutionException == null) {
+                throw new RuntimeException("error submitting remote command", ex);
+            } else {
+                throw (IOException) ex;
+            }
+        }
+    }
+
+    public HostAndPort getHostAndPort() throws IOException {
+        return getHostAndPort(false);
+    }
+
+    public HostAndPort getHostAndPort(boolean securityEnabled) 
+        throws IOException {
+        return getHostAndPort(null, securityEnabled);
+    }
+
+    public HostAndPort getVirtualServerHostAndPort(String virtualServer, boolean securityEnabled) throws IOException {
+        return getHostAndPort(null, virtualServer, securityEnabled);
+    }
+
+    public HostAndPort getHostAndPort(String moduleId, boolean securityEnabled) 
+        throws IOException {
+        return getHostAndPort(moduleId, null, securityEnabled);
+    }
+
+    private HostAndPort getHostAndPort(String moduleId, String virtualServer, 
+        boolean securityEnabled) throws IOException {
+        ensureConnected();
+        String commandName = "get-host-and-port";
+        Map commandParams = new HashMap();
+        if (moduleId != null) {
+            commandParams.put("moduleId", moduleId);
+        }
+        if (virtualServer != null) {
+            commandParams.put("virtualServer", virtualServer);
+        }
+        commandParams.put("securityEnabled", new Boolean(securityEnabled));
+        DFDeploymentStatus mainStatus = null;
+        Throwable commandExecutionException = null;
+        try {
+            DFCommandRunner commandRunner = getDFCommandRunner(commandName, commandParams, null);
+            DFDeploymentStatus ds = commandRunner.run();
+            mainStatus = ds.getMainStatus();
+            List<TargetModuleIDImpl> targetModuleIDList =
+                new ArrayList<TargetModuleIDImpl>();
+
+            HostAndPort hap = null;
+            if (mainStatus.getStatus() != DFDeploymentStatus.Status.FAILURE) {
+                for (Iterator iter = ds.getSubStages() ; iter.hasNext();) {
+                    DFDeploymentStatus subStage =
+                        (DFDeploymentStatus) iter.next();
+                    String hostPortStr = subStage.getStageStatusMessage();
+                    if (hostPortStr != null && !hostPortStr.trim().equals("")) {
+                        hap = new HostAndPort(hostPortStr);
+                        break;
+                    }
+                }
+                return hap;
+            } else {
+                /*
+                 * We received a response from the server but the status was
+                 * reported as unsuccessful.  Because getHostAndPort does not
                  * return a ProgressObject which the caller could use to find
                  * out about the success or failure, we must throw an exception
                  * so the caller knows about the failure.
