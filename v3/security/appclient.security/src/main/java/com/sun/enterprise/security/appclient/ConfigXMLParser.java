@@ -225,6 +225,7 @@ public class ConfigXMLParser implements ConfigParser {
     }
 
     public void initialize(Object config) throws IOException {
-       this.initialize((ClientContainer)config);
+       //remove dependence on ClientContainer before uncommenting
+       //this.initialize(config);
     }
 }
