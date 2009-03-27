@@ -398,9 +398,17 @@ public class ApplicationArchivist extends Archivist<Application>
             return FileUtils.revertFriendlyFilename(subModule.getName());
         }
 
+        // convert appRoot to canonical path so it would work on windows platform
+        String aRoot = null;
+        try {
+            aRoot = (new File(appRoot)).getCanonicalPath();
+        } catch (IOException ex) {
+            aRoot = appRoot;
+        } 
+
         //if archive deploy, need to make sure all of the directory
         //structure is correctly included
-        String uri = subModule.getAbsolutePath().substring(appRoot.length() + 1);
+        String uri = subModule.getAbsolutePath().substring(aRoot.length() + 1);
         return uri.replace(File.separatorChar, '/');
     }
 
