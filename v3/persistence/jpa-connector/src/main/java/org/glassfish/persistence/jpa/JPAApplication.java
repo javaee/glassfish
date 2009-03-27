@@ -239,7 +239,6 @@ public class JPAApplication implements ApplicationContainer {
         logger.logp(Level.FINE, "JPAApplication", "loadPU", // NOI18N
                     "emf = {0}", emf); // NOI18N
 
-        RootDeploymentDescriptor rootDD = pud.getParent().getParent();
         Application application = providerContainerContractInfo.getDeploymentContext()
                 .getModuleMetaData(Application.class);
         application.addEntityManagerFactory(pInfo.getPersistenceUnitName(), pud.getPuRoot(), emf);
