@@ -381,29 +381,30 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
         }
     }
 
-    public HostAndPort getHostAndPort() throws IOException {
-        return getHostAndPort(false);
+    public HostAndPort getHostAndPort(String target) throws IOException {
+        return getHostAndPort(target, false);
     }
 
-    public HostAndPort getHostAndPort(boolean securityEnabled) 
+    public HostAndPort getHostAndPort(String target, boolean securityEnabled) 
         throws IOException {
-        return getHostAndPort(null, securityEnabled);
+        return getHostAndPort(target, null, securityEnabled);
     }
 
-    public HostAndPort getVirtualServerHostAndPort(String virtualServer, boolean securityEnabled) throws IOException {
-        return getHostAndPort(null, virtualServer, securityEnabled);
+    public HostAndPort getVirtualServerHostAndPort(String target, String virtualServer, boolean securityEnabled) throws IOException {
+        return getHostAndPort(target, null, virtualServer, securityEnabled);
     }
 
-    public HostAndPort getHostAndPort(String moduleId, boolean securityEnabled) 
+    public HostAndPort getHostAndPort(String target, String moduleId, boolean securityEnabled) 
         throws IOException {
-        return getHostAndPort(moduleId, null, securityEnabled);
+        return getHostAndPort(target, moduleId, null, securityEnabled);
     }
 
-    private HostAndPort getHostAndPort(String moduleId, String virtualServer, 
-        boolean securityEnabled) throws IOException {
+    private HostAndPort getHostAndPort(String target, String moduleId, 
+        String virtualServer, boolean securityEnabled) throws IOException {
         ensureConnected();
         String commandName = "get-host-and-port";
         Map commandParams = new HashMap();
+        commandParams.put("target", target);
         if (moduleId != null) {
             commandParams.put("moduleId", moduleId);
         }
@@ -464,10 +465,14 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
     }
 
     public TargetModuleID[] listAppRefs(String[] targets, String state, String type) throws IOException {
+        Target[] targetImpls = prepareTargets(createTargets(targets));
+        return listAppRefs(targetImpls, state, type);
+    }
+
+    public TargetModuleID[] listAppRefs(Target[] targets, String state, String type) throws IOException {
         ensureConnected();
         String commandName = "list-app-refs";
-        Target[] targetImpls = prepareTargets(createTargets(targets));
-        String targetsParam = createTargetsParam(targetImpls);
+        String targetsParam = createTargetsParam(targets);
         Map commandParams = new HashMap();
         commandParams.put("target", targetsParam);
         commandParams.put("state", state);
@@ -497,8 +502,8 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
                     /*
                      * Look for the caller-supplied target that matches this result.
                      */
-                    for (Target targetImpl: targetImpls) {
-                        if (targetImpl.getName().equals(targetName)) {
+                    for (Target target: targets) {
+                        if (target.getName().equals(targetName)) {
                             /*
                              * Each substage below the target substage is for
                              * a module deployed to that target.
@@ -506,10 +511,9 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
                             for (Iterator appRefIter = targetSubStage.getSubStages(); appRefIter.hasNext();) {
                                 DFDeploymentStatus appRefSubStage = (DFDeploymentStatus) appRefIter.next();
                                 String moduleID = appRefSubStage.getStageStatusMessage();
-                                if (targetImpl instanceof TargetImpl) {
+                                if (target instanceof TargetImpl) {
                                     TargetModuleIDImpl targetModuleID =
-                                        new TargetModuleIDImpl((TargetImpl)targetImpl,
-                                            moduleID);
+                                        new TargetModuleIDImpl((TargetImpl)target, moduleID);
                                     targetModuleIDList.add(targetModuleID);
                                }
                             }

@@ -143,24 +143,24 @@ public interface DeploymentFacility {
     /**
      * get the host and port information
      */
-    public HostAndPort getHostAndPort() throws IOException;
+    public HostAndPort getHostAndPort(String target) throws IOException;
 
     /**
      * get the host and port information with security enabled attribute
      */
-    public HostAndPort getHostAndPort(boolean securityEnabled) throws IOException;
+    public HostAndPort getHostAndPort(String target, boolean securityEnabled) throws IOException;
 
     /**
      * get the host and port information with the specified virtual server and
      * security enabled attribute
      */
-    public HostAndPort getVirtualServerHostAndPort(String virtualServer, boolean securityEnabled) throws IOException;
+    public HostAndPort getVirtualServerHostAndPort(String target, String virtualServer, boolean securityEnabled) throws IOException;
 
    /**
      * get the host and port information with the specified module id and 
      * security enabled attribute
      */
-    public HostAndPort getHostAndPort(String modID, boolean securityEnabled) throws IOException;
+    public HostAndPort getHostAndPort(String target, String modID, boolean securityEnabled) throws IOException;
 
     /**
      * list all application refs that are present in the provided list of targets
@@ -176,6 +176,11 @@ public interface DeploymentFacility {
      * list all application refs that are present in the provided list of targets with the specified state and specified type
      */
     public TargetModuleID[] listAppRefs(String[] targets, String state, String type) throws IOException;
+
+    /**
+     * list all application refs that are present in the provided list of targets with the specified state and specified type
+     */
+    public TargetModuleID[] listAppRefs(Target[] targets, String state, String type) throws IOException;
 
     /**
      * list all targets

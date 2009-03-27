@@ -41,6 +41,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.component.Injectable;
 
 import java.io.Serializable;
@@ -85,6 +86,17 @@ public interface Configs extends ConfigBeanProxy, Injectable  {
     @Element(required=true)
     public List<Config> getConfig();
 
+    @DuckTyped
+    Config getConfigByName(String name);
 
-
+    public class Duck {
+        public static Config getConfigByName(Configs target, String name) {
+            for (Config c : target.getConfig()) {
+                if (c.getName().equals(name + "-config")) {
+                    return c;
+                }
+            }
+            return null;
+        }
+    }
 }

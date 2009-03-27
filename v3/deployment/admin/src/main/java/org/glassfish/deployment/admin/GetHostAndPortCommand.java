@@ -42,6 +42,8 @@ import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.HttpListener;
+import com.sun.enterprise.config.serverbeans.Configs;
+import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.StringUtils;
@@ -70,7 +72,7 @@ public class GetHostAndPortCommand implements AdminCommand {
     public String moduleId = null;
 
     @Inject
-    HttpService httpService;
+    Configs configs;
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(GetHostAndPortCommand.class);    
 
@@ -80,9 +82,21 @@ public class GetHostAndPortCommand implements AdminCommand {
 
         ActionReport.MessagePart part = report.getTopMessagePart();
 
+        HttpService httpService = null;
         HostAndPort hostAndPort = null;
+
         try {
-            hostAndPort = getHostAndPortForRequest();
+            Config config = configs.getConfigByName(target);
+
+            if (config == null) {
+                throw new Exception("Target config: " + target + 
+                    "-config does not exist");
+            }
+            httpService = config.getHttpService();
+
+            if (httpService != null) {
+                hostAndPort = getHostAndPortForRequest(httpService);
+            }
         } catch (Exception e) {
             report.setMessage(e.getMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -96,10 +110,11 @@ public class GetHostAndPortCommand implements AdminCommand {
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 
-    private HostAndPort getHostAndPortForRequest() throws Exception {
+    private HostAndPort getHostAndPortForRequest(HttpService httpService) 
+        throws Exception {
         if (moduleId == null) {
             if (virtualServer == null) {
-                return getHostAndPort(securityEnabled);
+                return getHostAndPort(httpService, securityEnabled);
             } else {
                 VirtualServer vs = httpService.getVirtualServerByName(
                     virtualServer);
@@ -107,7 +122,7 @@ public class GetHostAndPortCommand implements AdminCommand {
                     throw new Exception("Virtual server: " + 
                         virtualServer + " does not exist!");
                 }
-                return getHostAndPort(vs, securityEnabled);
+                return getHostAndPort(httpService, vs, securityEnabled);
             }
         }
 
@@ -123,11 +138,11 @@ public class GetHostAndPortCommand implements AdminCommand {
             appRef.getVirtualServers(), " ,");
 
         if (vsList==null) {
-            return getHostAndPort(securityEnabled);
+            return getHostAndPort(httpService, securityEnabled);
         }
 
         for (String virtualServer : vsList) {
-            HostAndPort hp = getHostAndPort(
+            HostAndPort hp = getHostAndPort(httpService,
                 httpService.getVirtualServerByName(virtualServer), 
                 securityEnabled);
             if (hp!=null) {
@@ -137,8 +152,7 @@ public class GetHostAndPortCommand implements AdminCommand {
         return null;
     }
 
-    private HostAndPort getHostAndPort(VirtualServer vs, 
-        boolean securityEnabled) {
+    private HostAndPort getHostAndPort(HttpService httpService, VirtualServer vs, boolean securityEnabled) {
         List<VirtualServer> virtualServerList =
             httpService.getVirtualServer();
         List<HttpListener> httpListenerList =
@@ -183,7 +197,7 @@ public class GetHostAndPortCommand implements AdminCommand {
         return null;
     }
 
-    private HostAndPort getHostAndPort(boolean securityEnabled) {
+    private HostAndPort getHostAndPort(HttpService httpService, boolean securityEnabled) {
         List<HttpListener> httpListenerList =
             httpService.getHttpListener();
 
@@ -216,8 +230,8 @@ public class GetHostAndPortCommand implements AdminCommand {
         return null;
     }
 
-    private HostAndPort getHostAndPort() {
-        return getHostAndPort(false);
+    private HostAndPort getHostAndPort(HttpService httpService) {
+        return getHostAndPort(httpService, false);
     }
 
     private String getDefaultHostName() {

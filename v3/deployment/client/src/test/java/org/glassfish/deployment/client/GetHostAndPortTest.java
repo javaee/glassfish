@@ -85,15 +85,17 @@ public class GetHostAndPortTest {
         df.connect(sci);
 
         try {
-            HostAndPort hap1 = df.getHostAndPort("webapps-simple", false);
+            HostAndPort hap1 = df.getHostAndPort("server", "webapps-simple", false);
             System.out.println("Host1 returned:" + hap1.getHost());
             System.out.println("Port1 returned:" + hap1.getPort());
-            HostAndPort hap2 = df.getVirtualServerHostAndPort("__asadmin", false);
+            HostAndPort hap2 = df.getVirtualServerHostAndPort("server", "__asadmin", false);
             System.out.println("Host2 returned:" + hap2.getHost());
             System.out.println("Port2 returned:" + hap2.getPort());
-            HostAndPort hap3 = df.getHostAndPort(false);
+            HostAndPort hap3 = df.getHostAndPort("server", false);
             System.out.println("Host3 returned:" + hap3.getHost());
             System.out.println("Port3 returned:" + hap3.getPort());
+            HostAndPort hap4 = df.getHostAndPort("foo", false);
+            System.out.println("hap4:" + hap4);
 
         } catch (Exception e) {
             fail("Failed due to exception " + e.getMessage());
