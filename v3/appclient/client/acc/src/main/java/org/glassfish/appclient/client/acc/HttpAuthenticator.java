@@ -35,7 +35,7 @@
  */
 package org.glassfish.appclient.client.acc;
 
-import com.sun.enterprise.security.auth.login.LoginContextDriver;
+import com.sun.enterprise.security.appclient.integration.AppClientSecurityInfo;
 import com.sun.enterprise.security.auth.login.common.PasswordCredential;
 import com.sun.enterprise.security.common.ClientSecurityContext;
 
@@ -48,7 +48,6 @@ import java.util.Set;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import javax.security.auth.Subject;
-import javax.security.auth.callback.CallbackHandler;
 /**
  * This is the callback object that gets called when a protected resource
  * needs to be accessed and authentication information is needed. Pops up
@@ -60,15 +59,16 @@ public class HttpAuthenticator extends Authenticator
 
     private static Logger _logger = Logger.getLogger(HttpAuthenticator.class.getName());
 
-    private final int loginType;
-    private final CallbackHandler callbackHandler;
+    private final AppClientSecurityInfo.CredentialType loginType;
+    private final AppClientSecurityInfo securityInfo;
 
     /**
      * Create the authenticator.
      */
-    public HttpAuthenticator(final int loginType, final CallbackHandler callbackHandler) {
+    public HttpAuthenticator(final AppClientSecurityInfo secInfo,
+            final AppClientSecurityInfo.CredentialType loginType) {
+        this.securityInfo = secInfo;
         this.loginType = loginType;
-        this.callbackHandler = callbackHandler;
     }
 
     /**
@@ -100,9 +100,8 @@ public class HttpAuthenticator extends Authenticator
                     _logger.fine("Initiating login again...");
                 }
                 
-		LoginContextDriver.doClientLogin(
-                loginType,
-                callbackHandler);
+		securityInfo.doClientLogin(
+                loginType);
 		cont = ClientSecurityContext.getCurrent();
 		subject = cont.getSubject();
 		user = getUserName(subject);

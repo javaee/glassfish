@@ -35,9 +35,11 @@
  */
 package org.glassfish.appclient.client.acc;
 
+import com.sun.enterprise.container.common.spi.util.InjectionException;
 import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.util.LocalStringManager;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -45,6 +47,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 import javax.security.auth.callback.CallbackHandler;
+
+import org.glassfish.api.naming.ClientNamingConfigurator;
 import org.glassfish.appclient.client.acc.config.AuthRealm;
 import org.glassfish.appclient.client.acc.config.ClientCredential;
 import org.glassfish.appclient.client.acc.config.MessageSecurityConfig;
@@ -52,6 +56,7 @@ import org.glassfish.appclient.client.acc.config.Property;
 import org.glassfish.appclient.client.acc.config.TargetServer;
 import org.glassfish.appclient.client.acc.config.util.XML;
 import org.jvnet.hk2.component.Habitat;
+import org.xml.sax.SAXParseException;
 
 /**
  * Implements a builder for accumulating configuration information for the
@@ -138,7 +143,8 @@ public class AppClientContainerConfigurator implements AppClientContainer.Config
 
     public AppClientContainer newContainer(final Class mainClass,
             final CallbackHandler callerSpecifiedCallbackHandler) throws Exception {
-        Launchable client = Launchable.Util.newLaunchable(mainClass);
+        prepareHabitatAndNaming();
+        Launchable client = Launchable.LauchableUtil.newLaunchable(mainClass);
         AppClientContainer container = createContainer(client, callerSpecifiedCallbackHandler);
         return container;
     }
@@ -150,9 +156,9 @@ public class AppClientContainerConfigurator implements AppClientContainer.Config
     public AppClientContainer newContainer(final URI clientURI,
             final CallbackHandler callerSpecifiedCallbackHandler,
             final String callerSpecifiedMainClassName,
-            final String callerSpecifiedAppClientName) throws Exception {
-
-        Launchable client = Launchable.Util.newLaunchable(
+            final String callerSpecifiedAppClientName) throws Exception, UserError {
+        prepareHabitatAndNaming();
+        Launchable client = Launchable.LauchableUtil.newLaunchable(
                 clientURI,
                 callerSpecifiedMainClassName,
                 callerSpecifiedAppClientName);
@@ -161,20 +167,28 @@ public class AppClientContainerConfigurator implements AppClientContainer.Config
         return container;
     }
 
-    public AppClientContainer newContainer(final URI clientURI) throws Exception {
+    public AppClientContainer newContainer(final URI clientURI) throws Exception, UserError {
         return newContainer(clientURI, null, null, null);
     }
 
     private AppClientContainer createContainer(final Launchable client,
-            final CallbackHandler callerSuppliedCallbackHandler) throws BootException, BootException, URISyntaxException, ClassNotFoundException {
+            final CallbackHandler callerSuppliedCallbackHandler) throws BootException, BootException, URISyntaxException, ClassNotFoundException, InstantiationException, IllegalAccessException, InjectionException, IOException, SAXParseException {
         AppClientContainer container = ACCModulesManager.getComponent(AppClientContainer.class);
         container.setClient(client);
-        container.setCallbackHandler(callerSuppliedCallbackHandler);
         container.setConfigurator(this);
+        container.prepareSecurity(targetServers, messageSecurityConfigs, containerProperties,
+                clientCredential, callerSuppliedCallbackHandler, classLoader);
         return container;
     }
 
-
+    private void prepareHabitatAndNaming() {
+        ACCModulesManager.initialize(Thread.currentThread().getContextClassLoader());
+        ClientNamingConfigurator namingConfig = ACCModulesManager.getHabitat().getByContract(ClientNamingConfigurator.class);
+        if (targetServers.length > 0) {
+            namingConfig.setDefaultHost(targetServers[0].getAddress());
+            namingConfig.setDefaultPort(Integer.toString(targetServers[0].getPort()));
+        }
+    }
 //    /**
 //     * Returns an AppClientContainer prepared to execute the app client implied
 //     * by the launch info and the app client args.

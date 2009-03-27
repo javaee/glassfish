@@ -261,15 +261,13 @@
         <!--
             Required for security.
         -->
-<!--
         <dependency>
             <groupId>org.glassfish.security</groupId>
             <artifactId>appclient.security</artifactId>
             <version>${project.version}</version>
         </dependency>
--->
         <!--
-            Required for InstrumentableClassLoader (persistence unit support)
+            Required for ClientNamingConfigurator
         -->
         <dependency>
             <groupId>org.glassfish.common</groupId>
@@ -335,6 +333,17 @@
         <dependency>
             <groupId>org.glassfish.admin</groupId>
             <artifactId>config-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>asm-all-repackaged</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.ejb</groupId>
+            <artifactId>ejb-container</artifactId>
             <version>${project.version}</version>
         </dependency>
 

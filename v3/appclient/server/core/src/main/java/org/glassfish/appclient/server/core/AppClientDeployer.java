@@ -1,24 +1,37 @@
 /*
- * The contents of this file are subject to the terms 
- * of the Common Development and Distribution License 
- * (the License).  You may not use this file except in
- * compliance with the License.
- * 
- * You can obtain a copy of the license at 
- * https://glassfish.dev.java.net/public/CDDLv1.0.html or
- * glassfish/bootstrap/legal/CDDLv1.0.txt.
- * See the License for the specific language governing 
- * permissions and limitations under the License.
- * 
- * When distributing Covered Code, include this CDDL 
- * Header Notice in each file and include the License file 
- * at glassfish/bootstrap/legal/CDDLv1.0.txt.  
- * If applicable, add the following below the CDDL Header, 
- * with the fields enclosed by brackets [] replaced by
- * you own identifying information: 
- * "Portions Copyrighted [year] [name of copyright owner]"
- * 
- * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License. You can obtain
+ * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * Sun designates this particular file as subject to the "Classpath" exception
+ * as provided by Sun in the GPL Version 2 section of the License file that
+ * accompanied this code.  If applicable, add the following below the License
+ * Header, with the fields enclosed by brackets [] replaced by your own
+ * identifying information: "Portions Copyrighted [year]
+ * [name of copyright owner]"
+ *
+ * Contributor(s):
+ *
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
  */
 package org.glassfish.appclient.server.core;
 
@@ -27,10 +40,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.List;
+import java.util.jar.JarEntry;
 import org.glassfish.deployment.common.DownloadableArtifacts;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
+import com.sun.enterprise.deployment.archivist.AppClientArchivist;
+import com.sun.enterprise.deployment.archivist.ArchivistFactory;
 import com.sun.enterprise.deployment.deploy.shared.OutputJarArchive;
 import com.sun.enterprise.deployment.deploy.shared.Util;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
@@ -79,6 +95,15 @@ public class AppClientDeployer
     public static final String GLASSFISH_APPCLIENT_KEY = "GlassFish-AppClient";
     public static final String SPLASH_SCREEN_IMAGE_KEY = "SplashScreen-Image";
 
+    private static final String STD_DESCRIPTOR = "META-INF/application-client.xml";
+    private static final String RUNTIME_DESCRIPTOR = "META-INF/sun-application-client.xml";
+
+    private static final String GLASSFISH_APPCLIENT_GROUP_FACADE_CLASS_NAME =
+            "org.glassfish.appclient.client.AppClientGroupFacade";
+
+    private static final Attributes.Name GLASSFISH_APPCLIENT_GROUP = new Attributes.Name("GlassFish-AppClient-Group");
+
+
     @Inject
     protected ServerContext sc;
     @Inject
@@ -87,6 +112,9 @@ public class AppClientDeployer
     protected Habitat habitat;
     @Inject
     private DownloadableArtifacts downloadInfo;
+
+    @Inject
+    private AppClientArchivist archivist;
 
     public AppClientDeployer() {
     }
@@ -200,10 +228,15 @@ public class AppClientDeployer
             manifest.write(os);
             facadeArchive.closeEntry();
 
+            writeUpdatedDescriptorsToFacade(facadeArchive, bundleDesc);
+
             os = facadeArchive.putNextEntry(APPCLIENT_FACADE_CLASS_FILE);
             InputStream is = openByteCodeStream("/" + APPCLIENT_FACADE_CLASS_FILE);
+            /*
+             * Note that the copyStream closes the output stream.
+             */
             FileUtils.copyStream(is, os);
-            
+
             try {
                 is.close();
                 facadeArchive.close();  //may have been closed in copyStream
@@ -222,10 +255,24 @@ public class AppClientDeployer
                 downloadInfo.addArtifacts(parentName, downloads);
             } else {
                 downloadInfo.addArtifacts(params.name(), downloads);
+                /*
+                 * For compatibility create a JAR named ${clientName}Client.jar
+                 * because that's what the old "umbrella" JAR was called.
+                 */
+                final int lastDot = modUri.lastIndexOf('.');
+                String umbrellaURI = modUri.substring(0, lastDot) + "Client.jar";
+                downloadInfo.addArtifact(params.name(), facadeArchive.getURI(), umbrellaURI);
             }
         } catch (Exception ex) {
             throw new DeploymentException(ex);
         }
+    }
+
+    private void writeUpdatedDescriptorsToFacade(final OutputJarArchive facadeArchive,
+            final ApplicationClientDescriptor acd) throws IOException {
+
+        archivist.setDescriptor(acd);
+        archivist.writeDeploymentDescriptors(facadeArchive);
     }
 
     private InputStream openByteCodeStream(final String resourceName) throws URISyntaxException, MalformedURLException, IOException {
@@ -300,6 +347,51 @@ public class AppClientDeployer
         return newName;
     }
 
+    private String generatedEARFacadeName(final String earName) {
+        return earName + "Client.jar";
+    }
+
+    private void generateAndRecordEARFacade(final String earName,
+            final File appScratchDir,
+            final String facadeFileName,
+            final String appClientGroupList) throws IOException {
+
+        File generatedJar = new File(appScratchDir, facadeFileName);
+        OutputJarArchive facadeArchive = new OutputJarArchive();
+        facadeArchive.create(generatedJar.toURI());
+
+        Manifest manifest = facadeArchive.getManifest();
+        Attributes mainAttrs = manifest.getMainAttributes();
+
+        mainAttrs.put(Attributes.Name.MANIFEST_VERSION, "1.0");
+        mainAttrs.put(Attributes.Name.MAIN_CLASS, GLASSFISH_APPCLIENT_GROUP_FACADE_CLASS_NAME);
+        mainAttrs.put(GLASSFISH_APPCLIENT_GROUP, appClientGroupList);
+
+
+        //Now manifest is ready to be written into the facade jar
+        OutputStream os = facadeArchive.putNextEntry(JarFile.MANIFEST_NAME);
+        manifest.write(os);
+        facadeArchive.closeEntry();
+
+        final String mainClassResourceName =
+                GLASSFISH_APPCLIENT_GROUP_FACADE_CLASS_NAME.replace('.', '/') +
+                ".class";
+        os = facadeArchive.putNextEntry(mainClassResourceName);
+
+        try {
+            InputStream is = openByteCodeStream("/" + mainClassResourceName);
+            FileUtils.copyStream(is, os);
+            is.close();
+        } catch (Exception e) {
+            throw new DeploymentException(e);
+        }
+
+        Set<DownloadableArtifacts.FullAndPartURIs> downloads =
+                    new HashSet<DownloadableArtifacts.FullAndPartURIs>();
+        downloads.add(new DownloadableArtifacts.FullAndPartURIs(generatedJar.toURI(), facadeFileName));
+        downloadInfo.addArtifacts(earName, downloads);
+
+    }
     /** Determines whether a client jar needs to be generated.  It can be skipped
      * if both conditions are met:
      * a. the deployment request does not request the deployer to generate stubs, and

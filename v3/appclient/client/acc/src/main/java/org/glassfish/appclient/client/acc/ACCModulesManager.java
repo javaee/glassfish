@@ -39,38 +39,16 @@
 
 package org.glassfish.appclient.client.acc;
 
-import com.sun.enterprise.glassfish.bootstrap.ProxyModule;
-import com.sun.enterprise.glassfish.bootstrap.ProxyModuleDefinition;
-import com.sun.enterprise.module.bootstrap.Main;
-import com.sun.enterprise.module.Module;
-import com.sun.enterprise.module.ModuleDefinition;
-import com.sun.enterprise.module.ModuleMetadata;
 import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.ResolveError;
-import com.sun.enterprise.module.bootstrap.BootException;
-import com.sun.enterprise.module.bootstrap.ModuleStartup;
-import com.sun.enterprise.module.bootstrap.Populator;
 import com.sun.enterprise.module.bootstrap.StartupContext;
-import com.sun.enterprise.module.impl.HK2Factory;
-import com.sun.enterprise.module.impl.ModulesRegistryImpl;
+import com.sun.enterprise.module.single.StaticModulesRegistry;
+import com.sun.enterprise.naming.impl.ClientNamingConfiguratorImpl;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
-import com.sun.hk2.component.Holder;
-import com.sun.hk2.component.InhabitantsParser;
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.glassfish.internal.api.Globals;
-import org.jvnet.hk2.component.ComponentException;
+import org.glassfish.api.admin.ProcessEnvironment;
+import org.glassfish.api.naming.ClientNamingConfigurator;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.config.ConfigParser;
+import org.jvnet.hk2.component.Inhabitant;
 
 /**
  * Encapsulates details of preparing the HK2 habitat while also providing
@@ -88,41 +66,54 @@ import org.jvnet.hk2.config.ConfigParser;
  *
  * @author tjquinn
  */
-public class ACCModulesManager implements ModuleStartup {
+public class ACCModulesManager /*implements ModuleStartup*/ {
 
     private static Habitat habitat = null;
 
     private StartupContext startupContext = null;
 
-    public static void initialize(final Class c) throws BootException, URISyntaxException, IOException {
-//        URI locURI = c.getProtectionDomain().getCodeSource().getLocation().toURI();
-//
-//        File locFile = new File(locURI);
-//        JarFile jf = new JarFile(locFile);
-//        Manifest mf = jf.getManifest();
-//        Attributes mainAttrs = mf.getMainAttributes();
-//        String classPath = locURI.toASCIIString() + " " + mainAttrs.getValue(Name.CLASS_PATH);
+    public synchronized static void initialize(final ClassLoader loader) {
+        /*
+         * The habitat might have been initialized earlier.  Currently
+         * we use a single habitat for the JVM.  
+         */
+        if (habitat == null) {
+            habitat = prepareHabitat(
+                    loader);
 
-        habitat = prepareHabitat(
-                Logger.getLogger("org.glassfish.appclient.client"));
-//        habitat.addComponent("default", habitat);
-//        habitat.getComponent(Globals.class);
+            StartupContext startupContext = new StartupContext();
+            habitat.add(new ExistingSingletonInhabitant(startupContext));
+            /*
+             * Following the example from AppServerStartup, remove any
+             * pre-loaded lazy inhabitant for ProcessEnvironment that exists
+             * from HK2's scan for services.  Then add in
+             * an ACC ProcessEnvironment.
+             */
+            Inhabitant<ProcessEnvironment> inh =
+                    habitat.getInhabitantByType(ProcessEnvironment.class);
+            if (inh!=null) {
+                habitat.remove(inh);
+            }
+            habitat.add(new ExistingSingletonInhabitant<ProcessEnvironment>
+                    (new ProcessEnvironment(ProcessEnvironment.ProcessType.ACC)));
+
+            ProcessEnvironment env = habitat.getComponent(ProcessEnvironment.class);
+
+            /*
+             * Create the ClientNamingConfigurator used by naming.
+             */
+            ClientNamingConfigurator cnc = new ClientNamingConfiguratorImpl();
+            habitat.add(new ExistingSingletonInhabitant<ClientNamingConfigurator>(
+                    ClientNamingConfigurator.class, cnc));
+       }
     }
 
-//    public synchronized static Habitat getHabitat(final ClassLoader classLoader, final Logger logger) throws
-//        BootException, URISyntaxException {
-//        if (habitat == null) {
-//            habitat = prepareHabitat(classLoader, logger);
-//        }
-//        return habitat;
-//    }
 
-//    static Habitat getHabitat() {
-//        return habitat;
-//    }
+    static Habitat getHabitat() {
+        return habitat;
+    }
 
     public static <T> T getComponent(Class<T> c) {
-//        return Globals.get(c);
         return habitat.getComponent(c);
     }
 
@@ -136,158 +127,30 @@ public class ACCModulesManager implements ModuleStartup {
      * @throws com.sun.enterprise.module.bootstrap.BootException
      * @throws java.net.URISyntaxException
      */
-    private static Habitat prepareHabitat(/*final String classPath, */
-            final Logger logger) throws BootException, URISyntaxException, MalformedURLException {
-
-        final URI bootstrapURI = findBootstrapURL().toURI();
-//        final String[] classPathElements = classPath.split(" ");
-//        final Set<URL> urls = new HashSet<URL>();
-//        for (String elt : classPathElements) {
-//            URI elementURI = bootstrapURI.resolve(elt);
-//            urls.add(elementURI.toURL());
-//        }
-//        final URLClassLoader urlClassLoader = new URLClassLoader(urls.toArray(new URL[urls.size()]),
-//                Thread.currentThread().getContextClassLoader());
-
-        final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        final File modulesDir = new File(bootstrapURI).getParentFile();
-        final File glassfishDir = modulesDir.getParentFile();
-
-        Properties props = new Properties();
-        URI domain1URI = bootstrapURI.resolve("../domains/domain1");
-        File f = new File(domain1URI);
-        props.setProperty("--domaindir", f.getAbsolutePath());
-        final StartupContext startupContext = new StartupContext(modulesDir, props);
-        final Module[] proxyMod = new Module[1];
-
-        HK2Factory.initialize();
-        final ModulesRegistryImpl modulesRegistry = new ModulesRegistryImpl(null) {
-            @Override
-            public Module find(Class clazz) {
-                Module m = super.find(clazz);
-                if (m == null)
-                    return proxyMod[0];
-                return m;
-            }
-
-            @Override
-            public Collection<Module> getModules() {
-                ArrayList<Module> list = new ArrayList<Module>();
-                list.add(proxyMod[0]);
-                return list;
-            }
-
-            @Override
-            public Module makeModuleFor(String name, String version) throws ResolveError {
-                return proxyMod[0];
-            }
-
-            @Override
-            public void parseInhabitants(Module module, String name, InhabitantsParser inhabitantsParser)
-                throws IOException {
-
-                Holder<ClassLoader> holder = new Holder<ClassLoader>() {
-                    public ClassLoader get() {
-                        return proxyMod[0].getClassLoader();
-                    }
-                };
-
-                for (ModuleMetadata.InhabitantsDescriptor d : proxyMod[0].getMetadata().getHabitats(name))
-                    inhabitantsParser.parse(d.createScanner(),holder);
-                }
-            @Override
-            public Habitat createHabitat(String name, InhabitantsParser parser) throws ComponentException {
-                try {
-                    Habitat habitat = parser.habitat;
-
-                    for (final Module module : getModules())
-                        parseInhabitants(module, name,parser);
-
-//                    ConfigParser configParser = new ConfigParser(habitat);
-//                    for( Populator p : habitat.getAllByContract(Populator.class) )
-//                        p.run(configParser);
-
-                    return habitat;
-                } catch (IOException e) {
-                    throw new ComponentException("Failed to create a habitat",e);
-                }
-            }
-        };
-
-        modulesRegistry.setParentClassLoader(classLoader);
-
-        ModuleDefinition moduleDef = null;
-        try {
-            moduleDef = new ProxyModuleDefinition(classLoader);
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "Cannot load single module from cache", e);
-            throw new BootException(e);
-        }
-        proxyMod[0] = new ProxyModule(modulesRegistry, moduleDef, classLoader);
-        modulesRegistry.add(moduleDef);
-
-//        Thread launcherThread = new Thread(new Runnable(){
-//            public void run() {
-//                Main main = new Main() {
-//                    protected Habitat createHabitat(ModulesRegistry registry, StartupContext context) throws BootException {
-//                        Habitat habitat = registry.newHabitat();
-//                        habitat.add(new ExistingSingletonInhabitant<StartupContext>(context));
-//                        // the root registry must be added as other components sometimes inject it
-//                        habitat.add(new ExistingSingletonInhabitant(ModulesRegistry.class, registry));
-//                        habitat.add(new ExistingSingletonInhabitant(Logger.class, logger));
-//                        registry.createHabitat("default", createInhabitantsParser(habitat));
-//                        return habitat;
-//                    }
-//                };
-//                try {
-//                    main.launch(modulesRegistry, startupContext);
-//                } catch (BootException e) {
-//                    logger.log(Level.SEVERE, e.getMessage(), e);
-//                }
-//            }
-//        },"Static Framework Launcher");
-
-        Habitat newHabitat = null;
-        Main main = new Main() {
-            @Override
-            protected Habitat createHabitat(ModulesRegistry registry, StartupContext context) throws BootException {
-                Habitat habitat = registry.newHabitat();
-                habitat.add(new ExistingSingletonInhabitant<StartupContext>(context));
-                // the root registry must be added as other components sometimes inject it
-                habitat.add(new ExistingSingletonInhabitant(ModulesRegistry.class, registry));
-                habitat.add(new ExistingSingletonInhabitant(Logger.class, logger));
-                registry.createHabitat("default", createInhabitantsParser(habitat));
-                return habitat;
-            }
-
-            @Override
-            public Habitat launch(ModulesRegistry registry, StartupContext context) throws BootException {
-                return createHabitat(registry, context);
-            }
-
-        };
-        try {
-            newHabitat = main.launch(modulesRegistry, startupContext);
-        } catch (BootException e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
-        }
-        return newHabitat;
+    private static Habitat prepareHabitat(
+            final ClassLoader loader) {
+        /*
+         * Initialize the habitat.
+         */
+        ModulesRegistry registry = new StaticModulesRegistry(loader);
+        Habitat habitat = registry.createHabitat("default");
+        return habitat;
     }
 
     private static URL findBootstrapURL() {
         return AppClientCommand.class.getProtectionDomain().getCodeSource().getLocation();
     }
 
-    public void setStartupContext(StartupContext startupContext) {
-        this.startupContext = startupContext;
-    }
-
-    public void start() {
-        //no-op
-    }
-
-    public void stop() {
-        //no-op
-    }
+//    public void setStartupContext(StartupContext startupContext) {
+//        this.startupContext = startupContext;
+//    }
+//
+//    public void start() {
+//        //no-op
+//    }
+//
+//    public void stop() {
+//        //no-op
+//    }
 
 }

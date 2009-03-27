@@ -42,6 +42,7 @@ package org.glassfish.appclient.client.acc;
 import java.util.Arrays;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -92,6 +93,7 @@ public class AppclientCommandArgumentsTest {
         assertEquals("textauth found but should be absent", false, info.isTextauth());
     }
 
+    @Ignore
     @Test
     public void invalidArgumentTest() throws Exception, UserError {
         try {

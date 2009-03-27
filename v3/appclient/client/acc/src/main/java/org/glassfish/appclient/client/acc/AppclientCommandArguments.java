@@ -46,6 +46,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -96,7 +97,11 @@ public class AppclientCommandArguments {
     private Map<String,AtomicReference<String>> valuedArgs = initValuedArgs();
     private Map<String,AtomicBoolean> unvaluedArgs = initUnvaluedArgs();
 
+    private List<String> unrecognizedArgs = new ArrayList<String>();
+
     private char[] password = null;
+
+    private String configPathToUse = null;
 
     /**
      * Initializes the list of valued arguments with nulls for all values.
@@ -134,7 +139,7 @@ public class AppclientCommandArguments {
      * populating the launch info object
      * @return
      */
-    static AppclientCommandArguments newInstance(List<String> appclientCommandArgs) throws UserError {
+    public static AppclientCommandArguments newInstance(List<String> appclientCommandArgs) throws UserError {
         AppclientCommandArguments result = new AppclientCommandArguments();
 
         result.processAppclientArgs(appclientCommandArgs);
@@ -182,10 +187,16 @@ public class AppclientCommandArguments {
         return valuedArgs.get(CONFIGXML).get();
     }
 
-    public String chooseConfigFilePath() {
-        String pathToUse = null;
-        boolean isConfig = logger.isLoggable(Level.CONFIG);
+    public String getConfigFilePath() {
+        if (configPathToUse == null) {
+            configPathToUse = chooseConfigFilePath();
+        }
+        return configPathToUse;
+    }
 
+    private String chooseConfigFilePath() {
+        boolean isConfig = logger.isLoggable(Level.CONFIG);
+        String pathToUse = null;
         if ((pathToUse = getXML()) != null) {
             if (isConfig) {
                 logger.config("Choosing app client container config from -xml option: " + pathToUse);
@@ -218,6 +229,10 @@ public class AppclientCommandArguments {
 
     public String getMainclass() {
         return valuedArgs.get(MAINCLASS).get();
+    }
+
+    public List<String> getAppArgs() {
+        return unrecognizedArgs;
     }
 
     private void processAppclientArgs(final List<String> commandArgs) throws UserError {
@@ -264,10 +279,10 @@ public class AppclientCommandArguments {
                          sb.append(LINE_SEP).append("  ").append(arg);
                      }
                  } else {
-                     throw new IllegalArgumentException(arg);
+                     unrecognizedArgs.add(arg);
                  }
             } else {
-                throw new IllegalArgumentException(arg);
+                unrecognizedArgs.add(arg);
             }
         }
         if (isConfig) {

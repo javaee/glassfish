@@ -38,28 +38,32 @@ package org.glassfish.appclient.client.acc;
 import com.sun.enterprise.container.common.spi.util.InjectionException;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
+import com.sun.enterprise.security.appclient.integration.AppClientSecurityInfo;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.Authenticator;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 import javax.security.auth.callback.CallbackHandler;
 import org.glassfish.appclient.client.acc.callbackhandler.DefaultGUICallbackHandler;
 import org.glassfish.appclient.client.acc.config.ClientCredential;
+import org.glassfish.appclient.client.acc.config.MessageSecurityConfig;
 import org.glassfish.appclient.client.acc.config.TargetServer;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.component.PerLookup;
 
 /**
  *
  * @author tjquinn
  */
 @Service
-@Scoped(Singleton.class)
-class AppClientContainerSecurityHelper {
+@Scoped(PerLookup.class)
+public class AppClientContainerSecurityHelper {
 
     private static final String ORB_INITIAL_HOST_PROPERTYNAME = "org.omg.CORBA.ORBInitialHost";
     private static final String ORB_INITIAL_PORT_PROPERTYNAME = "org.omg.CORBA.ORBInitialPort";
@@ -67,16 +71,19 @@ class AppClientContainerSecurityHelper {
     @Inject
     private InjectionManager injectionManager;
 
+    @Inject
+    private AppClientSecurityInfo secInfo;
+
     private final Logger logger = Logger.getLogger(getClass().getName());
 
-    private final Properties iiopProperties;
+    private Properties iiopProperties;
 
-    private final ClassLoader classLoader;
+    private ClassLoader classLoader;
 
-    private CallbackHandler userCallbackHandler = null;
 
-    AppClientContainerSecurityHelper(
-            final TargetServer[] targetServers, 
+    void init(
+            final TargetServer[] targetServers,
+            final List<MessageSecurityConfig> msgSecConfigs,
             final Properties containerProperties,
             final ClientCredential clientCredential,
             final CallbackHandler callerSuppliedCallbackHandler,
@@ -91,17 +98,16 @@ class AppClientContainerSecurityHelper {
         CallbackHandler callbackHandler = 
                 initSecurity(callerSuppliedCallbackHandler, acDesc);
 
-        initHttpAuthenticator(SomeSecurityThing.USERNAME_PASSWORD, callbackHandler);
-    }
+        secInfo.initializeSecurity(Arrays.asList(targetServers),
+                msgSecConfigs,
+                callbackHandler,
+                AppClientSecurityInfo.CredentialType.USERNAME_PASSWORD,
+                (clientCredential == null ? null : clientCredential.getUserName()),
+                (clientCredential == null ? null : clientCredential.getPassword().toString()),
+                false /* isJWS */);
 
-//    /**
-//     * Returns the earlier-specified callback handler or a default one if
-//     * none has been set.
-//     * @return the callback handler to use
-//     */
-//    CallbackHandler getCallbackHandler() {
-//        return callbackHandler;
-//    }
+        initHttpAuthenticator(AppClientSecurityInfo.CredentialType.USERNAME_PASSWORD);
+    }
 
     /**
      * Sets the callback handler for future use.
@@ -175,9 +181,9 @@ class AppClientContainerSecurityHelper {
         return iiopProperties;
     }
 
-    private void initHttpAuthenticator(final int loginType, CallbackHandler callbackHandler) {
+    private void initHttpAuthenticator(final AppClientSecurityInfo.CredentialType loginType) {
         Authenticator.setDefault(
-                new HttpAuthenticator(loginType, callbackHandler));
+                new HttpAuthenticator(secInfo, loginType));
     }
     
 //    /**

@@ -75,7 +75,7 @@ public final class  ClientNamingConfiguratorImpl
     }
 
     public void setDefaultPort(String port) {
-         SerialInitContextFactory.setDefaultHost(port);
+         SerialInitContextFactory.setDefaultPort(port);
     }
 
 

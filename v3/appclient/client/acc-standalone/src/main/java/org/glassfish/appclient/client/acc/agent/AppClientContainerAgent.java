@@ -41,22 +41,27 @@ package org.glassfish.appclient.client.acc.agent;
 
 import com.sun.enterprise.util.LocalStringManager;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.lang.instrument.Instrumentation;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import org.glassfish.appclient.client.AppClientFacadeInfo;
 import org.glassfish.appclient.client.acc.ACCClassLoader;
-import org.glassfish.appclient.client.acc.ACCModulesManager;
+import org.glassfish.appclient.client.acc.AgentArguments;
 import org.glassfish.appclient.client.acc.AppClientCommand;
 import org.glassfish.appclient.client.acc.AppClientContainer;
 import org.glassfish.appclient.client.acc.AppClientContainer.Configurator;
@@ -100,23 +105,58 @@ public class AppClientContainerAgent {
 
     private static AppClientContainer acc = null;
 
-    public static void premain(String agentArgs, Instrumentation inst) {
+    public static void premain(String agentArgsText, Instrumentation inst) {
         try {
             long now = System.currentTimeMillis();
 
-            ACCModulesManager.initialize(AppClientContainerAgent.class);
+            AgentArguments agentArgs = AgentArguments.newInstance(agentArgsText);
+
+            List<String> effectiveCommandLineArgs = new ArrayList<String>();
+
+            /*
+            * If the agent arguments includes an args file specification, then
+            * open it and read the command-line arguments from the file.
+            */
+//            final String argFilePath = agentArgs.namedValues().getProperty(
+//                    AppClientArgumentsFile.AGENT_ARGS_FILE_PROPERTY);
+//            if (argFilePath != null) {
+//
+//                final String argsFileFormat = agentArgs.namedValues().getProperty(
+//                                AppClientArgumentsFile.AGENT_ARGS_FORMAT_PROPERTY);
+//
+//                AppClientArgumentsFile argsFile = AppClientArgumentsFile
+//                        .newInstance(argFilePath, argsFileFormat);
+//
+//                effectiveCommandLineArgs.addAll(
+//                        skipJVMArgs(argsFile.getArguments()));
+//            }
+
+            /*
+             * Add any arguments specified to the agent to the end of the list so
+             * settings specified as agent arguments override settings on the
+             * command line.
+             */
+            effectiveCommandLineArgs.addAll(agentArgs.unnamedValues());
+
+
+
+            AppclientCommandArguments appClientCommandArgs = AppclientCommandArguments
+                    .newInstance(effectiveCommandLineArgs);
+
+
             /*
              * Process the agent arguments which include most of the appclient script
              * arguments.
              */
-            launchInfo = CommandLaunchInfo.newInstance(agentArgs);
-
-            setClassLoader(launchInfo.getAppcPath());
+            launchInfo = CommandLaunchInfo.newInstance(agentArgsText);
 
             /*
-             * Handle the legacy env. variable APPCPATH.  The script will have
-             * set appcpath=value as a command launch argument.
+             * Handle the legacy env. variable APPCPATH.  
              */
+            ACCClassLoader loader = initClassLoader(System.getenv("APPCPATH"));
+//            ACCModulesManager.initialize(loader);
+            Thread.currentThread().setContextClassLoader(loader);
+
 
             if (launchInfo.getClientLaunchType() != ClientLaunchType.UNKNOWN) {
                 appClientCommandArgs = launchInfo.getAppclientCommandArguments();
@@ -124,7 +164,7 @@ public class AppClientContainerAgent {
                 /*
                  * Load the ACC configuration XML file.
                  */
-                ClientContainer clientContainer = readConfig(appClientCommandArgs.chooseConfigFilePath());
+                ClientContainer clientContainer = readConfig(appClientCommandArgs.getConfigFilePath());
 
                 /*
                  * Decide what target servers to use.  This combines any
@@ -167,8 +207,7 @@ public class AppClientContainerAgent {
             logger.fine("AppClientContainerAgent finished after " + (System.currentTimeMillis() - now) + " ms");
 
         } catch (UserError ue) {
-            ue.printStackTrace();
-            System.exit(1);
+            ue.displayAndExit();
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
@@ -176,14 +215,54 @@ public class AppClientContainerAgent {
 
     }
 
-    private static ACCClassLoader setClassLoader(final String appcPath) throws MalformedURLException {
+    private static List<String> skipJVMArgs(final List<String> options) {
+        List<String> result = new ArrayList<String>();
+        /*
+         * JVM args are those that appear before the first "-jar xxx" or the
+         * first "-client xxx" or the first stand-alone value (the main class).
+         */
+        int slot = 0;
+        boolean isClassSelected = false;
+
+        while (slot < options.size()) {
+            final String option = options.get(slot);
+            if (isClassSelected) {
+                result.add(option);
+            } else {
+                if (option.equals("-jar") ||
+                        option.equals("-client")) {
+                    /*
+                     * This is the class selector.
+                     */
+                    isClassSelected = true;
+                    if (slot >= options.size()) {
+                        throw new IllegalArgumentException(option);
+                    }
+                    slot++; // skip past the value
+                } else if (option.charAt(0) != '-') {
+                    isClassSelected = true;
+                } else if (option.equals("-classpath") ||
+                        options.equals("-cp")) {
+                    if (slot >= options.size()) {
+                        throw new IllegalArgumentException(option);
+                    }
+                    slot++;
+                } else {
+                    // Must be a JVM option - ignore it.
+                }
+            }
+        }
+        return result;
+    }
+
+    private static ACCClassLoader initClassLoader(final String appcPath) throws MalformedURLException {
         ACCClassLoader newLoader = ACCClassLoader.newInstance(Thread.currentThread().getContextClassLoader());
         if (appcPath != null) {
             for (String elt : appcPath.split(File.pathSeparator)) {
-                newLoader.appendURL(new URL(elt));
+                File f = new File(elt);
+                newLoader.appendURL(f.toURI().toURL());
             }
         }
-        Thread.currentThread().setContextClassLoader(newLoader);
         return newLoader;
     }
 
@@ -209,7 +288,9 @@ public class AppClientContainerAgent {
             final AppclientCommandArguments appClientCommandArgs) {
 
         ClientCredential cc = config.getClientCredential();
-
+        if (cc == null) {
+            cc = new ClientCredential();
+        }
         /*
          * user on command line?
          */
@@ -231,7 +312,7 @@ public class AppClientContainerAgent {
 
     private static AppClientContainer createContainer(
             final Configurator config,
-            final CommandLaunchInfo launchInfo) throws Exception {
+            final CommandLaunchInfo launchInfo) throws Exception, UserError {
 
         /*
          * The launchInfo already knows something about how to conduct the
@@ -274,7 +355,7 @@ public class AppClientContainerAgent {
             final Configurator config,
             final String appClientPath,
             final String mainClassName,
-            final String clientName) throws Exception {
+            final String clientName) throws Exception, UserError {
 
         URI uri = Util.getURI(new File(appClientPath));
         return config.newContainer(uri, null /* callbackHandler */, mainClassName, clientName);
@@ -282,7 +363,7 @@ public class AppClientContainerAgent {
 
     private static AppClientContainer createContainerForClassName(
             final Configurator config,
-            final String className) throws Exception {
+            final String className) throws Exception, UserError {
 
         /*
          * Place "." on the class path so that when we convert the class file
@@ -306,7 +387,7 @@ public class AppClientContainerAgent {
 
     private static AppClientContainer createContainerForClassFile(
             final Configurator config,
-            final String classFilePath) throws MalformedURLException, ClassNotFoundException, FileNotFoundException, IOException, Exception {
+            final String classFilePath) throws MalformedURLException, ClassNotFoundException, FileNotFoundException, IOException, Exception, UserError {
         
         Util.verifyFilePath(classFilePath);
 
@@ -324,7 +405,7 @@ public class AppClientContainerAgent {
     private static ClientContainer readConfig(final String configPath) throws UserError, JAXBException, FileNotFoundException {
         ClientContainer result = null;
         File configFile = checkXMLFile(configPath);
-        checkXMLFile(launchInfo.getAppclientCommandArguments().chooseConfigFilePath());
+        checkXMLFile(launchInfo.getAppclientCommandArguments().getConfigFilePath());
 
         JAXBContext jc = JAXBContext.newInstance(ClientContainer.class );
 

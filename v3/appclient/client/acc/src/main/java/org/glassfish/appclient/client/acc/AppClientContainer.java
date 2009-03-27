@@ -35,6 +35,7 @@
  */
 package org.glassfish.appclient.client.acc;
 
+import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.container.common.spi.util.InjectionException;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
@@ -50,11 +51,12 @@ import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.security.auth.callback.CallbackHandler;
 import org.apache.naming.resources.DirContextURLStreamHandlerFactory;
+import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.appclient.client.acc.config.AuthRealm;
 import org.glassfish.appclient.client.acc.config.ClientCredential;
@@ -134,10 +136,18 @@ import org.xml.sax.SAXParseException;
  * import org.glassfish.appclient.client.acc.AppClientContainer;<br>
  * import org.glassfish.appclient.client.acc.config.TargetServer;<br>
  * <br>
- * AppClientContainerConfigurator accBuilder = AppClientContainer.newBuilder(<br>
- * &nbsp;&nbsp;    new TargetServer("localhost", 3700), new File("myAC.jar"));<br>
+ * AppClientContainerConfigurator configurator = AppClientContainer.newConfigurator(<br>
+ * &nbsp;&nbsp;    new TargetServer("localhost", 3700));<br>
  * <br>
- * AppClientContainer acc = accBuilder.newContainer();<br>
+ * AppClientContainer acc = configurator.newContainer(new File("myAC.jar").toURI());<br>
+ * <br>
+ * </code>(or, alternatively)<code><br>
+ * <br>
+ * AppClientContainer acc = configurator.newContainer(MyClient.class);<br>
+ * <br>
+ * <br</code>Then, <code><br>
+ * <br>
+ * acc.startClient(clientArgs);<br>
  * // The newContainer method returns as soon as the client's main method returns,<br>
  * // even if the client has started another thread or is using the AWT event<br>
  * // dispatcher thread
@@ -154,8 +164,8 @@ import org.xml.sax.SAXParseException;
  * several method invocations, such as
  * <p>
  * <code>
- * AppClientContainerConfigurator accBuilder = AppClientContainer.newBuilder(...);<br>
- * accBuilder.clientCredentials(myUser, myPass).clientArgs(argsToClient);<br>
+ * AppClientContainerConfigurator configurator = AppClientContainer.newConfigurator(...);<br>
+ * configurator.clientCredentials(myUser, myPass).logger(myLogger);<br>
  * </code>
  * «
  *
@@ -170,6 +180,8 @@ public class AppClientContainer {
     public static final String APPCLIENT_RETAIN_TEMP_FILES_PROPERTYNAME = "com.sun.aas.jws.retainTempFiles";
 
     private static final LocalStringManager localStrings = new LocalStringManagerImpl(AppClientContainer.class);
+
+    private static Logger logger = Logger.getLogger(AppClientContainer.class.getName());
 
     /**
      * Creates a new ACC configurator object, preset with the specified
@@ -198,6 +210,7 @@ public class AppClientContainer {
 //        return new AppClientContainerConfigurator();
 //    }
 
+    @Inject
     private AppClientContainerSecurityHelper secHelper;
 
     @Inject
@@ -206,29 +219,27 @@ public class AppClientContainer {
     @Inject
     private InvocationManager invocationManager;
 
+    @Inject
+    private ComponentEnvManager componentEnvManager;
+
     private Configurator configurator;
-    private Logger logger = Logger.getLogger(AppClientContainer.class.getPackage().getName());
+
     private Cleanup cleanup = null;
 
     private State state = State.INSTANTIATED; // HK2 will create the instance
 
-    private Class mainClass = null;
-
-    private ApplicationClientDescriptor descriptor = null;
-    
-
     private ClientMainClassSetting clientMainClassSetting = null;
-//    private URI clientURI = null;
 
     private ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
-//    private AppClientInfo appClientInfo = null;
-
-    private boolean isJWS = false;
+//    private boolean isJWS = false;
 
     private Launchable client = null;
 
     private CallbackHandler callerSuppliedCallbackHandler = null;
+
+    /** returned from binding the app client to naming; used in preparing component invocation */
+    private String componentId = null;
 
 
     /*
@@ -248,6 +259,19 @@ public class AppClientContainer {
         launch(args);
     }
 
+    void prepareSecurity(final TargetServer[] targetServers,
+            final List<MessageSecurityConfig> msgSecConfigs,
+            final Properties containerProperties,
+            final ClientCredential clientCredential,
+            final CallbackHandler callerSuppliedCallbackHandler,
+            final ClassLoader classLoader) throws InstantiationException,
+                IllegalAccessException, InjectionException, ClassNotFoundException,
+                IOException,
+                SAXParseException {
+        secHelper.init(targetServers, msgSecConfigs, containerProperties, clientCredential,
+                callerSuppliedCallbackHandler, classLoader, client.getDescriptor(classLoader));
+    }
+
     void setCallbackHandler(final CallbackHandler callerSuppliedCallbackHandler) {
         this.callerSuppliedCallbackHandler = callerSuppliedCallbackHandler;
     }
@@ -263,6 +287,7 @@ public class AppClientContainer {
     void setClient(final Launchable client) throws ClassNotFoundException {
         this.client = client;
         clientMainClassSetting = ClientMainClassSetting.set(client.getMainClass());
+
     }
     
     protected Class loadClass(final String className) throws ClassNotFoundException {
@@ -288,35 +313,12 @@ public class AppClientContainer {
         }
 
         /*
-         * Create the security helper and then register it with the habitat so
-         * the app client container can find it as the acc is instantiated and
-         * injected.  Do this before initializing
-         * naming so the ORB intialization side-effects of getting the
-         * InitialContext use the appropriate ORB settings.
+         * Attach any names defined in the app client.
          */
-        secHelper = new AppClientContainerSecurityHelper(
-                configurator.getTargetServers(),
-                configurator.getContainerProperties(),
-                configurator.getClientCredential(),
-                callerSuppliedCallbackHandler,
-                null /* use current context class loader */,
-                client.getDescriptor(Thread.currentThread().getContextClassLoader()));
+        componentId = componentEnvManager.bindToComponentNamespace(client.getDescriptor(classLoader));
 
-        /*
-         * Initialize naming now to establish an InitialContext with the
-         * side-effect of initializing the ORB.
-         * correct Properties.  Then, when the habitat instantiates the
-         * container which injects some services that also use InitialContext
-         * the context created here will be reused by those other places.
-         * As an example, the container injects the InjectionManager which
-         * invokes new InitialContext().
-         */
+        client.validateDescriptor();
 
-        initializeNaming(secHelper);
-
-
-
-       
         /*
          * Arrange for cleanup now instead of during launch() because in some use cases
          * the JVM will invoke the client's main method itself and launch will
@@ -334,7 +336,10 @@ public class AppClientContainer {
             ClassNotFoundException,
             IllegalAccessException,
             IllegalArgumentException,
-            InvocationTargetException {
+            InvocationTargetException,
+            IOException,
+            SAXParseException,
+            InjectionException {
 
         if (state != State.PREPARED) {
             throw new IllegalStateException();
@@ -347,18 +352,22 @@ public class AppClientContainer {
         state = State.STARTED;
     }
 
-    private void initializeNaming(final AppClientContainerSecurityHelper secHelper) throws NamingException {
-        new InitialContext(secHelper.getIIOPProperties());
-    }
-
-   private Method getMainMethod() throws NoSuchMethodException, ClassNotFoundException {
+   private Method getMainMethod() throws NoSuchMethodException, 
+           ClassNotFoundException, IOException, SAXParseException,
+           InjectionException {
 	    // determine the main method using reflection
 	    // verify that it is public static void and takes
 	    // String[] as the only argument
 	    Method result = null;
 
-        result = clientMainClassSetting.getClientMainClass(classLoader).getMethod("main",
-            new Class[] { String[].class } );
+        result = clientMainClassSetting.getClientMainClass(
+                classLoader,
+                injectionManager,
+                invocationManager,
+                componentId,
+                this,
+                client.getDescriptor(classLoader)).getMethod("main",
+                    new Class[] { String[].class } );
 
 	    // check modifiers: public static
 	    int modifiers = result.getModifiers ();
@@ -415,6 +424,7 @@ public class AppClientContainer {
 
         static protected String clientMainClassName;
         static protected Class clientMainClass;
+        static protected boolean isInjected = false;
 
         static ClientMainClassSetting set(final String name) {
             clientMainClassName = name;
@@ -428,12 +438,30 @@ public class AppClientContainer {
             return BY_CLASS;
         }
 
-        static Class getClientMainClass(final ClassLoader loader) throws ClassNotFoundException {
+        static Class getClientMainClass(final ClassLoader loader,
+                InjectionManager injectionManager,
+                InvocationManager invocationManager,
+                String componentId,
+                AppClientContainer container,
+                ApplicationClientDescriptor acDesc) throws ClassNotFoundException, InjectionException {
             if (clientMainClass == null) {
                 if (clientMainClassName == null) {
                     throw new IllegalStateException("neither client main class nor its class name has been set");
                 }
                 clientMainClass = Class.forName(clientMainClassName, true, loader);
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.fine("Loaded client main class " + clientMainClassName);
+                }
+            }
+            if ( ! isInjected) {
+            	ComponentInvocation ci = new ComponentInvocation(
+                        componentId,
+                        ComponentInvocation.ComponentInvocationType.APP_CLIENT_INVOCATION,
+                        container);
+                invocationManager.preInvoke(ci);
+
+                injectionManager.injectClass(clientMainClass, acDesc);
+                isInjected = true;
             }
             return clientMainClass;
         }
@@ -517,14 +545,14 @@ public class AppClientContainer {
      */
     public interface Configurator {
 
-        public AppClientContainer newContainer(URI archiveURI) throws Exception;
+        public AppClientContainer newContainer(URI archiveURI) throws Exception, UserError;
 
         public AppClientContainer newContainer(URI archiveURI,
                 CallbackHandler callbackHandler,
                 String mainClassName,
-                String appName) throws Exception;
+                String appName) throws Exception, UserError;
 
-        public AppClientContainer newContainer(Class mainClass) throws Exception;
+        public AppClientContainer newContainer(Class mainClass) throws Exception, UserError;
 
         public TargetServer[] getTargetServers();
 
