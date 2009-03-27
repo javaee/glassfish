@@ -1285,13 +1285,17 @@
     <xsd:annotation>
       <xsd:documentation>
 
-	The web-resource-collectionType is used to identify a subset
-	of the resources and HTTP methods on those resources within
-	a web application to which a security constraint applies. If
-	no HTTP methods are specified, then the security constraint
-	applies to all HTTP methods.
+        The web-resource-collectionType is used to identify the
+        resources and HTTP methods on those resources to which a
+        security constraint applies. If no HTTP methods are specified,
+        then the security constraint applies to all HTTP methods.
+        If HTTP methods are specified by http-method-omission
+        elements, the security constraint applies to all methods
+        except those identified in the collection.
+        http-method-omission and http-method elements are never
+        mixed in the same collection.
 
-	Used in: security-constraint
+        Used in: security-constraint
 
       </xsd:documentation>
     </xsd:annotation>
@@ -1315,9 +1319,28 @@
       <xsd:element name="url-pattern"
 		   type="javaee:url-patternType"
 		   maxOccurs="unbounded"/>
-      <xsd:element name="http-method"
-		   type="javaee:http-methodType"
-		   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:choice minOccurs="0" maxOccurs="1">
+        <xsd:element name="http-method"
+                     type="javaee:http-methodType"
+                     minOccurs="1" maxOccurs="unbounded">
+          <xsd:annotation>
+            <xsd:documentation>
+              Each http-method names an HTTP method to which the
+              constraint applies.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="http-method-omission"
+                     type="javaee:http-methodType"
+                     minOccurs="1" maxOccurs="unbounded">
+          <xsd:annotation>
+            <xsd:documentation>
+              Each http-method-omission names an HTTP method to
+              which the constraint does not apply.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:choice>
     </xsd:sequence>
     <xsd:attribute name="id" type="xsd:ID"/>
   </xsd:complexType>
