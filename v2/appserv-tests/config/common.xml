@@ -1119,6 +1119,9 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 <target name="runclient-common" depends="init-common">
   <echo message="appclient -client ${assemble.dir}/${appname}AppClient.jar -name ${appname}Client -textauth -user j2ee -password j2ee -xml ${admin.domain.dir}/${admin.domain}/config/sun-acc.xml ${appclient.application.args}"/>
   <exec executable="${APPCLIENT}" failonerror="false">
+    <!-- set APPCPATH to include reporter.jar so that all app clients
+         don't have to package the test framework in their apps -->
+    <env key="APPCPATH" file="${env.APS_HOME}/lib/reporter.jar"/>
     <arg line="-client ${assemble.dir}/${appname}AppClient.jar"/>
     <arg line="-name ${appname}Client"/>
     <arg line="-textauth"/>
