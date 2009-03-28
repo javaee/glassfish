@@ -117,7 +117,7 @@ public class Util {
         URI uri = f.toURI();
         if (f.isFile() && (f.getName().endsWith(".jar") ||
                            f.getName().endsWith(".ear"))) {
-            uri = new URI("jar:" + uri.getSchemeSpecificPart());
+            uri = new URI("jar:" + uri.getRawSchemeSpecificPart());
         }
         return uri;
     }
