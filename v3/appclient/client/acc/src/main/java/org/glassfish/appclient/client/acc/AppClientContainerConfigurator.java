@@ -181,7 +181,7 @@ public class AppClientContainerConfigurator implements AppClientContainer.Config
         return container;
     }
 
-    private void prepareHabitatAndNaming() {
+    private void prepareHabitatAndNaming() throws URISyntaxException {
         ACCModulesManager.initialize(Thread.currentThread().getContextClassLoader());
         ClientNamingConfigurator namingConfig = ACCModulesManager.getHabitat().getByContract(ClientNamingConfigurator.class);
         if (targetServers.length > 0) {
