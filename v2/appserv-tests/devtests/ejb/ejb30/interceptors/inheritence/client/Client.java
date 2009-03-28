@@ -14,10 +14,10 @@ public class Client {
 
     public static void main (String[] args) {
 
-        stat.addDescription("ejb-ejb30-interceptors-session");
+        stat.addDescription("ejb-ejb30-interceptors-inheritance");
         Client client = new Client(args);
         client.doTest();
-        stat.printSummary("ejb-ejb30-interceptors-sessionID");
+        stat.printSummary("ejb-ejb30-interceptors-inheritanceID");
     }
 
     public Client (String[] args) {
@@ -42,7 +42,7 @@ public class Client {
 	doTest3();
 	doTest4();
 	doTest6();
-	doTest7_8();
+	/**	doTest7_8(); **/ // enable when we have passivation
 	doTest9();
 	doTest10();
     }

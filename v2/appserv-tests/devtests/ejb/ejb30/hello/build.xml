@@ -13,17 +13,21 @@
 
     <target name="all">
         <antcall target="session"/>
-
-	<!-- gradually reenable as possible
-        <antcall target="mdb"/>
-        <antcall target="mdb2"/>
         <antcall target="session2"/>
         <antcall target="session2full"/>
-        <antcall target="session3"/>
-        <antcall target="session4"/>
-        <antcall target="session5"/>
         <antcall target="nopkg"/>
-        <antcall target="session_standalone"/>
+        <antcall target="session5"/>
+
+	<!-- gradually reenable as possible
+
+        <antcall target="session3"/> // depends on EMs working in ACC
+
+        <antcall target="session4"/> // depends on uncooked support in ACC
+
+        <antcall target="mdb"/>  
+        <antcall target="mdb2"/>
+
+        <antcall target="session_standalone"/>  // same as session4
 	-->
     </target>
 
@@ -56,11 +60,14 @@
             <ant dir="session2" target="build"/>
             <ant dir="session2" target="deploy"/>
             <ant dir="session2" target="run"/>
+
+	<!-- needs handle support
             <ant dir="dcode" target="build"/>
             <ant dir="dcode" target="deploy"/>
             <ant dir="dcode" target="run"/>
             <ant dir="dcode" target="run"/>
             <ant dir="dcode" target="undeploy"/>
+	-->
             <ant dir="session2" target="undeploy"/>
         <record name="session2.output" action="stop" />
     </target>

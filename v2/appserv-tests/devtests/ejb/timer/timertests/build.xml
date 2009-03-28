@@ -12,9 +12,7 @@
     &commonBuild;
     &testproperties;
 
-    <target name="all" depends="clean,build,create-resources,deploy,run,undeploy,delete-resources"/>
-    <!--target name="all" depends="clean,build,deploy,run,undeploy"/ -->
-    <target name="rerun" depends="clean,build,deploy,run,undeploy"/>
+    <target name="all" depends="clean,build,deploy,run,undeploy"/>
 
     <target name="clean" depends="init-common">
       <antcall  target="clean-common"/>
@@ -34,7 +32,7 @@
             <param name="ejbjar.classes" 
               value="**/**.class" />
             <param name="appclientjar.classes" 
-              value="**/*Client*.class" />
+              value="**/*Client*.class,**/TimerStuff*.class,**/AppInfo.class,**/Bar.class,**/BarHome.class,**/BarPrimaryKey.class,**/Foo.class,**/FooHome.class,**/Stateful.class,**/StatefulHome.class" />
         </antcall>
     </target> 
     

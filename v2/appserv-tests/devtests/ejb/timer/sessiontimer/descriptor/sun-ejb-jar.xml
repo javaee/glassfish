@@ -5,19 +5,10 @@
      <ejb>
         <ejb-name>TimerSessionEJB</ejb-name>
         <jndi-name>ejb/ejb_timer_sessiontimer_TimerSession</jndi-name>
-        <resource-ref>
-            <res-ref-name>jms/MyQueueConnectionFactory</res-ref-name>
-            <jndi-name>jms/ejb_timer_sessiontimer_TQCF</jndi-name>
-            <default-resource-principal>
-                <name>guest</name>
-                <password>guest</password>
-            </default-resource-principal>
-        </resource-ref>
-        <resource-env-ref>
-            <resource-env-ref-name>jms/MyQueue</resource-env-ref-name>
-            <jndi-name>jms/ejb_timer_sessiontimer_TQueue</jndi-name>
-        </resource-env-ref>
-        <gen-classes/>
+     </ejb>
+     <ejb>
+        <ejb-name>TimerSingleton</ejb-name>
+        <jndi-name>ejb/ejb_timer_sessiontimer_TimerSingleton</jndi-name>
      </ejb>
    </enterprise-beans>
 </sun-ejb-jar>

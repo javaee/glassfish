@@ -2,14 +2,17 @@ package com.sun.s1asdev.ejb.timer.sessiontimer.client;
 
 import java.io.Serializable;
 import javax.naming.*;
-import javax.jms.*;
+
+import java.util.concurrent.*;
+
 import javax.ejb.*;
-import javax.rmi.PortableRemoteObject;
-import java.rmi.NoSuchObjectException;
 
 import com.sun.s1asdev.ejb.timer.sessiontimer.TimerSession;
 import com.sun.s1asdev.ejb.timer.sessiontimer.TimerSessionHome;
+import com.sun.s1asdev.ejb.timer.sessiontimer.TimerSingletonRemote;
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
+
+import javax.rmi.PortableRemoteObject;
 
 public class Client {
     // consts
@@ -42,7 +45,6 @@ public class Client {
 
     public String doTest() {
         String result = kTestPassed;
-        QueueConnection connection = null; 
         TimerSession remoteObj = null;
 
         String ejbName = "ejbs/Timer";
@@ -55,7 +57,8 @@ public class Client {
 //PG->            Object objref = ic.lookup(jndiName);
 
 
-            java.lang.Object objref = ic.lookup("java:comp/env/" + ejbName);
+//            java.lang.Object objref = ic.lookup("java:comp/env/" + ejbName);
+	    java.lang.Object objref = ic.lookup("ejb/ejb_timer_sessiontimer_TimerSession");
 
             System.out.println("---ejb stub---" + 
                 objref.getClass().getClassLoader());
@@ -65,35 +68,24 @@ public class Client {
                 TimerSessionHome.class.getClassLoader());
             System.err.println("Looked up home!!");
 
-
+	    TimerSingletonRemote tsr = (TimerSingletonRemote)
+		ic.lookup("ejb/ejb_timer_sessiontimer_TimerSingleton");
+            // clear out singleton state.  This allows multiple test
+            // runs without having to redeploy
+	    tsr.startTest();
 
             TimerSessionHome home = (TimerSessionHome)
                 PortableRemoteObject.narrow(objref, TimerSessionHome.class);
             
             remoteObj = home.create();
-            TimerHandle handle = remoteObj.createTimer(5000);
-            
-            QueueConnectionFactory qcFactory = (QueueConnectionFactory)
-                      ic.lookup("java:comp/env/jms/MyQueueConnectionFactory");
-            System.out.println (" qcFactory = " + qcFactory);
+	    int timeoutInSeconds = 5;
+            TimerHandle handle = remoteObj.createTimer(timeoutInSeconds * 1000);
 
-            Queue queue = (Queue) ic.lookup("java:comp/env/jms/MyQueue");
-            System.out.println (" queue = " + queue);
-
-            connection = qcFactory.createQueueConnection();
-            QueueSession session = 
-                connection.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
-            QueueReceiver receiver = session.createReceiver(queue);
-            connection.start();
             System.out.println("Waiting for message");
-            Message message = receiver.receive(45000);
-            TextMessage textMsg = (TextMessage)message;
 
-	    	if ( (message == null) || 
-                 (! textMsg.getText().equals("ejbTimeout() invoked")))
-				throw new Exception("Received a null message ... TimeOut failed!!");
-	    	System.out.println("Message : " + message);
-            
+	    boolean gotTimeout = tsr.waitForTimeout(timeoutInSeconds * 2);
+
+	    // @@@
             System.out.println("TimerSession : jndi lookup for -> " + 
                 jndiName + " <- test passed!!");
             
@@ -106,8 +98,6 @@ public class Client {
         }
         finally {
             try {
-                if(connection != null)
-                    connection.close();
                 ((EJBObject)remoteObj).remove();
             } catch(Exception e) {
                 e.printStackTrace();

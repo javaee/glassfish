@@ -36,6 +36,7 @@
     <remote>com.sun.s1asdev.ejb.timer.timertests.Stateful</remote>
     <ejb-link>StatefulEJB_CMT</ejb-link>
   </ejb-ref>
+<!--
   <resource-ref>
     <res-ref-name>jms/MyTopicConnectionFactory</res-ref-name>
     <res-type>javax.jms.TopicConnectionFactory</res-type>
@@ -62,4 +63,5 @@
     <message-destination-usage>Produces</message-destination-usage>
     <message-destination-link>TimerMDBQueue_BMT</message-destination-link>
   </message-destination-ref>
+-->
 </application-client>

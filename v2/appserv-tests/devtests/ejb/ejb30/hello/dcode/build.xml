@@ -33,7 +33,7 @@
             <param name="ejbjar.classes" 
               value="**/Sful*.class,**/Sless*.class"/>
             <param name="appclientjar.classes" 
-              value="**/Client.class,**/Sful.class"/>
+              value="**/Client.class,**/Sful.class,**/SfulHome.class"/>
         </antcall>
     </target> 
     

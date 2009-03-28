@@ -2,10 +2,12 @@ package com.acme;
 
 import javax.ejb.*;
 import javax.annotation.*;
+import java.util.concurrent.TimeUnit;
 
 @Stateful
 @LocalBean
 @Local(Hello.class)
+@StatefulTimeout(value=15, unit=TimeUnit.SECONDS)
 public class HelloStateful {
 
     @Resource

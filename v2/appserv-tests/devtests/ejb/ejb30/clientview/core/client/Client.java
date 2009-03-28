@@ -3,7 +3,7 @@ package com.sun.s1asdev.ejb.ejb30.clientview.core.client;
 import java.io.*;
 import java.util.*;
 import javax.naming.InitialContext;
-import javax.ejb.EJB;
+import javax.ejb.*;
 import org.omg.CORBA.ORB;
 import com.sun.s1asdev.ejb.ejb30.clientview.core.*;
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
@@ -59,6 +59,11 @@ public class Client {
             System.out.println("testing injected BmpRemoteHome");
             BmpRemote bmpRemote = bmpRemoteHome.create("client1");
             bmpRemote = bmpRemoteHome.findByPrimaryKey("client1");
+
+	    /** TODO HandleDelegate not working yet
+             EJBMetaData md = bmpRemoteHome.getEJBMetaData();
+	    System.out.println("metadata = " + md);
+            **/
             
             System.out.println("testing injected SlessRemoteHome");
             SlessRemote slessRemote = slessRemoteHome.create();

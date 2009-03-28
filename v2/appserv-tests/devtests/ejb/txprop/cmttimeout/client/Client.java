@@ -61,7 +61,7 @@ public class Client {
         try {
             // invoke method on the EJB
             System.out.println("invoking ejb");
-            boolean result = ref.doSomething(60);
+            boolean result = ref.doSomething(8);
 
             System.out.println("successfully invoked ejb");
             stat.addStatus("ejbclient test1",

@@ -26,6 +26,7 @@
         <env-entry-type>java.lang.String</env-entry-type>
         <env-entry-value>CMT</env-entry-value>
       </env-entry>
+<!--
       <resource-ref>
         <description>description</description>
         <res-ref-name>jms/MyQueueConnectionFactory</res-ref-name>
@@ -40,11 +41,13 @@
         <message-destination-usage>ConsumesProduces</message-destination-usage>
         <message-destination-link>TimerQueue</message-destination-link>
       </message-destination-ref>
+-->
       <security-identity>
         <description></description>
         <use-caller-identity></use-caller-identity>
       </security-identity>
     </entity>
+<!--
     <message-driven>
       <ejb-name>msgbean_BMT</ejb-name>
       <ejb-class>com.sun.s1asdev.ejb.timer.timertests.MessageDrivenEJB</ejb-class>
@@ -98,7 +101,8 @@
         <message-destination-usage>ConsumesProduces</message-destination-usage>
         <message-destination-link>TimerQueue</message-destination-link>
       </message-destination-ref>
-    </message-driven>
+   </message-driven>
+-->
     <session>
       <ejb-name>FooEJB_UNSPECIFIED_TX</ejb-name>
       <home>com.sun.s1asdev.ejb.timer.timertests.FooHome</home>
@@ -111,6 +115,7 @@
         <env-entry-type>java.lang.String</env-entry-type>
         <env-entry-value>UNSPECIFIED_TX</env-entry-value>
       </env-entry>
+<!--
       <resource-ref>
         <description>description</description>
         <res-ref-name>jms/MyQueueConnectionFactory</res-ref-name>
@@ -125,6 +130,7 @@
         <message-destination-usage>ConsumesProduces</message-destination-usage>
         <message-destination-link>TimerQueue</message-destination-link>
       </message-destination-ref>
+-->
       <security-identity>
         <use-caller-identity/>
       </security-identity>
@@ -141,6 +147,7 @@
         <env-entry-type>java.lang.String</env-entry-type>
         <env-entry-value>BMT</env-entry-value>
       </env-entry>
+<!--
       <resource-ref>
         <description>description</description>
         <res-ref-name>jms/MyQueueConnectionFactory</res-ref-name>
@@ -155,6 +162,7 @@
         <message-destination-usage>ConsumesProduces</message-destination-usage>
         <message-destination-link>TimerQueue</message-destination-link>
       </message-destination-ref>
+-->
       <security-identity>
         <use-caller-identity/>
       </security-identity>
@@ -171,6 +179,7 @@
         <env-entry-type>java.lang.String</env-entry-type>
         <env-entry-value>CMT</env-entry-value>
       </env-entry>
+<!--
       <resource-ref>
         <description>description</description>
         <res-ref-name>jms/MyQueueConnectionFactory</res-ref-name>
@@ -185,6 +194,7 @@
         <message-destination-usage>ConsumesProduces</message-destination-usage>
         <message-destination-link>TimerQueue</message-destination-link>
       </message-destination-ref>
+-->
       <security-identity>
         <use-caller-identity/>
       </security-identity>
@@ -201,6 +211,7 @@
         <env-entry-type>java.lang.String</env-entry-type>
         <env-entry-value>BMT</env-entry-value>
       </env-entry>
+<!--
       <resource-ref>
         <description>description</description>
         <res-ref-name>jms/MyQueueConnectionFactory</res-ref-name>
@@ -215,6 +226,7 @@
         <message-destination-usage>ConsumesProduces</message-destination-usage>
         <message-destination-link>TimerQueue</message-destination-link>
       </message-destination-ref>
+-->
       <security-identity>
         <use-caller-identity/>
       </security-identity>
@@ -231,6 +243,7 @@
         <env-entry-type>java.lang.String</env-entry-type>
         <env-entry-value>CMT</env-entry-value>
       </env-entry>
+<!--
       <resource-ref>
         <description>description</description>
         <res-ref-name>jms/MyQueueConnectionFactory</res-ref-name>
@@ -245,12 +258,14 @@
         <message-destination-usage>ConsumesProduces</message-destination-usage>
         <message-destination-link>TimerQueue</message-destination-link>
       </message-destination-ref>
+-->
       <security-identity>
         <use-caller-identity/>
       </security-identity>
     </session>
   </enterprise-beans>
   <assembly-descriptor>
+<!--
     <container-transaction>
       <method>
         <ejb-name>msgbean_CMT</ejb-name>
@@ -271,6 +286,7 @@
       </method>
       <trans-attribute>RequiresNew</trans-attribute>
     </container-transaction>
+-->
     <container-transaction>
       <method>
         <ejb-name>FooEJB_CMT</ejb-name>
@@ -332,6 +348,7 @@
       </method>
       <trans-attribute>RequiresNew</trans-attribute>
     </container-transaction>
+<!--
     <message-destination>
       <description>timer app message destination</description>
       <display-name>timerqueue</display-name>
@@ -347,5 +364,6 @@
       <display-name>timerqueue</display-name>
       <message-destination-name>TimerMDBQueue_BMT</message-destination-name>
     </message-destination>
+-->
   </assembly-descriptor>
 </ejb-jar>

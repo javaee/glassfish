@@ -62,7 +62,7 @@ public class SlessEJB2 implements Sless, SessionBean
         try {
             // Proprietary way to look up tx manager.  
             TransactionManager tm = (TransactionManager)
-                new InitialContext().lookup("java:pm/TransactionManager");
+                new InitialContext().lookup("java:appserver/TransactionManager");
             // Use an implementation-specific check to ensure that there
             // is no tx.  A portable application couldn't make this check
             // since the exact tx behavior for TX_NOT_SUPPORTED is not

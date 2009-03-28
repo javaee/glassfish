@@ -6,21 +6,36 @@
 <!ENTITY reporting   SYSTEM "file:./../report.xml">
 ]>
 
-<project name="jms" default="usage" basedir=".">
+<project name="stubs" default="usage" basedir=".">
     &commonSetup;
     &commonBuild;
     &reporting;
 
     <target name="all">
+        <antcall target="proxy"/>
+
+	<!-- 2nd deploy always fails due to security policy linking error 
+	TODO need to add support for MBean here and in webclient
+
         <antcall target="ejbapp"/>
-        <antcall target="standaloneclient"/>
         <antcall target="ejbclient"/>
         <antcall target="appclient"/>
         <antcall target="webclient"/>
-        <ant dir="ejbapp" target="undeploy"/>
+         -->
 
-        <antcall target="proxy"/>
+	<!-- need handleDelegate and SerialInitContextFactory fix
+        <antcall target="standaloneclient"/>
+	-->
+	
+	<!--
+        <ant dir="ejbapp" target="undeploy"/>
+	-->
+
+
+	<!-- need handledelegate 
         <antcall target="stubser"/>
+	-->
+
     </target>
 
     <target name="ejbapp">

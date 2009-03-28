@@ -31,7 +31,7 @@
     <target name="runclient_nooverride">
        <java  fork="on" 
               failonerror="true"
-              classpath="${env.S1AS_HOME}/lib/j2ee.jar:${env.S1AS_HOME}/lib/appserv-rt.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
+              classpath="${env.S1AS_HOME}/lib/j2ee.jar:${env.S1AS_HOME}/modules/gf-client.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
            classname="${simple.client}">
            <jvmarg
                    value="-Dorg.omg.CORBA.ORBInitialPort=${orb.port}"/>
@@ -48,7 +48,7 @@
     <target name="runclient_setnothing" depends="init-common">
        <java  fork="on" 
               failonerror="true"
-              classpath="${env.S1AS_HOME}/lib/j2ee.jar:${env.S1AS_HOME}/lib/appserv-rt.jar:${build.classes.dir}:${assemble.dir}/ejb-stubs-ejbappAppClient.jar:${env.APS_HOME}/lib/reporter.jar"
+              classpath="${env.S1AS_HOME}/lib/j2ee.jar:${env.S1AS_HOME}/modules/gf-client.jar:${build.classes.dir}:${assemble.dir}/ejb-stubs-ejbappAppClient.jar:${env.APS_HOME}/lib/reporter.jar"
               classname="${simple.client}">
            <arg value="ejb/ejb_stubs_ejbapp_HelloBean"/>
         </java>
@@ -79,7 +79,7 @@
     <target name="runclient_withoverride" depends="init-common">
        <java  fork="on" 
               failonerror="true"
-              classpath="${env.S1AS_HOME}/lib/j2ee.jar:${env.S1AS_HOME}/lib/appserv-rt.jar:${build.classes.dir}:${assemble.dir}/ejb-stubs-ejbappAppClient.jar:${env.APS_HOME}/lib/reporter.jar"
+              classpath="${env.S1AS_HOME}/lib/j2ee.jar:${env.S1AS_HOME}/modules/gf-client.jar:${build.classes.dir}:${assemble.dir}/ejb-stubs-ejbappAppClient.jar:${env.APS_HOME}/lib/reporter.jar"
            classname="${simple.client}">
             <jvmarg value="-Dorg.omg.CORBA.ORBInitialPort=${orb.port}"/>
              <jvmarg

@@ -21,30 +21,38 @@
            <fileset dir="." includes="*.output"/>
         </delete>
         <record name="ejb.output" action="start" />
-<!-- gradually reenable the existing tests as features come on line
-        <ant dir="allowedmethods" target="all"/>
-        <ant dir="bmp" target="all"/>  
-        <ant dir="cmp" target="all"/>  
-        <ant dir="ejbc" target="all"/>  
-        <ant dir="jms" target="all"/>  
-        <ant dir="mdb" target="all"/> 
+
         <ant dir="stubs" target="all"/>
-        <ant dir="timer" target="all"/>
         <ant dir="txprop" target="all"/>
-        <ant dir="sfsb" target="all"/>
-        <ant dir="util" target="all"/>
--->
+        <ant dir="ejbc" target="all"/>  
         <ant dir="ejb31" target="all"/>
         <ant dir="ejb30" target="all"/>
+        <ant dir="timer" target="all"/>
+
+<!-- gradually reenable the existing tests as features come on line
+
+        <ant dir="bmp" target="all"/>  
+        <ant dir="cmp" target="all"/>  
+        <ant dir="jms" target="all"/>  
+        <ant dir="mdb" target="all"/> 
+
+        <ant dir="sfsb" target="all"/>
+        <ant dir="util" target="all"/>
+
+
+        <ant dir="allowedmethods" target="all"/> // ok to go but so far only one that needs db
+-->
+
         <record name="ejb.output" action="stop" />
         <antcall target="report"/>
+
     </target>
 
     <target name="orb_integration">
         <ant dir="ejb30" target="clientview"/>  
         <ant dir="ejb30" target="hello"/>  
-        <ant dir="ejbc" target="sameimpl"/>
-        <ant dir="txprop" target="simple"/>  
+        <ant dir="ejbc" target="all"/>
+        <ant dir="txprop" target="all"/>  
         <ant dir="stubs" target="all"/>  
         <ant dir="bmp" target="handle"/>  
         <ant dir="bmp" target="txtests"/> 

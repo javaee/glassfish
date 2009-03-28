@@ -41,6 +41,13 @@ public class HelloServlet extends HttpServlet {
 
 	System.out.println("In HelloServlet::doGet");
 
+	try {
+	    Object jaxrsEjbGlue = new InitialContext().lookup("org.glassfish.ejb.container.JaxrsEjbGlue");
+	    System.out.println("jaxrsEjbGlue = " + jaxrsEjbGlue);
+	} catch(Exception e) {
+	    e.printStackTrace();
+	}
+
 	simpleSingleton.hello();
 
 	out.println("<HTML> <HEAD> <TITLE> JMS Servlet Output </TITLE> </HEAD> <BODY BGCOLOR=white>");

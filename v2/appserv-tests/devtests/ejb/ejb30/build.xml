@@ -14,11 +14,11 @@
     <target name="all">
 	<!--- currently use SE client . switch back to appclient -->
         <antcall target="clientview"/>
-
-	<!--- gradually reenable as possible
         <antcall target="hello"/>
         <antcall target="interceptors"/>
-        <antcall target="persistence"/>
+
+	<!--- gradually reenable as possible
+        <antcall target="persistence"/>  // no .ear support for EMs yet 
 	-->
     </target>
 

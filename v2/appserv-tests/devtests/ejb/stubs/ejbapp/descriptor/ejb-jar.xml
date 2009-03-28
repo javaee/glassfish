@@ -15,6 +15,7 @@
         <use-caller-identity/>
       </security-identity>
     </session>
+<!-- no javax.management.jar in workspace yet
     <session>
       <display-name>DummyMEJBBean</display-name>
       <ejb-name>DummyMEJBBean</ejb-name>
@@ -27,6 +28,7 @@
         <use-caller-identity/>
       </security-identity>
     </session>
+-->
   </enterprise-beans>
   <assembly-descriptor>
   </assembly-descriptor>

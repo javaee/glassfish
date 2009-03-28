@@ -7,7 +7,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import javax.ejb.*;
-import javax.jms.*;
+//import javax.jms.*;
 import javax.naming.*;
 import javax.rmi.PortableRemoteObject;
 
@@ -24,6 +24,8 @@ import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 public class Client {
 
     private InitialContext context;
+
+    /**
     private TopicConnection topicCon;
     private TopicSession topicSession;
     private TopicPublisher topicPublisher;
@@ -32,12 +34,13 @@ public class Client {
     private QueueConnection queueCon;
     private QueueSession queueSession;
     private QueueSender queueSender;
+    */
 
     private static SimpleReporterAdapter stat = 
         new SimpleReporterAdapter("appserv-tests");
 
     public static void main(String args[]) { 
-        boolean doJms = (args.length == 1) && (args[0].equalsIgnoreCase("jms"));
+        boolean doJms = false; // TODO (args.length == 1) && (args[0].equalsIgnoreCase("jms"));
 
         stat.addDescription("ejb-timer-timertests");
 
@@ -46,9 +49,11 @@ public class Client {
         new Client().doFooTest("ejbs/Foo_UNSPECIFIED_TX", doJms);
         TimerStuff foo = new Client().doFooTest("ejbs/Foo_BMT", doJms);
 
-        new Client().doMessageDrivenTest("jms/TimerMDBQueue_CMT", foo, doJms);
 
+	/** TODO
+        new Client().doMessageDrivenTest("jms/TimerMDBQueue_CMT", foo, doJms);
         new Client().doMessageDrivenTest("jms/TimerMDBQueue_BMT", foo, doJms);
+	**/
 
         new Client().doStatefulTest("ejbs/Stateful_CMT", foo,doJms);
         new Client().doStatefulTest("ejbs/Stateful_BMT", foo, doJms);
@@ -77,6 +82,7 @@ public class Client {
 
     public void doMessageDrivenTest(String jndiName, TimerStuff foo,
                                     boolean jms) {
+	/**
         if( jms ) { return; }
 
         try {
@@ -85,7 +91,7 @@ System.out.println("********PG-> in doMessageDrivenTest() for jndiName = " + jnd
             setup();
 System.out.println("********PG-> in doMessageDrivenTest() after setup");
             Context ic = new InitialContext();
-            Queue messageDrivenDest = (Queue) ic.lookup("java:comp/env/" + jndiName);
+	     Queue messageDrivenDest = (Queue) ic.lookup("java:comp/env/" + jndiName);
 
             System.out.println("Doing message driven tests for" + jndiName);
 
@@ -117,6 +123,7 @@ System.out.println("********PG-> in doMessageDrivenTest() after setup");
         } finally {
             cleanup();
         }
+	**/
     }
 
     public void doBarTest(String jndiName, boolean jms) {
@@ -165,6 +172,7 @@ System.out.println("********PG-> in doMessageDrivenTest() after setup");
     }
 
     public void setup() throws Exception {
+	/**
 //PG->        context = new InitialContext();
         
         TopicConnectionFactory topicConFactory = 
@@ -199,10 +207,12 @@ System.out.println("********PG-> setup(): after createPublisher");
         queueSender = queueSession.createSender(null);        
 
         queueCon.start();
+	**/
 
     }
 
     public void cleanup() {
+	/**
         try {
             if( topicCon != null ) {
                 topicCon.close();
@@ -213,8 +223,9 @@ System.out.println("********PG-> setup(): after createPublisher");
         } catch(Throwable t) {
             t.printStackTrace();
         }
+        **/
     }
-
+    /**
     public void publishMsgs(Topic topic, Message msg, int num) 
         throws JMSException {
         for(int i = 0; i < num; i++) {
@@ -230,6 +241,7 @@ System.out.println("********PG-> setup(): after createPublisher");
             queueSender.send(queue, msg);
         }
     }
+    */
 
     public void doStatefulTest(String jndiName, TimerStuff foo, boolean jms) {
         if( jms ) return;
@@ -403,6 +415,7 @@ System.out.println("********PG-> setup(): after createPublisher");
 
         timerStuff.assertNoTimers();
 
+	/** TODO distributed timer tests
         try {
             System.out.println("Doing distributed timer tests");
                                
@@ -438,6 +451,7 @@ System.out.println("********PG-> setup(): after createPublisher");
             System.out.println("Exception is ..." + e);
             
         }
+	*/
         
     }
 

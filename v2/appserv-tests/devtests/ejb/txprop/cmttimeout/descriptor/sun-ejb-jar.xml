@@ -11,7 +11,7 @@
         <jndi-name>ejb/ejb_txprop_cmttimeout_HelloBean</jndi-name>
       </ejb-ref>
       -->
-      <cmt-timeout-in-seconds>45</cmt-timeout-in-seconds>
+      <cmt-timeout-in-seconds>4</cmt-timeout-in-seconds>
     </ejb>
   </enterprise-beans>
 </sun-ejb-jar>

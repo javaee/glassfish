@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<application-client version="1.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/application-client_1_4.xsd">
+<application-client version="1.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/application-client_1_5.xsd">
   <display-name>ejb-timer-sessiontimerClient</display-name>
   <ejb-ref>
     <ejb-ref-name>ejbs/Timer</ejb-ref-name>
@@ -8,15 +8,11 @@
     <remote>com.sun.s1asdev.ejb.timer.sessiontimer.TimerSession</remote>
     <ejb-link>TimerSessionEJB</ejb-link>
   </ejb-ref>
-  <resource-ref>
-    <description>description</description>
-    <res-ref-name>jms/MyQueueConnectionFactory</res-ref-name>
-    <res-type>javax.jms.QueueConnectionFactory</res-type>
-    <res-auth>Container</res-auth>
-    <res-sharing-scope>Shareable</res-sharing-scope>
-  </resource-ref>
-  <resource-env-ref>
-    <resource-env-ref-name>jms/MyQueue</resource-env-ref-name>
-    <resource-env-ref-type>javax.jms.Queue</resource-env-ref-type>
-  </resource-env-ref>
+  <ejb-ref>
+    <ejb-ref-name>ejbs/Singleton</ejb-ref-name>
+    <ejb-ref-type>Session</ejb-ref-type>
+    <remote>com.sun.s1asdev.ejb.timer.sessiontimer.TimerSingletonRemote</remote>
+    <ejb-link>TimerSingleton</ejb-link>
+  </ejb-ref>
+ 
 </application-client>

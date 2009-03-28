@@ -6,9 +6,11 @@
       <ejb-name>HelloBean</ejb-name>
       <jndi-name>ejb/ejb_stubs_ejbapp_HelloBean</jndi-name>
     </ejb>
+<!---
     <ejb>
       <ejb-name>DummyMEJBBean</ejb-name>
       <jndi-name>ejb/ejb_stubs_ejbapp_DummyMEJBBean</jndi-name>
     </ejb>
+-->
   </enterprise-beans>
 </sun-ejb-jar>

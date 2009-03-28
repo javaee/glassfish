@@ -12,7 +12,17 @@
     &reporting;
 
     <target name="all">
+        <antcall target="cmttimeout"/>
+
+	<!-- needs getTimerService() fix 
         <antcall target="simple"/>
+	-->
+    </target>
+
+    <target name="cmttimeout">
+        <record name="cmttimeout.output" action="start" />
+            <ant dir="cmttimeout" target="all"/>
+        <record name="cmttimeout.output" action="stop" />
     </target>
 
     <target name="simple">
@@ -24,7 +34,6 @@
     <target name="usage">
 	<echo>
 		Usage:
-			ant simple (Executes the ejb-txprop simple test)
 			ant all (Executes all the ejb-txprop tests)
 	</echo>
     </target>

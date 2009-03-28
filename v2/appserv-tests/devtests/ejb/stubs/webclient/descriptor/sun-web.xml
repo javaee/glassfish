@@ -10,10 +10,12 @@
      <ejb-ref-name>ejb/hello</ejb-ref-name>
      <jndi-name>ejb/ejb_stubs_ejbapp_HelloBean</jndi-name>
   </ejb-ref>
+<!--
   <ejb-ref>
      <ejb-ref-name>ejb/dummymejb</ejb-ref-name>
      <jndi-name>ejb/ejb_stubs_ejbapp_DummyMEJBBean</jndi-name>
   </ejb-ref>
+-->
   <class-loader delegate="true"/>
   <jsp-config/>
 </sun-web-app>

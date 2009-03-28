@@ -18,11 +18,13 @@
     <home>com.sun.s1asdev.ejb.stubs.ejbapp.HelloHome</home>
     <remote>com.sun.s1asdev.ejb.stubs.ejbapp.Hello</remote>
   </ejb-ref>
-  <ejb-ref>
+<!-- 
+ <ejb-ref>
     <ejb-ref-name>ejb/dummymejb</ejb-ref-name>
     <ejb-ref-type>Session</ejb-ref-type>
     <home>javax.management.j2ee.ManagementHome</home>
     <remote>javax.management.j2ee.Management</remote>
   </ejb-ref>
+-->
 </web-app>
 

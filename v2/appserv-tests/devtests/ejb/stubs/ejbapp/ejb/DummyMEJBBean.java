@@ -7,10 +7,11 @@ import javax.ejb.SessionContext;
 import javax.ejb.EJBException;
 
 import java.util.*;
-import javax.management.*;
-import javax.management.j2ee.*;
+//import javax.management.*;
+//import javax.management.j2ee.*;
 
-public class DummyMEJBBean implements SessionBean {
+public class DummyMEJBBean {} /**
+implements SessionBean {
 
     private SessionContext sc;
 
@@ -113,3 +114,4 @@ public class DummyMEJBBean implements SessionBean {
 
     public void ejbPassivate() {}
 }
+			      */
