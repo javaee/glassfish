@@ -40,6 +40,8 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.omg.CosNaming.NamingContext;
 import org.omg.CosNaming.NameComponent;
@@ -79,7 +81,8 @@ public class SerialContext implements Context {
 
     private static final NameParser myParser = new SerialNameParser();
 
-    // TODO private static Hashtable providerCache = new Hashtable();
+    private static Map<ProviderCacheKey, SerialContextProvider> providerCache =
+            new HashMap<ProviderCacheKey, SerialContextProvider>();
 
 
     private Hashtable myEnv = null; // THREAD UNSAFE
@@ -89,8 +92,6 @@ public class SerialContext implements Context {
     private final String myName;
 
     private final JavaURLContext javaUrlContext;
-
-    private static final Boolean threadlock = new Boolean(true);
 
     private Habitat habitat;
 
@@ -104,7 +105,14 @@ public class SerialContext implements Context {
 
     private String targetHost;
     private String targetPort;
+
+
     private ORB orb;
+    
+    // host/port associated with underlying orb.
+    // Used for logging / exception info purposes
+    private String orbsInitialHostValue;
+    private String orbsInitialPortValue;
 
     // True if we're running in the server and no orb,host, or port
     // properties have been explicitly set in the properties
@@ -129,7 +137,6 @@ public class SerialContext implements Context {
      * SerialContext.lookup() method. bug 5050591 This will be cleaned for the
      * next release.
      *
-
      */
 
 
@@ -271,34 +278,55 @@ public class SerialContext implements Context {
 
         if( provider == null ) {
 
+            GlassFishORBHelper orbHelper = habitat.getComponent(GlassFishORBHelper.class);
 
-            // TODO enable caching so that each InitialContext instance doesn't have to
-            // reacquire the top-level naming service.  For now, acquire the top-level
-            // server naming service reference once per InitialContext instance.
-
-            if( orb == null ) {
-                GlassFishORBHelper orbHelper = habitat.getComponent(GlassFishORBHelper.class);
-                orb = orbHelper.getORB();
-            }
-
-            org.omg.CORBA.Object cosNamingServiceRef = null;
-
-            if( targetHost != null ) {
-
-                cosNamingServiceRef = orb.string_to_object("corbaloc:iiop:1.2@" +
-					       targetHost + ":" + targetPort + "/NameService");
+            ProviderCacheKey key;
+            if( orb != null) {
+                key = new ProviderCacheKey(orb);
             } else {
+                orb = orbHelper.getORB();
 
-                cosNamingServiceRef = orb.resolve_initial_references("NameService");
+                key = (targetHost == null) ? new ProviderCacheKey(orb) :
+                    new ProviderCacheKey(targetHost, targetPort);
             }
 
-            SerialContextProvider tmpProvider = narrowProvider(cosNamingServiceRef);
+            // For logging / exception info purposes, keep track of what the
+            // orb has as its host/port
+            orbsInitialHostValue = orbHelper.getORBHost(orb);
+            orbsInitialPortValue = orbHelper.getORBPort(orb) + "";
 
-            // Don't want to
-            synchronized( threadlock ) {
-                if( provider == null ) {
-                    provider = tmpProvider;
+            SerialContextProvider cachedProvider;
+
+            synchronized(SerialContext.class) {
+                cachedProvider = providerCache.get(key);
+            }
+
+            if( cachedProvider == null) {
+
+                org.omg.CORBA.Object cosNamingServiceRef = null;
+
+                if( targetHost != null ) {
+
+                    cosNamingServiceRef = orb.string_to_object("corbaloc:iiop:1.2@" +
+					           targetHost + ":" + targetPort + "/NameService");
+                } else {
+
+                    cosNamingServiceRef = orb.resolve_initial_references("NameService");
                 }
+
+                SerialContextProvider tmpProvider = narrowProvider(cosNamingServiceRef);
+
+                synchronized(SerialContext.class) {
+                    cachedProvider = providerCache.get(key);
+                    if( cachedProvider == null ) {
+                        providerCache.put(key, tmpProvider);
+                        provider = tmpProvider;
+                    } else {
+                        provider = cachedProvider;
+                    }
+                }
+            } else {
+                provider = cachedProvider;
             }
                        
         }
@@ -387,6 +415,10 @@ public class SerialContext implements Context {
 
         try {
             if (isjavaURL(name)) {
+                if( processType == ProcessType.Other) {
+                    throw new NamingException("Access to Java EE namespace entry " +
+                            name + " is not available in this environment");
+                }
                 return javaUrlContext.lookup(name);
             } else {
                 Object obj = getProvider().lookup(name);
@@ -946,8 +978,55 @@ public class SerialContext implements Context {
             sb.append(",targetPort="+targetPort);
         }
 
+        if( orb != null ) {
+            sb.append(",orb'sInitialHost="+orbsInitialHostValue);
+            sb.append(",orb'sInitialPort="+orbsInitialPortValue);
+        }
+
         return sb.toString();
 
     }
 
-};
+    private class ProviderCacheKey {
+
+        // Key is either orb OR host/port combo.
+        private ORB orb;
+
+        private String host;
+        private String port;
+
+        public ProviderCacheKey(ORB orb) {
+            this.orb = orb;
+        }
+
+        // Host and Port must both be non-null
+        public ProviderCacheKey(String host, String port) {
+            this.host = host;
+            this.port = port;
+        }
+
+        public int hashCode() {
+            return (orb != null) ? orb.hashCode() : host.hashCode();
+        }
+
+        public boolean equals(Object other) {
+            boolean equal = false;
+
+            if( (other != null) && (other instanceof ProviderCacheKey) ) {
+                ProviderCacheKey otherKey = (ProviderCacheKey) other;
+                if( orb != null ) {
+                    equal = (orb == otherKey.orb);
+                } else {
+                    if( (otherKey.host != null) && host.equals(otherKey.host)
+                        && port.equals(otherKey.port) ) {
+                        equal = true;
+                    }
+                }
+
+            }
+
+            return equal;
+        }
+    }
+
+}

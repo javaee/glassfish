@@ -109,5 +109,20 @@ public class GlassFishORBHelper {
 
         return protocolManager;
     }
+
+    public String getORBHost(ORB orb) {
+        GlassFishORBFactory factory = habitat.getByContract(GlassFishORBFactory.class);
+
+        return factory.getORBHost(orb);
+
+    }
+
+     public int getORBPort(ORB orb) {
+        GlassFishORBFactory factory = habitat.getByContract(GlassFishORBFactory.class);
+
+        return factory.getORBPort(orb);
+
+    }
+      
     
 }

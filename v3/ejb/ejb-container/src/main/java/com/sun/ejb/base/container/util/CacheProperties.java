@@ -44,10 +44,13 @@ import com.sun.enterprise.deployment.runtime.IASEjbExtraDescriptors;
 import com.sun.enterprise.deployment.runtime.BeanCacheDescriptor;
 import com.sun.enterprise.config.serverbeans.EjbContainer;
 
+import com.sun.enterprise.deployment.EjbSessionDescriptor;
+
 import com.sun.logging.LogDomains;
 import org.glassfish.internal.api.ServerContext;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A util class to read the bean cache related entries from
@@ -83,7 +86,7 @@ public class CacheProperties {
             beanCacheDes = iased.getBeanCache();
         }
 
-        loadProperties(ejbContainer, beanCacheDes);
+        loadProperties(ejbContainer, desc, beanCacheDes);
         //container.setMonitorOn(ejbContainer.isMonitoringEnabled());
 
     }
@@ -124,6 +127,7 @@ public class CacheProperties {
     }
 
     private void loadProperties(EjbContainer ejbContainer,
+                                EjbDescriptor ejbDesc,
                                 BeanCacheDescriptor beanCacheDes) {
         numberOfVictimsToSelect =
                 new Integer(ejbContainer.getCacheResizeQuantity()).intValue();
@@ -138,6 +142,21 @@ public class CacheProperties {
                 new Integer(ejbContainer.getRemovalTimeoutInSeconds()).intValue();
 
         victimSelectionPolicy = ejbContainer.getVictimSelectionPolicy();
+
+        // If portable @StatefulTimeout is specified, it takes precedence over
+        // any default value in domain.xml.  However, if a removal timeout is
+        // specified in sun-ejb-jar.xml, that has highest precedence. 
+        if( ejbDesc instanceof EjbSessionDescriptor ) {
+
+            EjbSessionDescriptor sessionDesc = (EjbSessionDescriptor) ejbDesc;
+            if( sessionDesc.hasStatefulTimeout() ) {
+
+                long value = sessionDesc.getStatefulTimeoutValue();
+                TimeUnit unit = sessionDesc.getStatefulTimeoutUnit();
+
+                this.removalTimeoutInSeconds = (int) TimeUnit.SECONDS.convert(value, unit);
+            }
+        }
 
         if (beanCacheDes != null) {
             int temp = 0;

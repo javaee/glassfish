@@ -24,4 +24,18 @@ public class GlassFishORBFactoryImpl
         // TODO change this to a create call
        return GlassFishORBManager.getORB(props, habitat);
     }
+
+
+    public String getORBHost(ORB orb) {
+
+        return ((com.sun.corba.ee.spi.orb.ORB) orb).getORBData().getORBInitialHost();
+
+    }
+
+    public int getORBPort(ORB orb) {
+
+        return ((com.sun.corba.ee.spi.orb.ORB) orb).getORBData().getORBInitialPort();
+
+    }
+    
 }

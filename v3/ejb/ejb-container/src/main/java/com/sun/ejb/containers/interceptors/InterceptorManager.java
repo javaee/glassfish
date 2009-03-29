@@ -57,6 +57,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 
 
 /**
@@ -94,6 +95,9 @@ public class InterceptorManager {
 
     private CallbackChainImpl[] callbackChain;
 
+    private List<SystemInterceptorDescriptor> systemInterceptors =
+            new ArrayList<SystemInterceptorDescriptor>();
+
 
     public InterceptorManager(Logger _logger, BaseContainer container,
                               Class[] lcAnnotationClasses, String[] pre30LCMethodNames)
@@ -115,9 +119,13 @@ public class InterceptorManager {
     }
 
     public Object[] createInterceptorInstances() {
-        int size = serializableInterceptorClasses.length;
+        int size = serializableInterceptorClasses.length + systemInterceptors.size();
         Object[] interceptors = new Object[size];
-        for (int index = 0; index < size; index++) {
+
+        int newInstanceSize = serializableInterceptorClasses.length;
+
+        for (int index = 0; index < newInstanceSize; index++) {
+
             Class clazz = serializableInterceptorClasses[index];
             try {
                 interceptors[index] = clazz.newInstance();
@@ -126,9 +134,59 @@ public class InterceptorManager {
             } catch (InstantiationException instEx) {
                 throw new RuntimeException(instEx);
             }
+
+        }
+
+        // For system interceptors, we don't create a new instance each time.
+        // Just tack the existing obj on to the end so we don't disturb any
+        // existing index mappings.   It doesn't matter that the index
+        // corresponding to the system interceptor is "larger" than the
+        // application ones since the interceptor/callback chains will determine the
+        // order of invocation.
+        int index = newInstanceSize;
+        for (SystemInterceptorDescriptor systemInterceptor : systemInterceptors) {
+            interceptors[index] = systemInterceptor.interceptorInstance;
+            index++;
         }
 
         return interceptors;
+    }
+
+    /**
+     * Called sometime after original interceptor initialization.
+     * Install the given interceptor class instance before any application
+     * level interceptors.
+     * param o  instance of an interceptor class with a @PostConstruct method.
+     */
+    public void registerSystemInterceptor(Object o) {
+
+        int index = serializableInterceptorClasses.length +
+                systemInterceptors.size();
+
+        boolean hasPostConstruct = false;
+
+        SystemInterceptorDescriptor desc = new SystemInterceptorDescriptor();
+        desc.index = index;
+        desc.interceptorInstance = o;
+
+        // for now, we only support post construct methods
+        for(Method m : o.getClass().getDeclaredMethods()) {
+            PostConstruct postConstruct = m.getAnnotation(PostConstruct.class);
+            if( postConstruct != null ) {
+                desc.postConstructMethod = m;
+                hasPostConstruct = true;
+                break;
+            }
+        }
+
+        if(hasPostConstruct) {
+            CallbackInterceptor ci = new CallbackInterceptor(desc.index, desc.postConstructMethod);
+            callbackChain[CallbackType.POST_CONSTRUCT.ordinal()].prependInterceptor(ci);
+        }
+
+        systemInterceptors.add(desc);
+
+
     }
 
     public EjbInvocation.InterceptorChain getAroundInvokeChain(MethodDescriptor mDesc, Method beanMethod) {
@@ -249,7 +307,9 @@ public class InterceptorManager {
         if (ejbDesc.hasAroundInvokeMethod()) {
             methodInterceptorsExists = true;
         }
-        instanceIndexMap.put(beanClassName, index++);
+
+        // bean class is never accessed from instanceIndexMap so it's
+        // never added.
     }
 
     private void initCallbackIndices()
@@ -701,5 +761,11 @@ class BeanCallbackInterceptor
     public String toString() {
         return "beancallback[" + index + "]: " + method;
     }
+}
+
+class SystemInterceptorDescriptor {
+    int index;
+    Object interceptorInstance;
+    Method postConstructMethod;
 }
 

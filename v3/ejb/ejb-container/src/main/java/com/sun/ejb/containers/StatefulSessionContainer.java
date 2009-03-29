@@ -682,7 +682,7 @@ public final class StatefulSessionContainer
             ejbInv = super.invFactory.create(context.getEJB(), context);
             invocationManager.preInvoke(ejbInv);
             // PostConstruct must be called after state set to something
-            // other than NOT_INITIALIZED
+                // other than CREATED
             interceptorManager.intercept(CallbackType.POST_CONSTRUCT, context);
         } catch (Throwable t) {
             EJBException ejbEx = new EJBException();
@@ -2653,8 +2653,12 @@ public final class StatefulSessionContainer
         try {
             _logger.log(Level.FINE, "StatefulContainer Removing expired sessions....");
             long val = sfsbStoreManager.removeExpiredSessions();
-            sfsbStoreMonitor.incrementExpiredSessionsRemoved(val);
+
+            if( sfsbStoreMonitor != null ) {
+                sfsbStoreMonitor.incrementExpiredSessionsRemoved(val);
+            }
             _logger.log(Level.FINE, "StatefulContainer Removed " + val + " sessions....");
+
         } catch (SFSBStoreManagerException sfsbEx) {
             _logger.log(Level.WARNING, "Got exception from store manager",
                     sfsbEx);
@@ -2745,7 +2749,7 @@ public final class StatefulSessionContainer
             Object ejb = sc.getEJB();
 
             long checkpointStartTime = -1;
-            if (sfsbStoreMonitor.isMonitoringOn()) {
+            if ((sfsbStoreMonitor != null) && sfsbStoreMonitor.isMonitoringOn()) {
                 checkpointStartTime = System.currentTimeMillis();
             }
 
@@ -2796,10 +2800,14 @@ public final class StatefulSessionContainer
                             CallbackType.POST_ACTIVATE, sc);
                     sc.setState(BeanState.READY);
                     incrementMethodReadyStat();
-                    sfsbStoreMonitor.setCheckpointSize(serializedState.length);
-                    sfsbStoreMonitor.incrementCheckpointCount(true);
+                    if( sfsbStoreMonitor != null ) {
+                        sfsbStoreMonitor.setCheckpointSize(serializedState.length);
+                        sfsbStoreMonitor.incrementCheckpointCount(true);
+                    }
                 } catch (Throwable ex) {
-                    sfsbStoreMonitor.incrementCheckpointCount(false);
+                    if( sfsbStoreMonitor != null ) {
+                        sfsbStoreMonitor.incrementCheckpointCount(false);
+                    }
                     _logger.log(Level.WARNING, "ejb.sfsb_checkpoint_error",
                             new Object[]{ejbDescriptor.getName()});
                     _logger.log(Level.WARNING, "sfsb checkpoint error. Key: "
@@ -2814,7 +2822,9 @@ public final class StatefulSessionContainer
                     if (checkpointStartTime != -1) {
                         long timeSpent = System.currentTimeMillis()
                                 - checkpointStartTime;
-                        sfsbStoreMonitor.setCheckpointTime(timeSpent);
+                        if( sfsbStoreMonitor != null ) {
+                            sfsbStoreMonitor.setCheckpointTime(timeSpent);
+                        }
                     }
                 }
             } //synchronized

@@ -241,7 +241,7 @@ public final class POAProtocolMgr extends org.omg.CORBA.LocalObject
 
     }
 
-
+  
     /**
      * Map the EJB/RMI exception to a protocol-specific (e.g. CORBA) exception
      */

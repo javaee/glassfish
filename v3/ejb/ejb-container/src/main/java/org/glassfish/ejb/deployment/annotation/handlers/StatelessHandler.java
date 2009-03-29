@@ -86,7 +86,19 @@ public class StatelessHandler extends AbstractEjbHandler {
      */
     protected boolean isValidEjbDescriptor(EjbDescriptor ejbDesc,
             Annotation annotation) {
-        return EjbSessionDescriptor.TYPE.equals(ejbDesc.getType());
+        boolean isValid = EjbSessionDescriptor.TYPE.equals(ejbDesc.getType());
+
+        if( isValid ) {
+            EjbSessionDescriptor sessionDesc = (EjbSessionDescriptor) ejbDesc;
+            // Only check specific session-bean type if it's set in the descriptor.
+            // Otherwise it was probably populated with a sparse ejb-jar.xml and
+            // we'll set the type later.
+            if( sessionDesc.isSessionTypeSet() && !sessionDesc.isStateless() ) {
+                isValid = false;
+            }
+        }
+
+        return  isValid;
     }
 
     /**
@@ -120,7 +132,11 @@ public class StatelessHandler extends AbstractEjbHandler {
             throws AnnotationProcessorException {
 
         EjbSessionDescriptor ejbSessionDesc = (EjbSessionDescriptor)ejbDesc;
-        ejbSessionDesc.setSessionType(EjbSessionDescriptor.STATELESS);
+
+         // set session bean type in case it wasn't set in a sparse ejb-jar.xml.
+        if( !ejbSessionDesc.isSessionTypeSet() ) {
+            ejbSessionDesc.setSessionType(EjbSessionDescriptor.STATELESS);
+        }
 
         Stateless sless = (Stateless) ainfo.getAnnotation();
 

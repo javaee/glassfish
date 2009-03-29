@@ -49,6 +49,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.transaction.UserTransaction;
 import javax.xml.rpc.handler.MessageContext;
+import com.sun.ejb.EJBUtils;
 import java.util.*;
 
 
@@ -164,11 +165,10 @@ public abstract class AbstractSessionContextImpl
 
             } else if ((ejbRemoteBusinessObjectImpl != null) &&
                     ejbDesc.getRemoteBusinessClassNames().contains(intfName)) {
-                /*TODO
+
                 // Create a new client object from the stub for this
                 // business interface.
-                String generatedIntf =
-                    EJBUtils.getGeneratedRemoteIntfName(intfName);
+                String generatedIntf = EJBUtils.getGeneratedRemoteIntfName(intfName);
 
                 java.rmi.Remote stub =
                     ejbRemoteBusinessObjectImpl.getStub(generatedIntf);
@@ -184,7 +184,7 @@ public abstract class AbstractSessionContextImpl
                     ise.initCause(e);
                     throw ise;
                 }
-                */
+
             } else if( ejbDesc.isLocalBean() && intfName.equals( ejbDesc.getEjbClassName() ) ) {
 
                 businessObject = (T) optionalEjbLocalBusinessObjectImpl.

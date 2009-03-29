@@ -197,6 +197,8 @@ public class ComponentEnvManagerImpl
                 NamingObjectFactory factory = namingUtils.createSimpleNamingObjectFactory(name, obj);
                 value = namingUtils.createCloningNamingObjectFactory(name, factory);
             } else if (resourceRef.isORB()) {
+                // TODO handle non-default ORBs
+                value = namingUtils.createLazyNamingObjectFactory(name, physicalJndiName, false);
             } else if (resourceRef.isWebServiceContext()) {
             } else {
               value = namingUtils.createLazyNamingObjectFactory(name, physicalJndiName, true);

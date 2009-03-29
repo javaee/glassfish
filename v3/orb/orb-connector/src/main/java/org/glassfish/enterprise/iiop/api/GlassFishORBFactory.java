@@ -14,4 +14,8 @@ public interface GlassFishORBFactory {
 
     public ORB createORB(Properties props);
 
+    public String getORBHost(ORB orb);
+
+    public int getORBPort(ORB orb);
+
 }

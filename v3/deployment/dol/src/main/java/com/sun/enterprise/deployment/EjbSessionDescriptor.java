@@ -89,6 +89,7 @@ public class EjbSessionDescriptor extends EjbDescriptor {
     
     public final static String SINGLETON = "Singleton";
 
+    private boolean sessionTypeIsSet = false;
     private boolean isStateless = false;
     private boolean isStateful  = false;
     private boolean isSingleton = false;
@@ -160,7 +161,17 @@ public class EjbSessionDescriptor extends EjbDescriptor {
 	        }
 
 	    }
+        sessionTypeIsSet = true;
         return;
+    }
+
+    /**
+     * Useful for certain annotation / .xml processing.  ejb-jar.xml might
+     * not set <session-type> if it's only being used for sparse overriding.
+     * @return
+     */
+    public boolean isSessionTypeSet() {
+        return sessionTypeIsSet;
     }
     
 	/**

@@ -468,6 +468,11 @@ public abstract class BaseContainer
                     isSession = true;
                     EjbSessionDescriptor sd = (EjbSessionDescriptor) ejbDescriptor;
 
+                    if( !sd.isSessionTypeSet() ) {
+                        throw new RuntimeException("Invalid ejb Descriptor. Session type not set for "
+                           + " ejb " + sd.getName() + " : " + sd);                       
+                    }
+
                     if (sd.isSingleton()) {
                         isSingleton = true;
                     } else {
@@ -2309,19 +2314,18 @@ public abstract class BaseContainer
             if( otherContainer.getContainerId() == getContainerId() ) {
                 valid = true;
             } else {
-                errorMsg = localStrings.getLocalString
-                    ("containers.assert_local_obj_bean", "",
-                     new Object[] { otherContainer.ejbDescriptor.getName(),
-                                    ejbDescriptor.getName() });
+                errorMsg = "Local objects of ejb-name " + otherContainer.ejbDescriptor.getName() +
+                        " and ejb-name " + ejbDescriptor.getName() +
+                         " are from different containers" ;
+
             }
         } else {
-            errorMsg = (o != null) ? 
-               localStrings.getLocalString("containers.assert_local_obj_class",
-                   "", new Object[] { o.getClass().getName(), 
-                                      ejbDescriptor.getName() }) 
+            errorMsg = (o != null) ?
+                    "Parameter instance of class '" +  o.getClass().getName() +
+                           "' is not a valid local interface instance for bean " +
+                                      ejbDescriptor.getName()
                :
-               localStrings.getLocalString("containers.assert_local_obj_null",
-                   "", new Object[] { ejbDescriptor.getName() });
+             "A null parameter is not a valid local interface of bean " +  ejbDescriptor.getName();
         }
         
         if( !valid ) {
@@ -2338,7 +2342,7 @@ public abstract class BaseContainer
     {
         boolean valid = false;
         String errorMsg = "";
-	Exception causeException = null;
+	    Exception causeException = null;
 
         if( (o != null) && (o instanceof EJBObject) ) {
             String className = o.getClass().getName();
@@ -2346,37 +2350,37 @@ public abstract class BaseContainer
             // Given object must be an instance of the remote stub class for
             // this ejb.
             if (hasRemoteHomeView) {
-		try {
-		    valid = remoteHomeRefFactory.hasSameContainerID(
-				(org.omg.CORBA.Object) o);
-		} catch (Exception ex) {
-		    causeException = ex;
-		    errorMsg = localStrings.getLocalString
-			("containers.assert_remote_obj_class", "",
-			new Object[] { className, ejbDescriptor.getName() });
-		    
-		}
+		        try {
+		            valid = remoteHomeRefFactory.hasSameContainerID(
+				        (org.omg.CORBA.Object) o);
+		        } catch (Exception ex) {
+		            causeException = ex;
+		                errorMsg =   "Parameter instance of class '" + className +
+                        "' is not a valid remote interface instance for bean "
+                        + ejbDescriptor.getName();
+		        }
             } else {
-                errorMsg = localStrings.getLocalString
-                    ("containers.assert_remote_obj_class", "",
-                     new Object[] { className, ejbDescriptor.getName() });
+                errorMsg = "Parameter instance of class '" + className +
+                        "' is not a valid remote interface instance for bean "
+                        + ejbDescriptor.getName();
+
             }
         } else {
-            errorMsg = (o != null) ? 
-              localStrings.getLocalString("containers.assert_remote_obj_class",
-                  "", new Object[] { o.getClass().getName(), 
-                                     ejbDescriptor.getName() }) 
-              :
-              localStrings.getLocalString("containers.assert_remote_obj_null",
-                  "", new Object[] { ejbDescriptor.getName() });    
+            errorMsg = (o != null) ?
+                    "Parameter instance of class '" +  o.getClass().getName() +
+                           "' is not a valid remote interface instance for bean " +
+                                      ejbDescriptor.getName()
+               :
+             "A null parameter is not a valid remote interface of bean " +  ejbDescriptor.getName();
         }
+
 
         if( !valid ) {
             if (causeException != null) {
-		throw new EJBException(errorMsg, causeException);
-	    } else {
-		throw new EJBException(errorMsg);
-	    }
+		        throw new EJBException(errorMsg, causeException);
+	        } else {
+		        throw new EJBException(errorMsg);
+	        }
         }
     }
 
@@ -2922,6 +2926,10 @@ public abstract class BaseContainer
         this.interceptorManager = new InterceptorManager(_logger, this,
                 lifecycleCallbackAnnotationClasses,
                 getPre30LifecycleMethodNames());
+    }
+
+    void registerSystemInterceptor(Object o) {
+        interceptorManager.registerSystemInterceptor(o);
     }
     
     /*

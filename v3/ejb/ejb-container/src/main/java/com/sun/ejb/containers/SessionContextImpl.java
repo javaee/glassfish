@@ -180,14 +180,14 @@ public final class SessionContextImpl
         if( isStateless ) {
             // This covers constructor, setSessionContext, ejbCreate,
             // and ejbRemove. NOTE : For stateless session beans,
-            // instances don't move past NOT_INITIALIZED until after ejbCreate.
+            // instances don't move past CREATED until after ejbCreate.
             if( (state == BeanState.CREATED) || inEjbRemove ) {
                 throw new IllegalStateException("Operation not allowed");
             }
         } else {
             // This covers constructor and setSessionContext.
             // For stateful session beans, instances move past
-            // NOT_INITIALIZED after setSessionContext.
+            // CREATED after setSessionContext.
             if( state == BeanState.CREATED ) {
                 throw new IllegalStateException("Operation not allowed");
             }
@@ -250,7 +250,7 @@ public final class SessionContextImpl
     // Used to check if stateful session bean is in ejbCreate.
     // Since bean goes to READY state before ejbCreate is called by
     // EJBHomeImpl and EJBLocalHomeImpl, we can't rely on getState()
-    // being NOT_INITIALIZED for operations matrix checks.
+    // being CREATED for operations matrix checks.
     private boolean inStatefulSessionEjbCreate(ComponentInvocation inv) {
         boolean inEjbCreate = false;
         if ( inv instanceof EjbInvocation ) {

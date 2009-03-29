@@ -172,7 +172,7 @@ public class EntityContextImpl
     }
 
     public TimerService getTimerService() throws IllegalStateException {
-        if( state == BeanState.NOT_INITIALIZED || inUnsetEntityContext || inFinder() ) {
+        if( state == BeanState.CREATED || inUnsetEntityContext || inFinder() ) {
             throw new IllegalStateException("Operation not allowed");
         }
      
@@ -186,7 +186,7 @@ public class EntityContextImpl
     protected void checkAccessToCallerSecurity()
         throws IllegalStateException
     {
-        if( state == BeanState.NOT_INITIALIZED || inUnsetEntityContext ) {
+        if( state == BeanState.CREATED || inUnsetEntityContext ) {
             throw new IllegalStateException("Operation not allowed");
         }
         checkActivatePassivate();
@@ -206,7 +206,7 @@ public class EntityContextImpl
         
         // Prohibit access from constructor, setEntityContext, ejbCreate,
         // ejbActivate, ejbPassivate, unsetEntityContext, ejbFind
-        if( (state == BeanState.NOT_INITIALIZED) ||
+        if( (state == BeanState.CREATED) ||
         inUnsetEntityContext ||
         inFinder() ||
         inActivatePassivate() ||

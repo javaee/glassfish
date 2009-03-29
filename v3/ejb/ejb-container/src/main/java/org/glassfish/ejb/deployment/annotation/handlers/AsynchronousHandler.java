@@ -136,37 +136,47 @@ public class AsynchronousHandler extends AbstractAttributeHandler
         }
     }
 
-    protected void setAsynchronous(Method m0, EjbDescriptor ejbDesc) 
+    private void setAsynchronous(Method m0, EjbDescriptor ejbDesc)
             throws AnnotationProcessorException {
-        Set mds = ejbDesc.getClientBusinessMethodDescriptors();
-        for (Object next : mds) {
-            MethodDescriptor nextDesc = (MethodDescriptor) next;
-            Method m = nextDesc.getMethod(ejbDesc);
-            if(sameAsynchronousMethodSignature(m, m0)) {
-                // override by xml
 
-                /** XXX TODO: Compare that the Future type matches return type
-                 when @Asynchronous is on the interface as we don't look
-                 at bean methods in that case. **/
+        // All methods processed on bean class / superclass apply to all local/remote
+        // business interfaces
+        setAsynchronous(m0, ejbDesc, null);
+    }
 
-                // Check return type on the business method
-                checkValidReturnType(m);
+    /**
+     * Designate a method as asynchronous in the deployment descriptor
+     * @param methodIntf  null if processed on bean class / superclass.  Otherwise,
+     *                    set to the remote/local client view of the associated interface
+     * @throws AnnotationProcessorException
+     */
+    protected void setAsynchronous(Method m0, EjbDescriptor ejbDesc, String methodIntf)
+            throws AnnotationProcessorException {
 
-                if( !ejbDesc.getType().equals(EjbSessionDescriptor.TYPE)) {
-                    throw new AnnotationProcessorException("Invalid asynchronous method " + m +
-                        "@Asynchronous is only permitted for session beans");
-                }
-
-                EjbSessionDescriptor sessionDesc = (EjbSessionDescriptor) ejbDesc;
-
-                if (logger.isLoggable(Level.FINE)) {
-                    logger.fine("Adding asynchronous method " + nextDesc);
-                }
-                sessionDesc.addAsynchronousMethod(nextDesc);
-                
-                break;
-            }
+        if( !ejbDesc.getType().equals(EjbSessionDescriptor.TYPE)) {
+            throw new AnnotationProcessorException("Invalid asynchronous method " + m0 +
+                 "@Asynchronous is only permitted for session beans");
         }
+
+
+        /** XXX TODO: Compare that the Future type matches return type
+            when @Asynchronous is on the interface as we don't look
+            at bean methods in that case. **/
+
+        // Check return type on the business method
+        checkValidReturnType(m0);
+
+        EjbSessionDescriptor sessionDesc = (EjbSessionDescriptor) ejbDesc;
+
+        MethodDescriptor methodDesc = (methodIntf == null) ?
+                new MethodDescriptor(m0) : new MethodDescriptor(m0, methodIntf);
+
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("Adding asynchronous method " + methodDesc);
+        }
+
+        sessionDesc.addAsynchronousMethod(methodDesc);
+
     }
 
     /**

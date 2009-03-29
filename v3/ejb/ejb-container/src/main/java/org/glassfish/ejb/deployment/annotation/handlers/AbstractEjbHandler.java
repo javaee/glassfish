@@ -55,6 +55,8 @@ import javax.ejb.LocalHome;
 import javax.ejb.Stateless;
 import javax.ejb.Asynchronous;
 
+import org.jvnet.hk2.component.Habitat;
+
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.util.TypeUtil;
 
@@ -86,9 +88,14 @@ import com.sun.enterprise.deployment.annotation.handlers.AbstractHandler;
  */
 public abstract class AbstractEjbHandler extends AbstractHandler {
 
-    private AnnotationTypesProvider provider =
-            Globals.getDefaultHabitat().getComponent(AnnotationTypesProvider.class, "EJB");
-
+    private AnnotationTypesProvider provider = null;
+            
+    public AbstractEjbHandler() {
+        Habitat h = Globals.getDefaultHabitat();
+        if( h != null ) {
+            provider = h.getComponent(AnnotationTypesProvider.class, "EJB");
+        }
+    }
     /**
      * Return the name attribute of given annotation.
      * @param annotation
@@ -137,6 +144,8 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
      */
     public HandlerProcessingResult processAnnotation(AnnotationInfo ainfo) 
             throws AnnotationProcessorException {
+
+
 
         Class ejbClass = (Class) ainfo.getAnnotatedElement();
         Annotation annotation = ainfo.getAnnotation();
@@ -196,7 +205,7 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
                 log(Level.SEVERE, ainfo,     
                     localStrings.getLocalString(
                     "enterprise.deployment.annotation.handlers.wrongejbtype",
-                    "Wrong annotation symbol for ejb {1}",
+                    "Wrong annotation symbol for ejb {0}",
                     new Object[] { ejbDesc }));
                 return getDefaultFailedResult();
             }
@@ -316,8 +325,9 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
             EjbDescriptor ejbDesc, AnnotationInfo ainfo)
             throws AnnotationProcessorException {
 
-        Set<String> localIntfNames = new HashSet<String>();
-        Set<String> remoteIntfNames = new HashSet<String>();
+        Set<Class>  localBusIntfs  = new HashSet<Class>();
+        Set<Class>  remoteBusIntfs  = new HashSet<Class>();
+        
         Set<Class> clientInterfaces = new HashSet<Class>();
 
         Class ejbClass = (Class)ainfo.getAnnotatedElement();
@@ -332,17 +342,17 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
         boolean emptyRemoteBusAnn = false;
         if( remoteBusAnn != null ) {
             for(Class next : remoteBusAnn.value()) {
-                remoteIntfNames.add(next.getName());
                 clientInterfaces.add(next);
+                remoteBusIntfs.add(next);
             }
-            emptyRemoteBusAnn = remoteIntfNames.isEmpty();
+            emptyRemoteBusAnn = remoteBusIntfs.isEmpty();
         }
 
         Local localBusAnn = (Local) ejbClass.getAnnotation(Local.class); 
         if( localBusAnn != null ) {
             for(Class next : localBusAnn.value()) {
-                localIntfNames.add(next.getName());
                 clientInterfaces.add(next);
+                localBusIntfs.add(next);
             }
         }
 
@@ -361,16 +371,16 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
         // total number of local/remote business interfaces declared
         // outside of the implements clause
         int nonImplementsClauseBusinessInterfaceCount =
-            remoteIntfNames.size() + localIntfNames.size() +
+            remoteBusIntfs.size() + localBusIntfs.size() +
             ejbDesc.getRemoteBusinessClassNames().size() +
             ejbDesc.getLocalBusinessClassNames().size();
         
         for(Class next : eligibleInterfaces) {
             String nextIntfName = next.getName();
 
-            if( remoteIntfNames.contains(nextIntfName) 
+            if( remoteBusIntfs.contains(next)
                 ||
-                localIntfNames.contains(nextIntfName) 
+                localBusIntfs.contains(next)
                 ||
                 ejbDesc.getRemoteBusinessClassNames().contains(nextIntfName)
                 ||
@@ -381,13 +391,13 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
 
             } else if( next.getAnnotation(Local.class) != null ) {
 
-                localIntfNames.add(nextIntfName);
                 clientInterfaces.add(next);
+                localBusIntfs.add(next);
 
             } else if( next.getAnnotation(Remote.class) != null ) {
-                
-                remoteIntfNames.add(nextIntfName);
+
                 clientInterfaces.add(next);
+                remoteBusIntfs.add(next);
 
             } else {
 
@@ -398,9 +408,9 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
                     // it's treated as a remote business interface. Otherwise,
                     // it's treated as a local business interface.
                     if( emptyRemoteBusAnn ) {
-                        remoteIntfNames.add(nextIntfName);
+                        remoteBusIntfs.add(next);
                     } else {
-                        localIntfNames.add(nextIntfName);
+                        localBusIntfs.add(next);
                     }
                     clientInterfaces.add(next);
 
@@ -415,30 +425,22 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
             }
         }
 
-        if (localIntfNames.size() > 0) {
-            for(String next : localIntfNames) {
-                ejbDesc.addLocalBusinessClassName(next);
+        if (localBusIntfs.size() > 0) {
+            for(Class next : localBusIntfs) {
+                ejbDesc.addLocalBusinessClassName(next.getName());
             }
         }
 
-        if (remoteIntfNames.size() > 0) {
-            for(String next : remoteIntfNames) {
-                ejbDesc.addRemoteBusinessClassName(next);
+        if (remoteBusIntfs.size() > 0) {
+            for(Class next : remoteBusIntfs) {
+                ejbDesc.addRemoteBusinessClassName(next.getName());
             }
         }
 
-        for(Class next : clientInterfaces) {
-            processAsynchronousAnnotation(next, ejbDesc);
 
-            // Recursively call super-interfaces if there are any
-            // and if they are not listed explicitly
-            Class[] superintfs = next.getInterfaces();
-            for(Class c : superintfs) {
-                if (!clientInterfaces.contains(c)) {
-                    processAsynchronousAnnotation(c, ejbDesc);
-                }
-            }
-        }
+        processAsyncInterfaces(remoteBusIntfs, ejbDesc, MethodDescriptor.EJB_REMOTE);
+
+        processAsyncInterfaces(localBusIntfs, ejbDesc, MethodDescriptor.EJB_LOCAL);
 
 
         // Do Adapted @Home / Adapted @LocalHome processing here too since
@@ -558,8 +560,22 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
         
     }
 
+    private void processAsyncInterfaces(Set<Class> intfs, EjbDescriptor ejbDesc, String methodIntf)
+        throws AnnotationProcessorException {
+
+        for(Class next : intfs) {
+            processAsynchronousAnnotation(next, ejbDesc, methodIntf);
+            // Recursively call super-interfaces if there are any
+            Class[] superintfs = next.getInterfaces();
+            for(Class c : superintfs) {
+                processAsynchronousAnnotation(c, ejbDesc, methodIntf);
+            }
+        }
+
+    }
+
     private void processAsynchronousAnnotation(Class intf, 
-            EjbDescriptor ejbDesc) throws AnnotationProcessorException {
+            EjbDescriptor ejbDesc, String methodIntf) throws AnnotationProcessorException {
         if (logger.isLoggable(Level.FINE)) {            
             logger.fine("Looking for @Asynchronous annotation on " + intf);
         }
@@ -571,7 +587,7 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
         Method[] methods = intf.getDeclaredMethods();
         for (Method m0 : methods) {
             if (definedOnIntf || m0.getAnnotation(Asynchronous.class) != null) {
-                asHandler.setAsynchronous(m0, ejbDesc);
+                asHandler.setAsynchronous(m0, ejbDesc, methodIntf);
             }
         }
     }

@@ -46,6 +46,7 @@ import com.sun.enterprise.deployment.EjbSessionDescriptor;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.util.logging.Level;
 
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
@@ -88,7 +89,19 @@ public class SingletonHandler extends AbstractEjbHandler {
      */
     protected boolean isValidEjbDescriptor(EjbDescriptor ejbDesc,
             Annotation annotation) {
-        return EjbSessionDescriptor.TYPE.equals(ejbDesc.getType());
+        boolean isValid = EjbSessionDescriptor.TYPE.equals(ejbDesc.getType());
+
+        if( isValid ) {
+            EjbSessionDescriptor sessionDesc = (EjbSessionDescriptor) ejbDesc;
+            // Only check specific session-bean type if it's set in the descriptor.
+            // Otherwise it was probably populated with a sparse ejb-jar.xml and
+            // we'll set the type later.
+            if( sessionDesc.isSessionTypeSet() && !sessionDesc.isSingleton() ) {
+                isValid = false;
+            }
+        }
+
+        return  isValid;
     }
 
     /**
@@ -128,6 +141,11 @@ public class SingletonHandler extends AbstractEjbHandler {
 
         Class ejbClass = (Class) ainfo.getAnnotatedElement();
         Singleton singleton = (Singleton) ainfo.getAnnotation();
+
+        // set session bean type in case it wasn't set in a sparse ejb-jar.xml.
+        if( !ejbSingletonDescriptor.isSessionTypeSet() ) {
+            ejbSingletonDescriptor.setSessionType(EjbSessionDescriptor.SINGLETON);
+        }
 
         doDescriptionProcessing(singleton.description(), ejbDesc);
         doMappedNameProcessing(singleton.mappedName(), ejbDesc);

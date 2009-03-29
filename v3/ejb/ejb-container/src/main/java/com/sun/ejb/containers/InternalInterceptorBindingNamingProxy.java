@@ -1,9 +1,8 @@
 /*
- * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
- * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
+ * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -11,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -20,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -34,63 +33,40 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.ejb.containers.interceptors;
+package com.sun.ejb.containers;
 
-import com.sun.ejb.containers.BaseContainer;
-import java.util.Arrays;
+import org.glassfish.api.naming.NamedNamingObjectProxy;
+import org.glassfish.api.invocation.ComponentInvocation;
+
+import com.sun.ejb.EjbInvocation;
+
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
+
+import javax.naming.NamingException;
 
 /**
- * @author Mahesh Kannan
- *         Date: Mar 10, 2008
+ * Provides access to internal product-specific spi object for binding
+ * system-level interceptors (e.g from JAX-RS)
+ *
+ * @author Ken Saks
  */
-class CallbackChainImpl {
+@Service
+public class InternalInterceptorBindingNamingProxy
+        implements NamedNamingObjectProxy {
 
-    protected BaseContainer container;
-    protected CallbackInterceptor[] interceptors;
-    protected int size;
+    private static final String INTERCEPTOR_BINDING
+            = "java:org.glassfish.ejb.container.interceptor_binding_spi";
 
-    CallbackChainImpl(BaseContainer container,
-                      CallbackInterceptor[] interceptors) {
-        this.container = container;
-        this.interceptors = interceptors;
-        this.size = (interceptors == null) ? 0 : interceptors.length;
-    }
+    public Object handle(String name) throws NamingException {
 
-    public Object invokeNext(int index, CallbackInvocationContext invContext)
-            throws Throwable {
+        Object returnValue = null;
 
-        Object result = null;
-
-        if (index < size) {
-            result = interceptors[index].intercept(invContext);
+        if (INTERCEPTOR_BINDING.equals(name)) {
+            returnValue = new InternalInterceptorBindingImpl();
         }
 
-        return result;
+        return returnValue;
     }
 
-    public String toString() {
-        StringBuilder bldr = new StringBuilder("CallbackInterceptorChainImpl");
-        for (CallbackInterceptor inter : interceptors) {
-            bldr.append("\n\t\t").append(inter);
-        }
-
-        return bldr.toString();
-    }
-
-    /**
-     * Prepend an interceptor to an existing callback chain.
-     * @param interceptor
-     */
-    public void prependInterceptor(CallbackInterceptor interceptor) {
-
-        size++;
-
-        CallbackInterceptor[] newArray = new CallbackInterceptor[size];
-        newArray[0] = interceptor;
-        for(int i = 1; i < size; i++) {
-            newArray[i] = interceptors[i - 1];
-        }
-
-        interceptors = newArray;
-    }
 }
