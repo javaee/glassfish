@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:./../../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../../../config/common.xml">
+<!ENTITY run SYSTEM "file:./../../../../../config/run.xml">
+<!ENTITY testproperties SYSTEM "file:./build.properties">
+]>
+
+<project name="webcontainer_unittest" default="all" basedir=".">
+
+    &commonSetup;
+    &commonBuild;
+    &testproperties;
+    &run;
+
+    <target name="clean" depends="init-common">
+        <antcall target="clean-common"/>
+        <delete>
+            <fileset dir="." includes="*.class"/>
+        </delete>
+    </target>
+       
+    <target name="compile" depends="init-common">
+        <antcall target="compile-common">
+            <param name="src" value="servlet"/>
+        </antcall>
+    </target>
+
+    <target name="build" depends="compile">
+  	<javac srcdir="./applib1"
+    		destdir="./applib1"
+    		classpath="${s1astest.classpath}"
+    		debug="on"
+    		failonerror="true"/>
+        <mkdir dir="lib"/>
+	<jar destfile="lib/AppSharedLib1.jar">
+	    <fileset dir="./applib1"/>
+	</jar>
+        <property name="hasWebclient" value="yes"/> 
+        <antcall target="webclient-war-common">
+            <param name="hasWebclient" value="yes"/>
+            <param name="webclient.war.classes" value="**/*.class"/> 
+        </antcall>
+    </target> 
+
+    <target name="build-publish-war" depends="build, publish-war-common" />
+    
+    <target name="deploy" depends="build">
+        <antcall target="deploy-war-common"/>
+        <antcall target="clean"/>
+    </target>
+    
+    <target name="undeploy" depends="init-common">
+        <antcall target="undeploy-war-common"/>
+    </target>   
+</project>

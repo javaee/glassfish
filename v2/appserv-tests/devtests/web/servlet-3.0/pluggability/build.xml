@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:./../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../../config/common.xml">
+<!ENTITY run SYSTEM "file:./../../../../config/run.xml">
+]>
+
+<project name="webcontainer_unittest" default="all" basedir=".">
+
+    &commonSetup;
+    &commonBuild;
+    &run;
+
+    <target name="all" depends="init-sharedlib,build,run,undeploy,clean-lib"/>
+
+    <target name="clean" depends="init-common">
+	<ant dir="test1" target="clean"/>
+	<ant dir="test2" target="clean"/>
+        <antcall target="clean-common"/>
+        <delete>
+            <fileset dir="." includes="*.class"/>
+        </delete>
+    </target>
+       
+    <target name="clean-lib" depends="init-common">
+	<delete file="${env.S1AS_HOME}/lib/TestSharedLib1.jar"/>
+	<delete file="${env.S1AS_HOME}/lib/TestSharedLib2.jar"/>
+	<delete file="${env.S1AS_HOME}/lib/TestSharedLib3.jar"/>
+	<delete file="${env.S1AS_HOME}/lib/TestSharedLib4.jar"/>
+        <antcall target="restart-server-instance-common"/>
+    </target>
+
+    <target name="init-sharedlib" depends="init-common">
+        <antcall target="stopDomain"/>
+  	<javac srcdir="./sharedlib1"
+    		destdir="./sharedlib1"
+    		classpath="${s1astest.classpath}"
+    		debug="on"
+    		failonerror="true"/>
+	<jar destfile="${env.S1AS_HOME}/lib/TestSharedLib1.jar">
+	    <fileset dir="./sharedlib1"/>
+	</jar>
+  	<javac srcdir="./sharedlib2"
+    		destdir="./sharedlib2"
+    		classpath="${s1astest.classpath}"
+    		debug="on"
+    		failonerror="true"/>
+	<jar destfile="${env.S1AS_HOME}/lib/TestSharedLib2.jar">
+	    <fileset dir="./sharedlib2"/>
+	</jar>
+  	<javac srcdir="./sharedlib3"
+    		destdir="./sharedlib3"
+    		classpath="${s1astest.classpath}"
+    		debug="on"
+    		failonerror="true"/>
+	<jar destfile="${env.S1AS_HOME}/lib/TestSharedLib3.jar">
+	    <fileset dir="./sharedlib3"/>
+	</jar>
+  	<javac srcdir="./sharedlib4"
+    		destdir="./sharedlib4"
+    		classpath="${s1astest.classpath}"
+    		debug="on"
+    		failonerror="true"/>
+	<jar destfile="${env.S1AS_HOME}/lib/TestSharedLib4.jar">
+	    <fileset dir="./sharedlib4"/>
+	</jar>
+        <sleep seconds="15" />
+        <antcall target="startDomain"/>
+    </target>
+
+    <target name="build">
+	<ant dir="test1" target="deploy"/>
+	<ant dir="test2" target="deploy"/>
+        <javac srcdir="." classpath="${env.APS_HOME}/lib/reporter.jar"
+               includes="WebTest.java"/>
+    </target> 
+
+    <target name="run" depends="init-common">
+        <java classname="WebTest">
+          <arg value="${http.host}"/>
+          <arg value="${http.port}"/>
+          <arg value="/web-servlet-pluggability-1"/>
+          <arg value="1"/>
+          <classpath>
+           <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
+           <pathelement location="."/>
+         </classpath>
+        </java>
+        <java classname="WebTest">
+          <arg value="${http.host}"/>
+          <arg value="${http.port}"/>
+          <arg value="/web-servlet-pluggability-2"/>
+          <arg value="2"/>
+          <classpath>
+           <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
+           <pathelement location="."/>
+         </classpath>
+        </java>
+    </target>
+ 
+    <target name="undeploy" depends="init-common">
+	<ant dir="test1" target="undeploy"/>
+	<ant dir="test2" target="undeploy"/>
+    </target>   
+
+</project>
