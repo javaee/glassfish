@@ -19,15 +19,15 @@ import javax.naming.*;
 @WebServlet(urlPatterns="/HelloServlet", loadOnStartup=1)
 public class HelloServlet extends HttpServlet {
 
-    @EJB private SimpleSingleton simpleSingleton;
+    @EJB private SingletonBean simpleSingleton;
+    @EJB private StatelessBean simpleStateless;
+    
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
 
 	System.out.println("In HelloServlet::init");
-	simpleSingleton.hello();
-
     }
 
     @Override
@@ -40,6 +40,14 @@ public class HelloServlet extends HttpServlet {
 	System.out.println("In HelloServlet::doGet");
 
 	simpleSingleton.hello();
+	simpleStateless.hello();
+
+	simpleSingleton.assertInterceptorBinding();
+	System.out.println("Singleton interceptor binding asserted");
+
+	simpleStateless.assertInterceptorBinding();
+	System.out.println("Stateless interceptor binding asserted");
+
 
 	out.println("<HTML> <HEAD> <TITLE> JMS Servlet Output </TITLE> </HEAD> <BODY BGCOLOR=white>");
             out.println("<CENTER> <FONT size=+1 COLOR=blue>DatabaseServelt :: All information I can give </FONT> </CENTER> <p> " );

@@ -13,12 +13,19 @@
 
     <target name="all">
         <antcall target="remote"/>
+        <antcall target="localandremote"/>
     </target>
 
     <target name="remote">
         <record name="remote.output" action="start" />
             <ant dir="remote" target="all"/>
         <record name="remote.output" action="stop" />
+    </target>
+
+    <target name="localandremote">
+        <record name="localandremote.output" action="start" />
+            <ant dir="localandremote" target="all"/>
+        <record name="localandremote.output" action="stop" />
     </target>
 
     <target name="usage">

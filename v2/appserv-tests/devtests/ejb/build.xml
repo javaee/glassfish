@@ -54,8 +54,10 @@
         <ant dir="ejbc" target="all"/>
         <ant dir="txprop" target="all"/>  
         <ant dir="stubs" target="all"/>  
+<!-- gradually reenable the existing tests as features come on line
         <ant dir="bmp" target="handle"/>  
         <ant dir="bmp" target="txtests"/> 
+-->
     </target>
 
     <target name="allowedmethods">

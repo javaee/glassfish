@@ -44,6 +44,7 @@ public class Client {
 
         stat.addDescription("ejb-timer-timertests");
 
+
         new Client().doFooTest("ejbs/Foo_CMT", doJms);
 
         new Client().doFooTest("ejbs/Foo_UNSPECIFIED_TX", doJms);
@@ -55,13 +56,13 @@ public class Client {
         new Client().doMessageDrivenTest("jms/TimerMDBQueue_BMT", foo, doJms);
 	**/
 
-        new Client().doStatefulTest("ejbs/Stateful_CMT", foo,doJms);
-        new Client().doStatefulTest("ejbs/Stateful_BMT", foo, doJms);
+	new Client().doStatefulTest("ejbs/Stateful_CMT", foo,doJms);
+	new Client().doStatefulTest("ejbs/Stateful_BMT", foo, doJms);
 
         new Client().doBarTest("ejbtimer/Bar_CMT", doJms);
 
         try {
-            ((Foo) foo).remove();
+	     ((Foo) foo).remove();
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -159,7 +160,7 @@ System.out.println("********PG-> in doMessageDrivenTest() after setup");
             } else {
                 doTest(bar);
                 ((EJBObject)bar).remove();
-//PG->                doEntityTests(barHome);
+                doEntityTests(barHome);
             }
 
             System.out.println("doBarTest(): Bar : " + jndiName + " test passed!!");

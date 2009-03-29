@@ -8,18 +8,25 @@ import javax.naming.InitialContext;
 
 import java.lang.reflect.Method;
 
-import javax.ejb.EJB;
 
 @WebListener
 public class ContextListener implements ServletContextListener {
-
-    @EJB private SimpleStateless simpleStateless;
 
     public void contextInitialized(ServletContextEvent sce) {
 
 	System.out.println("In ContextListener::contextInitialized");
 
-	simpleStateless.hello();
+	try {
+	    Object jaxrsEjbGlue = new InitialContext().lookup("java:org.glassfish.ejb.container.interceptor_binding_spi");
+	    System.out.println("jaxrsEjbGlue = " + jaxrsEjbGlue);
+	    Method m = jaxrsEjbGlue.getClass().getMethod("registerInterceptor", java.lang.Object.class);
+	    System.out.println("register interceptor method = " + m);
+
+	    m.invoke(jaxrsEjbGlue, new com.sun.jersey.JerseyInterceptor());
+	    
+	} catch(Exception e) {
+	    e.printStackTrace();
+	}
 
     }
 
