@@ -267,7 +267,7 @@ public class AppClientContainerAgent {
                 } else if (option.charAt(0) != '-') {
                     isClassSelected = true;
                 } else if (option.equals("-classpath") ||
-                        options.equals("-cp")) {
+                        option.equals("-cp")) {
                     if (slot >= options.size()) {
                         throw new IllegalArgumentException(option);
                     }
