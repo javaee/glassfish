@@ -39,26 +39,34 @@
 
 package org.glassfish.appclient.client.acc.agent;
 
+import com.sun.enterprise.deployment.node.SaxParserHandler;
+import com.sun.enterprise.deployment.node.SaxParserHandlerFactory;
+import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManager;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import java.io.BufferedReader;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
 import java.lang.instrument.Instrumentation;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.sax.SAXSource;
 import org.glassfish.appclient.client.AppClientFacadeInfo;
 import org.glassfish.appclient.client.acc.ACCClassLoader;
 import org.glassfish.appclient.client.acc.AgentArguments;
@@ -75,6 +83,10 @@ import org.glassfish.appclient.client.acc.config.ClientContainer;
 import org.glassfish.appclient.client.acc.config.ClientCredential;
 import org.glassfish.appclient.client.acc.config.TargetServer;
 import org.glassfish.appclient.client.acc.config.util.XML;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Agent which prepares the ACC before the VM launches the selected main program.
@@ -104,6 +116,8 @@ public class AppClientContainerAgent {
     private static LocalStringManager localStrings = new LocalStringManagerImpl(AppClientCommand.class);
 
     private static AppClientContainer acc = null;
+
+    private static URI installRootURI = null;
 
     public static void premain(String agentArgsText, Instrumentation inst) {
         try {
@@ -164,7 +178,9 @@ public class AppClientContainerAgent {
                 /*
                  * Load the ACC configuration XML file.
                  */
-                ClientContainer clientContainer = readConfig(appClientCommandArgs.getConfigFilePath());
+                initInstallRootProperty();
+                ClientContainer clientContainer = readConfig(
+                        appClientCommandArgs.getConfigFilePath(), loader);
 
                 /*
                  * Decide what target servers to use.  This combines any
@@ -213,6 +229,15 @@ public class AppClientContainerAgent {
             System.exit(1);
         }
 
+    }
+
+    private static void initInstallRootProperty() throws URISyntaxException {
+        URI jarURI = AppClientContainerAgent.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+        File jarFile = new File(jarURI);
+        File dirFile = jarFile.getParentFile().getParentFile();
+        installRootURI = dirFile.toURI();
+
+        System.setProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY, dirFile.getAbsolutePath());
     }
 
     private static List<String> skipJVMArgs(final List<String> options) {
@@ -402,16 +427,36 @@ public class AppClientContainerAgent {
         return createContainerForClassName(config, className);
     }
 
-    private static ClientContainer readConfig(final String configPath) throws UserError, JAXBException, FileNotFoundException {
+    private static ClientContainer readConfig(final String configPath,
+            final ClassLoader loader) throws UserError, JAXBException,
+                FileNotFoundException, ParserConfigurationException,
+                SAXException, URISyntaxException {
         ClientContainer result = null;
         File configFile = checkXMLFile(configPath);
         checkXMLFile(launchInfo.getAppclientCommandArguments().getConfigFilePath());
+        /*
+         * Although JAXB makes it very simple to parse the XML into Java objects,
+         * we have to do several things explicitly to use our local copies of
+         * DTDs and XSDs.
+         */
+        SAXParserFactory spf = SAXParserFactory.newInstance();
+        spf.setValidating(true);
+        spf.setNamespaceAware(true);
+        SAXParser parser = spf.newSAXParser();
+        XMLReader reader = parser.getXMLReader();
 
+        /*
+         * Get the GF-specific local entity resolver that knows about the
+         * local copy of the DTD.
+         */
+        reader.setEntityResolver(new LocalDTDResolver());
+
+        InputSource inputSource = new InputSource(new FileInputStream(configFile));
+        SAXSource saxSource = new SAXSource(reader, inputSource);
         JAXBContext jc = JAXBContext.newInstance(ClientContainer.class );
 
         Unmarshaller u = jc.createUnmarshaller();
-        result = (ClientContainer) u.unmarshal(
-            new FileInputStream(configFile) );
+        result = (ClientContainer) u.unmarshal(saxSource);
 
         return result;
     }
@@ -456,6 +501,38 @@ public class AppClientContainerAgent {
 
     }
     
+    private static class LocalDTDResolver extends DefaultHandler {
 
+        private final static String ACC_PUBLIC_ID = "-//Sun Microsystems Inc.//DTD Application Server 8.0 Application Client Container//EN";
+        private final static URI ACC_WEB_URI = URI.create("sun-application-client-container_1_2.dtd");
 
+        private final static Map<String,URI> publicIDToFilePath = initPublicIDToWeb();
+
+        private static Map<String,URI> initPublicIDToWeb() {
+            Map<String,URI> result = new HashMap<String,URI>();
+            result.put(ACC_PUBLIC_ID, ACC_WEB_URI);
+            return result;
+        }
+
+        @Override
+        public InputSource resolveEntity(String publicId, String systemId) throws IOException, SAXException {
+            if (publicId == null) {
+                if (systemId == null ||
+                    systemId.lastIndexOf('/') == systemId.length()) {
+                        return null;
+                }
+                String fileName = SaxParserHandler.getSchemaURLFor(systemId.substring(systemId.lastIndexOf('/') + 1));
+                if (fileName == null) {
+                    fileName = systemId;
+                }
+                return new InputSource(fileName);
+            }
+            if (publicIDToFilePath.containsKey(publicId)) {
+                URI dtdURI = installRootURI.resolve("lib/dtds/").resolve(publicIDToFilePath.get(publicId));
+                File dtdFile = new File(dtdURI);
+                return new InputSource(new BufferedInputStream(new FileInputStream(dtdFile)));
+            }
+            return null;
+        }
+    }
 }
