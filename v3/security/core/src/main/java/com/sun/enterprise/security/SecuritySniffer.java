@@ -140,11 +140,6 @@ public class SecuritySniffer extends GenericSniffer {
         boolean result = false;
         try {
                 result = location.exists("META-INF/ejb-jar.xml");
-                if (result == false) {//Else scan for annotations
-                    AnnotationDetector detector =
-                           new AnnotationDetector(new EjbComponentAnnotationScanner());
-                    result = detector.hasAnnotationInArchive(location);
-                }
             } catch (IOException ioEx) {
                 //TODO
             }
