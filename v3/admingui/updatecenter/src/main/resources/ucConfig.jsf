@@ -40,25 +40,23 @@
 	setResourceBundle(key="i18nUC" bundle="org.glassfish.updatecenter.admingui.Strings");
         setResourceBundle(key="help" bundle="org.glassfish.updatecenter.admingui.Helplinks")
 />
-<!composition template="/templates/baseTemplate.tpl" 
-    pageTitle="$resource{i18nUC.updateCenter.ConfigPageTitle}" 
-    helpText="$resource{i18nUC.updateCenter.ConfigPageTitleHelp}"
-    i18nBundle="org.glassfish.admingui.core.Strings"
-    helpBundle="org.glassfish.updatecenter.admingui.Helplinks"
-    helpKey="$resource{help.uc.config}"
-    bodyOnLoad="showSection('#{proxyGroup}');"
-    >
-    
-    <!define name="headExtra">
-        <sun:script url="/resource/js/adminjsf.js" />
-    </define>
-    
-    <!define name="formExtra">
-#include "/shared/treeBreadcrumbs.inc"
+
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18nUC.updateCenter.ConfigPageTitle}" guiOnLoad="showSection('#{proxyGroup}');">
+<!define name="content">
+ 
+#include "/shared/restart.inc"    
+            <sun:form id="propertyForm">
+<f:verbatim>
+    <script type="text/javascript">
+        admingui.nav.selectTreeNodeById('form:tree:updateCenter');
+    </script>
+</f:verbatim>
 #include "/updateCenter/ucTabs.inc"
 #include "/shared/alertMsg.inc"
-    </define>
-    <!define name="pageButtonsTop">
+<!-- Page Title -->
+ <sun:title id="propertyContentPage" title="$resource{i18nUC.updateCenter.ConfigPageTitle}" helpText="$resource{i18nUC.updateCenter.ConfigPageTitleHelp}" >
+  <!facet pageButtonsTop>
+     <sun:panelGroup id="topButtons">
         <sun:button id="button" text="$resource{i18n.button.Save}" 
             onClick="if (validateProxyField()){ 
                 return submitAndDisable(this, '$resource{i18n.button.Processing}'); } 
@@ -69,8 +67,9 @@
                 redirect(page="/updateCenter/ucConfig.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
              />
         </sun:button>
-    </define>
-    <!define name="content">
+ </sun:panelGroup> 
+    </facet>
+</sun:title>
         <sun:propertySheet id="propertySheet">
             <!beforeCreate
                 setSessionAttribute(key="ucTabs" value="config");
@@ -121,9 +120,10 @@
                 </sun:tableColumn>
             </sun:tableRowGroup>
         </sun:table>
-    </define>
     
-    <!define name="htmlExtra">
+    
+ </sun:form>
+
         <f:verbatim>
         <script type="text/javascript">
             
