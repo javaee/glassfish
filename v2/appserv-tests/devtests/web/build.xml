@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="362"/>
+    <property name="TOTAL_EXPECTED" value="364"/>
 
     &commonSetup;
     &commonBuild;
@@ -225,6 +225,7 @@
         <ant dir="servlet-3.0/asyncContextDispatch" target="all"/>
         <ant dir="servlet-3.0/asyncListenerOnComplete" target="all"/>
         <ant dir="servlet-3.0/asyncListenerOnTimeout" target="all"/>
+        <ant dir="servlet-3.0/pluggability" target="all"/>
         <!-- XXX temporary commented out due to issue 7387
         <ant dir="servlet-3.0/asyncSupportedTrue" target="all"/>
         <ant dir="servlet-3.0/asyncSupportedFalse" target="all"/>
