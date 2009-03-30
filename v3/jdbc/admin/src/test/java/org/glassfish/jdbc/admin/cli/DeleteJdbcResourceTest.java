@@ -66,7 +66,7 @@ import org.jvnet.hk2.config.DomDocument;
  *
  * @author Jennifer
  */
-@Ignore // temporarily disabled
+//@Ignore // temporarily disabled
 public class DeleteJdbcResourceTest extends ConfigApiTest {
     Habitat habitat = Utils.instance.getHabitat(this);
     private Resources resources = habitat.getComponent(Resources.class);
@@ -245,6 +245,7 @@ public class DeleteJdbcResourceTest extends ConfigApiTest {
      * Test of execute method, of class DeleteJdbcResource.
      * delete-jdbc-resource
      */
+    @Ignore
     @Test
     public void testExecuteFailNoOperand() {
         //Call CommandRunnerImpl.doCommand(..) to execute the command
@@ -261,6 +262,7 @@ public class DeleteJdbcResourceTest extends ConfigApiTest {
      * Test of execute method, of class DeleteJdbcResource.
      * delete-jdbc-resource --invalid jdbc/foo
      */
+    @Ignore
     @Test
     public void testExecuteFailInvalidOption() {
         // Set operand

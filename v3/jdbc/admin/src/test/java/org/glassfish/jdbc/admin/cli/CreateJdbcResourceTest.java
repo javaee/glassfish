@@ -70,7 +70,7 @@ import org.jvnet.hk2.config.TransactionFailure;
  *
  * @author Jennifer
  */
-@Ignore // temporarily disabled
+//@Ignore // temporarily disabled
 public class CreateJdbcResourceTest extends ConfigApiTest {
     // Get Resources config bean
     Habitat habitat = Utils.instance.getHabitat(this);
@@ -337,6 +337,7 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
      * asadmin create-jdbc-resource --connectionpoolid DerbyPool --enabled=junk 
      *         --description "my resource" jdbc/junk
      */
+    @Ignore
     @Test
     public void testExecuteFailInvalidOptionEnabled() {
         // Set invalid enabled option value: --enabled junk

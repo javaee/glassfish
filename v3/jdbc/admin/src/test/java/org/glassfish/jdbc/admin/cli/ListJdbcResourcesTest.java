@@ -64,7 +64,7 @@ import org.jvnet.hk2.config.TransactionFailure;
  *
  * @author Jennifer
  */
-@Ignore // temporarily disabled
+//@Ignore // temporarily disabled
 public class ListJdbcResourcesTest extends ConfigApiTest {
     private Habitat habitat = Utils.instance.getHabitat(this);
     private Resources resources = habitat.getComponent(Resources.class);
@@ -258,6 +258,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
      * Test of execute method, of class ListJdbcResource.
      * list-jdbc-resources invalid
      */
+    @Ignore
     @Test
     public void testExecuteFailInvalidTargetOperand() {
         // List the original set of JDBC Resources 
@@ -287,6 +288,7 @@ public class ListJdbcResourcesTest extends ConfigApiTest {
      * Test of execute method, of class ListJdbcResource.
      * list-jdbc-resources --invalid invalid
      */
+    @Ignore
     @Test
     public void testExecuteFailInvalidOption() {
         listCommand = habitat.getComponent(ListJdbcResources.class);
