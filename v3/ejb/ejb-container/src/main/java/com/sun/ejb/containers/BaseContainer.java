@@ -300,7 +300,8 @@ public abstract class BaseContainer
     protected Map<String, RemoteBusinessIntfInfo> remoteBusinessIntfInfo
         = new HashMap<String, RemoteBusinessIntfInfo>();
 
-    Map<Method, List<ScheduledTimerDescriptor>> schedules = null;
+    Map<Method, List<ScheduledTimerDescriptor>> schedules =
+            new HashMap<Method, List<ScheduledTimerDescriptor>>();
 
     //
     // END -- Data members for Remote views    
@@ -678,7 +679,6 @@ public abstract class BaseContainer
                     ejbTimeoutMethod = method;
                 }
 
-                schedules = new HashMap<Method, List<ScheduledTimerDescriptor>>();
 
                 for (ScheduledTimerDescriptor schd : ejbDescriptor.getScheduledTimerDescriptors()) {
                     Method method = schd.getTimeoutMethod().getMethod(ejbDescriptor);
@@ -1579,7 +1579,7 @@ public abstract class BaseContainer
                 return;
             }
 
-            if (inv.method != ejbTimeoutMethod || 
+            if (inv.method != ejbTimeoutMethod && 
                     !schedules.keySet().contains(inv.method)) {
                 if (! authorize(inv)) {
                     throw new AccessLocalException(
