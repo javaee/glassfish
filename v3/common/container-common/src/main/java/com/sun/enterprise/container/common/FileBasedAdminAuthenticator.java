@@ -46,7 +46,7 @@ import org.glassfish.internal.api.AdminAuthenticator;
 import com.sun.grizzly.tcp.Request;
 import com.sun.enterprise.security.auth.realm.file.FileRealm;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
-import com.sun.enterprise.universal.BASE64Decoder;
+import com.sun.enterprise.universal.GFBase64Decoder;
 
 /**
  * User: Jerome Dochez
@@ -57,7 +57,7 @@ import com.sun.enterprise.universal.BASE64Decoder;
 public class FileBasedAdminAuthenticator implements AdminAuthenticator {
 
     private static final String BASIC = "Basic ";
-    private static final BASE64Decoder decoder = new BASE64Decoder();    
+    private static final GFBase64Decoder decoder = new GFBase64Decoder();    
 
     @Inject
     Logger logger;

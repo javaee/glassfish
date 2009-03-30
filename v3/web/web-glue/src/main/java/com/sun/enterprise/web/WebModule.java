@@ -62,8 +62,8 @@ import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.runtime.web.WebProperty;
 import com.sun.enterprise.deployment.web.ServletFilterMapping;
 import com.sun.enterprise.security.integration.RealmInitializer;
-import com.sun.enterprise.universal.BASE64Decoder;
-import com.sun.enterprise.universal.BASE64Encoder;
+import com.sun.enterprise.universal.GFBase64Decoder;
+import com.sun.enterprise.universal.GFBase64Encoder;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.web.pwc.PwcWebModule;
@@ -111,8 +111,8 @@ public class WebModule extends PwcWebModule {
     private static final String ALTERNATE_FROM = "from=";
     private static final String ALTERNATE_DOCBASE = "dir=";
 
-    private static final BASE64Encoder gfEncoder = new BASE64Encoder();
-    private static final BASE64Decoder gfDecoder = new BASE64Decoder();
+    private static final GFBase64Encoder gfEncoder = new GFBase64Encoder();
+    private static final GFBase64Decoder gfDecoder = new GFBase64Decoder();
 
     private static final String WS_SERVLET_CONTEXT_LISTENER =
         "com.sun.xml.ws.transport.http.servlet.WSServletContextListener";

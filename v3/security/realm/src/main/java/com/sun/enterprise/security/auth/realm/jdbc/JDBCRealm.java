@@ -55,7 +55,7 @@ import javax.sql.DataSource;
 //import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 
-import com.sun.enterprise.universal.BASE64Encoder;
+import com.sun.enterprise.universal.GFBase64Encoder;
 
 import javax.security.auth.login.LoginException;
 import com.sun.enterprise.security.auth.realm.IASRealm;
@@ -460,7 +460,7 @@ public final class JDBCRealm extends DigestRealmBase {
     }
 
     private String base64Encode(byte[] bytes) {
-        BASE64Encoder encoder = new BASE64Encoder();
+        GFBase64Encoder encoder = new GFBase64Encoder();
         return encoder.encode(bytes);
     }
 

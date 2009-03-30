@@ -36,8 +36,8 @@
 package com.sun.appserv.management.client.prefs;
 
 
-import com.sun.enterprise.universal.BASE64Decoder;
-import com.sun.enterprise.universal.BASE64Encoder;
+import com.sun.enterprise.universal.GFBase64Decoder;
+import com.sun.enterprise.universal.GFBase64Encoder;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -64,8 +64,8 @@ public class MemoryHashLoginInfoStore implements LoginInfoStore {
     
     public static final String DEFAULT_STORE_NAME = ".asadminpass";
     
-    private static final BASE64Encoder encoder = new BASE64Encoder();
-    private static final BASE64Decoder decoder = new BASE64Decoder();
+    private static final GFBase64Encoder encoder = new GFBase64Encoder();
+    private static final GFBase64Decoder decoder = new GFBase64Decoder();
     
     private Map<HostPortKey, LoginInfo> state;
     private final File store;

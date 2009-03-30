@@ -53,7 +53,7 @@ import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import org.glassfish.server.ServerEnvironmentImpl;
 
 import java.net.HttpURLConnection;
-import com.sun.enterprise.universal.BASE64Decoder;
+import com.sun.enterprise.universal.GFBase64Decoder;
 import com.sun.enterprise.v3.admin.adapter.AdminEndpointDecider;
 import com.sun.enterprise.v3.admin.listener.GenericJavaConfigListener;
 import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
@@ -82,7 +82,7 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
     public final static LocalStringManagerImpl adminStrings = new LocalStringManagerImpl(AdminAdapter.class);
     private final static String GET = "GET";
     private final static String POST = "POST";
-    private static final BASE64Decoder decoder = new BASE64Decoder();
+    private static final GFBase64Decoder decoder = new GFBase64Decoder();
     private static final String BASIC = "Basic ";
 
     private static final String QUERY_STRING_SEPARATOR = "&";

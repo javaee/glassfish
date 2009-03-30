@@ -11,5 +11,5 @@ package com.sun.enterprise.universal;
  * Also, we can replace the implementation whenever we like.
  * @author bnevins
  */
-public class BASE64Decoder extends sun.misc.BASE64Decoder{
+public class GFBase64Decoder extends sun.misc.BASE64Decoder{
 }

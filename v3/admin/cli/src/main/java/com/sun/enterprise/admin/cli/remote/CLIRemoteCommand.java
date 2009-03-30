@@ -50,7 +50,7 @@ import com.sun.enterprise.admin.cli.util.*;
 import com.sun.enterprise.cli.framework.*;
 import java.util.Iterator;
 import java.util.logging.Level;
-import com.sun.enterprise.universal.BASE64Encoder;
+import com.sun.enterprise.universal.GFBase64Encoder;
 import com.sun.enterprise.util.net.NetUtils;
 import org.glassfish.admin.payload.PayloadFilesManager;
 import org.glassfish.admin.payload.PayloadImpl;
@@ -793,7 +793,7 @@ public class CLIRemoteCommand {
         if(map == null || map.isEmpty())
             return;
         
-        BASE64Encoder encoder = new BASE64Encoder();
+        GFBase64Encoder encoder = new GFBase64Encoder();
         
         for(Map.Entry<String,String> entry : map.entrySet()) {
             String val = entry.getValue();

@@ -42,7 +42,7 @@ import java.util.logging.Logger;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
-import com.sun.enterprise.universal.BASE64Encoder;
+import com.sun.enterprise.universal.GFBase64Encoder;
 
 /** This class abstracts the details of URLS from a client. allowing
  * the client to set the host, port, security property and
@@ -284,6 +284,6 @@ public final class HttpConnectorAddress implements GenericHttpConnectorAddress
   
 
   private static final String getBase64Encoded(String clearString) {
-	return new BASE64Encoder().encode(clearString.getBytes());
+	return new GFBase64Encoder().encode(clearString.getBytes());
   }
 }

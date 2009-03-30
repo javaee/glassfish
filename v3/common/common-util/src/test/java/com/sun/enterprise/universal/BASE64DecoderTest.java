@@ -23,8 +23,8 @@ public class BASE64DecoderTest {
      */
     @Test
     public void testEncodeDecode() throws IOException{
-        BASE64Encoder encoder = new BASE64Encoder();
-        BASE64Decoder decoder = new BASE64Decoder();
+        GFBase64Encoder encoder = new GFBase64Encoder();
+        GFBase64Decoder decoder = new GFBase64Decoder();
         
         for(String s : ss) {
             byte[] stringAsByteBuf = s.getBytes();
@@ -40,10 +40,10 @@ public class BASE64DecoderTest {
      */
     @Test
     public void testEncodeDecodeAgainstSun() throws IOException{
-        com.sun.enterprise.universal.BASE64Encoder gfEncoder = 
-                new com.sun.enterprise.universal.BASE64Encoder();
-        com.sun.enterprise.universal.BASE64Decoder gfDecoder = 
-                new com.sun.enterprise.universal.BASE64Decoder();
+        com.sun.enterprise.universal.GFBase64Encoder gfEncoder = 
+                new com.sun.enterprise.universal.GFBase64Encoder();
+        com.sun.enterprise.universal.GFBase64Decoder gfDecoder = 
+                new com.sun.enterprise.universal.GFBase64Decoder();
         sun.misc.BASE64Decoder sunDecoder = new sun.misc.BASE64Decoder();
         sun.misc.BASE64Encoder sunEncoder = new sun.misc.BASE64Encoder();
         

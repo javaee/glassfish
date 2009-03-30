@@ -63,7 +63,7 @@ import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.InjectionManager;
 import org.jvnet.hk2.component.UnsatisfiedDepedencyException;
-import com.sun.enterprise.universal.BASE64Decoder;
+import com.sun.enterprise.universal.GFBase64Decoder;
 import org.glassfish.api.admin.Payload;
 /**
  * Encapsulates the logic needed to execute a server-side command (for example,  
@@ -622,7 +622,7 @@ public class CommandRunnerImpl implements CommandRunner {
          */
     String getPropertiesValue(final Properties props, final String key,
                               final boolean ignoreCase) {
-        BASE64Decoder base64Decoder = new BASE64Decoder();
+        GFBase64Decoder base64Decoder = new GFBase64Decoder();
         if (ignoreCase) {
             for (Object propObj : props.keySet()) {
                 final String propName = (String)propObj;

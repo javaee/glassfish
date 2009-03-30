@@ -39,7 +39,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.net.URLConnection;
-import com.sun.enterprise.universal.BASE64Encoder;
+import com.sun.enterprise.universal.GFBase64Encoder;
 
 public final class HttpConnectorAddress
 {
@@ -240,6 +240,6 @@ public final class HttpConnectorAddress
     }
   
     private final String getBase64Encoded(String clearString) {
-        return new BASE64Encoder().encode(clearString.getBytes());
+        return new GFBase64Encoder().encode(clearString.getBytes());
     }
 }

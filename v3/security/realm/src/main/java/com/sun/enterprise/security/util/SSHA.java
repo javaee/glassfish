@@ -42,8 +42,8 @@ import java.security.*;
 import java.security.spec.*;
 
 import com.sun.enterprise.util.i18n.StringManager;
-import com.sun.enterprise.universal.BASE64Decoder;
-import com.sun.enterprise.universal.BASE64Encoder;
+import com.sun.enterprise.universal.GFBase64Decoder;
+import com.sun.enterprise.universal.GFBase64Encoder;
 
 /**
  * Util class for salted SHA processing.
@@ -140,7 +140,7 @@ public class SSHA
         System.arraycopy(hash, 0, res, 0, 20);
         System.arraycopy(salt, 0, res, 20, salt.length);
 
-        BASE64Encoder encoder = new BASE64Encoder();
+        GFBase64Encoder encoder = new GFBase64Encoder();
         String encoded = encoder.encode(res);
 
         String out = SSHA_TAG + encoded;
@@ -254,7 +254,7 @@ public class SSHA
 
         String ssha = encoded.substring(SSHA_TAG.length());
         
-        BASE64Decoder decoder = new BASE64Decoder();
+        GFBase64Decoder decoder = new GFBase64Decoder();
         byte[] result = null;
       
         try {
