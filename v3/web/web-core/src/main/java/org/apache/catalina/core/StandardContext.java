@@ -57,6 +57,7 @@ package org.apache.catalina.core;
 import java.io.*;
 import java.net.URLDecoder;
 import java.util.*;
+import java.util.jar.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.management.MBeanRegistrationException;
@@ -68,6 +69,7 @@ import javax.management.ObjectName;
 import javax.naming.directory.DirContext;
 import javax.servlet.*;
 import javax.servlet.http.*;
+import javax.servlet.annotation.HandlesTypes;
 
 import org.apache.catalina.*;
 import org.apache.catalina.deploy.*;
@@ -5676,6 +5678,13 @@ public class StandardContext
                 lifecycle.fireLifecycleEvent(AFTER_START_EVENT, null);
             }
 
+            // Support for pluggability : this has to be done before
+            // listener events are fired
+            if (ok) {
+                if(!callServletContainerInitializers()) {
+                    ok = false;
+                }
+            }
 
             // Configure and call application event listeners
             if (ok) {
@@ -5755,6 +5764,214 @@ public class StandardContext
         }
 
         //cacheContext();
+    }
+
+    private boolean callServletContainerInitializers() {
+
+        // Get a list of ServletContainerInitializers present, if any, in this app's lib
+        // TODO : Looks like this loads all libraries; need to use the appropriate classLoader from clh
+        ServiceLoader<ServletContainerInitializer> frameworks =
+                ServiceLoader.load(ServletContainerInitializer.class, getLoader().getClassLoader());
+
+        //Build an interest list : Map of annotations/class of interest and array of initializers interested in that
+        // annotations/class
+        Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> interestList = null;
+
+        //Indicates the presence of ServletContainerInitializers with specific interest in classes
+        boolean initializerWithSpecificInterest = false;
+
+        // Build a list of the classes / annotations in which the initializers are interested in
+        for(ServletContainerInitializer sc : frameworks) {
+            if(interestList == null) {
+                interestList = new HashMap<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>>();
+            }
+            HandlesTypes ann = sc.getClass().getAnnotation(HandlesTypes.class);
+            if(ann == null) {
+                // This initializer does not contain @HandlesTypes
+                // This means it should always be called for all web apps
+                // So map it with a special token
+                ArrayList<Class<? extends ServletContainerInitializer>> currentInitializerList =
+                        interestList.get(StandardContext.class);
+                if(currentInitializerList == null) {
+                    ArrayList<Class<? extends ServletContainerInitializer>> arr =
+                            new ArrayList<Class<? extends ServletContainerInitializer>>();
+                    arr.add(sc.getClass());
+                    interestList.put(StandardContext.class, arr);
+                } else {
+                    currentInitializerList.add(sc.getClass());
+                }
+            } else {
+                Class[] interestedClasses = ann.value();
+                if( (interestedClasses != null) && (interestedClasses.length != 0) ) {
+                    initializerWithSpecificInterest = true;
+                    for(Class c : interestedClasses) {
+                        ArrayList<Class<? extends ServletContainerInitializer>> currentInitializerList =
+                                interestList.get(c);
+                        if(currentInitializerList == null) {
+                            ArrayList<Class<? extends ServletContainerInitializer>> arr =
+                                    new ArrayList<Class<? extends ServletContainerInitializer>>();
+                            arr.add(sc.getClass());
+                            interestList.put(c, arr);
+                        } else {
+                            currentInitializerList.add(sc.getClass());
+                        }
+                    }
+                }
+            }
+        }
+        // If interestList is still null, it means we did not find any ServletContainerInitializers
+        // return immediately
+        if(interestList == null)
+            return true;
+        // This holds the final list of initializers that have to be called for this webapp and a list of
+        // classes that has to be sent as arg for onStartup method
+        Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>> initializerList = null;
+
+        //If an initializer was present without @HandleTypes, that initializer should always be called
+        if(interestList.containsKey(StandardContext.class)) {
+            initializerList = new HashMap<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>>();
+            ArrayList<Class<? extends ServletContainerInitializer>> initializersWithoutHandleTypes =
+                    interestList.get(StandardContext.class);
+            for(Class c : initializersWithoutHandleTypes) {
+                initializerList.put(c, null);
+            }
+        }
+        //Now scan every class in this app's WEB-INF/classes and WEB-INF/lib to see if any class
+        //uses the annotation or extends/implements a class in our interest list
+        //Do this scanning only if we have ServletContainerinitializers that have expressed specific interest
+        if(initializerWithSpecificInterest) {
+            for(String path : ((WebappLoader)getLoader()).getLoaderRepositories()) {
+                String fullPath = docBase + path;
+                try {
+                    if(fullPath.endsWith(".jar")) {
+                        JarFile jf = new JarFile(fullPath);
+                        Enumeration<JarEntry> entries = jf.entries();
+                        while(entries.hasMoreElements()) {
+                            JarEntry anEntry = entries.nextElement();
+                            if(anEntry.isDirectory())
+                                continue;
+                            if(!anEntry.getName().endsWith(".class"))
+                                continue;
+                            try {
+                                String className = anEntry.getName().replace('/', '.');
+                                className = className.substring(0, className.length()-6);
+                                Class aClass =
+                                        getLoader().getClassLoader().loadClass(className);
+                                initializerList = checkAgainstInterestList(aClass, interestList, initializerList);
+                            } catch (ClassNotFoundException e) {
+                                log.warning(sm.getString("standardContext.pluggability.CNFWarning", anEntry.getName()));
+                                continue;
+                            }
+                        }
+                    } else if(fullPath.endsWith(".class")) {
+                        try {
+                            Class aClass = getLoader().getClassLoader().loadClass(getClassNameFromPath(fullPath,path));
+                            initializerList = checkAgainstInterestList(aClass, interestList, initializerList);
+                        } catch (ClassNotFoundException e) {
+                            log.warning(sm.getString("standardContext.pluggability.CNFWarning", fullPath));
+                            continue;
+                        }
+                    } else {
+                        File file = new File(fullPath);
+                        if(file.isDirectory()) {
+                            initializerList = scanDirectory(file, path, interestList, initializerList);
+                        } else {
+                            log.warning(sm.getString("standardContext.pluggability.UnkownFileWarning", path));
+                        }
+                    }
+                } catch(IOException ioex) {
+                    log.severe(sm.getString("standardContext.pluggability.IOerror", ioex.getLocalizedMessage()));
+                    return false;
+                }
+            }
+        }
+
+        //We have the list of initializers and the classes that satisfy the condition
+        //Time to call the initializers
+        if(initializerList != null) {
+                ServletContext ctxt = this.getServletContext();
+                for(Class<? extends ServletContainerInitializer> initializer : initializerList.keySet()) {
+                    try {
+                        ServletContainerInitializer iniInstance = initializer.newInstance();
+                        iniInstance.onStartup(initializerList.get(initializer), ctxt);
+                    } catch (Exception iex) {
+                        log.warning(sm.getString("standardContext.pluggability.CNFWarning", initializer.getCanonicalName()));
+                        continue;
+                    }
+                }
+        }
+        return true;
+    }
+
+    private String getClassNameFromPath(String fullPath, String path) {
+        String className = fullPath.substring(docBase.length()+path.length());
+        className = className.replace(File.separatorChar, '.');
+        className = className.substring(0, className.length()-6);
+        return className;
+    }
+
+    private Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>> scanDirectory(File dir, String path,
+                                      Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> interestList,
+                                      Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>> initializerList) {
+        File[] files = dir.listFiles();
+        for (File file : files) {
+            if (file.isFile()) {
+                String fileName = file.getPath();
+                if (fileName.endsWith(".class")) {
+                    try {
+                        Class aClass = getLoader().getClassLoader().loadClass(getClassNameFromPath(fileName, path));
+                        initializerList = checkAgainstInterestList(aClass, interestList, initializerList);
+                    } catch (ClassNotFoundException e) {
+                        log.warning(sm.getString("standardContext.pluggability.CNFWarning", fileName));
+                        continue;
+                    }
+                }
+            } else {
+                initializerList = scanDirectory(file, path, interestList, initializerList);
+            }
+        }
+        return initializerList;
+    }
+
+    private Map<Class<?extends ServletContainerInitializer>, HashSet<Class<?>>> checkAgainstInterestList(Class aClass,
+                                    Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> interestList,
+                                    Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>> initializerList) {
+        for(Class c : interestList.keySet()) {
+            boolean candidate = true;
+            if(aClass.getAnnotation(c) == null) {
+                //This class does not have the annotation
+                if(!c.isAssignableFrom(aClass)) {
+                    //This class does not extend the class in interest list
+                    Class[] interfaces = aClass.getInterfaces();
+                    boolean found = false;
+                    for(Class intf : interfaces) {
+                        if(intf.equals(c)) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if(!found) {
+                        //This class does not implement the interface also
+                        candidate = false;
+                    }
+                }
+            }
+            if(candidate) {
+                if(initializerList == null) {
+                    initializerList = new HashMap<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>>();
+                }
+                ArrayList<Class<? extends ServletContainerInitializer>> containerInitializers = interestList.get(c);
+                for(Class<? extends ServletContainerInitializer> initializer : containerInitializers) {
+                    HashSet<Class<?>> classSet = initializerList.get(initializer);
+                    if(classSet == null) {
+                        classSet = new HashSet<Class<?>>();
+                    }
+                    classSet.add(aClass);
+                    initializerList.put(initializer, classSet);
+                }
+            }
+        }
+        return initializerList;
     }
 
 
