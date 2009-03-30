@@ -44,6 +44,8 @@ import com.sun.grizzly.Controller;
 import com.sun.grizzly.arp.DefaultAsyncHandler;
 import com.sun.grizzly.arp.AsyncHandler;
 import com.sun.grizzly.arp.AsyncFilter;
+import com.sun.grizzly.util.ClassLoaderUtil;
+import com.sun.grizzly.util.net.SSLImplementation;
 import com.sun.logging.LogDomains;
 import java.lang.management.ManagementFactory;
 import java.util.LinkedList;
@@ -60,7 +62,15 @@ import org.jvnet.hk2.component.Habitat;
  * @author Alexey Stashok
  */
 public class GrizzlyListenerConfigurator {
-    
+
+    // Map the same name as Grizzly's SelectorThreadConfig
+    // TODO: Once Grizzly expose those value, remove from here.
+
+    private final static String SSL_CONFIGURATION_WANTAUTH =
+            "com.sun.grizzly.ssl.auth";
+
+    private final static String SSL_CONFIGURATION_SSLIMPL =
+            "com.sun.grizzly.ssl.sslImplementation";
     
     /**
      * The logger to use for logging messages.
@@ -264,13 +274,33 @@ public class GrizzlyListenerConfigurator {
             grizzlyEmbeddedHttps.setEnabledCipherSuites(enabledCiphers);
         }
 
+        // Allow customization of SSLImplementation
+        String auth = System.getProperty(SSL_CONFIGURATION_WANTAUTH);
+        if (auth != null) {
+            if (auth.trim().equalsIgnoreCase("want")){
+                grizzlyEmbeddedHttps.setWantClientAuth(true);
+            } else if (auth.trim().equalsIgnoreCase("need")){
+                grizzlyEmbeddedHttps.setNeedClientAuth(true);
+            }
+        }
+
+        if (System.getProperty(SSL_CONFIGURATION_SSLIMPL) != null) {
+            SSLImplementation sslImplementation = (SSLImplementation)
+                    ClassLoaderUtil.load(System.getProperty(SSL_CONFIGURATION_SSLIMPL));
+            if (sslImplementation != null){
+                grizzlyEmbeddedHttps.setSSLImplementation(sslImplementation);
+            } else {
+                logger.log(Level.WARNING, "Unable to load SSLImplementation");
+            }
+        }
+        
         try {
             grizzlyEmbeddedHttps.initializeSSL();
             return true;
         } catch(Exception e) {
             logger.log(Level.WARNING, "SSL support could not be configured!", e);
         }
-        
+
         return false;
     }
     
