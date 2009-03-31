@@ -24,8 +24,6 @@
 package org.glassfish.ejb;
 
 import org.glassfish.internal.deployment.GenericSniffer;
-import com.sun.enterprise.deployment.util.AnnotationDetector;
-import com.sun.enterprise.deployment.annotation.introspection.EjbComponentAnnotationScanner;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.ModulesRegistry;
@@ -136,11 +134,6 @@ public class EjbSniffer  extends GenericSniffer implements Sniffer {
         if (result == false) {
             try {
                 result = location.exists("WEB-INF/ejb-jar.xml");
-                if (result == false) {//Else scan for annotations
-                    AnnotationDetector detector =
-                           new AnnotationDetector(new EjbComponentAnnotationScanner());
-                    result = detector.hasAnnotationInArchive(location);
-                }
             } catch (IOException ioEx) {
                 //TODO
             }
