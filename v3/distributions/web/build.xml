@@ -48,7 +48,11 @@
                     <exclude name="META-INF/**"/>
                 </patternset>
                 <fileset dir="target/fragments" includes="*.zip"/>
-            </unzip>
+       	    </unzip>
+
+	    <!-- set execute permissions for glassfish/bin files -->
+
+	    <chmod file="target/stage/glassfish/bin/*" perm="ugo+rx"/>
 
             <zip file="@{zipfile}" basedir="target/stage">
                 <zipgroupfileset file="@{base}"/>
@@ -70,6 +74,10 @@
 	<delete dir="target/stage/glassfish/modules" includes="*.pom"/>
 	<delete dir="target/stage/glassfish/modules" includes="*.war"/>
 	<delete dir="target/stage/glassfish/modules" includes="*.xml" />
+
+	<!-- set execute permissions for glassfish/bin files -->
+
+	<chmod file="target/stage/glassfish/bin/*" perm="ugo+rx"/>
 
         <graphDef id="generate-picture" tolerateBrokenPOMs="true">
             <visualize file="modules.png">
