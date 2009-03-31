@@ -4985,28 +4985,24 @@ public class StandardContext
             return (ok);
         ServletContextEvent event =
           new ServletContextEvent(getServletContext());
-        for(Object instance : instances) {
-            if(instance == null) {
+        for (Object instance : instances) {
+            if (instance == null) {
                 continue;
             }
-            if(!(instance instanceof ServletContextListener)) {
+            if (!(instance instanceof ServletContextListener)) {
                 continue;
             }
             ServletContextListener listener = (ServletContextListener)instance;
             try {
                 fireContainerEvent(ContainerEvent.BEFORE_CONTEXT_INITIALIZED, listener);
                 listener.contextInitialized(event);
+            } finally {
                 fireContainerEvent(ContainerEvent.AFTER_CONTEXT_INITIALIZED, listener);
-            } catch(Throwable t) {
-                fireContainerEvent(ContainerEvent.AFTER_CONTEXT_INITIALIZED, listener);
-                getServletContext().log(sm.getString("standardContext.listenerStart",
-                        instance.getClass().getName()), t);
-                ok = false;
             }
         }
+
         isContextInitializedCalled = true;
         return (ok);
-
     }
 
 
