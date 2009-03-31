@@ -265,8 +265,6 @@ public final class GlassFishORBManager {
         ProcessEnvironment processEnv = habitat.getComponent(ProcessEnvironment.class);
 
         processType = processEnv.getProcessType();
-        processType = processEnv.getProcessType();
-
 
         try {
             if (logger.isLoggable(Level.FINEST)) {

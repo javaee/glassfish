@@ -1520,18 +1520,17 @@ public abstract class BaseContainer
             
             final BeanContext bc = (BeanContext) beanContextStack.pop();
             if ( bc.classLoaderSwitched == true ) {
-	        if (System.getSecurityManager() == null) {
-		    Thread.currentThread().setContextClassLoader(bc.previousClassLoader);
-		} else {
-		    java.security.AccessController.doPrivileged(
-				  new java.security.PrivilegedAction() {
+	            if (System.getSecurityManager() == null) {
+		            Thread.currentThread().setContextClassLoader(bc.previousClassLoader);
+		        } else {
+		            java.security.AccessController.doPrivileged(
+				        new java.security.PrivilegedAction() {
 		                      public java.lang.Object run() {
 					  Thread.currentThread().setContextClassLoader(
 								    bc.previousClassLoader);
 					  return null;
-				      }
-		    });
-		}
+                              }});
+		        }
             }
         } catch ( Exception ex ) {
             _logger.log(Level.FINE, "externalPostInvoke ex", ex);

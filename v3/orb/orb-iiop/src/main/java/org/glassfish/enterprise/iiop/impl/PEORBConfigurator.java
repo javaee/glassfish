@@ -62,9 +62,6 @@ public class PEORBConfigurator implements ORBConfigurator {
     private static final java.util.logging.Logger logger =
             java.util.logging.Logger.getLogger(LogDomains.CORBA_LOGGER);
 
-    private static final String OPT_COPIER_CLASS =
-            "com.sun.corba.ee.spi.copyobject.OptimizedCopyobjectDefaults";
-
     // TODO private static TSIdentification tsIdent;
     private static ORB theORB;
     private static ThreadPoolManager threadpoolMgr = null;
@@ -119,7 +116,7 @@ public class PEORBConfigurator implements ORBConfigurator {
 
     // Called from GlassFishORBManager only when the ORB is running on server side
     public static void setThreadPoolManager() {
-        //threadpoolMgr = S1ASThreadPoolManager.getThreadPoolManager();
+        threadpoolMgr = S1ASThreadPoolManager.getThreadPoolManager();
     }
 
     private static void configureCallflowInvocationInterceptor(ORB orb) {

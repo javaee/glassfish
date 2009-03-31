@@ -383,9 +383,9 @@ public class SerialContext implements Context {
         // Before any lookup bind any NamedNamingObjectProxy
         // Skip if in plain Java SE client
         // TODO this should really be moved somewhere else
-        if( (processType == ProcessType.Server) || (processType == ProcessType.ACC) ) {
-            NamedNamingObjectManager.checkAndLoadProxies(habitat);
-        }
+
+        NamedNamingObjectManager.checkAndLoadProxies(habitat);
+
 
         /**
          * In case a user is creating an IC with env passed in constructor; env
@@ -415,10 +415,6 @@ public class SerialContext implements Context {
 
         try {
             if (isjavaURL(name)) {
-                if( processType == ProcessType.Other) {
-                    throw new NamingException("Access to Java EE namespace entry " +
-                            name + " is not available in this environment");
-                }
                 return javaUrlContext.lookup(name);
             } else {
                 Object obj = getProvider().lookup(name);
@@ -441,7 +437,9 @@ public class SerialContext implements Context {
             throw ne;
         } catch (Exception ex) {
             _logger.log(Level.SEVERE,
-                    "enterprise_naming.serialctx_communication_exception", ex);
+                    "enterprise_naming.serialctx_communication_exception", name);
+            _logger.log(Level.SEVERE, "", ex);
+
             // temp fix for 6320008
             // this should be removed once we change the transient NS
             // implementation to persistent
