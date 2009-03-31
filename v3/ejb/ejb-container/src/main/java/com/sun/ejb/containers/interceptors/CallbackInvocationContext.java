@@ -67,6 +67,10 @@ public class CallbackInvocationContext implements InvocationContext {
         return ejbContext.getEJB();
     }
 
+    public Object getTimer() {
+        return null;
+    }
+
     public Method getMethod() {
         return null;
     }

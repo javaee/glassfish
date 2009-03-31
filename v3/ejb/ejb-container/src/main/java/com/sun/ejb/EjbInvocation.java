@@ -474,6 +474,14 @@ public class EjbInvocation
         return this.ejb;
     }
  
+    /**
+     * @return Returns the timer instance.
+     */
+    public Object getTimer() {
+        // TODO: Return the timer for AroundTimeout calls.
+        return null;
+    }
+ 
     
     /**
      * @return For AroundInvoke methods, returns the bean class 
