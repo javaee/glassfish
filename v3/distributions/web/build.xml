@@ -50,9 +50,13 @@
                 <fileset dir="target/fragments" includes="*.zip"/>
        	    </unzip>
 
-	    <!-- set execute permissions for glassfish/bin files -->
+	    <!-- set execute permissions for glassfish/bin files,
+	     if available -->
 
-	    <!--chmod file="target/stage/glassfish/bin/*" perm="ugo+rx"/-->
+            <available file="target/stage/glassfish/bin" type="dir"
+               property="bin.dir.present"/>
+	    
+            <antcall target="set.execute" />
 
             <zip file="@{zipfile}" basedir="target/stage">
                 <zipgroupfileset file="@{base}"/>
@@ -60,6 +64,11 @@
             <attachArtifact file="@{zipfile}"/>
         </sequential>
     </macrodef>
+
+    <target name="set.execute" if="bin.dir.present">
+	    <echo message="Setting execute permissions" />
+	    <chmod dir="target/stage/glassfish/bin" perm="ugo+rx"/>
+    </target>
 
     <target name="create.bundle" depends="web.prepare">
 	
@@ -74,8 +83,6 @@
 	<delete dir="target/stage/glassfish/modules" includes="*.pom"/>
 	<delete dir="target/stage/glassfish/modules" includes="*.war"/>
 	<delete dir="target/stage/glassfish/modules" includes="*.xml" />
-
-	<!-- set execute permissions for glassfish/bin files -->
 
 
         <graphDef id="generate-picture" tolerateBrokenPOMs="true">
