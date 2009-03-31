@@ -621,7 +621,7 @@ public class PEFileLayout
         return new File(getInstallRootDir(), CONFIG_DIR);
     }
 
-    public static final String ACC_XML_TEMPLATE = "sun-acc.xml.template";
+    public static final String ACC_XML_TEMPLATE = "sun-acc.xml";
     public File getAppClientContainerXmlTemplate()
     {
         return new File(getTemplatesDir(), ACC_XML_TEMPLATE);

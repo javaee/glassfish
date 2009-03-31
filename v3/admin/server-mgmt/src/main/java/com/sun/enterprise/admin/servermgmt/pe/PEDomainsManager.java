@@ -167,7 +167,7 @@ public class PEDomainsManager extends RepositoryManager
                 getDomainPasswordClear(domainConfig));
             createKeyFile(domainConfig, getDomainUser(domainConfig),
                 getDomainPasswordClear(domainConfig));
-            //createAppClientContainerXml(domainConfig);
+            createAppClientContainerXml(domainConfig);
             createIndexFile(domainConfig);
             createDefaultWebXml(domainConfig);
             createLoginConf(domainConfig);
