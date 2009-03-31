@@ -130,9 +130,9 @@
         <condition property="archive.ear">
             <equals arg1="ear" arg2="${archive.type}"/>
         </condition>
-        <!-- condition property="archive.jar">
-            <equals pattern="jar" string="${archive.type}"/>            
-        </condition -->
+        <condition property="archive.jar">
+            <equals arg1="jar" arg2="${archive.type}"/>            
+        </condition>
     </target>
     
     <target name="build-impl">
@@ -207,6 +207,7 @@
 </target>
 
 <target name="build-jar" depends="archive-type" if="archive.jar">    
+    <echo message="Now creating a jar file ${dist.dir}/${app.file.ext}"/>
     <delete dir="${class.output}"/>
     <delete dir="${dist.dir}"/>
     <mkdir dir="${class.output}"/>
@@ -218,29 +219,11 @@
     target="1.5"
     classpathref="class.path"
     srcdir="src/java"
-    destdir="${class.output}/app"/>
+    destdir="${class.output}"/>
     <echo message="Now creating a war file ${dist.dir}/${app.file.ext}"/>
-    <war destfile="${dist.dir}/${app.file.ext}" webxml="metadata/web.xml" needxmlfile="true">
-	    <fileset dir="src/java/html"/>
-        <fileset dir="src/myapp/jsp"/>
-        <!--<lib dir="thirdparty/libs">
-        <exclude name="jdbc1.jar"/>
-        </lib>-->
-        <classes dir="${class.output}/app">        
-            <include name="**/*.class"/>        
-        </classes>
-        <!--<zipfileset dir="src/graphics/images/gifs"
-        prefix="images"/>-->
-        <!--<webinf dir="metadata">                  
-            <include name="**/*.xml"/>                                        
-        </webinf>-->
-    </war>
-    <copy file="${dist.dir}/${app.file.ext}" tofile="./${app.file.ext}"/>
-    <echo message="======================================================="/>
-    <echo message="Packaged Archive at ${dist.dir}/${app.file.ext}"/>
-    <echo message="======================================================="/>
+    <jar destfile="${dist.dir}/${app.file.ext}" update="true" 
+	basedir="${class.output}"/>        
 </target>
-
 
 <target name="build-ear" depends="archive-type" if="archive.ear">    
     <delete dir="${class.output}"/>

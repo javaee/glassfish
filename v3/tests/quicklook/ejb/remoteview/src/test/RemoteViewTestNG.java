@@ -78,6 +78,7 @@ public class RemoteViewTestNG {
         //System.out.println("2.x HelloRemote.hello() says " + hr.hello());
     }
     private static void callBusHome(Hello h) {
-        System.out.println("Hello.hello() says " + h.hello());
+	String hret = h.hello();
+        //System.out.println("Hello.hello() says " + h.hello());
     }
 }

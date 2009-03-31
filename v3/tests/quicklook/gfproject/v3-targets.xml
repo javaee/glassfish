@@ -190,6 +190,7 @@
   <exec executable="${glassfish.home}/bin/asadmin" failonerror="false">
     <arg value="deploy"/>
     <arg value="--path"/>
+    <arg value="${redeploy}"/>
     <arg line="${dist.dir}/${app.file.ext}"/>
   </exec>
 </target>

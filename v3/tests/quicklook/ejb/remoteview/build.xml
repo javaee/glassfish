@@ -49,6 +49,7 @@
    
     <target name="build">
         <antcall target="build-impl"/>
+        <antcall target="compile-tests"/>
     </target>
     
     <target name="deploy">
