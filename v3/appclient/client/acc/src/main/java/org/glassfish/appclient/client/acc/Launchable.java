@@ -125,7 +125,7 @@ interface Launchable {
         }
 
         static Launchable newLaunchable(final Class mainClass) {
-            throw new UnsupportedOperationException("Don't yet support launching a class");
+            return new MainClass(mainClass);
         }
         
         static boolean matchesMainClassName(final ReadableArchive archive, final String callerSpecifiedMainClassName) throws IOException {
