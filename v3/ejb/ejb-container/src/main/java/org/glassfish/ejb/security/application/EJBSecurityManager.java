@@ -842,8 +842,10 @@ public final class EJBSecurityManager
 
         ProtectionDomain prdm = getCachedProtectionDomain(principalSet, true);
 
+        String oldContextId = null;
         try {
-
+            // set the policy context in the TLS.
+            oldContextId = setPolicyContext(this.contextId);
             ret = policy.implies(prdm, ejbrr);
         } catch (SecurityException se) {
             _logger.log(Level.SEVERE, "JACC: Unexpected security exception isCallerInRole", se);
@@ -851,6 +853,13 @@ public final class EJBSecurityManager
         } catch (Throwable t) {
             _logger.log(Level.SEVERE, "JACC: Unexpected exception isCallerInRole", t);
             ret = false;
+        } finally {
+            try {
+                resetPolicyContext(oldContextId, this.contextId);
+            } catch (Throwable ex) {
+                _logger.log(Level.SEVERE, "JACC: Unexpected security exception isCallerInRole", ex); 
+                ret = false;
+            }
         }
 
         if (_logger.isLoggable(Level.FINE)) {
@@ -1104,6 +1113,5 @@ public final class EJBSecurityManager
         }
         return ret;
     }
-    
-    
+   
 }
