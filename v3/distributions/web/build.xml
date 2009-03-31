@@ -52,7 +52,7 @@
 
 	    <!-- set execute permissions for glassfish/bin files -->
 
-	    <chmod file="target/stage/glassfish/bin/*" perm="ugo+rx"/>
+	    <!--chmod file="target/stage/glassfish/bin/*" perm="ugo+rx"/-->
 
             <zip file="@{zipfile}" basedir="target/stage">
                 <zipgroupfileset file="@{base}"/>
