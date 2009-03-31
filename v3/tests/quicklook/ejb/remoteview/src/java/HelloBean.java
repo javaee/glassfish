@@ -1,0 +1,93 @@
+package remoteview;
+
+import javax.ejb.*;
+import javax.annotation.*;
+
+@Stateless(mappedName="HH")
+@RemoteHome(HelloHome.class)
+@Remote(Hello.class)
+@TransactionManagement(TransactionManagementType.BEAN)
+public class HelloBean {
+
+    @Resource
+	private SessionContext sessionCtx;
+
+    @PostConstruct
+    public void init() {
+	System.out.println("In HelloBean::init()");
+    }
+
+    public String hello() {
+	System.out.println("In HelloBean::hello()");
+	return "hello, world\n";
+    }
+
+    public String helloAsync() {
+	System.out.println("In HelloBean::helloAsync()");
+	return "helo, async world!\n";
+    }
+
+    public String asyncBlock(int seconds) {
+	System.out.println("In HelloBean::asyncBlock");
+	sleep(seconds);
+	return "blocked successfully";
+    }
+
+    @Asynchronous 
+    public void fireAndForget() {
+	System.out.println("In HelloBean::fireAndForget()");
+	sleep(5);
+    }
+	
+    public String asyncThrowException(String exceptionType) {
+	System.out.println("In HelloBean::asyncThrowException");
+	throwException(exceptionType);
+	return "should have thrown exception";
+    }
+
+    public String asyncCancel(int seconds) throws Exception
+    {
+	System.out.println("In HelloBean::asyncCancel");
+	sleep(seconds);
+	if( sessionCtx.wasCancelCalled() ) {
+	    throw new Exception("Canceled after " + seconds + " seconds");
+	}
+	return "asyncCancel() should have been cancelled";
+    }
+
+    public void throwException(String exceptionType) {
+	if( exceptionType.equals("javax.ejb.EJBException") ) {
+	    throw new EJBException(exceptionType);
+	} else if( exceptionType.equals("javax.ejb.ConcurrentAccessException") ) {
+	    throw new ConcurrentAccessException(exceptionType);
+	} else if( exceptionType.equals("javax.ejb.ConcurrentAccessTimeoutException") ) {
+	    throw new ConcurrentAccessTimeoutException(exceptionType);
+	} else if( exceptionType.equals("javax.ejb.IllegalLoopbackException") ) {
+	    throw new IllegalLoopbackException(exceptionType);
+	}
+
+	throw new IllegalArgumentException(exceptionType);
+    }
+
+    private void sleep(int seconds) {
+
+	System.out.println("In HelloBean::sleeping for " + seconds + 
+			   "seconds");
+	try {
+	    Thread.currentThread().sleep(seconds * 1000);
+	    System.out.println("In HelloBean::woke up from " + seconds + 
+			       "second sleep");
+	} catch(Exception e) {
+	    e.printStackTrace();
+	}
+
+    }
+
+
+    @PreDestroy
+    public void destroy() {
+	System.out.println("In HelloBean::destroy()");
+    }
+
+
+}
