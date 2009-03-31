@@ -69,9 +69,6 @@ rem
 set AS_INSTALL=%~dp0..
 set AS_INSTALL_MOD=%AS_INSTALL%\modules
 
-rem Record the default ACC config file if possible
-call :recordACCArg -configxml %AS_INSTALL%\domains\domain1\config\sun-acc.xml
-
 set accJar="%AS_INSTALL_MOD%\gf-client.jar"
 
 rem Avoid constructs like set a=%a%OtherStuff%.
@@ -88,6 +85,9 @@ rem
 set jvmArgs=-Djava.system.class.loader=org.glassfish.appclient.client.acc.agent.ACCAgentClassLoader
 set accArgs=
 set appArgs=
+
+rem Record the default ACC config file if possible
+call :recordACCArg -configxml "%AS_INSTALL%\domains\domain1\config\sun-acc.xml"
 
 rem The state variable "expecting" records which special keyword,
 rem if any, was just processed and therefore what value we expect next.
@@ -123,10 +123,15 @@ java %jvmArgs% -javaagent:%accJar%=mode=acscript%accArgs%,%accMainArgs% ^
 goto :EOF
 
 :processArgs
-rem    for /f "tokens=1*" %%c in ("%*") do (
-    for %%c in (%*) do (
-        set x=%%c
-rem        set remainingArgs=%%d
+
+rem 'rest' is the rest of the command line args
+set rest=%*
+if x!rest!x==xx goto :EOF
+
+:getNextToken
+call :collectToken
+set x=!token!
+echo Token is !token!
 
 rem Assume this will be an arg to the app client until proven otherwise.
 rem Possible types are APP, ACC, and JVM.
@@ -174,11 +179,59 @@ rem if the argument starts with a - sign
 rem     esac
 rem    echo At end of loop, c is %%c and d is %%d
 rem    if NOT x!remainingArgs!==x call :processArgs !remainingArgs!
-    )
+
+if NOT x!rest!x==xx goto :getNextToken
 goto :EOF
 rem
 rem
 rem
+
+:advance
+    set rest=!rest:~1!
+    set firstCh=!rest:~0,1!
+    set q=!firstCh:"=@!
+goto :EOF
+
+:collectToken
+set token=
+set firstCh=!rest:~0,1!
+set q=!firstCh:"=@!
+if "!q!"=="@" (
+    call :collectQuotedString
+) else (
+    call :collectNonWhitespace
+)
+goto :EOF
+
+:collectNonWhitespace
+:skipToStartOfToken
+if "!q!"==" " (
+    call :advance
+    goto :skipToStartOfToken
+)
+:continueNonWhitespace
+if "!q!"=="@" (
+    call :collectQuotedString
+) else (
+    set token=!token!!firstCh!
+    call :advance
+)
+if "!rest!"=="" goto :EOF
+if NOT "!q!"==" " goto :continueNonWhitespace
+goto :EOF
+
+:collectQuotedString
+rem Handle quoted string
+    set token=!token!"
+:continueQuotedString
+    call :advance
+    if NOT "!q!"=="@" (
+        set token=!token!!firstCh!
+        goto :continueQuotedString
+    )
+    set token=!token!"
+    call :advance
+    goto :EOF
 
 :recordAPPArg
     set appArgs=!appArgs! %1
@@ -216,7 +269,7 @@ rem )
             call :recordClientArg %2
         ) else (
             set accArgs=!accArgs!,arg=%1
-            if NOT x%2==x set accArgs=!accArgs!,arg="%2"
+            if NOT x%2==x set accArgs=!accArgs!,arg=%2
         )
     )
     goto :EOF
