@@ -60,10 +60,8 @@ public class Client {
             BmpRemote bmpRemote = bmpRemoteHome.create("client1");
             bmpRemote = bmpRemoteHome.findByPrimaryKey("client1");
 
-	    /** TODO HandleDelegate not working yet
-             EJBMetaData md = bmpRemoteHome.getEJBMetaData();
+            EJBMetaData md = bmpRemoteHome.getEJBMetaData();
 	    System.out.println("metadata = " + md);
-            **/
             
             System.out.println("testing injected SlessRemoteHome");
             SlessRemote slessRemote = slessRemoteHome.create();

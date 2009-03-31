@@ -13,28 +13,22 @@
 
     <target name="all">
         <antcall target="proxy"/>
-
-	<!-- 2nd deploy always fails due to security policy linking error 
-	TODO need to add support for MBean here and in webclient
+        <antcall target="stubser"/>
 
         <antcall target="ejbapp"/>
         <antcall target="ejbclient"/>
         <antcall target="appclient"/>
+
+	<!-- depends on MBean classes
         <antcall target="webclient"/>
          -->
 
 	<!-- need handleDelegate and SerialInitContextFactory fix
         <antcall target="standaloneclient"/>
 	-->
-	
-	<!--
+
         <ant dir="ejbapp" target="undeploy"/>
-	-->
 
-
-	<!-- need handledelegate 
-        <antcall target="stubser"/>
-	-->
 
     </target>
 
