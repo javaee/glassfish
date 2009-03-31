@@ -119,12 +119,11 @@ Saves about 4-5 MB to the download size. */
  * only need to remove versions and we won't get stuck with an installer that
  * won't work with a Java release that is released after the installer.
  */
-#define MINIMUM_SUPPORTED_VM_VERSION "1.5"
+#define MINIMUM_SUPPORTED_VM_VERSION "1.6"
 
 #define SUPPORTED_VM_URL "http://java.sun.com/j2se"
 
 #define SUPPORTED_VM_VERSIONS { \
-    "1.5", \
     "1.6", \
     "1.7", \
     "1.8", \

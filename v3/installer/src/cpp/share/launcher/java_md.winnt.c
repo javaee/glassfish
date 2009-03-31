@@ -294,13 +294,16 @@ found:
     {
         char *java = NULL;
         char *javaw = NULL;
+        char *keytool = NULL;
 
         /* Check that executables exist */
         java = (char *)MemAlloc(strlen(libjava) + strlen(JAVA_EXE) + 1);
         javaw = (char *)MemAlloc(strlen(libjava) + strlen(JAVAW_EXE) + 1);
+        keytool = (char *)MemAlloc(strlen(libjava) + strlen(KEYTOOL_EXE) + 1);
         sprintf(java, "%s" JAVA_EXE, libjava);
         sprintf(javaw, "%s" JAVAW_EXE, libjava);
-        if (access(java, R_OK) != 0 || access(javaw, R_OK) != 0)
+        sprintf(keytool, "%s" KEYTOOL_EXE, libjava);
+        if (access(java, R_OK) != 0 || access(javaw, R_OK) != 0 || access(keytool, R_OK) != 0)
         {
             free(libjava);
             libjava = NULL;
@@ -309,6 +312,8 @@ found:
         java = NULL;
         free(javaw);
         javaw = NULL;
+        free(keytool);
+        keytool = NULL;
     }
     return libjava;
 }
