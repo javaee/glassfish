@@ -21,7 +21,7 @@ import com.sun.logging.LogDomains;
 
 public class SnifferAnnotationScanner implements ClassVisitor {
 
-    Map<String, SnifferStatus> annotations = new HashMap<String, SnifferStatus>();
+    Map<String, List<SnifferStatus>> annotations = new HashMap<String, List<SnifferStatus>>();
 
     String className;
     String signature;
@@ -32,7 +32,13 @@ public class SnifferAnnotationScanner implements ClassVisitor {
         SnifferStatus stat = new SnifferStatus(sniffer);
         if (annotationClasses!=null) {
             for (Class annClass : annotationClasses) {
-                annotations.put(Type.getDescriptor(annClass), stat);
+                List<SnifferStatus> statList = 
+                    annotations.get(Type.getDescriptor(annClass));
+                if (statList == null) {
+                    statList = new ArrayList<SnifferStatus>();        
+                    annotations.put(Type.getDescriptor(annClass), statList);
+                }
+                statList.add(stat);
             }
         }
     }
@@ -40,9 +46,11 @@ public class SnifferAnnotationScanner implements ClassVisitor {
     public List<Sniffer> getApplicableSniffers() {
         List<Sniffer> appSniffers = new ArrayList<Sniffer>();
         for (String annotationName : annotations.keySet()) {
-            SnifferStatus stat = annotations.get(annotationName);
-            if (!appSniffers.contains(stat.sniffer) && stat.found) {
-                appSniffers.add(stat.sniffer);
+            List<SnifferStatus> statList = annotations.get(annotationName);
+            for (SnifferStatus stat : statList) {
+                if (!appSniffers.contains(stat.sniffer) && stat.found) {
+                    appSniffers.add(stat.sniffer);
+                }
             }
         }
         return appSniffers;
@@ -66,9 +74,11 @@ public class SnifferAnnotationScanner implements ClassVisitor {
     }
 
     public AnnotationVisitor visitAnnotation(String s, boolean b) {
-        SnifferStatus status = annotations.get(s);
-        if (status != null) {
-            status.found = true;
+        List<SnifferStatus> statusList = annotations.get(s);
+        if (statusList != null) {
+            for (SnifferStatus status : statusList) {
+                status.found = true;
+            }
         }
         return null;
     }
