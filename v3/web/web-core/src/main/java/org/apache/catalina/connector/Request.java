@@ -80,7 +80,6 @@ import java.security.PrivilegedExceptionAction;
 import java.security.PrivilegedActionException;
 
 import javax.security.auth.Subject;
-import javax.security.auth.login.LoginException;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -1939,19 +1938,19 @@ public class Request
 
 
     public boolean login(HttpServletResponse response)
-            throws IOException, LoginException {
+            throws IOException, ServletException {
         // TBD
         return false;
     }
 
 
     public void login(String username, String password)
-            throws LoginException {
+            throws ServletException {
         // TBD
     }
 
 
-    public void logout() throws LoginException {
+    public void logout() throws ServletException {
         // TBD
     }
 

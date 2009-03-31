@@ -75,7 +75,6 @@ import java.util.*;
 import javax.naming.NamingException;
 import javax.naming.Binding;
 import javax.naming.directory.DirContext;
-import javax.security.auth.login.LoginException;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
@@ -366,10 +365,10 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
     public boolean isSetAsyncTimeoutCalled() { return false; }
     public void disableAsyncSupport() {}
     public boolean login(HttpServletResponse response)
-        throws IOException, LoginException { return false; }
+        throws IOException, ServletException { return false; }
     public void login(String username, String password)
-        throws LoginException {}
-    public void logout() throws LoginException {}
+        throws ServletException {}
+    public void logout() throws ServletException {}
 
     // START CR 6415120
     /**
