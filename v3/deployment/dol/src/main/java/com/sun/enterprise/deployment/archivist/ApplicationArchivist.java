@@ -481,12 +481,7 @@ public class ApplicationArchivist extends Archivist<Application>
 
             // now we are supporting directory names with
             // ".suffix" and "_suffix"
-            if (name.endsWith("_war")
-                    || name.endsWith(".war")
-                    || name.endsWith("_rar")
-                    || name.endsWith(".rar")
-                    || name.endsWith("_jar")
-                    || name.endsWith(".jar")) {
+            if (resemblesTopLevelSubmodule(name)) {
                 return true;
             }
 
@@ -850,34 +845,50 @@ public class ApplicationArchivist extends Archivist<Application>
     protected boolean postHandles(ReadableArchive abstractArchive)
             throws IOException {
 
-        // Only try to make a guess if the archive is a directory
-           
-        // We will try to conclude if a directory represents an application
-        // by looking at if it contains any Java EE modules.            
-        // We are supporting directory names with both "_suffix" and ".suffix".
-        File file = new File(abstractArchive.getURI());
-        if (file.isDirectory()) {
-            File[] files = file.listFiles();
-            for (File content : files) {
-                if (content.isDirectory()) {
-                    String dirPath = content.getPath();
-                    if (dirPath.endsWith("_war")
-                        || dirPath.endsWith(".war")
-                        || dirPath.endsWith("_jar")
-                        || dirPath.endsWith(".jar")
-                        || dirPath.endsWith("_rar")
-                        || dirPath.endsWith(".rar")) {
-                        return true;
-                    }
-                }
+        /*
+         * App clients are no longer expanded, so do not limit the check
+         * only to directory archives.
+         */
+
+        for (Enumeration<String> entries = abstractArchive.entries(); entries.hasMoreElements(); ) {
+            final String entryName = entries.nextElement();
+            if (resemblesTopLevelSubmodule(entryName)) {
+                return true;
             }
         }
-
         return false;
     }
 
     @Override
     protected String getArchiveExtension() {
         return APPLICATION_EXTENSION;
+    }
+
+    /**
+     * Returns whether the entry name appears to be that of a submodule at
+     * the top level of an enclosing application.
+     * <p>
+     * Judge an entry to be a top-level submodule if it ends with _war/, _jar/, or
+     * _rar/ and contains zero or one slash (probably one) OR if it ends with
+     * .war, .jar, or .rar with no slash in the entry name OR if it ends with
+     * .war/, .jar/, or .rar/.  (MyEclipse uses this last pattern.)
+     *
+     * @param entryName
+     * @return
+     */
+    private static boolean resemblesTopLevelSubmodule(final String entryName) {
+        return (entryName.indexOf('/') == entryName.lastIndexOf('/') && (
+                   entryName.endsWith("_war/")
+                || entryName.endsWith("_jar/")
+                || entryName.endsWith("_rar/")
+                || entryName.endsWith(".war/")
+                || entryName.endsWith(".jar/")
+                || entryName.endsWith(".rar/"))
+               )
+               ||
+               (entryName.indexOf('/') == -1) && (
+                   entryName.endsWith(".war")
+                || entryName.endsWith(".jar")
+                || entryName.endsWith(".rar"));
     }
 }
