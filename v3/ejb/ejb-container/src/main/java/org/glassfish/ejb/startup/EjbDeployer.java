@@ -28,6 +28,8 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.security.PolicyLoader;
+import com.sun.enterprise.security.SecurityUtil;
+import com.sun.enterprise.security.util.IASSecurityException;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -44,6 +46,7 @@ import org.jvnet.hk2.component.Habitat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.concurrent.ConcurrentHashMap;
+import org.glassfish.ejb.security.application.EJBSecurityManager;
 import org.glassfish.ejb.security.factory.EJBSecurityManagerFactory;
 
 /**
@@ -124,20 +127,27 @@ public class EjbDeployer
         // unload from ejb container
     }
 
-       /**
+    /**
      * Clean any files and artifacts that were created during the execution
      * of the prepare method.
      *
      * @param dc deployment context
      */
     public void clean(DeploymentContext dc) {
-
-       // Both undeploy and shutdown scenarios are
-       // handled directly in EjbApplication.shutdown.
-
-        // But CMP drop tables should be handled here.
         OpsParams params = dc.getCommandParameters(OpsParams.class);
+
         if (params.origin == OpsParams.Origin.undeploy) {
+            String appName = params.name();
+            String[] contextIds =
+                    ejbSecManagerFactory.getContextsForApp(appName, false);
+            for (String contextId:contextIds) {
+                try {
+                    SecurityUtil.removePolicy(contextId);
+                } catch (IASSecurityException ex) {
+                   throw new DeploymentException("Error removing the policy file for app "+appName +" "+ex);
+                }
+            }
+
             cmpDeployer = habitat.getByContract(CMPDeployer.class);
             if (cmpDeployer != null) {
                 cmpDeployer.clean(dc);
