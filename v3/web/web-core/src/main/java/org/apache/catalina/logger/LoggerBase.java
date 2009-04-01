@@ -446,7 +446,7 @@ public class LoggerBase
     
     public ObjectName createObjectName() {
         if(log.isLoggable(Level.FINE)) {
-            log("createObjectName with "+container);
+            log.fine("createObjectName with "+container);
         }
         // register
         try {
