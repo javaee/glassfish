@@ -81,7 +81,7 @@ public class LogDomains
      *
      * @param name
      *
-     * @return
+     * @return Logger
      */
     public static Logger getLogger(final Class clazz, String name) {
         return Logger.getLogger(name, PACKAGE + RESOURCE_BUNDLE);

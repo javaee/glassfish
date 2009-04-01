@@ -49,7 +49,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
- * This class is responsible for adding {@see DirContextURLStreamHandler}
+ * This class is responsible for adding {@code DirContextURLStreamHandler}
  * to OSGi service registry.
  *
  * @author Sanjeeb.Sahoo@Sun.COM

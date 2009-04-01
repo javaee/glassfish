@@ -246,7 +246,7 @@ public class SessionManagerConfigurationHelper {
     /**
      * Get the persistence frequency for this web module
      * (this is the value from sun-web.xml if defined
-     * @param the session manager config bean
+     * @param smBean the session manager config bean
      */
     protected String getPersistenceFrequency(SessionManager smBean) {
         String persistenceFrequency = null;        
@@ -267,7 +267,7 @@ public class SessionManagerConfigurationHelper {
     /**
      * Get the persistence scope for this web module
      * (this is the value from sun-web.xml if defined
-     * @param the session manager config bean
+     * @param smBean the session manager config bean
      */    
     protected String getPersistenceScope(SessionManager smBean) {
         String persistenceScope = null;

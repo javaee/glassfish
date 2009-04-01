@@ -607,7 +607,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
 
         loadDefaultWebModules();
-
+        
         //_lifecycle.fireLifecycleEvent(START_EVENT, null);
         _started = true;
         // start the embedded container
@@ -1577,7 +1577,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * a default context for the virtual server, based on the virtual server's
      * docroot.
      */
-    protected void loadDefaultWebModules() {
+    public void loadDefaultWebModules() {
 
         String defaultPath = null;
 

@@ -48,8 +48,6 @@ public interface PwcWebContainerLifecycle {
     /**
      * Server is starting up applications
      *
-     * @param sc ServerContext the server runtime context.
-     *
      * @exception ServerLifecycleException if this subsystem detects a fatal 
      *  error that prevents this subsystem from being used
      */
@@ -58,8 +56,6 @@ public interface PwcWebContainerLifecycle {
 
     /**
      * Server has complted loading the applications and is ready to serve requests.
-     *
-     * @param sc ServerContext the server runtime context.
      *
      * @exception ServerLifecycleException if this subsystem detects a fatal 
      *  error that prevents this subsystem from being used

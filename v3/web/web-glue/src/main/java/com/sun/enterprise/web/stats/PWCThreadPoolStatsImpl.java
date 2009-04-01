@@ -197,7 +197,7 @@ public final class  PWCThreadPoolStatsImpl implements PWCThreadPoolStats {
     /**
      * Queries for a statistic with the given name.
      *
-     * @name Name of the statistic to query for
+     * @param name Name of the statistic to query for
      *
      * @return Statistic for the given name
      */ 

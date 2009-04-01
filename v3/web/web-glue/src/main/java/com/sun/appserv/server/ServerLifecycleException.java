@@ -69,7 +69,7 @@ public final class ServerLifecycleException extends Exception {
     /**
      * Construct a new LifecycleException for the specified throwable.
      *
-     * @param throwable Throwable that caused this exception
+     * @param rootCause Throwable that caused this exception
      */
     public ServerLifecycleException(Throwable rootCause) {
         super(rootCause);

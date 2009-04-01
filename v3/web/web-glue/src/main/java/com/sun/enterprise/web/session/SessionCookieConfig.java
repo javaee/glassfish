@@ -238,7 +238,7 @@ public final class SessionCookieConfig {
 
     /**
      * Return whether the cookie is to be marked Secure or not.
-     * @returns "dynamic", "true" or "false"
+     * @return "dynamic", "true" or "false"
      */
     public String getSecure() {
         return _secure;

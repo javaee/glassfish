@@ -57,7 +57,6 @@ import org.apache.catalina.util.RequestUtil;
  * a wrapper to HttpServletResponse to cache the outbound headers and content
  * @see javax.servlet.http.HttpServletResponseWrapper and 
  * @see javax.servlet.http.HttpServletResponse
- * @see org.apache.catalina.connector.HttpResponseBase
  */
 public class CachingResponseWrapper extends HttpServletResponseWrapper {
 

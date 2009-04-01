@@ -136,7 +136,7 @@ abstract class LoggerBase implements Logger {
      * log.  The name and type of the servlet log is specific to the
      * servlet container. 
      *
-     * @param message A <code>String</code> specifying the message to be
+     * @param msg A <code>String</code> specifying the message to be
      *  written to the log file
      */
     public void log(String msg) {
