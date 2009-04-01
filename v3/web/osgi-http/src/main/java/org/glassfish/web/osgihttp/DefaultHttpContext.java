@@ -55,7 +55,7 @@ import java.net.URL;
  * 3. Its handleSecurity(HttpServlet Request,HttpServletResponse)
  * may implement an authentication mecha-nism that is implementation-dependent.
  * <p/>
- * {@See org.osgi.service.http.HttpService#createDefaultHttpContext()}
+ * {@code org.osgi.service.http.HttpService#createDefaultHttpContext()}
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
@@ -80,7 +80,7 @@ public class DefaultHttpContext implements HttpContext {
 
     /**
      * @param s
-     * @return
+     * @return URL
      */
     public URL getResource(String s) {
         /*
