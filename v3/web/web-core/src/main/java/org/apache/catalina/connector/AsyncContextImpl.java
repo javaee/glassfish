@@ -124,7 +124,7 @@ public class AsyncContextImpl implements AsyncContext {
             ApplicationDispatcher dispatcher = (ApplicationDispatcher)
                 servletRequest.getRequestDispatcher(dispatchTargetURI);
             if (dispatcher != null) {
-                origRequest.setOkToReinitializeAsync();
+                origRequest.setOkToReinitializeAsync(true);
                 origRequest.setAsyncStarted(false);
                 pool.execute(new Handler(dispatcher, servletRequest,
                                          servletResponse));
@@ -145,7 +145,7 @@ public class AsyncContextImpl implements AsyncContext {
         ApplicationDispatcher dispatcher = (ApplicationDispatcher)
             servletRequest.getRequestDispatcher(path);
         if (dispatcher != null) {
-            origRequest.setOkToReinitializeAsync();
+            origRequest.setOkToReinitializeAsync(true);
             origRequest.setAsyncStarted(false);
             pool.execute(new Handler(dispatcher, servletRequest,
                                      servletResponse));
@@ -164,7 +164,7 @@ public class AsyncContextImpl implements AsyncContext {
         ApplicationDispatcher dispatcher = (ApplicationDispatcher)
             context.getRequestDispatcher(path);
         if (dispatcher != null) {
-            origRequest.setOkToReinitializeAsync();
+            origRequest.setOkToReinitializeAsync(true);
             origRequest.setAsyncStarted(false);
             pool.execute(new Handler(dispatcher, servletRequest,
                                      servletResponse));

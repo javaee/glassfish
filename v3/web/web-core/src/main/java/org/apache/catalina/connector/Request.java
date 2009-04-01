@@ -3865,9 +3865,9 @@ public class Request
             asyncContext = new AsyncContextImpl(this, servletRequest,
                 (Response) getResponse(), servletResponse,
                 isOriginalRequestAndResponse);
-            asyncStarted = true;
-            isOkToReinitializeAsync = false;
         }
+        asyncStarted = true;
+        isOkToReinitializeAsync = false;
 
         CompletionHandler requestCompletionHandler =
             new CompletionHandler<Request>() {
@@ -3917,8 +3917,8 @@ public class Request
     }
 
 
-    void setOkToReinitializeAsync() {
-        isOkToReinitializeAsync = true;
+    void setOkToReinitializeAsync(boolean okToReInit) {
+        isOkToReinitializeAsync = okToReInit;
     }
 
 
@@ -4058,7 +4058,10 @@ public class Request
      */
     void asyncTimeout() {
         notifyAsyncListeners(AsyncEventType.TIMEOUT);
-        if (!isAsyncComplete && !isAsyncStarted()) {
+        // should not call asyncComplete if already completed or
+        // one of the listener call asyncContext.dispatch in which
+        // case asyncStarted has been set to false
+        if (!isAsyncComplete && isAsyncStarted()) {
             asyncComplete();
         }
     }
