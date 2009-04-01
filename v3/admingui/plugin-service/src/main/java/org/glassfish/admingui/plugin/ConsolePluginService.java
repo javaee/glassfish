@@ -182,7 +182,7 @@ public class ConsolePluginService {
      *	    not been initialized, or does not contain any admin console
      *	    extensions, this method will return <code>null</code>.</p>
      *
-     *	@param	name	The name of the module.
+     *	@param	moduleName	The name of the module.
      *
      *	@return	<code>null</code>, or the module's <code>ClassLoader</code>.
      */
