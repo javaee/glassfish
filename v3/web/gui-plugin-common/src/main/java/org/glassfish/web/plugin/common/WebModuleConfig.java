@@ -56,14 +56,14 @@ public interface WebModuleConfig extends ConfigBeanProxy, ApplicationConfig, Inj
 
     /**
      * Returns the env-entry objects, if any.
-     * @return
+     * @return the env-entry objects
      */
     @Element
     public List<EnvEntry> getEnvEntry();
 
     /**
      * Returns the context-param objects, if any.
-     * @return
+     * @return the context-param objects
      */
     @Element
     public List<ContextParam> getContextParam();
