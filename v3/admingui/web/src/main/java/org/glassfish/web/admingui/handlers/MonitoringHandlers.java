@@ -77,7 +77,7 @@ public class MonitoringHandlers {
      *  <p> Input value: "MonitorObject" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "StatisticData" -- Type: <code>java.util.List</code></p>
      *          
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getVirtualServers",
         input={
@@ -116,7 +116,7 @@ public class MonitoringHandlers {
      *  <p> Input value: "MonitorObject" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "StatisticData" -- Type: <code>java.util.List</code></p>
      *          
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getWebStats",
         input={
@@ -190,7 +190,7 @@ public class MonitoringHandlers {
      *  <p> Input value: "MonitorObject" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "StatisticData" -- Type: <code>java.util.List</code></p>
      *          
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getStats",
         input={
@@ -238,7 +238,7 @@ public class MonitoringHandlers {
      *  <p> Input value: "MonitorObject" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "StatisticData" -- Type: <code>java.util.List</code></p>
      *          
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getJvmStats",
         input={
@@ -282,7 +282,7 @@ public class MonitoringHandlers {
      *  <p> Input value: "MonitorObject" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "StatisticData" -- Type: <code>java.util.List</code></p>
      *          
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getChildNodes",
         input={

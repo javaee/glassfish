@@ -49,15 +49,16 @@ import java.net.URL;
  *
  * @author anilam
  */
+
+@Service
+public class WebConsolePlugin implements ConsoleProvider {
+
 /**
  *  <p> Returns the URL of the Integration Point configuration file
  *	console-config.xml </p>
  *
  *  @return URL of configration file.
  */
-@Service
-public class WebConsolePlugin implements ConsoleProvider {
-    
     public URL getConfiguration(){ 
             return null;
     }

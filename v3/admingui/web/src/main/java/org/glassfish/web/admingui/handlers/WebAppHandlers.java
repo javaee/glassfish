@@ -89,7 +89,7 @@ public class WebAppHandlers {
      *  <p> Input  value: "name" -- Type: <code> java.lang.String</code></p>
      *  <p> Output value: "description" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "enbled" -- Type: <code>java.lang.Boolean</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getApplicationInfo",
         input = {
@@ -142,7 +142,7 @@ public class WebAppHandlers {
     /**
      *	<p> This handler save  the values for all the attributes of the Application
      *  <p> Input  value: "name" -- Type: <code> java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "saveApplicationInfo",
         input = {
@@ -192,7 +192,7 @@ public class WebAppHandlers {
     /**
      *	<p> This handler returns the list of web applications for populating the table.
      *  <p> Input  value: "name" -- Type: <code> java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getDeployedWebInfo",
         input = {
@@ -247,7 +247,7 @@ public class WebAppHandlers {
 
     /**
      *	<p> Returns the app type for displaying in the redeploy page
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getAppTypeForDisplay",
         input = {
