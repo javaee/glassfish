@@ -115,41 +115,8 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer, Dummy
      */
    
     public boolean prepare(DeploymentContext dc) {
-        try {
+        return true;
 
-            dc.getScratchDir("ejb").mkdirs();
-
-            Application app = dc.getModuleMetaData(Application.class);
-
-            if (app==null) {
-                // hopefully the DOL gave a good message of the failure...
-                logger.severe(format(rb.getString("failed.loading.dd"),"foo","bar"));
-
-                return false;
-            }
-            if ((app.getStandaloneBundleDescriptor() instanceof WebBundleDescriptor)
-                    &&  ((!app.getStandaloneBundleDescriptor().getSpecVersion().equals("2.5")
-                          || (!app.getStandaloneBundleDescriptor().hasWebServices()) ) )
-                    ) {
-
-                    //do nothing let the WebDeployer handle this
-                    //since this is a JAXWS based application
-                    // super.generateArtifacts(dc);
-
-            }   else {
-                //This is either a webapp with version 2.5 or EJB with webservices
-                //Proceed with JSR 109
-                generateArtifacts(dc);
-                doWebServicesDeployment(app,dc) ;
-
-            }
-            return true;
-        } catch (Exception ex) {
-            // re-throw all the exceptions as runtime exceptions
-            RuntimeException re = new RuntimeException(ex.getMessage());
-            re.initCause(ex);
-            throw re;
-        }
     }
 
 
@@ -342,8 +309,43 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer, Dummy
      *
      * @parameters type type of metadata that this deployer has declared providing.
      */
-    public Object loadMetaData(Class type, DeploymentContext context) {
-        return null;
+    public Object loadMetaData(Class type, DeploymentContext dc) {
+        try {
+
+            dc.getScratchDir("ejb").mkdirs();
+
+            Application app = dc.getModuleMetaData(Application.class);
+
+            if (app==null) {
+                // hopefully the DOL gave a good message of the failure...
+                logger.severe(format(rb.getString("failed.loading.dd"),"foo","bar"));
+
+                return false;
+            }
+            if ((app.getStandaloneBundleDescriptor() instanceof WebBundleDescriptor)
+                    &&  ((!app.getStandaloneBundleDescriptor().getSpecVersion().equals("2.5")
+                          || (!app.getStandaloneBundleDescriptor().hasWebServices()) ) )
+                    ) {
+
+                    //do nothing let the WebDeployer handle this
+                    //since this is a JAXWS based application
+                    // super.generateArtifacts(dc);
+
+            }   else {
+                //This is either a webapp with version 2.5 or EJB with webservices
+                //Proceed with JSR 109
+                generateArtifacts(dc);
+                doWebServicesDeployment(app,dc) ;
+
+            }
+            return new Boolean(true);
+        } catch (Exception ex) {
+            // re-throw all the exceptions as runtime exceptions
+            RuntimeException re = new RuntimeException(ex.getMessage());
+            re.initCause(ex);
+            throw re;
+        }
+
     }
 
     /**
