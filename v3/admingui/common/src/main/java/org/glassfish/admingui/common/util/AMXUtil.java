@@ -60,7 +60,7 @@ public class AMXUtil {
      *
      *	@param	mbean MBean with properties
      *   (extends <code>com.sun.appserv.management.config.PropertiesAccess</code>).
-     *  @param	propName property name.
+     *  @param	key property name.
      *
      *	@return	String property value.
      */

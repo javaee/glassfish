@@ -91,7 +91,6 @@ public class LocalDeploymentFacility extends AbstractDeploymentFacility {
      * Disconnects.
      * <p>
      * There is no real connection, so nothing to do to disconnect.
-     * @return
      */
     @Override
     protected boolean doDisconnect() {

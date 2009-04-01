@@ -90,7 +90,7 @@ import com.sun.appserv.management.ext.runtime.RuntimeMgr;
 
 /**
  *
- *  @author:  anilam
+ *  @author  anilam
  */
 public class AMXRoot {
 
