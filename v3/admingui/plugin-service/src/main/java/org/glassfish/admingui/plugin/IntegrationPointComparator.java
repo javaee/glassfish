@@ -40,7 +40,7 @@ import java.util.Comparator;
 
 /**
  *  <p>	This class compares two {@link IntegrationPoint} Objects.  See
- *	{@link #compare()} for more details.</p>
+ *	{@link #compare} for more details.</p>
  */
 public class IntegrationPointComparator implements Comparator<IntegrationPoint>, Serializable {
     /**
