@@ -1065,7 +1065,7 @@ public class JavaEETransactionManagerSimplified
    /*
     *  This method returns the details of the Currently Active Transactions
     *  Called by Admin Framework when transaction monitoring is enabled
-    *  @returns ArrayList of TransactionAdminBean
+    *  @return ArrayList of TransactionAdminBean
     *  @see TransactionAdminBean
     */
     public ArrayList getActiveTransactions() {
