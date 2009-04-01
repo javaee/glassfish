@@ -230,7 +230,7 @@
         <ant dir="servlet-3.0/asyncListenerOnTimeout" target="all"/>
         <ant dir="servlet-3.0/pluggability" target="all"/>
         <!-- XXX temporary commented out due to issue 7387
-        <ant dir="servlet-3.0/asyncSupportedTrue" target="all"/>
+        <ant dir="servlet-3.0/asyncSupportedTrueDeclarative" target="all"/>
         <ant dir="servlet-3.0/asyncSupportedFalse" target="all"/>
         <ant dir="servlet-3.0/asyncContextHasOriginalRequestAndResponse" target="all"/>
         -->
