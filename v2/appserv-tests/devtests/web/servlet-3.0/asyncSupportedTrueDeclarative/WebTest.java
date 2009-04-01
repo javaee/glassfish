@@ -11,7 +11,7 @@ import com.sun.ejte.ccl.reporter.*;
  */
 public class WebTest {
 
-    private static final String TEST_NAME = "async-supported-true";
+    private static final String TEST_NAME = "async-supported-true-declarative";
 
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
