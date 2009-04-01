@@ -163,8 +163,6 @@ public interface DefaultContext {
     /**
      * Get the resources DirContext object with which this Container is
      * associated.
-     *
-     * @param resources The new associated DirContext
      */
     public DirContext getResources();
 
@@ -338,7 +336,7 @@ public interface DefaultContext {
     /**
      * Add a resource link for this web application.
      *
-     * @param resource New resource link
+     * @param resourceLink New resource link
      */
     public void addResourceLink(ContextResourceLink resourceLink);
 

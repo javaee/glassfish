@@ -309,9 +309,9 @@ public class InputBuffer extends Reader
     /** 
      * Reads new bytes in the byte chunk.
      * 
-     * @param buf Byte buffer to be written to the response
+     * @param cbuf Byte buffer to be written to the response
      * @param off Offset
-     * @param cnt Length
+     * @param len Length
      * 
      * @throws IOException An underlying IOException occurred
      */

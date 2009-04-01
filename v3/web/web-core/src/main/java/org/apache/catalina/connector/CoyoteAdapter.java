@@ -134,7 +134,6 @@ public class CoyoteAdapter
      * Construct a new CoyoteProcessor associated with the specified connector.
      *
      * @param connector CoyoteConnector that owns this processor
-     * @param id Identifier of this CoyoteProcessor (unique per connector)
      */
     public CoyoteAdapter(Connector connector) {
 

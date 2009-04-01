@@ -206,7 +206,7 @@ public interface Realm {
      * @param request Request we are processing
      * @param response Response we are creating
      * @param constraint Security constraint we are enforcing
-     * @param The Context to which client of this class is attached.
+     * @param context Context to which client of this class is attached.
      *
      * @exception IOException if an input/output error occurs
      */

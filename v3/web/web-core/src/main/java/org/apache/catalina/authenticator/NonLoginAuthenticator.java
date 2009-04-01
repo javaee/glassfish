@@ -130,8 +130,8 @@ public final class NonLoginAuthenticator
      *
      * @param request Request we are processing
      * @param response Response we are creating
-     * @param login Login configuration describing how authentication
-     *              should be performed
+     * @param config Login configuration describing how authentication
+     * should be performed
      *
      * @exception IOException if an input/output error occurs
      */

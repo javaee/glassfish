@@ -145,7 +145,7 @@ public interface Pipeline {
     /**
      * Add Tomcat-style valve.
      *
-     * @param The Tomcat-style valve to be added
+     * @param valve the Tomcat-style valve to be added
      */
     public void addValve(Valve valve);
 

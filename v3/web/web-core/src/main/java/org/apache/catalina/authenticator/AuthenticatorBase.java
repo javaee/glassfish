@@ -474,8 +474,6 @@ public abstract class AuthenticatorBase
      *
      * @param request Request to be processed
      * @param response Response to be processed
-     * @param context The valve context used to invoke the next valve
-     *  in the current processing pipeline
      *
      * @exception IOException if an input/output error occurs
      * @exception ServletException if thrown by a processing element
@@ -725,8 +723,8 @@ public abstract class AuthenticatorBase
      *
      * @param request Request we are processing
      * @param response Response we are creating
-     * @param login Login configuration describing how authentication
-     *              should be performed
+     * @param config Login configuration describing how authentication
+     * should be performed
      *
      * @exception IOException if an input/output error occurs
      */
@@ -738,8 +736,8 @@ public abstract class AuthenticatorBase
         throws IOException;
      */
     public abstract boolean authenticate(HttpRequest request,
-            HttpResponse response,
-            LoginConfig config)
+                                         HttpResponse response,
+                                         LoginConfig config)
             throws IOException;
     //END SJSAS 6202703
     

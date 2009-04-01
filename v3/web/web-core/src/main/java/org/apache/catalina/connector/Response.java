@@ -216,7 +216,7 @@ public class Response
     /**
      * Set the Coyote response.
      * 
-     * @param response The Coyote response
+     * @param coyoteResponse The Coyote response
      */
     public void setCoyoteResponse(com.sun.grizzly.tcp.Response coyoteResponse) {
         this.coyoteResponse = coyoteResponse;

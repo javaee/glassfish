@@ -2035,10 +2035,10 @@ public class StandardContext
     }
 
 
-    /** Get the absolute path to the work dir.
-     *  To avoid duplication.
+    /**
+     * Get the absolute path to the work dir.
      *
-     * @return
+     * @return the absolute path to the work dir
      */
     public String getWorkPath() {
         if (getWorkDir() == null) {
@@ -3151,7 +3151,7 @@ public class StandardContext
      * to this servlet context, and initializes it.
      *
      * @param servletName the servlet name
-     * @param instance the servlet instance
+     * @param servlet the servlet instance
      * @param initParams Map containing the initialization parameters for 
      * the servlet
      * @param urlPatterns the URL patterns that will be mapped to the servlet
@@ -7054,16 +7054,19 @@ public class StandardContext
         }
     }
 
-    /** There are 2 cases:
-     *   1.The context is created and registered by internal APIS
+    /**
+     * There are 2 cases:
+     *
+     *   1. The context is created and registered by internal APIs
      *   2. The context is created by JMX, and it'll self-register.
      *
      * @param server
      * @param name
-     * @return
+     *
+     * @return the ObjectName that was used for registration
+     *
      * @throws Exception
      */
-
     @Override
     public ObjectName preRegister(MBeanServer server,
                                   ObjectName name)

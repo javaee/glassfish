@@ -214,7 +214,8 @@ public class AlternateDocBase {
     /**
      * Sets the non-proxied resources of this AlternateDocBase.
      *
-     * @param resources The non-proxied resources of this AlternateDocBase
+     * @param webappResources The non-proxied resources of this
+     * AlternateDocBase
      */
     public void setWebappResources(DirContext webappResources) {
         this.webappResources = webappResources;

@@ -401,7 +401,7 @@ public final class StandardServer
     /**
      * Set the global naming resources.
      *
-     * @param namingResources The new global naming resources
+     * @param globalNamingResources The new global naming resources
      */
     public void setGlobalNamingResources
         (NamingResources globalNamingResources) {
@@ -634,8 +634,9 @@ public final class StandardServer
 
     }
     
-    /** @jmx:attribute List services
-    */
+    /**
+     * @return the object names of all registered Service instances
+     */
     public ObjectName[] getServiceNames() {
         ObjectName onames[]=new ObjectName[ services.length ];
         for( int i=0; i<services.length; i++ ) {

@@ -190,9 +190,9 @@ public interface Manager {
      * Sets the session id length (in bytes) for Sessions created by this
      * Manager.
      *
-     * @param sessionIdLength The session id length
+     * @param length The session id length
      */
-    public void setSessionIdLength(int idLength);
+    public void setSessionIdLength(int length);
 
 
     /** 
