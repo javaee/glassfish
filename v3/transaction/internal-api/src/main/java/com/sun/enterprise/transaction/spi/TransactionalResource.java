@@ -69,7 +69,7 @@ public interface TransactionalResource {
     public void destroyResource();
 
     /**
-     * @returns the String that can identify this resource
+     * @return the String that can identify this resource
      */
     public String getName();
 

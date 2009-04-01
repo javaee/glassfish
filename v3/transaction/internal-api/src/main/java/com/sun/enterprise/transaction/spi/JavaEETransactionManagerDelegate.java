@@ -126,7 +126,7 @@ public interface JavaEETransactionManagerDelegate {
     /**
      * Perform implementation specific steps to suspend a JavaEETransaction.
      *
-     * @param tran the JavaEETransaction object to be suspend.
+     * @param tx the JavaEETransaction object to be suspend.
      * @return Transaction object representing the suspended transaction.
      */
     public Transaction suspend(JavaEETransaction tx) throws SystemException;
@@ -150,7 +150,7 @@ public interface JavaEETransactionManagerDelegate {
     /**
      * The delegate with the largest order will be used.
      *
-     * @returns the order in which this delegate should be used.
+     * @return the order in which this delegate should be used.
      */
     public int getOrder();
 
@@ -169,7 +169,7 @@ public interface JavaEETransactionManagerDelegate {
     /**
      * Start new JTS transaction for the existing local transaction object.
      *
-     * @param tm the JavaEETransactionManager object.
+     * @param t the JavaEETransaction object.
      * @param isAssociatedTimeout <code>true</code> if transaction has a timeout
      * associated with it.
      * @return the new JTS Transaction instance.
@@ -225,7 +225,7 @@ public interface JavaEETransactionManagerDelegate {
      * Returns <code>null</code> otherwise.
      *
      *
-     * @returns an instance of an XAResourceWrapper or <code>null</code> if this 
+     * @return an instance of an XAResourceWrapper or <code>null</code> if this 
      * delegate doesn't support transaction recovery or a wrapper is not available.
      */
     public XAResourceWrapper getXAResourceWrapper(String clName);
