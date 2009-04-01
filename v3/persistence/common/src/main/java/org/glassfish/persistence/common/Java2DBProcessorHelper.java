@@ -160,12 +160,6 @@ public class Java2DBProcessorHelper {
      * Initializes the rest of the settings
      */
     public void init() {
-/** XXX Not ready yet
-        ActionReport report = ctx.getActionReport();
-        subReport = report.addSubActionsReport();
-        subReport.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-**/
-        
         if (deploy) {
             // DeployCommandParameters are available only on deploy or deploy
             // part of redeploy
@@ -209,6 +203,10 @@ public class Java2DBProcessorHelper {
         appDeployedLocation =
             ctx.getSource().getURI().getSchemeSpecificPart() + File.separator;
 
+        ActionReport report = ctx.getActionReport();
+        subReport = report.addSubActionsReport();
+        subReport.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+        
     }
     
     /**
@@ -701,10 +699,14 @@ public class Java2DBProcessorHelper {
      * @param msg Message for user.
      */
     public void warnUser(String msg) {
-/** XXX Not ready yet
-        subReport.setMessage(subReport.getMessage() + "\n" + msg); // NOI18N
+        StringBuffer sb = new StringBuffer();
+        String s = subReport.getMessage();
+        if (s != null) {
+            sb.append(s);
+        }
+        sb.append("\n").append(msg); // NOI18N
+        subReport.setMessage(sb.toString());
         subReport.setActionExitCode(ActionReport.ExitCode.WARNING);
-**/
     }
 
 } 
