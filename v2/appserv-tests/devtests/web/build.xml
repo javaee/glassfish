@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="364"/>
+    <property name="TOTAL_EXPECTED" value="365"/>
 
     &commonSetup;
     &commonBuild;
@@ -71,6 +71,9 @@
         <ant dir="jspResourceInjectionTagHandler" target="all"/>
         <ant dir="jspResourceInjectionTagHandlerPostConstruct" target="all"/>
         <ant dir="jspTagHandlerPostConstructElement" target="all"/>
+        <!-- XXX Uncomment as soon as fix for 6646921 has been ported
+        <ant dir="jspTagHandlerPreDestroyAnnotation" target="all"/>
+        -->
         <ant dir="jspResourceInjectionSimpleTagHandler" target="all"/>
         <ant dir="jspResourceInjectionTagHandlerPoolingDisabled" target="all"/>
         <ant dir="jspResourceInjectionContextListener" target="all"/>
