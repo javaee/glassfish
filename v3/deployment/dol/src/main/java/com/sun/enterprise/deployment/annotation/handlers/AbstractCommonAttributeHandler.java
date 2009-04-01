@@ -35,14 +35,34 @@
  */
 package com.sun.enterprise.deployment.annotation.handlers;
 
+import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.deployment.MethodDescriptor;
+import com.sun.enterprise.deployment.SecurityConstraintImpl;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.WebComponentDescriptor;
+import com.sun.enterprise.deployment.WebResourceCollectionImpl;
 import com.sun.enterprise.deployment.annotation.context.*;
+import com.sun.enterprise.deployment.web.SecurityConstraint;
 import org.glassfish.apf.AnnotatedElementHandler;
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
 
 import java.lang.annotation.ElementType;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.logging.Level;
+import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.annotation.security.DenyAll;
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * This is an abstract class encapsulate generic behaviour of annotation
@@ -170,5 +190,187 @@ abstract class AbstractCommonAttributeHandler extends AbstractHandler {
      */
     protected boolean supportTypeInheritance() {
         return false;
+    }
+
+    /**
+     * This method checks whether there are more than one security annotations.
+     *
+     * @param ainfo
+     * @return validity
+     */
+    protected boolean hasMoreThanOneAccessControlAnnotation(AnnotationInfo ainfo)
+            throws AnnotationProcessorException {
+
+        boolean moreThanOne = false;
+        AnnotatedElement ae = (AnnotatedElement)ainfo.getAnnotatedElement();
+
+        int count = 0;
+        count += (ae.isAnnotationPresent(RolesAllowed.class)? 1 : 0);
+        count += (ae.isAnnotationPresent(DenyAll.class)? 1 : 0);
+        if (count < 2) {
+            count += (ae.isAnnotationPresent(PermitAll.class)? 1 : 0);
+        }
+
+        if (count > 1) {
+            log(Level.SEVERE, ainfo,
+                localStrings.getLocalString(
+                "enterprise.deployment.annotation.handlers.inconsistentsecannotation",
+                "This annotation is not consistent with other annotations.  One cannot have more than one of @RolesAllowed, @PermitAll, @DenyAll in the same AnnotatedElement."));
+            moreThanOne = true;
+        }
+
+        return moreThanOne;
+    }
+
+    /**
+     * Returns MethodDescriptors representing All for a given EjbDescriptor.
+     * @param ejbDesc
+     * @return resulting MethodDescriptor
+     */
+    protected Set<MethodDescriptor> getMethodAllDescriptors(
+            EjbDescriptor ejbDesc) {
+        Set methodAlls = new HashSet();
+        if (ejbDesc.isRemoteInterfacesSupported() ||
+            ejbDesc.isRemoteBusinessInterfacesSupported()) {
+            methodAlls.add(
+                    new MethodDescriptor(MethodDescriptor.ALL_METHODS,
+                    "", MethodDescriptor.EJB_REMOTE));
+            if (ejbDesc.isRemoteInterfacesSupported()) {
+                methodAlls.add(
+                    new MethodDescriptor(MethodDescriptor.ALL_METHODS,
+                    "", MethodDescriptor.EJB_HOME));
+            }
+        }
+
+        if (ejbDesc.isLocalInterfacesSupported() ||
+                ejbDesc.isLocalBusinessInterfacesSupported()) {
+            methodAlls.add(
+                    new MethodDescriptor(MethodDescriptor.ALL_METHODS,
+                    "", MethodDescriptor.EJB_LOCAL));
+            if (ejbDesc.isLocalInterfacesSupported()) {
+                methodAlls.add(
+                    new MethodDescriptor(MethodDescriptor.ALL_METHODS,
+                    "", MethodDescriptor.EJB_LOCALHOME));
+            }
+        }
+
+        if (ejbDesc.isLocalBean()) {
+            methodAlls.add(
+                    new MethodDescriptor(MethodDescriptor.ALL_METHODS,
+                    "", MethodDescriptor.EJB_LOCAL));    
+        }
+
+        if (ejbDesc.hasWebServiceEndpointInterface()) {
+            methodAlls.add(
+                    new MethodDescriptor(MethodDescriptor.ALL_METHODS,
+                    "", MethodDescriptor.EJB_WEB_SERVICE));
+        }
+
+        return methodAlls;
+    }
+
+    /**
+     * @param methodDesc
+     * @param ejbDesc
+     * @return whether the given methodDesc has permission defined in ejbDesc
+     */
+    protected boolean hasMethodPermissionsFromDD(MethodDescriptor methodDesc,
+            EjbDescriptor ejbDesc) {
+        HashMap methodPermissionsFromDD = ejbDesc.getMethodPermissionsFromDD();
+        if (methodPermissionsFromDD != null) {
+            Set allMethods = ejbDesc.getMethodDescriptors();
+            String ejbClassSymbol = methodDesc.getEjbClassSymbol();
+            for (Object mdObjsObj : methodPermissionsFromDD.values()) {
+                List mdObjs = (List)mdObjsObj;
+                for (Object mdObj : mdObjs) {
+                    MethodDescriptor md = (MethodDescriptor)mdObj;
+                    for (Object style3MdObj :
+                            md.doStyleConversion(ejbDesc, allMethods)) {
+                        MethodDescriptor style3Md = (MethodDescriptor)style3MdObj;
+                        if (methodDesc.equals(style3Md)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * In Servlet 3.0, one can put annotations to only standard doXXX methods:
+     *     doDelete, doGet, doHead, doOptions, doPost, doPut, doTrace
+     * This method will check whether the given method can have security
+     * annotation.
+     *
+     * @param method
+     * @return validty of method for security annotations
+     */
+    protected boolean isValidHttpServletAnnotatedMethod(Method method) {
+        boolean valid = false;
+        String methodName = method.getName();
+        Class<?> returnType = method.getReturnType();
+        Class<?>[] parameterTypes = method.getParameterTypes();
+
+        String[] names = new String[] { "doDelete", "doGet", "doHead",
+            "doOptions", "doPost", "doPut", "doTrace" };
+        for (String name : names) {
+            if (methodName.equals(name)) {
+                valid = true;
+                break;
+            }
+        }
+
+        valid = valid && (Void.class.equals(returnType)) &&
+            Modifier.isProtected(method.getModifiers()) &&
+            (parameterTypes.length == 2) &&
+            (parameterTypes[0].equals(HttpServletRequest.class) &&
+                parameterTypes[1].equals(HttpServletResponse.class));
+
+        return valid;
+    }
+
+    /**
+     * Get or construct the associated SecurityConstraint.
+     * @param webCompDesc
+     * @param httpMethod
+     * @return an associated SecurityConstraint
+     */
+    protected SecurityConstraint getSecurityConstraint(
+            WebComponentDescriptor webCompDesc, Method annMethod) {
+
+        String httpMethod = annMethod.getName().substring(2).toUpperCase();
+        SecurityConstraint securityConstraint = null;
+        WebBundleDescriptor webBundleDesc = webCompDesc.getWebBundleDescriptor();
+
+        //XXX overriding TBD
+        /*
+        Set<String> urlPatterns = webCompDesc.getUrlPatternsSet();
+        for (SecurityConstraint sc : webBundleDesc.getSecurityConstraintsSet()) {
+            for (WebResourceCollection wrc : sc.getWebResourceCollections()) {
+                Set<String> ups = wrc.getUrlPatterns();
+                if (ups.equals(urlPatterns) && ) {
+                    securityConstraint = sc;
+                    break;
+                }
+            }
+            if (securityConstraint != null) {
+                break;
+            }
+        }
+        */
+
+        if (securityConstraint == null) {
+            securityConstraint = new SecurityConstraintImpl();
+            WebResourceCollectionImpl webResourceColl = new WebResourceCollectionImpl();
+            for (String urlPattern : webCompDesc.getUrlPatternsSet()) {
+                webResourceColl.addUrlPattern(urlPattern);
+            }
+            webResourceColl.addHttpMethod(httpMethod);
+            securityConstraint.addWebResourceCollection(webResourceColl);
+            webBundleDesc.addSecurityConstraint(securityConstraint);
+        }
+
+        return securityConstraint;
     }
 }

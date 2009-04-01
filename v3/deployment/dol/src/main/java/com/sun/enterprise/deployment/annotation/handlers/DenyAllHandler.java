@@ -33,12 +33,17 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.ejb.deployment.annotation.handlers;
+package com.sun.enterprise.deployment.annotation.handlers;
 
+import com.sun.enterprise.deployment.AuthorizationConstraintImpl;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.enterprise.deployment.MethodPermission;
+import com.sun.enterprise.deployment.WebComponentDescriptor;
+import com.sun.enterprise.deployment.web.SecurityConstraint;
 import com.sun.enterprise.deployment.annotation.context.EjbContext;
+import com.sun.enterprise.deployment.annotation.context.WebBundleContext;
+import com.sun.enterprise.deployment.annotation.context.WebComponentContext;
 import com.sun.enterprise.deployment.util.TypeUtil;
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
@@ -49,9 +54,9 @@ import javax.annotation.security.DenyAll;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
-import java.util.logging.Level;
 
 /**
  * This handler is responsible for handling the javax.annotation.security.DenyAll.
@@ -59,7 +64,7 @@ import java.util.logging.Level;
  * @author Shing Wai Chan
  */
 @Service
-public class DenyAllHandler extends AbstractAttributeHandler {
+public class DenyAllHandler extends AbstractCommonAttributeHandler {
     
     public DenyAllHandler() {
     }
@@ -80,16 +85,11 @@ public class DenyAllHandler extends AbstractAttributeHandler {
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
             EjbContext[] ejbContexts) throws AnnotationProcessorException {
 
-        AnnotatedElement ae = (AnnotatedElement)ainfo.getAnnotatedElement();
-        Method annMethod = (Method) ainfo.getAnnotatedElement();
-        if (ae.isAnnotationPresent(PermitAll.class) ||
-                ae.isAnnotationPresent(RolesAllowed.class)) {
-            log(Level.SEVERE, ainfo,
-                localStrings.getLocalString(
-                "enterprise.deployment.annotation.handlers.inconsistentsecannotation",
-                "This annotation is not consistent with other annotations.  One cannot have more than one of @RolesAllowed, @PermitAll, @DenyAll in the same AnnotatedElement."));
+        if (hasMoreThanOneAccessControlAnnotation(ainfo)) {
             return getDefaultFailedResult();
         }
+
+        Method annMethod = (Method) ainfo.getAnnotatedElement();
 
         for (EjbContext ejbContext : ejbContexts) {
             EjbDescriptor ejbDesc = ejbContext.getDescriptor();
@@ -109,4 +109,72 @@ public class DenyAllHandler extends AbstractAttributeHandler {
 
         return getDefaultProcessedResult();
     }   
+
+    /**
+     * Process Annotation with given WebCompContexts.
+     * @param ainfo
+     * @param webCompContexts
+     * @return HandlerProcessingResult
+     */
+    protected HandlerProcessingResult processAnnotation(
+            AnnotationInfo ainfo, WebComponentContext[] webCompContexts)
+            throws AnnotationProcessorException {
+
+            
+        if (hasMoreThanOneAccessControlAnnotation(ainfo)) {
+            return getDefaultFailedResult();
+        }
+
+        for (WebComponentContext webCompContext : webCompContexts) {
+            WebComponentDescriptor webCompDesc = webCompContext.getDescriptor();
+            if (ElementType.TYPE.equals(ainfo.getElementType())) {
+                //XXX
+            } else {
+                Method annMethod = (Method) ainfo.getAnnotatedElement();
+                if (isValidHttpServletAnnotatedMethod(annMethod)) {
+                    addHttpMethodConstraint(webCompDesc, annMethod);
+                }
+            }
+        }
+
+        return getDefaultProcessedResult();
+    }
+
+    /**
+     * Process Annotation with given WebBundleContext.
+     * @param ainfo
+     * @param webBundleContext
+     * @return HandlerProcessingResult
+     */
+    protected HandlerProcessingResult processAnnotation(
+            AnnotationInfo ainfo, WebBundleContext webBundleContext)
+            throws AnnotationProcessorException {
+
+        // this is not a web component
+        return getInvalidAnnotatedElementHandlerResult(webBundleContext, ainfo);
+    }
+
+    /**
+     * @return an array of annotation types this annotation handler would 
+     * require to be processed (if present) before it processes it's own 
+     * annotation type.
+     */
+    @Override
+    public Class<? extends Annotation>[] getTypeDependencies() {
+        return getEjbAndWebAnnotationTypes();
+    }
+
+    @Override
+    protected boolean supportTypeInheritance() {
+        return true;
+    }
+
+    private void addHttpMethodConstraint(
+           WebComponentDescriptor webCompDesc, Method annMethod) {
+
+        SecurityConstraint securityConstraint =
+            getSecurityConstraint(webCompDesc, annMethod);
+        AuthorizationConstraintImpl ac = new AuthorizationConstraintImpl();
+        securityConstraint.setAuthorizationConstraint(ac);
+    }
 }
