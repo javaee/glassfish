@@ -108,7 +108,7 @@ public class SunOptionUtil {
         SelectItem[] options =
                 (SelectItem[]) Array.newInstance(SUN_OPTION_CLASS, size);
         options[0] = getSunOption("", "");
-        for (int i = 0; i < values.length; i++) {
+        for (int i = 0; i < size-1; i++) {
             SelectItem option = getSunOption(values[i], values[i]);
             options[i + 1] = option;
         }
