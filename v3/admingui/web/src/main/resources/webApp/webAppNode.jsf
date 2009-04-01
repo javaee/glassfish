@@ -43,7 +43,6 @@
     expanded="$boolean{false}"
     attributeName="name"
     childImageURL="resource/images/webModule.gif"
-    childTarget="main"
     childExpanded="$boolean{false}"
     childURL="/web/webApp/webApplicationsEdit.jsf?appName=#{$this{valueBinding}.text}"
 >

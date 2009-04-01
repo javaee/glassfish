@@ -47,7 +47,6 @@
         objectName="amx:j2eeType=X-SecurityServiceConfig,name=na,X-ConfigConfig=$pageSession{configName}"   
         methodName="getAuthRealmConfigMap"
         childImageURL="resource/security/images/security.gif"
-        childTarget="main"
         childExpanded="$boolean{false}"
         childURL="/security/realms/realmEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
         text="$resource{i18n.tree.realms}"
@@ -62,7 +61,6 @@
         objectName="amx:j2eeType=X-SecurityServiceConfig,name=na,X-ConfigConfig=$pageSession{configName}"   
         methodName="getAuditModuleConfigMap"
         childImageURL="resource/security/images/security.gif"
-        childTarget="main"
         childExpanded="$boolean{false}"
         childURL="/security/auditModules/auditModuleEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
         text="$resource{i18n.tree.auditModules}"
@@ -84,7 +82,6 @@
 
             attributeName="name"
             childImageURL="resource/security/images/security.gif"
-            childTarget="main"
             childExpanded="$boolean{false}"
             childURL="configuration/jaccProviderEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"                    
             text="$resource{i18n.tree.jaccProviders}"
@@ -105,7 +102,6 @@
 
             attributeName="name"
             childImageURL="resource/security/images/security.gif"
-            childTarget="main"
             childExpanded="$boolean{false}"
             childURL="configuration/auditModuleEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
             text="$resource{i18n.tree.auditModules}"
