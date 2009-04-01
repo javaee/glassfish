@@ -36,26 +36,19 @@
 
 package com.sun.enterprise.web;
 
-import java.io.File;
+import java.io.*;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.MalformedURLException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Properties;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.jsp.JspFactory;
 
 import com.sun.appserv.server.util.Version;
+import com.sun.common.util.logging.LoggingConfigImpl;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Config;
@@ -69,7 +62,6 @@ import com.sun.enterprise.config.serverbeans.HttpProtocol;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.J2eeApplication;
 import com.sun.enterprise.config.serverbeans.KeepAlive;
-import com.sun.enterprise.config.serverbeans.LogService;
 import com.sun.enterprise.config.serverbeans.RequestProcessing;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.Server;
@@ -89,6 +81,7 @@ import com.sun.enterprise.security.integration.RealmInitializer;
 import com.sun.enterprise.util.Result;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
 import com.sun.enterprise.web.logger.IASLogger;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
@@ -136,7 +129,6 @@ import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.ObservableBean;
 import org.xml.sax.EntityResolver;
-import com.sun.enterprise.v3.services.impl.GrizzlyService;
 
 /**
  * Web container service
@@ -238,6 +230,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     @Inject
     GrizzlyService grizzlyService;
+
+    @Inject
+    LoggingConfigImpl logConfig;
 
     @Inject
     JavaEEObjectStreamFactory javaEEObjectStreamFactory;
@@ -494,13 +489,21 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             }
         }
 
-        LogService logService = cfg.getLogService();
         String logServiceFile = null;
-        if (logService != null) {
-            logServiceFile = logService.getFile();
+        Map<String, String> logProps = null;
+        try {
+            logProps = logConfig.getLoggingProperties();
+            if (logProps != null) {
+                logServiceFile = logProps.get("com.sun.enterprise.server.logging.GFFileHandler.file");
+            }
+        } catch (IOException ioe) {
+            _logger.log(Level.SEVERE,
+                        "Unable to determine location of server.log file",
+                        ioe);
         }
 
-        _embedded = new EmbeddedWebContainer(_serverContext, this, logServiceFile);
+        _embedded = new EmbeddedWebContainer(_serverContext, this,
+                                             logServiceFile);
 
         _embedded.setCatalinaHome(instance.getDomainRoot().getAbsolutePath());
         _embedded.setCatalinaBase(instance.getDomainRoot().getAbsolutePath());
@@ -558,11 +561,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
         //end HERCULES:mod
 
-  
-
         if (ejbWebServiceRegistryListener != null){
             ejbWebServiceRegistryListener.register();
-         }
+        }
 
         ConstructorWomb<HttpServiceConfigListener> womb =
                 new ConstructorWomb<HttpServiceConfigListener>(
