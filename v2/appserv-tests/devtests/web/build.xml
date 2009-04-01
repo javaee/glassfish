@@ -69,7 +69,7 @@
         <ant dir="jspErrorPageClassCastException" target="all"/>
         <ant dir="jspTemplateTextEscapedEL" target="all"/>
         <ant dir="jspResourceInjectionTagHandler" target="all"/>
-        <ant dir="jspResourceInjectionTagHandlerPostConstruct" target="all"/>
+        <ant dir="jspTagHandlerPostConstructAnnotation" target="all"/>
         <ant dir="jspTagHandlerPostConstructElement" target="all"/>
         <!-- XXX Uncomment as soon as fix for 6646921 has been ported
         <ant dir="jspTagHandlerPreDestroyAnnotation" target="all"/>
