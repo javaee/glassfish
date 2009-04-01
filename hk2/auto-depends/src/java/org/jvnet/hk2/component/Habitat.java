@@ -354,7 +354,7 @@ public class Habitat {
      *      if no such component is found.
      */
     public <T> Inhabitant<? extends T> getInhabitant(Class<T> contract, String name) throws ComponentException {
-        return _getInhabitant(contract, name);
+        return getInhabitantByContract(contract.getName(), name);
     }
 
     /**
@@ -388,7 +388,7 @@ public class Habitat {
      *      if no such component is found.
      */
     public Inhabitant<?> getInhabitantByAnnotation(Class<? extends Annotation> contract, String name) throws ComponentException {
-        return _getInhabitant(contract, name);
+        return getInhabitantByContract(contract.getName(), name);
     }
 
     /**
@@ -461,9 +461,9 @@ public class Habitat {
         return new MultiMapIterator(byType);
     }
 
-    private Inhabitant _getInhabitant(Class contract, String name) {
+    public Inhabitant getInhabitantByContract(String fullyQualifiedName, String name) {
         // TODO: faster implementation needed
-        for (NamedInhabitant i : byContract.get(contract.getName())) {
+        for (NamedInhabitant i : byContract.get(fullyQualifiedName)) {
             if(eq(i.name,name))
                 return i.inhabitant;
         }
