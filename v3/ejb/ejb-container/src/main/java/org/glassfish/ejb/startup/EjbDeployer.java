@@ -30,6 +30,7 @@ import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.security.PolicyLoader;
 import com.sun.enterprise.security.SecurityUtil;
 import com.sun.enterprise.security.util.IASSecurityException;
+import com.sun.logging.LogDomains;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -46,7 +47,7 @@ import org.jvnet.hk2.component.Habitat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.concurrent.ConcurrentHashMap;
-import org.glassfish.ejb.security.application.EJBSecurityManager;
+import java.util.logging.Logger;
 import org.glassfish.ejb.security.factory.EJBSecurityManagerFactory;
 
 /**
@@ -76,6 +77,9 @@ public class EjbDeployer
     protected EJBSecurityManagerFactory ejbSecManagerFactory;
 
     protected CMPDeployer cmpDeployer;
+    
+    private static final Logger _logger =
+                LogDomains.getLogger(EjbDeployer.class, LogDomains.EJB_LOGGER);
 
     /**
      * Constructor
@@ -134,10 +138,21 @@ public class EjbDeployer
      * @param dc deployment context
      */
     public void clean(DeploymentContext dc) {
-        OpsParams params = dc.getCommandParameters(OpsParams.class);
+        
+        // Both undeploy and shutdown scenarios are
+        // handled directly in EjbApplication.shutdown.
 
-        //Removing EjbSecurityManager for undeploy cases
+        // But CMP drop tables should be handled here.
+
+        OpsParams params = dc.getCommandParameters(OpsParams.class);
         if (params.origin == OpsParams.Origin.undeploy) {
+
+            cmpDeployer = habitat.getByContract(CMPDeployer.class);
+            if (cmpDeployer != null) {
+                cmpDeployer.clean(dc);
+            }
+
+            //Removing EjbSecurityManager for undeploy case
             String appName = params.name();
             String[] contextIds =
                     ejbSecManagerFactory.getContextsForApp(appName, false);
@@ -145,18 +160,9 @@ public class EjbDeployer
                 try {
                     SecurityUtil.removePolicy(contextId);
                 } catch (IASSecurityException ex) {
-                    throw new DeploymentException("Error removing the policy file for app " + appName + " " + ex);
+                    _logger.log( Level.WARNING,"Error removing the policy file " +
+                            "for application " + appName + " " + ex);
                 }
-            }
-
-            // Both undeploy and shutdown scenarios are
-            // handled directly in EjbApplication.shutdown.
-
-            // But CMP drop tables should be handled here.
-
-            cmpDeployer = habitat.getByContract(CMPDeployer.class);
-            if (cmpDeployer != null) {
-                cmpDeployer.clean(dc);
             }
         }
     }
