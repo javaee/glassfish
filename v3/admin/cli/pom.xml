@@ -182,5 +182,10 @@
             <artifactId>glassfish-api</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>jline</groupId>
+            <artifactId>jline</artifactId>
+            <version>0.9.94</version>
+        </dependency>
     </dependencies>
 </project>

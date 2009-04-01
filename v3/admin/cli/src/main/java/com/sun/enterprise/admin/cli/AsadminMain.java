@@ -102,7 +102,7 @@ public class AsadminMain {
         System.exit(exitCode);
     }
 
-    private Map<String, String> getRemoteCommands() {
+    public Map<String, String> getRemoteCommands() {
         try {
             ListCommandsCommand lcc = new ListCommandsCommand();
             String[] remoteCommands = lcc.getRemoteCommands();
@@ -118,7 +118,7 @@ public class AsadminMain {
     }
     
 
-    private int local(String[] args) throws InvalidCommandException{
+    public int local(String[] args) throws InvalidCommandException{
         try {
             CLIMain cli = new com.sun.enterprise.cli.framework.CLIMain();
             cli.invokeCommand(args);
@@ -146,7 +146,7 @@ public class AsadminMain {
             return ERROR;
         }
     }
-    private int remote(String[] args) {
+    public int remote(String[] args) {
         try {
             CLIRemoteCommand rc = new CLIRemoteCommand(args);
             rc.runCommand();
