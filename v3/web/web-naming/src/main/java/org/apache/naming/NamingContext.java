@@ -856,7 +856,7 @@ public class NamingContext implements Context {
      * must already exist.
      * 
      * @param name the name to bind; may not be empty
-     * @param object the object to bind; possibly null
+     * @param obj the object to bind; possibly null
      * @param rebind if true, then perform a rebind (ie, overwrite)
      * @exception NameAlreadyBoundException if name is already bound
      * @exception InvalidAttributesException if object did not supply all 

@@ -88,10 +88,6 @@ public class TransactionRef
 
     /**
      * Resource Reference.
-     * 
-     * @param resourceClass Resource class
-     * @param scope Resource scope
-     * @param auth Resource authetication
      */
     public TransactionRef() {
         this(null, null);
@@ -101,9 +97,8 @@ public class TransactionRef
     /**
      * Resource Reference.
      * 
-     * @param resourceClass Resource class
-     * @param scope Resource scope
-     * @param auth Resource authetication
+     * @param factory the factory
+     * @param factoryLocation the factory location 
      */
     public TransactionRef(String factory, String factoryLocation) {
         super("javax.transaction.UserTransaction", factory, factoryLocation);

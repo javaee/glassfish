@@ -89,7 +89,7 @@ public class ResourceEnvRef
     /**
      * Resource env reference.
      * 
-     * @param type Type
+     * @param resourceType the resource type
      */
     public ResourceEnvRef(String resourceType) {
         super(resourceType);
@@ -99,7 +99,7 @@ public class ResourceEnvRef
     /**
      * Resource env reference.
      * 
-     * @param type Type
+     * @param resourceType the resource type
      */
     public ResourceEnvRef(String resourceType, String factory,
                           String factoryLocation) {
