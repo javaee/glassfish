@@ -280,7 +280,7 @@ public class Java2DBProcessorHelper {
        /**
         * Read the ddl file from the disk location.
         * @param fileName the string name of the file.
-        * @param create true if this event results in creating tables.
+        * @param deploy true if this event results in creating tables.
         * @return the jdbc ddl file.
         */
     public File getDDLFile(String fileName, boolean deploy) {
@@ -303,7 +303,6 @@ public class Java2DBProcessorHelper {
     
     /**
      * Open a DDL file and execute each line as a SQL statement.
-     * @throw IOException if there is a problem with reading the file.
      * @param f the File object to use.
      * @param sql the Statement to use for execution.
      * @throws java.io.IOException if there is a problem with reading the file.
@@ -671,7 +670,7 @@ public class Java2DBProcessorHelper {
     /**
      * Get the localized message for the error code.
      * @param errorCode 
-     * @return 
+     * @return i18ned message 
      */
     public String getI18NMessage(String errorCode) {
         return getI18NMessage(errorCode, null, null, null);

@@ -64,7 +64,7 @@ public interface ProviderContainerContractInfo {
 
     /**
      *
-     * @return Adds ClassTransformer to underlying Application's classloader
+     * Adds ClassTransformer to underlying Application's classloader
      */
     void addTransformer(ClassTransformer transformer);
 

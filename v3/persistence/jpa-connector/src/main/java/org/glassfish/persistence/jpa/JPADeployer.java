@@ -82,7 +82,7 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPAApplication> {
     }
 
     /**
-     * @InheritDoc
+     * @inheritDoc
      */
     public <V> V loadMetaData(Class<V> type, DeploymentContext context) {
         return null;
@@ -131,7 +131,7 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPAApplication> {
     }
 
     /**
-     * @InheritDoc
+     * @inheritDoc
      */
     @Override public JPAApplication load(JPAContainer container, DeploymentContext context) {
         // Return the JPAApplication stored in DeploymentContext during prepaare phase
