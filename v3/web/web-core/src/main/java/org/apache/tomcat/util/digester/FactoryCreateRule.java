@@ -109,7 +109,7 @@ public class FactoryCreateRule extends Rule {
      * @param clazz Java class name of the object creation factory class
      *
      * @deprecated The digester instance is now set in the {@link Digester#addRule} method. 
-     * Use {@link #FactoryCreateRule(Class&lt;?&gt; clazz)} instead.
+     * Use {@link #FactoryCreateRule(Class clazz)} instead.
      */
     public FactoryCreateRule(Digester digester, Class<?> clazz) {
 
@@ -152,7 +152,7 @@ public class FactoryCreateRule extends Rule {
      *  override of the class name of the object creation factory to create.
      *
      * @deprecated The digester instance is now set in the {@link Digester#addRule} method. 
-     * Use {@link #FactoryCreateRule(Class&lt;?&gt; clazz, String attributeName)} instead.
+     * Use {@link #FactoryCreateRule(Class clazz, String attributeName)} instead.
      */
     public FactoryCreateRule(Digester digester,
                              Class<?> clazz, String attributeName) {
