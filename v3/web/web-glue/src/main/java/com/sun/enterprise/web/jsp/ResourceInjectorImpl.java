@@ -39,6 +39,7 @@ package com.sun.enterprise.web.jsp;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
@@ -116,7 +117,10 @@ public class ResourceInjectorImpl implements ResourceInjector {
     /**
      * Injects the injectable resources from the component environment 
      * associated with this ResourceInjectorImpl into the given 
-     * tag handler instance. 
+     * tag handler instance.
+     *
+     * <p>Any @PostConstruct methods on the class (and super-classes)
+     * of the instance will be invoked after injection.
      *
      * @param handler The tag handler instance to be injected
      *
@@ -126,6 +130,25 @@ public class ResourceInjectorImpl implements ResourceInjector {
 
         if( desc != null ) {
             injectionMgr.injectInstance(handler, desc);
+        }
+    }
+
+
+    /**
+     * Invokes any @PreDestroy methods defined on the instance's class
+     * (and super-classes).
+     *
+     * @param handler The tag handler instance whose @PreDestroy methods
+     * to call
+     */
+    public void preDestroy(JspTag handler) {
+        if (desc != null) {
+            try {
+                injectionMgr.invokeInstancePreDestroy(handler, desc);
+            } catch (Exception e) {
+                _logger.log(Level.WARNING, "Exception during invocation of " +
+                    "@PreDestroy on JSP tag handler " + handler, e);
+            }
         }
     }
 
