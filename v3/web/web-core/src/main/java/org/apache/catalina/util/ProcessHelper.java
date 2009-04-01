@@ -165,9 +165,6 @@ private int iClientInputTimeout;
  * @param  wd       File with the script's desired working directory
  * @param  params   Hashtable with the script's query parameters
  *
- * @param  res       HttpServletResponse object for setting headers
- *                   based on CGI script output
- *
  */
 public ProcessHelper(String command, Hashtable env, File wd,
                     Hashtable params) {

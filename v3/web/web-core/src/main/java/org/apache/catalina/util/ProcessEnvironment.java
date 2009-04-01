@@ -246,7 +246,7 @@ public class ProcessEnvironment {
 
     /**
      * Sets the desired command string
-     * @param   String command as desired
+     * @param   command string as desired
      * @return  command string
      */
     protected String setCommand(String command) {
@@ -274,8 +274,8 @@ public class ProcessEnvironment {
 
     /**
      * Sets process' environment
-     * @param    process' environment
-     * @return   Hashtable to which the process' environment was set
+     * @param   env  process' environment
+     * @return  Hashtable to which the process' environment was set
      */
     public Hashtable setEnvironment(Hashtable env) {
         this.env = env;
@@ -294,7 +294,7 @@ public class ProcessEnvironment {
 
     /**
      * Converts null strings to blank strings ("")
-     * @param    string to be converted if necessary
+     * @param    s string to be converted if necessary
      * @return   a non-null string, either the original or the empty string
      *           ("") if the original was <code>null</code>
      */
@@ -305,8 +305,8 @@ public class ProcessEnvironment {
 
     /**
      * Converts null strings to another string
-     * @param    string to be converted if necessary
-     * @param    string to return instead of a null string
+     * @param    couldBeNull string to be converted if necessary
+     * @param    subForNulls string to return instead of a null string
      * @return   a non-null string, either the original or the substitute
      *           string if the original was <code>null</code>
      */
@@ -317,8 +317,8 @@ public class ProcessEnvironment {
 
     /**
      * Converts blank strings to another string
-     * @param    string to be converted if necessary
-     * @param    string to return instead of a blank string
+     * @param    couldBeBlank string to be converted if necessary
+     * @param    subForBlanks string to return instead of a blank string
      * @return   a non-null string, either the original or the substitute
      *           string if the original was <code>null</code> or empty ("")
      */
@@ -342,7 +342,7 @@ public class ProcessEnvironment {
      * Should be overriden by subclasses to perform useful setup.
      * </p>
      *
-     * @param    HttpServletRequest request associated with the
+     * @param    req HttpServletRequest request associated with the
      *           Process' invocation
      * @return   true if environment was set OK, false if there was a problem
      *           and no environment was set

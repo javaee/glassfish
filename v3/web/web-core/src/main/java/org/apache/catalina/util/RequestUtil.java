@@ -310,7 +310,7 @@ public final class RequestUtil {
      *
      * @param map Map that accumulates the resulting parameters
      * @param data Input string containing request parameters
-     * @param urlParameters true if we're parsing parameters on the URL
+     * @param encoding The name of a supported charset used to encode
      *
      * @exception IllegalArgumentException if the data is malformed
      */

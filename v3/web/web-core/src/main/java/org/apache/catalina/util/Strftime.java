@@ -160,7 +160,7 @@ public class Strftime {
      * Create an instance of this date formatting class
      * 
      * @param origFormat the strftime-style formatting string
-     * @param the locale to use for locale-specific conversions
+     * @param locale to use for locale-specific conversions
      */
     public Strftime( String origFormat, Locale locale ) {
         String convertedFormat = convertDateFormat( origFormat );
@@ -189,7 +189,7 @@ public class Strftime {
     /**
      * Change the timezone used to format dates
      *
-     * @see java.util.TimeZone#setTimeZone
+     * @see java.text.SimpleDateFormat#setTimeZone
      */
     public void setTimeZone( TimeZone timeZone ) {
         simpleDateFormat.setTimeZone( timeZone );
@@ -264,7 +264,10 @@ public class Strftime {
      * try to get the Java Date/Time formating associated with
      * the C standard provided
      *
-     * @param c The C equivalent to translate
+     * @param buf translated StringBuffer 
+     * @param pattern command to translate
+     * @param index  first character index
+     * @param oldInside whether to close the quotes if inside quote
      * @return The Java formatting rule to use
      */
     protected boolean translateCommand( StringBuffer buf, String pattern, int index, boolean oldInside ) {

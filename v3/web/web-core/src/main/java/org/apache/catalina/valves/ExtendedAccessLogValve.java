@@ -591,8 +591,6 @@ public final class ExtendedAccessLogValve
      *
      * @param request Request being processed
      * @param response Response being processed
-     * @param context The valve context used to invoke the next valve
-     *  in the current processing pipeline
      *
      * @exception IOException if an input/output error has occurred
      * @exception ServletException if a servlet error has occurred

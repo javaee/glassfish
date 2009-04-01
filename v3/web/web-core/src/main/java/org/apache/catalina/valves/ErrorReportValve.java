@@ -148,8 +148,6 @@ public class ErrorReportValve
      *
      * @param request The servlet request to be processed
      * @param response The servlet response to be created
-     * @param context The valve context used to invoke the next valve
-     *  in the current processing pipeline
      *
      * @exception IOException if an input/output error occurs
      * @exception ServletException if a servlet error occurs
@@ -251,7 +249,7 @@ public class ErrorReportValve
      *
      * @param request The request being processed
      * @param response The response being generated
-     * @param exception The exception that occurred (which possibly wraps
+     * @param throwable The exception that occurred (which possibly wraps
      *  a root cause exception
      */
     protected void report(Request request, Response response,

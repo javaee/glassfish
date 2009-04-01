@@ -228,8 +228,6 @@ public abstract class RequestFilterValve
      *
      * @param request The servlet request to be processed
      * @param response The servlet response to be created
-     * @param context The valve context used to invoke the next valve
-     *  in the current processing pipeline
      *
      * @exception IOException if an input/output error occurs
      * @exception ServletException if a servlet error occurs
@@ -290,8 +288,6 @@ public abstract class RequestFilterValve
      * @param property The request property on which to filter
      * @param request The servlet request to be processed
      * @param response The servlet response to be processed
-     * @param context The valve context used to invoke the next valve
-     *  in the current processing pipeline
      *
      * @exception IOException if an input/output error occurs
      * @exception ServletException if a servlet error occurs
