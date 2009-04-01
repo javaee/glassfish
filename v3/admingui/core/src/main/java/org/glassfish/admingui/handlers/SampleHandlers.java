@@ -59,7 +59,7 @@ import java.util.HashSet;
 
 /**
  *
- * @ anilam
+ * @author anilam
  */
 public class SampleHandlers {
     
@@ -74,7 +74,7 @@ public class SampleHandlers {
      *  <p> Input value: "Map" -- Type: <code>java.util.Map</code> 
      *  <p> Input value: "Key" -- Type: <code>Object</code>
      *  <p> Output value: "Value" -- Type: <code>Object</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="sampleMapGet",
     	input={

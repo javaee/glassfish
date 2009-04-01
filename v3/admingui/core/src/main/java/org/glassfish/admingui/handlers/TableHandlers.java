@@ -87,7 +87,7 @@ public class TableHandlers {
      * 
      *  <p> Input  value: "TableRowGroup" -- Type: <code> com.sun.webui.jsf.component.TableRowGroup</code></p>
      *  <p> Input  value: "selectedRows" -- Type: <code> java.util.List</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getSelectedSingleMapRows",
     input={
@@ -116,7 +116,7 @@ public class TableHandlers {
     /**
      *	<p> This handler returns the selected row keys.</p>
      *
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getSelectedTableRowKeys",
 	input={
@@ -132,7 +132,7 @@ public class TableHandlers {
     /**
      *	<p> This handler deletes the given <code>RowKey</code>s.</p>
      *
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="deleteTableRows",
 	input={
@@ -153,7 +153,7 @@ public class TableHandlers {
      *	<p> This handler commits the changes to a <code>TableRowGroup</code>'s
      *	    DataProvider.</p>
      *
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="commitTableRowGroup",
 	input={
@@ -173,7 +173,7 @@ public class TableHandlers {
      *
      *  <p> Input value: "Properties" -- Type: <code>java.util.Map</code>/</p>
      *  <p> Output value: "TableList" -- Type: <code>java.util.List</code>/</p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getTableListFromProperties",
     input={
@@ -205,7 +205,7 @@ public class TableHandlers {
      *
      *  <p> Input value: "Properties" -- Type: <code>java.util.Map</code>/</p>
      *  <p> Output value: "TableList" -- Type: <code>java.util.List</code>/</p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getTableList",
     input={
@@ -241,7 +241,7 @@ public class TableHandlers {
      * 
      *  <p> Input  value: "TableRowGroup" -- Type: <code> com.sun.webui.jsf.component.TableRowGroup</code></p>
      *  <p> Output  value: "Rows" -- Type: <code> java.util.List</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getAllSingleMapRows",
     input={
@@ -271,7 +271,7 @@ public class TableHandlers {
      *  <p> Input value: "NameList" -- Type:<code>java.util.List</code></p>
      *  <p> Input value: "DefaultValueList" -- Type:<code>java.util.List</code></p>
      *  <p> Input value: "HasSelected" -- Type:<code>java.lang.Boolean</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="addRowToTable",
     input={
@@ -336,7 +336,7 @@ public class TableHandlers {
   /**
      *	<p> This handler converts the table list to arraylist.</p>
      *
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="convertListToArrayList",
 	input={
@@ -367,7 +367,7 @@ public class TableHandlers {
  /**
      *	<p> This handler returns the properties to be removed and added.</p>
      *
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getAddRemoveProps",
 	input={
@@ -421,7 +421,7 @@ public class TableHandlers {
   /**
      * <p> This handler converts the table List to a Property map.
      *
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="convertRowsToProperties",
 	input={
@@ -450,7 +450,7 @@ public class TableHandlers {
   /**
      * <p> This handler converts the table List to a Properties map.
      *
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getProperties",
 	input={

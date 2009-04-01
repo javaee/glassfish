@@ -73,7 +73,7 @@ public class VirtualServerHandlers {
    /**
      *	<p> This handler returns the list of specified config elements for populating the table.
      *  <p> Input  value: "type" -- Type: <code> java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getVirtualServerList",
         input={
@@ -128,7 +128,7 @@ public class VirtualServerHandlers {
      *  <p> Output value: "Http"     -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "Web"        -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "LogFile"  -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getVirtualServerSettings",
    input={
@@ -238,7 +238,7 @@ public class VirtualServerHandlers {
      *  <p> Input value: "Http"     -- Type: <code>java.lang.String</code></p>
      *  <p> Input value: "Web"        -- Type: <code>java.lang.String</code></p>
      *  <p> Input value: "LogFile"  -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="saveVirtualServerSettings",
    input={
@@ -314,7 +314,7 @@ public class VirtualServerHandlers {
 
     /**
      *	<p> This handler takes in selected rows, and removes selected config
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="deleteConfig",
     input={
@@ -375,7 +375,7 @@ public class VirtualServerHandlers {
   /**
      *	<p> This handler returns the list of web modules including both embedded
      *  ones in ear and web app.
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     //TODO-V3,  will need to add embedded war module in deployed EAR as well.
     /*
@@ -422,7 +422,7 @@ public class VirtualServerHandlers {
      /**
      *	<p> This handler returns the list of web modules including both embedded
      *  ones in ear and web app.
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getAllWebModules",
        output={

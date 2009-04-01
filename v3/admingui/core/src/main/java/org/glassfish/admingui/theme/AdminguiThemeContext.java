@@ -65,8 +65,8 @@ public class AdminguiThemeContext extends ServletThemeContext {
      *	<p> This constructor takes in the theme name and version to use by
      *	    default.</p>
      *
-     *	@param	theme	The theme name (i.e. suntheme).
-     *	@param	version	The version number (i.e. 4.2).
+     *	@param	themeName	The theme name (i.e. suntheme).
+     *	@param	themeVersion	The version number (i.e. 4.2).
      */
     protected AdminguiThemeContext(String themeName, String themeVersion) {
 	super(setThemeParams(themeName, themeVersion));

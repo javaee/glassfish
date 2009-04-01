@@ -89,7 +89,7 @@ public class InstanceHandler {
      *  <p> Output value: "version" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "configDir" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "debugPort" -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getInstanceGeneralAttributes",
     input = {
@@ -225,7 +225,7 @@ public class InstanceHandler {
      *	<p> This handler returns the configuration Name of the instance or cluster</p>
      *  <p> Input  value: "target" -- Type: <code> java.lang.String</code></p>
      *  <p> Output value: "configName" -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getConfigNameOfTarget",
     input = {
@@ -243,7 +243,7 @@ public class InstanceHandler {
 
     /**
      *	<p> This handler upgrade the profile from developer profile to cluster profile</p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "upgradeProfile")
     public static void upgradeProfile(HandlerContext handlerCtx) {

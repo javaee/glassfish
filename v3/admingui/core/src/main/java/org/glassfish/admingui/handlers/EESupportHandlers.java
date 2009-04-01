@@ -96,7 +96,7 @@ public class EESupportHandlers {
      *
      *  <p> Output value: "supportCluster" -- Type: <code>Boolean</code>/</p>
      *  <p> Output value: "supportHADB" -- Type: <code>Boolean</code>/</p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="checkSupport",
     output={
@@ -112,7 +112,7 @@ public class EESupportHandlers {
      *	<p> This handler returns a list of Cluster in sorted order </p>
      *
      *  <p> Output value: "clusterList" -- Type: <code>java.util.List</code>/</p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getClusterList",
         output={
@@ -130,7 +130,7 @@ public class EESupportHandlers {
      *	<p> This handler returns a list of Standalone server in sorted order </p>
      *
      *  <p> Output value: "serverList" -- Type: <code>java.util.List</code>/</p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getStandaloneServerList",
         output={
@@ -146,7 +146,7 @@ public class EESupportHandlers {
      *  server and server of a cluster, in sorted order </p>
      *
      *  <p> Output value: "serverList" -- Type: <code>java.util.List</code>/</p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getAllServerList",
         output={
@@ -164,7 +164,7 @@ public class EESupportHandlers {
     /**
      *	<p> This handler returns a list of virtual server for a give target.
      *  <p> Output value: "serverList" -- Type: <code>java.util.List</code>/</p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getAllVSList",
         input={
@@ -193,7 +193,7 @@ public class EESupportHandlers {
      *  server and cluster, in sorted order </p>
      *
      *  <p> Output value: "availableTargetList" -- Type: <code>java.util.List</code>/</p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getAllTargetList",
         output={
@@ -217,7 +217,7 @@ public class EESupportHandlers {
      *
      *  <p> Input value: "clusterName" -- Type: <code>String</code>/</p>
      *  <p> Output value: "serverList" -- Type: <code>java.util.List</code>/</p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getServersOfCluster",
         input={
@@ -330,7 +330,7 @@ public class EESupportHandlers {
      *  <p> Input value: "name" -- Type: <code>String</code>/</p>
      *  <p> Input value: "vsTargets" -- Type: <code>String[]</code>/</p>
      *  <p> Output value: "targetName" -- Type: <code>String</code>/</p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="createVSReferences",
         input={
@@ -355,7 +355,7 @@ public class EESupportHandlers {
      *  <p> Input value: "name" -- Type: <code>String</code>/</p>
      *  <p> Input value: "targets" -- Type: <code>String[]</code>/</p>
      *  <p> Output value: "name" -- Type: <code>String</code>/</p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="createResourceReferences",
         input={
@@ -391,7 +391,7 @@ public class EESupportHandlers {
      *          - the list to be added to the field.</p>
      *          - <code>java.util.List</code> 
      *  <p> Output value: "optionsList" -- Type: <code>Option</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getTargetsOptionsList",
     input={
@@ -434,7 +434,7 @@ public class EESupportHandlers {
      *          - <code>java.util.List</code> 
      *      The type specified must be either:  application, resource, loadbalancer
      *  <p> Output value: "optionsList" -- Type: <code>Option</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getTargetOptions",
     	input={
@@ -481,7 +481,7 @@ public class EESupportHandlers {
      *          - the list to be added to the field.</p>
      *          - <code>java.util.List</code> 
      *  <p> Output value: "optionsList" -- Type: <code>Option</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getVSOptions", 
     input = {
@@ -545,7 +545,7 @@ public class EESupportHandlers {
     
     /**
      *	<p> This handler returns the list of targets for populating the table.
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getConfigurationTargets",
            input={
@@ -779,7 +779,7 @@ public class EESupportHandlers {
     
     /**
      *	<p> This handler creates a new configuration
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      *  <p> Input value: "Name"       -- Type: <code>java.lang.String</code></p>
      *  <p> Input value: "Config"     -- Type: <code>java.lang.String</code></p>
      */
@@ -806,7 +806,7 @@ public class EESupportHandlers {
     
     /**
      *	<p> This handler deletes all selected clustered server instances.
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      *  <p> Input value: "selectedRows"       -- Type: <code>java.util.</code></p>
      */
     @Handler(id="deleteConfigurations",

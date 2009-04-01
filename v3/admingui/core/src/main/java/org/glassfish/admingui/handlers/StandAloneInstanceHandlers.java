@@ -88,7 +88,7 @@ public class StandAloneInstanceHandlers{
 
    /**
      *	<p> This handler returns the list of StandaloneInstances for populating the table.
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getStandaloneInstances",
         output={
@@ -129,7 +129,7 @@ public class StandAloneInstanceHandlers{
      * <p> This handler returns the node agent names of the domain </p>
      *
      * <p> Output value: "NodeAgents" -- Type: <code>java.util.SelectItem</code>
-     * @param  context The HandlerContext.
+     * @param  handlerCtx The HandlerContext.
      */
     @Handler(id="getNodeAgentsForDropdown",
         output={
@@ -150,7 +150,7 @@ public class StandAloneInstanceHandlers{
      * <p> This handler returns the config names of the domain </p>
      *
      * <p> Output value: "Configs" -- Type: <code>java.util.SelectItem</code>
-     * @param  context The HandlerContext.
+     * @param  handlerCtx The HandlerContext.
      */
     @Handler(id="getConfigsForDropdown",
         output={
@@ -176,7 +176,7 @@ public class StandAloneInstanceHandlers{
 
     /**
      *	<p> This handler creates standalone instances
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="createStandaloneInstance",
     input={
@@ -244,7 +244,7 @@ public class StandAloneInstanceHandlers{
     
      /**
      *	<p> This handler takes in selected rows, and removes selected instance
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="deleteStandaloneInstance",
     input={
@@ -424,7 +424,7 @@ public class StandAloneInstanceHandlers{
      *  <p> Output value: "version" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "configDir" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "debugPort" -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getStandaloneInstanceGeneralAttributes",
         input={
@@ -609,7 +609,7 @@ public class StandAloneInstanceHandlers{
       *	<p> Input value: "InstanceName"       -- Type: <code>java.lang.String</code></p>
      *  <p> Input value: "AddProps"     -- Type: <code>java.util.Map</code></p>
      *  <p> Input value: "RemoveProps"     -- Type: <code>java.util.ArrayList</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="saveStandaloneInstanceProperties",
     input={
@@ -642,7 +642,7 @@ public class StandAloneInstanceHandlers{
      *      Standalone Instance Config Properties Page.</p>
      *  <p> Input  value: "instanceName" -- Type: <code> java.lang.String</code></p>
      *  <p> Output value: "result" -- Type: <code>java.util.List</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getStandaloneInstanceConfigProperties",
         input={
@@ -677,7 +677,7 @@ public class StandAloneInstanceHandlers{
      *	<p> This method returns the properties for Standalone Instances </p>
      *
      *  <p> Output value: "Properties" -- Type: <code>java.util.List</code>/</p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getStandaloneInstanceProperties",
     input={

@@ -90,7 +90,7 @@ public class RegisterHandlers {
      *	<p> This handler test if registration related operation should be performed  </p>
      *
      *  <p> Output value: "value" -- Type: <code>Boolean</code>/</p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="showRegistration",
     output={
@@ -167,7 +167,7 @@ public class RegisterHandlers {
     /**
      *	<p> This handler set the Registration Status to Don't Ask </p>
      *
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="setRegistrationDontAsk")
     public static void setRegistrationDontAsk(HandlerContext handlerCtx) {
@@ -178,7 +178,7 @@ public class RegisterHandlers {
     /**
      *	<p> This handler set the Registration Status to Remind Later </p>
      *
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="setRegistrationRemindLater")
     public static void setRegistrationRemindLater(HandlerContext handlerCtx) {
@@ -226,7 +226,7 @@ public class RegisterHandlers {
      *	<p> This handler returns true if we should ask user to register  </p>
      *
      *  <p> Output value: "askRegistration" -- Type: <code>Boolean</code>/</p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="askRegistration",
     input={
@@ -417,7 +417,7 @@ public class RegisterHandlers {
     }
 
     
-    /**
+    /*
      *	<p> This method will return a List of 2 lists.  The first list is the
      *      country list of the specified locale. The second list is the country
      *      list in _en locale that the sysnet backend is expecting.  

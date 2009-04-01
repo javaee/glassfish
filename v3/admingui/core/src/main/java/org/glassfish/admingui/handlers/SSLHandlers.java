@@ -109,7 +109,7 @@ public class SSLHandlers {
          *  <p> Output value: "SelectedEph"           -- Type: <code>java.util.Array</code></p>
          *  <p> Output value: "SelectedOther"         -- Type: <code>java.util.Array</code></p>
          *  <p> Output value: "SelectedEcc"           -- Type: <code>java.util.Array</code></p>
-         *  @param context The HandlerContext.
+         *  @param handlerCtx The HandlerContext.
          */
         
         @Handler(id="getSSLProperties",
@@ -229,7 +229,7 @@ public class SSLHandlers {
          *  <p> Input value: "SelectedEphemeral"     -- Type: <code>java.util.Array</code></p>
          *  <p> Input value: "SelectedOther"         -- Type: <code>java.util.Array</code></p>
          *  <p> Input value: "SelectedEcc"           -- Type: <code>java.util.Array</code></p>
-         *  @param context The HandlerContext.
+         *  @param handlerCtx The HandlerContext.
          */
         @Handler(id="saveSSLProperties",
             input={
@@ -385,7 +385,7 @@ public class SSLHandlers {
          *  <p> Input value: "SelectedEphemeral"     -- Type: <code>java.util.Array</code></p>
          *  <p> Input value: "SelectedOther"         -- Type: <code>java.util.Array</code></p>
          *  <p> Input value: "SelectedEcc"           -- Type: <code>java.util.Array</code></p>
-         *  @param context The HandlerContext.
+         *  @param handlerCtx The HandlerContext.
          */
         @Handler(id="updateSSLProperties",
             input={

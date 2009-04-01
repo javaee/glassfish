@@ -109,7 +109,7 @@ public class ConnectorsHandlers {
      *  <p> Output value: "poolName" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "description" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "enbled" -- Type: <code>java.lang.Boolean</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getConnectorResourceInfo", input = {
 @HandlerInput(name = "jndiName", type = String.class, required = true),
@@ -151,7 +151,7 @@ public class ConnectorsHandlers {
      *  <p> Output value: "poolName" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "description" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "enbled" -- Type: <code>java.lang.Boolean</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "saveConnectorResource", input = {
 @HandlerInput(name = "edit", type = Boolean.class, required = true),
@@ -683,7 +683,7 @@ public class ConnectorsHandlers {
      *  <p> Input  value: "selectedRows" -- Type: <code>java.util.List</code></p>
      *  <p> Input  value: "appType" -- Type: <code>String</code></p>
      *  <p> Input  value: "isJmsConnectionFactory" -- Type: <code>Boolean</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "deleteConnectorSecurityMaps", input = {
 @HandlerInput(name = "jndiName", type = String.class, required = true),
@@ -874,7 +874,7 @@ public class ConnectorsHandlers {
      *  <p> Output value: "resAdapter" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "description" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "enbled" -- Type: <code>java.lang.Boolean</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getAdminObjectResourceInfo", input = {
 @HandlerInput(name = "jndiName", type = String.class, required = true),
@@ -914,7 +914,7 @@ public class ConnectorsHandlers {
 
     /**
      *	<p> This handler saves the attributes of the AdminObject Resource
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "saveAdminObjectResource", input = {
 @HandlerInput(name = "jndiName", type = String.class, required = true),
@@ -1331,7 +1331,7 @@ public class ConnectorsHandlers {
      *	<p> This handler returns the list of targets for populating the target table.
      *  <p> Input  value: "appName" -- Type: <code> java.lang.String</code></p>
      *  <p> Input  value: "appType" -- Type: <code> java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getResourcesTargetTableList", input = {
 @HandlerInput(name = "jndiName", type = String.class, required = true),
@@ -1361,7 +1361,7 @@ public class ConnectorsHandlers {
      *  <p> Input  value: "selectedRows" -- Type: <code>java.util.List</code></p>
      *  <p> Input  value: "appType" -- Type: <code>String</code></p>
      *  <p> Input  value: "enabled" -- Type: <code>Boolean</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "changeResourceStatus", input = {
 @HandlerInput(name = "selectedRows", type = List.class, required = true),
@@ -1413,7 +1413,7 @@ public class ConnectorsHandlers {
      *  <p> Input  value: "selectedRows" -- Type: <code>java.util.List</code></p>
      *  <p> Input  value: "appType" -- Type: <code>String</code></p>
      *  <p> Input  value: "enabled" -- Type: <code>Boolean</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "changeResourceTargetStatus", input = {
 @HandlerInput(name = "selectedRows", type = List.class, required = true),
@@ -1468,7 +1468,7 @@ public class ConnectorsHandlers {
     /**
      *	<p> This handler returns the list of specified resources for populating the table.
      *  <p> Input  value: "type" -- Type: <code> java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getResourcesList", input = {
 @HandlerInput(name = "type", type = String.class, required = true),
@@ -1564,7 +1564,7 @@ public class ConnectorsHandlers {
      *  <p> Input  value: "selectedRows" -- Type: <code>java.util.List</code></p>
      *  <p> Input  value: "appType" -- Type: <code>String</code></p>
      *  <p> Input  value: "isJmsConnectionFactory" -- Type: <code>Boolean</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "deleteResource", input = {
         @HandlerInput(name = "selectedRows", type = List.class, required = true),
@@ -1651,7 +1651,7 @@ public class ConnectorsHandlers {
      *	<p> This handler returns the list of resources deployed to the specified target.
      *     The target should be the name of a standalone server instance or cluster 
      *  <p> Input  value: "target" -- Type: <code> java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getResourceRefListForTarget", input = {
         @HandlerInput(name = "target", type = String.class, required = true),
@@ -1699,7 +1699,7 @@ public class ConnectorsHandlers {
     /**
      *	<p> This handler sets the enabled status for a particular target.
      *  <p> Input  value: "target" -- Type: <code> java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "changeEnableForTarget", input = {
 @HandlerInput(name = "target", type = String.class, required = true),
@@ -1724,7 +1724,7 @@ public class ConnectorsHandlers {
 
     /**
      *	<p> Returns the list of resources for filtering 
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getResourceFilterTypes", output = {
 @HandlerOutput(name = "labels", type = java.util.List.class),

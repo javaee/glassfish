@@ -112,7 +112,7 @@ public class PluginHandlers {
     /**
      *	<p> This handler provides access to {@link IntegrationPoint}s for the requested key.</p>
      *
-     *	@param	context	The <code>HandlerContext</code>.
+     *	@param	handlerCtx	The <code>HandlerContext</code>.
      */
     @Handler(id="getIntegrationPoints",
     	input={
@@ -274,11 +274,11 @@ public class PluginHandlers {
 
     /**
      *	<p> This method returns the parent for the content of the given
-     *	    {@link IntgrationPoint}.</p>
+     *	    {@link IntegrationPoint}.</p>
      *
      *	@param	root	The <code>UIComponent</code> in which to search for
      *			the parent.
-     *	@param	point	The {@link IntgrationPoint} which is looking for its
+     *	@param	point	The {@link IntegrationPoint} which is looking for its
      *			parent <code>UIComponent</code>.
      */
     public static UIComponent getIntegrationPointParent(UIComponent root, IntegrationPoint point) {
@@ -297,7 +297,7 @@ public class PluginHandlers {
     }
 
     /**
-     *	<p> This method includes a single {@link IntgrationPoint} under the
+     *	<p> This method includes a single {@link IntegrationPoint} under the
      *	    given parent <code>UIComponent</code>.</p>
      *
      *	@param	ctx	The <code>FacesContext</code>.

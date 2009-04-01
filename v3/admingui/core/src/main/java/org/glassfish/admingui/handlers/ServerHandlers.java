@@ -86,7 +86,7 @@ public class ServerHandlers {
      *	<p> Output value: "AppRoot" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "LogRoot" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "Locale" -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getServerDomainAttributes", output = {
         @HandlerOutput(name = "AppRoot", type = String.class),
@@ -111,7 +111,7 @@ public class ServerHandlers {
      *	<p> Input value: "AppRoot" -- Type: <code>java.lang.String</code></p>
      *  <p> Input value: "LogRoot" -- Type: <code>java.lang.String</code></p>
      *  <p> Input value: "Locale" -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "saveServerDomainAttributes", input = {
         @HandlerInput(name = "AppRoot", type = String.class),
@@ -142,7 +142,7 @@ public class ServerHandlers {
      *  <p> Output value: "Precompile" -- Type: <code>java.lang.Boolean</code></p>
      *  <p> Output value: "AutoDeployDirectory" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "Properties" -- Type: <code>java.util.Map</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getServerAppsConfigAttributes", input = {
         @HandlerInput(name = "ConfigName", type = String.class, required = true)
@@ -203,7 +203,7 @@ public class ServerHandlers {
      *  <p> Output value: "Verifier" -- Type: <code>java.lang.Boolean</code></p>
      *  <p> Output value: "Precompile" -- Type: <code>java.lang.Boolean</code></p>
      *  <p> Output value: "AutoDeployDirectory" -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getServerDefaultAppsConfigAttributes", input = {
         @HandlerInput(name = "ConfigName", type = String.class, required = true)
@@ -271,7 +271,7 @@ public class ServerHandlers {
      *  <p> input value: "Verifier" -- Type: <code>java.lang.Boolean</code></p>
      *  <p> input value: "Precompile" -- Type: <code>java.lang.Boolean</code></p>
      *  <p> input value: "AutoDeployDirectory" -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "saveServerAppsConfigAttributes", input = {
         @HandlerInput(name = "ConfigName", type = String.class, required = true),
@@ -311,7 +311,7 @@ public class ServerHandlers {
      *  <p> Output value: "DebugOptions" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "RmicOptions" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "BytecodePreprocessor" -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getServerJvmAttributes", input = {
         @HandlerInput(name = "ConfigName", type = String.class, required = true)
@@ -369,7 +369,7 @@ public class ServerHandlers {
      *  <p> Output value: "Util" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "Verifier" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "WEB" -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getDefaultServerModuleLogLevels", input = {
         @HandlerInput(name = "ConfigName", type = String.class, required = true)
@@ -494,7 +494,7 @@ public class ServerHandlers {
      *  <p> Output value: "Verifier" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "WEB" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "Properties" -- Type: <code>java.util.Map</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getServerModuleLogLevels", input = {
         @HandlerInput(name = "ConfigName", type = String.class, required = true)
@@ -648,7 +648,7 @@ public class ServerHandlers {
      *  <p> Input value: "Util" -- Type: <code>java.lang.String</code></p>
      *  <p> Input value: "Verifier" -- Type: <code>java.lang.String</code></p>
      *  <p> Input value: "WEB" -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "saveServerModuleLogLevels", input = {
         @HandlerInput(name = "ConfigName", type = String.class, required = true),
@@ -736,7 +736,7 @@ public class ServerHandlers {
      *  <p> Output value: "DebugEnabled" -- Type: <code>java.lang.Boolean</code></p>
      *  <p> Output value: "DebugOptions" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "RmicOptions" -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getServerDefaultJvmAttributes", input = {
         @HandlerInput(name = "ConfigName", type = String.class, required = true)
@@ -783,7 +783,7 @@ public class ServerHandlers {
      *  <p> Input value: "DebugOptions" -- Type: <code>java.lang.String</code></p>
      *  <p> Input value: "RmicOptions" -- Type: <code>java.lang.String</code></p>
      *  <p> Input value: "BytecodePreprocessor" -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "saveServerJvmAttributes", input = {
         @HandlerInput(name = "ConfigName", type = String.class, required = true),
@@ -818,7 +818,7 @@ public class ServerHandlers {
      *  <p> Output value: "ClasspathSuffix" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "NativeLibPathPrefix" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "NativeLibPathSuffix" -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getServerJvmPathSettings", input = {
         @HandlerInput(name = "ConfigName", type = String.class, required = true)
@@ -864,7 +864,7 @@ public class ServerHandlers {
      *  <p> Input value: "ClasspathSuffix" -- Type: <code>java.lang.String</code></p>
      *  <p> Input value: "NativeLibPathPrefix" -- Type: <code>java.lang.String</code></p>
      *  <p> Input value: "NativeLibPathSuffix" -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "saveServerJvmPathSettings", input = {
         @HandlerInput(name = "ConfigName", type = String.class, required = true),
@@ -944,7 +944,7 @@ public class ServerHandlers {
      *  <p> Output value: "RotationLimit" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "RotationTimeLimit" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "RetainErrorStats" -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getLogGeneralSettings", input = {
         @HandlerInput(name = "ConfigName", type = String.class, required = true)
@@ -995,7 +995,7 @@ public class ServerHandlers {
      *  <p> Input value: "RotationTimeLimit" -- Type: <code>java.lang.String</code></p>
      *  <p> Input value: "RetainErrorStats" -- Type: <code>java.lang.String</code></p>
      *  <p> Input value: "PropsList" -- Type: <code>java.util.List</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "saveServerLogGeneralSettings", input = {
         @HandlerInput(name = "ConfigName", type = String.class, required = true),
@@ -1046,7 +1046,7 @@ public class ServerHandlers {
     /**
      *	<p> This handler returns the selected row keys.</p>
      *
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "saveJvmOptions", input = {
         @HandlerInput(name = "NameList", type = ArrayList.class, required = true),
@@ -1071,7 +1071,7 @@ public class ServerHandlers {
     /**
      *	<p> This handler returns the selected row keys.</p>
      *
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "saveProfilerJvmOptions", input = {
         @HandlerInput(name = "NameList", type = ArrayList.class, required = true),
@@ -1102,7 +1102,7 @@ public class ServerHandlers {
      *  <p> Output value: "ProfilerEnabled" -- Type: <code>java.lang.Boolean</code></p>
      *  <p> Output value: "Classpath" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "NativeLibrary" -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getServerProfilerAttributes", input = {
         @HandlerInput(name = "ConfigName", type = String.class, required = true)
@@ -1147,7 +1147,7 @@ public class ServerHandlers {
      *  <p> Input value: "Classpath" -- Type: <code>java.lang.String</code></p>
      *  <p> Input value: "ProfilerEnabled" -- Type: <code>java.lang.Boolean</code></p>
      *  <p> Input value: "NativeLibrary" -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "saveServerProfilerSettings", input = {
         @HandlerInput(name = "ConfigName", type = String.class, required = true),
@@ -1201,7 +1201,7 @@ public class ServerHandlers {
      *
      *	<p> Input value: "Module" -- Type: <code>java.lang.String</code></p>
      *	<p> Output value: "LogList" -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getLoggerList", input = {
         @HandlerInput(name = "Module", type = String.class, required = true)
@@ -1226,7 +1226,7 @@ public class ServerHandlers {
      *      Persistence Module Log Levels Page.</p>
      *
      *	<p> Output value: "LogList" -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getPersistenceLoggerList", output = {
         @HandlerOutput(name = "LogList", type = String.class)
@@ -1264,7 +1264,7 @@ public class ServerHandlers {
      *
      *	<p> Input value: "Module" -- Type: <code>java.lang.String</code></p>
      *	<p> Output value: "LogList" -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getPersistenceLogLevel", input = {
         @HandlerInput(name = "ConfigName", type = String.class, required = true)
@@ -1283,7 +1283,7 @@ public class ServerHandlers {
      *
      *	<p> Input value: "ConfigName" -- Type: <code>java.lang.String</code></p>
      *	<p> Input value: "Value" -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "setPersistenceLogLevel", input = {
         @HandlerInput(name = "ConfigName", type = String.class, required = true),
@@ -1309,7 +1309,7 @@ public class ServerHandlers {
      *  <p> Input value: "EndDate" -- Type: <code>java.lang.Date</code></p>
      *  <p> Input value: "Target" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "ReportLocation -- Type: <code>java.lang.String</code>/</p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "generateDiagnosticReport", input = {
         @HandlerInput(name = "Description", type = String.class),
@@ -1347,7 +1347,7 @@ public class ServerHandlers {
      *	<p> This method returns the confidential properties </p>
      *
      *  <p> Output value: "ConfidentialProps" -- Type: <code>java.util.List</code>/</p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getConfidentialProps", output = {
         @HandlerOutput(name = "ConfidentialProps", type = List.class)
@@ -1371,7 +1371,7 @@ public class ServerHandlers {
      *	<p> This method returns the jvm options </p>
      *
      *  <p> Output value: "JvmOptions" -- Type: <code>java.util.List</code>/</p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getJvmOptions", input = {
         @HandlerInput(name = "ConfigName", type = String.class, required = true)
@@ -1408,7 +1408,7 @@ public class ServerHandlers {
      *	<p> This method returns the jvm options </p>
      *
      *  <p> Output value: "JvmOptions" -- Type: <code>java.util.List</code>/</p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getJvmOptionsForProfiler", input = {
         @HandlerInput(name = "ConfigName", type = String.class, required = true)
@@ -1443,7 +1443,7 @@ public class ServerHandlers {
      *	<p> This method returns the properties </p>
      *
      *  <p> Output value: "Properties" -- Type: <code>java.util.List</code>/</p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getModuleLogLevelProperties", input = {
         @HandlerInput(name = "ConfigName", type = String.class, required = true)
@@ -1462,7 +1462,7 @@ public class ServerHandlers {
      *	<p> This method returns the properties </p>
      *
      *  <p> Output value: "Properties" -- Type: <code>java.util.List</code>/</p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getLoggingProperties", input = {
         @HandlerInput(name = "ConfigName", type = String.class, required = true)
@@ -1478,7 +1478,7 @@ public class ServerHandlers {
     /**
      *	<p> This method returns values for the JVM Report </p>
      *  <p> Output value: "ViewsList" -- Type: <code>java.util.Array</code>/</p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getViews", input = {
         @HandlerInput(name = "InstanceName", type = String.class),
@@ -1512,7 +1512,7 @@ public class ServerHandlers {
      *	<p> Returns the filter list for Messages Table.
      *  <p> Output  value: "ReportListValue" -- Type: <code>java.util.List</code></p>
      *  <p> Output  value: "ReportListLabel" -- Type: <code>java.util.List</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getJVMReportList", output = {
         @HandlerOutput(name = "ReportListValue", type = java.util.List.class),
@@ -1543,7 +1543,7 @@ public class ServerHandlers {
      *	<p> Output value: "Running                 -- Type: <code>java.lang.Boolean</code></p>
      *	<p> Output value: "ServerName              -- Type: <code>java.lang.String</code></p>
      *	<p> Output value: "ServersList"            -- Type: <code>SelectItem[].class</code></p
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getServers", input = {
         @HandlerInput(name = "InstanceName", type = String.class, required = true),
@@ -1605,7 +1605,7 @@ public class ServerHandlers {
      *	<p> Input value: "InstanceName"            -- Type: <code>java.lang.String</code></p>
      *	<p> Input value: "ServerName"              -- Type: <code>java.lang.String</code></p>
      *	<p> Input value: "TransactionsLogDir       -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "recoverTransactions", input = {
         @HandlerInput(name = "SupportCluster", type = Boolean.class, required = true),

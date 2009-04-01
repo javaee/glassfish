@@ -98,7 +98,7 @@ public class DeploymentHandler {
      *	<p> Input value: "rmistubs" -- Type: <code>java.lang.String</code></p>
      *	<p> Input value: "threadpool" -- Type: <code>java.lang.String</code></p>
      *	<p> Input value: "registryType" -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "deploy", input = {
         @HandlerInput(name = "filePath", type = String.class),
@@ -159,7 +159,7 @@ public class DeploymentHandler {
      *	<p> This method uploads a file temp directory</p>
      *	<p> Input value: "file" -- Type: <code>com.sun.webui.jsf.model.UploadedFile</code></p>
      *	<p> Output value: "uploadDir" -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "uploadFileToTempDir", 
     input = {
@@ -252,7 +252,7 @@ public class DeploymentHandler {
      *	<p> This handler takes in selected rows, and do the undeployment
      *  <p> Input  value: "selectedRows" -- Type: <code>java.util.List</code></p>
      *  <p> Input  value: "appType" -- Type: <code>String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="undeploy",
     input={
@@ -313,7 +313,7 @@ public class DeploymentHandler {
      *  <p> Input  value: "selectedRows" -- Type: <code>java.util.List</code></p>
      *  <p> Input  value: "appType" -- Type: <code>String</code></p>
      *  <p> Input  value: "enabled" -- Type: <code>Boolean</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="changeAppStatus",
     input={
@@ -358,7 +358,7 @@ public class DeploymentHandler {
      *	<p> This method returns the deployment descriptors for a given app. </p>
      *
      *  <p> Output value: "descriptors" -- Type: <code>java.util.List</code>/</p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getDescriptors",
     input={
@@ -393,7 +393,7 @@ public class DeploymentHandler {
 //     *	<p> This method returns the resource-adapter properties </p>
 //     *
 //     *  <p> input value: "adapterProperties" -- Type: <code>java.util.Map</code>/</p>
-//     *	@param	context	The HandlerContext.
+//     *	@param	handlerCtx	The HandlerContext.
 //     */
 //    @Handler(id="createResourceAdapterConfig",
 //    input={
@@ -438,7 +438,7 @@ public class DeploymentHandler {
 //     *  <p> Input value: "name" -- Type: <code>String</code>/</p>
 //     *  <p> Input value: "targets" -- Type: <code>String[]</code>/</p>
 //     *  <p> Output value: "name" -- Type: <code>String</code>/</p>
-//     *	@param	context	The HandlerContext.
+//     *	@param	handlerCtx	The HandlerContext.
 //     */
 //    @Handler(id="createApplicationReferences",
 //        input={
@@ -477,7 +477,7 @@ public class DeploymentHandler {
 //     *	<p> This method displays the deployment descriptors for a given app. </p>
 //     *
 //     *  <p> Output value: "descriptors" -- Type: <code>String.class</code>/</p>
-//     *	@param	context	The HandlerContext.
+//     *	@param	handlerCtx	The HandlerContext.
 //     */
 //    @Handler(id="descriptorDisplay",
 //    input={
@@ -512,7 +512,7 @@ public class DeploymentHandler {
 //     *	<p> This method returns the resource-adapter properties </p>
 //     *
 //     *  <p> Output value: "adapterProperties" -- Type: <code>java.util.List</code>/</p>
-//     *	@param	context	The HandlerContext.
+//     *	@param	handlerCtx	The HandlerContext.
 //     */
 //    @Handler(id="getAdapterProperties",
 //    input={

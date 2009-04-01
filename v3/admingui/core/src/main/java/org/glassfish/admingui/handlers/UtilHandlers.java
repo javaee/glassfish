@@ -92,7 +92,7 @@ public class UtilHandlers {
      *  <p> Input value: "Amount" -- Type: <code>Integer</code>
      *          - the amount of date or time to be added to the field.</p>
      *  <p> Output value: "Date" -- Type: <code>java.util.Date</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="calendarAdd",
     	input={
@@ -115,7 +115,7 @@ public class UtilHandlers {
      *
      *  <p> Input value: "Pathname" -- Type: <code>String</code> 
      *  <p> Output value: "File" -- Type: <code>java.io.File</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getFile",
     	input={
@@ -134,7 +134,7 @@ public class UtilHandlers {
      *
      *  <p> Input value: "File" -- Type: <code>java.io.File</code> 
      *  <p> Output value: "Name" -- Type: <code>String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="fileGetName",
     	input={
@@ -153,7 +153,7 @@ public class UtilHandlers {
      *  <p> Input value: "Map" -- Type: <code>java.util.Map</code> 
      *  <p> Input value: "Key" -- Type: <code>Object</code>
      *  <p> Output value: "Value" -- Type: <code>Object</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="mapGet",
     	input={
@@ -174,7 +174,7 @@ public class UtilHandlers {
      *  <p> Input value: "obj1" -- Type: <code>Object</code> 
      *  <p> Input value: "obj2" -- Type: <code>Object</code>
      *  <p> Output value: "equal" -- Type: <code>Object</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="compare",
     	input={
@@ -197,7 +197,7 @@ public class UtilHandlers {
     
     /**
      * <p> This method displays the save successful message when the page refresh.
-     * @param context The HandlerContext.
+     * @param handlerCtx The HandlerContext.
      */
    @Handler(id="prepareSuccessfulMsg")
     public static void prepareSuccessful(HandlerContext handlerCtx){
@@ -211,7 +211,7 @@ public class UtilHandlers {
      * <p> Input value: "summary" -- Type: <code>java.lang.String</code></p>
      * <p> Input value: "type" -- Type: <code>java.lang.String</code></p>
      * <p> Input value: "detail" -- Type: <code>java.lang.String</code></p>
-     * @param context The HandlerContext.
+     * @param handlerCtx The HandlerContext.
      */
      @Handler(id="prepareAlertMsg",
      input={

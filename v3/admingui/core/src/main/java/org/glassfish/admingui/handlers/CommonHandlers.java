@@ -92,7 +92,7 @@ public class CommonHandlers {
      *	<p> This handler returns true if clusters are supported  </p>
      *
      *  <p> Output value: "isEE" -- Type: <code>Boolean</code>/</p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="isEE",
     output={
@@ -262,7 +262,7 @@ public class CommonHandlers {
      *	<p> This handler returns the version of the app server  </p>
      *
      *  <p> Output value: "version" -- Type: <code>String</code>/</p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getAppServerVersion",
         output={
@@ -277,7 +277,7 @@ public class CommonHandlers {
      *	<p> This handler returns the full version of the app server, including the build number  </p>
      *
      *  <p> Output value: "fullVersion" -- Type: <code>String</code>/</p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getAppServerFullVersion",
         output={
@@ -291,7 +291,7 @@ public class CommonHandlers {
      *	<p> This handler returns String[] of the given java.util.List </p>
      *
      *  <p> Output value: "selectedIndex" -- Type: <code>Object</code>/</p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getListElement",
     	input={
@@ -320,7 +320,7 @@ public class CommonHandlers {
      *
      * <p> Input value: "target" -- Type: <code>String</code> <p>
      * <p> Output Value: "configName" -- Type: <code>String</code> <p>
-     *@param	context	The HandlerContext.
+     *@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getConfigName",
     input={
@@ -341,7 +341,7 @@ public class CommonHandlers {
      * <p> Input value: "delim" -- Type: <code>String</code> <p>
      * <p> Input Value: "type" -- Type: <code>String</code> <p>
      * <p> Output Value: "value" -- Type: <code>String</code> <p>
-     *@param	context	The HandlerContext.
+     *@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="selectiveEncode",
     input={
@@ -364,7 +364,7 @@ public class CommonHandlers {
      *	<p> This method kills the session, and logs out </p>
      *      Server Domain Attributes Page.</p>
      *	<p> Input value: "page" -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="logout")
     public static void logout(HandlerContext handlerCtx) {
@@ -377,7 +377,7 @@ public class CommonHandlers {
      *	<p> This method sets the required attribute of a UI component .
      *	<p> Input value: "id" -- Type: <code>java.lang.String</code></p>
      *  <p> Input value: "required" -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="setComponentRequired",
     input={
@@ -703,7 +703,7 @@ public class CommonHandlers {
      *
      *  <p> Output value: "supportCluster" -- Type: <code>Boolean</code>/</p>
      *  <p> Output value: "supportHADB" -- Type: <code>Boolean</code>/</p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="checkSupport",
     output={

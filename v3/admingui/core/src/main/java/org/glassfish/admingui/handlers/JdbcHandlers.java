@@ -90,7 +90,7 @@ public class JdbcHandlers {
      *  <p> Output value: "poolName" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "description" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "enbled" -- Type: <code>java.lang.Boolean</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getJdbcInfo",
         input={
@@ -133,7 +133,7 @@ public class JdbcHandlers {
      *  <p> Output value: "poolName" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "description" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "enbled" -- Type: <code>java.lang.Boolean</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="saveJdbc",
         input={
