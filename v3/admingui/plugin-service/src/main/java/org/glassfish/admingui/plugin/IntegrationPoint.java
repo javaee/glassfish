@@ -71,7 +71,7 @@ import java.io.Serializable;
  *	    <code>IntegrationPoint</code>'s id.</li>
  *	<li><code>priority</code> - A priority of this component, often used to
  *	    compare or sort <code>IntegrationPoint</code>s.</li>
- *	<li><code>providerId</code> - The {@link Provider}'s id which provided
+ *	<li><code>providerId</code> - The {@link ConsoleProvider}'s id which provided
  *	    this <code>IntegrationPoint</code>.</li>
  *	<li><code>content</code> - A value pointing to additional content
  *	    to implement this <code>IntegrationPoint</code></li>
