@@ -62,7 +62,7 @@ public class AuditModuleHandlers {
         /**
      *	<p> This handler returns the list of specified config elements for populating the table.
      *  <p> Input  value: "type" -- Type: <code> java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getAuditModuleList",
         input={
@@ -101,7 +101,7 @@ public class AuditModuleHandlers {
     /**
      *	<p> This handler returns the values for all the attributes in 
      *      Edit Audit Modules Page </p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getAuditModuleSettings",
    input={

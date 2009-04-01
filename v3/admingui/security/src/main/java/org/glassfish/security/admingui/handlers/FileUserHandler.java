@@ -78,7 +78,7 @@ public class FileUserHandler {
      *  <p> Input value: "Realm" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "UserId" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "GroupList" -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     /*
     @Handler(id="getUser",
@@ -117,7 +117,7 @@ public class FileUserHandler {
      *  <p> Output value: "UserId" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "GroupList" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "Password" -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="saveUser",
     input={
@@ -144,7 +144,7 @@ public class FileUserHandler {
     /**
      *	<p> This handler adds user to specified Realm
      *      Page.</p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="addUser",
     input={
@@ -173,7 +173,7 @@ public class FileUserHandler {
      *  <p> Input value: "Realm" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "UserId" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "GroupList" -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getUserInfo",
     input={
@@ -191,7 +191,7 @@ public class FileUserHandler {
     
    /**
      *	<p> This handler returns the list of file users for specified realm.
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getFileUsers",
         input={
@@ -224,7 +224,7 @@ public class FileUserHandler {
     
   /**
      *	<p> This handler removes users for specified realm.
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="removeUser",
         input={
@@ -289,7 +289,7 @@ public class FileUserHandler {
     
      /**
      *	<p> This handler determines if a 'Manage User' button should be displayed.
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="hasManageUserButton",
         input={

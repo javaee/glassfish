@@ -36,7 +36,7 @@ public class RealmsHandlers {
     /**
      *	<p> This handler returns the list of specified config elements for populating the table.
      *  <p> Input  value: "type" -- Type: <code> java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getRealmsList",
         input={
@@ -75,7 +75,7 @@ public class RealmsHandlers {
      /**
      *	<p> This handler takes in selected rows, and remove the selected Realm
      *  <p> Input  value: "selectedRows" -- Type: <code>java.util.List</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "deleteSecurityConfig", input = {
         @HandlerInput(name = "ConfigName", type = String.class, required = true),
@@ -107,7 +107,7 @@ public class RealmsHandlers {
     
     /**
      *	<p> This handler returns the a Map for storing the attributes for realm creation.
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getRealmAttrForCreate",
     output={
@@ -135,7 +135,7 @@ public class RealmsHandlers {
     /**
      *	<p> This handler returns the a Map for storing the attributes for editing a realm.
      *  This can be used by either the node agent realm or the realm in configuration-Security-realm
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getRealmAttrForEdit",
     input={

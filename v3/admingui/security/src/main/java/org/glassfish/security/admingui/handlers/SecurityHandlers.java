@@ -43,7 +43,7 @@ public class SecurityHandlers {
      *  <p> Output value: "Realm"  -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "Module"  -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "Jacc"  -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getSecuritySettings",
    input={
@@ -93,7 +93,7 @@ public class SecurityHandlers {
      *  <p> Input value: "Modules"     -- Type: <code>java.lang.String</code></p>
      *  <p> Input value: "Realms"     -- Type: <code>java.lang.String</code></p>
      *  <p> Input value: "SecurityManager"     -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="saveSecuritySettings",
     input={
@@ -129,7 +129,7 @@ public class SecurityHandlers {
      *      Security Settings </p>
      *	<p> Input value: "objectName"       -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "securityManagerEnabled"   -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id = "getSecurityManagerStatus", input = {
     @HandlerInput(name = "ConfigName", type = String.class, required = true)
@@ -148,7 +148,7 @@ public class SecurityHandlers {
      *	<p> This handler saves the value for Security Manager</p>
      *	<p> Input value: "ObjectName"       -- Type: <code>java.lang.String</code></p>
      *  <p> Input value: "SecurityManager"   -- Type: <code>java.lang.String</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     
     @Handler(id="saveSecurityManagerStatus",
@@ -202,7 +202,7 @@ public class SecurityHandlers {
      *  <p> Output value: "Modules" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "Realms" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "SecurityManager" -- Type: <code>java.lang.Boolean</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getSecurityDefaultAttributes",
 	input={
@@ -235,7 +235,7 @@ public class SecurityHandlers {
      *      in Security Page.</p>
      *  <p> Input value: "ConfigName" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "Realms" -- Type: <code>java.util.Array</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getRealms",
     input={
@@ -259,7 +259,7 @@ public class SecurityHandlers {
      *      in Security Page.</p>
      *  <p> Input value: "ConfigName" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "AuditModules" -- Type: <code>java.util.Array</code></p>
-     *	@param	context	The HandlerContext.
+     *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="getAuditModules",
     input={
