@@ -67,8 +67,8 @@ public final class HttpConnectorAddress
 	 * security attributes desired.
 	 * @param host a host address
 	 * @param port a port number
-	 * @secure an indication of whether the connection should be
-     *  secure (i.e. confidential) or not
+	 * @param secure a boolean indication of whether the connection should be
+         *  secure (i.e. confidential) or not
 	 */
     public HttpConnectorAddress(String host, int port, boolean secure){
         this(host, port, secure, null);
@@ -85,7 +85,7 @@ public final class HttpConnectorAddress
 	 * Open a connection using the reciever and the given path
 	 * @param path the path to the required resource (path here is
 	 * the portion after the <code>hostname:port</code> portion of a URL)
-     * @returns a connection to the required resource. The
+     * @return a connection to the required resource. The
      * connection returned may be a sub-class of
      * <code>URLConnection</code> including
      * <code>HttpsURLConnection</code>. If the sub-class is a

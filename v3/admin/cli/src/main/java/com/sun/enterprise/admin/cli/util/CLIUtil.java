@@ -53,8 +53,9 @@ public class CLIUtil {
     
     /**
      *   Read passwords from the password file and save it in java.util.Map
-     *   @param passwordFileName - password file name
-     *   @returns Map - map of the password name and value
+     *   @param passwordFileName  password file name
+     *   @param withPrefix decides whether prefix should be taken into account
+     *   @return Map of the password name and value
      */
     public static Map<String, String> readPasswordFileOptions(
         final String passwordFileName, boolean withPrefix) 

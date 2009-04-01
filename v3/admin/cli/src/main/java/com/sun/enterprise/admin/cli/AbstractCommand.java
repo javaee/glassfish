@@ -261,8 +261,7 @@ public abstract class AbstractCommand extends Command {
 
     /**
      *   get user or password from ASADMINPASS file
-     *   @params nameOfValue
-     *   @return user or password value from .asadminpass file
+     *   @return String representing user or password value from .asadminpass file
      *   if file not found then return null
      */
     protected String getUserFromASADMINPASS() {

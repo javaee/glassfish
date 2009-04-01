@@ -85,10 +85,6 @@ public class CLIRemoteCommand {
     /**
      * Runs the command using the specified arguments and sending the result
      * to the caller-provided {@link OutputStream} in the requested format for processing.
-     * @param args the arguments to use in building the command
-     * @param responseFormatType direction to the server as to how to format the response; usually hk2-agent or xml-cli
-     * @param userOut the {@link OutputStream} to which to write the command's response text
-     * @throws com.sun.enterprise.cli.framework.CommandException 
      */
     public void runCommand() throws CommandException {
         try {
@@ -430,7 +426,7 @@ public class CLIRemoteCommand {
 
     /**
      * See if DAS is alive.
-     * @param port The admin port of DAS
+     * @param invoker instance of CommandInvoker
      * @return true if DAS can be reached and can handle commands, otherwise false.
      */
     public static boolean pingDAS(CommandInvoker invoker) {
@@ -479,7 +475,7 @@ public class CLIRemoteCommand {
 
     /**
      * Do not print out the results of the version command from the server 
-     * @param port The admin port of DAS
+     * @param invoker instance of CommandInvoker that invokes the command
      * @return true if DAS can be reached and can handle commands, otherwise false.
      */
     public static boolean pingDASQuietly(CommandInvoker invoker) {
