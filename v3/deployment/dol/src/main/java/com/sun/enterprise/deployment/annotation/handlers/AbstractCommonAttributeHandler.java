@@ -321,7 +321,7 @@ abstract class AbstractCommonAttributeHandler extends AbstractHandler {
             }
         }
 
-        valid = valid && (Void.class.equals(returnType)) &&
+        valid = valid && (void.class.equals(returnType)) &&
             Modifier.isProtected(method.getModifiers()) &&
             (parameterTypes.length == 2) &&
             (parameterTypes[0].equals(HttpServletRequest.class) &&
