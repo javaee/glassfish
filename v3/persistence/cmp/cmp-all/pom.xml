@@ -35,28 +35,65 @@
 * only if the new code is made subject to such option by the copyright 
 * holder. 
 */ 
--->
+--> 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.glassfish.persistence</groupId>
-        <artifactId>persistence</artifactId>
+        <groupId>org.glassfish.persistence.cmp</groupId>
+        <artifactId>cmp</artifactId>
         <version>3.0-SNAPSHOT</version>
     </parent>
-    <groupId>org.glassfish.persistence.cmp</groupId>
-    <artifactId>cmp</artifactId>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>cmp-all</artifactId>
     <packaging>pom</packaging>
-    <name>GlassFish cmp related modules</name>
-    <modules>
-        <module>utility</module>
-        <module>model</module>
-        <module>generator-database</module>
-        <module>ejb-mapping</module>
-        <module>enhancer</module>
-        <module>support-sqlstore</module>
-        <module>support-ejb</module>
-        <module>cmp-scripts</module>
-        <module>cmp-all</module>
-    </modules>
+    <name>CMP tier for GlassFish</name>
+    <description>
+      This module bundles all the CMP related Maven modules together.
+      Distributions that need CMP capability should depend on this module,
+      instead of pulling in individual CMP modules separately.
+    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>cmp-utility</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>cmp-model</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>cmp-generator-database</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>cmp-ejb-mapping</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>cmp-enhancer</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>cmp-support-sqlstore</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>cmp-support-ejb</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>cmp-scripts</artifactId>
+            <version>${project.version}</version>
+            <type>distribution-fragment</type>
+        </dependency>
+    </dependencies>
 </project>

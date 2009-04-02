@@ -148,8 +148,9 @@
         </dependency>
         <dependency>
            <groupId>org.glassfish.persistence.cmp</groupId>
-           <artifactId>cmp-support-ejb</artifactId>
+           <artifactId>cmp-all</artifactId>
            <version>${project.version}</version>
+           <type>pom</type>
         </dependency>
         <dependency>
             <groupId>com.sun.corba</groupId>
