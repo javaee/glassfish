@@ -439,6 +439,10 @@ public class DefaultTransactionService implements TransactionService,
         poasCreated = true;
 
     }
+
+    public static boolean isORBAvailable() {
+        return (orb != null);
+    }
 }
 
 /**The RecoveryCoordinatorServantActivator class provides the means to locate

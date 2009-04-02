@@ -338,8 +338,7 @@ public class JavaEETransactionManagerJTSDelegate
 
     public TransactionInternal startJTSTx(JavaEETransaction tran, boolean isAssociatedTimeout) 
             throws RollbackException, IllegalStateException, SystemException {
-        if (tm == null)
-            tm = TransactionManagerImpl.getTransactionManagerImpl();
+        initTransactionManager();
 
         JavaEETransactionImpl tx = (JavaEETransactionImpl)tran;
         try {
@@ -364,20 +363,24 @@ public class JavaEETransactionManagerJTSDelegate
     }
 
     public void recover(XAResource[] resourceList) {
-        ((TransactionManagerImpl)tm).recover(
+        initTransactionManager();
+        TransactionManagerImpl.recover(
                 Collections.enumeration(Arrays.asList(resourceList)));
     }
 
     public void release(Xid xid) throws WorkException {
-        ((TransactionManagerImpl) tm).release(xid);
+        initTransactionManager();
+        TransactionManagerImpl.release(xid);
     }
 
     public void recreate(Xid xid, long timeout) throws WorkException {
-        ((TransactionManagerImpl) tm).recreate(xid, timeout);
+        initTransactionManager();
+        TransactionManagerImpl.recreate(xid, timeout);
     }
 
     public XATerminator getXATerminator() {
-        return ((TransactionManagerImpl) tm).getXATerminator();
+        initTransactionManager();
+        return TransactionManagerImpl.getXATerminator();
     }
 
     private Transaction suspendInternal() throws SystemException {
@@ -392,6 +395,11 @@ public class JavaEETransactionManagerJTSDelegate
             throw new IllegalStateException
             (sm.getString("enterprise_distributedtx.transaction_notactive"));
         }
+    }
+
+    private void initTransactionManager() {
+        if (tm == null)
+            tm = TransactionManagerImpl.getTransactionManagerImpl();
     }
 
     public XAResourceWrapper getXAResourceWrapper(String clName) {

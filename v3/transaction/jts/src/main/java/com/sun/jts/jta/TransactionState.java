@@ -440,10 +440,13 @@ public class TransactionState {
         } catch (TRANSACTION_ROLLEDBACK ex) {
             throw new RollbackException();
         } catch (Unavailable ex) {
+            _logger.log(Level.WARNING,"jts.object_unavailable",ex);
             throw new SystemException();
         } catch (Inactive ex) {
+            _logger.log(Level.WARNING,"jts.transaction_inactive",ex);
             throw new IllegalStateException();
         } catch (Exception ex) {
+            _logger.log(Level.WARNING,"jts.exception_in_register_synchronization",ex);
             throw new SystemException();
         }
     }

@@ -103,8 +103,8 @@ class TransactionFactoryImpl extends TransactionFactoryPOA implements Transactio
 
     static boolean active = true;
 
-	/*Logger to log transaction messages*/  
-	static Logger _logger = LogDomains.getLogger(TransactionFactoryImpl.class, LogDomains.TRANSACTION_LOGGER);
+    /*Logger to log transaction messages*/  
+    static Logger _logger = LogDomains.getLogger(TransactionFactoryImpl.class, LogDomains.TRANSACTION_LOGGER);
     /**
      * Constructor for the TransactionFactoryImpl.  Passes through
      * to the parent constructor.
@@ -138,7 +138,7 @@ class TransactionFactoryImpl extends TransactionFactoryPOA implements Transactio
     public Control create(int timeOut) throws SystemException {
 
         Control result = null;
-	
+    
         ControlImpl cimpl = localCreate(timeOut);
 
         if (cimpl == null) {
@@ -210,15 +210,15 @@ class TransactionFactoryImpl extends TransactionFactoryPOA implements Transactio
             result = new ControlImpl(terminator, coordinator,
                                      coordinator.getGlobalTid(),
                                      new Long(coordinator.getLocalTID()));
-		    if(_logger.isLoggable(Level.FINE))
-		    {
-				_logger.logp(Level.FINE,"TransactionFactoryImpl","localCreate()",
-						"Control object :" + result + 
-						" corresponding to this transaction has been created"+
-						"GTID is : "+
-						((TopCoordinator)coordinator).superInfo.globalTID.toString());
-		    }
-	
+            if(_logger.isLoggable(Level.FINE))
+            {
+                _logger.logp(Level.FINE,"TransactionFactoryImpl","localCreate()",
+                        "Control object :" + result + 
+                        " corresponding to this transaction has been created"+
+                        "GTID is : "+
+                        ((TopCoordinator)coordinator).superInfo.globalTID.toString());
+            }
+    
         } catch (Throwable exc) {
 
             // If an error occurred, free up the objects.
@@ -444,10 +444,10 @@ class TransactionFactoryImpl extends TransactionFactoryPOA implements Transactio
 
             // If any exception was thrown during that lot, then we
             // have failed to create a subordinate.  Do something drastic.
-			_logger.log(Level.SEVERE,"jts.unable_to_create_subordinate_coordinator");
-			 String msg = LogFormatter.getLocalizedMessage(_logger,
-				 					  "jts.unable_to_create_subordinate_coordinator");
-			 throw  new org.omg.CORBA.INTERNAL(msg);
+            _logger.log(Level.SEVERE,"jts.unable_to_create_subordinate_coordinator");
+             String msg = LogFormatter.getLocalizedMessage(_logger,
+                                       "jts.unable_to_create_subordinate_coordinator");
+             throw  new org.omg.CORBA.INTERNAL(msg);
         }
 
         return result;
@@ -526,7 +526,7 @@ class TransactionFactoryImpl extends TransactionFactoryPOA implements Transactio
         } catch (Throwable exc) {
             // If any exception was thrown during that lot, then we
             // have failed to create a subordinate.
-			 _logger.log(Level.WARNING,"jts.unable_to_create_subordinate_coordinator");
+             _logger.log(Level.WARNING,"jts.unable_to_create_subordinate_coordinator");
              String msg = LogFormatter.getLocalizedMessage(_logger,
                                         "jts.unable_to_create_subordinate_coordinator");
             // ErrorLog.error(Messages.SUBORDINATE_CREATE_FAILED, null, true);
@@ -537,7 +537,7 @@ class TransactionFactoryImpl extends TransactionFactoryPOA implements Transactio
         }
 
         return result;
-	}
+    }
 
     /**
      * Prevents any further transactional activity in the process.
@@ -589,7 +589,7 @@ class TransactionFactoryImpl extends TransactionFactoryPOA implements Transactio
                     namingContext = NamingContextHelper.narrow(
                         Configuration.getORB().resolve_initial_references("NameService"/*#Frozen*/));
                 } catch (Exception exc) {
-					_logger.log(Level.WARNING,"jts.orb_not_running");
+                    _logger.log(Level.WARNING,"jts.orb_not_running");
                 }
 
                 try {
@@ -597,14 +597,14 @@ class TransactionFactoryImpl extends TransactionFactoryPOA implements Transactio
                     NameComponent path[] = { nc };
                     namingContext.rebind(path, thisRef);
                 } catch (Exception exc) {
-					_logger.log(Level.WARNING,"jts.cannot_register_with_orb",
-							"TransactionFactory");
+                    _logger.log(Level.WARNING,"jts.cannot_register_with_orb",
+                            "TransactionFactory");
                 }
             } catch (Exception exc) {
-				_logger.log(Level.SEVERE,"jts.create_transactionfactory_object_error");
-				 String msg = LogFormatter.getLocalizedMessage(_logger,
-				 						"jts.create_transactionfactory_object_error");
-				 throw  new org.omg.CORBA.INTERNAL(msg);
+                _logger.log(Level.SEVERE,"jts.create_transactionfactory_object_error");
+                 String msg = LogFormatter.getLocalizedMessage(_logger,
+                                         "jts.create_transactionfactory_object_error");
+                 throw  new org.omg.CORBA.INTERNAL(msg);
             }
         }
 
@@ -637,7 +637,7 @@ class TransactionFactoryImpl extends TransactionFactoryPOA implements Transactio
                 if( result.thisRef == null )
                     result.thisRef = factory;
             } catch( Exception exc ) {
-				_logger.log(Level.WARNING,"jts.cannot_locate_servant",
+                _logger.log(Level.WARNING,"jts.cannot_locate_servant",
                         "TransactionFactory");
             }
         }
@@ -680,18 +680,18 @@ class TransactionFactoryImpl extends TransactionFactoryPOA implements Transactio
     }
 
     public Request _create_request(Context ctx,
-				   String operation,
-				   NVList arg_list,
-				   NamedValue result) {
+                   String operation,
+                   NVList arg_list,
+                   NamedValue result) {
         throw new org.omg.CORBA.NO_IMPLEMENT("This is a locally constrained object.");
     }
 
     public Request _create_request(Context ctx,
-				   String operation,
-				   NVList arg_list,
-				   NamedValue result,
-				   ExceptionList exceptions,
-				   ContextList contexts) {
+                   String operation,
+                   NVList arg_list,
+                   NamedValue result,
+                   ExceptionList exceptions,
+                   ContextList contexts) {
         throw new org.omg.CORBA.NO_IMPLEMENT("This is a locally constrained object.");
     }
 

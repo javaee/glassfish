@@ -1229,7 +1229,7 @@ public class TopCoordinator extends CoordinatorImpl {
         // created with the registration flag set, so we do not need to
         // check whether we are the root TopCoordinator here.
 
-        if (!registered) {
+        if (!registered && DefaultTransactionService.isORBAvailable()) {
 
             // Initialise the CoordinatorResource with the local id,
             // our reference, and a flag to indicate that it does not
@@ -2418,7 +2418,7 @@ public class TopCoordinator extends CoordinatorImpl {
         // are created with the registration flag set, so we do not need to
         // check whether we are the root TopCoordinator here.
 
-        if (!registeredSync) {
+        if (!registeredSync && DefaultTransactionService.isORBAvailable()) {
 
             // Initialise the CoordinatorSync with the local id, our reference,
             // and a flag to indicate that does not represent a subtransaction.

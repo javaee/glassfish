@@ -192,7 +192,7 @@ public class TransactionManagerImpl implements TransactionManager {
                 dts.identify_ORB(null, null, new Properties());
                 current = dts.get_current();
              }
-            // transactionStates = new Hashtable();
+            // V2-commented-out transactionStates = new Hashtable();
         } catch (InvalidName inex) { 
 			_logger.log(Level.SEVERE,
 					"jts.unexpected_error_in_create_transaction_manager",inex);
