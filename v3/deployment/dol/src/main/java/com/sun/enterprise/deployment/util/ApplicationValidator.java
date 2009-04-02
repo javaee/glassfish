@@ -37,6 +37,7 @@
 package com.sun.enterprise.deployment.util;
 
 import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.web.LoginConfiguration;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -105,6 +106,14 @@ public class ApplicationValidator extends EjbBundleValidator
     public void accept(WebBundleDescriptor descriptor) {
         if (descriptor.getSessionConfigDescriptor() == null) {
             descriptor.setSessionConfigDescriptor(new SessionConfigDescriptor());
+        }
+
+        if (descriptor.getSecurityConstraints().hasMoreElements() &&
+                descriptor.getLoginConfiguration() == null) {
+            LoginConfiguration loginConfig = new LoginConfigurationImpl();
+            loginConfig.setAuthenticationMethod(LoginConfiguration.BASIC_AUTHENTICATION);
+            descriptor.setLoginConfiguration(loginConfig);
+
         }
     }   
     
