@@ -116,6 +116,9 @@ public class DeployCommandParameters extends OpsParams {
     @Param(optional=true, name="property")
     public Properties properties;
 
+    @Param(optional=true)
+    public String type = null;
+
     // todo : why is this not a param ?
     public Boolean clientJarRequested = true;
 

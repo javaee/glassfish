@@ -90,8 +90,16 @@ public interface SnifferManager {
      * @return possibly empty collection of sniffers that handle the passed
      * archive.
      */
-    public Collection<Sniffer> getSniffers(ReadableArchive archive, ClassLoader cloader);    
+    public Collection<Sniffer> getSniffers(ReadableArchive archive, ClassLoader cloader);
 
+    /**
+     * Return whether a sniffer supports to be isolated during deployment per use request.
+     *
+     * @return true if a snifer can by specified by the user when deploying
+     *
+     */
+    public boolean canBeIsolated(Sniffer sniffer);
+    
     /**
      * Returns a collection of composite sniffers that recognized some parts of
      * the passed archive as components their container handle.

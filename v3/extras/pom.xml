@@ -51,6 +51,7 @@
     <modules>
         <module>phobos</module>
         <module>grizzly-container</module>
+        <module>osgi-container</module>
         <!--module>php</module-->
     </modules>
 </project>

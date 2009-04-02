@@ -87,6 +87,10 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
                 }
                 String appName = params.name();
                 Application app = dc.getModuleMetaData(Application.class);
+                if (app==null) {
+                    // this is not a Java EE module, just return
+                    return;
+                }
                 Set<WebBundleDescriptor> webDesc = app.getWebBundleDescriptors();
                 Set<EjbBundleDescriptor> ejbDesc = app.getEjbBundleDescriptors();
                 try {

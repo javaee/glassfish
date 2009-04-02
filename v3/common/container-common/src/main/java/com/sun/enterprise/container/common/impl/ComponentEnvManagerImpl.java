@@ -50,6 +50,7 @@ import org.glassfish.api.naming.NamingObjectProxy;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Inhabitant;
 
 import javax.naming.NamingException;
 import javax.naming.NameNotFoundException;
@@ -237,13 +238,31 @@ public class ComponentEnvManagerImpl
         return jndiBindings;
     }
 
-    private CompEnvBinding getCompEnvBinding(JmsDestinationReferenceDescriptor next) {
-        String name = JAVA_COMP_STRING + next.getName();
+    private CompEnvBinding getCompEnvBinding(final JmsDestinationReferenceDescriptor next) {
+        final String name = JAVA_COMP_STRING + next.getName();
             Object value = null;
             if (next.isEJBContext()) {
                 value = new EjbContextProxy(next.getRefType());
             } else {
-                value = namingUtils.createLazyNamingObjectFactory(name, next.getJndiName(), true);
+                // we lookup first in the InitialContext, if not found we look up in the habitat.
+                value = new NamingObjectFactory() {
+                    NamingObjectFactory delegate = namingUtils.createLazyNamingObjectFactory(name, next.getJndiName(), true);
+                    public boolean isCreateResultCacheable() {
+                        return true;
+                    }
+
+                    public Object create(Context ic) throws NamingException {
+                        try {
+                            return delegate.create(ic);
+                        } catch(NamingException e) {
+                            Inhabitant i = habitat.getInhabitantByContract(next.getRefType(), next.getMappedName());
+                            if (i!=null) {
+                                return i.get();
+                            }
+                            throw e;
+                        }
+                    }
+                };
             }
 
         return new CompEnvBinding(name, value);

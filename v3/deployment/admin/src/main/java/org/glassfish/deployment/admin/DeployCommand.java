@@ -39,6 +39,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
+import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandRunner;
@@ -60,9 +61,7 @@ import org.jvnet.hk2.component.PerLookup;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.ActionReport.ExitCode;
@@ -239,7 +238,31 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             }
             appProps.setProperty(ServerTags.DIRECTORY_DEPLOYED, String.valueOf(isDirectoryDeployed));
 
-            ApplicationInfo appInfo = deployment.deploy(deploymentContext);
+            ApplicationInfo appInfo;
+            if (type==null) {
+                appInfo = deployment.deploy(deploymentContext);
+            } else {
+                StringTokenizer st = new StringTokenizer(type);
+                List<Sniffer> sniffers = new ArrayList<Sniffer>();
+                while (st.hasMoreTokens()) {
+                    String aType = st.nextToken();
+                    Sniffer sniffer = snifferManager.getSniffer(aType);
+                    if (sniffer==null) {
+                        report.failure(logger, localStrings.getLocalString("deploy.unknowncontainer",
+                                "{0} is not a recognized container ", new String[] { aType }));
+                        return;
+                    }
+                    if (!snifferManager.canBeIsolated(sniffer)) {
+                        report.failure(logger, localStrings.getLocalString("deploy.isolationerror",
+                                 "container {0} does not support other components containers to be turned off, --type {0} is forbidden",
+                                new String[] { aType }));
+                        return;
+                    }
+                    sniffers.add(sniffer);
+                }
+                appInfo = deployment.deploy(sniffers, deploymentContext);
+            }
+            
             if (report.getActionExitCode()==ActionReport.ExitCode.SUCCESS) {
                 // register application information in domain.xml
                 deployment.registerAppInDomainXML(appInfo, deploymentContext);

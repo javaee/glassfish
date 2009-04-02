@@ -1,9 +1,8 @@
 /*
- * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
- * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
+ * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -11,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -20,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -34,53 +33,28 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.deploy.shared;
 
+package org.glassfish.extras.osgicontainer;
 
-import java.io.File;
-import java.net.URI;
-import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.deployment.archive.WritableArchive;
-import org.glassfish.api.deployment.DeploymentContext;
-import org.glassfish.deployment.common.DeploymentUtils;
-import org.glassfish.loader.util.ASClassLoaderUtil;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.BufferedInputStream;
-import java.io.OutputStream;
-import java.util.Enumeration;
-import java.util.jar.Manifest;
-import java.util.jar.JarFile;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.net.URL;
-
-import com.sun.enterprise.util.io.FileUtils;
-import com.sun.logging.LogDomains;
-import org.glassfish.api.deployment.archive.ArchiveHandler;
-import org.glassfish.internal.deployment.GenericHandler;
+import org.glassfish.api.container.Container;
+import org.glassfish.api.deployment.Deployer;
+import org.glassfish.internal.deployment.GenericDeployer;
+import org.jvnet.hk2.annotations.Service;
 
 /**
- * Common methods for ArchiveHandler implementations
+ * OSGi container, will just be used to manage OSGi bundles through deployment
+ * backend
  *
  * @author Jerome Dochez
  */
-public abstract class AbstractArchiveHandler extends GenericHandler {
+@Service(name="osgi")
+public class OSGiContainer implements Container {
 
-    final protected Logger _logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
+    public Class<? extends Deployer> getDeployer() {
+        return OSGiDeployer.class;
+    }
 
-
-    public List<URL> getManifestLibraries(DeploymentContext context) {
-        try {
-            Manifest manifest = getManifest(context.getSource());
-            return ASClassLoaderUtil.getManifestClassPathAsURLs(manifest, 
-                context.getSourceDir().getParent());
-        }catch (IOException ioe) {
-            _logger.log(Level.WARNING, 
-                "Exception while getting manifest classpath: ", ioe);
-            return new ArrayList<URL>();
-        }
+    public String getName() {
+        return "osgi";
     }
 }

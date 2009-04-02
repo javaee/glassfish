@@ -55,7 +55,7 @@ public interface ArchiveHandler {
     public String getDefaultApplicationName(ReadableArchive archive);
 
     /**
-     * Returns true if thie handler understands the specified archive and
+     * Returns true if this handler understands the specified archive and
      * can process it.
      *
      * @throws IOException

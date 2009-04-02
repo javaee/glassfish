@@ -484,6 +484,11 @@
             <artifactId>bean-validator</artifactId>
             <version>${bean-validator.version}</version>
 	</dependency>
+        <dependency>
+            <groupId>org.glassfish.extras</groupId>
+            <artifactId>osgi-container</artifactId>
+            <version>${project.version}</version>
+        </dependency>		
     </dependencies>
 </project>
 
