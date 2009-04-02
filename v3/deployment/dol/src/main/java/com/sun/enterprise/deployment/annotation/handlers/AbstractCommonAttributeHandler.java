@@ -51,7 +51,6 @@ import org.glassfish.apf.HandlerProcessingResult;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.logging.Level;
 import java.util.List;
 import java.util.HashMap;
@@ -322,7 +321,6 @@ abstract class AbstractCommonAttributeHandler extends AbstractHandler {
         }
 
         valid = valid && (void.class.equals(returnType)) &&
-            Modifier.isProtected(method.getModifiers()) &&
             (parameterTypes.length == 2) &&
             (parameterTypes[0].equals(HttpServletRequest.class) &&
                 parameterTypes[1].equals(HttpServletResponse.class));
