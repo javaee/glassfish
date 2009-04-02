@@ -197,30 +197,30 @@ public class AppClientCommand {
         return clientJarOrDirOrClassFile.endsWith(".class");
     }
 
-    private AppClientContainer.Configurator configureForClassFile(
-            final TargetServer[] targetServers,
-            final String classFileName) throws UserError {
-        /*
-         * Try to load the class.
-         */
-        final String className = clientJarOrDirOrClassFile.substring(
-                0, clientJarOrDirOrClassFile.lastIndexOf(".class") + 1);
-        Class clientClass;
-        try {
-            clientClass = getClass().forName(className);
-        } catch (ClassNotFoundException ex) {
-            File classFile = new File(clientJarOrDirOrClassFile);
-            throw new UserError(localStrings.getLocalString(
-                    getClass(),
-                    "appclient.cannotFindClassFile",
-                    "Because -client did not appear, tried to use {0} as a class name but could not find {1}",
-                    new Object[] {className, classFile.getAbsolutePath()}));
-        }
-        AppClientContainer.Configurator config = AppClientContainer.newConfigurator(
-                targetServers);
-
-        return config;
-    }
+//    private AppClientContainer.Configurator configureForClassFile(
+//            final TargetServer[] targetServers,
+//            final String classFileName) throws UserError {
+//        /*
+//         * Try to load the class.
+//         */
+//        final String className = clientJarOrDirOrClassFile.substring(
+//                0, clientJarOrDirOrClassFile.lastIndexOf(".class") + 1);
+//        Class clientClass;
+//        try {
+//            clientClass = getClass().forName(className);
+//        } catch (ClassNotFoundException ex) {
+//            File classFile = new File(clientJarOrDirOrClassFile);
+//            throw new UserError(localStrings.getLocalString(
+//                    getClass(),
+//                    "appclient.cannotFindClassFile",
+//                    "Because -client did not appear, tried to use {0} as a class name but could not find {1}",
+//                    new Object[] {className, classFile.getAbsolutePath()}));
+//        }
+//        AppClientContainer.Configurator config = AppClientContainer.newConfigurator(
+//                targetServers);
+//
+//        return config;
+//    }
 
 
     /**

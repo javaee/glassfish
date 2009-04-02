@@ -98,7 +98,7 @@ public class AppClientInfoFactory {
              *it, get the default app client descriptor.  Then create the
              *new app client info instance.
              */
-            Archivist archivist = new AppClientArchivist();
+//            Archivist archivist = new AppClientArchivist();
             result = new ClassFileAppClientInfo(
                     isJWS, 
                     logger, 
