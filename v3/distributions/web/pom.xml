@@ -479,6 +479,11 @@
             <artifactId>grizzly-cometd</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>com.sun.grizzly</groupId>
+            <artifactId>grizzly-compat</artifactId>
+            <scope>runtime</scope>
+        </dependency>
 	<dependency>
             <groupId>org.glassfish.extras</groupId>
             <artifactId>bean-validator</artifactId>
