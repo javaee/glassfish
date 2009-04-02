@@ -140,8 +140,8 @@
     	<glassfish-corba.version>3.0.0-b018</glassfish-corba.version>        
 	<uc-pkg-client.version>1.0.7-15.1269</uc-pkg-client.version>
 	<ucbootstrap.version>0.0.0.15</ucbootstrap.version>
-        <webservices.version>1.4</webservices.version>
-        <jaxb.version>2.1.9</jaxb.version>
+        <webservices.version>2.0-b03</webservices.version>
+        <jaxb.version>2.2-promoted-b9</jaxb.version>
         <javax-persistence-api.version>2.0.0-M1</javax-persistence-api.version>
         <dbschema.version>RELEASE60</dbschema.version>
         <!-- osgi version string must start with a number. Manually mapping above dbschema.version to osgi.version here -->

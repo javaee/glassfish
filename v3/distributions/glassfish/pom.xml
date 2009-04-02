@@ -120,9 +120,14 @@
         </dependency>
         <dependency>
             <groupId>com.sun.xml.ws</groupId>
-            <artifactId>webservices</artifactId>
+            <artifactId>webservices-osgi</artifactId>
             <version>${webservices.version}</version>
-            <classifier>osgi</classifier>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml</groupId>
+            <artifactId>webservices-api-osgi</artifactId>
+            <version>${webservices.version}</version>
             <type>jar</type>
         </dependency>
         <dependency>
@@ -132,9 +137,9 @@
         </dependency>
         <dependency>
            <groupId>com.sun.xml.bind</groupId>
-           <artifactId>jaxb</artifactId>
+           <artifactId>jaxb-osgi</artifactId>
            <version>${jaxb.version}</version>
-           <classifier>osgi</classifier>
+            <type>jar</type>
         </dependency>
         <dependency>
            <groupId>org.glassfish.security</groupId>
