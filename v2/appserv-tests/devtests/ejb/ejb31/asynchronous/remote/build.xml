@@ -30,7 +30,7 @@
     <target name="build" depends="compile">
         <antcall target="ejb-jar-common">
             <param name="ejbjar.classes" 
-              value="**/Singleton*.class,**/Remote*.class"/>
+              value="**/*.class"/>
         </antcall>
     </target> 
     

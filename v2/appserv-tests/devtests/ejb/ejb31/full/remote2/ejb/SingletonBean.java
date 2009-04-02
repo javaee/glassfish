@@ -19,6 +19,8 @@ public class SingletonBean implements SingletonRemote {
     @EJB(name="helloref", mappedName="HH#com.acme.Hello") Hello hello;
     @EJB(name="hellohomeref", mappedName="HH") HelloHome helloHome;
 
+    @EJB RemoteAsync statefulBean;
+
     @Resource
     private SessionContext sesCtx;
 
@@ -31,6 +33,35 @@ public class SingletonBean implements SingletonRemote {
 
 	try {
 
+	     Future<String> futureSful = statefulBean.helloAsync();
+	    System.out.println("Stateful bean says " + futureSful.get());
+
+	    futureSful = statefulBean.removeAfterCalling();
+	    System.out.println("Stateful bean removed status = " + futureSful.get());
+
+	    boolean gotSfulException = false;
+	    try {
+		futureSful = statefulBean.helloAsync();    
+	    } catch(NoSuchEJBException nsee) {
+		System.out.println("Got nsee from helloAsync");
+		gotSfulException = true;
+	    }
+
+	    try {
+		if( !gotSfulException ) {
+		    System.out.println("return value = " + futureSful.get());
+		    throw new EJBException("Should have gotten exception");
+		}
+	    } catch(ExecutionException ee) {
+		if( ee.getCause() instanceof NoSuchEJBException ) {
+		    System.out.println("Successfully caught NoSuchEJBException when " +
+				       "accessing sful bean asynchronously after removal");
+		} else {
+		    throw new EJBException("wrong exception during sfsb access after removal",
+					   ee);
+		}
+	    }
+
 	    String targetAppJndiPrefix = "java:global/" + targetAppName + "/";
 
 	    HelloHome helloHomePGlobal = (HelloHome) new InitialContext().lookup(targetAppJndiPrefix + "HelloBean!com.acme.HelloHome");
@@ -41,7 +72,6 @@ public class SingletonBean implements SingletonRemote {
 	    ORB orb2 = (ORB) new InitialContext().lookup("java:comp/ORB");
 	    System.out.println("orb2 = " + orb2);
 
-	    System.out.println("Skipping remote async call");
 
 	    Future<String> future = hello.helloAsync();	   
 	    

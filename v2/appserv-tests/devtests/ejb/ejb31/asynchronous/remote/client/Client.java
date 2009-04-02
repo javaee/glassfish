@@ -20,6 +20,8 @@ public class Client {
 
     private RemoteAsync remoteAsync;
 
+    private RemoteAsync2 statefulBean;
+
     private int num;
 
     public static void main(String args[]) {
@@ -39,6 +41,37 @@ public class Client {
 
 	try {
 
+	    statefulBean = (RemoteAsync2) new InitialContext().lookup("java:global/" + appName + "/StatefulBean");
+	    Future<String> futureSful = statefulBean.helloAsync();
+	    System.out.println("Stateful bean says " + futureSful.get());
+
+	    futureSful = statefulBean.removeAfterCalling();
+	    System.out.println("Stateful bean removed status = " + futureSful.get());
+
+	    boolean gotSfulException = false;
+	    try {
+		futureSful = statefulBean.helloAsync();    
+	    } catch(NoSuchEJBException nsee) {
+		System.out.println("Got nsee from helloAsync");
+		gotSfulException = true;
+	    }
+
+	    try {
+		if( !gotSfulException ) {
+		    System.out.println("return value = " + futureSful.get());
+		    throw new EJBException("Should have gotten exception");
+		}
+	    } catch(ExecutionException ee) {
+		if( ee.getCause() instanceof NoSuchEJBException ) {
+		    System.out.println("Successfully caught NoSuchEJBException when " +
+				       "accessing sful bean asynchronously after removal");
+		} else {
+		    throw new EJBException("wrong exception during sfsb access after removal",
+					   ee);
+		}
+	    }
+	    
+	    
 	  
 	    remoteAsync = (RemoteAsync) new InitialContext().lookup("java:global/" + appName + "/SingletonBean");
 	    remoteAsync.startTest();
