@@ -59,10 +59,10 @@
     <condition property="install.webservices.jar" value="true">
         <and>
           <not>
-            <available file="${glassfish.home}/modules/webservices.jar"/>
+            <available file="${glassfish.home}/modules/webservices-osgi.jar"/>
           </not>
           <not>
-            <available file="${glassfish.home}/modules/webservices-osgi.jar"/>
+            <available file="${glassfish.home}/modules/webservices-api-osgi.jar"/>
           </not>
         </and>
     </condition>

@@ -121,6 +121,7 @@
             failonerror="false"
             keep="${keep}"
             extension="${extension}"
+            xendorsed="true"
             destdir="${build.classes.home}"
             wsdl="${client.wsdl}">
             <binding dir="${basedir}/etc" includes="${client.binding}"/>

@@ -113,6 +113,7 @@
             keep="${keep}"
             extension="${extension}"
             destdir="${build.classes.home}"
+            xendorsed="true"
             wsdl="${client.wsdl}">
             <binding dir="${basedir}/etc" includes="${client.binding}"/>
         </wsimport>

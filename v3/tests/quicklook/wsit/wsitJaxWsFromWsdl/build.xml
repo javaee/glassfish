@@ -73,6 +73,7 @@
             verbose="${verbose}"
             keep="${keep}"
             extension="${extension}"
+            xendorsed="true"
             destdir="${build.classes.home}"
             wsdl="${basedir}/${server.wsdl}">
             <binding dir="${basedir}/etc" includes="${server.binding}"/>
@@ -105,6 +106,7 @@
             keep="${keep}"
             extension="${extension}"
             destdir="${build.classes.home}"
+            xendorsed="true"
             wsdl="${client.wsdl}">
             <binding dir="${basedir}/etc" includes="${client.binding}"/>
         </wsimport>
