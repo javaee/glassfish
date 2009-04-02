@@ -353,8 +353,10 @@ public class ApplicationLifecycle implements Deployment {
             if (handler instanceof CompositeHandler) {
                 source = new CompositeArchive(context.getSource(), (CompositeHandler) handler);
                 context.getProps().setProperty(IS_COMPOSITE, "true");
+                sniffers = snifferManager.getCompositeSniffers(context);
+            } else {
+                sniffers = snifferManager.getSniffers(source, context.getClassLoader());
             }
-            sniffers = snifferManager.getSniffers(source, context.getClassLoader());
 
         }
 

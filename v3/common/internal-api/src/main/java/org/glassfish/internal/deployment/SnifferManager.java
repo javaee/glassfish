@@ -37,7 +37,9 @@
 package org.glassfish.internal.deployment;
 
 import org.glassfish.api.container.Sniffer;
+import org.glassfish.api.container.CompositeSniffer;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.deployment.DeploymentContext;
 import org.jvnet.hk2.annotations.Contract;
 
 import java.util.Collection;
@@ -69,6 +71,13 @@ public interface SnifferManager {
     public Collection<Sniffer> getSniffers();    
 
     /**
+     * Returns all the presently registered composite sniffers
+     *
+     * @return Collection (possibly empty but never null) of Sniffer
+     */
+    public Collection<CompositeSniffer> getCompositeSniffers();
+
+    /**
      * Returns a collection of sniffers that recognized some parts of the
      * passed archive as components their container handle.
      *
@@ -83,5 +92,16 @@ public interface SnifferManager {
      */
     public Collection<Sniffer> getSniffers(ReadableArchive archive, ClassLoader cloader);    
 
-    
+    /**
+     * Returns a collection of composite sniffers that recognized some parts of
+     * the passed archive as components their container handle.
+     *
+     * If no sniffer recognize the passed archive, an empty collection is
+     * returned.
+     *
+     * @param context deployment context
+     * @return possibly empty collection of sniffers that handle the passed
+     * archive.
+     */
+    public Collection<Sniffer> getCompositeSniffers(DeploymentContext context);    
 }

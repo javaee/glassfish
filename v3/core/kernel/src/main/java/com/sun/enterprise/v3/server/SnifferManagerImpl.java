@@ -41,7 +41,9 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.container.Sniffer;
+import org.glassfish.api.container.CompositeSniffer;
 import org.glassfish.internal.deployment.SnifferManager;
 
 import java.util.*;
@@ -58,6 +60,9 @@ public class SnifferManagerImpl implements SnifferManager {
     // I am not injecting the sniffers because this can rapidly become an expensive
     // operation especially when no application has been deployed.
     volatile List<Sniffer> sniffers;
+
+    volatile List<CompositeSniffer> compositeSniffers;
+
 
     @Inject
     protected Habitat habitat;
@@ -85,6 +90,19 @@ public class SnifferManagerImpl implements SnifferManager {
             });            
         }
         return sniffers;
+    }
+
+    /**
+     * Returns all the presently registered composite sniffers
+     *
+     * @return Collection (possibly empty but never null) of Sniffer
+     */
+    public Collection<CompositeSniffer> getCompositeSniffers() {
+        if (compositeSniffers==null) {
+            compositeSniffers = new ArrayList<CompositeSniffer>();
+            compositeSniffers.addAll(habitat.getAllByContract(CompositeSniffer.class));
+        }
+        return compositeSniffers;
     }
 
     /**
@@ -128,8 +146,10 @@ public class SnifferManagerImpl implements SnifferManager {
             new SnifferAnnotationScanner();
 
         for (Sniffer sniffer : getSniffers()) {
-            snifferAnnotationScanner.register(sniffer, 
-                sniffer.getAnnotationTypes());        
+            if (!(sniffer instanceof CompositeSniffer)) {
+                snifferAnnotationScanner.register(sniffer, 
+                    sniffer.getAnnotationTypes());        
+            }
         }
         snifferAnnotationScanner.scanArchive(archive);      
         appSniffers.addAll(snifferAnnotationScanner.getApplicableSniffers());
@@ -137,8 +157,46 @@ public class SnifferManagerImpl implements SnifferManager {
 
         // call handles method of the sniffers
         for (Sniffer sniffer : getSniffers()) {
-            if (!appSniffers.contains(sniffer) && 
+            if (!(sniffer instanceof CompositeSniffer) && 
+                !appSniffers.contains(sniffer) && 
                 sniffer.handles(archive, cloader )) {
+                appSniffers.add(sniffer);
+            }
+        }
+        return appSniffers;
+    }
+
+    /**
+     * Returns a collection of composite sniffers that recognized some parts of
+     * the passed archive as components their container handle.
+     *
+     * If no sniffer recognize the passed archive, an empty collection is
+     * returned.
+     *
+     * @param context deployment context
+     * @return possibly empty collection of sniffers that handle the passed
+     * archive.
+     */
+    public Collection<Sniffer> getCompositeSniffers(DeploymentContext context) {
+        // it is important to keep an ordered sequence here to keep sniffers
+        // in their natural order.
+        List<Sniffer> appSniffers = new ArrayList<Sniffer>();
+
+        // scan for registered annotations and retrieve applicable sniffers
+        SnifferAnnotationScanner snifferAnnotationScanner = 
+            new SnifferAnnotationScanner();
+
+        for (CompositeSniffer sniffer : getCompositeSniffers()) {
+            snifferAnnotationScanner.register(sniffer, 
+                sniffer.getAnnotationTypes());        
+        }
+        snifferAnnotationScanner.scanArchive(context.getSource());      
+        appSniffers.addAll(snifferAnnotationScanner.getApplicableSniffers());
+
+        // call handles method of the sniffers
+        for (CompositeSniffer sniffer : getCompositeSniffers()) {
+            if (!appSniffers.contains(sniffer) && 
+                sniffer.handles(context)) {
                 appSniffers.add(sniffer);
             }
         }
