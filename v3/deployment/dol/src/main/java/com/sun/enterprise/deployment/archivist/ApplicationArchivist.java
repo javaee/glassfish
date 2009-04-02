@@ -844,18 +844,27 @@ public class ApplicationArchivist extends Archivist<Application>
     @Override
     protected boolean postHandles(ReadableArchive abstractArchive)
             throws IOException {
+        // if we come here and archive is not a directory, it could not be ear
+        if (!(abstractArchive instanceof FileArchive)) {
+            return false;
+        }
 
-        /*
-         * App clients are no longer expanded, so do not limit the check
-         * only to directory archives.
-         */
+        // Only try to make a guess if the archive is a directory
 
-        for (Enumeration<String> entries = abstractArchive.entries(); entries.hasMoreElements(); ) {
-            final String entryName = entries.nextElement();
-            if (resemblesTopLevelSubmodule(entryName)) {
-                return true;
+        // We will try to conclude if a directory represents an application
+        // by looking at if it contains any Java EE modules.
+        // We are supporting directory names with both "_suffix" and ".suffix".
+        File file = new File(abstractArchive.getURI());
+        if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            for (File content : files) {
+                if (content.isDirectory() && 
+                    resemblesTopLevelSubmodule(content.getPath())) {
+                    return true;
+                }
             }
         }
+
         return false;
     }
 
@@ -868,26 +877,17 @@ public class ApplicationArchivist extends Archivist<Application>
      * Returns whether the entry name appears to be that of a submodule at
      * the top level of an enclosing application.
      * <p>
-     * Judge an entry to be a top-level submodule if it ends with _war/, _jar/, or
-     * _rar/ and contains zero or one slash (probably one) OR if it ends with
-     * .war, .jar, or .rar with no slash in the entry name OR if it ends with
-     * .war/, .jar/, or .rar/.  (MyEclipse uses this last pattern.)
+     * Judge an entry to be a top-level submodule if it ends with _war, _jar,
+     * _rar, or .war, .jar, or .rar (MyEclipse uses latter pattern.)
      *
      * @param entryName
      * @return
      */
     private static boolean resemblesTopLevelSubmodule(final String entryName) {
-        return (entryName.indexOf('/') == entryName.lastIndexOf('/') && (
-                   entryName.endsWith("_war/")
-                || entryName.endsWith("_jar/")
-                || entryName.endsWith("_rar/")
-                || entryName.endsWith(".war/")
-                || entryName.endsWith(".jar/")
-                || entryName.endsWith(".rar/"))
-               )
-               ||
-               (entryName.indexOf('/') == -1) && (
-                   entryName.endsWith(".war")
+        return (entryName.endsWith("_war")
+                || entryName.endsWith("_jar")
+                || entryName.endsWith("_rar")
+                || entryName.endsWith(".war")
                 || entryName.endsWith(".jar")
                 || entryName.endsWith(".rar"));
     }
