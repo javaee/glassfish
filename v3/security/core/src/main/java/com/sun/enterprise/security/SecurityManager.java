@@ -37,6 +37,7 @@ package com.sun.enterprise.security;
 
 import java.security.Principal;
 import java.security.PrivilegedExceptionAction;
+import java.lang.reflect.Method;
 
 import javax.security.auth.Subject;
 import org.glassfish.api.invocation.ComponentInvocation;
@@ -109,5 +110,8 @@ public interface SecurityManager {
       
     public Object doAsPrivileged(PrivilegedExceptionAction pea) 
  	throws Throwable;
+
+    public Object invoke(Method beanClassMethod, boolean isLocal, Object o, Object[] oa)
+            throws Throwable;
      
 }

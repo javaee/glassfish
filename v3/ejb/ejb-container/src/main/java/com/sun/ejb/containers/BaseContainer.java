@@ -1578,8 +1578,7 @@ public abstract class BaseContainer
                 return;
             }
 
-            if (inv.method != ejbTimeoutMethod && 
-                    !schedules.keySet().contains(inv.method)) {
+            if (!inv.isTimerCallback) {
                 if (! authorize(inv)) {
                     throw new AccessLocalException(
                         "Client not authorized for this invocation.");
@@ -1907,10 +1906,7 @@ public abstract class BaseContainer
         // 2.x client view.
         if( inv.invocationInfo.isAsynchronous() ) {
 
-            // In the common case that the remote business interface is not a
-            // subtype of java.rmi.Remote, there's nothing more to do.  If it
-            // is, map the exception and make sure any EJBException is wrapped
-            // as a RemoteException.
+
             if( java.rmi.Remote.class.isAssignableFrom(inv.clientInterface) ) {
                 mappedException = protocolMgr.mapException(originalException);
 
@@ -1924,9 +1920,7 @@ public abstract class BaseContainer
                 }
             } else {
 
-                // TODO Need some additional logic to handle the mapping of
-                // 2.x style exceptions used by the container to 3.x client
-                // view (similar to mapLocal3xException()
+                mappedException = mapLocal3xException(originalException);
                 
             }
 
@@ -2018,7 +2012,7 @@ public abstract class BaseContainer
             return true;
         }
        
-        boolean authorized = (securityManager != null) ? securityManager.authorize(inv) : true;
+        boolean authorized = securityManager.authorize(inv);
         
         if( !authorized ) {
 
@@ -3537,6 +3531,8 @@ public abstract class BaseContainer
         }
      
         EjbInvocation inv = invFactory.create();
+
+        inv.isTimerCallback = true;
      
         // Let preInvoke do tx attribute lookup.
         inv.transactionAttribute = Container.TX_NOT_INITIALIZED;
@@ -3644,12 +3640,9 @@ public abstract class BaseContainer
             if (inv.useFastPath) {
                 return inv.getBeanMethod().invoke(inv.ejb, inv.methodParams);
             } else {
-                /*TODO
-                return SecurityUtil.invoke(beanClassMethod, inv, target,
-                        params, this, mgr);
-                */
 
-                return beanClassMethod.invoke(target, params);
+                return securityManager.invoke(beanClassMethod, inv.isLocal, target,
+                        params);
             }
         } catch (InvocationTargetException ite) {
             inv.exception = ite.getCause();
@@ -4809,12 +4802,10 @@ public abstract class BaseContainer
         throws Throwable
     {
         try {
-            /*TODO
-            return SecurityUtil.invoke(inv.getBeanMethod(), inv, inv.ejb,
-                                       inv.getParameters(), this, null);
-            */
 
-            return inv.getBeanMethod().invoke(inv.ejb, inv.getParameters());
+            return securityManager.invoke(inv.getBeanMethod(), inv.isLocal, inv.ejb,
+                                       inv.getParameters());
+          
         } catch(InvocationTargetException ite) {
             throw ite.getCause();
         }

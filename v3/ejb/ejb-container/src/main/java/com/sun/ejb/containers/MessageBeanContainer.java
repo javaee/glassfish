@@ -395,7 +395,8 @@ public final class MessageBeanContainer extends BaseContainer implements
 
 			// Do pre-invoke logic for message bean with tx import = false
 			// and a null resource handle.
-			beforeMessageDelivery(ejbTimeoutMethod, false, nullResourceHandle);
+			beforeMessageDelivery(ejbTimeoutMethod, MessageDeliveryType.Timer,
+                    false, nullResourceHandle);
 
 			// Application must be passed a TimerWrapper.
 			Object[] args = { new TimerWrapper(timerState.getTimerId(),
@@ -940,8 +941,8 @@ public final class MessageBeanContainer extends BaseContainer implements
 	 * 
 	 */
 
-	public void beforeMessageDelivery(Method method, boolean txImported,
-			ResourceHandle resourceHandle) {
+	public void beforeMessageDelivery(Method method, MessageDeliveryType deliveryType,
+                                      boolean txImported, ResourceHandle resourceHandle) {
 
 		if (containerState != CONTAINER_STARTED) { // i.e. no invocation
 			String errorMsg = localStrings
@@ -960,6 +961,10 @@ public final class MessageBeanContainer extends BaseContainer implements
 
 			MessageBeanContextImpl context = (MessageBeanContextImpl) getContext(invocation);
 
+            if( deliveryType == MessageDeliveryType.Timer ) {
+                invocation.isTimerCallback = true;
+            }
+            
 			// Set the context class loader here so that message producer will
 			// have access to application class loader during message
 			// processing.
@@ -1228,5 +1233,7 @@ public final class MessageBeanContainer extends BaseContainer implements
 	public long getMessageCount() {
 		return statMessageCount;
 	}
+
+    public enum MessageDeliveryType { Message, Timer };
 
 }

@@ -36,12 +36,14 @@
 package org.glassfish.enterprise.iiop.spi;
 
 import java.rmi.*;
+import org.jvnet.hk2.annotations.Contract;
 
 import com.sun.enterprise.deployment.EjbDescriptor;
 
 /**
  * Provides general EJB container services needed by iiop glue code.
  */
+@Contract
 public interface EjbService {
 
 

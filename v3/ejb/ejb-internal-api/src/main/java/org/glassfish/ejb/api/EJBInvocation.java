@@ -33,55 +33,21 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.ejb.containers;
 
-import java.lang.reflect.Method;
-import com.sun.appserv.connectors.internal.api.ResourceHandle;
-import org.glassfish.ejb.api.MessageBeanListener;
-import com.sun.ejb.containers.MessageBeanContainer.MessageDeliveryType;
+package org.glassfish.ejb.api;
 
+
+import javax.ejb.EJBContext;
 
 /**
- *
- *
+ * This interface provides access to the exported portions of the
+ * ejb invocation object.  
  * @author Kenneth Saks
  */
-public class MessageBeanListenerImpl implements MessageBeanListener {
 
-    private MessageBeanContainer container_;
-    private ResourceHandle resourceHandle_;
 
-    MessageBeanListenerImpl(MessageBeanContainer container, 
-                            ResourceHandle handle) {
-        container_ = container;
+public interface EJBInvocation {
 
-        // can be null
-        resourceHandle_ = handle;
-    }
-
-    public void setResourceHandle(ResourceHandle handle) {
-        resourceHandle_ = handle;
-    }
-
-    public ResourceHandle getResourceHandle() {
-        return resourceHandle_;
-    }
-
-    public void beforeMessageDelivery(Method method, boolean txImported) {
-        container_.onEnteringContainer();   //Notify Callflow Agent
-        container_.beforeMessageDelivery(method, MessageDeliveryType.Message, txImported, resourceHandle_);
-    }
-    
-    public Object deliverMessage(Object[] params) throws Throwable {
-        return container_.deliverMessage(params);
-    }
-
-    public void afterMessageDelivery() {
-        try {
-            container_.afterMessageDelivery(resourceHandle_);
-        } finally {
-            container_.onLeavingContainer();    //Notify Callflow Agent
-        }
-    }
+    public EJBContext getEJBContext();
 
 }

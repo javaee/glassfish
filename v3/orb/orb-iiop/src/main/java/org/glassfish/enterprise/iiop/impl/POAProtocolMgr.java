@@ -78,6 +78,8 @@ import com.sun.corba.ee.impl.naming.cosnaming.TransientNameService;
 import com.sun.corba.ee.spi.orbutil.ORBConstants;
 
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.annotations.Inject;
 
 import java.util.logging.*;
 import com.sun.logging.*;
@@ -108,12 +110,19 @@ public final class POAProtocolMgr extends org.omg.CORBA.LocalObject
 
     private PresentationManager presentationMgr;
 
+    @Inject
+    private Habitat habitat;
+
+    private EjbService ejbService;
+
     public POAProtocolMgr() {}
 
     public void initialize(ORB o)
     {
 
         this.orb = (ORB)o;
+
+        ejbService = habitat.getByContract(EjbService.class);
 
         this.presentationMgr = 
             ((com.sun.corba.ee.spi.orb.ORB) orb).getPresentationManager();
@@ -291,8 +300,6 @@ public final class POAProtocolMgr extends org.omg.CORBA.LocalObject
     /**
      * Called from SecurityMechanismSelector for each objref creation
      */
-
-    /** TODO enable this when we get to security work
     public EjbDescriptor getEjbDescriptor(byte[] ejbKey)
     {
 	    EjbDescriptor result = null;
@@ -332,7 +339,7 @@ public final class POAProtocolMgr extends org.omg.CORBA.LocalObject
         return result;
    }
 
-     **/
+
 
 
 }

@@ -77,8 +77,6 @@ import java.lang.reflect.Proxy;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
-import org.glassfish.enterprise.iiop.spi.EjbService;
-
 /**
  * @author Mahesh Kannan
  *         Date: Feb 10, 2008

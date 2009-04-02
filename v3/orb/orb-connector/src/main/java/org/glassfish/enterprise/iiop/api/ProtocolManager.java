@@ -103,7 +103,7 @@ public interface ProtocolManager {
     void connectObject(Remote remoteObj) throws RemoteException;
 
 
-   
+    EjbDescriptor getEjbDescriptor(byte[] ejbKey);
 
 }
     

@@ -70,7 +70,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class EjbInvocation
     extends ComponentInvocation
-    implements InvocationContext, TransactionOperationsManager, Cloneable
+    implements InvocationContext, TransactionOperationsManager, Cloneable,
+         org.glassfish.ejb.api.EJBInvocation
 {
   
     private static Map<Class, Set<Class>> compatiblePrimitiveWrapper
@@ -167,6 +168,11 @@ public class EjbInvocation
      * true if this is a web service invocation
      */
     public boolean isWebService=false;
+
+    /**
+     * true if this is an ejb timeout method invocation
+     */
+    public boolean isTimerCallback=false;
     
     /**
      * true if this is a message-driven bean invocation

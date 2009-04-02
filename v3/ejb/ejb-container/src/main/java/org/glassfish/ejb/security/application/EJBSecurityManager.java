@@ -1070,7 +1070,7 @@ public final class EJBSecurityManager
      * containers for ejbTimeout, WebService and MDBs.
      *
      * @param beanClassMethod, the bean class method to be invoked
-     * @param inv,             the current invocation
+     * @param isLocal,         true if this invocation is through the local EJB view
      * @param o                the object on which this method is to be
      *                         invoked in this case the ejb,
      * @param oa               the parameters for the method,
@@ -1079,8 +1079,8 @@ public final class EJBSecurityManager
      *                         find its security manager.
      * @return Object, the result of the execution of the method.
      */
-    public Object invoke(Method beanClassMethod, EjbInvocation inv, Object o, Object[] oa,
-                         Container c) throws Throwable {
+    public Object invoke(Method beanClassMethod, boolean isLocal, Object o, Object[] oa)
+            throws Throwable {
 
         final Method meth = beanClassMethod;
         final Object obj = o;
@@ -1092,7 +1092,7 @@ public final class EJBSecurityManager
         // System Security Manager is disabled.
         // Still need to execute it within the target bean's policy context.
         // see CR 6331550
-        if ((inv.isLocal && this.getUsesCallerIdentity()) ||
+        if ((isLocal && this.getUsesCallerIdentity()) ||
                 System.getSecurityManager() == null) {
             ret = this.runMethod(meth, obj, objArr);
         } else {
