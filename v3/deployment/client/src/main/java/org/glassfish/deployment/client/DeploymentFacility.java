@@ -206,6 +206,17 @@ public interface DeploymentFacility {
             String moduleURI) throws IOException;
     
     /**
+     * Downloads the client stubs from the server repository.
+     *
+     * @param location is the root path where to place the 
+     * downloaded stubs
+     * @param moduleID is the moduleID of the deployed component
+     * to download the stubs for
+     */
+    public void getClientStubs(String location, String moduleID) 
+        throws IOException;
+
+    /**
      * Wait for a progress object to be in a completed state 
      * (sucessful or failed) and return the DeploymentStatus for 
      * this progress object.

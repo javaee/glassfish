@@ -381,6 +381,43 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
         }
     }
 
+    public void getClientStubs(String location, String moduleID)
+        throws IOException {
+        ensureConnected();
+        String commandName = "get-client-stubs";
+        Map commandParams = new HashMap();
+        commandParams.put("appName", moduleID);
+        commandParams.put("localDir", location);
+        DFDeploymentStatus mainStatus = null;
+        Throwable commandExecutionException = null;
+        try {
+            DFCommandRunner commandRunner = getDFCommandRunner(commandName, commandParams, null);
+            DFDeploymentStatus ds = commandRunner.run();
+            mainStatus = ds.getMainStatus();
+
+            if (mainStatus.getStatus() == DFDeploymentStatus.Status.FAILURE) {
+                /*
+                 * We received a response from the server but the status was
+                 * reported as unsuccessful.  Because getClientStubs does not
+                 * return a ProgressObject which the caller could use to find
+                 * out about the success or failure, we must throw an exception
+                 * so the caller knows about the failure.
+                 */
+                commandExecutionException = new IOException(
+                        "remote command execution failed on the server");
+                commandExecutionException.initCause(
+                        new RuntimeException(mainStatus.getAllStageMessages()));
+                throw commandExecutionException;
+            }
+        } catch (Throwable ex) {
+            if (commandExecutionException == null) {
+                throw new RuntimeException("error submitting remote command", ex);
+            } else {
+                throw (IOException) ex;
+            }
+        }
+    }
+
     public HostAndPort getHostAndPort(String target) throws IOException {
         return getHostAndPort(target, false);
     }
