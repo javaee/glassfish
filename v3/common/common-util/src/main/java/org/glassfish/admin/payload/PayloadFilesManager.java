@@ -212,7 +212,6 @@ public abstract class PayloadFilesManager {
      */
     public static class Temp extends PayloadFilesManager {
 
-        private static final String GFV3 = "gfv3";
         private boolean isCleanedUp = false;
 
         /** maps payload part name paths (excluding name and type) to temp file subdirs */
@@ -226,7 +225,7 @@ public abstract class PayloadFilesManager {
          */
         public Temp(final ActionReport report, final Logger logger) throws IOException {
             super(createTempFolder(
-                      new File(System.getProperty("java.io.tmpdir"), GFV3),
+                      new File(System.getProperty("java.io.tmpdir")),
                       logger),
                   report,
                   logger);
@@ -457,18 +456,6 @@ public abstract class PayloadFilesManager {
         }
     }
 
-    private static void ensureDirExists(final File dir) throws IOException {
-        if ( ! dir.exists()) {
-            if ( ! dir.mkdirs()) {
-                throw new IOException(
-                        strings.getLocalString(
-                            "payload.command.errorCreatingDir",
-                            "Unknown error creating directory {0}",
-                            dir.getAbsolutePath()));
-            }
-        }
-    }
-
     /**
      * Creates a unique temporary directory within the specified parent.
      * @param parent directory within which to create the temp dir; will be created if absent
@@ -476,7 +463,6 @@ public abstract class PayloadFilesManager {
      * @throws java.io.IOException
      */
     private static File createTempFolder(final File parent, final String prefix, final Logger logger) throws IOException {
-        ensureDirExists(parent);
         File result = File.createTempFile(prefix, "", parent);
         try {
             if ( ! result.delete()) {
