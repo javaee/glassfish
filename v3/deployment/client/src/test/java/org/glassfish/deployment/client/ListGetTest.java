@@ -48,9 +48,9 @@ import static org.junit.Assert.*;
 
 /**
  */
-public class ListTargetsTest {
+public class ListGetTest {
 
-    public ListTargetsTest() {
+    public ListGetTest() {
     }
 
     @BeforeClass
@@ -71,8 +71,8 @@ public class ListTargetsTest {
 
     @Ignore
     @Test
-    public void testListTargetsTest() {
-        System.out.println("testListTargetsTest");
+    public void testListGetTest() {
+        System.out.println("testListGetTest");
         DeploymentFacility df = DeploymentFacilityFactory.getDeploymentFacility();
         ServerConnectionIdentifier sci = new ServerConnectionIdentifier();
         sci.setHostName("localhost");
@@ -88,6 +88,9 @@ public class ListTargetsTest {
             for (Target tid : results) {
                 System.out.println(tid.getName());
             }
+
+            String contextRoot = df.getContextRoot("webapps-simple");
+            System.out.println("Context root:" + contextRoot);
 
         } catch (Exception e) {
             fail("Failed due to exception " + e.getMessage());

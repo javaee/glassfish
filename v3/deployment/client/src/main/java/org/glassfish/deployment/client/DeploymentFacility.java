@@ -183,6 +183,11 @@ public interface DeploymentFacility {
     public TargetModuleID[] listAppRefs(Target[] targets, String state, String type) throws IOException;
 
     /**
+     * Get context root for the module
+     */
+    public String getContextRoot(String moduleName) throws IOException;
+
+    /**
      * list all targets
      */
     public Target[] listTargets() throws IOException;

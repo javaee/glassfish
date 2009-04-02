@@ -71,8 +71,10 @@ import com.sun.enterprise.util.HostAndPort;
 public abstract class AbstractDeploymentFacility implements DeploymentFacility, TargetOwner {
     private static final String DEFAULT_SERVER_NAME = "server";
     protected static final LocalStringManagerImpl localStrings = new LocalStringManagerImpl(RemoteDeploymentFacility.class);
-//    protected Logger logger = LogDomains.getLogger(DeploymentUtils.class,
-//        LogDomains.DPL_LOGGER);
+
+    private static final String LIST_COMMAND = "list";
+    private static final String GET_CLIENT_STUBS_COMMAND = "get-client-stubs";
+    private static final String GET_COMMAND = "get";
 
     private boolean connected;
     private TargetImpl domain;
@@ -331,10 +333,63 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
         return connected;
     }
 
+    public String getContextRoot(String moduleName) throws IOException {
+        ensureConnected();
+        String commandName = GET_COMMAND;
+        Map commandParams = new HashMap();
+        String patternParam = "applications.application." + moduleName + 
+            ".context-root";
+        commandParams.put("pattern", patternParam);
+        DFDeploymentStatus mainStatus = null;
+        Throwable commandExecutionException = null;
+        try {
+            DFCommandRunner commandRunner = getDFCommandRunner(commandName, commandParams, null);
+            DFDeploymentStatus ds = commandRunner.run();
+            mainStatus = ds.getMainStatus();
+            String contextRoot = null;
+
+            if (mainStatus.getStatus() != DFDeploymentStatus.Status.FAILURE) {
+                for (Iterator subIter = ds.getSubStages(); subIter.hasNext();) {
+                    DFDeploymentStatus subStage =
+                        (DFDeploymentStatus) subIter.next();
+                    for (Iterator subIter2 = subStage.getSubStages() ; 
+                        subIter2.hasNext();) {
+                        DFDeploymentStatus subStage2 =
+                            (DFDeploymentStatus) subIter2.next();
+                        String result = subStage2.getStageStatusMessage();
+                        contextRoot = 
+                            getValueFromDottedNameGetResult(result);
+                    }
+                }
+            } else {
+                /*
+                 * We received a response from the server but the status was
+                 * reported as unsuccessful.  Because getContextRoot does not
+                 * return a ProgressObject which the caller could use to find
+                 * out about the success or failure, we must throw an exception
+                 * so the caller knows about the failure.
+                 */
+                commandExecutionException = new IOException(
+                        "remote command execution failed on the server");
+                commandExecutionException.initCause(
+                        new RuntimeException(mainStatus.getAllStageMessages()));
+                throw commandExecutionException;
+            }
+            return contextRoot;
+        } catch (Throwable ex) {
+            if (commandExecutionException == null) {
+                throw new RuntimeException("error submitting remote command", ex);
+            } else {
+                throw (IOException) ex;
+            }
+        }
+    }
+
     public Target[] listTargets() throws IOException {
         ensureConnected();
-        String commandName = "list-targets";
+        String commandName = LIST_COMMAND;
         Map commandParams = new HashMap();
+        commandParams.put("pattern", "servers.server");
         DFDeploymentStatus mainStatus = null;
         Throwable commandExecutionException = null;
         try {
@@ -351,7 +406,9 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
                         subIter2.hasNext();) {
                         DFDeploymentStatus subStage2 =
                             (DFDeploymentStatus) subIter2.next();
-                        String targetName = subStage2.getStageStatusMessage();
+                        String result = subStage2.getStageStatusMessage();
+                        String targetName = 
+                            getValueFromDottedNameListResult(result);
                         targets.add(createTarget(targetName));
                     }
                 }
@@ -384,7 +441,7 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
     public void getClientStubs(String location, String moduleID)
         throws IOException {
         ensureConnected();
-        String commandName = "get-client-stubs";
+        String commandName = GET_CLIENT_STUBS_COMMAND;
         Map commandParams = new HashMap();
         commandParams.put("appName", moduleID);
         commandParams.put("localDir", location);
@@ -668,5 +725,15 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
 
     protected ServerConnectionIdentifier getTargetDAS() {
         return targetDAS;
+    }
+
+    private String getValueFromDottedNameListResult(String result) {
+        int index = result.lastIndexOf(".");
+        return result.substring(index+1);
+    }
+
+    private String getValueFromDottedNameGetResult(String result) {
+        int index = result.lastIndexOf("=");
+        return result.substring(index+1);
     }
 }
