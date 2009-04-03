@@ -61,10 +61,11 @@ class JavaConfig {
     String getJavaHome() {
         return map.get("java-home");
     }
+
     List<File> getEnvClasspath() {
-        
         if(useEnvClasspath()) {
             String s = System.getenv("CLASSPATH");
+            s = stripQuotes(s);
             return GFLauncherUtils.stringToFiles(s);
         }
         else {
@@ -127,11 +128,63 @@ class JavaConfig {
     boolean isDebugEnabled() {
         return Boolean.parseBoolean(map.get("debug-enabled"));
     }
-    
+
+
     private boolean useEnvClasspath() {
-        return !Boolean.parseBoolean(map.get("env-classpath-ignored"));
+        String s = map.get("env-classpath-ignored");
+
+        // the default is true for *ignoring* which means
+        // the default is *false* for using (yikes!)
+        // If there is no value -- return false
+        // else use the opposite of whatever the value is
+
+        if(s == null || s.length() <= 0)
+            return false;
+
+        return !Boolean.parseBoolean(s);
     }
-    
+
+    private String stripQuotes(String s) {
+        // IT 7500
+        // if the CLASSPATH has "C:/foo goo" with actual double-quotes
+        // the server will not start.
+        // It is not allowed to have a classpath filename that contains quote characters.
+        // Here we just mindlessly remove such characters.
+        // It looks inefficient but it is incredibly rare for the CLASSPATH to be enabled
+        // and for there to be an embedded quote character especially since we give
+        // a SEVERE error message everytime.
+
+        if(!hasQuotes(s))
+            return s;
+
+        String s2 = stripChar(s, "'");
+        s2 = stripChar(s2, "\"");
+        GFLauncherLogger.severe("no_quotes_allowed", s, s2);
+
+        return s2;
+    }
+
+    private boolean hasQuotes(String s) {
+        if(s == null)
+            return false;
+
+        if(s.indexOf('\'') >= 0)
+            return true;
+        
+        return s.indexOf('"') >= 0;
+    }
+
+    private String stripChar(String s, String c) {
+        String[] ss = s.split(c);
+
+        StringBuilder sb = new StringBuilder();
+
+        for(String s2 : ss)
+            sb.append(s2);
+
+        return sb.toString();
+    }
+
     private Map<String, String> map;
 }
 /*
