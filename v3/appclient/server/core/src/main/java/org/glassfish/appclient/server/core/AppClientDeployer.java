@@ -40,13 +40,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.List;
-import java.util.jar.JarEntry;
+import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.deployment.common.DownloadableArtifacts;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.archivist.AppClientArchivist;
-import com.sun.enterprise.deployment.archivist.ArchivistFactory;
 import com.sun.enterprise.deployment.deploy.shared.OutputJarArchive;
 import com.sun.enterprise.deployment.deploy.shared.Util;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
@@ -57,6 +56,7 @@ import java.io.FileFilter;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.jar.Attributes;
@@ -92,8 +92,14 @@ public class AppClientDeployer
     public static final String APPCLIENT_FACADE_CLASS_FILE = "org/glassfish/appclient/client/AppClientFacade.class";
     public static final String APPCLIENT_COMMAND_CLASS_NAME = "org.glassfish.appclient.client.AppClientFacade";
     public static final String GLASSFISH_APPCLIENT_MAIN_CLASS_KEY = "GlassFish-AppClient-Main-Class";
+    static final Attributes.Name GLASSFISH_APPCLIENT_MAIN_CLASS =
+            new Attributes.Name(GLASSFISH_APPCLIENT_MAIN_CLASS_KEY);
     public static final String GLASSFISH_APPCLIENT_KEY = "GlassFish-AppClient";
+    static final Attributes.Name GLASSFISH_APPCLIENT =
+            new Attributes.Name(GLASSFISH_APPCLIENT_KEY);
     public static final String SPLASH_SCREEN_IMAGE_KEY = "SplashScreen-Image";
+    static final Attributes.Name SPLASH_SCREEN_IMAGE =
+            new Attributes.Name(SPLASH_SCREEN_IMAGE_KEY);
 
     private static final String STD_DESCRIPTOR = "META-INF/application-client.xml";
     private static final String RUNTIME_DESCRIPTOR = "META-INF/sun-application-client.xml";
@@ -169,7 +175,9 @@ public class AppClientDeployer
             Set<DownloadableArtifacts.FullAndPartURIs> downloads =
                     new HashSet<DownloadableArtifacts.FullAndPartURIs>();
 
-            URI originalSourceURI = originalSource.getURI();
+            URI originalSourceURI = ( insideEar ? originalSource.getURI()
+                    : copyOriginalToGen(originalSource, dc.getScratchDir("xml")));
+            
             String originalJarName = Util.getURIName(originalSourceURI);
             String renamedModUri = renameModUri(modUri, parentArchive);
             String renamedJarName = insideEar ?
@@ -279,6 +287,15 @@ public class AppClientDeployer
        URI currentModule = getClass().getProtectionDomain().getCodeSource().getLocation().toURI();
        URI classURI = currentModule.resolve("gf-client-module.jar!" + resourceName);
        return new URI("jar", classURI.toASCIIString(), null).toURL().openStream();
+    }
+
+    private URI copyOriginalToGen(final ReadableArchive originalSource,
+            final File targetDir) throws IOException {
+        WritableArchive target = new OutputJarArchive();
+        final String nameAndType = Util.getURIName(originalSource.getURI());
+        target.create(new File(targetDir, nameAndType).toURI());
+        ClientJarMakerUtils.copyArchive(originalSource, target, Collections.EMPTY_SET);
+        return target.getURI();
     }
 
     /**
