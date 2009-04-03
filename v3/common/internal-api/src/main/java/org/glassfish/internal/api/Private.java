@@ -1,9 +1,8 @@
 /*
- * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
+ *
  * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -11,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -20,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -34,36 +33,13 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.v3.admin;
-
-import static org.junit.Assert.*;
-import org.junit.Test;
-import org.junit.Before;
-import com.sun.enterprise.v3.admin.AdminAdapter;
-import java.util.Properties;
-
+package org.glassfish.internal.api;
 
 /**
- * junit test to test AdminAdapter class
+ * Denotes anything private (not visible to users, meant for internal
+ * administration/containers functionalilties).
+ *
+ * @author Jerome Dochez
  */
-public class AdminAdapterTest {
-    private AdminAdapter aa = null;
-
-    @Test
-    public void extractParametersTest() {
-        Properties props = aa.extractParameters("uniquetablenames=false&createtables=true&target=server&libraries=foo.jar&dbvendorname=test&deploymentplan=test");
-        Properties correctProps = new Properties();
-        correctProps.put("uniquetablenames", "false");
-        correctProps.put("createtables", "true");
-        correctProps.put("target", "server");
-        correctProps.put("libraries", "foo.jar");
-        correctProps.put("dbvendorname", "test");
-        correctProps.put("deploymentplan", "test");
-        assertEquals("compare Properties", correctProps, props);
-    }
-
-    @Before
-    public void setup() {
-        aa = new PublicAdminAdapter();
-    }
+public interface Private extends Privacy {
 }

@@ -651,7 +651,7 @@ public class CommandRunnerImpl implements CommandRunner {
      * @return the admin command handler if found
      *
      */
-    private AdminCommand getCommand(String commandName, ActionReport report, Logger logger) {
+    public AdminCommand getCommand(String commandName, ActionReport report, Logger logger) {
 
         AdminCommand command = null;
         try {

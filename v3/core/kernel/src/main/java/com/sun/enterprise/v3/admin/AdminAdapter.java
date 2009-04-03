@@ -33,10 +33,10 @@ import java.io.ByteArrayOutputStream;
 import org.glassfish.admin.payload.PayloadImpl;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.Payload;
+import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.container.Adapter;
-import org.glassfish.internal.api.AdminAuthenticator;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
@@ -63,9 +63,11 @@ import com.sun.hk2.component.ConstructorWomb;
 import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.lang.annotation.Annotation;
+
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.RestrictTo;
-import org.glassfish.internal.api.ServerContext;
+import org.glassfish.internal.api.*;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigListener;
 
@@ -73,8 +75,7 @@ import org.jvnet.hk2.config.ConfigListener;
  * Listen to admin commands...
  * @author dochez
  */
-@Service
-public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstruct, EventListener {
+public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstruct, EventListener {
 
     public final static String VS_NAME="__asadmin";
     public final static String PREFIX_URI = "/" + VS_NAME;
@@ -113,9 +114,15 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
     @Inject
     Habitat habitat;
 
+    final Class<? extends Privacy> privacyClass;
+
     private boolean isRegistered = false;
             
     CountDownLatch latch = new CountDownLatch(1);
+
+    protected AdminAdapter(Class<? extends Privacy> privacyClass) {
+        this.privacyClass = privacyClass;
+    }
 
     public void postConstruct() {
         events.register(this);
@@ -240,7 +247,7 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
     private ActionReport getClientActionReport(String requestURI, GrizzlyRequest req) {
 
 
-        ActionReport report;
+        ActionReport report=null;
 
         // first we look at the command extension (ie list-applications.[json | html | mf]
         if (requestURI.indexOf('.')!=-1) {
@@ -248,13 +255,16 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
             report = habitat.getComponent(ActionReport.class, qualifier);
         } else {
             String userAgent = req.getHeader("User-Agent");
-            report = habitat.getComponent(ActionReport.class, userAgent.substring(userAgent.indexOf('/')+1));
+            if (userAgent!=null)
+                report = habitat.getComponent(ActionReport.class, userAgent.substring(userAgent.indexOf('/')+1));
             if (report==null) {
                 String accept = req.getHeader("Accept");
-                StringTokenizer st = new StringTokenizer(accept, ",");
-                while (report==null && st.hasMoreElements()) {
-                    final String scheme=st.nextToken();
-                    report = habitat.getComponent(ActionReport.class, scheme.substring(scheme.indexOf('/')+1));
+                if (accept!=null) {
+                    StringTokenizer st = new StringTokenizer(accept, ",");
+                    while (report==null && st.hasMoreElements()) {
+                        final String scheme=st.nextToken();
+                        report = habitat.getComponent(ActionReport.class, scheme.substring(scheme.indexOf('/')+1));
+                    }
                 }
             }
         }
@@ -265,10 +275,12 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
         return report;
     }
 
+    protected abstract boolean validatePrivacy(AdminCommand command);
+
     private ActionReport doCommand(String requestURI, GrizzlyRequest req, ActionReport report,
             Payload.Outbound outboundPayload) {
 
-        if (!requestURI.startsWith(PREFIX_URI)) {
+        if (!requestURI.startsWith(getContextRoot())) {
             String msg = adminStrings.getLocalString("adapter.panic",
                     "Wrong request landed in AdminAdapter {0}", requestURI);
             report.setMessage(msg);
@@ -279,26 +291,34 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
         // wbn handle no command and no slash-suffix
         String command = "";
 
-        if (requestURI.length() > PREFIX_URI.length() + 1) 
-            command = requestURI.substring(PREFIX_URI.length() + 1);
+        if (requestURI.length() > getContextRoot().length() + 1)
+            command = requestURI.substring(getContextRoot().length() + 1);
 
         final Properties parameters = extractParameters(req.getQueryString());
         try {
             Payload.Inbound inboundPayload = PayloadImpl.Inbound.newInstance(
                     req.getContentType(), req.getInputStream());
-            if (req.getMethod().equalsIgnoreCase(GET)) {
-                logger.fine("***** AdminAdapter GET  *****");
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine("***** AdminAdapter "+req.getMethod()+"  *****");
+            }
+            AdminCommand adminCommand = commandRunner.getCommand(command, report, logger);
+            if (adminCommand==null) {
+                report.failure(logger, adminStrings.getLocalString("adapter.command.notfound",
+                    "Command {0} not found", command), null);
+                return report;
+            }
+            if (validatePrivacy(adminCommand)) {
+            //if (adminCommand.getClass().getAnnotation(Visibility.class).privacy().equals(visibility.privacy())) {
+                // todo : needs to be changed, we should reuse adminCommand
                 commandRunner.doCommand(command, parameters, report, inboundPayload, outboundPayload);
-            } 
-            else if (req.getMethod().equalsIgnoreCase(POST)) {
-                logger.fine("***** AdminAdapter POST *****");
-                /*
-                 * Extract any uploaded files from the POST payload.
-                 */
-//                uploadedFilesInfo = new UploadedFilesInfo(req.getInputStream(), report);
-//                uploadedFilesInfo = new UploadedFilesInfo(inboundPayload, report);
-                
-                commandRunner.doCommand(command, parameters, report, inboundPayload, outboundPayload);
+            } else {
+                report.failure( logger,
+                                adminStrings.getLocalString("adapter.wrongprivacy",
+                                    "Command {0} does not have {1} visibility",
+                                    command, privacyClass.getSimpleName().toLowerCase()),
+                                null);
+                return report;
+
             }
         } catch (Throwable t) {
             /*
@@ -332,17 +352,6 @@ public class AdminAdapter extends GrizzlyAdapter implements Adapter, PostConstru
     public void fireAdapterEvent(String type, Object data) {
 
     }
-
-    /**
-     * Returns the context root for this adapter
-     *
-     * @return context root
-     */
-    public String getContextRoot() {
-        return epd.getAsadminContextRoot();
-    }
-
-
      
      
     /**

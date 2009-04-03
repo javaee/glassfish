@@ -40,6 +40,7 @@ import org.glassfish.api.ActionReport;
 import org.jvnet.hk2.annotations.Contract;
 
 import java.util.Properties;
+import java.util.logging.Logger;
 
 /**
  * CommandRunner is a service that allow to run administrative commands.
@@ -104,5 +105,16 @@ public interface CommandRunner {
             final String commandName,
             final AdminCommand command,
             final Properties parameters,
-            final ActionReport report);  
+            final ActionReport report);
+
+    /**
+     * Obtain and return the command implementation defined by the passed commandName
+     *
+     * @param commandName command name as typed by users
+     * @param report report used to communicate command status back to the user
+     * @param logger logger to log
+     * @return command registered under commandName or null if not found.
+     */
+    public AdminCommand getCommand(String commandName, ActionReport report, Logger logger);
+
 }
