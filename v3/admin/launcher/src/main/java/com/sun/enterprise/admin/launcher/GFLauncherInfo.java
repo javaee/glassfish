@@ -132,7 +132,11 @@ public class GFLauncherInfo {
     public File getConfigDir() {
         return SmartFile.sanitize(configDir);
     }
-            
+
+    void setConfigDir(File f) {
+        configDir = SmartFile.sanitize(f);
+    }
+    
     
     public File getInstanceRootDir() throws GFLauncherException {
         if (!valid) {
@@ -148,6 +152,12 @@ public class GFLauncherInfo {
             throw new GFLauncherException("internalError", "Call to getInstanceRootDir() on an invalid GFLauncherInfo object.");
         }
     }
+
+    File getDomainParentDir() {
+        return domainParentDir;
+    }
+
+
     /**
      *  TEMPORARY.  The guts of HK2 and V3 bootstrapping wants String[]
      * -- this will be changed soon, but it is messy to change it right now.

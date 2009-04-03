@@ -33,7 +33,7 @@ public class GFLauncherFactory {
      */
     public enum ServerType
     {
-        domain, nodeAgent, instance
+        domain, nodeAgent, instance, embedded
     }; 
     /**
      * 
@@ -49,8 +49,12 @@ public class GFLauncherFactory {
             case domain:  
                 return new GFDomainLauncher(
                         new GFLauncherInfo(GFLauncherFactory.ServerType.domain));
+            case embedded:
+                return new GFEmbeddedLauncher(
+                        new GFLauncherInfo(GFLauncherFactory.ServerType.embedded));
+
             default:
-                throw new GFLauncherException("Only domain launching is currently supported.");
+                throw new GFLauncherException("Only domain and embedded launching is currently supported.");
         }
     }
 }

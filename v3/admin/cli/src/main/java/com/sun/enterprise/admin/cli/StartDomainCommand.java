@@ -37,7 +37,17 @@ import java.util.logging.*;
 public class StartDomainCommand extends AbstractCommand {
 
     public void runCommand() throws CommandException, CommandValidationException {
+
+        String gfejar = System.getenv("GFE_JAR");
+
+        if(gfejar != null && gfejar.length() > 0)
+            runCommandEmbedded();
+        else
+            runCommandNotEmbedded();
+    }
+
     
+    private void runCommandNotEmbedded() throws CommandException, CommandValidationException {
         try {
             validateOptions();
             GFLauncher launcher = GFLauncherFactory.getInstance(
@@ -92,6 +102,67 @@ public class StartDomainCommand extends AbstractCommand {
             throw new CommandException(me);
         }
     }
+
+
+    private void runCommandEmbedded() throws CommandException, CommandValidationException {
+        try {
+            GFLauncher launcher = null;
+
+            // bnevins nov 23 2008
+            // Embedded is a new type of server
+            // For now -- we ONLY start embedded
+
+                launcher = GFLauncherFactory.getInstance(
+                    GFLauncherFactory.ServerType.embedded);
+
+            info = launcher.getInfo();
+
+            if(!operands.isEmpty()) {
+                info.setDomainName((String) operands.firstElement());
+            }
+
+            else {
+                info.setDomainName("domain1");
+            }
+
+            String parent = getOption("domaindir");
+
+            if (parent != null) {
+                info.setDomainParentDir(parent);
+            }
+            else
+                info.setDomainParentDir(System.getenv("S1AS_HOME") + "/domains"); // TODO
+
+            boolean verbose = getBooleanOption("verbose");
+            info.setVerbose(verbose);
+            info.setDebug(getBooleanOption("debug"));
+            launcher.setup();
+
+            // now admin ports are set.
+            Set<Integer> ports = info.getAdminPorts();
+
+            if(isServerAlive(ports)) {
+                // todo add the port number to the message
+                throw new CommandException("The Admin port is already taken: ");
+            }
+
+            launcher.launch();
+
+            // if we are in verbose mode, we definitely do NOT want to wait for DAS --
+            // since it already ran and is now dead!!
+            //if(!verbose) {
+                waitForDAS(ports);
+                report(info);
+            //}
+        }
+        catch(GFLauncherException gfle) {
+            throw new CommandException(gfle.getMessage());
+        }
+        catch(MiniXmlParserException me) {
+            throw new CommandException(me);
+        }
+    }
+
 
     // bnevins: note to me -- this String handling is EVIL.  Need to add plenty of utilities...
     

@@ -79,7 +79,7 @@ public abstract class GFLauncher {
         }
     }
 
-    public final synchronized void setup() throws GFLauncherException, MiniXmlParserException {
+    public synchronized void setup() throws GFLauncherException, MiniXmlParserException {
         ASenvPropertyReader pr;
         if(isFakeLaunch()) {
             pr = new ASenvPropertyReader(info.getInstallDir());
@@ -177,7 +177,19 @@ public abstract class GFLauncher {
         
         List<String> cmds = getCommandLine();
         ProcessBuilder pb = new ProcessBuilder(cmds);
-        pb.directory(getInfo().getConfigDir());
+        
+        //pb.directory(getInfo().getConfigDir());
+
+
+        // change the directory if there is one specified, o/w stick with the
+        // default.
+        try {
+            File newDir = getInfo().getConfigDir();
+            pb.directory(newDir);
+        }
+        catch(Exception e) {
+        }
+
         
         //run the process and attach Stream Drainers
         Process process;
@@ -190,7 +202,7 @@ public abstract class GFLauncher {
                 ProcessStreamDrainer.drain(getInfo().getDomainName(), process);
             }
         }
-        catch (IOException e) {
+        catch (Exception e) {
             throw new GFLauncherException("jvmfailure", e, e);
         }
 
@@ -202,6 +214,40 @@ public abstract class GFLauncher {
             wait(process);
         }
     }
+
+    void setCommandLine() throws GFLauncherException {
+        // todo handle stuff in javaConfig like debug...
+        List<String> cmdLine = getCommandLine();
+        cmdLine.clear();
+        System.out.println("");
+        addIgnoreNull(cmdLine, javaExe);
+        addIgnoreNull(cmdLine, "-cp");
+        addIgnoreNull(cmdLine, getClasspath());
+        addIgnoreNull(cmdLine, debugOptions);
+
+        if(jvmOptions != null)
+            addIgnoreNull(cmdLine, jvmOptions.toStringArray());
+
+        addIgnoreNull(cmdLine, getNativePathCommandLine());
+        addIgnoreNull(cmdLine, getMainClass());
+
+        try {
+            addIgnoreNull(cmdLine, getInfo().getArgsAsList());
+        }
+        catch(Exception e) {
+            //harmless
+        }
+    }
+
+    private void addIgnoreNull(List<String> list, String s) {
+        if(GFLauncherUtils.ok(s))
+            list.add(s);
+    }
+    private void addIgnoreNull(List<String> list, Collection<String> ss) {
+        if(ss != null && !ss.isEmpty())
+            list.addAll(ss);
+    }
+
 
     private void wait(final Process p) throws GFLauncherException {
         try {
@@ -242,20 +288,6 @@ public abstract class GFLauncher {
     ////////////////////////////////////////////////////////////////////////////
     ///////              EVERYTHING BELOW IS PRIVATE                  //////////
     ////////////////////////////////////////////////////////////////////////////
-
-    private void setCommandLine() throws GFLauncherException {
-        // todo handle stuff in javaConfig like debug...
-        commandLine = new ArrayList<String>();
-        commandLine.add(javaExe);
-        commandLine.add("-cp");
-        commandLine.add(classpath);
-        commandLine.addAll(debugOptions);
-        commandLine.addAll(jvmOptions.toStringArray());
-        //commandLine.addAll(propsToJvmOptions(sysPropsFromXml));
-        commandLine.addAll(getNativePathCommandLine());
-        commandLine.add(getMainClass());
-        commandLine.addAll(getInfo().getArgsAsList());
-    }
 
     private void resolveAllTokens() {
         // resolve jvm-options against:
@@ -300,7 +332,7 @@ public abstract class GFLauncher {
 
     }
 
-    private void setClasspath() throws GFLauncherException {
+    void setClasspath() throws GFLauncherException {
         List<File> mainCP = getMainClasspath(); // subclass provides this
         List<File> envCP = javaConfig.getEnvClasspath();
         List<File> sysCP = javaConfig.getSystemClasspath();
@@ -316,10 +348,10 @@ public abstract class GFLauncher {
         all.addAll(sysCP);
         all.addAll(envCP);
         all.addAll(suffixCP);
-        classpath = GFLauncherUtils.fileListToPathString(all);
+        setClasspath(GFLauncherUtils.fileListToPathString(all));
     }
 
-    private boolean setJavaExecutableIfValid(String filename) {
+    boolean setJavaExecutableIfValid(String filename) {
         if (!GFLauncherUtils.ok(filename)) {
             return false;
         }
@@ -380,7 +412,7 @@ public abstract class GFLauncher {
         List<String> list = new ArrayList<String>();
         
         // if not enabled -- fagetaboutit
-        if(!profiler.isEnabled())
+        if(profiler == null || !profiler.isEnabled())
             return list;
         
         List<File> profilerNativeFiles = profiler.getNativePath();
@@ -401,7 +433,7 @@ public abstract class GFLauncher {
         return list;
     }
 
-    private void logCommandLine() {
+    void logCommandLine() {
         StringBuilder sb = new StringBuilder();
         for(String s : commandLine) {
             // newline before the first line...
@@ -412,6 +444,15 @@ public abstract class GFLauncher {
             GFLauncherLogger.info("commandline", sb.toString());
         }
     }
+
+    String getClasspath() {
+        return classpath;
+    }
+
+    void setClasspath(String s) {
+        classpath = s;
+    }
+
     private List<String> propsToJvmOptions(Map<String,String> map) {
         List<String> ss = new ArrayList<String>();
         Set<String> set = map.keySet();
@@ -436,6 +477,7 @@ public abstract class GFLauncher {
             GFLauncherLogger.setConsoleLevel(Level.WARNING);
     }
 
+    private List<String> commandLine = new ArrayList<String>();
     private GFLauncherInfo info;
     private Map<String, String> asenvProps;
     private JavaConfig javaConfig;
@@ -445,7 +487,6 @@ public abstract class GFLauncher {
     private String javaExe;
     private String classpath;
     private List<String> debugOptions;
-    private List<String> commandLine;
     private long startTime;
     private String logFilename;
     private LaunchType mode = LaunchType.normal;
