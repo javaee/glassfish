@@ -22,6 +22,7 @@
  */
 package com.sun.enterprise.admin.cli;
 
+import static com.sun.enterprise.admin.cli.CLIConstants.*;
 import com.sun.enterprise.admin.cli.remote.CLIRemoteCommand;
 import com.sun.enterprise.admin.cli.remote.CommandInvoker;
 import com.sun.enterprise.admin.launcher.GFLauncher;
@@ -54,7 +55,9 @@ public class StartDomainCommand extends AbstractCommand {
             }
 
             boolean verbose = getBooleanOption("verbose");
+            boolean watchdog = getBooleanOption(WATCHDOG);
             info.setVerbose(verbose);
+            info.setWatchdog(watchdog);
             info.setDebug(getBooleanOption("debug"));
             launcher.setup();
             // CLI calls this method only to ensure that domain.xml is parsed
@@ -66,11 +69,20 @@ public class StartDomainCommand extends AbstractCommand {
                 throw new CommandException(msg);
             }
             
-            launcher.launch();
-            
-            // if we are in verbose mode, we definitely do NOT want to wait for DAS --
-            // since it already ran and is now dead!!
-            if(!verbose) {
+            // if we are in watchdog mode, we may need to restart indefinitely
+            if(watchdog) {
+                boolean restart;
+                do {
+                    launcher.launch();
+                    int exit = launcher.getExitValue();
+
+                    // temporary!  TODO
+                    restart = Boolean.parseBoolean(System.getenv("GLASSFISH_RESTART"));
+                    // restart = (exit == RESTART_EXIT_VALUE);
+                } while (restart);
+            }
+            else {
+                launcher.launch();
                 waitForDAS(info.getAdminPorts());
                 report(info);
             }
@@ -161,7 +173,6 @@ public class StartDomainCommand extends AbstractCommand {
             lg.popAndUnlockLevel();
         }
     }
-    private static final long WAIT_FOR_DAS_TIME_MS = 90000;
     private GFLauncherInfo info;
 }
 
