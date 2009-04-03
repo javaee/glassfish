@@ -68,21 +68,19 @@ public class StartDomainCommand extends AbstractCommand {
                 String msg = getLocalizedString("ServerRunning", new String[]{info.getDomainName(), port});
                 throw new CommandException(msg);
             }
+
+            // launch returns very quickly if neither verbose or watchdog is set
+            // it returns after the domain dies o/w
+            launcher.launch();
             
             // if we are in watchdog mode, we may need to restart indefinitely
             if(watchdog) {
-                boolean restart;
-                do {
+                while (launcher.getExitValue() == RESTART_EXIT_VALUE) {
+                    Log.info("restart");
                     launcher.launch();
-                    int exit = launcher.getExitValue();
-
-                    // temporary!  TODO
-                    restart = Boolean.parseBoolean(System.getenv("GLASSFISH_RESTART"));
-                    // restart = (exit == RESTART_EXIT_VALUE);
-                } while (restart);
+                }
             }
-            else {
-                launcher.launch();
+            else if(!verbose) {
                 waitForDAS(info.getAdminPorts());
                 report(info);
             }
