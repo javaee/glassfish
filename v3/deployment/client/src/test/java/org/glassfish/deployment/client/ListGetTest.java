@@ -46,6 +46,7 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import java.util.List;
 
 /**
  */
@@ -110,6 +111,12 @@ public class ListGetTest {
 
             ModuleType type6 = df.getModuleType("barEjb");
             System.out.println("Module type for barEjb:" + type6);
+
+            List<String> subModuleResults = df.getSubModuleInfoForJ2EEApplication("singleton2");
+            System.out.println("Sub modules returned:");
+            for (String subModule : subModuleResults) {
+                System.out.println(subModule);
+            }
 
         } catch (Exception e) {
             fail("Failed due to exception " + e.getMessage());

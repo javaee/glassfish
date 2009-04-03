@@ -74,6 +74,7 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
     protected static final LocalStringManagerImpl localStrings = new LocalStringManagerImpl(RemoteDeploymentFacility.class);
 
     private static final String LIST_COMMAND = "list";
+    private static final String LIST_SUB_COMPONENTS_COMMAND = "list-sub-components";
     private static final String GET_CLIENT_STUBS_COMMAND = "get-client-stubs";
     private static final String GET_COMMAND = "get";
 
@@ -332,6 +333,55 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
      */
     public boolean isConnected() {
         return connected;
+    }
+
+    public List<String> getSubModuleInfoForJ2EEApplication(String appName) throws IOException {
+        ensureConnected();
+        String commandName = LIST_SUB_COMPONENTS_COMMAND;
+        Map commandParams = new HashMap();
+        commandParams.put("appName", appName);
+        DFDeploymentStatus mainStatus = null;
+        Throwable commandExecutionException = null;
+        try {
+            DFCommandRunner commandRunner = getDFCommandRunner(commandName, commandParams, null);
+            DFDeploymentStatus ds = commandRunner.run();
+            mainStatus = ds.getMainStatus();
+            List<String> subModuleInfoList = new ArrayList<String>();
+
+            if (mainStatus.getStatus() != DFDeploymentStatus.Status.FAILURE) {
+                for (Iterator subIter = ds.getSubStages(); subIter.hasNext();) {
+                    DFDeploymentStatus subStage =
+                        (DFDeploymentStatus) subIter.next();
+                    for (Iterator subIter2 = subStage.getSubStages() ; 
+                        subIter2.hasNext();) {
+                        DFDeploymentStatus subStage2 =
+                            (DFDeploymentStatus) subIter2.next();
+                        subModuleInfoList.add(
+                            subStage2.getStageStatusMessage());
+                    }
+                }
+            } else {
+                /*
+                 * We received a response from the server but the status was
+                 * reported as unsuccessful.  Because getContextRoot does not
+                 * return a ProgressObject which the caller could use to find
+                 * out about the success or failure, we must throw an exception
+                 * so the caller knows about the failure.
+                 */
+                commandExecutionException = new IOException(
+                        "remote command execution failed on the server");
+                commandExecutionException.initCause(
+                        new RuntimeException(mainStatus.getAllStageMessages()));
+                throw commandExecutionException;
+            }
+            return subModuleInfoList;
+        } catch (Throwable ex) {
+            if (commandExecutionException == null) {
+                throw new RuntimeException("error submitting remote command", ex);
+            } else {
+                throw (IOException) ex;
+            }
+        }
     }
 
     public String getContextRoot(String moduleName) throws IOException {

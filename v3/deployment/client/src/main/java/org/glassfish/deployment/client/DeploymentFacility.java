@@ -37,6 +37,7 @@
 package org.glassfish.deployment.client;
 
 import java.util.Map;
+import java.util.List;
 import java.io.File;
 import java.io.IOException;
 
@@ -182,6 +183,11 @@ public interface DeploymentFacility {
      * list all application refs that are present in the provided list of targets with the specified state and specified type
      */
     public TargetModuleID[] listAppRefs(Target[] targets, String state, String type) throws IOException;
+
+    /**
+     * Get sub module info for ear
+     */
+    public List<String> getSubModuleInfoForJ2EEApplication(String appName) throws IOException;
 
     /**
      * Get context root for the module
