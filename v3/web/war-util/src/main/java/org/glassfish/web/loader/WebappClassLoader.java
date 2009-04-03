@@ -523,6 +523,16 @@ public class WebappClassLoader
     }
 
 
+     /**
+      * Set the parent classloader for this class loader.
+      *
+      * @param newParent The new parent Class Loader
+      */
+     public void setParent(ClassLoader newParent) {
+         this.parent = newParent;
+     }
+
+     
     /**
      * If there is a Java SecurityManager create a read FilePermission
      * or JndiPermission for the file directory path.
