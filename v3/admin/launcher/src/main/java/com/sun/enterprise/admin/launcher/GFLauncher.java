@@ -120,6 +120,10 @@ public abstract class GFLauncher {
         logCommandLine();
         setupCalledByClients = true;
     }
+
+    public final int getExitValue() {
+        return exitValue;
+    }
     
     ///////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
@@ -194,7 +198,7 @@ public abstract class GFLauncher {
         GFLauncherLogger.info("launchTime", (endTime - getStartTime()));
         
         //if verbose, hang round until the domain stops
-        if (getInfo().isVerbose()) {
+        if (getInfo().isVerbose() || getInfo().isWatchdog()) {
             wait(process);
         }
     }
@@ -203,19 +207,26 @@ public abstract class GFLauncher {
         try {
             setShutdownHook(p);
             p.waitFor();
+            exitValue = p.exitValue();
         }
         catch (InterruptedException ex) {
             throw new GFLauncherException("verboseInterruption", ex, ex);
         }
     }
 
-    private void setShutdownHook(final Process p) {
+    private synchronized void setShutdownHook(final Process p) {
         // ON UNIX a ^C on the console will also kill DAS
         // On Windows a ^C on the console will not kill DAS
         // We want UNIX behavior on Windows
         // note that the hook thread will run in both cases:
         // 1. the server died on its own, e.g. with a stop-domain
         // 2. a ^C (or equivalent signal) was received by the console
+        // note that exitValue is still set to -1
+
+        // only do ONE TIME!
+        if(hooked)
+            return;
+
         
         final String msg = strings.get("serverStopped", info.getType());
         Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -224,6 +235,8 @@ public abstract class GFLauncher {
                 System.out.println(msg);
                 p.destroy();
             }});
+
+        hooked = true;
     }
         
     ////////////////////////////////////////////////////////////////////////////
@@ -440,6 +453,8 @@ public abstract class GFLauncher {
     private static final String NEWLINE = System.getProperty("line.separator");
     private final static LocalStringsImpl strings = new LocalStringsImpl(GFLauncher.class);
     private boolean setupCalledByClients = false; //handle with care
+    private int     exitValue = -1;
+    private boolean hooked = false;
 }
 
 
