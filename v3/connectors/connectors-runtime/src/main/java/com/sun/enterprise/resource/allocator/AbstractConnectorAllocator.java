@@ -202,4 +202,9 @@ public abstract class AbstractConnectorAllocator
             return new ResourceHandle(resource, spec, alloc, info);
         }
     }
+
+    public boolean hasValidatingMCF() {
+        return mcf instanceof ValidatingManagedConnectionFactory;
+    }
+
 }

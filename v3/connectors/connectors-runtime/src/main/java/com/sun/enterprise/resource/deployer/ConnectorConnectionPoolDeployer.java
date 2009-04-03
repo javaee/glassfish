@@ -420,6 +420,14 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
                 } else if ("DATASTRUCTUREPARAMETERS".equals(ep.getName().toUpperCase())) {
                     ccp.setDataStructureParameters(ep.getValue());
                     _logger.fine("DATASTRUCTUREPARAMETERS");
+                } else if ("PREFER-VALIDATE-OVER-RECREATE".equals(ep.getName().toUpperCase())) {
+                    String value = ep.getValue();
+                    if (_logger.isLoggable(Level.FINE)) {
+                        _logger.fine(" ConnectorConnectionPoolDeployer::  " +
+                                "Setting PREFER-VALIDATE-OVER-RECREATE to " +
+                                value);
+                    }
+                    ccp.setPreferValidateOverRecreate(toBoolean(value, false));
                 }
             }
         }

@@ -92,7 +92,10 @@ public class ConnectorConnectionPool implements Serializable {
     //The property will be set from system property :
     //com.sun.enterprise.connectors.ValidateAtmostEveryIdleSecs=true
     private boolean validateAtmostEveryIdleSecs = false;
-
+    //This property will be set by ConnectorConnectionPoolDeployer or
+    //JdbcConnectionPoolDeployer.
+    private boolean preferValidateOverRecreate_ = false;
+    
     private String validateAtmostOncePeriod_ = null;
 
     private String conCreationRetryAttempts_ = null;
@@ -163,7 +166,7 @@ public class ConnectorConnectionPool implements Serializable {
         clone.setConCreationRetryInterval
                 (getConCreationRetryInterval());
         clone.setConCreationRetryAttempts(getConCreationRetryAttempts());
-
+        clone.setPreferValidateOverRecreate(isPreferValidateOverRecreate());
         return clone;
     }
 
@@ -663,6 +666,8 @@ public class ConnectorConnectionPool implements Serializable {
             sb.append(transactionSupport_);
             sb.append("\nisConnectionValidationRequired_ ");
             sb.append(isConnectionValidationRequired_);
+            sb.append("\npreferValidateOverRecreate_ ");
+            sb.append(preferValidateOverRecreate_);
 
             sb.append("\nmatchConnections_ ");
             sb.append(matchConnections_);
@@ -776,4 +781,13 @@ public class ConnectorConnectionPool implements Serializable {
     public void setResourceSelectionStrategyClass(String resourceSelectionStrategyClass) {
         this.resourceSelectionStrategyClass = resourceSelectionStrategyClass;
     }
+
+    public boolean isPreferValidateOverRecreate() {
+        return preferValidateOverRecreate_;
+    }
+
+    public void setPreferValidateOverRecreate(boolean preferValidateOverRecreate) {
+        preferValidateOverRecreate_ = preferValidateOverRecreate;
+    }
+    
 }

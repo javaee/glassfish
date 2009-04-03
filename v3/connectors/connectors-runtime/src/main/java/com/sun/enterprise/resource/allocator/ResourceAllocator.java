@@ -75,4 +75,6 @@ public interface ResourceAllocator {
             throws ResourceException;
 
     public boolean isConnectionValid(ResourceHandle resource);
+    
+    public boolean hasValidatingMCF();
 }

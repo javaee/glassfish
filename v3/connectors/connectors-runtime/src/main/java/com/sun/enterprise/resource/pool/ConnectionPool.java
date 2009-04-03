@@ -86,6 +86,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
     protected boolean failAllConnections = false;
     protected boolean matchConnections = false;
     protected boolean validation = false;
+    protected boolean preferValidateOverRecreate = false;
     // hold on to the resizer task so we can cancel/reschedule it.
     protected Resizer resizerTask;
 
@@ -236,7 +237,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
             resizerTask = null;
         }
 
-        resizerTask = new Resizer(name, ds, this, this);
+        resizerTask = new Resizer(name, ds, this, this, preferValidateOverRecreate);
 
         if (timer == null) {
             timer = ConnectorRuntime.getRuntime().getTimer();
@@ -1245,7 +1246,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
      */
     private void setAdvancedPoolConfiguration(ConnectorConnectionPool poolResource) {
         matchConnections = poolResource.matchConnections();
-
+        preferValidateOverRecreate = poolResource.isPreferValidateOverRecreate();
         maxConnectionUsage_ = Integer.parseInt(poolResource.getMaxConnectionUsage());
         connectionCreationRetryAttempts_ = Integer.parseInt
                 (poolResource.getConCreationRetryAttempts());

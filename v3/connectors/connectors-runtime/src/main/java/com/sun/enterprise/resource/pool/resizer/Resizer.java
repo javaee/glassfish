@@ -39,6 +39,7 @@ import com.sun.enterprise.resource.ResourceHandle;
 import com.sun.enterprise.resource.ResourceState;
 import com.sun.enterprise.resource.pool.PoolProperties;
 import com.sun.appserv.connectors.internal.api.PoolingException;
+import com.sun.enterprise.resource.allocator.ResourceAllocator;
 import com.sun.enterprise.resource.pool.ResourceHandler;
 import com.sun.enterprise.resource.pool.datastructure.DataStructure;
 import com.sun.logging.LogDomains;
@@ -70,12 +71,15 @@ public class Resizer extends TimerTask {
     private DataStructure ds;
     private PoolProperties pool;
     private ResourceHandler handler;
-
-    public Resizer(String poolName, DataStructure ds, PoolProperties pp, ResourceHandler handler) {
+    private boolean preferValidateOverRecreate = false;
+    
+    public Resizer(String poolName, DataStructure ds, PoolProperties pp, ResourceHandler handler,
+            boolean preferValidateOverRecreate) {
         this.poolName = poolName;
         this.ds = ds;
         this.pool = pp;
         this.handler = handler;
+        this.preferValidateOverRecreate = preferValidateOverRecreate;
     }
 
     public void run() {
@@ -161,31 +165,87 @@ public class Resizer extends TimerTask {
         int size = ds.getFreeListSize();
         // let's cache the current time since precision is not required here.
         long currentTime = System.currentTimeMillis();
+        int validConnectionsCounter = 0;
+        int idleConnKeptInSteadyCounter = 0;
 
         //iterate through all thre active resources to find idle-time lapsed ones.
         ResourceHandle h;
-        Set<String> activeResources = new HashSet<String>();
+        Set<ResourceHandle> activeResources = new HashSet<ResourceHandle>();
+        Set<String> resourcesToValidate = new HashSet<String>();
+        try {
         while ((h = ds.getResource()) != null ) {
             state = h.getResourceState();
             //remove all idle-time lapsed resources.
             if (currentTime - state.getTimestamp() > pool.getIdleTimeout()) {
-                ds.removeResource(h);
+                ResourceAllocator alloc = h.getResourceAllocator();
+                if (preferValidateOverRecreate && alloc.hasValidatingMCF()) {
+                    //validConnectionsCounter is incremented if the connection
+                    //is valid but only till the steady pool size.
+                    if (validConnectionsCounter < pool.getSteadyPoolSize() 
+                            && alloc.isConnectionValid(h)) {
+                        
+                        validConnectionsCounter++;
+                        idleConnKeptInSteadyCounter++;
+                        debug("PreferValidateOverRecreate: Keeping idle resource " + 
+                                h + " in the steady part of the free pool " +
+                                "as the RA reports it to be valid (" + validConnectionsCounter +
+                                " <= " + pool.getSteadyPoolSize() + ")");
+                        h.setLastValidated(System.currentTimeMillis());
+                        state.touchTimestamp();
+                        
+                    } else {
+                        //Connection invalid and hence remove resource.
+                        if (_logger.isLoggable(Level.FINEST)) {
+                            if (validConnectionsCounter <=  pool.getSteadyPoolSize()) {
+                                _logger.log(Level.FINEST, "PreferValidateOverRecreate: " +
+                                        "Removing idle resource " + h + 
+                                        " from the free pool as the RA reports it to be invalid");
+                            } else {
+                                _logger.log(Level.FINEST, "PreferValidateOverRecreate: " +
+                                        "Removing idle resource " + h + 
+                                        " from the free pool as the steady part size has " +
+                                        "already been exceeded (" + validConnectionsCounter + " > " + 
+                                        pool.getSteadyPoolSize() + ")");
+                            }
+                        }
+                        ds.removeResource(h);
+                    }
+                } else {
+                    //prefer validate over recreate is set to false. hence 
+                    //remove resource directly.
+                    ds.removeResource(h);
+                }               
             } else {
-                ds.returnResource(h);
-                activeResources.add(h.toString());
+                validConnectionsCounter++;
+                resourcesToValidate.add(h.toString());
+                activeResources.add(h);
+            }
+        }
+        } finally {
+            for(ResourceHandle activeResource : activeResources) {
+                ds.returnResource(activeResource);
             }
         }
 
         //remove invalid resources from the free (active) resources list.
         //Since the whole pool is not locked, it may happen that some of these resources may be
         //given to applications.
-        removeInvalidResources(activeResources);
+        removeInvalidResources(resourcesToValidate);
 
         //These statistic computations will work fine as long as resizer locks the pool throughout its operations.
-        debug("Number of Idle resources freed for pool [ " + poolName + " ] - " +
-                (size - activeResources.size()));
-        debug("Number of Invalid resources removed for pool [ " + poolName + " ] - " +
-                (activeResources.size() - ds.getFreeListSize()));
+        if (preferValidateOverRecreate) {
+            debug("Idle resources validated and kept in the steady pool for pool [ " + 
+                    poolName + " ] - " + idleConnKeptInSteadyCounter);
+            debug("Number of Idle resources freed for pool [ " + poolName + " ] - " +
+                    (size - activeResources.size() - idleConnKeptInSteadyCounter));
+            debug("Number of Invalid resources removed for pool [ " + poolName + " ] - " +
+                    (activeResources.size() - ds.getFreeListSize() + idleConnKeptInSteadyCounter));       
+        } else {
+            debug("Number of Idle resources freed for pool [ " + poolName + " ] - " +
+                    (size - activeResources.size()));
+            debug("Number of Invalid resources removed for pool [ " + poolName + " ] - " +
+                    (activeResources.size() - ds.getFreeListSize()));            
+        }
         noOfResourcesRemoved = poolSizeBeforeRemoval - ds.getResourcesSize();
         return noOfResourcesRemoved;
     }

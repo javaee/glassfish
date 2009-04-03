@@ -310,7 +310,12 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
                     propList.add(new EnvironmentProperty("JDBC30DataSource",
                             rp.getValue(), "JDBC30DataSource", "java.lang.String"));
 
-                } else if (mcfConPropKeys.containsKey(name.toUpperCase())) {
+                } else if ("PREFER-VALIDATE-OVER-RECREATE".equals(name.toUpperCase())) {
+                    String value = rp.getValue();
+                    conConnPool.setPreferValidateOverRecreate(toBoolean(value, false));
+                    logFine("PREFER-VALIDATE-OVER-RECREATE : " + value);
+                }
+                else if (mcfConPropKeys.containsKey(name.toUpperCase())) {
 
                     propList.add(new EnvironmentProperty(
                             (String) mcfConPropKeys.get(name.toUpperCase()),
