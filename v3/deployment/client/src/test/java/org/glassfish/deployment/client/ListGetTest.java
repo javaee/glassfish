@@ -36,6 +36,7 @@
  */
 package org.glassfish.deployment.client;
 
+import javax.enterprise.deploy.shared.ModuleType;
 import javax.enterprise.deploy.spi.Target;
 import javax.enterprise.deploy.spi.TargetModuleID;
 import org.junit.After;
@@ -90,7 +91,25 @@ public class ListGetTest {
             }
 
             String contextRoot = df.getContextRoot("webapps-simple");
-            System.out.println("Context root:" + contextRoot);
+            System.out.println("Context root for webapps-simple:" + contextRoot);
+
+            ModuleType type = df.getModuleType("webapps-simple");
+            System.out.println("Module type for webapps-simple:" + type);
+
+            ModuleType type2 = df.getModuleType("i18n-simple");
+            System.out.println("Module type for i18n-simple:" + type2);
+
+            ModuleType type3 = df.getModuleType("singleton");
+            System.out.println("Module type for singleton:" + type3);
+
+            ModuleType type4 = df.getModuleType("generic-ra");
+            System.out.println("Module type for generic-ra:" + type4);
+
+            ModuleType type5 = df.getModuleType("fooClient");
+            System.out.println("Module type for fooClient:" + type5);
+
+            ModuleType type6 = df.getModuleType("barEjb");
+            System.out.println("Module type for barEjb:" + type6);
 
         } catch (Exception e) {
             fail("Failed due to exception " + e.getMessage());

@@ -49,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.enterprise.deploy.shared.ModuleType;
 import javax.enterprise.deploy.spi.Target;
 import javax.enterprise.deploy.spi.TargetModuleID;
 import javax.enterprise.deploy.spi.status.ClientConfiguration;
@@ -376,6 +377,55 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
                 throw commandExecutionException;
             }
             return contextRoot;
+        } catch (Throwable ex) {
+            if (commandExecutionException == null) {
+                throw new RuntimeException("error submitting remote command", ex);
+            } else {
+                throw (IOException) ex;
+            }
+        }
+    }
+
+    public ModuleType getModuleType(String moduleName) throws IOException {
+        ensureConnected();
+        String commandName = GET_COMMAND;
+        Map commandParams = new HashMap();
+        String patternParam = "applications.application." + moduleName + ".*";
+        commandParams.put("pattern", patternParam);
+        DFDeploymentStatus mainStatus = null;
+        Throwable commandExecutionException = null;
+        try {
+            DFCommandRunner commandRunner = getDFCommandRunner(commandName, commandParams, null);
+            DFDeploymentStatus ds = commandRunner.run();
+            mainStatus = ds.getMainStatus();
+            List<String> resultList = new ArrayList<String>();
+
+            if (mainStatus.getStatus() != DFDeploymentStatus.Status.FAILURE) {
+                for (Iterator subIter = ds.getSubStages(); subIter.hasNext();) {
+                    DFDeploymentStatus subStage =
+                        (DFDeploymentStatus) subIter.next();
+                    for (Iterator subIter2 = subStage.getSubStages() ; 
+                        subIter2.hasNext();) {
+                        DFDeploymentStatus subStage2 =
+                            (DFDeploymentStatus) subIter2.next();
+                        resultList.add(subStage2.getStageStatusMessage());
+                    }
+                }
+                return getJavaEEModuleTypeFromResult(resultList);
+            } else {
+                /*
+                 * We received a response from the server but the status was
+                 * reported as unsuccessful.  Because get does not
+                 * return a ProgressObject which the caller could use to find
+                 * out about the success or failure, we must throw an exception
+                 * so the caller knows about the failure.
+                 */
+                commandExecutionException = new IOException(
+                        "remote command execution failed on the server");
+                commandExecutionException.initCause(
+                        new RuntimeException(mainStatus.getAllStageMessages()));
+                throw commandExecutionException;
+            }
         } catch (Throwable ex) {
             if (commandExecutionException == null) {
                 throw new RuntimeException("error submitting remote command", ex);
@@ -736,4 +786,40 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
         int index = result.lastIndexOf("=");
         return result.substring(index+1);
     }
+
+
+   private ModuleType getJavaEEModuleTypeFromResult(List<String> resultList) {
+       List<String> sniffersFound = new ArrayList<String>();
+       for (String result : resultList) {
+           if (result.endsWith("property.isComposite=true")) {
+               return ModuleType.EAR;
+           } else if (result.endsWith("engine.web.sniffer=web")) {
+               sniffersFound.add("web");
+           } else if (result.endsWith("engine.ejb.sniffer=ejb")) {
+               sniffersFound.add("ejb");
+           } else if (result.endsWith("engine.connectors.sniffer=connectors")) {
+               sniffersFound.add("rar");
+           } else if (result.endsWith("engine.appclient.sniffer=appclient")) {
+               sniffersFound.add("car");
+           } 
+       }         
+       
+       // if we are here, it's not ear 
+       // note, we check for web sniffer before ejb, as in ejb in war case
+       // we will return war.
+       if (sniffersFound.contains("web")) {
+           return ModuleType.WAR;
+       }
+       if (sniffersFound.contains("ejb")) {
+           return ModuleType.EJB;
+       }
+       if (sniffersFound.contains("rar")) {
+           return ModuleType.RAR;
+       }
+       if (sniffersFound.contains("car")) {
+           return ModuleType.CAR;
+       }
+
+       return null;
+   }
 }

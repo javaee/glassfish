@@ -41,6 +41,7 @@ import java.io.File;
 import java.io.IOException;
 
 import java.net.URI;
+import javax.enterprise.deploy.shared.ModuleType;
 import javax.enterprise.deploy.spi.Target;
 import javax.enterprise.deploy.spi.TargetModuleID;
 import javax.enterprise.deploy.spi.status.DeploymentStatus;
@@ -186,6 +187,11 @@ public interface DeploymentFacility {
      * Get context root for the module
      */
     public String getContextRoot(String moduleName) throws IOException;
+
+    /**
+     * Get module type for the module
+     */
+   public ModuleType getModuleType(String moduleName) throws IOException;
 
     /**
      * list all targets
