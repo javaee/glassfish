@@ -96,11 +96,11 @@ public class InterceptorImpl extends org.omg.CORBA.LocalObject
     public static final int NO_REPLY_SLOT = 0;
     public static final int NULL_CTX_SLOT = 1;
 
-    public static final Integer PROPER_CTX = new Integer(0);
-    public static final Integer NULL_CTX = new Integer(1);
+    public static final Object PROPER_CTX = new Integer(0);
+    public static final Object NULL_CTX = new Integer(1);
 
-    public static final Integer REPLY = new Integer(0);
-    public static final Integer NO_REPLY = new Integer(1);
+    public static final Object REPLY = new Integer(0);
+    public static final Object NO_REPLY = new Integer(1);
 
     public static final String CLIENT_POLICY_CHECKING =
         "com.sun.jts.pi.CLIENT_POLICY_CHECKING";
@@ -723,7 +723,7 @@ public class InterceptorImpl extends org.omg.CORBA.LocalObject
 
         // see if a reply ctx needs to be sent.
 
-        Integer no_reply = getThreadLocalData(NO_REPLY_SLOT);
+        Object no_reply = getThreadLocalData(NO_REPLY_SLOT);
 
         if (no_reply == NO_REPLY) {
             return;
@@ -804,7 +804,7 @@ public class InterceptorImpl extends org.omg.CORBA.LocalObject
         */
         // return ((Integer) stack.peek() == NULL_CTX); 
         ArrayListStack stack = (ArrayListStack) threadLocalState[NULL_CTX_SLOT];
-        return ((Integer) stack.peek() == NULL_CTX);
+        return (stack.peek() == NULL_CTX);
         // IASRI 4698847 END
     }
 
@@ -823,7 +823,7 @@ public class InterceptorImpl extends org.omg.CORBA.LocalObject
         return (proceed && isNullContext(ctx) && ctx.timeout == -1);
     }
 
-    public static void setThreadLocalData(int slot, Integer data) {
+    public static void setThreadLocalData(int slot, Object data) {
         Object[] threadLocalState = (Object[]) otsThreadLocal.get();
         // IASRI 4698847 START
         //((Stack) threadLocalState[slot]).push(data); 
@@ -831,11 +831,11 @@ public class InterceptorImpl extends org.omg.CORBA.LocalObject
         // IASRI 4698847 END
     }
 
-    public static Integer getThreadLocalData(int slot) {
+    public static Object getThreadLocalData(int slot) {
         Object[] threadLocalState = (Object[]) otsThreadLocal.get();
         // IASRI 4698847 START
         //return (Integer) ((Stack) threadLocalState[slot]).pop();
-        return (Integer) ((ArrayListStack) threadLocalState[slot]).pop();
+        return ((ArrayListStack) threadLocalState[slot]).pop();
         // IASRI 4698847 END
     }
 
