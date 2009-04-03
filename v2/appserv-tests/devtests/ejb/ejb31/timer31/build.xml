@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:./../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../../config/common.xml">
+<!ENTITY reporting SYSTEM "file:./../../report.xml">
+]>
+
+
+<project name="timer" default="usage" basedir=".">
+    &commonSetup;
+    &commonBuild;
+    &reporting;
+
+    <target name="all">
+        <antcall target="nonpersistenttimer"/>
+
+    </target>
+
+    <target name="nonpersistenttimer">
+        <record name="nonpersistenttimer.output" action="start" />
+            <ant dir="nonpersistenttimer" target="all"/>
+        <record name="nonpersistenttimer.output" action="stop" />
+    </target>
+
+    <target name="usage">
+	<echo>
+		Usage:
+			ant all (Executes all the ejb-timer tests)
+
+			ant nonpersistenttimer (Executes the non-persistent ejb-timer test)
+
+	</echo>
+    </target>
+</project>
