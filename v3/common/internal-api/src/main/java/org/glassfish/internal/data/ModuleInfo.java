@@ -241,12 +241,12 @@ public class ModuleInfo {
         for (EngineRef engine : _getEngineRefs()) {
             if (engine.getApplicationContainer()!=null && engine.getApplicationContainer().getClassLoader()!=null) {
                 classLoaders.add(engine.getApplicationContainer().getClassLoader());
-            }
-            try {
-                engine.unload(context);
-            } catch(Throwable e) {
-                logger.log(Level.SEVERE, "Failed to unload from container type : " +
-                        engine.getContainerInfo().getSniffer().getModuleType(), e);
+                try {
+                    engine.unload(context);
+                } catch(Throwable e) {
+                    logger.log(Level.SEVERE, "Failed to unload from container type : " +
+                            engine.getContainerInfo().getSniffer().getModuleType(), e);
+                }
             }
         }
         // all modules have been unloaded, clean the class loaders...
