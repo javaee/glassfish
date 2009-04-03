@@ -43,6 +43,7 @@ import com.sun.enterprise.deployment.WebComponentDescriptor;
 import com.sun.enterprise.deployment.WebResourceCollectionImpl;
 import com.sun.enterprise.deployment.annotation.context.*;
 import com.sun.enterprise.deployment.web.SecurityConstraint;
+import com.sun.enterprise.deployment.web.WebResourceCollection;
 import org.glassfish.apf.AnnotatedElementHandler;
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
@@ -335,9 +336,8 @@ abstract class AbstractCommonAttributeHandler extends AbstractHandler {
      * @return an associated SecurityConstraint
      */
     protected SecurityConstraint getSecurityConstraint(
-            WebComponentDescriptor webCompDesc, Method annMethod) {
+            WebComponentDescriptor webCompDesc, String httpMethod) {
 
-        String httpMethod = annMethod.getName().substring(2).toUpperCase();
         SecurityConstraint securityConstraint = null;
         WebBundleDescriptor webBundleDesc = webCompDesc.getWebBundleDescriptor();
 
@@ -364,7 +364,9 @@ abstract class AbstractCommonAttributeHandler extends AbstractHandler {
             for (String urlPattern : webCompDesc.getUrlPatternsSet()) {
                 webResourceColl.addUrlPattern(urlPattern);
             }
-            webResourceColl.addHttpMethod(httpMethod);
+            if (httpMethod != null) {
+                webResourceColl.addHttpMethod(httpMethod);
+            }
             securityConstraint.addWebResourceCollection(webResourceColl);
             webBundleDesc.addSecurityConstraint(securityConstraint);
         }

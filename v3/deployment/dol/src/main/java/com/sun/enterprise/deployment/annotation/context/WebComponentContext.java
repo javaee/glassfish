@@ -36,6 +36,7 @@
 package com.sun.enterprise.deployment.annotation.context;
 
 import com.sun.enterprise.deployment.WebComponentDescriptor;
+import com.sun.enterprise.deployment.web.SecurityConstraint;
 
 import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
@@ -46,6 +47,13 @@ import java.lang.reflect.AnnotatedElement;
  * @author Shing Wai Chan
  */
 public class WebComponentContext extends ResourceContainerContextImpl {
+    /*
+     * The type level security constraint from annotation.
+     * Note that if there is a need for keeping other info.
+     * Then we can have a Map later.
+     */
+    private SecurityConstraint typeSecConstraint = null;
+
     private WebComponentDescriptor webComp = null;
 
     public WebComponentContext(WebComponentDescriptor wComp) {
@@ -70,5 +78,13 @@ public class WebComponentContext extends ResourceContainerContextImpl {
             // done with processing this class, let's pop this context
             getProcessingContext().popHandler();
         }
+    }
+
+    public SecurityConstraint getTypeSecurityConstraint() {
+        return typeSecConstraint;
+    }
+
+    public void setTypeSecurityConstraint(SecurityConstraint typeSecConstraint) {
+        this.typeSecConstraint = typeSecConstraint;
     }
 }
