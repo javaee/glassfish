@@ -71,14 +71,14 @@ public class TraceRecordFormatter
         }
         else
         {
-			if(tid instanceof String)
-			{
-				strBuf.append(tid);
-			}
-			else if(tid instanceof otid_t)
-			{	
-   		         	strBuf.append(convertToString(((otid_t)tid).tid));
-			}
+            if(tid instanceof String)
+            {
+                strBuf.append(tid);
+            }
+            else if(tid instanceof otid_t)
+            {    
+                        strBuf.append(convertToString(((otid_t)tid).tid));
+            }
         }
         strBuf.append(TraceUtil.getFieldDelimiter())
               .append(System.currentTimeMillis())
@@ -132,19 +132,20 @@ public class TraceRecordFormatter
    */
     public static String convertXidArrayToString(Xid[] xidArray)
     {
-	if(xidArray.length != 0)
-	{
-        	int i;
-        	StringBuffer strBuf = new StringBuffer("[ ");
-        	for(i = 0; i < xidArray.length - 1; i++)
-        	{
-            		strBuf.append(xidArray[i].getGlobalTransactionId()).append(", ");
-        	}
-        	strBuf.append(xidArray[xidArray.length - 1]).append(" ]");
-        	return strBuf.toString();
-	}
-	else
-		return " null ";
+    if(xidArray.length != 0)
+    {
+            int i;
+            StringBuffer strBuf = new StringBuffer("[ ");
+            for(i = 0; i < xidArray.length - 1; i++)
+            {
+                strBuf.append(convertToString(xidArray[i].getGlobalTransactionId()))
+                        .append(", ");
+            }
+            strBuf.append(xidArray[xidArray.length - 1]).append(" ]");
+            return strBuf.toString();
+    }
+    else
+        return " null ";
     }
 
   /**
@@ -156,7 +157,7 @@ public class TraceRecordFormatter
     public static String convertPropsToString(Properties prop)
     {
         if(prop==null){
-	    return "{null}";
+        return "{null}";
         }
         StringBuffer strBuf =  new StringBuffer("{ ");
         for(Enumeration e = prop.propertyNames(); e.hasMoreElements(); )
@@ -165,7 +166,7 @@ public class TraceRecordFormatter
             strBuf.append("[ ").append(obj).append("->");
             Object val=prop.getProperty((String)obj);
             if(val==null)
-	        strBuf.append("null");
+                strBuf.append("null");
             else
                 strBuf.append((String)val);        
             strBuf.append(" ] ");
