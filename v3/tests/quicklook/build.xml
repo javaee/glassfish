@@ -240,7 +240,8 @@
         <mkdir dir="${test.report}"/>
         <path id="run.testng.classpath">
             <fileset dir="${glassfish.home}/modules">
-               <include name="**/*.jar"/>
+               <include name="**/amx*.jar"/>
+               <include name="**/gf-client.jar"/>
             </fileset>
 	    <pathelement path="${plugin_classpath}"/>
 	    <pathelement location="${Java_SE}"/>
