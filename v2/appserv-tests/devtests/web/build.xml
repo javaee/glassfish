@@ -71,7 +71,9 @@
         <ant dir="jspResourceInjectionTagHandler" target="all"/>
         <ant dir="jspTagHandlerPostConstructAnnotation" target="all"/>
         <ant dir="jspTagHandlerPostConstructElement" target="all"/>
+        <!-- Commented out unil b44 promotion
         <ant dir="jspTagHandlerPreDestroyAnnotation" target="all"/>
+        -->
         <ant dir="jspResourceInjectionSimpleTagHandler" target="all"/>
         <ant dir="jspResourceInjectionTagHandlerPoolingDisabled" target="all"/>
         <ant dir="jspResourceInjectionContextListener" target="all"/>
