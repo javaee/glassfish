@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
+ *
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -34,41 +34,36 @@
  * holder.
  */
 
-package com.sun.enterprise.deployment.annotation.factory;
+package com.sun.enterprise.deployment.annotation.impl;
 
-import com.sun.enterprise.deployment.*;
-import com.sun.enterprise.deployment.annotation.context.AppClientContext;
-import com.sun.enterprise.deployment.annotation.context.EjbBundleContext;
-import com.sun.enterprise.deployment.annotation.context.WebBundleContext;
-import com.sun.enterprise.deployment.annotation.context.RarBundleContext;
-import org.glassfish.apf.AnnotatedElementHandler;
+import com.sun.enterprise.deployment.ConnectorDescriptor;
 
-/**
- * The Factory is reponsible for creating AnnotatedElementHandler.
- *
- * @author Shing Wai Chan
- */
-public class AnnotatedElementHandlerFactory {
-    private AnnotatedElementHandlerFactory() {
-    }
+import java.io.IOException;
+import java.io.File;
+import java.util.logging.Level;
 
-    public static AnnotatedElementHandler createAnnotatedElementHandler(
-            RootDeploymentDescriptor bundleDesc) {
-        AnnotatedElementHandler aeHandler = null;
-        if (bundleDesc instanceof EjbBundleDescriptor) {
-            EjbBundleDescriptor ejbBundleDesc = (EjbBundleDescriptor)bundleDesc;
-            aeHandler = new EjbBundleContext(ejbBundleDesc);
-        } else if (bundleDesc instanceof ApplicationClientDescriptor) {
-            ApplicationClientDescriptor appClientDesc =
-                    (ApplicationClientDescriptor)bundleDesc;
-            aeHandler = new AppClientContext(appClientDesc);
-        } else if (bundleDesc instanceof WebBundleDescriptor) {
-            WebBundleDescriptor webBundleDesc = (WebBundleDescriptor)bundleDesc;
-            aeHandler = new WebBundleContext(webBundleDesc);
-        } else if(bundleDesc instanceof ConnectorDescriptor){
-            ConnectorDescriptor connectorDesc = (ConnectorDescriptor)bundleDesc;
-            aeHandler = new RarBundleContext(connectorDesc);
+import org.glassfish.apf.impl.AnnotationUtils;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.PerLookup;
+
+
+@Service(name="rar")
+@Scoped(PerLookup.class)
+public class RarScanner extends ModuleScanner<ConnectorDescriptor>{
+
+    public void process(File archiveFile, ConnectorDescriptor desc,
+        ClassLoader classLoader) throws IOException {
+        if (AnnotationUtils.getLogger().isLoggable(Level.FINE)) {
+            AnnotationUtils.getLogger().fine("archiveFile is " + archiveFile);
+            AnnotationUtils.getLogger().fine("classLoader is " + classLoader);
         }
-        return aeHandler;
+        this.archiveFile = archiveFile;
+        this.classLoader = classLoader;
+        if (archiveFile.isDirectory()) {
+            addScanDirectory(archiveFile);
+        }else{
+            AnnotationUtils.getLogger().fine("RARScanner : not a directory : " + archiveFile.getName());
+        }
     }
 }

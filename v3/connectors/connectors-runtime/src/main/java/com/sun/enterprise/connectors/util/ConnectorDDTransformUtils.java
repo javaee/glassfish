@@ -39,6 +39,7 @@ package com.sun.enterprise.connectors.util;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import org.glassfish.api.admin.config.Property;
 import com.sun.enterprise.connectors.ConnectorDescriptorInfo;
+import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.deploy.shared.FileArchive;
 import com.sun.enterprise.deployment.ConnectionDefDescriptor;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
@@ -174,8 +175,6 @@ public class ConnectorDDTransformUtils {
      *                                   invalid this exception is thrown. For 1.5 type rar sun-ra.xml
      *                                   should not be  present.
      */
-
-    //TODO V3 with annotations, is it right a approach to load the descriptor using Archivist ?
     public static ConnectorDescriptor getConnectorDescriptor(String moduleDir)
             throws ConnectorRuntimeException {
 
@@ -184,11 +183,18 @@ public class ConnectorDDTransformUtils {
             File module = new File(moduleDir);
 
             FileArchive fileArchive = new FileArchive();
-            // TODO V3 [new fileArhive does not define this method, old one checks whether the file exists ]
-            //fileArchive.open(new URI("file://" + moduleDir));  // directory where rar is exploded
             fileArchive.open(module.toURI());  // directory where rar is exploded
-            //TODO V3 shouldnt this be injected ??
-            ConnectorArchivist connectorArchivist = new ConnectorArchivist();
+            ConnectorRuntime runtime = ConnectorRuntime.getRuntime();
+            ClassLoader loader = runtime.createConnectorClassLoader(moduleDir, null);
+
+            ConnectorArchivist connectorArchivist = runtime.getConnectorArchvist();
+            //TODO V3 what happens to embedded .rar ? as its parent classloader should be application CL
+            //setting the classloader so that annotation processor can make use of it.
+            connectorArchivist.setClassLoader(loader);
+            //fileArchive.entries("META-INF/ra.xml");
+            //TODO V3 need to check whether ra.xml is present, if so, check the version. process annotations
+            //only if its 1.6 or above ?
+            connectorArchivist.setAnnotationProcessingRequested(true);
 
             return connectorArchivist.open(fileArchive);
         } catch (IOException ex) {

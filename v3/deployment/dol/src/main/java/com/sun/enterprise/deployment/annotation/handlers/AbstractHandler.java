@@ -223,4 +223,12 @@ public abstract class AbstractHandler implements AnnotationHandler {
         weTypes[weTypes.length - 1] = javax.servlet.annotation.WebServlet.class;
         return weTypes;
     }
+
+    /**
+     * This is called by getTypeDependencies().
+     * @return an array of all connector type annotations
+     */
+    protected Class<? extends Annotation>[] getConnectorAnnotationTypes() {
+        return new Class[]{javax.resource.spi.Connector.class};
+    }
 }
