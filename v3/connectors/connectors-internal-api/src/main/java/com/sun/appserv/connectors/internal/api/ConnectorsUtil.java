@@ -500,4 +500,19 @@ public class ConnectorsUtil {
         return Boolean.parseBoolean(enabled.toString());
     }
 
+    /**
+     * given a resource config bean, returns the resource name / jndi-name
+     * @param resource
+     * @return resource name / jndi-name
+     */
+    public static String getResourceName(Resource resource){
+        if(resource instanceof BindableResource){
+            return ((BindableResource)resource).getJndiName();
+        }else if (resource instanceof ResourcePool){
+            return ((ResourcePool)resource).getName();
+        }else if (resource instanceof ResourceAdapterConfig){
+            return ((ResourceAdapterConfig)resource).getName();
+        }
+        return null;
+    }
 }

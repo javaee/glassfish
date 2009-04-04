@@ -76,7 +76,8 @@ public class ResourcesBinder {
         try{
             bindResource(resource, jndiName);
         }catch(NamingException ne){
-            logger.log(Level.SEVERE,"Cannot bind resource [ "  + jndiName + " ] to naming manager", ne);            
+            Object[] params = {jndiName, ne};
+            logger.log(Level.SEVERE,"resources.resources-binder.bind-resource-failed", params);            
         }
     }
 

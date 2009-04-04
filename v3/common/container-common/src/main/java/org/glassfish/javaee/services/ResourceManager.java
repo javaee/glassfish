@@ -64,7 +64,6 @@ import org.jvnet.hk2.config.ObservableBean;
  */
 public class ResourceManager implements Startup, PostConstruct, PreDestroy, ConfigListener {
 
-
     @Inject
     private Logger logger;
 
@@ -107,8 +106,8 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
                 try{
                     getResourceDeployer(resource).deployResource(resource);
                 }catch(Exception e){
-                    //TODO V3 log exception
-                    logger.log(Level.WARNING, "unable to deploy resource : ", e);
+                    Object[] params = {ConnectorsUtil.getResourceName(resource), e};
+                    logger.log(Level.WARNING, "resources.resource-manager.deploy-resource-failed", params);
                 }
             }
         }
@@ -162,7 +161,8 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
                 getResourceDeployer(resource).undeployResource(resource);
             }catch(Exception e){
                 //TODO V3 can't Resource (config bean) have name ?
-                logger.warning("Unable to undeploy resource of type : " + resource.getClass().getName());
+                Object[] params = {ConnectorsUtil.getResourceName(resource), e};
+                logger.log(Level.WARNING, "resources.resource-manager.undeploy-resource-failed", params);
             }finally{
                 removeListenerFromResource(resource);
             }
@@ -228,23 +228,11 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
             //TODO V3 handle enabled / disabled / resource-ref / redeploy ?
             try {
                 if (ConnectorsUtil.isValidEventType(instance)) {
-                    ResourceDeployer deployer = getResourceDeployer(instance);
-                    if (deployer != null) {
-                        deployer.redeployResource(instance);
-                    } else {
-                        logger.warning("no deployer found for resource type [ " + instance.getClass().getName() + "]");
-                    //TODO V3 log throw Exception
-                    }
+                    getResourceDeployer(instance).redeployResource(instance);
                 } else if (ConnectorsUtil.isValidEventType(instance.getParent())) {
                     //Added in case of a property change
                     //check for validity of the property's parent and redeploy
-                    ResourceDeployer deployer = getResourceDeployer(instance.getParent());
-                    if (deployer != null) {
-                        deployer.redeployResource(instance.getParent());
-                    } else {
-                        logger.warning("no deployer found for resource type [ " + instance.getClass().getName() + "]");
-                    //TODO V3 log throw Exception
-                    }
+                    getResourceDeployer(instance.getParent()).redeployResource(instance.getParent());
                 } else if (instance instanceof ResourceRef) {
                     ResourceRef ref = (ResourceRef) instance;
                     ResourceDeployer deployer = null;
@@ -299,12 +287,14 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
                 resourcesBinder.deployResource(((BindableResource) instance).getJndiName(), (Resource) instance);
             } else if (instance instanceof ResourcePool) {
                 //TODO V3 handle - ccp, jdbc-cp
-                } else if (instance instanceof Resource) {
+            } else if (instance instanceof Resource) {
                 //only resource type left is RAC
                 try {
                     getResourceDeployer(instance).deployResource(instance);
                 } catch (Exception e) {
-                    logger.log(Level.WARNING, "unable deploy resource : ", e);
+                    String resourceName = ConnectorsUtil.getResourceName((Resource) instance);
+                    Object params[] = {resourceName, e};
+                    logger.log(Level.WARNING, "resources.resource-manager.deploy-resource-failed", params);
                 }
             } else if (instance instanceof Property) {
                 final Property prop = (Property) instance;
@@ -327,26 +317,12 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
                     instancesToDestroy.add(instance);
                     //Remove listener from the removed instance
                     ResourceManager.this.removeListenerFromResource(instance);
-
                     //get appropriate deployer and unddeploy resource
-                    ResourceDeployer deployer = getResourceDeployer(instance);
-                    if (deployer != null) {
-                        deployer.undeployResource(instance);
-                    } else {
-                        logger.warning("no deployer found for resource type [ " + instance.getClass().getName() + "]");
-                    //TODO V3 log & throw Exception
-                    }
-
+                    getResourceDeployer(instance).undeployResource(instance);
                 } else if (ConnectorsUtil.isValidEventType(instance.getParent())) {
                     //Added in case of a property remove
                     //check for validity of the property's parent and redeploy
-                    ResourceDeployer deployer = getResourceDeployer(instance.getParent());
-                    if (deployer != null) {
-                        deployer.redeployResource(instance.getParent());
-                    } else {
-                        logger.warning("no deployer found for resource type [ " + instance.getClass().getName() + "]");
-                    //TODO V3 log & throw Exception
-                    }
+                    getResourceDeployer(instance).redeployResource(instance.getParent());
                 } else if (instance instanceof ResourceRef) {
                     //TODO V3: asadmin delete-resource-ref
                 }
