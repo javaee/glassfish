@@ -133,7 +133,7 @@
       </xsd:documentation>
     </xsd:annotation>
 
-    <xsd:unique name="web-app-servlet-name-uniqueness">
+    <xsd:unique name="web-common-servlet-name-uniqueness">
       <xsd:annotation>
 	<xsd:documentation>
 
@@ -146,7 +146,7 @@
       <xsd:field    xpath="javaee:servlet-name"/>
     </xsd:unique>
 
-    <xsd:unique name="web-app-filter-name-uniqueness">
+    <xsd:unique name="web-common-filter-name-uniqueness">
       <xsd:annotation>
 	<xsd:documentation>
 
@@ -159,7 +159,7 @@
       <xsd:field    xpath="javaee:filter-name"/>
     </xsd:unique>
 
-    <xsd:unique name="web-app-ejb-local-ref-name-uniqueness">
+    <xsd:unique name="web-common-ejb-local-ref-name-uniqueness">
       <xsd:annotation>
 	<xsd:documentation>
 
@@ -177,7 +177,7 @@
       <xsd:field    xpath="javaee:ejb-ref-name"/>
     </xsd:unique>
 
-    <xsd:unique name="web-app-ejb-ref-name-uniqueness">
+    <xsd:unique name="web-common-ejb-ref-name-uniqueness">
       <xsd:annotation>
 	<xsd:documentation>
 
@@ -195,7 +195,7 @@
       <xsd:field    xpath="javaee:ejb-ref-name"/>
     </xsd:unique>
 
-    <xsd:unique name="web-app-resource-env-ref-uniqueness">
+    <xsd:unique name="web-common-resource-env-ref-uniqueness">
       <xsd:annotation>
 	<xsd:documentation>
 
@@ -211,7 +211,7 @@
       <xsd:field    xpath="javaee:resource-env-ref-name"/>
     </xsd:unique>
 
-    <xsd:unique name="web-app-message-destination-ref-uniqueness">
+    <xsd:unique name="web-common-message-destination-ref-uniqueness">
       <xsd:annotation>
 	<xsd:documentation>
 
@@ -227,7 +227,7 @@
       <xsd:field    xpath="javaee:message-destination-ref-name"/>
     </xsd:unique>
 
-    <xsd:unique name="web-app-res-ref-name-uniqueness">
+    <xsd:unique name="web-common-res-ref-name-uniqueness">
       <xsd:annotation>
 	<xsd:documentation>
 
@@ -242,7 +242,7 @@
       <xsd:field    xpath="javaee:res-ref-name"/>
     </xsd:unique>
 
-    <xsd:unique name="web-app-env-entry-name-uniqueness">
+    <xsd:unique name="web-common-env-entry-name-uniqueness">
       <xsd:annotation>
 	<xsd:documentation>
 
@@ -258,7 +258,7 @@
       <xsd:field    xpath="javaee:env-entry-name"/>
     </xsd:unique>
 
-    <xsd:key name="web-app-role-name-key">
+    <xsd:key name="web-common-role-name-key">
       <xsd:annotation>
 	<xsd:documentation>
 
@@ -271,8 +271,8 @@
       <xsd:field    xpath="javaee:role-name"/>
     </xsd:key>
 
-    <xsd:keyref name="web-app-role-name-references"
-		refer="javaee:web-app-role-name-key">
+    <xsd:keyref name="web-common-role-name-references"
+		refer="javaee:web-common-role-name-key">
       <xsd:annotation>
 	<xsd:documentation>
 

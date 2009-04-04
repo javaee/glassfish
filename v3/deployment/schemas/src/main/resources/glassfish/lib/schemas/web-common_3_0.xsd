@@ -109,6 +109,60 @@
   <xsd:include schemaLocation="javaee_5.xsd"/>
   <xsd:include schemaLocation="jsp_2_2.xsd"/>
 
+  <xsd:attributeGroup name="web-common-attributes">
+    <xsd:attribute name="version"
+		   use="required"/>
+    <xsd:attribute name="id" type="xsd:ID"/>
+
+    <xsd:attribute name="metadata-complete" type="xsd:boolean">
+      <xsd:annotation>
+	<xsd:documentation>
+
+	  The metadata-complete attribute defines whether this
+	  deployment descriptor and other related deployment
+	  descriptors for this module (e.g., web service
+	  descriptors) are complete, or whether the class
+	  files available to this module and packaged with
+	  this application should be examined for annotations
+	  that specify deployment information.
+
+	  If metadata-complete is set to "true", the deployment
+	  tool must ignore any annotations that specify deployment
+	  information, which might be present in the class files
+	  of the application.
+
+	  If metadata-complete is not specified or is set to
+	  "false", the deployment tool must examine the class
+	  files of the application for annotations, as
+	  specified by the specifications.
+
+	</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+  </xsd:attributeGroup>
+
+
+<!-- **************************************************** -->
+
+   <xsd:complexType name="absoluteOrderingType">
+   <xsd:annotation>
+     <xsd:documentation>
+
+       Please see section 8.2.2 of the specification for details.
+
+     </xsd:documentation>
+   </xsd:annotation>
+   <xsd:choice minOccurs="0" maxOccurs="unbounded">
+     <xsd:element name="name"
+                  type="javaee:java-identifierType"
+                  minOccurs="0"
+                  maxOccurs="unbounded"/>
+     <xsd:element name="others"
+                  type="javaee:ordering-othersType"
+                  minOccurs="0"
+                  maxOccurs="1" />
+   </xsd:choice>
+ </xsd:complexType>
 
 <!-- **************************************************** -->
 
@@ -852,6 +906,73 @@
 
 <!-- **************************************************** -->
 
+ <xsd:complexType name="ordering-orderingType">
+   <xsd:annotation>
+     <xsd:documentation>
+
+       This element contains a sequence of "name" elements, each of
+which
+       refers to an application configuration resource by the "name"
+       declared on its web.xml fragment.  This element can also contain
+       a single "others" element which specifies that this document
+comes
+       before or after other documents within the application.
+       See section 8.2.2 of the specification for details.
+
+     </xsd:documentation>
+   </xsd:annotation>
+   <xsd:sequence>
+     <xsd:element name="name"
+                  type="javaee:java-identifierType"
+                  minOccurs="0"
+                  maxOccurs="unbounded"/>
+     <xsd:element name="others"
+                  type="javaee:ordering-othersType"
+                  minOccurs="0" maxOccurs="1" />
+   </xsd:sequence>
+ </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="ordering-othersType">
+   <xsd:annotation>
+     <xsd:documentation>
+
+       This element indicates that the ordering sub-element in which
+       it was placed should take special action regarding the ordering
+       of this application resource relative to other application
+       configuration resources.
+       See section 8.2.2 of the specification for details.
+
+     </xsd:documentation>
+   </xsd:annotation>
+   <xsd:attribute name="id" type="xsd:ID"/>
+ </xsd:complexType>
+
+<!-- **************************************************** -->
+
+ <xsd:complexType name="orderingType">
+   <xsd:annotation>
+     <xsd:documentation>
+
+       Please see section 8.2.2 of the specification for details.
+
+     </xsd:documentation>
+   </xsd:annotation>
+   <xsd:sequence>
+     <xsd:element name="after"
+                  type="javaee:ordering-orderingType"
+                  minOccurs="0"
+                  maxOccurs="1"/>
+     <xsd:element name="before"
+                  type="javaee:ordering-orderingType"
+                  minOccurs="0"
+                  maxOccurs="1"/>
+   </xsd:sequence>
+ </xsd:complexType>
+
+<!-- **************************************************** -->
+
   <xsd:complexType name="security-constraintType">
     <xsd:annotation>
       <xsd:documentation>
@@ -1194,15 +1315,26 @@
 <!-- **************************************************** -->
 
   <xsd:complexType name="web-appType">
-
     <xsd:choice minOccurs="0" maxOccurs="unbounded">
+     <xsd:group ref="javaee:web-commonType"/>
+     <xsd:element name="absolute-ordering"
+                         type="javaee:absoluteOrderingType"/>
+    </xsd:choice>
+    <xsd:attributeGroup ref="javaee:web-common-attributes"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:group name="web-commonType">
+
+    <xsd:choice>
       <xsd:group ref="javaee:descriptionGroup"/>
       <xsd:element name="distributable"
 		   type="javaee:emptyType"/>
       <xsd:element name="context-param"
 		   type="javaee:param-valueType">
 
-	<xsd:annotation>
+        <xsd:annotation>
 	  <xsd:documentation>
 
 	    The context-param element contains the declaration
@@ -1246,37 +1378,17 @@
 		   type="javaee:locale-encoding-mapping-listType"/>
     </xsd:choice>
 
-    <xsd:attribute name="version"
-		   type="javaee:web-app-versionType"
-		   use="required"/>
-    <xsd:attribute name="id" type="xsd:ID"/>
+  </xsd:group>
 
-    <xsd:attribute name="metadata-complete" type="xsd:boolean">
-      <xsd:annotation>
-	<xsd:documentation>
+<!-- **************************************************** -->
 
-	  The metadata-complete attribute defines whether this
-	  deployment descriptor and other related deployment
-	  descriptors for this module (e.g., web service
-	  descriptors) are complete, or whether the class
-	  files available to this module and packaged with
-	  this application should be examined for annotations
-	  that specify deployment information.
-
-	  If metadata-complete is set to "true", the deployment
-	  tool must ignore any annotations that specify deployment
-	  information, which might be present in the class files
-	  of the application.
-
-	  If metadata-complete is not specified or is set to
-	  "false", the deployment tool must examine the class
-	  files of the application for annotations, as
-	  specified by the specifications.
-
-	</xsd:documentation>
-      </xsd:annotation>
-    </xsd:attribute>
-
+  <xsd:complexType name="web-fragmentType">
+    <xsd:choice minOccurs="0" maxOccurs="unbounded">
+     <xsd:group ref="javaee:web-commonType"/>
+     <xsd:element name="absolute-ordering"
+                         type="javaee:orderingType"/>
+    </xsd:choice>
+    <xsd:attributeGroup ref="javaee:web-common-attributes"/>
   </xsd:complexType>
 
 <!-- **************************************************** -->

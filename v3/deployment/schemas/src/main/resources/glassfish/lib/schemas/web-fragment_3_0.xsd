@@ -61,9 +61,9 @@
       <![CDATA[
 
 	This is the XML Schema for the Servlet 3.0 deployment descriptor.
-	The deployment descriptor must be named "WEB-INF/web.xml" in the
-	web application's war file.  All Servlet deployment descriptors
-	must indicate the web application schema by using the Java EE
+	The deployment descriptor must be named "META-INF/web-fragment.xml" in the
+	web fragment's jar file.  All Servlet deployment descriptors
+	must indicate the web fragment schema by using the Java EE
 	namespace:
 
 	http://java.sun.com/xml/ns/javaee
@@ -71,18 +71,18 @@
 	and by indicating the version of the schema by
 	using the version element as shown below:
 
-	    <web-app xmlns="http://java.sun.com/xml/ns/javaee"
+	    <web-fragment xmlns="http://java.sun.com/xml/ns/javaee"
 	      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	      xsi:schemaLocation="..."
 	      version="3.0">
 	      ...
-	    </web-app>
+	    </web-fragment>
 
 	The instance documents may indicate the published version of
 	the schema using the xsi:schemaLocation attribute for Java EE
 	namespace with the following location:
 
-	http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd
+	http://java.sun.com/xml/ns/javaee/web-fragment_3_0.xsd
 
 	]]>
     </xsd:documentation>
@@ -111,12 +111,12 @@
 
 <!-- **************************************************** -->
 
-  <xsd:element name="web-fragment" type="javaee:web-appType">
+  <xsd:element name="web-fragment" type="javaee:web-fragmentType">
     <xsd:annotation>
       <xsd:documentation>
 
-	The web-app element is the root of the deployment
-	descriptor for a web application.  Note that the sub-elements
+	The web-fragment element is the root of the deployment
+	descriptor for a web fragment.  Note that the sub-elements
 	of this element can be in the arbitrary order. Because of
 	that, the multiplicity of the elements of distributable,
 	session-config, welcome-file-list, jsp-config, login-config,
@@ -133,7 +133,7 @@
       </xsd:documentation>
     </xsd:annotation>
 
-    <xsd:unique name="web-app-servlet-name-uniqueness">
+    <xsd:unique name="web-common-servlet-name-uniqueness">
       <xsd:annotation>
 	<xsd:documentation>
 
@@ -146,7 +146,7 @@
       <xsd:field    xpath="javaee:servlet-name"/>
     </xsd:unique>
 
-    <xsd:unique name="web-app-filter-name-uniqueness">
+    <xsd:unique name="web-common-filter-name-uniqueness">
       <xsd:annotation>
 	<xsd:documentation>
 
@@ -159,7 +159,7 @@
       <xsd:field    xpath="javaee:filter-name"/>
     </xsd:unique>
 
-    <xsd:unique name="web-app-ejb-local-ref-name-uniqueness">
+    <xsd:unique name="web-common-ejb-local-ref-name-uniqueness">
       <xsd:annotation>
 	<xsd:documentation>
 
@@ -177,7 +177,7 @@
       <xsd:field    xpath="javaee:ejb-ref-name"/>
     </xsd:unique>
 
-    <xsd:unique name="web-app-ejb-ref-name-uniqueness">
+    <xsd:unique name="web-common-ejb-ref-name-uniqueness">
       <xsd:annotation>
 	<xsd:documentation>
 
@@ -195,7 +195,7 @@
       <xsd:field    xpath="javaee:ejb-ref-name"/>
     </xsd:unique>
 
-    <xsd:unique name="web-app-resource-env-ref-uniqueness">
+    <xsd:unique name="web-common-resource-env-ref-uniqueness">
       <xsd:annotation>
 	<xsd:documentation>
 
@@ -211,7 +211,7 @@
       <xsd:field    xpath="javaee:resource-env-ref-name"/>
     </xsd:unique>
 
-    <xsd:unique name="web-app-message-destination-ref-uniqueness">
+    <xsd:unique name="web-common-message-destination-ref-uniqueness">
       <xsd:annotation>
 	<xsd:documentation>
 
@@ -227,7 +227,7 @@
       <xsd:field    xpath="javaee:message-destination-ref-name"/>
     </xsd:unique>
 
-    <xsd:unique name="web-app-res-ref-name-uniqueness">
+    <xsd:unique name="web-common-res-ref-name-uniqueness">
       <xsd:annotation>
 	<xsd:documentation>
 
@@ -242,7 +242,7 @@
       <xsd:field    xpath="javaee:res-ref-name"/>
     </xsd:unique>
 
-    <xsd:unique name="web-app-env-entry-name-uniqueness">
+    <xsd:unique name="web-common-env-entry-name-uniqueness">
       <xsd:annotation>
 	<xsd:documentation>
 
@@ -258,7 +258,7 @@
       <xsd:field    xpath="javaee:env-entry-name"/>
     </xsd:unique>
 
-    <xsd:key name="web-app-role-name-key">
+    <xsd:key name="web-common-role-name-key">
       <xsd:annotation>
 	<xsd:documentation>
 
@@ -271,8 +271,8 @@
       <xsd:field    xpath="javaee:role-name"/>
     </xsd:key>
 
-    <xsd:keyref name="web-app-role-name-references"
-		refer="javaee:web-app-role-name-key">
+    <xsd:keyref name="web-common-role-name-references"
+		refer="javaee:web-common-role-name-key">
       <xsd:annotation>
 	<xsd:documentation>
 
