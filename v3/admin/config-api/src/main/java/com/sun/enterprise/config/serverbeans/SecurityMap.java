@@ -45,8 +45,6 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -80,12 +78,6 @@ public interface SecurityMap extends ConfigBeanProxy, Injectable  {
     public void setName(String value) throws PropertyVetoException;
 
     /**
-     * Backward compatibility API
-     */
-    @Element
-    public List<String> getPrincipalOrUserGroup();
-
-    /**
      * Gets the value of the backendPrincipal property.
      *
      * @return possible object is
@@ -102,6 +94,18 @@ public interface SecurityMap extends ConfigBeanProxy, Injectable  {
      */
     public void setBackendPrincipal(BackendPrincipal value) throws PropertyVetoException;
 
+    /**
+     * get the list of principals to be mapped to backend-principal
+     * @return list of principals
+     */
+    @Element
+    public List<String> getPrincipal();
 
+    /**
+     * get the list of user-groups to be mapped to backend principal
+     * @return list of user-groups
+     */
+    @Element
+    public List<String> getUserGroup();
 
 }

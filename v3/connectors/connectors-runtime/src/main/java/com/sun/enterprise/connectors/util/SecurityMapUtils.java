@@ -108,15 +108,18 @@ public class SecurityMapUtils {
             SecurityMap securityMap) {
 
         String name = securityMap.getName();
-        BackendPrincipal principal = securityMap.getBackendPrincipal();
         List<String> principalList = new ArrayList<String>();
-        principalList.add(principal.getUserName());
-        principalList.add(principal.getPassword());
+        for(String p: securityMap.getPrincipal()){
+            principalList.add(p);
+        }
 
-        List<String> userGroup = securityMap.getPrincipalOrUserGroup();
+        List<String> userGroupList = new ArrayList<String>();
+        for(String g : securityMap.getUserGroup()){
+            userGroupList.add(g);
+        }
         EisBackendPrincipal backendPrincipal = transformBackendPrincipal(securityMap
                 .getBackendPrincipal());
-        return new ConnectorSecurityMap(name, principalList, userGroup, backendPrincipal);
+        return new ConnectorSecurityMap(name, principalList, userGroupList, backendPrincipal);
     }
 
     /**

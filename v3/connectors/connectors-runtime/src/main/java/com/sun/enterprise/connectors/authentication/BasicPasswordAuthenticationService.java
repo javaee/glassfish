@@ -44,12 +44,15 @@ import java.security.Principal;
 import java.util.logging.*;
 import java.util.*;
 import javax.security.auth.Subject;
+import javax.ejb.EJBContext;
 
 
 import com.sun.enterprise.deployment.interfaces.*;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import org.glassfish.api.invocation.ComponentInvocation;
-import org.glassfish.internal.api.Globals;
+import org.glassfish.ejb.api.EJBInvocation;
 
 
 /**
@@ -66,6 +69,7 @@ public class BasicPasswordAuthenticationService
     ConnectorRegistry connectorRegistry_ = ConnectorRegistry.getInstance();
     static Logger _logger = LogDomains.getLogger(BasicPasswordAuthenticationService.class, LogDomains.RSR_LOGGER);
     private Object containerContext = null;
+    private SecurityRoleMapperFactory securityRoleMapperFactory;
 
     /**
      * Constructor
@@ -149,11 +153,11 @@ public class BasicPasswordAuthenticationService
         }
 
         // If ejb, use isCallerInRole  
-/*      TODO V3 handle EJBContext later
-        if (isContainerContextAContainerObject() && roleName == null) {
+        if (isContainerContextAEJBContainerObject() && roleName == null) {
         	ComponentInvocation componentInvocation =
                 ConnectorRuntime.getRuntime().getInvocationManager().getCurrentInvocation();
-        	EJBContext ejbcontext = (EJBContext)componentInvocation.context;
+            EJBInvocation ejbInvocation = (EJBInvocation) componentInvocation;
+        	EJBContext ejbcontext = ejbInvocation.getEJBContext();
         	Set s = groupNameSecurityMap.keySet();
         	Iterator i = s.iterator();
         	while (i.hasNext()){
@@ -168,7 +172,7 @@ public class BasicPasswordAuthenticationService
           			return (Principal)groupNameSecurityMap.get(entry);
           		}
         	}
-        }*/
+        }
 
         // Check if caller's group(s) is/are present in the Group Map
         for (int j = 0; j < groupNames.size(); j++) {
@@ -194,11 +198,12 @@ public class BasicPasswordAuthenticationService
     private String getRoleName(Principal callerPrincipal) {
 
         String roleName = null;
-        String componentId = getCurrentComponentId();
 
-        SecurityRoleMapperFactory securityRoleMapperFactory = Globals.get(SecurityRoleMapperFactory.class);
+        WebBundleDescriptor wbd = (WebBundleDescriptor)getComponentEnvManager().getCurrentJndiNameEnvironment();
+
+        SecurityRoleMapperFactory securityRoleMapperFactory = getSecurityRoleMapperFactory();
         SecurityRoleMapper securityRoleMapper =
-                securityRoleMapperFactory.getRoleMapper(componentId);
+                securityRoleMapperFactory.getRoleMapper(wbd.getModuleID());
 
         Map<String, Subject> map = securityRoleMapper.getRoleToSubjectMapping();
         Set<String> roleSet = map.keySet();
@@ -214,13 +219,12 @@ public class BasicPasswordAuthenticationService
         return "";
     }
 
-    private ComponentInvocation getCurrentComponentInvocation() {
-        return ConnectorRuntime.getRuntime().getInvocationManager().getCurrentInvocation();
-
+    private ComponentEnvManager getComponentEnvManager(){
+        return ConnectorRuntime.getRuntime().getComponentEnvManager();
     }
 
-    private String getCurrentComponentId() {
-        return getCurrentComponentInvocation().getComponentId();
+    private ComponentInvocation getCurrentComponentInvocation() {
+        return ConnectorRuntime.getRuntime().getInvocationManager().getCurrentInvocation();
     }
 
     private ComponentInvocation.ComponentInvocationType getCurrentComponentType() {
@@ -234,5 +238,9 @@ public class BasicPasswordAuthenticationService
     //TODO V3 use this instead of isContainerContextAContainerObject
     private boolean isContainerContextAEJBContainerObject() {
         return ComponentInvocation.ComponentInvocationType.EJB_INVOCATION.equals(getCurrentComponentType());
+    }
+
+    public SecurityRoleMapperFactory getSecurityRoleMapperFactory() {
+        return ConnectorRuntime.getRuntime().getSecurityRoleMapperFactory();
     }
 }
