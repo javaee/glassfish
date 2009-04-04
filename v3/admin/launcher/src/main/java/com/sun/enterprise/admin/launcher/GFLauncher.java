@@ -79,6 +79,32 @@ public abstract class GFLauncher {
         }
     }
 
+    public final synchronized void launchJVM(List<String> cmdsIn) throws GFLauncherException {
+        try {
+            setup();    // we only use one thing -- the java executable
+            List<String> commands = new LinkedList<String>();
+            commands.add(javaExe);
+
+            for(String cmd : cmdsIn) {
+                commands.add(cmd);
+            }
+
+            ProcessBuilder pb = new ProcessBuilder(commands);
+            Process p = pb.start();
+            ProcessStreamDrainer.drain("launchJVM", p); // just to be safe
+        }
+        catch (GFLauncherException gfe) {
+            throw gfe;
+        }
+        catch (Throwable t) {
+            // hk2 might throw a java.lang.Error
+            throw new GFLauncherException(strings.get("unknownError", t.getMessage()) ,t);
+        }
+        finally {
+            GFLauncherLogger.removeLogFileHandler();
+        }
+    }
+
     public synchronized void setup() throws GFLauncherException, MiniXmlParserException {
         ASenvPropertyReader pr;
         if(isFakeLaunch()) {

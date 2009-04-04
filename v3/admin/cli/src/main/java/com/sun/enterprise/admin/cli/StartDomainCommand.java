@@ -65,7 +65,7 @@ public class StartDomainCommand extends AbstractCommand {
             }
 
             boolean verbose = getBooleanOption("verbose");
-            boolean watchdog = getBooleanOption(WATCHDOG);
+            boolean watchdog = !getBooleanOption(NOWATCHDOG);
             info.setVerbose(verbose);
             info.setWatchdog(watchdog);
             info.setDebug(getBooleanOption("debug"));
@@ -79,12 +79,25 @@ public class StartDomainCommand extends AbstractCommand {
                 throw new CommandException(msg);
             }
 
+            if(watchdog && !verbose && System.getProperty(WATCHDOG_SYS_PROP) == null) {
+                // We need to run watchdog in the background with no console window...
+                Log.info("watchdog_launch");
+                runWatchdogProcess(launcher);
+                waitForDAS(info.getAdminPorts());
+                report(info);
+                return;
+            }
+            else if(watchdog) {
+                Log.info("watchdog_running");
+            }
+
             // launch returns very quickly if neither verbose or watchdog is set
             // it returns after the domain dies o/w
             launcher.launch();
             
             // if we are in watchdog mode, we may need to restart indefinitely
             if(watchdog) {
+                Log.info("watchdog_running");
                 while (launcher.getExitValue() == RESTART_EXIT_VALUE) {
                     Log.info("restart");
                     launcher.launch();
@@ -163,9 +176,23 @@ public class StartDomainCommand extends AbstractCommand {
         }
     }
 
+    private void runWatchdogProcess(GFLauncher launcher) throws GFLauncherException {
+        // We need to run watchdog in the background with no console window...
+        List<String> cmdline = new LinkedList<String>();
+        cmdline.add("-cp");
+        cmdline.add(System.getProperty("java.class.path"));
+        cmdline.add("-D" + WATCHDOG_SYS_PROP + "=true");
+        cmdline.add(getClass().getPackage().getName() + ".ASWatchdog");
+        String[] args = AsadminMain.getArgs();
+
+        for(String arg : args) {
+            cmdline.add(arg);
+        }
+
+        launcher.launchJVM(cmdline);
+    }
 
     // bnevins: note to me -- this String handling is EVIL.  Need to add plenty of utilities...
-    
     private void waitForDAS(Set<Integer> ports) throws CommandException {
         try {
             CLILogger.getInstance().pushAndLockLevel(Level.WARNING);

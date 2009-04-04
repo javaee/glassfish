@@ -55,6 +55,9 @@ public class AsadminMain {
              System.out.println(msg);
              System.exit(0);
         }
+        copyOfArgs = new String[args.length];
+        System.arraycopy(args, 0, copyOfArgs, 0, args.length);
+
         String command = args[0];
         try {
             exitCode = main.local(args);
@@ -100,6 +103,10 @@ public class AsadminMain {
                 strings.get("CommandUnSuccessful", command));
         }
         System.exit(exitCode);
+    }
+
+    /*pkg-priv*/ static String[] getArgs() {
+        return copyOfArgs;
     }
 
     private Map<String, String> getRemoteCommands() {
@@ -169,6 +176,7 @@ public class AsadminMain {
     private final static int INVALID_COMMAND_ERROR = 3;    
     private final static int SUCCESS = 0;
     private final static LocalStringsImpl strings = new LocalStringsImpl(AsadminMain.class);
+    private       static String[] copyOfArgs;
 }
 
 

@@ -41,7 +41,8 @@ package com.sun.enterprise.admin.cli;
  */
 class CLIConstants {
     static final long   WAIT_FOR_DAS_TIME_MS = 90000;
-    static final String WATCHDOG = "watchdog";
+    static final String NOWATCHDOG = "nowatchdog";
     static final int    RESTART_EXIT_VALUE = 10;
+    static final String WATCHDOG_SYS_PROP = "GF_FINAL_WATCHDOG_PROCESS";
     private CLIConstants() {} // no instances allowed!
 }

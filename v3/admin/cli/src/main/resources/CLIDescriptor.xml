@@ -10,7 +10,7 @@
 	<Option name="verbose" type="boolean" value-required="false" default="false">
 	    <shortoption>v</shortoption>
 	</Option>
-	<Option name="watchdog" type="boolean" value-required="false" default="false">
+	<Option name="nowatchdog" type="boolean" value-required="false" default="false">
 	</Option>
         <Option name="domaindir" type="string" value-required="true"/>
         <Option name="debug" type="boolean" value-required="false"/>
@@ -67,9 +67,9 @@
     	<Option name="filter" type="string" value-required="true"/>
     </Options>
     <Commands>
-	<Command name="start-domain" classname="com.sun.enterprise.admin.cli.StartDomainCommand" numberofoperands="?" usage-text="start-domain [--terse=false] [--echo=false] [--interactive=true] [--user admin_user] [--passwordfile file_name] [--domaindir domain_directory] [--verbose=false] [--debug=false] [--watchdog=false] [domain_name]">
+	<Command name="start-domain" classname="com.sun.enterprise.admin.cli.StartDomainCommand" numberofoperands="?" usage-text="start-domain [--terse=false] [--echo=false] [--interactive=true] [--user admin_user] [--passwordfile file_name] [--domaindir domain_directory] [--verbose=false] [--debug=false] [--nowatchdog=false] [domain_name]">
 	    <ValidOption name="verbose"/>
-	    <ValidOption name="watchdog"/>
+	    <ValidOption name="nowatchdog"/>
             <ValidOption name="domaindir"/>
             <ValidOption name="debug"/>
 	    <ValidOption name="terse"/>
