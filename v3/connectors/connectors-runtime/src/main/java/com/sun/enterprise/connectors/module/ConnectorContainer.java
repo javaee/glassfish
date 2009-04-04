@@ -37,6 +37,7 @@
 package com.sun.enterprise.connectors.module;
 
 import com.sun.logging.LogDomains;
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.container.Container;
 import org.jvnet.hk2.annotations.Service;
@@ -83,7 +84,7 @@ public class ConnectorContainer implements Container, PostConstruct, PreDestroy 
      * @return a human readable name for this container.
      */
     public String getName() {
-        return "connectors";
+        return ConnectorConstants.CONNECTOR_MODULE;
     }
 
     public void logFine(String message) {

@@ -50,6 +50,10 @@ import java.util.Arrays;
 
 public interface ConnectorConstants {
 
+    /**
+     * Represents the connector container module name / type
+     */
+    public static final String CONNECTOR_MODULE = "connector";
      /**
      *  JAXR  system resource adapter name.
      */

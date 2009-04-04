@@ -42,15 +42,14 @@ import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.glassfish.javaee.services.ResourceManager;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.ConnectorClassFinder;
-import org.glassfish.deployment.common.DeploymentUtils;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
@@ -82,6 +81,16 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
     private ConnectorClassFinder ccf = null;
 
     public ConnectorDeployer() {
+    }
+
+    /**
+     * Returns the meta data assocated with this Deployer
+     *
+     * @return the meta data for this Deployer
+     */
+    public MetaData getMetaData() {
+        return new MetaData(false, null,
+                new Class[] { Application.class });
     }
 
     /**
@@ -120,7 +129,9 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
                 if(isEmbedded){
                     moduleName = getEmbeddedRarModuleName(getApplicationName(context), moduleName);
                 }
-                runtime.createActiveResourceAdapter(sourcePath, moduleName, ccf);
+                ConnectorDescriptor cd = context.getModuleMetaData(ConnectorDescriptor.class);
+                runtime.createActiveResourceAdapter(cd, moduleName, sourcePath, ccf);
+                //runtime.createActiveResourceAdapter(sourcePath, moduleName, ccf);
 
                 //don't add the class-finder to the chain if its embedded .rar
                 if(!(isEmbedded)){
@@ -199,7 +210,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
 
 
     protected String getModuleType() {
-        return "connectors";
+        return ConnectorConstants.CONNECTOR_MODULE;
     }
 
     /**
