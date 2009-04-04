@@ -40,6 +40,7 @@ import com.sun.appserv.connectors.spi.*;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
+import com.sun.appserv.connectors.internal.api.WorkContextHandler;
 import com.sun.enterprise.connectors.util.*;
 import com.sun.enterprise.deployment.ConnectionDefDescriptor;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
@@ -51,6 +52,8 @@ import javax.resource.spi.ManagedConnectionFactory;
 import java.security.PrivilegedActionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Set;
+import java.util.Iterator;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -99,11 +102,33 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
         jcl_ = jcl;
         connectorRuntime_ = ConnectorRuntime.getRuntime();
         connectionDefs_ = ConnectorDDTransformUtils.getConnectionDefs(desc_);
+        validateWorkContextSupport(desc);
     }
 
     public ActiveResourceAdapterImpl(){
     }
 
+    /**
+     * check whether the <i>required-work-context</i> list mandated by the resource-adapter
+     * is supported by the application server
+     * @param desc ConnectorDescriptor
+     * @throws ConnectorRuntimeException when unable to support any of the requested work-context type.
+     */
+    private void validateWorkContextSupport(ConnectorDescriptor desc) throws ConnectorRuntimeException {
+        Set workContexts = desc.getRequiredWorkContexts();
+        Iterator workContextsIterator = workContexts.iterator();
+
+        WorkContextHandler workContextHandler = connectorRuntime_ .getWorkContextHandler();
+        while(workContextsIterator.hasNext()){
+            String ic = (String)workContextsIterator.next();
+            boolean supported = workContextHandler.isContextSupported(true, ic );
+            if(!supported){
+                String errorMsg = "Unsupported inflow context [ "+ ic + " ] ";
+                _logger.log(Level.WARNING,errorMsg);
+                throw new ConnectorRuntimeException(errorMsg);
+            }
+        }
+    }
 
     /**
      * {@inheritDoc}

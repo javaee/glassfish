@@ -37,6 +37,7 @@
 package com.sun.enterprise.connectors;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
+import com.sun.appserv.connectors.internal.api.WorkContextHandler;
 import com.sun.logging.LogDomains;
 
 import javax.resource.spi.BootstrapContext;
@@ -102,13 +103,20 @@ public final class BootstrapContextImpl implements BootstrapContext, Serializabl
      */
     public Timer createTimer() {
         return new Timer("connectors-runtime-context");
+		//TODO V3 daemon ?
     }
 
-    public boolean isContextSupported(Class<? extends WorkContext> workContextClass) {
-        //TODO V3 implementation required
-        return false;
+    /**
+     * {@inheritDoc}
+     */
+    public boolean isContextSupported(Class<? extends WorkContext> aClass) {
+        WorkContextHandler wch = ConnectorRuntime.getRuntime().getWorkContextHandler();
+        return wch.isContextSupported(true, aClass.getName());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public TransactionSynchronizationRegistry getTransactionSynchronizationRegistry() {
         //TODO V3
         try{

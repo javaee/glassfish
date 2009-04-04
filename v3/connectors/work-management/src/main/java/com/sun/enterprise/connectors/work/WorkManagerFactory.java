@@ -105,7 +105,7 @@ public final class WorkManagerFactory implements com.sun.appserv.connectors.inte
      * @param poolName thread pool name
      * @return WorkManager work manager that can be used by resource-adapter
      */
-    public WorkManager createWorkManager(String poolName) {
+    public WorkManager createWorkManager(String poolName, String raName) {
 
         String className = null;
         String methodName = "getInstance";
@@ -117,7 +117,7 @@ public final class WorkManagerFactory implements com.sun.appserv.connectors.inte
 
             // Default work manager implementation is not a singleton.
             if (className.equals(DEFAULT)) {
-                return new CommonWorkManager(poolName, getConnectorRuntime() );
+                return new CommonWorkManager(poolName, getConnectorRuntime(), raName);
             }
 
             cls = Class.forName(className);
@@ -181,7 +181,7 @@ public final class WorkManagerFactory implements com.sun.appserv.connectors.inte
     public WorkManager getWorkManagerProxy(String poolId, String moduleName) throws ConnectorRuntimeException {
         WorkManager wm = retrieveWorkManager(moduleName);
         if (wm == null) {
-            wm = createWorkManager(poolId);
+            wm = createWorkManager(poolId, moduleName);
             addWorkManager(moduleName, wm);
         }
         return new WorkManagerProxy(wm, moduleName);
@@ -190,7 +190,7 @@ public final class WorkManagerFactory implements com.sun.appserv.connectors.inte
     private ConnectorRuntime getConnectorRuntime() {
         //TODO V3 not synchronized
         if(runtime == null){
-            runtime = connectorRuntimeHabitat.getComponent(ConnectorRuntime.class, null);
+            runtime = connectorRuntimeHabitat.getComponent(ConnectorRuntime.class);
         }
         return runtime;
     }

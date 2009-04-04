@@ -37,12 +37,15 @@ package com.sun.appserv.connectors.internal.api;
 
 import org.jvnet.hk2.annotations.Contract;
 
-import javax.resource.spi.work.WorkManager;
-
 @Contract
-public interface WorkManagerFactory {
-	//TODO V3 java-doc
-    WorkManager getWorkManagerProxy(String poolId, String moduleName) throws ConnectorRuntimeException;
-    boolean removeWorkManager(String moduleName);
-    WorkManager createWorkManager(String poolName, String raName);
+public interface WorkContextHandler {
+    /**
+     * indicates whether the provided workContextClass is supported by the container
+     *
+     * @param strict                 indicates whether the type-check need to be strict or not i.e.,
+     *                               exact type or its super-class type
+     * @param workContextClassName inflow context class name
+     * @return boolean indicating whether the workContextClass is supported or not
+     */
+    public boolean isContextSupported(boolean strict, String workContextClassName);
 }

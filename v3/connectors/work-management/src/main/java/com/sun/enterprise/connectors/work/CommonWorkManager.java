@@ -42,6 +42,7 @@ import com.sun.corba.se.spi.orbutil.threadpool.NoSuchThreadPoolException;
 import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
 import com.sun.corba.se.spi.orbutil.threadpool.ThreadPoolManager;
 import com.sun.enterprise.connectors.work.monitor.MonitorableWorkManager;
+import com.sun.enterprise.connectors.work.context.WorkContextHandler;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
 
@@ -74,6 +75,7 @@ public final class CommonWorkManager implements MonitorableWorkManager {
             CommonWorkManager.class);
 
     private ConnectorRuntime runtime;
+	private String raName ;
 
     /**
      * Private constructor.
@@ -81,12 +83,13 @@ public final class CommonWorkManager implements MonitorableWorkManager {
      * @param threadPoolId Id of the thread pool.
      * @throws ConnectorRuntimeException if thread pool is not accessible
      */
-    public CommonWorkManager(String threadPoolId, ConnectorRuntime runtime)
+    public CommonWorkManager(String threadPoolId, ConnectorRuntime runtime, String raName)
             throws ConnectorRuntimeException {
 
         try {
             //TODO V3 need to be in sync with v2 ? (default thread-pool trial)
             this.runtime = runtime;
+			this.raName = raName;
             tp = runtime.getThreadPool(threadPoolId);
         } catch (NoSuchThreadPoolException e) {
             String msg = localStrings.getString("workmanager.threadpool_not_found");
@@ -134,6 +137,8 @@ public final class CommonWorkManager implements MonitorableWorkManager {
     public void doWork(Work work, long startTimeout,
                        ExecutionContext execContext, WorkListener workListener)
             throws WorkException {
+        WorkContextHandler contextHandler = createWorkContextHandler();
+        validateWork(work, WorkCoordinator.getExecutionContext(execContext, work), contextHandler);
 
         if (logger.isLoggable(Level.FINEST)) {
             String msg = "doWork for [" + work.toString() + "] START";
@@ -142,7 +147,7 @@ public final class CommonWorkManager implements MonitorableWorkManager {
 
         WorkCoordinator wc = new WorkCoordinator
                 (work, startTimeout, execContext, tp.getAnyWorkQueue(), workListener,
-                        this.workStats, runtime);
+                        this.workStats, runtime, raName, contextHandler);
         wc.submitWork(WorkCoordinator.WAIT_UNTIL_FINISH);
         wc.lock();
 
@@ -188,6 +193,9 @@ public final class CommonWorkManager implements MonitorableWorkManager {
                           ExecutionContext execContext, WorkListener workListener)
             throws WorkException {
 
+        WorkContextHandler contextHandler = createWorkContextHandler();
+        validateWork(work, WorkCoordinator.getExecutionContext(execContext, work), contextHandler);
+
         if (logger.isLoggable(Level.FINEST)) {
             String msg = "startWork for [" + work.toString() + "] START";
             logger.log(Level.FINEST, debugMsg(msg));
@@ -197,7 +205,7 @@ public final class CommonWorkManager implements MonitorableWorkManager {
 
         WorkCoordinator wc = new WorkCoordinator
                 (work, startTimeout, execContext, tp.getAnyWorkQueue(), workListener,
-                        this.workStats, runtime);
+                        this.workStats, runtime, raName, contextHandler);
         wc.submitWork(WorkCoordinator.WAIT_UNTIL_START);
         wc.lock();
 
@@ -213,6 +221,15 @@ public final class CommonWorkManager implements MonitorableWorkManager {
         long startTime = System.currentTimeMillis();
 
         return (startTime - acceptanceTime);
+    }
+
+    /**
+     * prvides work-context-handler to handle the submitted work-contexts
+     * @return work-context-handler
+     */
+    private WorkContextHandler createWorkContextHandler() {
+        WorkContextHandler contextHandler = new WorkContextHandler(runtime);
+        return contextHandler;
     }
 
     /**
@@ -242,6 +259,8 @@ public final class CommonWorkManager implements MonitorableWorkManager {
                              ExecutionContext execContext, WorkListener workListener)
             throws WorkException {
 
+        WorkContextHandler contextHandler = createWorkContextHandler();
+        validateWork(work, WorkCoordinator.getExecutionContext(execContext, work), contextHandler);
         if (logger.isLoggable(Level.FINEST)) {
             String msg = "scheduleWork for [" + work.toString() + "] START";
             logger.log(Level.FINEST, debugMsg(msg));
@@ -249,7 +268,7 @@ public final class CommonWorkManager implements MonitorableWorkManager {
 
         WorkCoordinator wc = new WorkCoordinator
                 (work, startTimeout, execContext, tp.getAnyWorkQueue(), workListener,
-                        this.workStats, runtime);
+                        this.workStats, runtime, raName, contextHandler);
         wc.submitWork(WorkCoordinator.NO_WAIT);
         wc.lock();
 
@@ -263,6 +282,19 @@ public final class CommonWorkManager implements MonitorableWorkManager {
             logger.log(Level.FINEST, debugMsg(msg));
         }
         return;
+    }
+
+    /**
+     * validates the work-contexts provided in the work
+     * @param workToBeValidated work instance
+     * @param context execution-context (if present)
+     * @param contextHandler work-context-handler
+     * @throws WorkCompletedException when work processing fails
+     * @throws WorkRejectedException when work cannot be processed
+     */
+    private void validateWork(Work workToBeValidated, ExecutionContext context, WorkContextHandler contextHandler)
+            throws WorkCompletedException, WorkRejectedException {
+        contextHandler.validateWork(workToBeValidated, context);
     }
 
     private String debugMsg(String message) {

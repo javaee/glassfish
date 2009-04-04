@@ -39,6 +39,7 @@ package com.sun.enterprise.connectors.work;
 
 import com.sun.corba.se.spi.orbutil.threadpool.WorkQueue;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
+import com.sun.enterprise.connectors.work.context.WorkContextHandler;
 import com.sun.logging.LogDomains;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 
@@ -90,6 +91,9 @@ public final class WorkCoordinator {
     private WorkStats workStats = null;
 
     private ConnectorRuntime runtime;
+    private String raName = null;
+
+    private WorkContextHandler contextHandler;
 
     /**
      * Constructs a coordinator
@@ -105,7 +109,9 @@ public final class WorkCoordinator {
                            long timeout,
                            ExecutionContext ec,
                            WorkQueue queue,
-                           WorkListener listener, WorkStats workStats, ConnectorRuntime runtime) {
+                           WorkListener listener, WorkStats workStats,
+                           ConnectorRuntime runtime, String raName,
+                           WorkContextHandler handler) {
 
         this.work = work;
         this.timeout = timeout;
@@ -118,8 +124,14 @@ public final class WorkCoordinator {
         this.runtime = runtime;
         this.lock = new Object();
         this.workStats = workStats;
+        this.raName = raName;
+        this.contextHandler = handler;
     }
 
+    public String getRAName(){
+        return raName;
+    }
+ 
     /**
      * Submits the work to the queue and generates a work accepted event.
      */
@@ -134,7 +146,7 @@ public final class WorkCoordinator {
             workStats.submittedWorkCount++;
             workStats.incrementWaitQueueLength();
         }
-        queue.addWork(new OneWork(work, this));
+        queue.addWork( new OneWork(work, this, contextHandler));
     }
 
     /**
@@ -182,22 +194,15 @@ public final class WorkCoordinator {
         }
 
 
-        try {
-            JavaEETransactionManager tm = getTransactionManager();
-            if (ec != null && ec.getXid() != null) {
-                tm.recreate(ec.getXid(), ec.getTransactionTimeout());
-            }
-        } catch (WorkException we) {
-            this.exception = we;
-        } catch (Exception e) {
-            setException(e);
-        }
 
+    }
+
+    public void setupContext() {
+        contextHandler.setupContext(getExecutionContext(ec, work), this);
         if (workStats != null) {
             workStats.setActiveWorkCount(++workStats.currentActiveWorkCount);
             workStats.decrementWaitQueueLength();
         }
-
     }
 
     /**
@@ -209,13 +214,12 @@ public final class WorkCoordinator {
      * </pre>
      */
     public void postInvoke() {
-        boolean txImported = (ec != null && ec.getXid() != null);
+        boolean txImported = (getExecutionContext(ec, work) != null && getExecutionContext(ec, work).getXid() != null);
         try {
             JavaEETransactionManager tm = getTransactionManager();
             if (txImported) {
-                tm.release(ec.getXid());
+                tm.release(getExecutionContext(ec, work).getXid());
             }
-
         } catch (WorkException ex) {
             setException(ex);
         } finally {
@@ -238,11 +242,14 @@ public final class WorkCoordinator {
                 //Also release the TX from the record of TX Optimizer
                 if (txImported) {
                     JavaEETransactionManager tm = getTransactionManager();
+					//TODO V3 need to check whether tm is txMgrOpt ?
                     tm.clearThreadTx();
                 }
-
-            } catch (Exception e) {
-                logger.log(Level.WARNING, e.getMessage());
+            } catch(Exception e) {
+	            logger.log(Level.WARNING, e.getMessage());
+            }finally{
+                //reset the securityContext once the work has completed            
+                com.sun.enterprise.security.SecurityContext.setUnauthenticatedContext();
             }
         }
 
@@ -433,5 +440,13 @@ public final class WorkCoordinator {
 
     private JavaEETransactionManager getTransactionManager() {
         return runtime.getTransactionManager();
+    }
+
+    public static ExecutionContext getExecutionContext(ExecutionContext ec, Work work) {
+        //TODO V3 synchronized ?
+        if (ec == null) {
+            return WorkContextHandler.getExecutionContext(work);
+        }
+        return ec;
     }
 }

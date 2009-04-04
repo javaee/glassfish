@@ -40,6 +40,7 @@ import com.sun.logging.LogDomains;
 
 import javax.resource.spi.work.Work;
 import java.util.logging.Logger;
+import com.sun.enterprise.connectors.work.context.WorkContextHandler;
 
 /**
  * Represents one piece of work that will be submitted to the workqueue.
@@ -51,25 +52,41 @@ public final class OneWork implements com.sun.corba.se.spi.orbutil.threadpool.Wo
     private final Work work;
     private final WorkCoordinator coordinator;
     private long nqTime;
+    private WorkContextHandler contextHandler;
     private static final Logger logger =
             LogDomains.getLogger(OneWork.class, LogDomains.RSR_LOGGER);
 
     /**
      * Creates a work object that can be submitted to a workqueue.
      *
-     * @param work        Actual work submitted by Resource adapter.
+     * @param work Actual work submitted by Resource adapter.
      * @param coordinator <code>WorkCoordinator</code> object.
      */
-    OneWork(Work work, WorkCoordinator coordinator) {
+    OneWork (Work work, WorkCoordinator coordinator, WorkContextHandler contextHandler) {
         this.work = work;
         this.coordinator = coordinator;
+        this.contextHandler = contextHandler;
     }
 
     /**
      * This method is executed by thread pool as the basic work operation.
      */
     public void doWork() {
-        coordinator.preInvoke();
+        coordinator.preInvoke(); // pre-invoke will set work state to "started",
+        // validation of work context should be after this
+        //so as to throw WorkCompletedException in case of error.
+        try {
+            //TODO V3 validation happens during execution of work, shouldn't it be done before submitting
+            //TODO V3 the work to JavaSE/EE ThreadPoolManager ?
+
+            //TODO V3 check coordinator.getEC() - what happens when an EC
+            //TODO V3 is set and the case where work is ICP with TIC
+            //validateWork(work, coordinator.getExecutionContext());
+            coordinator.setupContext();
+        } catch (Throwable e) {
+            coordinator.setException(e);
+        }
+
         if (coordinator.proceed()) {
             try {
                 work.run();
