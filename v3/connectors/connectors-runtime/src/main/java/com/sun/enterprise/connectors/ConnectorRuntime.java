@@ -46,7 +46,11 @@ import com.sun.enterprise.connectors.naming.ConnectorNamingEventNotifier;
 import com.sun.enterprise.connectors.module.ConnectorApplication;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.JndiNameEnvironment;
+import com.sun.enterprise.deployment.util.XModuleType;
+import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 import com.sun.enterprise.deployment.archivist.ApplicationArchivist;
+import com.sun.enterprise.deployment.archivist.ConnectorArchivist;
+import com.sun.enterprise.deployment.archivist.ArchivistFactory;
 import com.sun.enterprise.resource.pool.PoolManager;
 import com.sun.appserv.connectors.internal.api.*;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
@@ -54,6 +58,7 @@ import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.deploy.shared.FileArchive;
+import com.sun.enterprise.security.jmac.callback.ContainerCallbackHandler;
 import com.sun.logging.LogDomains;
 import com.sun.corba.se.impl.orbutil.threadpool.ThreadPoolManagerImpl;
 import com.sun.corba.se.spi.orbutil.threadpool.ThreadPoolManager;
@@ -81,7 +86,9 @@ import javax.resource.spi.work.WorkManager;
 import javax.resource.ResourceException;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
+import javax.security.auth.callback.CallbackHandler;
 import java.io.PrintWriter;
+import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -338,6 +345,13 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
                                             ClassLoader loader) throws ConnectorRuntimeException {
         resourceAdapterAdmService.createActiveResourceAdapter(moduleDir, moduleName, loader);
     }
+    /**
+     * {@inheritDoc}
+     */
+    public void  createActiveResourceAdapter( ConnectorDescriptor connectorDescriptor, String moduleName,
+            String moduleDir, ClassLoader loader) throws ConnectorRuntimeException {
+        resourceAdapterAdmService.createActiveResourceAdapter(connectorDescriptor, moduleName, moduleDir, loader);
+    }
 
     /** Creates Active resource Adapter which abstracts the rar module.
      *  During the creation of ActiveResourceAdapter, default pools and
@@ -346,8 +360,6 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      *         deployment descriptor i.e rar.xml and sun-ra.xml.
      *  @param moduleName Name of the module
      *  @param moduleDir Directory where rar module is exploded.
-     *  @param writeSunDescriptor If true write the sun-ra.xml props to
-     *         domain.xml and if false it doesnot write to domain.xml
      *  @throws ConnectorRuntimeException if creation fails.
      */
 
@@ -902,5 +914,38 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     public void loadDeferredResourceAdapter(String rarName)
                         throws ConnectorRuntimeException {
         connectorService.loadDeferredResourceAdapter(rarName);
+    }
+
+    public SecurityRoleMapperFactory getSecurityRoleMapperFactory() {
+        return habitat.getComponent(SecurityRoleMapperFactory.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public CallbackHandler getCallbackHandler(){
+        return new ContainerCallbackHandler();
+    }
+
+    //TODO V3 can this impl be moved somewhere ?
+    public ConnectorArchivist getConnectorArchvist() throws ConnectorRuntimeException {
+        try{
+            ArchivistFactory archivistFactory = habitat.getComponent(ArchivistFactory.class);
+            return (ConnectorArchivist)archivistFactory.getArchivist(XModuleType.RAR);
+        }catch(IOException ioe){
+            ioe.printStackTrace();
+            ConnectorRuntimeException cre = new ConnectorRuntimeException(ioe.getMessage());
+            cre.setStackTrace(ioe.getStackTrace());
+            throw cre;
+        }
+    }
+
+    public WorkContextHandler getWorkContextHandler(){
+        return habitat.getComponent(WorkContextHandler.class);
+    }
+
+
+    public ComponentEnvManager getComponentEnvManager(){
+        return componentEnvManager;
     }
 }

@@ -42,6 +42,7 @@ import org.glassfish.api.invocation.InvocationManager;
 import javax.naming.NamingException;
 import javax.resource.ResourceException;
 import javax.resource.spi.ManagedConnectionFactory;
+import javax.security.auth.callback.CallbackHandler;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -241,4 +242,10 @@ public interface ConnectorRuntime extends ConnectorConstants{
      * @return ConnectorConstants.SERVER or ConnectorConstants.CLIENT
      */
     public int getEnvironment();
+
+    /**
+     * provides container's (application server's) callback handler
+     * @return container callback handler
+     */
+    public CallbackHandler getCallbackHandler();
 }
