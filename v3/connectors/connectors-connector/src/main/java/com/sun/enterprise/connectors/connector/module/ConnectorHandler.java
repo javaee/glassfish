@@ -36,7 +36,8 @@
 package com.sun.enterprise.connectors.connector.module;
 
 import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
-import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.annotation.introspection.ResourceAdapterAnnotationScanner;
+import com.sun.enterprise.deployment.util.AnnotationDetector;
 import com.sun.appserv.connectors.internal.api.ConnectorsClassLoaderUtil;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -69,7 +70,13 @@ public class ConnectorHandler extends AbstractArchiveHandler implements ArchiveH
      * {@inheritDoc}
      */
     public boolean handles(ReadableArchive archive) throws IOException {
-        return archive.exists("META-INF/ra.xml");
+        boolean handles =  archive.exists("META-INF/ra.xml");
+        if (!handles) {
+            AnnotationDetector detector =
+                   new AnnotationDetector(new ResourceAdapterAnnotationScanner());
+            handles = detector.hasAnnotationInArchive(archive);
+        }
+        return handles;
     }
 
     /**

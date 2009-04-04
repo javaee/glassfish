@@ -38,25 +38,39 @@ package com.sun.enterprise.connectors.connector.module;
 
 import org.glassfish.internal.deployment.GenericSniffer;
 import com.sun.enterprise.module.Module;
+import com.sun.enterprise.deployment.util.AnnotationDetector;
+import com.sun.enterprise.deployment.annotation.introspection.EjbComponentAnnotationScanner;
+import com.sun.enterprise.deployment.annotation.introspection.ResourceAdapterAnnotationScanner;
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import org.glassfish.api.container.Sniffer;
+import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Singleton;
 
 import java.io.IOException;
 import java.util.logging.Logger;
+import java.util.logging.Level;
+import java.lang.annotation.Annotation;
 
 /**
  * Sniffer for detecting resource-adapter modules
  *
  * @author Jagadish Ramu
  */
-@Service(name = "connectors")
+@Service(name = ConnectorConstants.CONNECTOR_MODULE)
 @Scoped(Singleton.class)
 public class ConnectorSniffer extends GenericSniffer implements Sniffer {
 
+    @Inject
+    private Logger logger;
+
+    private static final Class[]  connectorAnnotations = new Class[] {
+            javax.resource.spi.Connector.class };
+
     public ConnectorSniffer() {
-        super("connectors", "META-INF/ra.xml", null);
+        super(ConnectorConstants.CONNECTOR_MODULE, "META-INF/ra.xml", null);
     }
 
     final String[] containerNames = {"com.sun.enterprise.connectors.module.ConnectorContainer"};
@@ -93,7 +107,21 @@ public class ConnectorSniffer extends GenericSniffer implements Sniffer {
      * @return the container name
      */
     public String getModuleType() {
-        return "connectors";
+        return ConnectorConstants.CONNECTOR_MODULE;
+    }
+
+    /**
+     * Returns the list of annotations types that this sniffer is interested in.
+     * If an application bundle contains at least one class annotated with
+     * one of the returned annotations, the deployment process will not
+     * call the handles method but will invoke the containers deployers as if
+     * the handles method had been called and returned true.
+     *
+     * @return list of annotations this sniffer is interested in or an empty array
+     */
+    @Override
+    public Class<? extends Annotation>[] getAnnotationTypes() {
+        return connectorAnnotations;
     }
 
     /**
