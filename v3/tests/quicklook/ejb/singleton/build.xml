@@ -43,8 +43,8 @@
     <import file="${ws.root}/gfproject/build-impl.xml"/>   
     <import file="${ws.root}/gfproject/${deploy.platform}-targets.xml"/>
     
-    <target name="all" depends="build,deploy,runtest,undeploy" />    
-    <target name="build-deploy" depends="build,deploy" />
+    <target name="all" depends="build,deploy,redeploy,runtest,undeploy" />    
+    <target name="build-deploy" depends="build,deploy,redeploy" />
 
    
     <target name="build" depends="compile-tests">
@@ -53,6 +53,12 @@
     
     <target name="deploy">
         <antcall target="deploy-${deploy.platform}-impl"/>
+    </target>
+
+    <target name="redeploy">
+        <antcall target="deploy-${deploy.platform}-impl">
+          <param name="redeploy" value="--force=true"/>
+	</antcall>
     </target>
     
     <target  name="runtest"> 
