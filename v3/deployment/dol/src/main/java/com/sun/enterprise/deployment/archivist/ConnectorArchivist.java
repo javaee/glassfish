@@ -37,16 +37,18 @@
 package com.sun.enterprise.deployment.archivist;
 
 import com.sun.enterprise.deployment.ConnectorDescriptor;
+import com.sun.enterprise.deployment.annotation.introspection.ResourceAdapterAnnotationScanner;
 import com.sun.enterprise.deployment.util.XModuleType;
+import com.sun.enterprise.deployment.util.AnnotationDetector;
 import com.sun.enterprise.deployment.io.ConnectorDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.runtime.ConnectorRuntimeDDFile;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
-import javax.enterprise.deploy.shared.ModuleType;
 import java.io.IOException;
 
 /**
@@ -63,7 +65,7 @@ public class ConnectorArchivist extends Archivist<ConnectorDescriptor> {
      * The DeploymentDescriptorFile handlers we are delegating for XML i/o
      */
     DeploymentDescriptorFile standardDD = new ConnectorDeploymentDescriptorFile(); 
-    
+
     /**
      * @return the  module type handled by this archivist 
      * as defined in the application DTD
@@ -103,10 +105,16 @@ public class ConnectorArchivist extends Archivist<ConnectorDescriptor> {
         return new ConnectorDescriptor();
     }
 
+    /**
+     * @return true if the archivist is handling the provided archive
+     */
     @Override
     protected boolean postHandles(ReadableArchive abstractArchive)
             throws IOException {
-        return false;
+        AnnotationDetector detector =
+                    new AnnotationDetector(new ResourceAdapterAnnotationScanner());
+        return detector.hasAnnotationInArchive(abstractArchive);
+
     }
 
     @Override    

@@ -58,14 +58,14 @@ import java.util.zip.ZipEntry;
  * @author Qingqing Ouyang
  */
 public class ConnectorDescriptor extends BundleDescriptor {
-    
+
     private String  displayName = "";
     private String  connectorDescription = "";
     private String  largeIcon = "";
     private String  smallIcon = "";
     private String  vendorName = "";
     private String  eisType = "";
-    //private String  version = "";
+    private String  version = "";
     private String resourceAdapterVersion = "";
     private LicenseDescriptor licenseDescriptor = null;
 
@@ -98,18 +98,36 @@ public class ConnectorDescriptor extends BundleDescriptor {
     
     // following are all the get and set methods for the 
     // various variables listed above
+    private Set requiredWorkContexts;
+
+    /*Set variables indicates that a particular attribute is set by DD processing so that
+      annotation processing need not (must not) set the values from annotation */
+    private boolean specVersionSet = false;
 
     public ConnectorDescriptor() {
         this.configProperties = new OrderedSet();
 	this.authMechanisms = new OrderedSet();
 	this.securityPermissions = new OrderedSet();
 	this.adminObjects = new OrderedSet();
+    this.requiredWorkContexts = new OrderedSet();
 
         //FIXME.  need to remove the following
 	this.messageListeners = new OrderedSet();
     }
 
 
+    public Set getRequiredWorkContexts() {
+        return this.requiredWorkContexts;
+    }
+
+    public void addRequiredWorkContext (String workContextClass){
+        this.requiredWorkContexts.add(workContextClass);
+    }
+
+    public void removeRequiredWorkContext(String workContextClass) {
+	    this.requiredWorkContexts.remove(workContextClass);
+    }
+    
     /**
      * @return the default version of the deployment descriptor
      * loaded by this descriptor
@@ -449,7 +467,7 @@ public class ConnectorDescriptor extends BundleDescriptor {
     // The following are the accessor methods for elements that
     // are common to both connector1.0 and connector1.5
     /////////////////////////////////////////////////////////////
-    
+
 
     /** get the connector description
     */
@@ -477,6 +495,15 @@ public class ConnectorDescriptor extends BundleDescriptor {
     }
 
 
+    //TODO V3 setting spec version not recommended ?
+    /**
+     * set value for specVersion
+     */
+    public void setSpecVersion(String specVersion) {
+        super.setSpecVersion(specVersion);
+        this.specVersionSet = true;
+    }
+
     /** get eisType
     */
     public String getEisType() {
@@ -493,14 +520,18 @@ public class ConnectorDescriptor extends BundleDescriptor {
     /** get value for version
     */
     public String getVersion() {
-        //return version;
-        throw new UnsupportedOperationException();
+        return version;
+        //throw new UnsupportedOperationException();
     }
 
     /** set value for version
     */ 
     public void setVersion(String version) {
-        throw new UnsupportedOperationException();
+        //TODO V3 validate version ?
+        this.version = version;
+        //TODO V3 need to have "set" variable ?
+//        versionSet = true;
+        //throw new UnsupportedOperationException();
     }
 
     /** get value for resourceadapter version (1.5 schema
@@ -524,8 +555,8 @@ public class ConnectorDescriptor extends BundleDescriptor {
     public String getDeployName() {
 	return getModuleDescriptor().getArchiveUri();
     }
-            
-    
+
+
     /** 
      * visit the descriptor and all sub descriptors with a DOL visitor implementation
      * 
@@ -599,6 +630,20 @@ public class ConnectorDescriptor extends BundleDescriptor {
         return outboundRA.getConnectionDefs().size();
     }
 
+    public AdminObject getAdminObject(String adminObjectInterface, String adminObjectClass){
+        Iterator i = getAdminObjects().iterator();
+        while (i.hasNext())
+        {
+            AdminObject ao = (AdminObject) i.next();
+            if (adminObjectInterface.equals(ao.getAdminObjectInterface())
+                    && adminObjectClass.equals(ao.getAdminObjectClass()))
+                return ao;
+        }
+
+        return null;
+    }
+
+    //TODO V3 its possible that multiple admin-object-impls can be present for a particular type, need to take care.
     public AdminObject getAdminObjectByType(String type) 
     {
         Iterator i = getAdminObjects().iterator();
@@ -827,6 +872,9 @@ public class ConnectorDescriptor extends BundleDescriptor {
     /*******************************************************************************************
      * END
      * Deployment Consolidation to Suppport Multiple Deployment API Clients
-     *******************************************************************************************/     
+     *******************************************************************************************/
+    public boolean isSpecVersionSet() {
+        return specVersionSet;
+    }
 }
 

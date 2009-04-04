@@ -78,6 +78,7 @@ public interface ConnectorTagNames extends TagNames {
     public static String MSG_ADAPTER = "messageadapter";
     public static String MSG_LISTENER = "messagelistener";
     public static String MSG_LISTENER_TYPE = "messagelistener-type";
+    public static String REQUIRED_WORK_CONTEXT = "required-work-context";
     public static String ADMIN_OBJECT = "adminobject";
     public static String ADMIN_OBJECT_INTERFACE = "adminobject-interface";
     public static String ADMIN_OBJECT_CLASS = "adminobject-class";

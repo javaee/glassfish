@@ -49,11 +49,16 @@ import java.util.Set;
  */
 public class OutboundResourceAdapter extends Descriptor 
 {
-    
+
     private int     transactionSupport = PoolManagerConstants.LOCAL_TRANSACTION;
     private Set     authMechanisms;
     private boolean reauthenticationSupport = false;
     private Set     connectionDefs;
+    
+    /*Set variables indicates that a particular attribute is set by DD processing so that
+      annotation processing need not (must not) set the values from annotation */
+    private boolean reauthenticationSupportSet = false;
+    private boolean transactionSupportSet = false;
 
     public OutboundResourceAdapter () 
     {
@@ -80,6 +85,7 @@ public class OutboundResourceAdapter extends Descriptor
     public void 
     setReauthenticationSupport(boolean reauthenticationSupport) 
     {
+        this.reauthenticationSupportSet = true;
         this.reauthenticationSupport = reauthenticationSupport;
     }
 
@@ -89,6 +95,7 @@ public class OutboundResourceAdapter extends Descriptor
     public void setReauthenticationSupport(String reauthSupport) {
         this.reauthenticationSupport = 
 	    (Boolean.valueOf(reauthSupport)).booleanValue();
+        this.reauthenticationSupportSet = true;
     }
 
 
@@ -122,7 +129,7 @@ public class OutboundResourceAdapter extends Descriptor
     setTransactionSupport(int transactionSupport) 
     {
         this.transactionSupport = transactionSupport;
-
+        this.transactionSupportSet = true;
     }
 
     /**
@@ -133,13 +140,19 @@ public class OutboundResourceAdapter extends Descriptor
     public void 
     setTransactionSupport(String support) 
     {
-        if (ConnectorTagNames.DD_NO_TRANSACTION.equals(support))
-            this.transactionSupport = PoolManagerConstants.NO_TRANSACTION;
+        //TODO V3 : should throw exception when the "support" is none of XA/NO/Local ?
+        try{
+        if (ConnectorTagNames.DD_XA_TRANSACTION.equals(support))
+            this.transactionSupport = PoolManagerConstants.XA_TRANSACTION;
         else if (ConnectorTagNames.DD_LOCAL_TRANSACTION.equals(support))
             this.transactionSupport = PoolManagerConstants.LOCAL_TRANSACTION;
         else
-            this.transactionSupport = PoolManagerConstants.XA_TRANSACTION;
+            this.transactionSupport = PoolManagerConstants.NO_TRANSACTION;
 
+        this.transactionSupportSet = true;
+        }catch(NumberFormatException nfe){
+            nfe.printStackTrace();
+        }
     }
       
    /** 
@@ -244,7 +257,16 @@ public class OutboundResourceAdapter extends Descriptor
      */
     public void addConnectionDefDescriptor(ConnectionDefDescriptor conDefDesc) {
 	this.connectionDefs.add(conDefDesc);
+    }
 
+    public boolean hasConnectionDefDescriptor(String connectionFactoryIntf){
+        for(Object o  : connectionDefs){
+            ConnectionDefDescriptor cdd = (ConnectionDefDescriptor)o;
+            if(cdd.getConnectionFactoryIntf().equals(connectionFactoryIntf)){
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -471,5 +493,13 @@ public class OutboundResourceAdapter extends Descriptor
     public void setConnectionImpl(String con) 
     {
 	getConnectionDef().setConnectionImpl(con);
+    }
+
+    public boolean isReauthenticationSupportSet() {
+        return reauthenticationSupportSet;
+    }
+
+    public boolean isTransactionSupportSet() {
+        return transactionSupportSet;
     }
 }

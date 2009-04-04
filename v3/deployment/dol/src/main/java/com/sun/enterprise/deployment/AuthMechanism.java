@@ -107,6 +107,16 @@ public class AuthMechanism extends Descriptor{
         else
             return ConnectorTagNames.DD_KERBEROS;
     }
+
+    public static int getAuthMechInt(String value){
+        if(value.trim().equals(ConnectorTagNames.DD_BASIC_PASSWORD)){
+            return PoolManagerConstants.BASIC_PASSWORD;
+        }else if((value.trim()).equals(ConnectorTagNames.DD_KERBEROS)){
+	        return PoolManagerConstants.KERBV5;
+        }else{
+            throw new IllegalArgumentException("Invalid auth-mech-type");// put this in localStrings...
+        }
+    }
     
     /**
      * Get the authentication mechanism value.

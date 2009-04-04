@@ -51,10 +51,7 @@ import com.sun.enterprise.deployment.xml.ConnectorTagNames;
 import com.sun.enterprise.deployment.xml.TagNames;
 import org.w3c.dom.Node;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -68,19 +65,29 @@ public class ConnectorNode extends BundleNode<ConnectorDescriptor> {
     private ConnectorDescriptor descriptor; 
     public static final String VERSION_10 = "1.0";
     public static final String VERSION_15 = "1.5";
+    public static final String VERSION_16 = "1.6";
+
     private String specVersion;
 
     //connector1.0
     public static final String PUBLIC_DTD_ID_10 = "-//Sun Microsystems, Inc.//DTD Connector 1.0//EN";
     public static final String SYSTEM_ID_10 = "http://java.sun.com/dtd/connector_1_0.dtd";
 
-    
     //connector1.5
-    public final static String PUBLIC_DTD_ID = "-//Sun Microsystems, Inc.//DTD Connector 1.5//EN";
-    public final  static String SYSTEM_ID = "http://java.sun.com/dtd/connector_1_5.dtd";
-    
-    public final static String SCHEMA_ID = "connector_1_5.xsd";
-    public final static String SPEC_VERSION = VERSION_15;
+    public final static String PUBLIC_DTD_ID_15 = "-//Sun Microsystems, Inc.//DTD Connector 1.5//EN";
+    public final  static String SYSTEM_ID_15 = "http://java.sun.com/dtd/connector_1_5.dtd";
+    public final static String SCHEMA_ID_15 = "connector_1_5.xsd";
+
+    //connector1.6
+    public final static String PUBLIC_DTD_ID_16 = "-//Sun Microsystems, Inc.//DTD Connector 1.6//EN";
+    public final  static String SYSTEM_ID_16 = "http://java.sun.com/dtd/connector_1_6.dtd" ;
+    public final static String SCHEMA_ID_16 = "connector_1_6.xsd";
+
+    public final static String PUBLIC_DTD_ID = PUBLIC_DTD_ID_16;
+    public final static String SYSTEM_ID = SYSTEM_ID_16;
+    public final static String SCHEMA_ID = SCHEMA_ID_16;
+    public final static String SPEC_VERSION = VERSION_16;
+
     private final static List<String> systemIDs = initSystemIDs();
 
     public final static XMLElement tag = new XMLElement(ConnectorTagNames.CONNECTOR);
@@ -235,6 +242,7 @@ public class ConnectorNode extends BundleNode<ConnectorDescriptor> {
 
 	// support for 1.0 DTD and 1.5 schema and not 1.5 DTD
 	table.put(ConnectorTagNames.RESOURCEADAPTER_VERSION, "setResourceAdapterVersion");
+    table.put(ConnectorTagNames.REQUIRED_WORK_CONTEXT, "addRequiredWorkContext");
 
         return table;
     } 
@@ -273,6 +281,13 @@ public class ConnectorNode extends BundleNode<ConnectorDescriptor> {
 	appendTextChild(connectorNode, ConnectorTagNames.VENDOR_NAME, conDesc.getVendorName());  
 	appendTextChild(connectorNode, ConnectorTagNames.EIS_TYPE, conDesc.getEisType()); 
 	appendTextChild(connectorNode, ConnectorTagNames.RESOURCEADAPTER_VERSION, conDesc.getResourceAdapterVersion());   
+
+        Iterator requiredInflowContexts = conDesc.getRequiredWorkContexts().iterator();
+
+        for (; requiredInflowContexts.hasNext();) {
+            String className = (String) requiredInflowContexts.next();
+            appendTextChild(connectorNode, ConnectorTagNames.REQUIRED_WORK_CONTEXT, className);
+        }
 
 	//license info
         LicenseNode licenseNode = new LicenseNode();

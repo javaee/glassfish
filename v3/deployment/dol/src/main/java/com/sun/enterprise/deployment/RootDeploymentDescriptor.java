@@ -53,6 +53,7 @@ import java.util.logging.Level;
 public abstract class RootDeploymentDescriptor extends Descriptor {
 
      // the spec versions we should start to look at annotations
+    private final static double ANNOTATION_RAR_VER = 1.6;
     private final static double ANNOTATION_EJB_VER = 3.0;
     private final static double ANNOTATION_WAR_VER = 2.5;
     private final static double ANNOTATION_CAR_VER = 5.0;
@@ -376,33 +377,29 @@ public abstract class RootDeploymentDescriptor extends Descriptor {
 
     /**
      * @ return true for following cases:
-     *   a. connector module;
-     *   b. ejb module and schema version earlier than 3.0;
-     *   c. web module and schema version earlier than 2.5;
-     *   d. appclient module and schema version earlier than 5.0.
+     *   a. ejb module and schema version earlier than 3.0;
+     *   b. web module and schema version earlier than 2.5;
+     *   c. appclient module and schema version earlier than 5.0.
+     *   d. connector module and schema version earlier than 1.6
      */
     public boolean isDDWithNoAnnotationAllowed() {
         XModuleType mType = getModuleType();
 
         double specVersion = Double.parseDouble(getSpecVersion());
 
-        // connector DD doesn't have annotation, so always treated
-        // as full DD
-        if (XModuleType.RAR == mType) {
-            return true;
-        } else {
             // we do not process annotations for earlier versions of DD
             if ( (mType.equals(XModuleType.EJB) &&
                   specVersion < ANNOTATION_EJB_VER) ||
                  (mType.equals(XModuleType.WAR) &&
                   specVersion < ANNOTATION_WAR_VER) ||
                  (mType.equals(XModuleType.CAR) &&
-                  specVersion < ANNOTATION_CAR_VER) ) {
+                  specVersion < ANNOTATION_CAR_VER)  ||
+                 (mType.equals(ModuleType.RAR) &&
+                  specVersion < ANNOTATION_RAR_VER)) {
                 return true;
             } else {
                 return false;
             }
-        }
     }    
 
 }

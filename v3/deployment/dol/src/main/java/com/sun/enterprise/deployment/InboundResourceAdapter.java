@@ -52,7 +52,7 @@ import java.util.Set;
 public class InboundResourceAdapter extends Descriptor 
 {
     private Set messageListeners;
-    
+
     public InboundResourceAdapter () 
     {
         messageListeners = new OrderedSet();
@@ -74,5 +74,25 @@ public class InboundResourceAdapter extends Descriptor
     removeMessageListener (MessageListener listener) 
     {
 	messageListeners.remove(listener);
-    }   
+    }
+
+    public boolean hasMessageListenerType(String msgListenerType){
+        for(Object messageListenerObject : messageListeners){
+            MessageListener ml = (MessageListener) messageListenerObject;
+            if(ml.getMessageListenerType().equals(msgListenerType)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public MessageListener getMessageListener(String msgListenerType){
+        for(Object messageListenerObject : messageListeners){
+            MessageListener ml = (MessageListener) messageListenerObject;
+            if(ml.getMessageListenerType().equals(msgListenerType)){
+                return ml;
+            }
+        }
+        return null;
+    }
 }

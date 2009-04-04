@@ -52,7 +52,8 @@ public class ConnectorDeploymentDescriptorFile extends DeploymentDescriptorFile 
     
     public final static String VERSION_10 = "1.0";
     public final static String VERSION_15 = "1.5";
-    
+    public final static String VERSION_16 = "1.6";
+
     /** Creates a new instance of ConnectorDeploymentDescriptorFile */
     public ConnectorDeploymentDescriptorFile() {
     }
