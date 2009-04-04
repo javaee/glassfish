@@ -43,7 +43,6 @@
   <target name="deploy" depends="init-common">
     <antcall target="create-ra-config"/>
     <antcall target="setup-pool"/>
-    <antcall target="create-table"/>
     <antcall target="create-users"/>
     <antcall target="create-security-maps"/>
     <antcall target="deploy-war"/>
@@ -114,6 +113,13 @@
       <arg line="${as.props}"/>
       <arg line="domain.resources.connector-connection-pool.${poolname}.property.Password=${db.pwd}"/>
     </exec>
+   
+     <exec executable="${ASADMIN}" failonerror="false">
+      <arg line="set"/>
+      <arg line="${as.props}"/>
+      <arg line="domain.resources.connector-connection-pool.${poolname}.property.ConnectionAttributes=;create=true"/>
+    </exec>
+
 
     <antcall target="create-connector-resource-common">
       <param name="connector.conpool.name" value="${poolname}"/>
@@ -408,10 +414,12 @@
   </target>
 
   <target name="run" depends="init-common">
+    <antcall target="create-table"/>
     <java classname="com.sun.ejte.j2ee.connector.securitymapweb.WebTest"
       classpath="${s1astest.classpath}" fork="true">
       <arg line="${db.driver}"/>
     </java>
+    <antcall target="drop-table"/>
 
     <antcall target="checkReporting-common">
       <param name="test.name" value="${appname}"/>
@@ -431,7 +439,6 @@
     <antcall target="undeploy-war"/>
     <antcall target="delete-pool"/>
     <antcall target="delete-ra-config"/>
-    <antcall target="drop-table"/>
     <antcall target="delete-users"/>
   </target>
 
