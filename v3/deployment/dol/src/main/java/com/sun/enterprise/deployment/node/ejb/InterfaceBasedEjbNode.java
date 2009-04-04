@@ -110,19 +110,5 @@ public abstract class InterfaceBasedEjbNode extends EjbNode {
                         descriptor.getWebServiceEndpointInterfaceName());
         appendTextChild(ejbNode, EjbTagNames.EJB_CLASS, 
                         descriptor.getEjbClassName());              
-    }        
-    
-    /**
-     * write  the security role references to the DOM Tree
-     *
-     * @param parent node for the DOM tree
-     * @param the iterator over the RoleReference descriptors to write
-     */        
-    protected void writeRoleReferenceDescriptors(Node parentNode, Iterator refs) {     
-        SecurityRoleRefNode node = new SecurityRoleRefNode();
-        for (;refs.hasNext();) {
-            RoleReference roleRef = (RoleReference) refs.next();
-            node.writeDescriptor(parentNode, EjbTagNames.ROLE_REFERENCE, roleRef);            
-        }
     }
 }

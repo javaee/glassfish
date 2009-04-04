@@ -46,6 +46,7 @@ import com.sun.enterprise.deployment.xml.WebServicesTagNames;
 import org.w3c.dom.Node;
 
 import java.util.Map;
+import java.util.Iterator;
 import java.util.logging.Level;
 
 /**
@@ -159,5 +160,19 @@ public abstract class EjbNode extends DisplayableComponentNode {
         
         SecurityIdentityNode node = new SecurityIdentityNode();
         node.writeDescriptor(parent, EjbTagNames.SECURITY_IDENTITY,  descriptor);
-    }    
+    }
+
+    /**
+     * write  the security role references to the DOM Tree
+     *
+     * @param parentNode for the DOM tree
+     * @param refs iterator over the RoleReference descriptors to write
+     */
+    protected void writeRoleReferenceDescriptors(Node parentNode, Iterator refs) {
+        SecurityRoleRefNode node = new SecurityRoleRefNode();
+        for (;refs.hasNext();) {
+            RoleReference roleRef = (RoleReference) refs.next();
+            node.writeDescriptor(parentNode, EjbTagNames.ROLE_REFERENCE, roleRef);
+        }
+    }
 }

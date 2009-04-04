@@ -42,14 +42,8 @@
 
 package com.sun.enterprise.deployment.node.ejb;
 
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
-import com.sun.enterprise.deployment.node.DescriptorFactory;
-import com.sun.enterprise.deployment.node.LifecycleCallbackNode;
-import com.sun.enterprise.deployment.node.MethodNode;
-import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.node.*;
 import com.sun.enterprise.deployment.xml.EjbTagNames;
 import com.sun.enterprise.deployment.xml.TagNames;
 import org.w3c.dom.Node;
@@ -80,7 +74,7 @@ public class MessageDrivenBeanNode extends EjbNode {
 
         registerElementHandler(new XMLElement(EjbTagNames.TIMEOUT_METHOD), MethodNode.class, "setEjbTimeoutMethod");      
 
-         registerElementHandler(new XMLElement(EjbTagNames.TIMEOUT_METHOD), MethodNode.class, "setEjbTimeoutMethod");
+        registerElementHandler(new XMLElement(EjbTagNames.ROLE_REFERENCE), SecurityRoleRefNode.class, "addRoleReference");
     }
 
     /**
@@ -208,9 +202,12 @@ public class MessageDrivenBeanNode extends EjbNode {
         // pre-destroy
         writePreDestroyDescriptors(ejbNode, ejbDesc.getPreDestroyDescriptors().iterator());
 
+        // security-role-ref*
+        writeRoleReferenceDescriptors(ejbNode, ejbDesc.getRoleReferences().iterator());
+
         // security-identity
         writeSecurityIdentityDescriptor(ejbNode, ejbDesc);
         
         return ejbNode;
-    }    
+    }
 }

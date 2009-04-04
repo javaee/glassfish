@@ -109,10 +109,6 @@ public final class MessageBeanContextImpl
         throw exception;
     }
 
-    public boolean isCallerInRole(String roleRef)
-    {
-        throw new java.lang.IllegalStateException("isCallerInRole() is not defined for message-driven ejbs");
-    }
 
     protected void checkAccessToCallerSecurity()
         throws java.lang.IllegalStateException

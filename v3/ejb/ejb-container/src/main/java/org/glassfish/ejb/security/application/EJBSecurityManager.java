@@ -149,8 +149,6 @@ public final class EJBSecurityManager
     private static CodeSource managerCodeSource =
             EJBSecurityManager.class.getProtectionDomain().getCodeSource();
 
-    private boolean isMdb;
-
     private InvocationManager invMgr;
     private EJBSecurityManagerFactory ejbSFM = null;
 
@@ -162,8 +160,6 @@ public final class EJBSecurityManager
 
         this.deploymentDescriptor = (EjbDescriptor) ejbDescriptor;
         this.invMgr = invMgr;
-        this.isMdb = (EjbMessageBeanDescriptor.TYPE.equals(
-                this.deploymentDescriptor.getType()));
         roleMapperFactory = Globals.get(SecurityRoleMapperFactory.class);
         // get the default policy
         policy = Policy.getPolicy();
@@ -763,9 +759,6 @@ public final class EJBSecurityManager
         // and preInvoke is not call before
         if ((!isWebService || (inv.getAuth() != null && inv.getAuth().booleanValue()))
                 && !inv.isPreInvokeDone()) {
-            if (isMdb) {
-                SecurityContext.setUnauthenticatedContext();
-            }
             if (runAs != null) {
                 inv.setOldSecurityContext(SecurityContext.getCurrent());
                 loginForRunAs();
