@@ -55,7 +55,7 @@ public class MessageCheckerEJB implements SessionBean {
 
     public void notifyAndWait() {
         //done so as to inialize TransactionManager
-        hackGetConnection();
+        //hackGetConnection();
         try {
             synchronized (Controls.getLockObject()) {
                 //Tell the resource adapter the client is ready to run
@@ -165,7 +165,7 @@ public class MessageCheckerEJB implements SessionBean {
             DataSource ds = (DataSource) ic.lookup("java:comp/env/MyDB");
             debug("Looked up Datasource\n");
             debug("Get JDBC connection, auto sign on");
-            con = ds.getConnection();
+            con = ds.getConnection("dbuser","dbpassword");
 
             if (con != null) {
                 return con;

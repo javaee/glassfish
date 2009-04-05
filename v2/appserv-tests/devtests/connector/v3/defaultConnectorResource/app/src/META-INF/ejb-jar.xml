@@ -34,7 +34,7 @@
                 <description>description</description>
                 <res-ref-name>MyDB</res-ref-name>
                 <res-type>javax.sql.DataSource</res-type>
-                <res-auth>Container</res-auth>
+                <res-auth>Application</res-auth>
                 <res-sharing-scope>Shareable</res-sharing-scope>
             </resource-ref>
         </message-driven>
@@ -59,7 +59,7 @@
             <resource-ref>
                 <res-ref-name>MyDB</res-ref-name>
                 <res-type>javax.sql.DataSource</res-type>
-                <res-auth>Container</res-auth>
+                <res-auth>Application</res-auth>
                 <res-sharing-scope>Shareable</res-sharing-scope>
             </resource-ref>
             <resource-env-ref>

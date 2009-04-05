@@ -115,7 +115,7 @@ public class MyMessageBean implements MessageDrivenBean,
                   DataSource ds = (DataSource) ic.lookup("java:comp/env/MyDB");
                   debug("Looked up Datasource\n");
                   debug("Get JDBC connection, auto sign on");
-                  dbConnection = ds.getConnection();
+                  dbConnection = ds.getConnection("dbuser","dbpassword");
                   
                   Statement stmt = dbConnection.createStatement();
                   String query = 
@@ -138,7 +138,7 @@ public class MyMessageBean implements MessageDrivenBean,
                 DataSource ds = (DataSource) ic.lookup("java:comp/env/MyDB");
                 //debug("Looked up Datasource\n");
                 //debug("Get JDBC connection, auto sign on");
-                dbConnection = ds.getConnection();
+                dbConnection = ds.getConnection("dbuser","dbpassword");
 
                 createRow(id, body, dbConnection);
                 System.out.println("Created one message\n");
@@ -151,7 +151,7 @@ public class MyMessageBean implements MessageDrivenBean,
                 DataSource ds = (DataSource) ic.lookup("java:comp/env/MyDB");
                 //debug("Looked up Datasource\n");
                 //debug("Get JDBC connection, auto sign on");
-                dbConnection = ds.getConnection();
+                dbConnection = ds.getConnection("dbuser","dbpassword");
 
                 deleteRow(id, dbConnection);
                 System.out.println("Deleted one message\n");
@@ -163,7 +163,7 @@ public class MyMessageBean implements MessageDrivenBean,
                 DataSource ds = (DataSource) ic.lookup("java:comp/env/MyDB");
                 //debug("Looked up Datasource\n");
                 //debug("Get JDBC connection, auto sign on");
-                dbConnection = ds.getConnection();
+                dbConnection = ds.getConnection("dbuser","dbpassword");
                 deleteAll(dbConnection);
                 System.out.println("Deleted all messages\n");
             } else {

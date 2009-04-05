@@ -7,7 +7,7 @@ import java.net.*;
 import com.sun.ejte.ccl.reporter.*;
 
 public class WebTest {
-    private static final String TEST_NAME = "webtest-connector1.5";
+    private static final String TEST_NAME = "defaultConnectorResource";
     static SimpleReporterAdapter stat = new SimpleReporterAdapter("appserv-tests");
     static int count;
 

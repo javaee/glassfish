@@ -91,7 +91,7 @@
 
        <target name="run-war" depends="init-common">
            <antcall target="runwebclient-common">
-               <param name="testsuite.id" value="web-to-ejb (stand-alone war based)"/>
+               <param name="testsuite.id" value="defaultConnectorResource  (stand-alone war based)"/>
            </antcall>
        </target>
 
