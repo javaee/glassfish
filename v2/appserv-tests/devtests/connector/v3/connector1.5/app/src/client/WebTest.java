@@ -7,7 +7,7 @@ import java.net.*;
 import com.sun.ejte.ccl.reporter.*;
 
 public class WebTest {
-    private static final String TEST_NAME = "webtest-connector1.5";
+    private static final String TEST_NAME = "Connector 1.5 test";
     static SimpleReporterAdapter stat = new SimpleReporterAdapter("appserv-tests");
     static int count;
 
@@ -52,13 +52,14 @@ private static void goGet(String host, int port,
                 System.out.println("[Server response]" + line);
 
                 if (index != -1) {
+                    count++;
                     index = line.indexOf(":");
                     String status = line.substring(index+1);
 
                     if (status.equalsIgnoreCase("PASS")){
-                        stat.addStatus(TEST_NAME, stat.PASS);
+                        stat.addStatus("ID Connector 1.5 test - " + count, stat.PASS);
                     } else {
-                        stat.addStatus(TEST_NAME, stat.FAIL);
+                        stat.addStatus("ID Connector 1.5 test - " + count, stat.FAIL);
                     }
                 }
 
@@ -105,7 +106,7 @@ private static void goGet(String host, int port,
             }*/
         } catch( Exception ex){
            ex.printStackTrace();
-           stat.addStatus("TEST_NAME", stat.FAIL);
+           stat.addStatus(TEST_NAME, stat.FAIL);
         }
    }
 }

@@ -45,6 +45,7 @@ public class MessageCheckerEJB implements SessionBean {
     }
 
     public boolean done() {
+        //hackGetConnection();
         return Controls.done();
     }
 

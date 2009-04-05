@@ -76,7 +76,7 @@ public class SimpleServlet extends HttpServlet {
             out.println("END_OF_TEST");
             out.flush();
         }
-        System.out.println("connector1.5ID");
+        System.out.println("connector15ID");
 
 
         debug("EXITING... STATUS = " + res);

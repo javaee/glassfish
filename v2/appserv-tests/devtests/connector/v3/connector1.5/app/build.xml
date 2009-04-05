@@ -12,7 +12,7 @@
 <project name="connector1.5 MDB" default="all" basedir=".">
 
     <property name="j2ee.home" value="../../../.."/>
-    <property name="earfile" value="simplemdb.ear"/>
+    <property name="earfile" value="connector15.ear"/>
 
 
     <!-- include common.xml and testcommon.xml -->
@@ -23,7 +23,7 @@
     <target name="all" depends="init-common, clean-common">
         <ant dir="src" inheritAll="false" target="all"/>
         <antcall target="ear-common">
-            <param name="appname" value="simplemdb"/>
+            <param name="appname" value="connector15"/>
             <param name="application.xml" value="META-INF/application.xml"/>
         </antcall>
     </target>
@@ -58,7 +58,7 @@
 
     <target name="deploy-ear" depends="init-common">
         <antcall target="deploy-common">
-            <param name="appname" value="simplemdb"/>
+            <param name="appname" value="connector15"/>
         </antcall>
     </target>
 
@@ -68,7 +68,7 @@
 
     <target name="run-war" depends="init-common">
         <antcall target="runwebclient-common">
-            <param name="testsuite.id" value="web-to-ejb (stand-alone war based)"/>
+            <param name="testsuite.id" value="connector1.5  (stand-alone war based)"/>
         </antcall>
     </target>
 
@@ -80,7 +80,7 @@
 
     <target name="undeploy" depends="init-common">
         <antcall target="undeploy-common">
-            <param name="appname" value="simplemdb"/>
+            <param name="appname" value="connector15"/>
         </antcall>
     </target>
 

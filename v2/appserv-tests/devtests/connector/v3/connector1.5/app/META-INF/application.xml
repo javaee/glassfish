@@ -6,12 +6,12 @@
   <display-name>GenericMessageDrivenBean</display-name>
   <description>Application description</description>
   <module>
-    <ejb>simplemdb-ejb.jar</ejb>
+    <ejb>connector15-ejb.jar</ejb>
   </module>
   <module>
      <web>
-     <web-uri>simplemdb-web.war</web-uri>
-      <context-root>simplemdb</context-root>
+     <web-uri>connector15-web.war</web-uri>
+      <context-root>connector15</context-root>
     </web>
   </module>
 </application>

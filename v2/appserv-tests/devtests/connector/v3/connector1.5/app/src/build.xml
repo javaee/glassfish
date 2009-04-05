@@ -32,12 +32,12 @@
         <param name="ejb-jar.xml" value="META-INF/ejb-jar.xml" />
         <param name="ejbjar.classes" value="mdb/*.class, beans/*.class, connector/*.class" />
         <param name="sun-ejb-jar.xml" value="META-INF/sun-ejb-jar.xml" />
-        <param name="appname" value="simplemdb" />
+        <param name="appname" value="connector15" />
     </antcall>
 
       <antcall target="webclient-war-common">
       <param name="hasWebclient" value="yes"/>
-          <param name="appname" value="simplemdb" />
+          <param name="appname" value="connector15" />
           <param name="web.xml" value="META-INF/web.xml" />
           <param name="sun-web.xml" value="META-INF/sun-web.xml" />
       <param name="webclient.war.classes" value="servlet/*.class, beans/*.class"/>
@@ -47,7 +47,7 @@
 <!--
      <antcall target="war-common">
         <param name="war.classes" value="servlet/*.class, beans/*.class, connector/*.class, mdb/*.class" />
-         <param name="appname" value="simplemdb" />
+         <param name="appname" value="connector15" />
          <param name="web.xml" value="META-INF/web.xml" />
          <param name="sun-web.xml" value="META-INF/sun-web.xml" />
      </antcall>
@@ -57,7 +57,7 @@
 
 <!--
     <antcall target="appclient-jar-common">
-        <param name="appname" value="simplemdb" />
+        <param name="appname" value="connector15" />
         <param name="application-client.xml" value="META-INF/application-client.xml" />
         <param name="appclientjar.classes" value="mdb/*.class, beans/*.class, connector/*.class, client/Client.class" />
         <param name="sun-application-client.xml" value="META-INF/sun-application-client.xml" />

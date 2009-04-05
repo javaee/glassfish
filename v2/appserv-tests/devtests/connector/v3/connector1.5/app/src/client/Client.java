@@ -63,7 +63,7 @@ public class Client   {
             ex.printStackTrace();
             res = "TEST FAILED";
         }
-        stat.printSummary("connector1.5ID");
+        stat.printSummary("connector15ID");
 
         
         debug("EXITING... STATUS = " + res);
