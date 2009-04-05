@@ -32,7 +32,16 @@ public class SimpleBankServlet extends HttpServlet {
 
   /** handles the HTTP POST operation **/ 
   public void doPost (HttpServletRequest request,HttpServletResponse response) 
-        throws ServletException, IOException { 
+        throws ServletException, IOException {
+
+
+      try{
+            InitialContext ic = new InitialContext();
+          //ic.lookup("jms/ConnectionFactory");
+      }catch(Exception e){
+          e.printStackTrace();
+      }
+      
     doLookup();
     System.out.println("SimpleBankServlet is executing");
     String SSN = request.getParameter("SSN");
