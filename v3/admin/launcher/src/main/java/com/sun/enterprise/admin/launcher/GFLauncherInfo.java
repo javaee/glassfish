@@ -200,6 +200,7 @@ public class GFLauncherInfo {
         Map<String, String> map = new HashMap<String, String>();
         map.put("-domaindir", SmartFile.sanitize(domainRootDir.getPath()));
         map.put("-verbose", Boolean.toString(verbose));
+        map.put("-watchdog", Boolean.toString(watchdog));
         map.put("-debug", Boolean.toString(debug));
         map.put("-domainname", domainName);
         map.put("-instancename", instanceName);

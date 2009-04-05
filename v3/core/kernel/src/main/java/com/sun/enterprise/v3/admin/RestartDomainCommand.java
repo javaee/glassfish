@@ -25,6 +25,7 @@ package com.sun.enterprise.v3.admin;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.glassfish.api.ActionReport;
 import org.glassfish.api.Async;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -54,7 +55,7 @@ public class RestartDomainCommand implements AdminCommand {
     ModulesRegistry registry;
 
     /**
-     * Shutdown of the application server :
+     * Restart of the application server :
      *
      * All running services are stopped.
      * LookupManager is flushed.
@@ -62,7 +63,18 @@ public class RestartDomainCommand implements AdminCommand {
      * Client code that started us should notice the return value of 10 and restart us.
      */
     public void execute(AdminCommandContext context) {
-        context.getLogger().info(localStrings.getLocalString("stop.domain.init","Server shutdown initiated"));
+        // This has to be an asynchronous command so there is no way to directly
+        // return an error.  We do our best by logging a SEVERE error...
+
+        if(!isRestartAllowed()) {
+            context.getLogger().severe(localStrings.getLocalString(
+                    "restart.domain.not_enabled",
+                    "The server was not started with a watchdog. Restart is not " +
+                    "possible.  Try stopping and then locally starting the server."));
+            return;
+        }
+
+        context.getLogger().info(localStrings.getLocalString("restart.domain.init","Server restart initiated"));
         Collection<Module> modules = registry.getModules(
                 "com.sun.enterprise.osgi-adapter");
         if (modules.size() == 1) {
@@ -78,7 +90,13 @@ public class RestartDomainCommand implements AdminCommand {
          * But this code goes into a jar that is sort of an island -- very few
          * dependencies.  The client code on the other end will also just use 10
          */
-
         System.exit(10);
+    }
+
+    boolean isRestartAllowed() {
+        // TODO commandline args are clumped into this one System Property - 
+        
+        String s = System.getProperty("hk2.startup.context.args");
+        return s != null && s.indexOf("-watchdog=true") >= 0;
     }
 }
