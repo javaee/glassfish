@@ -50,6 +50,7 @@
                             getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});                            
                             convertListToArrayList(TableList="#{newList}", Name="option", NameList=>$attribute{nameList});
                             saveJvmOptions(NameList="#{nameList}", ConfigName="#{configName}");
+                            redirect(page="#{request.contextPath}/appServer/serverJvmOptions.jsf?configName=server-config&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                         />      
                     </sun:button>
                 </sun:panelGroup>
@@ -67,6 +68,7 @@
                             getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});                            
                             convertListToArrayList(TableList="#{newList}", Name="option", NameList=>$attribute{nameList});
                             saveJvmOptions(NameList="#{nameList}", ConfigName="#{configName}");
+                            redirect(page="#{request.contextPath}/appServer/serverJvmOptions.jsf?configName=server-config&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                          />                                
                     </sun:button>
                 </sun:panelGroup>
