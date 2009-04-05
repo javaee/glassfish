@@ -79,7 +79,6 @@ public class ConcurrencyManagementHandler extends AbstractAttributeHandler {
             EjbDescriptor ejbDesc = ejbContext.getDescriptor();
             if (ejbDesc instanceof EjbSessionDescriptor) {
 
-                // TODO handle stateful session beans and CONCURRENCY_PROHIBITED
                 EjbSessionDescriptor.ConcurrencyManagementType descCMType;
 
                 switch(cmType) {

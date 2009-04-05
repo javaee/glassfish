@@ -87,8 +87,7 @@ public class AccessTimeoutHandler extends AbstractAttributeHandler implements Po
                 EjbSessionDescriptor sessionDesc =
                         (EjbSessionDescriptor) ejbContext.getDescriptor();
 
-                // TODO handle stateful session beans
-                if( !sessionDesc.isSingleton() ) {
+                if( sessionDesc.isStateless() ) {
                     continue;
                 }
 

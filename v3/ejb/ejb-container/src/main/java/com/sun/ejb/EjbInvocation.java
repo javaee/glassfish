@@ -312,6 +312,9 @@ public class EjbInvocation
 
     private boolean wasCancelCalled = false;
 
+    // True if lock is currently held for this invocation
+    private boolean holdingSFSBSerializedLock = false;
+
     public EjbFutureTask getEjbFutureTask() {
         return asyncFuture;
     }
@@ -427,6 +430,14 @@ public class EjbInvocation
 
     public void setCMCLock(java.util.concurrent.locks.Lock l) {
         cmcLock = l;
+    }
+
+    public boolean holdingSFSBSerializedLock() {
+        return this.holdingSFSBSerializedLock;
+    }
+
+    public void setHoldingSFSBSerializedLock(boolean flag) {
+        holdingSFSBSerializedLock = flag;
     }
 
     @Override

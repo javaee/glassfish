@@ -82,14 +82,14 @@ public class EjbBundleRuntimeNode extends
      * @return the DOCTYPE that should be written to the XML file
      */
     public String getDocType() {
-	return DTDRegistry.SUN_EJBJAR_300_DTD_PUBLIC_ID;
+	return DTDRegistry.SUN_EJBJAR_310_DTD_PUBLIC_ID;
     }
     
     /**
      * @return the SystemID of the XML file
      */
     public String getSystemID() {
-	return DTDRegistry.SUN_EJBJAR_300_DTD_SYSTEM_ID;
+	return DTDRegistry.SUN_EJBJAR_310_DTD_SYSTEM_ID;
     }
 
     /**
@@ -118,6 +118,8 @@ public class EjbBundleRuntimeNode extends
        publicIDToDTD.put(DTDRegistry.SUN_EJBJAR_210_DTD_PUBLIC_ID, DTDRegistry.SUN_EJBJAR_210_DTD_SYSTEM_ID);
        publicIDToDTD.put(DTDRegistry.SUN_EJBJAR_211_DTD_PUBLIC_ID, DTDRegistry.SUN_EJBJAR_211_DTD_SYSTEM_ID);
        publicIDToDTD.put(DTDRegistry.SUN_EJBJAR_300_DTD_PUBLIC_ID, DTDRegistry.SUN_EJBJAR_300_DTD_SYSTEM_ID);
+       publicIDToDTD.put(DTDRegistry.SUN_EJBJAR_310_DTD_PUBLIC_ID, DTDRegistry.SUN_EJBJAR_310_DTD_SYSTEM_ID);
+
        if (!restrictDTDDeclarations()) {
            publicIDToDTD.put(DTDRegistry.SUN_EJBJAR_210beta_DTD_PUBLIC_ID, DTDRegistry.SUN_EJBJAR_210beta_DTD_SYSTEM_ID);
        }           

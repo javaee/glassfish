@@ -2562,6 +2562,7 @@ public abstract class BaseContainer
                 info.interceptorChain = interceptorManager.getAroundInvokeChain(md, beanMethod);
             }
 
+
             // Asynchronous method initialization        
             if ( isEligibleForAsync(originalIntf, methodIntf) ) {
 
@@ -2570,7 +2571,78 @@ public abstract class BaseContainer
                 boolean isAsync = ((EjbSessionDescriptor) ejbDescriptor).
                         isAsynchronousMethod(targetMethod, methodIntf);
 
-                info.setIsAsynchronous(isAsync);
+                if( isAsync ) {
+
+                    // Check return type
+                    if( optionalLocalBusView ) {
+
+                        boolean beanMethodReturnTypeVoid = beanMethod.getReturnType().equals(Void.TYPE);
+                        boolean beanMethodReturnTypeFuture = beanMethod.getReturnType().equals(Future.class);
+
+                        if ( !beanMethodReturnTypeVoid && !beanMethodReturnTypeFuture ){
+                            throw new RuntimeException("Invalid no-interface view asynchronous method '"
+                                    + beanMethod + "' for bean " + ejbDescriptor.getName() +
+                                    ". Async method exposed through no-interface view must " +
+                                    " have return type void or java.lang.concurrent.Future<V>");
+                        }
+
+                    } else {
+
+                        // Use actual interface method instead of method from generated interface
+                        Method intfMethod = null;
+                        try {
+                            intfMethod = originalIntf.getMethod(
+                                method.getName(), method.getParameterTypes());
+                        } catch (NoSuchMethodException nsmEx) {
+                            throw new RuntimeException("No matching async intf method for method '" +
+                                beanMethod + "' on bean " + ejbDescriptor.getName());
+                        }
+
+                        if( beanMethod == null ) {
+
+                            throw new RuntimeException("No matching bean class method for async method '" +
+                                intfMethod + "' on bean " + ejbDescriptor.getName());
+                        }
+
+                        boolean beanMethodReturnTypeVoid = beanMethod.getReturnType().equals(Void.TYPE);
+                        boolean beanMethodReturnTypeFuture = beanMethod.getReturnType().equals(Future.class);
+
+                        boolean intfMethodReturnTypeVoid = intfMethod.getReturnType().equals(Void.TYPE);
+                        boolean intfMethodReturnTypeFuture = intfMethod.getReturnType().equals(Future.class);
+
+                        boolean bothVoid = intfMethodReturnTypeVoid && beanMethodReturnTypeVoid;
+                        boolean bothFuture = intfMethodReturnTypeFuture && beanMethodReturnTypeFuture;
+
+                        boolean valid = false;
+
+                        if( bothVoid ) {
+                            valid = true;
+                        } else if( bothFuture ) {
+                            valid = true;
+                        } else if( intfMethodReturnTypeFuture ) {
+
+                            // If method is exposed through a local or remote business interface,
+                            // it's valid if the interface declares Future<V> return type and
+                            // the method impl returns V.
+                            Type intfMethodReturnType = intfMethod.getGenericReturnType();
+                            Type beanMethodReturnType = beanMethod.getGenericReturnType();
+
+                            valid = (beanMethodReturnType.equals(
+                                ((ParameterizedType)intfMethodReturnType).getActualTypeArguments()[0]));
+
+                        }
+
+                        if( !valid ) {
+                            throw new RuntimeException("Invalid asynchronous bean class / interface " +
+                                    "method signatures for bean " + ejbDescriptor.getName() +
+                                    ". beanMethod = '" + beanMethod + "' , interface method = '"
+                                        +  intfMethod + "'");
+                        }
+                    }
+
+                    info.setIsAsynchronous(true);
+
+                }
             }
         }
         
@@ -2662,7 +2734,7 @@ public abstract class BaseContainer
 
         MethodLockInfo lockInfo = null;
 
-        // Set locking info
+        // Set READ/WRITE lock info.  Only applies to singleton beans.
         if( isSingleton ) {
             EjbSessionDescriptor singletonDesc = (EjbSessionDescriptor) ejbDescriptor;
             List<MethodDescriptor> readLockMethods = singletonDesc.getReadLockMethods();
@@ -2692,16 +2764,16 @@ public abstract class BaseContainer
         }
 
         // Set AccessTimeout info
-        if( isSingleton ) {
-            // @@@ need to do this for stateful session beans too
-            EjbSessionDescriptor singletonDesc = (EjbSessionDescriptor) ejbDescriptor;
+        if( isSingleton || isStatefulSession ) {
+
+            EjbSessionDescriptor sessionDesc = (EjbSessionDescriptor) ejbDescriptor;
             List<EjbSessionDescriptor.AccessTimeoutHolder> accessTimeoutInfo =
-                    singletonDesc.getAccessTimeoutInfo();
+                    sessionDesc.getAccessTimeoutInfo();
 
 
             for(EjbSessionDescriptor.AccessTimeoutHolder accessTimeoutHolder : accessTimeoutInfo) {
                 MethodDescriptor accessTimeoutMethodDesc = accessTimeoutHolder.method;
-                Method accessTimeoutMethod = accessTimeoutMethodDesc.getMethod(singletonDesc);
+                Method accessTimeoutMethod = accessTimeoutMethodDesc.getMethod(sessionDesc);
                 if(implMethodMatchesInvInfoMethod(invInfoMethod, methodIntf, accessTimeoutMethod)) {
 
                     if( lockInfo == null ) {

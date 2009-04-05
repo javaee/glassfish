@@ -156,7 +156,13 @@ public final class DTDRegistry {
     public static final String SUN_EJBJAR_300_DTD_PUBLIC_ID =
         "-//Sun Microsystems, Inc.//DTD Application Server 9.0 EJB 3.0//EN";
     public static final String SUN_EJBJAR_300_DTD_SYSTEM_ID =
-        "http://www.sun.com/software/appserver/dtds/sun-ejb-jar_3_0-0.dtd";    
+        "http://www.sun.com/software/appserver/dtds/sun-ejb-jar_3_0-0.dtd";
+    
+    public static final String SUN_EJBJAR_310_DTD_PUBLIC_ID =
+           "-//GlassFish.org//DTD GlassFish v3 EJB 3.1//EN";
+    public static final String SUN_EJBJAR_310_DTD_SYSTEM_ID =
+           "http://glassfish.org/dtds/gf-ejb-jar_3_1-0.dtd";
+
 
     
     /**

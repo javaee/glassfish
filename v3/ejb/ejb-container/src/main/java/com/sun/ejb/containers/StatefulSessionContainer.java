@@ -36,6 +36,7 @@
 package com.sun.ejb.containers;
 
 import java.util.*;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.NotSerializableException;
@@ -164,6 +165,8 @@ public final class StatefulSessionContainer
     private Method beforeCompletionMethod;
     private Method afterCompletionMethod;
 
+    private boolean allowSerializedAccess;
+
     /*
      * Cache for keeping ref count for shared extended entity manager.
      * The key in this map is the physical entity manager
@@ -191,6 +194,10 @@ public final class StatefulSessionContainer
         super(conType, desc, loader);
         super.createCallFlowAgent(ComponentType.SFSB);
         this.ejbName = desc.getName();
+
+        EjbSessionDescriptor sessionDesc = (EjbSessionDescriptor) desc;
+        allowSerializedAccess = !sessionDesc.isConcurrencyProhibited();
+
         this.traceInfoPrefix = "sfsb-" + ejbName + ": ";
     }
 
@@ -1341,68 +1348,117 @@ public final class StatefulSessionContainer
                     + " session-key: " + sessionKey);
         }
 
-        SessionContextImpl context = null;
-        synchronized (sc) {
-            SessionContextImpl newSC = sc;
-            if (sc.getState() == BeanState.PASSIVATED) {
-                // This is possible if the EJB was passivated after
-                // the last lookupEJB. Try to activate it again.
-                newSC = (SessionContextImpl) sessionBeanCache.lookupEJB(
-                        sessionKey, this, ejbo);
-                if (newSC == null) {
-                    if (_logger.isLoggable(TRACE_LEVEL)) {
-                        logTraceInfo(inv, sessionKey, "Context does not exist");
-                    }
-                    // EJB2.0 section 7.6
-                    throw new NoSuchObjectLocalException(
-                            "The EJB does not exist. key: " + sessionKey);
-                }
-            }
-            // acquire the lock again, in case a new sc was returned.
-            synchronized (newSC) { //newSC could be same as sc
-                // Check & set the state of the EJB
-                if (newSC.getState() == BeanState.DESTROYED) {
-                    if (_logger.isLoggable(TRACE_LEVEL)) {
-                        logTraceInfo(inv, sessionKey, "Got destroyed context");
-                    }
-                    throw new NoSuchObjectLocalException
-                            ("The EJB does not exist. session-key: " + sessionKey);
-                } else if (newSC.getState() == BeanState.INVOKING) {
-                    handleConcurrentInvocation(inv, sessionKey);
-                }
-                if (newSC.getState() == BeanState.READY) {
-                    decrementMethodReadyStat();
-                }
-                if (checkpointPolicy.isHAEnabled()) {
-                    doVersionCheck(inv, sessionKey, sc);
-                }
-                newSC.setState(BeanState.INVOKING);
-                context = newSC;
-            }
-        }
+        if( allowSerializedAccess ) {
 
-        // touch the context here so timestamp is set & timeout is prevented
-        context.touch();
+            MethodLockInfo lockInfo = inv.invocationInfo.methodLockInfo;
 
-        if ((context.existsInStore()) && (removalGracePeriodInSeconds > 0)) {
-            long now = System.currentTimeMillis();
-            long threshold = now - (removalGracePeriodInSeconds * 1000);
-            if (context.getLastPersistedAt() <= threshold) {
+            if( (lockInfo != null) && lockInfo.hasTimeout() ) {
                 try {
-                    sfsbStoreManager.updateLastAccessTime(sessionKey, now);
-                    context.setLastPersistedAt(System.currentTimeMillis());
-                } catch (SFSBStoreManagerException sfsbEx) {
-                    _logger.log(Level.WARNING,
-                            "Couldn't update timestamp for: " + sessionKey
-                                    + "; Exception: " + sfsbEx);
-                    _logger.log(Level.FINE,
-                            "Couldn't update timestamp for: " + sessionKey, sfsbEx);
+                    boolean acquired = sc.getStatefulWriteLock().tryLock(lockInfo.getTimeout(),
+                            lockInfo.getTimeUnit());
+                    if( !acquired ) {
+                        String msg = "Serialized access attempt on method " + inv.beanMethod +
+                            " for ejb " + ejbDescriptor.getName() + " timed out after " +
+                             + lockInfo.getTimeout() + " " + lockInfo.getTimeUnit();
+                        throw new ConcurrentAccessTimeoutException(msg);
+                    }
+
+                } catch(InterruptedException ie)  {
+                    String msg = "Serialized access attempt on method " + inv.beanMethod +
+                            " for ejb " + ejbDescriptor.getName() + " was interrupted within " +
+                             + lockInfo.getTimeout() + " " + lockInfo.getTimeUnit();
+                    throw new ConcurrentAccessTimeoutException(msg);
                 }
+            } else {
+                sc.getStatefulWriteLock().lock();
             }
+
+            // Explicitly set state to track that we're holding the lock for this invocation.
+            // No matter what we need to ensure that the lock is released.   In some
+            // cases releaseContext() isn't called so for safety we'll have more than one
+            // place that can potentially release the lock.  The invocation state will ensure
+            // we don't accidently unlock too many times. 
+            inv.setHoldingSFSBSerializedLock(true);
         }
 
-        if (_logger.isLoggable(TRACE_LEVEL)) {
-            logTraceInfo(inv, context, "Got Context!!");
+        SessionContextImpl context = null;
+
+        try {
+
+            synchronized (sc) {
+
+                // TODO Current serialized locking logic does not handle passivation case
+                // As part of enabling passivation, need to revisit lock acquisition given
+                // the potential difference between sc and newSC
+
+                SessionContextImpl newSC = sc;
+                if (sc.getState() == BeanState.PASSIVATED) {
+                    // This is possible if the EJB was passivated after
+                    // the last lookupEJB. Try to activate it again.
+                    newSC = (SessionContextImpl) sessionBeanCache.lookupEJB(
+                            sessionKey, this, ejbo);
+                    if (newSC == null) {
+                        if (_logger.isLoggable(TRACE_LEVEL)) {
+                            logTraceInfo(inv, sessionKey, "Context does not exist");
+                        }
+                        // EJB2.0 section 7.6
+                        throw new NoSuchObjectLocalException(
+                                "The EJB does not exist. key: " + sessionKey);
+                    }
+                }
+                // acquire the lock again, in case a new sc was returned.
+                synchronized (newSC) { //newSC could be same as sc
+                    // Check & set the state of the EJB
+                    if (newSC.getState() == BeanState.DESTROYED) {
+                        if (_logger.isLoggable(TRACE_LEVEL)) {
+                            logTraceInfo(inv, sessionKey, "Got destroyed context");
+                        }
+                        throw new NoSuchObjectLocalException
+                                ("The EJB does not exist. session-key: " + sessionKey);
+                    } else if (newSC.getState() == BeanState.INVOKING) {
+                        handleConcurrentInvocation(inv, newSC, sessionKey);
+                    }
+                    if (newSC.getState() == BeanState.READY) {
+                        decrementMethodReadyStat();
+                    }
+                    if (checkpointPolicy.isHAEnabled()) {
+                        doVersionCheck(inv, sessionKey, sc);
+                    }
+                    newSC.setState(BeanState.INVOKING);
+                    context = newSC;
+                }
+            }
+
+            // touch the context here so timestamp is set & timeout is prevented
+            context.touch();
+
+            if ((context.existsInStore()) && (removalGracePeriodInSeconds > 0)) {
+                long now = System.currentTimeMillis();
+                long threshold = now - (removalGracePeriodInSeconds * 1000);
+                if (context.getLastPersistedAt() <= threshold) {
+                    try {
+                        sfsbStoreManager.updateLastAccessTime(sessionKey, now);
+                        context.setLastPersistedAt(System.currentTimeMillis());
+                    } catch (SFSBStoreManagerException sfsbEx) {
+                        _logger.log(Level.WARNING,
+                                "Couldn't update timestamp for: " + sessionKey
+                                    + "; Exception: " + sfsbEx);
+                        _logger.log(Level.FINE,
+                                "Couldn't update timestamp for: " + sessionKey, sfsbEx);
+                    }
+                }
+            }
+
+            if (_logger.isLoggable(TRACE_LEVEL)) {
+                logTraceInfo(inv, context, "Got Context!!");
+            }
+        } catch(RuntimeException t) {
+
+            // releaseContext isn't called if this method throws an exception,
+            // so make sure to release any sfsb lock
+            releaseSFSBSerializedLock(inv, sc);    
+
+            throw t;
         }
 
         return context;
@@ -1443,21 +1499,36 @@ public final class StatefulSessionContainer
         }
     }
 
-    private void handleConcurrentInvocation(EjbInvocation inv, Object sessionKey) {
+    private void handleConcurrentInvocation(EjbInvocation inv, SessionContextImpl sc, Object sessionKey) {
         if (_logger.isLoggable(TRACE_LEVEL)) {
             logTraceInfo(inv, sessionKey, "Another invocation in progress");
         }
 
-        String errMsg = "SessionBean is executing another request. "
-                + "[session-key: " + sessionKey + "]";
-        ConcurrentAccessException conEx = new ConcurrentAccessException(errMsg);
+        if( allowSerializedAccess ) {
 
-        if (inv.isBusinessInterface) {
-            throw conEx;
+            // Check for loopback call to avoid deadlock.
+            if( sc.getStatefulWriteLock().getHoldCount() > 1 ) {
+
+                throw new IllegalLoopbackException("Illegal Reentrant Access : Attempt to make " +
+                        "a loopback call on method '" + inv.beanMethod + " for stateful session bean " +
+                        ejbDescriptor.getName());
+            }
+
         } else {
-            // there is an invocation in progress for this instance
-            // throw an exception (EJB2.0 section 7.5.6).
-            throw new EJBException(conEx);
+
+            String errMsg = "Concurrent Access attempt on method " +
+                    inv.beanMethod + " of SessionBean " + ejbDescriptor.getName() +
+                    " is prohibited.  SFSB instance is executing another request. "
+                + "[session-key: " + sessionKey + "]";
+            ConcurrentAccessException conEx = new ConcurrentAccessException(errMsg);
+
+            if (inv.isBusinessInterface) {
+                throw conEx;
+            } else {
+                // there is an invocation in progress for this instance
+                // throw an exception (EJB2.0 section 7.5.6).
+                throw new EJBException(conEx);
+            }
         }
     }
 
@@ -1523,14 +1594,17 @@ public final class StatefulSessionContainer
     public void releaseContext(EjbInvocation inv) {
         SessionContextImpl sc = (SessionContextImpl) inv.context;
 
-        // check if the bean was destroyed
-        if (sc.getState() == BeanState.DESTROYED)
-            return;
-
-        // we're sure that no concurrent thread can be using this
-        // context, so no need to synchronize.
-        Transaction tx = sc.getTransaction();
+        // Make sure everything is within try block so we can be assured that
+        // any instance lock is released in the finally block.
         try {
+            // check if the bean was destroyed
+            if (sc.getState() == BeanState.DESTROYED)
+                return;
+
+            // we're sure that no concurrent thread can be using this
+            // context, so no need to synchronize.
+            Transaction tx = sc.getTransaction();
+
 
             // If this was an invocation of a remove-method
             if (inv.invocationInfo.removalInfo != null) {
@@ -1560,6 +1634,9 @@ public final class StatefulSessionContainer
                     sc.setTransaction(null);
 
                     forceDestroyBean(sc);
+
+                    // The bean has been detroyed so just skip any remaining processing.
+                    return;
                 }
             }
 
@@ -1601,9 +1678,27 @@ public final class StatefulSessionContainer
 
         } catch (SystemException ex) {
             throw new EJBException(ex);
+        } finally {
+
+            releaseSFSBSerializedLock(inv, sc);
         }
     }
 
+    private void releaseSFSBSerializedLock(EjbInvocation inv, SessionContextImpl sc) {
+        if( !this.allowSerializedAccess ) {
+            return;
+        }
+        
+        try {
+            if( inv.holdingSFSBSerializedLock() ) {
+                inv.setHoldingSFSBSerializedLock(false);
+                sc.getStatefulWriteLock().unlock();
+            }
+        } catch(IllegalMonitorStateException imse) {
+            logTraceInfo(inv, sc, "error unlocking serialized SFSB lock");
+            _logger.log(Level.WARNING, "error unlocking serialized SFSB lock", imse);
+        }
+    }
 
     void afterBegin(EJBContextImpl context) {
         // TX_BEAN_MANAGED EJBs cannot implement SessionSynchronization
@@ -2084,6 +2179,9 @@ public final class StatefulSessionContainer
             incrementMethodReadyStat();
             context.setInstanceKey(sessionKey);
             context.setExistsInStore(true);
+
+            context.initializeStatefulWriteLock();
+
 
             if (ejbObject == null) {
 

@@ -159,13 +159,6 @@ public class AsynchronousHandler extends AbstractAttributeHandler
         }
 
 
-        /** XXX TODO: Compare that the Future type matches return type
-            when @Asynchronous is on the interface as we don't look
-            at bean methods in that case. **/
-
-        // Check return type on the business method
-        checkValidReturnType(m0);
-
         EjbSessionDescriptor sessionDesc = (EjbSessionDescriptor) ejbDesc;
 
         MethodDescriptor methodDesc = (methodIntf == null) ?
@@ -175,39 +168,12 @@ public class AsynchronousHandler extends AbstractAttributeHandler
             logger.fine("Adding asynchronous method " + methodDesc);
         }
 
+
+        // There is no way to "turn off" the asynchronous designation in the
+        // deployment descriptor, so we don't need to do any override checks
+        // here.  Just always add any async methods.  
         sessionDesc.addAsynchronousMethod(methodDesc);
 
     }
 
-    /**
-     * Verify that the return type is void or Future<V>
-     */
-    private void checkValidReturnType(Method m) throws AnnotationProcessorException {
-        if ( !(m.getReturnType().equals(Void.TYPE) ||
-                m.getReturnType().equals(Future.class)) ) {
-            throw new AnnotationProcessorException("Return type of a method " + m +
-                    "annotated as @Asynchronous is not void or Future<V>");
-        }
-    }
-
-    /**
-     * Returns true if two methods have the same signatures 
-     * or if one returns a Future of the return type of the other
-     */
-    private boolean sameAsynchronousMethodSignature(Method asyncm, Method otherm) {
-        if(TypeUtil.sameMethodSignature(asyncm, otherm)) {
-            return true;
-        } else if ((asyncm.getName().equals(otherm.getName())) &&
-                TypeUtil.sameParamTypes(asyncm, otherm)  && 
-                asyncm.getReturnType().equals(Future.class) ) {
-
-            // If it's not the same return type, it should be a Future<V> vs. <V>
-            Type asyncmt = asyncm.getGenericReturnType();
-            Type othermt = otherm.getGenericReturnType();
-
-            return othermt.equals(
-                    ((ParameterizedType)asyncmt).getActualTypeArguments()[0]); 
-        }
-        return false;
-    }
 }

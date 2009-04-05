@@ -49,6 +49,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import java.util.*;
 
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static com.sun.ejb.containers.StatefulSessionContainer.EEMRefInfo;
 import static com.sun.ejb.containers.StatefulSessionContainer.EEMRefInfoKey;
@@ -88,7 +89,9 @@ public final class SessionContextImpl
     //Used during activation to populate entries in the above maps
     //Also, EEMRefInfo implements IndirectlySerializable
     private Collection<EEMRefInfo> eemRefInfos = new HashSet<EEMRefInfo>();
-    
+
+    // Used to provide serialized access to an SFSB instance.
+    private transient ReentrantReadWriteLock statefulSerializedAccessLock;
     
     SessionContextImpl(Object ejb, BaseContainer container) {
         super(ejb, container);
@@ -96,6 +99,9 @@ public final class SessionContextImpl
             (EjbSessionDescriptor) getContainer().getEjbDescriptor();
         isStateless = sessionDesc.isStateless();
         isStateful  = sessionDesc.isStateful();
+        if( isStateful ) {
+            initializeStatefulWriteLock();   
+        }
     }
 
     public Map<EntityManagerFactory, EntityManager> getExtendedEntityManagerMap() {
@@ -149,6 +155,15 @@ public final class SessionContextImpl
 
     public boolean isEmfRegisteredWithTx(EntityManagerFactory emf) {
         return getEmfsRegisteredWithTx().contains(emf);
+    }
+
+
+    public void initializeStatefulWriteLock() {
+        statefulSerializedAccessLock = new ReentrantReadWriteLock(true);
+    }
+
+    public ReentrantReadWriteLock.WriteLock getStatefulWriteLock() {
+        return statefulSerializedAccessLock.writeLock();
     }
 
     @Override

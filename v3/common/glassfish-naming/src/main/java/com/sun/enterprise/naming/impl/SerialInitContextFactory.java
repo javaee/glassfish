@@ -92,7 +92,7 @@ public class SerialInitContextFactory implements InitialContextFactory {
         }
 
 
-        //Another Big TODO Sync with useS1ASCtxFactory
+        // TODO S1ASCtxFactory is not supported yet.  This will be added after V3.
 
         // Use Atomic look to ensure only first thread does NamingObjectsProvider
         // initialization.
