@@ -17,10 +17,6 @@
             <connection-definition>
                 <managedconnectionfactory-class>com.sun.connector.blackbox.LocalTxManagedConnectionFactory
                 </managedconnectionfactory-class>
-                <connectionfactory-interface>com.sun.connector.blackbox.DataSource</connectionfactory-interface>
-                <connectionfactory-impl-class>com.sun.connector.blackbox.JdbcDataSource</connectionfactory-impl-class>
-                <connection-interface>java.sql.Connection</connection-interface>
-                <connection-impl-class>com.sun.connector.blackbox.JdbcConnection</connection-impl-class>
 
                 <config-property>
                     <config-property-name>PortNumber</config-property-name>
@@ -77,6 +73,10 @@
                     <config-property-name>Password</config-property-name>
                     <config-property-type>java.lang.String</config-property-type>
                 </config-property>
+                <connectionfactory-interface>com.sun.connector.blackbox.DataSource</connectionfactory-interface>
+                <connectionfactory-impl-class>com.sun.connector.blackbox.JdbcDataSource</connectionfactory-impl-class>
+                <connection-interface>java.sql.Connection</connection-interface>
+                <connection-impl-class>com.sun.connector.blackbox.JdbcConnection</connection-impl-class>
 
             </connection-definition>
 
