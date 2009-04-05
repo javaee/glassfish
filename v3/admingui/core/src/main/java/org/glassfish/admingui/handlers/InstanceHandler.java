@@ -170,14 +170,10 @@ public class InstanceHandler {
                 }
             }
         }
-
-        String msg = GuiUtil.getMessage("inst.notEnabled");
-        if (debugPort != null) {
-            if (debugPort.equals("0") == false) {
-                msg = GuiUtil.getMessage("inst.debugEnabled") + debugPort;
-            }
-        }
-
+        String debugEnabled = amxRoot.getConfig(configName).getJavaConfig().getDebugEnabled();
+        String msg = ("true".equals(debugEnabled)) ?
+            GuiUtil.getMessage("inst.debugEnabled") + debugPort :
+            GuiUtil.getMessage("inst.notEnabled");
         handlerCtx.setOutputValue("debugPort", msg);
         handlerCtx.setOutputValue("configDir", configDir);
         handlerCtx.setOutputValue("version", version);
