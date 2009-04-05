@@ -8,6 +8,9 @@ import javax.naming.InitialContext;
 
 import java.util.concurrent.*;
 
+import java.rmi.RemoteException;
+import java.rmi.NoSuchObjectException;
+
 
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
@@ -21,6 +24,8 @@ public class Client {
     private RemoteAsync remoteAsync;
 
     private RemoteAsync2 statefulBean;
+    private RemoteAsync3 statefulBeanLegacyRemote;
+    private RemoteAsync3 statefulBeanLegacyRemote2;
 
     private int num;
 
@@ -41,7 +46,10 @@ public class Client {
 
 	try {
 
-	    statefulBean = (RemoteAsync2) new InitialContext().lookup("java:global/" + appName + "/StatefulBean");
+	    statefulBean = (RemoteAsync2) new InitialContext().lookup("java:global/" + appName + "/StatefulBean!com.acme.RemoteAsync2");
+	    statefulBeanLegacyRemote = (RemoteAsync3) new InitialContext().lookup("java:global/" + appName + "/StatefulBean!com.acme.RemoteAsync3");
+	    statefulBeanLegacyRemote2 = (RemoteAsync3) new InitialContext().lookup("java:global/" + appName + "/StatefulBean!com.acme.RemoteAsync3");
+
 	    Future<String> futureSful = statefulBean.helloAsync();
 	    System.out.println("Stateful bean says " + futureSful.get());
 
@@ -71,7 +79,55 @@ public class Client {
 		}
 	    }
 	    
+	    try {
+		Future<String> f = statefulBeanLegacyRemote.throwException("javax.ejb.CreateException");
+		String result = f.get();
+		throw new EJBException("Didn't get CreateException");
+	    } catch(ExecutionException ee) {
+		if( ee.getCause() instanceof CreateException ) {
+		    System.out.println("Successfully received CreateException");
+		} else {
+		    throw new EJBException("wrong exception received",
+					   ee);
+		}
+	    }
+
+	    try {
+		Future<String> f = statefulBeanLegacyRemote.throwException("javax.ejb.EJBException");
+		String result = f.get();
+		throw new EJBException("Didn't get EJBException");
+	    } catch(ExecutionException ee) {
+		if( ee.getCause() instanceof RemoteException ) {
+		    System.out.println("Successfully received RemoteException");
+		} else {
+		    throw new EJBException("wrong exception received",
+					   ee);
+		}
+	    }
+
 	    
+	    try {
+		Future<String> f = statefulBeanLegacyRemote2.removeAfterCalling();
+		String result = f.get();
+		System.out.println("result of removeAfterCalling = " + result);
+	    } catch(ExecutionException ee) {
+		throw new EJBException("got unexpected exception", ee);
+	    }
+
+	    try {
+		Future<String> f = statefulBeanLegacyRemote2.helloAsync();
+		String result = f.get();
+		throw new EJBException("Didn't get RemoteException");
+	    } catch(ExecutionException ee) {
+		if( ee.getCause() instanceof NoSuchObjectException ) {
+		    System.out.println("Successfully received RemoteException");
+		} else {
+		    throw new EJBException("wrong exception received",
+					   ee);
+		}
+	    } catch(NoSuchObjectException nsoe) {
+		System.out.println("Successfully received NoSuchObjectException");
+	    }
 	  
 	    remoteAsync = (RemoteAsync) new InitialContext().lookup("java:global/" + appName + "/SingletonBean");
 	    remoteAsync.startTest();

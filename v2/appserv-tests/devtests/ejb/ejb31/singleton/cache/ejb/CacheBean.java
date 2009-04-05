@@ -5,10 +5,12 @@ import javax.annotation.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+
 @Singleton
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 @LocalBean
-public class CacheBean implements CacheRemote {
+@Remote(CacheRemote.class)
+public class CacheBean {
 
     @EJB CacheBean me;
     @Resource SessionContext sesCtx;
@@ -33,6 +35,9 @@ public class CacheBean implements CacheRemote {
 	    }
 	      finishedInit = true;
        }
+
+    @Asynchronous
+    public void fooAsync() { return; }
 
     public int checkCache() {
 

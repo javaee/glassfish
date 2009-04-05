@@ -10,6 +10,7 @@ import javax.annotation.PreDestroy;
 import javax.annotation.security.DenyAll;
 
 @Stateful
+@ConcurrencyManagement(ConcurrencyManagementType.CONCURRENCY_NOT_ALLOWED)
 public class SfulEJB implements 
     SfulBusiness, SfulRemoteBusiness, SfulRemoteBusiness2
 {

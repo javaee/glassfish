@@ -18,6 +18,7 @@
 
         <antcall target="webandejb"/>
         <antcall target="schema"/>
+        <antcall target="sfsbscnc"/>
     </target>
 
     <target name="remote1">
@@ -42,6 +43,12 @@
         <record name="schema.output" action="start" />
             <ant dir="schema" target="all"/>
         <record name="schema.output" action="stop" />
+    </target>
+
+    <target name="sfsbscnc">
+        <record name="sfsbscnc.output" action="start" />
+            <ant dir="sfsbscnc" target="all"/>
+        <record name="sfsbscnc.output" action="stop" />
     </target>
 
     <target name="usage">

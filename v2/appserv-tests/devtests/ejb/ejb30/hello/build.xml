@@ -16,9 +16,11 @@
         <antcall target="session2"/>
         <antcall target="session2full"/>
         <antcall target="nopkg"/>
-        <antcall target="session5"/>
+
 
 	<!-- gradually reenable as possible
+
+        <antcall target="session5"/> // Client class seems to be disappearing from client.jar after deployment. need to ask Tim
 
         <antcall target="session3"/> // depends on EMs working in ACC
 
