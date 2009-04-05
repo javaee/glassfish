@@ -189,13 +189,13 @@
     
     <target name="run-war" depends="init-common">
         <antcall target="runwebclient-common">
-	<param name="testsuite.id" value="web-to-ejb (stand-alone war based)"/>
+	<param name="testsuite.id" value="embeddedweb (stand-alone war based)"/>
 	</antcall>
     </target>
 
     <target name="run-ear" depends="init-common">
         <antcall target="runwebclient-common">
-	<param name="testsuite.id" value="web-to-ejb (ear based)"/>
+	<param name="testsuite.id" value="embeddedweb (ear based)"/>
 	</antcall>
     </target>
  
