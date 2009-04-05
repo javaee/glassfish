@@ -347,19 +347,17 @@ public class TableHandlers {
         public static void convertListToArrayList(HandlerContext handlerCtx) {
         List tableList = (List)handlerCtx.getInputValue("TableList");
         String name = (String)handlerCtx.getInputValue("Name");
+        if (GuiUtil.isEmpty(name))
+            name = "name";
         if(tableList != null) {
             ListIterator li = tableList.listIterator();
             ArrayList names = new ArrayList();
             while(li.hasNext()) {
                 Map props = (Map)li.next();
-                if(name != null) {
-                    names.add(props.get(name));
-                
-                } else {
-                    names.add(props.get("name"));
-                }
+                String val= (String) props.get(name);
+                if (!GuiUtil.isEmpty(val))
+                    names.add(val);
             }
-            
             handlerCtx.setOutputValue("NameList", names);
         }
     }      
