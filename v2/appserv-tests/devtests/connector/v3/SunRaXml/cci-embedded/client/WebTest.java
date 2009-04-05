@@ -32,7 +32,7 @@ public class WebTest {
         try {
             long time = System.currentTimeMillis();
             Socket s = new Socket(host, port);
-            s.setSoTimeout(10000);
+            s.setSoTimeout(60000);
             OutputStream os = s.getOutputStream();
 
             contextPath += "?url=" + contextPath;
