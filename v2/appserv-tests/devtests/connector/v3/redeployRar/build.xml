@@ -53,8 +53,8 @@
         <antcall target="build-ear-common">
             <param name="ejbjar.classes"
                    value="**/*Vers*.class"/>
-            <param name="appclientjar.classes"
-                   value="**/*Client*.class"/>
+            <!--<param name="appclientjar.classes"
+                   value="**/*Client*.class"/>-->
         </antcall>
 
     </target>
