@@ -394,7 +394,7 @@ public abstract class RootDeploymentDescriptor extends Descriptor {
                   specVersion < ANNOTATION_WAR_VER) ||
                  (mType.equals(XModuleType.CAR) &&
                   specVersion < ANNOTATION_CAR_VER)  ||
-                 (mType.equals(ModuleType.RAR) &&
+                 (mType.equals(XModuleType.RAR) &&
                   specVersion < ANNOTATION_RAR_VER)) {
                 return true;
             } else {
