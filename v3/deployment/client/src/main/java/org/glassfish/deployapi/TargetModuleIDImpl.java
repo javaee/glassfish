@@ -107,6 +107,16 @@ public class TargetModuleIDImpl implements TargetModuleID {
     }
 
     /**
+     * Sets the URL for running the Web module, if this TargetModuleID
+     * represents a Web module or submodule on a Target.
+     * @param the webURL
+     */
+    public void setWebURL(String webURL) {
+        target.getOwner().setWebURL(this, webURL);
+    }
+
+
+    /**
      * Returns the TargetModuleID for the containing module on the Target, if
      * this TargetModuleID represents a submodule.
      * @return the parent TargetModuleID

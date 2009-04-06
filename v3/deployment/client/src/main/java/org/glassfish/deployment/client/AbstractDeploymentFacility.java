@@ -81,6 +81,8 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
     private boolean connected;
     private TargetImpl domain;
     private ServerConnectionIdentifier targetDAS;
+    private Map<String, String> targetModuleWebURLs = 
+        new HashMap<String, String>();
 
     /**
      * Defines behavior implemented in the local or remote deployment facility
@@ -820,7 +822,11 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
 
 
     public String getWebURL(TargetModuleID tmid) {
-        throw new UnsupportedOperationException("Not supported for v3");
+        return targetModuleWebURLs.get(tmid.getModuleID());
+    }
+
+    public void setWebURL(TargetModuleID tmid, String webURL) {
+        targetModuleWebURLs.put(tmid.getModuleID(), webURL);
     }
 
     protected ServerConnectionIdentifier getTargetDAS() {
@@ -847,7 +853,7 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
                sniffersFound.add("web");
            } else if (result.endsWith("engine.ejb.sniffer=ejb")) {
                sniffersFound.add("ejb");
-           } else if (result.endsWith("engine.connectors.sniffer=connectors")) {
+           } else if (result.endsWith("engine.connector.sniffer=connector")) {
                sniffersFound.add("rar");
            } else if (result.endsWith("engine.appclient.sniffer=appclient")) {
                sniffersFound.add("car");

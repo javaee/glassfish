@@ -68,10 +68,20 @@ public interface TargetOwner {
     public ClientConfiguration getClientConfiguration(TargetModuleID targetModuleID);
     
     /**
-     * Returns the Web URL for the specified module on the {@link Target} implied by 
-     * the TargetModuleID.
+     * Returns the Web URL for the specified module on the {@link Target}
+     * implied by the TargetModuleID.
      * @param tmid
-     * @return
+     * @return web url
      */
     public String getWebURL(TargetModuleID tmid);
+
+    /**
+     * Sets the Web URL for the specified module on the {@link Target} implied
+     * by the TargetModuleID.
+     * represents a Web module or submodule on a Target.
+     * @param tmid
+     * @param the URL
+     */
+    public void setWebURL(TargetModuleID tmid, String webURL);
+
 }
