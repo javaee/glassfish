@@ -45,7 +45,7 @@
         </sun:textField>
 </sun:property>
 
-<sun:property id="cxp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.webApp.ContextRoot}" helpText="$resource{i18n.webApp.contextRootHelp}" visible="#{false}">
+<sun:property id="cxp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.webApp.ContextRoot}" helpText="$resource{i18n.webApp.contextRootHelp}" >
 	<sun:textField id="ctx" columns="$int{40}" text="#{ctxtRoot}" >
             <!afterCreate
                 getClientId(component="$this{component}" clientId=>$page{contextRootId});
@@ -53,7 +53,7 @@
         </sun:textField>
 </sun:property>
 
-<sun:property id="vsp" labelAlign="left" noWrap="#{true}" rendered="#{displayVS}" overlapLabel="#{false}" label="$resource{i18n.deploy.virtualServerLabel}" helpText="$resource{i18n.deploy.vsHelp}" visible="#{false}">
+<sun:property id="vsp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.virtualServerLabel}" helpText="$resource{i18n.deploy.vsHelp}" >
 	<sun:listbox id="vs" 
 		immediate="#{true}"
 		items="#{availableVS}"
