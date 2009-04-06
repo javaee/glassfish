@@ -590,6 +590,8 @@ class TransactionFactoryImpl extends TransactionFactoryPOA implements Transactio
                         Configuration.getORB().resolve_initial_references("NameService"/*#Frozen*/));
                 } catch (Exception exc) {
                     _logger.log(Level.WARNING,"jts.orb_not_running");
+                    // Return - otherwise it'll just be an NPE reported in the next block
+                    return thisRef;
                 }
 
                 try {
