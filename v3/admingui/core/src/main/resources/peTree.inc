@@ -102,17 +102,24 @@
 	</sun:treeNode>
 
 	<!--  ===================================== Applications ======================  -->
-			
-	<sun:treeNode id="applications"
-		    text="$resource{i18n.tree.applications}"
-		    url="/applications/applications.jsf"
-		    expanded="$boolean{true}" 
-		    >
-	    <!facet image>
-		<sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/applications/applications.jsf"  border="$int{0}" immediate="$boolean{true}" />
-	    </facet>
+	
+    <dynamicTreeNode id="applications"
+        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
+        objectName="amx:j2eeType=X-ApplicationsConfig,name=na"
+        methodName="getApplicationConfigMap"
+        text="$resource{i18n.tree.applications}"
+        url="/applications/applications.jsf"
+        expanded="$boolean{false}"
+        attributeName="name"
+        childImageURL="resource/images/webModule.gif"
+        childExpanded="$boolean{false}"
+        childURL="/applications/applicationEdit.jsf?appName=#{$this{valueBinding}.text}"
+    >
+    <!facet image>
+        <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/applications/applications.jsf"  border="$int{0}" immediate="$boolean{true}" />
+    </facet>
+    </dynamicTreeNode>
 
-      </sun:treeNode>
 	    
 	<!--  ===================================== Resources ======================  -->
 
