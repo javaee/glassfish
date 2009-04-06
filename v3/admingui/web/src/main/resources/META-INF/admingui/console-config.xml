@@ -8,26 +8,33 @@
                 parentId="configuration" 
                 content="configuration/webContainerNode.jsf" 
         />
-        <integration-point 
-                id="web" 
-                type="org.glassfish.admingui:treeNode" 
-                priority="100" 
-                parentId="applications" 
-                content="webApp/webAppNode.jsf" 
-        />
+
+        
         <integration-point 
                 id="monitor" 
                 type="org.glassfish.admingui:treeNode" 
                 priority="350"
                 parentId="configuration" 
-                content="monitor/monitoringNode.jsf"/>
-                
+                content="monitor/monitoringNode.jsf"
+        />
+
+        <!--
+        <integration-point
+                id="web"
+                type="org.glassfish.admingui:treeNode"
+                priority="100"
+                parentId="applications" 
+                content="webApp/webAppNode.jsf"
+        />
+        -->
         <!-- Add a link under the Applications Page for showing all the web Applications. -->
-        <integration-point 
+        <!--
+        <integration-point
                 id="webAppLink" 
                 type="org.glassfish.admingui:applications" 
                 priority="100"
                 content="webApp/webAppLink.jsf"/>
+                -->
                 
         <!-- Add a link under the Configuration Page  -->
         <integration-point 
@@ -38,12 +45,14 @@
                 content="configuration/configurationLink.jsf"/>
                 
         <!-- Add a Common Task under the 'Deployment' Task group -->
+        <!--
         <integration-point 
                 id="webAppDeployment" 
                 type="org.glassfish.admingui:commonTask" 
                 priority="100"
                 parentId="deployment"
                 content="webApp/webAppDeploymentTask.jsf"/>
+        ->
                 
         <!-- Add view monitoring data under the 'Monitoring' Task group -->
         <integration-point 
