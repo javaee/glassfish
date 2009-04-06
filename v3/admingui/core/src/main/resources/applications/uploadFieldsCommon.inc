@@ -34,7 +34,7 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- webApp/uploadFieldsCommon.inc -->
+<!-- applications/uploadFieldsCommon.inc -->
 
 <sun:propertySheetSection id="psec" label="$resource{i18n.common.General}">
 <sun:property id="nameProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.ApplicationName}" visible="#{true}">

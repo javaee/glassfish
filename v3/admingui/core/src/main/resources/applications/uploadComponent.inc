@@ -100,7 +100,7 @@
 		 text="$resource{i18n.button.BrowseFile}" 
 		 disabled="#{true}"
                  primary="#{false}" 
-		 onClick="javascript: var win = window.open('../webApp/fileChooser.jsf?dirPathId=#{dirPathId}&appNameId=#{appNameId}&ctxRootId=#{contextRootId}&typeId=#{typeId}&extensionId=#{extensionId}', 'fileChooserPopup', 'height=580, width=650, top='+((screen.height - (screen.height/1.618))-(500/2))+',left='+((screen.width-650)/2)+', scrollbars, resizable');win.focus(); return false" >
+		 onClick="javascript: var win = window.open('../applications/fileChooser.jsf?dirPathId=#{dirPathId}&appNameId=#{appNameId}&ctxRootId=#{contextRootId}&typeId=#{typeId}&extensionId=#{extensionId}', 'fileChooserPopup', 'height=580, width=650, top='+((screen.height - (screen.height/1.618))-(500/2))+',left='+((screen.width-650)/2)+', scrollbars, resizable');win.focus(); return false" >
                  <!afterCreate
                     getClientId(component="$this{component}" clientId=>$page{filSelectBtnId});
                 />
@@ -110,7 +110,7 @@
 		 text="$resource{i18n.button.BrowseFolder}" 
 		 disabled="#{true}"
                  primary="#{false}" 
-		 onClick="javascript: var win = window.open('../webApp/fileChooser.jsf?folderOnly=true&dirPathId=#{dirPathId}&appNameId=#{appNameId}&ctxRootId=#{contextRootId}&typeId=#{typeId}&extensionId=#{extensionId}', 'fileChooserPopup', 'height=580, width=650, top='+((screen.height - (screen.height/1.618))-(500/2))+',left='+((screen.width-650)/2)+', scrollbars, resizable');win.focus(); return false" >
+		 onClick="javascript: var win = window.open('../applications/fileChooser.jsf?folderOnly=true&dirPathId=#{dirPathId}&appNameId=#{appNameId}&ctxRootId=#{contextRootId}&typeId=#{typeId}&extensionId=#{extensionId}', 'fileChooserPopup', 'height=580, width=650, top='+((screen.height - (screen.height/1.618))-(500/2))+',left='+((screen.width-650)/2)+', scrollbars, resizable');win.focus(); return false" >
                 <!afterCreate
                     getClientId(component="$this{component}" clientId=>$page{dirSelectBtnId});
                 />

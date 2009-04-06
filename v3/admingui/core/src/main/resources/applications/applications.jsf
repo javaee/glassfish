@@ -40,86 +40,35 @@
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
     setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
 />
-<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.server.AppsConfigPageTitle}" >
+//<sun:page id="page1">
+<!composition template="/layout.xhtml" guiTitle="$resource{i18n.enterpriseApplications.title}">
 <!define name="content">
-#include "/shared/restart.inc"   
-   <sun:form id="appsForm">
-#include "/shared/treeBreadcrumbs.inc"
-                 <sun:title 
-                 id="appsPageTitle" 
-                 title="$resource{i18n.appsPageTitle}" 
-                 helpText="$resource{i18n.appsPageTitleHelp}"
-                 />
+    <event>
+        <!beforeCreate
+            getRequestValue(key="filterValue" value=>$page{filterValue});
+            getDeployedAppsInfo(serverName='#{request.serverName}',  filterValue="#{pageSession.filterValue}", filters=>$attribute{filters} result=>$attribute{listOfRows} );
+            setPageSessionAttribute(key="tableTitle" value="$resource{i18n.deployTable.applications}");
+            setPageSessionAttribute(key="editLink" value="/applications/applicationEdit.jsf");
+            setPageSessionAttribute(key="listPageLink" value="/applications/applications.jsf");
+            setPageSessionAttribute(key="hasContextRoot" value="#{true}" );
 
-                 <sun:propertySheet id="propSheet">
-                     <sun:propertySheetSection id="propSheetSection">
-                         <!afterCreate
-                            getClientId(component="$this{component}" clientId=>$attribute{sheetId});
-                        />
-                         <!--
-                         <sun:property>
-                             <sun:hyperlink  
-                                 toolTip="$resource{i18n.applications.enterpriseAppsToolTip}" 
-                                 url="enterpriseApplications.jsf" >
-                                 <sun:image  url="/resource/images/application.gif" />
-                                 <sun:staticText  text="&nbsp; $resource{i18n.tree.enterpriseApps}" />
-                             </sun:hyperlink>
-                         </sun:property>
-                        
-                         <sun:property>
-                             <sun:hyperlink 
-                                 toolTip="$resource{i18n.applications.webAppsToolTip}" 
-                                 url="webApplications.jsf" >
-                                 <sun:image url="/resource/images/webModule.gif" />
-                                 <sun:staticText text="&nbsp; $resource{i18n.tree.webApps}" />
-                             </sun:hyperlink>
-                         </sun:property>
-                         
-                         <sun:property>
-                             <sun:hyperlink 
-                                 toolTip="$resource{i18n.applications.ejbModulesToolTip}" 
-                                 url="ejbModules.jsf" >
-                                 <sun:image url="/resource/images/ejbModule.gif" />
-                                 <sun:staticText text="&nbsp; $resource{i18n.tree.ejbModules}" />
-                             </sun:hyperlink>
-                         </sun:property>
-                         <sun:property>
-                             <sun:hyperlink 
-                                 toolTip="$resource{i18n.applications.connectorModulesToolTip}" 
-                                 url="connectorModules.jsf" >
-                                 <sun:image url="/resource/images/connector.gif" />
-                                 <sun:staticText text="&nbsp; $resource{i18n.tree.connectorModules}" />
-                             </sun:hyperlink>
-                         </sun:property>
-                         <sun:property>
-                             <sun:hyperlink 
-                                 toolTip="$resource{i18n.applications.lifecycleModulesToolTip}" 
-                                 url="lifecycleModules.jsf" >
-                                 <sun:image url="/resource/images/lifecycle.gif" />
-                                 <sun:staticText text="&nbsp; $resource{i18n.tree.lifecycleModules}" />
-                             </sun:hyperlink>
-                         </sun:property>
-                         <sun:property>
-                             <sun:hyperlink 
-                                 toolTip="$resource{i18n.applications.appclientModulesToolTip}" 
-                                 url="appclientModules.jsf" >
-                                 <sun:image url="/resource/images/appclient.gif" />
-                                 <sun:staticText text="&nbsp; $resource{i18n.tree.appclientModules}" />
-                             </sun:hyperlink>
-                         </sun:property>
-                         -->
-                     </sun:propertySheetSection >
-                     
-                     <event>
-                        <!afterCreate
-                            getUIComponent(clientId="#{sheetId}"  component=>$attribute{component})
-                            includeIntegrations(type="org.glassfish.admingui:applications" root="#{component}");
-                        />
-                    </event>
-                 </sun:propertySheet>
-                 <sun:hidden id="helpKey" value="$resource{help.applications}" />
-             </sun:form>           
+       #include "/shared/viewSummaryDetail.inc"
+        />
+    </event>
+#include "/shared/restart.inc"
+            <sun:form id="propertyForm">
+<f:verbatim>
+    <script type="text/javascript">
+        admingui.nav.selectTreeNodeById('form:tree:applications');
+    </script>
+</f:verbatim>
+#include "/shared/alertMsg.inc"
+                <!-- Page Title -->
+                 <sun:title id="propertyContentPage" title="$resource{i18n.enterpriseApplications.title}" helpText="$resource{i18n.enterpriseApplications.titleHelp}"/>
+                 "<br />
+#include "deployTable.inc"
+	<sun:hidden id="helpKey" value="$resource{help.enterpriseApplications}" />
+            </sun:form>
+#include "/shared/changeButtonsJS.inc"
 </define>
 </composition>
-
-

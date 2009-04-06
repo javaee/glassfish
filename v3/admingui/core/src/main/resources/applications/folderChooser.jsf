@@ -34,7 +34,7 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- webApp/fileChooser.jsf -->
+<!-- applications/fileChooser.jsf -->
 
 <sun:page id="page1">
     <!beforeCreate

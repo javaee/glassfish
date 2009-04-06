@@ -32,7 +32,7 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- webApp/uploadButtons.inc -->
+<!-- applications/uploadButtons.inc -->
 
     <sun:button id="uploadButton" text="$resource{i18n.button.OK}" 
             onClick="javascript: 
