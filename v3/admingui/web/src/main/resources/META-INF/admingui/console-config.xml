@@ -52,7 +52,7 @@
                 priority="100"
                 parentId="deployment"
                 content="webApp/webAppDeploymentTask.jsf"/>
-        ->
+        -->
                 
         <!-- Add view monitoring data under the 'Monitoring' Task group -->
         <integration-point 
