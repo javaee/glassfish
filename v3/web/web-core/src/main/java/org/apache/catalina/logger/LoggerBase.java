@@ -241,6 +241,35 @@ public class LoggerBase
     }
 
 
+    /**
+     * Set the verbosity level of this logger.  Messages logged with a
+     * higher verbosity than this level will be silently ignored.
+     *
+     * @param verbosityLevel The new verbosity level, as a string
+     */
+    public void setLoggingLevel(String logLevel) {
+            
+        if ("SEVERE".equalsIgnoreCase(logLevel)) {
+            log.setLevel(Level.SEVERE);
+        } else if ("WARNING".equalsIgnoreCase(logLevel)) {
+            log.setLevel(Level.WARNING);
+        } else if ("INFO".equalsIgnoreCase(logLevel)) {
+           log.setLevel(Level.INFO);
+        } else if ("CONFIG".equalsIgnoreCase(logLevel)) {
+           log.setLevel(Level.CONFIG);
+        } else if ("FINE".equalsIgnoreCase(logLevel)) {
+            log.setLevel(Level.FINE);
+        } else if ("FINER".equalsIgnoreCase(logLevel)) {
+            log.setLevel(Level.FINER);
+        } else if ("FINEST".equalsIgnoreCase(logLevel)) {
+            log.setLevel(Level.FINEST);
+        } else {
+            log.setLevel(Level.INFO);
+        }
+        
+    }
+    
+
     // --------------------------------------------------------- Public Methods
 
 

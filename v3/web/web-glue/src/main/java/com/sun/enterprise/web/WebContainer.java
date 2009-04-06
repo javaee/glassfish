@@ -246,6 +246,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     Engine engine;
     String instanceName;
 
+    private String logLevel;
+    
+    
     private WebConnector jkConnector;
 
     /**
@@ -499,6 +502,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             logProps = logConfig.getLoggingProperties();
             if (logProps != null) {
                 logServiceFile = logProps.get("com.sun.enterprise.server.logging.GFFileHandler.file");
+                logLevel = logProps.get("org.apache.catalina.level");
             }
         } catch (IOException ioe) {
             _logger.log(Level.SEVERE,
@@ -507,7 +511,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
 
         _embedded = new EmbeddedWebContainer(_serverContext, this,
-                                             logServiceFile);
+                                             logServiceFile, logLevel);
 
         _embedded.setCatalinaHome(instance.getDomainRoot().getAbsolutePath());
         _embedded.setCatalinaBase(instance.getDomainRoot().getAbsolutePath());
@@ -2937,7 +2941,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         virtualServer.setBean(vsBean);
 
-        virtualServer.setLogFile(vsBean.getLogFile());
+        virtualServer.setLogFile(vsBean.getLogFile(), logLevel);
 
         virtualServer.configureState();
         

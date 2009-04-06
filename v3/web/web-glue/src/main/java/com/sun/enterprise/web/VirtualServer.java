@@ -52,6 +52,7 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.archivist.WebArchivist;
 import com.sun.enterprise.security.web.SingleSignOn;
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.web.logger.IASLogger;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 import com.sun.enterprise.web.session.SessionCookieConfig;
 import com.sun.enterprise.web.stats.PWCRequestStatsImpl;
@@ -927,8 +928,9 @@ public class VirtualServer extends StandardHost {
                     String vsDocroot,
                     String vsLogFile,
                     MimeMap vsMimeMap,
-                    String logServiceFile) {
-    
+                    String logServiceFile,
+                    String logLevel) {
+            
         setDebug(debug);
         setAppBase(vsDocroot);
         setName(vsID);
@@ -987,7 +989,7 @@ public class VirtualServer extends StandardHost {
              * 'log-file' attribute of this <virtual-server> and 'file'
              * attribute of <log-service> are different (See 6189219).
              */
-            setLogFile(vsLogFile);
+            setLogFile(vsLogFile, logLevel);
         }
     }
 
@@ -1029,8 +1031,8 @@ public class VirtualServer extends StandardHost {
      * @param logFile The value of the virtual server's log-file attribute in 
      * the domain.xml
      */
-    void setLogFile(String logFile) {
-
+    void setLogFile(String logFile, String logLevel) {
+        
         String logPrefix = logFile;
         String logDir = null;
         String logSuffix = null;
@@ -1062,7 +1064,8 @@ public class VirtualServer extends StandardHost {
             contextLogger.setSuffix(logSuffix);
         }
         contextLogger.setTimestamp(true);
-
+        contextLogger.setLoggingLevel(logLevel);
+        
         setLogger(contextLogger);
     }
 

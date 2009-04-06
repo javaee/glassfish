@@ -88,16 +88,23 @@ public final class EmbeddedWebContainer extends Embedded {
      * The value of the 'file' attribute of the log-service element
      */
     private String logServiceFile;
+    
+    /*
+     * The log level for org.apache.catalina.level as defined in logging.properties 
+     */
+    private String logLevel;
 
  
     // ------------------------------------------------------------ Constructor
 
     public EmbeddedWebContainer(ServerContext serverContext,
                                 WebContainer webContainer,
-                                String logServiceFile) {
+                                String logServiceFile,
+                                String logLevel) {
         super();
         this.webContainer = webContainer;
         this.logServiceFile = logServiceFile;
+        this.logLevel = logLevel;
         this.serverContext = serverContext;
         habitat = serverContext.getDefaultHabitat();
         webContainerFeatureFactory = habitat.getByContract(
@@ -131,7 +138,7 @@ public final class EmbeddedWebContainer extends Embedded {
         VirtualServer vs = new VirtualServer();
 
         vs.configure(vsID, vsBean, vsDocroot, vsLogFile, vsMimeMap,
-                     logServiceFile);
+                     logServiceFile, logLevel);
          
         ContainerListener listener = loadListener
             ("com.sun.enterprise.web.connector.extension.CatalinaListener");
