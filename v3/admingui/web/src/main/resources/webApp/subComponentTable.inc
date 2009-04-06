@@ -34,12 +34,12 @@
  holder.
 -->
 
-<!-- webApp/subComponentTable.inc -->
+<!-- applications/subComponentTable.inc -->
 
   "<br /><br />
-      <sun:table id="components"  title="$resource{i18n.common.SubComponents}" style="padding: 8pt; width:95%" >
+      <sun:table id="components"  title="$resource{i18n.common.SubModules}" style="padding: 8pt; width:95%" >
         <!beforeCreate
-            getSubComponents(appName="#{name}" appType="#{appType}" result=>$attribute{listOfRows});
+            getSubComponents(appName="#{appName}"  result=>$attribute{listOfRows});
         />
         <sun:tableRowGroup id="rowGroup1" data={"$attribute{listOfRows}"} sourceVar="td">
         
@@ -47,16 +47,18 @@
                 <staticText id="nameCol" value="#{td.value.componentName}" />
             </sun:tableColumn>
             
-            <sun:tableColumn headerText="$resource{i18n.ComponentTable.colType}" rowHeader="$boolean{true}" id="col2">
-                <staticText id="typeCol" value="#{td.value.componentType}" />
+            <sun:tableColumn headerText="$resource{i18n.deployTable.ColEngines}" rowHeader="$boolean{true}" id="col2">
+                <staticText id="typeCol" value="#{td.value.enginees}" />
             </sun:tableColumn>
-            
+
+            <!-- TODO
             <sun:tableColumn headerText="$resource{i18n.ComponentTable.colAction}" rendered="#{hasActionColumn}" embeddedActions="#{true}" rowHeader="$boolean{true}" id="col3">
                 <sun:hyperlink id="link" text="#{td.value.downloadText}" 
                     url="/download/#{td.value.componentName}?contentSourceId=clientStubs&appName=#{name}&appClientName=#{td.value.componentName}" />
                 <sun:hyperlink id="link2" rendered="#{td.value.javaWebStart}" text="$resource{i18n.deployTable.launch}" 
                     url="appclientLaunch.jsf?appID=#{name}&appName=#{name}&appClientName=#{td.value.componentName}&nextPage=enterpriseApplicationsEdit.jsf&appType=#{appType}" />
             </sun:tableColumn>
+            -->
             
         </sun:tableRowGroup>
      </sun:table>

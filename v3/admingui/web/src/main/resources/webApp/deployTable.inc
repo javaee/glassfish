@@ -33,9 +33,9 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- webApp/deployTable.inc -->
+<!-- applications/deployTable.inc -->
 
-<sun:table id="deployTable" title="#{tableTitle}" sortPanelToggleButton="#{false}" 
+<sun:table id="deployTable" title="$resource{i18n.deployTable.applications}" sortPanelToggleButton="#{false}"
        deselectMultipleButton="$boolean{true}"
         deselectMultipleButtonOnClick="setTimeout('changeThreeTableButtons()', 0)"
         selectMultipleButton="$boolean{true}"
@@ -50,14 +50,14 @@
                 getClientId(component="$this{component}" clientId=>$page{topActionGroup});
             />
             <sun:button id="deployButton" text="$resource{i18n.button.Deploy}" primary="#{true}">
-                    <!command redirect(page="#{request.contextPath}/web/webApp/upload.jsf?cancelPage=#{listPageLink}&appType=#{appType}"); />
+                    <!command redirect(page="#{request.contextPath}/applications/upload.jsf?cancelPage=#{listPageLink}&appType=#{appType}"); />
             </sun:button>
             <sun:button id="button1" text="$resource{i18n.button.Undeploy}" disabled="#{true}" primary="#{false}"
                     onClick="javascript: return submitAndDisable(this, '$resource{i18n.button.Processing}');">
                 <!command 
                     getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup}); 
                     getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                    undeploy(selectedRows="${selectedRows}" appType="#{appType}");
+                    undeploy(selectedRows="${selectedRows}" );
                     navigate(page="#{listPageLink}");
                 />
              </sun:button>
@@ -66,7 +66,7 @@
             <!command 
                     getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});      
                     getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                    changeAppStatus(selectedRows="${selectedRows}" appType="#{appType}" enabled="#{true}")
+                    changeAppStatus(selectedRows="${selectedRows}"  enabled="#{true}")
                     navigate(page="#{listPageLink}");
                 />
                 </sun:button>
@@ -75,17 +75,26 @@
             <!command 
                     getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});      
                     getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                    changeAppStatus(selectedRows="${selectedRows}" appType="#{appType}" enabled="#{false}")
+                    changeAppStatus(selectedRows="${selectedRows}"  enabled="#{false}")
                     navigate(page="#{listPageLink}");
                 />
             </sun:button>
 
-            <sun:image id="actionTopSeparator1" rendered="$session{supportCluster}"
+            <sun:image id="actionTopSeparator1"
                align="top"
                height="$int{18}"
-               url="/theme/com/sun/webui/jsf/suntheme/images/table/actions_separator.gif"
                width="$int{18}"
-               />
+               src="#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/table/actions_separator.gif"
+            />
+
+           <sun:dropDown id="filter" selected="#{filterValue}" label="$resource{i18n.common.filterDropDown}" submitForm="#{true}" immediate="#{true}"
+                    values="${filters}"  labels="${filters}">
+                <!command
+                    setAttribute(key="click" value="$this{component}");
+                    setAttribute(key="filterValue" value="#{click.selected}");
+                    redirect(page="#{request.contextPath}/applications/applications.jsf?serverName=#{serverName}&filterValue=${filterValue}" );
+                />
+            </sun:dropDown>
 
             <!--
             <sun:dropDown rendered="$session{supportCluster}" id="view" selected="$pageSession{viewValue}" label="$resource{i18n.common.viewDropDown}" submitForm="#{true}" immediate="#{true}" 
@@ -119,19 +128,27 @@
             url="#{editLink}?appName=#{td.value.name}" />
     </sun:tableColumn>
 
-    <sun:tableColumn rendered="$session{supportCluster}" headerText="$resource{i18n.deployTable.colStatus}" sort="enabled" rowHeader="$boolean{true}" id="col2">
+    <!-- sun:tableColumn rendered="$session{supportCluster}" headerText="$resource{i18n.deployTable.colStatus}" sort="enabled" rowHeader="$boolean{true}" id="col2">
         <sun:hyperlink rendered="$session{supportCluster}" id="targetLink" text="#{td.value.enabled}" url="#{targetLink}?appName=#{td.value.name}" />
-    </sun:tableColumn>
+    </sun:tableColumn -->
 
     <sun:tableColumn rendered="$session{notSupportCluster}" headerText="$resource{i18n.deployTable.colEnabled}" sort="enabled" rowHeader="$boolean{true}" id="col22">
-        <staticText id="typeCol" value="#{td.value.enabled}" />
-    </sun:tableColumn>
-    
-    <sun:tableColumn headerText="$resource{i18n.deployTable.colContextRoot}"  sort="contextRoot" rendered="#{hasContextRoot}" rowHeader="$boolean{true}" id="col3">
-        <staticText id="typeContextRoot" value="#{td.value.contextRoot}" />
+        <sun:image id="enCol" value="#{td.value.enableURL}" />
     </sun:tableColumn>
 
-    <!-- TODO-V3
+    <!-- sun:tableColumn headerText="$resource{i18n.deployTable.colContextRoot}"  sort="contextRoot" rendered="#{hasContextRoot}" rowHeader="$boolean{true}" id="col3">
+        <staticText id="typeContextRoot" value="#{td.value.contextRoot}" />
+    </sun:tableColumn -->
+
+    <sun:tableColumn headerText="$resource{i18n.deployTable.colComposite}"  sort="composite"  rowHeader="$boolean{true}" id="col33">
+        <staticText id="composite" value="#{td.value.composite}" />
+    </sun:tableColumn>
+
+    <sun:tableColumn headerText="$resource{i18n.deployTable.ColEngines}"  sort="sniffers"  rowHeader="$boolean{true}" id="colsnif">
+        <staticText id="sniffer" value="#{td.value.sniffers}" />
+    </sun:tableColumn>
+
+    <!-- TODO-V3-CLUSTER
         <sun:tableColumn rendered="$pageSession{showDetail}"
             headerText="$resource{i18n.common.TargetTab}"  
             rowHeader="$boolean{true}" id="colTarget">
@@ -146,22 +163,26 @@
                 "<br />
             </foreach>
         </sun:tableColumn> 
-        -->
+      -->
    
 
     <sun:tableColumn headerText="$resource{i18n.ComponentTable.colAction}" embeddedActions="#{true}" rowHeader="$boolean{true}" id="col4">
-        <!if $session{notSupportCluster}>
+        #<!if $session{notSupportCluster}>
             <sun:hyperlink id="link" rendered="#{td.value.hasLaunch}" text="$resource{i18n.deployTable.launch}" 
                 onClick="window.open('#{td.value.launchLink}','ViewerWindow','width='+.75*screen.width+',height='+.75*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes,directories=yes,location=yes');document.Form.target='_self';" />
-        </!if>
+        #</!if>
+
+        <!--TODO-V3-CLUSTER
         <!if $session{supportCluster}>
             <sun:hyperlink id="clusterLink" rendered="#{td.value.hasLaunch}" text="$resource{i18n.deployTable.launch}" 
                 onClick="var win=window.open('webApplicationLinks.jsf?appID=#{td.value.name}&contextRoot=#{td.value.contextRoot}','ViewerWindow','width='+.75*screen.width+',height='+.75*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes,directories=yes,location=yes');win.focus(); return false;" />
         </!if>
-        // TODO: These resources should probably be in a web plugin bundle and not the core
+        -->
+
         <sun:hyperlink id="link2" text="$resource{i18n.deployTable.redeploy}" 
-            url="#{request.contextPath}/web/webApp/redeploy.jsf?appName=#{td.value.name}&appType=$pageSession{appType}&nextPage=#{listPageLink}" />
-        <sun:hyperlink id="restartLink" text="$resource{web.restart.restart}">
+            url="#{request.contextPath}/applications/redeploy.jsf?appName=#{td.value.name}&appType=$pageSession{appType}&nextPage=#{listPageLink}" />
+
+        <sun:hyperlink id="restartLink" text="$resource{i18n.deployTable.restart}">
             <!command
                 prepareSuccessfulMsg();
                 restartApplication(appName="#{td.value.name}");

@@ -33,8 +33,10 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- webApp/descriptorsTable.jsf -->
+<!-- applications/descriptorsTable.jsf -->
 
+<!-- Descriptos Table .... -->
+               
 <sun:table id="basicTable" style="padding: 10pt" deselectMultipleButton="$boolean{false}" selectMultipleButton="$boolean{false}"
     title="$resource{i18n.deploy.descriptors}">
 
@@ -46,15 +48,20 @@
         	<staticText id="name" value="#{td.value.moduleName}" />
         </sun:tableColumn>
         <sun:tableColumn headerText="$resource{i18n.deploy.descriptorFileName}" rowHeader="$boolean{false}" id="col3">
-        	<sun:hyperlink id="link" text="#{td.value.descriptor}"> 
+        	<sun:hyperlink id="link" text="#{td.value.descriptor}"
+            onClick="var win=window.open('#{request.contextPath}/applications/viewDD.jsf?appName=$pageSession{appName}&descriptorName=#{td.value.descriptorPath}','ViewerWindow','width='+.75*screen.width+',height='+.75*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=no,status=yes,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');win.focus(); return false;">
+                >
 				<!command
+<!--
 					descriptorDisplay(filePath="#{td.value.descriptorPath}"
 									  appName="#{name}"
 									  pageName="#{descriptorPage}"
 									  descriptor=>$attribute{descriptor}
 									  appName=>$attribute{appName}
-									  pageName=>$attribute{pageName});	
-					navigate(page="/web/webApp/descriptorDisplay.jsf");
+									  pageName=>$attribute{pageName});
+
+					navigate(page="applications/descriptorDisplay.jsf");
+-->
 				/>
 			</sun:hyperlink>
         </sun:tableColumn>

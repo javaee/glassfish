@@ -33,10 +33,9 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- webApp/webDDEdit.jsf -->
-"<pre>
+   "<pre>
 <h:outputText id="descriptorText" value="#{descriptorText}" escape="#{true}" style="font-size: large;">
-    <!beforeCreate
+     <!beforeCreate
         setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
         getRequestValue(key="appName" value=>$page{name});
         getRequestValue(key="descriptorName" value=>$page{descriptorName});
@@ -44,4 +43,7 @@
         descriptorText=>$attribute{descriptorText});
     />
 </h:outputText>
-"</pre>
+   "</pre>
+
+
+

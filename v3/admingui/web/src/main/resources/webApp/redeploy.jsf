@@ -47,7 +47,6 @@
         getRequestValue(key="nextPage" value=>$page{nextPage});
         setAttribute(key="chooseType" value="$boolean{false}");
         setAttribute(key="keepSessions" value="$boolean{false}");
-        getAppTypeForDisplay(appType="$pageSession{appType}" displayType=>$page{displayType});
     />
     </event>
 #include "/shared/restart.inc"    
@@ -70,7 +69,7 @@
                                 }
                                 
                                 redeploy(filePath="$attribute{filePath}"  , origPath="$attribute{origPath}" appName="#{appName}" keepSessions="#{keepSessions}");
-                                redirect(page="webApplications.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                                redirect(page="#{request.contextPath}/applications/applications.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                             />
                     </sun:button>
                     <sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" immediate="#{true}" primary="#{false}">
@@ -85,9 +84,6 @@
         <sun:propertySheetSection id="section1" >
             <sun:property id="nameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}">
                 <sun:staticText id="name" text="#{appName}"/>
-            </sun:property>
-            <sun:property id="typeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.TypeLabel}">
-                <sun:staticText id="type" text="#{displayType}"/>
             </sun:property>
             <sun:property id="keepSessionProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" 
                             label="$resource{i18n.redeploy.keepSessions}" helpText="$resource{i18n.redeploy.keepSessionsHelp}">

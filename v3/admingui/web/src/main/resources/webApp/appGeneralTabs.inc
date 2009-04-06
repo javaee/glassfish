@@ -33,35 +33,35 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- webApp/appGeneralTabs.inc -->
+<!-- applications/appGeneralTabs.inc -->
 <sun:tabSet id="appGeneralTabs" immediate="$boolean{true}" selected="#{sessionScope.appGeneralTabs}">
     <sun:tab id="general" immediate="$boolean{true}" text="$resource{i18n.common.General}" >
         <!command
             setSessionAttribute(key="appGeneralTabs" value="general");
-            urlencode(value="#{name}", value=>$pageSession{name});
-            redirect(page="#{request.contextPath}/web/webApp/#{generalPage}?appName=#{name}");
+println("AAAAAXxxxxxxxxx #{appName},   #{pageSession.appName}");
+            redirect(page="#{request.contextPath}/applications/#{generalPage}?appName=#{appName}");
         />       
     </sun:tab>
     <sun:tab id="editDDTab" immediate="$boolean{true}" text="$resource{i18n.common.DescriptorTab}">
         <!command
+println("BBBBBBXxxxxxxxxx #{appName},   #{pageSession.appName}");
             setSessionAttribute(key="appGeneralTabs" value="editDDTab");
-            urlencode(value="#{name}", value=>$pageSession{name});
-            redirect(page="#{request.contextPath}/web/webApp/#{editDDPage}?appName=#{name}");
+            redirect(page="#{request.contextPath}/applications/#{editDDPage}?appName=#{appName}");
         />
     </sun:tab>
 <!--
     <sun:tab id="descriptorTab" immediate="$boolean{true}" text="$resource{i18n.common.DescriptorTab}">
         <!command
             setSessionAttribute(key="appGeneralTabs" value="descriptorTab");
-            urlencode(value="#{name}", value=>$pageSession{name});
-            redirect(page="#{request.contextPath}/web/webApp/#{descriptorPage}?appName=#{name}");
+            urlencode(value="#{appName}", value=>$pageSession{appName});
+            redirect(page="#{request.contextPath}/web/webApp/#{descriptorPage}?appName=#{appName}");
         />
     </sun:tab>
     <sun:tab id="targetTab" rendered="$session{supportCluster}" immediate="$boolean{true}" text="$resource{i18n.common.TargetTab}">
         <!command
             setSessionAttribute(key="appGeneralTabs" value="targetTab");
-                    urlencode(value="#{name}", value=>$pageSession{name});
-            redirect(page="#{request.contextPath}/web/webApp/#{targetPage}?appName=#{name}");
+            urlencode(value="#{name}", value=>$pageSession{appName});
+            redirect(page="#{request.contextPath}/web/webApp/#{targetPage}?appName=#{appName}");
         />
     </sun:tab>
 -->

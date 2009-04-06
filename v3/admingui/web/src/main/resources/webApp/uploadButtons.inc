@@ -60,7 +60,7 @@
                     description="#{description}"
                     targets="#{selectedTargets}"
             );
-           redirect(page="#{request.contextPath}/web/webApp/webApplications.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=$pageSession{target}");
+           redirect(page="#{request.contextPath}/applications/applications.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=$pageSession{target}");
         />
 </sun:button>
 

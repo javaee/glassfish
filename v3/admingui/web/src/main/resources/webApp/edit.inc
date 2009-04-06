@@ -34,8 +34,7 @@
  holder.
 -->
 
-<!-- webApp/edit.inc -->
-<!-- used in enterpriseApplicationsEdit.jsf  ejbModulesEdit.jsf  webApplicationsEdit.jsf -->
+<!-- applications/edit.inc -->
 
 <!-- Page Title -->
 <sun:title id="propertyContentPage" title="#{pageTitle}" helpText="#{pageTitleHelp}" >
@@ -44,29 +43,25 @@
     <sun:panelGroup id="topButtons">
         <sun:button id="saveButton" text="$resource{i18n.button.Save}" primary="#{true}">  
            <!command
-
                 saveApplicationInfo(
-                    appType="#{appType}"
-                    name="#{name}"
+                    name="#{appName}"
                     enabled="#{enabled}"
                     description="#{description}"
-                    availEnabled="#{availEnabled}"
                     javaWebStart="#{javaWebStart}"
                     contextRoot="#{contextRoot}"
-                    threadPool="#{threadPool}"
                     );
 		if("#{pe}&#{hasVS}") {
                   	createVSReferences(
 				vsTargets="#{selectedVS}"
                         	targetName="server"
-                        	name="#{name}");
+                        	name="#{appName}");
 		}
                 prepareSuccessfulMsg();
           />
           </sun:button>
           <sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" primary="#{false}"  immediate="#{true}">
             <!command
-                redirect(page="#{request.contextPath}/web/webApp/webApplications.jsf?name=#{name}");
+                redirect(page="#{request.contextPath}/applications/applications.jsf?name=#{name}");
             />
         </sun:button>
     </sun:panelGroup>
@@ -79,15 +74,13 @@
     <sun:propertySheetSection id="propertSectionTextField">
         <event>
         <!beforeCreate
-            setPageSessionAttribute(key="name" value="$requestParameter{appName}")                               
+            getRequestValue(key="appName" value=>$page{appName});
             setPageSessionAttribute(key="pe" value="#{true}")                               
-            getApplicationInfo(name="#{name}" appType="#{appType}" 
+            getApplicationInfo(name="#{appName}" 
                 location=>$page{location} description=>$attribute{description} 
                 enabled=>$attribute{enabled} enabledString=>$attribute{enabledString}
-                availEnabled=>$attribute{availEnabled} libraries=>$page{libraries} 
-                contextRoot=>$attribute{contextRoot} javaWebStart=>$attribute{javaWebStart}
-                threadPool=>$attribute{threadPool}
-                );
+                libraries=>$page{libraries} directoryDeployed=>$attribute{directoryDeployed}
+                contextRoot=>$attribute{contextRoot} javaWebStart=>$attribute{javaWebStart})
             setPageSessionAttribute(key="showHa" value="$boolean{false}");
             # if ( $session{supportCluster} & $pageSession{hasHa} ){
             #   setPageSessionAttribute(key="showHa" value="$boolean{true}");
@@ -98,19 +91,17 @@
         />
         </event>
         <sun:property id="jndiProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}">
-            <sun:staticText id="name" text="#{name}"/>
+            <sun:staticText id="name" text="#{appName}"/>
         </sun:property> 
 
-        <sun:property id="ctxProp" rendered="#{hasContextRoot}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.webApp.ContextRoot}" helpText="$resource{i18n.webApp.contextRootHelp}" >
-            <sun:textField id="ctx" columns="$int{55}" text="#{contextRoot}" />      
-        </sun:property>
+        
        	<sun:property id="vsProp" rendered="#{hasVS}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.virtualServerLabel}" helpText="$resource{i18n.deploy.vsHelp}" >
             <sun:listbox id="vs" immediate="#{true}"  labels="$pageSession{availableVS}" multiple="#{true}"  rows="$int{4}"  selected="#{selectedVS}" >
                 <!beforeCreate
                 if("#{pe}") {
                     getAllVSList( targetName="server"  PE="#{pe}"  serverList=>$attribute{vsList});
                     getVSOptions(vsList="$attribute{vsList}" 
-                            name="#{name}"
+                            name="#{appName}"
                             PE="#{pe}"
                             targetName="server"
                             availableVS=>$pageSession{availableVS}
@@ -119,13 +110,12 @@
                 />
             </sun:listbox>
        	</sun:property>
-        <sun:property id="threadProp" rendered="#{hasThreadPool}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.connectorModule.ThreadPoolID}" helpText="$resource{i18n.connectorModule.ThreadPoolIDHelp}" >
-            <sun:textField id="thread" columns="$int{55}" text="#{requestScope.threadPool}" />      
+        <sun:property id="ctxProp" rendered="#{hasContextRoot}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.webApp.ContextRoot}" helpText="$resource{i18n.webApp.contextRootHelp}" >
+            <sun:textField id="ctx" columns="$int{40}" text="#{contextRoot}" />
         </sun:property>
 
-
         <sun:property id="descProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.description}">
-            <sun:textField id="desc" columns="$int{55}" text="#{requestScope.description}" />      
+            <sun:textField id="desc" columns="$int{40}" text="#{requestScope.description}" />
         </sun:property>
 
     
@@ -133,24 +123,24 @@
             <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{requestScope.enabled}" />  
        </sun:property>
 
-        <sun:property id="statusProp2" rendered="$session{supportCluster}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" 
+       <sun:property id="statusProp2" rendered="$session{supportCluster}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" 
             label="$resource{i18n.common.status}" helpText="$resource{i18n.application.EnableTargetHelp}">
             <sun:staticText  text="#{requestScope.enabledString}" />  
        </sun:property>
 
-        <sun:property id="jwsProp"  rendered="#{hasJavaWebStart}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.JavaWebStart}">
+       <sun:property id="jwsProp"  rendered="#{hasJavaWebStart}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.JavaWebStart}">
             <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{javaWebStart}" />  
        </sun:property> 
 
-        <sun:property id="haProp"  rendered="$pageSession{showHa}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Availability}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{availEnabled}" />  
-       </sun:property>   
+       <sun:property id="dirDeploy" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.enterpriseApplications.directoryDeploy}">
+            <sun:checkbox disabled="#{true}" selected="#{directoryDeployed}" />
+       </sun:property>
 
         <sun:property id="locationProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.location}">
             <sun:staticText id="location" text="#{location}"/>
         </sun:property> 
 
-        <sun:property id="librariesProp"  rendered="#{hasLibraries}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Libraries}">
+        <sun:property id="librariesProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Libraries}">
             <sun:staticText id="libraries" text="#{libraries}"/>
             "<br /><br />
         </sun:property> 

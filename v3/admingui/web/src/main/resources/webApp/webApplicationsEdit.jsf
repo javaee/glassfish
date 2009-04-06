@@ -33,21 +33,20 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- webApp/webApplicationsEdit.jsf -->
+<!-- applications/applicationEdit.jsf -->
 <!initPage
-    setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
 	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
 />
 //<sun:page id="page1">
-<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.webApp.editPageTitle}" >
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.enterpriseApplications.editPageTitle}" >
 <!define name="content">
     <event>
         <!beforeCreate
         setSessionAttribute(key="appGeneralTabs" value="general");
-        setPageSessionAttribute(key="pageTitle" value="$resource{i18n.webApp.editPageTitle}");
-        setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.webApp.editPageTitleHelp}");
-        setPageSessionAttribute(key="hasJavaWebStart" value="#{false}");
-        setPageSessionAttribute(key="hasHa" value="#{true}");
+        setPageSessionAttribute(key="pageTitle" value="$resource{i18n.enterpriseApplications.editPageTitle}");
+        setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.enterpriseApplications.editPageTitleHelp}");
+        setPageSessionAttribute(key="hasJavaWebStart" value="#{true}");
+        setPageSessionAttribute(key="hasHa" value="#{false}");
         setPageSessionAttribute(key="hasContextRoot" value="#{true}");
         #TODO-V3 omit Libraries
         setPageSessionAttribute(key="hasLibraries" value="#{false}");
@@ -55,11 +54,12 @@
         setPageSessionAttribute(key="hasVS" value="#{true}");
         setPageSessionAttribute(key="hasComponentTable" value="#{true}");
         setPageSessionAttribute(key="hasActionColumn" value="#{false}");
-        setPageSessionAttribute(key="appType" value="webApp");
-        setPageSessionAttribute(key="generalPage" value="webApplicationsEdit.jsf");
+        setPageSessionAttribute(key="generalPage" value="applicationEdit.jsf");
         setPageSessionAttribute(key="editDDPage" value="webDDEdit.jsf");
-        setPageSessionAttribute(key="descriptorPage" value="webApplicationDesc.jsf");
-        setPageSessionAttribute(key="targetPage" value="webApplicationTargets.jsf");
+        setPageSessionAttribute(key="descriptorPage" value="applicationDesc.jsf");
+
+        #TODO-V3-CLUSTER
+        #setPageSessionAttribute(key="targetPage" value="webApplicationTargets.jsf");
         if ($session{supportCluster} ){
             setPageSessionAttribute(key="hasVS" value="#{false}");
         }
@@ -69,12 +69,11 @@
         <sun:form id="propertyForm">
         
         #include "/shared/treeBreadcrumbs.inc"
-        # TODO-V3 no descriptor or target tab for TP2
-#include "/web/webApp/appGeneralTabs.inc"
+#include "/applications/appGeneralTabs.inc"
 #include "/shared/alertMsg.inc"
-#include "/web/webApp/edit.inc"
-        #include "subComponentTable.inc"
-	<sun:hidden id="helpKey" value="$resource{help.webApplicationsEdit}" />
+#include "/applications/edit.inc"
+#include "subComponentTable.inc"
+	<sun:hidden id="helpKey" value="$resource{help.applicationEdit}" />
         </sun:form>
 </define>
 </composition>

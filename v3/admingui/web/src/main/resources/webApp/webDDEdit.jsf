@@ -33,16 +33,17 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- webApp/webDDEdit.jsf -->
+<!-- applications/webDDEdit.jsf -->
 <!namespace sc="http://java.sun.com/mojarra/scales" />
 <!composition template="/layout.xhtml"  guiTitle="$resource{i18n.webApp.editDDPageTitle}" >
 <!define name="content">
     <event>
         <!beforeCreate
-            setPageSessionAttribute(key="generalPage" value="webApplicationsEdit.jsf");
+            setSessionAttribute(key="appGeneralTabs" value="editDDTab");
+            setPageSessionAttribute(key="generalPage" value="applicationEdit.jsf");
             setPageSessionAttribute(key="editDDPage" value="webDDEdit.jsf");
-            getRequestValue(key="appName" value=>$page{name});
-            getDescriptors(appName="$pageSession{name}"  descriptors=>$attribute{descriptors});
+            getRequestValue(key="appName" value=>$page{appName});
+            getDescriptors(appName="$pageSession{appName}"  descriptors=>$attribute{descriptors});
         />
     </event>
 #include "/shared/restart.inc"    
@@ -63,7 +64,7 @@
                             getUIComponent(clientId="$pageSession{editParamTableRowGroupId}", component=>$attribute{paramTableRowGroup});
                             getAllSingleMapRows(TableRowGroup="$attribute{paramTableRowGroup}",  Rows=>$attribute{paramNewList});
                             
-                            saveWebDDInfo(appName="$pageSession{name}", appType="web", serverName="server", reload="#[false}"
+                            saveWebDDInfo(appName="$pageSession{appName}", appType="web", serverName="server", reload="#[false}"
                                     envList="${envNewList}" ctxParamList="${paramNewList}" )
                             prepareSuccessfulMsg();
                             />
@@ -76,7 +77,7 @@
                             getUIComponent(clientId="$pageSession{editParamTableRowGroupId}", component=>$attribute{paramTableRowGroup});
                             getAllSingleMapRows(TableRowGroup="$attribute{paramTableRowGroup}",  Rows=>$attribute{paramNewList});
                             
-                            saveWebDDInfo(appName="$pageSession{name}", appType="web", serverName="server", reload="#[true}"
+                            saveWebDDInfo(appName="$pageSession{appName}", appType="web", serverName="server", reload="#[true}"
                                     envList="${envNewList}" ctxParamList="${paramNewList}" )
                             prepareSuccessfulMsg();
                             />
@@ -84,7 +85,7 @@
                         -->
                         <sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" primary="#{false}"  immediate="#{true}">
                         <!command
-                            redirect(page="#{request.contextPath}/web/webApp/webApplications.jsf");
+                            redirect(page="#{request.contextPath}/applications/applications.jsf");
                         />
                     </sun:button>
                     </sun:panelGroup>
@@ -94,20 +95,23 @@
             <sun:propertySheet id="propertySheet">			 
             <sun:propertySheetSection id="generalPropertySheet" >
                 <sun:property id="NameProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.webApp.appName}" >                           
-                    <sun:staticText id="Name" value="#{name}" />
-                </sun:property>     
+                    <sun:staticText id="Name" value="#{appName}" />
+                </sun:property>
+                <!--
                 <sun:property id="DdProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.webApp.descriptors}" >
                     <foreach key="dd" list="$attribute{descriptors}">
-                        "<a href="#" style="text-decoration: none" onClick="var win=window.open('viewDD.jsf?appName=$pageSession{name}&descriptorName=#{dd.descriptorPath}','ViewerWindow','width='+.75*screen.width+',height='+.75*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=no,status=yes,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');win.focus(); return false;">#{dd.descriptor}</a>
-                        " | <a href="#" style="text-decoration: none" onclick="showDD('$pageSession{name}', '#{dd.descriptorPath}');">#{dd.descriptor}</a>
+                        "<a href="#" style="text-decoration: none" onClick="var win=window.open('#{request.contextPath}/applications/viewDD.jsf?appName=$pageSession{appName}&descriptorName=#{dd.descriptorPath}','ViewerWindow','width='+.75*screen.width+',height='+.75*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=no,status=yes,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');win.focus(); return false;">#{dd.descriptor}</a>
+                        " | <a href="#" style="text-decoration: none" onclick="showDD('$pageSession{appName}', '#{dd.descriptorPath}');">#{dd.descriptor}</a>
                         "<br />
                     </foreach>
-                </sun:property>     
+                </sun:property>
+                -->
             </sun:propertySheetSection>    
             </sun:propertySheet> 
             "<br />
             "<br />
-    #include "/web/webApp/editWebDDTable.inc"
+#include "/applications/descriptorsTable.inc"
+    #include "/applications/editWebDDTable.inc"
 	<sun:hidden id="helpKey" value="$resource{help.webApp.editDD}" />
             </sun:form>
             "<div id="panels"/>
