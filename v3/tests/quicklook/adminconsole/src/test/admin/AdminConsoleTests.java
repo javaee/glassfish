@@ -50,7 +50,7 @@ public class AdminConsoleTests extends BaseAdminConsoleTest {
      */
     @Test
     public void testDeployedWebAppPage() throws Exception {
-        Assert.assertTrue(getUrlAndTestForStrings(this.adminUrl + "applications/webApplications.jsf",
+        Assert.assertTrue(getUrlAndTestForStrings(this.adminUrl + "applications/applications.jsf",
                 "id=\"propertyForm:deployTable\""),
                 "The Deployed Applications table does not appear to have been rendered.");
     }
