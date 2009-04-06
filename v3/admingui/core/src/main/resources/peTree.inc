@@ -72,7 +72,7 @@
     <sun:tree id="tree" 
 	      text="$resource{i18n.tree.commonTasks}"
 	      url="/commonTask.jsf"
-	      imageURL="resource/images/common_tasks.gif"
+	      imageURL="/resource/images/common_tasks.gif"
 	      clientSide="#{true}">
 	  <!afterCreate
 	      getClientId(component="$this{component}" clientId=>$page{treeId});
@@ -93,7 +93,7 @@
 	<sun:treeNode id="applicationServer" 
 		      text="$resource{i18n.tree.appServer}"
 		      url="/appServer/serverInstGeneralPe.jsf?instanceName=server"
-		      imageURL="resource/images/instance.gif"
+		      imageURL="/resource/images/instance.gif"
 		      >
 	    <!facet image>
 		<sun:image id="xyz" url="/resource/images/instance.gif" />
@@ -111,7 +111,7 @@
         url="/applications/applications.jsf"
         expanded="$boolean{false}"
         attributeName="name"
-        childImageURL="resource/images/webModule.gif"
+        childImageURL="/resource/images/webModule.gif"
         childExpanded="$boolean{false}"
         childURL="/applications/applicationEdit.jsf?appName=#{$this{valueBinding}.text}"
     >
@@ -126,7 +126,7 @@
 	<sun:treeNode  id="resources"
 	    text="$resource{i18n.tree.resources}"
 	    url="/resourceNode/resources.jsf"
-	    imageURL="resource/images/resources.gif"
+	    imageURL="/resource/images/resources.gif"
 	    expanded="$boolean{true}" 
 	    />
 	    
@@ -135,7 +135,7 @@
 	 <sun:treeNode id="configuration" 
 	    text="$resource{i18n.tree.configuration}"
 	    url="/configuration/configuration.jsf?configName=server-config"
-	    imageURL="resource/images/configurations.gif"
+	    imageURL="/resource/images/configurations.gif"
 	    expanded="$boolean{true}"
 	    >
 	</sun:treeNode>

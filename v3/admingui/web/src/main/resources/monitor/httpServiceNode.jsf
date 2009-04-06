@@ -1,5 +1,5 @@
 <sun:treeNode	id="monitor_http"
 		text="$resource{i18n.tree.httpService}"
-		url="monitor/httpServicePage.jsf"
-		imageURL="resource/images/httpservice.gif"
+		url="/monitor/httpServicePage.jsf"
+		imageURL="/resource/images/httpservice.gif"
   />
