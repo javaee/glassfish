@@ -139,6 +139,10 @@ public class GlassFishORBHelper implements PostConstruct {
     }
 
 
+    public int getCSIv2PolicyType() {
+        return orbFactory.getCSIv2PolicyType();    
+    }
+
     public Properties getCSIv2Props() {
         return orbFactory.getCSIv2Props();
     }

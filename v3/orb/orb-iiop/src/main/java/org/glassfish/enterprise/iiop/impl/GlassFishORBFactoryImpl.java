@@ -30,6 +30,10 @@ public class GlassFishORBFactoryImpl
         iiopUtils.setGlassFishORBManager(gfORBManager);
     }
 
+    public int getCSIv2PolicyType() {
+        return POARemoteReferenceFactory.CSIv2_POLICY_TYPE;
+    }
+
     public ORB createORB(Properties props) {
         // TODO change this to a create call
        return gfORBManager.getORB(props);

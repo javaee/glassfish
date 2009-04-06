@@ -14,6 +14,8 @@ public interface GlassFishORBFactory {
 
     public ORB createORB(Properties props);
 
+    public int getCSIv2PolicyType();
+
     public Properties getCSIv2Props();
 
     public void setCSIv2Prop(String name, String value);
