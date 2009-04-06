@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="366"/>
+    <property name="TOTAL_EXPECTED" value="369"/>
 
     &commonSetup;
     &commonBuild;
@@ -220,6 +220,7 @@
         <ant dir="servlet-3.0/webFilterAnnotation" target="all"/>
         <ant dir="servlet-3.0/webListenerAnnotation" target="all"/>
         <ant dir="servlet-3.0/xmlOverrideAnnotation" target="all"/>
+        <ant dir="servlet-3.0/authAnnotations" target="all"/>
         <ant dir="servlet-3.0/webFragment" target="all"/>
         <ant dir="servlet-3.0/multiWebFragments" target="all"/>
         <ant dir="servlet-3.0/servletRequestResponseWrapperIsWrapperFor" target="all"/>
