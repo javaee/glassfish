@@ -106,5 +106,7 @@ public interface RemoteReferenceFactory {
     
     public void cleanupClass(Class clazz);
 
+    public int getCSIv2PolicyType();
+
 }
 

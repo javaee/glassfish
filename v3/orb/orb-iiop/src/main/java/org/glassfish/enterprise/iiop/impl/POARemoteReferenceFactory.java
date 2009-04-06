@@ -170,6 +170,10 @@ public final class POARemoteReferenceFactory extends org.omg.CORBA.LocalObject
 	    // NOTE: ReferenceFactory creation happens in setRepositoryIds.
     }
 
+    public int getCSIv2PolicyType() {
+        return CSIv2_POLICY_TYPE;
+    }
+
     private String getRepositoryId(Class c) throws Exception {
 
         // Using PresentationManager to get repository ID will always work,

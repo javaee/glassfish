@@ -132,9 +132,9 @@ public class GlassFishORBInitializer extends org.omg.CORBA.LocalObject
 
         } catch (Exception e) {
             if (_logger.isLoggable(Level.FINE)) {
-                _logger.log(Level.FINE, "Exception registering JTS interceptors", e);
+                _logger.log(Level.FINE, "Exception registering interceptors", e);
             }
-            throw new RuntimeException(e.getMessage());
+            throw new RuntimeException(e.getMessage(), e);
         }
 
     }

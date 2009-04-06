@@ -46,6 +46,8 @@ public class IIOPUtils implements PostConstruct {
     // Set during init
     private ORB defaultORB;
 
+    private GlassFishORBManager gfORBMgr;
+
     public void postConstruct() {
         _me = this;
 
@@ -65,6 +67,14 @@ public class IIOPUtils implements PostConstruct {
 
     public static IIOPUtils getInstance() {
         return _me;
+    }
+
+    void setGlassFishORBManager(GlassFishORBManager orbMgr) {
+        gfORBMgr = orbMgr;
+    }
+
+    GlassFishORBManager getGlassFishORBManager() {
+        return gfORBMgr;
     }
 
     public ClassLoader getCommonClassLoader() {
