@@ -18,7 +18,7 @@
 
 <sc:subMenu value="Configure" id="editMenu">
     <sc:subMenu value="Applications" id="applications">
-    <sc:menuItem value="Web Applications" url="#{request.contextPath}/web/webApp/webApplications.jsf" />
+    <sc:menuItem value="Web Applications" url="#{request.contextPath}/applications/applications.jsf" />
 	<sc:menuItem value="Enterprise Applications" url="#{request.contextPath}/layouttest.jsf?page=Enterprise+Applications" />
 	<sc:menuItem value="EJB Modules" url="#{request.contextPath}/layouttest.jsf?page=EJB+Modules" />
 	<sc:menuItem value="Lifecycle Modules" url="#{request.contextPath}/layouttest.jsf?page=Lifecycle+Modules" />

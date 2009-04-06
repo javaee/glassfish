@@ -80,7 +80,20 @@
             </sun:commonTask>
           </sun:commonTasksGroup>
 
-          <sun:commonTasksGroup id="deployment" title="$resource{i18n.commonTasks.group.Deployment}" />
+          <sun:commonTasksGroup id="deployment" title="$resource{i18n.commonTasks.group.Deployment}" >
+            <sun:commonTask
+                text="$resource{i18n.commonTasks.task.listApp}"
+                toolTip="$resource{i18n.commonTasks.task.listApp.toolTip}"
+                infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=applications.html"
+                onClick="admingui.nav.selectTreeNodeById('form:tree:applications:applications'); parent.location='#{facesContext.externalContext.requestContextPath}/applications/applications.jsf'; return false;">
+            </sun:commonTask>
+            <sun:commonTask
+                text="$resource{i18n.commonTasks.task.deployEAR}"
+                toolTip="$resource{i18n.commonTasks.task.deployEAR.toolTip}"
+                infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=upload.html"
+                onClick="admingui.nav.selectTreeNodeById('form:tree:applications:applications'); parent.location='#{facesContext.externalContext.requestContextPath}/applications/upload.jsf?appType=webApp&cancelPage=homePage.jsf'; return false;">
+            </sun:commonTask>
+        </sun:commonTasksGroup>
           <sun:commonTasksGroup id="monitoring"  title="$resource{i18n.commonTasks.group.Monitoring}" />
 
 #include "/commonTaskDoc.inc"
