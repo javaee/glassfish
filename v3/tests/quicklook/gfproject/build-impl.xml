@@ -62,8 +62,9 @@
     </target>
     
     <path id="run.testng.classpath">
-	    <fileset dir="${ws.root}/lib">
-            <include name="**/*.jar"/>
+        <fileset dir="${glassfish.home}/modules">
+            <include name="**/amx*.jar"/>
+            <include name="**/gf-client.jar"/>
         </fileset>
         <pathelement location="${class.output}"/>
         <pathelement location="${test.class.output}"/>
@@ -280,7 +281,7 @@
     <testng outputdir="${result.output}" verbose="2"
     suitename="${testsuite.name}"
     testname="${testng.test.name}"
-            classpathref="class.path">
+            classpathref="run.testng.classpath">
         <classfileset dir="${test.class.output}" includes="**/${testng.testclient}.class"/>
         <jvmarg value="-Dhttp.host=${glassfish.http.host}" />
         <jvmarg value="-Dhttp.port=${glassfish.http.port}" />
@@ -293,7 +294,7 @@
     <testng outputdir="${result.output}"
     suitename="${testsuite.name}"
     testname="${testng.test.name}"
-            classpathref="class.path">
+            classpathref="run.testng.classpath">
         <xmlfileset dir="." includes="testng.xml"/>
         <jvmarg value="-Dhttp.host=${glassfish.http.host}" />
         <jvmarg value="-Dhttp.port=${glassfish.http.port}" />
