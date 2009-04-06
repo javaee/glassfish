@@ -1329,6 +1329,8 @@ comes
 
     <xsd:choice>
       <xsd:group ref="javaee:descriptionGroup"/>
+      <xsd:element name="name"
+                   type="javaee:java-identifierType"/>
       <xsd:element name="distributable"
 		   type="javaee:emptyType"/>
       <xsd:element name="context-param"
