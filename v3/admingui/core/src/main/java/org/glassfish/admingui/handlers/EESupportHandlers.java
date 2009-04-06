@@ -91,22 +91,6 @@ public class EESupportHandlers {
     public EESupportHandlers() {
     }
     
-    /**
-     *	<p> This handler checks if particular feature is supported  </p>
-     *
-     *  <p> Output value: "supportCluster" -- Type: <code>Boolean</code>/</p>
-     *  <p> Output value: "supportHADB" -- Type: <code>Boolean</code>/</p>
-     *	@param	handlerCtx	The HandlerContext.
-     */
-    @Handler(id="checkSupport",
-    output={
-        @HandlerOutput(name="supportCluster", type=Boolean.class),
-        @HandlerOutput(name="supportHADB", type=Boolean.class)})
-        public static void checkSupport(HandlerContext handlerCtx) {
-            handlerCtx.setOutputValue("supportCluster", AMXRoot.getInstance().supportCluster());  
-            handlerCtx.setOutputValue("supportHADB", false);
-    }
-    
     
      /**
      *	<p> This handler returns a list of Cluster in sorted order </p>

@@ -256,22 +256,18 @@ public class DeploymentHandler {
      */
     @Handler(id="undeploy",
     input={
-        @HandlerInput(name="selectedRows", type=List.class, required=true),
-        @HandlerInput(name="appType", type=String.class, required=true)})
+        @HandlerInput(name="selectedRows", type=List.class, required=true)})
         
     public static void undeploy(HandlerContext handlerCtx) {
         
         Object obj = handlerCtx.getInputValue("selectedRows");
 
-        //appType can be one of the following: application,webApp,ejbModule,connector,appClient
-        String appType = (String)handlerCtx.getInputValue("appType");
-        Properties dProps = new Properties();;
-
-        if(appType.equals("connector")) {
-                //Default cascade is true. May be we can issue a warning,
-                //bcz undeploy will fail anyway if cascade is false.
-                dProps.put(DFDeploymentProperties.CASCADE, "true");
-        }
+        Properties dProps = new Properties();
+//        if(appType.equals("connector")) {
+//                //Default cascade is true. May be we can issue a warning,
+//                //bcz undeploy will fail anyway if cascade is false.
+//                dProps.put(DFDeploymentProperties.CASCADE, "true");
+//        }
         
         List selectedRows = (List) obj;
         DFProgressObject progressObject = null;
@@ -318,7 +314,6 @@ public class DeploymentHandler {
     @Handler(id="changeAppStatus",
     input={
         @HandlerInput(name="selectedRows", type=List.class, required=true),
-        @HandlerInput(name="appType", type=String.class, required=true),
         @HandlerInput(name="enabled", type=Boolean.class, required=true)})
         
     public static void changeAppStatus(HandlerContext handlerCtx) {
