@@ -35,7 +35,7 @@
 -->
 <!-- applications/webDDEdit.jsf -->
 <!namespace sc="http://java.sun.com/mojarra/scales" />
-<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.webApp.editDDPageTitle}" >
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.enterpriseApplications.descriptorPageTitle}" >
 <!define name="content">
     <event>
         <!beforeCreate
@@ -52,7 +52,7 @@
 #include "/applications/appGeneralTabs.inc"
 #include "/shared/alertMsg.inc"                
             <!-- Page Title -->
-            <sun:title id="propertyContentPage" title="$resource{i18n.webApp.editDDPageTitle}" helpText="$resource{i18n.webApp.editDDPageTitleHelp}" >
+            <sun:title id="propertyContentPage" title="$resource{i18n.enterpriseApplications.descriptorPageTitle}" helpText="$resource{i18n.enterpriseApplications.descriptorPageTitleHelp}" >
                 <!facet pageButtonsTop>
                     <sun:panelGroup id="topButtons">
                         <!--

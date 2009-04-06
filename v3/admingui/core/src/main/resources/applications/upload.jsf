@@ -35,10 +35,9 @@
 -->
 <!-- upload.jsf -->
 <!initPage
-    setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
 	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
 />
-<!composition template="/layout.xhtml" guiTitle="$resource{i18n_web.war.deployTitle}"  guiTemplateOnLoad="uploadInit();"  >
+<!composition template="/layout.xhtml" guiTitle="$resource{i18n.enterpriseApplications.deployPageTitle}"  guiTemplateOnLoad="uploadInit();"  >
 <!define name="content">
     <event>
     <!beforeCreate
@@ -65,7 +64,7 @@
 	    	<sun:form id="form"> 
    #include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc"
-                <sun:title id="title" title="$resource{i18n_web.war.deployTitle}" helpText="$resource{i18n_web.war.deployTitleHelp}">
+                <sun:title id="title" title="$resource{i18n.enterpriseApplications.deployPageTitle}" helpText="$resource{i18n.enterpriseApplications.deployPageTitleHelp}">
                  <!facet pageButtonsTop>
                         <sun:panelGroup id="topButtons">
 #include "uploadButtons.inc"                            
