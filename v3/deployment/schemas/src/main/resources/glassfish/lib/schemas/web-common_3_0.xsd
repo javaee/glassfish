@@ -1316,8 +1316,8 @@ comes
 
   <xsd:complexType name="web-appType">
     <xsd:choice minOccurs="0" maxOccurs="unbounded">
-     <xsd:group ref="javaee:web-commonType"/>
-     <xsd:element name="absolute-ordering"
+      <xsd:group ref="javaee:web-commonType"/>
+      <xsd:element name="absolute-ordering"
                          type="javaee:absoluteOrderingType"/>
     </xsd:choice>
     <xsd:attributeGroup ref="javaee:web-common-attributes"/>
@@ -1384,8 +1384,8 @@ comes
 
   <xsd:complexType name="web-fragmentType">
     <xsd:choice minOccurs="0" maxOccurs="unbounded">
-     <xsd:group ref="javaee:web-commonType"/>
-     <xsd:element name="absolute-ordering"
+      <xsd:group ref="javaee:web-commonType"/>
+      <xsd:element name="ordering"
                          type="javaee:orderingType"/>
     </xsd:choice>
     <xsd:attributeGroup ref="javaee:web-common-attributes"/>

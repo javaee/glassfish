@@ -8,7 +8,7 @@
 	    version="3.0">
   <xsd:annotation>
     <xsd:documentation>
-      @(#)web-common_3_0.xsds
+      @(#)web-fragment_3_0.xsds
     </xsd:documentation>
   </xsd:annotation>
 
