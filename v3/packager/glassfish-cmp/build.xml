@@ -232,12 +232,18 @@ own identifying information: Portions Copyright [yyyy]
             </visualize>
         </graphDef>
 
-	
+	<resolveArtifact artifactId="cmp-scripts" property="cmp-scripts.zip"/>
+       
+	<unzip src="${cmp-scripts.zip}" dest="target/stage/${install.dir.name}">
+	</unzip>
+
+	<chmod file="target/stage/${install.dir.name}/glassfish/bin/*" perm="ugo+rx"/>
 
 	<delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.zip" />   
 	<delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.pom" />  
 	<delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.war" />  
 
+       
 
         <if test="${compression}">
 	       <antcall target="pack.compression" />

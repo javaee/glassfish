@@ -72,8 +72,9 @@
         -->       
         <dependency>
            <groupId>org.glassfish.persistence.cmp</groupId>
-           <artifactId>cmp-support-ejb</artifactId>
-           <version>${project.version}</version>
+           <artifactId>cmp-all</artifactId>
+	   <version>${project.version}</version>
+	   <type>pom</type>
         </dependency>
 	
 

@@ -70,11 +70,7 @@
         <!--
           modules to be included in this bundle
 	  -->          
-	<dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.activation</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.annotation</artifactId>
