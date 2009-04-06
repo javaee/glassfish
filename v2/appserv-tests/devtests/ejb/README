@@ -2,6 +2,10 @@
 Steps for running EJB Development Tests
 ----------------------------------------
 
+Open ISSUES :
+
+** Make sure the glassfish installation bin/appclient script has execute permissions before running.  **
+
 1. Run step 2) of general appserv-tests framework configuration
 in appserv-tests/QuickLook-README.txt.   
 
@@ -16,25 +20,17 @@ cat `which ant` :
 
  "$JAVACMD" -Xmx999m -classpath "$LOCALCLASSPATH" -Dant.home="${ANT_HOME}" $ANT_OPTS org.apache.tools.ant.Main $ANT_ARGS "$@"
 
-3. Start the database 
-
-  % ant startDerby
-
-4. Start the app server. 
+3. Start the app server. 
 
   % asadmin start-domain
 
-5. Run all the tests
+4. Run all the tests
 
   % ant all
 
-6. Stop the app server
+5. Stop the app server
 
-  % asadmin start-domain
-
-7. Stop derby
-
-  % ant stopDerby
+  % asadmin stop-domain
 
 
   
