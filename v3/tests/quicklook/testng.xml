@@ -112,6 +112,11 @@
         <class name="test.ejb.sfulnoi.SfulnoiTestNG" />
     </classes>
   </test>
+  <test name="bv_servlet_simple">
+    <classes>
+        <class name="test.bv.servlet.simple.SimpleBVServletTestNG" />
+    </classes>
+  </test>
   <test name="asadmin_tests">
     <classes>
       <class name="test.admin.JvmOptionTests"/>

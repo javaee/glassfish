@@ -108,6 +108,7 @@
         <ant dir="security/basicauth" target="build-deploy"/>
         <ant dir="ejb/slsbnicmt" target="build-deploy"/>
         <ant dir="ejb/sfulnoi" target="build-deploy"/>
+        <ant dir="bean-validator/simple-bv-servlet" target="build-deploy"/>
         <!-- ant dir="web/strutsbasic" target="build"/ -->
         <!-- ant dir="persistence/servlet-jpa-app" target="build"/ -->
         <!--<ant dir="ejb30/hello" target="build"/>
@@ -136,6 +137,7 @@
         <ant dir="security/basicauth" target="undeploy"/>
         <ant dir="ejb/slsbnicmt" target="undeploy"/>
         <ant dir="ejb/sfulnoi" target="undeploy"/>
+        <ant dir="bean-validator/simple-bv-servlet" target="undeploy"/>
         <!-- ant dir="web/strutsbasic" target="undeploy"/ -->
         <!-- ant dir="persistence/servlet-jpa-app" target="undeploy"/ -->   
         <record name="undeploy.output" action="stop"/>
