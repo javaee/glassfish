@@ -14,6 +14,7 @@
 
     <target name="all">
         <antcall target="nonpersistenttimer"/>
+        <antcall target="schedule_exp"/>
 
     </target>
 
@@ -23,12 +24,19 @@
         <record name="nonpersistenttimer.output" action="stop" />
     </target>
 
+    <target name="schedule_exp">
+        <record name="schedule_exp.output" action="start" />
+            <ant dir="schedule_exp" target="all"/>
+        <record name="schedule_exp.output" action="stop" />
+    </target>
+
     <target name="usage">
 	<echo>
 		Usage:
 			ant all (Executes all the ejb-timer tests)
 
 			ant nonpersistenttimer (Executes the non-persistent ejb-timer test)
+			ant schedule_exp (Executes the schedule_exp ejb-timer test)
 
 	</echo>
     </target>
