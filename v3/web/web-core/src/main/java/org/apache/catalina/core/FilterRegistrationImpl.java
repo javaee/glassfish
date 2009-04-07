@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,46 +44,18 @@ import org.apache.catalina.util.StringManager;
 
 public class FilterRegistrationImpl implements FilterRegistration {
 
-    private static final StringManager sm =
+    protected static final StringManager sm =
         StringManager.getManager(Constants.Package);
 
-    private FilterDef filterDef;
-    private StandardContext ctx;
-
-    /*
-     * true if this ServletRegistration was obtained through programmatic
-     * registration (i.e., via a call to ServletContext#addServlet), and
-     * false if it represents a servlet declared in web.xml or a web.xml
-     * fragment
-     */
-    private boolean isProgrammatic;
-
+    protected FilterDef filterDef;
+    protected StandardContext ctx;
 
     /**
      * Constructor
      */
-    FilterRegistrationImpl(FilterDef filterDef, StandardContext ctx,
-                           boolean isProgrammatic) {
+    FilterRegistrationImpl(FilterDef filterDef, StandardContext ctx) {
         this.filterDef = filterDef;
         this.ctx = ctx;
-        this.isProgrammatic = isProgrammatic;
-    }
-
-
-    public boolean setDescription(String description) {
-        if (ctx.isContextInitializedCalled()) {
-            throw new IllegalStateException(
-                sm.getString("filterRegistration.alreadyInitialized",
-                             "description", filterDef.getFilterName(),
-                             ctx.getName()));
-        }
-
-        if (!isProgrammatic) {
-            return false;
-        } else {
-            filterDef.setDescription(description);
-            return true;
-        }
     }
 
 
@@ -101,23 +73,6 @@ public class FilterRegistrationImpl implements FilterRegistration {
 
     public boolean setInitParameters(Map<String, String> initParameters) {
         return filterDef.setInitParameters(initParameters);
-    }
-
-
-    public boolean setAsyncSupported(boolean isAsyncSupported) {
-        if (ctx.isContextInitializedCalled()) {
-            throw new IllegalStateException(
-                sm.getString("filterRegistration.alreadyInitialized",
-                             "async-supported", filterDef.getFilterName(),
-                             ctx.getName()));
-        }
-
-        if (!isProgrammatic) {
-            return false;
-        } else {
-            filterDef.setIsAsyncSupported(isAsyncSupported);
-            return true;
-        }
     }
 
 

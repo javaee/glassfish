@@ -192,7 +192,8 @@ public class OSGiServletContext implements ServletContext {
         attributes.put(name, value);
     }
 
-    public ServletRegistration addServlet(String servletName, String className) {
+    public ServletRegistration.Dynamic addServlet(
+            String servletName, String className) {
         throw new UnsupportedOperationException(); // TODO(Sahoo):
     }
 
@@ -200,7 +201,8 @@ public class OSGiServletContext implements ServletContext {
         throw new UnsupportedOperationException(); // TODO(Sahoo):
     }
 
-    public FilterRegistration addFilter(String filterName, String className) {
+    public FilterRegistration.Dynamic addFilter(
+            String filterName, String className) {
         throw new UnsupportedOperationException(); // TODO(Sahoo):
     }
 
@@ -255,7 +257,8 @@ public class OSGiServletContext implements ServletContext {
     *
     * @since 3.0
     */
-    public ServletRegistration addServlet(String servletName, Class<? extends Servlet> servletClass)
+    public ServletRegistration.Dynamic addServlet(
+            String servletName, Class<? extends Servlet> servletClass)
     {
         return null;  //TODO(Sahoo): Not Yet Implemented
     }
@@ -265,7 +268,8 @@ public class OSGiServletContext implements ServletContext {
         return null;  //TODO(Sahoo): Not Yet Implemented
     }
 
-    public FilterRegistration addFilter(String filterName, Class<? extends Filter> filterClass)
+    public FilterRegistration.Dynamic addFilter(
+            String filterName, Class<? extends Filter> filterClass)
     {
         return null;  //TODO(Sahoo): Not Yet Implemented
     }
@@ -275,12 +279,14 @@ public class OSGiServletContext implements ServletContext {
         return null;  //TODO(Sahoo): Not Yet Implemented
     }
 
-    public ServletRegistration addServlet(String servletName, Servlet servlet)
+    public ServletRegistration.Dynamic addServlet(
+            String servletName, Servlet servlet)
     {
         return null;  //TODO(Sahoo): Not Yet Implemented
     }
 
-    public FilterRegistration addFilter(String filterName, Filter filter)
+    public FilterRegistration.Dynamic addFilter(
+            String filterName, Filter filter)
     {
         return null;  //TODO(Sahoo): Not Yet Implemented
     }

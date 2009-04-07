@@ -38,63 +38,44 @@ package org.apache.catalina.core;
 
 import java.util.*;
 import javax.servlet.*;
-import org.apache.catalina.core.StandardWrapper;
+import org.apache.catalina.deploy.FilterDef;
+import org.apache.catalina.deploy.FilterMap;
 import org.apache.catalina.util.StringManager;
 
-public class ServletRegistrationImpl implements ServletRegistration {
-
-    protected static final StringManager sm =
-        StringManager.getManager(Constants.Package);
-
-    protected StandardWrapper wrapper;
-    protected StandardContext ctx;
+public class DynamicFilterRegistrationImpl
+    extends FilterRegistrationImpl
+    implements FilterRegistration.Dynamic {
 
     /**
      * Constructor
      */
-    ServletRegistrationImpl(StandardWrapper wrapper, StandardContext ctx) {
-        this.wrapper = wrapper;
-        this.ctx = ctx;
+    DynamicFilterRegistrationImpl(FilterDef filterDef,
+            StandardContext ctx) {
+        super(filterDef, ctx);
     }
 
 
-    public boolean setInitParameter(String name, String value) {
+    public void setDescription(String description) {
         if (ctx.isContextInitializedCalled()) {
             throw new IllegalStateException(
-                sm.getString("servletRegistration.alreadyInitialized",
-                             "init parameter", wrapper.getName(),
+                sm.getString("filterRegistration.alreadyInitialized",
+                             "description", filterDef.getFilterName(),
                              ctx.getName()));
         }
 
-        return wrapper.setInitParameter(name, value, false);
+        filterDef.setDescription(description);
     }
 
 
-    public boolean setInitParameters(Map<String, String> initParameters) {
-        return wrapper.setInitParameters(initParameters);
-    }
-
-
-    public boolean addMapping(String... urlPatterns) {
+    public void setAsyncSupported(boolean isAsyncSupported) {
         if (ctx.isContextInitializedCalled()) {
             throw new IllegalStateException(
-                sm.getString("servletRegistration.alreadyInitialized",
-                             "mapping", wrapper.getName(), ctx.getName()));
+                sm.getString("filterRegistration.alreadyInitialized",
+                             "async-supported", filterDef.getFilterName(),
+                             ctx.getName()));
         }
 
-        if (urlPatterns == null || urlPatterns.length == 0) {
-            throw new IllegalArgumentException(
-                sm.getString(
-                    "servletRegistration.mappingWithNullOrEmptyUrlPatterns",
-                    wrapper.getName(), ctx.getName()));
-        }
-
-        for (String urlPattern : urlPatterns) {
-            ctx.addServletMapping(urlPattern, wrapper.getName());
-        }
-
-        return true;
+        filterDef.setIsAsyncSupported(isAsyncSupported);
     }
-
 }
 

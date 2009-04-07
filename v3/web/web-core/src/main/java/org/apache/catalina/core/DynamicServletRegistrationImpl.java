@@ -41,59 +41,52 @@ import javax.servlet.*;
 import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.util.StringManager;
 
-public class ServletRegistrationImpl implements ServletRegistration {
-
-    protected static final StringManager sm =
-        StringManager.getManager(Constants.Package);
-
-    protected StandardWrapper wrapper;
-    protected StandardContext ctx;
+public class DynamicServletRegistrationImpl
+    extends ServletRegistrationImpl
+    implements ServletRegistration.Dynamic {
 
     /**
      * Constructor
      */
-    ServletRegistrationImpl(StandardWrapper wrapper, StandardContext ctx) {
-        this.wrapper = wrapper;
-        this.ctx = ctx;
+    DynamicServletRegistrationImpl(StandardWrapper wrapper,
+            StandardContext ctx) {
+        super(wrapper, ctx);
     }
 
 
-    public boolean setInitParameter(String name, String value) {
+    public void setDescription(String description) {
         if (ctx.isContextInitializedCalled()) {
             throw new IllegalStateException(
                 sm.getString("servletRegistration.alreadyInitialized",
-                             "init parameter", wrapper.getName(),
+                             "description", wrapper.getName(),
                              ctx.getName()));
         }
 
-        return wrapper.setInitParameter(name, value, false);
+        wrapper.setDescription(description);
     }
 
 
-    public boolean setInitParameters(Map<String, String> initParameters) {
-        return wrapper.setInitParameters(initParameters);
-    }
-
-
-    public boolean addMapping(String... urlPatterns) {
+    public void setLoadOnStartup(int loadOnStartup) {
         if (ctx.isContextInitializedCalled()) {
             throw new IllegalStateException(
                 sm.getString("servletRegistration.alreadyInitialized",
-                             "mapping", wrapper.getName(), ctx.getName()));
+                             "load-on-startup", wrapper.getName(),
+                             ctx.getName()));
         }
 
-        if (urlPatterns == null || urlPatterns.length == 0) {
-            throw new IllegalArgumentException(
-                sm.getString(
-                    "servletRegistration.mappingWithNullOrEmptyUrlPatterns",
-                    wrapper.getName(), ctx.getName()));
+        wrapper.setLoadOnStartup(loadOnStartup);
+    }
+
+
+    public void setAsyncSupported(boolean isAsyncSupported) {
+        if (ctx.isContextInitializedCalled()) {
+            throw new IllegalStateException(
+                sm.getString("servletRegistration.alreadyInitialized",
+                             "async-supported", wrapper.getName(),
+                             ctx.getName()));
         }
 
-        for (String urlPattern : urlPatterns) {
-            ctx.addServletMapping(urlPattern, wrapper.getName());
-        }
-
-        return true;
+        wrapper.setIsAsyncSupported(isAsyncSupported);
     }
 
 }

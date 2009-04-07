@@ -424,10 +424,10 @@ public final class ApplicationContextFacade
      * Adds the servlet with the given name and class name to this
      * servlet context.
      */
-    public ServletRegistration addServlet(String servletName,
-                                          String className) {
+    public ServletRegistration.Dynamic addServlet(
+            String servletName, String className) {
         if (SecurityUtil.isPackageProtectionEnabled()) {
-            return (ServletRegistration) doPrivileged(
+            return (ServletRegistration.Dynamic) doPrivileged(
                 "addServlet", new Object[] {servletName, className});
         } else {
             return context.addServlet(servletName, className);
@@ -439,10 +439,10 @@ public final class ApplicationContextFacade
      * Registers the given servlet instance with this ServletContext
      * under the given <tt>servletName</tt>.
      */
-    public ServletRegistration addServlet(String servletName,
-                                          Servlet servlet) {
+    public ServletRegistration.Dynamic addServlet(
+            String servletName, Servlet servlet) {
         if (SecurityUtil.isPackageProtectionEnabled()) {
-            return (ServletRegistration) doPrivileged(
+            return (ServletRegistration.Dynamic) doPrivileged(
                 "addServlet", new Object[] {servletName, servlet});
         } else {
             return context.addServlet(servletName, servlet);
@@ -454,10 +454,10 @@ public final class ApplicationContextFacade
      * Adds the servlet with the given name and class type to this
      * servlet context.
      */
-    public ServletRegistration addServlet(String servletName,
+    public ServletRegistration.Dynamic addServlet(String servletName,
             Class <? extends Servlet> servletClass) {
         if (SecurityUtil.isPackageProtectionEnabled()) {
-            return (ServletRegistration) doPrivileged(
+            return (ServletRegistration.Dynamic) doPrivileged(
                 "addServlet", new Object[] {servletName, servletClass});
         } else {
             return context.addServlet(servletName, servletClass);
@@ -499,9 +499,10 @@ public final class ApplicationContextFacade
      * Adds the filter with the given name and class name to this servlet
      * context.
      */
-    public FilterRegistration addFilter(String filterName, String className) {
+    public FilterRegistration.Dynamic addFilter(
+            String filterName, String className) {
         if (SecurityUtil.isPackageProtectionEnabled()) {
-            return (FilterRegistration) doPrivileged(
+            return (FilterRegistration.Dynamic) doPrivileged(
                 "addFilter", new Object[] {filterName, className});
         } else {
             return context.addFilter(filterName, className);
@@ -513,9 +514,10 @@ public final class ApplicationContextFacade
      * Registers the given filter instance with this ServletContext
      * under the given <tt>filterName</tt>.
      */
-    public FilterRegistration addFilter(String filterName, Filter filter) {
+    public FilterRegistration.Dynamic addFilter(
+            String filterName, Filter filter) {
         if (SecurityUtil.isPackageProtectionEnabled()) {
-            return (FilterRegistration) doPrivileged(
+            return (FilterRegistration.Dynamic) doPrivileged(
                 "addFilter", new Object[] {filterName, filter});
         } else {
             return context.addFilter(filterName, filter);
@@ -527,10 +529,10 @@ public final class ApplicationContextFacade
      * Adds the filter with the given name and class type to this servlet
      * context.
      */
-    public FilterRegistration addFilter(String filterName,
+    public FilterRegistration.Dynamic addFilter(String filterName,
             Class <? extends Filter> filterClass) {
         if (SecurityUtil.isPackageProtectionEnabled()) {
-            return (FilterRegistration) doPrivileged(
+            return (FilterRegistration.Dynamic) doPrivileged(
                 "addFilter", new Object[] {filterName, filterClass});
         } else {
             return context.addFilter(filterName, filterClass);
