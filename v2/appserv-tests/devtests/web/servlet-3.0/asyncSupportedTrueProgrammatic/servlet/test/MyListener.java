@@ -38,14 +38,16 @@ public class MyListener implements ServletContextListener {
         /*
          * Register servlet
          */
-        ServletRegistration sr = sc.addServlet("NewServlet", "test.NewServlet");
+        ServletRegistration.Dynamic sr = sc.addServlet(
+            "NewServlet", "test.NewServlet");
         sr.addMapping("/newServlet");
         sr.setAsyncSupported(true);
 
         /*
          * Register filter
          */
-        FilterRegistration fr = sc.addFilter("NewFilter", "test.NewFilter");
+        FilterRegistration.Dynamic fr = sc.addFilter(
+            "NewFilter", "test.NewFilter");
         fr.addMappingForServletNames(EnumSet.of(DispatcherType.REQUEST),
                                      true, "NewServlet"); 
         fr.setAsyncSupported(true);
