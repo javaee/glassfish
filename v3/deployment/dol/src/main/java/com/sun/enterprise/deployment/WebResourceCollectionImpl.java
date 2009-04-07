@@ -158,10 +158,10 @@ public class WebResourceCollectionImpl extends Descriptor
      * @return array of strings of HttpMethodOmissions
      */
     public String[] getHttpMethodOmissionsAsArray(){
-        if (httpMethods == null){
+        if (httpMethodOmissions == null){
             return (String[]) null;
         }
-        String[] array = (String[])httpMethods.toArray(new String[0]);
+        String[] array = (String[])httpMethodOmissions.toArray(new String[0]);
         return array;
     }
     /**
