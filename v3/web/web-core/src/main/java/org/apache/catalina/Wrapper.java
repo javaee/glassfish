@@ -410,16 +410,6 @@ public interface Wrapper extends Container {
 
 
     /**
-     * Gets the timeout (in milliseconds) for any asynchronous operations
-     * initiated by the wrapped servlet.
-     *
-     * @return the timeout (in milliseconds) for any async operations 
-     * initiated by the wrapped servlet
-     */
-    public long getAsyncTimeout();
-
-
-    /**
      * Sets the ServletRegistration through which the wrapped servlet
      * may be further configured.
      *

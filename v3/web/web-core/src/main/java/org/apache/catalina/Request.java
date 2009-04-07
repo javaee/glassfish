@@ -420,25 +420,22 @@ public interface Request {
 
     /**
      * Sets the timeout (in milliseconds) for any asynchronous operations
-     * started on this request.
+     * initiated on this request.
      *
-     * @param timeout the timeout
-     * @param isExplicit true if setAsyncTimeout(long) is being called by
-     * application code (in which case the specified timeout overrides the
-     * async timeout configured for the servlet or filter that may initiate
-     * the async operation), false otherwise
+     * @param timeout the timeout for any asynchronous operations initiated
+     * on this request.
      */
-    public void setAsyncTimeout(long timeout, boolean isExplicit);
+    public void setAsyncTimeout(long timeout);
 
 
     /**
-     * Checks if setAsyncTimeout was called on this request. 
+     * Gets the timeout (in milliseconds) for any asynchronous operations
+     * initiated on this request.
      *
-     * This is used to determine if the request should inherit the 
-     * async timeout of the servlet or filter that called startAsync
-     * (if setAsyncTimeout was not called, it will).
+     * @return the timeout for any asynchronous operations initiated on this
+     * request.
      */
-    public boolean isSetAsyncTimeoutCalled();
+    public long getAsyncTimeout();
 
 
     /**

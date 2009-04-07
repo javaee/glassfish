@@ -621,30 +621,6 @@ public class StandardWrapper
 
 
     /**
-     * Sets the timeout (in milliseconds) for any asynchronous operations
-     * initiated by the wrapped servlet.
-     *
-     * @param timeout the timeout (in milliseconds) for any async operations 
-     * initiated by the wrapped servlet
-     */
-    public void setAsyncTimeout(long timeout) {
-        asyncTimeout = timeout;
-    }
-
-
-    /**
-     * Gets the timeout (in milliseconds) for any asynchronous operations
-     * initiated by the wrapped servlet.
-     *
-     * @return the timeout (in milliseconds) for any async operations 
-     * initiated by the wrapped servlet
-     */
-    public long getAsyncTimeout() {
-        return asyncTimeout;
-    }
-
-
-    /**
      * Return the fully qualified servlet class name for this servlet.
      */
     public String getServletClassName() {

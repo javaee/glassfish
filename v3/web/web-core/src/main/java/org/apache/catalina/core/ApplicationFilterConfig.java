@@ -172,18 +172,6 @@ final class ApplicationFilterConfig implements FilterConfig, Serializable {
 
 
     /**
-     * Gets the timeout (in milliseconds) for any asynchronous operations
-     * initiated by this filter.
-     *
-     * @return the timeout (in milliseconds) for any async operations 
-     * initiated by this filter
-     */
-    public long getAsyncTimeout() {
-        return filterDef.getAsyncTimeout();
-    }
-
-
-    /**
      * Return a <code>String</code> containing the value of the named
      * initialization parameter, or <code>null</code> if the parameter
      * does not exist.

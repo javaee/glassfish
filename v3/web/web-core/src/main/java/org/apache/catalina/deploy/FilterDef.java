@@ -123,11 +123,6 @@ public class FilterDef implements Serializable {
     private boolean isAsyncSupported = false;
 
     /**
-     * The async timeout for this filter
-     */  
-    private long asyncTimeout;
-
-    /**
      * The FilterRegistration object through which this FilterDef may be
      * further configured
      */
@@ -274,19 +269,6 @@ public class FilterDef implements Serializable {
     public boolean isAsyncSupported() {
         return isAsyncSupported;
     }
-
-
-    /**
-     * Gets the timeout (in milliseconds) for any asynchronous operations
-     * initiated by this filter.
-     *
-     * @return the timeout (in milliseconds) for any async operations 
-     * initiated by this filter
-     */
-    public long getAsyncTimeout() {
-        return asyncTimeout;
-    }
-
 
 
     // --------------------------------------------------------- Public Methods

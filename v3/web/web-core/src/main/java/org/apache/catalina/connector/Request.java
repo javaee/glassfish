@@ -138,11 +138,14 @@ import com.sun.appserv.security.provider.ProxyHandler;
 public class Request
     implements HttpRequest, HttpServletRequest {
 
-
     /**
      * Whether or not to enforce scope checking of this object.
      */
     private static boolean enforceScope = false;
+
+    // Default timeout for async operations
+    private static final long DEFAULT_ASYNC_TIMEOUT_MILLIS = 30000L;
+
 
     // ----------------------------------------------------------- Constructors
 
@@ -532,11 +535,9 @@ public class Request
     private boolean asyncStarted;
     private AsyncContextImpl asyncContext;
     private LinkedList<AsyncListenerHolder> asyncListenerHolders;
-    private long asyncTimeoutMillis = -1L;
+    private long asyncTimeoutMillis = DEFAULT_ASYNC_TIMEOUT_MILLIS;
     // Has AsyncContext.complete been called?
     private boolean isAsyncComplete;
-    // Has setAsyncTimeout been called on this request?
-    private boolean isSetAsyncTimeoutCalled;
     private boolean isOkToReinitializeAsync;
 
     /**
@@ -645,10 +646,9 @@ public class Request
         isAsyncSupported = true;
         asyncStarted = false;
         isAsyncComplete = false;
-        isSetAsyncTimeoutCalled = false;
         isOkToReinitializeAsync = false;
 
-        asyncTimeoutMillis = -1L;
+        asyncTimeoutMillis = DEFAULT_ASYNC_TIMEOUT_MILLIS;
     }
 
 
@@ -3985,30 +3985,12 @@ public class Request
 
     /**
      * Sets the timeout (in milliseconds) for any asynchronous operations
-     * started on this request.
+     * initiated on this request.
      *
      * @param timeout the timeout
      */
     public void setAsyncTimeout(long timeout) {
-        setAsyncTimeout(timeout, true);
-    }
-
-
-    /**
-     * Sets the timeout (in milliseconds) for any asynchronous operations
-     * started on this request.
-     *
-     * @param timeout the timeout
-     * @param isExplicit true if setAsyncTimeout(long) is being called by
-     * application code (in which case the specified timeout overrides the
-     * async timeout configured for the servlet or filter that may initiate
-     * the async operation), false otherwise
-     */
-    public void setAsyncTimeout(long timeout, boolean isExplicit) {
         asyncTimeoutMillis = timeout;
-        if (isExplicit) {
-            isSetAsyncTimeoutCalled = true;
-        }
     }
 
 
@@ -4016,23 +3998,11 @@ public class Request
      * Gets the timeout (in milliseconds) for any asynchronous operations
      * initiated on this request.
      *
-     * @return the timeout (in milliseconds) for any async operations 
-     * initiated on this request
+     * @return the timeout (in milliseconds) for any asynchronous
+     * operations initiated on this request
      */
     public long getAsyncTimeout() {
         return asyncTimeoutMillis;
-    }
-
-
-    /**
-     * Checks if setAsyncTimeout was called on this request. 
-     *
-     * This is used to determine if the request should inherit the 
-     * async timeout of the servlet or filter that called startAsync
-     * (if setAsyncTimeout was not called, it will).
-     */
-    public boolean isSetAsyncTimeoutCalled() {
-        return isSetAsyncTimeoutCalled;
     }
 
 
@@ -4058,9 +4028,9 @@ public class Request
      */
     void asyncTimeout() {
         notifyAsyncListeners(AsyncEventType.TIMEOUT);
-        // should not call asyncComplete if already completed or
-        // one of the listener call asyncContext.dispatch in which
-        // case asyncStarted has been set to false
+        // Must not call asyncComplete if already completed or
+        // one of the listeners called AsyncContext#dispatch, in which
+        // case asyncStarted will have been set to false
         if (!isAsyncComplete && isAsyncStarted()) {
             asyncComplete();
         }
