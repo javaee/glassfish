@@ -58,6 +58,22 @@
 
     <dependencySets useProjectArtifact="true">
         <dependencySet>
+
+            <!--
+                N O T E
+                The next mapping works for the current version of the assembly
+                plug-in.  Future versions are described as using
+                ${artifact.artifactId} and ${artifact.extension}.
+
+                See the outputFileNameMapping topic right after this URL:
+
+                http://maven.apache.org/plugins/maven-assembly-plugin/assembly.html#class_dependencySet
+
+            -->
+            <outputFileNameMapping>
+                ${artifactId}.${extension}
+            </outputFileNameMapping>
+
             <excludes>
                 <exclude>com.sun.xml.bind:jaxb</exclude> <!-- we don't need 2.1 of this; 2.0 is in the JRE -->
             </excludes>
