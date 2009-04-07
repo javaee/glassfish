@@ -245,6 +245,12 @@ public class VirtualServerPipeline extends StandardPipeline {
                 }
                 // END 6810361
             }
+            // START 6810361
+            // Implements welcome page only redirection
+            if ("".equals(redirectMatch.from)) {
+                if (!("/".equals(requestURI))) return false;
+            }
+            // END 6810361
             if (redirectMatch.urlPrefix != null) {
                 // Replace 'from' URI prefix with URL prefix
                 location = redirectMatch.urlPrefix + uriSuffix;
@@ -287,9 +293,17 @@ public class VirtualServerPipeline extends StandardPipeline {
                     }
                     location = locationCC.toString();
                 } catch (MalformedURLException mue) {
-                    logger.log(Level.WARNING,
-                               "virtualServerPipeline.invalidRedirectLocation",
-                               location);
+                    if (redirectMatch.validURI) {
+                        logger.log(Level.WARNING,
+                            "virtualServerPipeline.invalidRedirectLocation",
+                            location);
+                    } else {
+                        if (logger.isLoggable(Level.FINE)) {
+                            logger.log(Level.FINE,
+                                "virtualServerPipeline.invalidRedirectLocation",
+                                location);
+                        }
+                    }
                 } finally {
                     if (urlEncoder != null) {
                         urlEncoders.offer(urlEncoder);
@@ -328,6 +342,8 @@ public class VirtualServerPipeline extends StandardPipeline {
         private String urlPrefixPath;
         // END 6810361
 
+        private boolean validURI;
+
         private boolean isEscape;
 
         RedirectParameters(String from, String url, String urlPrefix,
@@ -336,6 +352,7 @@ public class VirtualServerPipeline extends StandardPipeline {
             this.url = url;
             this.urlPrefix = urlPrefix;
             this.isEscape = isEscape;
+            this.validURI = true;
 
             // START 6810361
             try {
@@ -343,6 +360,7 @@ public class VirtualServerPipeline extends StandardPipeline {
                 urlPrefixPath = u.getPath();
             } catch (MalformedURLException e) {
                 urlPrefixPath = urlPrefix;
+                this.validURI = false;
             }
             // END 6810361
         }
