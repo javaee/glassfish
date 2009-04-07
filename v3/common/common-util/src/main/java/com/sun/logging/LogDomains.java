@@ -213,11 +213,13 @@ public class LogDomains
 
 
 
+
     /**
      * This is temporary and needed so that IAS can run with or without
      * the com.sun.enterprise.server.logging.ServerLogger. The subclassed 
      * addLogger() method there automatically appends the logger name.
      **/
+
     private static String getLoggerResourceBundleName(String loggerName) {
         String result = loggerName + "." + RESOURCE_BUNDLE;
        // System.out.println("looking for bundle "+ result.replaceFirst(DOMAIN_ROOT, PACKAGE_ROOT));
@@ -238,10 +240,27 @@ public class LogDomains
     public static Logger getLogger(final Class clazz, final String name) {
         final ClassLoader cloader =clazz.getClassLoader();
         Logger l = LogManager.getLogManager().getLogger(name);
-        
+
         if (l==null) {
+            //first time through for this logger.  create it and find the resource bundle
+
             // should be pass in a resource bundle?
-            l = new Logger(name, null) {
+            l = Logger.getLogger(name); 
+                    
+        };
+
+
+        // now create the real logger which is the logger name with the package name
+        // this is what will be returned.
+        //look for the resource bundle only in the package if not there then the resource
+        // bundle from the parent above will be used.
+        String pkgName = clazz.getPackage().getName();
+        String loggerName = name + "."+ pkgName;
+        Logger cLogger = LogManager.getLogManager().getLogger(loggerName);
+        if (cLogger == null) {
+            //first time through for this logger.  create it and find the resource bundle
+            cLogger = new Logger(loggerName, null) {
+ 
                 /**
                  * Retrieve the localization resource bundle for this
                  * logger for the current default locale.  Note that if
@@ -249,8 +268,12 @@ public class LogDomains
                  * bundle inherited from its parent.
                  *
                  * @return localization bundle (may be null)
+                 *
                  */
-                public ResourceBundle getResourceBundle() {
+             public ResourceBundle getResourceBundle() {
+
+                    //call routine to add resource bundle if not already added
+                    // the return needs to go through all known resource bundles
                     try {
 
                         return ResourceBundle.getBundle(getLoggerResourceBundleName(name), Locale.getDefault(), cloader);
@@ -285,34 +308,33 @@ public class LogDomains
 
                             } catch (MissingResourceException me) {
                         }
-                        System.out.println("class name that failed "+clazz.getName());
-
+                        //System.out.println("class name that failed "+clazz.getName());
                         throw e;
                     }
-
-                }
-
+                };
             };
-            
+
             // We must not return an orphan logger (the one we just created) if
             // a race condition has already created one
-            if ( ! LogManager.getLogManager().addLogger(l) )
+            if ( ! LogManager.getLogManager().addLogger(cLogger) )
             {
                 final Logger existing = LogManager.getLogManager().getLogger(name);
                 if ( existing == null )
                 {
                     // Can loggers be removed?  If not, this should be impossible
                     // this time, make the call and hope for the best.
-                    LogManager.getLogManager().addLogger(l);
+                    LogManager.getLogManager().addLogger(cLogger);
                 }
                 else
                 {
-                    l = existing;
+                    cLogger = existing;
                 }
 
             }
-        }
+        };
+        
+        return cLogger;
 
-        return l;
+
     }
 }

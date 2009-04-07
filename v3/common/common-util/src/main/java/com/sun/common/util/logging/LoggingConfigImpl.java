@@ -41,6 +41,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
 		String loggingPropertiesName;
 		LogManager logMgr = null;
         File loggingConfigDir = null;
+        File file = null;
 
    /**
      * Constructor
@@ -62,13 +63,32 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
 	
 	private void openPropFile() throws IOException{
 		try {
-			fis = new java.io.FileInputStream (new File(loggingConfigDir, loggingPropertiesName));
+            file =new File(loggingConfigDir, loggingPropertiesName);
+			fis = new java.io.FileInputStream (file);
 			props = new java.util.Properties();
         	props.load(fis);
             fis.close();            
-		} catch (FileNotFoundException e ) {
-			Logger.getAnonymousLogger().log(Level.SEVERE, "Cannot read logging.properties file : ", e);
-			throw new IOException();
+		} catch (java.io.FileNotFoundException e ) {
+			Logger.getAnonymousLogger().log(Level.INFO, "Cannot read logging.properties file. Creating new one ");
+            File parent = file.getParentFile();
+            if (!parent.exists()) {
+                parent.mkdirs();
+            }
+
+            file =new File(loggingConfigDir, loggingPropertiesName);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+
+            fis = new java.io.FileInputStream (file);
+            props = new java.util.Properties();
+
+            //need to set a bunch of properties
+			props.setProperty("handlers","java.util.logging.ConsoleHandler");
+            props.setProperty("java.util.logging.ConsoleHandler.formatter", "com.sun.enterprise.server.logging.UniformLogFormatter");
+            props.setProperty("java.util.logging.ConsoleHandler.level","FINEST");
+            Logger.getAnonymousLogger().log(Level.INFO, "New logging.properties file created. ");
+
 		} catch (IOException e) {
 			Logger.getAnonymousLogger().log(Level.SEVERE, "Cannot read logging.properties file : ", e);
 			throw new IOException();
