@@ -52,6 +52,7 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.Singleton;
 
+
 import java.io.*;
 import java.text.FieldPosition;
 import java.text.SimpleDateFormat;
@@ -59,6 +60,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Vector;
+import java.util.ResourceBundle;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -85,6 +87,7 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
     @Inject(optional=true)
     Agent agent;
 
+
     // This is a OutputStream to keep track of number of bytes
     // written out to the stream
     private MeteredStream meter;
@@ -98,7 +101,7 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
     private static final String LOGGING_MAX_HISTORY_FILES = "com.sun.enterprise.server.logging.max_history_files";
 
     // For now the mimimum rotation value is 0.5 MB.
-    private static final int MINIMUM_FILE_ROTATION_VALUE = 5000000;
+    private static final int MINIMUM_FILE_ROTATION_VALUE = 500000;
 
     // Initially the LogRotation will be off until the domain.xml value is read.
     private int limitForFileRotation = 0;
@@ -478,7 +481,7 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
             return;
         }
         super.publish(record);
-        flush();
+        flush();       
         if ( ( rotationRequested.get() )
             || ( ( limitForFileRotation > 0 )
                 &&  ( meter.written >= limitForFileRotation ) ) )
