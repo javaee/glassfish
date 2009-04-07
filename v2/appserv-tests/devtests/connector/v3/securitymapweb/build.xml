@@ -399,6 +399,8 @@
       <arg line="${as.props}"/>
       <arg line="${principals}"/>
       <arg line="--poolname ${poolname}"/>
+      <!-- custom parameter -->
+      <arg line="--passwordfile1 ${admin.password.file}"/>
       <arg line="--mappedusername ${mappeduser}"/>
       <arg line="${map.name}"/>
     </exec>

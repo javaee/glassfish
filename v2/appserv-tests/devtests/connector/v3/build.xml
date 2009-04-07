@@ -222,6 +222,9 @@
         <echo message="@@## config-property-accessor-test ##@@"/>
         <ant dir="config-property-accessor-test" target="${connector-target}"/>
 
+        <echo message="@@## redeployRar ##@@"/>
+        <ant dir="redeployRar" target="${connector-target}"/>
+
         <antcall target="report"/>
         <record name="connector.output" action="stop"/>
     </target>
