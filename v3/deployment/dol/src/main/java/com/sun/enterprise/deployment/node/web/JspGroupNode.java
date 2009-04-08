@@ -52,6 +52,7 @@ import java.util.Map;
  * @version 
  */
 public class JspGroupNode  extends DeploymentDescriptorNode {
+    private JspGroupDescriptor descriptor;
 
     public JspGroupNode() {
         super();
@@ -86,6 +87,31 @@ public class JspGroupNode  extends DeploymentDescriptorNode {
             "setErrorOnUndeclaredNamespace");
         return table;
     }    
+
+   /**
+    * @return the descriptor instance to associate with this XMLNode
+    */
+    public Object getDescriptor() {
+        if (descriptor == null) {
+            descriptor = (JspGroupDescriptor)super.getDescriptor();
+        }
+        return descriptor;
+    }
+
+
+    /**
+     * receives notiification of the value for a particular tag
+     * 
+     * @param element the xml element
+     * @param value it's associated value
+     */
+    public void setElementValue(XMLElement element, String value) {
+        if (WebTagNames.IS_XML.equals(element.getQName())) {
+            descriptor.setIsXml(Boolean.valueOf(value));
+        } else {
+            super.setElementValue(element, value);
+        }
+    }
     
     /**
      * write the descriptor class to a DOM tree and return it
