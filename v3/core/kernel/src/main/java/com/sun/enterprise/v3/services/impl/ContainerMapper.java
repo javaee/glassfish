@@ -142,10 +142,8 @@ public class ContainerMapper extends StaticResourcesAdapter{
                 if (a != null){
                     a.service(req, res);
                     req.setNote(MAPPED_ADAPTER, a);
-                } else {
-                    super.service(req, res);
+                    return;
                 }
-                return;
             }
 
             MappingData mappingData = null;
@@ -230,8 +228,8 @@ public class ContainerMapper extends StaticResourcesAdapter{
     }
 
     public synchronized void initializeFileURLPattern(String ext) {
-        boolean match = false;
         for (Sniffer sniffer : grizzlyService.habitat.getAllByContract(Sniffer.class)) {
+            boolean match = false;
             if (sniffer.getURLPatterns()!=null) {
                 
                 for (String pattern : sniffer.getURLPatterns()) {
@@ -242,25 +240,19 @@ public class ContainerMapper extends StaticResourcesAdapter{
                 }
 
                 Adapter adapter = this;
-                if (match){                              
+                if (match){
                     adapter = grizzlyService.habitat.getComponent(SnifferAdapter.class);
                     ((SnifferAdapter)adapter).initialize(sniffer, this);
                     unregister(ROOT);
-                }
-                
-                ContextRootInfo c= new ContextRootInfo(adapter, null, null);
-                register(ROOT,grizzlyService.hosts,adapter,null,null);
 
-                if (match){                                            
+                    ContextRootInfo c= new ContextRootInfo(adapter, null, null);
+                    register(ROOT,grizzlyService.hosts,adapter,null,null);
+
                     for (String pattern : sniffer.getURLPatterns()) {
-                        for (String host: grizzlyService.hosts ){                       
-                             mapper.addWrapper(host,ROOT, pattern,c, 
+                        for (String host: grizzlyService.hosts ){
+                            mapper.addWrapper(host,ROOT, pattern,c, 
                                     ("*.jsp".equals(pattern) || "*.jspx".equals(pattern)) ? true:false);
                         }
-                    }
-                } else {
-                    for (String host: grizzlyService.hosts ){ 
-                        mapper.addWrapper(host,ROOT, ext,c, false); 
                     }
                 }
             }
