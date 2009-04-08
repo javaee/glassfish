@@ -18,6 +18,7 @@ public class WebTest{
         String host = args[0];
         String port = args[1];
         String contextRoot = args[2];
+        int adminPort = Integer.parseInt(args[3]);
 
         try{
             stat.addDescription("Single Engine Test");
@@ -45,7 +46,7 @@ public class WebTest{
             }
 
 
-            url = new URL("http://" + host  + ":4848" + contextRoot + "/ServletTest");
+            url = new URL("http://" + host  + ":" + adminPort + contextRoot + "/ServletTest");
             System.out.println("\n Invoking url: " + url.toString());
             conn = url.openConnection();
             if (conn instanceof HttpURLConnection) {

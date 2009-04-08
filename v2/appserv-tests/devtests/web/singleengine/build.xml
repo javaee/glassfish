@@ -53,6 +53,7 @@
           <arg value="${http.host}"/>
           <arg value="${http.port}"/>
           <arg value="${contextroot}"/>
+          <arg value="${admin.port}"/>
           <classpath>
            <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
            <pathelement location="."/>
