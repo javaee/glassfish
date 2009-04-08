@@ -1882,7 +1882,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 vs.getDefaultContextXmlLocation(),
                 vs.getDefaultWebXmlLocation(),
                 useDOLforDeployment,
-                wmInfo.getDescriptor());
+                wmInfo);
 
         // for now disable JNDI
         ctx.setUseNaming(false);
@@ -1952,7 +1952,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             // Determine if an alternate DD is set for this web-module in
             // the application
             ctx.configureAlternateDD(
-                    wmInfo,
                     wbd.getModuleDescriptor().getAlternateDescriptor(),
                     instance);
             ctx.configureWebServices(wbd);
@@ -1977,7 +1976,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
 
         // Configure the class loader delegation model, classpath etc
-        Loader loader = ctx.configureLoader(iasBean, wmInfo);
+        Loader loader = ctx.configureLoader(iasBean);
 
         // Set the class loader on the DOL object
         if (wbd != null && wbd.hasWebServices())

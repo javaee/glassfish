@@ -162,7 +162,7 @@ public final class EmbeddedWebContainer extends Embedded {
                                  String defaultContextXmlLocation,
                                  String defaultWebXmlLocation, 
                                  boolean useDOLforDeployment,
-                                 WebBundleDescriptor wbd) {
+                                 WebModuleConfig wmInfo) {
 
         File configFile = null;
         // check contextPath.xml and /META-INF/context.xml if not found
@@ -182,10 +182,11 @@ public final class EmbeddedWebContainer extends Embedded {
         context.setDocBase(location.getAbsolutePath());
         context.setCrossContext(true);
         context.setUseNaming(isUseNaming());
-        context.setHasWebXml(wbd != null);
-        context.setWebBundleDescriptor(wbd);
+        context.setHasWebXml(wmInfo.getDescriptor() != null);
+        context.setWebBundleDescriptor(wmInfo.getDescriptor());
         context.setManagerChecksFrequency(1);
         context.setServerContext(serverContext);
+        context.setWebModuleConfig(wmInfo);
 
         if (configFile.exists()) {
             context.setConfigFile(configFile.getAbsolutePath());
@@ -194,7 +195,8 @@ public final class EmbeddedWebContainer extends Embedded {
         ContextConfig config;
         if (useDOLforDeployment) {            
             config = new WebModuleContextConfig();  
-            ((WebModuleContextConfig)config).setDescriptor(wbd);
+            ((WebModuleContextConfig)config).setDescriptor(
+                wmInfo.getDescriptor());
             ((WebModuleContextConfig)config).setHabitat(habitat);
         } else {
             config = new ContextConfig();
@@ -206,7 +208,7 @@ public final class EmbeddedWebContainer extends Embedded {
 
         // TODO: should any of those become WebModuleDecorator, too?
         context.addLifecycleListener(new WebModuleListener(serverContext,
-                location, wbd));
+                location, wmInfo.getDescriptor()));
 
         context.addContainerListener(
                 new WebContainerListener(invocationManager, injectionManager));

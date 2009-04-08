@@ -175,6 +175,8 @@ public class WebModule extends PwcWebModule {
     // web module was deployed
     private String vsId;
 
+    private WebModuleConfig wmInfo;
+
 
     /**
      * Constructor.
@@ -229,6 +231,11 @@ public class WebModule extends PwcWebModule {
             webContainer.getWebModuleProbeProvider();
 
         this.javaEEObjectStreamFactory = webContainer.getJavaEEObjectStreamFactory();
+    }
+
+
+    public void setWebModuleConfig(WebModuleConfig wmInfo) {
+        this.wmInfo = wmInfo;
     }
 
 
@@ -475,7 +482,7 @@ public class WebModule extends PwcWebModule {
         // Get interestList of ServletContainerInitializers present, if any, in app's WEB-INF/lib
         // We set parent of WebappClassLoader to API temporarily so that the search is not done for
         // system libraries again
-        ClassLoader currCl = Thread.currentThread().getContextClassLoader();
+        ClassLoader currCl = wmInfo.getAppClassLoader();
         if(currCl instanceof WebappClassLoader) {
             WebappClassLoader appCl = (WebappClassLoader)currCl;
             ClassLoader currentParent = appCl.getParent();
@@ -1396,8 +1403,7 @@ public class WebModule extends PwcWebModule {
     }
 
 
-    void configureAlternateDD(WebModuleConfig wmInfo, String altDDName,
-                              ServerEnvironment env) {
+    void configureAlternateDD(String altDDName, ServerEnvironment env) {
 
         if (altDDName == null) {
             return;
@@ -1468,7 +1474,7 @@ public class WebModule extends PwcWebModule {
      * Configure the class loader for the web module based on the
      * settings in sun-web.xml's class-loader element (if any).
      */
-    Loader configureLoader(SunWebApp bean, WebModuleConfig wmInfo) {
+    Loader configureLoader(SunWebApp bean) {
 
         com.sun.enterprise.deployment.runtime.web.ClassLoader clBean = null;
 
