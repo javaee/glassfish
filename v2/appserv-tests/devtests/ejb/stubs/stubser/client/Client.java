@@ -20,9 +20,16 @@ public class Client {
 
     public static void main (String[] args) {
 
+	System.out.println("cp = " + System.getProperty("java.class.path"));
 
         Client client = new Client(args);
-        if( args.length == 1 ) {
+	System.out.println("args.length = " + args.length);
+	for(int i = 0; i < args.length; i++) {
+	    System.out.println("arg " + i + " = " + args[0]);
+	}
+	
+
+        if( args.length == 1) {
             stat.addDescription("ejb-stubs-stubser2");
             client.doRestartTest();
             stat.printSummary("ejb-stubs-stubser2ID");
@@ -61,6 +68,7 @@ public class Client {
 
         try {
 
+
             FooHome  home = lookupHome();
                                                                      
             System.err.println("Narrowed home!!");
@@ -90,7 +98,7 @@ public class Client {
 
         System.out.println("Looking up ejb ref ");
         // create EJB using factory from container 
-        Object objref = ic.lookup("java:comp/env/ejb/foo");
+        Object objref = ic.lookup("java:global/ejb-stubs-stubserApp/ejb-stubs-stubser-ejb/FooBean");
         System.out.println("objref = " + objref);
         System.err.println("Looked up home!!");
         
