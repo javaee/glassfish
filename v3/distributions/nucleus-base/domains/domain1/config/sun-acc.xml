@@ -34,7 +34,7 @@
       <property name="signature.key.alias" value="s1as"/>
       <property name="dynamic.username.password" value="false"/>
       <property name="debug" value="false"/>
-      <property name="security.config" value="$[com.sun.aas.installRoot}/lib/appclient/wss-client-config-1.0.xml"/>
+      <property name="security.config" value="${com.sun.aas.installRoot}/lib/appclient/wss-client-config-1.0.xml"/>
     </provider-config>
   </message-security-config>
 </client-container>
