@@ -15,7 +15,7 @@
 <!DOCTYPE client-container PUBLIC "-//Sun Microsystems Inc.//DTD Application Server 8.0 Application Client Container//EN" "http://www.sun.com/software/appserver/dtds/sun-application-client-container_1_2.dtd">
 
 <client-container>
-  <target-server name="localhost" address="localhost" port="3700"/>
+  <target-server name="%%%SERVER_NAME%%%" address="localhost" port="%%%ORB_LISTENER1_PORT%%%"/>
   <log-service file="" level="WARNING"/>
   <message-security-config auth-layer="SOAP">
     <!-- turned off by default -->
@@ -34,7 +34,7 @@
       <property name="signature.key.alias" value="s1as"/>
       <property name="dynamic.username.password" value="false"/>
       <property name="debug" value="false"/>
-      <property name="security.config" value="/Users/dochez/java/cvs/v3/publish/lib/appclient/wss-client-config-1.0.xml"/> 
+      <property name="security.config" value="${com.sun.aas.installRoot}/lib/appclient/wss-client-config-1.0.xml"/>
     </provider-config>
   </message-security-config>
 </client-container>
