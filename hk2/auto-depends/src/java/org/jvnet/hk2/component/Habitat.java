@@ -341,7 +341,16 @@ public class Habitat {
             }
         else
             return null;
-    }    
+    }
+
+    public Object getComponent(String fullQualifiedName, String name) {
+        if (name!=null && name.length()==0) {
+            name=null;
+        }
+        Inhabitant i = isContract(fullQualifiedName)?
+                getInhabitantByContract(fullQualifiedName, name):getInhabitantByType(fullQualifiedName);
+        return i==null?null:i.get();
+    }
 
     /**
      * Gets a lazy reference to the component.
