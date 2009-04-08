@@ -181,6 +181,7 @@
     <arg value="${glassfish.home}\bin\asadmin.bat"/>
     <arg value="deploy"/>
     <arg value="--path"/>
+    <arg value="${redeploy}"/>
     <arg value="--upload=false"/>
     <arg line="${dist.dir}/${app.file.ext}"/>   
    </exec>  

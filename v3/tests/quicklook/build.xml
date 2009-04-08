@@ -381,6 +381,9 @@
         <arg value="${glassfish.home}\bin\asadmin.bat"/>
         <arg value="start-domain"/>
     </exec>
+    <waitfor maxwait="30" maxwaitunit="second" checkevery="500">
+        <http url="http://localhost:4848/"/>
+    </waitfor> 
 </target>
 
 <target name="start-server-felix-unix" if="isUnix">
@@ -402,7 +405,7 @@
 </target>
 
 <target name="build-version-windows" if="isWindows">
-    <exec executable="cmd" spawn="true">
+    <exec executable="cmd" output="version.output">
         <arg value="/c"/>
         <arg value="${glassfish.home}\bin\asadmin.bat"/>
         <arg value="version"/>
