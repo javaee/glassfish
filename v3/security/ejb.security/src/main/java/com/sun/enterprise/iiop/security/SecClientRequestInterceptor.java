@@ -36,47 +36,46 @@
 
 package com.sun.enterprise.iiop.security;
 
+import com.sun.enterprise.common.iiop.security.AnonCredential;
+import com.sun.enterprise.common.iiop.security.GSSUPName;
 import com.sun.enterprise.common.iiop.security.SecurityContext;
-import org.omg.CORBA.*;
-import org.omg.PortableInterceptor.*;
-import org.omg.IOP.*;
+
+
+
+
+import com.sun.corba.ee.org.omg.CSI.*;
+import com.sun.enterprise.security.SecurityServicesUtil;
+import com.sun.enterprise.security.auth.login.common.PasswordCredential;
+import com.sun.enterprise.security.auth.login.common.X509CertificateCredential;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.logging.LogDomains;
+
 import java.util.*;
+import java.util.logging.Level;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.cert.X509Certificate;
 
-/* Import classes generated from CSIV2 idl files */
-import com.sun.corba.ee.org.omg.CSI.*;
-import com.sun.corba.ee.org.omg.GSSUP.*;
-
-/* Import classes required for DER encoding and decoding */
-import com.sun.enterprise.common.iiop.security.AnonCredential;
-import com.sun.enterprise.common.iiop.security.GSSUPName;
+import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
+import org.jvnet.hk2.component.Habitat;
+import org.omg.CORBA.*;
+import org.omg.PortableInterceptor.*;
+import org.omg.IOP.*;
 import sun.security.util.DerOutputStream;
 import sun.security.util.DerValue;
-
 import sun.security.x509.X500Name;
-
-import com.sun.enterprise.security.auth.login.common.PasswordCredential;
-import com.sun.enterprise.security.auth.login.common.X509CertificateCredential;
-import com.sun.enterprise.util.ORBManager;
-import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.iiop.CSIV2TaggedComponentInfo;
-import com.sun.enterprise.security.SecurityServicesUtil;
-import java.util.logging.*;
-import com.sun.logging.*;
 
 /**
  * This class implements a client side security request interceptor for CSIV2.
  * It is used to send and receive the service context in a service context
  * element in the service context list in an IIOP header.
  *
- * @author    Nithya Subramanian
+ * 
  */
 
-public class SecClientRequestInterceptor 
-    extends    org.omg.CORBA.LocalObject
-    implements ClientRequestInterceptor   {
+public class SecClientRequestInterceptor extends    org.omg.CORBA.LocalObject
+                                    implements ClientRequestInterceptor   {
+    
     private static java.util.logging.Logger _logger=null;
     static{
        _logger=LogDomains.getLogger(SecClientRequestInterceptor.class,LogDomains.SECURITY_LOGGER);
@@ -94,21 +93,25 @@ public class SecClientRequestInterceptor
      */
     private String prname; 
     private Codec  codec;                // used for marshalling
-    private ORB    orb;                  
+    //private ORB    orb;                  
     //private SecurityService secsvc;
-
+    private GlassFishORBHelper orbHelper;
+    private SecurityContextUtil secContextUtil;
+    
     /** 
      *  Hard code the value of 15 for SecurityAttributeService until
      *  it is defined in IOP.idl.
      *     sc.context_id = SecurityAttributeService.value;
      */
     protected static final int SECURITY_ATTRIBUTE_SERVICE_ID = 15;
-
+   
     public SecClientRequestInterceptor(String name, Codec codec) {
 	this.name   = name;
         this.codec  = codec;
         this.prname = name + "::";
-      
+        Habitat habitat = SecurityServicesUtil.getInstance().getHabitat();
+        orbHelper = habitat.getComponent(GlassFishORBHelper.class);
+        secContextUtil = habitat.getComponent(SecurityContextUtil.class);
     }
 
     public String name() {
@@ -153,7 +156,7 @@ public class SecClientRequestInterceptor
      *  The client authentication token is cdr encoded.
      */
 
-    private byte[] createAuthToken(java.lang.Object cred, Class cls)
+    private byte[] createAuthToken(java.lang.Object cred, Class cls, ORB orb)
         throws Exception
     {
         byte[] gsstoken = {};      // GSS token
@@ -174,7 +177,7 @@ public class SecClientRequestInterceptor
      *  create and return an identity token from the credential. 
      *  The identity token is cdr encoded.
      */
-    private IdentityToken createIdToken(java.lang.Object cred, Class cls)
+    private IdentityToken createIdToken(java.lang.Object cred, Class cls, ORB orb)
         throws Exception {
 
         IdentityToken idtok   = null;
@@ -218,7 +221,6 @@ public class SecClientRequestInterceptor
             GSSUPName gssname = (GSSUPName) cred;
 
             byte[] expname = gssname.getExportedName();
-
             GSS_NT_ExportedNameHelper.insert(any, expname);
 
             /* IdentityToken with CDR encoded GSSUPName */
@@ -259,10 +261,10 @@ public class SecClientRequestInterceptor
 	if(_logger.isLoggable(Level.FINE))
                 _logger.log(Level.FINE,"++++ Entered " + prname + "send_request" + "()");
         SecurityContext secctxt = null;       // SecurityContext to be sent 
-	orb = ORBManager.getORB();
+	ORB orb = orbHelper.getORB();
 	org.omg.CORBA.Object effective_target = ri.effective_target();
 	try{
-	    secctxt = SecurityContextUtil.getSecurityContext(effective_target);
+	    secctxt = secContextUtil.getSecurityContext(effective_target);
 	}catch(InvalidMechanismException ime){
                _logger.log(Level.SEVERE,"iiop.sec_context_exception",ime);
 	    throw new RuntimeException(ime.getMessage());
@@ -292,7 +294,7 @@ public class SecClientRequestInterceptor
             });
 
             try {
-                cAuthenticationToken = createAuthToken(cred, secctxt.authcls);
+                cAuthenticationToken = createAuthToken(cred, secctxt.authcls, orb);
             } catch (Exception e) {
                 _logger.log(Level.SEVERE,"iiop.createauthtoken_exception",e);
 	        throw new SecurityException(
@@ -307,7 +309,7 @@ public class SecClientRequestInterceptor
             cred = getCred(secctxt.subject.getPublicCredentials(secctxt.identcls),
                            secctxt.identcls);
             try {
-                cIdentityToken = createIdToken(cred, secctxt.identcls);
+                cIdentityToken = createIdToken(cred, secctxt.identcls, orb);
             } catch (Exception e) {
                 _logger.log(Level.SEVERE,"iiop.createidtoken_exception",e);
 	        throw new SecurityException(
@@ -427,7 +429,7 @@ public class SecClientRequestInterceptor
         if(_logger.isLoggable(Level.FINE)){
             _logger.log(Level.FINE,"No SAS context element found in service context list");
         }
-        setreplyStatus(SecurityServicesUtil.STATUS_PASSED, ri.effective_target());
+        setreplyStatus(SecurityContextUtil.STATUS_PASSED, ri.effective_target());
     }
     
     public void receive_reply(ClientRequestInfo ri)
@@ -438,7 +440,7 @@ public class SecClientRequestInterceptor
 	if(_logger.isLoggable(Level.FINE)){
                 _logger.log(Level.FINE,"++++ Entered " + prname + "receive_reply");
         }
-	orb = ORBManager.getORB();
+	ORB orb = orbHelper.getORB();
 
         /** 
          * get the service context element from the reply and decode the

@@ -39,9 +39,6 @@ package com.sun.enterprise.iiop.security;
 import java.io.*;
 import java.net.Socket;
 
-/** 
- * @author Nithya Subramanian
- */
 
 public final class ServerConnectionContext implements Serializable {
     private Socket socket = null;

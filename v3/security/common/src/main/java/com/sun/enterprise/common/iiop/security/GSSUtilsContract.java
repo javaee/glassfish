@@ -34,21 +34,25 @@
  * holder.
  */
 
-package com.sun.enterprise.iiop.security;
+package com.sun.enterprise.common.iiop.security;
 
+import java.io.IOException;
+import org.jvnet.hk2.annotations.Contract;
+import sun.security.util.ObjectIdentifier;
 
+/**
+ *
+ * @author Kumar
+ */
+@Contract
+public interface GSSUtilsContract {
+    
+    public String dumpHex(byte[] octets);
 
-public class SecurityMechanismException extends java.lang.Exception
-{
-    /**
-     * Constructs the exception with the specified detail message.
-     * @param the detail message.
-     */
-    public SecurityMechanismException(String msg) {
-	super(msg);
-    }
-
+    public byte[] importName(ObjectIdentifier oid, byte[] externalName)
+	throws IOException;
+    public byte[] createExportedName(ObjectIdentifier oid, byte[] extName)
+	throws IOException;
+    public ObjectIdentifier GSSUP_MECH_OID();
     
 }
-
-

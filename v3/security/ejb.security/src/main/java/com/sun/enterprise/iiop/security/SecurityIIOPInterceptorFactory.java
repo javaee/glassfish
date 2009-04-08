@@ -1,0 +1,108 @@
+/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ * 
+ * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * 
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License. You can obtain
+ * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ * 
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * Sun designates this particular file as subject to the "Classpath" exception
+ * as provided by Sun in the GPL Version 2 section of the License file that
+ * accompanied this code.  If applicable, add the following below the License
+ * Header, with the fields enclosed by brackets [] replaced by your own
+ * identifying information: "Portions Copyrighted [year]
+ * [name of copyright owner]"
+ * 
+ * Contributor(s):
+ * 
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
+
+package com.sun.enterprise.iiop.security;
+
+import com.sun.logging.LogDomains;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.glassfish.enterprise.iiop.api.IIOPInterceptorFactory;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Singleton;
+import org.omg.IOP.Codec;
+import org.omg.PortableInterceptor.ClientRequestInterceptor;
+import org.omg.PortableInterceptor.ORBInitInfo;
+import org.omg.PortableInterceptor.ORBInitInfoPackage.DuplicateName;
+import org.omg.PortableInterceptor.ServerRequestInterceptor;
+
+/**
+ *
+ * @author Kumar
+ */
+@Service(name="ServerSecurityInterceptorFactory")
+@Scoped(Singleton.class)
+public class SecurityIIOPInterceptorFactory implements IIOPInterceptorFactory {
+
+    private static Logger _logger = null;
+    static {
+        _logger = LogDomains.getLogger(SecurityIIOPInterceptorFactory.class, LogDomains.SECURITY_LOGGER);
+    }
+    private ClientRequestInterceptor creq;
+    private ServerRequestInterceptor sreq;
+    
+    // are we supposed to add the interceptor and then return or just return an instance ?.
+    public ClientRequestInterceptor createClientRequestInterceptor(ORBInitInfo info, Codec codec) {
+        ClientRequestInterceptor ret = getClientInterceptorInstance(codec);
+//      I was told the add call is done by the caller        
+//        try {
+//            info.add_client_request_interceptor(ret);
+//        } catch (DuplicateName ex) {
+//            _logger.log(Level.SEVERE, null, ex);
+//            throw new RuntimeException(ex);
+//        }
+        return ret;
+    }
+
+    public ServerRequestInterceptor createServerRequestInterceptor(ORBInitInfo info, Codec codec) {
+        ServerRequestInterceptor ret = getServerInterceptorInstance(codec);
+//      I was told the add call is done by the caller 
+//        try {
+//            info.add_server_request_interceptor(ret);
+//        } catch (DuplicateName ex) {
+//            _logger.log(Level.SEVERE, null, ex);
+//            throw new RuntimeException(ex);
+//        }
+        return ret;
+    }
+    
+    private synchronized ClientRequestInterceptor getClientInterceptorInstance(Codec codec) {
+        if (creq == null) {
+            creq = new SecClientRequestInterceptor(
+                "SecClientRequestInterceptor", codec);
+        }
+        return creq;
+    }
+    
+     private synchronized ServerRequestInterceptor getServerInterceptorInstance(Codec codec) {
+        if (sreq == null) {
+            sreq = new SecServerRequestInterceptor(
+                    "SecServerRequestInterceptor", codec);
+        }
+        return sreq;
+    }
+
+}

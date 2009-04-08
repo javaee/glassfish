@@ -36,9 +36,11 @@
 
 package com.sun.enterprise.iiop.security;
 
-/* Import classes generated from CSIV2 idl files */
-import com.sun.corba.ee.org.omg.CSI.*;
-import com.sun.corba.ee.org.omg.GSSUP.*;
+
+import com.sun.corba.ee.org.omg.CSI.MTCompleteEstablishContext;
+import com.sun.corba.ee.org.omg.CSI.MTContextError;
+import com.sun.corba.ee.org.omg.CSI.MTEstablishContext;
+import com.sun.corba.ee.org.omg.CSI.MTMessageInContext;
 import java.util.logging.*;
 import com.sun.logging.*;
 

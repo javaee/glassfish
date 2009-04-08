@@ -50,30 +50,30 @@ import org.omg.CORBA.*;
 import org.omg.PortableInterceptor.*;
 import org.omg.IOP.*;
 
-import java.util.*;
 import java.security.cert.X509Certificate;
 
 /* Import classes generated from CSIV2 idl files */
 import com.sun.corba.ee.org.omg.CSI.*;
-import com.sun.corba.ee.org.omg.GSSUP.*;
-
-/* Import classes required for DER encoding and decoding */
-import com.sun.enterprise.config.serverbeans.SecurityService;
+import com.sun.enterprise.common.iiop.security.AnonCredential;
+import com.sun.enterprise.common.iiop.security.GSSUPName;
+import com.sun.enterprise.security.SecurityServicesUtil;
 import sun.security.util.DerInputStream;
-import sun.security.util.DerOutputStream;
 import sun.security.util.DerValue;
 
 import sun.security.x509.X509CertImpl;
 import sun.security.x509.X500Name;
-import javax.security.auth.*;  // for JAAS subject
+import javax.security.auth.*;  
 
 import com.sun.enterprise.security.auth.login.common.PasswordCredential;
 import com.sun.enterprise.security.auth.login.common.X509CertificateCredential;
-import com.sun.enterprise.util.ORBManager;
+
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.log.Log;
+
+import com.sun.logging.LogDomains;
 import java.util.logging.*;
-import com.sun.logging.*;
+import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
+import org.jvnet.hk2.component.Habitat;
+
 /*
  * Security server request interceptor 
  */
@@ -108,14 +108,18 @@ public class SecServerRequestInterceptor
     private String prname; 
     private String name;
     private Codec  codec;
-    private ORB orb;
-    SecurityService secsvc = null;       // Security Service
-
-
-    public SecServerRequestInterceptor( String name, Codec codec) {
+    //private ORB orb;
+    private SecurityContextUtil secContextUtil = null;
+    private GlassFishORBHelper orbHelper;
+    //Not required
+    //  SecurityService secsvc = null;       // Security Service
+    public SecServerRequestInterceptor(String name, Codec codec) {
         this.name    = name;
         this.codec   = codec;
         this.prname  = name + "::";
+        Habitat habitat = SecurityServicesUtil.getInstance().getHabitat();
+        secContextUtil = habitat.getComponent(SecurityContextUtil.class);
+        orbHelper = habitat.getComponent(GlassFishORBHelper.class);
     }
 
     public String name() {
@@ -184,7 +188,7 @@ public class SecServerRequestInterceptor
      *  CDR encode a SAS Context body and then construct a service context
      *  element.
      */
-    private ServiceContext createSvcContext(SASContextBody sasctxtbody) {
+    private ServiceContext createSvcContext(SASContextBody sasctxtbody, ORB orb) {
 
         ServiceContext sc = null;
 
@@ -366,7 +370,7 @@ public class SecServerRequestInterceptor
      *
      * This method currently only works for PasswordCredential tokens.
      */
-    private void createAuthCred(SecurityContext sc, byte[] authtok) throws Exception
+    private void createAuthCred(SecurityContext sc, byte[] authtok, ORB orb) throws Exception
     {
 		_logger.log(Level.FINE,"Constructing a PasswordCredential from client authentication token");
         /* create a GSSUPToken from the authentication token */
@@ -388,17 +392,17 @@ public class SecServerRequestInterceptor
         sc.authcls  = PasswordCredential.class;
     }     
     
-    private void handle_null_service_context(ServerRequestInfo ri, ServiceContext sc) {
+    private void handle_null_service_context(ServerRequestInfo ri, ServiceContext sc, ORB orb) {
         if(_logger.isLoggable(Level.FINE)){
             _logger.log(Level.FINE,"No SAS context element found in service context list");
         }
-        int secStatus = secsvc.setSecurityContext(null, ri.object_id(),
+        int secStatus = secContextUtil.setSecurityContext(null, ri.object_id(),
                 ri.operation());
         
-        if (secStatus == SecurityService.STATUS_FAILED){
+        if (secStatus == SecurityContextUtil.STATUS_FAILED){
             SASContextBody sasctxbody = createContextError(INVALID_MECHANISM_MAJOR,
                     INVALID_MECHANISM_MINOR);
-            sc = createSvcContext(sasctxbody);
+            sc = createSvcContext(sasctxbody, orb);
             ri.add_reply_service_context(sc, NO_REPLACE);
             if(_logger.isLoggable(Level.FINE)) {
                 _logger.log(Level.FINE,
@@ -420,17 +424,17 @@ public class SecServerRequestInterceptor
             _logger.log(Level.FINE, "++++ Entered " + prname + "receive_request");
         }
         
-        secsvc  = Csiv2Manager.getSecurityService();
-        orb = ORBManager.getORB();
+       // secsvc  = Csiv2Manager.getSecurityService();
+        ORB orb = orbHelper.getORB();
 
         try {
             sc = ri.get_request_service_context(SECURITY_ATTRIBUTE_SERVICE_ID);
             if (sc == null) {
-                handle_null_service_context(ri, sc);
+                handle_null_service_context(ri, sc, orb);
                 return;
             }
         } catch (org.omg.CORBA.BAD_PARAM e) {
-            handle_null_service_context(ri,sc);
+            handle_null_service_context(ri,sc, orb);
             return;
         }
 
@@ -474,7 +478,7 @@ public class SecServerRequestInterceptor
 
         if (sasdiscr == MTMessageInContext.value) {
              sasctxbody = createContextError(SvcContextUtils.MessageInContextMinor);
-             sc = createSvcContext(sasctxbody);
+             sc = createSvcContext(sasctxbody, orb);
         if(_logger.isLoggable(Level.FINE)){
 		_logger.log(Level.FINE,"Adding ContextError message to service context list");
 		_logger.log(Level.FINE,"SecurityContext set to null");
@@ -514,7 +518,7 @@ public class SecServerRequestInterceptor
                 if(_logger.isLoggable(Level.FINE)){
                     _logger.log(Level.FINE,"Message contains Client Authentication Token");
                 }
-                createAuthCred(seccontext, ec.client_authentication_token);
+                createAuthCred(seccontext, ec.client_authentication_token, orb);
             }
         } catch (Exception e) {
             _logger.log(Level.SEVERE,"iiop.authentication_exception",e);
@@ -536,7 +540,7 @@ public class SecServerRequestInterceptor
             _logger.log(Level.SEVERE,"iiop.security_exception",secex);
             sasctxbody = createContextError(INVALID_MECHANISM_MAJOR,
                                             INVALID_MECHANISM_MINOR);
-            sc = createSvcContext(sasctxbody);
+            sc = createSvcContext(sasctxbody, orb);
             ri.add_reply_service_context(sc, NO_REPLACE);
             throw new NO_PERMISSION();
         } catch (Exception e) {
@@ -550,7 +554,7 @@ public class SecServerRequestInterceptor
         if(_logger.isLoggable(Level.FINE)){
             _logger.log(Level.FINE,"Invoking setSecurityContext() to set security context");
         }
-        status = secsvc.setSecurityContext(seccontext, ri.object_id(), ri.operation());
+        status = secContextUtil.setSecurityContext(seccontext, ri.object_id(), ri.operation());
 	if(_logger.isLoggable(Level.FINE)){
 		_logger.log(Level.FINE,"setSecurityContext() returned status code " + status);
         }
@@ -563,12 +567,12 @@ public class SecServerRequestInterceptor
          * field. If validation succeeds then CompleteEstablishContext message
          * is sent back. If validation fails, a ContextError must be sent back.
          */
-        if (status == SecurityService.STATUS_FAILED) {
+        if (status == SecurityContextUtil.STATUS_FAILED) {
             if(_logger.isLoggable(Level.FINE)){
 		_logger.log(Level.FINE,"setSecurityContext() returned STATUS_FAILED");
             }
             sasctxbody = createContextError(status);
-            sc = createSvcContext(sasctxbody);
+            sc = createSvcContext(sasctxbody, orb);
             if(_logger.isLoggable(Level.FINE)){
 		_logger.log(Level.FINE,"Adding ContextError message to service context list");
             }
@@ -580,7 +584,7 @@ public class SecServerRequestInterceptor
 		_logger.log(Level.FINE,"setSecurityContext() returned SUCCESS");
         }
         sasctxbody = createCompleteEstablishContext(status);
-        sc = createSvcContext(sasctxbody);
+        sc = createSvcContext(sasctxbody, orb);
         if(_logger.isLoggable(Level.FINE)){
             _logger.log(Level.FINE,"Adding CompleteEstablisContext message to service context list");
         }
@@ -605,8 +609,9 @@ public class SecServerRequestInterceptor
             counterForCalls.set(cntr);
         } 
         if (cntr.count == 0){
-            SecurityService secsvc  = Csiv2Manager.getSecurityService();
-            secsvc.unsetSecurityContext();
+            //Not required
+            //SecurityService secsvc  = Csiv2Manager.getSecurityService();
+            SecurityContextUtil.unsetSecurityContext();
         }
         cntr.increment();
     }
@@ -639,8 +644,7 @@ public class SecServerRequestInterceptor
         }
         cntr.decrement();
         if (cntr.count == 0){
-            SecurityService secsvc  = Csiv2Manager.getSecurityService();
-            secsvc.unsetSecurityContext();
+            SecurityContextUtil.unsetSecurityContext();
         } 
     }
 }

@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.common.iiop.security;
 
+import com.sun.enterprise.security.common.Util;
 import java.util.*;
 import java.util.logging.*;
 import com.sun.logging.*;
@@ -60,12 +61,14 @@ public class GSSUPName {
 
     private String username;  // username
     private String realm;     // realmname
+    private GSSUtilsContract gssUtils;
 
     public GSSUPName(String username, String realm)
     {
 
 	this.username = username;
 	this.realm    = realm;
+        gssUtils = Util.getDefaultHabitat().getComponent(GSSUtilsContract.class);
     }
 
     /* Construct a GSSUPName from an exported name. This constructor
@@ -82,12 +85,14 @@ public class GSSUPName {
         String name_scope = "" ;
         byte[] exportedname = {} ;
 
+        gssUtils = Util.getDefaultHabitat().getComponent(GSSUtilsContract.class);
+        assert(gssUtils != null);
         if(_logger.isLoggable(Level.FINE)){
             _logger.log(Level.FINE,"Attempting to create a mechanism specific name from the exported name.");
         }
 	
         try {
-            exportedname = GSSUtils.importName(GSSUtils.GSSUP_MECH_OID, GSSExportedName);
+            exportedname = gssUtils.importName(gssUtils.GSSUP_MECH_OID(), GSSExportedName);
             // extract from the "UTF8" encoding
             expname = new String(exportedname, "UTF8");
         } catch (Exception e) {
@@ -165,7 +170,7 @@ public class GSSUPName {
     /**
      *  returns and exported name as an array of 1 or more UTF8 characters.
      */
-    protected byte[] getExportedName() {
+    public byte[] getExportedName() {
 
         byte[] expname = {} ;
         byte[] expname_utf8 = {} ;
@@ -229,14 +234,16 @@ public class GSSUPName {
 	}
         try {
             expname_utf8 = strbuf.toString().getBytes("UTF8");
-            expname = GSSUtils.createExportedName(
-                       GSSUtils.GSSUP_MECH_OID, expname_utf8);
+            assert(gssUtils != null);
+            expname = gssUtils.createExportedName(
+                       gssUtils.GSSUP_MECH_OID(), expname_utf8);
         } catch (Exception e) {
              _logger.log(Level.SEVERE,"iiop.createexportedname_exception" , e);
 	}
 
 	if(_logger.isLoggable(Level.FINE)) {
-		_logger.log(Level.FINE,"GSSUPName in exported format = " + GSSUtils.dumpHex(expname));
+                assert(gssUtils != null);
+		_logger.log(Level.FINE,"GSSUPName in exported format = " + gssUtils.dumpHex(expname));
 	}
         return expname;
     }

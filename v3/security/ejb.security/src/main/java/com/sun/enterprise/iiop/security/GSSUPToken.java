@@ -41,24 +41,24 @@ package com.sun.enterprise.iiop.security;
  * @author Nithya Subramanian
  */
 
+import com.sun.corba.ee.org.omg.CSIIOP.CompoundSecMech;
+import com.sun.corba.ee.org.omg.GSSUP.InitialContextToken;
+import com.sun.corba.ee.org.omg.GSSUP.InitialContextTokenHelper;
+import com.sun.enterprise.security.SecurityServicesUtil;
 import java.io.IOException;
 import org.omg.CORBA.*;
-import org.omg.PortableInterceptor.*;
 import org.omg.IOP.*;
 
 
 import java.util.*;
 
-/* Import CSIV2 idl generated classes */
-import com.sun.corba.ee.org.omg.CSI.*;
-import com.sun.corba.ee.org.omg.GSSUP.*;
-import com.sun.corba.ee.org.omg.CSIIOP.*;
+
 
 import com.sun.enterprise.security.auth.login.common.PasswordCredential;
-import com.sun.enterprise.common.iiop.security.GSSUtils;
 
 import java.util.logging.*;
 import com.sun.logging.*;
+import org.jvnet.hk2.component.Habitat;
 /**
  * GSSUPToken Represents the on the wire username/password credential on the 
  * client side and the server side. 
@@ -173,8 +173,8 @@ public class GSSUPToken {
         /* Get the target name from the IOR. The IOR is stored in the
          * ConnectionContext object
          */
-
-        SecurityMechanismSelector sms = new SecurityMechanismSelector();
+        Habitat habitat = SecurityServicesUtil.getInstance().getHabitat();
+        SecurityMechanismSelector sms = habitat.getComponent(SecurityMechanismSelector.class);
         ConnectionContext cc   = sms.getClientConnectionContext();
         CompoundSecMech   mech = cc.getMechanism();
         byte[] target_name     = mech.as_context_mech.target_name;

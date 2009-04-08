@@ -36,18 +36,15 @@
 
 package com.sun.enterprise.iiop.security;
 
+import com.sun.corba.ee.org.omg.CSIIOP.CompoundSecMech;
 import java.io.*;
 import java.net.Socket;
 
 import com.sun.corba.ee.spi.ior.IOR;
 import com.sun.corba.ee.spi.transport.SocketInfo;
-import com.sun.corba.ee.org.omg.CSI.*;
-import com.sun.corba.ee.org.omg.CSIIOP.*;
 
 
-/** 
- * @author Nithya Subramanian
- */
+
 
 public final class ConnectionContext implements Serializable {
     private CompoundSecMech mechanism = null;

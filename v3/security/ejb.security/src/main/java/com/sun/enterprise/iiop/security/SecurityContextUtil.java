@@ -35,52 +35,61 @@
  */
 package com.sun.enterprise.iiop.security;
 
+
+import com.sun.corba.ee.spi.ior.IOR;
+import com.sun.corba.se.spi.presentation.rmi.StubAdapter;
 import com.sun.enterprise.common.iiop.security.SecurityContext;
-import java.net.Socket;
+import com.sun.enterprise.security.CORBAObjectPermission;
+import com.sun.enterprise.security.SecurityServicesUtil;
+import com.sun.enterprise.security.auth.login.LoginContextDriver;
+import com.sun.logging.LogDomains;
+
 import java.security.Principal;
 import java.security.ProtectionDomain;
 import java.security.CodeSource;
 import java.security.Policy;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-
-import javax.security.auth.Subject;
-import com.sun.enterprise.log.Log;
-import com.sun.enterprise.util.ORBManager;
-import com.sun.enterprise.InvocationManager;
-import com.sun.enterprise.ComponentInvocation;
-import com.sun.enterprise.InvocationException;
-import com.sun.enterprise.Switch;
-import com.sun.enterprise.security.CORBAObjectPermission;
-import com.sun.enterprise.security.auth.common.LoginContextDriver;
-import com.sun.enterprise.iiop.POAProtocolMgr;
-import com.sun.corba.ee.spi.ior.IOR;
-import com.sun.corba.ee.spi.presentation.rmi.StubAdapter;
-
-import com.sun.enterprise.security.auth.login.LoginContextDriver;
+import java.util.logging.Level;
 import java.util.Set;
-import java.util.logging.*;
-import com.sun.logging.*;
+import javax.security.auth.Subject;
+import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
+import org.glassfish.enterprise.iiop.api.ProtocolManager;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Singleton;
+
 
 /** 
  * This class provides has the helper methods to deal with
- * the SecurityContext - represents the SecurityServiceImpl of V2
+ * the SecurityContext .This represents the SecurityServiceImpl of V2
  * @author Nithya Subramanian
  */
-public class SecurityContextUtil {
 
-    private static java.util.logging.Logger _logger =
-            LogDomains.getLogger(SecurityContextUtil.class, LogDomains.CORBA_LOGGER);
-    // ignoring exceptions thrown for _is_a calls from the ORB
-    private static String IS_A = "_is_a";
-    private Policy policy;
+@Service
+@Scoped(Singleton.class)
+public class SecurityContextUtil {
+    
     public static final int STATUS_PASSED = 0;
     public static final int STATUS_FAILED = 1;
     public static final int STATUS_RETRY = 2;
-
+    
+    private static java.util.logging.Logger _logger =
+            LogDomains.getLogger(SecurityContextUtil.class, LogDomains.SECURITY_LOGGER);
+   
+    private static String IS_A = "_is_a";
+    private Policy policy;
+    
+    //TODO: change the below two to @Inject
+    private GlassFishORBHelper orbHelper;
+    private SecurityMechanismSelector sms;
+    
     public SecurityContextUtil() {
-
         policy = Policy.getPolicy();
+        Habitat habitat = SecurityServicesUtil.getInstance().getHabitat();
+        orbHelper = habitat.getComponent(GlassFishORBHelper.class);
+        sms = habitat.getComponent(SecurityMechanismSelector.class);
     }
 
     /**
@@ -91,12 +100,12 @@ public class SecurityContextUtil {
      * @return a SecurityContext which is marshalled into the IIOP msg
      * by the CSIv2 interceptor.
      */
-    public static SecurityContext getSecurityContext(
+    public SecurityContext getSecurityContext(
             org.omg.CORBA.Object effective_target)
             throws InvalidMechanismException, InvalidIdentityTokenException {
         SecurityContext context = null;
-
-        IOR ior = ((com.sun.corba.ee.spi.orb.ORB) ORBManager.getORB()).getIOR(effective_target, false);
+        assert(orbHelper != null);
+        IOR ior =  ((com.sun.corba.ee.spi.orb.ORB)orbHelper.getORB()).getIOR(effective_target, false);
         if (StubAdapter.isStub(effective_target)) {
             if (StubAdapter.isLocal(effective_target)) {
                 return null;
@@ -104,7 +113,6 @@ public class SecurityContextUtil {
         }
 
         try {
-            SecurityMechanismSelector sms = new SecurityMechanismSelector();
             context = sms.selectSecurityContext(ior);
         } catch (InvalidMechanismException ime) { // let this pass ahead
 
@@ -173,7 +181,6 @@ public class SecurityContextUtil {
             // as required by the object's CSIv2 policy.
             // evaluateTrust will throw an exception if client did not
             // conform to security policy.
-            SecurityMechanismSelector sms = new SecurityMechanismSelector();
             SecurityContext ssc = sms.evaluateTrust(context, object_id);
 
             Class cls = null;
@@ -219,7 +226,7 @@ public class SecurityContextUtil {
             throws Exception {
 
         // Check if target is an EJB
-        POAProtocolMgr protocolMgr = (POAProtocolMgr) Switch.getSwitch().getProtocolManager();
+        ProtocolManager protocolMgr = orbHelper.getProtocolManager();
         // Check to make sure protocolMgr is not null. 
         // This could happen during server initialization or if this call
         // is on a callback object in the client VM. 
@@ -264,7 +271,7 @@ public class SecurityContextUtil {
      * this is introduced to prevent the re-use of the thread
      * security context on re-use of the thread.
      */
-    public void unsetSecurityContext() {
+    public static void unsetSecurityContext() {
         // logout method from LoginContext not called 
         // as we dont want to unset the appcontainer context
 

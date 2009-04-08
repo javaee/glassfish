@@ -37,18 +37,34 @@
 package com.sun.enterprise.iiop.security;
 
 
+import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.security.SecurityServicesUtil;
+import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 
-public class SecurityMechanismException extends java.lang.Exception
-{
-    /**
-     * Constructs the exception with the specified detail message.
-     * @param the detail message.
-     */
-    public SecurityMechanismException(String msg) {
-	super(msg);
+
+public class CSIv2Policy extends org.omg.CORBA.LocalObject
+                    implements org.omg.CORBA.Policy {
+    
+    private EjbDescriptor ejbDescriptor;
+    private GlassFishORBHelper orbHelper;
+    
+    public CSIv2Policy(EjbDescriptor ejbDescriptor) {
+	this.ejbDescriptor = ejbDescriptor;
+        orbHelper = SecurityServicesUtil.getInstance().getHabitat().getComponent(GlassFishORBHelper.class);
     }
 
-    
+    public int policy_type() {
+	return orbHelper.getCSIv2PolicyType();
+    }
+
+    public org.omg.CORBA.Policy copy() {
+	return new CSIv2Policy(ejbDescriptor);
+    }
+
+    public void destroy() {
+    }
+
+    EjbDescriptor getEjbDescriptor() {
+	return ejbDescriptor;
+    }
 }
-
-

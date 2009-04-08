@@ -34,18 +34,18 @@
  * holder.
  */
 
-package com.sun.enterprise.common.iiop.security;
+package com.sun.enterprise.iiop.security;
 
 import java.io.IOException;
 import java.io.InputStream;
 import sun.security.util.ObjectIdentifier;
 import sun.security.util.DerInputStream;
 import sun.security.util.DerOutputStream;
-/*TODO:V3 commented, uncomment later
+
 import com.sun.corba.ee.org.omg.GSSUP.GSSUPMechOID;
 import com.sun.corba.ee.org.omg.CSI.GSS_NT_Export_Name_OID;
 import com.sun.corba.ee.org.omg.CSI.GSS_NT_Scoped_Username_OID;
- */
+ 
 import java.util.logging.*;
 import com.sun.logging.*;
 
@@ -68,39 +68,41 @@ public class GSSUtils
      * defined here for the sake of completeness.
      */
     public static final ObjectIdentifier GSS_NT_SCOPED_USERNAME_OID;
+    
+    private static byte[] mech;
 
     static {
 
         int i ; // index
         ObjectIdentifier x = null;
-
+        
         /* Construct an ObjectIdentifer by extracting each OID */
-        /*TODO:V3 Commented, uncomment later
+      
         try {
             i = GSSUPMechOID.value.indexOf(':');
             x = new ObjectIdentifier( GSSUPMechOID.value.substring(i+1));
 	} catch(IOException e) {
             x = null;
             _logger.log(Level.SEVERE,"iiop.IOexception",e);
-	}*/
+	}
         GSSUP_MECH_OID = x;
-         /*TODO:V3 Commented, uncomment later
+         
         try {
             i = GSS_NT_Export_Name_OID.value.indexOf(':');
             x = new ObjectIdentifier( GSS_NT_Export_Name_OID.value.substring(i+1));
 	} catch(IOException e) {
             x = null;
                 _logger.log(Level.SEVERE,"iiop.IOexception",e);
-	}*/
+	}
         GSS_NT_EXPORT_NAME_OID = x;
-         /*TODO:V3 Commented, uncomment later
+        
         try {
             i = GSS_NT_Scoped_Username_OID.value.indexOf(':');
             x = new ObjectIdentifier( GSS_NT_Scoped_Username_OID.value.substring(i+1));
 	} catch(IOException e) {
             x = null;
                 _logger.log(Level.SEVERE,"iiop.IOexception",e);
-	}*/
+	}
         GSS_NT_SCOPED_USERNAME_OID = x;
 
         try {
@@ -111,6 +113,12 @@ public class GSSUtils
 	    }
 	} catch(IOException e) {
                 _logger.log(Level.SEVERE,"iiop.IOexception",e);
+	}
+        
+        try {
+	    mech = GSSUtils.getDER(GSSUtils.GSSUP_MECH_OID);
+	} catch(IOException io) {
+	    mech = null;
 	}
     }
 
@@ -514,6 +522,15 @@ public class GSSUtils
   
 	return(ret);
     }
+    
+   /**
+     * Return the ASN.1 encoded representation of a GSS mechanism identifier.
+     * Currently only the GSSUP Mechanism is supported.
+     */
+    public static byte[] getMechanism() {
+        return mech;
+    }
+
 
     public static void main(String[] args) {
 	try {

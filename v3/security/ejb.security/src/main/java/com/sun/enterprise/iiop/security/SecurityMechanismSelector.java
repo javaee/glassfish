@@ -37,8 +37,10 @@
 
 package com.sun.enterprise.iiop.security;
 
+import com.sun.enterprise.common.iiop.security.AnonCredential;
+import com.sun.enterprise.common.iiop.security.GSSUPName;
 import com.sun.enterprise.common.iiop.security.SecurityContext;
-import java.lang.InheritableThreadLocal;
+
 import java.net.Socket;
 import java.util.Set;
 import java.util.HashSet;
@@ -55,52 +57,39 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 // GSS Related Functionality
 
-import com.sun.enterprise.ExecutionContext;
-import com.sun.enterprise.InvocationManager;
-import com.sun.enterprise.InvocationException;
-import com.sun.enterprise.appclient.AppContainer;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbIORConfigurationDescriptor;
-import com.sun.enterprise.iiop.CSIV2TaggedComponentInfo;
 import org.omg.CORBA.ORB;
-import com.sun.enterprise.iiop.IORToSocketInfoImpl;
-import com.sun.enterprise.iiop.POAProtocolMgr;
-import com.sun.enterprise.security.SSLUtils;
 import com.sun.enterprise.security.auth.login.common.PasswordCredential;
 import com.sun.enterprise.security.auth.login.common.X509CertificateCredential;
-import com.sun.enterprise.security.auth.LoginContextDriver;
-import com.sun.enterprise.util.Utility;
-import com.sun.enterprise.util.ORBManager;
-import com.sun.enterprise.util.TypeUtil;
 
+import com.sun.enterprise.util.Utility;
 import com.sun.corba.ee.spi.ior.IOR;
 import com.sun.corba.ee.spi.ior.iiop.IIOPAddress;
 import com.sun.corba.ee.spi.ior.iiop.IIOPProfileTemplate;
 import com.sun.corba.ee.spi.transport.SocketInfo;
-import com.sun.corba.ee.org.omg.CSI.*;
 import com.sun.corba.ee.org.omg.CSIIOP.*;
 
-import com.sun.corba.se.spi.ior.iiop.IIOPAddress;
-import com.sun.corba.se.spi.ior.iiop.IIOPProfileTemplate;
-import com.sun.corba.se.spi.transport.SocketInfo;
-import com.sun.enterprise.common.iiop.security.AnonCredential;
-import com.sun.enterprise.common.iiop.security.GSSUPName;
-import com.sun.enterprise.common.iiop.security.GSSUtils;
 import sun.security.x509.X500Name;
-import com.sun.enterprise.log.Log;
-import com.sun.enterprise.security.SecurityContext;
 import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.security.auth.login.LoginContextDriver;
+import com.sun.enterprise.security.common.ClientSecurityContext;
+import com.sun.enterprise.security.common.SecurityConstants;
 import com.sun.enterprise.security.ssl.SSLUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.java.util.jar.pack.Instruction.Switch;
-import com.sun.java.util.jar.pack.Instruction.Switch;
-import com.sun.java.util.jar.pack.Instruction.Switch;
+
 import java.util.logging.*;
 import com.sun.logging.*;
-import javax.resource.spi.security.PasswordCredential;
 import org.glassfish.api.invocation.ComponentInvocation;
-import org.omg.IOP.IOR;
+import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
+import org.glassfish.enterprise.iiop.api.ProtocolManager;
+
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
+import org.glassfish.api.invocation.InvocationManager ;
+import org.jvnet.hk2.component.Singleton;
+
 
 /** 
  * This class is responsible for making various decisions for selecting
@@ -114,6 +103,8 @@ import org.omg.IOP.IOR;
 
  */
 
+@Service
+@Scoped(Singleton.class)
 public final class SecurityMechanismSelector {
 
     private static final java.util.logging.Logger _logger =
@@ -122,8 +113,8 @@ public final class SecurityMechanismSelector {
     public static final String CLIENT_CONNECTION_CONTEXT = "ClientConnContext";
     public static final String SERVER_CONNECTION_CONTEXT = "ServerConnContext";
 
-    private static Set corbaIORDescSet = null;
-    private static boolean sslRequired = false;
+    private  Set corbaIORDescSet = null;
+    private  boolean sslRequired = false;
 
     // List of hosts trusted by the client for sending passwords to.
     // Also, list of hosts trusted by the server for accepting propagated
@@ -135,17 +126,30 @@ public final class SecurityMechanismSelector {
 
     // A reference to POAProtocolMgr will be obtained dynamically
     // and set if not null. So set it to null here.
-    private static POAProtocolMgr protocolMgr = null;
+    private  ProtocolManager protocolMgr = null;
+    private SSLUtils sslUtils = null;
+    private GlassFishORBHelper orbHelper;
 
+    //private CompoundSecMech mechanism = null;
+    private ORB orb = null;
+    private CSIV2TaggedComponentInfo ctc = null;
+    private InvocationManager invMgr = null;
+    
     /**
      * Read the client and server preferences from the config files.
      */
-    static {
+    public SecurityMechanismSelector() {
         try {
-	  
+            
+            Habitat habitat = SecurityServicesUtil.getInstance().getHabitat();
+            orbHelper = habitat.getComponent(GlassFishORBHelper.class);
+            sslUtils = habitat.getComponent(SSLUtils.class);
+            orb = orbHelper.getORB();
+            this.ctc = new CSIV2TaggedComponentInfo(orb);
+            invMgr = habitat.getComponent(InvocationManager.class);
 	    // Initialize client security config
 	    String s = 
-		(String)(ORBManager.getCSIv2Props()).get(ORBManager.ORB_SSL_CLIENT_REQUIRED);
+		(String)(orbHelper.getCSIv2Props()).get(GlassFishORBHelper.ORB_SSL_CLIENT_REQUIRED);
 	    if ( s != null && s.equals("true") ) {
 		sslRequired = true;
 	    }
@@ -156,7 +160,7 @@ public final class SecurityMechanismSelector {
 					    new EjbIORConfigurationDescriptor();
 	    EjbIORConfigurationDescriptor iorDesc2 = 
 					    new EjbIORConfigurationDescriptor();
-	    String serverSslReqd = (String)(ORBManager.getCSIv2Props()).get(ORBManager.ORB_SSL_SERVER_REQUIRED);
+	    String serverSslReqd = (String)(orbHelper.getCSIv2Props()).get(GlassFishORBHelper.ORB_SSL_SERVER_REQUIRED);
 	    if ( serverSslReqd != null && serverSslReqd.equals("true") ) {
 		iorDesc.setIntegrity(EjbIORConfigurationDescriptor.REQUIRED);
 		iorDesc.setConfidentiality(
@@ -166,7 +170,7 @@ public final class SecurityMechanismSelector {
 					EjbIORConfigurationDescriptor.REQUIRED);
 	    }
 	    String clientAuthReq = 
-		(String)(ORBManager.getCSIv2Props()).get(ORBManager.ORB_CLIENT_AUTH_REQUIRED);
+		(String)(orbHelper.getCSIv2Props()).get(GlassFishORBHelper.ORB_CLIENT_AUTH_REQUIRED);
 	    if ( clientAuthReq != null && clientAuthReq.equals("true") ) {
 		// Need auth either by SSL or username-password.
 		// This sets SSL clientauth to required.
@@ -174,27 +178,17 @@ public final class SecurityMechanismSelector {
 					EjbIORConfigurationDescriptor.REQUIRED);
 		// This sets username-password auth to required.
 		iorDesc2.setAuthMethodRequired(true);
-		corbaIORDescSet.add(iorDesc2);
+		getCorbaIORDescSet().add(iorDesc2);
 	    }
-	    corbaIORDescSet.add(iorDesc);
+	    getCorbaIORDescSet().add(iorDesc);
 
         } catch(Exception e) {
             _logger.log(Level.SEVERE,"iiop.Exception",e);
         }
+        
     }
 
-    private CompoundSecMech mechanism = null;
-    private ORB orb = null;
-    private CSIV2TaggedComponentInfo ctc = null;
-    
-    /**
-     * Default constructor.
-     */
-    public SecurityMechanismSelector() {
-        this.orb = ORBManager.getORB();
-        this.ctc = new CSIV2TaggedComponentInfo(orb);
-    }
-
+   
     public static ServerConnectionContext getServerConnectionContext() {
         Hashtable h = ConnectionExecutionContext.getContext();
         ServerConnectionContext scc = 
@@ -228,8 +222,9 @@ public final class SecurityMechanismSelector {
     public SocketInfo getSSLPort(IOR ior, ConnectionContext ctx) 
     {
         SocketInfo info = null;
+        CompoundSecMech mechanism = null;
         try {
-            mechanism = selectSecurityMechanism(ior);
+             mechanism = selectSecurityMechanism(ior);
         } catch(SecurityMechanismException sme) {
             throw new RuntimeException(sme.getMessage());
         }
@@ -242,14 +237,14 @@ public final class SecurityMechanismSelector {
         }
 
         if (ssl == null) {
-            if (sslRequired) {
+            if (isSslRequired()) {
                 // Attempt to create SSL connection to host, ORBInitialPort
                 IIOPProfileTemplate templ = (IIOPProfileTemplate)
                     ior.getProfile().getTaggedProfileTemplate();
                 IIOPAddress addr = templ.getPrimaryAddress();
                 info = IORToSocketInfoImpl.createSocketInfo(
 		        "SecurityMechanismSelector1",
-                        "SSL", addr.getHost(), ORBManager.getORBInitialPort());
+                        "SSL", addr.getHost(), orbHelper.getORBPort(orb));
                 return info;
             } else {
                 return null;
@@ -291,7 +286,7 @@ public final class SecurityMechanismSelector {
                 _logger.log(Level.FINE, "Target supports SSL");
             }
 
-            if ( sslRequired ) {
+            if ( isSslRequired() ) {
                 if (_logger.isLoggable(Level.FINE)) {
                     _logger.log(Level.FINE, "Client is configured to require SSL for the target");
                 }
@@ -307,7 +302,7 @@ public final class SecurityMechanismSelector {
             } else {
                 return null;
             }
-        } else if ( sslRequired ) {
+        } else if ( isSslRequired() ) {
 	    throw new RuntimeException("SSL required by client but not supported by server.");
 	} else {
 	    return null;
@@ -324,13 +319,6 @@ public final class SecurityMechanismSelector {
     }
     */
     
-    public CompoundSecMech getMechanism() {
-        return mechanism;
-    }
-    
-    public void setMechanism(CompoundSecMech val) {
-        this.mechanism = val;
-    }
     
     public ORB getOrb() {
         return orb;
@@ -350,6 +338,7 @@ public final class SecurityMechanismSelector {
     
     public java.util.List<SocketInfo> getSSLPorts(IOR ior, ConnectionContext ctx) 
     {
+        CompoundSecMech mechanism = null;
         try {
             mechanism = selectSecurityMechanism(ior);
         } catch(SecurityMechanismException sme) {
@@ -364,14 +353,14 @@ public final class SecurityMechanismSelector {
         }
 
         if (ssl == null) {
-            if (sslRequired) {
+            if (isSslRequired()) {
                 // Attempt to create SSL connection to host, ORBInitialPort
                 IIOPProfileTemplate templ = (IIOPProfileTemplate)
                     ior.getProfile().getTaggedProfileTemplate();
                 IIOPAddress addr = templ.getPrimaryAddress();
                 SocketInfo info = IORToSocketInfoImpl.createSocketInfo(
 		        "SecurityMechanismSelector1",
-                        "SSL", addr.getHost(), ORBManager.getORBInitialPort());
+                        "SSL", addr.getHost(), orbHelper.getORBPort(orb));
                 //SocketInfo[] sInfos = new SocketInfo[]{info};
                 List<SocketInfo> sInfos = new ArrayList<SocketInfo>();
                 sInfos.add(info);
@@ -420,7 +409,7 @@ public final class SecurityMechanismSelector {
                 _logger.log(Level.FINE, "Target supports SSL");
             }
 
-            if ( sslRequired ) {
+            if ( isSslRequired() ) {
                 if (_logger.isLoggable(Level.FINE)) {
                     _logger.log(Level.FINE, "Client is configured to require SSL for the target");
                 }
@@ -442,7 +431,7 @@ public final class SecurityMechanismSelector {
             } else {
                 return null;
             }
-        } else if ( sslRequired ) {
+        } else if ( isSslRequired() ) {
 	    throw new RuntimeException("SSL required by client but not supported by server.");
 	} else {
 	    return null;
@@ -461,45 +450,39 @@ public final class SecurityMechanismSelector {
             InvalidMechanismException, SecurityMechanismException
     {
         SecurityContext context = null;   
-
 	ConnectionContext cc = new ConnectionContext();
         getSSLPort(ior, cc);
         setClientConnectionContext(cc); 
 
-
-        mechanism = cc.getMechanism();
+        CompoundSecMech mechanism = cc.getMechanism();
         if(mechanism == null) {
             return null;
         }
         boolean sslUsed = cc.getSSLUsed();
         boolean clientAuthOccurred = cc.getSSLClientAuthenticationOccurred();
-        //TODO V3 : need to change this
-//        InvocationManager im = Switch.getSwitch().getInvocationManager();
-//       if(im == null) {
-            // Standalone client
-            if (SecurityServicesUtil.getInstance().isNotServerOrACC()) {
-                context = getSecurityContextForAppClient(
-                        null, sslUsed, clientAuthOccurred);
-                return context;
-            }
-//        }
+
+        // Standalone client
+        if (SecurityServicesUtil.getInstance().isNotServerOrACC()) {
+            context = getSecurityContextForAppClient(
+                    null, sslUsed, clientAuthOccurred, mechanism);
+            return context;
+        }
 
         if (_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE, "SSL used:" + sslUsed + " SSL Mutual auth:" + clientAuthOccurred);
         }
-
         ComponentInvocation ci = null;
         // BEGIN IASRI# 4646060
-        ci = im.getCurrentInvocation();
+        ci = invMgr.getCurrentInvocation();
         if (ci == null) {
-        // END IASRI# 4646060
+            // END IASRI# 4646060
             return null;
         }
         Object obj = ci.getContainerContext();
         if(SecurityServicesUtil.getInstance().isACC()) {
-            context = getSecurityContextForAppClient(ci, sslUsed, clientAuthOccurred);
+            context = getSecurityContextForAppClient(ci, sslUsed, clientAuthOccurred, mechanism);
         } else {
-            context = getSecurityContextForWebOrEJB(ci, sslUsed, clientAuthOccurred);
+            context = getSecurityContextForWebOrEJB(ci, sslUsed, clientAuthOccurred, mechanism);
         }
         return context;
     }
@@ -513,11 +496,12 @@ public final class SecurityMechanismSelector {
     public SecurityContext getSecurityContextForAppClient(
                                         ComponentInvocation ci, 
                                         boolean sslUsed,
-                                        boolean clientAuthOccurred) 
+                                        boolean clientAuthOccurred,
+                                        CompoundSecMech mechanism) 
         throws InvalidMechanismException, InvalidIdentityTokenException,
                                             SecurityMechanismException {
 
-        return sendUsernameAndPassword(ci, sslUsed, clientAuthOccurred);
+        return sendUsernameAndPassword(ci, sslUsed, clientAuthOccurred, mechanism);
     }
 
     /**
@@ -528,22 +512,23 @@ public final class SecurityMechanismSelector {
      */
     public SecurityContext getSecurityContextForWebOrEJB(
                         ComponentInvocation ci, boolean sslUsed,
-                        boolean clientAuthOccurred) 
+                        boolean clientAuthOccurred,
+                        CompoundSecMech mechanism) 
         throws InvalidMechanismException, InvalidIdentityTokenException, 
                             SecurityMechanismException {
 
         SecurityContext ctx = null;
         if(!sslUsed) {
-	    ctx = propagateIdentity(false, ci);
+	    ctx = propagateIdentity(false, ci, mechanism);
 	} else {
-	    ctx = propagateIdentity(clientAuthOccurred, ci);
+	    ctx = propagateIdentity(clientAuthOccurred, ci, mechanism);
 	}
 	return ctx;
     }
 
     private boolean isMechanismSupported(SAS_ContextSec sas){
         byte[][] mechanisms = sas.supported_naming_mechanisms;
-        byte[] mechSupported = Utility.getMechanism();
+        byte[] mechSupported = GSSUtils.getMechanism();
 
 	if (mechSupported == null) {
 	    return false;
@@ -577,7 +562,8 @@ public final class SecurityMechanismSelector {
      */
     private SecurityContext sendUsernameAndPassword(ComponentInvocation ci,
 						    boolean sslUsed,
-						    boolean clientAuthOccurred) 
+						    boolean clientAuthOccurred,
+                                                    CompoundSecMech mechanism) 
                 throws SecurityMechanismException {
         SecurityContext ctx = null;
         if(mechanism == null) {
@@ -588,7 +574,7 @@ public final class SecurityMechanismSelector {
             || ( isSet(mechanism.target_requires, EstablishTrustInClient.value)
 		 && !clientAuthOccurred ) ) {
 
-            ctx = getUsernameAndPassword(ci);
+            ctx = getUsernameAndPassword(ci, mechanism);
 
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.log(Level.FINE, "Sending Username/Password");
@@ -607,9 +593,9 @@ public final class SecurityMechanismSelector {
      * @exception SecurityMechanismException if there was an error.
      */
     private SecurityContext propagateIdentity(boolean clientAuth,
-                                              ComponentInvocation ci) 
-        throws InvalidIdentityTokenException, InvalidMechanismException,
-SecurityMechanismException {
+                                              ComponentInvocation ci,
+                                              CompoundSecMech mechanism) 
+        throws InvalidIdentityTokenException, InvalidMechanismException, SecurityMechanismException {
             
         SecurityContext ctx = null;
         if(mechanism == null) {
@@ -623,7 +609,7 @@ SecurityMechanismException {
         }
 
         if(isSet(asContext.target_requires, EstablishTrustInClient.value)) {
-            ctx = getUsernameAndPassword(ci);
+            ctx = getUsernameAndPassword(ci, mechanism);
             if (ctx.authcls == null){ // run as mode cannot send password
                 String errmsg =
 localStrings.getLocalString("securitymechansimselector.runas_cannot_propagate_username_password",
@@ -657,7 +643,7 @@ localStrings.getLocalString("securitymechansimselector.runas_cannot_propagate_us
         } else if(isSet(asContext.target_supports, 
                         EstablishTrustInClient.value)) {
             if (clientAuth) {   // client auth done we can send password
-                ctx = getUsernameAndPassword(ci);
+                ctx = getUsernameAndPassword(ci, mechanism);
                 if (ctx.authcls == null) {
                     return null; // runas mode dont have username/password
                                 //  dont really need to send it too
@@ -780,15 +766,15 @@ localStrings.getLocalString("securitymechansimselector.runas_cannot_propagate_us
      * gather authentication information.
      * @return the security context.
      */
-    private SecurityContext getUsernameAndPassword(ComponentInvocation ci) 
+    private SecurityContext getUsernameAndPassword(ComponentInvocation ci, CompoundSecMech mechanism) 
             throws SecurityMechanismException {
         try {
             Subject s = null;
             if(ci == null) {
 		// Standalone client ... Changed the security context 
 		// from which to fetch the subject
-                com.sun.enterprise.security.ClientSecurityContext sc = 
-                    com.sun.enterprise.security.ClientSecurityContext.getCurrent();
+                ClientSecurityContext sc = 
+                    ClientSecurityContext.getCurrent();
                 if(sc == null) {
                     return null;
                 }
@@ -801,11 +787,11 @@ localStrings.getLocalString("securitymechansimselector.runas_cannot_propagate_us
                 //if(obj instanceof AppContainer) {
                  if (SecurityServicesUtil.getInstance().isACC()) {
 		    // get the subject
-                    com.sun.enterprise.security.ClientSecurityContext sc = 
-                        com.sun.enterprise.security.ClientSecurityContext.getCurrent();
+                    ClientSecurityContext sc = 
+                        ClientSecurityContext.getCurrent();
                     if(sc == null) {
 			s = LoginContextDriver.doClientLogin(
-                                SecurityConstants.U_P,
+                                SecurityConstants.USERNAME_PASSWORD,
                                 SecurityServicesUtil.getInstance().getCallbackHandler());
                     } else {
                         s = sc.getSubject();
@@ -1011,7 +997,7 @@ localStrings.getLocalString("securitymechansimselector.runas_cannot_propagate_us
         }
         int targetRequires = tls.target_requires;
         if(isSet(targetRequires, EstablishTrustInClient.value)) {
-            if(! SSLUtils.isKeyAvailable()) {
+            if(! sslUtils.isKeyAvailable()) {
                 val = false;
             }
         }
@@ -1318,7 +1304,7 @@ as_context_mech
             return true;
 
         if (protocolMgr == null)
-            protocolMgr = (POAProtocolMgr)Switch.getSwitch().getProtocolManager();
+            protocolMgr = orbHelper.getProtocolManager();
 
         // Check to make sure protocolMgr is not null. 
         // This could happen during server initialization or if this call
@@ -1335,7 +1321,7 @@ as_context_mech
 	else {
 	    // Probably a non-EJB CORBA object.
 	    // Create a temporary EjbIORConfigurationDescriptor.
-	    iorDescSet = corbaIORDescSet;
+	    iorDescSet = getCorbaIORDescSet();
 	}
 
 	if(_logger.isLoggable(Level.FINE)) {
@@ -1524,9 +1510,15 @@ as_context_mech
         }
         return false;
     }
+
+    public Set getCorbaIORDescSet() {
+        return corbaIORDescSet;
+    }
+
+    public boolean isSslRequired() {
+        return sslRequired;
+    }
 }
-
-
 /**
  * This class that implements ConnectionExecutionContext that gets 
  * stored in Thread Local Storage. If the current thread creates

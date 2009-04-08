@@ -36,9 +36,6 @@
 
 package com.sun.enterprise.iiop.security;
 
-/** 
- * @author Nithya Subramanian
- */
 
 public class InvalidMechanismException extends java.lang.Exception{
     /**

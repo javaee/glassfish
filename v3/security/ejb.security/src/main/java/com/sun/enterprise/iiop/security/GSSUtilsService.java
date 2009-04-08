@@ -33,25 +33,38 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.sun.enterprise.iiop.security;
 
-import com.sun.enterprise.config.serverbeans.SecurityService;
+import com.sun.enterprise.common.iiop.security.GSSUtilsContract;
+import java.io.IOException;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Singleton;
+import sun.security.util.ObjectIdentifier;
 
-public class Csiv2Manager {
+/**
+ *
+ * @author Kumar
+ */
+@Service
+@Scoped(Singleton.class)
+public class GSSUtilsService implements GSSUtilsContract {
 
-    private static SecurityService secsvc = null;
-
-    // called by J2EE RI to register a security service
-    public static void setSecurityService(SecurityService ss)
-    {
-        secsvc = ss;
+    public String dumpHex(byte[] octets) {
+        return GSSUtils.dumpHex(octets);
     }
 
-    // called by security interceptors
-
-    public static SecurityService getSecurityService()
-    {
-        return secsvc;
+    public byte[] importName(ObjectIdentifier oid, byte[] externalName) throws IOException {
+        return GSSUtils.importName(oid, externalName);
     }
+
+    public byte[] createExportedName(ObjectIdentifier oid, byte[] extName) throws IOException {
+        return GSSUtils.createExportedName(oid, extName);
+    }
+
+    public ObjectIdentifier GSSUP_MECH_OID() {
+        return GSSUtils.GSSUP_MECH_OID;
+    }
+
 }
-

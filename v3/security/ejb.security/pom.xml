@@ -35,15 +35,15 @@
 * only if the new code is made subject to such option by the copyright 
 * holder. 
 */ 
---> 
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.glassfish.security</groupId>
         <artifactId>securitymodule</artifactId>
         <version>3.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>        
-    </parent>    
+        <relativePath>../pom.xml</relativePath>
+    </parent>
     <groupId>org.glassfish.security</groupId>
     <artifactId>ejb.security</artifactId>
     <packaging>hk2-jar</packaging>
@@ -67,7 +67,7 @@
                     <include>**/*.properties</include>
                 </includes>
             </resource>
-             <resource>
+            <resource>
                 <directory>src/main/resources</directory>
                 <includes>
                     <include>**/*.properties</include>
@@ -85,7 +85,7 @@
             <artifactId>config-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-             <dependency>
+        <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
         </dependency>
@@ -94,7 +94,7 @@
             <artifactId>common-util</artifactId>
             <version>${project.version}</version>
         </dependency>
-          <dependency>
+        <dependency>
             <groupId>org.glassfish.deployment</groupId>
             <artifactId>dol</artifactId>
             <version>${project.version}</version>
@@ -110,9 +110,19 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.ejb</groupId>
-            <artifactId>ejb-container</artifactId>
+            <groupId>com.sun.corba</groupId>
+            <artifactId>glassfish-corba-csiv2-idl</artifactId>
+            <version>${glassfish-corba.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.orb</groupId>
+            <artifactId>orb-iiop</artifactId>
             <version>${project.version}</version>
         </dependency>
-         </dependencies>
+        <dependency>
+            <groupId>org.glassfish.orb</groupId>
+            <artifactId>orb-connector</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

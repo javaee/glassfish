@@ -36,10 +36,6 @@
 
 package com.sun.enterprise.iiop.security;
 
-/** 
- * @author Nithya Subramanian
- */
-
 public class InvalidIdentityTokenException extends java.lang.Exception{
     /**
      * Constructs the exception with the specified detail message.
