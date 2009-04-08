@@ -86,8 +86,9 @@ public class WebServicesSniffer extends GenericSniffer {
 
     @Override
     public String[] getURLPatterns() {
-        // anything finishing with jsp or jspx
-        return new String[] { "*.jsp", "*.jspx" };
+//        // anything finishing with jsp or jspx
+//        return new String[] { "*.jsp", "*.jspx" };
+        return null;
     }
 
 }
