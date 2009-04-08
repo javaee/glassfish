@@ -70,6 +70,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
             fis.close();            
 		} catch (java.io.FileNotFoundException e ) {
 			Logger.getAnonymousLogger().log(Level.INFO, "Cannot read logging.properties file. Creating new one ");
+/*
             File parent = file.getParentFile();
             if (!parent.exists()) {
                 parent.mkdirs();
@@ -88,7 +89,8 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
             props.setProperty("java.util.logging.ConsoleHandler.formatter", "com.sun.enterprise.server.logging.UniformLogFormatter");
             props.setProperty("java.util.logging.ConsoleHandler.level","FINEST");
             Logger.getAnonymousLogger().log(Level.INFO, "New logging.properties file created. ");
-
+*/
+            throw new IOException();
 		} catch (IOException e) {
 			Logger.getAnonymousLogger().log(Level.SEVERE, "Cannot read logging.properties file : ", e);
 			throw new IOException();
@@ -213,7 +215,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
         		m.put(key, props.getProperty(key));
 			}
 
-			closePropFile();
+			//closePropFile();
 			return m;
 		} catch (IOException ex) {
 			throw ex;
