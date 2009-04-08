@@ -53,14 +53,14 @@
     <sun:tab id="descriptorTab" immediate="$boolean{true}" text="$resource{i18n.common.DescriptorTab}">
         <!command
             setSessionAttribute(key="appGeneralTabs" value="descriptorTab");
-            urlencode(value="#{appName}", value=>$pageSession{appName});
+            urlencode(value="#{appName}", result=>$pageSession{appName});
             redirect(page="#{request.contextPath}/applications/#{descriptorPage}?appName=#{appName}");
         />
     </sun:tab>
     <sun:tab id="targetTab" rendered="$session{supportCluster}" immediate="$boolean{true}" text="$resource{i18n.common.TargetTab}">
         <!command
             setSessionAttribute(key="appGeneralTabs" value="targetTab");
-            urlencode(value="#{name}", value=>$pageSession{appName});
+            urlencode(value="#{name}", result=>$pageSession{appName});
             redirect(page="#{request.contextPath}/applications/#{targetPage}?appName=#{appName}");
         />
     </sun:tab>
