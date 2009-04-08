@@ -36,6 +36,7 @@
 package com.sun.ejb.containers;
 
 import com.sun.ejb.*;
+import com.sun.ejb.codegen.ServiceInterfaceGenerator;
 import com.sun.ejb.base.stats.MonitoringRegistryMediator;
 import com.sun.ejb.containers.interceptors.InterceptorManager;
 import com.sun.ejb.containers.util.MethodMap;
@@ -64,6 +65,10 @@ import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
+import org.glassfish.ejb.spi.WSEjbEndpointRegistry;
+import org.glassfish.ejb.api.EjbEndpointFacade;
+import org.glassfish.internal.api.Globals;
+import org.glassfish.deployment.common.DeploymentException;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -416,6 +421,15 @@ public abstract class BaseContainer
     // True if there is at least one asynchronous method exposed from the bean.
     private boolean hasAsynchronousInvocations = false;
 
+    // Information about a web service ejb endpoint.  Used as a conduit
+    // between webservice runtime and ejb container.  Contains a Remote
+    // servant used by jaxrpc to call web service business method.
+    private WebServiceEndpoint webServiceEndpoint;
+
+    //The Webservices Ejb Endpoint Registry contract
+    // used to register and unregister ejb webservices endpoints
+    private WSEjbEndpointRegistry wsejbEndpointRegistry;
+
     /**
      * This constructor is called from ContainerFactoryImpl when an
      * EJB Jar is deployed.
@@ -628,8 +642,7 @@ public abstract class BaseContainer
                     ejbGeneratedOptionalLocalBusinessIntfClass = optIntfClassLoader.loadClass(optIntfClassName);
                 }
 
-                // TODO support singleton webservice endpoints
-                if( isStatelessSession ) {
+                if( isStatelessSession || isSingleton ) {
                     EjbBundleDescriptor bundle =
                         ejbDescriptor.getEjbBundleDescriptor();
                     WebServicesDescriptor webServices = bundle.getWebServices();
@@ -1002,6 +1015,69 @@ public abstract class BaseContainer
     void initializeHome()
         throws Exception
     {
+
+        if( isWebServiceEndpoint ) {
+
+            EjbBundleDescriptor bundle =
+                ejbDescriptor.getEjbBundleDescriptor();
+            WebServicesDescriptor webServices = bundle.getWebServices();
+            Collection myEndpoints =
+                webServices.getEndpointsImplementedBy(ejbDescriptor);
+
+
+            // An ejb can only be exposed through 1 web service endpoint
+            Iterator iter = myEndpoints.iterator();
+            webServiceEndpoint =
+ 					(com.sun.enterprise.deployment.WebServiceEndpoint) iter.next();
+
+            Class serviceEndpointIntfClass =
+                    loader.loadClass(webServiceEndpoint.getServiceEndpointInterface());
+
+            if (!serviceEndpointIntfClass.isInterface()) {
+                ServiceInterfaceGenerator generator = new ServiceInterfaceGenerator(loader, ejbClass);
+                serviceEndpointIntfClass = EJBUtils.generateSEI(generator,  generator.getGeneratedClass(),
+                        loader, this.ejbClass);
+                if (serviceEndpointIntfClass==null) {
+                    throw new RuntimeException("Error generating the SEI");
+                }
+
+            }
+
+            Class tieClass=null;
+
+            WebServiceInvocationHandler invocationHandler =
+                    new WebServiceInvocationHandler(ejbClass, webServiceEndpoint, serviceEndpointIntfClass,
+                                                    ejbContainerUtilImpl,webServiceInvocationInfoMap);
+
+
+            invocationHandler.setContainer(this);
+            Object servant = (Object) Proxy.newProxyInstance
+                    (loader, new Class[] { serviceEndpointIntfClass },
+                    invocationHandler);
+
+            // starting in 2.0, there is no more generated Ties
+            if (webServiceEndpoint.getTieClassName()!=null) {
+                tieClass = loader.loadClass(webServiceEndpoint.getTieClassName());
+            }
+
+            // Create a facade for container services to be used by web services runtime.
+            EjbEndpointFacade endpointFacade =
+                        new EjbEndpointFacadeImpl(this, ejbContainerUtilImpl);
+
+
+            wsejbEndpointRegistry = Globals.getDefaultHabitat().getComponent(
+                    WSEjbEndpointRegistry.class);
+            if (wsejbEndpointRegistry != null ) {
+                wsejbEndpointRegistry.registerEndpoint(webServiceEndpoint,endpointFacade,servant,tieClass);
+            } else {
+                throw new DeploymentException("EJB based Webservice endpoint is detected but there is" +
+                        "no webservices module installed to handle it \n" );
+
+            }
+
+
+        }
+
         Map<String, Object> intfsForPortableJndi = new HashMap<String, Object>();
 
         // Root of portable global JNDI name for this bean
@@ -3807,6 +3883,23 @@ public abstract class BaseContainer
 
         if( baseContainerCleanupDone ) {
             return;
+        }
+
+        try {
+            if( isWebServiceEndpoint && (webServiceEndpoint != null) ) {
+                String endpointAddress =
+                    webServiceEndpoint.getEndpointAddressUri();
+                if (wsejbEndpointRegistry != null) {
+                    wsejbEndpointRegistry.unregisterEndpoint(endpointAddress);
+                }
+            }
+
+            // NOTE : Pipe cleanup that used to done here is now encapsulated within
+            // endpoint registry unregisterEndpoint operation
+
+        } catch(Exception e) {
+            _logger.log(Level.FINE, "Error unregistering ejb endpoint for " +
+                        ejbDescriptor.getName(), e);
         }
 
         try {

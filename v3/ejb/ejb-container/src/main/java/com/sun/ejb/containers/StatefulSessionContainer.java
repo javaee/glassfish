@@ -1685,19 +1685,17 @@ public final class StatefulSessionContainer
     }
 
     private void releaseSFSBSerializedLock(EjbInvocation inv, SessionContextImpl sc) {
+
         if( !this.allowSerializedAccess ) {
             return;
         }
         
-        try {
-            if( inv.holdingSFSBSerializedLock() ) {
-                inv.setHoldingSFSBSerializedLock(false);
-                sc.getStatefulWriteLock().unlock();
-            }
-        } catch(IllegalMonitorStateException imse) {
-            logTraceInfo(inv, sc, "error unlocking serialized SFSB lock");
-            _logger.log(Level.WARNING, "error unlocking serialized SFSB lock", imse);
+
+        if( inv.holdingSFSBSerializedLock() ) {
+            inv.setHoldingSFSBSerializedLock(false);
+            sc.getStatefulWriteLock().unlock();
         }
+
     }
 
     void afterBegin(EJBContextImpl context) {
