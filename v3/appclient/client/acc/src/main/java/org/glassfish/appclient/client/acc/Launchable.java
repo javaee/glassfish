@@ -138,7 +138,10 @@ interface Launchable {
             ApplicationClientDescriptor acd = null;
             AppClientArchivist archivist = new AppClientArchivist();
             acd = archivist.open(archive);
-            return (acd.getName().equals(appClientName));
+            final String moduleID = acd.getModuleID();
+            final String displayName = acd.getDisplayName();
+            return (   (moduleID != null && moduleID.equals(appClientName))
+                    || (displayName != null && displayName.equals(appClientName)));
 
 //            XMLInputFactory f = XMLInputFactory.newInstance();
 //

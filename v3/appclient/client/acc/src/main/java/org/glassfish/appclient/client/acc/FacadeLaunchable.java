@@ -222,7 +222,7 @@ public class FacadeLaunchable implements Launchable {
             ReadableArchive clientFacadeRA = af.openArchive(clientFacadeURI);
             Manifest facadeMF = clientFacadeRA.getManifest();
             Attributes facadeMainAttrs = facadeMF.getMainAttributes();
-            URI clientURI = groupFacadeURI.resolve(facadeMF.getMainAttributes().getValue(GLASSFISH_APPCLIENT));
+            URI clientURI = clientFacadeURI.resolve(facadeMF.getMainAttributes().getValue(GLASSFISH_APPCLIENT));
             ReadableArchive clientRA = af.openArchive(clientURI);
             /*
              * Look for an entry corresponding to the

@@ -40,15 +40,18 @@
 package org.glassfish.appclient.client.acc.agent;
 
 import com.sun.enterprise.deployment.node.SaxParserHandler;
-import com.sun.enterprise.deployment.node.SaxParserHandlerFactory;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.universal.glassfish.TokenResolver;
 import com.sun.enterprise.util.LocalStringManager;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import java.io.BufferedInputStream;
+import java.io.CharArrayWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.lang.instrument.Instrumentation;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -56,9 +59,11 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -430,7 +435,8 @@ public class AppClientContainerAgent {
     private static ClientContainer readConfig(final String configPath,
             final ClassLoader loader) throws UserError, JAXBException,
                 FileNotFoundException, ParserConfigurationException,
-                SAXException, URISyntaxException {
+                SAXException, URISyntaxException,
+                IOException {
         ClientContainer result = null;
         File configFile = checkXMLFile(configPath);
         checkXMLFile(launchInfo.getAppclientCommandArguments().getConfigFilePath());
@@ -451,7 +457,14 @@ public class AppClientContainerAgent {
          */
         reader.setEntityResolver(new LocalDTDResolver());
 
-        InputSource inputSource = new InputSource(new FileInputStream(configFile));
+        /*
+         * To support installation-directory independence the default sun-acc.xml
+         * refers to the wss-config file using ${com.sun.aas.installRoot}...  So
+         * preprocess the sun-acc.xml file to replace any tokens with the
+         * corresponding values, then submit that result to JAXB.
+         */
+        InputSource inputSource = replaceTokensForParsing(configFile);
+
         SAXSource saxSource = new SAXSource(reader, inputSource);
         JAXBContext jc = JAXBContext.newInstance(ClientContainer.class );
 
@@ -459,6 +472,44 @@ public class AppClientContainerAgent {
         result = (ClientContainer) u.unmarshal(saxSource);
 
         return result;
+    }
+
+    private static InputSource replaceTokensForParsing(final File configFile) throws FileNotFoundException, IOException, URISyntaxException {
+        FileReader reader = new FileReader(configFile);
+        char[] buffer = new char[1024];
+
+        CharArrayWriter writer = new CharArrayWriter();
+        int charsRead;
+        while ((charsRead = reader.read(buffer)) != -1) {
+            writer.write(buffer, 0, charsRead);
+        }
+        writer.close();
+        reader.close();
+
+        Map<String,String> mapping = new HashMap<String,String>();
+        Properties props = System.getProperties();
+        for (Enumeration e = props.propertyNames(); e.hasMoreElements(); ) {
+            String propName = (String) e.nextElement();
+            mapping.put(propName, props.getProperty(propName));
+        }
+
+        /*
+         * Add com.sun.aas.installRoot if it's not already there.
+         */
+        if ( ! props.containsKey(SystemPropertyConstants.INSTALL_ROOT_PROPERTY) ) {
+            URI thisJarURI = AppClientContainerAgent.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+            if (thisJarURI.getScheme().equals("jar")) {
+                String ssp = thisJarURI.getSchemeSpecificPart();
+                thisJarURI = (ssp.startsWith("file:") ? URI.create(ssp) : URI.create("file:" + ssp));
+            }
+            File thisJarFile = new File(thisJarURI);
+
+            mapping.put(SystemPropertyConstants.INSTALL_ROOT_PROPERTY, thisJarFile.getParentFile().getParentFile().getAbsolutePath());
+        }
+        TokenResolver resolver = new TokenResolver(mapping);
+        String configWithTokensReplaced = resolver.resolve(writer.toString());
+        InputSource inputSource = new InputSource(new StringReader(configWithTokensReplaced));
+        return inputSource;
     }
 
     private static File checkXMLFile(String xmlFullName) throws UserError

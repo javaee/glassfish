@@ -453,12 +453,12 @@ public class AppClientContainer {
                     logger.fine("Loaded client main class " + clientMainClassName);
                 }
             }
+            ComponentInvocation ci = new ComponentInvocation(
+                    componentId,
+                    ComponentInvocation.ComponentInvocationType.APP_CLIENT_INVOCATION,
+                    container);
+            invocationManager.preInvoke(ci);
             if ( ! isInjected) {
-            	ComponentInvocation ci = new ComponentInvocation(
-                        componentId,
-                        ComponentInvocation.ComponentInvocationType.APP_CLIENT_INVOCATION,
-                        container);
-                invocationManager.preInvoke(ci);
 
                 injectionManager.injectClass(clientMainClass, acDesc);
                 isInjected = true;

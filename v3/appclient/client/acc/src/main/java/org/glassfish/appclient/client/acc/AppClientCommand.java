@@ -75,7 +75,6 @@ import org.glassfish.appclient.client.acc.config.Property;
 import org.glassfish.appclient.client.acc.config.Security;
 import org.glassfish.appclient.client.acc.config.TargetServer;
 import org.glassfish.enterprise.iiop.api.IIOPConstants;
-import org.glassfish.enterprise.iiop.impl.GlassFishORBManager;
 import org.jvnet.hk2.component.Habitat;
 
 /**

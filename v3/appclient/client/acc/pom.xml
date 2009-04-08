@@ -313,6 +313,7 @@
         </dependency>
 
         <dependency>
+            <scope>runtime</scope>
             <groupId>org.glassfish.orb</groupId>
             <artifactId>orb-iiop</artifactId>
             <version>${project.version}</version>

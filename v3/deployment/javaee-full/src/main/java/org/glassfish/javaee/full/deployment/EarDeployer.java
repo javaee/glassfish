@@ -168,12 +168,13 @@ public class EarDeployer implements Deployer {
         final StringBuilder appClientGroupListSB = new StringBuilder();
 
         /*
-         * For each app client, get its URI to include in the generated facade's
-         * client group listing.
+         * For each app client, get its facade's URI to include in the
+         * generated EAR facade's client group listing.
          */
         for (Iterator<ModuleDescriptor<BundleDescriptor>> it = appClients.iterator(); it.hasNext(); ) {
             ModuleDescriptor<BundleDescriptor> md = it.next();
-            appClientGroupListSB.append((appClientGroupListSB.length() > 0) ? " " : "").append(md.getArchiveUri());
+            appClientGroupListSB.append((appClientGroupListSB.length() > 0) ? " " : "")
+                    .append(earDirUserURI(context)).append(appClientFacadeUserURI(md.getArchiveUri()));
         }
 
         try {
@@ -186,6 +187,21 @@ public class EarDeployer implements Deployer {
         }
 
 
+    }
+
+    private String earDirUserURI(final DeploymentContext dc) {
+        final DeployCommandParameters deployParams = dc.getCommandParameters(DeployCommandParameters.class);
+        final String appName = deployParams.name();
+        return appName + "Client/";
+    }
+
+    private String appClientFacadeUserURI(String appClientModuleURIText) {
+        if (appClientModuleURIText.endsWith("_jar")) {
+            appClientModuleURIText = appClientModuleURIText.substring(0, appClientModuleURIText.lastIndexOf("_jar")) + ".jar";
+        }
+        final int dotJar = appClientModuleURIText.lastIndexOf(".jar");
+        String appClientFacadePath = appClientModuleURIText.substring(0, dotJar) + "Client.jar";
+        return appClientFacadePath;
     }
 
     private String generatedEARFacadeName(final String earName) {

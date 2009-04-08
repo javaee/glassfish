@@ -45,7 +45,7 @@ import org.glassfish.appclient.client.acc.config.ClientContainer;
 import org.glassfish.appclient.client.acc.config.Property;
 import org.glassfish.appclient.client.acc.config.Security;
 import org.glassfish.appclient.client.acc.config.TargetServer;
-import org.glassfish.enterprise.iiop.impl.GlassFishORBManager;
+import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 
 /**
  * Encapsulates the logic for deciding what TargetServer objects to use for
@@ -55,7 +55,7 @@ import org.glassfish.enterprise.iiop.impl.GlassFishORBManager;
  */
 public class TargetServerHelper {
 
-    private static int DEFAULT_ENDPOINT_PORT = Integer.parseInt(GlassFishORBManager.DEFAULT_ORB_INIT_PORT);
+    private static int DEFAULT_ENDPOINT_PORT = Integer.parseInt(GlassFishORBHelper.DEFAULT_ORB_INIT_PORT);
     private static final String SSL_PROPERTY_NAME = "ssl";
 
 
@@ -103,13 +103,17 @@ public class TargetServerHelper {
         String endpointPropertySetting = null;
 
         for (Property p : cc.getProperty()) {
-            if (p.getName().equals(GlassFishORBManager.IIOP_ENDPOINTS_PROPERTY)) {
+            /*
+             * Per Ken S., commented out for now.
+             */
+/*            if (p.getName().equals(GlassFishORBManager.IIOP_ENDPOINTS_PROPERTY)) {
                 endpointPropertySetting = p.getValue();
-            } else {
+             } else {
+ */
                 if (p.getName().equals(SSL_PROPERTY_NAME)) {
                     isGlobalSSL = Boolean.parseBoolean(p.getValue());
                 }
-            }
+//            }
         }
 
         List<TargetServer> endpoints = new ArrayList<TargetServer>();

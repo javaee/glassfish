@@ -121,7 +121,7 @@ recordClientArg() {
 # determinant and extra ACC args
 # are to be treated as application arguments, control never reaches here.
 #
-    if [ "$mainClassIdent"="" -o "$mainClassIdent"="tentative" ]; then
+    if [ "$mainClassIdent" = "" -o "$mainClassIdent" = "tentative" ]; then
         if [ -d $1 ]; then
             # -client with a directory
             jvmMainArgs=-jar\ \$accJar
@@ -142,7 +142,7 @@ recordClientArg() {
 recordACCArg() {
     if [ "$ACCArgType" = "APP" ]; then
         recordAPPArg $1
-        if [ "$2"!="" ]; then
+        if [ "$2" != "" ]; then
             recordAPPArg $2
         fi
     elif [ "$1" = "-client" ]; then
@@ -181,7 +181,7 @@ recordMainClass() {
     # Change the ACC arg type now that we have seen the main class info if
     # the user wants extra ACC options and args passed to the client.
 
-    if [ "$extraACCArgsAsAppArgs"!="" ]; then
+    if [ "$extraACCArgsAsAppArgs" != "" ]; then
         ACCArgType=APP
     fi
 
@@ -193,7 +193,7 @@ recordMainClass() {
 recordJVMArg() {
     if [ "$JVMArgType" = "APP" ]; then
         recordAPPArg $1
-        if [ "$2"!="" ]; then
+        if [ "$2" != "" ]; then
             recordAPPArg $2
         fi
     elif [ "$1" = "-jar" ]; then
@@ -204,7 +204,7 @@ recordJVMArg() {
 }
 
 recordNonACCOption() {
-    if [ "$mainClassIdent"=="" ]; then
+    if [ "$mainClassIdent" == "" ]; then
         recordJVMArg $1
     else
         recordAPPArg $1
@@ -218,7 +218,7 @@ recordLoneArg() {
 # If we have not yet seen the main class determinant then this is it.
 # It could be a class file or a class name.
 
-    if [ "$mainClassIdent"=="" ]; then
+    if [ "$mainClassIdent" == "" ]; then
         # This is the main class or main class file.
         recordMainClass $1
     else
@@ -262,22 +262,25 @@ for x do
 
         # The next case must refer to all valid ACC options that expect no value
         -textauth|-noappinvoke)
-            recordACCArg $x; unset expecting ;;
+            recordACCArg $x; expecting=
+            ;;
 
         -*)
             recordNonACCOption $x
-            unset expecting ;;
+            expecting=
+            ;;
 
         *)
-            if [ "$expecting"!="" ]; then
+            if [ "$expecting" != "" ]; then
                 record${expectingArgType}Arg $expecting $x
             else
                 recordLoneArg $x
             fi
-            unset expecting ;;
+            expecting=
+            ;;
     esac
 done
-if [ "$APPCPATH"!="" ]; then
+if [ "$APPCPATH" != "" ]; then
     accArgs=$accArgs,appcpath=\"$APPCPATH\"
 fi
 exec java $jvmArgs -javaagent:$accJar=mode=acscript${accArgs},$accMainArgs \

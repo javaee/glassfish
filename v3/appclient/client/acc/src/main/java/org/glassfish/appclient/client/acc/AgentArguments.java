@@ -109,6 +109,9 @@ public class AgentArguments {
      * @param singleWordArgs list of strings to augment with un-keyworded entries in the input
      */
     private void scan(final String args) {
+        if (args == null) {
+            return;
+        }
         Matcher m = agentArgPattern.matcher(args);
         while (m.find()) {
             final String keyword = m.group(KEYWORD);
