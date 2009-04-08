@@ -36,25 +36,8 @@
 
 package com.sun.ejb.spi.distributed;
 
+// TODO - check if we need this interface
 public interface DistributedEJBService {
-
-    public int migrateTimers( String serverId );
-
-    public String[] listTimers( String[] serverIds );
-
-    /*
-     * Since GMS is now dropped from 8.1, need a mechanism by which a canceltimer
-     * initiated on another server instance would be affected on the owner server
-     * instance. This would be done by reading the database before delivering the
-     * ejbTimeout call to ensure that the timer is still valid. Since this would 
-     * lead to potential performance degradation also need to provide some user
-     * interaction to control this behavior.
-     *
-     * For SE/EE the default value if system property is not specified would be 
-     * "true" (i.e. always read from DB before delivering a ejbTimeout for a timer)
-     *
-    */
-    public void setPerformDBReadBeforeTimeout( boolean defaultDBReadValue );
 
     public DistributedReadOnlyBeanService getDistributedReadOnlyBeanService();
     

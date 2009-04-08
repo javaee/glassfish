@@ -36,28 +36,11 @@
 
 package com.sun.ejb.spi.distributed;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-
-import java.util.logging.Logger;
-import java.util.logging.Level;
-
-import com.sun.logging.LogDomains;
-
-import java.util.concurrent.ConcurrentHashMap;
-
 public class DistributedEJBServiceFactory
     implements DistributedEJBService 
 {
 
-	private Logger _logger = LogDomains.getLogger(DistributedEJBServiceFactory.class, LogDomains.EJB_LOGGER);
-    
     protected static DistributedEJBService distributedEJBService = null;
-    protected static DistributedEJBTimerService distributedEJBTimerService = null;
 
     private static DistributedReadOnlyBeanService _distributedReadOnlyBeanService
         = new DistributedReadOnlyBeanServiceImpl();
@@ -73,64 +56,6 @@ public class DistributedEJBServiceFactory
         distributedEJBService = this;
     }
 
-
-    public static void setDistributedEJBTimerService( 
-        DistributedEJBTimerService distribEJBTimerService ) {
-        
-        getDistributedEJBService();
-
-        //The distributedEJBTimerService is the EJBTimerService that should
-        //be assigned as part of the server startup. Also this code makes sense
-        //in the appserv-core part of the land. But since this method is on the
-        //interface even the appserv-core-ee code might call it. Need to safeguard
-        //against this possibility.
-        if( null == distributedEJBTimerService ) {
-            distributedEJBTimerService = distribEJBTimerService;
-        }
-    }
-
-    /**
-     *--------------------------------------------------------------
-     * Methods to be implemented for DistributedEJBService
-     *--------------------------------------------------------------
-     */
-    public int migrateTimers( String serverId ) {
-        int result = 0;
-        if (distributedEJBTimerService != null) {
-            result = distributedEJBTimerService.migrateTimers( serverId );
-        } else {
-            //throw new IllegalStateException("EJB Timer service is null. "
-                    //+ "Cannot migrate timers for: " + serverId);
-        }
-        
-        return result;
-    }
-
-    public String[] listTimers( String[] serverIds ) {
-        String[] result = new String[serverIds.length];
-        if (distributedEJBTimerService != null) {
-            result = distributedEJBTimerService.listTimers( serverIds );
-        } else {
-            //FIXME: Should throw IllegalStateException
-            for (int i=0; i<serverIds.length; i++) {
-                result[i] = "0";
-            }
-            //throw new com.sun.enterprise.admin.common.exception.AFException("EJB Timer service is null. "
-                    //+ "Cannot list timers.");
-        }
-        
-        return result;
-    }
-
-    public void setPerformDBReadBeforeTimeout( boolean defaultDBReadValue ) {
-        if( null != distributedEJBTimerService ) {
-            distributedEJBTimerService.setPerformDBReadBeforeTimeout( 
-                                           defaultDBReadValue );
-        } else {
-            // Should we ensure that the EJBTimerService can not be null
-            // in the case of SE/EE
-        }
-    }
 
     public DistributedReadOnlyBeanService getDistributedReadOnlyBeanService() {
         return _distributedReadOnlyBeanService;
