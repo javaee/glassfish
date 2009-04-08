@@ -38,17 +38,14 @@ package com.sun.enterprise.web;
 
 import java.io.File;
 import java.util.HashMap;
-
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
-//import com.sun.enterprise.deployment.backend.DeploymentUtils;
 import com.sun.enterprise.config.serverbeans.WebModule;
-//import com.sun.enterprise.config.ConfigException;
 import com.sun.enterprise.util.io.FileUtils;
 
 /**
  * Represents the configuration parameters required in order to create
- * and install a web module (web application) in the iAS 7.0 server runtime.
+ * and install a web module (web application) into the server runtime.
  */
 public class WebModuleConfig {
 
@@ -87,21 +84,22 @@ public class WebModuleConfig {
      */
     private ClassLoader _parentLoader = null;
 
-   /**
-    * Deployment descriptor information about the web application.
-    */
-   private WebBundleDescriptor _wbd = null;
+    /**
+     * Deployment descriptor information about the web application.
+     */
+    private WebBundleDescriptor _wbd = null;
 
-   /** 
-    * keep a list of virtual servers that this webmodule is associated with
-    */
-   private String _vsIDs;
+    /** 
+     * keep a list of virtual servers that this webmodule is associated with
+     */
+    private String _vsIDs;
 
     // START S1AS 6178005
     private String stubBaseDir;
     // END S1AS 6178005
 
     private ClassLoader _appClassLoader = null;
+
 
     // ------------------------------------------------------------- Properties
 
