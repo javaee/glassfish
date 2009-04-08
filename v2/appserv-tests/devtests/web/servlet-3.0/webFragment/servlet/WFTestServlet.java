@@ -7,7 +7,7 @@ import javax.servlet.http.*;
 import javax.servlet.annotation.WebInitParam;
 import javax.servlet.annotation.WebServlet;
 
-@WebServlet(name="wftestServlet", initParams={ @WebInitParam(name="mesg", value="hello a"), @WebInitParam(name="mesg3", value="hello3 a") })
+@WebServlet(name="wftestServlet", urlPatterns={"/t"}, initParams={ @WebInitParam(name="mesg", value="hello a"), @WebInitParam(name="mesg3", value="hello3 a") })
 public class WFTestServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
