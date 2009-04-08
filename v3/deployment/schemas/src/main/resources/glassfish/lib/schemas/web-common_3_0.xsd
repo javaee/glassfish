@@ -633,9 +633,6 @@
       <xsd:element name="async-supported"
 		   type="javaee:true-falseType"
 		   minOccurs="0"/>
-      <xsd:element name="async-timeout"
-		   type="javaee:xsdIntegerType"
-		   minOccurs="0"/>
 
       <xsd:element name="init-param"
 		   type="javaee:param-valueType"
@@ -1119,9 +1116,6 @@ comes
 		   minOccurs="0"/>
       <xsd:element name="async-supported"
 		   type="javaee:true-falseType"
-		   minOccurs="0"/>
-      <xsd:element name="async-timeout"
-		   type="javaee:xsdIntegerType"
 		   minOccurs="0"/>
       <xsd:element name="run-as"
 		   type="javaee:run-asType"
