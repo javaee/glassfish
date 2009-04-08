@@ -48,9 +48,6 @@ import com.sun.hk2.component.ScopeInstance;
  */
 @Service @Scoped(Singleton.class)
 public class Singleton extends Scope {
-    @Inject
-    public Habitat habitat;
-
     /**
      * @deprecated
      *  Singleton instances are not stored in a single map.
