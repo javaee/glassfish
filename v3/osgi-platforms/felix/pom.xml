@@ -55,7 +55,7 @@
                              <artifactItem>
                                <groupId>org.apache.felix</groupId>
                                <artifactId>org.apache.felix.main</artifactId>
-                               <version>1.2.2</version>
+                               <version>1.6.0</version>
                                <outputDirectory>${felix.outdir}/bin</outputDirectory>
                                <destFileName>felix.jar</destFileName>
                              </artifactItem>
@@ -80,6 +80,23 @@
                                <groupId>org.apache.felix</groupId>
                                <artifactId>org.apache.felix.shell.remote</artifactId>
                                <version>1.0.4</version>
+                               <type>jar</type>
+                               <outputDirectory>${glassfish.modulesdir}</outputDirectory>
+                             </artifactItem>
+                             <!-- We install fileinstall bundle which monitors modules
+                                  dir and autodeploy dir for addition/removal/updation of bundles -->
+                             <artifactItem>
+                               <groupId>org.apache.felix</groupId>
+                               <artifactId>org.apache.felix.fileinstall</artifactId>
+                               <version>0.9.2</version>
+                               <type>jar</type>
+                               <outputDirectory>${glassfish.modulesdir}</outputDirectory>
+                             </artifactItem>
+                             <!-- fileinstall needs configadmin service -->
+                             <artifactItem>
+                               <groupId>org.apache.felix</groupId>
+                               <artifactId>org.apache.felix.configadmin</artifactId>
+                               <version>1.0.10</version>
                                <type>jar</type>
                                <outputDirectory>${glassfish.modulesdir}</outputDirectory>
                              </artifactItem>
