@@ -107,14 +107,6 @@ public class ApplicationValidator extends EjbBundleValidator
         if (descriptor.getSessionConfigDescriptor() == null) {
             descriptor.setSessionConfigDescriptor(new SessionConfigDescriptor());
         }
-
-        if (descriptor.getSecurityConstraints().hasMoreElements() &&
-                descriptor.getLoginConfiguration() == null) {
-            LoginConfiguration loginConfig = new LoginConfigurationImpl();
-            loginConfig.setAuthenticationMethod(LoginConfiguration.BASIC_AUTHENTICATION);
-            descriptor.setLoginConfiguration(loginConfig);
-
-        }
     }   
     
     /**
