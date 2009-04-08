@@ -192,6 +192,14 @@ public final class MultiMap<K,V> {
         return new MultiMap<K,V>(this);
     }
 
+    /**
+     * Returns the size of the map
+     * @return integer or 0 if the map is empty
+     */
+    public int size() {
+        return store.size();
+    }
+
     private static final MultiMap EMPTY = new MultiMap(Collections.emptyMap());
 
     /**

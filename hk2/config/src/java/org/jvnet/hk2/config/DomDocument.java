@@ -36,19 +36,15 @@
  */
 package org.jvnet.hk2.config;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.ComponentException;
+import org.jvnet.hk2.component.MultiMap;
 
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.XMLStreamException;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * Represents a whole DOM tree.
@@ -66,6 +62,7 @@ public class DomDocument {
     private volatile Translator translator = Translator.NOOP;
 
     protected final Map<Inhabitant<? extends ConfigInjector>,ConfigModel> models = new HashMap<Inhabitant<? extends ConfigInjector>, ConfigModel>();
+    private final MultiMap<Class, List<ConfigModel>> implementorsOf = new MultiMap<Class, List<ConfigModel>>();
 
     /*package*/ final Habitat habitat;
 
@@ -136,6 +133,54 @@ public class DomDocument {
         if(i==null) return null;
         return buildModel(i);
     }
+
+    /**
+     * Calculates all @Configured interfaces subclassing the passed interface type.
+     *
+     * @param intf a @Configured interface
+     * @return List of all @Configured subclasses
+     * @throws ClassNotFoundException
+     */
+    public List<ConfigModel> getAllModelsImplementing(Class intf) throws ClassNotFoundException {
+        if (implementorsOf.size()==0) {
+            initXRef();
+        }
+        return implementorsOf.getOne(intf);   
+    }
+
+    /**
+     * probably a bit slow, calculates all the @Configured interfaces subclassing, useful
+     * to find all possible subclasses of a type.
+     * 
+     * @throws ClassNotFoundException
+     */
+    private void initXRef() throws ClassNotFoundException {
+
+        // force initialization of all the config models.
+        for (Inhabitant<? extends ConfigInjector> i : habitat.getInhabitants(ConfigInjector.class)) {
+            buildModel(i);
+        }
+        List<ConfigModel> result = new ArrayList<ConfigModel>();
+        for (ConfigModel cm : models.values()) {
+            Class targetType = cm.classLoaderHolder.get().loadClass(cm.targetTypeName);
+            do {
+                Class[] intfs = targetType.getInterfaces();
+                for (Class intf : intfs) {
+                    if (intf.isAnnotationPresent(Configured.class)) {
+
+                        List<ConfigModel> models = implementorsOf.getOne(intf);
+                        if (models==null) {
+                            models = new ArrayList<ConfigModel>();
+                            implementorsOf.add(intf, models);
+                        }
+                        models.add(cm);
+                    }
+                }
+                targetType = targetType.getSuperclass();
+            } while (targetType!=null);
+        }
+    }
+
 
     // TODO: to be removed once we make sure that no one is using it anymore
     @Deprecated
