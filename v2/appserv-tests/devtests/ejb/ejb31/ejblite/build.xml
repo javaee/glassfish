@@ -14,9 +14,7 @@
     <target name="all">
         <antcall target="javamodule"/>
 
-        <!-- disable this until intra .war servlet init -> ejb non-deterministic ordering bug is fixed
         <antcall target="sinitcallejb"/>
-       -->
 
         <antcall target="jaxrs"/>
     </target>
