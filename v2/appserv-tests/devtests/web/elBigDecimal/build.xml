@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
+]>
+
+<project name="webcontainer_unittest" default="all" basedir=".">
+
+    &commonSetup;
+    &commonBuild;
+
+    <target name="all" depends="compile,run"/>
+
+    <target name="clean">
+        <delete file="WebTest.class" />
+    </target>
+       
+    <target name="compile">
+        <javac
+            srcdir="."
+            classpath="${env.APS_HOME}/lib/reporter.jar;${env.S1AS_HOME}/modules/el-api.jar"
+            includes="WebTest.java"/>
+
+    </target> 
+
+    <target name="run" depends="compile">
+        <java classname="WebTest">
+          <classpath>
+           <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
+           <pathelement location="${env.S1AS_HOME}/modules/el-api.jar"/>
+           <pathelement location="${env.S1AS_HOME}/modules/el-impl.jar"/>
+           <pathelement location="."/>
+         </classpath>
+        </java>
+    </target>
+ 
+    <target name="usage">
+        <antcall target="usage-common"/>
+    </target>
+</project>

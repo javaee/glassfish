@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="369"/>
+    <property name="TOTAL_EXPECTED" value="370"/>
 
     &commonSetup;
     &commonBuild;
@@ -118,6 +118,7 @@
         <ant dir="bodyTag" target="all"/>
         <ant dir="elUninterpretedTag" target="all"/>
         <ant dir="elequals" target="all"/>
+        <ant dir="elBigDecimal" target="all"/>
     </target>
 
     <target name="servlet">
