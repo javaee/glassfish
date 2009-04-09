@@ -267,32 +267,33 @@ public class DefaultServlet
      * Initialize this servlet.
      */
     public void init() throws ServletException {
-        if (getServletConfig().getInitParameter("debug") != null)
-            debug = Integer.parseInt(getServletConfig().getInitParameter("debug"));
+        ServletConfig sc = getServletConfig();
+        if (sc.getInitParameter("debug") != null)
+            debug = Integer.parseInt(sc.getInitParameter("debug"));
 
-        if (getServletConfig().getInitParameter("input") != null)
-            input = Integer.parseInt(getServletConfig().getInitParameter("input"));
+        if (sc.getInitParameter("input") != null)
+            input = Integer.parseInt(sc.getInitParameter("input"));
 
-        if (getServletConfig().getInitParameter("output") != null)
-            output = Integer.parseInt(getServletConfig().getInitParameter("output"));
+        if (sc.getInitParameter("output") != null)
+            output = Integer.parseInt(sc.getInitParameter("output"));
 
-        listings = Boolean.parseBoolean(getServletConfig().getInitParameter("listings"));
+        listings = Boolean.parseBoolean(sc.getInitParameter("listings"));
 
-        if (getServletConfig().getInitParameter("readonly") != null)
-            readOnly = Boolean.parseBoolean(getServletConfig().getInitParameter("readonly"));
+        if (sc.getInitParameter("readonly") != null)
+            readOnly = Boolean.parseBoolean(sc.getInitParameter("readonly"));
 
-        if (getServletConfig().getInitParameter("sendfileSize") != null)
+        if (sc.getInitParameter("sendfileSize") != null)
             sendfileSize = 
-                Integer.parseInt(getServletConfig().getInitParameter("sendfileSize")) * 1024;
+                Integer.parseInt(sc.getInitParameter("sendfileSize")) * 1024;
 
-        fileEncoding = getServletConfig().getInitParameter("fileEncoding");
+        fileEncoding = sc.getInitParameter("fileEncoding");
 
-        globalXsltFile = getServletConfig().getInitParameter("globalXsltFile");
-        localXsltFile = getServletConfig().getInitParameter("localXsltFile");
-        readmeFile = getServletConfig().getInitParameter("readmeFile");
+        globalXsltFile = sc.getInitParameter("globalXsltFile");
+        localXsltFile = sc.getInitParameter("localXsltFile");
+        readmeFile = sc.getInitParameter("readmeFile");
 
-        if (getServletConfig().getInitParameter("useAcceptRanges") != null)
-            useAcceptRanges = Boolean.parseBoolean(getServletConfig().getInitParameter("useAcceptRanges"));
+        if (sc.getInitParameter("useAcceptRanges") != null)
+            useAcceptRanges = Boolean.parseBoolean(sc.getInitParameter("useAcceptRanges"));
 
         // Sanity check on the specified buffer sizes
         if (input < 256)
