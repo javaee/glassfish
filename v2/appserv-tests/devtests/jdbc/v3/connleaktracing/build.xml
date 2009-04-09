@@ -71,7 +71,8 @@
             <param name="sql.file" value="sql/drop_pointbase.sql"/>
         </antcall>
         <antcall target="delete-jdbc-stuff"/>
-        <antcall target="undeploy-common"/>
+	<antcall target="undeploy-common"/>
+	<delete file="client/WebTest.class"/>
     </target>
 
     <target name="usage">
