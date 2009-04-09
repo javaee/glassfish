@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
+	<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
+	<!ENTITY jdbcCommon SYSTEM "file:./../JdbcCommon.xml">
+	<!ENTITY jdbcCommonProperties SYSTEM "file:./../JdbcCommon.properties">
+	<!ENTITY reporting   SYSTEM "file:./../report.xml">
+	<!ENTITY eeCommon SYSTEM "file:./../config/ee-common.xml">
+	<!ENTITY eeCommonProperties SYSTEM "file:./../config/ee-properties.xml">
+        ]>
+
+<project name="jdbc" default="usage" basedir=".">
+    <!--
+        &commonSetup;
+        &commonBuild;
+        &reporting;
+        &jdbcCommon;
+        &jdbcCommonProperties;
+    -->
+    &eeCommon;
+    &eeCommonProperties;
+
+    <target name="all">
+        <antcall target="${execution.mode}-all"/>
+    </target>
+
+    <target name="pe-all">
+        <delete>
+            <fileset dir="${env.APS_HOME}" includes="test_results*"/>
+        </delete>
+        <delete>
+            <fileset dir="." includes="*.output"/>
+        </delete>
+	<record name="jdbc.output" action="start"/>
+	<antcall target="contauth"/>
+	<antcall target="maxconnectionusage"/>
+	<antcall target="connleaktracing"/>
+	<antcall target="resEnableDisable"/>
+        <record name="jdbc.output" action="stop"/>
+    </target>
+
+    <target name="ee-all">
+        <delete>
+            <fileset dir="${env.APS_HOME}" includes="test_results*"/>
+        </delete>
+        <delete>
+            <fileset dir="." includes="*.output"/>
+        </delete>
+        <record name="jdbc.output" action="start"/>
+	<antcall target="contauth"/>
+	<antcall target="maxconnectionusage"/>
+	<antcall target="connleaktracing"/>
+	<antcall target="resEnableDisable"/>
+        <record name="jdbc.output" action="stop"/>
+    </target>
+
+    <target name="contauth">
+        <record name="contauth/contauth.output" action="start"/>
+        <ant dir="contauth" target="all"/>
+	<record name="contauth/contauth.output" action="stop"/>
+    </target>
+
+    <target name="maxconnectionusage">
+        <record name="maxconnectionusage/maxconnectionusage.output" action="start"/>
+        <ant dir="maxconnectionusage" target="all"/>
+	<record name="maxconnectionusage/maxconnectionusage.output" action="stop"/>
+    </target>
+                                   
+    <target name="connleaktracing">
+        <record name="connleaktracing/connleaktracing.output" action="start"/>
+        <ant dir="connleaktracing" target="all"/>
+	<record name="connleaktracing/connleaktracing.output" action="stop"/>
+    </target>
+
+    <target name="resEnableDisable">
+       <record name="resEnableDisable/resenabledisable.output" action="start"/>
+        <ant dir="resEnableDisable" target="all"/>
+	<record name="resEnableDisable/resenabledisable.output" action="stop"/>
+    </target>
+    <target name="usage">
+        <echo>
+            Usage:
+            ant all (Executes all the jdbc tests)
+        </echo>
+    </target>
+</project>
