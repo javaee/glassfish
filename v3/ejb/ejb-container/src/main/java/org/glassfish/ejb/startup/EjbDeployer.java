@@ -46,7 +46,7 @@ import org.jvnet.hk2.component.Habitat;
 
 import java.util.*;
 import java.util.logging.Level;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 import org.glassfish.ejb.security.factory.EJBSecurityManagerFactory;
 
@@ -77,6 +77,11 @@ public class EjbDeployer
     protected EJBSecurityManagerFactory ejbSecManagerFactory;
 
     protected CMPDeployer cmpDeployer;
+
+    // Property used to persist unique id across server restart.
+    private static final String APP_UNIQUE_ID_PROP = "org.glassfish.ejb.container.application_unique_id";
+
+    private AtomicLong uniqueIdCounter;
     
     private static final Logger _logger =
                 LogDomains.getLogger(EjbDeployer.class, LogDomains.EJB_LOGGER);
@@ -85,6 +90,9 @@ public class EjbDeployer
      * Constructor
      */
     public EjbDeployer() {
+
+        // Seed a counter used for ejb application unique id generation.
+        uniqueIdCounter = new AtomicLong(System.currentTimeMillis());
 
     }
 
@@ -107,6 +115,33 @@ public class EjbDeployer
         
         if( ejbBundle == null ) {
             throw new RuntimeException("Null EjbBundleDescriptor in EjbDeployer.load()");
+        }
+
+        // Get application-level properties (*not* module-level)
+        Properties appProps = dc.getAppProps();
+
+        long uniqueAppId;
+
+        if( !appProps.containsKey(APP_UNIQUE_ID_PROP)) {
+
+            // This is the first time load is being called for any ejb module in an
+            // application, so generate the unique id.
+
+            uniqueAppId = getNextEjbAppUniqueId();
+            appProps.setProperty(APP_UNIQUE_ID_PROP, uniqueAppId + "");
+        } else {
+            uniqueAppId = Long.parseLong(appProps.getProperty(APP_UNIQUE_ID_PROP));         
+        }
+
+        Application app = ejbBundle.getApplication();
+
+        if( !app.isUniqueIdSet() ) {
+            // This will set the unique id for all EJB components in the application.
+            // If there are multiple ejb modules in the app, we'll only call it once
+            // for the first ejb module load().  All the old
+            // .xml processing for unique-id in the sun-* descriptors is removed so
+            // this is the only place where Application.setUniqueId() should be called.
+            app.setUniqueId(uniqueAppId);
         }
 
         if (ejbBundle.containsCMPEntity()) {
@@ -197,5 +232,31 @@ public class EjbDeployer
             throw new DeploymentException("No CMP Deployer is available to deploy this module");
         }
         cmpDeployer.deploy(dc);
+    }
+
+    private long getNextEjbAppUniqueId() {
+        long next = uniqueIdCounter.incrementAndGet();
+
+        // This number represents the base unique id for each ejb application.
+        // It is used to generate an id for each ejb component that is
+        // guaranteed to be unique across all the applications deployed to a
+        // particular stand-alone server instance or DAS.
+        //
+        // The unique id is 64 bits, with the low-order 16 bits zeroed out.
+        // Component ids are selected from these low-order bits, allowing a
+        // maximum of 2^16 EJB components per application.
+        //
+        // The initial number is seeded from System.currentTimeMillis() the
+        // first time this class is instantiated after a server start.
+        // Since this epoch value is relative to 1970, even after left-shifting
+        // 16 bits, the number of remaining milliseconds won't run out until
+        // the year 10889.   This scheme also assumes that for the lifetime
+        // of the JVM for a given server, there aren't more individual
+        // ejb application deployments than elapsed milliseconds, since the
+        // next time the server starts it will simply seed from
+        // currentTimeMillis() again rather than remembering the largest unique
+        // id that was used the last time the server ran.  
+
+        return next << 16;
     }
 }

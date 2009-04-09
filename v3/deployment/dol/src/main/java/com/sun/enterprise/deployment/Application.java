@@ -90,6 +90,10 @@ public class Application extends RootDeploymentDescriptor
     // Set of modules in this application
     private Set<ModuleDescriptor<BundleDescriptor>> modules = new OrderedSet<ModuleDescriptor<BundleDescriptor>>();
 
+    // True if unique id has been set.  Allows callers to avoid
+    // applying unique ids to subcomponents multiple times.
+    private boolean uniqueIdSet = false;
+
     // IASRI 4645310
     /**
      * unique id for this application
@@ -1158,28 +1162,38 @@ public class Application extends RootDeploymentDescriptor
     public void setPackagedAsSingleModule(boolean status) {
         this.isPackagedAsSingleModule = status;
     }
-    
+
+    public boolean isUniqueIdSet() {
+        return uniqueIdSet;
+    }
+
     /**
      * Sets the unique id for this application.  It traverses through all
      * the  ejbs in the application and sets the unique id for each of them.
      * The traversal is done in ascending element order.
      *
+     * NOTE : assumption is that the id has already been left shifted 16
+     *        bits to allow space for the component ids.
+     *
      * @param id unique id for this application
      */
     public void setUniqueId(long id) {
-        _logger.log(Level.FINE, "[Application]uid: " + id);
+        _logger.log(Level.FINE, "[Application] " + getName() + " , uid: " + id);
         this.uniqueId = id;
 
         EjbDescriptor[] descs = getSortedEjbDescriptors();
 
         for (int i = 0; i < descs.length; i++) {
-            // 2^16 beans max per stand alone module
+            // Maximum of 2^16 beans max per application
             descs[i].setUniqueId((id | i));
             if (_logger.isLoggable(Level.FINE)) {
-                _logger.log(Level.FINE, "[Application]desc name: " + descs[i].getName());
-                _logger.log(Level.FINE, "[Application]desc id: " + descs[i].getUniqueId());
+                String module = descs[i].getEjbBundleDescriptor().getModuleDescriptor().getArchiveUri();
+                _logger.log(Level.FINE, "Ejb  " + module + ":" + descs[i].getName() + " id = " +
+                        descs[i].getUniqueId());
             }
         }
+
+        uniqueIdSet = true;
     }
 
     /**

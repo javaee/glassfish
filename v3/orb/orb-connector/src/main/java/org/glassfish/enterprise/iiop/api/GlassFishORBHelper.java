@@ -88,26 +88,34 @@ public class GlassFishORBHelper implements PostConstruct {
 			                    habitat.getByContract(ProtocolManager.class);
 
                             tempProtocolManager.initialize(tempOrb);
-
+                          
                             tempProtocolManager.initializeNaming();
 
                             tempProtocolManager.initializePOAs();
 
+                            // Make protocol and orb visible now.  This will allow
+                            // loopback calls to getORB()/getProtocolManager() from
+                            // portable interceptors activated as a side-effect of the
+                            // remaining initialization to get these objects.
+                            protocolManager = tempProtocolManager;
+                            orb = tempOrb;
+
                             GlassfishNamingManager namingManager =
                                 habitat.getByContract(GlassfishNamingManager.class);
 
+
                             Remote remoteSerialProvider =
-                                namingManager.initializeRemoteNamingSupport(tempOrb);
+                                namingManager.initializeRemoteNamingSupport(orb);
 
-                            tempProtocolManager.initializeRemoteNaming(remoteSerialProvider);
+                            protocolManager.initializeRemoteNaming(remoteSerialProvider);
 
-                            protocolManager = tempProtocolManager;
-
+                        } else {
+                            orb = tempOrb;
                         }
 
-                        orb = tempOrb;
-
                     } catch(Exception e) {
+                        orb = null;
+                        protocolManager = null;
                         throw new RuntimeException("Orb initialization erorr", e);    
                     }
 

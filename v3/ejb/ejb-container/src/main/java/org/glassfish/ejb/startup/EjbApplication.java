@@ -73,7 +73,6 @@ import java.io.IOException;
 public class EjbApplication
         implements ApplicationContainer<Collection<EjbDescriptor>> {
 
-    private String appName;
     private Collection<EjbDescriptor> ejbs;
     private Collection<Container> containers = new ArrayList();
     private ClassLoader ejbAppClassLoader;
@@ -100,7 +99,6 @@ public class EjbApplication
             EJBSecurityManagerFactory ejbSecMgrFactory) {
         this.ejbs = bundleDesc;
         this.ejbAppClassLoader = cl;
-        this.appName = ""; //TODO
         this.dc = dc;
         this.habitat = habitat;
         this.ejbContainerFactory = habitat.getByContract(ContainerFactory.class);
@@ -173,7 +171,6 @@ public class EjbApplication
             String moduleName = null;
         
             for (EjbDescriptor desc : ejbs) {
-                desc.setUniqueId(getUniqueId(desc)); // XXX appUniqueID + (counter++));
                 EJBSecurityManager ejbSM = null;
 
                 // Initialize each ejb container (setup component environment, register JNDI objects, etc.)
@@ -260,29 +257,6 @@ public class EjbApplication
      */
     public ClassLoader getClassLoader() {
         return ejbAppClassLoader;
-    }
-
-    private static final char NAME_PART_SEPARATOR = '_';   // NOI18N
-    private static final char NAME_CONCATENATOR = ' ';   // NOI18N
-
-    private long getUniqueId(EjbDescriptor desc) {
-
-        com.sun.enterprise.deployment.BundleDescriptor bundle = desc.getEjbBundleDescriptor();
-        com.sun.enterprise.deployment.Application application = bundle.getApplication();
-
-        // Add ejb name and application name.
-        StringBuffer rc = new StringBuffer().
-                append(desc.getName()).
-                append(NAME_CONCATENATOR).
-                append(application.getRegistrationName());
-
-        // If it's not just a module, add a module name.
-        if (!application.isVirtual()) {
-            rc.append(NAME_CONCATENATOR).
-                    append(bundle.getModuleDescriptor().getArchiveUri());
-        }
-
-        return rc.toString().hashCode();
     }
 
 

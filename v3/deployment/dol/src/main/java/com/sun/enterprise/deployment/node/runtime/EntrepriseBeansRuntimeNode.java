@@ -101,9 +101,8 @@ public class EntrepriseBeansRuntimeNode extends RuntimeDescriptorNode {
             DOLUtils.getDefaultLogger().finer("Ignoring runtime bundle name " + value);
             return;
         }
-	if (getDescriptor()!=null && RuntimeTagNames.UNIQUE_ID.equals(element.getQName())) {
-            ((EjbBundleDescriptor) getDescriptor()).setUniqueId(Long.parseLong(value));
-        } else super.setElementValue(element, value);
+
+	    super.setElementValue(element, value);
     }
     
     /**
@@ -117,7 +116,8 @@ public class EntrepriseBeansRuntimeNode extends RuntimeDescriptorNode {
 
         Node ejbs = super.writeDescriptor(parent, nodeName, bundleDescriptor);
 	
-        appendTextChild(ejbs, RuntimeTagNames.UNIQUE_ID, String.valueOf(bundleDescriptor.getUniqueId()));
+        // NOTE : unique-id is no longer written out to sun-ejb-jar.xml.  It is persisted via
+        // domain.xml deployment context properties instead.
         
         // ejb*
         EjbNode ejbNode = new EjbNode();

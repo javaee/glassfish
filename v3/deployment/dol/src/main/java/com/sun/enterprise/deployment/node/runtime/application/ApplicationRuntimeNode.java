@@ -151,9 +151,6 @@ public class ApplicationRuntimeNode extends RuntimeBundleNode<Application> {
     public void setElementValue(XMLElement element, String value) {
 	if (element.getQName().equals(RuntimeTagNames.PASS_BY_REFERENCE)) {
 	    descriptor.setPassByReference("true".equalsIgnoreCase(value));
-	} else 
-	if (element.getQName().equals(RuntimeTagNames.UNIQUE_ID)) {
-	    descriptor.setUniqueId(Long.parseLong(value));
 	} else
 	if (element.getQName().equals(RuntimeTagNames.WEB_URI)) {
 	    currentWebUri=value;
@@ -230,9 +227,9 @@ public class ApplicationRuntimeNode extends RuntimeBundleNode<Application> {
 	if (application.isPassByReferenceDefined()) {
 	    appendTextChild(appNode, RuntimeTagNames.PASS_BY_REFERENCE, String.valueOf(application.getPassByReference()));
 	}
-	
-	// unique-id
-	appendTextChild(appNode, RuntimeTagNames.UNIQUE_ID, String.valueOf(application.getUniqueId()));
+
+        // NOTE : unique-id is no longer written out to sun-ejb-jar.xml.  It is persisted via
+        // domain.xml deployment context properties instead.
 	
         // security-role-mapping*
         List<SecurityRoleMapping> roleMappings = application.getSecurityRoleMappings();
