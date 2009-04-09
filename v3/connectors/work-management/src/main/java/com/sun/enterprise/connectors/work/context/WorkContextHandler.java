@@ -42,12 +42,14 @@ import org.glassfish.security.common.PrincipalImpl;
 import org.glassfish.security.common.Group;
 import org.jvnet.hk2.annotations.Service;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
+import com.sun.logging.LogDomains;
 
 import javax.resource.spi.work.*;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
 import java.util.*;
-
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 
 /**
@@ -62,6 +64,8 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
     //TODO V3 logstrings for entire class
     private static final List<Class<? extends WorkContext>> containerSupportedContexts =
             new ArrayList<Class<? extends WorkContext>>();
+    private static final Logger logger =
+            LogDomains.getLogger(WorkCoordinator.class, LogDomains.RESOURCE_BUNDLE);
 
 
     static {
@@ -119,7 +123,8 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
 
             } catch (ClassNotFoundException cnfe) {
                 debug(cnfe.toString());
-                cnfe.printStackTrace();  //TODO V3 log & remove pST
+                Object params[] = {workContextClassName, cnfe};
+                logger.log(Level.WARNING, "workcontext.context_class_not_found", params);
                 break;
             }
             if (workContextClass.equals(clz)) {
@@ -148,7 +153,6 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
             Class context = null;
             try {
                 context = loadClass(contextClassName);
-
             } catch (ClassNotFoundException e) {
                 debug("Container cannot load the context class [isAssignable] : " + contextClassName + " ");
             }
@@ -167,9 +171,7 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
     }
 
     private static Class loadClass(String contextClassName) throws ClassNotFoundException {
-        //context = ConnectorClassLoader.getInstance().loadClass(contextClassName);
         //TODO V3 not a clean way ?
-        //return WorkContextHandler.class.getClassLoader().loadClass(contextClassName);
         return Thread.currentThread().getContextClassLoader().loadClass(contextClassName);
     }
 
@@ -188,10 +190,11 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
             //JSR-322-WORK-CONTEXT-REQ
             //TODO V3 hack - ec & getEC() test
             if (ec != null && getExecutionContext(work) != ec) {
-                String errorMsg = "Work is an WorkContextProvider " +
-                        "and ExecutionContext [ " + ec + " ] is not null";
-                debug(errorMsg);
-                throw new WorkRejectedException(errorMsg);
+                WorkRejectedException wre =
+                        new WorkRejectedException();
+                Object params[] = {ec, wre};
+                logger.log(Level.WARNING, "workcontext.context_is_context_provider_and_execcontext", params);
+                throw wre;
             }
 
             WorkContextProvider icp = (WorkContextProvider) work;
@@ -208,21 +211,19 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
                     } else {
                         //JSR-322-WORK-CONTEXT-REQ If a particular IC type is submitted twice,
                         // container does not support it, fail work submission.
-                        WorkCompletedException wce = new WorkCompletedException(
-                                "duplicate work context for type : " + ic.getClass().getName());
+                        WorkCompletedException wce = new WorkCompletedException();
                         wce.setErrorCode(WorkContextErrorCodes.DUPLICATE_CONTEXTS);
-                        debug(wce.getMessage());
+                        logger.log(Level.WARNING, "workcontext.duplicate_work_context", ic.getClass().getName());
                         notifyContextSetupFailure(listener, WorkContextErrorCodes.DUPLICATE_CONTEXTS);
                         throw wce;
                     }
                 } else {
                     //JSR-322-WORK-CONTEXT-REQ   unable to handle the work context or its generic type
                     // (any of its super types) container does not support it, fail work submission.
-                    WorkCompletedException wce = new WorkCompletedException(
-                            "Connector runtime cannot handle the following work context : "
-                                    + ic.getClass().getName());
+                    WorkCompletedException wce = new WorkCompletedException();
+                    Object params[] = {ic.getClass().getName(), wce};
                     wce.setErrorCode(WorkContextErrorCodes.UNSUPPORTED_CONTEXT_TYPE);
-                    debug(wce.getMessage());
+                    logger.log(Level.WARNING, "workcontext.cannot_handle_context", params);
                     notifyContextSetupFailure(listener, WorkContextErrorCodes.UNSUPPORTED_CONTEXT_TYPE);
                     throw wce;
                 }
@@ -246,11 +247,8 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
             if (workContextName.equalsIgnoreCase(icName)) {
                 debug("Not a unique workContext submission : " + workContext.getClass().getName());
                 return false;
-            } else {
-                //System.out.println(workContextName + " EQUALS " + icName);
             }
         }
-        //return !(validContexts.contains(ic.getClass().getName().toLowerCase()));
         return true;
     }
 
@@ -264,7 +262,6 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
         boolean useExecutionContext = true;
         for (WorkContext ic : validContexts) {
             WorkContextLifecycleListener listener = getListener(ic);
-            //TODO V3 Command Pattern ?
             if (ic instanceof TransactionContext) {
                 useExecutionContext = false;
                 setupTransactionWorkContext((TransactionContext) ic, listener);
@@ -284,7 +281,7 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
                 }
                 setupCustomWorkContext(ic, listener, claz);
 
-                //TODO V3 Handle custom work contexts supported by GlassFish
+                //Handle custom work contexts, if any, supported by GlassFish
             }
         }
 
@@ -325,9 +322,8 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
     private void setupCustomWorkContext(WorkContext ic, WorkContextLifecycleListener listener,
                                           Class<? extends WorkContext> claz) {
         if (claz != null) {
-            debug("setting customWorkContext for WorkContext [ " + ic.getClass().getName() + " ]" +
-                    " using most specific support " +
-                    "Work Context [ " + claz.getName() + " ]");
+            Object params[] = {ic.getClass().getName(), claz.getName()};
+            logger.log(Level.INFO, "workcontext.setting_most_specific_context", params);
         } else {
             debug("setting exact customWorkContext for WorkContext [ " + ic.getClass().getName() + " ]  ");
         }
@@ -349,8 +345,8 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
             }
         }
         assignableClasses = sortBasedOnInheritence(assignableClasses);
-        debug("most specific work context for [ " + ic.getClass().getName() + " ] " +
-                "supported by container is [ " + assignableClasses.get(0).getName() + " ]");
+        Object params[]= {ic.getClass().getName(), assignableClasses.get(0).getName()};
+        logger.log(Level.INFO, "workcontext.most_specific_work_context_supported", params);
         return assignableClasses.get(0);
     }
 
@@ -400,46 +396,16 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
         try {
             Subject executionSubject = new Subject();
             Subject serviceSubject = new Subject(); //TODO need to populate with server's credentials ?
-            //boolean translationRequired = securityWorkContext.isTranslationRequired();
-            //boolean translationRequired = false;
             Map securityMap = getSecurityWorkContextMap(raName);
             CallbackHandler handler = new ConnectorCallbackHandler(executionSubject, runtime.getCallbackHandler(), securityMap);
 
             securityWorkContext.setupSecurityContext(handler, executionSubject, serviceSubject);
-            //SecurityContext.setCurrent(new SecurityContext(securityWorkContext.getSubject()));
-            /*if (securityWorkContext instanceof GlassFishSecurityWorkContext) {
-                if (!((GlassFishSecurityWorkContext) securityWorkContext).isTranslationRequired()) {
-                    debug("translation NOT required");
-                    SecurityContext.setCurrent(new SecurityContext(executionSubject));
-                    //System.out.println("JSR322 :  Thread setting security context : " + Thread.currentThread().getName());
-                } else {
-                    debug("translation REQUIRED");
-                    Subject subject = ((GlassFishSecurityWorkContext) securityWorkContext).getSubject(); //returns EIS domain principal
-                    Principal appserverPrincipal = getAppserverDomainPrincipal(subject.getPrincipals());
-                    //set the mapped appserver principal as distinguished caller principal so that appserver's
-                    //security context will make use of it.
-                    subject.getPublicCredentials().add(new DistinguishedPrincipalCredential(appserverPrincipal));
-                    SecurityContext.setCurrent(new SecurityContext(subject));
-                }
-            }*/
-//            handleIfTranslationRequired(securityWorkContext, listener, raName);
-
             notifyContextSetupComplete(listener);
         } catch (Exception e) {
-            e.printStackTrace(); //TODO V3 log fine and remove pST
+            logger.log(Level.WARNING, "workcontext.security_context_setup_failure", e);
             notifyContextSetupFailure(listener, WorkContextErrorCodes.CONTEXT_SETUP_FAILED);
         }
     }
-
-/*
-    private void handleIfTranslationRequired(SecurityWorkContext securityWorkContext,
-                                             WorkContextLifecycleListener listener, String raName) {
-        Map eisASMap = getSecurityWorkContextMap(raName);
-        if(eisASMap != null){
-            getAppserverDomainPrincipal(securityWorkContext.get)
-        }
-    }
-*/
 
     /**
      * get the security work context map (if any) for the resource-adapter
@@ -483,19 +449,6 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
         }
         return null;
     }
-
-/*
-    private Principal getAppserverDomainPrincipal(Set principals) {
-        for (Object p : principals) {
-            Object appserverPrincipal = principalMap.get(p);
-            if (appserverPrincipal != null && appserverPrincipal instanceof Principal) {
-                debug("got mapped principal for EIS Principal [ " + p.toString() + " ]" + appserverPrincipal.toString());
-                return (Principal) appserverPrincipal;
-            }
-        }
-        return null; //could not find a mapped principal.
-    }
-*/
 
     /**
      * notify the work-context-listener that the context setup has failed
@@ -553,7 +506,7 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
     }
 
     public static void debug(String message) {
-        System.out.println("JSR-322 [Connector Container] [WorkContextHandler]: " + message);
+        logger.finest(message);
     }
 
     /**

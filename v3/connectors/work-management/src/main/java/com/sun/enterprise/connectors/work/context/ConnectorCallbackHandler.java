@@ -36,8 +36,9 @@
 
 package com.sun.enterprise.connectors.work.context;
 
-import com.sun.enterprise.security.auth.login.DistinguishedPrincipalCredential;
 import com.sun.enterprise.security.SecurityContext;
+import com.sun.enterprise.connectors.work.WorkCoordinator;
+import com.sun.logging.LogDomains;
 import org.glassfish.security.common.Group;
 import org.glassfish.security.common.PrincipalImpl;
 
@@ -50,6 +51,8 @@ import javax.security.auth.message.callback.PasswordValidationCallback;
 import javax.security.auth.Subject;
 import java.io.IOException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.security.Principal;
 
 /**
@@ -61,6 +64,9 @@ import java.security.Principal;
  */
 //TODO V3 need contract based handlers for individual callbacks ?
 public class ConnectorCallbackHandler implements CallbackHandler {
+
+    private static final Logger logger =
+            LogDomains.getLogger(WorkCoordinator.class, LogDomains.RESOURCE_BUNDLE);
 
     public static final List<String> supportedCallbacks = new ArrayList<String>();
 
@@ -105,15 +111,14 @@ public class ConnectorCallbackHandler implements CallbackHandler {
                                 asCallbacks.add(handleSupportedCallback(callback));
                             }
                         } catch (ClassNotFoundException cnfe) {
-                            cnfe.printStackTrace();
+                            logger.log(Level.FINEST, "class not found", cnfe);
                         }
                     }
                     if (!callbackSupported) {
-                        //TODO log ?
-                        String message = "Unsupported callback: " + callback.getClass().getName() +
-                                " during credential mapping";
-                        debug(message);
-                        throw new UnsupportedCallbackException(callback);
+                        UnsupportedCallbackException uce = new UnsupportedCallbackException(callback);
+                        Object params[] = {callback.getClass().getName(), uce};
+                        logger.log(Level.WARNING, "workcontext.unsupported_callback", params);
+                        throw uce;
                     }
                 }
 
@@ -183,13 +188,9 @@ public class ConnectorCallbackHandler implements CallbackHandler {
                     s.getPrincipals().addAll(pvc.getSubject().getPrincipals());
                     s.getPublicCredentials().addAll(pvc.getSubject().getPublicCredentials());
                     s.getPrivateCredentials().addAll(pvc.getSubject().getPrivateCredentials());
-                } else {
-                    //log warning, can't happen
                 }
             }
             SecurityContext.setCurrent(new SecurityContext(s));
-        } else {
-            //log warning, can't happen
         }
     }
 
@@ -265,6 +266,6 @@ public class ConnectorCallbackHandler implements CallbackHandler {
     }
 
     public void debug(String message) {
-        System.out.println("JSR-322 [Connector Container] [ConnectorCallbackHandler]: " + message);
+        logger.finest(message);
     }
 }
