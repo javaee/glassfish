@@ -55,7 +55,10 @@ import org.glassfish.api.admin.config.PropertyBag;
 
 import org.glassfish.quality.ToDo;
 
-
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import javax.validation.constraints.Max;
 /**
  *
  */
@@ -142,7 +145,9 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (dataType=Port.class)
+    @Attribute
+    @Max(value=65535)
+    @Size(min=1,max=5)
     public String getPort();
 
     /**
@@ -176,7 +181,9 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
+    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
     public String getAuthRealmName();
 
     /**
