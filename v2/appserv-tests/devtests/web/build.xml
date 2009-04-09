@@ -231,8 +231,8 @@
         <ant dir="servlet-3.0/asyncContextDispatch" target="all"/>
         <ant dir="servlet-3.0/asyncListenerOnComplete" target="all"/>
         <ant dir="servlet-3.0/asyncListenerOnTimeout" target="all"/>
-        <ant dir="servlet-3.0/pluggability/sharedLibWithWars" target="all"/>
-        <ant dir="servlet-3.0/pluggability/sharedLibWithEAR" target="all"/>
+        <ant dir="servlet-3.0/pluggability/servletContainerInitializer/sharedLibWithWars" target="all"/>
+        <ant dir="servlet-3.0/pluggability/servletContainerInitializer/sharedLibWithEAR" target="all"/>
         <!-- XXX temporary commented out due to issue 7387
         <ant dir="servlet-3.0/asyncSupportedTrueDeclarative" target="all"/>
         <ant dir="servlet-3.0/asyncSupportedTrueProgrammatic" target="all"/>
