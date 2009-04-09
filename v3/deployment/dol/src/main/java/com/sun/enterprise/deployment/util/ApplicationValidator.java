@@ -143,9 +143,6 @@ public class ApplicationValidator extends EjbBundleValidator
         if (descriptor.isAsyncSupported() == null) {
             descriptor.setAsyncSupported(false);
         }
-        if (descriptor.getAsyncTimeout() == null) {
-            descriptor.setAsyncTimeout(60000L);
-        }        
 
         computeRuntimeDefault(descriptor);
     }
@@ -162,9 +159,6 @@ public class ApplicationValidator extends EjbBundleValidator
         if (descriptor.isAsyncSupported() == null) {
             descriptor.setAsyncSupported(false);
         }
-        if (descriptor.getAsyncTimeout() == null) {
-            descriptor.setAsyncTimeout(60000L);
-        }        
     }
     
     /**

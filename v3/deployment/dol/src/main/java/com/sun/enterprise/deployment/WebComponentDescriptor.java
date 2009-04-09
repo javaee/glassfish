@@ -90,7 +90,6 @@ public class WebComponentDescriptor extends Descriptor {
     private WebBundleDescriptor webBundleDescriptor = null;
     private boolean enabled = true;
     private Boolean asyncSupported = null;
-    private Long asyncTimeout = null;
 
     /**
      * The default constructor.
@@ -361,14 +360,6 @@ public class WebComponentDescriptor extends Descriptor {
         return asyncSupported;
     }
 
-    public Long getAsyncTimeout() {
-        return asyncTimeout;
-    }
-
-    public void setAsyncTimeout(Long asyncTimeout) {
-        this.asyncTimeout = asyncTimeout;
-    }
-
     /* -----------
     */
 
@@ -384,7 +375,6 @@ public class WebComponentDescriptor extends Descriptor {
         toStringBuffer.append("\n loadOnStartUp ").append(loadOnStartUp);
         toStringBuffer.append("\n enabled ").append(enabled);
         toStringBuffer.append("\n asyncSupported ").append(asyncSupported);
-        toStringBuffer.append("\n asyncTimeout ").append(asyncTimeout);
         toStringBuffer.append("\n securityRoleReferences ").append(securityRoleReferences);
         if (isServlet()) {
             toStringBuffer.append("\n servlet className ").append(getWebComponentImplementation());
@@ -466,9 +456,6 @@ public class WebComponentDescriptor extends Descriptor {
         }
         if (isAsyncSupported() == null) {
             setAsyncSupported(other.isAsyncSupported());
-        }
-        if (getAsyncTimeout() == null) {
-            setAsyncTimeout(other.getAsyncTimeout());
         }
         if (getRunAsIdentity() == null) {
             setRunAsIdentity(other.getRunAsIdentity());

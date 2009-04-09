@@ -204,9 +204,6 @@ public class WebServletHandler extends AbstractWebHandler {
         if (webCompDesc.isAsyncSupported() == null) {
             webCompDesc.setAsyncSupported(webServletAn.asyncSupported());
         }
-        if (webCompDesc.getAsyncTimeout() == null) {
-            webCompDesc.setAsyncTimeout(webServletAn.asyncTimeout());
-        }
 
         return getDefaultProcessedResult();
     }

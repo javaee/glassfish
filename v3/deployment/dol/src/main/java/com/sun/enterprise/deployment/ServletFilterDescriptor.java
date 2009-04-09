@@ -65,9 +65,6 @@ public class ServletFilterDescriptor
     /** async supported */
     private Boolean asyncSupported = null;
 
-    /** async timeout */
-    private Long asyncTimeout = null;
-
     /* ----
     */
 
@@ -164,15 +161,6 @@ public class ServletFilterDescriptor
 
     public Boolean isAsyncSupported() {
         return asyncSupported;
-    }
-
-    /* set asyncTimeout */
-    public void setAsyncTimeout(Long asyncTimeout) {
-        this.asyncTimeout = asyncTimeout;
-    }
-
-    public Long getAsyncTimeout() {
-        return asyncTimeout;
     }
 
     /* ----

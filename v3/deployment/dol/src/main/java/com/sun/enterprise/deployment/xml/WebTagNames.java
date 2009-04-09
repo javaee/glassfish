@@ -71,7 +71,6 @@ public interface WebTagNames extends TagNames {
     public static final String CONTEXT_PARAM = "context-param";
     public static final String ENABLED = "enabled";
     public static final String ASYNC_SUPPORTED = "async-supported";
-    public static final String ASYNC_TIMEOUT = "async-timeout";
     
     public static final String SECURITY_CONSTRAINT = "security-constraint";
     public static final String WEB_RESOURCE_COLLECTION = "web-resource-collection";
@@ -143,4 +142,7 @@ public interface WebTagNames extends TagNames {
     //ordering
     public static final String ABSOLUTE_ORDERING = "absolute-ordering";
     public static final String OTHERS = "others";
+    public static final String ORDERING = "ordering";
+    public static final String AFTER = "after";
+    public static final String BEFORE = "before";
 }

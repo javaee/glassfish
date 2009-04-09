@@ -163,9 +163,6 @@ public class WebFilterHandler extends AbstractWebHandler {
         if (servletFilterDesc.isAsyncSupported() == null) {
             servletFilterDesc.setAsyncSupported(webFilterAn.asyncSupported());
         }
-        if (servletFilterDesc.getAsyncTimeout() == null) {
-            servletFilterDesc.setAsyncTimeout(webFilterAn.asyncTimeout());
-        }
 
         ServletFilterMapping servletFilterMappingDesc = null;
         for (ServletFilterMapping sfm : webBundleDesc.getServletFilterMappings()) {

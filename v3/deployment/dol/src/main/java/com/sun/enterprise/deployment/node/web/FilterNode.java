@@ -96,8 +96,6 @@ public class FilterNode extends DisplayableComponentNode {
     public void setElementValue(XMLElement element, String value) {
         if (WebTagNames.ASYNC_SUPPORTED.equals(element.getQName())) {
             descriptor.setAsyncSupported(Boolean.valueOf(value));
-        } else if (WebTagNames.ASYNC_TIMEOUT.equals(element.getQName())) {
-            descriptor.setAsyncTimeout(Long.valueOf(value));
         } else {
             super.setElementValue(element, value);
         }
@@ -117,7 +115,6 @@ public class FilterNode extends DisplayableComponentNode {
         appendTextChild(myNode, WebTagNames.FILTER_NAME, descriptor.getName());         
         appendTextChild(myNode, WebTagNames.FILTER_CLASS, descriptor.getClassName());     
         appendTextChild(myNode, WebTagNames.ASYNC_SUPPORTED, String.valueOf(descriptor.isAsyncSupported()));     
-        appendTextChild(myNode, WebTagNames.ASYNC_TIMEOUT, String.valueOf(descriptor.getAsyncTimeout()));     
         Vector initParams = descriptor.getInitializationParameters();
         if (!initParams.isEmpty()) {
             WebBundleNode.addInitParam(myNode, WebTagNames.INIT_PARAM, initParams.elements());
