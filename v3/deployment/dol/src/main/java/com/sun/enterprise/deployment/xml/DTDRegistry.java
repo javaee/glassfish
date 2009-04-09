@@ -214,23 +214,24 @@ public final class DTDRegistry {
         "-//Sun Microsystems, Inc.//DTD Sun ONE Application Server 8.0 Servlet 2.4//EN";	
     public static final String SUN_WEBAPP_240beta_DTD_SYSTEM_ID =
         "http://www.sun.com/software/sunone/appserver/dtds/sun-web-app_2_4-0.dtd";	
+
     public static final String SUN_WEBAPP_240_DTD_PUBLIC_ID =
         "-//Sun Microsystems, Inc.//DTD Application Server 8.0 Servlet 2.4//EN";	
     public static final String SUN_WEBAPP_240_DTD_SYSTEM_ID =
-        "http://www.sun.com/software/appserver/dtds/sun-web-app_2_4-0.dtd";	
+        "http://www.sun.com/software/appserver/dtds/sun-web-app_2_4-0.dtd";
 
     public static final String SUN_WEBAPP_241_DTD_PUBLIC_ID =
         "-//Sun Microsystems, Inc.//DTD Application Server 8.1 Servlet 2.4//EN";	
     public static final String SUN_WEBAPP_241_DTD_SYSTEM_ID =
-        "http://www.sun.com/software/appserver/dtds/sun-web-app_2_4-1.dtd";	
+        "http://www.sun.com/software/appserver/dtds/sun-web-app_2_4-1.dtd";
 
     public static final String SUN_WEBAPP_250_DTD_PUBLIC_ID =
         "-//Sun Microsystems, Inc.//DTD Application Server 9.0 Servlet 2.5//EN";	
     public static final String SUN_WEBAPP_250_DTD_SYSTEM_ID =
-        "http://www.sun.com/software/appserver/dtds/sun-web-app_2_5-0.dtd";	
-    
+        "http://www.sun.com/software/appserver/dtds/sun-web-app_2_5-0.dtd";
+
     public static final String SUN_WEBAPP_300_DTD_PUBLIC_ID =
-        "-//Sun Microsystems, Inc.//DTD GlassFish v3 Servlet 3.0//EN";
+        "-//Sun Microsystems, Inc.//DTD GlassFish Application Server 3.0 Servlet 3.0//EN";
     public static final String SUN_WEBAPP_300_DTD_SYSTEM_ID =
         "http://www.sun.com/software/appserver/dtds/sun-web-app_3_0-0.dtd";
     
