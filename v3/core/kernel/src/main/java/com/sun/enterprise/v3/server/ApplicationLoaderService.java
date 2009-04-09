@@ -259,12 +259,12 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                     ActionReport report = new HTMLActionReporter();
                     ExtendedDeploymentContext depContext = deployment.getContext(logger, archive, deploymentParams, report);
 
-                    depContext.getProps().putAll(app.getDeployProperties());
+                    depContext.getAppProps().putAll(app.getDeployProperties());
                     depContext.setModulePropsMap(app.getModulePropertiesMap());
 
 
                     List<Sniffer> sniffers = new ArrayList<Sniffer>();
-                    if (!Boolean.valueOf(depContext.getProps().getProperty
+                    if (!Boolean.valueOf(depContext.getAppProps().getProperty
                         (IS_COMPOSITE))) {
                         for (String snifferType : snifferTypes) {
                             Sniffer sniffer = snifferManager.getSniffer(snifferType);

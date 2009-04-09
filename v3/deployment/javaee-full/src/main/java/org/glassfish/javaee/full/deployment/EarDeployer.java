@@ -450,7 +450,12 @@ public class EarDeployer implements Deployer {
                     }
 
                     @Override
-                    public Properties getProps() {
+                    public Properties getAppProps() {
+                        return context.getAppProps();
+                    }
+
+                    @Override
+                    public Properties getModuleProps() {
                         return moduleProps;
                     }
 
@@ -512,17 +517,6 @@ public class EarDeployer implements Deployer {
             moduleProps = new Properties();
             modulePropsMap.put(moduleUri, moduleProps);
         }
-
-        // add the properties from parent context if such property does not
-        // exist in current context properties
-        for (Enumeration e = context.getProps().keys(); e.hasMoreElements();) {
-            String propName = (String)e.nextElement();
-            if (moduleProps.contains(propName)) {
-                continue;
-            }
-            moduleProps.put(propName, context.getProps().get(propName));
-        }
-
         return moduleProps;
     }
 }

@@ -206,17 +206,17 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
             // reset the properties (might be null) set by the deployers when undeploying.
             if (undeployProps!=null) {
-                deploymentContext.getProps().putAll(undeployProps);
+                deploymentContext.getAppProps().putAll(undeployProps);
             }
 
             if (properties!=null) {
-                deploymentContext.getProps().putAll(properties);
+                deploymentContext.getAppProps().putAll(properties);
             }
 
             // clean up any generated files
             deploymentContext.clean();
 
-            Properties appProps = deploymentContext.getProps();
+            Properties appProps = deploymentContext.getAppProps();
             /*
              * If the app's location is within the domain's directory then
              * express it in the config as ${com.sun.aas.instanceRootURI}/rest-of-path

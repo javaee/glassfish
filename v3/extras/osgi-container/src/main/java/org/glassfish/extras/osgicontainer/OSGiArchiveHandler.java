@@ -109,7 +109,7 @@ public class OSGiArchiveHandler extends GenericHandler {
             e.printStackTrace();
             return null;
         }
-        context.getProps().put("module-name", moduleDef.getName());
+        context.getAppProps().put("module-name", moduleDef.getName());
 
         // add the new module or retrieve the existing one.
         final Module module = mr.add(moduleDef);

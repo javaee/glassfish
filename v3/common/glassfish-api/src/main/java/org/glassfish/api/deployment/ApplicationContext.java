@@ -64,4 +64,24 @@ public interface ApplicationContext {
      */
     public Properties getProps();
 
+    /**
+     * Returns the application level properties that will be persisted as a
+     * key value pair at then end of deployment. That allows individual
+     * Deployers implementation to store some information at the
+     * application level that should be available upon server restart.
+     * Application level propertries are shared by all the modules.
+     *
+     * @return the application's properties.
+     */
+    public Properties getAppProps();
+
+    /**
+     * Returns the module level properties that will be persisted as a
+     * key value pair at then end of deployment. That allows individual
+     * Deployers implementation to store some information at the module
+     * level that should be available upon server restart.
+     * Module level properties are only visible to the current module.
+     * @return the module's properties.
+     */
+    public Properties getModuleProps();
 }

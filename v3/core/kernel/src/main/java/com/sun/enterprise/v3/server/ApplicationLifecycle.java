@@ -363,7 +363,7 @@ public class ApplicationLifecycle implements Deployment {
             ReadableArchive source=context.getSource();
             if (handler instanceof CompositeHandler) {
                 source = new CompositeArchive(context.getSource(), (CompositeHandler) handler);
-                context.getProps().setProperty(IS_COMPOSITE, "true");
+                context.getAppProps().setProperty(IS_COMPOSITE, "true");
                 sniffers = snifferManager.getCompositeSniffers(context);
             } else {
                 sniffers = snifferManager.getSniffers(source, context.getClassLoader());
@@ -598,7 +598,7 @@ public class ApplicationLifecycle implements Deployment {
         // I need to create the application info here from the context, or something like this.
         // and return the application info from this method for automatic registration in the caller.
         return new ModuleInfo(events, moduleName, addedEngines, 
-            context.getProps());
+            context.getModuleProps());
     }
 
     protected Collection<EngineInfo> setupContainer(Sniffer sniffer, Module snifferModule,  Logger logger, DeploymentContext context) {
@@ -670,7 +670,7 @@ public class ApplicationLifecycle implements Deployment {
 
         ActionReport report = context.getActionReport();
         if (report.getExtraProperties()!=null) {
-            context.getProps().put("ActionReportProperties", report.getExtraProperties());
+            context.getAppProps().put("ActionReportProperties", report.getExtraProperties());
         }
 
         ApplicationInfo info = appRegistry.get(appName);
@@ -703,7 +703,7 @@ public class ApplicationLifecycle implements Deployment {
     public void registerAppInDomainXML(final ApplicationInfo
         applicationInfo, final DeploymentContext context)
         throws TransactionFailure {
-        final Properties appProps = context.getProps();
+        final Properties appProps = context.getAppProps();
         final DeployCommandParameters deployParams = context.getCommandParameters(DeployCommandParameters.class);
         ConfigSupport.apply(new ConfigCode() {
             public Object run(ConfigBeanProxy... params) throws PropertyVetoException, TransactionFailure {

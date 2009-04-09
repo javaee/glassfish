@@ -145,7 +145,7 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer, Dummy
                 stubsDir.mkdir();
                 
                 /** TODO BM implement later
-                if(!dc.getProps.getProperty("type").equals("web")) {
+                if(!dc.getModuleProps().getProperty("type").equals("web")) {
                     String subDirName = DeploymentUtils.getRelativeEmbeddedModulePath(moduleDir.getAbsolutePath(), bundle.getModuleDescriptor().getArchiveUri());
 
                     moduleDir =new File(moduleDir, subDirName);
@@ -784,9 +784,9 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer, Dummy
 
         // swap the deployment descriptors context-root with the one
         // provided in the deployment request.
-        if (dc.getProps().get("context-root") !=null ) {
+        if (dc.getAppProps().get("context-root") !=null ) {
             if (app.isVirtual()) {
-                String contextRoot = ((String)dc.getProps().get("context-root"));
+                String contextRoot = ((String)dc.getAppProps().get("context-root"));
                 ((WebBundleDescriptor) webBundles.iterator().next()).setContextRoot(contextRoot);
 
             }

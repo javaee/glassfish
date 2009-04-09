@@ -76,15 +76,6 @@ public interface DeploymentContext extends ApplicationContext, ExecutionContext 
     public ClassLoader getFinalClassLoader();
 
     /**
-     * Depending on the phase of deployment, returns a temporary class loader (prepare
-     * phase) or the final class loader used to run the application in the various
-     * containers.
-     *
-     * @return a class loader to load application bits with
-     */
-    public ClassLoader getClassLoader();
-
-    /**
      * Returns the DeployCommand parameters
      * @param opsParamsType expected deployment operation parameters type.
      * @return the command parameters
@@ -129,15 +120,6 @@ public interface DeploymentContext extends ApplicationContext, ExecutionContext 
      * @return
      */
     public <T> T getModuleMetaData(Class<T> metadataType);
-
-    /**
-     * Returns the properties that will be persisted as a key value pair at
-     * then end of deployment. That allows individual Deployers implementation
-     * to store some information that should be available upon server restart.
-     *
-     * @return the application's properties.
-     */
-    public Properties getProps();
 
     /**
      * Add a new ClassFileTransformer to the context. Once all the deployers potentially

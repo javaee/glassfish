@@ -27,7 +27,7 @@ public class OSGiDeployer extends GenericDeployer {
     @Override
     public GenericApplicationContainer load(Container container, DeploymentContext context) {
 
-        Collection<Module> modules = registry.getModules(context.getProps().getProperty("module-name"));
+        Collection<Module> modules = registry.getModules(context.getAppProps().getProperty("module-name"));
         final Module module = (modules.size()>0?modules.iterator().next():null);
 
         return new GenericApplicationContainer(context.getFinalClassLoader()) {
@@ -53,7 +53,7 @@ public class OSGiDeployer extends GenericDeployer {
     public void clean(DeploymentContext context) {
         UndeployCommandParameters Params = context.getCommandParameters(UndeployCommandParameters.class);
 
-        Collection<Module> modules = registry.getModules(context.getProps().getProperty("module-name"));
+        Collection<Module> modules = registry.getModules(context.getAppProps().getProperty("module-name"));
         final Module module = (modules.size()>0?modules.iterator().next():null);
 
         if (module!=null) {

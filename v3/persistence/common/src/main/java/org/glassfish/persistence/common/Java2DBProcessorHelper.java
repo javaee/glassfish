@@ -153,7 +153,7 @@ public class Java2DBProcessorHelper {
         deploy = (params.origin == OpsParams.Origin.deploy);
         undeploy = (params.origin == OpsParams.Origin.undeploy);
 
-        deploymentContextProps = ctx.getProps();
+        deploymentContextProps = ctx.getModuleProps();
     }
 
     /**

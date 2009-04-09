@@ -126,7 +126,7 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
 
         props = null;
 
-        if (Boolean.parseBoolean(stopContext.getProps().getProperty(DeploymentProperties.KEEP_SESSIONS))) {
+        if (Boolean.parseBoolean(stopContext.getAppProps().getProperty(DeploymentProperties.KEEP_SESSIONS))) {
             props = new Properties();
         }
         container.unloadWebModule(getDescriptor().getContextRoot(), null,

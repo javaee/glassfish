@@ -134,10 +134,10 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
             return;
         }
 
-        deploymentContext.getProps().putAll(application.getDeployProperties());
+        deploymentContext.getAppProps().putAll(application.getDeployProperties());
 
         if (properties!=null) {
-            deploymentContext.getProps().putAll(properties);
+            deploymentContext.getAppProps().putAll(properties);
         }
 
         deploymentContext.setModulePropsMap(

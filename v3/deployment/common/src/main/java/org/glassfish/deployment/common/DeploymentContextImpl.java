@@ -275,14 +275,36 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
         return props;
     }
 
+    /**
+     * Returns the application level properties that will be persisted as a
+     * key value pair at then end of deployment. That allows individual
+     * Deployers implementation to store some information at the
+     * application level that should be available upon server restart.
+     * Application level propertries are shared by all the modules.
+     *
+     * @return the application's properties.
+     */
+    public Properties getAppProps() {
+        if (props==null) {
+            props = new Properties();
+        }
+        return props;
+    }
 
     /**
-     * Sets the extra properties for this deployment context
-     *
-     * @param props extra properties bag.
+     * Returns the module level properties that will be persisted as a
+     * key value pair at then end of deployment. That allows individual
+     * Deployers implementation to store some information at the module
+     * level that should be available upon server restart.
+     * Module level properties are only visible to the current module.
+     * @return the module's properties.
      */
-    public void setProps(Properties props) {
-        this.props = props;
+    public Properties getModuleProps() {
+        // for standalone case, it would return the same as application level 
+        // properties
+        // for composite case, the composite deployer will return proper 
+        // module level properties
+        return props;
     }
 
     /**

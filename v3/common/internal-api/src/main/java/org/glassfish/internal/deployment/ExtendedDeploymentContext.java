@@ -65,14 +65,6 @@ public interface ExtendedDeploymentContext extends DeploymentContext {
     public void setPhase(Phase newPhase);
 
     /**
-     * Returns the final class loader that will be used to load the application
-     * bits in their associated runtime container.
-     *
-     * @return final class loader
-     */
-    public ClassLoader getFinalClassLoader();
-
-    /**
      * Returns the list of transformers registered to this context.
      *
      * @return the transformers list
@@ -90,13 +82,6 @@ public interface ExtendedDeploymentContext extends DeploymentContext {
 
 
     public void clean();
-
-    /**
-     * Sets the properties (possibly saved from a previous deployment operation)
-     *
-     * @param props
-     */
-    public void setProps(Properties props);
 
     /**
      * Sets the archive handler that's associated with this context

@@ -121,13 +121,21 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
     public boolean prepare(DeploymentContext dc) {
         try {
             prepareScratchDirs(dc);
-            if (dc.getProps().getProperty(ServerTags.OBJECT_TYPE)==null) {
+/*
+            // TODO: Need to revisit this when we have a good plan for system 
+            // applications in v3
+            // currently the object type is always user for applications 
+            // under <applications> element
+            // if we need to use this code again, also need to move to a 
+            // place which only gets done once per application
+            if (dc.getAppProps().getProperty(ServerTags.OBJECT_TYPE)==null) {
                 String objectType = getObjectType(dc);
                 if (objectType != null) {
-                    dc.getProps().setProperty(ServerTags.OBJECT_TYPE,
+                    dc.getAppProps().setProperty(ServerTags.OBJECT_TYPE,
                         objectType);
                 }
             }
+*/
 
             generateArtifacts(dc);
             return true;

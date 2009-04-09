@@ -128,7 +128,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
 
             // set the context root to deployment context props so this value
             // will be persisted in domain.xml
-            dc.getProps().setProperty(ServerTags.CONTEXT_ROOT, contextRoot);
+            dc.getAppProps().setProperty(ServerTags.CONTEXT_ROOT, contextRoot);
         } 
 
         return null;
@@ -146,7 +146,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
             wmInfo.setDescriptor(dc.getModuleMetaData(WebBundleDescriptor.class));
             wmInfo.setVirtualServers(params.virtualservers);
             wmInfo.setLocation(dc.getSourceDir());
-            wmInfo.setObjectType(dc.getProps().getProperty(ServerTags.OBJECT_TYPE));
+            wmInfo.setObjectType(dc.getAppProps().getProperty(ServerTags.OBJECT_TYPE));
         } catch (Exception ex) {
             dc.getLogger().log(Level.WARNING, "loadWebModuleConfig", ex);
         }
@@ -178,8 +178,8 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
             moduleConfig = config.getModule(wmInfo.getDescriptor().getName());
         }
         WebApplication webApp = new WebApplication(container, wmInfo, moduleConfig,
-            (Boolean.parseBoolean(dc.getProps().getProperty(DeploymentProperties.KEEP_SESSIONS))?
-                dc.getProps():null));
+            (Boolean.parseBoolean(dc.getAppProps().getProperty(DeploymentProperties.KEEP_SESSIONS))?
+                dc.getAppProps():null));
         return webApp;
     }
 
@@ -192,8 +192,8 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
         // does not have access to DeploymentContext
         // we will need a better solution after prelude.
         if (webApplication.props!=null) {
-            if ((dc.getProps().get("ActionReportProperties"))!=null) {
-                ((Properties) dc.getProps().get("ActionReportProperties")).putAll(webApplication.props);
+            if ((dc.getAppProps().get("ActionReportProperties"))!=null) {
+                ((Properties) dc.getAppProps().get("ActionReportProperties")).putAll(webApplication.props);
             }
         }
     }
