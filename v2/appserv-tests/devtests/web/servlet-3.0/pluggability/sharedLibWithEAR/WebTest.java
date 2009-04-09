@@ -9,8 +9,8 @@ public class WebTest {
 
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
-    private static final String TEST_NAME = "pluggable-sharedlibraries-war";
-    private static final String[] EXPECTED_RESPONSE = {"none","CALLED SHAREDLIB-1;CALLED SHAREDLIB-2;null;null;CALLED APPLIB-1;null;","CALLED SHAREDLIB-1;CALLED SHAREDLIB-2;CALLED SHAREDLIB-3;null;null;CALLED APPLIB-2;"};
+    private static final String TEST_NAME = "pluggability-sharedlib-ear";
+    private static final String[] EXPECTED_RESPONSE = {"none","CALLED EARSHAREDLIB-1;CALLED EARSHAREDLIB-2;null;null;CALLED EARAPPLIB-1;null;","CALLED SHAREDLIB-1;CALLED SHAREDLIB-2;CALLED SHAREDLIB-3;null;null;CALLED APPLIB-2;"};
 
     private String host;
     private String port;
@@ -25,14 +25,10 @@ public class WebTest {
     }
     
     public static void main(String[] args) {
-        stat.addDescription("Unit test for pluggable shared libraries in WAR");
+        stat.addDescription("Unit test for pluggability of sharedlib in EAR");
         WebTest webTest = new WebTest(args);
 	if("1".equals(args[3])) {
             webTest.doTest("/mytest1");
-            stat.printSummary(TEST_NAME);
-	}
-	if("2".equals(args[3])) {
-            webTest.doTest("/mytest2");
             stat.printSummary(TEST_NAME);
 	}
     }
