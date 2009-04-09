@@ -195,6 +195,10 @@ public class ModuleInfo {
         
         // registers all deployed items.
         for (EngineRef engine : _getEngineRefs()) {
+            if (context.getLogger().isLoggable(Level.FINE)) {
+                context.getLogger().fine("starting " + engine.getContainerInfo().getSniffer().getModuleType());
+            }
+
             ClassLoader currentClassLoader  = 
                 Thread.currentThread().getContextClassLoader();
             try {

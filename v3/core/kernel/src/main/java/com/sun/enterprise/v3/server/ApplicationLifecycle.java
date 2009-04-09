@@ -218,8 +218,19 @@ public class ApplicationLifecycle implements Deployment {
                 
                 // containers that are started are not stopped even if the deployment fail, the main reason
                 // is that some container do not support to be restarted.
-                LinkedList<EngineInfo> sortedEngineInfos =
+                if (sniffers!=null && logger.isLoggable(Level.FINE)) {
+                    for (Sniffer sniffer : sniffers) {
+                        logger.fine("Before Sorting" + sniffer.getModuleType());
+                    }
+                }
+                List<EngineInfo> sortedEngineInfos =
                     setupContainerInfos(handler, sniffers, context);
+
+                if (logger.isLoggable(Level.FINE)) {
+                    for (EngineInfo info : sortedEngineInfos) {
+                        logger.fine("After Sorting " + info.getSniffer().getModuleType());
+                    }
+                }
                 if (sortedEngineInfos ==null || sortedEngineInfos.isEmpty()) {
                     report.failure(logger, localStrings.getLocalString("unknowncontainertype","There is no installed container capable of handling this application {0}",context.getSource()));                    
                     tracker.actOn(logger);
@@ -336,14 +347,14 @@ public class ApplicationLifecycle implements Deployment {
         return isSuccess;
     }
 
-    public LinkedList<EngineInfo> setupContainerInfos(DeploymentContext context)
+    public List<EngineInfo> setupContainerInfos(DeploymentContext context)
         throws Exception {
 
         return setupContainerInfos(null, null, context);
     }
 
     // set up containers and prepare the sorted ModuleInfos
-    public LinkedList<EngineInfo> setupContainerInfos(final ArchiveHandler handler,
+    public List<EngineInfo> setupContainerInfos(final ArchiveHandler handler,
             Collection<Sniffer> sniffers, DeploymentContext context)
              throws Exception {
 
@@ -365,7 +376,7 @@ public class ApplicationLifecycle implements Deployment {
             return null;
         }
 
-        Map<Deployer, EngineInfo> containerInfosByDeployers = new HashMap<Deployer, EngineInfo>();
+        Map<Deployer, EngineInfo> containerInfosByDeployers = new LinkedHashMap<Deployer, EngineInfo>();
 
         for (Sniffer sniffer : sniffers) {
             if (sniffer.getContainersNames() == null || sniffer.getContainersNames().length == 0) {
@@ -415,6 +426,9 @@ public class ApplicationLifecycle implements Deployment {
                 report.failure(logger, "Got a null deployer out of the " + engineInfo.getContainer().getClass() + " container, is it annotated with @Service ?");
                 return null;
             }
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine("Adding deployer to the map " + deployer.getClass());
+            }
             containerInfosByDeployers.put(deployer, engineInfo);
         }
 
@@ -424,7 +438,7 @@ public class ApplicationLifecycle implements Deployment {
         List<ApplicationMetaDataProvider> providers = new LinkedList<ApplicationMetaDataProvider>();
         providers.addAll(habitat.getAllByContract(ApplicationMetaDataProvider.class));
 
-        LinkedList<EngineInfo> sortedEngineInfos = new LinkedList<EngineInfo>();
+        List<EngineInfo> sortedEngineInfos = new ArrayList<EngineInfo>();
 
         Map<Class, ApplicationMetaDataProvider> typeByProvider = new HashMap<Class, ApplicationMetaDataProvider>();
         for (ApplicationMetaDataProvider provider : habitat.getAllByContract(ApplicationMetaDataProvider.class)) {
@@ -469,13 +483,19 @@ public class ApplicationLifecycle implements Deployment {
         }
 
         // ok everything is satisfied, just a matter of running things in order
-        LinkedList<Deployer> orderedDeployers = new LinkedList<Deployer>();
+        List<Deployer> orderedDeployers = new ArrayList<Deployer>();
         for (Deployer deployer : containerInfosByDeployers.keySet()) {
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine("Keyed Deployer " + deployer.getClass());   
+            }
             loadDeployer(orderedDeployers, deployer, typeByDeployer, typeByProvider, context);
         }
 
         // now load metadata from deployers.
         for (Deployer deployer : orderedDeployers) {
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine("Ordered Deployer " + deployer.getClass());
+            }
 
             final MetaData metadata = deployer.getMetaData();
             try {
@@ -503,13 +523,13 @@ public class ApplicationLifecycle implements Deployment {
         return sortedEngineInfos;
     }
 
-    private void loadDeployer(LinkedList<Deployer> results, Deployer deployer, Map<Class, Deployer> typeByDeployer,  Map<Class, ApplicationMetaDataProvider> typeByProvider, DeploymentContext dc)
+    private void loadDeployer(List<Deployer> results, Deployer deployer, Map<Class, Deployer> typeByDeployer,  Map<Class, ApplicationMetaDataProvider> typeByProvider, DeploymentContext dc)
         throws IOException {
 
         if (results.contains(deployer)) {
             return;
         }
-        results.addFirst(deployer);
+        results.add(deployer);
         if (deployer.getMetaData()!=null) {
             for (Class required : deployer.getMetaData().requires()) {
                 if (dc.getModuleMetaData(required)!=null) {
@@ -546,12 +566,12 @@ public class ApplicationLifecycle implements Deployment {
     }
 
     public ModuleInfo prepareModule(
-        LinkedList<EngineInfo> sortedEngineInfos, String moduleName,
+        List<EngineInfo> sortedEngineInfos, String moduleName,
         DeploymentContext context,
         ProgressTracker tracker) throws Exception {
 
         ActionReport report = context.getActionReport();
-        List<EngineRef> addedEngines = new LinkedList<EngineRef>();
+        List<EngineRef> addedEngines = new ArrayList<EngineRef>();
         for (EngineInfo engineInfo : sortedEngineInfos) {
 
             // get the deployer

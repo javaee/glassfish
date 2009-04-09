@@ -40,19 +40,14 @@ import com.sun.enterprise.module.bootstrap.Populator;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.single.StaticModulesRegistry;
-import com.sun.hk2.component.Holder;
-import com.sun.hk2.component.InhabitantsParser;
-import com.sun.hk2.component.InhabitantsScanner;
+
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigParser;
 import org.jvnet.hk2.config.DomDocument;
-import org.glassfish.api.admin.ServerEnvironment;
 
 import java.net.URL;
-import java.util.Enumeration;
 import java.util.logging.Logger;
-import java.io.IOException;
 import java.io.File;
 import java.util.Map;
 import java.util.HashMap;

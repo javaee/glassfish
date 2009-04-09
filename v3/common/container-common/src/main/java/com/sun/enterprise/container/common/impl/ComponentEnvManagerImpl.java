@@ -255,9 +255,9 @@ public class ComponentEnvManagerImpl
                         try {
                             return delegate.create(ic);
                         } catch(NamingException e) {
-                            Inhabitant i = habitat.getInhabitantByContract(next.getRefType(), next.getMappedName());
-                            if (i!=null) {
-                                return i.get();
+                            Object ref = habitat.getComponent(next.getRefType(), next.getMappedName());
+                            if (ref!=null) {
+                                return ref;
                             }
                             throw e;
                         }

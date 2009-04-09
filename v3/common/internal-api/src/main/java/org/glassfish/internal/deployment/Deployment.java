@@ -53,6 +53,7 @@ import java.io.IOException;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.Collection;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -130,7 +131,7 @@ public interface Deployment {
 
 
     public ModuleInfo prepareModule(
-        LinkedList<EngineInfo> sortedEngineInfos, String moduleName,
+        List<EngineInfo> sortedEngineInfos, String moduleName,
         DeploymentContext context,
         ProgressTracker tracker) throws Exception;
 
@@ -147,7 +148,7 @@ public interface Deployment {
         throws TransactionFailure;
     
 
-    public LinkedList<EngineInfo> setupContainerInfos(
+    public List<EngineInfo> setupContainerInfos(
             DeploymentContext context) throws Exception;
 
     public boolean isRegistered(String appName);

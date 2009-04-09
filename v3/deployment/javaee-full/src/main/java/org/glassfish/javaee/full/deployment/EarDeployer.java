@@ -364,7 +364,7 @@ public class EarDeployer implements Deployer {
     private ModuleInfo prepareBundle(final ModuleDescriptor md, final ExtendedDeploymentContext bundleContext)
         throws Exception {
 
-        LinkedList<EngineInfo> orderedContainers = null;
+        List<EngineInfo> orderedContainers = null;
 
         ProgressTracker tracker = new ProgressTracker() {
             public void actOn(Logger logger) {

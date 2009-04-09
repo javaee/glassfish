@@ -50,7 +50,7 @@ import com.sun.enterprise.config.serverbeans.Module;
  */
 public class ApplicationInfo {
 
-    final private Collection<ModuleInfo> modules = new LinkedList<ModuleInfo>();
+    final private Collection<ModuleInfo> modules = new ArrayList<ModuleInfo>();
     final private String name;
     final private ReadableArchive source;
     final private Events events;

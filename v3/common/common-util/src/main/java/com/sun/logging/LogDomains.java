@@ -28,6 +28,8 @@ import java.util.logging.FileHandler;
 import java.util.ResourceBundle;
 import java.util.MissingResourceException;
 import java.util.Locale;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Class LogDomains
@@ -211,6 +213,8 @@ public class LogDomains
     public static final String WEBSERVICES_LOGGER=DOMAIN_ROOT + "enterprise.webservices";
 
 
+    // Lock to ensure the Logger creation is synchronized (JDK 6U10 and before can deadlock)
+    static Lock lock = new ReentrantLock();
 
 
 
@@ -257,84 +261,94 @@ public class LogDomains
         String pkgName = clazz.getPackage().getName();
         String loggerName = name + "."+ pkgName;
         Logger cLogger = LogManager.getLogManager().getLogger(loggerName);
-        if (cLogger == null) {
-            //first time through for this logger.  create it and find the resource bundle
-            cLogger = new Logger(loggerName, null) {
- 
-                /**
-                 * Retrieve the localization resource bundle for this
-                 * logger for the current default locale.  Note that if
-                 * the result is null, then the Logger will use a resource
-                 * bundle inherited from its parent.
-                 *
-                 * @return localization bundle (may be null)
-                 *
-                 */
-             public ResourceBundle getResourceBundle() {
 
-                    //call routine to add resource bundle if not already added
-                    // the return needs to go through all known resource bundles
-                    try {
+        // we should only add a logger of the same name at time.
+        lock.lock();
+        try {
+            // try again, the Logger may have been created in the meantime.
+            cLogger = LogManager.getLogManager().getLogger(loggerName);
+            if (cLogger == null) {
+                //first time through for this logger.  create it and find the resource bundle
+                cLogger = new Logger(loggerName, null) {
 
-                        return ResourceBundle.getBundle(getLoggerResourceBundleName(name), Locale.getDefault(), cloader);
-                    } catch (MissingResourceException e) {
+                    /**
+                     * Retrieve the localization resource bundle for this
+                     * logger for the current default locale.  Note that if
+                     * the result is null, then the Logger will use a resource
+                     * bundle inherited from its parent.
+                     *
+                     * @return localization bundle (may be null)
+                     *
+                     */
+                 public ResourceBundle getResourceBundle() {
 
-                            //try the parent
-                            String root = clazz.getPackage().getName();
-                            try {
+                        //call routine to add resource bundle if not already added
+                        // the return needs to go through all known resource bundles
+                        try {
 
-                                return ResourceBundle.getBundle(root + "." +RESOURCE_BUNDLE, Locale.getDefault(), cloader);
-                            } catch (MissingResourceException me) {
-                                //walk the parents to find the bundle
+                            return ResourceBundle.getBundle(getLoggerResourceBundleName(name), Locale.getDefault(), cloader);
+                        } catch (MissingResourceException e) {
 
-                                String p = root;
-                                while (p != null) {
-                                    try {
-                                        int i = p.lastIndexOf(".");
-                                        if (i != -1) {
-                                            p = p.substring(0, i);
-                                            return ResourceBundle.getBundle(p + "." + RESOURCE_BUNDLE, Locale.getDefault(), cloader);
-                                        } else {
-                                            p = null;
+                                //try the parent
+                                String root = clazz.getPackage().getName();
+                                try {
+
+                                    return ResourceBundle.getBundle(root + "." +RESOURCE_BUNDLE, Locale.getDefault(), cloader);
+                                } catch (MissingResourceException me) {
+                                    //walk the parents to find the bundle
+
+                                    String p = root;
+                                    while (p != null) {
+                                        try {
+                                            int i = p.lastIndexOf(".");
+                                            if (i != -1) {
+                                                p = p.substring(0, i);
+                                                return ResourceBundle.getBundle(p + "." + RESOURCE_BUNDLE, Locale.getDefault(), cloader);
+                                            } else {
+                                                p = null;
+                                            }
+                                        } catch (MissingResourceException mre) {
                                         }
-                                    } catch (MissingResourceException mre) {
                                     }
                                 }
-                            }
-                        // look in this package for the file
-                        try {
-                                return ResourceBundle.getBundle(getLoggerResourceBundleName(name), Locale.getDefault(),
-                                        LogDomains.class.getClassLoader());
+                            // look in this package for the file
+                            try {
+                                    return ResourceBundle.getBundle(getLoggerResourceBundleName(name), Locale.getDefault(),
+                                            LogDomains.class.getClassLoader());
 
-                            } catch (MissingResourceException me) {
+                                } catch (MissingResourceException me) {
+                            }
+                            //System.out.println("class name that failed "+clazz.getName());
+                            throw e;
                         }
-                        //System.out.println("class name that failed "+clazz.getName());
-                        throw e;
-                    }
+                    };
                 };
+
+                // let's make sure we are the only
+
+                // We must not return an orphan logger (the one we just created) if
+                // a race condition has already created one
+                if ( ! LogManager.getLogManager().addLogger(cLogger) )
+                {
+                    final Logger existing = LogManager.getLogManager().getLogger(name);
+                    if ( existing == null )
+                    {
+                        // Can loggers be removed?  If not, this should be impossible
+                        // this time, make the call and hope for the best.
+                        LogManager.getLogManager().addLogger(cLogger);
+                    }
+                    else
+                    {
+                        cLogger = existing;
+                    }
+
+                }
             };
 
-            // We must not return an orphan logger (the one we just created) if
-            // a race condition has already created one
-            if ( ! LogManager.getLogManager().addLogger(cLogger) )
-            {
-                final Logger existing = LogManager.getLogManager().getLogger(name);
-                if ( existing == null )
-                {
-                    // Can loggers be removed?  If not, this should be impossible
-                    // this time, make the call and hope for the best.
-                    LogManager.getLogManager().addLogger(cLogger);
-                }
-                else
-                {
-                    cLogger = existing;
-                }
-
-            }
-        };
-        
-        return cLogger;
-
+            return cLogger;
+        } finally {
+            lock.unlock();
+        }
 
     }
 }

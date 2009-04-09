@@ -31,7 +31,7 @@
  * holder.
  */
 
-package org.glassfish.deployment.admin;
+package org.glassfish.javaee.core.deployment;
 
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
@@ -71,7 +71,7 @@ public class ListSubComponentsCommand implements AdminCommand {
     @Inject
     public Deployment deployment;
 
-    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListComponentsCommand.class);    
+    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListSubComponentsCommand.class);    
 
     public void execute(AdminCommandContext context) {
         

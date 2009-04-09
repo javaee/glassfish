@@ -4,7 +4,6 @@ import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.component.Habitat;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.glassfish.api.admin.config.Property;
 
 import java.util.Set;
 import java.util.logging.Logger;
@@ -27,7 +26,7 @@ public class TraversalTest extends ConfigApiTest {
     @Test
     public void traverse() {
         Habitat habitat = super.getHabitat();
-        Domain domain = habitat.getComponent(Domain.class);
+        Domain domain = Domain.class.cast(habitat.getComponent(Domain.class.getName(), ""));
         introspect(0, Dom.unwrap(domain));
     }
 

@@ -107,11 +107,6 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.glassfish.admin</groupId>
-            <artifactId>admin-cli</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 </project>
 

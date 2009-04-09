@@ -56,6 +56,7 @@
             <url>http://blogs.sun.com/misty</url>
             <organization>Sun Microsystems, Inc.</organization>
             <roles>
+            	<role>lead</role>
                 <role>developer</role>
             </roles>
         </developer>

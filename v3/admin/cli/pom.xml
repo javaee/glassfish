@@ -54,7 +54,6 @@
             <name>Jane Young</name>
             <organization>Sun Microsystems, Inc.</organization>
             <roles>
-                <role>lead</role>
                 <role>developer</role>
             </roles>
         </developer>
@@ -63,7 +62,6 @@
             <name>Byron Nevins</name>
             <organization>Sun Microsystems, Inc.</organization>
             <roles>
-                <role>lead</role>
                 <role>developer</role>
             </roles>
         </developer>        
@@ -80,6 +78,7 @@
             <name>Kedar Mhaswade</name>
             <organization>Sun Microsystems, Inc.</organization>
             <roles>
+                <role>lead</role>
                 <role>developer</role>
             </roles>
         </developer>
