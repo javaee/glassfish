@@ -7,9 +7,10 @@ import com.sun.ejte.ccl.reporter.*;
  */
 public class WebTest {
 
-    private static SimpleReporterAdapter stat
-        = new SimpleReporterAdapter("appserv-tests");
-    private static final String TEST_NAME = "defaultResponseType";
+    private static SimpleReporterAdapter stat =
+        new SimpleReporterAdapter("appserv-tests");
+    private static final String TEST_NAME = "default-response-type";
+    private static final String EXPECTED_CONTENT_TYPE = "test/xml; charset=utf-8";
 
     private String host;
     private String port;
@@ -31,6 +32,7 @@ public class WebTest {
     public void doTest() {     
         try { 
             invoke();
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             System.out.println(TEST_NAME + " test failed.");
             stat.addStatus(TEST_NAME, stat.FAIL);
@@ -40,40 +42,22 @@ public class WebTest {
 
     private void invoke() throws Exception {
          
-        Socket sock = new Socket(host, new Integer(port).intValue());
-        sock.setSoTimeout(60000);
-        OutputStream os = sock.getOutputStream();
-        String get = "GET /test.xyz HTTP/1.1\n";
-        System.out.println(get);
-        os.write(get.getBytes());
-        os.write("Host: localhost\n".getBytes());
-        os.write("\n".getBytes());
-        
-        InputStream is = sock.getInputStream();
-        BufferedReader bis = new BufferedReader(new InputStreamReader(is));
-
-        boolean found = false;
-        String line = null;
-        int i =0;
-        try{
-            while ((line = bis.readLine()) != null) {
-                System.out.println(i++ + ": " + line);
-                if ("Content-Type: test/xml; charset=utf-8".equals(line)){
-                    found = true;
-                }
-                if (found) {
-                    break;
-                }
-            }
-        }catch (SocketTimeoutException t){
-            t.printStackTrace();
+        URL url = new URL("http://" + host  + ":" + port + "/test.xyz");
+        System.out.println("Connecting to: " + url.toString());
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.connect();
+        int responseCode = conn.getResponseCode();
+        if (responseCode != 200) {
+            throw new Exception("Wrong response code. Expected: 200" +
+                                ", received: " + responseCode);
         }
-        sock.close();
 
-        if (found) {
-            stat.addStatus(TEST_NAME, stat.PASS);
-        } else {
-            stat.addStatus(TEST_NAME, stat.FAIL);
+        String contentType = conn.getHeaderField("Content-Type");
+        if (contentType == null ||
+                !(EXPECTED_CONTENT_TYPE.equals(contentType))) {
+            throw new Exception("Missing or wrong response Content-Type. " +
+                                "Expected: " + EXPECTED_CONTENT_TYPE +
+                                ", received: " + contentType);
         }
     }
 }
