@@ -22,7 +22,10 @@
                         <configuration>
                             <tasks>
                                 <jar file="target/descriptors.jar">
-                                    <fileset dir="src/main/resources" />
+                                    <fileset dir="src/main/resources">
+                                        <exclude name="**/*connector_1_5.dtd" />
+                                        <exclude name="**/*connector_1_6.dtd" />
+                                    </fileset>
                                 </jar>
                                 <attachArtifact file="target/descriptors.jar" type="jar" classifier="resources" />
                             </tasks>
