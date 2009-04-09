@@ -73,6 +73,8 @@ public class Resizer extends TimerTask {
     private ResourceHandler handler;
     private boolean preferValidateOverRecreate = false;
     
+    private final static Logger _logger = LogDomains.getLogger(Resizer.class, LogDomains.RSR_LOGGER);
+
     public Resizer(String poolName, DataStructure ds, PoolProperties pp, ResourceHandler handler,
             boolean preferValidateOverRecreate) {
         this.poolName = poolName;
@@ -305,7 +307,6 @@ public class Resizer extends TimerTask {
         }
     }
 
-    private final static Logger _logger = LogDomains.getLogger(Resizer.class, LogDomains.RSR_LOGGER);
 
     private static void debug(String debugStatement) {
         if (_logger.isLoggable(Level.FINE))
