@@ -33,36 +33,46 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package com.sun.enterprise.deployment;
 
-package com.sun.enterprise.deployment.io;
-
-import com.sun.enterprise.deployment.WebFragmentDescriptor;
-import com.sun.enterprise.deployment.node.RootXMLNode;
-import com.sun.enterprise.deployment.node.web.WebFragmentNode;
+import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 
 /**
- * This class is responsible for handling WebFragment DeploymentDescriptor files
+ * I am an object that represents all the deployment information about
+ * a web fragment.
  *
  * @author Shing Wai Chan
  */
-public class WebFragmentDeploymentDescriptorFile extends DeploymentDescriptorFile<WebFragmentDescriptor> {
+
+public class WebFragmentDescriptor extends WebBundleDescriptor
+{
+    private String jarName = null;
 
     /**
-     * @return the location of the DeploymentDescriptor file for a
-     * particular type of J2EE Archive
+     * Constrct an empty web app [{0}].
      */
-    public String getDeploymentDescriptorPath() {
-        return DescriptorConstants.WEB_FRAGMENT_JAR_ENTRY;        
+    public WebFragmentDescriptor() {
+        super();
     }
-    
+
+    public String getJarName() {
+        return jarName;
+    }
+
+    public void setJarName(String jarName) {
+        this.jarName = jarName;
+    }
+
     /**
-     * @return a RootXMLNode responsible for handling the deployment
-     * descriptors associated with this J2EE module
-     *
-     * @param descriptor descriptor for which we need the node
+     * Return a formatted version as a String.
      */
-    public RootXMLNode<WebFragmentDescriptor> getRootXMLNode(WebFragmentDescriptor descriptor) {
-        return new WebFragmentNode();        
+    public void print(StringBuffer toStringBuffer) {
+        toStringBuffer.append("\nWeb Fragment descriptor");
+        toStringBuffer.append("\n");
+        printCommon(toStringBuffer);
+        if (jarName != null) {
+            toStringBuffer.append("\njar name " + jarName);
+        }
     }
-    
 }
+    

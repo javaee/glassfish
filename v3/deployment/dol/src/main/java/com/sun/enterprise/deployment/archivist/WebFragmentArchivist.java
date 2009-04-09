@@ -37,7 +37,7 @@
 package com.sun.enterprise.deployment.archivist;
 
 import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.WebFragmentDescriptor;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.DescriptorConstants;
 import com.sun.enterprise.deployment.io.WebFragmentDeploymentDescriptorFile;
@@ -64,7 +64,7 @@ import java.util.Vector;
  * @author  Shing Wai Chan
  * @version 
  */
-class WebFragmentArchivist extends Archivist<WebBundleDescriptor> {
+class WebFragmentArchivist extends Archivist<WebFragmentDescriptor> {
 
     /** 
      * The DeploymentDescriptorFile handlers we are delegating for XML i/o
@@ -87,14 +87,7 @@ class WebFragmentArchivist extends Archivist<WebBundleDescriptor> {
      * for a particular Archivst type
      */
     public void setDescriptor(Application descriptor) {
-        java.util.Set webBundles = descriptor.getWebBundleDescriptors();
-        if (webBundles.size()>0) {
-            this.descriptor = (WebBundleDescriptor) webBundles.iterator().next();
-            if (this.descriptor.getModuleDescriptor().isStandalone())
-                return;
-            else
-                this.descriptor=null;
-        }
+        this.descriptor = null;
     }  
     
     /** 
@@ -129,7 +122,7 @@ class WebFragmentArchivist extends Archivist<WebBundleDescriptor> {
      * @return a default BundleDescriptor for this archivist
      */
     @Override
-    public WebBundleDescriptor getDefaultBundleDescriptor() {
+    public WebFragmentDescriptor getDefaultBundleDescriptor() {
         return null;
     }
 
@@ -140,13 +133,13 @@ class WebFragmentArchivist extends Archivist<WebBundleDescriptor> {
      * @param archive the module archive
      */
     @Override
-    protected void postOpen(WebBundleDescriptor descriptor, ReadableArchive archive)
+    protected void postOpen(WebFragmentDescriptor descriptor, ReadableArchive archive)
         throws IOException
     {
         super.postOpen(descriptor, archive);
-        WebBundleDescriptor webBundle = (WebBundleDescriptor) descriptor;
+        WebFragmentDescriptor webFragment = (WebFragmentDescriptor) descriptor;
         ModuleContentValidator mdv = new ModuleContentValidator(archive);
-        webBundle.visit(mdv);
+        webFragment.visit(mdv);
     }
 
     /**

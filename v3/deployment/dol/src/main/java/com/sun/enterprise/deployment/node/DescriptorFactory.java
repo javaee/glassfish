@@ -73,8 +73,6 @@ public class DescriptorFactory {
         
 	//EJB
         register(new XMLElement(EjbTagNames.EJB_BUNDLE_TAG), EjbBundleDescriptor.class);
-        register(new XMLElement(WebTagNames.WEB_BUNDLE), WebBundleDescriptor.class);
-        register(new XMLElement(WebTagNames.WEB_FRAGMENT), WebBundleDescriptor.class);
         register(new XMLElement(EjbTagNames.SESSION), EjbSessionDescriptor.class);       
         register(new XMLElement(EjbTagNames.ENTITY), EjbEntityDescriptor.class);     
         register(new XMLElement(EjbTagNames.MESSAGE_DRIVEN), EjbMessageBeanDescriptor.class);        
@@ -145,6 +143,7 @@ public class DescriptorFactory {
 
 	//web stuff
         register(new XMLElement(WebTagNames.WEB_BUNDLE), WebBundleDescriptor.class);
+        register(new XMLElement(WebTagNames.WEB_FRAGMENT), WebFragmentDescriptor.class);
         register(new XMLElement(WebTagNames.SERVLET), WebComponentDescriptor.class);
         register(new XMLElement(WebTagNames.INIT_PARAM), EnvironmentProperty.class);        
         register(new XMLElement(WebTagNames.MIME_MAPPING), MimeMappingDescriptor.class);
@@ -165,6 +164,7 @@ public class DescriptorFactory {
         register(new XMLElement(WebTagNames.JSP_GROUP), JspGroupDescriptor.class);            
         register(new XMLElement(WebTagNames.LOCALE_ENCODING_MAPPING_LIST), LocaleEncodingMappingListDescriptor.class);            
         register(new XMLElement(WebTagNames.LOCALE_ENCODING_MAPPING), LocaleEncodingMappingDescriptor.class);                         
+        register(new XMLElement(WebTagNames.ABSOLUTE_ORDERING), AbsoluteOrderingDescriptor.class);                         
 
         // JSR 109 integration
         register(new XMLElement(WebServicesTagNames.SERVICE_REF), ServiceReferenceDescriptor.class);

@@ -50,6 +50,7 @@ package com.sun.enterprise.deployment.xml;
  */
 public interface WebTagNames extends TagNames {
 
+    public static final String COMMON_NAME = "name";
     public static final String WEB_BUNDLE = "web-app";
     public static final String WEB_FRAGMENT = "web-fragment";
     public static final String SERVLET = "servlet";    
@@ -85,7 +86,6 @@ public interface WebTagNames extends TagNames {
     public static final String SESSION_CONFIG = "session-config";
     public static final String SESSION_TIMEOUT = "session-timeout";    
     public static final String COOKIE_CONFIG = "cookie-config";    
-    public static final String COOKIE_NAME = "name";   // NAME is already defined in TagNames.java    
     public static final String DOMAIN = "domain";    
     public static final String PATH = "path";    
     public static final String COMMENT = "comment";    
@@ -139,4 +139,8 @@ public interface WebTagNames extends TagNames {
     public static final String LOCALE_ENCODING_MAPPING = "locale-encoding-mapping";
     public static final String LOCALE = "locale";
     public static final String ENCODING = "encoding";
+
+    //ordering
+    public static final String ABSOLUTE_ORDERING = "absolute-ordering";
+    public static final String OTHERS = "others";
 }

@@ -38,67 +38,59 @@ package com.sun.enterprise.deployment.node.web;
 
 import java.util.Map;
 
-import com.sun.enterprise.deployment.CookieConfigDescriptor;
+import com.sun.enterprise.deployment.AbsoluteOrderingDescriptor;
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
+import com.sun.enterprise.deployment.node.DescriptorFactory;
 import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.xml.WebTagNames;
-
 import org.w3c.dom.Node;
+import org.xml.sax.Attributes;
 
 /**
- * This class is responsible for handling cookie-config xml node.
- * 
- * @author Shing Wai Chan
+ * This node is responsible for handling the absolute-ordering xml tree
+ *
+ * @author  Shing Wai Chan
+ * @version 
  */
-public class CookieConfigNode extends DeploymentDescriptorNode {
-    private CookieConfigDescriptor descriptor;
+public class AbsoluteOrderingNode extends DeploymentDescriptorNode {
 
-    public CookieConfigNode() {
-        super();
-    }
+   public final static XMLElement tag = new XMLElement(WebTagNames.ABSOLUTE_ORDERING);
+
+   protected AbsoluteOrderingDescriptor descriptor = null;
 
    /**
     * @return the descriptor instance to associate with this XMLNode
     */
-    public Object getDescriptor() {
-        if (descriptor == null) {
-            descriptor = (CookieConfigDescriptor)super.getDescriptor();
+    public AbsoluteOrderingDescriptor getDescriptor() {
+        if (descriptor==null) {
+            descriptor = (AbsoluteOrderingDescriptor) DescriptorFactory.getDescriptor(getXMLPath());
         }
         return descriptor;
-    }
+    }  
 
-    /**
+   /**
      * all sub-implementation of this class can use a dispatch table to map xml element to
      * method name on the descriptor class for setting the element value. 
      *  
      * @return the map with the element name as a key, the setter method as a value
-     */    
+     */
     protected Map getDispatchTable() {
         Map table = super.getDispatchTable();
-        table.put(WebTagNames.COMMON_NAME, "setName");
-        table.put(WebTagNames.DOMAIN, "setDomain");
-        table.put(WebTagNames.PATH, "setPath");
-        table.put(WebTagNames.COMMENT, "setComment");
+        table.put(WebTagNames.COMMON_NAME, "addName");
         return table;
     }
 
     /**
-     * receives notiification of the value for a particular tag
-     * 
-     * @param element the xml element
-     * @param value it's associated value
+     * SAX Parser API implementation, we don't really care for now.
      */
-    public void setElementValue(XMLElement element, String value) {
-        if (WebTagNames.HTTP_ONLY.equals(element.getQName())) {
-            descriptor.setHttpOnly(Boolean.parseBoolean(value));
-        } else if (WebTagNames.SECURE.equals(element.getQName())) {
-            descriptor.setSecure(Boolean.parseBoolean(value));
-        } else if (WebTagNames.MAX_AGE.equals(element.getQName())) {
-            descriptor.setMaxAge(Integer.parseInt(value));
-        } else {
-            super.setElementValue(element, value);
+    public void startElement(XMLElement element, Attributes attributes) {
+        super.startElement(element, attributes);
+
+        if (WebTagNames.OTHERS.equals(element.getQName())) {
+            descriptor.addOthers();
         }
     }
+
 
     /**
      * write the descriptor class to a DOM tree and return it
@@ -108,16 +100,15 @@ public class CookieConfigNode extends DeploymentDescriptorNode {
      * @param the descriptor to write
      * @return the DOM tree top node
      */
-    public Node writeDescriptor(Node parent, String nodeName, CookieConfigDescriptor descriptor) {       
+    public Node writeDescriptor(Node parent, String nodeName, AbsoluteOrderingDescriptor descriptor) {
         Node myNode = appendChild(parent, nodeName);
-        appendTextChild(myNode, WebTagNames.COMMON_NAME, descriptor.getName());         
-        appendTextChild(myNode, WebTagNames.DOMAIN, descriptor.getDomain());         
-        appendTextChild(myNode, WebTagNames.PATH, descriptor.getPath());     
-        appendTextChild(myNode, WebTagNames.COMMENT, descriptor.getComment());     
-        appendTextChild(myNode, WebTagNames.HTTP_ONLY, Boolean.toString(descriptor.isHttpOnly()));     
-        appendTextChild(myNode, WebTagNames.SECURE, Boolean.toString(descriptor.isSecure()));     
-        appendTextChild(myNode, WebTagNames.MAX_AGE, Integer.toString(descriptor.getMaxAge()));     
-        
+        for (Object obj : descriptor.getOrdering()) {
+            if (obj instanceof String) {
+                appendTextChild(myNode, WebTagNames.COMMON_NAME, (String)obj);
+            } else { // others
+                appendChild(myNode, WebTagNames.OTHERS);
+            }
+        }
         return myNode;
-    }   
+    }
 }

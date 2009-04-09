@@ -38,11 +38,6 @@ package com.sun.enterprise.deployment.node.web;
 
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.node.*;
-import com.sun.enterprise.deployment.types.EjbReference;
-import com.sun.enterprise.deployment.util.DOLUtils;
-import com.sun.enterprise.deployment.web.LoginConfiguration;
-import com.sun.enterprise.deployment.xml.TagNames;
-import com.sun.enterprise.deployment.xml.WebServicesTagNames;
 import com.sun.enterprise.deployment.xml.WebTagNames;
 import org.w3c.dom.Node;
 
@@ -54,7 +49,7 @@ import java.util.*;
  * @author  Shing Wai Chan
  * @version 
  */
-public class WebFragmentNode extends WebBundleNode {
+public class WebFragmentNode extends WebCommonNode<WebFragmentDescriptor> {
 
    public final static XMLElement tag = new XMLElement(WebTagNames.WEB_FRAGMENT);
 
@@ -117,13 +112,11 @@ public class WebFragmentNode extends WebBundleNode {
    /**
     * @return the descriptor instance to associate with this XMLNode
     */
-    public WebBundleDescriptor getDescriptor() {
+    public WebFragmentDescriptor getDescriptor() {
         // no default bundle for web-fragment
         if (descriptor==null) {
-            descriptor = (WebBundleDescriptor) DescriptorFactory.getDescriptor(getXMLPath());
+            descriptor = (WebFragmentDescriptor) DescriptorFactory.getDescriptor(getXMLPath());
         }
-        return descriptor;
+        return (WebFragmentDescriptor)descriptor;
     }  
-
-    
 }

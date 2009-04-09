@@ -103,9 +103,7 @@ public class WebBundleDescriptor extends BundleDescriptor
     private Vector<ServletFilter> servletFilters = null;
     private Vector<ServletFilterMapping> servletFilterMappings = null;
 
-    // name of metadata complete web fragment jars resided in WEB-INF/lib
-    private Set<String> metadataCompleteWebFragments = new HashSet<String>();
-
+    private AbsoluteOrderingDescriptor absOrdering = null;
 
     private final static String DEPLOYMENT_DESCRIPTOR_DIR = "WEB-INF";
 
@@ -1295,12 +1293,12 @@ public class WebBundleDescriptor extends BundleDescriptor
         this.moveVectorItem(this.getAppListeners(), ref, relPos);
     }
 
-    public void addMetadataCompleteWebFragment(String path) {
-        metadataCompleteWebFragments.add(path);
+    public AbsoluteOrderingDescriptor getAbsoluteOrderingDescriptor() {
+        return absOrdering;
     }
 
-    public Set<String> getMetadataCompleteWebFragments() {
-        return metadataCompleteWebFragments;
+    public void setAbsoluteOrderingDescriptor(AbsoluteOrderingDescriptor absOrdering) {
+        this.absOrdering = absOrdering;
     }
 
     /**
@@ -1451,10 +1449,22 @@ public class WebBundleDescriptor extends BundleDescriptor
     public void print(StringBuffer toStringBuffer) {
         toStringBuffer.append("\nWeb Bundle descriptor");
         toStringBuffer.append("\n");
+        printCommon(toStringBuffer);
+        if (sunWebApp != null) {
+            toStringBuffer.append("\n ========== Runtime Descriptors =========");
+            toStringBuffer.append("\n").append(sunWebApp.toString());
+        }
+    }
+
+    public void printCommon(StringBuffer toStringBuffer) {
         super.print(toStringBuffer);
         toStringBuffer.append("\n context root ").append(getContextRoot());
         if (sessionConfigDescriptor != null) {
             sessionConfigDescriptor.print(toStringBuffer);
+        }
+        String wname = getName();
+        if (wname != null && wname.length() > 0) {
+            toStringBuffer.append("\n name ").append(wname);
         }
         toStringBuffer.append("\n mimeMappings ").append(mimeMappings);
         toStringBuffer.append("\n welcomeFiles ").append(welcomeFiles);
@@ -1487,10 +1497,6 @@ public class WebBundleDescriptor extends BundleDescriptor
         toStringBuffer.append("\n environmentEntries ");
         if (environmentEntries != null)
             printDescriptorSet(environmentEntries, toStringBuffer);
-        if (sunWebApp != null) {
-            toStringBuffer.append("\n ========== Runtime Descriptors =========");
-            toStringBuffer.append("\n").append(sunWebApp.toString());
-        }
     }
 
     private void printDescriptorSet(Set descSet, StringBuffer sbuf) {

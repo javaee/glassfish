@@ -38,6 +38,8 @@ package com.sun.enterprise.deployment.archivist;
 
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.WebFragmentDescriptor;
+import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.DescriptorConstants;
 import com.sun.enterprise.deployment.io.WebDeploymentDescriptorFile;
@@ -57,7 +59,11 @@ import org.xml.sax.SAXParseException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import java.net.URL;
 
@@ -285,8 +291,6 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
     @Override
     protected void postStandardDDsRead(WebBundleDescriptor descriptor,
             ReadableArchive archive) throws IOException {
-        // read the web fragment after reading the web.xml
-        readStandardFragment(descriptor, archive);
         super.postStandardDDsRead(descriptor, archive);
         // apply default from default-web.xml
         if (getDefaultBundleDescriptor() != null) {
@@ -294,12 +298,42 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
         }
     }
 
-    protected void readStandardFragment(WebBundleDescriptor descriptor,
+    @Override
+    protected void postAnnotationProcess(WebBundleDescriptor descriptor,
+            ReadableArchive archive) throws IOException {
+        // read web-fragment.xml
+        List<WebFragmentDescriptor> wfList = readStandardFragments(descriptor, archive);
+        // process annotations in web-fragment
+        // extension annotation processing is done in top level
+        Map<ExtensionsArchivist, RootDeploymentDescriptor> extensions = new HashMap<ExtensionsArchivist, RootDeploymentDescriptor>();
+        for (WebFragmentDescriptor wfDesc : wfList) {
+            readAnnotations(archive, wfDesc, extensions);
+        }
+
+        WebFragmentDescriptor mergedWebFragment = null;
+        for (WebFragmentDescriptor wf : wfList) {
+            if (mergedWebFragment == null) {
+                mergedWebFragment = wf;
+            } else {
+                mergedWebFragment.addWebBundleDescriptor(wf);
+            }
+        }
+
+        if (mergedWebFragment != null) {
+            descriptor.addWebBundleDescriptor(mergedWebFragment);
+        }
+    }
+
+    /**
+     * This method will return the list of web fragment in the desired order.
+     */
+    private List<WebFragmentDescriptor> readStandardFragments(WebBundleDescriptor descriptor,
             ReadableArchive archive) throws IOException {
 
+        List<WebFragmentDescriptor> wfList = new ArrayList<WebFragmentDescriptor>();
         Vector libs = getLibraries(archive);
         if (libs != null && libs.size() > 0) {
-            WebBundleDescriptor mergedWebFragment = null;
+
             for (int i = 0; i < libs.size(); i++) {
                 String lib = (String)libs.get(i);
                 Archivist wfArchivist = new WebFragmentArchivist();
@@ -310,32 +344,29 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
                 wfArchivist.setAnnotationProcessingRequested(false);
                 ReadableArchive embeddedArchive = archive.getSubArchive(lib);
 
+                WebFragmentDescriptor wfDesc = null;
                 if (wfArchivist.hasStandardDeploymentDescriptor(embeddedArchive)) {
-                    WebBundleDescriptor wdesc = null;
                     try {
-                        wdesc = (WebBundleDescriptor)wfArchivist.open(embeddedArchive);
+                        wfDesc = (WebFragmentDescriptor)wfArchivist.open(embeddedArchive);
                     } catch(SAXParseException ex) {
                         IOException ioex = new IOException();
                         ioex.initCause(ex);
                         throw ioex;
                     }
 
-                    if (wdesc.isFullFlag()) {
-                        descriptor.addMetadataCompleteWebFragment(
-                                lib.substring(lib.lastIndexOf('/') + 1));
-                    }
-
-                    if (mergedWebFragment != null) {
-                        mergedWebFragment.addWebBundleDescriptor(wdesc);
-                    } else {
-                        mergedWebFragment = wdesc;
-                    }
+                } else {   
+                    wfDesc = new WebFragmentDescriptor();
                 }
+                wfDesc.setJarName(lib.substring(lib.lastIndexOf('/') + 1));    
+                wfList.add(wfDesc);
+
             }
 
-            if (mergedWebFragment != null) {
-                descriptor.addWebBundleDescriptor(mergedWebFragment);
+            if (descriptor.getAbsoluteOrderingDescriptor() != null) {
+                wfList = descriptor.getAbsoluteOrderingDescriptor().order(wfList);
             }
         }
+
+        return wfList;
     }
 }

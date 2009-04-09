@@ -36,6 +36,7 @@
 package com.sun.enterprise.deployment.annotation.impl;
 
 import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.WebFragmentDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
 import com.sun.enterprise.deployment.web.AppListenerDescriptor;
 import com.sun.enterprise.deployment.web.ServletFilter;
@@ -85,32 +86,20 @@ public class WarScanner extends ModuleScanner<WebBundleDescriptor> {
         }
 
         File webinf = new File(archiveFile, "WEB-INF");
-        File classes = new File(webinf, "classes");
-        if (classes.exists()) {
-            addScanDirectory(classes);   
-        }
-        File lib = new File(webinf, "lib");
-        if (lib.exists()) {
-            final Set<String> metadataCompleteWebFragments =
-                    webBundleDesc.getMetadataCompleteWebFragments();
-            File[] jarFiles = lib.listFiles(new FileFilter() {
-                 public boolean accept(File pathname) {
-                     boolean result = false;
-                     if (pathname.isFile()) {
-                         String name = pathname.getName();
-                         if (name.endsWith(".jar")) {
-                             // this will include non web fragment jars
-                             result = !metadataCompleteWebFragments.contains(name);
-                         }
-                     }
-                     return result;
-                 }
-            });
-
-            if (jarFiles != null && jarFiles.length > 0) {
-                for (File jarFile : jarFiles) {
+        
+        if (webBundleDesc instanceof WebFragmentDescriptor) {
+            WebFragmentDescriptor webFragmentDesc = (WebFragmentDescriptor)webBundleDesc;
+            File lib = new File(webinf, "lib");
+            if (lib.exists()) {
+                File jarFile = new File(lib, webFragmentDesc.getJarName());
+                if (jarFile.exists() && (!jarFile.isDirectory())) {
                     addScanJar(jarFile);
                 }
+            }
+        } else {
+            File classes = new File(webinf, "classes");
+            if (classes.exists()) {
+                addScanDirectory(classes);   
             }
         }
 
