@@ -83,7 +83,7 @@ public  class IASEjbCMPEntityDescriptor extends EjbCMPEntityDescriptor {
 
     private transient Collection finders = null;
     private transient Collection selectors = null;
-    private QueryParser queryParser = null;
+    private transient QueryParser queryParser = null;
     private PrefetchDisabledDescriptor prefetchDisabledDescriptor = null;
     private static final Map conversionTable = createConversionTable();
     private Map oneOneFinders = new HashMap();
