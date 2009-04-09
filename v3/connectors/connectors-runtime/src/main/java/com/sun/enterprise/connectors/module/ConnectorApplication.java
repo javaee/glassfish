@@ -41,6 +41,7 @@ import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Resource;
+import com.sun.enterprise.config.serverbeans.AdminObjectResource;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.ApplicationContext;
@@ -112,29 +113,38 @@ public class ConnectorApplication implements ApplicationContainer {
      * deploy all resources/pools pertaining to this resource adapter
      */
     public void deployResources() {
-        //TODO V3 handle admin-object-resources also
         Resources allResources = resourceManager.getAllResources();
         //TODO V3 needed for redeploy of module, what happens to the listeners of these resources ?
         Collection<ConnectorConnectionPool> connectionPools =
                 ConnectorsUtil.getAllPoolsOfModule(moduleName, allResources);
         Collection<String> poolNames = ConnectorsUtil.getAllPoolNames(connectionPools);
-        Collection<Resource> connectorResources = ConnectorsUtil.getAllResources(poolNames, allResources);
-        resourceManager.deployResources(connectorResources);
+        Collection<Resource> resources = ConnectorsUtil.getAllResources(poolNames, allResources);
+        AdminObjectResource[] adminObjectResources =
+                ConnectorsUtil.getEnabledAdminObjectResources(moduleName, allResources, null);
+        for(AdminObjectResource aor : adminObjectResources){
+            resources.add(aor);
+        }
+        resourceManager.deployResources(resources);
     }
 
     /**
      * undeploy all resources/pools pertaining to this resource adapter
      */
     public void undeployResources() {
-        //TODO V3 handle admin-object-resources also
         Resources allResources = resourceManager.getAllResources();
         Collection<ConnectorConnectionPool> connectionPools =
                 ConnectorsUtil.getAllPoolsOfModule(moduleName, allResources);
         Collection<String> poolNames = ConnectorsUtil.getAllPoolNames(connectionPools);
         Collection<Resource> connectorResources = ConnectorsUtil.getAllResources(poolNames, allResources);
+        AdminObjectResource[] adminObjectResources =
+                ConnectorsUtil.getEnabledAdminObjectResources(moduleName, allResources, null);
         List<Resource> resources = new ArrayList<Resource>();
         resources.addAll(connectorResources);
         resources.addAll(connectionPools);
+        for(AdminObjectResource aor : adminObjectResources){
+            resources.add(aor);
+        }
+
         resourceManager.undeployResources(resources);
     }
 

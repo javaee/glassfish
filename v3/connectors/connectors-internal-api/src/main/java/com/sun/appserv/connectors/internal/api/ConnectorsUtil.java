@@ -315,15 +315,14 @@ public class ConnectorsUtil {
         }
         return raName;
     }
-
-    public static AdminObjectResource[] getEnabledAdminObjectResources(String raName, Resources allResources, Server server)  {
+    public static AdminObjectResource[] getEnabledAdminObjectResources(String raName, Resources allResources,
+                                                                       Server server)  {
         List resourcesList = allResources.getResources();
         int resourceCount = resourcesList.size();      //sizeAdminObjectResource();
         if(resourceCount == 0) {
             return null;
         }
-        Vector<AdminObjectResource> allAdminObjectResourcesVector =
-                    new Vector<AdminObjectResource>();
+        List<AdminObjectResource> adminObjectResources = new ArrayList<AdminObjectResource>();
         for(int i=0; i< resourceCount; ++i) {
              Resource resource = (Resource)resourcesList.get(i);
 
@@ -341,15 +340,12 @@ public class ConnectorsUtil {
             // skips the admin resource if it is not referenced by the server
             if(!isEnabled(adminObjectResource, server))
                 continue;
-            allAdminObjectResourcesVector.add(adminObjectResource);
+            adminObjectResources.add(adminObjectResource);
         }
         AdminObjectResource[] allAdminObjectResources =
-                    new AdminObjectResource[allAdminObjectResourcesVector.size()];
-       allAdminObjectResources =
-                    (AdminObjectResource[])allAdminObjectResourcesVector.toArray(
-                    allAdminObjectResources);
-            return allAdminObjectResources;
-}
+                    new AdminObjectResource[adminObjectResources.size()];
+        return adminObjectResources.toArray(allAdminObjectResources);
+    }
     
      public static boolean isEnabled(AdminObjectResource aot, Server server) {
         if(aot == null || !Boolean.parseBoolean(aot.getEnabled()))
@@ -367,7 +363,11 @@ public class ConnectorsUtil {
      */
     private static boolean isResourceReferenceEnabled(String resourceName, Server server) {
 
-        ResourceRef ref = server.getResourceRef(resourceName);
+        ResourceRef ref  = null;
+        //TODO V3 server should not be null.
+        if(server != null){
+            ref = server.getResourceRef(resourceName);
+        }
 
         if (ref == null) {
             _logger.fine("ResourcesUtil :: isResourceReferenceEnabled null ref");
