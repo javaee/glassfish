@@ -4,9 +4,10 @@ import java.net.*;
 
 import com.sun.ejte.ccl.reporter.*;
 
-public class WebTest
-{
+public class WebTest {
     
+    private static final String TEST_NAME = "jsp-use-bean";
+
     private static boolean pass = false;
     
     static SimpleReporterAdapter stat=
@@ -27,10 +28,10 @@ public class WebTest
         
         try {
             goGet(host, port, contextRoot + "/test.jsp" );
-            stat.addStatus("UseBean test", pass? stat.PASS: stat.FAIL);
+            stat.addStatus(TEST_NAME, pass? stat.PASS: stat.FAIL);
         } catch (Throwable t) {
             System.out.println(t.getMessage());
-            stat.addStatus("Test UNPREDICTED-FAILURE", stat.FAIL);
+            stat.addStatus(TEST_NAME, stat.FAIL);
         }
 
         stat.printSummary("UseBean optimization");
