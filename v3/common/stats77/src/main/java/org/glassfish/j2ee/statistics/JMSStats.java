@@ -37,21 +37,13 @@
 package org.glassfish.j2ee.statistics;
 
 /**
+ * Specifies the statistics provided by a JMS Resource
+ *
+ * @author Hans Hrasna
  */
-public interface JMSStats extends Stats
-{
+public interface JMSStats extends Stats {
+    /**
+     * Returns an array of JMSConnectionStats that provide statistics about the connections associated with the referencing JMS resource.
+     */
+    JMSConnectionStats[] getConnections();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

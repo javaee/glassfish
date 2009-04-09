@@ -37,21 +37,16 @@
 package org.glassfish.j2ee.statistics;
 
 /**
+ * Specifies the statistics provided by a Java VM. 
  */
-public interface JVMStats extends Stats
-{
+public interface JVMStats extends Stats {
+    /**
+     * Amount of time the JVM has been running. 
+     */
+    CountStatistic getUpTime();
+
+    /**
+     * Size of the JVM's heap. 
+     */
+    BoundedRangeStatistic getHeapSize();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -37,21 +37,31 @@
 package org.glassfish.j2ee.statistics;
 
 /**
+ * Specifies the statistics provided by a JDBC connection pool. 
  */
-public interface JDBCConnectionPoolStats extends Stats
-{
+public interface JDBCConnectionPoolStats extends JDBCConnectionStats {
+    /**
+     * Number of connections created. 
+     */
+    CountStatistic getCreateCount();
+
+    /**
+     * Number of connections closed. 
+     */
+    CountStatistic getCloseCount();
+
+    /**
+     * Size of the connection pool. 
+     */
+    BoundedRangeStatistic getPoolSize();
+
+    /**
+     * Number of free connections in the pool. 
+     */
+    BoundedRangeStatistic getFreePoolSize();
+
+    /**
+     * Number of threads waiting for a connection. 
+     */
+    RangeStatistic getWaitingThreadCount();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

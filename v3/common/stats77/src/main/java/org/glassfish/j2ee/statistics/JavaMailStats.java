@@ -37,21 +37,11 @@
 package org.glassfish.j2ee.statistics;
 
 /**
+ * Specifies the statistics provided by a JavaMail resource. 
  */
-public interface JavaMailStats extends Stats
-{
+public interface JavaMailStats {
+    /**
+     * The number of mail messages sent. 
+     */
+    CountStatistic getSentMailCount();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

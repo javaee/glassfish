@@ -37,21 +37,37 @@
 package org.glassfish.j2ee.statistics;
 
 /**
+ * Specifies the statistics provided by a JCA Connection Pool
+ *
  */
-public interface JCAConnectionPoolStats extends Stats
-{
+public interface JCAConnectionPoolStats extends JCAConnectionStats {
+    /**
+     * The number of connections closed
+     * @return CountStatistic
+     */
+    CountStatistic getCloseCount();
+
+    /**
+     * The number of connections created
+     * @return CountStatistic
+     */
+    CountStatistic getCreateCount();
+
+    /**
+     * The number of free connections in the pool
+     * @return BoundedRangeStatistic
+     */
+    BoundedRangeStatistic getFreePoolSize();
+
+    /**
+     * The size of the connection pool
+     * @return BoundedRangeStatistic
+     */
+    BoundedRangeStatistic getPoolSize();
+
+    /**
+     * The number of threads waiting for a connection
+     * @return BoundedRangeStatistic
+     */
+    RangeStatistic getWaitingThreadCount();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

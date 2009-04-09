@@ -37,21 +37,13 @@
 package org.glassfish.j2ee.statistics;
 
 /**
+ * Specifies the statistics provided by a JMS message producer
+ *
+ * @author Hans Hrasna
  */
-public interface JMSProducerStats extends Stats
-{
+public interface JMSProducerStats extends JMSEndpointStats {
+    /**
+     * Returns a string that encapsulates the identity of the message destination
+     */
+    String getDestination();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

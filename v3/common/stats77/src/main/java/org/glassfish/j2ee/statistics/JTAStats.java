@@ -37,21 +37,21 @@
 package org.glassfish.j2ee.statistics;
 
 /**
+ * Specifies the statistics provided by a JTA resource. 
  */
-public interface JTAStats extends Stats
-{
+public interface JTAStats extends Stats {
+    /**
+     * Number of active transactions. 
+     */
+    CountStatistic getActiveCount();
+
+    /**
+     * Number of committed transactions. 
+     */
+    CountStatistic getCommittedCount();
+
+    /**
+     * Number of rolled-back transactions. 
+     */
+    CountStatistic getRolledbackCount();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

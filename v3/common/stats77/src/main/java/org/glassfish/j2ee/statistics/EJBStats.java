@@ -37,21 +37,16 @@
 package org.glassfish.j2ee.statistics;
 
 /**
+ * Specifies statistics provided by all EJB component types. 
  */
-public interface EJBStats extends Stats
-{
+public interface EJBStats extends Stats {
+    /**
+     * Number of times create was called. 
+     */
+    CountStatistic getCreateCount();
+
+    /**
+     * Number of times remove was called. 
+     */
+    CountStatistic getRemoveCount();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

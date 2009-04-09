@@ -37,21 +37,21 @@
 package org.glassfish.j2ee.statistics;
 
 /**
+ * Specifies the statistics provided by a JMS connection
+ *
+ * @author Hans Hrasna
  */
-public interface JMSConnectionStats extends Stats
-{
+public interface JMSConnectionStats extends Stats {
+    /**
+     * Returns an array of JMSSessionStats that provide statistics
+     * about the sessions associated with the referencing JMSConnectionStats.
+     */
+    JMSSessionStats[] getSessions();
+
+    /**
+     * Returns the transactional state of this JMS connection.
+     * If true, indicates that this JMS connection is transactional.
+     */
+    boolean isTransactional();
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

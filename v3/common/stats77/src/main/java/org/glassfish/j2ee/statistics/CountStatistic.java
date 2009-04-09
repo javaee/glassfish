@@ -37,23 +37,11 @@
 package org.glassfish.j2ee.statistics;
 
 /**
+ * Specifies standard count measurements. 
  */
-public interface CountStatistic extends Statistic
-{
-    public long getCount();
+public interface CountStatistic extends Statistic {
+    /**
+     * The count since the last reset. 
+     */
+    long getCount();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

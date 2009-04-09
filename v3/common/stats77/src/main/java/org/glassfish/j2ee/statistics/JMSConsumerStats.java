@@ -37,21 +37,13 @@
 package org.glassfish.j2ee.statistics;
 
 /**
+ * Specifies the statistics provided by a JMS message consumer
+ *
+ * @author Hans Hrasna
  */
-public interface JMSConsumerStats extends Stats
-{
+public interface JMSConsumerStats extends JMSEndpointStats {
+    /**
+     * Returns a string that encapsulates the identity of a message origin
+     */
+    String getOrigin();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

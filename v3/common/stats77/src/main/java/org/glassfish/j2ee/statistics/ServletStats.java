@@ -37,26 +37,11 @@
 package org.glassfish.j2ee.statistics;
 
 /**
+ * Specifies the statistics provided by a Servlet. 
  */
-public interface ServletStats extends Stats
-{
-	public CountStatistic getMaxTime();
-	public CountStatistic getProcessingTime();
-	public TimeStatistic getServiceTime();
-	public CountStatistic getRequestCount();
-	public CountStatistic getErrorCount();
+public interface ServletStats extends Stats {
+    /**
+     * Execution times for the methods. 
+     */
+    TimeStatistic getServiceTime();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

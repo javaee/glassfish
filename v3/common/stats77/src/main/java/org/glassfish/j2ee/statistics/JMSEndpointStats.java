@@ -36,22 +36,17 @@
 
 package org.glassfish.j2ee.statistics;
 
-/**
- */
-public interface JMSEndpointStats extends Stats
-{
+/** Specifies the statistics provided by a JMS message producer or a JMS message consumer. */
+public interface JMSEndpointStats extends Stats {
+    /** Number of messages sent or received. */
+    CountStatistic getMessageCount();
+
+    /** Number of pending messages. */
+    CountStatistic getPendingMessageCount();
+
+    /** Number of messages that expired before delivery. */
+    CountStatistic getExpiredMessageCount();
+
+    /** Time spent by a message before being delivered. */
+    TimeStatistic getMessageWaitTime();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

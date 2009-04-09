@@ -37,21 +37,20 @@
 package org.glassfish.j2ee.statistics;
 
 /**
+ * Statistics provided by a JDBC resource
+ *
+ * @author Hans Hrasna
  */
-public interface JDBCStats extends Stats
-{
+public interface JDBCStats extends Stats{
+    /* Returns an array of JDBCConnectionStats that provide statistics about the
+     * non-pooled connections associated with the referencing JDBC resource stats
+     * @return JDBCConnectionStats []
+     */
+    JDBCConnectionStats[] getConnections();
+
+    /* Returns an array of JDBCConnectionPoolStats that provide statistics about the
+     * connection pools associated with the referencing JDBC resource stats
+     * @return JDBCConnectionStats []
+     */
+    JDBCConnectionPoolStats[] getConnectionPools();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

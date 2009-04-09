@@ -37,21 +37,20 @@
 package org.glassfish.j2ee.statistics;
 
 /**
+ * Specifies statistics provided by a JCA resource
  */
-public interface JCAStats extends Stats
-{
+public interface JCAStats extends Stats {
+    /**
+     * Returns an array of JCAConnectionStats that provide statistics about
+     * the non-pooled connections associated with the referencing JCA resource statistics
+     * @return JCAConnectionStats []
+     */
+    JCAConnectionStats[] getConnections();
+
+    /**
+     * Returns an array of JCAConnectionPool Stats that provide statistics about
+     * the connection pools associated with the referencing JCA resource statistics
+     * @return JCAConnectionPoolStats []
+     */
+    JCAConnectionPoolStats[] getConnectionPools();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

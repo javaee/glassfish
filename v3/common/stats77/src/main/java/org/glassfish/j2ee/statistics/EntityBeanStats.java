@@ -37,23 +37,16 @@
 package org.glassfish.j2ee.statistics;
 
 /**
+ * Specifies statistics provided by entity beans. 
  */
-public interface EntityBeanStats extends Stats
-{
-	public RangeStatistic getPooledCount();
-	public RangeStatistic getReadyCount();
+public interface EntityBeanStats extends EJBStats {
+    /**
+     * Number of beans in the ready state.
+     */
+    RangeStatistic getReadyCount();
+
+    /**
+     * Number of beans in the pooled state.
+     */
+    RangeStatistic getPooledCount();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

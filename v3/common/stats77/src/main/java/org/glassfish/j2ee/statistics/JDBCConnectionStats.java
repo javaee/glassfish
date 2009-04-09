@@ -37,21 +37,21 @@
 package org.glassfish.j2ee.statistics;
 
 /**
+ * Specifies the statistics provided by all (pooled and non-pooled) JDBC connections.
  */
-public interface JDBCConnectionStats extends Stats
-{
+public interface JDBCConnectionStats extends Stats {
+     /**
+     * Identifies the JDBC driver for the corresponding JDBCConnection.
+     */
+    String getJdbcDataSource();
+
+    /**
+     * Time spent waiting for a connection to be available. 
+     */
+    TimeStatistic getWaitTime();
+
+    /**
+     * Time spent using a connection. 
+     */
+    TimeStatistic getUseTime();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
