@@ -447,13 +447,6 @@
         <echo message="#################################################"/>
         <echo message="javaxServletErrorRequestUriDynamicResource and javaxServletErrorRequestUriStaticResource will fail on Linux if you don't change appserv-tests/config.properties localhost to localhost.localdomain"/>
         <echo message="#################################################"/>
-        <echo message="Expected failures on GlassFish as of 03/27/06: 1"/>
-        <echo message="  ssl-responseCode (Issue 483) "/>
-        <echo message="#################################################"/>
-        <echo message="#################################################"/>
-        <echo message="Expected failures on SE as of 04/21/05: 1"/>
-        <echo message="  sslClientAuthUnprotectedResourceGetClientCert"/>
-        <echo message="#################################################"/>
     </target>
 
     <target name="dev-report" depends="init-common,compile-report">
