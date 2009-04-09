@@ -43,6 +43,13 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.util.*;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.ValidatorFactory;
+import javax.validation.Validator;
+import javax.validation.ValidatorContext;
+import javax.validation.BeanDescriptor;
+
 /**
  * A WriteableView is a view of a ConfigBean object that allow access to the
  * setters of the ConfigBean.
@@ -56,12 +63,25 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
     private final Map<String, PropertyChangeEvent> changedAttributes;
     private final Map<String, ProtectedList> changedCollections;
     Transaction currentTx;
-
+    private static Validator beanValidator;
+    
     public WriteableView(ConfigBeanProxy readView) {
         this.bean = (ConfigBean) ((ConfigView) Proxy.getInvocationHandler(readView)).getMasterView();
         this.defaultView = bean.createProxy();
         changedAttributes = new HashMap<String, PropertyChangeEvent>();
         changedCollections = new HashMap<String, ProtectedList>();
+        if (beanValidator == null) {
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            try {
+                Thread.currentThread().setContextClassLoader(null);
+                ValidatorFactory validatorFactory =
+                    Validation.buildDefaultValidatorFactory();
+                ValidatorContext validatorContext = validatorFactory.usingContext();
+                beanValidator = validatorContext.getValidator();
+            } finally {
+                Thread.currentThread().setContextClassLoader(cl);
+            }
+        }
     }
 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -451,13 +471,44 @@ private class ProtectedList extends AbstractList {
 
 }
 
-    private void handleValidation(ConfigModel.Property property, Object value) 
-        throws ValidationException { //TODO
-        if (property instanceof ConfigModel.AttributeLeaf) { //validate only attributes for now
-            ConfigModel.AttributeLeaf al = (ConfigModel.AttributeLeaf)property;
-            DataType validator = bean.document.getValidator(al.dataType);
-            if (validator != null)
-                validator.validate(value.toString());
+    private String toCamelCase(String xmlName) {
+        StringTokenizer st =  new StringTokenizer(xmlName, "-");
+        StringBuffer camelCaseName = null;
+        if (st.hasMoreTokens()) {
+            camelCaseName = new StringBuffer(st.nextToken());
+        }
+        StringBuffer sb = null;
+        while (st.hasMoreTokens()) {
+            sb = new StringBuffer(st.nextToken());
+            char startChar = sb.charAt(0);
+            sb.setCharAt(0,Character.toUpperCase(startChar));
+            camelCaseName.append(sb);
+        }
+        return camelCaseName.toString();
+    }
+
+    private void handleValidation(ConfigModel.Property property, Object value)
+    throws ValidationException { 
+        BeanDescriptor bd =
+            beanValidator.getConstraintsForClass(bean.getProxyType());
+
+        Set constraintViolations = beanValidator.validateValue(
+            bean.getProxyType(), toCamelCase(property.xmlName()), value);
+
+        if (constraintViolations != null) {
+            Iterator it = constraintViolations.iterator();
+            boolean violated = false;
+            String msg = "Constraints for this bean " +
+                   "violated. \n Message = ";
+            while (it.hasNext()) {
+                violated = true;
+                ConstraintViolation cv = (ConstraintViolation) it.next();
+                msg = msg + cv.getPropertyPath() + " " + cv.getMessage();
+            }
+            if (violated) {
+                System.out.println(msg); // todo: needs to be removed
+                throw new ValidationException(msg);
+            }
         }
     }
 }
