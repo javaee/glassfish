@@ -96,7 +96,7 @@ public class OSGiArchiveHandler extends GenericHandler {
    */
     public boolean handles(ReadableArchive archive) throws IOException {
         Manifest manifest = getManifest(archive);
-        return (manifest.getMainAttributes().getValue("Bundle-Name")!=null);
+        return manifest!=null && (manifest.getMainAttributes().getValue("Bundle-Name")!=null);
     }
 
     public ClassLoader getClassLoader(ClassLoader parent, DeploymentContext context) {
