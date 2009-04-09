@@ -391,13 +391,15 @@
         <ant dir="readerThreadsConfig" target="all"/>
         <ant dir="readerSelectorsConfig" target="all"/>
         <ant dir="httpServletDoPost" target="all"/>
-<!-- XXX temporary commented out due to issue 7420 
+<!-- XXX temporarily commented out due to issue 7420 
         <ant dir="keepAliveTimeoutZero" target="all"/>
 -->
         <ant dir="keepAliveTimeoutZeroSSL" target="all"/>
         <ant dir="httpResponseServerHeader" target="all"/>
+<!-- XXX temporarily commented out due to issue 7559 
         <ant dir="defaultResponseType" target="all"/>
-<!-- XXX temporary commented out due to issue 6991 
+-->
+<!-- XXX temporarily commented out due to issue 6991 
         <ant dir="httpListenerAdminReconfig" target="all"/>
 -->
         <ant dir="headerBufferSize" target="all"/>
@@ -412,7 +414,7 @@
         <!-- Exclude for prelude, since port unification not supported
         <ant dir="wrongTransport" target="all"/>
         -->
-<!-- XXX temporary commented out due to issue 7420
+<!-- XXX temporarily commented out due to issue 7420
         <ant dir="maxKeepAliveRequests" target="all"/>
 -->
         <ant dir="httpRequestWhitespaceTolerance" target="all"/>
