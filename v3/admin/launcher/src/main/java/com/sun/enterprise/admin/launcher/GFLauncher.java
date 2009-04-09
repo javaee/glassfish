@@ -295,20 +295,18 @@ public abstract class GFLauncher {
         // 2. a ^C (or equivalent signal) was received by the console
         // note that exitValue is still set to -1
 
-        // only do ONE TIME!
-        if(hooked)
-            return;
+        // if we are watchdogging we may get many many processes.
+        // Each time this method is called we reset the Process reference inside
+        // the processWhacker
 
-        
-        final String msg = strings.get("serverStopped", info.getType());
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            public void run() {
-                // logger won't work anymore...
-                System.out.println(msg);
-                p.destroy();
-            }});
-
-        hooked = true;
+        if(processWhacker == null)  {
+            Runtime runtime = Runtime.getRuntime();
+            final String msg = strings.get("serverStopped", info.getType());
+            processWhacker = new ProcessWhacker(p, msg);
+            runtime.addShutdownHook(new Thread(processWhacker));
+        }
+        else
+            processWhacker.setProcess(p);
     }
         
     ////////////////////////////////////////////////////////////////////////////
@@ -521,7 +519,28 @@ public abstract class GFLauncher {
     private final static LocalStringsImpl strings = new LocalStringsImpl(GFLauncher.class);
     private boolean setupCalledByClients = false; //handle with care
     private int     exitValue = -1;
-    private boolean hooked = false;
+    private ProcessWhacker  processWhacker;
+
+    private static class ProcessWhacker implements Runnable {
+        ProcessWhacker(Process p, String msg) {
+            message = msg;
+            process = p;
+        }
+
+        void setProcess(Process p) {
+            process = p;
+        }
+
+        public void run() {
+            // we are in a shutdown hook -- most of the JVM is gone.
+            // logger won't work anymore...
+            System.out.println(message);
+            process.destroy();
+        }
+
+        private String message;
+        private Process process;
+    }
 }
 
 
