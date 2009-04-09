@@ -61,43 +61,10 @@ import org.apache.jasper.compiler.JspConfig;
  * 
  * @author Jean-Francois Arcand
  */
-public class TomcatDeploymentConfig{
+public class TomcatDeploymentConfig {
 
     private static final Logger logger = LogDomains.getLogger(
         TomcatDeploymentConfig.class, LogDomains.WEB_LOGGER);
-    
-    
-    /**
-     * Empty constructor
-     */
-    public TomcatDeploymentConfig(){
-    }
-    
-    
-    /**
-     * Configure a <code>WebModule</code> by applying default-web.xml 
-     * information contained in the default <code>WebModule</code>. 
-     *
-     * @param webModule Web Module to be configured with default web module
-     * @param defaultWebModule Default web module 
-     */
-    public static void configureWebModule(WebModule webModule,
-                                          WebModule defaultWebModule){ 
-        configureStandardContext(webModule,defaultWebModule);
-        configureContextParam(webModule,defaultWebModule);
-        configureApplicationListener(webModule,defaultWebModule);
-        configureEjbReference(webModule,defaultWebModule);
-        configureContextEnvironment(webModule,defaultWebModule);
-        configureErrorPage(webModule,defaultWebModule);
-        configureFilterDef(webModule,defaultWebModule);
-        configureFilterMap(webModule,defaultWebModule);
-        configureLoginConfig(webModule,defaultWebModule);
-        configureMimeMapping(webModule,defaultWebModule);
-        configureResourceRef(webModule,defaultWebModule);
-        configureMessageDestination(webModule,defaultWebModule); 
-        configureMessageRef(webModule,defaultWebModule);  
-    }
-    
     
     /**
      * Configure a <code>WebModule</code> by applying web.xml information
@@ -157,30 +124,6 @@ public class TomcatDeploymentConfig{
      
     /**
      * Configures EJB resource reference for a web application, as
-     * represented in a <code>&lt;ejb-ref&gt;</code> and 
-     * <code>&lt;ejb-local-ref&gt;</code>element in the
-     * deployment descriptor.
-     */
-    protected static void configureEjbReference(WebModule webModule,
-                                                WebModule defaultWebModule) {
-        ContextLocalEjb[] localEjbs = (ContextLocalEjb[])
-                            defaultWebModule.getCachedFindOperation()
-                                        [WebModuleContextConfig.LOCAL_EJBS];   
-        for (int i=0; i < localEjbs.length; i++){
-            webModule.addLocalEjb(localEjbs[i]);
-        }
-        
-        ContextEjb[] ejbs = (ContextEjb[])
-                            defaultWebModule.getCachedFindOperation()
-                                                [WebModuleContextConfig.EJBS];
-        for (int i=0; i <ejbs.length; i++){
-            webModule.addEjb(ejbs[i]);
-        }
-    }   
-    
-    
-    /**
-     * Configures EJB resource reference for a web application, as
      * represented in a <code>&lt;ejb-ref&gt;</code> in the
      * deployment descriptor.
      */    
@@ -219,23 +162,6 @@ public class TomcatDeploymentConfig{
 
     
     /**
-     * Configure application environment entry, as represented in
-     * an <code>&lt;env-entry&gt;</code> element in the deployment descriptor.
-     */
-    protected static void configureContextEnvironment(
-                                    WebModule webModule,
-                                    WebModule defaultWebModule) { 
-                                                        
-        ContextEnvironment[] contextEnvironment = (ContextEnvironment[])
-                    defaultWebModule.getCachedFindOperation()
-                                        [WebModuleContextConfig.ENVIRONMENTS];
-        for(int i=0; i < contextEnvironment.length; i++){
-            webModule.addEnvironment(contextEnvironment[i]);
-        }
-    }
-    
-    
-    /**
      * Configure error page element for a web application,
      * as represented in a <code>&lt;error-page&gt;</code> element in the
      * deployment descriptor.
@@ -250,25 +176,6 @@ public class TomcatDeploymentConfig{
         }                                     
     }
     
-    
-    /**
-     * Configure error page element for a web application,
-     * as represented in a <code>&lt;error-page&gt;</code> element in the
-     * deployment descriptor.
-     */
-    protected static void configureErrorPage(WebModule webModule,
-                                             WebModule defaultWebModule) { 
-            
-       ErrorPage[] errorPages = (ErrorPage[])
-                        defaultWebModule.getCachedFindOperation()
-                                    [WebModuleContextConfig.ERROR_PAGES];
-                                                 
-       for(int i=0; i <  errorPages.length; i++){
-            webModule.addErrorPage(errorPages[i]);
-       }
-                                             
-    }
-       
     
     /**
      * Configure filter definition for a web application, as represented
@@ -290,25 +197,7 @@ public class TomcatDeploymentConfig{
        }
                                                                      
     }
-    
-    
-    /**
-     * Configure filter definition for a web application, as represented
-     * in a <code>&lt;filter&gt;</code> element in the deployment descriptor.
-     */
-    protected static void configureFilterDef(WebModule webModule,
-                                             WebModule defaultWebModule) { 
-                                                        
-       FilterDef[] filterDefs = (FilterDef[])
-            defaultWebModule.getCachedFindOperation()
-                                        [WebModuleContextConfig.FILTER_DEFS];
-       
-       for (int i=0; i < filterDefs.length; i++)  {
-           webModule.addFilterDef(filterDefs[i]);          
-       }
-                                                                     
-    }
-    
+        
     
     /**
      * Configure filter mapping for a web application, as represented
@@ -327,54 +216,14 @@ public class TomcatDeploymentConfig{
     
     
     /**
-     * Configure filter mapping for a web application, as represented
-     * in a <code>&lt;filter-mapping&gt;</code> element in the deployment
-     * descriptor.  Each filter mapping must contain a filter name plus either
-     * a URL pattern or a servlet name.    
-     */
-    protected static void configureFilterMap(WebModule webModule,
-                                             WebModule defaultWebModule) { 
-                                                        
-        FilterMap[] filterMaps = (FilterMap[])
-                        defaultWebModule.getCachedFindOperation()
-                                        [WebModuleContextConfig.FILTER_MAPS];
-       
-        for (int i=0; i < filterMaps.length; i++)  {
-            webModule.addFilterMap(filterMaps[i]);           
-        }                                                    
-    }
-    
-    
-    /**
      * Configure context initialization parameter that is configured
      * in the server configuration file, rather than the application deployment
      * descriptor.  This is convenient for establishing default values (which
      * may be configured to allow application overrides or not) without having
      * to modify the application deployment descriptor itself.  
      */             
-    protected static void configureApplicationListener( WebModule webModule,
-                                                        WebModule defaultWebModule) {  
-        
-       String[] applicationListeners = (String[])
-                     defaultWebModule.getCachedFindOperation()
-                                [WebModuleContextConfig.APPLICATION_LISTENERS];
-       
-       for (int i=0; i < applicationListeners.length ; i++){
-            webModule.addApplicationListener(applicationListeners[i]);
-       }
-         
-    }
-    
-    
-    /**
-     * Configure context initialization parameter that is configured
-     * in the server configuration file, rather than the application deployment
-     * descriptor.  This is convenient for establishing default values (which
-     * may be configured to allow application overrides or not) without having
-     * to modify the application deployment descriptor itself.  
-     */             
-    protected static void configureApplicationListener( WebModule webModule,
-                                                    WebBundleDescriptor wmd) {
+    protected static void configureApplicationListener(
+            WebModule webModule, WebBundleDescriptor wmd) {
         
         Vector vector = wmd.getAppListenerDescriptors();
         for (int i=0; i < vector.size() ; i++){
@@ -496,23 +345,7 @@ public class TomcatDeploymentConfig{
      * deployment descriptor.
      */ 
     protected static void configureLoginConfig(WebModule webModule,
-                                               WebModule defaultWebModule) {
-        LoginConfig loginConf = defaultWebModule.getLoginConfig();
-        if ( loginConf == null ){
-            return;
-        }                                          
-        webModule.setLoginConfig(loginConf);       
-        
-    }
-    
-    
-    /**
-     * Configure a login configuration element for a web application,
-     * as represented in a <code>&lt;login-config&gt;</code> element in the
-     * deployment descriptor.
-     */ 
-    protected static void configureLoginConfig(WebModule webModule,
-                                        WebBundleDescriptor wmd) {
+                                               WebBundleDescriptor wmd) {
                                             
         LoginConfiguration loginConf = wmd.getLoginConfiguration();
         if ( loginConf == null ){
@@ -542,28 +375,6 @@ public class TomcatDeploymentConfig{
     
     
     /**
-     * Adds the MIME mappings defined in default-web.xml to the given
-     * web module.
-     *
-     * @param webModule Web module to which the MIME mappings specified in
-     * default-web.xml are to be added
-     * @param defaultWebModule Web Module representing default-web.xml
-     */
-    protected static void configureMimeMapping(WebModule webModule,
-                                               WebModule defaultWebModule) {
-        String[] mimeMappings = (String[])
-            defaultWebModule.getCachedFindOperation()
-                                    [WebModuleContextConfig.MIME_MAPPINGS];
-       
-        for (int i=0; mimeMappings!=null && i<mimeMappings.length; i++) {
-            webModule.addMimeMapping(
-                            mimeMappings[i],
-                            defaultWebModule.findMimeMapping(mimeMappings[i]));
-        }                                                
-    }
-    
-    
-    /**
      * Configure resource-reference defined in the deployment descriptor.
      */
     protected static void configureResourceRef(WebModule webModule,
@@ -574,21 +385,6 @@ public class TomcatDeploymentConfig{
         }                                                                     
     }
     
-    /**
-     * Configure resource-reference defined in the deployment descriptor.
-     */
-    protected static void configureResourceRef(WebModule webModule,
-                                               WebModule defaultWebModule) { 
-        
-        ContextResource[] contextResources = (ContextResource[])
-                                defaultWebModule.getCachedFindOperation()
-                                        [WebModuleContextConfig.RESOURCES];
-
-        for (int i=0; i < contextResources.length; i++){
-            webModule.addResource(contextResources[i]);
-        }
-    }
- 
     
     /**
      * Configure context parameter defined in the deployment descriptor.
@@ -602,28 +398,12 @@ public class TomcatDeploymentConfig{
     
     
     /**
-     * Configure context parameter defined in the deployment descriptor.
-     */
-    protected static void configureContextParam(WebModule webModule,
-                                                WebModule defaultWebModule) { 
-        
-        ApplicationParameter[] params = (ApplicationParameter[])
-                    defaultWebModule.getCachedFindOperation()
-                            [WebModuleContextConfig.APPLICATION_PARAMETERS];
-       
-        for (int i=0 ; i < params.length; i++){
-            webModule.addParameter(params[i].getName(), params[i].getValue());
-        }
-    }
-    
-    
-    /**
      * Configure of a message destination for a web application, as
      * represented in a <code>&lt;message-destination&gt;</code> element
      * in the deployment descriptor.
      */    
-    protected static void configureMessageDestination(WebModule webModule,
-                                                      WebBundleDescriptor wmd) {
+    protected static void configureMessageDestination(
+            WebModule webModule, WebBundleDescriptor wmd) {
         for (MessageDestinationDescriptor msgDrd :
                 wmd.getMessageDestinations()) {
             webModule.addMessageDestination(
@@ -633,31 +413,12 @@ public class TomcatDeploymentConfig{
 
     
     /**
-     * Configure of a message destination for a web application, as
-     * represented in a <code>&lt;message-destination&gt;</code> element
-     * in the deployment descriptor.
-     */    
-    protected static void configureMessageDestination(WebModule webModule,
-                                                      WebModule defaultWebModule) { 
-                                                        
-        MessageDestination[] messageDestinations = (MessageDestination[])
-                    defaultWebModule.getCachedFindOperation()
-                                [WebModuleContextConfig.MESSAGE_DESTINATIONS];
-        
-        for(int i=0; i < messageDestinations.length; i++){
-            webModule.addMessageDestination(messageDestinations[i]);
-        }                                                           
-    }
-
-    
-    
-    /**
      * Representation of a message destination reference for a web application,
      * as represented in a <code>&lt;message-destination-ref&gt;</code> element
      * in the deployment descriptor.
      */
-    protected static void configureMessageDestinationRef(WebModule webModule,
-                                                  WebBundleDescriptor wmd) {
+    protected static void configureMessageDestinationRef(
+            WebModule webModule, WebBundleDescriptor wmd) {
         for (MessageDestinationReferenceDescriptor msgDrd :
                 wmd.getMessageDestinationReferenceDescriptors()) {            
             webModule.addMessageDestinationRef(
@@ -666,24 +427,6 @@ public class TomcatDeploymentConfig{
     }
     
         
-    /**
-     * Configure of a message destination for a web application, as
-     * represented in a <code>&lt;message-destination&gt;</code> element
-     * in the deployment descriptor.
-     */    
-    protected static void configureMessageRef(WebModule webModule,
-                                              WebModule defaultWebModule) { 
-                                                        
-        MessageDestinationRef[] messageDestinationRefs = (MessageDestinationRef[])
-                defaultWebModule.getCachedFindOperation()
-                            [WebModuleContextConfig.MESSAGE_DESTINATION_REFS];
-        
-        for(int i=0; i < messageDestinationRefs.length; i++){
-            webModule.addMessageDestinationRef(messageDestinationRefs[i]);
-        }                                                           
-    }
-      
-    
     /**
      * Configure a resource reference for a web application, as
      * represented in a <code>&lt;resource-ref&gt;</code> element in the
@@ -884,66 +627,5 @@ public class TomcatDeploymentConfig{
                 }
             }
         }
-
     }
-    
-    protected static void configureStandardContext(
-            WebModule webModule, WebModule defaultWebModule) { 
-                     
-        // 1. Add the default Wrapper
-        Container wrappers[] = (Container[])
-                            defaultWebModule.getCachedFindOperation()
-                                            [WebModuleContextConfig.CHILDREN];
-        
-        StandardWrapper wrapper, defaultWrapper;
-        for(int i=0; i < wrappers.length; i++){    
-            defaultWrapper = (StandardWrapper)wrappers[i];
-            wrapper = (StandardWrapper)webModule.createWrapper();
-            wrapper.setName(defaultWrapper.getName());
-            webModule.addChild(wrapper);
-            
-            String[] initParams = defaultWrapper.findInitParameters();
-            for (int j=0; j < initParams.length; j++){
-                wrapper.addInitParameter(
-                    initParams[j], defaultWrapper.findInitParameter(initParams[j]));
-            }
-       
-            if (defaultWrapper.getJspFile() == null){
-                wrapper.setServletClassName(
-                    defaultWrapper.getServletClassName());
-            } else {
-                wrapper.setJspFile(defaultWrapper.getJspFile());
-            }
-    
-            wrapper.setLoadOnStartup(defaultWrapper.getLoadOnStartup());
-            if (defaultWrapper.getRunAs() != null)
-                wrapper.setRunAs(defaultWrapper.getRunAs());
-        }
-                           
-        String[] servletMappings = (String[])
-                    defaultWebModule.getCachedFindOperation()
-                                    [WebModuleContextConfig.SERVLET_MAPPINGS];
-        
-        String servletName;
-        for (int j=0; j < servletMappings.length; j++){
-            servletName = 
-                defaultWebModule.findServletMapping(servletMappings[j]);
-            if (servletName.equals("jsp")){
-                webModule.addServletMapping(
-                    servletMappings[j], servletName, true);
-            } else {
-                webModule.addServletMapping(servletMappings[j],servletName);
-            }
-        }
-        
-        webModule.setSessionTimeout(defaultWebModule.getSessionTimeout());
-           
-        String[] welcomeFiles = defaultWebModule.getWelcomeFiles();
-        for(int i=0; i < welcomeFiles.length; i++){
-            webModule.addWelcomeFile(welcomeFiles[i]);
-        }
-        
-        webModule.setCharsetMapper((CharsetMapper)
-            defaultWebModule.getCharsetMapper().clone()); 
-    }       
 }
