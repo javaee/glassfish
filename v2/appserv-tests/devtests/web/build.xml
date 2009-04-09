@@ -23,7 +23,7 @@
     <target name="jsp">
         <ant dir="jspAnonymousClass" target="all"/>
         <ant dir="emptyServletPathJspInclude" target="all"/>
-        <ant dir="usebean" target="all"/>
+        <ant dir="jspUseBean" target="all"/>
         <ant dir="jspconfig" target="all"/>
         <ant dir="jsp-security" target="all"/>
         <ant dir="jspGetTagLibraryInfos" target="all"/>
