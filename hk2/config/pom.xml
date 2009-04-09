@@ -90,6 +90,11 @@
             <artifactId>tiger-types-osgi</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.extras</groupId>
+            <artifactId>bean-validator</artifactId>
+            <version>4.0.0.Alpha3</version>
+        </dependency>
     </dependencies>
     <profiles>
         <profile>
