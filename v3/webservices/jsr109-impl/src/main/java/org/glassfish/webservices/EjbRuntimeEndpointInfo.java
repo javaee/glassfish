@@ -268,10 +268,10 @@ public class EjbRuntimeEndpointInfo {
 
                         String uri = endpoint.getEndpointAddressUri();
                         String urlPattern = uri.startsWith("/") ? uri : "/" + uri;
-                        if(urlPattern.indexOf("/", 1) != -1) {
+                        /*if(urlPattern.indexOf("/", 1) != -1) {
                             urlPattern = urlPattern.substring(urlPattern.indexOf("/", 1));
                         }
-
+*/
                         // All set; Create the adapter
                         if(adapterList == null) {
                             adapterList = new ServletAdapterList();

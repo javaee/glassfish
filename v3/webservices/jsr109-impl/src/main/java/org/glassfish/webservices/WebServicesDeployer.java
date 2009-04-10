@@ -268,33 +268,12 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer,WebSer
                             // This is a JAXWS endpoint with @WebService; Invoke wsgen
                             jaxwsEndPtFound = true;
 
-                            String wsgenClassPath = getWsgenClassPath(classesDir, webinfLibDir,
-                                dc.getSourceDir().getAbsolutePath()+File.separator+app.getLibraryDirectory(),
-                                moduleDir.getAbsolutePath(),app,dc);
-                            QName servicename = endpoint.getServiceName();
-                            File newstubsdir = new File(stubsDir,servicename.getLocalPart());
-                            boolean stubsdircreated = newstubsdir.mkdir();
-                           // stubsdircreated?newstubsdir.getCanonicalPath():stubsDir;
-                            Thread.currentThread().setContextClassLoader(dc.getClassLoader())  ;
-                            /*boolean wsgenDone =
-                                runWsGen(implClassName, wsdlFile.exists(), wsgenClassPath,
-                                    stubsDir, wsdlDir, endpoint.getServiceName(), endpoint.getWsdlPort(),dc);
-                            if(!wsgenDone) {
-                                // wsgen failed; if WSDL file were present, just throw a warning
-                                // assuming that the user would have packaged everything
-                                if(!wsdlFile.exists()) {
-                                    throw new DeploymentException("WSGEN FAILED");
-                                } else {
-                                    logger.warning(rb.getString("wsgen.failed.cont"));
 
-                                }
-                            }
-                            try {
-                                endpoint.getWebService().setWsdlFileUrl(wsdlFile.toURI().toURL());
-                            } catch(java.net.MalformedURLException mue) {
-                                throw new DeploymentException(rb.getString("wsgen.failed") , mue);
-                            }
-                            logger.info(rb.getString("wsgen.success"));*/
+                            QName servicename = endpoint.getServiceName();
+
+
+                            Thread.currentThread().setContextClassLoader(dc.getClassLoader())  ;
+
                         } else {
                             // this is a jaxrpc endpoint
                             // if we already found a jaxws endpoint, flag error since we do not support jaxws+jaxrpc endpoint
@@ -611,177 +590,9 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer,WebSer
 
     }
 
-    private String getWsgenClassPath(File classesDir, String webinfLibDir,
-                                     String appLibDirPath, String moduleDir, Application app,DeploymentContext dc) throws DeploymentException {
-        // First thing in the classpath is modules' classes directory
-        String classpath = classesDir.getAbsolutePath();
-        /**
-         * JAXWS uses the System.getProperty(java.class.path) to pass on to apt during wsgen
-         * In V2 this would have
-         * tools.jar, webservices-rt and webservices-api.jar and webservices-tools.jar so there was no issue
-         * In V3 the apt cannot see JSR 250, JAXB api and JAXWS apis and javax.ejb classes so I have to pass them
-         * explicitly to apt using the classpath option
-         * This will be changed after prelude once I move to asm as it is not thoroughly tested right now
-         */
-
-        WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
-        ModulesRegistry modulesRegistry = wscImpl.getModulesRegistry();
-        Collection<Module> modules1 = modulesRegistry.getModules();
-        Iterator it= modules1.iterator();
-
-        while(it.hasNext()){
-            Module m = (Module) it.next();
-            String name = m.getName();
-            if (name.equals("com.sun.xml.ws") || name.equals("com.sun.xml.bind") || name.equals("org.glassfish.javax.ejb") ){
-                ModuleDefinition modDef= m.getModuleDefinition();
-                java.net.URI[] location = modDef.getLocations();
-                classpath+=(File.pathSeparator + new File(location[0]).getAbsolutePath())  ;
-
-            }
-        }
-
-        // Next add the Jar files in WEB-INF/lib, if any
-        if(webinfLibDir != null) {
-            classpath = addJarsToClassPath(classpath, webinfLibDir);
-        }
-
-        // Next add the jar files in the EAR level lib directory
-        if(appLibDirPath != null) {
-            classpath = addJarsToClassPath(classpath, appLibDirPath);
-            //This will add thelib folder at root of the ear file
-            if (dc.getSource().getParentArchive()!= null) {
-                classpath = addJarsToClassPath(classpath,new File(dc.getSource().getParentArchive().getURI().getSchemeSpecificPart(),"lib").getAbsolutePath());
-            }
-            classpath = addJarsToClassPath(classpath,new File(appLibDirPath).getParentFile().getAbsolutePath());
-        }
-
-        //Add expanded modules to classpath
-        Set <ModuleDescriptor<BundleDescriptor>> modulesSet = app.getModules();
-        Iterator <ModuleDescriptor<BundleDescriptor>> modules ;
-        for ( modules = modulesSet.iterator() ; modules.hasNext();) {
-
-            ModuleDescriptor <BundleDescriptor> md =  modules.next();
-
-            String moduleUri = md.getArchiveUri();
-            String parentPath = new File(appLibDirPath).getParentFile(
-            ).getAbsolutePath();
-            String moduleRoot = DeploymentUtils.getEmbeddedModulePath(
-                    parentPath, moduleUri);
-
-            classpath = addModuleDirsToClassPath(classpath,moduleRoot);
-        }
-
-        // Now add the classpath elements in the modules Manifest entries
-        FileInputStream is = null;
-        try {
-            File mfFile = new File(moduleDir+File.separator+"META-INF"+
-                    File.separator+"MANIFEST.MF");
-            if(mfFile.exists()) {
-                is = new FileInputStream(mfFile);
-                Manifest ms = new Manifest(is);
-                Attributes attrMap = ms.getMainAttributes();
-                String mfCp = attrMap.getValue(Attributes.Name.CLASS_PATH);
-                if(mfCp != null && mfCp.length() != 0) {
-                    StringTokenizer strTok = new StringTokenizer(mfCp, " \t");
-                    while(strTok.hasMoreTokens()) {
-                        String givenCP = strTok.nextToken();
-                        // Append moduleDir to all relative classPaths
-                        if(!givenCP.startsWith(File.separator)) {
-                            //Fix for 2629
-                            // Based on J2EE spec the referenced jars
-                            // in Classpath
-                            // must be relative to the referencing jars
-                            givenCP = new File(moduleDir).getParent()+File.separator+givenCP;
-                        }
-                        classpath+=(File.pathSeparator+givenCP);
-                    }
-                }
-            }
-
-        } catch (Exception e) {
-            throw new DeploymentException(format(rb.getString("exception.manifest"),
-                   e.getMessage() , moduleDir));
-        } finally {
-            if(is != null) {
-                try {
-                    is.close();
-                } catch(IOException t) {
-                    logger.fine( t.getMessage());
-                }
-            }
-        }
-        return classpath;
-    }
-
-    class JarFilter implements FilenameFilter {
-        public boolean accept(File dir, String name) {
-            return (name.endsWith(".jar"));
-        }
-    }
-
-    private String addJarsToClassPath(String cp, String dirName) throws DeploymentException {
-        try {
-            File dir = new File(dirName);
-            if(dir.exists()) {
-                Iterator fileSetIter = FileUtils.getAllFilesUnder(dir, new JarFilter(), false).iterator();
-                while(fileSetIter.hasNext()) {
-                    cp+=(File.pathSeparator+((File)fileSetIter.next()).getAbsolutePath());
-                }
-            }
-        } catch (IOException ioex) {
-            throw new DeploymentException(format(rb.getString("io.exception"),
-                    ioex.getMessage() , dirName));
-        }
-        return cp;
-    }
 
 
 
-    private String addModuleDirsToClassPath(String cp, String dirName)  {
-        File dir = new File(dirName);
-        if (dir.exists()) {
-            cp+=File.pathSeparator+ dir.getAbsolutePath();
-
-        }
-
-        return cp;
-    }
-
-    private boolean runWsGen(String implClass, boolean skipGenWsdl, String classPath, File stubsDir,
-                             File wsdlDir, QName sQname, QName port,DeploymentContext dc) {
-
-
-       // Thread.currentThread().setContextClassLoader(dc.getClassLoader())      ;
-        ArrayList<String> argsList = new ArrayList<String>();
-        argsList.add("-cp");
-        argsList.add(classPath);
-        argsList.add("-keep");
-        if(!skipGenWsdl) {
-            argsList.add("-wsdl");
-            argsList.add("-r");
-            argsList.add(wsdlDir.getAbsolutePath());
-            argsList.add("-servicename");
-            argsList.add(sQname.toString());
-            argsList.add("-portname");
-            argsList.add(port.toString());
-        }
-
-
-        argsList.add("-d");
-        argsList.add(stubsDir.getAbsolutePath());
-        argsList.add("-Xdonotoverwrite");
-        argsList.add(implClass);
-        WSToolsObjectFactory wsTools = WSToolsObjectFactory.newInstance();
-        String[] wsgenargs = argsList.toArray(new String[0]);
-        try {
-            return wsTools.wsgen(System.out, wsgenargs);
-        } catch (Exception e ) {
-            e.printStackTrace();
-            throw new RuntimeException (format(rb.getString("wsgen.rtexception"),
-                    e.getMessage()));
-
-        }
-    }
 
     public void doWebServicesDeployment(Application app, DeploymentContext dc)throws Exception{
 
@@ -857,46 +668,9 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer,WebSer
                 String subDirName = next.getBundleDescriptor().getModuleDescriptor().getArchiveUri();
                 genXmlDir = new File(genXmlDir, subDirName.replaceAll("\\.", "_"));
             }*/
-            File genWsdlFile = null;
+            //No generation of wsdl done since wsgen takes care of it.
 
-            /*if (!next.hasWsdlFile()) {
-                // no wsdl file was specified at deployment or it was an http location
-                // we must have downloaded it or created one when
-                // deploying into the generated directory directly. pick it up from there,
-                // but generate it into a temp
-                genWsdlFile = new File(url.toURI());
-                genWsdlFile = File.createTempFile("gen_","", genWsdlFile.getParentFile());
-            } else {
-                String wsdlFileDir = next.getWsdlFileUri().substring(0, next.getWsdlFileUri().lastIndexOf('/'));
-                (new File(genXmlDir, wsdlFileDir)).mkdirs();
-                genWsdlFile = new File(genXmlDir, next.getWsdlFileUri());
-            }
-            wsUtil.generateFinalWsdl(url, next, wsUtil.getWebServerInfo(), genWsdlFile);
 
-            if (!next.hasWsdlFile()) {
-                // Two renaming operations followed by a delete
-                // are required because, on windows, a File.delete and
-                // a File.renameTo are not foolproof
-                File finalName = new File(url.toURI());
-                File tmpName = new File(genWsdlFile.getAbsolutePath() + ".TMP");
-                // Rename wsgen generated / downloaded WSDL to .TMP
-                boolean renameDone = finalName.renameTo(tmpName);
-                if(!renameDone) {
-                    // On windows rename operation fails occassionaly;
-                    // so use the iostream way to do the rename
-                    moveFile(finalName.getAbsolutePath(), tmpName.getAbsolutePath());
-                }
-                // Rename soap:address fixed WSDL to wsgen generated WSDL
-                renameDone = genWsdlFile.renameTo(finalName);
-                if(!renameDone) {
-                    // On windows rename operation fails occassionaly;
-                    // so use the iostream way to do the rename
-                    moveFile(genWsdlFile.getAbsolutePath(), finalName.getAbsolutePath());
-                }
-                // Remove the original WSDL file
-                tmpName.delete();
-            }
-*/
         }
     }
 
@@ -971,17 +745,7 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer,WebSer
     }
 
     public void unload(WebServicesApplication container, DeploymentContext context) {
-//        try {
-//            //Fix for NPE, if load failed, the container is null, why is v3 trying to unload if there is
-//            //no container?
-//            if(container != null)
-//                dispatcher.unregisterEndpoint(contextRoot, container);
-//            container = null;
-//            logger.log(Level.INFO,"Unloading ");
-//        } catch (EndpointRegistrationException e) {
-//            context.getLogger().log(Level.SEVERE,
-//                    Messages.format(Messages.ERR_UNLOAD_APP, container.getContextRoot()), e);
-//        }
+        
     }
 
      public void clean(DeploymentContext context) {
