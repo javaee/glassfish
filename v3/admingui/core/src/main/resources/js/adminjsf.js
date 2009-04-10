@@ -366,7 +366,6 @@ function setFieldValue(appNameId, value,  typeId, contextRootId, extensionId) {
     var pfex = getPrefix(appName);
     var sfex = getSuffix(appName);
 
-    alert(sfex);
     var component = getTextElement(extensionId);
     component.value=sfex;
 
