@@ -41,10 +41,14 @@ import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.container.Container;
+import org.glassfish.api.container.RequestDispatcher;
+import org.glassfish.api.container.EndpointRegistrationException;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.deployment.common.DummyApplication;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -74,11 +78,18 @@ import java.util.logging.Logger;
  * 
  */
 @Service
-public class WebServicesDeployer implements Deployer<WebServicesContainer, DummyApplication> {
+public class WebServicesDeployer implements Deployer<WebServicesContainer,WebServicesApplication> {
 
     protected Logger logger = LogDomains.getLogger(this.getClass(),LogDomains.WEBSERVICES_LOGGER);
 
     private ResourceBundle rb = logger.getResourceBundle()   ;
+
+    @Inject
+    ServerEnvironment env;
+
+    @Inject
+    RequestDispatcher dispatcher;
+
 
 
    private final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(WebServicesDeployer.class);
@@ -96,7 +107,7 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer, Dummy
 
 
     protected void cleanArtifacts(DeploymentContext deploymentContext) throws DeploymentException {
-        //TODO BM clean
+
     }
 
    
@@ -265,7 +276,7 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer, Dummy
                             boolean stubsdircreated = newstubsdir.mkdir();
                            // stubsdircreated?newstubsdir.getCanonicalPath():stubsDir;
                             Thread.currentThread().setContextClassLoader(dc.getClassLoader())  ;
-                            boolean wsgenDone =
+                            /*boolean wsgenDone =
                                 runWsGen(implClassName, wsdlFile.exists(), wsgenClassPath,
                                     stubsDir, wsdlDir, endpoint.getServiceName(), endpoint.getWsdlPort(),dc);
                             if(!wsgenDone) {
@@ -283,7 +294,7 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer, Dummy
                             } catch(java.net.MalformedURLException mue) {
                                 throw new DeploymentException(rb.getString("wsgen.failed") , mue);
                             }
-                            logger.info(rb.getString("wsgen.success"));
+                            logger.info(rb.getString("wsgen.success"));*/
                         } else {
                             // this is a jaxrpc endpoint
                             // if we already found a jaxws endpoint, flag error since we do not support jaxws+jaxrpc endpoint
@@ -357,6 +368,7 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer, Dummy
     public MetaData getMetaData() {
         return new MetaData(false, null, new Class[] {Application.class});
     }
+    
     private void downloadWsdlsAndSchemas( URL httpUrl, File wsdlDir) throws Exception {
         // First make required directories and download this wsdl file
         wsdlDir.mkdirs();
@@ -847,7 +859,7 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer, Dummy
             }*/
             File genWsdlFile = null;
 
-            if (!next.hasWsdlFile()) {
+            /*if (!next.hasWsdlFile()) {
                 // no wsdl file was specified at deployment or it was an http location
                 // we must have downloaded it or created one when
                 // deploying into the generated directory directly. pick it up from there,
@@ -884,7 +896,7 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer, Dummy
                 // Remove the original WSDL file
                 tmpName.delete();
             }
-
+*/
         }
     }
 
@@ -958,9 +970,18 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer, Dummy
         new File(sourceFile).delete();
     }
 
-    public void unload(DummyApplication application, DeploymentContext dc) {
-
-        // unload from webservices container
+    public void unload(WebServicesApplication container, DeploymentContext context) {
+//        try {
+//            //Fix for NPE, if load failed, the container is null, why is v3 trying to unload if there is
+//            //no container?
+//            if(container != null)
+//                dispatcher.unregisterEndpoint(contextRoot, container);
+//            container = null;
+//            logger.log(Level.INFO,"Unloading ");
+//        } catch (EndpointRegistrationException e) {
+//            context.getLogger().log(Level.SEVERE,
+//                    Messages.format(Messages.ERR_UNLOAD_APP, container.getContextRoot()), e);
+//        }
     }
 
      public void clean(DeploymentContext context) {
@@ -968,8 +989,10 @@ public class WebServicesDeployer implements Deployer<WebServicesContainer, Dummy
     }
 
 
-    public DummyApplication load(WebServicesContainer container, DeploymentContext context) {
-        return new DummyApplication();
+    public WebServicesApplication load(WebServicesContainer container, DeploymentContext context) {
+
+        return new WebServicesApplication(context,env,dispatcher);
+
     }
 
 

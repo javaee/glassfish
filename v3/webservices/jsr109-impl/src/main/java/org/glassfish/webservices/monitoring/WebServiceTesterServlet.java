@@ -598,11 +598,14 @@ public class WebServiceTesterServlet extends HttpServlet implements MessageListe
         classesDir.delete();
         classesDir.mkdirs();
         
-        String[] wsimportArgs = new String[4];
+        String[] wsimportArgs = new String[7];
         wsimportArgs[0]="-d";
         wsimportArgs[1]=classesDir.getAbsolutePath();
         wsimportArgs[2]="-keep";
         wsimportArgs[3]=wsdlLocation.toExternalForm();
+        wsimportArgs[4]="-Xendorsed";
+        wsimportArgs[5]="-target";
+        wsimportArgs[6]="2.1";
         WSToolsObjectFactory tools = WSToolsObjectFactory.newInstance();
         boolean success = tools.wsimport(System.out, wsimportArgs);
         if (logger!=null) {

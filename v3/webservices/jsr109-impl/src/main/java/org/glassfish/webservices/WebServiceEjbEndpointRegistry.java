@@ -48,9 +48,11 @@ import com.sun.enterprise.deployment.WebServiceEndpoint;
 import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Inject;
 import org.glassfish.webservices.monitoring.WebServiceEngineImpl;
 import org.glassfish.ejb.spi.WSEjbEndpointRegistry;
 import org.glassfish.ejb.api.EjbEndpointFacade;
+import org.glassfish.api.container.RequestDispatcher;
 
 
 /**
@@ -68,7 +70,7 @@ public class WebServiceEjbEndpointRegistry implements WSEjbEndpointRegistry {
 
     private ResourceBundle rb = logger.getResourceBundle()   ;
     
-    private static final WebServiceEjbEndpointRegistry registry = new WebServiceEjbEndpointRegistry();
+
     
     // Ejb service endpoint info.  
     private Hashtable webServiceEjbEndpoints = new Hashtable();
@@ -87,12 +89,7 @@ public class WebServiceEjbEndpointRegistry implements WSEjbEndpointRegistry {
     
 
     
-    /**
-     * @return the registry instance
-     */
-    public static WebServiceEjbEndpointRegistry getRegistry() {
-        return registry;        
-    }
+
     
     public void registerEndpoint(WebServiceEndpoint webserviceEndpoint,
                                   EjbEndpointFacade ejbContainer,

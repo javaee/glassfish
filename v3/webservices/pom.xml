@@ -50,6 +50,7 @@
     <name>GlassFish Web Services related modules</name>  
     <modules>
         <module>jsr109-impl</module>
+        <module>webservices-scripts</module>
     </modules>
 </project>
 

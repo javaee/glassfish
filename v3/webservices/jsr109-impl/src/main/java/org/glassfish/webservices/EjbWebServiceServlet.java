@@ -60,6 +60,7 @@ import org.glassfish.webservices.monitoring.WebServiceEngineImpl;
 import org.glassfish.webservices.monitoring.WebServiceTesterServlet;
 import org.glassfish.webservices.monitoring.AuthenticationListener;
 import org.glassfish.ejb.api.EjbEndpointFacade;
+import org.glassfish.ejb.spi.WSEjbEndpointRegistry;
 
 /**
  * Servlet responsible for invoking EJB webservice endpoint.
@@ -112,8 +113,10 @@ public class EjbWebServiceServlet extends HttpServlet {
         }
 
         if (dispatch) {
+            WebServiceEjbEndpointRegistry wsejbEndpointRegistry = (WebServiceEjbEndpointRegistry) org.glassfish.internal.api.Globals.getDefaultHabitat().getComponent(
+                    WSEjbEndpointRegistry.class);
             EjbRuntimeEndpointInfo ejbEndpoint = 
-                WebServiceEjbEndpointRegistry.getRegistry().getEjbWebServiceEndpoint(requestUri, hreq.getMethod(), query);
+                wsejbEndpointRegistry.getEjbWebServiceEndpoint(requestUri, hreq.getMethod(), query);
 
             if (ejbEndpoint != null) {
                 /*
@@ -185,12 +188,12 @@ public class EjbWebServiceServlet extends HttpServlet {
 
 
 
-            if (!authenticated) {
+            /*if (!authenticated) {
                 hresp.setHeader("WWW-Authenticate",
                         "Basic realm=\"" + realmName + "\"");
                 hresp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
-            }
+            }*/
             
             // depending on the jaxrpc or jax-ws version, this will return the
             // right dispatcher.
