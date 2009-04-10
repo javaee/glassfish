@@ -351,7 +351,7 @@ public class SqlTimestamp
      * this object to the stream. 
      *    
      * @return java.sql.Timestamp that represents the same value. 
-     * @throw ObjectStreamException. 
+     * @throws ObjectStreamException. 
      */   
     Object writeReplace() throws ObjectStreamException 
     { 

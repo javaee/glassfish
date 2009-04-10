@@ -184,7 +184,7 @@ public class MappingReferenceKeyElementImpl extends MappingMemberElementImpl
 	 * based on the name of the supplied table.  This method is provided as 
 	 * part of the implementation of the ReferenceKey interface but should 
 	 * only be used when a ReferenceKey object is used or by the runtime.
-	 * @param table table element to be used with this key.
+	 * @param tableElement mapping table element to be used with this key.
 	 */
 	public void setDeclaringTable (TableElement tableElement)
 	{

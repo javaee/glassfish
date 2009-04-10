@@ -415,7 +415,7 @@ public class ConnectionFactoryImpl implements ConnectionFactory, java.io.Seriali
   
   /**
    * Sets the LogWriter to which messages should be sent
-   * @param pw            logWriter
+   * @param logWriter            logWriter
    */
   public void setLogWriter (PrintWriter logWriter)
   {

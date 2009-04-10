@@ -105,7 +105,6 @@ public class BucketizedHashtable implements Cloneable, Map, Serializable {
      * Constructs a new, empty BucketizedHashtable with the default bucket
      * size 11, default initial capacity (11 * bucketSize)
      * and default load factor 0.75.
-     * @param bucketSize      the number of buckets used for hashing
      */
     public BucketizedHashtable() {
         this(11, 11 * 11, 0.75f);

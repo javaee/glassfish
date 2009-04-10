@@ -274,7 +274,7 @@ public class SqlDate
      * this object to the stream.
      *   
      * @return java.sql.Date that represents the same value.
-     * @throw ObjectStreamException.
+     * @throws ObjectStreamException.
      */  
     Object writeReplace() throws ObjectStreamException
     {

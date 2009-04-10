@@ -197,7 +197,7 @@ public class FilterEnhancer
 
     /**
      * Creates an instance of a JDO enhancer.
-     * @param model the JDO model
+     * @param metaData the JDO model
      * @param settings enhancement properties
      * @param out standard ouput stream for the enhancer
      */

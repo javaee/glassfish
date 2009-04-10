@@ -198,7 +198,7 @@ public class ClassFileSource
   /**
    * Constructor
    * @param className The expected name of the class
-   * @param classFile The zip file containing the class.  This file should
+   * @param zipFile The zip file containing the class.  This file should
    *   exist and be readable.
    */
   public ClassFileSource(String className, ZipFile zipFile) {
@@ -212,8 +212,8 @@ public class ClassFileSource
   /**
    * Constructor
    * @param className The expected name of the class
-   * @param classFile The zip file containing the class.  This file should
-   *   exist and be readable.
+   * @param byteCodeStream containing the class file.
+   * 
    */
   //@olsen: added constructor
   public ClassFileSource(String className, InputStream byteCodeStream) {

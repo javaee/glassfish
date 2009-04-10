@@ -84,7 +84,7 @@ import com.sun.jdo.api.persistence.enhancer.util.Support;
  * Implements a ClassLoader which automatically enchances the .class files
  * according to the JDOMetaData information in the jar archive.
  * @author  Yury Kamen
- * @version
+ *
  */
 public class EnhancerClassLoader extends URLClassLoader {
 

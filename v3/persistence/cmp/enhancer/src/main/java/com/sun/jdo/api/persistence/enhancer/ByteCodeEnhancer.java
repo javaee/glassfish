@@ -78,8 +78,8 @@ public interface ByteCodeEnhancer
      * the enhanced class to the output stream wrapper object (it's
      * possible to get the input stream without knowing the classname).
      *
-     * @param inByteCode  The byte-code of the class to be enhanced.
-     * @param outByteCode The byte-code of the enhanced class.
+     * @param in  The byte-code of the class to be enhanced.
+     * @param out The byte-code of the enhanced class.
      *
      * @return  <code>true</code> if the class has been enhanced,
      *          <code>false</code> otherwise.

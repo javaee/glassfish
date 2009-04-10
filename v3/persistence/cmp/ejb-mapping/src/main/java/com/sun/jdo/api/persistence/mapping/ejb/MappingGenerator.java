@@ -100,8 +100,6 @@ public class MappingGenerator {
     /** 
      * Constructor
      * @param infoHelper an instance of an EJBInfoHelper
-     * @param model a model containing mapping class and 
-     * persistence class information
      * @param loader a class loader
      * @param skipGeneratedFields a boolean indicating to remove generated 
      * fields from jdo model and mapping model 

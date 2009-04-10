@@ -215,7 +215,6 @@ abstract public class JDOEJB20HelperImpl extends JDOEJB11HelperImpl
      * of a local interface type.
      *
      * @param o the instance to validate.
-     * @return true if the type is correct.
      * @throws IllegalArgumentException if validation fails.
      */
     abstract public void assertInstanceOfLocalInterfaceImpl(Object o);
@@ -227,7 +226,7 @@ abstract public class JDOEJB20HelperImpl extends JDOEJB11HelperImpl
      * argument is of a wrong type.
      *
      * @param o the instance to validate.
-     * @param bean name as String.
+     * @param beanName as String.
      * @throws IllegalArgumentException if validation fails.
      */
     protected void assertInstanceOfLocalInterfaceImpl(Object o,

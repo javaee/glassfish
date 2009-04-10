@@ -144,7 +144,7 @@ public class JDOCodeGenerator
     private static String signatures = null;
 
     /**
-     * @see CMPGenerator#init(EjbBundleDescriptor, DeploymentContext, String)
+     * @see CMPGenerator#init(EjbBundleDescriptor, DeploymentContext, String, String)
      */
     public void init(EjbBundleDescriptor bundle, DeploymentContext ctx,
         String bundlePathName, String generatedXmlsPathName) 

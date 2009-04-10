@@ -529,7 +529,7 @@ public class MappingClassElementImpl extends MappingElementImpl
 	/** Adds a reference to the supplied table as a secondary table for this
 	 * mapping class.  It creates a MappingReferenceKeyElement for the supplied
 	 * primary/secondary table pair.
-	 * @param parent mapping table element which should also be the primary
+	 * @param parentTable mapping table element which should also be the primary
 	 * table.
 	 * @param table table element to be used as a secondary table.
 	 * @exception ModelException if impossible

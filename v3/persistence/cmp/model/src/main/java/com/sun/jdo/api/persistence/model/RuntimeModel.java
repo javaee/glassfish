@@ -187,7 +187,7 @@ public class RuntimeModel extends Model
 	 * @param classLoader the class loader used to find mapping information
 	 * @return the MappingClassElement for className,
 	 * <code>null</code> if an error occurs or none exists
-	 * @see MappingClassElementImpl#forName
+	 * @see com.sun.jdo.api.persistence.model.mapping.impl.MappingClassElementImpl#forName(String, Model)
 	 */
 	public MappingClassElement getMappingClass (String className, 
 		ClassLoader classLoader)

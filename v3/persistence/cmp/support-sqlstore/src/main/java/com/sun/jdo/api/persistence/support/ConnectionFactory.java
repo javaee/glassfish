@@ -157,7 +157,7 @@ public interface ConnectionFactory {
   
   /**
    * Sets the LogWriter to which messages should be sent
-   * @param pw            logWriter
+   * @param logWriter
    */
   void setLogWriter (PrintWriter logWriter);
 

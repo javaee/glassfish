@@ -316,7 +316,7 @@ public class Date
      * this object to the stream.
      *   
      * @return java.util.Date that represents the same value.
-     * @throw ObjectStreamException.
+     * @throws ObjectStreamException.
      */  
     Object writeReplace() throws ObjectStreamException 
     {

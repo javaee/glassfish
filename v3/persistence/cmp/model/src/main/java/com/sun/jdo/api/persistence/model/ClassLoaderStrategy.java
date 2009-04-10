@@ -90,7 +90,7 @@ public class ClassLoaderStrategy
 		PROPERTY_MULTIPLE_CLASS_LOADERS, MULTIPLE_CLASS_LOADERS_ERROR);
 
 	/** Get the value of the property 
-	 * {@link #PROPERTY_MULTIPLE_CLASS_LOADER} used to define the model 
+	 * {@link #PROPERTY_MULTIPLE_CLASS_LOADERS} used to define the model 
 	 * behavior concerning multiple class loaders.
 	 * @return the value of the property, one of
 	 * {@link #MULTIPLE_CLASS_LOADERS_IGNORE},
@@ -103,7 +103,7 @@ public class ClassLoaderStrategy
 	}
 
 	/** Sets the value of the property 
-	 * {@link #PROPERTY_MULTIPLE_CLASS_LOADER} used to define the model 
+	 * {@link #PROPERTY_MULTIPLE_CLASS_LOADERS} used to define the model 
 	 * behavior concerning multiple class loaders.
 	 * @param strategy the new value of the property. Value should be one of
 	 * {@link #MULTIPLE_CLASS_LOADERS_IGNORE},

@@ -166,7 +166,7 @@ import com.sun.jdo.api.persistence.support.PersistenceManagerFactory;
      * without username and password validation. 
      * @param password the password for the resource username.
      * @return a Connection. 
-     * @throw java.sql.SQLException.
+     * @throws java.sql.SQLException.
      */  
     java.sql.Connection getConnection(Object resource, String username, String password)
         throws java.sql.SQLException;
@@ -180,7 +180,7 @@ import com.sun.jdo.api.persistence.support.PersistenceManagerFactory;
      * without username and password validation.
      * @param password the password for the resource username.
      * @return a Connection.
-     * @throw java.sql.SQLException.
+     * @throws java.sql.SQLException.
      */
     java.sql.Connection getNonTransactionalConnection(
         Object resource, String username, String password)

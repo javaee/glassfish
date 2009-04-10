@@ -54,8 +54,6 @@ public class NumericConverterFactory {
      private static NumericConverter defaultConverter = new NumericConverterImpl();
 
      /**
-      * @param policy for determining mechanism for conversion from BigDecimal
-      *        to BigInteger
       */
      protected NumericConverterFactory() {
      }

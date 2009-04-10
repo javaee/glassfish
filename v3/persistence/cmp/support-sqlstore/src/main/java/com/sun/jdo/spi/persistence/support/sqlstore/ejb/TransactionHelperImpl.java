@@ -225,7 +225,7 @@ abstract public class TransactionHelperImpl
      * without username and password validation.
      * @param password the password for the resource username.
      * @return a Connection.
-     * @throw java.sql.SQLException.
+     * @throws java.sql.SQLException.
      */
     abstract public java.sql.Connection getNonTransactionalConnection(
         Object resource, String username, String password)

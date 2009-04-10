@@ -54,8 +54,7 @@ import java.math.BigInteger;
  */
 public class NumericConverterImpl implements NumericConverter {
      /**
-      * @param policy for determine mechanism for conversion to BigDecimal
-      *        and BigInteger
+      *
       */
      public NumericConverterImpl() {
      }

@@ -66,7 +66,7 @@ public class SymbolTable
      * the SymbolTable is not changed and the existing declaration is returned. 
      * Otherwise <code>null</code> is returned.
      * @param   ident   identifier to be declared
-     * @param   definition new definition of identifier
+     * @param   decl new definition of identifier
      * @return  the old definition if the identifier was already declared; 
      * <code>null</code> otherwise
 	 */

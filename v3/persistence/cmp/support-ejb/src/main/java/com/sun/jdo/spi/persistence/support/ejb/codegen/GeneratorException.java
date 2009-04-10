@@ -43,7 +43,7 @@ package com.sun.jdo.spi.persistence.support.ejb.codegen;
 public class GeneratorException extends java.lang.Exception {
     /**
      * Constructs the Generator exception with the specified string.
-     * @param the string description
+     * @param s the string description
      */
     public GeneratorException(String s) {
 	super(s);

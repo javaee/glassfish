@@ -50,7 +50,7 @@ public interface SCODate extends SCO
 	/**
 	 * Sets initial date value without notifying the owner object
 	 *
-	 * @param date in milliseconds
+	 * @param time in milliseconds
 	 */
 	void setTimeInternal(long time);
 }

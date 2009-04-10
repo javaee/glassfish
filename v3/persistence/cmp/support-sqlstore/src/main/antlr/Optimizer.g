@@ -689,7 +689,8 @@ options
      * Check a cast operation for a constant operand
      * that could be optimized.
      * @param op the cast operator
-     * @param arg the operand
+     * @param castType the cast type
+     * @param expr the non constant operand
      * @return optimized JQLAST 
      */
     protected JQLAST checkCastOp(JQLAST op, JQLAST castType, JQLAST expr)

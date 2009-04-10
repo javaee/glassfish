@@ -220,7 +220,7 @@ public class PersistenceFieldElementImpl extends PersistenceMemberElementImpl
 	/** Determines whether this field element is a key field or not.  
 	 * @return <code>true</code> if the field is a key field, 
 	 * <code>false</code> otherwise
-	 * @see PersistenceClassElement#getKeyClass
+	 * @see com.sun.jdo.api.persistence.model.jdo.impl.PersistenceClassElementImpl#getKeyClass
 	 */
 	public boolean isKey () { return _isKey; }
 
@@ -228,7 +228,7 @@ public class PersistenceFieldElementImpl extends PersistenceMemberElementImpl
 	 * @param flag - if <code>true</code>, the field element is marked 
 	 * as a key field; otherwise, it is not
 	 * @exception ModelException if impossible
-	 * @see PersistenceClassElement#getKeyClass
+	 * @see com.sun.jdo.api.persistence.model.jdo.impl.PersistenceClassElementImpl#getKeyClass
 	 */
 	public void setKey (boolean flag) throws ModelException
 	{

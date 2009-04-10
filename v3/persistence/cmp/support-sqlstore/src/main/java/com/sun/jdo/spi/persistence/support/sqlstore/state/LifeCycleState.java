@@ -200,7 +200,7 @@ public abstract class LifeCycleState {
     /**
      * Returns the LifeCycleState for the state constant.
      *
-     * @param op the type as integer
+     * @param state the type as integer
      * @return the type as LifeCycleState object
      */
     public static LifeCycleState getLifeCycleState(int state) {

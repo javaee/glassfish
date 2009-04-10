@@ -293,7 +293,7 @@ public class QueryImpl
     /**
      * Bind the candidate Collection to the query instance.
      *
-     * @param pcs the Candidate collection.
+     * @param candidateCollection the Candidate collection.
      */
     public void setCandidates(Collection candidateCollection)
     {

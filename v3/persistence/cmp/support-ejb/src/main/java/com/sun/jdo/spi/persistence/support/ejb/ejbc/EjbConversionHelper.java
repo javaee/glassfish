@@ -198,7 +198,6 @@ public class EjbConversionHelper implements ConversionHelper {
      * return an array of cmp + cmr + pseudo cmr fields, otherwise 
      * the method will return an array of cmp + cmr fields.
      * @param ejbName The ejb-name element for the bean
-     * @param fieldName The name of a container managed field in the named bean 
      * @return an array of fields in the ejb bean 
      */
     public Object[] getFields(String ejbName) {

@@ -276,7 +276,7 @@ public class JavaClassWriterHelper extends JavaTypeHelper {
      * Adds fields to a class parsing the multi-String property.
      * @param prop String to use for field generation.
      * @param modifiers other field modifiers for these fields.
-     * @param JavaClassWriter the Class writer.
+     * @param writer the Class writer.
      * @throws IOException if writer fails to add a field.
      */
     public static void addFields(String prop, int modifiers, JavaClassWriter writer)
@@ -304,7 +304,6 @@ public class JavaClassWriterHelper extends JavaTypeHelper {
      * Adds private fields to a class parsing the multi-String property.
      * @param prop String to use for field generation.
      * @param modifiers field modifiers for these fields.
-     * @param JavaClassWriter the Class writer.
      * @throws IOException if writer fails to add a field.
      */
     public static void addPrivateField(String prop, int modifiers, JavaClassWriter writer)
@@ -317,7 +316,6 @@ public class JavaClassWriterHelper extends JavaTypeHelper {
      * Adds a private void no-args method to a class with this method body.
      * @param mname method name
      * @param body the method body as String[]
-     * @param JavaClassWriter the Class writer.
      * @throws IOException if writer fails to add a field.
      */
     public static void addGenericMethod(String mname,
@@ -333,7 +331,6 @@ public class JavaClassWriterHelper extends JavaTypeHelper {
      * @param mname method name
      * @param type return type of the method
      * @param body the method body as String[]
-     * @param JavaClassWriter the Class writer.
      * @throws IOException if writer fails to add a field.
      */
     public static void addGenericMethod(String mname, String type,
@@ -348,7 +345,6 @@ public class JavaClassWriterHelper extends JavaTypeHelper {
      * @param mname method name
      * @param modifiers the method modifiers
      * @param body the method body as String[]
-     * @param JavaClassWriter the Class writer.
      * @throws IOException if writer fails to add a field.
      */  
     public static void addGenericMethod(String mname, int modifiers,
@@ -364,7 +360,6 @@ public class JavaClassWriterHelper extends JavaTypeHelper {
      * @param modifiers the method modifiers
      * @param type return type of the method
      * @param body the method body as String[]
-     * @param JavaClassWriter the Class writer.
      * @throws IOException if writer fails to add a field.
      */  
     public static void addGenericMethod(String mname, int modifiers,
@@ -386,10 +381,9 @@ public class JavaClassWriterHelper extends JavaTypeHelper {
      * @param m Method that describes one to be added to the bean.
      * @param mname method name if different from Method#getName(). This
      * will be true for finder/selector/create methods.
-     * @param type return type of the method, that can differ from the
+     * @param mtype return type of the method, that can differ from the
      * bean's local or remote interface.
      * @param body String to use for method body generation.
-     * @param JavaClassWriter the Class writer.
      * @throws IOException if writer fails to add a field.
      */
     public static void addGenericMethod(Method m, String mname,

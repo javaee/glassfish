@@ -121,7 +121,7 @@ public class JDOMetaDataPropertyImpl extends Support
 
     /**
      * Creates an instance.
-     * @lars: out id not used anymore
+     * //@lars: out id not used anymore
      */
     public JDOMetaDataPropertyImpl(Properties properties,
                                    PrintWriter out)
@@ -148,7 +148,7 @@ public class JDOMetaDataPropertyImpl extends Support
 
     /**
      * Creates an instance.
-     * @lars: out id not used anymore
+     * //@lars: out id not used anymore
      */
     public JDOMetaDataPropertyImpl(Properties properties)
        throws JDOMetaDataUserException, JDOMetaDataFatalError

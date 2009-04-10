@@ -75,7 +75,7 @@ public interface JDOEJB11Helper {
      * @param pm the associated instance of PersistenceManager.
      * @param validate true if the existence of the instance is to be validated.
      * @return persistence-capable instance.
-     * @throw IllegalArgumentException if validate is true and instance does
+     * @throws IllegalArgumentException if validate is true and instance does
      * not exist in the database or is deleted.
      */
     Object convertEJBObjectToPC(EJBObject o, PersistenceManager pm, boolean validate);
@@ -105,7 +105,7 @@ public interface JDOEJB11Helper {
      * @param pm the associated instance of PersistenceManager.
      * @param validate true if the existence of the instances is to be validated.
      * @return Collection of persistence-capable instance.
-     * @throw IllegalArgumentException if validate is true and at least one instance does
+     * @throws IllegalArgumentException if validate is true and at least one instance does
      * not exist in the database or is deleted.
      */
     Collection convertCollectionEJBObjectToPC (Collection coll, PersistenceManager pm,
@@ -155,7 +155,7 @@ public interface JDOEJB11Helper {
    /**
      * Converts Collection of PrimaryKey instances to a Collection of Object Id's
      * of a corresponding persistence-capable Class.
-     * @param keys Collection of the PrimaryKey instances to be converted.
+     * @param key Collection of the PrimaryKey instances to be converted.
      * @return Collection of the Object Id's.
      */
     Collection convertCollectionPrimaryKeyToObjectId (Collection key);
@@ -195,8 +195,7 @@ public interface JDOEJB11Helper {
      * of a remote interface type.
      *
      * @param o the instance to validate.
-     * @return true if the type is correct.
-     * @throw IllegalArgumentException if validation fails.
+     * @throws IllegalArgumentException if validation fails.
      */
     void assertInstanceOfRemoteInterfaceImpl(Object o);
 

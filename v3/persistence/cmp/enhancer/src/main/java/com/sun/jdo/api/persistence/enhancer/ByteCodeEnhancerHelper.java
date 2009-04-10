@@ -104,8 +104,7 @@ public class ByteCodeEnhancerHelper
      *  @param  zip_in    The zip input stream.
      *  @param  zip_out   The zip output stream.
      *
-     *  @param  <code>true</code> if at least one entry of the zip file has
-     *          been enhanced, <code>false</code> otherwise.
+     * 
      *
      *  @exception  EnhancerUserException  If something went wrong.
      *  @exception  EnhancerFatalError     If something went wrong.

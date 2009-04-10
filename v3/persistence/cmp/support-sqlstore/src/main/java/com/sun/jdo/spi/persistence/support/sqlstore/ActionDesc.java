@@ -78,7 +78,6 @@ public interface ActionDesc {
     public static final int OP_AND = 3;
 
     /**
-     * @ForteInternal
      */
     public static final int OP_APPROX = 4;
 

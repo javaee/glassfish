@@ -415,7 +415,6 @@ abstract public class JDOEJB11HelperImpl implements JDOEJB11Helper {
      * of a remote interface type.
      *
      * @param o the instance to validate.
-     * @return true if the type is correct.
      * @throws IllegalArgumentException if validation fails.
      */
     abstract public void assertInstanceOfRemoteInterfaceImpl(Object o);
@@ -426,7 +425,7 @@ abstract public class JDOEJB11HelperImpl implements JDOEJB11Helper {
      * Throws IllegalArgumentException if the argument is of a wrong type.
      *
      * @param o the instance to validate.
-     * @param bean name as String.
+     * @param beanName as String.
      * @throws IllegalArgumentException if validation fails.
      */
     protected void assertInstanceOfRemoteInterfaceImpl(Object o, 

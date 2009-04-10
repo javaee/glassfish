@@ -104,10 +104,8 @@ public class SunContainerHelper extends SunTransactionHelper implements Containe
     SunContainerHelper() { }
 
     /** Get an EJBObject reference for this primary key and Container helper.
-     * The Container instance is acquired via #getContainer(Object).
      * This is SunContainerHelper specific code.
      *
-     * @see getContainer(Object)
      * @param pk the primary key instance.
      * @param container a Container instance for the request.
      * @return a corresponding EJBObject instance to be used by the client.
@@ -121,12 +119,10 @@ public class SunContainerHelper extends SunTransactionHelper implements Containe
     }
 
     /** Get an EJBLocalObject reference for this primary key and Container helper.
-     * The Container instance is acquired via #getContainer(Object).
      * This is SunContainerHelper specific code.
      *
-     * @see getContainer(Object)
      * @param pk the primary key instance.
-     * @param containerHelper a helper instance for the request.
+     * @param container a helper instance for the request.
      * @return a corresponding EJBLocalObject instance to be used by the client.
      */
     public EJBLocalObject getEJBLocalObject(Object pk, Object container) {
@@ -141,12 +137,10 @@ public class SunContainerHelper extends SunTransactionHelper implements Containe
      * and EJBContext of the calling bean.
      * Allows the container to check if this method is called during ejbRemove
      * that is part of a cascade-delete remove.
-     * The Container instance is acquired via #getContainer(Object).
      * This is SunContainerHelper specific code.
      *
-     * @see getContainer(Object)
      * @param pk the primary key instance.
-     * @param containerHelper a helper instance for the request.
+     * @param container a helper instance for the request.
      * @param context an EJBContext of the calling bean.
      * @return a corresponding EJBLocalObject instance to be used by the client.
      */
@@ -162,10 +156,8 @@ public class SunContainerHelper extends SunTransactionHelper implements Containe
     }
 
     /** Remove a bean for a given EJBLocalObject and Container helper.
-     * The Container instance is acquired via #getContainer(Object).
      * This is SunContainerHelper specific code.
      *
-     * @see getContainer(Object)
      * @param ejb the EJBLocalObject for the bean to be removed.
      * @param container a Container instance for the request.
      */
@@ -178,10 +170,8 @@ public class SunContainerHelper extends SunTransactionHelper implements Containe
     }
 
     /** Remove a bean for a given primary key and Container helper.
-     * The Container instance is acquired via #getContainer(Object).
      * This is SunContainerHelper specific code.
      *
-     * @see getContainer(Object)
      * @param pk the primary key for the bean to be removed.
      * @param container a Container instance for the request.
      */
@@ -195,10 +185,8 @@ public class SunContainerHelper extends SunTransactionHelper implements Containe
 
     /** Verify that this instance is of a valid local interface type for
      * a given Container helper.
-     * The Container instance is acquired via #getContainer(Object).
      * This is SunContainerHelper specific code.
      *
-     * @see getContainer(Object)
      * @param o the instance to be verified.
      * @param container a Container instance for the request.
      */
@@ -208,10 +196,8 @@ public class SunContainerHelper extends SunTransactionHelper implements Containe
 
     /** Verify that this instance is of a valid remote interface type for
      * a given Container helper.
-     * The Container instance is acquired via #getContainer(Object).
      * This is SunContainerHelper specific code.
      *
-     * @see getContainer(Object)
      * @param o the instance to be verified.
      * @param container a Container instance for the request.
      */
@@ -238,11 +224,9 @@ public class SunContainerHelper extends SunTransactionHelper implements Containe
 
     /** Called in a CMP supported environment. Notifies the container that
      * ejbSelect had been called.
-     * The Container instance is acquired via #getContainer(Object).
      *
      * This is SunContainerHelper specific code.
      *
-     * @see getContainer(Object)
      * @param container a Container instance for the request.
      */
     public void preSelect(Object container) {
@@ -251,11 +235,9 @@ public class SunContainerHelper extends SunTransactionHelper implements Containe
 
     /** Called in a CMP environment to lookup PersistenceManagerFactory
      * referenced by this Container instance as the CMP resource.
-     * The Container instance is acquired via #getContainer(Object).
      *
      * This is SunContainerHelper specific code.
      *
-     * @see getContainer(Object)
      * @param container a Container instance for the request.
      */
     public PersistenceManagerFactory getPersistenceManagerFactory(Object container) {
@@ -314,7 +296,6 @@ public class SunContainerHelper extends SunTransactionHelper implements Containe
     /**
      * Called in CMP environment to get NumericConverter policy referenced
      * by this Container instance.
-     * @see getContainer(Object)
      * @param container a Container instance for the request
      * @return a valid NumericConverter policy type
      */

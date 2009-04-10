@@ -47,7 +47,7 @@ import com.sun.jdo.api.persistence.mapping.ejb.beans.FetchedWith;
 /**
  *
  * @author  vkraemer
- * @version 
+ * @version 1.0
  */
 public interface HasFetchedWith {
 

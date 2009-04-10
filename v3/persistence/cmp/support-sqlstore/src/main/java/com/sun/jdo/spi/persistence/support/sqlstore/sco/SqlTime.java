@@ -274,7 +274,7 @@ public class SqlTime
      * this object to the stream.
      *   
      * @return java.sql.Time that represents the same value.
-     * @throw ObjectStreamException.
+     * @throws ObjectStreamException.
      */  
     Object writeReplace() throws ObjectStreamException
     {

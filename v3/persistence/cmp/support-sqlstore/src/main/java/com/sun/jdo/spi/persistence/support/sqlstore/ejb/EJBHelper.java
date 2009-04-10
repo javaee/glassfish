@@ -119,7 +119,7 @@ public class EJBHelper {
     * returns the value passed to it as an argument.
     *
     * @see TransactionHelper#translateStatus(int st)
-    * @param 	local 	Status value
+    * @param 	st 	Status value
     * @return 	the javax.transaction.Status value of the status
     */
     public static int translateStatus(int st) {
@@ -190,7 +190,7 @@ public class EJBHelper {
      * without username and password validation.
      * @param password the password for the resource username.
      * @return a Connection.
-     * @throw java.sql.SQLException.
+     * @throws java.sql.SQLException.
      */
     public static java.sql.Connection getConnection(Object resource, 
         String username, String password) throws java.sql.SQLException {
@@ -206,7 +206,7 @@ public class EJBHelper {
      * without username and password validation.
      * @param password the password for the resource username.
      * @return a Connection.
-     * @throw java.sql.SQLException.
+     * @throws java.sql.SQLException.
      */
     public static java.sql.Connection getNonTransactionalConnection(
         Object resource, String username, String password)

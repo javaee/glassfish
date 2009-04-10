@@ -189,7 +189,7 @@ public class SQLPersistenceManagerFactory
 
     /**
      * Sets database user name
-     * @param	database user name
+     * @param userName	 user name
      */
     public void setConnectionUserName(String userName) {
         throw new JDOUnsupportedOptionException(I18NHelper.getMessage(messages,
@@ -206,7 +206,7 @@ public class SQLPersistenceManagerFactory
 
     /**
      * Sets database user password
-     * @param       database user password
+     * @param       password user password
      */
     public void setConnectionPassword(String password) {
         throw new JDOUnsupportedOptionException(I18NHelper.getMessage(messages,
@@ -215,7 +215,7 @@ public class SQLPersistenceManagerFactory
 
     /**
      * Sets connection URL
-     * @param	connection URL
+     * @param	url connection URL
      */
     public void setConnectionURL(String url) {
         throw new JDOUnsupportedOptionException(I18NHelper.getMessage(messages,
@@ -233,7 +233,7 @@ public class SQLPersistenceManagerFactory
 
     /**
      * Sets JDBC driver name
-     * @param	driver name
+     * @param	driverName driver name
      */
     public void setConnectionDriverName(String driverName) {
         throw new JDOUnsupportedOptionException(I18NHelper.getMessage(messages,
@@ -251,7 +251,7 @@ public class SQLPersistenceManagerFactory
 
     /**
      * Sets ConnectionFactory
-     * @param	ConnectionFactory as java.lang.Object
+     * @param	cf as java.lang.Object
      */
     public void setConnectionFactory(Object cf) {
         throw new JDOUnsupportedOptionException(I18NHelper.getMessage(messages,

@@ -170,7 +170,7 @@ public class MappingGenerator extends
      * the database generation backend
      * @param inputFilesPath the directory where sun-cmp-mappings.xml is located
      * @param generatedXmlsPath the directory where the generated files are located
-     @ @param classout the directory where the classes are located
+     * @param classout the directory where the classes are located
      * @param ignoreSunDeploymentDescriptors use java2db generation if set to <code>true</code>.
      * @return a SchemaElement for mapping classes mapped to
      * @throws IOException

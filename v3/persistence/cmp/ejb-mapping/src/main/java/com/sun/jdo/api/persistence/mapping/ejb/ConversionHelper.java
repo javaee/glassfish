@@ -81,7 +81,7 @@ public interface ConversionHelper {
     /** Compute the keyness of a field.
     * The value returned is the keyness of the field, if it is
     * computable. If it is not, the candidate value is returned.
-    * @param ejbName The value of the ejb-name element for a bean.
+    * @param beanName The value of the ejb-name element for a bean.
     * @param fieldName The name of a container managed field in the named bean.
     * @param candidate The value "proposed" by the content of the sun-cmp-mapping file.
     * @return The real value of the keyness of a field.
@@ -110,13 +110,15 @@ public interface ConversionHelper {
     /**
     * @param ejbName The value of the ejb-name element for a bean.
     * @param fieldName The name of a container managed field in the named bean.
-    * @return  */    
+    * @return The String values "One" or "Many".
+    */
     public String getRelationshipFieldType(String ejbName, String fieldName);
     
     /**
     * @param ejbName The value of the ejb-name element for a bean.
     * @param fieldName The name of a container managed field in the named bean.
-    * @return  */    
+    * @return The String values "One" or "Many".
+    */
     public String getInverseFieldName(String ejbName, String fieldName);
 
     /** 

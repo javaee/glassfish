@@ -86,7 +86,7 @@ public interface JDOEJB20Helper extends JDOEJB11Helper {
      * @param pm the associated instance of PersistenceManager.
      * @param validate true if the existence of the instance is to be validated.
      * @return persistence-capable instance.
-     * @throw IllegalArgumentException if validate is true and instance does 
+     * @throws IllegalArgumentException if validate is true and instance does 
      * not exist in the database or is deleted.    
      */
     Object convertEJBLocalObjectToPC(EJBLocalObject o, PersistenceManager pm,
@@ -117,7 +117,7 @@ public interface JDOEJB20Helper extends JDOEJB11Helper {
      * @param pm the associated instance of PersistenceManager.
      * @param validate true if the existence of the instances is to be validated.
      * @return Collection of persistence-capable instance.
-     * @throw IllegalArgumentException if validate is true and at least one instance does 
+     * @throws IllegalArgumentException if validate is true and at least one instance does 
      * not exist in the database or is deleted.    
      */
     Collection convertCollectionEJBLocalObjectToPC (Collection coll, PersistenceManager pm,
@@ -128,8 +128,7 @@ public interface JDOEJB20Helper extends JDOEJB11Helper {
      * of a local interface type.
      *
      * @param o the instance to validate.
-     * @return true if the type is correct.
-     * @throw IllegalArgumentException if validation fails.
+     * @throws IllegalArgumentException if validation fails.
      */
     void assertInstanceOfLocalInterfaceImpl(Object o);
     

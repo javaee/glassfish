@@ -108,7 +108,7 @@ public class SymbolTable
      * is stored in the symbol table. This allows to reinstall the old
      * definition when the sctaul scope is closed.
      * @param   ident   identifier to be declared
-     * @param   definition new definition of identifier
+     * @param   def new definition of identifier
      * @return  the old definition if the identifier was already declared 
 	 *          in the actual scope; null otherwise
 	 */

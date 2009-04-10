@@ -135,7 +135,7 @@ public class JavaTypeHelper
 	/**
 	 * Returns the name of a class without the package name.  For example: if
 	 * input = "java.lang.Object" , then output = "Object".
-	 * @param fully qualified classname
+	 * @param className fully qualified classname
 	 */
 	public static String getShortClassName (final String className)
 	{

@@ -88,9 +88,9 @@ public class PersistenceElementCollection
 
 	/** Change the set of elements.
 	 * @param elements the new elements
-	 * @param action {@link PersistenceElement.Impl#ADD}, 
-	 * {@link PersistenceElement.Impl#REMOVE}, or 
-	 * {@link PersistenceElement.Impl#SET}
+	 * @param action {@link com.sun.jdo.api.persistence.model.jdo.PersistenceElement.Impl#ADD},
+	 * {@link com.sun.jdo.api.persistence.model.jdo.PersistenceElement.Impl#REMOVE}, or
+	 * {@link com.sun.jdo.api.persistence.model.jdo.PersistenceElement.Impl#SET}
 	 * @exception ModelException if impossible
 	 */
 	public void changeElements (PersistenceElement[] elements, int action)
@@ -101,9 +101,9 @@ public class PersistenceElementCollection
 
 	/** Change the set of elements.
 	 * @param elements the new elements
-	 * @param action {@link PersistenceElement.Impl#ADD}, 
-	 * {@link PersistenceElement.Impl#REMOVE}, or 
-	 * {@link PersistenceElement.Impl#SET}
+	 * @param action {@link com.sun.jdo.api.persistence.model.jdo.PersistenceElement.Impl#ADD},
+	 * {@link com.sun.jdo.api.persistence.model.jdo.PersistenceElement.Impl#REMOVE}, or
+	 * {@link com.sun.jdo.api.persistence.model.jdo.PersistenceElement.Impl#SET}
 	 * @exception ModelException if impossible
 	 */
 	public void changeElements (List elements, int action)

@@ -1098,7 +1098,7 @@ options
      * @param op the bitwise/logical operator
      * @param leftAST left operand 
      * @param rightAST right operand
-     * @return 
+     * @return Type
      */
     protected Type analyseBitwiseExpr(JQLAST op, JQLAST leftAST, JQLAST rightAST)
     {
@@ -1153,7 +1153,7 @@ options
      * @param op the conditional operator
      * @param leftAST left operand 
      * @param rightAST right operand
-     * @return 
+     * @return Type
      */
     protected Type analyseConditionalExpr(JQLAST op, JQLAST leftAST, JQLAST rightAST)
     {
@@ -1185,7 +1185,7 @@ options
      * @param op the relational operator
      * @param leftAST left operand 
      * @param rightAST right operand
-     * @return 
+     * @return Type 
      */
     protected Type analyseRelationalExpr(JQLAST op, JQLAST leftAST, JQLAST rightAST)
     {
@@ -1254,7 +1254,7 @@ options
      * @param op the  operator
      * @param leftAST left operand 
      * @param rightAST right operand
-     * @return 
+     * @return Type
      */
     protected Type analyseBinaryArithmeticExpr(JQLAST op, JQLAST leftAST, JQLAST rightAST)
     {
@@ -1334,9 +1334,8 @@ options
     /**
      * Analyses a 
      * @param op the operator
-     * @param argASTleftAST left operand 
-     * @param rightAST right operand
-     * @return 
+     * @param argAST right operand
+     * @return Type 
      */
     protected Type analyseUnaryArithmeticExpr(JQLAST op, JQLAST argAST)
     {
@@ -1380,9 +1379,8 @@ options
     /**
      * Analyses a 
      * @param op the operator
-     * @param argASTleftAST left operand 
-     * @param rightAST right operand
-     * @return 
+     * @param argAST right operand
+     * @return Type 
      */
     protected Type analyseComplementExpr(JQLAST op, JQLAST argAST)
     {

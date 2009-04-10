@@ -1429,7 +1429,7 @@ public class ClassDesc
      * Retrieves the update query plan for the specified descriptor.
      * @param desc the descriptor
      * @param store the store manager
-     * @return
+     * @return Instance of update query plan for the specified descriptor.
      */
     public UpdateQueryPlan getUpdateQueryPlan(
             UpdateObjectDescImpl desc, SQLStoreManager store)

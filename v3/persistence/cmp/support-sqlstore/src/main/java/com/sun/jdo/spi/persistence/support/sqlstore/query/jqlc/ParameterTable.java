@@ -165,7 +165,6 @@ public class ParameterTable
      * Check actual query parameters specified as array and return the
      * ValueFetcher for the inputparameters.
      * @param actualParams
-     * @return the parameters wrapped in the ValueFetcher
      */
     public void setValues(Object[] actualParams)
     {
@@ -200,7 +199,6 @@ public class ParameterTable
      * Check actual query parameters specified as map and return the
      * ValueFetcher for the inputparameters.
      * @param actualParams
-     * @return the parameters wrapped in the ValueFetcher
      */
     public void setValues(Map actualParams)
     {
@@ -253,7 +251,7 @@ public class ParameterTable
 
     /**
      * Wraps the actual parameter array into a ValueFetcher instnace.
-     * @return
+     * @return Instance of ValueFetcher
      */
     public ValueFetcher getValueFetcher()
     {

@@ -96,7 +96,7 @@ public class ParameterInfo
     }
 
     /**
-     * @returns the associated field.
+     * Returns the associated field.
      */
     public String getAssociatedField()
     {

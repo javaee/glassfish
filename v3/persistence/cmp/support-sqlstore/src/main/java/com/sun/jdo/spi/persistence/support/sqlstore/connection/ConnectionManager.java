@@ -1469,7 +1469,6 @@ public class ConnectionManager {
      * the connection will be closed after the transaction is commited
      * or rolledback.
      *
-     * @see #yieldConnection
      */
     public synchronized void shutDown() throws SQLException {
         this.shutDownPending = true;
@@ -1506,7 +1505,6 @@ public class ConnectionManager {
      * the connection will be closed after the transaction is commited
      * or rolledback.
      *
-     * @see #yieldConnection
      */
     protected void finalize() {
         try {

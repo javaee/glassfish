@@ -683,7 +683,7 @@ public class MappingPolicy implements Cloneable {
 
     /**
      * Sets user-provided policy to that provided in the given properties.
-     * @param userProp Properties which override built in defaults.
+     * @param props Properties which override built in defaults.
      */
     public void setUserPolicy(Properties props) {
         if (null != props) {
@@ -996,7 +996,7 @@ public class MappingPolicy implements Cloneable {
      * name.  Client must provide a name that is unique to them.
      * @return Name to be used for table.  Regardless of the current policy,
      * the name is different from other names returned during the current run
-     * of {@link DatabaseGenerator.generate}.
+     * of {@link DatabaseGenerator#generate}.
      */
     // XXX FIXME: If the user needs to provide a unique name, why do we
     // invoke getUniqueGlobalName on it?

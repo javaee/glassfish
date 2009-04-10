@@ -63,7 +63,7 @@ import java.text.MessageFormat;
 /**
  *
  * @author  vkraemer
- * @version
+ * @version 1.0
  */
 public class CaptureSchema {
     /** Required filename extension. */

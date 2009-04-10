@@ -191,7 +191,7 @@ public class ClassPath {
    * package in this class path.
    * @param packageName specifies the VM format package name 
    *    to which class files must belong.
-   * @returns an Enumeration of the VM format class names which
+   * @return an Enumeration of the VM format class names which
    *    can be found.  Note that the Enumeration value is of type String
    *    and duplicate entries may be returned as the result of finding
    *    a class through more than one class path element.  Note also

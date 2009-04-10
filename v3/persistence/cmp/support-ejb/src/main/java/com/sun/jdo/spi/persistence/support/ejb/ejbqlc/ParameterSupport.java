@@ -136,7 +136,6 @@ public class ParameterSupport
      * It has the form "?<number>" where <number> is the parameter number 
      * starting with 1.
      * @param ejbName
-     * @return class instance representing the parameter type.
      */
     public void setParameterEjbName(String ejbqlParamDecl, String ejbName)
     {

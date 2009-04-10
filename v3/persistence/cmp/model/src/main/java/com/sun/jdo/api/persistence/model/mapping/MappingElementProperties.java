@@ -116,7 +116,7 @@ public interface MappingElementProperties
 	 */
 	public static final String PROP_TABLE = "table";				// NOI18N
 
-	/** Name of {@link MappingReferenceKeyElement#getReferencingKey key columns}
+	/** Name of {@link MappingTableElement#getReferencingKeys key columns}
 	 * and {@link MappingTableElement#getKey key columns} property for 
 	 * {@link MappingReferenceKeyElement reference key elements} and 
 	 * {@link MappingTableElement mapping table elements}.

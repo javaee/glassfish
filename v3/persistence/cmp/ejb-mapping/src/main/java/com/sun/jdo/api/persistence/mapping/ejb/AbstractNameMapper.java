@@ -286,7 +286,7 @@ abstract public class AbstractNameMapper {
 	 * is one which was generated automatically for 2 way managed 
 	 * relationships in the case that the ejb specifies one way
 	 * relationships.
-	 * @param className the name of the ejb
+	 * @param name the name of the ejb
 	 * @param fieldName the name of the field in the ejb
 	 * @return <code>true</code> if the field is generated;<code>false</code>
 	 * otherwise

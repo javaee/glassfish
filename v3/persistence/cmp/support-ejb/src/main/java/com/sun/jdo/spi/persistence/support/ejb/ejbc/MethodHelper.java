@@ -69,7 +69,7 @@ public class MethodHelper extends AbstractMethodHelper
         	MethodHelper.class);
 
 	/** Creates a new instance of MethodHelper
-	 * @param ejbcmp the IASEjbCMPEntityDescriptor which defines the 
+	 * @param descriptor the IASEjbCMPEntityDescriptor which defines the 
 	 * information for this bean.
 	 */
 	public MethodHelper (IASEjbCMPEntityDescriptor descriptor)
