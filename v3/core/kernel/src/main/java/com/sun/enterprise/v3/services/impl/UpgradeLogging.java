@@ -43,11 +43,12 @@ public class UpgradeLogging implements ConfigurationUpgrade, PostConstruct {
     	// move all log-service elements to logging.properties
     	
     	final LogService logService = config.getLogService();
+        
     	// check if null and exit
     	if (logService == null )
     		return;
         try {
-
+            
             //Get the logLevels
             ModuleLogLevels mll = logService.getModuleLogLevels();
 
@@ -63,8 +64,6 @@ public class UpgradeLogging implements ConfigurationUpgrade, PostConstruct {
             logLevels.put("alarms", logService.getAlarms());
             logLevels.put("retain-error-statistics-for-hours", logService.getRetainErrorStatisticsForHours());
             final Map<String, String> m =  new HashMap<String,String>(logLevels);
-
-
 
             ConfigSupport.apply(new SingleConfigCode<Config>() {
                 public Object run(Config c) throws PropertyVetoException, TransactionFailure {
@@ -84,6 +83,9 @@ public class UpgradeLogging implements ConfigurationUpgrade, PostConstruct {
             } catch(TransactionFailure tf) {
                 Logger.getAnonymousLogger().log(Level.SEVERE, "Failure while upgrading log-service ", tf);
                 throw new RuntimeException(tf);
-            }        
+            }
+
+        
     }
+
 }

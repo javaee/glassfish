@@ -37,13 +37,24 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
+import org.jvnet.hk2.config.ConfigBean;
+import org.jvnet.hk2.config.ConfigView;
+import org.jvnet.hk2.component.Habitat;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
-import java.util.List;
+import java.util.*;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+import java.io.*;
+import java.io.IOException;
+import java.lang.reflect.Proxy;
+
+import  com.sun.common.util.logging.LoggingConfigImpl;
 
 import org.glassfish.config.support.datatypes.Port;
 
@@ -55,8 +66,10 @@ import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
+import org.glassfish.api.admin.ServerEnvironment;
 
 import org.glassfish.quality.ToDo;
+import org.glassfish.server.ServerEnvironmentImpl;
 
 /**
  *
@@ -475,7 +488,64 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
     )
     @Element
     public List<SystemProperty> getSystemProperty();
+
+
+    //DuckTyped for accessing the logging.properties file
+
+    @DuckTyped
+    public Map<String, String> getLoggingProperties();
+
+    @DuckTyped
+    public String setLoggingProperty(String property, String value);
     
+    @DuckTyped
+    public Map<String, String> updateLoggingProperties( Map<String, String> properties);
+
+    public class Duck {
+
+        public static String setLoggingProperty(Config c, String property, String value){
+            ConfigBean cb = (ConfigBean) ((ConfigView)Proxy.getInvocationHandler(c)).getMasterView();
+            ServerEnvironmentImpl env = cb.getHabitat().getComponent(ServerEnvironmentImpl.class);
+            LoggingConfigImpl loggingConfig = new LoggingConfigImpl();
+            loggingConfig.setupConfigDir(env.getConfigDirPath());
+            
+            String prop = null;
+            try{
+                   prop= loggingConfig.setLoggingProperty(property, value);
+            } catch (IOException ex){
+            }
+            return prop;
+        }
+
+        public static Map<String, String>getLoggingProperties(Config c) {
+            ConfigBean cb = (ConfigBean) ((ConfigView)Proxy.getInvocationHandler(c)).getMasterView();
+            ServerEnvironmentImpl env = cb.getHabitat().getComponent(ServerEnvironmentImpl.class);
+            LoggingConfigImpl loggingConfig = new LoggingConfigImpl();
+            loggingConfig.setupConfigDir(env.getConfigDirPath());
+
+            Map <String, String> map = new HashMap<String, String>() ;
+            try {
+                map = loggingConfig.getLoggingProperties();
+            } catch (IOException ex){
+            }
+            return map;
+        }
+
+        public static Map<String, String>updateLoggingProperties(Config c, Map<String, String>properties){
+            ConfigBean cb = (ConfigBean) ((ConfigView)Proxy.getInvocationHandler(c)).getMasterView();
+            ServerEnvironmentImpl env = cb.getHabitat().getComponent(ServerEnvironmentImpl.class);
+            LoggingConfigImpl loggingConfig = new LoggingConfigImpl();
+            loggingConfig.setupConfigDir(env.getConfigDirPath());
+            
+            Map <String, String> map = new HashMap<String, String>() ;
+            try {
+                map = loggingConfig.updateLoggingProperties(properties);
+            } catch (IOException ex){
+            }
+            return map;
+        }
+
+    }
     /**
     	Properties as per {@link PropertyBag}
      */

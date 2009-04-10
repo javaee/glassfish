@@ -26,8 +26,8 @@ package com.sun.enterprise.v3.services.impl;
 import com.sun.enterprise.admin.monitor.callflow.Agent;
 import com.sun.enterprise.server.logging.FormatterDelegate;
 import com.sun.enterprise.server.logging.UniformLogFormatter;
-import com.sun.common.util.logging.LoggingConfigImpl;
 import com.sun.enterprise.v3.logging.AgentFormatterDelegate;
+import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.common.util.logging.LoggingOutputStream;
 
 import com.sun.logging.LogDomains;
@@ -52,6 +52,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.logging.Handler;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -82,8 +83,8 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
     @Inject
     FileMonitoring fileMonitoring;
 
-    @Inject
-    LoggingConfigImpl loggingConfig;
+    @Inject ( name="server-config")
+    Config config;
 
     /**
      * Initialize the loggers
@@ -143,7 +144,8 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
             }
         }
 
-        // redirect stderr and stdout
+        // redirect stderr and stdout, a better way to do this
+        //http://blogs.sun.com/nickstephen/entry/java_redirecting_system_out_and
         LoggingOutputStream los = new LoggingOutputStream(Logger.getAnonymousLogger(), Level.INFO);
         PrintStream pout = new  PrintStream(los, true);
         System.setOut(pout);
@@ -159,7 +161,7 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
                 public void changed(File changedFile) {
                     try {
 
-                        Map<String,String> props = loggingConfig.getLoggingProperties();
+                         Map<String,String> props = config.getLoggingProperties();
                         Set<String> keys = props.keySet();
                         for (String a : keys)   {
                             if (a.endsWith(".level")) {
@@ -168,16 +170,26 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
                                 if (logMgr.getLogger(n) != null) {
                                     logMgr.getLogger(n).setLevel(l);
                                 } else if (gfHandlers.containsKey(n)) {
-                                    // check if this is a handler
+                                    // check if this is one of our handlers
                                     Handler h = (Handler) gfHandlers.get(n);
                                     h.setLevel(l);
+                                } else if (n.equals("java.util.logging.ConsoleHandler")) {
+                                    Logger logger = Logger.global.getParent();
+                                    Handler[] h= logger.getHandlers();
+                                    for(int i=0;i<h.length;i++){
+                                        String name = h[i].toString();
+                                        if(name.contains("java.util.logging.ConsoleHandler"))
+                                            h[i].setLevel(l);
+                                    }
                                 }
 
-                            }
+                            }                           
+
                         }
 
                         logger.log(Level.INFO,"Updated log levels for loggers.");                                                     
-                    } catch (IOException e) {
+//                    } catch (IOException e) {
+                      } catch (Exception e) {
                         logger.log(Level.SEVERE, "Cannot read logging.properties file : ", e);
                     }
 
