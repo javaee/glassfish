@@ -104,6 +104,8 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
             new HashSet<LifecycleCallbackDescriptor>();
     private Set<LifecycleCallbackDescriptor> aroundInvokeDescs =
             new HashSet<LifecycleCallbackDescriptor>();
+    private Set<LifecycleCallbackDescriptor> aroundTimeoutDescs =
+            new HashSet<LifecycleCallbackDescriptor>();
 
     private Set<EntityManagerFactoryReferenceDescriptor>
             entityManagerFactoryReferences =
@@ -452,6 +454,41 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
     public boolean hasAroundInvokeMethod() {
         return (getAroundInvokeDescriptors().size() > 0);
     }
+    public Set<LifecycleCallbackDescriptor> getAroundTimeoutDescriptors() {
+        return aroundTimeoutDescs;
+    }
+
+    public void addAroundTimeoutDescriptor(LifecycleCallbackDescriptor
+            aroundTimeoutDesc) {
+        String className = aroundTimeoutDesc.getLifecycleCallbackClass();
+        boolean found = false;
+        for (LifecycleCallbackDescriptor next :
+                getAroundTimeoutDescriptors()) {
+            if (next.getLifecycleCallbackClass().equals(className)) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            getAroundTimeoutDescriptors().add(aroundTimeoutDesc);
+        }
+    }
+
+    public LifecycleCallbackDescriptor
+    getAroundTimeoutDescriptorByClass(String className) {
+
+        for (LifecycleCallbackDescriptor next :
+                getAroundTimeoutDescriptors()) {
+            if (next.getLifecycleCallbackClass().equals(className)) {
+                return next;
+            }
+        }
+        return null;
+    }
+
+    public boolean hasAroundTimeoutMethod() {
+        return (getAroundTimeoutDescriptors().size() > 0);
+    }
 
     /**
      * Since ejb-class is optional, in some cases the lifecycle-class
@@ -464,6 +501,7 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
         Set<LifecycleCallbackDescriptor> lifecycleMethods =
                 new HashSet<LifecycleCallbackDescriptor>();
         lifecycleMethods.addAll(getAroundInvokeDescriptors());
+        lifecycleMethods.addAll(getAroundTimeoutDescriptors());
         lifecycleMethods.addAll(getPostConstructDescriptors());
         lifecycleMethods.addAll(getPreDestroyDescriptors());
         if (getType().equals(EjbSessionDescriptor.TYPE)) {
@@ -597,18 +635,8 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
         LinkedList<EjbInterceptor> aroundInvokeInterceptors =
                 new LinkedList<EjbInterceptor>();
 
-        List<EjbInterceptor> classOrMethodInterceptors = null;
-
-        for (MethodDescriptor methodDesc : methodInterceptorsMap.keySet()) {
-            if (methodDesc.implies(businessMethod)) {
-                classOrMethodInterceptors =
-                        methodInterceptorsMap.get(methodDesc);
-            }
-        }
-
-        if( classOrMethodInterceptors == null ) {
-            classOrMethodInterceptors = interceptorChain;
-        }
+        List<EjbInterceptor> classOrMethodInterceptors = 
+                getClassOrMethodInterceptors(businessMethod);
 
         for (EjbInterceptor next : classOrMethodInterceptors) {
             if (next.getAroundInvokeDescriptors().size() > 0) {
@@ -627,6 +655,59 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
         }
 
         return aroundInvokeInterceptors;
+    }
+
+    /**
+     * Return the ordered list of interceptor info for AroundTimeout behavior
+     * of a particular business method.  This list *does* include the info
+     * on any bean class interceptor.  If present, this would always be the
+     * last element in the list because of the precedence defined by the spec.
+     */
+    public List<EjbInterceptor> getAroundTimeoutInterceptors
+            (MethodDescriptor businessMethod) {
+
+        LinkedList<EjbInterceptor> aroundTimeoutInterceptors =
+                new LinkedList<EjbInterceptor>();
+
+        List<EjbInterceptor> classOrMethodInterceptors = 
+                getClassOrMethodInterceptors(businessMethod);
+
+        for (EjbInterceptor next : classOrMethodInterceptors) {
+            if (next.getAroundTimeoutDescriptors().size() > 0) {
+                aroundTimeoutInterceptors.add(next);
+            }
+        }
+
+        if (hasAroundTimeoutMethod()) {
+
+            EjbInterceptor interceptorInfo = new EjbInterceptor();
+            interceptorInfo.setFromBeanClass(true);
+            interceptorInfo.addAroundTimeoutDescriptors(getAroundTimeoutDescriptors());
+            interceptorInfo.setInterceptorClassName(getEjbImplClassName());
+
+            aroundTimeoutInterceptors.add(interceptorInfo);
+        }
+
+        return aroundTimeoutInterceptors;
+    }
+
+    private List<EjbInterceptor> getClassOrMethodInterceptors
+            (MethodDescriptor businessMethod) {
+
+        List<EjbInterceptor> classOrMethodInterceptors = null;
+
+        for (MethodDescriptor methodDesc : methodInterceptorsMap.keySet()) {
+            if (methodDesc.implies(businessMethod)) {
+                classOrMethodInterceptors =
+                        methodInterceptorsMap.get(methodDesc);
+            }
+        }
+
+        if( classOrMethodInterceptors == null ) {
+            classOrMethodInterceptors = interceptorChain;
+        }
+
+        return classOrMethodInterceptors;
     }
 
     /**

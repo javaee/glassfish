@@ -189,7 +189,9 @@ public class InterceptorManager {
 
     }
 
-    public EjbInvocation.InterceptorChain getAroundInvokeChain(MethodDescriptor mDesc, Method beanMethod) {
+    public EjbInvocation.InterceptorChain getAroundInvokeChain(
+            MethodDescriptor mDesc, Method beanMethod) {
+
         List<EjbInterceptor> list = ejbDesc.getAroundInvokeInterceptors(mDesc);
         ArrayList<AroundInvokeInterceptor> interceptors =
                 new ArrayList<AroundInvokeInterceptor>();
@@ -209,39 +211,76 @@ public class InterceptorManager {
                throw new IllegalStateException("No AroundInvokeIntercetpors found "
                    + " on class " + className, e); 
             }
-
-            Iterator<LifecycleCallbackDescriptor> aiIterator = orderedAIInterceptors.iterator();
-            while (aiIterator.hasNext()) {
-                LifecycleCallbackDescriptor aroundInvokeDesc = aiIterator.next();
-                
-                Method method = null;
-                try {
-                    method = aroundInvokeDesc.getLifecycleCallbackMethodObject(loader);
-                } catch(Exception e) {
-                   throw new IllegalStateException("No callback method of name " +
-                           aroundInvokeDesc.getLifecycleCallbackMethod() 
-                   + " found on class " + className, e); 
-                }
-
-                if (interceptor.getFromBeanClass()) {
-                    interceptors.add(new BeanAroundInvokeInterceptor(method));
-                } else {
-                    Integer bigInt = instanceIndexMap.get(className);
-                    int index = (bigInt == null) ? -1 : bigInt;
-                    if (index == -1) {
-                        throw new IllegalStateException(getInternalErrorString(className));
-                    }
-                    Class clazz = interceptorClasses[index];
-                    _logger.log(Level.FINE, "*[md.getDeclaredMethod() => " 
-                                + method + " FOR CLAZZ: " + clazz);  
-                    interceptors.add(new AroundInvokeInterceptor(index, method));
-                }
-            }
+            addAroundInvokeInterceptors(interceptors, interceptor,
+                    orderedAIInterceptors, className);
         }
 
         AroundInvokeInterceptor[] inter = interceptors.toArray(
                 new AroundInvokeInterceptor[interceptors.size()]);
         return new AroundInvokeChainImpl(container, inter);
+    }
+
+    public EjbInvocation.InterceptorChain getAroundTimeoutChain(
+            MethodDescriptor mDesc, Method beanMethod) {
+
+        List<EjbInterceptor> list = ejbDesc.getAroundTimeoutInterceptors(mDesc);
+        ArrayList<AroundInvokeInterceptor> interceptors =
+                new ArrayList<AroundInvokeInterceptor>();
+        for (EjbInterceptor interceptor : list) {
+            String className = interceptor.getInterceptorClassName();
+            Set<LifecycleCallbackDescriptor> aroundTimeoutDescs = 
+                interceptor.getAroundTimeoutDescriptors();
+            if(aroundTimeoutDescs.isEmpty() ) {
+                continue;
+            }
+
+            List<LifecycleCallbackDescriptor> orderedATInterceptors =
+                new ArrayList<LifecycleCallbackDescriptor>();
+            try {
+                orderedATInterceptors = interceptor.getOrderedAroundTimeoutDescriptors(loader);
+            } catch (Exception e) {
+               throw new IllegalStateException("No AroundTimeoutIntercetpors found "
+                   + " on class " + className, e); 
+            }
+            addAroundInvokeInterceptors(interceptors, interceptor, 
+                    orderedATInterceptors, className);
+        }
+
+        AroundInvokeInterceptor[] inter = interceptors.toArray(
+                new AroundInvokeInterceptor[interceptors.size()]);
+        return new AroundInvokeChainImpl(container, inter);
+    }
+
+    private void addAroundInvokeInterceptors(
+            List<AroundInvokeInterceptor> interceptors,
+            EjbInterceptor interceptor,
+            List<LifecycleCallbackDescriptor> orderedInterceptors, 
+            String className) {
+
+        for(LifecycleCallbackDescriptor desc : orderedInterceptors) {
+            Method method = null;
+            try {
+                method = desc.getLifecycleCallbackMethodObject(loader);
+            } catch(Exception e) {
+               throw new IllegalStateException("No callback method of name " +
+                       desc.getLifecycleCallbackMethod() 
+               + " found on class " + className, e); 
+            }
+
+            if (interceptor.getFromBeanClass()) {
+                interceptors.add(new BeanAroundInvokeInterceptor(method));
+            } else {
+                Integer bigInt = instanceIndexMap.get(className);
+                int index = (bigInt == null) ? -1 : bigInt;
+                if (index == -1) {
+                    throw new IllegalStateException(getInternalErrorString(className));
+                }
+                Class clazz = interceptorClasses[index];
+                _logger.log(Level.FINE, "*[md.getDeclaredMethod() => " 
+                            + method + " FOR CLAZZ: " + clazz);  
+                interceptors.add(new AroundInvokeInterceptor(index, method));
+            }
+        }
     }
 
     public boolean hasInterceptors() {
@@ -304,7 +343,7 @@ public class InterceptorManager {
         }
         methodInterceptorsExists = interceptorClassNames.size() > 0;
 
-        if (ejbDesc.hasAroundInvokeMethod()) {
+        if (ejbDesc.hasAroundInvokeMethod() || ejbDesc.hasAroundTimeoutMethod()) {
             methodInterceptorsExists = true;
         }
 

@@ -40,7 +40,7 @@ import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 
-import javax.interceptor.AroundInvoke;
+import javax.interceptor.AroundTimeout;
 
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbInterceptor;
@@ -55,20 +55,20 @@ import org.glassfish.ejb.deployment.annotation.handlers.AbstractAttributeHandler
 import org.jvnet.hk2.annotations.Service;
 
 /**
- * This handler is responsible for handling the javax.ejb.AroundInvoke attribute
+ * This handler is responsible for handling the javax.ejb.AroundTimeout attribute
  *
  */
 @Service
-public class AroundInvokeHandler extends AbstractAttributeHandler {
+public class AroundTimeoutHandler extends AroundInvokeHandler {
     
-    public AroundInvokeHandler() {
+    public AroundTimeoutHandler() {
     }
     
     /**
      * @return the annoation type this annotation handler is handling
      */
     public Class<? extends Annotation> getAnnotationType() {
-        return AroundInvoke.class;
+        return AroundTimeout.class;
     }    
         
     protected HandlerProcessingResult processAnnotation(AnnotationInfo ainfo,
@@ -79,7 +79,7 @@ public class AroundInvokeHandler extends AbstractAttributeHandler {
             EjbDescriptor ejbDescriptor = 
                 (EjbDescriptor) next.getDescriptor();
 
-            ejbDescriptor.addAroundInvokeDescriptor(
+            ejbDescriptor.addAroundTimeoutDescriptor(
                 getAroundInvocationDescriptor(ainfo));
         }
 
@@ -92,33 +92,10 @@ public class AroundInvokeHandler extends AbstractAttributeHandler {
 
         EjbInterceptor ejbInterceptor =  ejbInterceptorContext.getDescriptor();
 
-        ejbInterceptor.addAroundInvokeDescriptor(
+        ejbInterceptor.addAroundTimeoutDescriptor(
             getAroundInvocationDescriptor(ainfo));
             
         return getDefaultProcessedResult();
     }
 
-    protected LifecycleCallbackDescriptor getAroundInvocationDescriptor(
-            AnnotationInfo ainfo) {
-        
-        Method m = (Method) ainfo.getAnnotatedElement();
-        LifecycleCallbackDescriptor lccDesc =
-                new LifecycleCallbackDescriptor();
-        lccDesc.setLifecycleCallbackClass(m.getDeclaringClass().getName());
-        lccDesc.setLifecycleCallbackMethod(m.getName());
-        return lccDesc;
-    }
-
-    /**
-     * @return an array of annotation types this annotation handler would 
-     * require to be processed (if present) before it processes it's own 
-     * annotation type.
-     */
-    public Class<? extends Annotation>[] getTypeDependencies() {
-        return getEjbAnnotationTypes();
-    }
-
-    protected boolean isDelegatee() {
-        return true;
-    }
 }

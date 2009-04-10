@@ -171,6 +171,9 @@ public interface EjbTagNames extends TagNames {
     public static final String AROUND_INVOKE_CLASS_NAME = "class";
     public static final String AROUND_INVOKE_METHOD_NAME = "method-name";
 
+    // around-invoke
+    public final static String AROUND_TIMEOUT_METHOD = "around-timeout";
+
     // stateful session
     public final static String POST_ACTIVATE_METHOD = "post-activate";
     public final static String PRE_PASSIVATE_METHOD = "pre-passivate";

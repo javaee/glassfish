@@ -47,6 +47,7 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.interceptor.AroundInvoke;
+import javax.interceptor.AroundTimeout;
 import javax.interceptor.Interceptors;
 import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;
@@ -146,6 +147,8 @@ public class InterceptorsHandler extends AbstractAttributeHandler {
                 
         Set<LifecycleCallbackDescriptor> aroundInvokeDescriptors =
             new HashSet<LifecycleCallbackDescriptor>();
+        Set<LifecycleCallbackDescriptor> aroundTimeoutDescriptors =
+            new HashSet<LifecycleCallbackDescriptor>();
         Set<LifecycleCallbackDescriptor> postActivateDescriptors =
             new HashSet<LifecycleCallbackDescriptor>();
         Set<LifecycleCallbackDescriptor> prePassivateDescriptors =
@@ -155,6 +158,9 @@ public class InterceptorsHandler extends AbstractAttributeHandler {
         for(Method m : cdef.getMethods()) {
             if( m.getAnnotation(AroundInvoke.class) != null ) {
                 aroundInvokeDescriptors.add(getLifecycleCallbackDescriptor(m));
+            }
+            if( m.getAnnotation(AroundTimeout.class) != null ) {
+                aroundTimeoutDescriptors.add(getLifecycleCallbackDescriptor(m));
             }
             if( m.getAnnotation(PostActivate.class) != null ) {
                 postActivateDescriptors.add(getLifecycleCallbackDescriptor(m));
@@ -175,6 +181,10 @@ public class InterceptorsHandler extends AbstractAttributeHandler {
         
         if (aroundInvokeDescriptors.size() > 0) {
             interceptor.addAroundInvokeDescriptors(aroundInvokeDescriptors);
+        }
+        
+        if (aroundTimeoutDescriptors.size() > 0) {
+            interceptor.addAroundTimeoutDescriptors(aroundTimeoutDescriptors);
         }
         
         if (postActivateDescriptors.size() > 0) {

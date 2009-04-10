@@ -2611,11 +2611,18 @@ public abstract class BaseContainer
                                    Class originalIntf)
         throws EJBException {
 
-        return addInvocationInfo(method, methodIntf, originalIntf, false);
+        return addInvocationInfo(method, methodIntf, originalIntf, false, false);
+    }
+    private InvocationInfo addInvocationInfo(Method method, String methodIntf,
+                                   Class originalIntf, boolean isEjbTimeout)
+        throws EJBException {
+
+        return addInvocationInfo(method, methodIntf, originalIntf, isEjbTimeout, false);
     }
 
     private InvocationInfo addInvocationInfo(Method method, String methodIntf,
-                                   Class originalIntf, boolean optionalLocalBusView)
+                                   Class originalIntf, boolean isEjbTimeout, 
+                                   boolean optionalLocalBusView)
         throws EJBException
         
     {
@@ -2635,7 +2642,13 @@ public abstract class BaseContainer
             }
             if (beanMethod != null) {
                 MethodDescriptor md = new MethodDescriptor(beanMethod, MethodDescriptor.EJB_BEAN);
-                info.interceptorChain = interceptorManager.getAroundInvokeChain(md, beanMethod);
+                if (isEjbTimeout) {
+                    info.interceptorChain = 
+                            interceptorManager.getAroundTimeoutChain(md, beanMethod);
+                } else {
+                    info.interceptorChain = 
+                            interceptorManager.getAroundInvokeChain(md, beanMethod);
+                }
             }
 
 
@@ -3189,7 +3202,8 @@ public abstract class BaseContainer
                         Method method = methods[i];
                         addInvocationInfo(method,
                                           MethodDescriptor.EJB_LOCAL,
-                                          ejbGeneratedOptionalLocalBusinessIntfClass, true);
+                                          ejbGeneratedOptionalLocalBusinessIntfClass, 
+                                          false, true);
                     }
 
                     // Process generated Optional Local Business interface
@@ -3308,7 +3322,7 @@ public abstract class BaseContainer
             txAttr == TX_REQUIRED ||
             txAttr == TX_REQUIRES_NEW ||
             txAttr == TX_NOT_SUPPORTED ) {
-            addInvocationInfo(m, MethodDescriptor.EJB_BEAN, null);
+            addInvocationInfo(m, MethodDescriptor.EJB_BEAN, null, true);
         } else {
             throw new EJBException("Timeout method " + m +
                                "must have TX attribute of " +
@@ -3696,10 +3710,13 @@ public abstract class BaseContainer
 
         inv.beanMethod = inv.method;
 
-        // If the timeout method has an argument, we'll pass a TimerWrapper.
+        // Create a TimerWrapper for AroundTimeout and as a method argument.
+        javax.ejb.Timer timer  = new TimerWrapper(timerState.getTimerId(),
+                                            timerService);
+        inv.timer = timer;
+
         if (inv.method.getParameterTypes().length == 1) {
-            Object[] args  = { new TimerWrapper(timerState.getTimerId(),
-                                            timerService) };
+            Object[] args  = { timer };
             inv.methodParams = args;
         } else {
             inv.methodParams = null;
@@ -3715,10 +3732,13 @@ public abstract class BaseContainer
 
             preInvoke(inv);
 
+/**
             // AroundInvoke methods don't apply to timeout methods so
             // use invokeTargetBeanMethod() instead of intercept()
             invokeTargetBeanMethod(inv.getBeanMethod(), inv, inv.ejb,
                                    inv.methodParams, null);
+**/
+            intercept(inv);
      
             if( !isBeanManagedTran && (transactionManager.getStatus() ==
                                        Status.STATUS_MARKED_ROLLBACK) ) {

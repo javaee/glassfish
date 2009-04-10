@@ -38,6 +38,7 @@ package com.sun.enterprise.deployment.node;
 
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.node.ejb.AroundInvokeNode;
+import com.sun.enterprise.deployment.node.ejb.AroundTimeoutNode;
 import com.sun.enterprise.deployment.types.EjbReference;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.xml.EjbTagNames;
@@ -778,6 +779,21 @@ public abstract class DeploymentDescriptorNode<T> implements XMLNode<T>  {
                 (LifecycleCallbackDescriptor) aroundInvokeDescs.next();
             subNode.writeDescriptor(parentNode, 
                                     EjbTagNames.AROUND_INVOKE_METHOD, next);
+        }
+
+    }
+
+    protected void writeAroundTimeoutDescriptors
+        (Node parentNode, Iterator aroundTimeoutDescs) {
+        if (aroundTimeoutDescs == null || !aroundTimeoutDescs.hasNext())
+            return;
+
+        AroundTimeoutNode subNode = new AroundTimeoutNode();
+        for(; aroundTimeoutDescs.hasNext();) {
+            LifecycleCallbackDescriptor next =
+                (LifecycleCallbackDescriptor) aroundTimeoutDescs.next();
+            subNode.writeDescriptor(parentNode, 
+                                    EjbTagNames.AROUND_TIMEOUT_METHOD, next);
         }
 
     }

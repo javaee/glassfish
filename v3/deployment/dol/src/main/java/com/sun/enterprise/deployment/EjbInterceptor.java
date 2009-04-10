@@ -55,9 +55,10 @@ public class EjbInterceptor extends JndiEnvironmentRefsGroupDescriptor
     private static final Logger _logger = DOLUtils.getDefaultLogger();
 
     private Set<LifecycleCallbackDescriptor> aroundInvokeDescriptors;
+    private Set<LifecycleCallbackDescriptor> aroundTimeoutDescriptors;
     private String interceptorClassName;
 
-    // true if the AroundInvoke/Callback methods for this 
+    // true if the AroundInvoke/AroundTimeout/Callback methods for this 
     // descriptor were defined on the bean class itself (or one of its
     // super-classes).  false if the methods are defined
     // on a separate interceptor class (or one of its super-classes).  
@@ -90,6 +91,25 @@ public class EjbInterceptor extends JndiEnvironmentRefsGroupDescriptor
 
     }
 
+    public Set<LifecycleCallbackDescriptor> getAroundTimeoutDescriptors() {
+        if (aroundTimeoutDescriptors == null) {
+            aroundTimeoutDescriptors =
+                new HashSet<LifecycleCallbackDescriptor>(); 
+        }
+        return aroundTimeoutDescriptors;
+    }
+
+    /**
+     * Some clients need the AroundTimeout methods for this inheritance
+     * hierarchy in the spec-defined "least derived --> most derived" order.
+     */
+    public List<LifecycleCallbackDescriptor> getOrderedAroundTimeoutDescriptors
+        (ClassLoader loader) throws Exception {
+
+        return orderDescriptors(getAroundTimeoutDescriptors(), loader);
+
+    }
+
     public void setFromBeanClass(boolean flag) {
         fromBeanClass = flag;
     }
@@ -101,16 +121,8 @@ public class EjbInterceptor extends JndiEnvironmentRefsGroupDescriptor
     public void addAroundInvokeDescriptor(LifecycleCallbackDescriptor aroundInvokeDesc) {
         Set<LifecycleCallbackDescriptor> aroundInvokeDescs =
             getAroundInvokeDescriptors();
-        boolean found = false;       
-        for (LifecycleCallbackDescriptor ai : aroundInvokeDescs) {
-            if ((aroundInvokeDesc.getLifecycleCallbackClass() != null) &&
-                aroundInvokeDesc.getLifecycleCallbackClass().equals(
-                    ai.getLifecycleCallbackClass())) {
-                found = true;
-            }
-        }
 
-        if (!found) {
+        if (!knownLifecycleCallbackDescriptor(aroundInvokeDesc, aroundInvokeDescs)) {
             aroundInvokeDescs.add(aroundInvokeDesc);
         }
     }
@@ -124,6 +136,41 @@ public class EjbInterceptor extends JndiEnvironmentRefsGroupDescriptor
 
     public boolean hasAroundInvokeDescriptor() {
         return (getAroundInvokeDescriptors().size() > 0);
+    }
+
+    public void addAroundTimeoutDescriptor(LifecycleCallbackDescriptor aroundTimeoutDesc) {
+        Set<LifecycleCallbackDescriptor> aroundTimeoutDescs =
+            getAroundTimeoutDescriptors();
+
+        if (!knownLifecycleCallbackDescriptor(aroundTimeoutDesc, aroundTimeoutDescs)) {
+            aroundTimeoutDescs.add(aroundTimeoutDesc);
+        }
+    }
+
+    private boolean knownLifecycleCallbackDescriptor(
+            LifecycleCallbackDescriptor desc, Set<LifecycleCallbackDescriptor> descs) {
+        boolean found = false;
+
+        for (LifecycleCallbackDescriptor ai : descs) {
+            if ((desc.getLifecycleCallbackClass() != null) &&
+                    desc.getLifecycleCallbackClass().equals(
+                    ai.getLifecycleCallbackClass())) {
+                found = true;
+            }
+        }
+
+        return found;
+    }
+
+    public void addAroundTimeoutDescriptors(
+        Set<LifecycleCallbackDescriptor> aroundTimeouts) {
+        for (LifecycleCallbackDescriptor ai : aroundTimeouts) {
+            addAroundTimeoutDescriptor(ai);
+        }
+    }
+
+    public boolean hasAroundTimeoutDescriptor() {
+        return (getAroundTimeoutDescriptors().size() > 0);
     }
 
     /**

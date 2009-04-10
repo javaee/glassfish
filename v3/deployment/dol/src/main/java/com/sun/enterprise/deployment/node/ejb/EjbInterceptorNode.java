@@ -58,6 +58,7 @@ public class EjbInterceptorNode extends DeploymentDescriptorNode {
         super();
 
         registerElementHandler(new XMLElement(EjbTagNames.AROUND_INVOKE_METHOD), AroundInvokeNode.class, "addAroundInvokeDescriptor");       
+        registerElementHandler(new XMLElement(EjbTagNames.AROUND_TIMEOUT_METHOD), AroundTimeoutNode.class, "addAroundTimeoutDescriptor");       
         registerElementHandler(new XMLElement(EjbTagNames.POST_ACTIVATE_METHOD), LifecycleCallbackNode.class, "addPostActivateDescriptor");       
         registerElementHandler(new XMLElement(EjbTagNames.PRE_PASSIVATE_METHOD), LifecycleCallbackNode.class, "addPrePassivateDescriptor");       
 
@@ -155,6 +156,10 @@ public class EjbInterceptorNode extends DeploymentDescriptorNode {
         if (descriptor.hasAroundInvokeDescriptor()) {
             writeAroundInvokeDescriptors(interceptorNode,
                 descriptor.getAroundInvokeDescriptors().iterator());
+        }
+        if (descriptor.hasAroundTimeoutDescriptor()) {
+            writeAroundTimeoutDescriptors(interceptorNode,
+                descriptor.getAroundTimeoutDescriptors().iterator());
         }
         if (descriptor.hasCallbackDescriptor(CallbackType.POST_CONSTRUCT)) {
             writePostConstructDescriptors(interceptorNode,

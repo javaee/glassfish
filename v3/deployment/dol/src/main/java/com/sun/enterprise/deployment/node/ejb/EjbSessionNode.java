@@ -69,6 +69,8 @@ public class EjbSessionNode  extends InterfaceBasedEjbNode {
 
        registerElementHandler(new XMLElement(EjbTagNames.AROUND_INVOKE_METHOD), AroundInvokeNode.class, "addAroundInvokeDescriptor");       
 
+       registerElementHandler(new XMLElement(EjbTagNames.AROUND_TIMEOUT_METHOD), AroundTimeoutNode.class, "addAroundTimeoutDescriptor");       
+
        registerElementHandler(new XMLElement(EjbTagNames.POST_CONSTRUCT), LifecycleCallbackNode.class, "addPostConstructDescriptor");       
 
        registerElementHandler(new XMLElement(EjbTagNames.PRE_DESTROY), LifecycleCallbackNode.class, "addPreDestroyDescriptor");       
@@ -287,6 +289,9 @@ public class EjbSessionNode  extends InterfaceBasedEjbNode {
 
         //around-invoke-method
         writeAroundInvokeDescriptors(ejbNode, ejbDesc.getAroundInvokeDescriptors().iterator());
+
+        //around-timeout-method
+        writeAroundTimeoutDescriptors(ejbNode, ejbDesc.getAroundTimeoutDescriptors().iterator());
 
         // env-entry*
         writeEnvEntryDescriptors(ejbNode, ejbDesc.getEnvironmentProperties().iterator());

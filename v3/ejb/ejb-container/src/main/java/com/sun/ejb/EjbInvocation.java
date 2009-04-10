@@ -46,6 +46,7 @@ import org.glassfish.api.invocation.ComponentInvocation;
 import com.sun.enterprise.transaction.spi.TransactionOperationsManager;
 
 import javax.ejb.EJBContext;
+import javax.ejb.Timer;
 import javax.interceptor.InvocationContext;
 import javax.transaction.Transaction;
 import javax.xml.rpc.handler.MessageContext;
@@ -277,6 +278,7 @@ public class EjbInvocation
      */
     public Object[] methodParams;
 
+    public Timer timer;
 
     /**
      * Result of txManager.getStatus() performed at the beginning of
@@ -495,13 +497,12 @@ public class EjbInvocation
      * @return Returns the timer instance.
      */
     public Object getTimer() {
-        // TODO: Return the timer for AroundTimeout calls.
-        return null;
+        return timer;
     }
  
     
     /**
-     * @return For AroundInvoke methods, returns the bean class 
+     * @return For AroundInvoke/AroundTimeout methods, returns the bean class 
      *         method being invoked.  For lifecycle callback methods, 
      *         returns null.
      */
