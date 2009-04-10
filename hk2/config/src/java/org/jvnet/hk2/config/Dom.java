@@ -158,16 +158,6 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
     }
 
     /**
-     * Returns the habitat in which this object resides.
-     *
-     * @return the habitat
-     */
-    public Habitat getHabitat() {
-        return habitat;
-    }
-
-
-    /**
      * Unwraps the proxy and returns the underlying {@link Dom} object.
      *
      * @return
