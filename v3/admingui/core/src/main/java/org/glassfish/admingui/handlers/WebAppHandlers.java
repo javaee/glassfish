@@ -205,10 +205,13 @@ public class WebAppHandlers {
             Map<String, EngineConfig> eConfigs = mf.getEngineConfigMap();
             List snifferList = new ArrayList();
             for(EngineConfig ec : eConfigs.values()){
-                snifferList.add(ec.getSniffer());
+                String sniffer = ec.getSniffer();
+                if (sniffersHide.contains(sniffer) )
+                    continue;
+                snifferList.add(sniffer);
             }
             Collections.sort(snifferList);
-            oneRow.put("enginees", snifferList.toString());
+            oneRow.put("engines", snifferList.toString());
             result.add(oneRow);
         }
         handlerCtx.setOutputValue("result", result);

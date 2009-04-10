@@ -48,7 +48,7 @@
             </sun:tableColumn>
             
             <sun:tableColumn headerText="$resource{i18n.deployTable.ColEngines}" rowHeader="$boolean{true}" id="col2">
-                <staticText id="typeCol" value="#{td.value.enginees}" />
+                <staticText id="typeCol" value="#{td.value.engines}" />
             </sun:tableColumn>
 
             <!-- TODO

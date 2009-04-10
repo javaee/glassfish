@@ -365,8 +365,9 @@ function setFieldValue(appNameId, value,  typeId, contextRootId, extensionId) {
     appName = extractName(value);
     var pfex = getPrefix(appName);
     var sfex = getSuffix(appName);
-    
-    component = getTextElement(extensionId);
+
+    alert(sfex);
+    var component = getTextElement(extensionId);
     component.value=sfex;
 
     if (appNameId==null || appNameId.length <=0)
@@ -380,9 +381,11 @@ function setFieldValue(appNameId, value,  typeId, contextRootId, extensionId) {
 //        component = getTextElement(contextRootId);
 //        component.value = pfex
 //    }
-    component = getTextElement(contextRootId);
-    if (component != null){
-        component.value = pfex;
+    if ( sfex == ".war"){
+        component = getTextElement(contextRootId);
+        if (component != null){
+            component.value = pfex;
+        }
     }
 }
 
@@ -411,10 +414,12 @@ function populateDirAndAppName(fileChooserId, dirPathId, appNameId, typeId, ctxR
 //    }
 
     //TODO V3: may need to adjust other type.
+    if (getSuffix(appName) == ".war"){
         component = window.opener.getTextElement(ctxRootId);
         if (component != null){
             component.value = getPrefix(appName);
         }
+    }
     window.close();
 }
 
