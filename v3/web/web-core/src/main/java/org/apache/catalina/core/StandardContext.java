@@ -2577,8 +2577,28 @@ public class StandardContext
             throw new NullPointerException("Null filter instance or name");
         }
 
+        /*
+         * Make sure the given Filter instance is unique across all deployed
+         * contexts
+         */
+        Container host = getParent();
+        if (host != null) {
+            for (Container child : host.findChildren()) {
+                if (child == this) {
+                    // Our own context will be checked further down
+                    continue;
+                }
+                if (((StandardContext) child).hasFilter(filter)) {
+                    return null;
+                }
+            }
+        }
+
+        /*
+         * Make sure the given Filter name and instance are unique within 
+         * this context
+         */
         synchronized (filterDefs) {
-            // Make sure filter name and instance are unique for this context
             for (Map.Entry<String, FilterDef> e : filterDefs.entrySet()) {
                 if (filterName.equals(e.getKey()) ||
                         filter == e.getValue().getFilter()) {
@@ -2593,6 +2613,19 @@ public class StandardContext
             return (FilterRegistration.Dynamic)
                 filterDef.getFilterRegistration();
         }
+    }
+
+
+    /**
+     * Checks whether this context contains the given Filter instance
+     */
+    public boolean hasFilter(Filter filter) {
+        for (Map.Entry<String, FilterDef> e : filterDefs.entrySet()) {
+            if (filter == e.getValue().getFilter()) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
@@ -3194,7 +3227,27 @@ public class StandardContext
                 SingleThreadModel.class.getName());
         }
 
-        // Make sure servlet name and instance are unique for this context
+        /*
+         * Make sure the given Servlet instance is unique across all deployed
+         * contexts
+         */
+        Container host = getParent();
+        if (host != null) {
+            for (Container child : host.findChildren()) {
+                if (child == this) {
+                    // Our own context will be checked further down
+                    continue;
+                }
+                if (((StandardContext) child).hasServlet(servlet)) {
+                    return null;
+                }
+            }
+        }
+      
+        /*
+         * Make sure the given Servlet name and instance are unique within 
+         * this context
+         */
         synchronized (children) {
             for (Map.Entry<String, Container> e : children.entrySet()) {
                 if (servletName.equals(e.getKey()) ||
@@ -3202,7 +3255,7 @@ public class StandardContext
                     return null;
                 }
             }
-             
+                         
             StandardWrapper wrapper = (StandardWrapper) createWrapper();
 
             if (initParams != null) {
@@ -3225,6 +3278,19 @@ public class StandardContext
             return (ServletRegistration.Dynamic)
                 wrapper.getServletRegistration();
         }
+    }
+
+
+    /**
+     * Checks whether this context contains the given Servlet instance
+     */
+    public boolean hasServlet(Servlet servlet) {
+        for (Map.Entry<String, Container> e : children.entrySet()) {
+            if (servlet == ((StandardWrapper)e.getValue()).getServlet()) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
