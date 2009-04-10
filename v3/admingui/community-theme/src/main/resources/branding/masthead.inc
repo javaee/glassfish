@@ -8,10 +8,10 @@
               serverInfo="#{serverName}" serverInfoLabel="$resource{i18n.masthead.serverInfoLabel}"
               dateTime="$boolean{false}" notificationMsg="$attribute{null}">
     <!facet consoleLink>
-        <sun:hyperlink id="homeLink" toolTip="$resource{i18n.homeLinkTooltip}" target="_top" text="$resource{i18n.masthead.Home}" url="/index.jsf" />
+        <sun:hyperlink id="homeLink" toolTip="$resource{i18n.homeLinkTooltip}" target="_top" text="$resource{i18n.masthead.Home}" url="#{request.contextPath}/index.jsf" />
     </facet>
     <!facet versionLink>
-        <sun:hyperlink id="versionLink" toolTip="$resource{i18n.versionTooltip}" text="$resource{i18n.masthead.Version}" onClick="javascript: var versionWin = window.open('version.jsf','VersionWindow','scrollbars,resizable,width=700,height=500,top='+((screen.height - (screen.height/1.618)) - (500/2))+',left='+((screen.width-650)/2) ); versionWin.focus(); return false;" onKeyPress="javascript: return true;" />
+        <sun:hyperlink id="versionLink" toolTip="$resource{i18n.versionTooltip}" text="$resource{i18n.masthead.Version}" onClick="javascript: var versionWin = window.open('#{request.contextPath}/version.jsf','VersionWindow','scrollbars,resizable,width=700,height=500,top='+((screen.height - (screen.height/1.618)) - (500/2))+',left='+((screen.width-650)/2) ); versionWin.focus(); return false;" onKeyPress="javascript: return true;" />
     </facet>
     <!facet helpLink>
         <sun:helpWindow id="helpLink" windowTitle="$resource{i18n.helpWindowTitle}" text="$resource{i18n.masthead.Help}" toolTip="$resource{i18n.helpWindowTooltip}" helpFile="CONTEXT_HELP.html" onClick="doHelp(this); return false; " onKeyPress="doHelp(this); return false; " />
