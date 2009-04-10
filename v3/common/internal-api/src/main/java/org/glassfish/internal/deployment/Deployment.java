@@ -121,6 +121,12 @@ public interface Deployment {
     public final EventTypes<DeploymentContext> APPLICATION_CLEANED= EventTypes.create("Application_Cleaned", DeploymentContext.class);
 
 
+    /**
+     * The following asynchronous event is sent after all applications are 
+     * started in server start up.
+     */
+    public final EventTypes<DeploymentContext> ALL_APPLICATIONS_PROCESSED= EventTypes.create("All_Applications_Processed", DeploymentContext.class);
+
     public ArchiveHandler getArchiveHandler(ReadableArchive archive) throws IOException;
 
     public ExtendedDeploymentContext getContext(Logger logger, File source, OpsParams params, ActionReport report)
