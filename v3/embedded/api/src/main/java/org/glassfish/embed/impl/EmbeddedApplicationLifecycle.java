@@ -42,7 +42,8 @@
 
 package org.glassfish.embed.impl;
 
-import java.util.LinkedList;
+import java.util.List;
+import java.util.Collection;
 
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.container.Sniffer;
@@ -80,11 +81,13 @@ public class EmbeddedApplicationLifecycle extends ApplicationLifecycle {
     @Inject protected ContainerRegistry creg;
 
     
-    protected LinkedList<EngineInfo> setupContainerInfos(
-            Iterable<Sniffer> sniffers, DeploymentContextImpl context,
+    protected List<EngineInfo> setupContainerInfos(
+            Collection<Sniffer> sniffers, DeploymentContextImpl context,
             ActionReport report, ProgressTracker tracker) throws Exception {
-/*
-        LinkedList<EngineInfo> result = super.setupContainerInfos(sniffers, context, report, tracker);
+
+
+        List<EngineInfo> result = 
+            super.setupContainerInfos(context.getArchiveHandler(), sniffers, context);
 
         if (result != null && result.isEmpty()) {
 
@@ -98,8 +101,6 @@ public class EmbeddedApplicationLifecycle extends ApplicationLifecycle {
             }
         }
         return result;
-*/
-        return null;
     }
 
 
