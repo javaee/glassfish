@@ -256,7 +256,7 @@ public final class ConfigModel {
         public abstract void set(Dom dom, Object arg);
     }
 
-    static abstract class Node extends Property {
+    public static abstract class Node extends Property {
         final ConfigModel model;
         public Node(ConfigModel model, String xmlName) {
             super(xmlName);
@@ -265,6 +265,15 @@ public final class ConfigModel {
 
         public boolean isLeaf() {
             return false;
+        }
+
+        /**
+         * Returns the config model for this Node
+         * 
+         * @return
+         */
+        public ConfigModel getModel() {
+            return model;
         }
 
         /**

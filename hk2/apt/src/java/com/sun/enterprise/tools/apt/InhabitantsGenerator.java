@@ -44,14 +44,7 @@ import com.sun.mirror.apt.AnnotationProcessor;
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.apt.RoundCompleteEvent;
 import com.sun.mirror.apt.RoundCompleteListener;
-import com.sun.mirror.declaration.AnnotationMirror;
-import com.sun.mirror.declaration.AnnotationTypeDeclaration;
-import com.sun.mirror.declaration.AnnotationTypeElementDeclaration;
-import com.sun.mirror.declaration.AnnotationValue;
-import com.sun.mirror.declaration.ClassDeclaration;
-import com.sun.mirror.declaration.InterfaceDeclaration;
-import com.sun.mirror.declaration.TypeDeclaration;
-import com.sun.mirror.declaration.Declaration;
+import com.sun.mirror.declaration.*;
 import com.sun.mirror.type.InterfaceType;
 import com.sun.mirror.type.MirroredTypeException;
 import com.sun.mirror.type.TypeMirror;
@@ -59,13 +52,7 @@ import com.sun.mirror.type.ClassType;
 import com.sun.mirror.util.DeclarationVisitor;
 import com.sun.mirror.util.DeclarationVisitors;
 import com.sun.mirror.util.SimpleDeclarationVisitor;
-import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.annotations.ContractProvided;
-import org.jvnet.hk2.annotations.Index;
-import org.jvnet.hk2.annotations.InhabitantAnnotation;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.InhabitantMetadata;
-import org.jvnet.hk2.annotations.CompanionOf;
+import org.jvnet.hk2.annotations.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -162,13 +149,82 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
             }
 
             if (debug) {
-                env.getMessager().printNotice("Found component annotation " + a + " on "+d.getQualifiedName());
+                env.getMessager().printWarning("Found component annotation " + a + " on "+d.getQualifiedName());
             }
             
             // update the descriptor
             InhabitantsDescriptor descriptor = list.get(ia.value());
             descriptor.put(d.getQualifiedName(),getInhabitantDeclaration(a,d));
         }
+
+        /**
+         * Visits a method declaration.
+         * The implementation simply invokes
+         * {@link #visitExecutableDeclaration visitExecutableDeclaration}.
+         * @param d the declaration to visit
+         */
+        public void visitMethodDeclaration(MethodDeclaration d) {
+            if (debug) {
+                env.getMessager().printWarning("Visiting " + d.getSimpleName());
+            }
+            InhabitantAnnotation ia=null;
+            AnnotationMirror a=null;
+            for (AnnotationMirror am : d.getAnnotationMirrors()) {
+                ia = am.getAnnotationType().getDeclaration().getAnnotation(InhabitantAnnotation.class);
+                if (ia!=null) {
+                    a=am;
+                }
+            }
+            if (a==null)
+                return;
+            InhabitantsDescriptor descriptor = list.get(ia.value());
+
+            String service=null;
+            // I cannot use a.getAnnotationType().getDeclaration().getAnnotation() because the value() is a class
+            // which cannot be loaded by the classloader at compile time.
+            for (AnnotationMirror am : a.getAnnotationType().getDeclaration().getAnnotationMirrors()) {
+                if (am.getAnnotationType().getDeclaration().getSimpleName().equals(ServiceProvider.class.getSimpleName())) {
+                    for (Map.Entry<AnnotationTypeElementDeclaration, AnnotationValue> entry : am.getElementValues().entrySet()) {
+                        service = entry.getValue().toString();
+                    }
+                }
+            }
+            if (service!=null) {
+                String name = getIndexValue(a);
+                String contract="";
+                // we should support gettting the @ContractProvided from the ServiceProvider
+                for (AnnotationMirror am : a.getAnnotationType().getDeclaration().getAnnotationMirrors()) {
+                    if (am.getAnnotationType().getDeclaration().getSimpleName().equals(ContractProvided.class.getSimpleName())) {
+                        for (Map.Entry<AnnotationTypeElementDeclaration, AnnotationValue> entry : am.getElementValues().entrySet()) {
+                            contract = entry.getValue().toString();
+                        }
+                    }
+                }
+
+                StringBuilder buf = new StringBuilder();
+                buf.append(InhabitantsFile.CLASS_KEY).append('=').append(service);
+                buf.append(",").append(INDEX_KEY).append("=").append(contract).append(":").append(name);
+                buf.append(",").append("declaring-type").append("=").append(d.getDeclaringType().getQualifiedName());
+                buf.append(",").append("method-name").append('=').append(d.getSimpleName());
+                for (AnnotationTypeElementDeclaration ated : a.getAnnotationType().getDeclaration().getMethods()) {
+                    for (AnnotationMirror am : ated.getAnnotationMirrors()) {
+                        if (am.getAnnotationType().getDeclaration().getSimpleName().equals(InhabitantMetadata.class.getSimpleName())) {
+                            for (Map.Entry<AnnotationTypeElementDeclaration, AnnotationValue> entry : a.getElementValues().entrySet()) {
+                                if (entry.getKey().getSimpleName().equals(ated.getSimpleName())) {
+                                    buf.append(",").append(ated.getSimpleName()).append("=").append(entry.getValue().toString());
+                                }
+                            }
+                        }
+                    }
+                }
+
+                descriptor.put(contract+":"+name, buf.toString());
+            } else {
+                descriptor.put(d.getDeclaringType().getQualifiedName(),
+                        getInhabitantDeclaration(a, (ClassDeclaration) d.getDeclaringType()));
+            }
+        }
+
 
         /**
          * Computes the metadata line for the given class declaration. 
@@ -182,7 +238,7 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
             checkedInterfaces.clear();
 
             // check for Contract supertypes.
-            String name = geIndexValue(a);
+            String name = getIndexValue(a);
             for (TypeDeclaration t : ContractFinder.find(d)) {
                 enforceContractLevelScope(t,d);
                 addIndex(t.getQualifiedName(),name);
@@ -195,7 +251,7 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
                 if(c!=null) {
                     // this is a contract annotation
                     enforceContractLevelScope(atd,d);
-                    addIndex(atd.getQualifiedName(), geIndexValue(am));
+                    addIndex(atd.getQualifiedName(), getIndexValue(am));
                 }
 
                 // check for meta-annotations
@@ -204,7 +260,7 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
                     Contract mc = matd.getAnnotation(Contract.class);
                     if(mc!=null)
                         // meta-contract annotation
-                        addIndex(matd.getQualifiedName(), geIndexValue(mam));
+                        addIndex(matd.getQualifiedName(), getIndexValue(mam));
                 }
             }
 
@@ -270,7 +326,7 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
         /**
          * Finds the value of the annotation element annotated with {@link Index}.
          */
-        private String geIndexValue(AnnotationMirror a) {
+        private String getIndexValue(AnnotationMirror a) {
             AnnotationTypeDeclaration decl = a.getAnnotationType().getDeclaration();
             for(AnnotationTypeElementDeclaration e : decl.getMethods()) {
                 if(e.getAnnotation(Index.class)!=null) {

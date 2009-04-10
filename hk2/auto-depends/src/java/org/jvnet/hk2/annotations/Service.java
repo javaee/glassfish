@@ -82,7 +82,7 @@ public @interface Service {
      * The value is "key=value,key=value,..." format. See {@link InhabitantsFile}
      * for more details.
      *
-     * This information is accessilbe from {@link Inhabitant#metadata()}.
+     * This information is accessible from {@link Inhabitant#metadata()}.
      *
      * <p>
      * While this is limited in expressiveness, metadata has a performance advantage
