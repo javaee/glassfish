@@ -136,7 +136,10 @@ public class DeploymentHandler {
         }
 
         deploymentProps.setProperty(DFDeploymentProperties.NAME, appName != null ? appName : "");
-        deploymentProps.setProperty(DFDeploymentProperties.CONTEXT_ROOT, ctxtRoot != null ? ctxtRoot : "");
+        //If user doesn't set the context root, do not pass anything to DF in the deploymentProperties.  
+        //Otherwise, a "/" will be set as the context root instead of looking into sun-web.xml or using the filename.
+        if (!GuiUtil.isEmpty(ctxtRoot))
+            deploymentProps.setProperty(DFDeploymentProperties.CONTEXT_ROOT, ctxtRoot);
         deploymentProps.setProperty(DFDeploymentProperties.ENABLED, enabled != null ? enabled : "false");
         deploymentProps.setProperty(DFDeploymentProperties.DEPLOY_OPTION_LIBRARIES, libraries != null ? libraries : "");
         deploymentProps.setProperty(DFDeploymentProperties.DESCRIPTION, desc != null ? desc : "");
