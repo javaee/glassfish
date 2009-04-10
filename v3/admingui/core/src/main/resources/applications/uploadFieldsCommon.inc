@@ -94,7 +94,7 @@
 <sun:property id="precmplProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.precompile}" visible="#{false}" helpText="$resource{i18n.server.PrecompileHelp}">
 	<sun:checkbox id="precompileJSP" label="$resource{i18n.common.Enabled}" selected="#{precompile}" />  
 </sun:property>
-<sun:property id="librariesProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Libraries}" helpText="$resource{i18n.deploy.libraryHelp}" visible="#{false}">
+<sun:property id="librariesProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Libraries}" helpText="$resource{i18n.deploy.libraryHelp}" >
 	<sun:textField id="library" columns="$int{40}" text="#{library}" />
 </sun:property>
 <sun:property id="threadpoolProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.connectorModule.ThreadPoolID}" helpText="$resource{i18n.connectorModule.ThreadPoolIDHelp}" visible="#{false}">
