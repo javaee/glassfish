@@ -7,7 +7,10 @@
 	<CommandProperty name="environment-prefix" value="AS_ADMIN_"/>
     </CommandProperties>
     <Options>
-	<Option name="verbose" type="boolean" value-required="false" default="false">
+	<Option name="file" value-required="true">
+	    <shortoption>f</shortoption>
+	</Option>
+    <Option name="verbose" type="boolean" value-required="false" default="false">
 	    <shortoption>v</shortoption>
 	</Option>
 	<Option name="nowatchdog" type="boolean" value-required="false" default="false">
@@ -180,6 +183,11 @@
              <ValidOption name="echo"/>
              <ValidOption name="user"/>
              <ValidOption name="passwordfile"/>
-        </Command>        
+        </Command>
+        <Command name="multimode" classname="com.sun.enterprise.admin.cli.optional.StreamCommandRunner" numberofoperands="0" usage-text="multimode -f|--file filename">
+            <ValidOption name="terse"/>
+            <ValidOption name="echo"/>
+            <ValidOption name="file"/>
+        </Command>
     </Commands>
 </CommandsAndOptions>

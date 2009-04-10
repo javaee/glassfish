@@ -48,7 +48,7 @@ import java.util.Hashtable;
 public class AsadminMain {
     public static void main(String[] args) {
         AsadminMain main = new AsadminMain();
-        int exitCode = ERROR;
+        int exitCode;
 
         if(args.length <= 0) {
              String msg = strings.get("AsadminUsageMessage");
@@ -125,7 +125,7 @@ public class AsadminMain {
     }
     
 
-    private int local(String[] args) throws InvalidCommandException{
+    public int local(String[] args) throws InvalidCommandException{
         try {
             CLIMain cli = new com.sun.enterprise.cli.framework.CLIMain();
             cli.invokeCommand(args);
@@ -153,7 +153,7 @@ public class AsadminMain {
             return ERROR;
         }
     }
-    private int remote(String[] args) {
+    public int remote(String[] args) {
         try {
             CLIRemoteCommand rc = new CLIRemoteCommand(args);
             rc.runCommand();
@@ -173,7 +173,7 @@ public class AsadminMain {
     }
     private final static int ERROR = 1;
     private final static int CONNECTION_ERROR = 2;
-    private final static int INVALID_COMMAND_ERROR = 3;    
+    private final static int INVALID_COMMAND_ERROR = 3;
     private final static int SUCCESS = 0;
     private final static LocalStringsImpl strings = new LocalStringsImpl(AsadminMain.class);
     private       static String[] copyOfArgs;
@@ -243,5 +243,4 @@ public class AsadminMain {
         System.out.println("Time to pre-load classes = " + (stop-start) + " msec");
     }
      */
-
 
