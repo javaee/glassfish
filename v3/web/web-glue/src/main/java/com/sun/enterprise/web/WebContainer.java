@@ -116,6 +116,7 @@ import org.glassfish.flashlight.provider.ProbeProviderFactory;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.internal.data.ApplicationRegistry;
+import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.web.admin.monitor.JspProbeProvider;
 import org.glassfish.web.admin.monitor.RequestProbeProvider;
 import org.glassfish.web.admin.monitor.ServletProbeProvider;
@@ -618,8 +619,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             // Configure virtual servers
             createHosts(httpService, aConfig.getSecurityService());
         }
-
-        loadDefaultWebModules();
         
         //_lifecycle.fireLifecycleEvent(START_EVENT, null);
         _started = true;
@@ -661,7 +660,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
 
     public void event(Event event) {
-        if (event.is(EventTypes.PREPARE_SHUTDOWN)) {
+        if (event.is(Deployment.ALL_APPLICATIONS_PROCESSED)) {
+            // configure default web modules for virtual servers after all applications are processed
+            loadDefaultWebModules();
+        } else if (event.is(EventTypes.PREPARE_SHUTDOWN)) {
             isShutdown = true;
         }
     }
