@@ -325,29 +325,38 @@ public class FilterDef implements Serializable {
      *
      * @param initParameters the map with the init params to set
      *
-     * @return true if the update was successful, false otherwise
+     * @return the (possibly empty) Set of initialization parameter names
+     * that are in conflict
      */
-    public boolean setInitParameters(Map<String, String> initParameters) {
+    public Set<String> setInitParameters(Map<String, String> initParameters) {
         if (null == initParameters) {
             throw new IllegalArgumentException("Null init parameters");
         }
 
         synchronized (parameters) {
+            Set conflicts = null;
             for (Map.Entry<String, String> e : initParameters.entrySet()) {
                 if (e.getKey() == null || e.getValue() == null) {
                     throw new IllegalArgumentException(
                         "Null parameter name or value");
                 }
                 if (parameters.containsKey(e.getKey())) {
-                    return false;
+                    if (conflicts == null) {
+                        conflicts = new HashSet<String>();    
+                    }
+                    conflicts.add(e.getKey());
                 }
+            }
+
+            if (conflicts != null) {
+                return conflicts;
             }
 
             for (Map.Entry<String, String> e : initParameters.entrySet()) {
                 setInitParameter(e.getKey(), e.getValue(), true);
             }
    
-            return true;
+            return Collections.EMPTY_SET;
         }
     }
 
