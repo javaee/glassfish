@@ -95,7 +95,7 @@ until we sort out 1.0.2 non-snapshot dependencies
        <dependency>	  
 	    <groupId>org.glassfish.packager.temp</groupId>
 	    <artifactId>jersey</artifactId>
-	    <version>1.0.1</version>
+	    <version>${jersey.version}</version>
             <type>zip</type>
        </dependency>
     </dependencies>

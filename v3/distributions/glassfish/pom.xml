@@ -187,6 +187,13 @@
             <version>${project.version}</version>
             <type>distribution-fragment</type>
         </dependency>
+        <!-- temporary integration of Jersey content -->
+        <dependency>	  
+	    <groupId>org.glassfish.packager.temp</groupId>
+	    <artifactId>jersey</artifactId>
+	    <version>${jersey.version}</version>
+            <type>zip</type>
+       </dependency>
 	<!-- following appclient modules should get replaced with appclient-all -->
 	<dependency>
             <groupId>org.glassfish.appclient</groupId>

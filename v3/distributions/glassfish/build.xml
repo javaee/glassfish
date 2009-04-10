@@ -30,14 +30,25 @@
 
          <resolveAll todir="target/stage/glassfish/modules" tolerateBrokenPOMs="true" stripVersion="true">
 	    <scope level="compile,runtime" />
-    </resolveAll>	
+    </resolveAll>
+
+    <!-- using only runtime out of jersey zip file -->
+
+    <resolveArtifact groupID="org.glassfish.packager.temp" artifactID="jersey" type="zip" property="jersey.zip" />
+
+    <unzip src="${jersey.zip}" dest="target/stage">
+        <patternset>
+	     <include name="**/modules/*.jar"/>
+        </patternset>
+    </unzip>	    
+
 
     <!-- temporary workaround for MS1 mq integration since artifact
     type is not being properly resolved as distribution-fragment -->
 
     <resolveArtifact todir="target/fragments" groupID="org.glassfish" artifactID="mq-distribution" type="zip" />
 
-    <!-- temporary workaround for MS1 mq integration - appclient 
+    <!-- temporary workaround for MS1 integration - appclient 
     bundle needs another layer of distribution-fragment packaging -->
 
     <copy todir="target/stage/glassfish/lib/appclient"
