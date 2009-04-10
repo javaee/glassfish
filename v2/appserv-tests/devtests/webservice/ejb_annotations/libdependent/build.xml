@@ -47,13 +47,13 @@
 
     <target name="assemble-client" depends="init-common">
       <mkdir dir="${build.classes.dir}/client"/>
-      <echo message="wsimporting http://${http.host}:${http.port}/HelloImplService/HelloImpl?WSDL"/>
+      <echo message="wsimporting http://localhost:8080/HelloImplService/HelloImpl?WSDL"/>
       <antcall target="wsimport">
         <param name="wsimport.args"
-               value="-keep -d ${build.classes.dir}/client http://${http.host}:${http.port}/HelloImplService/HelloImpl?WSDL"/>
+               value="-keep  -Xendorsed -d ${build.classes.dir}/client http://${http.host}:${http.port}/HelloImplService/HelloImpl?WSDL"/>
       </antcall>
-      <javac srcdir="." destdir="${build.classes.dir}/client" 
-            classpath="${env.APS_HOME}/lib/reporter.jar:${env.S1AS_HOME}/lib/j2ee.jar:${env.S1AS_HOME}/lib/webservices-rt.jar:${env.S1AS_HOME}/lib/webservices-tools.jar" 
+      <javac verbose="true" srcdir="." destdir="${build.classes.dir}/client" 
+            classpath="${env.APS_HOME}/lib/reporter.jar:${env.S1AS_HOME}/lib/j2ee.jar:${env.S1AS_HOME}/modules/webservices-osgi.jar:${env.S1AS_HOME}/modules/webservices-api-osgi.jar:${env.S1AS_HOME}/modules/jaxb-osgi.jar:${env.S1AS_HOME}/modules/jaxb-api-osgi.jar" 
             includes="client/**"/>
     </target>
 
