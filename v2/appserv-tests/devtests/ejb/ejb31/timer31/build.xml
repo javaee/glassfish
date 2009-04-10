@@ -16,6 +16,7 @@
         <antcall target="nonpersistenttimer"/>
         <antcall target="schedule_exp"/>
         <antcall target="schedule_ann"/>
+        <antcall target="aroundtimeout"/>
 
     </target>
 
@@ -37,6 +38,12 @@
         <record name="schedule_ann.output" action="stop" />
     </target>
 
+    <target name="aroundtimeout">
+        <record name="aroundtimeout.output" action="start" />
+            <ant dir="aroundtimeout" target="all"/>
+        <record name="aroundtimeout.output" action="stop" />
+    </target>
+
     <target name="usage">
 	<echo>
 		Usage:
@@ -45,6 +52,7 @@
 			ant nonpersistenttimer (Executes the non-persistent ejb-timer test)
 			ant schedule_exp (Executes the schedule_exp ejb-timer test)
 			ant schedule_ann (Executes the schedule_ann ejb-timer test)
+			ant aroundtimeout (Executes the aroundtimeout ejb-timer test)
 
 	</echo>
     </target>
