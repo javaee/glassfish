@@ -73,8 +73,6 @@ public class NavigationNodeFactory extends ComponentFactoryBase {
                 setOption(context, imageHyperlink, descriptor, "border", "0");
                 setOption(context, imageHyperlink, descriptor, "immediate", Boolean.TRUE);
                 comp.getFacets().put("image", imageHyperlink);
-                UIComponent facet = comp.getFacets().get("image");
-                assert (facet != null);
             }
         }
 

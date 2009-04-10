@@ -23,8 +23,8 @@ import javax.faces.context.FacesContext;
  * <li>target</li>
  * </ul>
  */
-@UIComponentFactory("gf:navigation")
-public class NavigationFactory extends ComponentFactoryBase {
+@UIComponentFactory("gf:navNodeContainer")
+public class NavNodeContainerFactory extends ComponentFactoryBase {
 
     /**
      *	<p> This is the factory method responsible for creating the
