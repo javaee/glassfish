@@ -62,6 +62,8 @@ import java.util.jar.JarFile;
 import java.util.jar.JarEntry;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.annotation.HandlesTypes;
@@ -150,7 +152,7 @@ public class ServletContainerInitializerUtil {
         //Do this scanning only if we have ServletContainerinitializers that have expressed specific interest
         if( (interestList.keySet().size() > 1) ||
             ((interestList.keySet().size() == 1) && (!interestList.containsKey(ServletContainerInitializerUtil.class)))) {
-            for(java.net.URL u : ((WebappClassLoader)cl).getURLs()) {
+            for(URL u : ((URLClassLoader)cl).getURLs()) {
                 String path = u.getPath();
                 try {
                     if(path.endsWith(".jar")) {

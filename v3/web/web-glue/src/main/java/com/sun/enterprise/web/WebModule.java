@@ -96,7 +96,6 @@ import org.glassfish.web.admin.monitor.ServletProbeProvider;
 import org.glassfish.web.admin.monitor.SessionProbeProvider;
 import org.glassfish.web.admin.monitor.WebModuleProbeProvider;
 import org.glassfish.web.valve.GlassFishValve;
-import org.glassfish.web.loader.WebappClassLoader;
 import org.glassfish.web.loader.ServletContainerInitializerUtil;
 
 /**
@@ -479,36 +478,10 @@ public class WebModule extends PwcWebModule {
      */
     @Override
     public synchronized void start() throws LifecycleException {
-        // Get interestList of ServletContainerInitializers present, if any, in app's WEB-INF/lib
-        // We set parent of WebappClassLoader to API temporarily so that the search is not done for
-        // system libraries again
-        ClassLoader currCl = wmInfo.getAppClassLoader();
-        if(currCl instanceof WebappClassLoader) {
-            WebappClassLoader appCl = (WebappClassLoader)currCl;
-            ClassLoader currentParent = appCl.getParent();
-            appCl.setParent(getWebContainer().getClassLoaderHierarchy().getAPIClassLoader());
-            Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> appInterestList =
-                                                            ServletContainerInitializerUtil.getInterestList(appCl);
-            appCl.setParent(currentParent);
-            Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> systemInterestList =
-                            getWebContainer().getServletContainerInitializerInterestList();
-            if(appInterestList != null || systemInterestList != null) {
-                //Consolidate system and app intertest lists into a single one
-                if(appInterestList == null) {
-                    appInterestList = systemInterestList;
-                } else if(systemInterestList != null) {
-                    for(Class<?> c : systemInterestList.keySet()) {
-                        if(appInterestList.containsKey(c))
-                            appInterestList.get(c).addAll(systemInterestList.get(c));
-                        else
-                            appInterestList.put(c, systemInterestList.get(c));
-                    }
-                }
-                this.setServletContainerInitializerInterestList(appInterestList);
-            }
-        } else {
-            logger.log(Level.WARNING, "webcontainer.nowebappclassloader");
-        }
+        // Get interestList of ServletContainerInitializers present, if any.
+        this.setServletContainerInitializerInterestList(
+                ServletContainerInitializerUtil.getInterestList(wmInfo.getAppClassLoader()));
+
         // Start and register Tomcat mbeans
         super.start();
 

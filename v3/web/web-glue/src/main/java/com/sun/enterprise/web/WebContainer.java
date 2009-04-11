@@ -46,7 +46,6 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.jsp.JspFactory;
-import javax.servlet.ServletContainerInitializer;
 
 import com.sun.appserv.server.util.Version;
 import com.sun.common.util.logging.LoggingConfigImpl;
@@ -122,7 +121,6 @@ import org.glassfish.web.admin.monitor.RequestProbeProvider;
 import org.glassfish.web.admin.monitor.ServletProbeProvider;
 import org.glassfish.web.admin.monitor.SessionProbeProvider;
 import org.glassfish.web.admin.monitor.WebModuleProbeProvider;
-import org.glassfish.web.loader.ServletContainerInitializerUtil;
 import org.glassfish.web.valve.GlassFishValve;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
@@ -402,9 +400,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     private boolean isShutdown = false;
 
     private final Object mapperUpdateSync = new Object();
-
-    private Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>>
-            systemServletContainerInitializerInterestList = null;
     /**
      * Static initialization
      */
@@ -550,10 +545,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
 
         initInstanceSessionProperties();
-
-        // Get ServletContainerInitializer interestList, if any, for system libraries
-        systemServletContainerInitializerInterestList =
-                ServletContainerInitializerUtil.getInterestList(clh.getCommonClassLoader());
 
         //HERCULES:mod
         /*
@@ -716,20 +707,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     public RequestProbeProvider getRequestProbeProvider() {
         return requestProbeProvider;
-    }
-
-    /**
-     * Gets the servletContainerInitializerList for system libraries
-     */
-    public Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> getServletContainerInitializerInterestList() {
-        return systemServletContainerInitializerInterestList;
-    }
-
-    /**
-     * Gets the ClassLoaderHierarchy
-     */
-    public ClassLoaderHierarchy getClassLoaderHierarchy() {
-        return clh;
     }
 
     /**
