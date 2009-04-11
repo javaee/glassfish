@@ -349,7 +349,7 @@ public class CommonHandlers {
         @HandlerInput(name="delim", type=String.class),
         @HandlerInput(name="type", type=String.class)},
     output={
-        @HandlerOutput(name="value", type=String.class)}
+        @HandlerOutput(name="result", type=String.class)}
     )
     public static void selectiveEncode(HandlerContext handlerCtx) {
         
@@ -357,7 +357,7 @@ public class CommonHandlers {
         String delim = (String) handlerCtx.getInputValue("delim");
         String encType = (String) handlerCtx.getInputValue("type");
 		String encodedString = GuiUtil.encode(value, delim, encType);
-        handlerCtx.setOutputValue("value", encodedString);
+        handlerCtx.setOutputValue("result", encodedString);
    } 
     
     /**
