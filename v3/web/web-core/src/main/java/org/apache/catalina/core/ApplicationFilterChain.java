@@ -393,9 +393,11 @@ final class ApplicationFilterChain implements FilterChain {
 
 
     /**
-     * Set the servlet that will be executed at the end of this chain.
+     * Sets the Servlet instance that will be executed at the end of this
+     * Filter chain.
      *
-     * @param wrapper The Wrapper for the servlet to be executed
+     * @param servlet the Servlet instance that will be executed at the end
+     * of this Filter chain.
      */
     void setServlet(Servlet servlet) {
         this.servlet = servlet;
@@ -403,8 +405,11 @@ final class ApplicationFilterChain implements FilterChain {
 
 
     /**
-     * @param isAsyncSupportedByServlet true if the servlet at the end of the
-     * filter chain supports async, false otherwise
+     * Sets the wrapper of the Servlet that will be executed at the end of
+     * this Filter chain.
+     *
+     * @param wrapper the wrapper of the Servlet that will be executed at
+     * the end of this Filter chain.
      */
     void setWrapper(StandardWrapper wrapper) {
         this.wrapper = wrapper;
