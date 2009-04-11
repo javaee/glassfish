@@ -101,7 +101,7 @@ public class Main implements BundleActivator
             }
             final Bundle bundle = context.getBundle(id);
             // check is necessary as bundle could have been uninstalled
-            if (bundle != null) bundle.start();
+            if (bundle != null) bundle.start(Bundle.START_TRANSIENT);
         }
     }
 

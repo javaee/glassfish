@@ -134,7 +134,7 @@ public final class OSGiModuleImpl implements Module {
 
         try {
             if ((bundle.getState() & Bundle.ACTIVE) == 0) {
-                bundle.start();
+                bundle.start(Bundle.START_TRANSIENT);
                 isTransientlyActive = true;
                 logger.logp(Level.INFO, "OSGiModuleImpl",
                         "start", "Started bundle {0}", bundle);
