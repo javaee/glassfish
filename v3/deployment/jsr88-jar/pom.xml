@@ -45,20 +45,11 @@
         <version>3.0-SNAPSHOT</version>
     </parent>
     <groupId>org.glassfish.deployment</groupId>
-    <artifactId>deployment</artifactId>
+    <artifactId>jsr-88</artifactId>
     <packaging>pom</packaging>
-    <name>GlassFish Deployment Related Modules</name>  
+    <name>JSR-88 JAR and dist. fragment</name>  
     <modules>
-        <module>dtds</module>
-        <module>schemas</module>
-        <module>dol</module>
-        <module>client</module>
-        <module>common</module>
-        <module>javaee-core</module>
-        <module>javaee-full</module>
-        <module>admin</module>
-        <module>autodeploy</module>
-        <module>javax.enterprise.deploy</module>
-        <module>jsr88-jar</module>
+        <module>sun-as-jsr88-dm</module>
+        <module>sun-as-jsr88-dm-frag</module>
     </modules>
 </project>
