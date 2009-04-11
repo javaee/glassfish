@@ -9,7 +9,7 @@
 	    // Page did not specify a tagViewId!  Use default (viewId)
 	    setPageSessionAttribute(key="tagViewId" value="#{view.viewId}");
 	}
-	gf.normalizeTagViewId("#{pageSession.tagViewId}" tagViewId=>$pageSession{tagViewId});
+	gf.normalizeTagViewId(viewId="#{pageSession.tagViewId}" tagViewId=>$pageSession{tagViewId});
 	gf.queryTags(tagViewId="#{pageSession.tagViewId}" results=>$pageSession{pageTags});
 	if ("!#{pageSession.pageTags}") {
 	    setPageSessionAttribute(key="pageTags" value={});

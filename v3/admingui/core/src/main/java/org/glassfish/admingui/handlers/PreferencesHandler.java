@@ -106,12 +106,12 @@ public class PreferencesHandler {
      */
     @Handler(id="gf.normalizeTagViewId",
         input = {
-	    @HandlerInput(name="tagViewId", type=String.class, required=true) },
+	    @HandlerInput(name="viewId", type=String.class, required=true) },
 	output = {
 	    @HandlerOutput(name="tagViewId", type=String.class )})
     public static void normalizeTagViewId(HandlerContext handlerCtx) {
 	handlerCtx.setOutputValue("tagViewId",
 	    TagSupport.normalizeTagViewId(
-		    (String) handlerCtx.getInputValue("tagViewId")));
+		    (String) handlerCtx.getInputValue("viewId")));
     }
 }
