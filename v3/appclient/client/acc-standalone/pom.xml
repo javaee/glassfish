@@ -71,155 +71,43 @@
         </developer>
     </developers>
 
-    <repositories>
-        <repository>
-            <id>maven-repository</id>
-            <name>Maven repos for current archiver</name>
-            <url>http://repo1.maven.org/maven2</url>
-            <snapshots>
-                <updatePolicy>never</updatePolicy>
-            </snapshots>
-        </repository>
-    </repositories>
-    
     <build>
         <resources>
             
         </resources>
 
         <plugins>
-
-<!--            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-archiver-plugin</artifactId>
-                <version>2.2</version>  
-            </plugin>
--->
-            <!--
-                Creates a text file containing a -classpath string - might be
-                useful later for automating the construction of the Class-Path
-                in the JAR.
-            -->
-
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>build-classpath</id>
-                <phase>generate-sources</phase>
-                <goals>
-                  <goal>build-classpath</goal>
-                </goals>
-                <configuration>
-                    <prefix>.</prefix>
-                    <stripVersion>true</stripVersion>
-                    <outputFile>standalone-cp.txt</outputFile>
-                    <outputFilterFile>true</outputFilterFile>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-
-
-<!--
-          <plugin>
-              <groupId>org.apache.maven</groupId>
-              <artifactId>maven-archiver</artifactId>
-              <version>2.4</version>
-          </plugin>
--->
-
-<!--
-    Following says to use the JAR plug-in v2.2 which uses archiver 2.4
-    which is supposed to allow me to completely specify the format in which
-    Class-Path elements will be written in the manifest but it does not seem
-    to work as expected.
--->
-
-
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-jar-plugin</artifactId>
-<!--
-
-            <version>2.2</version>
--->
-
-<!--
-            <dependencies>
-                <dependency>
-                    <groupId>org.apache.maven</groupId>
-                    <artifactId>maven-archiver</artifactId>
-                    
-                    <version>2.4</version>
-                </dependency>
-            </dependencies>
--->
-<!--
-            <executions>
-                <execution>
-                    <id>build-stand-alone-JAR</id>
--->
-<!--
-                    <phase>package</phase>
-                    <goals>
-                        <goal>jar</goal>
-                    </goals>
--->
                     <configuration>
-            
+
               <!--
                   Includes only the agent class.  All the rest are in
                   the OSGi module.
               -->
-                        
+
                         <archive>
 
 <!-- We need the index eventually but until the plug-in itself knows the correct
 classpath we must comment this out, or else the index reflects nothing in
 this or the downstream JARs and so attempts to find things fail.
 
-                        <index>true</index>
+                            <index>true</index>
 -->
                             <manifest>
                                 <mainClass>org.glassfish.appclient.client.acc.ACCLauncher</mainClass>
                                 <packageName>org.glassfish.appclient.client.acc</packageName>
-<!--
-    Note that addClasspath builds the transitive closure correctly but includes
-    the version string (SNAPSHOT or actual version) while the GlassFish packaging
-    of distributions strips versions away.  So, for now, we can't use
-    addClasspath.
--->
-
-<!--
                                 <addClasspath>true</addClasspath>
--->
-<!-- This is avl in archiver plug-in 2.4 only; it doesn't seem to work -->
-<!--
                                 <classpathLayoutType>custom</classpathLayoutType>
-                                <customClasspathLayout>${artifact.artifactId}${dashClassifier?}.${artifact.extension}</customClasspathLayout>
--->
+                                <customClasspathLayout>$${artifact.artifactId}$${dashClassifier?}.$${artifact.extension}</customClasspathLayout>
+
                             </manifest>
-<!--
-    Until we get the plug-ins to generate the correct class path we have
-    to hand-code this.  Ugly.
--->
                             <manifestEntries>
-<!--
-                                <Class-Path>gf-client-module.jar acc-config.jar hk2.jar hk2-core.jar config.jar auto-depends.jar tiger-types-osgi.jar common-util.jar glassfish-api.jar security.jar realms.jar securitycommon.jar config-api.jar dol.jar javax.servlet.jar javax.annotation.jar javax.transaction.jar javax.enterprise.deploy.jar javax.persistence.jar javax.resource.jar deployment-common.jar internal-api.jar grizzly-utils.jar annotation-framework.jar connectors-internal-api.jar transaction-internal-api.jar ldapbp-repackaged.jar javax.security.auth.message.jar javax.security.jacc.jar container-common.jar glassfish-naming.jar javax.mail.jar grizzly-http.jar grizzly-framework.jar grizzly-rcm.jar grizzly-portunif.jar grizzly-comet.jar webservices.security.jar kernel.jar asm-all-repackaged.jar pkg-client.jar flashlight-framework.jar flashlight-agent.jar webservices-osgi.jar jaxb-osgi.jar websecurity.jar web-core.jar apache-commons.jar war-util.jar javax.servlet.jsp.jar web-naming.jar jsr109-impl.jar web-glue.jar web-cli.jar monitoring-core.jar stats77.jar cli-framework.jar amx-api.jar admin-util.jar deployment-javaee-core.jar jsp-impl.jar servlet-api.jar jsp-api.jar el-api.jar el-impl.jar admin-core.jar web-gui-plugin-common.jar javax.ejb.jar ejb-internal-api.jar orb-connector.jar glassfish-corba-omgapi.jar glassfish-corba-orb.jar glassfish-corba-orbgeneric.jar glassfish-corba-dynamicany.jar glassfish-corba-naming.jar glassfish-corba-newtimer.jar glassfish-corba-codegen.jar glassfish-corba-asm.jar glassfish.jar</Class-Path>
--->
                                 <PreMain-Class>org.glassfish.appclient.client.acc.agent.AppClientContainerAgent</PreMain-Class>
-
-                                <Class-Path>./glassfish-corba-asm.jar ./glassfish-corba-codegen.jar ./glassfish-corba-dynamicany.jar ./glassfish-corba-naming.jar ./glassfish-corba-newtimer.jar ./glassfish-corba-omgapi.jar ./glassfish-corba-orb.jar ./glassfish-corba-orbgeneric.jar ./auto-depends.jar ./config.jar ./hk2.jar ./hk2-core.jar ./tiger-types-osgi.jar ./grizzly-comet.jar ./grizzly-framework.jar ./grizzly-http.jar ./grizzly-portunif.jar ./grizzly-rcm.jar ./grizzly-utils.jar ./pkg-client.jar ./jaxb-osgi.jar ./webservices-osgi.jar ./el-api.jar ./servlet-api.jar ./jsp-api.jar ./webservices-api-osgi.jar ./junit.jar ./javax.persistence.jar ./javax.annotation.jar ./javax.ejb.jar ./javax.enterprise.deploy.jar ./javax.mail.jar ./javax.resource.jar ./javax.security.auth.message.jar ./javax.security.jacc.jar ./javax.servlet.jar ./javax.servlet.jsp.jar ./javax.transaction.jar ./admin-core.jar ./admin-util.jar ./cli-framework.jar ./config-api.jar ./monitoring-core.jar ./acc-config.jar ./gf-client-module.jar ./amx-api.jar ./annotation-framework.jar ./common-util.jar ./container-common.jar ./glassfish-api.jar ./glassfish-naming.jar ./internal-api.jar ./stats77.jar ./connectors-internal-api.jar ./glassfish.jar ./kernel.jar ./deployment-common.jar ./deployment-javaee-core.jar ./dol.jar ./dtds.zip ./ejb-container.jar ./ejb-internal-api.jar ./apache-commons.jar ./asm-all-repackaged.jar ./ldapbp-repackaged.jar ./flashlight-agent.jar ./flashlight-framework.jar ./orb-connector.jar ./orb-iiop.jar ./appclient.security.jar ./realms.jar ./security.jar ./securitycommon.jar ./websecurity.jar ./webservices.security.jar ./transaction-internal-api.jar ./el-impl.jar ./jsp-impl.jar ./war-util.jar ./web-cli.jar ./web-core.jar ./web-glue.jar ./web-gui-plugin-common.jar ./web-naming.jar ./jsr109-impl.jar</Class-Path>
                             </manifestEntries>
-
                         </archive>
                     </configuration>
-<!--
-                </execution>
-            </executions>
--->
           </plugin>
 
 

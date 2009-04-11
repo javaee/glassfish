@@ -608,6 +608,23 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!--
+                Require the maven archiver release 2.4 which has enhancements needed in
+                appclient/client/acc-standalone.  For consistency, use the
+                same release throughout the build.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <dependencies>
+                  <dependency>
+                      <groupId>org.apache.maven</groupId>
+                      <artifactId>maven-archiver</artifactId>
+                      <version>2.4</version>
+                 </dependency>
+               </dependencies>
+            </plugin>
         </plugins>
     </build>
     
