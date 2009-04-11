@@ -402,7 +402,9 @@
         <ant dir="httpListenerAdminReconfig" target="all"/>
 -->
         <ant dir="headerBufferSize" target="all"/>
+<!-- XXX temporarily commented out due to issue 7559 
         <ant dir="defaultContentType" target="all"/>
+-->
         <ant dir="headerBufferFull" target="all"/>
         <!-- Fail on Hudson, removing it for now
         <ant dir="dosSlowClient" target="all"/>
