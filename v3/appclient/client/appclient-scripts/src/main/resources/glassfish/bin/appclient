@@ -97,7 +97,9 @@ accMainArgs=
 expecting=
 
 jvmArgs=-Djava.system.class.loader=org.glassfish.appclient.client.acc.agent.ACCAgentClassLoader
-
+if [ "$VMARGS" != "" ]; then
+    jvmArgs=$jvmArgs\ $VMARGS
+fi
 # The environment variable extraACCArgsAsAppArgs will cause the script to
 # place ACC arguments that appear once the main class has been specified
 # as client arguments rather than redefinitions of the ACC arguments.  For
@@ -204,7 +206,7 @@ recordJVMArg() {
 }
 
 recordNonACCOption() {
-    if [ "$mainClassIdent" == "" ]; then
+    if [ "$mainClassIdent" = "" ]; then
         recordJVMArg $1
     else
         recordAPPArg $1
@@ -218,7 +220,7 @@ recordLoneArg() {
 # If we have not yet seen the main class determinant then this is it.
 # It could be a class file or a class name.
 
-    if [ "$mainClassIdent" == "" ]; then
+    if [ "$mainClassIdent" = "" ]; then
         # This is the main class or main class file.
         recordMainClass $1
     else

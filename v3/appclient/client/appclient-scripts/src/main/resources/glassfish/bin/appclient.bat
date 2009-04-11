@@ -83,6 +83,9 @@ rem from a -client option but it could be overridden by a later -client appearan
 rem And it can have the value "final."
 rem
 set jvmArgs=-Djava.system.class.loader=org.glassfish.appclient.client.acc.agent.ACCAgentClassLoader
+if DEFINED VMARGS (
+    set jvmArgs=!jvmArgs! %VMARGS%
+)
 set accArgs=
 set appArgs=
 
@@ -131,7 +134,7 @@ if x!rest!x==xx goto :EOF
 :getNextToken
 call :collectToken
 set x=!token!
-echo Token is !token!
+rem echo !token!
 
 rem Assume this will be an arg to the app client until proven otherwise.
 rem Possible types are APP, ACC, and JVM.
@@ -234,30 +237,30 @@ rem Handle quoted string
     goto :EOF
 
 :recordAPPArg
-    set appArgs=!appArgs! %1
+    set appArgs=!appArgs! %token%
     goto :EOF
 
 :recordClientArg
     if "%mainClassIdent%"=="final" goto :treatAsAppArg
 rem if NOT DEFINED mainClassIdent OR x%mainClassIdent%==xtentative (
-        dir/b/a:d %1 1>nul 2>nul
+        dir/b/a:d %token% 1>nul 2>nul
         if not ERRORLEVEL 1 (
             rem client is a dir
             set jvmMainArgs=-jar %accJar%
-            set accMainArgs=client=dir=%1
+            set accMainArgs=client=dir=%token%
         ) else (
             rem client is NOT a dir.  Record the client info as a JAR
             rem if not already recorded.
 
             rem client is NOT a dir
-            set jvmMainArgs=-jar %1
-            set accMainArgs=client=jar=%1
+            set jvmMainArgs=-jar %token%
+            set accMainArgs=client=jar=%token%
         )
         set mainClassIdent=tentative
 rem ) else (
 :treatAsAppArg
         call :recordAPPArg -client
-        call :recordAPPArg %1
+        call :recordAPPArg %token%
 rem )
     goto :EOF
 
