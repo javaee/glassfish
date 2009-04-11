@@ -200,7 +200,6 @@ public class JdbcHandlers {
         input={
             @HandlerInput(name="jndiName", type=String.class, required=true)},
         output={
-            @HandlerOutput(name="jndiName", type=String.class),
             @HandlerOutput(name="datasourceClassname", type=String.class),
             @HandlerOutput(name="resType", type=String.class),
             @HandlerOutput(name="description", type=String.class),
