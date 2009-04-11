@@ -50,13 +50,18 @@ import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.config.serverbeans.Application;
+import com.sun.enterprise.config.serverbeans.Applications;
+//import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
+import com.sun.enterprise.config.serverbeans.ConnectorModule;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Domain;
 
 import java.beans.PropertyVetoException;
 import java.util.Properties;
+import java.util.List;
 
 /**
  * Create Connector Connection Pool Command
@@ -72,7 +77,7 @@ public class CreateConnectorConnectionPool implements AdminCommand {
     @Param(name="raname")
     String raname;
 
-    @Param(name="connectiondefinition", optional=true)
+    @Param(name="connectiondefinition")
     String connectiondefinition;
 
     @Param(name="steadypoolsize", optional=true)
@@ -147,6 +152,14 @@ public class CreateConnectorConnectionPool implements AdminCommand {
     @Inject
     Domain domain;
 
+    @Inject
+    Applications applications;
+
+    //TODO Use the constants from ConnectorConstants instead
+    public static final String DEFAULT_JMS_ADAPTER = "jmsra";
+    public static final String JAXR_RA_NAME = "jaxr-ra";
+    public static String EMBEDDEDRAR_NAME_DELIMITER="#";
+
     /**
      * Executes the command with the command parameters passed as Properties
      * where the keys are the paramter names and the values the parameter values
@@ -162,6 +175,7 @@ public class CreateConnectorConnectionPool implements AdminCommand {
             report.setMessage(localStrings.getLocalString("create.connector.connection.pool.noJndiName",
                             "No pool name defined for connector connection pool."));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
         }
         // ensure we don't already have one of this name
         for (com.sun.enterprise.config.serverbeans.Resource resource : resources.getResources()) {
@@ -170,8 +184,13 @@ public class CreateConnectorConnectionPool implements AdminCommand {
                     report.setMessage(localStrings.getLocalString("create.connector.connection.pool.duplicate",
                             "A connector connection pool named {0} already exists.", poolname));
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
                 }
             }
+        }
+
+        if (!validateCnctorConnPoolAttrList(raname, connectiondefinition, report)) {
+            return;
         }
 
         try {
@@ -234,9 +253,104 @@ public class CreateConnectorConnectionPool implements AdminCommand {
             report.setFailureCause(tfe);
         }
 
-        report.setMessage(localStrings.getLocalString(
-                "create.connector.connection.pool.success", "Connector connection pool {0} created successfully",
-                poolname));
+        //report.setMessage(localStrings.getLocalString(
+        //        "create.connector.connection.pool.success", "Connector connection pool {0} created successfully",
+        //        poolname));
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
+
+    private boolean validateCnctorConnPoolAttrList(String raName, String connDef, ActionReport report) {
+        boolean valid = false;
+        if(isValidRAName(raName, report)) {
+            if(!isValidConnectionDefinition(connDef,raName)) {
+
+                report.setMessage(localStrings.getLocalString("admin.mbeans.rmb.invalid_ra_connectdef_not_found",
+                            "Invalid connection definition. Connector Module with connection definition {0} not found.", connDef));
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            } else {
+                valid = true;
+            }
+        }
+        return valid;
+    }
+
+    private boolean isValidRAName(String raName, ActionReport report) {
+        //TODO turn on validation.  For now, turn validation off until connector modules ready
+        //boolean retVal = false;
+        boolean retVal = true;
+
+        if ((raName == null) || (raName.equals(""))) {
+            report.setMessage(localStrings.getLocalString("admin.mbeans.rmb.null_res_adapter",
+                    "Resource Adapter Name is null."));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return retVal;
+        }
+
+        // To check for embedded conenctor module
+        if (raName.equals(DEFAULT_JMS_ADAPTER) || raName.equals(JAXR_RA_NAME)) {
+            // System RA, so don't validate
+            retVal = true;
+        } else {
+            // Check if the raName contains double underscore or hash.
+            // If that is the case then this is the case of an embedded rar,
+            // hence look for the application which embeds this rar,
+            // otherwise look for the webconnector module with this raName.
+
+            //ObjectName applnObjName = m_registry.getMbeanObjectName(ServerTags.APPLICATIONS, new String[]{getDomainName()});
+            int indx = raName.indexOf(
+                    EMBEDDEDRAR_NAME_DELIMITER);
+            if (indx != -1) {
+                String appName = raName.substring(0, indx);
+                //ObjectName j2eeAppObjName = (ObjectName)getMBeanServer().invoke(applnObjName, "getJ2eeApplicationByName", new Object[]{appName}, new String[]{"java.lang.String"});
+                if (applications != null) {
+                    List<Application> list = applications.getApplications();
+                    for (Application app : list) {
+                        if (app.getName().equals(appName)) {
+                            retVal = true;
+                        }
+                    }
+                    if (!retVal) {
+                        report.setMessage(localStrings.getLocalString("admin.mbeans.rmb.invalid_ra_app_not_found",
+                                "Invalid raname. Application with name {0} not found.", appName));
+                        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                        return retVal;
+                    }
+                }
+            } else {
+                //ObjectName connectorModuleObjName = (ObjectName)getMBeanServer().invoke(applnObjName, "getConnectorModuleByName", new Object[]{raName}, new String[]{"java.lang.String"});
+                if (applications != null) {
+                    //TODO list of connector modules is always empty.  Turn off validation for now.
+                    List<ConnectorModule> list = applications.getModules(ConnectorModule.class);
+                    for (ConnectorModule cm : list) {
+                        if (cm.getName().equals(raName)) {
+                            retVal = true;
+                        }
+                    }
+                    if (!retVal) {
+                        report.setMessage(localStrings.getLocalString("admin.mbeans.rmb.invalid_ra_cm_not_found",
+                                "Invalid raname. Connector Module with name {0} not found.", raName));
+                        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                        return retVal;
+                    }
+                }
+            }
+        }
+
+        return retVal;
+    }
+
+    private boolean isValidConnectionDefinition(String connectionDef,String raName) {
+        //TODO Need API for validation of connection definition
+        /*String [] names =
+                ConnectorRuntime.getRuntime().getConnectionDefinitionNames(raName);
+        for(int i = 0; i < names.length; i++) {
+            if(names[i].equals(connectionDef)) {
+                return true;
+            }
+        }
+        return false;*/
+        return true;
+    }
+
+
 }
