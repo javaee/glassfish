@@ -94,6 +94,15 @@ public final class ConfigModel {
     final String tagName;
 
     /**
+     * getter for tagName
+     * @return the element name of this model itself, if this element can appear globally
+     * Otherwise null
+     */
+    public String getTagName() {
+        return tagName;
+    }
+
+    /**
      * Deferred reference to the class loader that loaded the injector.
      * This classloader can also load the configurable object.
      */
