@@ -117,6 +117,10 @@
             <artifactId>grizzly-http</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.sun.grizzly</groupId>
+            <artifactId>grizzly-config</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>common-util</artifactId>
             <version>${project.version}</version>

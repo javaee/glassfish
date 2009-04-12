@@ -36,20 +36,22 @@
  */
 package com.sun.enterprise.config.serverbeans;
 
-import org.jvnet.hk2.config.*;
-import org.jvnet.hk2.component.Injectable;
-import org.glassfish.api.admin.config.Named;
-import org.glassfish.api.admin.config.PropertyBag;
-
-import java.beans.PropertyVetoException;
 import java.util.List;
+
+import org.glassfish.api.admin.config.PropertyBag;
+import org.glassfish.api.admin.config.Named;
+import org.glassfish.api.amx.AMXConfigInfo;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.DuckTyped;
+import org.jvnet.hk2.config.Element;
 
 /**
  * Tag Interface for any module
  *
  * @author Jerome Dochez
  */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ModuleConfig")
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ModuleConfig")
 @Configured
 public interface Module extends Named, ConfigBeanProxy, PropertyBag {
 
@@ -59,7 +61,7 @@ public interface Module extends Named, ConfigBeanProxy, PropertyBag {
     @DuckTyped
     Engine getEngine(String snifferType);
 
-    public class Duck {
+    class Duck {
 
         public static Engine getEngine(Module instance, String snifferName) {
             for (Engine engine : instance.getEngines()) {

@@ -45,16 +45,12 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.List;
 
 import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
-
-import org.glassfish.quality.ToDo;
-
 import org.glassfish.api.amx.AMXConfigInfo;
 
 /* @XmlType(name = "", propOrder = {
@@ -72,7 +68,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="60")
-    public String getInitTimeoutInSeconds();
+    String getInitTimeoutInSeconds();
 
     /**
      * Sets the value of the initTimeoutInSeconds property.
@@ -80,7 +76,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setInitTimeoutInSeconds(String value) throws PropertyVetoException;
+    void setInitTimeoutInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the type property.
@@ -89,7 +85,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute(required = true)
-    public String getType();
+    String getType();
 
     /**
      * Sets the value of the type property.
@@ -97,7 +93,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setType(String value) throws PropertyVetoException;
+    void setType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the startArgs property.
@@ -106,7 +102,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute
-    public String getStartArgs();
+    String getStartArgs();
 
     /**
      * Sets the value of the startArgs property.
@@ -114,7 +110,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setStartArgs(String value) throws PropertyVetoException;
+    void setStartArgs(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the defaultJmsHost property.
@@ -123,7 +119,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute
-    public String getDefaultJmsHost();
+    String getDefaultJmsHost();
 
     /**
      * Sets the value of the defaultJmsHost property.
@@ -131,7 +127,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDefaultJmsHost(String value) throws PropertyVetoException;
+    void setDefaultJmsHost(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the reconnectIntervalInSeconds property.
@@ -140,7 +136,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="5")
-    public String getReconnectIntervalInSeconds();
+    String getReconnectIntervalInSeconds();
 
     /**
      * Sets the value of the reconnectIntervalInSeconds property.
@@ -148,7 +144,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setReconnectIntervalInSeconds(String value) throws PropertyVetoException;
+    void setReconnectIntervalInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the reconnectAttempts property.
@@ -157,7 +153,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="3")
-    public String getReconnectAttempts();
+    String getReconnectAttempts();
 
     /**
      * Sets the value of the reconnectAttempts property.
@@ -165,7 +161,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setReconnectAttempts(String value) throws PropertyVetoException;
+    void setReconnectAttempts(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the reconnectEnabled property.
@@ -174,7 +170,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="true")
-    public String getReconnectEnabled();
+    String getReconnectEnabled();
 
     /**
      * Sets the value of the reconnectEnabled property.
@@ -182,7 +178,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setReconnectEnabled(String value) throws PropertyVetoException;
+    void setReconnectEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the addresslistBehavior property.
@@ -191,7 +187,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="random")
-    public String getAddresslistBehavior();
+    String getAddresslistBehavior();
 
     /**
      * Sets the value of the addresslistBehavior property.
@@ -199,7 +195,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAddresslistBehavior(String value) throws PropertyVetoException;
+    void setAddresslistBehavior(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the addresslistIterations property.
@@ -208,7 +204,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="3")
-    public String getAddresslistIterations();
+    String getAddresslistIterations();
 
     /**
      * Sets the value of the addresslistIterations property.
@@ -216,7 +212,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAddresslistIterations(String value) throws PropertyVetoException;
+    void setAddresslistIterations(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the mqScheme property.
@@ -225,7 +221,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute
-    public String getMqScheme();
+    String getMqScheme();
 
     /**
      * Sets the value of the mqScheme property.
@@ -233,7 +229,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMqScheme(String value) throws PropertyVetoException;
+    void setMqScheme(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the mqService property.
@@ -242,7 +238,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute
-    public String getMqService();
+    String getMqService();
 
     /**
      * Sets the value of the mqService property.
@@ -250,7 +246,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMqService(String value) throws PropertyVetoException;
+    void setMqService(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the jmsHost property.
@@ -273,8 +269,8 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      * {@link JmsHost }
      */
     @Element
-    public List<JmsHost> getJmsHost();
-    
+    List<JmsHost> getJmsHost();
+
      /**
         Properties.
      */
@@ -282,21 +278,21 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
     props={
         @PropertyDesc(name="instance-name", defaultValue="imqbroker",
             description="The full Sun GlassFish Message Queue broker instance name"),
-            
+
         @PropertyDesc(name="instance-name-suffix", defaultValue="xxxxxxxxxxxxxxxxxx",
             description="A suffix to add to the full Message Queue broker instance name. The suffix is separated " +
                 "from the instance name by an underscore character (_). For example, if the instance name is 'imqbroker', " +
                 "appending the suffix 'xyz' changes the instance name to 'imqbroker_xyz'"),
-            
+
         @PropertyDesc(name="append-version", defaultValue="",
             description="If true, appends the major and minor version numbers, preceded by underscore characters (_), " +
                 "to the full Message Queue broker instance name. For example, if the instance name is 'imqbroker', " +
                 "appending the version numbers changes the instance name to imqbroker_8_0"),
-            
+
         @PropertyDesc(name="user-name", defaultValue="xxxxxxxxxxxxxxxxxx",
             description="Specifies the user name for creating the JMS connection. Needed only if the default " +
                 "username/password of guest/guest is not available in the broker"),
-            
+
         @PropertyDesc(name="password", defaultValue="xxxxxxxxxxxxxxxxxx",
             description="Specifies the password for creating the JMS connection. Needed only if the default " +
                 "username/password of guest/guest is not available in the broker")
@@ -304,5 +300,4 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
     )
     @Element
     List<Property> getProperty();
-    
-    }
+}

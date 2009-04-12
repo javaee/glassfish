@@ -77,7 +77,7 @@ import org.glassfish.api.admin.Payload;
 public class CommandRunnerImpl implements CommandRunner {
     
     public final static LocalStringManagerImpl adminStrings = new LocalStringManagerImpl(CommandRunnerImpl.class);
-    public Logger logger = null;
+    public Logger logger = Logger.getLogger(CommandRunnerImpl.class.getName());
 
     private static final String ASADMIN_CMD_PREFIX = "AS_ADMIN_";
     @Inject
@@ -312,6 +312,7 @@ public class CommandRunnerImpl implements CommandRunner {
             try {
                 wrappedComamnd.execute(context);
             } catch(Throwable e) {
+                System.out.println("logger = " + logger);
                 logger.log(Level.SEVERE,
                         adminStrings.getLocalString("adapter.exception","Exception in command execution : ", e), e);
                 report.setMessage(e.toString());

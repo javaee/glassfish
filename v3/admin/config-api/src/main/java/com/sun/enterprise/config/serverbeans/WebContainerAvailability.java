@@ -47,7 +47,6 @@ import org.jvnet.hk2.config.Element;
 import java.beans.PropertyVetoException;
 import java.util.List;
 
-import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
@@ -63,7 +62,8 @@ import org.glassfish.quality.ToDo;
 }) */
 @org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.WebContainerAvailabilityConfig")
 @Configured
-public interface WebContainerAvailability extends ConfigBeanProxy, Injectable, PropertyBag {
+public interface WebContainerAvailability extends ConfigBeanProxy, Injectable,
+    org.glassfish.api.admin.config.PropertyBag {
 
     /**
      * Gets the value of the availabilityEnabled property.

@@ -1,20 +1,25 @@
 package com.sun.enterprise.v3.admin;
 
+import com.sun.enterprise.v3.common.HTMLActionReporter;
+import com.sun.grizzly.config.dom.NetworkListener;
+import com.sun.grizzly.config.dom.NetworkListeners;
+import org.glassfish.api.ActionReport;
 import org.glassfish.tests.utils.ConfigApiTest;
 import org.glassfish.tests.utils.Utils;
-import org.glassfish.api.ActionReport;
-import org.jvnet.hk2.config.*;
-import org.jvnet.hk2.component.Habitat;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import org.junit.Ignore;
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.config.ConfigListener;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.DomDocument;
+import org.jvnet.hk2.config.ObservableBean;
+import org.jvnet.hk2.config.Transactions;
+import org.jvnet.hk2.config.UnprocessedChangeEvents;
 
-import java.util.Properties;
 import java.beans.PropertyChangeEvent;
-
-import com.sun.enterprise.v3.common.HTMLActionReporter;
-import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.HttpListener;
+import java.util.Properties;
 
 /**
  * test the set command
@@ -48,10 +53,10 @@ public class ConfigAttributeSetTest  extends ConfigApiTest implements ConfigList
         assertNotNull(runner);
 
         // let's find our target
-        HttpListener listener = null;
-        HttpService service = habitat.getComponent(HttpService.class);
-        for (HttpListener l : service.getHttpListener()) {
-            if ("http-listener-1".equals(l.getId())) {
+        NetworkListener listener = null;
+        NetworkListeners service = habitat.getComponent(NetworkListeners.class);
+        for (NetworkListener l : service.getNetworkListener()) {
+            if ("http-listener-1".equals(l.getName())) {
                 listener = l;
                 break;
             }

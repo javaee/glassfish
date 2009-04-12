@@ -25,16 +25,17 @@ package com.sun.enterprise.v3.admin.adapter;
 
 import com.sun.enterprise.config.serverbeans.AdminService;
 import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.config.serverbeans.HttpListener;
-import com.sun.enterprise.config.serverbeans.HttpService;
-import org.glassfish.api.admin.config.Property;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.v3.admin.AdminAdapter;
+import com.sun.grizzly.config.dom.NetworkConfig;
+import com.sun.grizzly.config.dom.NetworkListener;
+import org.glassfish.api.admin.config.Property;
+import org.glassfish.server.ServerEnvironmentImpl;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
-import org.glassfish.server.ServerEnvironmentImpl;
 
 /** Makes various decisions about the admin adapters.
  *
@@ -85,17 +86,17 @@ public final class AdminEndpointDecider {
     private void setValues() {
         asadminContextRoot = AdminAdapter.PREFIX_URI;  //can't change
         //asadminHosts       = Collections.emptyList();  //asadmin is handled completely by the adapter, no VS needed
-        HttpService hs = cfg.getHttpService();
-        if (hs == null)
+        NetworkConfig config = cfg.getNetworkConfig();
+        if (config == null)
             throw new IllegalStateException("Can't operate without <http-service>");
-        List<HttpListener> lss = hs.getHttpListener();
-        if (lss == null || lss.size() == 0)
-            throw new IllegalStateException("Can't operate without at least one <http-listener>");
+        List<NetworkListener> lss = config.getNetworkListeners().getNetworkListener();
+        if (lss == null || lss.isEmpty())
+            throw new IllegalStateException("Can't operate without at least one <network-listener>");
         boolean dedicatedAdmin = false;
-        for (HttpListener ls : lss) {
-            if(ADMIN_LISTENER_ID.equals(ls.getId())) {
+        for (NetworkListener ls : lss) {
+            if(ADMIN_LISTENER_ID.equals(ls.getName())) {
                 guiContextRoot = "";  //at the root context for separate admin-listener
-                String dvs     = ls.getDefaultVirtualServer();
+                String dvs     = ls.findProtocol().getHttp().getDefaultVirtualServer();
                 guiHosts       = Collections.unmodifiableList(Arrays.asList(dvs));
                 asadminHosts   = guiHosts;  //same for now
                 try {
@@ -109,8 +110,8 @@ public final class AdminEndpointDecider {
         }
         if (dedicatedAdmin == false) {
             //pick first
-            HttpListener effective = lss.get(0);
-            String dvs = effective.getDefaultVirtualServer();
+            NetworkListener effective = lss.get(0);
+            String dvs = effective.findProtocol().getHttp().getDefaultVirtualServer();
             guiHosts = Collections.unmodifiableList(Arrays.asList(dvs));
             asadminHosts = guiHosts;
             try {
@@ -138,7 +139,7 @@ public final class AdminEndpointDecider {
 	    return;
 	}
 	if (ServerTags.ADMIN_CONSOLE_CONTEXT_ROOT.equals(prop.getName())) {
-	    if ((prop.getValue() != null) && prop.getValue().startsWith("/")) {
+	    if (prop.getValue() != null && prop.getValue().startsWith("/")) {
 		guiContextRoot = prop.getValue();
 		log.info("Admin Console Adapter: context root: " + guiContextRoot);
 	    } else {

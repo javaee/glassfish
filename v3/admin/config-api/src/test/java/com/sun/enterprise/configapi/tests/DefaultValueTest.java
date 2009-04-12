@@ -1,20 +1,19 @@
 package com.sun.enterprise.configapi.tests;
 
-import org.junit.Test;
+import com.sun.grizzly.config.dom.NetworkListener;
+import com.sun.grizzly.config.dom.NetworkListeners;
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.Test;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Dom;
-import static org.junit.Assert.*;
-import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.HttpListener;
 
 /**
  * Test attribute and raw attribute access *
  */
 public class DefaultValueTest extends ConfigApiTest {
 
-    HttpListener listener;
+    NetworkListener listener;
 
     public String getFileName() {
         return "DomainTest";
@@ -22,23 +21,22 @@ public class DefaultValueTest extends ConfigApiTest {
 
     @Before
     public void setup() {
-
-        HttpService httpService = getHabitat().getComponent(HttpService.class);
-        listener = httpService.getHttpListener().get(0);
+        NetworkListeners httpService = getHabitat().getComponent(NetworkListeners.class);
+        listener = httpService.getNetworkListener().get(0);
 
     }
 
     @Test
     public void rawAttributeTest() throws NoSuchMethodException {
 
-        String family = listener.getFamily();
+        String address = listener.getAddress();
 
         Dom raw = Dom.unwrap(listener);
-        Attribute attr = raw.getProxyType().getMethod("getFamily").getAnnotation(Attribute.class);
-        assertEquals(attr.defaultValue(), family);
+        Attribute attr = raw.getProxyType().getMethod("getAddress").getAnnotation(Attribute.class);
+        assertEquals(attr.defaultValue(), address);
         
-        assertEquals(raw.attribute("family"), family);
-        assertEquals(raw.rawAttribute("family"), family);
+        assertEquals(raw.attribute("address"), address);
+        assertEquals(raw.rawAttribute("address"), address);
 
     }
 

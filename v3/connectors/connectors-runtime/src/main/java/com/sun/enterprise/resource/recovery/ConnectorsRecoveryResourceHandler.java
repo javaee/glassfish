@@ -35,43 +35,45 @@
  */
 package com.sun.enterprise.resource.recovery;
 
-import com.sun.enterprise.connectors.util.ResourcesUtil;
-import com.sun.enterprise.connectors.util.ConnectionPoolObjectsUtils;
-import com.sun.enterprise.connectors.*;
-import com.sun.enterprise.connectors.ConnectorRuntime;
-import com.sun.enterprise.connectors.service.ConnectorAdminServiceUtils;
-import com.sun.enterprise.resource.deployer.ConnectorResourceDeployer;
-import com.sun.enterprise.config.serverbeans.*;
-import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
-import com.sun.enterprise.deployment.*;
-import com.sun.enterprise.transaction.spi.RecoveryResourceHandler;
-import com.sun.enterprise.util.io.FileUtils;
-import com.sun.logging.LogDomains;
-import com.sun.appserv.connectors.internal.api.*;
-
-import javax.naming.InitialContext;
-import javax.naming.NameNotFoundException;
-import javax.naming.NamingException;
-import javax.security.auth.Subject;
-import javax.resource.spi.ManagedConnectionFactory;
-import javax.resource.spi.ManagedConnection;
-import javax.resource.spi.security.PasswordCredential;
-import javax.resource.ResourceException;
-import javax.transaction.xa.XAResource;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.*;
-import java.security.Principal;
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.resource.ResourceException;
+import javax.resource.spi.ManagedConnection;
+import javax.resource.spi.ManagedConnectionFactory;
+import javax.resource.spi.security.PasswordCredential;
+import javax.security.auth.Subject;
+import javax.transaction.xa.XAResource;
 
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.Habitat;
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
+import com.sun.appserv.connectors.internal.api.ConnectorsClassLoaderUtil;
+import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
+import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
+import com.sun.enterprise.config.serverbeans.ConnectorResource;
+import com.sun.enterprise.config.serverbeans.Resource;
+import com.sun.enterprise.connectors.ConnectorRegistry;
+import com.sun.enterprise.connectors.ConnectorRuntime;
+import com.sun.enterprise.connectors.service.ConnectorAdminServiceUtils;
+import com.sun.enterprise.connectors.util.ConnectionPoolObjectsUtils;
+import com.sun.enterprise.deployment.ConnectionDefDescriptor;
+import com.sun.enterprise.deployment.ConnectorDescriptor;
+import com.sun.enterprise.deployment.EnvironmentProperty;
+import com.sun.enterprise.deployment.ResourcePrincipal;
+import com.sun.enterprise.resource.deployer.ConnectorResourceDeployer;
+import com.sun.enterprise.transaction.spi.RecoveryResourceHandler;
 import org.glassfish.api.admin.config.Property;
+import com.sun.logging.LogDomains;
 import org.glassfish.api.Startup;
-import org.glassfish.internal.api.ConnectorClassFinder;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * Recovery handler for connector resources

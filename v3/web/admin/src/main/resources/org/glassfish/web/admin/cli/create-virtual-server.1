@@ -12,9 +12,9 @@ SYNOPSIS
      [--passwordfile filename] [--help]
      [ --target  server]
      --hosts hosts [--httplisteners http_listeners]
-     [--defaultwebmodule default_web_module]
-     [--state on] [--logfile log_file]
-     [--property (name=value)[:name=value]*]
+     [--networklisteners network_listeners]
+     [--defaultwebmodule default_web_module] [--state on]
+     [--logfile log_file] [--property (name=value)[:name=value]*]
      virtual_server_id
 
 DESCRIPTION
@@ -151,6 +151,12 @@ Administration Commands;                 create-virtual-server(1)
 
      --httplisteners
          A  comma-separated  (,)  list  of  HTTP  listener   IDs.
+         Required  only  for  a  virtual  server  that is not the
+         default virtual server.  Deprecated.  Use
+         --networklisteners instead.
+
+     --networklisteners
+         A  comma-separated  (,)  list  of network listener  IDs.
          Required  only  for  a  virtual  server  that is not the
          default virtual server.
 

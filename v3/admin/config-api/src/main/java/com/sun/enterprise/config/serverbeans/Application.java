@@ -38,25 +38,26 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import java.beans.PropertyVetoException;
+import java.io.File;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+import org.glassfish.api.admin.config.Property;
+import org.glassfish.api.admin.config.PropertyBag;
+import org.glassfish.api.admin.config.Named;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.amx.AMXConfigInfo;
+import org.glassfish.api.deployment.DeployCommandParameters;
+import org.glassfish.quality.ToDo;
+import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.component.Injectable;
-
-import java.beans.PropertyVetoException;
-import java.io.File;
-import java.util.List;
-import java.util.Properties;
-import java.util.Map;
-import java.util.HashMap;
-
-import org.glassfish.api.admin.config.*;
-import org.glassfish.api.deployment.DeployCommandParameters;
-
-import org.glassfish.quality.ToDo;
-
 
 /**
  *
@@ -67,7 +68,7 @@ import org.glassfish.quality.ToDo;
     "engine",
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ApplicationConfig")
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ApplicationConfig")
 @Configured
 public interface Application extends ConfigBeanProxy, Injectable, Named, PropertyBag {
 
@@ -78,7 +79,7 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
      *         {@link String }
      */
     @Attribute(required = true)
-    public String getContextRoot();
+    String getContextRoot();
 
     /**
      * Sets the value of the contextRoot property.
@@ -86,7 +87,7 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
      * @param value allowed object is
      *              {@link String }
      */
-    public void setContextRoot(String value) throws PropertyVetoException;
+    void setContextRoot(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the location property.
@@ -95,7 +96,7 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
      *         {@link String }
      */
     @Attribute(required = true)
-    public String getLocation();
+    String getLocation();
 
     /**
      * Sets the value of the location property.
@@ -103,7 +104,7 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLocation(String value) throws PropertyVetoException;
+    void setLocation(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the objectType property.
@@ -112,7 +113,7 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
      *         {@link String }
      */
     @Attribute
-    public String getObjectType();
+    String getObjectType();
 
     /**
      * Sets the value of the objectType property.
@@ -120,7 +121,7 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
      * @param value allowed object is
      *              {@link String }
      */
-    public void setObjectType(String value) throws PropertyVetoException;
+    void setObjectType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the enabled property.
@@ -129,7 +130,7 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
      *         {@link String }
      */
     @Attribute
-    public String getEnabled();
+    String getEnabled();
 
     /**
      * Sets the value of the enabled property.
@@ -137,7 +138,7 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
      * @param value allowed object is
      *              {@link String }
      */
-    public void setEnabled(String value) throws PropertyVetoException;
+    void setEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the libraries property.
@@ -146,7 +147,7 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
      *         {@link String }
      */
     @Attribute
-    public String getLibraries();
+    String getLibraries();
 
     /**
      * Sets the value of the libraries property.
@@ -154,7 +155,7 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLibraries(String value) throws PropertyVetoException;
+    void setLibraries(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the availabilityEnabled property.
@@ -163,7 +164,7 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
      *         {@link String }
      */
     @Attribute
-    public String getAvailabilityEnabled();
+    String getAvailabilityEnabled();
 
     /**
      * Sets the value of the availabilityEnabled property.
@@ -171,7 +172,7 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAvailabilityEnabled(String value) throws PropertyVetoException;
+    void setAvailabilityEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the directoryDeployed property.
@@ -180,7 +181,7 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
      *         {@link String }
      */
     @Attribute
-    public String getDirectoryDeployed();
+    String getDirectoryDeployed();
 
     /**
      * Sets the value of the directoryDeployed property.
@@ -188,7 +189,7 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDirectoryDeployed(String value) throws PropertyVetoException;
+    void setDirectoryDeployed(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the description property.
@@ -197,7 +198,7 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
      *         {@link String }
      */
     @Attribute
-    public String getDescription();
+    String getDescription();
 
     /**
      * Sets the value of the description property.
@@ -205,11 +206,11 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDescription(String value) throws PropertyVetoException;
+    void setDescription(String value) throws PropertyVetoException;
 
 
     @Element("*")
-    public List<Module> getModule();
+    List<Module> getModule();
     
     /**
      * Gets the value of the engine property.
@@ -232,7 +233,7 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
      * {@link Engine }
      */
     @Element(required = true)
-    public List<Engine> getEngine();
+    List<Engine> getEngine();
 
     /**
      * Gets the value of the webServiceEndpoint property.
@@ -255,7 +256,7 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
      * {@link WebServiceEndpoint }
      */
     @Element
-    public List<WebServiceEndpoint> getWebServiceEndpoint();
+    List<WebServiceEndpoint> getWebServiceEndpoint();
 
     /**
      * Gets the applicationConfig children.
@@ -278,7 +279,7 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
      * {@link ApplicationConfig }
      */
     @Element("*")
-    public List<ApplicationConfig> getApplicationConfigs();
+    List<ApplicationConfig> getApplicationConfigs();
 
     /**
      * Retrieves the single ApplicationConfig object for the given type,
@@ -287,20 +288,21 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
      * @return ApplicationConfig for the specified type; null if none exists
      */
     @DuckTyped
-    public <T extends ApplicationConfig> T getApplicationConfig(Class<T> type);
+    <T extends ApplicationConfig> T getApplicationConfig(Class<T> type);
 
     @DuckTyped
-    public Module getModule(String moduleName);
+    Module getModule(String moduleName);
 
     @DuckTyped
-    public Properties getDeployProperties();
+    Properties getDeployProperties();
 
     @DuckTyped
-    public DeployCommandParameters getDeployParameters(ApplicationRef appRef);    
-    @DuckTyped
-    public Map<String, Properties> getModulePropertiesMap();
+    DeployCommandParameters getDeployParameters(ApplicationRef appRef);
 
-    public class Duck {
+    @DuckTyped
+    Map<String, Properties> getModulePropertiesMap();
+
+    class Duck {
         public static <T extends ApplicationConfig> T getApplicationConfig(Application me, Class<T> type) {
             return getApplicationConfig(me.getApplicationConfigs(), type);
         }

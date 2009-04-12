@@ -35,28 +35,38 @@
  */
 package org.glassfish.internal.data;
 
-import org.glassfish.api.container.Sniffer;
-import org.glassfish.api.container.Container;
-import org.glassfish.api.deployment.*;
-import org.glassfish.api.ActionReport;
-import org.glassfish.api.event.EventListener.Event;
-import org.glassfish.api.event.Events;
-import org.glassfish.api.admin.config.Property;
-import org.glassfish.internal.deployment.ExtendedDeploymentContext;
-import org.glassfish.internal.deployment.Deployment;
-import org.jvnet.hk2.component.PreDestroy;
-import org.jvnet.hk2.config.TransactionFailure;
-
-import java.util.*;
+import java.beans.PropertyVetoException;
+import java.lang.instrument.ClassFileTransformer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.lang.instrument.ClassFileTransformer;
-import java.beans.PropertyVetoException;
 
-import com.sun.logging.LogDomains;
-import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.Engine;
+import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.ServerTags;
+import org.glassfish.api.admin.config.Property;
+import com.sun.logging.LogDomains;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.container.Container;
+import org.glassfish.api.container.Sniffer;
+import org.glassfish.api.deployment.ApplicationContainer;
+import org.glassfish.api.deployment.ApplicationContext;
+import org.glassfish.api.deployment.Deployer;
+import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.api.deployment.InstrumentableClassLoader;
+import org.glassfish.api.event.EventListener.Event;
+import org.glassfish.api.event.Events;
+import org.glassfish.internal.deployment.Deployment;
+import org.glassfish.internal.deployment.ExtendedDeploymentContext;
+import org.jvnet.hk2.component.PreDestroy;
+import org.jvnet.hk2.config.TransactionFailure;
 
 /**
  * Each module of an application has an associated module info instance keeping

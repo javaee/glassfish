@@ -45,11 +45,10 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.List;
 
-import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 
@@ -62,7 +61,7 @@ import org.glassfish.quality.ToDo;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.DASConfig", singleton=true)
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.DASConfig", singleton=true)
 @Configured
 public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
 
@@ -73,7 +72,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="false")
-    public String getDynamicReloadEnabled();
+    String getDynamicReloadEnabled();
 
     /**
      * Sets the value of the dynamicReloadEnabled property.
@@ -81,7 +80,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDynamicReloadEnabled(String value) throws PropertyVetoException;
+    void setDynamicReloadEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the dynamicReloadPollIntervalInSeconds property.
@@ -90,7 +89,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="2")
-    public String getDynamicReloadPollIntervalInSeconds();
+    String getDynamicReloadPollIntervalInSeconds();
 
     /**
      * Sets the value of the dynamicReloadPollIntervalInSeconds property.
@@ -98,7 +97,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDynamicReloadPollIntervalInSeconds(String value) throws PropertyVetoException;
+    void setDynamicReloadPollIntervalInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the autodeployEnabled property.
@@ -107,7 +106,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="false")
-    public String getAutodeployEnabled();
+    String getAutodeployEnabled();
 
     /**
      * Sets the value of the autodeployEnabled property.
@@ -115,7 +114,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAutodeployEnabled(String value) throws PropertyVetoException;
+    void setAutodeployEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the autodeployPollingIntervalInSeconds property.
@@ -124,7 +123,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="2")
-    public String getAutodeployPollingIntervalInSeconds();
+    String getAutodeployPollingIntervalInSeconds();
 
     /**
      * Sets the value of the autodeployPollingIntervalInSeconds property.
@@ -132,7 +131,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAutodeployPollingIntervalInSeconds(String value) throws PropertyVetoException;
+    void setAutodeployPollingIntervalInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the autodeployDir property.
@@ -141,7 +140,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="autodeploy")
-    public String getAutodeployDir();
+    String getAutodeployDir();
 
     /**
      * Sets the value of the autodeployDir property.
@@ -149,7 +148,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAutodeployDir(String value) throws PropertyVetoException;
+    void setAutodeployDir(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the autodeployVerifierEnabled property.
@@ -158,7 +157,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="false")
-    public String getAutodeployVerifierEnabled();
+    String getAutodeployVerifierEnabled();
 
     /**
      * Sets the value of the autodeployVerifierEnabled property.
@@ -166,7 +165,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAutodeployVerifierEnabled(String value) throws PropertyVetoException;
+    void setAutodeployVerifierEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the autodeployJspPrecompilationEnabled property.
@@ -175,7 +174,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="false")
-    public String getAutodeployJspPrecompilationEnabled();
+    String getAutodeployJspPrecompilationEnabled();
 
     /**
      * Sets the value of the autodeployJspPrecompilationEnabled property.
@@ -183,7 +182,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAutodeployJspPrecompilationEnabled(String value) throws PropertyVetoException;
+    void setAutodeployJspPrecompilationEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the autodeployRetryTimeout property.
@@ -192,7 +191,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="4")
-    public String getAutodeployRetryTimeout();
+    String getAutodeployRetryTimeout();
 
     /**
      * Sets the value of the autodeployRetryTimeout property.
@@ -200,7 +199,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAutodeployRetryTimeout(String value) throws PropertyVetoException;
+    void setAutodeployRetryTimeout(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the deployXmlValidation property.
@@ -209,7 +208,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="full")
-    public String getDeployXmlValidation();
+    String getDeployXmlValidation();
 
     /**
      * Sets the value of the deployXmlValidation property.
@@ -217,7 +216,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDeployXmlValidation(String value) throws PropertyVetoException;
+    void setDeployXmlValidation(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the adminSessionTimeoutInMinutes property.
@@ -226,7 +225,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="60")
-    public String getAdminSessionTimeoutInMinutes();
+    String getAdminSessionTimeoutInMinutes();
 
     /**
      * Sets the value of the adminSessionTimeoutInMinutes property.
@@ -234,7 +233,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAdminSessionTimeoutInMinutes(String value) throws PropertyVetoException;
+    void setAdminSessionTimeoutInMinutes(String value) throws PropertyVetoException;
     
     /**
     	Properties as per {@link PropertyBag}

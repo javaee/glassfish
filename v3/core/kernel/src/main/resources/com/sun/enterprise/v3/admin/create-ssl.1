@@ -151,7 +151,9 @@ Administration Commands                             create-ssl(1)
          The type of service or listener for  which  the  SSL  is
          created.  The type can be:
 
-             o    http-listener
+             o    network-listener
+
+             o    http-listener (deprecated use network-listener)
 
              o    iiop-listener
 
@@ -254,7 +256,7 @@ Administration Commands                             create-ssl(1)
 OPERANDS
      listener_id
 
-          The ID of the HTTP or IIOP listener for which  the  SSL
+         The ID of the network or IIOP listener for which the SSL
          element  is  to  be  created.  The  listener_id  is  not
          required if the --type is iiop-service.
 
@@ -269,7 +271,7 @@ EXAMPLES
      an HTTP listener named http-listener-1.
 
        asadmin> create-ssl --user admin --host fuyako --port 7070
-       --passwordfile adminpassword.txt --type http-listener
+       --passwordfile adminpassword.txt --type network-listener
        --certname sampleCert http-listener-1
        Command create-ssl executed successfully.
 

@@ -5,31 +5,41 @@
 
 package org.glassfish.web.admin.monitor.telemetry;
 
-import java.beans.PropertyChangeEvent;
-import java.net.UnknownHostException;
-import java.util.List;
-import java.util.Collection;
-import java.util.ArrayList;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.Singleton;
-import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.config.serverbeans.Application;
+import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.enterprise.config.serverbeans.J2eeApplication;
+import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.VirtualServer;
+import com.sun.enterprise.config.serverbeans.WebModule;
+import com.sun.grizzly.config.dom.NetworkConfig;
+import com.sun.grizzly.config.dom.NetworkListener;
 import org.glassfish.api.monitoring.TelemetryProvider;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 import org.glassfish.flashlight.client.ProbeClientMediator;
 import org.glassfish.flashlight.client.ProbeClientMethodHandle;
-import org.glassfish.flashlight.provider.ProbeProviderListener;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.datatree.factory.TreeNodeFactory;
 import org.glassfish.flashlight.provider.ProbeProviderEventManager;
+import org.glassfish.flashlight.provider.ProbeProviderListener;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.config.ConfigListener;
 import org.jvnet.hk2.config.UnprocessedChangeEvents;
-import com.sun.enterprise.config.serverbeans.ApplicationRef;
+
+import java.beans.PropertyChangeEvent;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  *
  * @author PRASHANTH ABBAGANI
@@ -75,6 +85,7 @@ public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryPr
     private TreeNode webRequestNode;
     private TreeNode applicationsNode;
     private static HttpService httpService = null;
+    private static NetworkConfig networkConfig = null;
 
     public WebTelemetryBootstrap() {
     }
@@ -102,6 +113,7 @@ public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryPr
             }
         }
         httpService = config.getHttpService();
+        networkConfig = config.getNetworkConfig();
     }
     
     public void onLevelChange(String newLevel) {
@@ -720,17 +732,18 @@ public class WebTelemetryBootstrap implements ProbeProviderListener, TelemetryPr
             if (hostName.equals("localhost")) {
                 hostName = InetAddress.getLocalHost().getHostName();
             }
-            HttpListener httpListener = null;
+            NetworkListener listener = null;
 
-            for (HttpListener hl : httpService.getHttpListener()) {
+            for (NetworkListener hl : networkConfig.getNetworkListeners().getNetworkListener()) {
                 if (hl.getPort().equals(listenerPort)) {
-                    httpListener = hl;
+                    listener = hl;
                     break;
                 }
             }
             VirtualServer virtualServer = null;
             for (VirtualServer vs : httpService.getVirtualServer()) {
-                if (vs.getHosts().contains(hostName) && vs.getHttpListeners().contains(httpListener.getId())) {
+                if (vs.getHosts().contains(hostName)
+                    && vs.getNetworkListeners().contains(listener.getName())) {
                     virtualServer = vs;
                     break;
                 }

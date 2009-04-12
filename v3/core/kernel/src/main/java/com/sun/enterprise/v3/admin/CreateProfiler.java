@@ -35,37 +35,37 @@
  */
 package com.sun.enterprise.v3.admin;
 
+import java.beans.PropertyVetoException;
+import java.util.Map;
 import java.util.Properties;
 
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.I18n;
-import org.glassfish.api.Param;
-import org.glassfish.api.ActionReport;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.TransactionFailure;
 import com.sun.enterprise.config.serverbeans.JavaConfig;
 import com.sun.enterprise.config.serverbeans.Profiler;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.admin.config.Property;
-
-import java.beans.PropertyVetoException;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.I18n;
+import org.glassfish.api.Param;
+import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.AdminCommandContext;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
 
 /**
  * Create Profiler Command
- * 
+ *
  */
 @Service(name="create-profiler")
 @Scoped(PerLookup.class)
 @I18n("create.profiler")
 public class CreateProfiler implements AdminCommand {
-    
-    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateProfiler.class);    
+
+    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateProfiler.class);
 
     @Param(optional=true)
     String classpath;
@@ -78,10 +78,10 @@ public class CreateProfiler implements AdminCommand {
 
     @Param(name="profiler_name", primary=true)
     String name;
-    
+
     @Param(name="property", optional=true)
     Properties properties;
-    
+
     @Param(optional=true)
     String target;
 
@@ -116,7 +116,7 @@ public class CreateProfiler implements AdminCommand {
                     newProfiler.setEnabled(enabled.toString());
                     newProfiler.setNativeLibraryPath(nativeLibraryPath);
                     if (properties != null) {
-                        for ( java.util.Map.Entry e : properties.entrySet()) {
+                        for ( Map.Entry e : properties.entrySet()) {
                             Property prop = newProfiler.createChild(Property.class);
                             prop.setName((String)e.getKey());
                             prop.setValue((String)e.getValue());

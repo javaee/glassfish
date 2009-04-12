@@ -45,14 +45,12 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.List;
 
-import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
-
 import org.glassfish.quality.ToDo;
 
 /**
@@ -63,7 +61,7 @@ import org.glassfish.quality.ToDo;
     "clusterRefOrServerRef",
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.LBConfig")
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.LBConfig")
 @Configured
 public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
 
@@ -74,7 +72,7 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute(required = true, key=true)
-    public String getName();
+    String getName();
 
     /**
      * Sets the value of the name property.
@@ -82,7 +80,7 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setName(String value) throws PropertyVetoException;
+    void setName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the responseTimeoutInSeconds property.
@@ -91,7 +89,7 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="60")
-    public String getResponseTimeoutInSeconds();
+    String getResponseTimeoutInSeconds();
 
     /**
      * Sets the value of the responseTimeoutInSeconds property.
@@ -99,7 +97,7 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setResponseTimeoutInSeconds(String value) throws PropertyVetoException;
+    void setResponseTimeoutInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the httpsRouting property.
@@ -108,7 +106,7 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="false")
-    public String getHttpsRouting();
+    String getHttpsRouting();
 
     /**
      * Sets the value of the httpsRouting property.
@@ -116,7 +114,7 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHttpsRouting(String value) throws PropertyVetoException;
+    void setHttpsRouting(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the reloadPollIntervalInSeconds property.
@@ -125,7 +123,7 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="60")
-    public String getReloadPollIntervalInSeconds();
+    String getReloadPollIntervalInSeconds();
 
     /**
      * Sets the value of the reloadPollIntervalInSeconds property.
@@ -133,7 +131,7 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setReloadPollIntervalInSeconds(String value) throws PropertyVetoException;
+    void setReloadPollIntervalInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the monitoringEnabled property.
@@ -142,7 +140,7 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="false")
-    public String getMonitoringEnabled();
+    String getMonitoringEnabled();
 
     /**
      * Sets the value of the monitoringEnabled property.
@@ -150,7 +148,7 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMonitoringEnabled(String value) throws PropertyVetoException;
+    void setMonitoringEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the routeCookieEnabled property.
@@ -159,7 +157,7 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="true")
-    public String getRouteCookieEnabled();
+    String getRouteCookieEnabled();
 
     /**
      * Sets the value of the routeCookieEnabled property.
@@ -167,7 +165,7 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setRouteCookieEnabled(String value) throws PropertyVetoException;
+    void setRouteCookieEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the clusterRefOrServerRef property.
@@ -190,8 +188,8 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * {@link ClusterRef }
      * {@link ServerRef }
      */
-    @Element("*")    
-    public List<Ref> getClusterRefOrServerRef();
+    @Element("*")
+    List<Ref> getClusterRefOrServerRef();
     
     /**
     	Properties as per {@link PropertyBag}

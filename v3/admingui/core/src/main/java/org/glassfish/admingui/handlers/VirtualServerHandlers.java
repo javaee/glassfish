@@ -174,7 +174,7 @@ public class VirtualServerHandlers {
             handlerCtx.setOutputValue("accessLogWriteInterval", AMXUtil.getPropertyValue(vs, "accessLogWriteInterval"));
             handlerCtx.setOutputValue("accesslog", AMXUtil.getPropertyValue(vs, "accesslog"));
             handlerCtx.setOutputValue("docroot", AMXUtil.getPropertyValue(vs, "docroot"));
-            String sso = AMXUtil.getPropertyValue(vs, "sso-enabled");
+            String sso = vs.getSsoEnabled();
             Boolean ssoFlag = false;
             if ( GuiUtil.isEmpty(sso))
                 ssoFlag = false;
@@ -267,16 +267,9 @@ public class VirtualServerHandlers {
             Boolean edit = (Boolean) handlerCtx.getInputValue("Edit");
             if(!edit){
                 Map convertedMap = AMXUtil.convertToPropertiesOptionMap(newProps, null);
-                AMXUtil.putOptionalValue((String) handlerCtx.getInputValue("accesslog"), convertedMap, "accesslog");
-                AMXUtil.putOptionalValue((String) handlerCtx.getInputValue("docroot"), convertedMap, "docroot");
                 AMXUtil.putOptionalValue((String) handlerCtx.getInputValue("accessLogBufferSize"), convertedMap, "accessLogBufferSize");
                 AMXUtil.putOptionalValue((String) handlerCtx.getInputValue("accessLogWriteInterval"), convertedMap, "accessLogWriteInterval");
-                AMXUtil.putOptionalValue(""+ handlerCtx.getInputValue("sso"), convertedMap, "sso-enabled");
-                String accessLoggingFlag = (String)handlerCtx.getInputValue("accessLoggingFlag");
-                if ( (accessLoggingFlag!= null) && (!accessLoggingFlag.equals("off"))){
-                    AMXUtil.putOptionalValue(accessLoggingFlag, convertedMap, "accessLoggingEnabled");
-                }
-                
+
                 convertedMap.put(VirtualServerConfigKeys.HTTP_LISTENERS_KEY,handlerCtx.getInputValue("Http"));
                 convertedMap.put(VirtualServerConfigKeys.DEFAULT_WEB_MODULE_KEY,handlerCtx.getInputValue("Web"));
                 convertedMap.put(VirtualServerConfigKeys.LOG_FILE_KEY,handlerCtx.getInputValue("LogFile"));
@@ -299,12 +292,7 @@ public class VirtualServerHandlers {
             AMXUtil.setPropertyValue(vs, "accesslog", (String)handlerCtx.getInputValue("accesslog"));
             AMXUtil.setPropertyValue(vs, "accessLogBufferSize", (String)handlerCtx.getInputValue("accessLogBufferSize"));
             AMXUtil.setPropertyValue(vs, "accessLogWriteInterval", (String)handlerCtx.getInputValue("accessLogWriteInterval"));
-            AMXUtil.setPropertyValue(vs, "docroot", (String)handlerCtx.getInputValue("docroot"));
-            AMXUtil.setPropertyValue(vs, "sso-enabled", ""+handlerCtx.getInputValue("sso"));
-            String accessLoggingFlag = (String)handlerCtx.getInputValue("accessLoggingFlag");
-            if (accessLoggingFlag.equals("off"))
-                accessLoggingFlag=null;
-            AMXUtil.setPropertyValue(vs, "accessLoggingEnabled", accessLoggingFlag);
+
             
         }catch (Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
@@ -446,10 +434,6 @@ public class VirtualServerHandlers {
      private static List vsSkipPropsList = new ArrayList();
 
      static {
-        vsSkipPropsList.add("accesslog");
-        vsSkipPropsList.add("docroot");
-        vsSkipPropsList.add("sso-enabled");
-        vsSkipPropsList.add("sso-enabled");
         vsSkipPropsList.add("accessLogBufferSize");
         vsSkipPropsList.add("accessLogWriteInterval");
         vsSkipPropsList.add("accessLoggingEnabled");

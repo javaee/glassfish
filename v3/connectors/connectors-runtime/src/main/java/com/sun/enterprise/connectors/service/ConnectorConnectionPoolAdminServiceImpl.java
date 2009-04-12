@@ -36,36 +36,47 @@
 
 package com.sun.enterprise.connectors.service;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.resource.ResourceException;
+import javax.resource.spi.ManagedConnection;
+import javax.resource.spi.ManagedConnectionFactory;
+import javax.security.auth.Subject;
+
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.PoolingException;
-import com.sun.appserv.connectors.internal.api.ConnectorConstants;
-import org.glassfish.api.admin.config.Property;
 import com.sun.enterprise.config.serverbeans.SecurityMap;
-import com.sun.enterprise.connectors.*;
+import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
+import com.sun.enterprise.connectors.ActiveResourceAdapter;
+import com.sun.enterprise.connectors.ConnectorConnectionPool;
+import com.sun.enterprise.connectors.ConnectorDescriptorInfo;
+import com.sun.enterprise.connectors.ConnectorRegistry;
+import com.sun.enterprise.connectors.ConnectorRuntime;
+import com.sun.enterprise.connectors.PoolMetaData;
 import com.sun.enterprise.connectors.authentication.ConnectorSecurityMap;
 import com.sun.enterprise.connectors.authentication.RuntimeSecurityMap;
-import com.sun.enterprise.connectors.util.*;
+import com.sun.enterprise.connectors.util.ConnectionDefinitionUtils;
+import com.sun.enterprise.connectors.util.ConnectionPoolObjectsUtils;
+import com.sun.enterprise.connectors.util.ConnectionPoolReconfigHelper;
+import com.sun.enterprise.connectors.util.ConnectorDDTransformUtils;
+import com.sun.enterprise.connectors.util.ResourcesUtil;
+import com.sun.enterprise.connectors.util.SecurityMapUtils;
+import com.sun.enterprise.connectors.util.SetMethodAction;
 import com.sun.enterprise.deployment.ConnectionDefDescriptor;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.enterprise.deployment.ResourcePrincipal;
-import com.sun.enterprise.resource.pool.PoolManager;
 import com.sun.enterprise.resource.listener.UnpooledConnectionEventListener;
+import com.sun.enterprise.resource.pool.PoolManager;
 import com.sun.enterprise.util.RelativePathResolver;
 import com.sun.enterprise.util.i18n.StringManager;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.resource.spi.ManagedConnectionFactory;
-import javax.resource.spi.ManagedConnection;
-import javax.resource.ResourceException;
-import javax.security.auth.Subject;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.Map;
-import java.util.logging.Level;
+import org.glassfish.api.admin.config.Property;
 
 
 /**
@@ -97,7 +108,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
      * @param rarName Name of the resource adapter
      * @throws ConnectorRuntimeException When creation of pool fails.
      */
-    public void createConnectorConnectionPool(com.sun.enterprise.connectors.ConnectorConnectionPool ccp,
+    public void createConnectorConnectionPool(ConnectorConnectionPool ccp,
                                               ConnectionDefDescriptor cdd, String rarName)
             throws ConnectorRuntimeException {
 
@@ -152,7 +163,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
      */
 
     private void createConnectorConnectionPool(
-            com.sun.enterprise.connectors.ConnectorConnectionPool connectorPoolObj,
+            ConnectorConnectionPool connectorPoolObj,
             ConnectorDescriptorInfo connectorDescInfo)
             throws ConnectorRuntimeException {
 
@@ -425,7 +436,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
      * 7. getConnection from the ManagedConnection with above subject<br>
      *
      * @return true if the connection pool is healthy. false otherwise
-     * @throws javax.resource.ResourceException
+     * @throws ResourceException
      *          if pool is not usable
      */
     public boolean testConnectionPool(String poolName)
@@ -484,7 +495,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
         //Get the ManagedConnectionFactory for this poolName
         ManagedConnectionFactory mcf = null;
         boolean needToUndeployPool = false;
-        com.sun.enterprise.config.serverbeans.JdbcConnectionPool
+        JdbcConnectionPool
                 jdbcPoolToDeploy = null;
         com.sun.enterprise.config.serverbeans.ConnectorConnectionPool
                 ccPoolToDeploy = null;
@@ -629,7 +640,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
     */
     private ResourcePrincipal getDefaultResourcePrincipal(String poolName,
                                                           ManagedConnectionFactory mcf) throws NamingException {
-        // All this to get the default user name and principal 
+        // All this to get the default user name and principal
         ConnectorConnectionPool connectorConnectionPool = null;
         try {
             String jndiNameForPool = ConnectorAdminServiceUtils.getReservePrefixedJNDINameForPool(poolName);
@@ -667,7 +678,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
 
         if (userName == null || userName.trim().equals("")) {
             userName = ConnectionPoolObjectsUtils.getValueFromMCF("UserName", poolName, mcf);
-            //It is possible that ResourceAdapter may have getUser() instead of 
+            //It is possible that ResourceAdapter may have getUser() instead of
             //getUserName() property getter
             if (userName.trim().equals("")) {
                 userName = ConnectionPoolObjectsUtils.getValueFromMCF("User", poolName, mcf);
@@ -686,7 +697,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
      */
     public void switchOnMatching(String poolName) throws ConnectorRuntimeException {
         try {
-            com.sun.enterprise.connectors.ConnectorConnectionPool origCcp =
+            ConnectorConnectionPool origCcp =
                     getOriginalConnectorConnectionPool(poolName);
             origCcp.setMatchConnections(true);
 
@@ -856,13 +867,8 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
 
                 ConnectorConnectionPool connectorConnectionPool = getConnectorConnectionPool(poolName);
                 ActiveResourceAdapter activeResourceAdapter = getResourceAdapter(connectorConnectionPool);
-                String rarName = activeResourceAdapter.getModuleName();
-
-                ClassLoader loader = null;
-                if(rarName.indexOf(ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER) == -1){
-                     loader = ConnectorRuntime.getRuntime().
-                            getConnectorClassLoader(activeResourceAdapter.getModuleName());
-                }
+                ClassLoader loader = ConnectorRuntime.getRuntime().
+                        getConnectorClassLoader(activeResourceAdapter.getModuleName());
                 ManagedConnectionFactory mcf = activeResourceAdapter.
                         createManagedConnectionFactory(connectorConnectionPool, loader);
                 if (mcf != null) {
@@ -999,7 +1005,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
     public boolean isConnectorConnectionPoolDeployed(String poolName) {
         try {
             Context ic = ConnectorRuntime.getRuntime().getNamingManager().getInitialContext();
-            String jndiName = com.sun.enterprise.connectors.service.ConnectorAdminServiceUtils.
+            String jndiName = ConnectorAdminServiceUtils.
                     getReservePrefixedJNDINameForPool(poolName);
             ic.lookup(jndiName);
             return true;
@@ -1023,7 +1029,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
      * @return true - if a pool restart is required, false otherwise
      * @throws ConnectorRuntimeException
      */
-    public boolean reconfigureConnectorConnectionPool(com.sun.enterprise.connectors.ConnectorConnectionPool
+    public boolean reconfigureConnectorConnectionPool(ConnectorConnectionPool
             ccp, Set excludedProps) throws ConnectorRuntimeException {
         if (ccp == null) {
             throw new ConnectorRuntimeException("No pool to reconfigure, new pool object is null");
@@ -1033,7 +1039,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
         //see if the new ConnectorConnectionPool is different from
         //the original one and update relevant properties
         String poolName = ccp.getName();
-        com.sun.enterprise.connectors.ConnectorConnectionPool origCcp = null;
+        ConnectorConnectionPool origCcp = null;
         try {
             origCcp = getOriginalConnectorConnectionPool(poolName);
         } catch (NamingException ne) {
@@ -1057,11 +1063,11 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
         return false;
     }
 
-    private void updateMCFAndPoolAttributes(com.sun.enterprise.connectors.ConnectorConnectionPool
+    private void updateMCFAndPoolAttributes(ConnectorConnectionPool
             ccp) throws ConnectorRuntimeException {
         String poolName = ccp.getName();
         try {
-            com.sun.enterprise.connectors.ConnectorConnectionPool origCcp =
+            ConnectorConnectionPool origCcp =
                     getOriginalConnectorConnectionPool(poolName);
 
             //update properties
@@ -1143,7 +1149,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
      *
      * @param ccp - the ConnectorConnectionPool to publish
      */
-    public void recreateConnectorConnectionPool(com.sun.enterprise.connectors.ConnectorConnectionPool ccp)
+    public void recreateConnectorConnectionPool(ConnectorConnectionPool ccp)
             throws ConnectorRuntimeException {
         ConnectorRegistry registry = ConnectorRegistry.getInstance();
         if (registry == null) {
@@ -1165,7 +1171,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
         //Now bind the updated pool and
         //obtain a new managed connection factory for this pool
         try {
-            String jndiNameForPool = com.sun.enterprise.connectors.service.ConnectorAdminServiceUtils.
+            String jndiNameForPool = ConnectorAdminServiceUtils.
                     getReservePrefixedJNDINameForPool(poolName);
             _runtime.getNamingManager().publishObject(
                     jndiNameForPool, (Object) ccp, true);
@@ -1249,7 +1255,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
      * @throws ConnectorRuntimeException When creation of pool fails.
      */
 
-    public void createConnectorConnectionPool(com.sun.enterprise.connectors.ConnectorConnectionPool ccp,
+    public void createConnectorConnectionPool(ConnectorConnectionPool ccp,
                                               String connectionDefinitionName, String rarName,
                                               List<Property> props, List<SecurityMap> securityMaps)
             throws ConnectorRuntimeException {

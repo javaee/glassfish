@@ -45,11 +45,10 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.List;
 
-import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 
@@ -62,7 +61,7 @@ import org.glassfish.quality.ToDo;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.JMSHostConfig")
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.JMSHostConfig")
 @Configured
 public interface JmsHost extends ConfigBeanProxy, Injectable, PropertyBag {
 
@@ -73,7 +72,7 @@ public interface JmsHost extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute(required = true, key=true)
-    public String getName();
+    String getName();
 
     /**
      * Sets the value of the name property.
@@ -81,7 +80,7 @@ public interface JmsHost extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setName(String value) throws PropertyVetoException;
+    void setName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the host property.
@@ -90,7 +89,7 @@ public interface JmsHost extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute
-    public String getHost();
+    String getHost();
 
     /**
      * Sets the value of the host property.
@@ -98,7 +97,7 @@ public interface JmsHost extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHost(String value) throws PropertyVetoException;
+    void setHost(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the port property.
@@ -107,7 +106,7 @@ public interface JmsHost extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="7676")
-    public String getPort();
+    String getPort();
 
     /**
      * Sets the value of the port property.
@@ -115,7 +114,7 @@ public interface JmsHost extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setPort(String value) throws PropertyVetoException;
+    void setPort(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the adminUserName property.
@@ -124,7 +123,7 @@ public interface JmsHost extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="admin")
-    public String getAdminUserName();
+    String getAdminUserName();
 
     /**
      * Sets the value of the adminUserName property.
@@ -132,7 +131,7 @@ public interface JmsHost extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAdminUserName(String value) throws PropertyVetoException;
+    void setAdminUserName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the adminPassword property.
@@ -141,7 +140,7 @@ public interface JmsHost extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="admin")
-    public String getAdminPassword();
+    String getAdminPassword();
 
     /**
      * Sets the value of the adminPassword property.
@@ -149,7 +148,7 @@ public interface JmsHost extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAdminPassword(String value) throws PropertyVetoException;
+    void setAdminPassword(String value) throws PropertyVetoException;
     
     /**
     	Properties as per {@link PropertyBag}

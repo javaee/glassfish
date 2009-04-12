@@ -46,15 +46,11 @@ import org.jvnet.hk2.component.Injectable;
 import java.beans.PropertyVetoException;
 import org.glassfish.config.support.datatypes.NonNegativeInteger;
 import org.glassfish.config.support.datatypes.PositiveInteger;
+import org.glassfish.api.amx.AMXConfigInfo;
 
-
-/**
- *
- */
-
-/* @XmlType(name = "") */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ConnectionPoolConfig", singleton=true)
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ConnectionPoolConfig", singleton=true)
 @Configured
+@Deprecated
 public interface ConnectionPool extends ConfigBeanProxy, Injectable  {
 
     /**
@@ -64,7 +60,7 @@ public interface ConnectionPool extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute (defaultValue="4096", dataType=NonNegativeInteger.class)
-    public String getQueueSizeInBytes();
+    String getQueueSizeInBytes();
 
     /**
      * Sets the value of the queueSizeInBytes property.
@@ -72,7 +68,7 @@ public interface ConnectionPool extends ConfigBeanProxy, Injectable  {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setQueueSizeInBytes(String value) throws PropertyVetoException;
+    void setQueueSizeInBytes(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxPendingCount property.
@@ -81,7 +77,7 @@ public interface ConnectionPool extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute (defaultValue="4096", dataType=PositiveInteger.class)
-    public String getMaxPendingCount();
+    String getMaxPendingCount();
 
     /**
      * Sets the value of the maxPendingCount property.
@@ -89,7 +85,7 @@ public interface ConnectionPool extends ConfigBeanProxy, Injectable  {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxPendingCount(String value) throws PropertyVetoException;
+    void setMaxPendingCount(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the receiveBufferSizeInBytes property.
@@ -98,7 +94,7 @@ public interface ConnectionPool extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute (defaultValue="4096", dataType=PositiveInteger.class)
-    public String getReceiveBufferSizeInBytes();
+    String getReceiveBufferSizeInBytes();
 
     /**
      * Sets the value of the receiveBufferSizeInBytes property.
@@ -106,7 +102,7 @@ public interface ConnectionPool extends ConfigBeanProxy, Injectable  {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setReceiveBufferSizeInBytes(String value) throws PropertyVetoException;
+    void setReceiveBufferSizeInBytes(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the sendBufferSizeInBytes property.
@@ -115,7 +111,7 @@ public interface ConnectionPool extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute (defaultValue="8192", dataType=PositiveInteger.class)
-    public String getSendBufferSizeInBytes();
+    String getSendBufferSizeInBytes();
 
     /**
      * Sets the value of the sendBufferSizeInBytes property.
@@ -123,5 +119,5 @@ public interface ConnectionPool extends ConfigBeanProxy, Injectable  {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSendBufferSizeInBytes(String value) throws PropertyVetoException;
+    void setSendBufferSizeInBytes(String value) throws PropertyVetoException;
 }

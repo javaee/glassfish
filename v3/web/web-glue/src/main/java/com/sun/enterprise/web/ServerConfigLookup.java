@@ -52,6 +52,7 @@ import com.sun.enterprise.config.serverbeans.SessionManager;
 import com.sun.enterprise.config.serverbeans.SessionProperties;
 import com.sun.enterprise.config.serverbeans.StoreProperties;
 import com.sun.enterprise.config.serverbeans.WebContainerAvailability;
+import com.sun.enterprise.config.serverbeans.WebContainer;
 import com.sun.enterprise.web.session.PersistenceType;
 import com.sun.logging.LogDomains;
 
@@ -98,7 +99,7 @@ public class ServerConfigLookup {
             return null;
         }
         
-        com.sun.enterprise.config.serverbeans.WebContainer webContainerBean 
+        WebContainer webContainerBean
             = configBean.getWebContainer();
         if (webContainerBean == null) {
             return null;
@@ -149,7 +150,7 @@ public class ServerConfigLookup {
             return null;
         }
         
-        com.sun.enterprise.config.serverbeans.WebContainer webContainerBean 
+        WebContainer webContainerBean
             = configBean.getWebContainer();
         if (webContainerBean == null) {
             return null;
@@ -202,7 +203,7 @@ public class ServerConfigLookup {
         if (bool == null) {
             return false;
         } else {
-            return bool.booleanValue();
+            return bool;
         }       
     }
 
@@ -279,7 +280,7 @@ public class ServerConfigLookup {
         if (bool == null) {
             return globalAvailabilityEnabled;
         } else {
-            return bool.booleanValue();
+            return bool;
         }       
     } 
     
@@ -300,7 +301,7 @@ public class ServerConfigLookup {
         if (bool == null) {
             return inheritedValue;
         } else {
-            return bool.booleanValue();
+            return bool;
         }       
     }    
 
@@ -349,7 +350,7 @@ public class ServerConfigLookup {
         boolean webModuleAvailability = false;
         Boolean bool = toBoolean(webModuleAvailabilityString);
         if (bool != null) {
-            webModuleAvailability = bool.booleanValue();
+            webModuleAvailability = bool;
         }       
 
         if (_logger.isLoggable(Level.FINEST)) {

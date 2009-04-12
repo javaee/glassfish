@@ -45,6 +45,7 @@ import com.sun.enterprise.transaction.api.XAResourceWrapper;
 import com.sun.enterprise.transaction.spi.RecoveryResourceHandler;
 import com.sun.logging.LogDomains;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
+import org.glassfish.api.admin.config.Property;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -59,7 +60,6 @@ import java.util.logging.Logger;
 import java.util.*;
 import java.security.Principal;
 
-import org.glassfish.api.admin.config.Property;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;

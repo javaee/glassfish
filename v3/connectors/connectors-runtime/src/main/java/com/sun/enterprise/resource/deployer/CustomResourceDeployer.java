@@ -64,8 +64,8 @@ import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.repository.ResourceProperty;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
-import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.api.admin.config.Property;
+import org.glassfish.api.naming.GlassfishNamingManager;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -203,7 +203,7 @@ public class CustomResourceDeployer implements ResourceDeployer {
      *
      * @param customRes custom resource
      */
-    public void installCustomResource(com.sun.enterprise.resource.beans.CustomResource customRes) {
+    public void installCustomResource(CustomResource customRes) {
 
         String bindName = null;
 
@@ -252,7 +252,7 @@ public class CustomResourceDeployer implements ResourceDeployer {
     public static JavaEEResource toCustomJavaEEResource(
             com.sun.enterprise.config.serverbeans.CustomResource rbean) {
 
-        CustomResource jr = new com.sun.enterprise.resource.beans.CustomResource( rbean.getJndiName() );
+        CustomResource jr = new CustomResource( rbean.getJndiName() );
 
         //jr.setDescription(rbean.getDescription()); // FIXME: getting error
 

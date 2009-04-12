@@ -53,9 +53,9 @@ import org.glassfish.config.support.datatypes.NonNegativeInteger;
 
 import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
-
 
 /**
  *
@@ -65,12 +65,13 @@ import org.glassfish.api.admin.config.PropertyBag;
     "description",
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.JDBCConnectionPoolConfig")
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.JDBCConnectionPoolConfig")
 @Configured
-public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resource, ResourcePool, PropertyBag {
+public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resource, ResourcePool,
+    PropertyBag {
 
     @Attribute(required = true)
-    public String getDatasourceClassname();
+    String getDatasourceClassname();
 
     /**
      * Sets the value of the datasourceClassname property.
@@ -78,7 +79,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDatasourceClassname(String value) throws PropertyVetoException;
+    void setDatasourceClassname(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the resType property.
@@ -87,7 +88,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *         {@link String }
      */
     @Attribute
-    public String getResType();
+    String getResType();
 
     /**
      * Sets the value of the resType property.
@@ -95,7 +96,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @param value allowed object is
      *              {@link String }
      */
-    public void setResType(String value) throws PropertyVetoException;
+    void setResType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the steadyPoolSize property.
@@ -104,7 +105,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *         {@link String }
      */
     @Attribute (defaultValue="8", dataType=PositiveInteger.class)
-    public String getSteadyPoolSize();
+    String getSteadyPoolSize();
 
     /**
      * Sets the value of the steadyPoolSize property.
@@ -112,7 +113,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSteadyPoolSize(String value) throws PropertyVetoException;
+    void setSteadyPoolSize(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxPoolSize property.
@@ -121,7 +122,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *         {@link String }
      */
     @Attribute (defaultValue="32", dataType=PositiveInteger.class)
-    public String getMaxPoolSize();
+    String getMaxPoolSize();
 
     /**
      * Sets the value of the maxPoolSize property.
@@ -129,7 +130,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxPoolSize(String value) throws PropertyVetoException;
+    void setMaxPoolSize(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxWaitTimeInMillis property.
@@ -138,7 +139,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *         {@link String }
      */
     @Attribute (defaultValue="60000", dataType=NonNegativeInteger.class)
-    public String getMaxWaitTimeInMillis();
+    String getMaxWaitTimeInMillis();
 
     /**
      * Sets the value of the maxWaitTimeInMillis property.
@@ -146,7 +147,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxWaitTimeInMillis(String value) throws PropertyVetoException;
+    void setMaxWaitTimeInMillis(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the poolResizeQuantity property.
@@ -155,7 +156,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *         {@link String }
      */
     @Attribute (defaultValue="2", dataType=PositiveInteger.class)
-    public String getPoolResizeQuantity();
+    String getPoolResizeQuantity();
 
     /**
      * Sets the value of the poolResizeQuantity property.
@@ -163,7 +164,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @param value allowed object is
      *              {@link String }
      */
-    public void setPoolResizeQuantity(String value) throws PropertyVetoException;
+    void setPoolResizeQuantity(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the idleTimeoutInSeconds property.
@@ -172,7 +173,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *         {@link String }
      */
     @Attribute (defaultValue="300", dataType=NonNegativeInteger.class)
-    public String getIdleTimeoutInSeconds();
+    String getIdleTimeoutInSeconds();
 
     /**
      * Sets the value of the idleTimeoutInSeconds property.
@@ -180,7 +181,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @param value allowed object is
      *              {@link String }
      */
-    public void setIdleTimeoutInSeconds(String value) throws PropertyVetoException;
+    void setIdleTimeoutInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the transactionIsolationLevel property.
@@ -189,7 +190,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *         {@link String }
      */
     @Attribute
-    public String getTransactionIsolationLevel();
+    String getTransactionIsolationLevel();
 
     /**
      * Sets the value of the transactionIsolationLevel property.
@@ -197,7 +198,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @param value allowed object is
      *              {@link String }
      */
-    public void setTransactionIsolationLevel(String value) throws PropertyVetoException;
+    void setTransactionIsolationLevel(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the isIsolationLevelGuaranteed property.
@@ -206,7 +207,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *         {@link String }
      */
     @Attribute (defaultValue="true", dataType=Boolean.class)
-    public String getIsIsolationLevelGuaranteed();
+    String getIsIsolationLevelGuaranteed();
 
     /**
      * Sets the value of the isIsolationLevelGuaranteed property.
@@ -214,7 +215,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @param value allowed object is
      *              {@link String }
      */
-    public void setIsIsolationLevelGuaranteed(String value) throws PropertyVetoException;
+    void setIsIsolationLevelGuaranteed(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the isConnectionValidationRequired property.
@@ -223,7 +224,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *         {@link String }
      */
     @Attribute (defaultValue="false", dataType=Boolean.class)
-    public String getIsConnectionValidationRequired();
+    String getIsConnectionValidationRequired();
 
     /**
      * Sets the value of the isConnectionValidationRequired property.
@@ -231,7 +232,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @param value allowed object is
      *              {@link String }
      */
-    public void setIsConnectionValidationRequired(String value) throws PropertyVetoException;
+    void setIsConnectionValidationRequired(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the connectionValidationMethod property.
@@ -240,7 +241,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *         {@link String }
      */
     @Attribute (defaultValue="auto-commit")
-    public String getConnectionValidationMethod();
+    String getConnectionValidationMethod();
 
     /**
      * Sets the value of the connectionValidationMethod property.
@@ -248,7 +249,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @param value allowed object is
      *              {@link String }
      */
-    public void setConnectionValidationMethod(String value) throws PropertyVetoException;
+    void setConnectionValidationMethod(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the validationTableName property.
@@ -257,7 +258,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *         {@link String }
      */
     @Attribute
-    public String getValidationTableName();
+    String getValidationTableName();
 
     /**
      * Sets the value of the validationTableName property.
@@ -265,7 +266,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @param value allowed object is
      *              {@link String }
      */
-    public void setValidationTableName(String value) throws PropertyVetoException;
+    void setValidationTableName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the failAllConnections property.
@@ -274,7 +275,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *         {@link String }
      */
     @Attribute (defaultValue="false", dataType=Boolean.class)
-    public String getFailAllConnections();
+    String getFailAllConnections();
 
     /**
      * Sets the value of the failAllConnections property.
@@ -282,7 +283,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @param value allowed object is
      *              {@link String }
      */
-    public void setFailAllConnections(String value) throws PropertyVetoException;
+    void setFailAllConnections(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the nonTransactionalConnections property.
@@ -291,7 +292,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *         {@link String }
      */
     @Attribute (defaultValue="false", dataType=Boolean.class)
-    public String getNonTransactionalConnections();
+    String getNonTransactionalConnections();
 
     /**
      * Sets the value of the nonTransactionalConnections property.
@@ -299,7 +300,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @param value allowed object is
      *              {@link String }
      */
-    public void setNonTransactionalConnections(String value) throws PropertyVetoException;
+    void setNonTransactionalConnections(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the allowNonComponentCallers property.
@@ -308,7 +309,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *         {@link String }
      */
     @Attribute (defaultValue="false", dataType=Boolean.class)
-    public String getAllowNonComponentCallers();
+    String getAllowNonComponentCallers();
 
     /**
      * Sets the value of the allowNonComponentCallers property.
@@ -316,7 +317,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAllowNonComponentCallers(String value) throws PropertyVetoException;
+    void setAllowNonComponentCallers(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the validateAtmostOncePeriodInSeconds property.
@@ -325,7 +326,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *         {@link String }
      */
     @Attribute (defaultValue="0", dataType=NonNegativeInteger.class)
-    public String getValidateAtmostOncePeriodInSeconds();
+    String getValidateAtmostOncePeriodInSeconds();
 
     /**
      * Sets the value of the validateAtmostOncePeriodInSeconds property.
@@ -333,7 +334,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @param value allowed object is
      *              {@link String }
      */
-    public void setValidateAtmostOncePeriodInSeconds(String value) throws PropertyVetoException;
+    void setValidateAtmostOncePeriodInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the connectionLeakTimeoutInSeconds property.
@@ -342,7 +343,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *         {@link String }
      */
     @Attribute (defaultValue="0", dataType=NonNegativeInteger.class)
-    public String getConnectionLeakTimeoutInSeconds();
+    String getConnectionLeakTimeoutInSeconds();
 
     /**
      * Sets the value of the connectionLeakTimeoutInSeconds property.
@@ -350,7 +351,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @param value allowed object is
      *              {@link String }
      */
-    public void setConnectionLeakTimeoutInSeconds(String value) throws PropertyVetoException;
+    void setConnectionLeakTimeoutInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the connectionLeakReclaim property.
@@ -359,7 +360,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *         {@link String }
      */
     @Attribute (defaultValue="false", dataType=Boolean.class)
-    public String getConnectionLeakReclaim();
+    String getConnectionLeakReclaim();
 
     /**
      * Sets the value of the connectionLeakReclaim property.
@@ -367,7 +368,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @param value allowed object is
      *              {@link String }
      */
-    public void setConnectionLeakReclaim(String value) throws PropertyVetoException;
+    void setConnectionLeakReclaim(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the connectionCreationRetryAttempts property.
@@ -376,7 +377,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *         {@link String }
      */
     @Attribute (defaultValue="0", dataType=NonNegativeInteger.class)
-    public String getConnectionCreationRetryAttempts();
+    String getConnectionCreationRetryAttempts();
 
     /**
      * Sets the value of the connectionCreationRetryAttempts property.
@@ -384,7 +385,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @param value allowed object is
      *              {@link String }
      */
-    public void setConnectionCreationRetryAttempts(String value) throws PropertyVetoException;
+    void setConnectionCreationRetryAttempts(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the connectionCreationRetryIntervalInSeconds property.
@@ -393,7 +394,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *         {@link String }
      */
     @Attribute (defaultValue="10", dataType=NonNegativeInteger.class)
-    public String getConnectionCreationRetryIntervalInSeconds();
+    String getConnectionCreationRetryIntervalInSeconds();
 
     /**
      * Sets the value of the connectionCreationRetryIntervalInSeconds property.
@@ -401,7 +402,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @param value allowed object is
      *              {@link String }
      */
-    public void setConnectionCreationRetryIntervalInSeconds(String value) throws PropertyVetoException;
+    void setConnectionCreationRetryIntervalInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the statementTimeoutInSeconds property.
@@ -410,7 +411,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *         {@link String }
      */
     @Attribute (defaultValue="-1", dataType=Integer.class)
-    public String getStatementTimeoutInSeconds();
+    String getStatementTimeoutInSeconds();
 
     /**
      * Sets the value of the statementTimeoutInSeconds property.
@@ -418,7 +419,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @param value allowed object is
      *              {@link String }
      */
-    public void setStatementTimeoutInSeconds(String value) throws PropertyVetoException;
+    void setStatementTimeoutInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the lazyConnectionEnlistment property.
@@ -427,7 +428,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *         {@link String }
      */
     @Attribute (defaultValue="false", dataType=Boolean.class)
-    public String getLazyConnectionEnlistment();
+    String getLazyConnectionEnlistment();
 
     /**
      * Sets the value of the lazyConnectionEnlistment property.
@@ -435,7 +436,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLazyConnectionEnlistment(String value) throws PropertyVetoException;
+    void setLazyConnectionEnlistment(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the lazyConnectionAssociation property.
@@ -444,7 +445,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *         {@link String }
      */
     @Attribute (defaultValue="false", dataType=Boolean.class)
-    public String getLazyConnectionAssociation();
+    String getLazyConnectionAssociation();
 
     /**
      * Sets the value of the lazyConnectionAssociation property.
@@ -452,7 +453,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLazyConnectionAssociation(String value) throws PropertyVetoException;
+    void setLazyConnectionAssociation(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the associateWithThread property.
@@ -461,7 +462,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *         {@link String }
      */
     @Attribute (defaultValue="false", dataType=Boolean.class)
-    public String getAssociateWithThread();
+    String getAssociateWithThread();
 
     /**
      * Sets the value of the associateWithThread property.
@@ -469,7 +470,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAssociateWithThread(String value) throws PropertyVetoException;
+    void setAssociateWithThread(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the matchConnections property.
@@ -478,7 +479,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *         {@link String }
      */
     @Attribute (defaultValue="false", dataType=Boolean.class)
-    public String getMatchConnections();
+    String getMatchConnections();
 
     /**
      * Sets the value of the matchConnections property.
@@ -486,7 +487,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMatchConnections(String value) throws PropertyVetoException;
+    void setMatchConnections(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxConnectionUsageCount property.
@@ -495,7 +496,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *         {@link String }
      */
     @Attribute (defaultValue="0", dataType=NonNegativeInteger.class)
-    public String getMaxConnectionUsageCount();
+    String getMaxConnectionUsageCount();
 
     /**
      * Sets the value of the maxConnectionUsageCount property.
@@ -503,7 +504,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxConnectionUsageCount(String value) throws PropertyVetoException;
+    void setMaxConnectionUsageCount(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the wrapJdbcObjects property.
@@ -512,7 +513,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *         {@link String }
      */
     @Attribute (defaultValue="false", dataType=Boolean.class)
-    public String getWrapJdbcObjects();
+    String getWrapJdbcObjects();
 
     /**
      * Sets the value of the wrapJdbcObjects property.
@@ -520,7 +521,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @param value allowed object is
      *              {@link String }
      */
-    public void setWrapJdbcObjects(String value) throws PropertyVetoException;
+    void setWrapJdbcObjects(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the description property.
@@ -529,7 +530,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *         {@link String }
      */
     @Attribute
-    public String getDescription();
+    String getDescription();
 
     /**
      * Sets the value of the description property.
@@ -538,7 +539,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * 
      *              {@link String }
      */
-    public void setDescription(String value) throws PropertyVetoException;
+    void setDescription(String value) throws PropertyVetoException;
     
     /**
         Properties.  This list is likely incomplete as of 21 October 2008.

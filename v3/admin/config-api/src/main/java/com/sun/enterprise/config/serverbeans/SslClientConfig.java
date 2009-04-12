@@ -38,13 +38,14 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import com.sun.grizzly.config.dom.Ssl;
+import org.glassfish.api.amx.AMXConfigInfo;
+import org.jvnet.hk2.component.Injectable;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 
 
 /**
@@ -54,7 +55,7 @@ import java.io.Serializable;
 /* @XmlType(name = "", propOrder = {
     "ssl"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.SSLConfig", singleton=true)
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.SSLConfig", singleton=true)
 @Configured
 public interface SslClientConfig extends ConfigBeanProxy, Injectable  {
 
@@ -65,7 +66,7 @@ public interface SslClientConfig extends ConfigBeanProxy, Injectable  {
      *         {@link Ssl }
      */
     @Element(required=true)
-    public Ssl getSsl();
+    Ssl getSsl();
 
     /**
      * Sets the value of the ssl property.
@@ -73,7 +74,7 @@ public interface SslClientConfig extends ConfigBeanProxy, Injectable  {
      * @param value allowed object is
      *              {@link Ssl }
      */
-    public void setSsl(Ssl value) throws PropertyVetoException;
+    void setSsl(Ssl value) throws PropertyVetoException;
 
 
 

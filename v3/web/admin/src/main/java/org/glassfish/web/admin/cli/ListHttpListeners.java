@@ -35,57 +35,49 @@
  */
 package org.glassfish.web.admin.cli;
 
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.grizzly.config.dom.NetworkConfig;
+import com.sun.grizzly.config.dom.NetworkListener;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.I18n;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.I18n;
-import org.glassfish.api.Param;
-import org.glassfish.api.ActionReport;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.TransactionFailure;
-import com.sun.enterprise.config.serverbeans.HttpListener;
-import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.util.LocalStringManagerImpl;
 
-import java.beans.PropertyVetoException;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
  * List http listeners command
- *
  */
-@Service(name="list-http-listeners")
+@Service(name = "list-http-listeners")
 @Scoped(PerLookup.class)
 @I18n("list.http.listeners")
 public class ListHttpListeners implements AdminCommand {
-    
-    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListHttpListeners.class);
-
+    final private static LocalStringManagerImpl localStrings
+        = new LocalStringManagerImpl(ListHttpListeners.class);
     @Inject
-    HttpService httpService;
+    NetworkConfig httpService;
 
     /**
      * Executes the command with the command parameters passed as Properties
-     * where the keys are the paramter names and the values the parameter values
+     * where the keys are the paramter names and the values the parameter
+     * values
      *
      * @param context information
      */
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
-
-        List<HttpListener> list = httpService.getHttpListener();
-        Iterator iter = list.iterator();
-        while (iter.hasNext()) {
-            HttpListener listener = (HttpListener)iter.next();
-            final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-            part.setMessage(listener.getId());
-        };
+        List<NetworkListener> list = httpService.getNetworkListeners()
+            .getNetworkListener();
+        for (NetworkListener listener : list) {
+            if (listener.findProtocol().getHttp() != null) {
+                report.getTopMessagePart()
+                    .addChild().setMessage(listener.getName());
+            }
+        }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 }

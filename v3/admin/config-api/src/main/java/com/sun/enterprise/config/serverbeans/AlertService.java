@@ -43,10 +43,8 @@ import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
-import java.io.Serializable;
 import java.util.List;
 
-import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
@@ -87,7 +85,7 @@ public interface AlertService extends ConfigBeanProxy, Injectable, PropertyBag {
      * {@link AlertSubscription }
      */
     @Element
-    public List<AlertSubscription> getAlertSubscription();
+    List<AlertSubscription> getAlertSubscription();
     
     /**
     	Properties as per {@link PropertyBag}

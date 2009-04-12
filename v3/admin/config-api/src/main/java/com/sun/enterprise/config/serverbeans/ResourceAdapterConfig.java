@@ -45,10 +45,8 @@ import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
 
 import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeSupport;
 import java.util.List;
 
-import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
@@ -135,7 +133,7 @@ public interface ResourceAdapterConfig extends ConfigBeanProxy, Injectable, Reso
     public void setResourceAdapterName(String value) throws PropertyVetoException;
     
     /**
-    	Properties as per {@link PropertyBag}
+    	Properties as per {@link org.glassfish.api.admin.config.PropertyBag}
      */
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
     @PropertiesDesc(props={})

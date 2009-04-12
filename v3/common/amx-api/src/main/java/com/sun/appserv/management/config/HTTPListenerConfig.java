@@ -42,7 +42,7 @@ import com.sun.appserv.management.base.XTypes;
 
 
 /**
-	 Configuration for an <http-listener&gt; element.
+	 Configuration for an &lt;http-listener&gt; element.
 */
 @AMXCreateInfo(paramNames={"id", "address", "port", "default-virtual-server", "server-name", "optional"})
 public interface HTTPListenerConfig

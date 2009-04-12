@@ -23,8 +23,8 @@
 
 package com.sun.enterprise.v3.services.impl;
 
-import com.sun.enterprise.config.serverbeans.HttpListener;
 import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.grizzly.util.http.mapper.Mapper;
 
 /**
@@ -34,6 +34,5 @@ import com.sun.grizzly.util.http.mapper.Mapper;
  * @author Alexey Stashok
  */
 public interface MapperUpdateListener {
-    public void update(HttpService httpService, HttpListener httpListener,
-            Mapper mapper);
+    void update(HttpService httpService, NetworkListener httpListener, Mapper mapper);
 }

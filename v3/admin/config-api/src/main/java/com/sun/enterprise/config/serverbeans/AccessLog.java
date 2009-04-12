@@ -47,13 +47,12 @@ import java.beans.PropertyVetoException;
 
 import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.config.support.datatypes.PositiveInteger;
-
-
+import org.glassfish.api.admin.config.PropertyBag;
 
 /* @XmlType(name = "") */
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.AccessLogConfig", singleton=true)
 @Configured
-public interface AccessLog extends ConfigBeanProxy, Injectable {
+public interface AccessLog extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the format property.
@@ -62,7 +61,7 @@ public interface AccessLog extends ConfigBeanProxy, Injectable {
      *         {@link String }
      */
     @Attribute (defaultValue="%client.name% %auth-user-name% %datetime% %request% %status% %response.length%")
-    public String getFormat();
+    String getFormat();
 
     /**
      * Sets the value of the format property.
@@ -70,7 +69,7 @@ public interface AccessLog extends ConfigBeanProxy, Injectable {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setFormat(String value) throws PropertyVetoException;
+    void setFormat(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the rotationPolicy property.
@@ -79,7 +78,7 @@ public interface AccessLog extends ConfigBeanProxy, Injectable {
      *         {@link String }
      */
     @Attribute (defaultValue="time")
-    public String getRotationPolicy();
+    String getRotationPolicy();
 
     /**
      * Sets the value of the rotationPolicy property.
@@ -87,7 +86,7 @@ public interface AccessLog extends ConfigBeanProxy, Injectable {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setRotationPolicy(String value) throws PropertyVetoException;
+    void setRotationPolicy(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the rotationIntervalInMinutes property.
@@ -96,7 +95,7 @@ public interface AccessLog extends ConfigBeanProxy, Injectable {
      *         {@link String }
      */
     @Attribute (defaultValue="1440", dataType=PositiveInteger.class)
-    public String getRotationIntervalInMinutes();
+    String getRotationIntervalInMinutes();
 
     /**
      * Sets the value of the rotationIntervalInMinutes property.
@@ -104,7 +103,7 @@ public interface AccessLog extends ConfigBeanProxy, Injectable {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setRotationIntervalInMinutes(String value) throws PropertyVetoException;
+    void setRotationIntervalInMinutes(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the rotationSuffix property.
@@ -112,8 +111,8 @@ public interface AccessLog extends ConfigBeanProxy, Injectable {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="yyyyMMdd-HH'h'mm'm'ss's'")
-    public String getRotationSuffix();
+    @Attribute (defaultValue="yyyyMMdd")
+    String getRotationSuffix();
 
     /**
      * Sets the value of the rotationSuffix property.
@@ -121,7 +120,7 @@ public interface AccessLog extends ConfigBeanProxy, Injectable {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setRotationSuffix(String value) throws PropertyVetoException;
+    void setRotationSuffix(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the rotationEnabled property.
@@ -130,7 +129,7 @@ public interface AccessLog extends ConfigBeanProxy, Injectable {
      *         {@link String }
      */
     @Attribute (defaultValue="true", dataType=Boolean.class)
-    public String getRotationEnabled();
+    String getRotationEnabled();
 
     /**
      * Sets the value of the rotationEnabled property.
@@ -138,6 +137,5 @@ public interface AccessLog extends ConfigBeanProxy, Injectable {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setRotationEnabled(String value) throws PropertyVetoException;
-
+    void setRotationEnabled(String value) throws PropertyVetoException;
 }

@@ -45,14 +45,13 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeSupport;
-import java.io.Serializable;
 import java.util.List;
 
 import org.glassfish.api.admin.config.*;
-
+import org.glassfish.api.amx.AMXConfigInfo;
+import org.glassfish.api.admin.config.Property;
+import org.glassfish.api.admin.config.PropertyBag;
 import org.glassfish.quality.ToDo;
-
 
 /**
  *
@@ -62,7 +61,7 @@ import org.glassfish.quality.ToDo;
     "description",
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.LifecycleModuleConfig")
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.LifecycleModuleConfig")
 @Configured
 public interface LifecycleModule extends ConfigBeanProxy, Injectable, Named, PropertyBag {
 
@@ -73,7 +72,7 @@ public interface LifecycleModule extends ConfigBeanProxy, Injectable, Named, Pro
      *         {@link String }
      */
     @Attribute(required = true)
-    public String getClassName();
+    String getClassName();
 
     /**
      * Sets the value of the className property.
@@ -81,7 +80,7 @@ public interface LifecycleModule extends ConfigBeanProxy, Injectable, Named, Pro
      * @param value allowed object is
      *              {@link String }
      */
-    public void setClassName(String value) throws PropertyVetoException;
+    void setClassName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the classpath property.
@@ -90,7 +89,7 @@ public interface LifecycleModule extends ConfigBeanProxy, Injectable, Named, Pro
      *         {@link String }
      */
     @Attribute
-    public String getClasspath();
+    String getClasspath();
 
     /**
      * Sets the value of the classpath property.
@@ -98,7 +97,7 @@ public interface LifecycleModule extends ConfigBeanProxy, Injectable, Named, Pro
      * @param value allowed object is
      *              {@link String }
      */
-    public void setClasspath(String value) throws PropertyVetoException;
+    void setClasspath(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the loadOrder property.
@@ -107,7 +106,7 @@ public interface LifecycleModule extends ConfigBeanProxy, Injectable, Named, Pro
      *         {@link String }
      */
     @Attribute
-    public String getLoadOrder();
+    String getLoadOrder();
 
     /**
      * Sets the value of the loadOrder property.
@@ -115,7 +114,7 @@ public interface LifecycleModule extends ConfigBeanProxy, Injectable, Named, Pro
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLoadOrder(String value) throws PropertyVetoException;
+    void setLoadOrder(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the isFailureFatal property.
@@ -124,7 +123,7 @@ public interface LifecycleModule extends ConfigBeanProxy, Injectable, Named, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="false")
-    public String getIsFailureFatal();
+    String getIsFailureFatal();
 
     /**
      * Sets the value of the isFailureFatal property.
@@ -132,7 +131,7 @@ public interface LifecycleModule extends ConfigBeanProxy, Injectable, Named, Pro
      * @param value allowed object is
      *              {@link String }
      */
-    public void setIsFailureFatal(String value) throws PropertyVetoException;
+    void setIsFailureFatal(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the objectType property.
@@ -141,7 +140,7 @@ public interface LifecycleModule extends ConfigBeanProxy, Injectable, Named, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="user")
-    public String getObjectType();
+    String getObjectType();
 
     /**
      * Sets the value of the objectType property.
@@ -149,7 +148,7 @@ public interface LifecycleModule extends ConfigBeanProxy, Injectable, Named, Pro
      * @param value allowed object is
      *              {@link String }
      */
-    public void setObjectType(String value) throws PropertyVetoException;
+    void setObjectType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the enabled property.
@@ -158,7 +157,7 @@ public interface LifecycleModule extends ConfigBeanProxy, Injectable, Named, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="true")
-    public String getEnabled();
+    String getEnabled();
 
     /**
      * Sets the value of the enabled property.
@@ -166,7 +165,7 @@ public interface LifecycleModule extends ConfigBeanProxy, Injectable, Named, Pro
      * @param value allowed object is
      *              {@link String }
      */
-    public void setEnabled(String value) throws PropertyVetoException;
+    void setEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the description property.
@@ -175,7 +174,7 @@ public interface LifecycleModule extends ConfigBeanProxy, Injectable, Named, Pro
      *         {@link String }
      */
     @Element
-    public String getDescription();
+    String getDescription();
 
     /**
      * Sets the value of the description property.
@@ -183,7 +182,7 @@ public interface LifecycleModule extends ConfigBeanProxy, Injectable, Named, Pro
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDescription(String value) throws PropertyVetoException;
+    void setDescription(String value) throws PropertyVetoException;
     
     /**
     	Properties as per {@link PropertyBag}

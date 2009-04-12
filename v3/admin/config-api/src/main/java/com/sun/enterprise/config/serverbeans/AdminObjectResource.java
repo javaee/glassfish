@@ -48,7 +48,7 @@ import java.beans.PropertyVetoException;
 import java.util.List;
 
 import org.glassfish.api.admin.config.PropertiesDesc;
-import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 
@@ -62,9 +62,10 @@ import org.glassfish.quality.ToDo;
     "description",
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.AdminObjectResourceConfig")
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.AdminObjectResourceConfig")
 @Configured
-public interface AdminObjectResource extends ConfigBeanProxy, Injectable, BindableResource, Resource, PropertyBag {
+public interface AdminObjectResource extends ConfigBeanProxy, Injectable, BindableResource, Resource,
+    PropertyBag {
 
     /**
      * Gets the value of the resType property.
@@ -73,7 +74,7 @@ public interface AdminObjectResource extends ConfigBeanProxy, Injectable, Bindab
      *         {@link String }
      */
     @Attribute(required = true)
-    public String getResType();
+    String getResType();
 
     /**
      * Sets the value of the resType property.
@@ -81,7 +82,7 @@ public interface AdminObjectResource extends ConfigBeanProxy, Injectable, Bindab
      * @param value allowed object is
      *              {@link String }
      */
-    public void setResType(String value) throws PropertyVetoException;
+    void setResType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the resAdapter property.
@@ -90,7 +91,7 @@ public interface AdminObjectResource extends ConfigBeanProxy, Injectable, Bindab
      *         {@link String }
      */
     @Attribute(required = true)
-    public String getResAdapter();
+    String getResAdapter();
 
     /**
      * Sets the value of the resAdapter property.
@@ -98,7 +99,7 @@ public interface AdminObjectResource extends ConfigBeanProxy, Injectable, Bindab
      * @param value allowed object is
      *              {@link String }
      */
-    public void setResAdapter(String value) throws PropertyVetoException;
+    void setResAdapter(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the objectType property.
@@ -107,7 +108,7 @@ public interface AdminObjectResource extends ConfigBeanProxy, Injectable, Bindab
      *         {@link String }
      */
     @Attribute (defaultValue="user")
-    public String getObjectType();
+    String getObjectType();
 
     /**
      * Sets the value of the objectType property.
@@ -115,7 +116,7 @@ public interface AdminObjectResource extends ConfigBeanProxy, Injectable, Bindab
      * @param value allowed object is
      *              {@link String }
      */
-    public void setObjectType(String value) throws PropertyVetoException;
+    void setObjectType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the enabled property.
@@ -124,7 +125,7 @@ public interface AdminObjectResource extends ConfigBeanProxy, Injectable, Bindab
      *         {@link String }
      */
     @Attribute (defaultValue="true")
-    public String getEnabled();
+    String getEnabled();
 
     /**
      * Sets the value of the enabled property.
@@ -132,7 +133,7 @@ public interface AdminObjectResource extends ConfigBeanProxy, Injectable, Bindab
      * @param value allowed object is
      *              {@link String }
      */
-    public void setEnabled(String value) throws PropertyVetoException;
+    void setEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the description property.
@@ -141,7 +142,7 @@ public interface AdminObjectResource extends ConfigBeanProxy, Injectable, Bindab
      *         {@link String }
      */
     @Attribute
-    public String getDescription();
+    String getDescription();
 
     /**
      * Sets the value of the description property.
@@ -149,7 +150,7 @@ public interface AdminObjectResource extends ConfigBeanProxy, Injectable, Bindab
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDescription(String value) throws PropertyVetoException;
+    void setDescription(String value) throws PropertyVetoException;
     
     /**
     	Properties as per {@link PropertyBag}

@@ -36,23 +36,23 @@
 
 package com.sun.enterprise.configapi.tests;
 
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.config.*;
-import org.glassfish.tests.utils.Utils;
-import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.AccessLog;
+import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.JavaConfig;
 import com.sun.enterprise.config.serverbeans.Profiler;
+import org.glassfish.tests.utils.Utils;
+import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.config.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.TransactionFailure;
 
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
-
-
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.assertTrue;
+import java.util.Map;
 
 /**
  * User: Jerome Dochez
@@ -94,6 +94,7 @@ public class DirectCreationTest extends ConfigPersistence {
         ConfigSupport support = getHabitat().getComponent(ConfigSupport.class);
 
         for (Class<?> subType : subTypes) {
+            // TODO:  JL force compilation error to mark this probably edit point for grizzly config
             if (subType.getName().endsWith("HttpListener")) {
                 Map<String, String> configChanges = new HashMap<String, String>();
                 configChanges.put("id", "funky-listener");
@@ -125,6 +126,6 @@ public class DirectCreationTest extends ConfigPersistence {
     }
 
     public boolean assertResult(String s) {
-        return s.indexOf("id=\"funky-listener\"")!=-1;
+        return s.contains("id=\"funky-listener\"");
     }
 }

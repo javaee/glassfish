@@ -36,14 +36,16 @@
 
 package com.sun.enterprise.configapi.tests;
 
-import com.sun.enterprise.config.serverbeans.HttpListener;
-import com.sun.enterprise.config.serverbeans.HttpService;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.TransactionFailure;
-import org.jvnet.hk2.config.ConfigSupport;
+import com.sun.grizzly.config.GrizzlyConfig;
+import com.sun.grizzly.config.dom.NetworkListener;
+import com.sun.grizzly.config.dom.NetworkListeners;
+import com.sun.grizzly.config.dom.Transport;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
 
 import java.beans.PropertyVetoException;
 
@@ -58,16 +60,16 @@ public class HttpListenerTest extends ConfigApiTest {
     public String getFileName() {
         return "DomainTest";
     }
-    
-    HttpListener listener = null;
+
+    NetworkListener listener = null;
 
     @Before
     public void setup() {
-        HttpService service = getHabitat().getComponent(HttpService.class);
+        NetworkListeners service = getHabitat().getComponent(NetworkListeners.class);
         assertTrue(service!=null);
-        for (HttpListener list : service.getHttpListener()) {
-            if (list.getId().equals("http-listener-1")) {
-                listener=list;
+        for (NetworkListener item : service.getNetworkListener()) {
+            if ("http-listener-1".equals(item.getName())) {
+                listener= item;
                 break;
             }
         }
@@ -80,20 +82,20 @@ public class HttpListenerTest extends ConfigApiTest {
     @Test
     public void portTest() {
         logger.fine("port = " + listener.getPort());
-        assertTrue(listener.getPort().equals("8080"));
+        assertTrue("8080".equals(listener.getPort()));
     }
 
     @Test
     public void validTransaction() throws TransactionFailure {
         
-        ConfigSupport.apply((new SingleConfigCode<HttpListener>() {
-            public Object run(HttpListener okToChange) throws PropertyVetoException {
+        ConfigSupport.apply(new SingleConfigCode<Transport>() {
+            public Object run(Transport okToChange) {
                 okToChange.setAcceptorThreads("2");
-                logger.fine("ID inside the transaction is " + okToChange.getId());
+                logger.fine("ID inside the transaction is " + okToChange.getName());
                 return null;
             }
-        }), listener);
-        logger.fine("ID outside the transaction is " + listener.getId());
-        assertTrue(listener.getAcceptorThreads().equals("2"));
+        }, listener.findTransport());
+        logger.fine("ID outside the transaction is " + listener.getName());
+        assertTrue("2".equals(listener.findTransport().getAcceptorThreads()));
     }    
 }

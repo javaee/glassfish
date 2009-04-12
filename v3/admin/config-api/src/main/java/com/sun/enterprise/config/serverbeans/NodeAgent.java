@@ -45,14 +45,10 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.List;
 
-import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
-import org.glassfish.api.admin.config.PropertyBag;
-
 import org.glassfish.quality.ToDo;
 
 /**
@@ -67,7 +63,7 @@ import org.glassfish.quality.ToDo;
 }) */
 @org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.NodeAgentConfig")
 @Configured
-public interface NodeAgent extends ConfigBeanProxy, Injectable, PropertyBag {
+public interface NodeAgent extends ConfigBeanProxy, Injectable, org.glassfish.api.admin.config.PropertyBag {
 
     /**
      * Gets the value of the name property.
@@ -172,7 +168,7 @@ public interface NodeAgent extends ConfigBeanProxy, Injectable, PropertyBag {
     public void setLogService(LogService value) throws PropertyVetoException;
     
     /**
-    	Properties as per {@link PropertyBag}
+    	Properties as per {@link org.glassfish.api.admin.config.PropertyBag}
      */
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
     @PropertiesDesc(props={})

@@ -35,8 +35,8 @@
  */
 package com.sun.enterprise.security.cli;
 
-import org.glassfish.api.admin.config.Property;
 import java.util.List;
+import java.util.Properties;
 
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -55,6 +55,7 @@ import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.glassfish.api.admin.config.Property;
 
 import java.beans.PropertyVetoException;
 
@@ -97,7 +98,7 @@ public class CreateAuthRealm implements AdminCommand {
     String authRealmName;
     
     @Param(optional=true, name="property")
-    java.util.Properties properties;   
+    Properties properties;
     
     @Param(optional=true)
     String target;

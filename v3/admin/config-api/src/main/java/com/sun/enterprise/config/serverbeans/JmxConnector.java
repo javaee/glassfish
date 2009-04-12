@@ -38,27 +38,24 @@
 
 package com.sun.enterprise.config.serverbeans;
 
-import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.component.Injectable;
-import java.util.List;
-
 import java.beans.PropertyVetoException;
-import org.glassfish.config.support.datatypes.Port;
+import java.util.List;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
-import org.glassfish.api.admin.config.PropertyDesc;
-import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
-
+import com.sun.grizzly.config.dom.Ssl;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.quality.ToDo;
-
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import javax.validation.constraints.Max;
+import org.jvnet.hk2.component.Injectable;
+import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.Element;
 /**
  *
  */
@@ -67,7 +64,7 @@ import javax.validation.constraints.Max;
     "ssl",
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.JMXConnectorConfig")
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.JMXConnectorConfig")
 @Configured
 public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
 
@@ -78,7 +75,7 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute(required = true, key=true)
-    public String getName();
+    String getName();
 
     /**
      * Sets the value of the name property.
@@ -86,7 +83,7 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setName(String value) throws PropertyVetoException;
+    void setName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the enabled property.
@@ -95,7 +92,7 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="true", dataType=Boolean.class)
-    public String getEnabled();
+    String getEnabled();
 
     /**
      * Sets the value of the enabled property.
@@ -103,7 +100,7 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setEnabled(String value) throws PropertyVetoException;
+    void setEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the protocol property.
@@ -112,7 +109,7 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="rmi_jrmp")
-    public String getProtocol();
+    String getProtocol();
 
     /**
      * Sets the value of the protocol property.
@@ -120,7 +117,7 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setProtocol(String value) throws PropertyVetoException;
+    void setProtocol(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the address property.
@@ -129,7 +126,7 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute(required = true)
-    public String getAddress();
+    String getAddress();
 
     /**
      * Sets the value of the address property.
@@ -137,7 +134,7 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAddress(String value) throws PropertyVetoException;
+    void setAddress(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the port property.
@@ -148,7 +145,7 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
     @Attribute
     @Max(value=65535)
     @Size(min=1,max=5)
-    public String getPort();
+    String getPort();
 
     /**
      * Sets the value of the port property.
@@ -156,7 +153,7 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setPort(String value) throws PropertyVetoException;
+    void setPort(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the acceptAll property.
@@ -165,7 +162,7 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="false", dataType=Boolean.class)
-    public String getAcceptAll();
+    String getAcceptAll();
 
     /**
      * Sets the value of the acceptAll property.
@@ -173,7 +170,7 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAcceptAll(String value) throws PropertyVetoException;
+    void setAcceptAll(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the authRealmName property.
@@ -184,7 +181,7 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
     @Attribute
     @NotNull
     @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
-    public String getAuthRealmName();
+    String getAuthRealmName();
 
     /**
      * Sets the value of the authRealmName property.
@@ -192,7 +189,7 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAuthRealmName(String value) throws PropertyVetoException;
+    void setAuthRealmName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the securityEnabled property.
@@ -201,7 +198,7 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="true", dataType=Boolean.class)
-    public String getSecurityEnabled();
+    String getSecurityEnabled();
 
     /**
      * Sets the value of the securityEnabled property.
@@ -209,7 +206,7 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSecurityEnabled(String value) throws PropertyVetoException;
+    void setSecurityEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the ssl property.
@@ -218,7 +215,7 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link Ssl }
      */
     @Element
-    public Ssl getSsl();
+    Ssl getSsl();
 
     /**
      * Sets the value of the ssl property.
@@ -226,7 +223,7 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link Ssl }
      */
-    public void setSsl(Ssl value) throws PropertyVetoException;
+    void setSsl(Ssl value) throws PropertyVetoException;
     
     /**
     	Properties as per {@link PropertyBag}

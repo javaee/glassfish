@@ -45,14 +45,12 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.List;
 
-import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
-
 import org.glassfish.quality.ToDo;
 
 
@@ -64,7 +62,7 @@ import org.glassfish.quality.ToDo;
     "ejbTimerService",
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.EJBContainerConfig", singleton=true)
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.EJBContainerConfig", singleton=true)
 @Configured
 public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
 
@@ -75,7 +73,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="32")
-    public String getSteadyPoolSize();
+    String getSteadyPoolSize();
 
     /**
      * Sets the value of the steadyPoolSize property.
@@ -83,7 +81,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSteadyPoolSize(String value) throws PropertyVetoException;
+    void setSteadyPoolSize(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the poolResizeQuantity property.
@@ -92,7 +90,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="16")
-    public String getPoolResizeQuantity();
+    String getPoolResizeQuantity();
 
     /**
      * Sets the value of the poolResizeQuantity property.
@@ -100,7 +98,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setPoolResizeQuantity(String value) throws PropertyVetoException;
+    void setPoolResizeQuantity(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxPoolSize property.
@@ -109,7 +107,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="64")
-    public String getMaxPoolSize();
+    String getMaxPoolSize();
 
     /**
      * Sets the value of the maxPoolSize property.
@@ -117,7 +115,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxPoolSize(String value) throws PropertyVetoException;
+    void setMaxPoolSize(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the cacheResizeQuantity property.
@@ -126,7 +124,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="32")
-    public String getCacheResizeQuantity();
+    String getCacheResizeQuantity();
 
     /**
      * Sets the value of the cacheResizeQuantity property.
@@ -134,7 +132,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setCacheResizeQuantity(String value) throws PropertyVetoException;
+    void setCacheResizeQuantity(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxCacheSize property.
@@ -143,7 +141,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="512")
-    public String getMaxCacheSize();
+    String getMaxCacheSize();
 
     /**
      * Sets the value of the maxCacheSize property.
@@ -151,7 +149,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxCacheSize(String value) throws PropertyVetoException;
+    void setMaxCacheSize(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the poolIdleTimeoutInSeconds property.
@@ -160,7 +158,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="600")
-    public String getPoolIdleTimeoutInSeconds();
+    String getPoolIdleTimeoutInSeconds();
 
     /**
      * Sets the value of the poolIdleTimeoutInSeconds property.
@@ -168,7 +166,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setPoolIdleTimeoutInSeconds(String value) throws PropertyVetoException;
+    void setPoolIdleTimeoutInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the cacheIdleTimeoutInSeconds property.
@@ -177,7 +175,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="600")
-    public String getCacheIdleTimeoutInSeconds();
+    String getCacheIdleTimeoutInSeconds();
 
     /**
      * Sets the value of the cacheIdleTimeoutInSeconds property.
@@ -185,7 +183,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setCacheIdleTimeoutInSeconds(String value) throws PropertyVetoException;
+    void setCacheIdleTimeoutInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the removalTimeoutInSeconds property.
@@ -194,7 +192,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="5400")
-    public String getRemovalTimeoutInSeconds();
+    String getRemovalTimeoutInSeconds();
 
     /**
      * Sets the value of the removalTimeoutInSeconds property.
@@ -202,7 +200,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setRemovalTimeoutInSeconds(String value) throws PropertyVetoException;
+    void setRemovalTimeoutInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the victimSelectionPolicy property.
@@ -211,7 +209,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="nru")
-    public String getVictimSelectionPolicy();
+    String getVictimSelectionPolicy();
 
     /**
      * Sets the value of the victimSelectionPolicy property.
@@ -219,7 +217,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setVictimSelectionPolicy(String value) throws PropertyVetoException;
+    void setVictimSelectionPolicy(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the commitOption property.
@@ -228,7 +226,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="B")
-    public String getCommitOption();
+    String getCommitOption();
 
     /**
      * Sets the value of the commitOption property.
@@ -236,7 +234,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setCommitOption(String value) throws PropertyVetoException;
+    void setCommitOption(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the sessionStore property.
@@ -245,7 +243,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute
-    public String getSessionStore();
+    String getSessionStore();
 
     /**
      * Sets the value of the sessionStore property.
@@ -253,7 +251,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSessionStore(String value) throws PropertyVetoException;
+    void setSessionStore(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the ejbTimerService property.
@@ -262,7 +260,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link EjbTimerService }
      */
     @Element
-    public EjbTimerService getEjbTimerService();
+    EjbTimerService getEjbTimerService();
 
     /**
      * Sets the value of the ejbTimerService property.
@@ -270,7 +268,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link EjbTimerService }
      */
-    public void setEjbTimerService(EjbTimerService value) throws PropertyVetoException;
+    void setEjbTimerService(EjbTimerService value) throws PropertyVetoException;
     
     
     /**

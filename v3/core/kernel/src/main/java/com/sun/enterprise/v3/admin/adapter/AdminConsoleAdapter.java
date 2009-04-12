@@ -35,7 +35,6 @@ package com.sun.enterprise.v3.admin.adapter;
 import com.sun.pkg.client.Image;
 import com.sun.pkg.client.Version;
 import com.sun.enterprise.config.serverbeans.*;
-import org.glassfish.api.admin.config.Property;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.v3.common.PlainTextActionReporter;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
@@ -43,6 +42,8 @@ import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.grizzly.tcp.http11.GrizzlyOutputBuffer;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
+import org.glassfish.api.admin.config.Property;
+
 import java.beans.PropertyVetoException;
 import com.sun.logging.LogDomains;
 import java.io.File;
@@ -687,7 +688,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
                         // Copy the token value to the buffer
                         buf.append(
                                 bundle.getString(text.substring(start, end)));
-                    } catch (java.util.MissingResourceException ex) {
+                    } catch (MissingResourceException ex) {
                         // Unable to find the resource, so we don't do anything
                         buf.append("%%%" + text.substring(start, end) + "%%%");
                     }

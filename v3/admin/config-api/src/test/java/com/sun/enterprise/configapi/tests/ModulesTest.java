@@ -36,16 +36,12 @@
 
 package com.sun.enterprise.configapi.tests;
 
-import com.sun.enterprise.config.serverbeans.HttpListener;
-import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.Applications;
+import org.glassfish.api.admin.config.Named;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.assertTrue;
-import org.jvnet.hk2.component.Inhabitant;
-import org.glassfish.api.admin.config.Named;
 
-import java.util.List;
 import java.util.Collection;
 
 /**

@@ -54,19 +54,23 @@
 
 package org.glassfish.web.loader;
 
-import com.sun.logging.LogDomains;
-
-import java.util.*;
-import java.util.logging.Logger;
-import java.util.jar.JarFile;
-import java.util.jar.JarEntry;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
-
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.ServiceLoader;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.logging.Logger;
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.annotation.HandlesTypes;
+
+import com.sun.logging.LogDomains;
 
 /**
  *  Utility class - contains util methods used for implementation of pluggable Shared Library features
@@ -133,7 +137,7 @@ public class ServletContainerInitializerUtil {
             ClassLoader cl) {
         if(interestList == null)
             return null;
-        
+
         // This contains the final list of initializers and the set of classes to be passed to them as arg
         Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>> initializerList = null;
 

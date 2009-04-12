@@ -1,10 +1,9 @@
 package com.sun.enterprise.configapi.tests;
 
-import com.sun.enterprise.config.serverbeans.HttpListener;
-import com.sun.enterprise.config.serverbeans.HttpService;
-
+import com.sun.grizzly.config.dom.NetworkListener;
+import com.sun.grizzly.config.dom.NetworkListeners;
+import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 
 /**
@@ -22,16 +21,16 @@ public class ParentTest extends ConfigApiTest {
     @Test
     public void parents() {
 
-        HttpService service = getHabitat().getComponent(HttpService.class);
+        NetworkListeners service = getHabitat().getComponent(NetworkListeners.class);
         assertNotNull(service);
-        HttpListener listener = service.getHttpListener().get(0);
+        NetworkListener listener = service.getNetworkListener().get(0);
         assertNotNull(listener);
 
         ConfigBeanProxy parent = service.getParent();
         assertNotNull(parent);
 
-        HttpService myService = listener.getParent(HttpService.class);
+        NetworkListeners myService = listener.getParent(NetworkListeners.class);
         assertNotNull(myService);
-        assertNotNull(myService.getHttpListener().get(0).getId());
+        assertNotNull(myService.getNetworkListener().get(0).getName());
     }
 }

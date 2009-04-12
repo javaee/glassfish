@@ -46,14 +46,16 @@ import org.jvnet.hk2.component.Injectable;
 import java.beans.PropertyVetoException;
 import org.glassfish.config.support.datatypes.PositiveInteger;
 import org.glassfish.config.support.datatypes.NonNegativeInteger;
+import org.glassfish.api.amx.AMXConfigInfo;
 
 /**
  *
  */
 
 /* @XmlType(name = "") */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.KeepAliveConfig", singleton=true)
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.KeepAliveConfig", singleton=true)
 @Configured
+@Deprecated
 public interface KeepAlive extends ConfigBeanProxy, Injectable  {
 
     /**
@@ -63,7 +65,7 @@ public interface KeepAlive extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute (defaultValue="1", dataType=PositiveInteger.class)
-    public String getThreadCount();
+    String getThreadCount();
 
     /**
      * Sets the value of the threadCount property.
@@ -71,7 +73,7 @@ public interface KeepAlive extends ConfigBeanProxy, Injectable  {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setThreadCount(String value) throws PropertyVetoException;
+    void setThreadCount(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxConnections property.
@@ -80,7 +82,7 @@ public interface KeepAlive extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute (defaultValue="256", dataType=PositiveInteger.class)
-    public String getMaxConnections();
+    String getMaxConnections();
 
     /**
      * Sets the value of the maxConnections property.
@@ -88,7 +90,7 @@ public interface KeepAlive extends ConfigBeanProxy, Injectable  {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxConnections(String value) throws PropertyVetoException;
+    void setMaxConnections(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the timeoutInSeconds property.
@@ -97,7 +99,7 @@ public interface KeepAlive extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute (defaultValue="30", dataType=NonNegativeInteger.class)
-    public String getTimeoutInSeconds();
+    String getTimeoutInSeconds();
 
     /**
      * Sets the value of the timeoutInSeconds property.
@@ -105,7 +107,7 @@ public interface KeepAlive extends ConfigBeanProxy, Injectable  {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setTimeoutInSeconds(String value) throws PropertyVetoException;
+    void setTimeoutInSeconds(String value) throws PropertyVetoException;
 
 
 

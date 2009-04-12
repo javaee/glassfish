@@ -45,11 +45,12 @@ import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
 
 import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeSupport;
 import java.util.List;
 
 import org.glassfish.api.admin.config.*;
-
+import org.glassfish.api.amx.AMXConfigInfo;
+import org.glassfish.api.admin.config.Property;
+import org.glassfish.api.admin.config.PropertyBag;
 import org.glassfish.quality.ToDo;
 
 /**
@@ -60,7 +61,7 @@ import org.glassfish.quality.ToDo;
     "description",
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ConnectorModuleConfig")
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ConnectorModuleConfig")
 @Configured
 public interface ConnectorModule extends ConfigBeanProxy, Injectable, Named, PropertyBag {
 
@@ -71,7 +72,7 @@ public interface ConnectorModule extends ConfigBeanProxy, Injectable, Named, Pro
      *         {@link String }
      */
     @Attribute(required = true)
-    public String getLocation();
+    String getLocation();
 
     /**
      * Sets the value of the location property.
@@ -79,7 +80,7 @@ public interface ConnectorModule extends ConfigBeanProxy, Injectable, Named, Pro
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLocation(String value) throws PropertyVetoException;
+    void setLocation(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the objectType property.
@@ -88,7 +89,7 @@ public interface ConnectorModule extends ConfigBeanProxy, Injectable, Named, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="user")
-    public String getObjectType();
+    String getObjectType();
 
     /**
      * Sets the value of the objectType property.
@@ -96,7 +97,7 @@ public interface ConnectorModule extends ConfigBeanProxy, Injectable, Named, Pro
      * @param value allowed object is
      *              {@link String }
      */
-    public void setObjectType(String value) throws PropertyVetoException;
+    void setObjectType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the enabled property.
@@ -105,7 +106,7 @@ public interface ConnectorModule extends ConfigBeanProxy, Injectable, Named, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="true")
-    public String getEnabled();
+    String getEnabled();
 
     /**
      * Sets the value of the enabled property.
@@ -113,7 +114,7 @@ public interface ConnectorModule extends ConfigBeanProxy, Injectable, Named, Pro
      * @param value allowed object is
      *              {@link String }
      */
-    public void setEnabled(String value) throws PropertyVetoException;
+    void setEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the directoryDeployed property.
@@ -122,7 +123,7 @@ public interface ConnectorModule extends ConfigBeanProxy, Injectable, Named, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="false")
-    public String getDirectoryDeployed();
+    String getDirectoryDeployed();
 
     /**
      * Sets the value of the directoryDeployed property.
@@ -130,7 +131,7 @@ public interface ConnectorModule extends ConfigBeanProxy, Injectable, Named, Pro
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDirectoryDeployed(String value) throws PropertyVetoException;
+    void setDirectoryDeployed(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the description property.
@@ -139,7 +140,7 @@ public interface ConnectorModule extends ConfigBeanProxy, Injectable, Named, Pro
      *         {@link String }
      */
     @Attribute
-    public String getDescription();
+    String getDescription();
 
     /**
      * Sets the value of the description property.
@@ -147,7 +148,7 @@ public interface ConnectorModule extends ConfigBeanProxy, Injectable, Named, Pro
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDescription(String value) throws PropertyVetoException;
+    void setDescription(String value) throws PropertyVetoException;
     
     /**
     	Properties as per {@link PropertyBag}

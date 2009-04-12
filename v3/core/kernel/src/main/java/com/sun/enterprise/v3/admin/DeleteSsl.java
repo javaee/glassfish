@@ -35,26 +35,29 @@
  */
 package com.sun.enterprise.v3.admin;
 
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
+import com.sun.enterprise.config.serverbeans.IiopListener;
+import com.sun.enterprise.config.serverbeans.IiopService;
+import com.sun.enterprise.config.serverbeans.Configs;
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.grizzly.config.dom.NetworkListener;
+import com.sun.grizzly.config.dom.NetworkListeners;
+import com.sun.grizzly.config.dom.NetworkConfig;
+import com.sun.grizzly.config.dom.Protocol;
+import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.ActionReport;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
+import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.AdminCommandContext;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
-import com.sun.enterprise.config.serverbeans.HttpListener;
-import com.sun.enterprise.config.serverbeans.IiopListener;
-import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.IiopService;
-import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.beans.PropertyVetoException;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -74,17 +77,21 @@ public class DeleteSsl implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeleteSsl.class);
 
-    @Param(name="type", acceptableValues="http-listener, iiop-listener")
+    @Param(name="type", acceptableValues="network-listener, http-listener, iiop-listener")
     String type;
     
     @Param(name="listener_id", primary=true)
     String listenerId;
 
     @Inject
-    HttpService httpService;
+    NetworkListeners networkListeners;
 
     @Inject
     IiopService iiopService;
+
+    @Inject
+    Configs configs;
+
     /**
      * Executes the command with the command parameters passed as Properties
      * where the keys are the paramter names and the values the parameter values
@@ -95,16 +102,12 @@ public class DeleteSsl implements AdminCommand {
         ActionReport report = context.getActionReport();
 
         try {
-            if (type.equals("http-listener")) {
-                
-                HttpListener httpListener = null;
-                for (HttpListener listener : httpService.getHttpListener()) {
-                    if (listener.getId().equals(listenerId)) {
-                        httpListener = listener;
-                    }
-                }
-                
-                if (httpListener == null) {
+            if ("http-listener".equals(type) || "network-listener".equals(type)) {
+                Config config = configs.getConfig().get(0);
+                NetworkConfig netConfig = config.getNetworkConfig();
+                NetworkListener networkListener = netConfig.getNetworkListener(listenerId);
+
+                if (networkListener == null) {
                     report.setMessage(localStrings.getLocalString(
                         "delete.ssl.http.listener.notfound", 
                         "HTTP Listener named {0} not found", listenerId));
@@ -112,15 +115,14 @@ public class DeleteSsl implements AdminCommand {
                     return;
                 }
                 
-                ConfigSupport.apply(new SingleConfigCode<HttpListener>() {
-                    public Object run(HttpListener param) 
-                    throws PropertyVetoException, TransactionFailure {
+                ConfigSupport.apply(new SingleConfigCode<Protocol>() {
+                    public Object run(Protocol param) {
                         param.setSsl(null);
                         return null;
                     }
-                }, httpListener);
+                }, networkListener.findProtocol());
                 
-            } else if (type.equals("iiop-listener")) {
+            } else if ("iiop-listener".equals(type)) {
                 IiopListener iiopListener = null;
                 for (IiopListener listener : iiopService.getIiopListener()) {
                     if (listener.getId().equals(listenerId)) {
@@ -138,7 +140,7 @@ public class DeleteSsl implements AdminCommand {
                 
                 ConfigSupport.apply(new SingleConfigCode<IiopListener>() {
                     public Object run(IiopListener param) 
-                    throws PropertyVetoException, TransactionFailure {
+                    throws PropertyVetoException {
                         param.setSsl(null);
                         return null;
                     }

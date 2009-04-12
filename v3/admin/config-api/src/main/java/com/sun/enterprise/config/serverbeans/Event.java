@@ -45,11 +45,10 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.List;
 
-import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 
@@ -64,7 +63,7 @@ import org.glassfish.quality.ToDo;
     "description",
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.EventConfig")
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.EventConfig")
 @Configured
 public interface Event extends ConfigBeanProxy, Injectable, PropertyBag {
     
@@ -75,7 +74,7 @@ public interface Event extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute(required = true, key=true)
-    public String getType();
+    String getType();
 
     /**
      * Sets the value of the type property.
@@ -83,7 +82,7 @@ public interface Event extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setType(String value) throws PropertyVetoException;
+    void setType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the recordEvent property.
@@ -92,7 +91,7 @@ public interface Event extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="true")
-    public String getRecordEvent();
+    String getRecordEvent();
 
     /**
      * Sets the value of the recordEvent property.
@@ -100,7 +99,7 @@ public interface Event extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setRecordEvent(String value) throws PropertyVetoException;
+    void setRecordEvent(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the level property.
@@ -109,7 +108,7 @@ public interface Event extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="INFO")
-    public String getLevel();
+    String getLevel();
 
     /**
      * Sets the value of the level property.
@@ -117,7 +116,7 @@ public interface Event extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLevel(String value) throws PropertyVetoException;
+    void setLevel(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the description property.
@@ -126,7 +125,7 @@ public interface Event extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute
-    public String getDescription();
+    String getDescription();
 
     /**
      * Sets the value of the description property.
@@ -134,7 +133,7 @@ public interface Event extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDescription(String value) throws PropertyVetoException;
+    void setDescription(String value) throws PropertyVetoException;
     
     /**
     	Properties as per {@link PropertyBag}

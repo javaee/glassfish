@@ -33,28 +33,31 @@
 
 package org.glassfish.deployment.admin;
 
-import org.glassfish.api.ActionReport;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.Param;
-import org.jvnet.hk2.annotations.Service;
-import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.VirtualServer;
-import com.sun.enterprise.config.serverbeans.ApplicationRef;
-import com.sun.enterprise.config.serverbeans.HttpListener;
-import com.sun.enterprise.config.serverbeans.Configs;
-import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
-import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.util.StringUtils;
-import com.sun.enterprise.util.HostAndPort;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.PerLookup;
-import java.util.List;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
+
+import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
+import com.sun.enterprise.config.serverbeans.Configs;
+import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.VirtualServer;
+import com.sun.enterprise.util.HostAndPort;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.StringUtils;
+import com.sun.grizzly.config.dom.Http;
+import com.sun.grizzly.config.dom.NetworkListener;
+import com.sun.grizzly.config.dom.Protocol;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.Param;
+import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.AdminCommandContext;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
 
 @Service(name="get-host-and-port")
 @Scoped(PerLookup.class)
@@ -157,34 +160,35 @@ public class GetHostAndPortCommand implements AdminCommand {
     private HostAndPort getHostAndPort(HttpService httpService, VirtualServer vs, boolean securityEnabled) {
         List<VirtualServer> virtualServerList =
             httpService.getVirtualServer();
-        List<HttpListener> httpListenerList =
-            httpService.getHttpListener();
+        List<NetworkListener> httpListenerList =
+            httpService.getParent(Config.class).getNetworkConfig().getNetworkListeners().getNetworkListener();
 
         for (VirtualServer virtualServer : virtualServerList) {
             if (!virtualServer.getId().equals(vs.getId())) {
                 continue;
             }
-            String vsHttpListeners = virtualServer.getHttpListeners();
+            String vsHttpListeners = virtualServer.getNetworkListeners();
             List<String> vsHttpListenerList =
                 StringUtils.parseStringList(vsHttpListeners, " ,");
 
             for (String vsHttpListener : vsHttpListenerList) {
-                for (HttpListener httpListener : httpListenerList) {
-                    if (!httpListener.getId().equals(vsHttpListener)) {
+                for (NetworkListener httpListener : httpListenerList) {
+                    if (!httpListener.getName().equals(vsHttpListener)) {
                         continue;
                     }
                     if (!Boolean.valueOf(httpListener.getEnabled())) {
                         continue;
                     }
-                    if (Boolean.valueOf(httpListener.getSecurityEnabled())
+                    final Protocol protocol = httpListener.findProtocol();
+                    if (Boolean.valueOf(protocol.getSecurityEnabled())
                         == securityEnabled) {
-                        String serverName = httpListener.getServerName();
+                        String serverName = protocol.getHttp().getServerName();
                         if (serverName == null ||
                             serverName.trim().equals("")) {
                             serverName = getDefaultHostName();
                         }
                         String portStr = httpListener.getPort();
-                        String redirPort = httpListener.getRedirectPort();
+                        String redirPort = protocol.getHttp().getRedirectPort();
                         if (redirPort != null &&
                             !redirPort.trim().equals("")) {
                             portStr = redirPort;
@@ -200,26 +204,28 @@ public class GetHostAndPortCommand implements AdminCommand {
     }
 
     private HostAndPort getHostAndPort(HttpService httpService, boolean securityEnabled) {
-        List<HttpListener> httpListenerList =
-            httpService.getHttpListener();
+        List<NetworkListener> httpListenerList =
+            httpService.getParent(Config.class).getNetworkConfig().getNetworkListeners().getNetworkListener();
 
-        for (HttpListener httpListener : httpListenerList) {
+        for (NetworkListener httpListener : httpListenerList) {
             if (!Boolean.valueOf(httpListener.getEnabled())) {
                 continue;
             }
-            if (httpListener.getDefaultVirtualServer().equals("__asadmin")){
+            final Protocol protocol = httpListener.findProtocol();
+            final Http http = protocol.getHttp();
+            if (http.getDefaultVirtualServer().equals("__asadmin")){
                 continue;
             }
-            if (Boolean.valueOf(httpListener.getSecurityEnabled()) ==
+            if (Boolean.valueOf(protocol.getSecurityEnabled()) ==
                 securityEnabled) {
 
-                String serverName = httpListener.getServerName();
+                String serverName = http.getServerName();
                 if (serverName == null ||
                     serverName.trim().equals("")) {
                     serverName = getDefaultHostName();
                 }
                 String portStr = httpListener.getPort();
-                String redirPort = httpListener.getRedirectPort();
+                String redirPort = http.getRedirectPort();
                 if (redirPort != null &&
                     !redirPort.trim().equals("")) {
                     portStr = redirPort;

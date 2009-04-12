@@ -38,38 +38,24 @@
 
 package com.sun.enterprise.config.serverbeans;
 
-import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.component.Injectable;
-
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.List;
 
-
-import org.glassfish.api.amx.AMXConfigInfo;
-
-import org.glassfish.config.support.datatypes.PositiveInteger;
-import org.glassfish.config.support.datatypes.NonNegativeInteger;
-
-import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
+import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.amx.AMXConfigInfo;
+import org.glassfish.config.support.datatypes.PositiveInteger;
+import org.jvnet.hk2.component.Injectable;
+import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.Element;
 
-import org.glassfish.quality.ToDo;
-
-
-
-/* @XmlType(name = "", propOrder = {
-    "httpAccessLog",
-    "property"
-}) */
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.VirtualServerConfig")
 @Configured
-public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag  {
+public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the id property.
@@ -78,7 +64,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
      *         {@link String }
      */
     @Attribute(required = true, key=true)
-    public String getId();
+    String getId();
 
     /**
      * Sets the value of the id property.
@@ -86,7 +72,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
      * @param value allowed object is
      *              {@link String }
      */
-    public void setId(String value) throws PropertyVetoException;
+    void setId(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the httpListeners property.
@@ -95,7 +81,8 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
      *         {@link String }
      */
     @Attribute
-    public String getHttpListeners();
+    @Deprecated
+    String getHttpListeners();
 
     /**
      * Sets the value of the httpListeners property.
@@ -103,7 +90,25 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHttpListeners(String value) throws PropertyVetoException;
+    @Deprecated
+    void setHttpListeners(String value) throws PropertyVetoException;
+
+    /**
+     * Gets the value of the httpListeners property.
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute
+    String getNetworkListeners();
+
+    /**
+     * Sets the value of the httpListeners property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    void setNetworkListeners(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the defaultWebModule property.
@@ -112,7 +117,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
      *         {@link String }
      */
     @Attribute
-    public String getDefaultWebModule();
+    String getDefaultWebModule();
 
     /**
      * Sets the value of the defaultWebModule property.
@@ -120,7 +125,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDefaultWebModule(String value) throws PropertyVetoException;
+    void setDefaultWebModule(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the hosts property.
@@ -129,7 +134,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
      *         {@link String }
      */
     @Attribute(required = true, defaultValue="${com.sun.aas.hostName}")
-    public String getHosts();
+    String getHosts();
 
     /**
      * Sets the value of the hosts property.
@@ -137,7 +142,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHosts(String value) throws PropertyVetoException;
+    void setHosts(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the state property.
@@ -146,7 +151,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
      *         {@link String }
      */
     @Attribute(defaultValue="on")
-    public String getState();
+    String getState();
 
     /**
      * Sets the value of the state property.
@@ -154,7 +159,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
      * @param value allowed object is
      *              {@link String }
      */
-    public void setState(String value) throws PropertyVetoException;
+    void setState(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the docroot property.
@@ -163,7 +168,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
      *         {@link String }
      */
     @Attribute(defaultValue="${com.sun.aas.instanceRoot}/docroot")
-    public String getDocroot();
+    String getDocroot();
 
     /**
      * Sets the value of the docroot property.
@@ -171,7 +176,59 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDocroot(String value) throws PropertyVetoException;
+    void setDocroot(String value) throws PropertyVetoException;
+
+    /**
+     * Gets the value of the accesslog property.
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute(defaultValue="${com.sun.aas.instanceRoot}/logs/access")
+    String getAccessLog();
+
+    /**
+     * Sets the value of the accesslog property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    void setAccessLog(String value) throws PropertyVetoException;
+
+    /**
+     * Gets the value of the sso-enabled property.
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute(defaultValue="false")
+    String getSsoEnabled();
+
+    /**
+     * Sets the value of the sso-enabled property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    void setSsoEnabled(String value) throws PropertyVetoException;
+
+
+    /**
+     * Gets the value of the enabled property.
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute(defaultValue="false")
+    String getAccessLoggingEnabled();
+
+    /**
+     * Sets the value of the access logging enabled property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    void setAccessLoggingEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the logFile property.
@@ -180,7 +237,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
      *         {@link String }
      */
     @Attribute(defaultValue="${com.sun.aas.instanceRoot}/logs/server.log")
-    public String getLogFile();
+    String getLogFile();
 
     /**
      * Sets the value of the logFile property.
@@ -188,7 +245,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLogFile(String value) throws PropertyVetoException;
+    void setLogFile(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the httpAccessLog property.
@@ -197,7 +254,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
      *         {@link HttpAccessLog }
      */
     @Element
-    public HttpAccessLog getHttpAccessLog();
+    HttpAccessLog getHttpAccessLog();
 
     /**
      * Sets the value of the httpAccessLog property.
@@ -205,7 +262,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
      * @param value allowed object is
      *              {@link HttpAccessLog }
      */
-    public void setHttpAccessLog(HttpAccessLog value) throws PropertyVetoException;
+    void setHttpAccessLog(HttpAccessLog value) throws PropertyVetoException;
     
     
    /**

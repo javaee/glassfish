@@ -36,19 +36,27 @@
  */
 package com.sun.enterprise.configapi.tests;
 
-import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.KeepAlive;
 import com.sun.enterprise.config.serverbeans.Domain;
 import org.glassfish.api.admin.config.Property;
-import org.junit.Test;
 import static org.junit.Assert.assertTrue;
-import org.jvnet.hk2.config.*;
+import org.junit.Test;
+import org.jvnet.hk2.config.Changed;
+import org.jvnet.hk2.config.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.Dom;
+import org.jvnet.hk2.config.NotProcessed;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.TransactionListener;
+import org.jvnet.hk2.config.Transactions;
+import org.jvnet.hk2.config.UnprocessedChangeEvents;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 /**
  * User: Jerome Dochez

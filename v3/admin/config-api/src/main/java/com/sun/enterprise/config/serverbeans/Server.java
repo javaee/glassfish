@@ -38,21 +38,25 @@
 
 package com.sun.enterprise.config.serverbeans;
 
-import org.jvnet.hk2.config.*;
-import org.jvnet.hk2.component.Injectable;
-import org.glassfish.api.admin.config.Named;
-import org.glassfish.api.admin.config.ReferenceContainer;
-
-import java.beans.PropertyVetoException;
-import java.io.Serializable;
-import java.util.List;
-
-import org.glassfish.api.admin.config.PropertyDesc;
-import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
-
+import org.glassfish.api.admin.config.Named;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.admin.config.ReferenceContainer;
+import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.quality.ToDo;
+import org.jvnet.hk2.component.Injectable;
+import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.DuckTyped;
+import org.jvnet.hk2.config.Element;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
+
+import java.beans.PropertyVetoException;
+import java.util.List;
 
 /**
  *
@@ -64,7 +68,7 @@ import org.glassfish.quality.ToDo;
     "systemProperty",
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.StandaloneServerConfig")
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.StandaloneServerConfig")
 @Configured
 public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer {
 
@@ -77,7 +81,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     @Attribute(required=true)
     String getName();
 
-    public void setName(String value) throws PropertyVetoException;    
+    void setName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the configRef property.
@@ -86,7 +90,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      *         {@link String }
      */
     @Attribute
-    public String getConfigRef();
+    String getConfigRef();
 
     /**
      * Sets the value of the configRef property.
@@ -94,7 +98,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      * @param value allowed object is
      *              {@link String }
      */
-    public void setConfigRef(String value) throws PropertyVetoException;
+    void setConfigRef(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the nodeAgentRef property.
@@ -103,7 +107,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      *         {@link String }
      */
     @Attribute
-    public String getNodeAgentRef();
+    String getNodeAgentRef();
 
     /**
      * Sets the value of the nodeAgentRef property.
@@ -111,7 +115,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      * @param value allowed object is
      *              {@link String }
      */
-    public void setNodeAgentRef(String value) throws PropertyVetoException;
+    void setNodeAgentRef(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the lbWeight property.
@@ -120,7 +124,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      *         {@link String }
      */
     @Attribute (defaultValue="100")
-    public String getLbWeight();
+    String getLbWeight();
 
     /**
      * Sets the value of the lbWeight property.
@@ -128,7 +132,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLbWeight(String value) throws PropertyVetoException;
+    void setLbWeight(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the applicationRef property.
@@ -151,7 +155,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      * {@link ApplicationRef }
      */
     @Element
-    public List<ApplicationRef> getApplicationRef();
+    List<ApplicationRef> getApplicationRef();
 
     /**
      * Gets the value of the resourceRef property.
@@ -174,7 +178,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      * {@link ResourceRef }
      */
     @Element
-    public List<ResourceRef> getResourceRef();
+    List<ResourceRef> getResourceRef();
 
     /**
      * Gets the value of the systemProperty property.
@@ -198,24 +202,24 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      */
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal system properties" )
     @Element
-    public List<SystemProperty> getSystemProperty();
+    List<SystemProperty> getSystemProperty();
 
     @DuckTyped
-    public String getReference();
+    String getReference();
 
     @DuckTyped
-    public ResourceRef getResourceRef(String name);
+    ResourceRef getResourceRef(String name);
 
     @DuckTyped
-    public boolean isResourceRefExists(String refName);
+    boolean isResourceRefExists(String refName);
 
     @DuckTyped
-    public void deleteResourceRef(String name) throws TransactionFailure;
+    void deleteResourceRef(String name) throws TransactionFailure;
 
     @DuckTyped
-    public void createResourceRef(final String enabled, String refName) throws TransactionFailure;
+    void createResourceRef(String enabled, String refName) throws TransactionFailure;
 
-    public class Duck {
+    class Duck {
         public static String getReference(Server server) {
             return server.getConfigRef();
         }
@@ -238,14 +242,14 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
             if (ref!=null) {
                ConfigSupport.apply(new SingleConfigCode<Server>() {
 
-                    public Object run(Server param) throws PropertyVetoException, TransactionFailure {
+                    public Object run(Server param) {
                         return param.getResourceRef().remove(ref);
                         }
                }, server);
             }
         }
 
-        public static void createResourceRef(Server server, final String enabled, final String refName)       throws TransactionFailure {
+        public static void createResourceRef(Server server, final String enabled, final String refName) throws TransactionFailure {
 
             ConfigSupport.apply(new SingleConfigCode<Server>() {
 

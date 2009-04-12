@@ -45,15 +45,12 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeSupport;
-import java.io.Serializable;
 import java.util.List;
 
-import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
-
 import org.glassfish.quality.ToDo;
 
 
@@ -65,9 +62,10 @@ import org.glassfish.quality.ToDo;
     "description",
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.JNDIResourceConfig")
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.JNDIResourceConfig")
 @Configured
-public interface ExternalJndiResource extends ConfigBeanProxy, Injectable, Resource, PropertyBag, BindableResource {
+public interface ExternalJndiResource extends ConfigBeanProxy, Injectable, Resource,
+    PropertyBag, BindableResource {
 
 
     /**
@@ -77,7 +75,7 @@ public interface ExternalJndiResource extends ConfigBeanProxy, Injectable, Resou
      *         {@link String }
      */
     @Attribute(required = true)
-    public String getJndiLookupName();
+    String getJndiLookupName();
 
     /**
      * Sets the value of the jndiLookupName property.
@@ -85,7 +83,7 @@ public interface ExternalJndiResource extends ConfigBeanProxy, Injectable, Resou
      * @param value allowed object is
      *              {@link String }
      */
-    public void setJndiLookupName(String value) throws PropertyVetoException;
+    void setJndiLookupName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the resType property.
@@ -94,7 +92,7 @@ public interface ExternalJndiResource extends ConfigBeanProxy, Injectable, Resou
      *         {@link String }
      */
     @Attribute(required = true)
-    public String getResType();
+    String getResType();
 
     /**
      * Sets the value of the resType property.
@@ -102,7 +100,7 @@ public interface ExternalJndiResource extends ConfigBeanProxy, Injectable, Resou
      * @param value allowed object is
      *              {@link String }
      */
-    public void setResType(String value) throws PropertyVetoException;
+    void setResType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the factoryClass property.
@@ -111,7 +109,7 @@ public interface ExternalJndiResource extends ConfigBeanProxy, Injectable, Resou
      *         {@link String }
      */
     @Attribute(required = true)
-    public String getFactoryClass();
+    String getFactoryClass();
 
     /**
      * Sets the value of the factoryClass property.
@@ -119,7 +117,7 @@ public interface ExternalJndiResource extends ConfigBeanProxy, Injectable, Resou
      * @param value allowed object is
      *              {@link String }
      */
-    public void setFactoryClass(String value) throws PropertyVetoException;
+    void setFactoryClass(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the objectType property.
@@ -128,7 +126,7 @@ public interface ExternalJndiResource extends ConfigBeanProxy, Injectable, Resou
      *         {@link String }
      */
     @Attribute (defaultValue="user")
-    public String getObjectType();
+    String getObjectType();
 
     /**
      * Sets the value of the objectType property.
@@ -136,7 +134,7 @@ public interface ExternalJndiResource extends ConfigBeanProxy, Injectable, Resou
      * @param value allowed object is
      *              {@link String }
      */
-    public void setObjectType(String value) throws PropertyVetoException;
+    void setObjectType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the enabled property.
@@ -145,7 +143,7 @@ public interface ExternalJndiResource extends ConfigBeanProxy, Injectable, Resou
      *         {@link String }
      */
     @Attribute (defaultValue="true")
-    public String getEnabled();
+    String getEnabled();
 
     /**
      * Sets the value of the enabled property.
@@ -153,7 +151,7 @@ public interface ExternalJndiResource extends ConfigBeanProxy, Injectable, Resou
      * @param value allowed object is
      *              {@link String }
      */
-    public void setEnabled(String value) throws PropertyVetoException;
+    void setEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the description property.
@@ -162,7 +160,7 @@ public interface ExternalJndiResource extends ConfigBeanProxy, Injectable, Resou
      *         {@link String }
      */
     @Attribute
-    public String getDescription();
+    String getDescription();
 
     /**
      * Sets the value of the description property.
@@ -170,7 +168,7 @@ public interface ExternalJndiResource extends ConfigBeanProxy, Injectable, Resou
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDescription(String value) throws PropertyVetoException;
+    void setDescription(String value) throws PropertyVetoException;
     
     /**
     	Properties as per {@link PropertyBag}

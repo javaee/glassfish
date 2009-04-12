@@ -45,12 +45,10 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeSupport;
-import java.io.Serializable;
 import java.util.List;
 
-import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 
@@ -65,7 +63,7 @@ import org.glassfish.quality.ToDo;
     "description",
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.EngineConfig")
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.EngineConfig")
 @Configured
 public interface Engine extends ConfigBeanProxy, Injectable, PropertyBag {
 
@@ -76,7 +74,7 @@ public interface Engine extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute(required = true, key=true)
-    public String getSniffer();
+    String getSniffer();
 
     /**
      * Sets the value of the sniffer property.
@@ -84,7 +82,7 @@ public interface Engine extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSniffer(String value) throws PropertyVetoException;
+    void setSniffer(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the description property.
@@ -93,7 +91,7 @@ public interface Engine extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute
-    public String getDescription();
+    String getDescription();
 
     /**
      * Sets the value of the description property.
@@ -101,13 +99,13 @@ public interface Engine extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDescription(String value) throws PropertyVetoException;
+    void setDescription(String value) throws PropertyVetoException;
 
 
     @Element
-    public ApplicationConfig getConfig();
+    ApplicationConfig getConfig();
 
-    public void setConfig(ApplicationConfig config) throws PropertyVetoException;
+    void setConfig(ApplicationConfig config) throws PropertyVetoException;
     
     /**
     	Properties as per {@link PropertyBag}

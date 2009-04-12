@@ -35,35 +35,27 @@
  */
 package com.sun.enterprise.config.serverbeans;
 
+import java.beans.PropertyVetoException;
 import java.util.List;
 
-import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.component.Injectable;
-
-import java.beans.PropertyVetoException;
-
-import org.glassfish.config.support.datatypes.Port;
-import org.glassfish.config.support.datatypes.PositiveInteger;
-import org.glassfish.config.support.datatypes.NonNegativeInteger;
-import org.glassfish.api.amx.AMXConfigInfo;
-
-import org.glassfish.api.admin.config.PropertyDesc;
-import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
+import com.sun.grizzly.config.dom.Ssl;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.amx.AMXConfigInfo;
+import org.glassfish.config.support.datatypes.NonNegativeInteger;
+import org.glassfish.config.support.datatypes.Port;
+import org.glassfish.config.support.datatypes.PositiveInteger;
+import org.jvnet.hk2.component.Injectable;
+import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.Element;
 
-import org.glassfish.quality.ToDo;
-
-
-/* @XmlType(name = "", propOrder = {
-    "ssl",
-    "property"
-}) */
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.HTTPListenerConfig")
 @Configured
+@Deprecated
 public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
@@ -73,7 +65,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute(required = true, key=true)
-    public String getId();
+    String getId();
 
     /**
      * Sets the value of the id property.
@@ -81,7 +73,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setId(String value) throws PropertyVetoException;
+    void setId(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the address property.
@@ -90,7 +82,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute(required = true)
-    public String getAddress();
+    String getAddress();
 
     /**
      * Sets the value of the address property.
@@ -98,7 +90,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAddress(String value) throws PropertyVetoException;
+    void setAddress(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the port property.
@@ -107,7 +99,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute(required = true, dataType=Port.class)
-    public String getPort();
+    String getPort();
 
     /**
      * Sets the value of the port property.
@@ -115,7 +107,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setPort(String value) throws PropertyVetoException;
+    void setPort(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the externalPort property.
@@ -124,7 +116,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute(dataType=Port.class)
-    public String getExternalPort();
+    String getExternalPort();
 
     /**
      * Sets the value of the externalPort property.
@@ -132,7 +124,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setExternalPort(String value) throws PropertyVetoException;
+    void setExternalPort(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the family property.
@@ -141,7 +133,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="inet")
-    public String getFamily();
+    String getFamily();
 
     /**
      * Sets the value of the family property.
@@ -149,7 +141,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setFamily(String value) throws PropertyVetoException;
+    void setFamily(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the blockingEnabled property.
@@ -158,7 +150,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="false", dataType=Boolean.class)
-    public String getBlockingEnabled();
+    String getBlockingEnabled();
 
     /**
      * Sets the value of the blockingEnabled property.
@@ -166,7 +158,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setBlockingEnabled(String value) throws PropertyVetoException;
+    void setBlockingEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the acceptorThreads property.
@@ -175,7 +167,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="1", dataType=PositiveInteger.class)
-    public String getAcceptorThreads();
+    String getAcceptorThreads();
 
     /**
      * Sets the value of the acceptorThreads property.
@@ -183,7 +175,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAcceptorThreads(String value) throws PropertyVetoException;
+    void setAcceptorThreads(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the securityEnabled property.
@@ -192,7 +184,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="false", dataType=Boolean.class)
-    public String getSecurityEnabled();
+    String getSecurityEnabled();
 
     /**
      * Sets the value of the securityEnabled property.
@@ -200,7 +192,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSecurityEnabled(String value) throws PropertyVetoException;
+    void setSecurityEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the defaultVirtualServer property.
@@ -209,7 +201,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute(required = true)
-    public String getDefaultVirtualServer();
+    String getDefaultVirtualServer();
 
     /**
      * Sets the value of the defaultVirtualServer property.
@@ -217,7 +209,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDefaultVirtualServer(String value) throws PropertyVetoException;
+    void setDefaultVirtualServer(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the serverName property.
@@ -226,7 +218,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute(required = true)
-    public String getServerName();
+    String getServerName();
 
     /**
      * Sets the value of the serverName property.
@@ -234,7 +226,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setServerName(String value) throws PropertyVetoException;
+    void setServerName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the redirectPort property.
@@ -243,7 +235,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute(dataType=Port.class)
-    public String getRedirectPort();
+    String getRedirectPort();
 
     /**
      * Sets the value of the redirectPort property.
@@ -251,7 +243,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setRedirectPort(String value) throws PropertyVetoException;
+    void setRedirectPort(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the xpoweredBy property.
@@ -260,7 +252,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="true", dataType=Boolean.class)
-    public String getXpoweredBy();
+    String getXpoweredBy();
 
     /**
      * Sets the value of the xpoweredBy property.
@@ -268,7 +260,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setXpoweredBy(String value) throws PropertyVetoException;
+    void setXpoweredBy(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the enabled property.
@@ -277,7 +269,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="true", dataType=Boolean.class)
-    public String getEnabled();
+    String getEnabled();
 
     /**
      * Sets the value of the enabled property.
@@ -285,7 +277,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setEnabled(String value) throws PropertyVetoException;
+    void setEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the ssl property.
@@ -294,7 +286,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link Ssl }
      */
     @Element
-    public Ssl getSsl();
+    Ssl getSsl();
 
     /**
      * Sets the value of the ssl property.
@@ -302,7 +294,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link Ssl }
      */
-    public void setSsl(Ssl value) throws PropertyVetoException;
+    void setSsl(Ssl value) throws PropertyVetoException;
     
     
 @PropertiesDesc(systemProperties=false,

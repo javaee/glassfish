@@ -1,20 +1,20 @@
 package org.glassfish.config.support;
 
-import org.jvnet.hk2.annotations.Service;
+import java.beans.PropertyVetoException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import com.sun.enterprise.config.serverbeans.Application;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Engine;
+import com.sun.enterprise.config.serverbeans.Module;
+import org.glassfish.api.admin.config.ConfigurationUpgrade;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
-import org.glassfish.api.admin.config.ConfigurationUpgrade;
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.Application;
-import com.sun.enterprise.config.serverbeans.Engine;
-import com.sun.enterprise.config.serverbeans.Module;
-
-import java.beans.PropertyVetoException;
-import java.util.logging.Logger;
-import java.util.logging.Level;
 
 /**
  * Startup service to update existing domain.xml to the latest expected format

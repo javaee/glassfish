@@ -45,10 +45,8 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.List;
 
-import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
@@ -74,7 +72,7 @@ public interface ListenerConfig extends ConfigBeanProxy, Injectable, PropertyBag
      *         {@link String }
      */
     @Attribute(required = true, key=true)
-    public String getListenerClassName();
+    String getListenerClassName();
 
     /**
      * Sets the value of the listenerClassName property.
@@ -82,7 +80,7 @@ public interface ListenerConfig extends ConfigBeanProxy, Injectable, PropertyBag
      * @param value allowed object is
      *              {@link String }
      */
-    public void setListenerClassName(String value) throws PropertyVetoException;
+    void setListenerClassName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the subscribeListenerWith property.
@@ -91,7 +89,7 @@ public interface ListenerConfig extends ConfigBeanProxy, Injectable, PropertyBag
      *         {@link String }
      */
     @Attribute(required = true)
-    public String getSubscribeListenerWith();
+    String getSubscribeListenerWith();
 
     /**
      * Sets the value of the subscribeListenerWith property.
@@ -99,7 +97,7 @@ public interface ListenerConfig extends ConfigBeanProxy, Injectable, PropertyBag
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSubscribeListenerWith(String value) throws PropertyVetoException;
+    void setSubscribeListenerWith(String value) throws PropertyVetoException;
     
     /**
     	Properties as per {@link PropertyBag}

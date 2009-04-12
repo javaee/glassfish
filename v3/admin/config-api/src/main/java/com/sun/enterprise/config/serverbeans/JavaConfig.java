@@ -46,13 +46,12 @@ import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.DuckTyped;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 
@@ -66,7 +65,7 @@ import org.glassfish.quality.ToDo;
     "profiler",
     "jvmOptionsOrProperty"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.JavaConfig", singleton=true)
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.JavaConfig", singleton=true)
 @Configured
 public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
 
@@ -77,7 +76,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="${com.sun.aas.javaRoot}")
-    public String getJavaHome();
+    String getJavaHome();
 
     /**
      * Sets the value of the javaHome property.
@@ -85,7 +84,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setJavaHome(String value) throws PropertyVetoException;
+    void setJavaHome(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the debugEnabled property.
@@ -94,7 +93,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="false")
-    public String getDebugEnabled();
+    String getDebugEnabled();
 
     /**
      * Sets the value of the debugEnabled property.
@@ -102,7 +101,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDebugEnabled(String value) throws PropertyVetoException;
+    void setDebugEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the debugOptions property.
@@ -111,7 +110,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n")
-    public String getDebugOptions();
+    String getDebugOptions();
 
     /**
      * Sets the value of the debugOptions property.
@@ -119,7 +118,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDebugOptions(String value) throws PropertyVetoException;
+    void setDebugOptions(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the rmicOptions property.
@@ -128,7 +127,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="-iiop -poa -alwaysgenerate -keepgenerated -g")
-    public String getRmicOptions();
+    String getRmicOptions();
 
     /**
      * Sets the value of the rmicOptions property.
@@ -136,7 +135,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setRmicOptions(String value) throws PropertyVetoException;
+    void setRmicOptions(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the javacOptions property.
@@ -145,7 +144,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="-g")
-    public String getJavacOptions();
+    String getJavacOptions();
 
     /**
      * Sets the value of the javacOptions property.
@@ -153,7 +152,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setJavacOptions(String value) throws PropertyVetoException;
+    void setJavacOptions(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the classpathPrefix property.
@@ -162,7 +161,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute
-    public String getClasspathPrefix();
+    String getClasspathPrefix();
 
     /**
      * Sets the value of the classpathPrefix property.
@@ -170,7 +169,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setClasspathPrefix(String value) throws PropertyVetoException;
+    void setClasspathPrefix(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the classpathSuffix property.
@@ -179,7 +178,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute
-    public String getClasspathSuffix();
+    String getClasspathSuffix();
 
     /**
      * Sets the value of the classpathSuffix property.
@@ -187,7 +186,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setClasspathSuffix(String value) throws PropertyVetoException;
+    void setClasspathSuffix(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the serverClasspath property.
@@ -196,7 +195,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute
-    public String getServerClasspath();
+    String getServerClasspath();
 
     /**
      * Sets the value of the serverClasspath property.
@@ -204,7 +203,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setServerClasspath(String value) throws PropertyVetoException;
+    void setServerClasspath(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the systemClasspath property.
@@ -213,7 +212,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute
-    public String getSystemClasspath();
+    String getSystemClasspath();
 
     /**
      * Sets the value of the systemClasspath property.
@@ -221,7 +220,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSystemClasspath(String value) throws PropertyVetoException;
+    void setSystemClasspath(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the nativeLibraryPathPrefix property.
@@ -230,7 +229,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute
-    public String getNativeLibraryPathPrefix();
+    String getNativeLibraryPathPrefix();
 
     /**
      * Sets the value of the nativeLibraryPathPrefix property.
@@ -238,7 +237,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setNativeLibraryPathPrefix(String value) throws PropertyVetoException;
+    void setNativeLibraryPathPrefix(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the nativeLibraryPathSuffix property.
@@ -247,7 +246,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute
-    public String getNativeLibraryPathSuffix();
+    String getNativeLibraryPathSuffix();
 
     /**
      * Sets the value of the nativeLibraryPathSuffix property.
@@ -255,7 +254,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setNativeLibraryPathSuffix(String value) throws PropertyVetoException;
+    void setNativeLibraryPathSuffix(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the bytecodePreprocessors property.
@@ -264,7 +263,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute
-    public String getBytecodePreprocessors();
+    String getBytecodePreprocessors();
 
     /**
      * Sets the value of the bytecodePreprocessors property.
@@ -272,7 +271,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setBytecodePreprocessors(String value) throws PropertyVetoException;
+    void setBytecodePreprocessors(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the envClasspathIgnored property.
@@ -281,7 +280,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="true")
-    public String getEnvClasspathIgnored();
+    String getEnvClasspathIgnored();
 
     /**
      * Sets the value of the envClasspathIgnored property.
@@ -289,7 +288,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setEnvClasspathIgnored(String value) throws PropertyVetoException;
+    void setEnvClasspathIgnored(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the profiler property.
@@ -298,7 +297,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link Profiler }
      */
     @Element
-    public Profiler getProfiler();
+    Profiler getProfiler();
 
     /**
      * Sets the value of the profiler property.
@@ -306,12 +305,12 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link Profiler }
      */
-    public void setProfiler(Profiler value) throws PropertyVetoException;
+    void setProfiler(Profiler value) throws PropertyVetoException;
 
     @Element
-    public List<String> getJvmOptions();
+    List<String> getJvmOptions();
     
-    public void setJvmOptions(List<String> options) throws PropertyVetoException;
+    void setJvmOptions(List<String> options) throws PropertyVetoException;
     
     /**
     	Properties as per {@link PropertyBag}
@@ -330,9 +329,9 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return javac options as of a list of java.lang.String
      */
     @DuckTyped
-    public List<String> getJavacOptionsAsList();
+    List<String> getJavacOptionsAsList();
 
-    public class Duck {
+    class Duck {
         public static List<String> getJavacOptionsAsList(JavaConfig me) {
 
             List<String> javacOptions = new ArrayList<String>();
@@ -341,7 +340,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable, PropertyBag {
 
             StringTokenizer st = new StringTokenizer(options, " ");
             while (st.hasMoreTokens()) {
-                String op = (String) st.nextToken();
+                String op = st.nextToken();
                 if ( !(op.startsWith("-d")
                    || op.startsWith("-cp") || op.startsWith("-classpath")) ) {
                     javacOptions.add(op);

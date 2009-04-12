@@ -36,18 +36,13 @@
  */
 package com.sun.enterprise.configapi.tests;
 
+import com.sun.grizzly.config.dom.NetworkListener;
+import com.sun.grizzly.config.dom.NetworkListeners;
+import org.glassfish.tests.utils.Utils;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.glassfish.tests.utils.Utils;
-import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.AccessLog;
-import com.sun.enterprise.config.serverbeans.HttpListener;
-
-import java.util.Map;
-import java.util.HashMap;
+import org.jvnet.hk2.config.TransactionFailure;
 
 /**
  * User: Jerome Dochez
@@ -75,12 +70,12 @@ public class DirectRemovalTest extends ConfigPersistence {
 
     public void doTest() throws TransactionFailure {
 
-        HttpService service = habitat.getComponent(HttpService.class);
+        NetworkListeners listeners = habitat.getComponent(NetworkListeners.class);
 
-        ConfigBean serviceBean = (ConfigBean) ConfigBean.unwrap(service);
+        ConfigBean serviceBean = (ConfigBean) ConfigBean.unwrap(listeners);
 
-        for (HttpListener listener : service.getHttpListener()) {
-            if (listener.getId().endsWith("http-listener-1")) {
+        for (NetworkListener listener : listeners.getNetworkListener()) {
+            if (listener.getName().endsWith("http-listener-1")) {
                 ConfigSupport.deleteChild(serviceBean, (ConfigBean) ConfigBean.unwrap(listener));
                 break;
             }
@@ -89,6 +84,6 @@ public class DirectRemovalTest extends ConfigPersistence {
 
     public boolean assertResult(String s) {
         // we must not find it
-        return s.indexOf("id=\"http-listener-1\"")==-1;
+        return !s.contains("id=\"http-listener-1\"");
     }
 }

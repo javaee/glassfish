@@ -3,14 +3,14 @@
  * 
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
  * 
- * The contents of this file are subject to the terms of either the GNU 
+ * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License. You can obtain
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -36,26 +36,32 @@
 
 package com.sun.enterprise.web;
 
+import java.io.File;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.HttpProtocol;
 import com.sun.enterprise.config.serverbeans.HttpService;
-import org.glassfish.api.admin.config.Property;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.WebModule;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.archivist.WebArchivist;
 import com.sun.enterprise.security.web.SingleSignOn;
 import com.sun.enterprise.util.StringUtils;
-import com.sun.enterprise.web.logger.IASLogger;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 import com.sun.enterprise.web.session.SessionCookieConfig;
 import com.sun.enterprise.web.stats.PWCRequestStatsImpl;
+import org.glassfish.api.admin.config.Property;
 import com.sun.logging.LogDomains;
 import com.sun.web.security.RealmAdapter;
 import org.apache.catalina.Container;
@@ -76,13 +82,7 @@ import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.web.loader.WebappClassLoader;
 import org.glassfish.web.valve.GlassFishValve;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.io.File;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * Standard implementation of a virtual server (aka virtual host) in
@@ -104,13 +104,10 @@ public class VirtualServer extends StandardHost {
     // ------------------------------------------------------------ Constructor
 
     /**
-     * Default constructor that simply gets a handle to the web container 
+     * Default constructor that simply gets a handle to the web container
      * subsystem's logger.
      */
     public VirtualServer() {
-
-        super();
-
         origPipeline = pipeline;
         vsPipeline = new VirtualServerPipeline(this);
         accessLogValve = new PEAccessLogValve();
@@ -122,7 +119,7 @@ public class VirtualServer extends StandardHost {
     // ----------------------------------------------------- Instance Variables
 
     /*
-     * The custom pipeline of this VirtualServer, which implements the 
+     * The custom pipeline of this VirtualServer, which implements the
      * following virtual server features:
      *
      * - state (disabled/off)
@@ -156,7 +153,7 @@ public class VirtualServer extends StandardHost {
     protected static final ResourceBundle rb = _logger.getResourceBundle();
 
     /**
-     * Indicates whether the logger level is set to any one of 
+     * Indicates whether the logger level is set to any one of
      * FINE/FINER/FINEST.
      *
      * This flag is used to avoid incurring a perf penalty by making
@@ -194,10 +191,10 @@ public class VirtualServer extends StandardHost {
      * default context.xml location
      */
     private String defaultContextXmlLocation;
-    
+
 
     /*
-     * default-web.xml location 
+     * default-web.xml location
      */
     private String defaultWebXmlLocation;
 
@@ -208,7 +205,7 @@ public class VirtualServer extends StandardHost {
     // Is this virtual server active?
     private boolean isActive;
 
-    
+
     /**
      * The Stats holder used by this virtual-server.
      */
@@ -227,7 +224,7 @@ public class VirtualServer extends StandardHost {
      * pipeline.
      */
     private PEAccessLogValve accessLogValve;
-    
+
 
     // The value of the ssoCookieSecure property
     private String ssoCookieSecure = null;
@@ -435,7 +432,7 @@ public class VirtualServer extends StandardHost {
                                                   HttpServletRequest hreq) {
         super.configureSingleSignOnCookieSecure(ssoCookie, hreq);
         if (ssoCookieSecure != null &&
-                !(ssoCookieSecure.equals(SessionCookieConfig.DYNAMIC_SECURE))) {
+                !ssoCookieSecure.equals(SessionCookieConfig.DYNAMIC_SECURE)) {
             ssoCookie.setSecure(Boolean.parseBoolean(ssoCookieSecure));
         }
     }
@@ -518,10 +515,10 @@ public class VirtualServer extends StandardHost {
      * The default-web-module for a virtual server is specified via the
      * 'default-web-module' attribute of the 'virtual-server' element in
      * server.xml. This is an optional attribute and if the configuration
-     * does not specify another web module (standalone or part of a 
+     * does not specify another web module (standalone or part of a
      * j2ee-application) that is configured at a context-root="", then
      * a default web module will be created and loaded. The value for this
-     * attribute is either "${standalone-web-module-name}" or 
+     * attribute is either "${standalone-web-module-name}" or
      * "${j2ee-app-name}:${web-module-uri}".
      *
      * @return null if the default-web-module has not been specified or
@@ -530,17 +527,17 @@ public class VirtualServer extends StandardHost {
      *              it specifies a value for the virtual-servers attribute) or
      *              if there was an error loading its deployment descriptors.
      */
-    protected String getDefaultContextPath(Domain domain, 
+    protected String getDefaultContextPath(Domain domain,
             ApplicationRegistry appRegistry) {
-        
+
         String contextRoot = null;
         String wmID = getDefaultWebModuleID();
-        
+
         if (wmID != null) {
             // Check if the default-web-module is part of a
             // j2ee-application
             Applications appsBean = domain.getApplications();
-            WebModuleConfig wmInfo = findWebModuleInJ2eeApp(appsBean, wmID, 
+            WebModuleConfig wmInfo = findWebModuleInJ2eeApp(appsBean, wmID,
                                                             appRegistry);
             if (wmInfo == null) {
                 contextRoot = ConfigBeansUtilities.getContextRoot(wmID);
@@ -556,30 +553,30 @@ public class VirtualServer extends StandardHost {
         }
 
         return contextRoot;
-    }    
-    
-    
-    protected WebModuleConfig getDefaultWebModule(Domain domain, 
+    }
+
+
+    protected WebModuleConfig getDefaultWebModule(Domain domain,
             WebArchivist webArchivist, ApplicationRegistry appRegistry) {
-        
+
         WebModuleConfig wmInfo = null;
-        
-        String wmID = getDefaultWebModuleID();        
+
+        String wmID = getDefaultWebModuleID();
         if (wmID != null) {
             // Check if the default-web-module is part of a
             // j2ee-application
             Applications appsBean = domain.getApplications();
-            wmInfo = findWebModuleInJ2eeApp(appsBean, wmID, appRegistry);        
+            wmInfo = findWebModuleInJ2eeApp(appsBean, wmID, appRegistry);
             if (wmInfo == null) {
                 String contextRoot = ConfigBeansUtilities.getContextRoot(wmID);
                 String location = ConfigBeansUtilities.getLocation(wmID);
-                if ((contextRoot != null) && (location != null)) {
+                if (contextRoot!=null && location != null) {
                     File docroot = new File(location);
                     WebBundleDescriptor wbd = webArchivist.getValidatedDefaultBundleDescriptor();
                     wmInfo = new WebModuleConfig();
                     wbd.setName(Constants.DEFAULT_WEB_MODULE_NAME);
                     wbd.setContextRoot(contextRoot);
-                    wmInfo.setLocation(docroot);            
+                    wmInfo.setLocation(docroot);
                     wmInfo.setDescriptor(wbd);
                     wmInfo.setParentLoader(EmbeddedWebContainer.class.getClassLoader());
                     wmInfo.setAppClassLoader(new WebappClassLoader(wmInfo.getParentLoader()));
@@ -594,9 +591,9 @@ public class VirtualServer extends StandardHost {
         }
 
         return wmInfo;
-    }    
+    }
 
-    
+
     /**
      * If a default web module has not yet been configured and added to this
      * virtual server's list of web modules then return the configuration
@@ -611,14 +608,14 @@ public class VirtualServer extends StandardHost {
     protected WebModuleConfig createSystemDefaultWebModuleIfNecessary(WebArchivist webArchivist) {
 
         WebModuleConfig wmInfo = null;
-        
+
         // Add a default context only if one hasn't already been loaded
         // and then too only if docroot is not null
         //
         String docroot = getAppBase();
-        if (getDefaultWebModuleID() == null && (findChild("") == null)
-                && (docroot != null)) {
-            
+        if (getDefaultWebModuleID() == null && findChild("") == null
+                && docroot != null) {
+
             WebBundleDescriptor wbd = webArchivist.getValidatedDefaultBundleDescriptor();
             wmInfo = new WebModuleConfig();
             wbd.setModuleID(Constants.DEFAULT_WEB_MODULE_NAME);
@@ -634,9 +631,9 @@ public class VirtualServer extends StandardHost {
                 wbd.setApplication(application);
             }
         }
-        
+
         return wmInfo;
-        
+
     }
 
 
@@ -645,7 +642,7 @@ public class VirtualServer extends StandardHost {
      * the web module's configuration such as the information specified
      * in server.xml, the deployment descriptor objects etc.
      *
-     * @return null if an error occured while reading/parsing the 
+     * @return null if an error occured while reading/parsing the
      *              deployment descriptors.
      */
     protected WebModuleConfig loadWebModuleConfig(WebModule wm) {
@@ -701,8 +698,8 @@ public class VirtualServer extends StandardHost {
 
         String vsID = getID();
 
-        boolean active = ((vsID != null) && (vsID.length() > 0));
-        active &= (wm != null);
+        boolean active = vsID != null && vsID.length() > 0;
+        active &= wm != null;
 
         if (active) {
             // Check if the web module is enabled
@@ -725,12 +722,12 @@ public class VirtualServer extends StandardHost {
             // on admin-vs
             //
             if (getID().equals(ADMIN_VS) && matchVSID
-                    && ((vsIDs == null) || (vsIDs.length() == 0 ))) {
+                    && (vsIDs == null || vsIDs.length() == 0)) {
                 return false;
-            } 
+            }
 
 
-            if (matchVSID && (vsIDs != null) && (vsIDs.length() > 0)) {
+            if (matchVSID && vsIDs != null && vsIDs.length() > 0) {
                 List vsList = StringUtils.parseStringList(vsIDs, " ,");
                 if (vsList != null)
                     active &= vsList.contains(vsID.trim());
@@ -744,17 +741,17 @@ public class VirtualServer extends StandardHost {
 
     /**
      * Returns the id of the default web module for this virtual server
-     * as specified in the 'default-web-module' attribute of the 
+     * as specified in the 'default-web-module' attribute of the
      * 'virtual-server' element.
      *
      * This is an optional attribute.
      */
     protected String getDefaultWebModuleID() {
         String wmID = null;
-        
+
         if (vsBean != null) {
             wmID = vsBean.getDefaultWebModule();
-            if ((wmID!=null) && (wmID.equals(""))) {
+            if (wmID!=null && wmID.equals("")) {
                 wmID = null;
             }
             if (wmID != null && _debug) {
@@ -780,9 +777,9 @@ public class VirtualServer extends StandardHost {
      */
     protected WebModuleConfig findWebModuleInJ2eeApp(Applications appsBean,
             String id, ApplicationRegistry appRegistry) {
-        
+
         WebModuleConfig wmInfo = null;
-        
+
         int length = id.length();
         // Check for ':' separator
         int separatorIndex = id.indexOf(Constants.NAME_SEPARATOR);
@@ -794,15 +791,15 @@ public class VirtualServer extends StandardHost {
             String appID = id.substring(0, separatorIndex);
             String moduleID = id.substring(separatorIndex + 1);
 
-            com.sun.enterprise.config.serverbeans.Application appBean = 
+            com.sun.enterprise.config.serverbeans.Application appBean =
                 appsBean.getModule(
                 com.sun.enterprise.config.serverbeans.Application.class, appID);
-                
+
             if ((appBean != null) && Boolean.valueOf(appBean.getEnabled())) {
                 String location = appBean.getLocation();
                 String moduleDir = DeploymentUtils.getRelativeEmbeddedModulePath(
-                                                            location, moduleID); 
-                    
+                                                            location, moduleID);
+
                 ApplicationInfo appInfo = appRegistry.get(appID);
                 Application app = null;
                 if (appInfo != null) {
@@ -830,19 +827,19 @@ public class VirtualServer extends StandardHost {
                     wmInfo.setLocation(docroot);
                     wmInfo.setParentLoader(EmbeddedWebContainer.class.getClassLoader());
                     wmInfo.setAppClassLoader(new WebappClassLoader(wmInfo.getParentLoader()));
-                }                         
+                }
             } else {
                 Object[] params = { id, getID() };
                 _logger.log(Level.SEVERE, "vs.defaultWebModuleDisabled",
                             params);
             }
         }
-         
+
         return wmInfo;
     }
-    
+
     /**
-     * Virtual servers are maintained in the reference contained 
+     * Virtual servers are maintained in the reference contained
      * in Server element. First, we need to find the server
      * and then get the virtual server from the correct reference
      *
@@ -852,17 +849,17 @@ public class VirtualServer extends StandardHost {
      */
     private String getVirtualServers(String appName) {
         String ret = null;
-        Server server = org.glassfish.internal.api.Globals.getDefaultHabitat().getComponent(Server.class);
+        Server server = Globals.getDefaultHabitat().getComponent(Server.class);
         for (ApplicationRef appRef : server.getApplicationRef()) {
             if (appRef.getRef().equals(appName)) {
                 return appRef.getVirtualServers();
             }
         }
-        
+
         return ret;
     }
-    
-    
+
+
     /**
      * Delete all aliases.
      */
@@ -877,7 +874,7 @@ public class VirtualServer extends StandardHost {
         if (isDisabled && pipeline != vsPipeline) {
             // Enable custom pipeline
             setPipeline(vsPipeline);
-        } 
+        }
     }
 
 
@@ -887,7 +884,7 @@ public class VirtualServer extends StandardHost {
         if (isOff && pipeline != vsPipeline) {
             // Enable custom pipeline
             setPipeline(vsPipeline);
-        } 
+        }
     }
 
 
@@ -910,7 +907,7 @@ public class VirtualServer extends StandardHost {
         this.pwcRequestStatsImpl = pwcRequestStatsImpl;
     }
 
-    
+
     /**
      * Get the Stat holder.
      */
@@ -940,7 +937,7 @@ public class VirtualServer extends StandardHost {
 
         String defaultContextXmlLocation = Constants.DEFAULT_CONTEXT_XML;
         String defaultWebXmlLocation = Constants.DEFAULT_WEB_XML;
-    
+
         boolean allowLinking = false;
         String state = null;
 
@@ -980,7 +977,7 @@ public class VirtualServer extends StandardHost {
         } else {
             setIsActive(Boolean.parseBoolean(state));
         }
-        
+
         setAllowLinking(allowLinking);
 
         if (vsLogFile != null && !vsLogFile.equals(logServiceFile)) {
@@ -1015,20 +1012,20 @@ public class VirtualServer extends StandardHost {
             }
 
             if (propName.startsWith("valve_")) {
-                addValve(propValue);            
+                addValve(propValue);
             } else if (propName.startsWith("listener_")) {
-                addListener(propValue);   
+                addListener(propValue);
             } else if (propName.equals("securePagesWithPragma")){
                 setSecurePagesWithPragma(Boolean.valueOf(propValue));
             }
         }
     }
-    
+
 
     /*
      * Configures this virtual server with the specified log file.
      *
-     * @param logFile The value of the virtual server's log-file attribute in 
+     * @param logFile The value of the virtual server's log-file attribute in
      * the domain.xml
      */
     void setLogFile(String logFile, String logLevel) {
@@ -1046,7 +1043,7 @@ public class VirtualServer extends StandardHost {
             logDir = logPrefix.substring(0, index);
             logPrefix = logPrefix.substring(index+1);
         }
-        
+
         index = logPrefix.indexOf('.');
         if (index != -1) {
             logSuffix = logPrefix.substring(index);
@@ -1072,7 +1069,7 @@ public class VirtualServer extends StandardHost {
 
     /**
      * Configure virtual-server alias attribute.
-     */    
+     */
     void configureAliases() {
 
         // Add each host name from the 'hosts' attribute as an alias
@@ -1085,7 +1082,7 @@ public class VirtualServer extends StandardHost {
         }
     }
 
- 
+
     /**
      * Configures this virtual server with its authentication realm.
      *
@@ -1123,7 +1120,7 @@ public class VirtualServer extends StandardHost {
             }
         }
     }
-     
+
 
     /**
      * Gets the value of the authRealm property of this virtual server.
@@ -1145,45 +1142,45 @@ public class VirtualServer extends StandardHost {
     protected void addValve(String valveName) {
         Object valve = loadInstance(valveName);
         if (valve instanceof Valve) {
-            addValve((Valve) valve); 
+            addValve((Valve) valve);
         } else if (valve instanceof GlassFishValve) {
-            addValve((GlassFishValve) valve);       
+            addValve((GlassFishValve) valve);
         } else {
             _logger.log(Level.WARNING,
                         "Object of type classname " + valveName +
                         " not an instance of Valve or GlassFishValve");
-        }     
-    }    
-    
-    
+        }
+    }
+
+
     /**
      * Adds the Catalina listener with the given class name to this
      * VirtualServer.
-     * 
-     * @param listenerName The fully qualified class name of the listener. 
+     *
+     * @param listenerName The fully qualified class name of the listener.
      */
     protected void addListener(String listenerName) {
         Object listener = loadInstance(listenerName);
-        
+
         if ( listener == null ) return;
 
         if (listener instanceof ContainerListener) {
             addContainerListener((ContainerListener)listener);
         } else if (listener instanceof LifecycleListener){
-            addLifecycleListener((LifecycleListener)listener);            
+            addLifecycleListener((LifecycleListener)listener);
         } else {
             _logger.log(Level.SEVERE,"webcontainer.invalidListener"
                     + listenerName);
-        }     
+        }
     }
-    
-   
+
+
     private Object loadInstance(String className){
         try{
             Class clazz = Class.forName(className);
             return clazz.newInstance();
         } catch (Throwable ex){
-            _logger.log(Level.SEVERE,"webcontainer.unableToLoadExtension",ex);        
+            _logger.log(Level.SEVERE,"webcontainer.unableToLoadExtension",ex);
         }
         return null;
     }
@@ -1220,7 +1217,7 @@ public class VirtualServer extends StandardHost {
                 continue;
             }
 
-            /* 
+            /*
              * Validate the prop value
              */
             String path = null;
@@ -1306,7 +1303,7 @@ public class VirtualServer extends StandardHost {
                 continue;
             }
 
-            /* 
+            /*
              * Validate the prop value
              */
             String from = null;
@@ -1438,7 +1435,7 @@ public class VirtualServer extends StandardHost {
             try {
                 SSOFactory ssoFactory = webContainerFeatureFactory.getSSOFactory();
                 SingleSignOn sso = ssoFactory.createSingleSignOnValve(getName());
-                
+
                 // set max idle time if given
                 Property idle = vsBean.getProperty(SSO_MAX_IDLE);
                 if (idle != null && idle.getValue() != null) {
@@ -1489,13 +1486,13 @@ public class VirtualServer extends StandardHost {
             stateValue = vsBean.getState();
         }
 
-        if ( ( !stateValue.equalsIgnoreCase(ON) )
-            && (getName().equalsIgnoreCase(ADMIN_VS) ) ){
-            throw new java.lang.IllegalArgumentException(
-                "virtual-server " 
+        if ( !stateValue.equalsIgnoreCase(ON)
+            && getName().equalsIgnoreCase(ADMIN_VS)){
+            throw new IllegalArgumentException(
+                "virtual-server "
                 + ADMIN_VS + " state property cannot be modified");
         }
-        
+
         if ( stateValue.equalsIgnoreCase(DISABLED) ) {
             // state="disabled"
             setIsDisabled(true);
@@ -1524,8 +1521,8 @@ public class VirtualServer extends StandardHost {
 
         Property allow = vsBean.getProperty("allowRemoteAddress");
         Property deny = vsBean.getProperty("denyRemoteAddress");
-        if ((allow != null && allow.getValue() != null)
-                || (deny != null && deny.getValue() != null))  {
+        if (allow != null && allow.getValue() != null
+                || deny != null && deny.getValue() != null)  {
             remoteAddrValve = new RemoteAddrValve();
         }
 
@@ -1557,11 +1554,11 @@ public class VirtualServer extends StandardHost {
 
     /**
      * Configures the Remote Host Filter valve of this VirtualServer.
-     * 
+     *
      * This valve enforces request acceptance/denial based on the name of the
      * remote host from where the request originated.
      */
-    void configureRemoteHostFilterValve(HttpProtocol httpProtocol) {
+    void configureRemoteHostFilterValve() {
 
         RemoteHostValve remoteHostValve = null;
 
@@ -1571,33 +1568,20 @@ public class VirtualServer extends StandardHost {
 
         Property allow = vsBean.getProperty("allowRemoteHost");
         Property deny = vsBean.getProperty("denyRemoteHost");
-        if ((allow != null && allow.getValue() != null)
-                || (deny != null && deny.getValue() != null))  {
+        if (allow != null && allow.getValue() != null
+                || deny != null && deny.getValue() != null)  {
             remoteHostValve = new RemoteHostValve();
         }
-
         if (allow != null && allow.getValue() != null) {
-            _logger.fine("Allowing access to " + getID()+ " from " +
-                         allow.getValue());
-            if (httpProtocol == null || !Boolean.valueOf(httpProtocol.getDnsLookupEnabled())) {
-                _logger.log(Level.WARNING,
-                            "webcontainer.allowRemoteHost.dnsLookupDisabled",
-                            getID());
-            }
+            _logger.fine("Allowing access to " + getID() + " from " +
+                allow.getValue());
             remoteHostValve.setAllow(allow.getValue());
         }
-
         if (deny != null && deny.getValue() != null) {
-            _logger.fine("Denying access to " + getID()+ " from " +
-                         deny.getValue());
-            if (httpProtocol == null || !Boolean.valueOf(httpProtocol.getDnsLookupEnabled())) {
-                _logger.log(Level.WARNING,
-                            "webcontainer.denyRemoteHost.dnsLookupDisabled",
-                            getID());
-            }
+            _logger.fine("Denying access to " + getID() + " from " +
+                deny.getValue());
             remoteHostValve.setDeny(deny.getValue());
         }
-
         if (remoteHostValve != null) {
             // Remove existing RemoteHostValve (if any), in case of a reconfig
             GlassFishValve[] valves = getValves();
@@ -1618,7 +1602,7 @@ public class VirtualServer extends StandardHost {
      */
     void reconfigureAccessLog(String globalAccessLogBufferSize,
                               String globalAccessLogWriteInterval,
-                              org.jvnet.hk2.component.Habitat habitat,
+                              Habitat habitat,
                               Domain domain,
                               boolean globalAccessLoggingEnabled) {
         try {
@@ -1648,7 +1632,7 @@ public class VirtualServer extends StandardHost {
     void reconfigureAccessLog(
             HttpService httpService,
             WebContainerFeatureFactory webcontainerFeatureFactory) {
-        
+
         try {
             boolean restart = false;
             if (accessLogValve.isStarted()) {
@@ -1735,13 +1719,11 @@ public class VirtualServer extends StandardHost {
     /**
      * Configures the cache control of this VirtualServer
      */
-    void configureCacheControl(String cacheControl){       
+    void configureCacheControl(String cacheControl){
         if (cacheControl != null) {
-            List values = StringUtils.parseStringList(cacheControl,
-                                                      ",");
+            List<String> values = StringUtils.parseStringList(cacheControl, ",");
             if (values != null && !values.isEmpty()) {
-                String[] cacheControls = new String[values.size()];
-                setCacheControls((String[]) values.toArray(cacheControls));
+                setCacheControls(values.toArray(new String[values.size()]));
             }
         }
     }
@@ -1758,12 +1740,12 @@ public class VirtualServer extends StandardHost {
             return false;
         }
 
-        Property ssoProperty = vsBean.getProperty(Constants.SSO_ENABLED);
+        String ssoProperty = vsBean.getSsoEnabled();
 
-        if (ssoProperty == null || ssoProperty.getValue() == null) {
+        if (ssoProperty == null) {
             return globalSSOEnabled;
         } else {
-            return ConfigBeansUtilities.toBoolean(ssoProperty.getValue());
+            return ConfigBeansUtilities.toBoolean(ssoProperty);
         }
     }
 
@@ -1771,7 +1753,7 @@ public class VirtualServer extends StandardHost {
     /**
      * Determines whether access logging is enabled for this virtual server.
      *
-     * @param globalAccessLoggingEnabled The value of the 
+     * @param globalAccessLoggingEnabled The value of the
      * accessLoggingEnabled property of the http-service element
      *
      * @return true if access logging is enabled for this virtual server,
@@ -1811,7 +1793,7 @@ public class VirtualServer extends StandardHost {
      * concurrently.
      *
     protected void startChildren() {
-     
+
         ArrayList<LifecycleStarter> starters
             = new ArrayList<LifecycleStarter>();
 
@@ -1852,16 +1834,16 @@ public class VirtualServer extends StandardHost {
         Property prop = vsBean.getProperty(SSO_COOKIE_SECURE);
         if (prop != null) {
             String propValue = prop.getValue();
-            if ((propValue == null) ||
-                    (!propValue.equalsIgnoreCase("true") &&
-                    !propValue.equalsIgnoreCase("false") &&
-                    !propValue.equalsIgnoreCase(
-                            SessionCookieConfig.DYNAMIC_SECURE))) {
+            if (propValue == null ||
+                !"true".equalsIgnoreCase(propValue) &&
+                !"false".equalsIgnoreCase(propValue) &&
+                !propValue.equalsIgnoreCase(
+                        SessionCookieConfig.DYNAMIC_SECURE)) {
                 _logger.warning("Illegal value for " + SSO_COOKIE_SECURE +
                                 " property: " + propValue);
             } else {
                 ssoCookieSecure = propValue;
-            }        
+            }
         }
     }
 

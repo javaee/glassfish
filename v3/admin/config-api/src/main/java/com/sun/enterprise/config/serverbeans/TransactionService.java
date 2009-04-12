@@ -46,20 +46,13 @@ import org.jvnet.hk2.config.Element;
 import java.util.List;
 
 import java.beans.PropertyVetoException;
-import java.util.List;
 
 import org.glassfish.api.amx.AMXConfigInfo;
 
 import org.glassfish.config.support.datatypes.PositiveInteger;
-import org.glassfish.config.support.datatypes.NonNegativeInteger;
-
 import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
-import org.glassfish.api.admin.config.PropertyBag;
-
-import org.glassfish.quality.ToDo;
-
 
 /**
  *
@@ -70,7 +63,7 @@ import org.glassfish.quality.ToDo;
 }) */
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.TransactionServiceConfig", singleton=true)
 @Configured
-public interface TransactionService extends ConfigBeanProxy, Injectable, PropertyBag  {
+public interface TransactionService extends ConfigBeanProxy, Injectable, org.glassfish.api.admin.config.PropertyBag {
 
     /**
      * Gets the value of the automaticRecovery property.

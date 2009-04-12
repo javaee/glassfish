@@ -40,7 +40,6 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.admin.config.Property;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -58,21 +57,22 @@ import com.sun.enterprise.config.serverbeans.ConnectorModule;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Resource;
+import org.glassfish.api.admin.config.Property;
 
 import java.beans.PropertyVetoException;
 import java.util.Properties;
-import java.util.List;
 
 /**
  * Create Connector Connection Pool Command
- * 
+ *
  */
 @Service(name="create-connector-connection-pool")
 @Scoped(PerLookup.class)
 @I18n("create.connector.connection.pool")
 public class CreateConnectorConnectionPool implements AdminCommand {
-    
-    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateConnectorConnectionPool.class);    
+
+    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateConnectorConnectionPool.class);
 
     @Param(name="raname")
     String raname;
@@ -85,19 +85,19 @@ public class CreateConnectorConnectionPool implements AdminCommand {
 
     @Param(name="maxpoolsize", optional=true)
     String maxpoolsize = "32";
-    
+
     @Param(name="maxwait", optional=true)
     String maxwait = "60000";
 
     @Param(name="poolresize", optional=true)
     String poolresize = "2";
-    
+
     @Param(name="idletimeout", optional=true)
     String idletimeout = "300";
-                
+
     @Param(name="isconnectvalidatereq", optional=true, defaultValue="false")
     Boolean isconnectvalidatereq;
-    
+
     @Param(name="failconnection", optional=true, defaultValue="false")
     Boolean failconnection;
 
@@ -133,22 +133,22 @@ public class CreateConnectorConnectionPool implements AdminCommand {
 
     @Param(name="transactionsupport", acceptableValues="XATransaction,LocalTransaction,NoTransaction", optional=true)
     String transactionsupport;
-    
+
     @Param(name="description", optional=true)
     String description;
-    
+
     @Param(name="property", optional=true)
     Properties properties;
-    
+
     @Param(optional=true)
     String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
-    
+
     @Param(name="poolname", primary=true)
     String poolname;
-  
+
     @Inject
     Resources resources;
-    
+
     @Inject
     Domain domain;
 
@@ -168,7 +168,7 @@ public class CreateConnectorConnectionPool implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
-       
+
         Server targetServer = domain.getServerNamed(target);
 
         if (poolname == null) {
@@ -178,7 +178,7 @@ public class CreateConnectorConnectionPool implements AdminCommand {
             return;
         }
         // ensure we don't already have one of this name
-        for (com.sun.enterprise.config.serverbeans.Resource resource : resources.getResources()) {
+        for (Resource resource : resources.getResources()) {
             if (resource instanceof ConnectorConnectionPool) {
                 if (((ConnectorConnectionPool) resource).getName().equals(poolname)) {
                     report.setMessage(localStrings.getLocalString("create.connector.connection.pool.duplicate",
@@ -199,7 +199,7 @@ public class CreateConnectorConnectionPool implements AdminCommand {
                 public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
 
                     ConnectorConnectionPool newResource = param.createChild(ConnectorConnectionPool.class);
-                    
+
                     newResource.setPoolResizeQuantity(poolresize);
                     newResource.setMaxWaitTimeInMillis(maxwait);
                     newResource.setMaxPoolSize(maxpoolsize);
@@ -227,13 +227,13 @@ public class CreateConnectorConnectionPool implements AdminCommand {
                     newResource.setAssociateWithThread(
                                     associatewiththread.toString());
                     newResource.setTransactionSupport(transactionsupport);
-                    
+
                     if (description != null) {
                         newResource.setDescription(description);
                     }
                     newResource.setName(poolname);
                     if (properties != null) {
-                        for ( java.util.Map.Entry e : properties.entrySet()) {
+                        for ( Map.Entry e : properties.entrySet()) {
                             Property prop = newResource.createChild(Property.class);
                             prop.setName((String)e.getKey());
                             prop.setValue((String)e.getValue());

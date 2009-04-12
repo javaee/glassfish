@@ -38,22 +38,18 @@
 
 package com.sun.enterprise.config.serverbeans;
 
-import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.glassfish.api.amx.AMXConfigInfo;
 import org.jvnet.hk2.component.Injectable;
+import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.Configured;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 
 
-/**
- *
- */
-
-/* @XmlType(name = "") */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.HTTPProtocolConfig", singleton=true)
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.HTTPProtocolConfig", singleton=true)
 @Configured
+@Deprecated
 public interface HttpProtocol extends ConfigBeanProxy, Injectable  {
 
     /**
@@ -63,7 +59,7 @@ public interface HttpProtocol extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute (defaultValue="HTTP/1.1")
-    public String getVersion();
+    String getVersion();
 
     /**
      * Sets the value of the version property.
@@ -71,7 +67,7 @@ public interface HttpProtocol extends ConfigBeanProxy, Injectable  {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setVersion(String value) throws PropertyVetoException;
+    void setVersion(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the dnsLookupEnabled property.
@@ -80,7 +76,7 @@ public interface HttpProtocol extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute  (defaultValue="false")
-    public String getDnsLookupEnabled();
+    String getDnsLookupEnabled();
 
     /**
      * Sets the value of the dnsLookupEnabled property.
@@ -88,7 +84,7 @@ public interface HttpProtocol extends ConfigBeanProxy, Injectable  {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDnsLookupEnabled(String value) throws PropertyVetoException;
+    void setDnsLookupEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the forcedType property.
@@ -97,7 +93,7 @@ public interface HttpProtocol extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute (defaultValue="text/html; charset=iso-8859-1")
-    public String getForcedType();
+    String getForcedType();
 
     /**
      * Sets the value of the forcedType property.
@@ -105,7 +101,7 @@ public interface HttpProtocol extends ConfigBeanProxy, Injectable  {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setForcedType(String value) throws PropertyVetoException;
+    void setForcedType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the defaultType property.
@@ -114,7 +110,7 @@ public interface HttpProtocol extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute (defaultValue="text/html; charset=iso-8859-1")
-    public String getDefaultType();
+    String getDefaultType();
 
     /**
      * Sets the value of the defaultType property.
@@ -122,7 +118,7 @@ public interface HttpProtocol extends ConfigBeanProxy, Injectable  {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDefaultType(String value) throws PropertyVetoException;
+    void setDefaultType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the forcedResponseType property.
@@ -131,7 +127,7 @@ public interface HttpProtocol extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute
-    public String getForcedResponseType();
+    String getForcedResponseType();
 
     /**
      * Sets the value of the forcedResponseType property.
@@ -139,7 +135,7 @@ public interface HttpProtocol extends ConfigBeanProxy, Injectable  {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setForcedResponseType(String value) throws PropertyVetoException;
+    void setForcedResponseType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the defaultResponseType property.
@@ -147,8 +143,8 @@ public interface HttpProtocol extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute  
-    public String getDefaultResponseType();
+    @Attribute
+    String getDefaultResponseType();
 
     /**
      * Sets the value of the defaultResponseType property.
@@ -156,7 +152,7 @@ public interface HttpProtocol extends ConfigBeanProxy, Injectable  {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDefaultResponseType(String value) throws PropertyVetoException;
+    void setDefaultResponseType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the sslEnabled property.
@@ -165,7 +161,7 @@ public interface HttpProtocol extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute (defaultValue="true")
-    public String getSslEnabled();
+    String getSslEnabled();
 
     /**
      * Sets the value of the sslEnabled property.
@@ -173,7 +169,7 @@ public interface HttpProtocol extends ConfigBeanProxy, Injectable  {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSslEnabled(String value) throws PropertyVetoException;
+    void setSslEnabled(String value) throws PropertyVetoException;
 
 
 

@@ -49,7 +49,7 @@ import java.util.List;
 
 
 import org.glassfish.api.admin.config.PropertiesDesc;
-import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 import org.glassfish.quality.ToDo;
@@ -60,7 +60,7 @@ import org.glassfish.quality.ToDo;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.SessionPropertiesConfig", singleton=true)
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.SessionPropertiesConfig", singleton=true)
 @Configured
 public interface SessionProperties extends ConfigBeanProxy, Injectable, PropertyBag {
 
@@ -71,7 +71,7 @@ public interface SessionProperties extends ConfigBeanProxy, Injectable, Property
      *         {@link String }
      */
     @Attribute(defaultValue="600")
-    public String getTimeoutInSeconds();
+    String getTimeoutInSeconds();
 
     /**
      * Sets the value of the timeoutInSeconds property.
@@ -79,7 +79,7 @@ public interface SessionProperties extends ConfigBeanProxy, Injectable, Property
      * @param value allowed object is
      *              {@link String }
      */
-    public void setTimeoutInSeconds(String value) throws PropertyVetoException;
+    void setTimeoutInSeconds(String value) throws PropertyVetoException;
     
     /**
     	Properties as per {@link PropertyBag}

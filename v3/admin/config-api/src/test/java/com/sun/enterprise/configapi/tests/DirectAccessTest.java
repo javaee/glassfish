@@ -36,17 +36,18 @@
 
 package com.sun.enterprise.configapi.tests;
 
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.assertTrue;
-import org.jvnet.hk2.config.*;
-import org.jvnet.hk2.component.Habitat;
-import org.glassfish.tests.utils.Utils;
-import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.JavaConfig;
+import com.sun.grizzly.config.dom.Http;
+import com.sun.grizzly.config.dom.NetworkConfig;
+import com.sun.grizzly.config.dom.NetworkListener;
+import org.glassfish.tests.utils.Utils;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.config.ConfigBean;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.TransactionFailure;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * User: Jerome Dochez
@@ -75,13 +76,16 @@ public class DirectAccessTest extends ConfigPersistence {
         
 
     public void doTest() throws TransactionFailure {
-        HttpService service = habitat.getComponent(HttpService.class);
-        ConfigBean config = (ConfigBean) ConfigBean.unwrap(service.getHttpFileCache());
-        ConfigBean config2 = (ConfigBean) ConfigBean.unwrap(service.getHttpProtocol());
+        NetworkConfig networkConfig = habitat.getComponent(NetworkConfig.class);
+        final NetworkListener listener = networkConfig.getNetworkListeners()
+            .getNetworkListener().get(0);
+        final Http http = listener.findProtocol().getHttp();
+        ConfigBean config = (ConfigBean) ConfigBean.unwrap(http.getFileCache());
+        ConfigBean config2 = (ConfigBean) ConfigBean.unwrap(http);
         Map<ConfigBean, Map<String, String>> changes = new HashMap<ConfigBean, Map<String, String>>();
         Map<String, String> configChanges = new HashMap<String, String>();
-        configChanges.put("max-age-in-seconds", "12543");
-        configChanges.put("medium-file-size-limit-in-bytes", "1200");
+        configChanges.put("max-age", "12543");
+        configChanges.put("max-cache-size", "1200");
         Map<String, String> config2Changes = new HashMap<String, String>();
         config2Changes.put("version", "12351");
         changes.put(config, configChanges);
@@ -97,9 +101,8 @@ public class DirectAccessTest extends ConfigPersistence {
     }
 
     public boolean assertResult(String s) {
-        return ((s.indexOf("max-age-in-seconds=\"12543\"")!=-1)
-            && (s.indexOf("version=\"12351\"")!=-1)
-            && (s.indexOf("-XFooBar=false")!=-1)        
-        );
+        return s.contains("max-age=\"12543\"")
+            && s.contains("version=\"12351\"")
+            && s.contains("-XFooBar=false");
     }
 }

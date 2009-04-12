@@ -1,19 +1,25 @@
 package com.sun.enterprise.configapi.tests;
 
-import org.glassfish.tests.utils.*;
-import org.glassfish.api.ActionReport;
-import org.jvnet.hk2.config.*;
-import org.jvnet.hk2.component.Habitat;
-import org.junit.Test;
-import static org.junit.Assert.*;
-
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyVetoException;
-import java.util.Properties;
 import java.util.List;
 
-import com.sun.enterprise.config.serverbeans.HttpListener;
-import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.grizzly.config.dom.NetworkConfig;
+import com.sun.grizzly.config.dom.NetworkListener;
+import org.glassfish.tests.utils.Utils;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.config.ConfigListener;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.ObservableBean;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.TransactionListener;
+import org.jvnet.hk2.config.Transactions;
+import org.jvnet.hk2.config.UnprocessedChangeEvent;
+import org.jvnet.hk2.config.UnprocessedChangeEvents;
 
 /**
  * @author Jerome Dochez
@@ -38,14 +44,8 @@ public class UnprocessedEventsTest  extends ConfigApiTest
      public void unprocessedEventsTest() throws TransactionFailure {
 
         // let's find our target
-        HttpListener listener = null;
-        HttpService service = habitat.getComponent(HttpService.class);
-        for (HttpListener l : service.getHttpListener()) {
-            if ("http-listener-1".equals(l.getId())) {
-                listener = l;
-                break;
-            }
-        }
+        NetworkConfig service = habitat.getComponent(NetworkConfig.class);
+        NetworkListener listener = service.getNetworkListener("http-listener-1");
         assertNotNull(listener);
 
         // Let's register a listener
@@ -56,8 +56,8 @@ public class UnprocessedEventsTest  extends ConfigApiTest
         try {
             transactions.addTransactionsListener(this);
 
-            ConfigSupport.apply(new SingleConfigCode<HttpListener>() {
-                public Object run(HttpListener param) throws PropertyVetoException, TransactionFailure {
+            ConfigSupport.apply(new SingleConfigCode<NetworkListener>() {
+                public Object run(NetworkListener param) {
                     param.setPort("8908");
                     return null;
                 }

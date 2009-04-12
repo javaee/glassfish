@@ -35,23 +35,27 @@
  */
 package org.glassfish.web.admin.cli;
 
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.I18n;
-import org.glassfish.api.Param;
+import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.enterprise.config.serverbeans.VirtualServer;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.grizzly.config.dom.NetworkConfig;
+import com.sun.grizzly.config.dom.NetworkListener;
+import com.sun.grizzly.config.dom.Protocol;
+import com.sun.grizzly.config.dom.NetworkListeners;
+import com.sun.grizzly.config.dom.Protocols;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
+import org.glassfish.api.I18n;
+import org.glassfish.api.Param;
+import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.AdminCommandContext;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
-import com.sun.enterprise.config.serverbeans.HttpListener;
-import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.VirtualServer;
-import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
@@ -60,104 +64,112 @@ import java.util.regex.Pattern;
 
 /**
  * Delete http listener command
- * 
  */
-@Service(name="delete-http-listener")
+@Service(name = "delete-http-listener")
 @Scoped(PerLookup.class)
 @I18n("delete.http.listener")
 public class DeleteHttpListener implements AdminCommand {
-    
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeleteHttpListener.class);
-
-    @Param(name="listener_id", primary=true)
-    String lid;
-
-    @Param(name="secure", optional=true)
+    @Param(name = "listener_id", primary = true)
+    String listenerId;
+    @Param(name = "secure", optional = true)
     String secure;
-
     @Inject
     HttpService httpService;
+    @Inject
+    NetworkConfig networkConfig;
 
     /**
-     * Executes the command with the command parameters passed as Properties
-     * where the keys are the paramter names and the values the parameter values
+     * Executes the command with the command parameters passed as Properties where the keys are the paramter names and
+     * the values the parameter values
      *
      * @param context information
      */
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
-        
-        if(!exists()) {
-            report.setMessage(localStrings.getLocalString("delete.http.listener.notexists", "{0} doesn't exist", lid));
+        if (!exists()) {
+            report.setMessage(localStrings.getLocalString("delete.http.listener.notexists", "{0} doesn't exist",
+                listenerId));
             report.setActionExitCode(ExitCode.FAILURE);
             return;
         }
         try {
-            HttpListener  ls = httpService.getHttpListenerById(lid);
-            VirtualServer vs = httpService.getVirtualServerByName(ls.getDefaultVirtualServer());
-            ConfigSupport.apply(new Config(lid), httpService);
+            NetworkListener ls = networkConfig.getNetworkListener(listenerId);
+            VirtualServer vs = httpService
+                .getVirtualServerByName(ls.findProtocol().getHttp().getDefaultVirtualServer());
+            ConfigSupport.apply(new Config(), networkConfig.getNetworkListeners());
             ConfigSupport.apply(new SingleConfigCode<VirtualServer>() {
-                public Object run(VirtualServer avs) throws PropertyVetoException, TransactionFailure {
-                    String lss = avs.getHttpListeners();
-                    if (lss != null && lss.contains(lid)) { //change only if needed
+                public Object run(VirtualServer avs) throws PropertyVetoException {
+                    String lss = avs.getNetworkListeners();
+                    if (lss != null && lss.contains(listenerId)) { //change only if needed
                         Pattern p = Pattern.compile(",");
                         String[] names = p.split(lss);
                         List<String> nl = new ArrayList<String>();
-                        for (String name:names) {
-                            if(!lid.equals(name)) {
+                        for (String name : names) {
+                            if (!listenerId.equals(name)) {
                                 nl.add(name);
                             }
                         }
-                        //we removed the lid from lss and is captured in nl by now
+                        //we removed the listenerId from lss and is captured in nl by now
                         lss = nl.toString();
-                        lss = lss.substring(1, lss.length()-1);
-                        avs.setHttpListeners(lss);
+                        lss = lss.substring(1, lss.length() - 1);
+                        avs.setNetworkListeners(lss);
                     }
-                    return ( avs );
+                    return avs;
                 }
             }, vs);
             //remove the id from associated virtual-server's
-            
             report.setActionExitCode(ExitCode.SUCCESS);
 
-        } catch(TransactionFailure e) {
-            report.setMessage(localStrings.getLocalString("delete.http.listener.fail", "failed", lid));
+        } catch (TransactionFailure e) {
+            report.setMessage(localStrings.getLocalString("delete.http.listener.fail", "failed",
+                listenerId));
             report.setActionExitCode(ExitCode.FAILURE);
             report.setFailureCause(e);
         }
     }
 
     private boolean exists() {
-
-        if(lid == null)
-            return false;
-        
-        List<HttpListener> list = httpService.getHttpListener();
-        
-        for(HttpListener hl : list) {
-            String currId = hl.getId();
-         
-            if(currId != null && currId.equals(lid))
-                return true;
-        }
-        return false;
+        return networkConfig.getNetworkListener(listenerId) != null;
     }
 
-    private static class Config implements SingleConfigCode<HttpService> {
-        private Config(String lid) {
-            this.lid = lid;
+    private void cleanUp(NetworkListener listener) throws TransactionFailure {
+        final Protocol protocol = listener.findProtocol();
+        boolean found = false;
+        for (NetworkListener candidate : listener.getParent(NetworkListeners.class).getNetworkListener()) {
+            found |= !listener.getName().equals(candidate.getName()) && candidate.getProtocol()
+                .equals(protocol.getName());
         }
-        public Object run(HttpService param) throws PropertyVetoException, TransactionFailure {
-            List<HttpListener> list = param.getHttpListener();
-            for(HttpListener listener : list) {
-                String currId = listener.getId();
-                if (currId != null && currId.equals(lid)) {
+        if (!found) {
+            ConfigSupport.apply(new SingleConfigCode<Protocols>() {
+                @Override
+                public Object run(Protocols param) throws PropertyVetoException, TransactionFailure {
+                    List<Protocol> list = new ArrayList<Protocol>(param.getProtocol());
+                    for (Protocol old : list) {
+                        if (protocol.getName().equals(old.getName())) {
+                            list.remove(old);
+                            break;
+                        }
+                    }
+                    param.getProtocol().clear();
+                    param.getProtocol().addAll(list);
+                    return null;
+                }
+            }, protocol.getParent(Protocols.class));
+        }
+    }
+
+    private class Config implements SingleConfigCode<NetworkListeners> {
+        public Object run(NetworkListeners param) throws PropertyVetoException, TransactionFailure {
+            final List<NetworkListener> list = param/*.getNetworkListeners()*/.getNetworkListener();
+            for (NetworkListener listener : list) {
+                if (listener.getName().equals(listenerId)) {
                     list.remove(listener);
+                    cleanUp(listener);
                     break;
                 }
             }
             return list;
         }
-        private String lid;
     }
 }

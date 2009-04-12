@@ -33,65 +33,73 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.appserv.management.config;
-
-import com.sun.appserv.management.base.Container;
-import com.sun.appserv.management.base.XTypes;
 
 import java.util.Map;
 
+import com.sun.appserv.management.base.AMX;
+import com.sun.appserv.management.base.Container;
+import com.sun.appserv.management.base.XTypes;
 
 /**
-	 Configuration for the &lt;virtual-server&gt; element.
-*/
-@AMXCreateInfo(paramNames={"id", "hosts", "optional"})
+ * Configuration for the &lt;virtual-server&gt; element.
+ */
+@AMXCreateInfo(paramNames = {"id", "hosts", "optional"})
 public interface VirtualServerConfig
-	extends NamedConfigElement, PropertiesAccess, Container, DefaultValues
-{
-/** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
-	public static final String	J2EE_TYPE			= XTypes.VIRTUAL_SERVER_CONFIG;
+    extends NamedConfigElement, PropertiesAccess, Container, DefaultValues {
+    /**
+     * The j2eeType as returned by {@link AMX#getJ2EEType}.
+     */
+    String J2EE_TYPE = XTypes.VIRTUAL_SERVER_CONFIG;
 
+    String getSsoEnabled();
 
-	public String	getDefaultWebModule();
-	public void	setDefaultWebModule( String value );
+    void setSsoEnabled(String value);
 
-	public String	getHosts();
-	public void	setHosts( String value );
+    String getDefaultWebModule();
 
-	public String	getHTTPListeners();
-	public void	setHTTPListeners( String value );
+    void setDefaultWebModule(String value);
+
+    String getHosts();
+
+    void setHosts(String value);
+
+    String getHTTPListeners();
+
+    void setHTTPListeners(String value);
 
     //** default: "${com.sun.aas.instanceRoot}/logs/server.log" */
-	public String	getLogFile();
-	public void	setLogFile( String value );
+    String getLogFile();
 
-	public String	getState();
-	public void	setState( String value );
-	
-	public String	getDocRoot();
-	public void	setDocRoot( String value );
+    void setLogFile(String value);
 
-	/**
-		Removes http-access-log element.
-	 */
-	void removeHTTPAccessLogConfig();
+    String getState();
 
-	/**
-		Get the HTTPAccessLogConfig MBean.
-	 */
-	public HTTPAccessLogConfig	getHTTPAccessLogConfig();
+    void setState(String value);
 
-	/**
-		Creates new http-access-log element.
-	 
-		@param	ipOnly
-		@param	logDirectory
-		@param	reserved
-		@return A proxy to the HTTPAccessLogConfig MBean.
-	 */
-	public HTTPAccessLogConfig createHTTPAccessLogConfig(
-        @ResolveTo(Boolean .class) final String	ipOnly,
-		final String	logDirectory,
-		final Map<String,String>		reserved );
+    String getDocRoot();
+
+    void setDocRoot(String value);
+
+    /**
+     * Removes http-access-log element.
+     */
+    void removeHTTPAccessLogConfig();
+
+    /**
+     * Get the HTTPAccessLogConfig MBean.
+     */
+    HTTPAccessLogConfig getHTTPAccessLogConfig();
+
+    /**
+     * Creates new http-access-log element.
+     *
+     * @return A proxy to the HTTPAccessLogConfig MBean.
+     *
+     * @param    ipOnly
+     * @param    logDirectory
+     * @param    reserved
+     */
+    HTTPAccessLogConfig createHTTPAccessLogConfig(@ResolveTo(Boolean.class) String ipOnly,
+        String logDirectory, Map<String, String> reserved );
 }

@@ -90,7 +90,7 @@ public interface SystemPropertyBag {
     @DuckTyped
     String getPropertyValue(String name, String defaultValue);
 
-    public class Duck {
+    class Duck {
         public static SystemProperty getSystemProperty(final SystemPropertyBag me, final String name) {
             for (final SystemProperty prop : me.getSystemProperty()) {
                 if (prop.getName().equals(name)) {

@@ -50,23 +50,23 @@
  */
 package com.sun.enterprise.web.connector.grizzly;
 
-import com.sun.grizzly.http.Management;
-import com.sun.grizzly.http.SelectorThread;
-import com.sun.grizzly.ssl.SSLSelectorThread;
 import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.management.ObjectName;
 
-import org.apache.tomcat.util.modeler.Registry;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import com.sun.grizzly.http.Management;
+import com.sun.grizzly.http.SelectorThread;
+import com.sun.grizzly.ssl.SSLSelectorThread;
+import com.sun.grizzly.tcp.http11.Constants;
 import com.sun.grizzly.util.net.SSLImplementation;
 import com.sun.grizzly.util.net.ServerSocketFactory;
-import com.sun.grizzly.tcp.http11.Constants;
+import org.apache.tomcat.util.modeler.Registry;
 
 /**
  * Abstract the protocol implementation, including threading, etc.
@@ -477,19 +477,20 @@ public class GrizzlyConnectorLauncher extends CoyoteConnectorLauncher {
      * @param threadCount Number of keep-alive threads
      */    
     public void setKeepAliveThreadCount(int threadCount) {
+        selectorThread.setMaxKeepAliveRequests(threadCount);
     }
 
 
     /**
      * The minimun threads created at startup.
-     */ 
+     */
     /*
      * API was changed. Method doesn't exist in SelectorThread
      */
     public void setMinThreads(int minThreads){
 //        selectorThread.setMinThreads(minThreads);
     }
-    
+
 
     /**
      * Set the request input buffer size
@@ -499,105 +500,105 @@ public class GrizzlyConnectorLauncher extends CoyoteConnectorLauncher {
         super.setBufferSize(requestBufferSize);
         selectorThread.setBufferSize(requestBufferSize);
     }
-    
-    
+
+
     /**
      * Set the <code>Selector</code> times out value.
-     */ 
+     */
     public void setSelectorTimeout(int selectorTimeout){
         SelectorThread.setSelectorTimeout(selectorTimeout);
     }
-    
-    
+
+
     /**
      * Return the <code>Selector</code> times out value.
      */
     public int getSelectorTimeout(){
         return SelectorThread.getSelectorTimeout();
     }
-    
-    
+
+
     /**
      * Set the <code>reader-thread</code> from domain.xml.
      */
     public void setMaxReadWorkerThreads(int maxReadWorkerThreads){
 //        selectorThread.setMaxReadWorkerThreads(maxReadWorkerThreads);
     }
-    
-    
+
+
     /**
      * Return the <code>read-thread</code> used by this <code>Selector</code>
-     */   
+     */
     public int getMaxReadWorkerThreads(){
 //        return selectorThread.getMaxReadWorkerThreads();
         return 0;
-    }  
+    }
 
-    
+
     public void setDisplayConfiguration(boolean displayConfiguration){
         selectorThread.setDisplayConfiguration(displayConfiguration);
     }
-        
-    
+
+
     public boolean getDisplayConfiguration(){
 //        return selectorThread.getDisplay();
         return false;
     }
 
-    
+
     /**
      * Set the <code>recycle-tasks</code> by this <code>Selector</code>
      */
     public void setRecycleTasks(boolean recycleTasks){
 //        selectorThread.setRecycleTasks(recycleTasks);
     }
-    
-    
+
+
     /**
-     * Return the <code>recycle-tasks</code> used by this 
+     * Return the <code>recycle-tasks</code> used by this
      * <code>Selector</code>
-     */     
+     */
     public boolean getRecycleTasks(){
 //        return selectorThread.isRecycleTasks();
         return false;
-    }    
-    
-     
+    }
+
+
     public void setUseByteBufferView(boolean useByteBufferView){
         selectorThread.setUseByteBufferView(useByteBufferView);
     }
-    
-            
+
+
     public boolean getUseByteBufferView(){
         return selectorThread.isUseByteBufferView() ;
     }
 
-    
+
     /**
      * Set the <code>processor-thread</code> from domain.xml
-     */   
+     */
     public void setMaxProcessorWorkerThreads(int maxProcessorWorkerThreads){
         selectorThread.setMaxThreads(maxProcessorWorkerThreads);
     }
-    
-    
+
+
     /**
      * Return the <code>processor-thread</code> used by this <code>Selector</code>
-     */   
+     */
     public int getMaxProcessorWorkerThreads(){
         return selectorThread.getMaxThreads();
     }
- 
-   
+
+
     /**
-     * Set the <code>reader-queue-length</code> value 
+     * Set the <code>reader-queue-length</code> value
      * on this <code>Selector</code>
      */
     public void setMinReadQueueLength(int minReadQueueLength){
 //        selectorThread.setMinReadQueueLength(minReadQueueLength);
     }
 
-    
+
     /**
      * Return the <code>reader-queue-length</code> value
      * on this <code>Selector</code>
@@ -606,44 +607,44 @@ public class GrizzlyConnectorLauncher extends CoyoteConnectorLauncher {
 //        return selectorThread.getMinReadQueueLength();
         return 0;
     }
- 
-  
+
+
     /**
-     * Set the <code>processor-queue-length</code> value 
+     * Set the <code>processor-queue-length</code> value
      * on this <code>Selector</code>
      */
     public void setMinProcessorQueueLength(int minProcessorQueueLength){
 //        selectorThread.setMinProcessorQueueLength(minProcessorQueueLength);
     }
- 
-     
+
+
     /**
      * Return the <code>processor-queue-length</code> value
      * on this <code>Selector</code>
-     */   
+     */
     public int getMinProcessorQueueLength(){
 //        return selectorThread.getMinProcessorQueueLength();
         return 0;
     }
-    
-    
+
+
     /**
      * Set the <code>use-nio-non-blocking</code> by this <code>Selector</code>
-     */    
+     */
     public void setUseDirectByteBuffer(boolean useDirectByteBuffer){
         selectorThread.setUseDirectByteBuffer(useDirectByteBuffer);
     }
-    
-    
+
+
     /**
-     * Return the <code>use-nio-non-blocking</code> used by this 
+     * Return the <code>use-nio-non-blocking</code> used by this
      * <code>Selector</code>
-     */     
+     */
     public boolean getUseDirectByteBuffer(){
         return selectorThread.isUseDirectByteBuffer();
     }
-    
-    
+
+
     /**
      * Set the maximum pending connection this <code>Pipeline</code>
      * can handle.
@@ -654,15 +655,15 @@ public class GrizzlyConnectorLauncher extends CoyoteConnectorLauncher {
     public void setQueueSizeInBytes(int maxQueueSizeInBytes){
 //        selectorThread.setMaxQueueSizeInBytes(maxQueueSizeInBytes);
     }
-    
-    
+
+
     /**
      * Set the <code>SocketServer</code> backlog.
      */
     public void setSocketServerBacklog(int ssBackLog){
         selectorThread.setSsBackLog(ssBackLog);
     }
-    
+
     /**
      * Set the number of <code>SelectorThread</code> Grizzly will uses.
      */
@@ -670,7 +671,7 @@ public class GrizzlyConnectorLauncher extends CoyoteConnectorLauncher {
         selectorThread.setSelectorReadThreadsCount(selectorReadThreadsCount);
     }
 
- 
+
     /**
      * Set the default response type used. Specified as a semi-colon
      * delimited string consisting of content-type, encoding,
@@ -687,28 +688,28 @@ public class GrizzlyConnectorLauncher extends CoyoteConnectorLauncher {
     public String getDefaultResponseType(){
          return  selectorThread.getDefaultResponseType();
     }
-    
-    
+
+
     /**
      * Sets the forced request type, which is forced onto requests that
      * do not already specify any MIME type.
      */
     public void setForcedRequestType(String forcedResponseType){
         selectorThread.setForcedRequestType(forcedResponseType);
-    }  
-    
-        
+    }
+
+
     /**
      * Return the default request type used
      */
     public String getForcedRequestType(){
         return  selectorThread.getForcedRequestType();
-    }   
-    
-    
+    }
+
+
     //------------------------------------------------- FileCache config -----/
 
-   
+
     /**
      * The timeout in seconds before remove a <code>FileCacheEntry</code>
      * from the <code>fileCache</code>
@@ -716,8 +717,8 @@ public class GrizzlyConnectorLauncher extends CoyoteConnectorLauncher {
     public void setSecondsMaxAge(int sMaxAges){
         selectorThread.setSecondsMaxAge(sMaxAges);
     }
-    
-    
+
+
     /**
      * Set the maximum entries this cache can contains.
      */
@@ -725,79 +726,79 @@ public class GrizzlyConnectorLauncher extends CoyoteConnectorLauncher {
         selectorThread.setMaxCacheEntries(mEntries);
     }
 
-    
+
     /**
      * Return the maximum entries this cache can contains.
-     */    
+     */
     public int getMaxCacheEntries(){
         return selectorThread.getMaxCacheEntries();
     }
-    
-    
+
+
     /**
      * Set the maximum size a <code>FileCacheEntry</code> can have.
      */
     public void setMinEntrySize(long mSize){
         selectorThread.setMinEntrySize(mSize);
     }
-    
-    
+
+
     /**
      * Get the maximum size a <code>FileCacheEntry</code> can have.
      */
     public long getMinEntrySize(){
         return selectorThread.getMinEntrySize();
     }
-     
-    
+
+
     /**
      * Set the maximum size a <code>FileCacheEntry</code> can have.
      */
     public void setMaxEntrySize(long mEntrySize){
         selectorThread.setMaxEntrySize(mEntrySize);
     }
-    
-    
+
+
     /**
      * Get the maximum size a <code>FileCacheEntry</code> can have.
      */
     public long getMaxEntrySize(){
         return selectorThread.getMaxEntrySize();
     }
-    
-    
+
+
     /**
      * Set the maximum cache size
-     */ 
+     */
     public void setMaxLargeCacheSize(long mCacheSize){
         selectorThread.setMaxLargeCacheSize(mCacheSize);
     }
 
-    
+
     /**
      * Get the maximum cache size
-     */ 
+     */
     public long getMaxLargeCacheSize(){
         return selectorThread.getMaxLargeCacheSize();
     }
-    
-    
+
+
     /**
      * Set the maximum cache size
-     */ 
+     */
     public void setMaxSmallCacheSize(long mCacheSize){
         selectorThread.setMaxSmallCacheSize(mCacheSize);
     }
-    
-    
+
+
     /**
      * Get the maximum cache size
-     */ 
+     */
     public long getMaxSmallCacheSize(){
         return selectorThread.getMaxSmallCacheSize();
-    }    
+    }
 
-    
+
     /**
      * Is the fileCache enabled.
      */
@@ -805,47 +806,47 @@ public class GrizzlyConnectorLauncher extends CoyoteConnectorLauncher {
         return selectorThread.isFileCacheEnabled();
     }
 
-    
+
     /**
      * Is the file caching mechanism enabled.
      */
     public void setFileCacheEnabled(boolean isFileCacheEnabled){
         selectorThread.setFileCacheIsEnabled(isFileCacheEnabled);
     }
-   
-    
+
+
     /**
      * Is the large file cache support enabled.
      */
     public void setLargeFileCacheEnabled(boolean isLargeEnabled){
         selectorThread.setLargeFileCacheEnabled(isLargeEnabled);
     }
-   
-    
+
+
     /**
      * Is the large file cache support enabled.
      */
     public boolean getLargeFileCacheEnabled(){
         return selectorThread.getLargeFileCacheEnabled();
-    }    
-   
-    
+    }
+
+
     /**
      * Set the documenr root folder
      */
     public void setWebAppRootPath(String rootFolder){
         SelectorThread.setWebAppRootPath(rootFolder);
     }
-    
-    
+
+
     /**
      * Return the folder's root where application are deployed.
      */
     public String getWebAppRootPath(){
         return SelectorThread.getWebAppRootPath();
-    }     
-    
-    
+    }
+
+
     /**
      * Set the logger
      */
@@ -853,16 +854,16 @@ public class GrizzlyConnectorLauncher extends CoyoteConnectorLauncher {
         if ( logger != null )
             SelectorThread.setLogger(logger);
     }
-    
-    
+
+
     /**
      * Return the logger used by the Grizzly classes.
      */
     public static Logger getLogger(){
         return SelectorThread.logger();
-    }  
-    
-    
+    }
+
+
     /**
      * Return the instance of SelectorThread used by this class.
      */
@@ -874,24 +875,24 @@ public class GrizzlyConnectorLauncher extends CoyoteConnectorLauncher {
     public void setCometSupport(boolean cometSupport){
         //TODO: Should Comet has its own Container.
     }
-    
-    
+
+
     public void setRcmSupport(boolean rcmSupport){
         selectorThread.enableRcmSupport(rcmSupport);
     }
-    
-    
+
+
     // --------------------------------------------------------- Private method
 
     /** Sanity check and socketFactory setup.
      *  IMHO it is better to stop the show on a broken connector,
      *  then leave Tomcat running and broken.
-     *  @exception TomcatException Unable to resolve classes
+     *  @exception Exception Unable to resolve classes
      */
     @SuppressWarnings("unchecked")
     private void checkSocketFactory() throws Exception {
         if ( !blocking && !secure) return;
-        
+
         SSLSelectorThread secureSel = (SSLSelectorThread)selectorThread;
         if (secure) {
             // The SSL setup code has been moved into
@@ -899,16 +900,15 @@ public class GrizzlyConnectorLauncher extends CoyoteConnectorLauncher {
             // provide a wide enough interface
             sslImplementation =
                 SSLImplementation.getInstance(sslImplementationName);
-            
+
             socketFactory = sslImplementation.getServerSocketFactory();
-            
+
             secureSel.setSSLImplementation(sslImplementation);
             secureSel.setEnabledCipherSuites(toStringArray(getCiphers()));
             secureSel.setEnabledProtocols(toStringArray(getProtocols()));
             String clientAuthStr = (String) getAttribute("clientauth");
             if (clientAuthStr != null){
-                secureSel.setNeedClientAuth(
-                        Boolean.valueOf(clientAuthStr).booleanValue());
+                secureSel.setNeedClientAuth(Boolean.valueOf(clientAuthStr));
             }            
         } else if (socketFactoryName != null) {
             socketFactory = string2SocketFactory(socketFactoryName);

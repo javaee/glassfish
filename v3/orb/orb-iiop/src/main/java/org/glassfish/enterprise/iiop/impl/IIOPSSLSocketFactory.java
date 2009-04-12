@@ -35,44 +35,21 @@
  */
 package org.glassfish.enterprise.iiop.impl;
 
-import java.io.IOException; 
-import java.io.Serializable; 
-import java.net.InetSocketAddress; 
-import java.net.ServerSocket; 
-import java.net.Socket; 
-import java.net.SocketException; 
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.security.SecureRandom;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.SSLServerSocket;
-import javax.net.ssl.SSLServerSocketFactory;
-import javax.net.ssl.X509KeyManager;
 
-import com.sun.corba.ee.impl.orbutil.ORBUtility;
-import com.sun.corba.ee.pept.transport.Acceptor;
 import com.sun.corba.ee.spi.orb.ORB;
-import com.sun.corba.ee.spi.transport.ORBSocketFactory;
-
-import org.glassfish.security.common.CipherInfo;
-
-
-import com.sun.enterprise.config.serverbeans.IiopListener;
-import com.sun.enterprise.config.serverbeans.IiopService;
-import com.sun.enterprise.config.serverbeans.Ssl;
-
-
 import com.sun.logging.LogDomains;
+import org.glassfish.security.common.CipherInfo;
 
 
 /**
@@ -263,7 +240,7 @@ public class IIOPSSLSocketFactory /* implements ORBSocketFactory, Serializable *
     /**
      * Create a server socket on the specified InetSocketAddress  based on the
      * type of the server socket (SSL, SSL_MUTUALAUTH, PERSISTENT_SSL or CLEAR_TEXT).
-     * @param the type of socket to create.
+     * @param type type of socket to create.
      * @param  inetSocketAddress the InetSocketAddress
      * @return the server socket on the specified InetSocketAddress
      * @exception IOException if an I/O error occurs during server socket
@@ -437,8 +414,8 @@ public class IIOPSSLSocketFactory /* implements ORBSocketFactory, Serializable *
 
     /**
      * Create an SSL socket at the specified host and port.
-     * @param the host
-     * @param the port
+     * @param host
+     * @param port
      * @return the socket.
      */
     private Socket createSSLSocket(String host, int port)

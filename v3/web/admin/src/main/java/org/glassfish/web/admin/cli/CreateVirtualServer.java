@@ -37,6 +37,7 @@ package org.glassfish.web.admin.cli;
 
 import java.util.List;
 import java.util.Properties;
+import java.util.Map;
 
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -78,6 +79,9 @@ public class CreateVirtualServer implements AdminCommand {
     @Param(name="httplisteners", optional=true)
     String httpListeners;
 
+    @Param(name="networklisteners", optional=true)
+    String networkListeners;
+
     @Param(name="defaultwebmodule", optional=true)
     String defaultWebModule;
 
@@ -104,6 +108,12 @@ public class CreateVirtualServer implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
+        if (networkListeners != null && httpListeners != null) {
+            report.setMessage(localStrings.getLocalString("create.virtual.server.both.http.network",
+                "Please use only networklisteners", virtualServerId));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
 
         List <Config> configList = configs.getConfig();
         Config config = configList.get(0);
@@ -129,7 +139,7 @@ public class CreateVirtualServer implements AdminCommand {
                     VirtualServer newVirtualServer = param.createChild(VirtualServer.class);
                     newVirtualServer.setId(virtualServerId);
                     newVirtualServer.setHosts(hosts);
-                    newVirtualServer.setHttpListeners(httpListeners);
+                    newVirtualServer.setNetworkListeners(httpListeners);
                     newVirtualServer.setDefaultWebModule(defaultWebModule);
                     newVirtualServer.setState(state);
                     newVirtualServer.setLogFile(logFile);
@@ -139,7 +149,7 @@ public class CreateVirtualServer implements AdminCommand {
                     //    been specified. We need to add those with default 
                     //    values if the properties have not been specified.
                     if (properties != null) {
-                        for (java.util.Map.Entry entry : properties.entrySet()) {
+                        for (Map.Entry entry : properties.entrySet()) {
                             Property property = newVirtualServer.createChild(Property.class);
                             String pn = (String)entry.getKey();
                             property.setName(pn);

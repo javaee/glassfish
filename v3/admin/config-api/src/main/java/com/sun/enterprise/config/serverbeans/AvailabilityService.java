@@ -45,11 +45,10 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.List;
 
-import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 
@@ -65,7 +64,7 @@ import org.glassfish.quality.ToDo;
     "jmsAvailability",
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.AvailabilityServiceConfig", singleton=true)
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.AvailabilityServiceConfig", singleton=true)
 @Configured
 public interface AvailabilityService extends ConfigBeanProxy, Injectable, PropertyBag {
 
@@ -76,7 +75,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
      *         {@link String }
      */
     @Attribute (defaultValue="true")
-    public String getAvailabilityEnabled();
+    String getAvailabilityEnabled();
 
     /**
      * Sets the value of the availabilityEnabled property.
@@ -84,7 +83,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAvailabilityEnabled(String value) throws PropertyVetoException;
+    void setAvailabilityEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the haAgentHosts property.
@@ -93,7 +92,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
      *         {@link String }
      */
     @Attribute
-    public String getHaAgentHosts();
+    String getHaAgentHosts();
 
     /**
      * Sets the value of the haAgentHosts property.
@@ -101,7 +100,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHaAgentHosts(String value) throws PropertyVetoException;
+    void setHaAgentHosts(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the haAgentPort property.
@@ -110,7 +109,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
      *         {@link String }
      */
     @Attribute
-    public String getHaAgentPort();
+    String getHaAgentPort();
 
     /**
      * Sets the value of the haAgentPort property.
@@ -118,7 +117,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHaAgentPort(String value) throws PropertyVetoException;
+    void setHaAgentPort(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the haAgentPassword property.
@@ -127,7 +126,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
      *         {@link String }
      */
     @Attribute
-    public String getHaAgentPassword();
+    String getHaAgentPassword();
 
     /**
      * Sets the value of the haAgentPassword property.
@@ -135,7 +134,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHaAgentPassword(String value) throws PropertyVetoException;
+    void setHaAgentPassword(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the haStoreName property.
@@ -144,7 +143,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
      *         {@link String }
      */
     @Attribute
-    public String getHaStoreName();
+    String getHaStoreName();
 
     /**
      * Sets the value of the haStoreName property.
@@ -152,7 +151,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHaStoreName(String value) throws PropertyVetoException;
+    void setHaStoreName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the autoManageHaStore property.
@@ -161,7 +160,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
      *         {@link String }
      */
     @Attribute (defaultValue="false")
-    public String getAutoManageHaStore();
+    String getAutoManageHaStore();
 
     /**
      * Sets the value of the autoManageHaStore property.
@@ -169,7 +168,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAutoManageHaStore(String value) throws PropertyVetoException;
+    void setAutoManageHaStore(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the storePoolName property.
@@ -178,7 +177,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
      *         {@link String }
      */
     @Attribute
-    public String getStorePoolName();
+    String getStorePoolName();
 
     /**
      * Sets the value of the storePoolName property.
@@ -186,7 +185,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
      * @param value allowed object is
      *              {@link String }
      */
-    public void setStorePoolName(String value) throws PropertyVetoException;
+    void setStorePoolName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the haStoreHealthcheckEnabled property.
@@ -195,7 +194,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
      *         {@link String }
      */
     @Attribute (defaultValue="false")
-    public String getHaStoreHealthcheckEnabled();
+    String getHaStoreHealthcheckEnabled();
 
     /**
      * Sets the value of the haStoreHealthcheckEnabled property.
@@ -203,7 +202,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHaStoreHealthcheckEnabled(String value) throws PropertyVetoException;
+    void setHaStoreHealthcheckEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the haStoreHealthcheckIntervalInSeconds property.
@@ -212,7 +211,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
      *         {@link String }
      */
     @Attribute (defaultValue="5")
-    public String getHaStoreHealthcheckIntervalInSeconds();
+    String getHaStoreHealthcheckIntervalInSeconds();
 
     /**
      * Sets the value of the haStoreHealthcheckIntervalInSeconds property.
@@ -220,7 +219,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHaStoreHealthcheckIntervalInSeconds(String value) throws PropertyVetoException;
+    void setHaStoreHealthcheckIntervalInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the webContainerAvailability property.
@@ -229,7 +228,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
      *         {@link WebContainerAvailability }
      */
     @Element
-    public WebContainerAvailability getWebContainerAvailability();
+    WebContainerAvailability getWebContainerAvailability();
 
     /**
      * Sets the value of the webContainerAvailability property.
@@ -237,7 +236,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
      * @param value allowed object is
      *              {@link WebContainerAvailability }
      */
-    public void setWebContainerAvailability(WebContainerAvailability value) throws PropertyVetoException;
+    void setWebContainerAvailability(WebContainerAvailability value) throws PropertyVetoException;
 
     /**
      * Gets the value of the ejbContainerAvailability property.
@@ -246,7 +245,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
      *         {@link EjbContainerAvailability }
      */
     @Element
-    public EjbContainerAvailability getEjbContainerAvailability();
+    EjbContainerAvailability getEjbContainerAvailability();
 
     /**
      * Sets the value of the ejbContainerAvailability property.
@@ -254,7 +253,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
      * @param value allowed object is
      *              {@link EjbContainerAvailability }
      */
-    public void setEjbContainerAvailability(EjbContainerAvailability value) throws PropertyVetoException;
+    void setEjbContainerAvailability(EjbContainerAvailability value) throws PropertyVetoException;
 
     /**
      * Gets the value of the jmsAvailability property.
@@ -263,7 +262,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
      *         {@link JmsAvailability }
      */
     @Element
-    public JmsAvailability getJmsAvailability();
+    JmsAvailability getJmsAvailability();
 
     /**
      * Sets the value of the jmsAvailability property.
@@ -271,7 +270,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
      * @param value allowed object is
      *              {@link JmsAvailability }
      */
-    public void setJmsAvailability(JmsAvailability value) throws PropertyVetoException;
+    void setJmsAvailability(JmsAvailability value) throws PropertyVetoException;
     
     /**
     	Properties as per {@link PropertyBag}

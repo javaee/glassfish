@@ -53,7 +53,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
-import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;

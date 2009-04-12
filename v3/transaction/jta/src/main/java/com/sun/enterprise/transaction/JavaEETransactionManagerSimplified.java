@@ -134,16 +134,16 @@ public class JavaEETransactionManagerSimplified
     private  Timer _timer = new Timer("transaction-manager", true);
 
     static {
-        statusMap.put(javax.transaction.Status.STATUS_ACTIVE, "Active");
-        statusMap.put(javax.transaction.Status.STATUS_MARKED_ROLLBACK, "MarkedRollback");
-        statusMap.put(javax.transaction.Status.STATUS_PREPARED, "Prepared");
-        statusMap.put(javax.transaction.Status.STATUS_COMMITTED, "Committed");
-        statusMap.put(javax.transaction.Status.STATUS_ROLLEDBACK, "RolledBack");
-        statusMap.put(javax.transaction.Status.STATUS_UNKNOWN, "UnKnown");
-        statusMap.put(javax.transaction.Status.STATUS_NO_TRANSACTION, "NoTransaction");
-        statusMap.put(javax.transaction.Status.STATUS_PREPARING, "Preparing");
-        statusMap.put(javax.transaction.Status.STATUS_COMMITTING, "Committing");
-        statusMap.put(javax.transaction.Status.STATUS_ROLLING_BACK, "RollingBack");
+        statusMap.put(Status.STATUS_ACTIVE, "Active");
+        statusMap.put(Status.STATUS_MARKED_ROLLBACK, "MarkedRollback");
+        statusMap.put(Status.STATUS_PREPARED, "Prepared");
+        statusMap.put(Status.STATUS_COMMITTED, "Committed");
+        statusMap.put(Status.STATUS_ROLLEDBACK, "RolledBack");
+        statusMap.put(Status.STATUS_UNKNOWN, "UnKnown");
+        statusMap.put(Status.STATUS_NO_TRANSACTION, "NoTransaction");
+        statusMap.put(Status.STATUS_PREPARING, "Preparing");
+        statusMap.put(Status.STATUS_COMMITTING, "Committing");
+        statusMap.put(Status.STATUS_ROLLING_BACK, "RollingBack");
     }
     public JavaEETransactionManagerSimplified() {
         transactions = new ThreadLocal<JavaEETransaction>();

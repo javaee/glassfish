@@ -93,6 +93,10 @@
             <artifactId>hk2</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.sun.grizzly</groupId>
+            <artifactId>grizzly-config</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.admin</groupId>
             <artifactId>cli-framework</artifactId>
             <version>${project.version}</version>

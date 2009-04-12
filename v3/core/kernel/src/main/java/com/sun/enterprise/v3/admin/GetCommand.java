@@ -35,25 +35,28 @@
  */
 package com.sun.enterprise.v3.admin;
 
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.config.Dom;
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.PerLookup;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.ActionReport;
-import org.glassfish.api.Param;
-
-import java.util.*;
-import java.net.URLEncoder;
-import java.io.UnsupportedEncodingException;
-
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.v3.common.PropsFileActionReporter;
+import org.glassfish.api.admin.config.Property;
+import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
+import org.glassfish.api.Param;
+import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.config.Dom;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * User: Jerome Dochez
@@ -118,7 +121,7 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
         List<Map.Entry> matchingNodesSorted = sortNodesByDottedName(matchingNodes);
         for (Map.Entry<Dom, String> node : matchingNodesSorted) {
             // if we get more of these special cases, we should switch to a Renderer pattern
-            if (node.getKey().model.targetTypeName.equals("org.glassfish.api.admin.config.Property")) {
+            if (Property.class.getName().equals(node.getKey().model.targetTypeName)) {
                  // special display for properties...
                 if (matches(node.getValue(), pattern)) {
                     ActionReport.MessagePart part = report.getTopMessagePart().addChild();

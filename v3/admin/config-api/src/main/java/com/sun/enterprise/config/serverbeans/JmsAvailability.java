@@ -45,11 +45,10 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.List;
 
-import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 
@@ -62,7 +61,7 @@ import org.glassfish.quality.ToDo;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.JMSAvailabilityConfig")
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.JMSAvailabilityConfig")
 @Configured
 public interface JmsAvailability extends ConfigBeanProxy, Injectable, PropertyBag {
 
@@ -73,7 +72,7 @@ public interface JmsAvailability extends ConfigBeanProxy, Injectable, PropertyBa
      *         {@link String }
      */
     @Attribute (defaultValue="true")
-    public String getAvailabilityEnabled();
+    String getAvailabilityEnabled();
 
     /**
      * Sets the value of the availabilityEnabled property.
@@ -81,7 +80,7 @@ public interface JmsAvailability extends ConfigBeanProxy, Injectable, PropertyBa
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAvailabilityEnabled(String value) throws PropertyVetoException;
+    void setAvailabilityEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the mqStorePoolName property.
@@ -90,7 +89,7 @@ public interface JmsAvailability extends ConfigBeanProxy, Injectable, PropertyBa
      *         {@link String }
      */
     @Attribute
-    public String getMqStorePoolName();
+    String getMqStorePoolName();
 
     /**
      * Sets the value of the mqStorePoolName property.
@@ -98,7 +97,7 @@ public interface JmsAvailability extends ConfigBeanProxy, Injectable, PropertyBa
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMqStorePoolName(String value) throws PropertyVetoException;
+    void setMqStorePoolName(String value) throws PropertyVetoException;
     
     /**
     	Properties as per {@link PropertyBag}

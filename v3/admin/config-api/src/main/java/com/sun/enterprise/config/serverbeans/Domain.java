@@ -38,7 +38,13 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import org.glassfish.api.admin.config.PropertyBag;
+import org.glassfish.api.admin.config.Named;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.admin.config.Property;
+import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.amx.AMXConfigInfo;
+import org.glassfish.quality.ToDo;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.ConfigBeanProxy;
@@ -50,26 +56,6 @@ import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.glassfish.api.admin.config.*;
-
-import org.glassfish.quality.ToDo;
-
-/**
- *
- */
-
-/* @XmlType(name = "", propOrder = {
-    "applications",
-    "resources",
-    "configs",
-    "servers",
-    "clusters",
-    "nodeAgents",
-    "lbConfigs",
-    "loadBalancers",
-    "systemProperty",
-    "property"
-}) */
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.DomainConfig", singleton=true, omitAsAncestorInChildObjectName=true)
 @Configured
 public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, SystemPropertyBag  {
@@ -81,7 +67,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
      *         {@link String }
      */
     @Attribute
-    public String getApplicationRoot();
+    String getApplicationRoot();
 
     /**
      * Sets the value of the applicationRoot property.
@@ -89,7 +75,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
      * @param value allowed object is
      *              {@link String }
      */
-    public void setApplicationRoot(String value) throws PropertyVetoException;
+    void setApplicationRoot(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the logRoot property.
@@ -98,7 +84,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
      *         {@link String }
      */
     @Attribute
-    public String getLogRoot();
+    String getLogRoot();
 
     /**
      * Sets the value of the logRoot property.
@@ -106,7 +92,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLogRoot(String value) throws PropertyVetoException;
+    void setLogRoot(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the locale property.
@@ -115,7 +101,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
      *         {@link String }
      */
     @Attribute
-    public String getLocale();
+    String getLocale();
 
     /**
      * Sets the value of the locale property.
@@ -123,7 +109,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLocale(String value) throws PropertyVetoException;
+    void setLocale(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the version property. It is read-only.
@@ -131,7 +117,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
      * @return String representing version of the Domain.
      */
     @Attribute
-    public String getVersion();
+    String getVersion();
 
     /**
      * Gets the value of the applications property.
@@ -140,7 +126,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
      *         {@link Applications }
      */
     @Element
-    public Applications getApplications();
+    Applications getApplications();
 
     /**
      * Sets the value of the system-applications property.
@@ -148,10 +134,10 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
      * @param value allowed object is
      *              {@link Applications }
      */
-    public void setApplications(Applications value) throws PropertyVetoException;
+    void setApplications(Applications value) throws PropertyVetoException;
 
     @Element
-    public SystemApplications getSystemApplications();
+    SystemApplications getSystemApplications();
 
     /**
      * Sets the value of the system-applications property.
@@ -159,7 +145,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
      * @param value allowed object is
      *              {@link Applications }
      */
-    public void setSystemApplications(SystemApplications value) throws PropertyVetoException;
+    void setSystemApplications(SystemApplications value) throws PropertyVetoException;
     /**
      * Gets the value of the resources property.
      *
@@ -167,7 +153,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
      *         {@link Resources }
      */
     @Element
-    public Resources getResources();
+    Resources getResources();
 
     /**
      * Sets the value of the resources property.
@@ -175,7 +161,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
      * @param value allowed object is
      *              {@link Resources }
      */
-    public void setResources(Resources value) throws PropertyVetoException;
+    void setResources(Resources value) throws PropertyVetoException;
 
     /**
      * Gets the value of the configs property.
@@ -184,7 +170,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
      *         {@link Configs }
      */
     @Element(required=true)
-    public Configs getConfigs();
+    Configs getConfigs();
 
     /**
      * Sets the value of the configs property.
@@ -192,7 +178,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
      * @param value allowed object is
      *              {@link Configs }
      */
-    public void setConfigs(Configs value) throws PropertyVetoException;
+    void setConfigs(Configs value) throws PropertyVetoException;
 
     /**
      * Gets the value of the servers property.
@@ -201,7 +187,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
      *         {@link Servers }
      */
     @Element(required=true)
-    public Servers getServers();
+    Servers getServers();
 
     /**
      * Sets the value of the servers property.
@@ -209,7 +195,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
      * @param value allowed object is
      *              {@link Servers }
      */
-    public void setServers(Servers value) throws PropertyVetoException;
+    void setServers(Servers value) throws PropertyVetoException;
 
     /**
      * Gets the value of the clusters property.
@@ -218,7 +204,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
      *         {@link Clusters }
      */
     @Element
-    public Clusters getClusters();
+    Clusters getClusters();
 
     /**
      * Sets the value of the clusters property.
@@ -226,7 +212,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
      * @param value allowed object is
      *              {@link Clusters }
      */
-    public void setClusters(Clusters value) throws PropertyVetoException;
+    void setClusters(Clusters value) throws PropertyVetoException;
 
     /**
      * Gets the value of the nodeAgents property.
@@ -235,7 +221,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
      *         {@link NodeAgents }
      */
     @Element
-    public NodeAgents getNodeAgents();
+    NodeAgents getNodeAgents();
 
     /**
      * Sets the value of the nodeAgents property.
@@ -243,7 +229,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
      * @param value allowed object is
      *              {@link NodeAgents }
      */
-    public void setNodeAgents(NodeAgents value) throws PropertyVetoException;
+    void setNodeAgents(NodeAgents value) throws PropertyVetoException;
 
     /**
      * Gets the value of the lbConfigs property.
@@ -252,7 +238,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
      *         {@link LbConfigs }
      */
     @Element
-    public LbConfigs getLbConfigs();
+    LbConfigs getLbConfigs();
 
     /**
      * Sets the value of the lbConfigs property.
@@ -260,7 +246,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
      * @param value allowed object is
      *              {@link LbConfigs }
      */
-    public void setLbConfigs(LbConfigs value) throws PropertyVetoException;
+    void setLbConfigs(LbConfigs value) throws PropertyVetoException;
 
     /**
      * Gets the value of the loadBalancers property.
@@ -269,7 +255,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
      *         {@link LoadBalancers }
      */
     @Element
-    public LoadBalancers getLoadBalancers();
+    LoadBalancers getLoadBalancers();
 
     /**
      * Sets the value of the loadBalancers property.
@@ -277,7 +263,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
      * @param value allowed object is
      *              {@link LoadBalancers }
      */
-    public void setLoadBalancers(LoadBalancers value) throws PropertyVetoException;
+    void setLoadBalancers(LoadBalancers value) throws PropertyVetoException;
 
     /**
      * Gets the value of the systemProperty property.
@@ -332,7 +318,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
     }
     )
     @Element
-    public List<SystemProperty> getSystemProperty();
+    List<SystemProperty> getSystemProperty();
     
     /**
     	Properties as per {@link PropertyBag}
@@ -370,7 +356,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
     @DuckTyped
     Server getServerNamed(String name);
 
-    public class Duck {
+    class Duck {
         public static List<Application> getAllDefinedSystemApplications(Domain me) {
             List<Application> allSysApps = new ArrayList<Application>();
             SystemApplications sa = me.getSystemApplications();
@@ -380,7 +366,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
                         allSysApps.add((Application)m);
                 }
             }
-            return ( allSysApps );
+            return allSysApps;
         }
 
         public static ApplicationRef getApplicationRefInServer(Domain me, String sn, String name) {
@@ -403,15 +389,15 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
                     }
                 }
             }
-            return ( aref );
+            return aref;
         }
 
         public static List<Application> getSystemApplicationsReferencedFrom(Domain d, String sn) {
             if (d == null || sn == null)
                 throw new IllegalArgumentException("Null argument");
             List<Application> allApps = d.getAllDefinedSystemApplications();
-            if (allApps.size() == 0)
-                return (allApps); //if there are no sys-apps, none can reference one :)
+            if (allApps.isEmpty())
+                return allApps; //if there are no sys-apps, none can reference one :)
             //allApps now contains ALL the system applications
             Server s = getServerNamed(d,sn);
             List<Application> referencedApps = new ArrayList<Application>();
@@ -423,7 +409,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
                     }
                 }
             }
-            return ( referencedApps );
+            return referencedApps;
         }
 
         public static Application getSystemApplicationReferencedFrom(Domain d, String sn, String appName) {
@@ -431,19 +417,19 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
             List<Application> allApps = getSystemApplicationsReferencedFrom(d, sn);
             for (Application app : allApps) {
                 if (app.getName().equals(appName)) {
-                    return ( app );
+                    return app;
                 }
             }
-            return ( null );
+            return null;
         }
 
         public static boolean isNamedSystemApplicationReferencedFrom(Domain d, String appName, String serverName) {
             List <Application> referencedApps = getSystemApplicationsReferencedFrom(d, serverName);
             for (Application app : referencedApps) {
                 if (app.getName().equals(appName))
-                    return ( true );
+                    return true;
             }
-            return ( false );
+            return false;
         }
 
         public static Server getServerNamed(Domain d, String name) {
@@ -452,10 +438,10 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
             List<Server> servers = d.getServers().getServer();
             for (Server s : servers) {
                 if (name.equals(s.getName().trim())) {
-                    return ( s );
+                    return s;
                 }
             }
-            return ( null );
+            return null;
         }
     }
 }

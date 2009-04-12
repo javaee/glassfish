@@ -147,7 +147,9 @@ Administration Commands                             delete-ssl(1)
          The type of service or listener for  which  the  SSL  is
          deleted.  The type must be one of the following types:
 
-             o    http-listener
+             o    network-listener
+
+             o    http-listener (deprecated use network-listener)
 
              o    iiop-listener
 
@@ -170,10 +172,10 @@ EXAMPLES
      Example 1 Using delete-ssl
 
      The following example shows how to  delete  an  SSL  element
-     from an HTTP listener named http-listener-1.
+     from a network listener named http-listener-1.
 
        asadmin> delete-ssl --user admin
-       --host fuyako --port 7070 --passwordfile adminpassword.txt --type http-listener
+       --host fuyako --port 7070 --passwordfile adminpassword.txt --type network-listener
        http-listener-1
        Command delete-ssl executed successfully.
 

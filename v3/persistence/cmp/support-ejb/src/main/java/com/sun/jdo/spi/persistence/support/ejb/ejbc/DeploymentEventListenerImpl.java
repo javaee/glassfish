@@ -80,7 +80,6 @@ package com.sun.jdo.spi.persistence.support.ejb.ejbc;
 //import com.sun.jdo.spi.persistence.support.sqlstore.LogHelperSQLStore;
 //
 //import com.sun.jdo.spi.persistence.utility.logging.Logger;
-import org.glassfish.persistence.common.I18NHelper;
 //import com.sun.jdo.spi.persistence.utility.database.DatabaseConstants;
 ////import com.sun.jdo.spi.persistence.support.sqlstore.ejb.*;
 //

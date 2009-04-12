@@ -38,40 +38,40 @@ package com.sun.enterprise.web.connector.coyote;
 
 import com.sun.appserv.security.provider.ProxyHandler;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
-import com.sun.enterprise.config.serverbeans.ConnectionPool;
-import com.sun.enterprise.config.serverbeans.HttpFileCache;
-import com.sun.enterprise.config.serverbeans.HttpListener;
-import com.sun.enterprise.config.serverbeans.HttpProtocol;
 import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.KeepAlive;
-import org.glassfish.api.admin.config.Property;
-import com.sun.enterprise.config.serverbeans.RequestProcessing;
-import com.sun.enterprise.config.serverbeans.Ssl;
 import com.sun.enterprise.web.WebContainer;
-import com.sun.enterprise.web.pwc.connector.coyote.PwcCoyoteRequest;
 import com.sun.enterprise.web.connector.extension.GrizzlyConfig;
+import com.sun.enterprise.web.pwc.connector.coyote.PwcCoyoteRequest;
+import com.sun.grizzly.config.dom.Http;
+import com.sun.grizzly.config.dom.NetworkListener;
+import org.glassfish.api.admin.config.Property;
+import com.sun.grizzly.config.dom.Ssl;
+import com.sun.grizzly.config.dom.ThreadPool;
+import com.sun.grizzly.config.dom.Transport;
+import com.sun.grizzly.config.dom.FileCache;
+import com.sun.grizzly.util.IntrospectionUtils;
 import com.sun.logging.LogDomains;
+import org.apache.catalina.LifecycleException;
+import org.apache.catalina.Request;
+import org.apache.catalina.Response;
+import org.apache.catalina.connector.Connector;
+import org.apache.catalina.connector.MapperListener;
+import org.glassfish.security.common.CipherInfo;
+import org.glassfish.web.admin.monitor.RequestProbeProvider;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
 import java.io.IOException;
-import java.lang.reflect.Method;
+import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.connector.Connector;
-import org.apache.catalina.connector.Constants;
-import org.apache.catalina.connector.MapperListener;
-import com.sun.grizzly.util.IntrospectionUtils;
-import org.glassfish.security.common.CipherInfo;
-import org.glassfish.web.admin.monitor.RequestProbeProvider;
 
 public class PECoyoteConnector extends Connector {
 
@@ -270,7 +270,7 @@ public class PECoyoteConnector extends Connector {
      */   
     public PECoyoteConnector(WebContainer webContainer) {
         this.webContainer = webContainer;
-        this.requestProbeProvider = webContainer.getRequestProbeProvider();
+        requestProbeProvider = webContainer.getRequestProbeProvider();
         setProtocolHandlerClassName(DUMMY_CONNECTOR_LAUNCHER);
     }
     
@@ -292,7 +292,7 @@ public class PECoyoteConnector extends Connector {
      * otherwise
      */
     public boolean isChunkingDisabled() {
-        return this.chunkingDisabled;
+        return chunkingDisabled;
     }
 
 
@@ -301,11 +301,11 @@ public class PECoyoteConnector extends Connector {
      * specifying the contents of a Request to the responsible ContractProvider.
      */
     @Override
-    public org.apache.catalina.Request createRequest() {
+    public Request createRequest() {
         
         PwcCoyoteRequest request = new PwcCoyoteRequest();
         request.setConnector(this);
-        return (request);
+        return request;
     }
 
 
@@ -315,11 +315,11 @@ public class PECoyoteConnector extends Connector {
      * @return Response object
      */ 
     @Override
-    public org.apache.catalina.Response createResponse() {
+    public Response createResponse() {
 
         PECoyoteResponse response = new PECoyoteResponse(isChunkingDisabled());
         response.setConnector(this);
-        return (response);
+        return response;
 
     }
 
@@ -355,18 +355,6 @@ public class PECoyoteConnector extends Connector {
     public int getKeepAliveThreadCount() {
         return keepAliveThreadCount;
     }
-
-
-    /**
-     * Sets the number of keep-alive threads.
-     *
-     * @param threadCount Number of keep-alive threads
-     */
-    public void setKeepAliveThreadCount(int threadCount) {
-        keepAliveThreadCount = threadCount;
-        setProperty("keepAliveThreadCount", String.valueOf(threadCount));
-    }
-
 
     /**
      * Set the maximum pending connection this <code>Connector</code>
@@ -538,7 +526,7 @@ public class PECoyoteConnector extends Connector {
 
     
     public void setProcessorWorkerThreadsTimeout(int timeout){
-        this.processorWorkerThreadsTimeout = timeout;
+        processorWorkerThreadsTimeout = timeout;
         setProperty("processorWorkerThreadsTimeout", 
                     String.valueOf(timeout));        
     }
@@ -547,15 +535,7 @@ public class PECoyoteConnector extends Connector {
     public int getProcessorWorkerThreadsTimeout(){
         return processorWorkerThreadsTimeout;
     }
-    
-    
-    public void setProcessorWorkerThreadsIncrement(int increment){
-        this.minProcessorWorkerThreadsIncrement = increment;
-        setProperty("processorThreadsIncrement", 
-                    String.valueOf(increment));      
-    }
-    
-    
+
     public int getMinProcessorWorkerThreadsIncrement(){
         return minProcessorWorkerThreadsIncrement;
     }
@@ -590,7 +570,7 @@ public class PECoyoteConnector extends Connector {
      * do not already specify any MIME type.
      */
     public void setForcedRequestType(String forcedResponseType){
-        this.forcedRequestType = forcedResponseType;
+        forcedRequestType = forcedResponseType;
         setProperty("forcedRequestType", forcedResponseType);                     
     }  
     
@@ -740,7 +720,7 @@ public class PECoyoteConnector extends Connector {
      * Is the large file cache support enabled.
      */
     public void setLargeFileCacheEnabled(boolean isLargeEnabled){
-        this.isLargeFileCacheEnabled = isLargeEnabled;
+        isLargeFileCacheEnabled = isLargeEnabled;
         setProperty("largeFileCacheEnabled",
                 String.valueOf(isLargeFileCacheEnabled));                 
     }
@@ -940,19 +920,27 @@ public class PECoyoteConnector extends Connector {
     /*
      * Configures this connector.
      *
-     * @param httpListener The http-listener that corresponds to the given
+     * @param listener The http-listener that corresponds to the given
      * connector
      * @param isSecure true if the connector is security-enabled, false
      * otherwise
      * @param httpServiceProps The http-service properties
      */
-    public void configure(HttpListener httpListener,
-                          boolean isSecure,
-                          HttpService httpService) {
+    public void configure(NetworkListener listener, boolean isSecure,
+        HttpService httpService) {
 
-        configureConnectionPool(httpService.getConnectionPool());
-
-        /* TODO 
+        final Transport transport = listener.findTransport();
+        try {
+            setSocketServerBacklog(
+                Integer.parseInt(transport.getMaxConnectionsCount()));
+        } catch (NumberFormatException ex) {
+            String msg = _rb.getString("pewebcontainer.invalidMaxPendingCount");
+            msg = MessageFormat.format(
+                msg, transport.getMaxConnectionsCount(),
+                Integer.toString(getSocketServerBacklog()));
+            _logger.log(Level.WARNING, msg, ex);
+        }
+        /* TODO
         WebContainerFeatureFactory wcFeatureFactory = _serverContext.getDefaultHabitat().getComponent(WebContainerFeatureFactory.class);
         String sslImplementationName = 
             webFeatureFactory.getSSLImplementationName();
@@ -963,23 +951,21 @@ public class PECoyoteConnector extends Connector {
         
         setDomain(webContainer.getServerContext().getDefaultDomainName());
         
-        configureSSL(httpListener);
-        configureKeepAlive(httpService.getKeepAlive());
-        configureHttpProtocol(httpService.getHttpProtocol());     
-        configureRequestProcessing(httpService.getRequestProcessing());
-        configureFileCache(httpService.getHttpFileCache());
+        configureSSL(listener);
+        configureThreadPool(listener.findThreadPool());
+        configureFileCache(listener.findProtocol().getHttp().getFileCache());
         
-        // default-virtual-server
-        setDefaultHost(httpListener.getDefaultVirtualServer());
+        final Http http = listener.findProtocol().getHttp();
+        setMaxHttpHeaderSize(Integer.parseInt(http.getSendBufferSize()));
+        setDefaultHost(http.getDefaultVirtualServer());
         
-        // xpoweredBy
-        setXpoweredBy(Boolean.valueOf(httpListener.getXpoweredBy()));
+        setXpoweredBy(Boolean.valueOf(http.getXpoweredBy()));
         
         // Application root
         setWebAppRootPath(webContainer.getModulesRoot().getAbsolutePath());
         
         // server-name (may contain scheme and colon-separated port number)
-        String serverName = httpListener.getServerName();
+        String serverName = http.getServerName();
         if (serverName != null && serverName.length() > 0) {
             // Ignore scheme, which was required for webcore issued redirects
             // in 8.x EE
@@ -998,7 +984,7 @@ public class PECoyoteConnector extends Connector {
                     } catch (NumberFormatException nfe) {
                         _logger.log(Level.SEVERE,
                             "pewebcontainer.invalid_proxy_port",
-                            new Object[] { serverPort, httpListener.getId() });
+                            new Object[] { serverPort, listener.getName() });
 		    }
                 }
             } else {
@@ -1006,15 +992,9 @@ public class PECoyoteConnector extends Connector {
             }
         }
 
-        boolean blockingEnabled = Boolean.valueOf(
-                        httpListener.getBlockingEnabled());
-        if (blockingEnabled){
-            setBlocking(blockingEnabled);
-        }
-
         // redirect-port
-        String redirectPort = httpListener.getRedirectPort();
-        if (redirectPort != null && !redirectPort.equals("")) {
+        String redirectPort = http.getRedirectPort();
+        if (redirectPort != null && redirectPort.length() != 0) {
             try {
                 setRedirectPort(Integer.parseInt(redirectPort));
             } catch (NumberFormatException nfe) {
@@ -1022,7 +1002,7 @@ public class PECoyoteConnector extends Connector {
                     "pewebcontainer.invalid_redirect_port",
                     new Object[] {
                         redirectPort,
-                        httpListener.getId(),
+                        listener.getName(),
                         Integer.toString(getRedirectPort()) });
             }  
         } else {
@@ -1030,7 +1010,7 @@ public class PECoyoteConnector extends Connector {
         }
 
         // acceptor-threads
-        String acceptorThreads = httpListener.getAcceptorThreads();
+        String acceptorThreads = transport.getAcceptorThreads();
         if (acceptorThreads != null) {
             try {
                 setSelectorReadThreadsCount(Integer.parseInt(
@@ -1040,7 +1020,7 @@ public class PECoyoteConnector extends Connector {
                     "pewebcontainer.invalid_acceptor_threads",
                     new Object[] {
                         acceptorThreads,
-                        httpListener.getId(),
+                        listener.getName(),
                         Integer.toString(getMaxProcessors()) });
             }  
         }
@@ -1053,7 +1033,7 @@ public class PECoyoteConnector extends Connector {
         webContainer.configureHttpServiceProperties(httpService, this);      
 
         // Override http-service property if defined.
-        configureHttpListenerProperties(httpListener);
+        configureHttpListenerProperties(listener);
     }
 
 
@@ -1108,172 +1088,32 @@ public class PECoyoteConnector extends Connector {
 
         Enumeration enumeration = properties.keys();
         while (enumeration.hasMoreElements()) {
-            String name = (String) enumeration.nextElement();
-            String value = properties.getProperty(name);
+            String propName = (String) enumeration.nextElement();
+            String value = properties.getProperty(propName);
             if (value != null) {
-                IntrospectionUtils.setProperty(this, name, value);
+                IntrospectionUtils.setProperty(this, propName, value);
             }
         }
     }
-
-
-    /*
-     * Configures this connector with connection-pool related info.
-     */
-    public void configureConnectionPool(ConnectionPool cp) {
-
-        if (cp == null) {
-            return;
-        }
-            
-        try{
-            int queueSizeInBytes = Integer.parseInt(cp.getQueueSizeInBytes());
-            if (queueSizeInBytes <= -1){
-                _logger.log(
-                    Level.WARNING,
-                    "pewebcontainer.invalidQueueSizeInBytes",
-                    new Object[] 
-                        { cp.getQueueSizeInBytes(),
-                          Integer.toString(getQueueSizeInBytes())});
-            } else {
-                setQueueSizeInBytes(queueSizeInBytes);
-            }
-        } catch (NumberFormatException ex){
-            String msg = _rb.getString("pewebcontainer.invalidQueueSizeInBytes");
-            msg = MessageFormat.format(
-                msg, ConfigBeansUtilities.getDefaultQueueSizeInBytes(),
-                Integer.toString(getQueueSizeInBytes()));
-            _logger.log(Level.WARNING, msg, ex);
-        }
-        
-        
-        try{
-            int ssBackLog = Integer.parseInt(cp.getMaxPendingCount());
-            if (ssBackLog <= 0){
-                _logger.log(
-                    Level.WARNING,
-                    "pewebcontainer.invalidMaxPendingCount",
-                    new Object[] 
-                        { cp.getMaxPendingCount(),
-                          Integer.toString(getSocketServerBacklog())});
-            } else {
-                setSocketServerBacklog(ssBackLog);
-            }
-        } catch (NumberFormatException ex){
-            String msg = _rb.getString("pewebcontainer.invalidMaxPendingCount");
-            msg = MessageFormat.format(
-                msg, cp.getMaxPendingCount(),
-                Integer.toString(getSocketServerBacklog()));
-            _logger.log(Level.WARNING, msg, ex);
-        }
-        
-        
-        try{
-            int bufferSize = 
-                        Integer.parseInt(cp.getReceiveBufferSizeInBytes());
-            if ( bufferSize <= 0 ){
-                _logger.log(
-                    Level.WARNING,
-                    "pewebcontainer.invalidBufferSize",
-                    new Object[] 
-                        { cp.getReceiveBufferSizeInBytes(),
-                          Integer.toString(getBufferSize())});
-            } else {
-                setBufferSize(bufferSize);
-            }
-        } catch (NumberFormatException ex) {
-            String msg = _rb.getString("pewebcontainer.invalidBufferSize");
-            msg = MessageFormat.format(
-                msg, cp.getReceiveBufferSizeInBytes(),
-                Integer.toString(getBufferSize()));
-            _logger.log(Level.WARNING, msg, ex);
-        }
-
-        try{
-            int maxHttpHeaderSize = 
-                          Integer.parseInt(cp.getSendBufferSizeInBytes());
-            if ( maxHttpHeaderSize <= 0 ){
-                _logger.log(
-                    Level.WARNING,
-                    "pewebcontainer.invalidMaxHttpHeaderSize",
-                    new Object[] 
-                        { cp.getSendBufferSizeInBytes(),
-                          Integer.toString(getMaxHttpHeaderSize())});
-            } else {
-                setMaxHttpHeaderSize(maxHttpHeaderSize);
-            }
-        } catch (NumberFormatException ex){
-            String msg = _rb.getString(
-                "pewebcontainer.invalidMaxHttpHeaderSize");
-            msg = MessageFormat.format(
-                msg, cp.getSendBufferSizeInBytes(),
-                Integer.toString(getMaxHttpHeaderSize()));
-            _logger.log(Level.WARNING, msg, ex);
-        }
-    }     
-
-
-    /*
-     * Configures this connector with the given http-protocol
-     * config.
-     *
-     * @param httpProtocol http-protocol config to use
-     */
-    public void configureHttpProtocol(HttpProtocol httpProtocol) {
-    
-        if (httpProtocol == null) {
-            return;
-        }
-
-        // http-protocol's "forced-type" and "default-type" attributes
-        // now configured directly at Grizzly level
-        setEnableLookups(
-            Boolean.parseBoolean(httpProtocol.getDnsLookupEnabled()));
-    }
-
 
     /**
      * Configure the Grizzly FileCache mechanism
+     * @param fileCache
      */
-    public void configureFileCache(HttpFileCache httpFileCache){
-
-        if ( httpFileCache == null ) return;
-        
-        /*catalinaCachingAllowed = !(httpFileCache.isGloballyEnabled() &&
-                ConfigBeansUtilities.toBoolean(httpFileCache.getFileCachingEnabled()));
-        
-        connector.setFileCacheEnabled(httpFileCache.isGloballyEnabled());   */      
-        setLargeFileCacheEnabled(ConfigBeansUtilities.toBoolean(
-            httpFileCache.getFileCachingEnabled()));
-        
-        if (httpFileCache.getMaxAgeInSeconds() != null){
-            setSecondsMaxAge(Integer.parseInt(
-                httpFileCache.getMaxAgeInSeconds()));
-        }
-        
-        if (httpFileCache.getMaxFilesCount() != null){
-            setMaxCacheEntries(Integer.parseInt(
-                httpFileCache.getMaxFilesCount()));
-        }
-        
-        if (httpFileCache.getSmallFileSizeLimitInBytes() != null){
-            setMinEntrySize(Integer.parseInt(
-                httpFileCache.getSmallFileSizeLimitInBytes()));
-        }
-        
-        if (httpFileCache.getMediumFileSizeLimitInBytes() != null){
-            setMaxEntrySize(Integer.parseInt(
-                httpFileCache.getMediumFileSizeLimitInBytes()));
-        }
-        
-        if (httpFileCache.getMediumFileSpaceInBytes() != null){
-            setMaxLargeCacheSize(Integer.parseInt(
-                httpFileCache.getMediumFileSpaceInBytes()));
-        }
-        
-        if (httpFileCache.getSmallFileSpaceInBytes() != null){
-            setMaxSmallCacheSize(Integer.parseInt(
-                httpFileCache.getSmallFileSpaceInBytes())); 
+    public void configureFileCache(FileCache fileCache) {
+        if (fileCache != null) {
+            setLargeFileCacheEnabled(ConfigBeansUtilities.toBoolean(
+                fileCache.getEnabled()));
+            if (fileCache.getMaxAge() != null) {
+                setSecondsMaxAge(Integer.parseInt(fileCache.getMaxAge()));
+            }
+            if (fileCache.getMaxFilesCount() != null) {
+                setMaxCacheEntries(Integer.parseInt(
+                    fileCache.getMaxFilesCount()));
+            }
+            if (fileCache.getMaxCacheSize() != null) {
+                setMaxLargeCacheSize(Integer.parseInt(fileCache.getMaxCacheSize()));
+            }
         }
     }
 
@@ -1282,193 +1122,120 @@ public class PECoyoteConnector extends Connector {
      * Configures this connector with the given request-processing
      * config.
      *
-     * @param rp http-service config to use
+     * @param pool http-service config to use
      */
-    public void configureRequestProcessing(RequestProcessing rp){
-
-        if (rp == null) return;
-
-        try {
-            setMaxProcessors(Integer.parseInt(rp.getThreadCount()));
-            setMinProcessors(Integer.parseInt(rp.getInitialThreadCount()));
-            setProcessorWorkerThreadsTimeout(Integer.parseInt(
-                rp.getRequestTimeoutInSeconds())); 
-            setProcessorWorkerThreadsIncrement(Integer.parseInt(
-                rp.getThreadIncrement()));
-            setMaxHttpHeaderSize(Integer.parseInt(
-                rp.getHeaderBufferLengthInBytes()));
-        } catch (NumberFormatException ex){
-            _logger.log(Level.WARNING, " Invalid request-processing attribute", 
-                    ex);                      
-        }             
-    }
-
-
-    /*
-     * Configures the keep-alive properties on this PECoyoteConnector
-     * from the given keep-alive config.
-     *
-     * @param keepAlive Keep-alive config to use
-     */
-    public void configureKeepAlive(KeepAlive keepAlive) {
-
-        // timeout-in-seconds, default is 60 as per sun-domain_1_1.dtd
-        int timeoutInSeconds = 60;
-
-        // max-connections, default is 256 as per sun-domain_1_1.dtd
-        int maxConnections = 256;
-
-        // thread-count, default is 1 as per sun-domain_1_1.dtd
-        int threadCount = 1;
-
-        if (keepAlive != null) {
-            // timeout-in-seconds
+    public void configureThreadPool(ThreadPool pool){
+        if (pool != null) {
             try {
-	        timeoutInSeconds = Integer.parseInt(
-                                keepAlive.getTimeoutInSeconds());
+                setMaxProcessors(Integer.parseInt(pool.getMaxThreadPoolSize()));
+                setMinProcessors(Integer.parseInt(pool.getMinThreadPoolSize()));
+                setQueueSizeInBytes(Integer.parseInt(pool.getMaxQueueSize()));
+//                setProcessorWorkerThreadsTimeout(Integer.parseInt(
+//                    pool.getRequestTimeoutInSeconds()));
             } catch (NumberFormatException ex) {
-                String msg = _rb.getString(
-                    "pewebcontainer.invalidKeepAliveTimeout");
-                msg = MessageFormat.format(
-                    msg,
-                        keepAlive.getTimeoutInSeconds(),
-                        Integer.toString(timeoutInSeconds));
-                _logger.log(Level.WARNING, msg, ex);
-            }
-
-            // max-connections
-            try {
-	        maxConnections = Integer.parseInt(
-                                keepAlive.getMaxConnections());
-            } catch (NumberFormatException ex) {
-                String msg = _rb.getString(
-                    "pewebcontainer.invalidKeepAliveMaxConnections");
-                msg = MessageFormat.format(
-                    msg,
-                        keepAlive.getMaxConnections(),
-                        Integer.toString(maxConnections));
-                _logger.log(Level.WARNING, msg, ex);
-            }
-
-            // thread-count
-            try {
-	        threadCount = Integer.parseInt(keepAlive.getThreadCount());
-            } catch (NumberFormatException ex) {
-                String msg = _rb.getString(
-                    "pewebcontainer.invalidKeepAliveThreadCount");
-                msg = MessageFormat.format(
-                    msg,
-                        keepAlive.getThreadCount(),
-                        Integer.toString(threadCount));
-                _logger.log(Level.WARNING, msg, ex);
+                _logger
+                    .log(Level.WARNING, " Invalid request-processing attribute",
+                        ex);
             }
         }
-        
-        setKeepAliveTimeoutInSeconds(timeoutInSeconds);
-        setMaxKeepAliveRequests(maxConnections);
-        setKeepAliveThreadCount(threadCount);
     }
-
 
     /**
      * Configure http-listener property.
      * return true if the property exists and has been set.
      */
-    public boolean configureHttpListenerProperty(String propName, 
-                                                 String propValue)
-            throws NumberFormatException {
-                                                        
-        if ("bufferSize".equals(propName)) {
-            setBufferSize(Integer.parseInt(propValue)); 
-            return true; 
-        } else if ("recycle-objects".equals(propName)) {
-            setRecycleObjects(ConfigBeansUtilities.toBoolean(propValue));
-            return true;
-        } else if ("reader-threads".equals(propName)) {
-            setMaxReadWorkerThreads(Integer.parseInt(propValue));
-            return true;            
-        } else if ("acceptor-queue-length".equals(propName)) {
-            setMinAcceptQueueLength(Integer.parseInt(propValue));
-            return true;            
-        } else if ("reader-queue-length".equals(propName)) {
-            setMinReadQueueLength(Integer.parseInt(propValue));
-            return true;            
-        } else if ("use-nio-direct-bytebuffer".equals(propName)) {
-            setUseDirectByteBuffer(ConfigBeansUtilities.toBoolean(propValue));
-            return true;   
-        } else if ("maxKeepAliveRequests".equals(propName)) {
-            setMaxKeepAliveRequests(Integer.parseInt(propValue));
-            return true;           
-        } else if ("reader-selectors".equals(propName)) {
+    public boolean configureHttpListenerProperty(String propName, String propValue)
+        throws NumberFormatException {
+        if ("reader-selectors".equals(propName)) {
             setSelectorReadThreadsCount(Integer.parseInt(propValue));
             return true;
-        } else if ("authPassthroughEnabled".equals(propName)) {
-            setAuthPassthroughEnabled(
-                                        ConfigBeansUtilities.toBoolean(propValue));
-            return true;
-        } else if ("maxPostSize".equals(propName)) {
-            setMaxPostSize(Integer.parseInt(propValue));
-            return true;
-        } else if ("compression".equals(propName)) {
-            setProperty("compression",propValue);
-            return true;
-        } else if ("compressableMimeType".equals(propName)) {
-            setProperty("compressableMimeType",propValue);
-            return true;       
-        } else if ("noCompressionUserAgents".equals(propName)) {
-            setProperty("noCompressionUserAgents",propValue);
-            return true;   
-        } else if ("compressionMinSize".equals(propName)) {
-            setProperty("compressionMinSize",propValue);
-            return true;             
-        } else if ("restrictedUserAgents".equals(propName)) {
-            setProperty("restrictedUserAgents",propValue);
-            return true;             
-        } else if ("blocking".equals(propName)) {
-            setBlocking(ConfigBeansUtilities.toBoolean(propValue));
-            return true;             
-        } else if ("selectorThreadImpl".equals(propName)) {
+        }
+        if ("selectorThreadImpl".equals(propName)) {
             setSelectorThreadImpl(propValue);
-            return true;             
-        } else if ("cometSupport".equals(propName)) {
-            setProperty(propName,ConfigBeansUtilities.toBoolean(propValue));
-            return true;     
-        } else if ("rcmSupport".equals(propName)) {
-            setProperty(propName,ConfigBeansUtilities.toBoolean(propValue));
-            return true;    
-        } else if ("connectionUploadTimeout".equals(propName)) {
-            setConnectionUploadTimeout(Integer.parseInt(propValue));
-            return true;            
-        } else if ("disableUploadTimeout".equals(propName)) {
-            setDisableUploadTimeout(ConfigBeansUtilities.toBoolean(propValue));
-            return true;             
-        } else if ("proxiedProtocols".equals(propName)) {
-            setProperty(propName,propValue);
-            return true;              
-        } else if ("proxyHandler".equals(propName)) {
+            return true;
+        }
+        if ("proxyHandler".equals(propName)) {
             setProxyHandler(propValue);
             return true;
-        } else if ("uriEncoding".equals(propName)) {
-            setURIEncoding(propValue);
-            return true;
-        } else if ("chunkingDisabled".equals(propName)
-                || "chunking-disabled".equals(propName)) {
-            setChunkingDisabled(ConfigBeansUtilities.toBoolean(propValue));
-            return true;
-        } else if ("crlFile".equals(propName)) {
-            setCrlFile(propValue);
-            return true;
-        } else if ("trustAlgorithm".equals(propName)) {
-            setTrustAlgorithm(propValue);
-            return true;
-        } else if ("trustMaxCertLength".equals(propName)) {
-            setTrustMaxCertLength(propValue);
-            return true;
-        } else {
-            return false;
-        }   
-    }   
+        }
+        return false;
+    }
 
+    public void configHttpProperties(Http http, Transport transport, Ssl ssl) {
+        if (http.getRequestBodyBufferSize() != null) {
+            setBufferSize(Integer.parseInt(http.getRequestBodyBufferSize()));
+        }
+        if (transport.getUseNioDirectByteBuffer() != null) {
+            setUseDirectByteBuffer(ConfigBeansUtilities.toBoolean(
+                transport.getUseNioDirectByteBuffer()));
+        }
+        if (http.getMaxConnections() != null) {
+            setMaxKeepAliveRequests(Integer.parseInt(http.getMaxConnections()));
+        }
+        if (http.getTimeout() != null) {
+            setKeepAliveTimeoutInSeconds(Integer.parseInt(http.getTimeout()));
+        }
+        if (http.getEnableAuthPassThrough() != null) {
+            setAuthPassthroughEnabled(ConfigBeansUtilities.toBoolean(
+                http.getEnableAuthPassThrough()));
+        }
+        if (http.getMaxPostSize() != null) {
+            setMaxPostSize(Integer.parseInt(http.getMaxPostSize()));
+        }
+        if (http.getCompression() != null) {
+            setProperty("compression", http.getCompression());
+        }
+        if (http.getCompressableMimeType() != null) {
+            setProperty("compressableMimeType", http.getCompressableMimeType());
+        }
+        if (http.getNoCompressionUserAgents() != null) {
+            setProperty("noCompressionUserAgents", http.getNoCompressionUserAgents());
+        }
+        if (http.getCompressionMinSize() != null) {
+            setProperty("compressionMinSize", http.getCompressionMinSize());
+        }
+        if (http.getRestrictedUserAgents() != null) {
+            setProperty("restrictedUserAgents", http.getRestrictedUserAgents());
+        }
+        if (http.getEnableCometSupport() != null) {
+            setProperty("cometSupport",ConfigBeansUtilities.toBoolean(
+                http.getEnableCometSupport()));
+        }
+        if (http.getEnableRcmSupport() != null) {
+            setProperty("rcmSupport",ConfigBeansUtilities.toBoolean(
+                http.getEnableRcmSupport()));
+        }
+        if (http.getConnectionUploadTimeout() != null) {
+            setConnectionUploadTimeout(Integer.parseInt(
+                http.getConnectionUploadTimeout()));
+        }
+        if (http.getDisableUploadTimeout() != null) {
+            setDisableUploadTimeout(ConfigBeansUtilities.toBoolean(
+                http.getDisableUploadTimeout()));
+        }
+        if (http.getUriEncoding() != null) {
+            setURIEncoding(http.getUriEncoding());
+        }
+        if (http.getChunkingDisabled() != null) {
+            setChunkingDisabled(ConfigBeansUtilities.toBoolean(
+                http.getChunkingDisabled()));
+        }
+        configSslOptions(ssl);
+    }
+
+    private void configSslOptions(final Ssl ssl) {
+        if (ssl != null) {
+            if (ssl.getCrlFile() != null) {
+                setCrlFile(ssl.getCrlFile());
+            }
+            if (ssl.getTrustAlgorithm() != null) {
+                setTrustAlgorithm(ssl.getTrustAlgorithm());
+            }
+            if (ssl.getTrustMaxCertLength() != null) {
+                setTrustMaxCertLength(ssl.getTrustMaxCertLength());
+            }
+        }
+    }
 
     /*
      * Loads and instantiates the ProxyHandler implementation
@@ -1549,11 +1316,11 @@ public class PECoyoteConnector extends Connector {
      * Configures the SSL properties on this PECoyoteConnector from the
      * SSL config of the given HTTP listener.
      *
-     * @param httpListener HTTP listener whose SSL config to use
+     * @param listener HTTP listener whose SSL config to use
      */
-    private void configureSSL(HttpListener httpListener) {
+    private void configureSSL(NetworkListener listener) {
 
-        Ssl sslConfig = httpListener.getSsl();
+        Ssl sslConfig = listener.findProtocol().getSsl();
         if (sslConfig == null) {
             return;
         }
@@ -1564,7 +1331,7 @@ public class PECoyoteConnector extends Connector {
         }
 
         // ssl protocol variants
-        StringBuffer sslProtocolsBuf = new StringBuffer();
+        StringBuilder sslProtocolsBuf = new StringBuilder();
         boolean needComma = false;
         if (Boolean.valueOf(sslConfig.getSsl2Enabled())) {
             sslProtocolsBuf.append("SSLv2");
@@ -1591,8 +1358,7 @@ public class PECoyoteConnector extends Connector {
 
         if (sslProtocolsBuf.length() == 0) {
             _logger.log(Level.WARNING,
-                        "pewebcontainer.all_ssl_protocols_disabled",
-                        httpListener.getId());
+                "pewebcontainer.all_ssl_protocols_disabled", listener.getName());
         } else {
             setSslProtocols(sslProtocolsBuf.toString());
         }
@@ -1610,7 +1376,7 @@ public class PECoyoteConnector extends Connector {
             if (jsseCiphers == null) {
                 _logger.log(Level.WARNING,
                             "pewebcontainer.all_ciphers_disabled",
-                            httpListener.getId());
+                            listener.getName());
             } else {
                 setCiphers(jsseCiphers);
             }
@@ -1673,9 +1439,12 @@ public class PECoyoteConnector extends Connector {
     /**
      * Configure http-listener properties
      */
-    private void configureHttpListenerProperties(HttpListener httpListener) {
+    private void configureHttpListenerProperties(NetworkListener listener) {
         // Configure Connector with <http-service> properties
-        for (Property httpListenerProp  : httpListener.getProperty()) { 
+        configHttpProperties(listener.findProtocol().getHttp(),
+            listener.findTransport(), listener.findProtocol().getSsl());
+/*
+        for (Property httpListenerProp  : listener.getProperty()) {
             String propName = httpListenerProp.getName();
             String propValue = httpListenerProp.getValue();
             if (!configureHttpListenerProperty(propName, propValue)) {
@@ -1683,7 +1452,8 @@ public class PECoyoteConnector extends Connector {
                     "pewebcontainer.invalid_http_listener_property",
                     propName);                    
             }
-        }    
+        }
+*/ 
     }          
 
 
@@ -1700,11 +1470,9 @@ public class PECoyoteConnector extends Connector {
      * mapped to corresponding JSSE cipher suite names
      */
     private String getJSSECiphers(String ciphers) {
-
         String cipher = null;
         StringBuffer enabledCiphers = null;
         boolean first = true;
-
         int index = ciphers.indexOf(',');
         if (index != -1) {
             int fromIndex = 0;
@@ -1713,7 +1481,7 @@ public class PECoyoteConnector extends Connector {
                 if (cipher.length() > 0 && !cipher.startsWith("-")) {
                     if (cipher.startsWith("+")) {
                         cipher = cipher.substring(1);
-		    }
+                    }
                     String jsseCipher = getJSSECipher(cipher);
                     if (jsseCipher == null) {
                         _logger.log(Level.WARNING,
@@ -1737,7 +1505,6 @@ public class PECoyoteConnector extends Connector {
         } else {
             cipher = ciphers;
         }
-
         if (cipher != null) {
             cipher = cipher.trim();
             if (cipher.length() > 0 && !cipher.startsWith("-")) {
@@ -1747,7 +1514,7 @@ public class PECoyoteConnector extends Connector {
                 String jsseCipher = getJSSECipher(cipher);
                 if (jsseCipher == null) {
                     _logger.log(Level.WARNING,
-                                "pewebcontainer.unrecognized_cipher", cipher);
+                        "pewebcontainer.unrecognized_cipher", cipher);
                 } else {
                     if (enabledCiphers == null) {
                         enabledCiphers = new StringBuffer();
@@ -1761,8 +1528,7 @@ public class PECoyoteConnector extends Connector {
                 }
             }
         }
-
-        return (enabledCiphers == null ? null : enabledCiphers.toString());
+        return enabledCiphers == null ? null : enabledCiphers.toString();
     }
 
 

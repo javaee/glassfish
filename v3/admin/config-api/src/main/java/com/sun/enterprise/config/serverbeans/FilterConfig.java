@@ -45,14 +45,11 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.List;
 
-import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
-
 import org.glassfish.quality.ToDo;
 
 
@@ -65,7 +62,7 @@ import org.glassfish.quality.ToDo;
 }) */
 //@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.FilterConfig")
 @Configured
-public interface FilterConfig extends ConfigBeanProxy, Injectable, PropertyBag  {
+public interface FilterConfig extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the filterClassName property.
@@ -74,7 +71,7 @@ public interface FilterConfig extends ConfigBeanProxy, Injectable, PropertyBag  
      *         {@link String }
      */
     @Attribute(required = true, key=true)
-    public String getFilterClassName();
+    String getFilterClassName();
 
     /**
      * Sets the value of the filterClassName property.
@@ -82,7 +79,7 @@ public interface FilterConfig extends ConfigBeanProxy, Injectable, PropertyBag  
      * @param value allowed object is
      *              {@link String }
      */
-    public void setFilterClassName(String value) throws PropertyVetoException;
+    void setFilterClassName(String value) throws PropertyVetoException;
     
     /**
     	Properties as per {@link PropertyBag}

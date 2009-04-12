@@ -24,6 +24,8 @@ package org.glassfish.internal.grizzly;
 
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.util.http.mapper.Mapper;
+import com.sun.grizzly.config.ContextMapper;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jvnet.hk2.annotations.ContractProvided;
@@ -36,8 +38,8 @@ import org.jvnet.hk2.annotations.Service;
  * @author Jeanfrancois Arcand
  */
 @Service
-@ContractProvided(com.sun.grizzly.util.http.mapper.Mapper.class)
-public class V3Mapper extends Mapper {
+@ContractProvided(Mapper.class)
+public class V3Mapper extends ContextMapper {
 
     private static final String ADMIN_LISTENER = "admin-listener";
     private static final String ADMIN_VS = "__asadmin";
@@ -46,7 +48,7 @@ public class V3Mapper extends Mapper {
 
     private Adapter adapter;
 
-    // The id of the associated http-listener
+    // The id of the associated network-listener
     private String id;
     
 
@@ -151,7 +153,7 @@ public class V3Mapper extends Mapper {
 
 
     /**
-     * Sets the id of the associated http-listener on this mapper.
+     * Sets the id of the associated network-listener on this mapper.
      */
     public void setId(String id) {
         this.id = id;

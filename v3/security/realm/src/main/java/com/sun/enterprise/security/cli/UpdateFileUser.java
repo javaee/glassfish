@@ -53,8 +53,8 @@ import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.security.auth.realm.file.FileRealm;
 import com.sun.enterprise.security.auth.realm.BadRealmException;
 import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
-import org.glassfish.api.admin.config.Property;
 import com.sun.enterprise.config.serverbeans.SecurityService;
+import org.glassfish.api.admin.config.Property;
 
 /**
  * Update File User Command

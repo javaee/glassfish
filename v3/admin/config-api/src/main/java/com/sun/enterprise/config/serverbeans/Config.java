@@ -35,41 +35,33 @@
  */
 package com.sun.enterprise.config.serverbeans;
 
+import java.beans.PropertyVetoException;
+import java.io.IOException;
+import java.lang.reflect.Proxy;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.sun.common.util.logging.LoggingConfigImpl;
+import com.sun.grizzly.config.dom.NetworkConfig;
+import org.glassfish.api.admin.config.Property;
+import org.glassfish.api.admin.config.PropertyBag;
+import org.glassfish.api.admin.config.Container;
+import org.glassfish.api.admin.config.Named;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.amx.AMXConfigInfo;
+import org.glassfish.config.support.datatypes.Port;
+import org.glassfish.quality.ToDo;
+import org.glassfish.server.ServerEnvironmentImpl;
+import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.ConfigView;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.component.Injectable;
-import org.jvnet.hk2.config.ConfigBean;
-import org.jvnet.hk2.config.ConfigView;
-import org.jvnet.hk2.component.Habitat;
-
-import java.beans.PropertyVetoException;
-import java.util.*;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.io.*;
-import java.io.IOException;
-import java.lang.reflect.Proxy;
-
-import  com.sun.common.util.logging.LoggingConfigImpl;
-
-import org.glassfish.config.support.datatypes.Port;
-
-import org.glassfish.api.amx.AMXConfigInfo;
-import org.glassfish.api.admin.config.Named;
-import org.glassfish.api.admin.config.Container;
-
-import org.glassfish.api.admin.config.PropertyDesc;
-import org.glassfish.api.admin.config.PropertiesDesc;
-import org.glassfish.api.admin.config.Property;
-import org.glassfish.api.admin.config.PropertyBag;
-import org.glassfish.api.admin.ServerEnvironment;
-
-import org.glassfish.quality.ToDo;
-import org.glassfish.server.ServerEnvironmentImpl;
 
 /**
  *
@@ -107,12 +99,12 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      *
      * @return name of the configured object
      FIXME: should set 'key=true'.  See bugs 6039, 6040
-     */                                                                                                          
+     */
     @Attribute(required=true)
     String getName();
 
-    public void setName(String value) throws PropertyVetoException;
-    
+    void setName(String value) throws PropertyVetoException;
+
     /**
      * Gets the value of the dynamicReconfigurationEnabled property.
      *
@@ -120,7 +112,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      *         {@link String }
      */
     @Attribute (defaultValue="true")
-    public String getDynamicReconfigurationEnabled();
+    String getDynamicReconfigurationEnabled();
 
     /**
      * Sets the value of the dynamicReconfigurationEnabled property.
@@ -128,7 +120,22 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDynamicReconfigurationEnabled(String value) throws PropertyVetoException;
+    void setDynamicReconfigurationEnabled(String value) throws PropertyVetoException;
+
+    /**
+     * Gets the value of the networkConfig property.
+     *
+     * @return possible object is {@link NetworkConfig }
+     */
+    @Element(required=true)
+    NetworkConfig getNetworkConfig();
+
+    /**
+     * Sets the value of the networkConfig property.
+     *
+     * @param value allowed object is {@link NetworkConfig }
+     */
+    void setNetworkConfig(NetworkConfig value) throws PropertyVetoException;
 
     /**
      * Gets the value of the httpService property.
@@ -137,7 +144,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      *         {@link HttpService }
      */
     @Element(required=true)
-    public HttpService getHttpService();
+    HttpService getHttpService();
 
     /**
      * Sets the value of the httpService property.
@@ -145,7 +152,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      * @param value allowed object is
      *              {@link HttpService }
      */
-    public void setHttpService(HttpService value) throws PropertyVetoException;
+    void setHttpService(HttpService value) throws PropertyVetoException;
 
     /**
      * Gets the value of the iiopService property.
@@ -154,7 +161,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      *         {@link IiopService }
      */
     @Element(required=true)
-    public IiopService getIiopService();
+    IiopService getIiopService();
 
     /**
      * Sets the value of the iiopService property.
@@ -162,7 +169,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      * @param value allowed object is
      *              {@link IiopService }
      */
-    public void setIiopService(IiopService value) throws PropertyVetoException;
+    void setIiopService(IiopService value) throws PropertyVetoException;
 
     /**
      * Gets the value of the adminService property.
@@ -171,7 +178,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      *         {@link AdminService }
      */
     @Element(required=true)
-    public AdminService getAdminService();
+    AdminService getAdminService();
 
     /**
      * Sets the value of the adminService property.
@@ -179,7 +186,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      * @param value allowed object is
      *              {@link AdminService }
      */
-    public void setAdminService(AdminService value) throws PropertyVetoException;
+    void setAdminService(AdminService value) throws PropertyVetoException;
 
     /**
      * Gets the value of the connectorService property.
@@ -187,8 +194,8 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      * @return possible object is
      *         {@link ConnectorService }
      */
-    @Element    
-    public ConnectorService getConnectorService();
+    @Element
+    ConnectorService getConnectorService();
 
     /**
      * Sets the value of the connectorService property.
@@ -196,7 +203,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      * @param value allowed object is
      *              {@link ConnectorService }
      */
-    public void setConnectorService(ConnectorService value) throws PropertyVetoException;
+    void setConnectorService(ConnectorService value) throws PropertyVetoException;
 
     /**
      * Gets the value of the webContainer property.
@@ -205,7 +212,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      *         {@link WebContainer }
      */
     @Element(required=true)
-    public WebContainer getWebContainer();
+    WebContainer getWebContainer();
 
     /**
      * Sets the value of the webContainer property.
@@ -213,7 +220,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      * @param value allowed object is
      *              {@link WebContainer }
      */
-    public void setWebContainer(WebContainer value) throws PropertyVetoException;
+    void setWebContainer(WebContainer value) throws PropertyVetoException;
 
     /**
      * Gets the value of the ejbContainer property.
@@ -222,7 +229,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      *         {@link EjbContainer }
      */
     @Element(required=true)
-    public EjbContainer getEjbContainer();
+    EjbContainer getEjbContainer();
 
     /**
      * Sets the value of the ejbContainer property.
@@ -230,7 +237,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      * @param value allowed object is
      *              {@link EjbContainer }
      */
-    public void setEjbContainer(EjbContainer value) throws PropertyVetoException;
+    void setEjbContainer(EjbContainer value) throws PropertyVetoException;
 
     /**
      * Gets the value of the mdbContainer property.
@@ -239,7 +246,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      *         {@link MdbContainer }
      */
     @Element(required=true)
-    public MdbContainer getMdbContainer();
+    MdbContainer getMdbContainer();
 
     /**
      * Sets the value of the mdbContainer property.
@@ -247,7 +254,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      * @param value allowed object is
      *              {@link MdbContainer }
      */
-    public void setMdbContainer(MdbContainer value) throws PropertyVetoException;
+    void setMdbContainer(MdbContainer value) throws PropertyVetoException;
 
     /**
      * Gets the value of the jmsService property.
@@ -256,7 +263,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      *         {@link JmsService }
      */
     @Element
-    public JmsService getJmsService();
+    JmsService getJmsService();
 
     /**
      * Sets the value of the jmsService property.
@@ -264,7 +271,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      * @param value allowed object is
      *              {@link JmsService }
      */
-    public void setJmsService(JmsService value) throws PropertyVetoException;
+    void setJmsService(JmsService value) throws PropertyVetoException;
 
     /**
      * Gets the value of the logService property.
@@ -273,7 +280,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      *         {@link LogService }
      */
     @Element(required=true)
-    public LogService getLogService();
+    LogService getLogService();
 
     /**
      * Sets the value of the logService property.
@@ -281,7 +288,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      * @param value allowed object is
      *              {@link LogService }
      */
-    public void setLogService(LogService value) throws PropertyVetoException;
+    void setLogService(LogService value) throws PropertyVetoException;
 
     /**
      * Gets the value of the securityService property.
@@ -290,7 +297,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      *         {@link SecurityService }
      */
     @Element(required=true)
-    public SecurityService getSecurityService();
+    SecurityService getSecurityService();
 
     /**
      * Sets the value of the securityService property.
@@ -298,7 +305,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      * @param value allowed object is
      *              {@link SecurityService }
      */
-    public void setSecurityService(SecurityService value) throws PropertyVetoException;
+    void setSecurityService(SecurityService value) throws PropertyVetoException;
 
     /**
      * Gets the value of the transactionService property.
@@ -307,7 +314,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      *         {@link TransactionService }
      */
     @Element(required=true)
-    public TransactionService getTransactionService();
+    TransactionService getTransactionService();
 
     /**
      * Sets the value of the transactionService property.
@@ -315,7 +322,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      * @param value allowed object is
      *              {@link TransactionService }
      */
-    public void setTransactionService(TransactionService value) throws PropertyVetoException;
+    void setTransactionService(TransactionService value) throws PropertyVetoException;
 
     /**
      * Gets the value of the monitoringService property.
@@ -324,7 +331,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      *         {@link MonitoringService }
      */
     @Element(required=true)
-    public MonitoringService getMonitoringService();
+    MonitoringService getMonitoringService();
 
     /**
      * Sets the value of the monitoringService property.
@@ -332,7 +339,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      * @param value allowed object is
      *              {@link MonitoringService }
      */
-    public void setMonitoringService(MonitoringService value) throws PropertyVetoException;
+    void setMonitoringService(MonitoringService value) throws PropertyVetoException;
 
     /**
      * Gets the value of the diagnosticService property.
@@ -341,7 +348,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      *         {@link DiagnosticService }
      */
     @Element
-    public DiagnosticService getDiagnosticService();
+    DiagnosticService getDiagnosticService();
 
     /**
      * Sets the value of the diagnosticService property.
@@ -349,7 +356,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      * @param value allowed object is
      *              {@link DiagnosticService }
      */
-    public void setDiagnosticService(DiagnosticService value) throws PropertyVetoException;
+    void setDiagnosticService(DiagnosticService value) throws PropertyVetoException;
 
     /**
      * Gets the value of the javaConfig property.
@@ -358,7 +365,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      *         {@link JavaConfig }
      */
     @Element(required=true)
-    public JavaConfig getJavaConfig();
+    JavaConfig getJavaConfig();
 
     /**
      * Sets the value of the javaConfig property.
@@ -366,7 +373,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      * @param value allowed object is
      *              {@link JavaConfig }
      */
-    public void setJavaConfig(JavaConfig value) throws PropertyVetoException;
+    void setJavaConfig(JavaConfig value) throws PropertyVetoException;
 
     /**
      * Gets the value of the availabilityService property.
@@ -375,7 +382,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      *         {@link AvailabilityService }
      */
     @Element
-    public AvailabilityService getAvailabilityService();
+    AvailabilityService getAvailabilityService();
 
     /**
      * Sets the value of the availabilityService property.
@@ -383,7 +390,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      * @param value allowed object is
      *              {@link AvailabilityService }
      */
-    public void setAvailabilityService(AvailabilityService value) throws PropertyVetoException;
+    void setAvailabilityService(AvailabilityService value) throws PropertyVetoException;
 
     /**
      * Gets the value of the threadPools property.
@@ -392,7 +399,8 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      *         {@link ThreadPools }
      */
     @Element(required=true)
-    public ThreadPools getThreadPools();
+    @Deprecated
+    ThreadPools getThreadPools();
 
     /**
      * Sets the value of the threadPools property.
@@ -400,7 +408,8 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      * @param value allowed object is
      *              {@link ThreadPools }
      */
-    public void setThreadPools(ThreadPools value) throws PropertyVetoException;
+    @Deprecated
+    void setThreadPools(ThreadPools value) throws PropertyVetoException;
 
     /**
      * Gets the value of the alertService property.
@@ -409,7 +418,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      *         {@link AlertService }
      */
     @Element
-    public AlertService getAlertService();
+    AlertService getAlertService();
 
     /**
      * Sets the value of the alertService property.
@@ -417,7 +426,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      * @param value allowed object is
      *              {@link AlertService }
      */
-    public void setAlertService(AlertService value) throws PropertyVetoException;
+    void setAlertService(AlertService value) throws PropertyVetoException;
 
     /**
      * Gets the value of the groupManagementService property.
@@ -426,7 +435,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      *         {@link GroupManagementService }
      */
     @Element
-    public GroupManagementService getGroupManagementService();
+    GroupManagementService getGroupManagementService();
 
     /**
      * Sets the value of the groupManagementService property.
@@ -434,7 +443,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      * @param value allowed object is
      *              {@link GroupManagementService }
      */
-    public void setGroupManagementService(GroupManagementService value) throws PropertyVetoException;
+    void setGroupManagementService(GroupManagementService value) throws PropertyVetoException;
 
     /**
      * Gets the value of the managementRules property.
@@ -443,7 +452,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      *         {@link ManagementRules }
      */
     @Element
-    public ManagementRules getManagementRules();
+    ManagementRules getManagementRules();
 
     /**
      * Sets the value of the managementRules property.
@@ -451,7 +460,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      * @param value allowed object is
      *              {@link ManagementRules }
      */
-    public void setManagementRules(ManagementRules value) throws PropertyVetoException;
+    void setManagementRules(ManagementRules value) throws PropertyVetoException;
 
     /**
      * Gets the value of the systemProperty property.
@@ -487,28 +496,28 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
     }
     )
     @Element
-    public List<SystemProperty> getSystemProperty();
+    List<SystemProperty> getSystemProperty();
 
 
     //DuckTyped for accessing the logging.properties file
 
     @DuckTyped
-    public Map<String, String> getLoggingProperties();
+    Map<String, String> getLoggingProperties();
 
     @DuckTyped
-    public String setLoggingProperty(String property, String value);
-    
-    @DuckTyped
-    public Map<String, String> updateLoggingProperties( Map<String, String> properties);
+    String setLoggingProperty(String property, String value);
 
-    public class Duck {
+    @DuckTyped
+    Map<String, String> updateLoggingProperties( Map<String, String> properties);
+
+    class Duck {
 
         public static String setLoggingProperty(Config c, String property, String value){
             ConfigBean cb = (ConfigBean) ((ConfigView)Proxy.getInvocationHandler(c)).getMasterView();
             ServerEnvironmentImpl env = cb.getHabitat().getComponent(ServerEnvironmentImpl.class);
             LoggingConfigImpl loggingConfig = new LoggingConfigImpl();
             loggingConfig.setupConfigDir(env.getConfigDirPath());
-            
+
             String prop = null;
             try{
                    prop= loggingConfig.setLoggingProperty(property, value);
@@ -536,7 +545,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
             ServerEnvironmentImpl env = cb.getHabitat().getComponent(ServerEnvironmentImpl.class);
             LoggingConfigImpl loggingConfig = new LoggingConfigImpl();
             loggingConfig.setupConfigDir(env.getConfigDirPath());
-            
+
             Map <String, String> map = new HashMap<String, String>() ;
             try {
                 map = loggingConfig.updateLoggingProperties(properties);

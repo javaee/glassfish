@@ -38,24 +38,19 @@
 
 package com.sun.enterprise.config.serverbeans;
 
-import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.component.Injectable;
-
 import java.beans.PropertyVetoException;
 import java.util.List;
 
-import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
-
-import org.glassfish.quality.ToDo;
-
-
 import org.glassfish.api.amx.AMXConfigInfo;
+import org.glassfish.quality.ToDo;
+import org.jvnet.hk2.component.Injectable;
+import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.Element;
 
 /* @XmlType(name = "", propOrder = {
     "jmxConnector",
@@ -64,7 +59,7 @@ import org.glassfish.api.amx.AMXConfigInfo;
 }) */
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.AdminServiceConfig", singleton=true)
 @Configured
-public interface AdminService extends ConfigBeanProxy, Injectable, PropertyBag  {
+public interface AdminService extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
      * Gets the value of the type property.
@@ -73,7 +68,7 @@ public interface AdminService extends ConfigBeanProxy, Injectable, PropertyBag  
      *         {@link String }
      */
     @Attribute (defaultValue="server")
-    public String getType();
+    String getType();
 
     /**
      * Sets the value of the type property.
@@ -81,7 +76,7 @@ public interface AdminService extends ConfigBeanProxy, Injectable, PropertyBag  
      * @param value allowed object is
      *              {@link String }
      */
-    public void setType(String value) throws PropertyVetoException;
+    void setType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the systemJmxConnectorName property.
@@ -90,7 +85,7 @@ public interface AdminService extends ConfigBeanProxy, Injectable, PropertyBag  
      *         {@link String }
      */
     @Attribute
-    public String getSystemJmxConnectorName();
+    String getSystemJmxConnectorName();
 
     /**
      * Sets the value of the systemJmxConnectorName property.
@@ -98,7 +93,7 @@ public interface AdminService extends ConfigBeanProxy, Injectable, PropertyBag  
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSystemJmxConnectorName(String value) throws PropertyVetoException;
+    void setSystemJmxConnectorName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the jmxConnector property.
@@ -106,7 +101,7 @@ public interface AdminService extends ConfigBeanProxy, Injectable, PropertyBag  
      * {@link JmxConnector }
      */
     @Element("jmx-connector")
-    public List<JmxConnector> getJmxConnector();
+    List<JmxConnector> getJmxConnector();
 
     /**
      * Gets the value of the dasConfig property.
@@ -115,7 +110,7 @@ public interface AdminService extends ConfigBeanProxy, Injectable, PropertyBag  
      *         {@link DasConfig }
      */
     @Element("das-config")
-    public DasConfig getDasConfig();
+    DasConfig getDasConfig();
 
     /**
      * Sets the value of the dasConfig property.
@@ -123,7 +118,7 @@ public interface AdminService extends ConfigBeanProxy, Injectable, PropertyBag  
      * @param value allowed object is
      *              {@link DasConfig }
      */
-    public void setDasConfig(DasConfig value) throws PropertyVetoException;
+    void setDasConfig(DasConfig value) throws PropertyVetoException;
     
     /**
     	Properties as per {@link PropertyBag}

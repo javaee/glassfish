@@ -1,22 +1,24 @@
 package com.sun.enterprise.configapi.tests;
 
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.config.*;
+import com.sun.grizzly.config.dom.NetworkListener;
+import com.sun.grizzly.config.dom.NetworkListeners;
+import com.sun.hk2.component.ConstructorWomb;
+import org.glassfish.tests.utils.Utils;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.assertTrue;
-import org.glassfish.tests.utils.Utils;
-import com.sun.hk2.component.ConstructorWomb;
-import com.sun.enterprise.config.serverbeans.HttpListener;
-import com.sun.enterprise.config.serverbeans.HttpService;
-
-import java.beans.PropertyVetoException;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.ObservableBean;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.Transactions;
 
 /**
  * This test will ensure that when a class is injected with a parent bean and a child
  * is added to the parent, anyone injected will that parent will be notified
  * correctly.
- * 
+ *
  * User: Jerome Dochez
  */
 public class ParentConfigListenerTest extends ConfigApiTest {
@@ -37,16 +39,17 @@ public class ParentConfigListenerTest extends ConfigApiTest {
     public void addHttpListenerTest() throws TransactionFailure {
 
 
-        ConstructorWomb<HttpServiceContainer> womb = new ConstructorWomb<HttpServiceContainer>(HttpServiceContainer.class, habitat, null);
-        HttpServiceContainer container = womb.get(null);
+        ConstructorWomb<NetworkListenersContainer> womb = new ConstructorWomb<NetworkListenersContainer>(
+            NetworkListenersContainer.class, habitat, null);
+        NetworkListenersContainer container = womb.get(null);
 
-        ConfigSupport.apply(new SingleConfigCode<HttpService>() {
+        ConfigSupport.apply(new SingleConfigCode<NetworkListeners>() {
 
-            public Object run(HttpService param) throws PropertyVetoException, TransactionFailure {
-                HttpListener newListener = param.createChild(HttpListener.class);
-                newListener.setId("Funky-Listener");
+            public Object run(NetworkListeners param) throws TransactionFailure {
+                NetworkListener newListener = param.createChild(NetworkListener.class);
+                newListener.setName("Funky-Listener");
                 newListener.setPort("8078");
-                param.getHttpListener().add(newListener);
+                param.getNetworkListener().add(newListener);
                 return null;
             }
         }, container.httpService);

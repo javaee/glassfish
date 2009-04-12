@@ -54,6 +54,7 @@ import java.beans.PropertyVetoException;
 import java.util.List;
 
 import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 
@@ -68,13 +69,13 @@ import org.glassfish.quality.ToDo;
     "securityMap",
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ConnectorConnectionPoolConfig")
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ConnectorConnectionPoolConfig")
 @Configured
 public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Resource, ResourcePool,
         PropertyBag {
 
     @Attribute(required = true)
-    public String getResourceAdapterName();
+    String getResourceAdapterName();
 
     /**
      * Sets the value of the resourceAdapterName property.
@@ -82,7 +83,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @param value allowed object is
      *              {@link String }
      */
-    public void setResourceAdapterName(String value) throws PropertyVetoException;
+    void setResourceAdapterName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the connectionDefinitionName property.
@@ -91,7 +92,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      *         {@link String }
      */
     @Attribute(required = true)
-    public String getConnectionDefinitionName();
+    String getConnectionDefinitionName();
 
     /**
      * Sets the value of the connectionDefinitionName property.
@@ -99,7 +100,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @param value allowed object is
      *              {@link String }
      */
-    public void setConnectionDefinitionName(String value) throws PropertyVetoException;
+    void setConnectionDefinitionName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the steadyPoolSize property.
@@ -108,7 +109,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      *         {@link String }
      */
     @Attribute (defaultValue="8")
-    public String getSteadyPoolSize();
+    String getSteadyPoolSize();
 
     /**
      * Sets the value of the steadyPoolSize property.
@@ -116,7 +117,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSteadyPoolSize(String value) throws PropertyVetoException;
+    void setSteadyPoolSize(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxPoolSize property.
@@ -125,7 +126,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      *         {@link String }
      */
     @Attribute (defaultValue="32")
-    public String getMaxPoolSize();
+    String getMaxPoolSize();
 
     /**
      * Sets the value of the maxPoolSize property.
@@ -133,7 +134,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxPoolSize(String value) throws PropertyVetoException;
+    void setMaxPoolSize(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxWaitTimeInMillis property.
@@ -142,7 +143,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      *         {@link String }
      */
     @Attribute (defaultValue="60000")
-    public String getMaxWaitTimeInMillis();
+    String getMaxWaitTimeInMillis();
 
     /**
      * Sets the value of the maxWaitTimeInMillis property.
@@ -150,7 +151,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxWaitTimeInMillis(String value) throws PropertyVetoException;
+    void setMaxWaitTimeInMillis(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the poolResizeQuantity property.
@@ -159,7 +160,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      *         {@link String }
      */
     @Attribute (defaultValue="2")
-    public String getPoolResizeQuantity();
+    String getPoolResizeQuantity();
 
     /**
      * Sets the value of the poolResizeQuantity property.
@@ -167,7 +168,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @param value allowed object is
      *              {@link String }
      */
-    public void setPoolResizeQuantity(String value) throws PropertyVetoException;
+    void setPoolResizeQuantity(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the idleTimeoutInSeconds property.
@@ -176,7 +177,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      *         {@link String }
      */
     @Attribute (defaultValue="300")
-    public String getIdleTimeoutInSeconds();
+    String getIdleTimeoutInSeconds();
 
     /**
      * Sets the value of the idleTimeoutInSeconds property.
@@ -184,7 +185,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @param value allowed object is
      *              {@link String }
      */
-    public void setIdleTimeoutInSeconds(String value) throws PropertyVetoException;
+    void setIdleTimeoutInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the failAllConnections property.
@@ -193,7 +194,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      *         {@link String }
      */
     @Attribute (defaultValue="false")
-    public String getFailAllConnections();
+    String getFailAllConnections();
 
     /**
      * Sets the value of the failAllConnections property.
@@ -201,7 +202,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @param value allowed object is
      *              {@link String }
      */
-    public void setFailAllConnections(String value) throws PropertyVetoException;
+    void setFailAllConnections(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the transactionSupport property.
@@ -210,7 +211,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      *         {@link String }
      */
     @Attribute
-    public String getTransactionSupport();
+    String getTransactionSupport();
 
     /**
      * Sets the value of the transactionSupport property.
@@ -218,7 +219,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @param value allowed object is
      *              {@link String }
      */
-    public void setTransactionSupport(String value) throws PropertyVetoException;
+    void setTransactionSupport(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the isConnectionValidationRequired property.
@@ -227,7 +228,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      *         {@link String }
      */
     @Attribute (defaultValue="false")
-    public String getIsConnectionValidationRequired();
+    String getIsConnectionValidationRequired();
 
     /**
      * Sets the value of the isConnectionValidationRequired property.
@@ -235,7 +236,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @param value allowed object is
      *              {@link String }
      */
-    public void setIsConnectionValidationRequired(String value) throws PropertyVetoException;
+    void setIsConnectionValidationRequired(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the validateAtmostOncePeriodInSeconds property.
@@ -244,7 +245,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      *         {@link String }
      */
     @Attribute (defaultValue="0")
-    public String getValidateAtmostOncePeriodInSeconds();
+    String getValidateAtmostOncePeriodInSeconds();
 
     /**
      * Sets the value of the validateAtmostOncePeriodInSeconds property.
@@ -252,7 +253,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @param value allowed object is
      *              {@link String }
      */
-    public void setValidateAtmostOncePeriodInSeconds(String value) throws PropertyVetoException;
+    void setValidateAtmostOncePeriodInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the connectionLeakTimeoutInSeconds property.
@@ -261,7 +262,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      *         {@link String }
      */
     @Attribute (defaultValue="0")
-    public String getConnectionLeakTimeoutInSeconds();
+    String getConnectionLeakTimeoutInSeconds();
 
     /**
      * Sets the value of the connectionLeakTimeoutInSeconds property.
@@ -269,7 +270,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @param value allowed object is
      *              {@link String }
      */
-    public void setConnectionLeakTimeoutInSeconds(String value) throws PropertyVetoException;
+    void setConnectionLeakTimeoutInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the connectionLeakReclaim property.
@@ -278,7 +279,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      *         {@link String }
      */
     @Attribute (defaultValue="false")
-    public String getConnectionLeakReclaim();
+    String getConnectionLeakReclaim();
 
     /**
      * Sets the value of the connectionLeakReclaim property.
@@ -286,7 +287,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @param value allowed object is
      *              {@link String }
      */
-    public void setConnectionLeakReclaim(String value) throws PropertyVetoException;
+    void setConnectionLeakReclaim(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the connectionCreationRetryAttempts property.
@@ -295,7 +296,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      *         {@link String }
      */
     @Attribute (defaultValue="0")
-    public String getConnectionCreationRetryAttempts();
+    String getConnectionCreationRetryAttempts();
 
     /**
      * Sets the value of the connectionCreationRetryAttempts property.
@@ -303,7 +304,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @param value allowed object is
      *              {@link String }
      */
-    public void setConnectionCreationRetryAttempts(String value) throws PropertyVetoException;
+    void setConnectionCreationRetryAttempts(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the connectionCreationRetryIntervalInSeconds property.
@@ -312,7 +313,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      *         {@link String }
      */
     @Attribute (defaultValue="10")
-    public String getConnectionCreationRetryIntervalInSeconds();
+    String getConnectionCreationRetryIntervalInSeconds();
 
     /**
      * Sets the value of the connectionCreationRetryIntervalInSeconds property.
@@ -320,7 +321,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @param value allowed object is
      *              {@link String }
      */
-    public void setConnectionCreationRetryIntervalInSeconds(String value) throws PropertyVetoException;
+    void setConnectionCreationRetryIntervalInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the lazyConnectionEnlistment property.
@@ -329,7 +330,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      *         {@link String }
      */
     @Attribute (defaultValue="false")
-    public String getLazyConnectionEnlistment();
+    String getLazyConnectionEnlistment();
 
     /**
      * Sets the value of the lazyConnectionEnlistment property.
@@ -337,7 +338,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLazyConnectionEnlistment(String value) throws PropertyVetoException;
+    void setLazyConnectionEnlistment(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the lazyConnectionAssociation property.
@@ -346,7 +347,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      *         {@link String }
      */
     @Attribute (defaultValue="false")
-    public String getLazyConnectionAssociation();
+    String getLazyConnectionAssociation();
 
     /**
      * Sets the value of the lazyConnectionAssociation property.
@@ -354,7 +355,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLazyConnectionAssociation(String value) throws PropertyVetoException;
+    void setLazyConnectionAssociation(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the associateWithThread property.
@@ -363,7 +364,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      *         {@link String }
      */
     @Attribute (defaultValue="false")
-    public String getAssociateWithThread();
+    String getAssociateWithThread();
 
     /**
      * Sets the value of the associateWithThread property.
@@ -371,7 +372,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAssociateWithThread(String value) throws PropertyVetoException;
+    void setAssociateWithThread(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the matchConnections property.
@@ -380,7 +381,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      *         {@link String }
      */
     @Attribute (defaultValue="true")
-    public String getMatchConnections();
+    String getMatchConnections();
 
     /**
      * Sets the value of the matchConnections property.
@@ -388,7 +389,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMatchConnections(String value) throws PropertyVetoException;
+    void setMatchConnections(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxConnectionUsageCount property.
@@ -397,7 +398,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      *         {@link String }
      */
     @Attribute (defaultValue="0")
-    public String getMaxConnectionUsageCount();
+    String getMaxConnectionUsageCount();
 
     /**
      * Sets the value of the maxConnectionUsageCount property.
@@ -405,7 +406,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxConnectionUsageCount(String value) throws PropertyVetoException;
+    void setMaxConnectionUsageCount(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the description property.
@@ -414,7 +415,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      *         {@link String }
      */
     @Attribute
-    public String getDescription();
+    String getDescription();
 
     /**
      * Sets the value of the description property.
@@ -422,7 +423,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDescription(String value) throws PropertyVetoException;
+    void setDescription(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the securityMap property.
@@ -445,7 +446,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * {@link SecurityMap }
      */
     @Element
-    public List<SecurityMap> getSecurityMap();
+    List<SecurityMap> getSecurityMap();
     
     /**
     	Properties as per {@link PropertyBag}

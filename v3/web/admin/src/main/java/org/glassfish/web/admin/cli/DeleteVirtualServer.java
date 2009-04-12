@@ -35,24 +35,32 @@
  */
 package org.glassfish.web.admin.cli;
 
+import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.VirtualServer;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.grizzly.config.dom.NetworkConfig;
+import com.sun.grizzly.config.dom.NetworkListener;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.ActionReport.ExitCode;
+import org.glassfish.api.I18n;
+import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.api.I18n;
-import org.glassfish.api.Param;
-import org.glassfish.api.ActionReport;
-import org.glassfish.api.ActionReport.ExitCode;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.*;
-import com.sun.enterprise.config.serverbeans.*;
-import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.ConfigCode;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.TransactionFailure;
 
 import java.beans.PropertyVetoException;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 /**
@@ -71,6 +79,9 @@ public class DeleteVirtualServer implements AdminCommand {
 
     @Inject
     HttpService httpService;
+
+    @Inject
+    NetworkConfig networkConfig;
 
     @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Server server;
@@ -94,7 +105,7 @@ public class DeleteVirtualServer implements AdminCommand {
 
         // reference check
         String referencedBy = getReferencingListener();
-        if((referencedBy != null) && (referencedBy != "")) {
+        if(referencedBy != null && referencedBy.length() != 0) {
             report.setMessage(localStrings.getLocalString("delete.virtual.server.referenced", 
                 "Virtual Server, {0} can not be deleted because it is referenced from http listener, {1}", vsid, referencedBy));
             report.setActionExitCode(ExitCode.FAILURE);
@@ -143,13 +154,14 @@ public class DeleteVirtualServer implements AdminCommand {
     }
 
     private String getReferencingListener() {
-        List<HttpListener> list = httpService.getHttpListener();
+        List<NetworkListener> list = networkConfig.getNetworkListeners().getNetworkListener();
         
-        for(HttpListener listener: list) {
-            String virtualServer = listener.getDefaultVirtualServer();
+        for(NetworkListener listener: list) {
+            String virtualServer = listener.findProtocol().getHttp().getDefaultVirtualServer();
          
-            if(virtualServer != null && virtualServer.equals(vsid))
-                return listener.getId();
+            if(virtualServer != null && virtualServer.equals(vsid)) {
+                return listener.getName();
+            }
         }
         return null;
     }

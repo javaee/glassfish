@@ -45,14 +45,11 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeSupport;
-import java.io.Serializable;
 import java.util.List;
 
 import org.glassfish.api.admin.config.*;
-
+import org.glassfish.api.admin.config.Property;
 import org.glassfish.quality.ToDo;
-
 
 /**
  *
@@ -64,7 +61,7 @@ import org.glassfish.quality.ToDo;
 }) */
 @org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.CustomMBeanConfig")
 @Configured
-public interface Mbean extends ConfigBeanProxy, Injectable, Named, PropertyBag {
+public interface Mbean extends ConfigBeanProxy, Injectable, Named, org.glassfish.api.admin.config.PropertyBag {
 
     /**
      * Gets the value of the objectType property.
@@ -152,7 +149,7 @@ public interface Mbean extends ConfigBeanProxy, Injectable, Named, PropertyBag {
     public void setDescription(String value) throws PropertyVetoException;
     
     /**
-    	Properties as per {@link PropertyBag}
+    	Properties as per {@link org.glassfish.api.admin.config.PropertyBag}
      */
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
     @PropertiesDesc(props={})

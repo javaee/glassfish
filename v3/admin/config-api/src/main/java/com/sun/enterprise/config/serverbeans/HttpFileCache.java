@@ -46,15 +46,16 @@ import org.jvnet.hk2.component.Injectable;
 import java.beans.PropertyVetoException;
 import org.glassfish.config.support.datatypes.NonNegativeInteger;
 import org.glassfish.config.support.datatypes.PositiveInteger;
-
+import org.glassfish.api.amx.AMXConfigInfo;
 
 /**
  *
  */
 
 /* @XmlType(name = "") */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.HTTPFileCacheConfig", singleton=true)
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.HTTPFileCacheConfig", singleton=true)
 @Configured
+@Deprecated
 public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
 
     /**
@@ -64,7 +65,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute (defaultValue="true", dataType=Boolean.class)
-    public String getGloballyEnabled();
+    String getGloballyEnabled();
 
     /**
      * Sets the value of the globallyEnabled property.
@@ -72,7 +73,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setGloballyEnabled(String value) throws PropertyVetoException;
+    void setGloballyEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the fileCachingEnabled property.
@@ -81,7 +82,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute (defaultValue="true", dataType=Boolean.class)
-    public String getFileCachingEnabled();
+    String getFileCachingEnabled();
 
     /**
      * Sets the value of the fileCachingEnabled property.
@@ -89,7 +90,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setFileCachingEnabled(String value) throws PropertyVetoException;
+    void setFileCachingEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxAgeInSeconds property.
@@ -98,7 +99,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute (defaultValue="30", dataType=NonNegativeInteger.class)
-    public String getMaxAgeInSeconds();
+    String getMaxAgeInSeconds();
 
     /**
      * Sets the value of the maxAgeInSeconds property.
@@ -106,7 +107,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxAgeInSeconds(String value) throws PropertyVetoException;
+    void setMaxAgeInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the mediumFileSizeLimitInBytes property.
@@ -115,7 +116,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute (defaultValue="537600", dataType=PositiveInteger.class)
-    public String getMediumFileSizeLimitInBytes();
+    String getMediumFileSizeLimitInBytes();
 
     /**
      * Sets the value of the mediumFileSizeLimitInBytes property.
@@ -123,7 +124,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMediumFileSizeLimitInBytes(String value) throws PropertyVetoException;
+    void setMediumFileSizeLimitInBytes(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the mediumFileSpaceInBytes property.
@@ -132,7 +133,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute  (defaultValue="10485760", dataType=PositiveInteger.class) //is positive integer enough?
-    public String getMediumFileSpaceInBytes();
+    String getMediumFileSpaceInBytes();
 
     /**
      * Sets the value of the mediumFileSpaceInBytes property.
@@ -140,7 +141,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMediumFileSpaceInBytes(String value) throws PropertyVetoException;
+    void setMediumFileSpaceInBytes(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the smallFileSizeLimitInBytes property.
@@ -149,7 +150,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute (defaultValue="2048", dataType=PositiveInteger.class)
-    public String getSmallFileSizeLimitInBytes();
+    String getSmallFileSizeLimitInBytes();
 
     /**
      * Sets the value of the smallFileSizeLimitInBytes property.
@@ -157,7 +158,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSmallFileSizeLimitInBytes(String value) throws PropertyVetoException;
+    void setSmallFileSizeLimitInBytes(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the smallFileSpaceInBytes property.
@@ -166,7 +167,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute (defaultValue="1048576", dataType=PositiveInteger.class)
-    public String getSmallFileSpaceInBytes();
+    String getSmallFileSpaceInBytes();
 
     /**
      * Sets the value of the smallFileSpaceInBytes property.
@@ -174,7 +175,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSmallFileSpaceInBytes(String value) throws PropertyVetoException;
+    void setSmallFileSpaceInBytes(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the fileTransmissionEnabled property.
@@ -183,7 +184,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute (defaultValue="false", dataType=Boolean.class)
-    public String getFileTransmissionEnabled();
+    String getFileTransmissionEnabled();
 
     /**
      * Sets the value of the fileTransmissionEnabled property.
@@ -191,7 +192,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setFileTransmissionEnabled(String value) throws PropertyVetoException;
+    void setFileTransmissionEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxFilesCount property.
@@ -200,7 +201,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute (defaultValue="1024", dataType=PositiveInteger.class)
-    public String getMaxFilesCount();
+    String getMaxFilesCount();
 
     /**
      * Sets the value of the maxFilesCount property.
@@ -208,7 +209,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxFilesCount(String value) throws PropertyVetoException;
+    void setMaxFilesCount(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the hashInitSize property.
@@ -217,7 +218,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute (defaultValue="0", dataType=NonNegativeInteger.class)
-    public String getHashInitSize();
+    String getHashInitSize();
 
     /**
      * Sets the value of the hashInitSize property.
@@ -225,5 +226,5 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHashInitSize(String value) throws PropertyVetoException;
+    void setHashInitSize(String value) throws PropertyVetoException;
 }

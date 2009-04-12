@@ -45,14 +45,13 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.List;
 
-import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
-
+import com.sun.grizzly.config.dom.Ssl;
 import org.glassfish.quality.ToDo;
 
 /**
@@ -63,7 +62,7 @@ import org.glassfish.quality.ToDo;
     "ssl",
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.IIOPListenerConfig")
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.IIOPListenerConfig")
 @Configured
 public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag {
 
@@ -74,7 +73,7 @@ public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute(required = true, key=true)
-    public String getId();
+    String getId();
 
     /**
      * Sets the value of the id property.
@@ -82,7 +81,7 @@ public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setId(String value) throws PropertyVetoException;
+    void setId(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the address property.
@@ -91,7 +90,7 @@ public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute(required = true)
-    public String getAddress();
+    String getAddress();
 
     /**
      * Sets the value of the address property.
@@ -99,7 +98,7 @@ public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAddress(String value) throws PropertyVetoException;
+    void setAddress(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the port property.
@@ -108,7 +107,7 @@ public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="1072")
-    public String getPort();
+    String getPort();
 
     /**
      * Sets the value of the port property.
@@ -116,7 +115,7 @@ public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setPort(String value) throws PropertyVetoException;
+    void setPort(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the securityEnabled property.
@@ -125,7 +124,7 @@ public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="false")
-    public String getSecurityEnabled();
+    String getSecurityEnabled();
 
     /**
      * Sets the value of the securityEnabled property.
@@ -133,7 +132,7 @@ public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSecurityEnabled(String value) throws PropertyVetoException;
+    void setSecurityEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the enabled property.
@@ -142,7 +141,7 @@ public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="true")
-    public String getEnabled();
+    String getEnabled();
 
     /**
      * Sets the value of the enabled property.
@@ -150,7 +149,7 @@ public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setEnabled(String value) throws PropertyVetoException;
+    void setEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the ssl property.
@@ -159,7 +158,7 @@ public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link Ssl }
      */
     @Element
-    public Ssl getSsl();
+    Ssl getSsl();
 
     /**
      * Sets the value of the ssl property.
@@ -167,7 +166,7 @@ public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link Ssl }
      */
-    public void setSsl(Ssl value) throws PropertyVetoException;
+    void setSsl(Ssl value) throws PropertyVetoException;
     
     
     /**

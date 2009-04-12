@@ -36,18 +36,19 @@
  */
 package com.sun.enterprise.configapi.tests;
 
-import org.junit.Test;
-import org.junit.Ignore;
-import org.junit.Before;
-import org.jvnet.hk2.config.*;
-import org.jvnet.hk2.component.Habitat;
-import com.sun.enterprise.config.serverbeans.HttpListener;
+import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.hk2.component.ConstructorWomb;
-
-import java.beans.PropertyVetoException;
-
-import static org.junit.Assert.*;
 import org.glassfish.tests.utils.Utils;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.ObservableBean;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.Transactions;
 
 /**
  * Simple ConfigListener tests
@@ -74,9 +75,9 @@ public class ConfigListenerTest extends ConfigApiTest {
         ConstructorWomb<HttpListenerContainer> womb = new ConstructorWomb<HttpListenerContainer>(HttpListenerContainer.class, habitat, null);
         HttpListenerContainer container = womb.get(null);
 
-        ConfigSupport.apply(new SingleConfigCode<HttpListener>() {
+        ConfigSupport.apply(new SingleConfigCode<NetworkListener>() {
 
-            public Object run(HttpListener param) throws PropertyVetoException, TransactionFailure {
+            public Object run(NetworkListener param) {
                 param.setPort("8989");
                 return null;
             }
@@ -88,9 +89,9 @@ public class ConfigListenerTest extends ConfigApiTest {
         bean.removeListener(container);
 
         // put back the right values in the domain to avoid test collisions
-        ConfigSupport.apply(new SingleConfigCode<HttpListener>() {
+        ConfigSupport.apply(new SingleConfigCode<NetworkListener>() {
 
-            public Object run(HttpListener param) throws PropertyVetoException, TransactionFailure {
+            public Object run(NetworkListener param) {
                 param.setPort("8080");
                 return null;
             }
@@ -108,9 +109,9 @@ public class ConfigListenerTest extends ConfigApiTest {
         ObservableBean bean = (ObservableBean) ConfigSupport.getImpl(container.httpListener);
         bean.removeListener(container);
 
-        ConfigSupport.apply(new SingleConfigCode<HttpListener>() {
+        ConfigSupport.apply(new SingleConfigCode<NetworkListener>() {
 
-            public Object run(HttpListener param) throws PropertyVetoException, TransactionFailure {
+            public Object run(NetworkListener param) {
                 param.setPort("8989");
                 return null;
             }
@@ -120,9 +121,9 @@ public class ConfigListenerTest extends ConfigApiTest {
         assertFalse(container.received);
 
         // put back the right values in the domain to avoid test collisions        
-        ConfigSupport.apply(new SingleConfigCode<HttpListener>() {
+        ConfigSupport.apply(new SingleConfigCode<NetworkListener>() {
 
-            public Object run(HttpListener param) throws PropertyVetoException, TransactionFailure {
+            public Object run(NetworkListener param) {
                 param.setPort("8080");
                 return null;
             }

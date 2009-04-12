@@ -38,22 +38,18 @@
 
 package com.sun.enterprise.config.serverbeans;
 
-import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.glassfish.api.amx.AMXConfigInfo;
 import org.jvnet.hk2.component.Injectable;
+import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.Configured;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 
 
-/**
- *
- */
-
-/* @XmlType(name = "") */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.RequestProcessingConfig", singleton=true)
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.RequestProcessingConfig", singleton=true)
 @Configured
+@Deprecated
 public interface RequestProcessing extends ConfigBeanProxy, Injectable  {
 
     /**
@@ -63,7 +59,7 @@ public interface RequestProcessing extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute (defaultValue="128")
-    public String getThreadCount();
+    String getThreadCount();
 
     /**
      * Sets the value of the threadCount property.
@@ -71,7 +67,7 @@ public interface RequestProcessing extends ConfigBeanProxy, Injectable  {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setThreadCount(String value) throws PropertyVetoException;
+    void setThreadCount(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the initialThreadCount property.
@@ -80,7 +76,7 @@ public interface RequestProcessing extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute (defaultValue="48")
-    public String getInitialThreadCount();
+    String getInitialThreadCount();
 
     /**
      * Sets the value of the initialThreadCount property.
@@ -88,7 +84,7 @@ public interface RequestProcessing extends ConfigBeanProxy, Injectable  {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setInitialThreadCount(String value) throws PropertyVetoException;
+    void setInitialThreadCount(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the threadIncrement property.
@@ -97,7 +93,7 @@ public interface RequestProcessing extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute (defaultValue="10")
-    public String getThreadIncrement();
+    String getThreadIncrement();
 
     /**
      * Sets the value of the threadIncrement property.
@@ -105,7 +101,7 @@ public interface RequestProcessing extends ConfigBeanProxy, Injectable  {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setThreadIncrement(String value) throws PropertyVetoException;
+    void setThreadIncrement(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the requestTimeoutInSeconds property.
@@ -114,7 +110,7 @@ public interface RequestProcessing extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute (defaultValue="30")
-    public String getRequestTimeoutInSeconds();
+    String getRequestTimeoutInSeconds();
 
     /**
      * Sets the value of the requestTimeoutInSeconds property.
@@ -122,7 +118,7 @@ public interface RequestProcessing extends ConfigBeanProxy, Injectable  {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setRequestTimeoutInSeconds(String value) throws PropertyVetoException;
+    void setRequestTimeoutInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the headerBufferLengthInBytes property.
@@ -131,7 +127,7 @@ public interface RequestProcessing extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute (defaultValue="4096")
-    public String getHeaderBufferLengthInBytes();
+    String getHeaderBufferLengthInBytes();
 
     /**
      * Sets the value of the headerBufferLengthInBytes property.
@@ -139,7 +135,7 @@ public interface RequestProcessing extends ConfigBeanProxy, Injectable  {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHeaderBufferLengthInBytes(String value) throws PropertyVetoException;
+    void setHeaderBufferLengthInBytes(String value) throws PropertyVetoException;
 
 
 

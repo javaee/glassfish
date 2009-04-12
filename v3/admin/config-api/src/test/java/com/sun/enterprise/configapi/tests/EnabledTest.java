@@ -35,47 +35,43 @@
  */
 package com.sun.enterprise.configapi.tests;
 
-import com.sun.enterprise.config.serverbeans.HttpListener;
-import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.grizzly.config.dom.NetworkConfig;
+import com.sun.grizzly.config.dom.NetworkListener;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
  * HttpListener.getEnabled() API test
- * 
- * User: Jerome Dochez
- * Date: Feb 21, 2008
- * Time: 2:06:44 PM
+ *
+ * User: Jerome Dochez Date: Feb 21, 2008 Time: 2:06:44 PM
  */
 public class EnabledTest extends ConfigApiTest {
-
-
     public String getFileName() {
         return "DomainTest";
     }
 
-    List<HttpListener> listeners = null;
+    List<NetworkListener> listeners = null;
 
     @Before
     public void setup() {
-        HttpService service = getHabitat().getComponent(HttpService.class);
-        assertTrue(service!=null);
-        listeners = service.getHttpListener();
+        NetworkConfig service = getHabitat().getComponent(NetworkConfig.class);
+        assertTrue(service != null);
+        listeners = service.getNetworkListeners().getNetworkListener();
     }
 
     @Test
     public void enabled() {
-        for (HttpListener listener : listeners) {
-            logger.fine("Listener " + listener.getId() + " enabled " + listener.getEnabled());
-            if (listener.getId().equals("http-listener-2")) {
-                assertFalse(new Boolean(listener.getEnabled()).booleanValue());
+        for (NetworkListener listener : listeners) {
+            logger.fine("Listener " + listener.getName() + " enabled "
+                + listener.getEnabled());
+            if ("http-listener-2".equals(listener.getName())) {
+                assertFalse(new Boolean(listener.getEnabled()));
             } else {
-                assertTrue(new Boolean(listener.getEnabled()).booleanValue());
+                assertTrue(new Boolean(listener.getEnabled()));
             }
         }
     }

@@ -36,29 +36,27 @@
  */
 package com.sun.enterprise.web.reconfig;
 
-import com.sun.grizzly.util.http.mapper.Mapper;
 import java.beans.PropertyChangeEvent;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.sun.enterprise.config.serverbeans.AccessLog;
-import com.sun.enterprise.config.serverbeans.ConnectionPool;
-import com.sun.enterprise.config.serverbeans.HttpFileCache;
-import com.sun.enterprise.config.serverbeans.HttpListener;
-import com.sun.enterprise.config.serverbeans.HttpProtocol;
 import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.KeepAlive;
-import org.glassfish.api.admin.config.Property; 
-import com.sun.enterprise.config.serverbeans.RequestProcessing;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.v3.services.impl.MapperUpdateListener;
 import com.sun.enterprise.web.WebContainer;
-
+import com.sun.grizzly.config.dom.NetworkListener;
+import org.glassfish.api.admin.config.Property;
+import com.sun.grizzly.util.http.mapper.Mapper;
 import org.apache.catalina.LifecycleException;
-
-import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.config.Changed;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.ConfigListener;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.NotProcessed;
+import org.jvnet.hk2.config.UnprocessedChangeEvents;
 
 
 /**
@@ -70,97 +68,69 @@ public class HttpServiceConfigListener implements ConfigListener, MapperUpdateLi
 
     @Inject
     public HttpService httpService;
-    
+
     @Inject(optional=true)
     public AccessLog accessLog;
-    
-    @Inject(optional=true)
-    public ConnectionPool connectionPool;
-    
-    @Inject(optional=true)
-    public HttpFileCache httpFileCache;
-    
-    @Inject(optional=true)
-    public HttpProtocol httpProtocol;
-    
-    @Inject(optional=true)
-    public KeepAlive keepAlive;
-    
+
     @Inject(optional=true)
     public List<Property> property;
-    
+
     @Inject(name="accessLoggingEnabled",optional=true)
     public Property accessLoggingEnabledProperty;
-        
+
     @Inject(name="docroot",optional=true)
     public Property docroot;
-    
-    @Inject(optional=true)
-    public RequestProcessing requestProcessing;
-    
     private WebContainer container;
-    
+
     private Logger logger;
 
     volatile boolean received=false;
-        
+
     /**
      * Set the Web Container for this ConfigListener.
-     * Must be set in order to perform dynamic configuration 
+     * Must be set in order to perform dynamic configuration
      * @param container the container to be set
      */
     public void setContainer(WebContainer container) {
         this.container = container;
-    } 
-    
+    }
+
     public void setLogger(Logger logger) {
         this.logger = logger;
     }
-    
+
     /**
      * Handles HttpService change events
      * @param events the PropertyChangeEvent
      */
     public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
-        
-        final UnprocessedChangeEvents unp = ConfigSupport.sortAndDispatch(events, new Changed() {
+        return ConfigSupport.sortAndDispatch(events, new Changed() {
             public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> tClass, T t) {
                 if (logger.isLoggable(Level.FINE)) {
                     logger.fine("HttpService config changed "+type+" "+tClass+" "+t);
                 }
                 try {
                     if (t instanceof VirtualServer) {
-                        if (type==TYPE.ADD) {                           
-                            container.createHost(
-                                    (VirtualServer)t, httpService, null);
+                        if (type==TYPE.ADD) {
+                            container.createHost((VirtualServer) t, httpService, null);
                         } else if (type==TYPE.REMOVE) {
                             container.deleteHost(httpService);
                         } else if (type==TYPE.CHANGE) {
-                            container.updateHost((VirtualServer)t, httpService);
+                            container.updateHost((VirtualServer)t);
                         }
                         return null;
-                    } else if (t instanceof HttpListener) {
+                    } else if (t instanceof NetworkListener) {
                         if (type==TYPE.ADD) {
-                            container.addConnector((HttpListener)t,
+                            container.addConnector((NetworkListener) t,
                                                    httpService, true);
                         } else if (type==TYPE.REMOVE) {
-                            container.deleteConnector((HttpListener)t);
+                            container.deleteConnector((NetworkListener) t);
                         } else if (type==TYPE.CHANGE) {
-                            container.updateConnector((HttpListener)t, httpService);
+                            container.updateConnector((NetworkListener) t, httpService);
                         }
                         return null;
                     } else if (t instanceof AccessLog) {
                         container.updateAccessLog(httpService);
-                    } else if (t instanceof RequestProcessing) {
-                        container.configureRequestProcessing(httpService);
-                    } else if (t instanceof KeepAlive) {
-                        container.configureKeepAlive(httpService);
-                    } else if (t instanceof ConnectionPool) {
-                        container.configureConnectionPool(httpService);
-                    } else if (t instanceof HttpProtocol) {
-                        container.configureHttpProtocol(httpService);
-                    } else if (t instanceof HttpFileCache) {
-                        container.configureFileCache(httpService);
                     }
                     container.updateHttpService(httpService);
                 } catch (LifecycleException le) {
@@ -170,10 +140,9 @@ public class HttpServiceConfigListener implements ConfigListener, MapperUpdateLi
             }
         }
         , logger);
-         return unp;
     }
 
-    public void update(HttpService httpService, HttpListener httpListener,
+    public void update(HttpService httpService, NetworkListener httpListener,
             Mapper mapper) {
         container.updateMapper(httpService, httpListener, mapper);
     }

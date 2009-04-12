@@ -46,11 +46,10 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.List;
 
-import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 
@@ -63,7 +62,7 @@ import org.glassfish.quality.ToDo;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.DiagnosticServiceConfig", singleton=true)
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.DiagnosticServiceConfig", singleton=true)
 @Configured
 public interface DiagnosticService extends ConfigBeanProxy, Injectable, PropertyBag {
 
@@ -74,7 +73,7 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable, Property
      *         {@link String }
      */
     @Attribute (defaultValue="true")
-    public String getComputeChecksum();
+    String getComputeChecksum();
 
     /**
      * Sets the value of the computeChecksum property.
@@ -82,7 +81,7 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable, Property
      * @param value allowed object is
      *              {@link String }
      */
-    public void setComputeChecksum(String value) throws PropertyVetoException;
+    void setComputeChecksum(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the verifyConfig property.
@@ -91,7 +90,7 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable, Property
      *         {@link String }
      */
     @Attribute (defaultValue="true")
-    public String getVerifyConfig();
+    String getVerifyConfig();
 
     /**
      * Sets the value of the verifyConfig property.
@@ -99,7 +98,7 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable, Property
      * @param value allowed object is
      *              {@link String }
      */
-    public void setVerifyConfig(String value) throws PropertyVetoException;
+    void setVerifyConfig(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the captureInstallLog property.
@@ -108,7 +107,7 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable, Property
      *         {@link String }
      */
     @Attribute (defaultValue="true")
-    public String getCaptureInstallLog();
+    String getCaptureInstallLog();
 
     /**
      * Sets the value of the captureInstallLog property.
@@ -116,7 +115,7 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable, Property
      * @param value allowed object is
      *              {@link String }
      */
-    public void setCaptureInstallLog(String value) throws PropertyVetoException;
+    void setCaptureInstallLog(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the captureSystemInfo property.
@@ -125,7 +124,7 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable, Property
      *         {@link String }
      */
     @Attribute (defaultValue="true")
-    public String getCaptureSystemInfo();
+    String getCaptureSystemInfo();
 
     /**
      * Sets the value of the captureSystemInfo property.
@@ -133,7 +132,7 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable, Property
      * @param value allowed object is
      *              {@link String }
      */
-    public void setCaptureSystemInfo(String value) throws PropertyVetoException;
+    void setCaptureSystemInfo(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the captureHadbInfo property.
@@ -142,7 +141,7 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable, Property
      *         {@link String }
      */
     @Attribute (defaultValue="true")
-    public String getCaptureHadbInfo();
+    String getCaptureHadbInfo();
 
     /**
      * Sets the value of the captureHadbInfo property.
@@ -150,7 +149,7 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable, Property
      * @param value allowed object is
      *              {@link String }
      */
-    public void setCaptureHadbInfo(String value) throws PropertyVetoException;
+    void setCaptureHadbInfo(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the captureAppDd property.
@@ -159,7 +158,7 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable, Property
      *         {@link String }
      */
     @Attribute (defaultValue="true")
-    public String getCaptureAppDd();
+    String getCaptureAppDd();
 
     /**
      * Sets the value of the captureAppDd property.
@@ -167,7 +166,7 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable, Property
      * @param value allowed object is
      *              {@link String }
      */
-    public void setCaptureAppDd(String value) throws PropertyVetoException;
+    void setCaptureAppDd(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the minLogLevel property.
@@ -176,7 +175,7 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable, Property
      *         {@link String }
      */
     @Attribute (defaultValue="INFO")
-    public String getMinLogLevel();
+    String getMinLogLevel();
 
     /**
      * Sets the value of the minLogLevel property.
@@ -184,7 +183,7 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable, Property
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMinLogLevel(String value) throws PropertyVetoException;
+    void setMinLogLevel(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxLogEntries property.
@@ -193,7 +192,7 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable, Property
      *         {@link String }
      */
     @Attribute (defaultValue="500")
-    public String getMaxLogEntries();
+    String getMaxLogEntries();
 
     /**
      * Sets the value of the maxLogEntries property.
@@ -201,7 +200,7 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable, Property
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxLogEntries(String value) throws PropertyVetoException;
+    void setMaxLogEntries(String value) throws PropertyVetoException;
     
     /**
     	Properties as per {@link PropertyBag}

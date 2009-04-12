@@ -45,14 +45,12 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.List;
 
-import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
-
 import org.glassfish.quality.ToDo;
 
 
@@ -63,9 +61,10 @@ import org.glassfish.quality.ToDo;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.EJBContainerAvailabilityConfig")
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.EJBContainerAvailabilityConfig")
 @Configured
-public interface EjbContainerAvailability extends ConfigBeanProxy, Injectable, PropertyBag  {
+public interface EjbContainerAvailability extends ConfigBeanProxy, Injectable,
+    PropertyBag {
     
     /**
      * Gets the value of the availabilityEnabled property.
@@ -74,7 +73,7 @@ public interface EjbContainerAvailability extends ConfigBeanProxy, Injectable, P
      *         {@link String }
      */
     @Attribute
-    public String getAvailabilityEnabled();
+    String getAvailabilityEnabled();
 
     /**
      * Sets the value of the availabilityEnabled property.
@@ -82,7 +81,7 @@ public interface EjbContainerAvailability extends ConfigBeanProxy, Injectable, P
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAvailabilityEnabled(String value) throws PropertyVetoException;
+    void setAvailabilityEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the sfsbHaPersistenceType property.
@@ -91,7 +90,7 @@ public interface EjbContainerAvailability extends ConfigBeanProxy, Injectable, P
      *         {@link String }
      */
     @Attribute (defaultValue="ha")
-    public String getSfsbHaPersistenceType();
+    String getSfsbHaPersistenceType();
 
     /**
      * Sets the value of the sfsbHaPersistenceType property.
@@ -99,7 +98,7 @@ public interface EjbContainerAvailability extends ConfigBeanProxy, Injectable, P
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSfsbHaPersistenceType(String value) throws PropertyVetoException;
+    void setSfsbHaPersistenceType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the sfsbPersistenceType property.
@@ -108,7 +107,7 @@ public interface EjbContainerAvailability extends ConfigBeanProxy, Injectable, P
      *         {@link String }
      */
     @Attribute (defaultValue="file")
-    public String getSfsbPersistenceType();
+    String getSfsbPersistenceType();
 
     /**
      * Sets the value of the sfsbPersistenceType property.
@@ -116,7 +115,7 @@ public interface EjbContainerAvailability extends ConfigBeanProxy, Injectable, P
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSfsbPersistenceType(String value) throws PropertyVetoException;
+    void setSfsbPersistenceType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the sfsbCheckpointEnabled property.
@@ -125,7 +124,7 @@ public interface EjbContainerAvailability extends ConfigBeanProxy, Injectable, P
      *         {@link String }
      */
     @Attribute
-    public String getSfsbCheckpointEnabled();
+    String getSfsbCheckpointEnabled();
 
     /**
      * Sets the value of the sfsbCheckpointEnabled property.
@@ -133,7 +132,7 @@ public interface EjbContainerAvailability extends ConfigBeanProxy, Injectable, P
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSfsbCheckpointEnabled(String value) throws PropertyVetoException;
+    void setSfsbCheckpointEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the sfsbQuickCheckpointEnabled property.
@@ -142,7 +141,7 @@ public interface EjbContainerAvailability extends ConfigBeanProxy, Injectable, P
      *         {@link String }
      */
     @Attribute
-    public String getSfsbQuickCheckpointEnabled();
+    String getSfsbQuickCheckpointEnabled();
 
     /**
      * Sets the value of the sfsbQuickCheckpointEnabled property.
@@ -150,7 +149,7 @@ public interface EjbContainerAvailability extends ConfigBeanProxy, Injectable, P
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSfsbQuickCheckpointEnabled(String value) throws PropertyVetoException;
+    void setSfsbQuickCheckpointEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the sfsbStorePoolName property.
@@ -159,7 +158,7 @@ public interface EjbContainerAvailability extends ConfigBeanProxy, Injectable, P
      *         {@link String }
      */
     @Attribute
-    public String getSfsbStorePoolName();
+    String getSfsbStorePoolName();
 
     /**
      * Sets the value of the sfsbStorePoolName property.
@@ -167,7 +166,7 @@ public interface EjbContainerAvailability extends ConfigBeanProxy, Injectable, P
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSfsbStorePoolName(String value) throws PropertyVetoException;
+    void setSfsbStorePoolName(String value) throws PropertyVetoException;
     
     /**
     	Properties as per {@link PropertyBag}

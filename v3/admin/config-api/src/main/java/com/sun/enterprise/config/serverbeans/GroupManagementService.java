@@ -45,14 +45,12 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.List;
 
-import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
-
 import org.glassfish.quality.ToDo;
 
 
@@ -63,7 +61,7 @@ import org.glassfish.quality.ToDo;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.GroupManagementServiceConfig", singleton=true)
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.GroupManagementServiceConfig", singleton=true)
 @Configured
 public interface GroupManagementService extends ConfigBeanProxy, Injectable, PropertyBag {
 
@@ -74,7 +72,7 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="3")
-    public String getFdProtocolMaxTries();
+    String getFdProtocolMaxTries();
 
     /**
      * Sets the value of the fdProtocolMaxTries property.
@@ -82,7 +80,7 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      * @param value allowed object is
      *              {@link String }
      */
-    public void setFdProtocolMaxTries(String value) throws PropertyVetoException;
+    void setFdProtocolMaxTries(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the fdProtocolTimeoutInMillis property.
@@ -91,7 +89,7 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="2000")
-    public String getFdProtocolTimeoutInMillis();
+    String getFdProtocolTimeoutInMillis();
 
     /**
      * Sets the value of the fdProtocolTimeoutInMillis property.
@@ -99,7 +97,7 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      * @param value allowed object is
      *              {@link String }
      */
-    public void setFdProtocolTimeoutInMillis(String value) throws PropertyVetoException;
+    void setFdProtocolTimeoutInMillis(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the mergeProtocolMaxIntervalInMillis property.
@@ -108,7 +106,7 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="10000")
-    public String getMergeProtocolMaxIntervalInMillis();
+    String getMergeProtocolMaxIntervalInMillis();
 
     /**
      * Sets the value of the mergeProtocolMaxIntervalInMillis property.
@@ -116,7 +114,7 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMergeProtocolMaxIntervalInMillis(String value) throws PropertyVetoException;
+    void setMergeProtocolMaxIntervalInMillis(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the mergeProtocolMinIntervalInMillis property.
@@ -125,7 +123,7 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="5000")
-    public String getMergeProtocolMinIntervalInMillis();
+    String getMergeProtocolMinIntervalInMillis();
 
     /**
      * Sets the value of the mergeProtocolMinIntervalInMillis property.
@@ -133,7 +131,7 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMergeProtocolMinIntervalInMillis(String value) throws PropertyVetoException;
+    void setMergeProtocolMinIntervalInMillis(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the pingProtocolTimeoutInMillis property.
@@ -142,7 +140,7 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="2000")
-    public String getPingProtocolTimeoutInMillis();
+    String getPingProtocolTimeoutInMillis();
 
     /**
      * Sets the value of the pingProtocolTimeoutInMillis property.
@@ -150,7 +148,7 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      * @param value allowed object is
      *              {@link String }
      */
-    public void setPingProtocolTimeoutInMillis(String value) throws PropertyVetoException;
+    void setPingProtocolTimeoutInMillis(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the vsProtocolTimeoutInMillis property.
@@ -159,7 +157,7 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="1500")
-    public String getVsProtocolTimeoutInMillis();
+    String getVsProtocolTimeoutInMillis();
 
     /**
      * Sets the value of the vsProtocolTimeoutInMillis property.
@@ -167,7 +165,7 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      * @param value allowed object is
      *              {@link String }
      */
-    public void setVsProtocolTimeoutInMillis(String value) throws PropertyVetoException;
+    void setVsProtocolTimeoutInMillis(String value) throws PropertyVetoException;
     
     
     /**

@@ -110,5 +110,9 @@
             <version>1.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.sun.grizzly</groupId>
+            <artifactId>grizzly-config</artifactId>
+        </dependency>
     </dependencies>
 </project>

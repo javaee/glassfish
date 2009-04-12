@@ -23,38 +23,41 @@
 
 package com.sun.enterprise.v3.server;
 
-import com.sun.enterprise.module.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Properties;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.util.Result;
 import com.sun.enterprise.v3.common.PlainTextActionReporter;
-import com.sun.logging.LogDomains;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
-import org.glassfish.api.Startup;
+import com.sun.logging.LogDomains;
 import org.glassfish.api.Async;
 import org.glassfish.api.FutureProvider;
-import org.glassfish.api.admin.*;
+import org.glassfish.api.Startup;
+import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.branding.Branding;
 import org.glassfish.api.event.EventListener.Event;
-
-import org.glassfish.internal.api.Init;
+import org.glassfish.api.event.EventTypes;
+import org.glassfish.api.event.Events;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
+import org.glassfish.internal.api.Init;
+import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.ComponentException;
-
-import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.CountDownLatch;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.glassfish.api.event.*;
-import org.glassfish.server.ServerEnvironmentImpl;
 
 /**
  * Main class for Glassfish v3 startup
@@ -215,6 +218,7 @@ public class AppServerStartup implements ModuleStartup {
                         futures.addAll(((FutureProvider) startup).getFutures());
                     }
                 } catch(RuntimeException e) {
+                    e.printStackTrace();
                         logger.info("Startup service failed to start : " + e.getMessage());
                 }
                 if (logger.isLoggable(Level.FINE)) {

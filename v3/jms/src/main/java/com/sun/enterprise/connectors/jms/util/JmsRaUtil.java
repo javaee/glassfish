@@ -36,26 +36,32 @@
 
 package com.sun.enterprise.connectors.jms.util;
 
-import com.sun.enterprise.config.serverbeans.*;
-import com.sun.enterprise.server.*;
-import com.sun.enterprise.deployment.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.List;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import com.sun.enterprise.connectors.jms.system.*;
-import com.sun.enterprise.connectors.jms.inflow.*;
-import com.sun.enterprise.util.zip.*;
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
-import com.sun.logging.LogDomains;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
-
-import java.io.*;
-import java.util.logging.*;
-import java.util.jar.*;
-import java.util.List;
-
-import org.glassfish.internal.api.ServerContext;
-import org.glassfish.internal.api.Globals;
+import com.sun.enterprise.config.serverbeans.Cluster;
+import com.sun.enterprise.config.serverbeans.JmsService;
+import com.sun.enterprise.config.serverbeans.MdbContainer;
+import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.connectors.jms.inflow.MdbContainerProps;
+import com.sun.enterprise.connectors.jms.system.MQAddressList;
+import com.sun.enterprise.deployment.ConnectorDescriptor;
+import com.sun.enterprise.deployment.EnvironmentProperty;
+import com.sun.enterprise.server.Constants;
+import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.util.zip.ZipFile;
+import com.sun.enterprise.util.zip.ZipFileException;
 import org.glassfish.api.admin.config.Property;
+import com.sun.logging.LogDomains;
+import org.glassfish.internal.api.Globals;
+import org.glassfish.internal.api.ServerContext;
 
 /**
  *
@@ -219,7 +225,7 @@ public class JmsRaUtil {
     }
 
     public void setMdbContainerProperties(){
-        com.sun.enterprise.config.serverbeans.MdbContainer mdbc = null;
+        MdbContainer mdbc = null;
         try {
 
             ServerContext sc = Globals.get(ServerContext.class);
@@ -369,7 +375,7 @@ public class JmsRaUtil {
         if (!installedMqVersion.equals(deployedMqVersion)) {
            try {
                _rarlogger.log(Level.INFO, "jmsra.upgrade_started" );
-           ZipFile rarFile = new ZipFile(java.lang.System.getProperty
+           ZipFile rarFile = new ZipFile(System.getProperty
                                  (SystemPropertyConstants.IMQ_LIB_PROPERTY) +
                                  File.separator + MQ_RAR, deployed_dir);
                rarFile.explode();
@@ -385,7 +391,7 @@ public class JmsRaUtil {
        String ver = null;
        // Full path of installed Mq Client library
        String installed_dir =
-           java.lang.System.getProperty(SystemPropertyConstants.IMQ_LIB_PROPERTY);
+           System.getProperty(SystemPropertyConstants.IMQ_LIB_PROPERTY);
        String jarFile = installed_dir + File.separator + MQ_RAR;
        _rarlogger.log(Level.FINE,"Installed MQ JAR " + jarFile);
     JarFile jFile = null;
@@ -417,7 +423,7 @@ public class JmsRaUtil {
        String ver = null;
         // Full path of Mq client library that is deployed in appserver.
        String deployed_dir =
-           java.lang.System.getProperty(Constants.INSTALL_ROOT)
+           System.getProperty(Constants.INSTALL_ROOT)
            + File.separator + SYSTEM_APP_DIR;
        String manifestFile = deployed_dir + File.separator +
                              MQ_RAR_MANIFEST;

@@ -37,13 +37,19 @@
 package com.sun.enterprise.configapi.tests;
 
 import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.KeepAlive;
-import org.junit.Test;
+import com.sun.grizzly.config.dom.Http;
+import com.sun.grizzly.config.dom.NetworkConfig;
+import com.sun.grizzly.config.dom.NetworkListener;
 import static org.junit.Assert.assertTrue;
-import org.jvnet.hk2.config.*;
+import org.junit.Test;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.TransactionListener;
+import org.jvnet.hk2.config.Transactions;
+import org.jvnet.hk2.config.UnprocessedChangeEvents;
 
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyVetoException;
 import java.util.List;
 
 /**
@@ -51,11 +57,8 @@ import java.util.List;
  * User: dochez
  * Date: Jan 23, 2008
  * Time: 10:48:55 PM
- * To change this template use File | Settings | File Templates.
  */
 public class TransactionListenerTest extends ConfigApiTest {
-
-
     public String getFileName() {
         return "DomainTest";
     }
@@ -66,6 +69,10 @@ public class TransactionListenerTest extends ConfigApiTest {
     @Test
     public void transactionEvents() throws TransactionFailure {
         httpService = getHabitat().getComponent(HttpService.class);
+        NetworkConfig networkConfig = getHabitat().getComponent(NetworkConfig.class);
+        final NetworkListener netListener = networkConfig.getNetworkListeners()
+            .getNetworkListener().get(0);
+        final Http http = netListener.findProtocol().getHttp();
         final TransactionListener listener = new TransactionListener() {
                 public void transactionCommited(List<PropertyChangeEvent> changes) {
                     events = changes;
@@ -80,16 +87,15 @@ public class TransactionListenerTest extends ConfigApiTest {
         try {
             transactions.addTransactionsListener(listener);
             assertTrue(httpService!=null);
+            logger.fine("Max connections = " + http.getMaxConnections());
+            ConfigSupport.apply(new SingleConfigCode<Http>() {
 
-            logger.fine("Max connections = " + httpService.getKeepAlive().getMaxConnections());
-            ConfigSupport.apply(new SingleConfigCode<KeepAlive>() {
-
-                public Object run(KeepAlive param) throws PropertyVetoException, TransactionFailure {
+                public Object run(Http param) {
                     param.setMaxConnections("500");
                     return null;
                 }
-            }, httpService.getKeepAlive());
-            assertTrue(httpService.getKeepAlive().getMaxConnections().equals("500"));
+            }, http);
+            assertTrue("500".equals(http.getMaxConnections()));
 
             transactions.waitForDrain();
             
@@ -105,13 +111,13 @@ public class TransactionListenerTest extends ConfigApiTest {
         }
 
         // put back the right values in the domain to avoid test collisions
-        ConfigSupport.apply(new SingleConfigCode<KeepAlive>() {
+        ConfigSupport.apply(new SingleConfigCode<Http>() {
 
-            public Object run(KeepAlive param) throws PropertyVetoException, TransactionFailure {
+            public Object run(Http param) {
                 param.setMaxConnections("250");
                 return null;
             }
-        }, httpService.getKeepAlive());
+        }, http);
 
     }
 }

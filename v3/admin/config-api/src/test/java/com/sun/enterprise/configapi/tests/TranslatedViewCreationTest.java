@@ -1,21 +1,24 @@
 package com.sun.enterprise.configapi.tests;
 
-import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.KeepAlive;
-import com.sun.enterprise.config.serverbeans.VirtualServer;
-
-import org.junit.Test;
-import org.junit.Before;
-import org.junit.After;
-import static org.junit.Assert.assertTrue;
-import org.jvnet.hk2.config.*;
-import org.jvnet.hk2.component.Habitat;
-import org.glassfish.tests.utils.Utils;
-import org.glassfish.config.support.GlassFishConfigBean;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.util.List;
+
+import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.enterprise.config.serverbeans.VirtualServer;
+import org.glassfish.config.support.GlassFishConfigBean;
+import org.glassfish.tests.utils.Utils;
+import org.junit.After;
+import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.TransactionListener;
+import org.jvnet.hk2.config.Transactions;
+import org.jvnet.hk2.config.UnprocessedChangeEvents;
 
 /**
  * User: Jerome Dochez
@@ -25,7 +28,7 @@ import java.util.List;
 public class TranslatedViewCreationTest extends ConfigApiTest {
 
     final static String propName = "com.sun.my.chosen.docroot";
-    
+
     public String getFileName() {
         return "DomainTest";
     }
@@ -59,12 +62,10 @@ public class TranslatedViewCreationTest extends ConfigApiTest {
         };
 
         Transactions transactions = getHabitat().getComponent(Transactions.class);
-        
+
         try {
             transactions.addTransactionsListener(listener);
             assertTrue(httpService!=null);
-
-            logger.fine("Max connections = " + httpService.getKeepAlive().getMaxConnections());
             ConfigSupport.apply(new SingleConfigCode<HttpService>() {
 
                 public Object run(HttpService param) throws PropertyVetoException, TransactionFailure {
@@ -80,7 +81,7 @@ public class TranslatedViewCreationTest extends ConfigApiTest {
             VirtualServer vs = httpService.getVirtualServerByName("translated-view-creation");
             assertTrue(vs!=null);
             String docRoot = vs.getDocroot();
-            assertTrue(docRoot.equals("/foo/bar/docroot"));
+            assertTrue("/foo/bar/docroot".equals(docRoot));
 
             transactions.waitForDrain();
 
@@ -88,11 +89,11 @@ public class TranslatedViewCreationTest extends ConfigApiTest {
             logger.fine("Number of events " + events.size());
             assertTrue(events.size()==3);
             for (PropertyChangeEvent event : events) {
-                if (event.getPropertyName().equals("virtual-server")) {
+                if ("virtual-server".equals(event.getPropertyName())) {
                     VirtualServer newVS = (VirtualServer) event.getNewValue();
                     assertTrue(event.getOldValue()==null);
                     docRoot = newVS.getDocroot();
-                    assertTrue(docRoot.equals("/foo/bar/docroot"));
+                    assertTrue("/foo/bar/docroot".equals(docRoot));
 
                     VirtualServer rawView = GlassFishConfigBean.getRawView(newVS);
                     assertTrue(rawView!=null);

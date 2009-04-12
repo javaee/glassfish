@@ -44,27 +44,17 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.List;
 
 import org.glassfish.config.support.datatypes.PositiveInteger;
 
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
-import org.glassfish.quality.ToDo;
 
-
-/**
- *
- */
-
-/* @XmlType(name = "", propOrder = {
-    "sessionConfig",
-    "property"
-}) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.WebContainerConfig", singleton=true)
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.WebContainerConfig", singleton=true)
 @Configured
 public interface WebContainer extends ConfigBeanProxy, Injectable, PropertyBag {
 
@@ -75,7 +65,7 @@ public interface WebContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link SessionConfig }
      */
     @Element
-    public SessionConfig getSessionConfig();
+    SessionConfig getSessionConfig();
 
     /**
      * Sets the value of the sessionConfig property.
@@ -83,7 +73,7 @@ public interface WebContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link SessionConfig }
      */
-    public void setSessionConfig(SessionConfig value) throws PropertyVetoException;
+    void setSessionConfig(SessionConfig value) throws PropertyVetoException;
 
     /**
         Properties.

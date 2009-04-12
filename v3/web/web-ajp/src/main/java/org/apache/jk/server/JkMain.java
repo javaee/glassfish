@@ -108,6 +108,7 @@ import com.sun.grizzly.util.IntrospectionUtils;
  * 
  * @author Costin Manolache
  */
+@SuppressWarnings({"StringContatenationInLoop"})
 public class JkMain implements MBeanRegistration
 {
     WorkerEnv wEnv;
@@ -140,7 +141,7 @@ public class JkMain implements MBeanRegistration
         return jkMain;
     }
 
-    private static String DEFAULT_HTTPS="com.sun.net.ssl.internal.www.protocol";
+    private static final String DEFAULT_HTTPS="com.sun.net.ssl.internal.www.protocol";
     private void initHTTPSUrls() {
         try {
             // 11657: if only ajp is used, https: redirects need to work ( at least for 1.3+)
@@ -197,7 +198,7 @@ public class JkMain implements MBeanRegistration
      * Retrieve a property.
      */
     public Object getProperty(String name) {
-        String alias = (String)replacements.get(name);
+        String alias = replacements.get(name);
         Object result = null;
         if(alias != null) {
             result = props.get(alias);
@@ -216,7 +217,7 @@ public class JkMain implements MBeanRegistration
     }
 
     public String getChannelClassName() {
-        return (String)props.get( "handler.channel.className");
+        return props.getProperty( "handler.channel.className");
     }
 
     /**
@@ -228,7 +229,7 @@ public class JkMain implements MBeanRegistration
     }
 
     public String getWorkerClassName() {
-        return (String)props.get( "handler.container.className");
+        return props.getProperty( "handler.container.className");
     }
 
     /** Set the base dir of jk2. ( including WEB-INF if in a webapp ).
@@ -250,19 +251,19 @@ public class JkMain implements MBeanRegistration
     File propsF;
     
     public void setOut( String s ) {
-        this.out=s;
+        out =s;
     }
 
     public String getOut() {
-        return this.out;
+        return out;
     }
 
     public void setErr( String s ) {
-        this.err=s;
+        err =s;
     }
     
     public String getErr() {
-        return this.err;
+        return err;
     }
     
     // -------------------- Initialization --------------------
@@ -282,7 +283,7 @@ public class JkMain implements MBeanRegistration
         String home=getWorkerEnv().getJkHome();
         if( home==null ) {
             // XXX use IntrospectionUtil to find myself
-            this.guessHome();
+            guessHome();
         }
         home=getWorkerEnv().getJkHome();
         if( home==null ) {
@@ -292,7 +293,7 @@ public class JkMain implements MBeanRegistration
             log.debug("Starting Jk2, base dir= " + home  );
         loadPropertiesFile();
 
-        String initHTTPS = (String)props.get("class.initHTTPS");
+        String initHTTPS = props.getProperty("class.initHTTPS");
         if("true".equalsIgnoreCase(initHTTPS)) {
             initHTTPSUrls();
         }
@@ -301,7 +302,7 @@ public class JkMain implements MBeanRegistration
         initTime=t2-t1;
     }
     
-    static String defaultHandlers[]= { "request",
+    static final String defaultHandlers[]= { "request",
                                        "container",
                                        "channelSocket"};
     /*
@@ -348,12 +349,10 @@ public class JkMain implements MBeanRegistration
 
         // Load additional component declarations
         processModules();
-        
-        for( int i=0; i<handlers.length; i++ ) {
-            String name= handlers[i];
-            JkHandler w=getWorkerEnv().getHandler( name );
-            if( w==null ) {
-                newHandler( name, "", name );
+        for (String name : handlers) {
+            JkHandler w = getWorkerEnv().getHandler(name);
+            if (w == null) {
+                newHandler(name, "", name);
             }
         }
 
@@ -377,8 +376,7 @@ public class JkMain implements MBeanRegistration
         started=true;
         long t2=System.currentTimeMillis();
         startTime=t2-t1;
-
-        this.saveProperties();
+        saveProperties();
         log.info("Jk running ID=" + wEnv.getLocalId() + " time=" + initTime + "/" + startTime +
                  "  config=" + propFile);
     }
@@ -457,7 +455,7 @@ public class JkMain implements MBeanRegistration
             jkMain=new JkMain();
 
             IntrospectionUtils.processArgs( jkMain, args, new String[] {},
-                                            null, new Hashtable());
+                                            null, new Hashtable<String,String>());
 
             jkMain.init();
             jkMain.start();
@@ -514,7 +512,7 @@ public class JkMain implements MBeanRegistration
     }
 
     // translate top-level keys ( from coyote or generic ) into component keys
-    static Hashtable replacements=new Hashtable();
+    static final Hashtable<String, String> replacements=new Hashtable<String, String>();
     static {
         replacements.put("port","channelSocket.port");
         replacements.put("maxThreads", "channelSocket.maxThreads");   
@@ -545,7 +543,7 @@ public class JkMain implements MBeanRegistration
         while( keys.hasMoreElements() ) {
             String key=(String)keys.nextElement();
             Object propValue=props.getProperty( key );
-            String replacement=(String)replacements.get(key);
+            String replacement= replacements.get(key);
             props.put(replacement, propValue);
             if( log.isDebugEnabled()) 
                 log.debug("Substituting " + key + " " + replacement + " " + 
@@ -603,7 +601,7 @@ public class JkMain implements MBeanRegistration
         
         if( log.isDebugEnabled() ) 
             log.debug("Setting " + propName + " on " + fullName + " " + comp);
-        this.setBeanProperty( comp, propName, propValue );
+        setBeanProperty( comp, propName, propValue );
     }
 
     private JkHandler newHandler( String type, String localName, String fullName )
@@ -622,10 +620,10 @@ public class JkMain implements MBeanRegistration
             log.error( "Can't create " + fullName, ex );
             return null;
         }
-        if( this.domain != null ) {
+        if(domain != null ) {
             try {
                 ObjectName handlerOname = new ObjectName
-                    (this.domain + ":" + "type=JkHandler,name=" + fullName);
+                    (domain + ":" + "type=JkHandler,name=" + fullName);
                 Registry.getRegistry(null, null).registerComponent(handler, handlerOname, classN);
             } catch (Exception e) {
                 log.error( "Error registering " + fullName, e );

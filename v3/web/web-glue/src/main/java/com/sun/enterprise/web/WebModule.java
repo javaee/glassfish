@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
+ *
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -36,14 +36,29 @@
 
 package com.sun.enterprise.web;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+import java.util.ResourceBundle;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.*;
+import javax.servlet.Servlet;
 import javax.servlet.http.HttpSession;
 
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
@@ -71,8 +86,6 @@ import com.sun.enterprise.web.session.PersistenceType;
 import com.sun.enterprise.web.session.SessionCookieConfig;
 import com.sun.logging.LogDomains;
 import com.sun.web.security.RealmAdapter;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import org.apache.catalina.Container;
 import org.apache.catalina.ContainerListener;
 import org.apache.catalina.InstanceListener;
@@ -85,7 +98,6 @@ import org.apache.catalina.Valve;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.core.StandardPipeline;
 import org.apache.catalina.core.StandardWrapper;
-import org.apache.catalina.deploy.FilterMap;
 import org.apache.catalina.deploy.FilterMaps;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.session.StandardManager;
@@ -95,8 +107,8 @@ import org.glassfish.internal.api.ServerContext;
 import org.glassfish.web.admin.monitor.ServletProbeProvider;
 import org.glassfish.web.admin.monitor.SessionProbeProvider;
 import org.glassfish.web.admin.monitor.WebModuleProbeProvider;
-import org.glassfish.web.valve.GlassFishValve;
 import org.glassfish.web.loader.ServletContainerInitializerUtil;
+import org.glassfish.web.valve.GlassFishValve;
 
 /**
  * Class representing a web module for use by the Application Server.
@@ -125,12 +137,12 @@ public class WebModule extends PwcWebModule {
 
     //locale-charset-info tag from sun-web.xml
     private LocaleCharsetMap[] _lcMap = null;
-    
+
     /**
      * Is the default-web.xml parsed?
-     */    
+     */
     private boolean hasBeenXmlConfigured = false;
-    
+
     private WebContainer webContainer;
 
     private final Map<String,AdHocServletInfo> adHocPaths;
@@ -143,12 +155,12 @@ public class WebModule extends PwcWebModule {
 
     // File encoding of static resources
     private String fileEncoding;
-    
+
     /**
      * Cached findXXX results
      */
     protected Object[] cachedFinds;
-    
+
     private com.sun.enterprise.config.serverbeans.WebModule bean;
 
     /**
@@ -196,7 +208,7 @@ public class WebModule extends PwcWebModule {
      * set the sun-web.xml config bean
      */
     public void setIasWebAppConfigBean(SunWebApp iasBean) {
-       this.iasBean = iasBean; 
+       this.iasBean = iasBean;
     }
 
 
@@ -204,11 +216,11 @@ public class WebModule extends PwcWebModule {
      * gets the sun-web.xml config bean
      */
     public SunWebApp getIasWebAppConfigBean() {
-       return iasBean; 
+       return iasBean;
     }
 
 
-    /** 
+    /**
      * Gets the web container in which this web module was loaded.
      *
      * @return the web container in which this web module was loaded
@@ -356,11 +368,11 @@ public class WebModule extends PwcWebModule {
                         matchFound = true;
                     }
                 }
-            }           
+            }
         }
 
         return encoding;
-    }    
+    }
 
 
     /**
@@ -428,8 +440,8 @@ public class WebModule extends PwcWebModule {
     public void setXmlConfigured(boolean hasBeenXmlConfigured){
         this.hasBeenXmlConfigured = hasBeenXmlConfigured;
     }
-    
-    
+
+
     /**
      * Return <code>true</code> if the default=web.xml has been read for
      * this module.
@@ -437,8 +449,8 @@ public class WebModule extends PwcWebModule {
     public boolean hasBeenXmlConfigured(){
         return hasBeenXmlConfigured;
     }
-    
-    
+
+
     /**
      * Cache the result of doing findXX on this object
      * NOTE: this method MUST be used only when loading/using
@@ -447,8 +459,8 @@ public class WebModule extends PwcWebModule {
     public void setCachedFindOperation(Object[] cachedFinds){
         this.cachedFinds = cachedFinds;
     }
-    
-    
+
+
     /**
      * Return the cached result of doing findXX on this object
      * NOTE: this method MUST be used only when loading/using
@@ -513,7 +525,7 @@ public class WebModule extends PwcWebModule {
                 //ClientPipeCloser.getInstance().cleanupClientPipe((ServiceReferenceDescriptor)obj);
             }
         }
-       
+
         // Stop and unregister Tomcat mbeans
         super.stop(getWebContainer().isShutdown());
     }
@@ -547,7 +559,7 @@ public class WebModule extends PwcWebModule {
     /**
      * Indicates whether this web module contains any ad-hoc paths.
      *
-     * An ad-hoc path is a servlet path that is mapped to a servlet 
+     * An ad-hoc path is a servlet path that is mapped to a servlet
      * not declared in the web module's deployment descriptor.
      *
      * A web module all of whose mappings are for ad-hoc paths is called an
@@ -579,10 +591,10 @@ public class WebModule extends PwcWebModule {
      * module.
      *
      * @param path The ad-hoc path to add
-     * @param subtree The ad-hoc subtree path to add 
+     * @param subtree The ad-hoc subtree path to add
      * @param servletInfo Information about the servlet that is responsible
      * for servicing the given ad-hoc path
-     */    
+     */
     void addAdHocPathAndSubtree(String path,
                                 String subtree,
                                 AdHocServletInfo servletInfo) {
@@ -615,7 +627,7 @@ public class WebModule extends PwcWebModule {
      *
      * @param newPaths Mappings of ad-hoc paths to the servlets responsible
      * for servicing them
-     */    
+     */
     void addAdHocPaths(Map<String, AdHocServletInfo> newPaths) {
 
         if (newPaths == null || newPaths.isEmpty()) {
@@ -642,7 +654,7 @@ public class WebModule extends PwcWebModule {
      *
      * @param newSubtrees Mappings of ad-hoc subtree paths to the servlets
      * responsible for servicing them
-     */    
+     */
     void addAdHocSubtrees(Map<String, AdHocServletInfo> newSubtrees) {
 
         if (newSubtrees == null || newSubtrees.isEmpty()) {
@@ -733,7 +745,7 @@ public class WebModule extends PwcWebModule {
      * Removes the given ad-hoc path from this web module.
      *
      * @param path The ad-hoc path to remove
-     */    
+     */
     void removeAdHocPath(String path) {
 
         if (path == null) {
@@ -751,7 +763,7 @@ public class WebModule extends PwcWebModule {
      * Removes the given ad-hoc path from this web module.
      *
      * @param subtree The ad-hoc subtree to remove
-     */    
+     */
     void removeAdHocSubtree(String subtree) {
 
         if (subtree == null) {
@@ -797,7 +809,7 @@ public class WebModule extends PwcWebModule {
 
     /**
      * Sets the file encoding of all static resources of this web module.
-     * 
+     *
      * @param enc The file encoding of static resources of this web module
      */
     public void setFileEncoding(String enc) {
@@ -807,7 +819,7 @@ public class WebModule extends PwcWebModule {
 
     /**
      * Gets the file encoding of all static resources of this web module.
-     * 
+     *
      * @return The file encoding of static resources of this web module
      */
     public String getFileEncoding() {
@@ -839,7 +851,7 @@ public class WebModule extends PwcWebModule {
         FilterMaps filterMaps = new FilterMaps();
         filterMaps.setFilterName(sfm.getName());
         filterMaps.setDispatcherTypes(sfm.getDispatchers());
-        
+
         List<String> servletNames = sfm.getServletNames();
         if (servletNames != null) {
             for(String servletName : servletNames) {
@@ -876,13 +888,13 @@ public class WebModule extends PwcWebModule {
         if (initParams != null && !initParams.isEmpty()) {
             for(String paramName : initParams.keySet()) {
                 adHocWrapper.addInitParameter(paramName, initParams.get(paramName));
-            }              
+            }
         }
 
         return adHocWrapper;
     }
-    
-   
+
+
 
     /**
      * Configure the <code>WebModule</code> valves.
@@ -913,7 +925,7 @@ public class WebModule extends PwcWebModule {
                 }
             }
         }
-        
+
         if (iasBean != null && iasBean.sizeWebProperty() > 0) {
             WebProperty[] wprops = iasBean.getWebProperty();
             for(WebProperty wprop : wprops) {
@@ -921,10 +933,10 @@ public class WebModule extends PwcWebModule {
                 propValue = wprop.getAttributeValue("value");
                 configureCatalinaProperties(propName, propValue);
             }
-        }      
+        }
     }
-    
-    
+
+
     /**
      * Configure the <code>WebModule</code< properties.
      * @param propName the property name
@@ -937,14 +949,14 @@ public class WebModule extends PwcWebModule {
                         getName());
             return;
         }
-        
+
         if (propName.startsWith("valve_")) {
-            addValve(propValue);            
+            addValve(propValue);
         } else if (propName.startsWith("listener_")) {
-            addListener(propValue);   
-        }           
+            addListener(propValue);
+        }
     }
-    
+
 
     /**
      * Instantiates a <tt>Valve</tt> from the given <tt>className</tt>
@@ -955,15 +967,15 @@ public class WebModule extends PwcWebModule {
     protected void addValve(String className) {
         Object valve = loadInstance(className);
         if (valve instanceof Valve) {
-            super.addValve((Valve) valve); 
+            super.addValve((Valve) valve);
         } else if (valve instanceof GlassFishValve) {
-            super.addValve((GlassFishValve) valve);       
+            super.addValve((GlassFishValve) valve);
         } else {
             logger.log(Level.WARNING, "webmodule.valve.classNameNoValve",
                        className);
-        }     
-    }    
-    
+        }
+    }
+
     /**
      * Constructs a <tt>Valve</tt> from the given <tt>valveDescriptor</tt>
      * and adds it to the <tt>Pipeline</tt> of this WebModule.
@@ -1038,16 +1050,16 @@ public class WebModule extends PwcWebModule {
             super.addValve((GlassFishValve) valve);
         }
     }
-    
 
-    
+
+
     /**
      * Add a Catalina listener to a <code>ContractProvider</code>
-     * @param listenerName the fully qualified class name of the listener. 
+     * @param listenerName the fully qualified class name of the listener.
      */
     protected void addListener(String listenerName) {
         Object listener = loadInstance(listenerName);
-        
+
         if ( listener == null ) return;
 
         if (listener instanceof ContainerListener) {
@@ -1055,13 +1067,13 @@ public class WebModule extends PwcWebModule {
         } else if (listener instanceof LifecycleListener ){
             addLifecycleListener((LifecycleListener)listener);
         } else if (listener instanceof InstanceListener){
-            addInstanceListener(listenerName);            
+            addInstanceListener(listenerName);
         } else {
             logger.log(Level.SEVERE,"webcontainer.invalidListener"
                        + listenerName);
-        }     
+        }
     }
-    
+
 
     private Object loadInstance(String className){
         try{
@@ -1072,9 +1084,9 @@ public class WebModule extends PwcWebModule {
             msg = MessageFormat.format(msg, new Object[] { className,
                                                            getName() });
             logger.log(Level.SEVERE, msg, ex);
-        } 
+        }
         return null;
-    } 
+    }
 
 
     private String getSetterName(String propName) {
@@ -1089,12 +1101,12 @@ public class WebModule extends PwcWebModule {
         }
         return propName;
     }
-    
+
     public com.sun.enterprise.config.serverbeans.WebModule getBean() {
         return bean;
     }
 
-    
+
     public void setBean(com.sun.enterprise.config.serverbeans.WebModule bean) {
         this.bean = bean;
     }
@@ -1115,7 +1127,7 @@ public class WebModule extends PwcWebModule {
      * domain.xml representing the application (EAR file) in which this
      * web module has been embedded.
      *
-     * @return The application bean, or null if this web module 
+     * @return The application bean, or null if this web module
      * is standalone
      */
     public J2eeApplication getApplicationBean() {
@@ -1192,7 +1204,7 @@ public class WebModule extends PwcWebModule {
         if (!propName.startsWith("alternatedocroot_")) {
             return;
         }
-            
+
         /*
          * Validate the prop value
          */
@@ -1536,7 +1548,7 @@ public class WebModule extends PwcWebModule {
     void loadSessions(Properties deploymentProperties) {
         if (deploymentProperties == null) {
             return;
-        }    
+        }
 
         StandardManager manager = (StandardManager) getManager();
         if (manager == null) {
@@ -1608,11 +1620,11 @@ public class WebModule extends PwcWebModule {
                 cookieBean = cfg.getCookieProperties();
             }
         }
-        
+
         configureSessionManager(smBean, wbd, wmInfo);
         configureSession(sessionPropsBean, wbd);
-        configureCookieProperties(cookieBean);        
-    } 
+        configureCookieProperties(cookieBean);
+    }
 
     /**
      * Configures the given classloader with its attributes specified in
@@ -1736,39 +1748,39 @@ public class WebModule extends PwcWebModule {
 
     /**
      * Configure the session manager according to the persistence-type
-     * specified in the <session-manager> element and the related 
+     * specified in the <session-manager> element and the related
      * settings in the <manager-properties> and <store-properties> elements
      * in sun-web.xml.
      */
     private void configureSessionManager(SessionManager smBean,
                                          WebBundleDescriptor wbd,
                                          WebModuleConfig wmInfo) {
-        
+
         PersistenceType persistence = PersistenceType.MEMORY;
         String frequency = null;
         String scope = null;
-        
-        SessionManagerConfigurationHelper configHelper = 
+
+        SessionManagerConfigurationHelper configHelper =
             new SessionManagerConfigurationHelper(
                 this, smBean, wbd, wmInfo,
                 webContainer.getServerConfigLookup());
-        
+
         persistence = configHelper.getPersistenceType();
         frequency = configHelper.getPersistenceFrequency();
         scope = configHelper.getPersistenceScope();
 
-        if (logger.isLoggable(Level.FINEST)) {        
+        if (logger.isLoggable(Level.FINEST)) {
             logger.finest("IN WebContainer>>ConfigureSessionManager before builder factory");
             logger.finest("FINAL_PERSISTENCE-TYPE IS = "
                           + persistence.getType());
             logger.finest("FINAL_PERSISTENCE_FREQUENCY IS = " + frequency);
-            logger.finest("FINAL_PERSISTENCE_SCOPE IS = " + scope);          
+            logger.finest("FINAL_PERSISTENCE_SCOPE IS = " + scope);
         }
 
-        PersistenceStrategyBuilderFactory factory = 
+        PersistenceStrategyBuilderFactory factory =
             new PersistenceStrategyBuilderFactory(
                 webContainer.getServerConfigLookup());
-        PersistenceStrategyBuilder builder = 
+        PersistenceStrategyBuilder builder =
             factory.createPersistenceStrategyBuilder(persistence.getType(),
                                                      frequency, scope, this);
         if (logger.isLoggable(Level.FINEST)) {
@@ -1818,8 +1830,8 @@ public class WebModule extends PwcWebModule {
                 }
             }
         }
-        
-        int webXmlTimeoutSeconds = -1; 
+
+        int webXmlTimeoutSeconds = -1;
         if (wbd != null) {
             webXmlTimeoutSeconds = wbd.getSessionConfigDescriptor().getSessionTimeout() * 60;
         }
@@ -1835,9 +1847,9 @@ public class WebModule extends PwcWebModule {
              */
             if (timeoutConfigured) {
                 getManager().setMaxInactiveIntervalSeconds(timeoutSeconds);
-            } 
+            }
         }
-    }        
+    }
 
     /**
      * Configure the settings for the session cookie using the values

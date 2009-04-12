@@ -23,34 +23,9 @@
 
 package com.sun.enterprise.v3.services.impl;
 
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.Singleton;
-import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.component.PreDestroy;
-import org.jvnet.hk2.component.Habitat;
-import org.glassfish.api.Startup;
-import org.glassfish.api.FutureProvider;
-import org.glassfish.api.container.RequestDispatcher;
-import org.glassfish.api.container.EndpointRegistrationException;
-import org.glassfish.api.deployment.ApplicationContainer;
-import org.glassfish.flashlight.provider.ProbeProviderFactory;
-import org.glassfish.kernel.admin.monitor.ThreadPoolProbeProvider;
-import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
-import com.sun.enterprise.config.serverbeans.HttpListener;
-import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.VirtualServer;
-import com.sun.enterprise.util.StringUtils;
-import com.sun.enterprise.util.Result;
-import com.sun.enterprise.v3.admin.AdminAdapter;
-import com.sun.enterprise.v3.admin.adapter.AdminConsoleAdapter;
-import com.sun.grizzly.Controller;
-import com.sun.grizzly.tcp.Adapter;
-import com.sun.grizzly.util.http.mapper.Mapper;
-import com.sun.hk2.component.ConstructorWomb;
-import java.lang.reflect.*;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -58,6 +33,35 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.enterprise.config.serverbeans.VirtualServer;
+import com.sun.enterprise.util.Result;
+import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.v3.admin.AdminAdapter;
+import com.sun.enterprise.v3.admin.adapter.AdminConsoleAdapter;
+import com.sun.grizzly.Controller;
+import com.sun.grizzly.config.dom.NetworkConfig;
+import com.sun.grizzly.config.dom.NetworkListener;
+import com.sun.grizzly.config.dom.NetworkListeners;
+import com.sun.grizzly.tcp.Adapter;
+import com.sun.grizzly.util.http.mapper.Mapper;
+import com.sun.hk2.component.ConstructorWomb;
+import org.glassfish.api.FutureProvider;
+import org.glassfish.api.Startup;
+import org.glassfish.api.container.EndpointRegistrationException;
+import org.glassfish.api.container.RequestDispatcher;
+import org.glassfish.api.deployment.ApplicationContainer;
+import org.glassfish.flashlight.provider.ProbeProviderFactory;
+import org.glassfish.kernel.admin.monitor.ThreadPoolProbeProvider;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.component.PreDestroy;
+import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.ObservableBean;
 
@@ -103,8 +107,6 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
 
     private ThreadPoolProbeProvider threadPoolProbeProvider;
 
-    private DynamicConfigListener configListener;
-
     ConcurrentLinkedQueue<MapperUpdateListener> mapperUpdateListeners =
             new ConcurrentLinkedQueue<MapperUpdateListener>();
 
@@ -148,7 +150,6 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     
     /**
      * Remove the new proxy from our list of proxies by id.
-     * @param port number to be removed
      * @return <tt>true</tt>, if proxy on specified port was removed,
      *         <tt>false</tt> if no proxy was associated with the port.
      */
@@ -157,9 +158,9 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
         for (NetworkProxy p : proxies) {
             if (p instanceof GrizzlyProxy) {
                 GrizzlyProxy grizzlyProxy = (GrizzlyProxy) p;
-                if (grizzlyProxy.httpListener != null &&
-                        grizzlyProxy.httpListener.getId() != null &&
-                        grizzlyProxy.httpListener.getId().equals(id)) {
+                if (grizzlyProxy.networkListener != null &&
+                        grizzlyProxy.networkListener.getName() != null &&
+                        grizzlyProxy.networkListener.getName().equals(id)) {
                     proxy = p;
                     break;
                 }
@@ -202,13 +203,13 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
      * Notify all {@link MapperUpdateListener}s about update happened.
      * 
      * @param httpService {@link HttpService}
-     * @param httpListener {@link HttpListener}, which {@link Mapper} got changed
+     * @param networkListener {@link NetworkListener}, which {@link Mapper} got changed
      * @param mapper new {@link Mapper} value
      */
     public void notifyMapperUpdateListeners(HttpService httpService,
-            HttpListener httpListener, Mapper mapper) {
+            NetworkListener networkListener, Mapper mapper) {
         for(MapperUpdateListener listener : mapperUpdateListeners) {
-            listener.update(httpService, httpListener, mapper);
+            listener.update(httpService, networkListener, mapper);
         }
     }
 
@@ -267,18 +268,17 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
      * will be placed into commission by the subsystem.
      */
     public void postConstruct() {
-        HttpService httpService = config.getHttpService();
+        NetworkConfig networkConfig = config.getNetworkConfig();
 
         ConstructorWomb<DynamicConfigListener> womb =
                 new ConstructorWomb<DynamicConfigListener>(
                 DynamicConfigListener.class,
                 habitat,
                 null);
-        configListener = womb.get(null);
+        DynamicConfigListener configListener = womb.get(null);
 
-        ObservableBean httpServiceBean = (ObservableBean) ConfigSupport.getImpl(
-                configListener.httpService);
-        httpServiceBean.addListener(configListener);
+        ObservableBean bean = (ObservableBean) ConfigSupport.getImpl(networkConfig);
+        bean.addListener(configListener);
 
         configListener.setGrizzlyService(this);
         configListener.setLogger(logger);
@@ -286,8 +286,8 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
         try {
             createProbeProviders();
             futures = new ArrayList<Future<Result<Thread>>>();
-            for (HttpListener listener : httpService.getHttpListener()) {
-                createNetworkProxy(listener, httpService);
+            for (NetworkListener listener : networkConfig.getNetworkListeners().getNetworkListener()) {
+                createNetworkProxy(listener);
             }
             
             registerNetworkProxy(); 
@@ -340,36 +340,34 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
 
     /*
      * Creates a new NetworkProxy for a particular HttpListner
-     * @param listener HttpListener
-     * @param httpService HttpService
+     * @param listener NetworkListener
+     * @param networkConfig HttpService
      */
-    public synchronized Future<Result<Thread>> createNetworkProxy(
-            HttpListener listener, HttpService httpService) {
+    public synchronized Future<Result<Thread>> createNetworkProxy(NetworkListener listener) {
 
         // Do not create listener when mod_ajp/jk is enabled. This
         // should never happens one the grizzly-config configuration
         // will be used.
-        String jkEnabled = listener.getPropertyValue("jkEnabled");
-        if (jkEnabled != null && ConfigBeansUtilities.toBoolean(jkEnabled)) {
-            return null;
-        }
+//        if (ConfigBeansUtilities.toBoolean(listener.getPropertyValue("jkEnabled"))) {
+//            return null;
+//        }
 
         if (!Boolean.valueOf(listener.getEnabled())) {
-            logger.info("Network listener " + listener.getId() +
+            logger.info("Network listener " + listener.getName() +
                     " on port " + listener.getPort() +
                     " disabled per domain.xml");
             return null;
         }
 
         // create the proxy for the port.
-        GrizzlyProxy proxy = new GrizzlyProxy(this, listener, httpService);
-      
+        GrizzlyProxy proxy = new GrizzlyProxy(this, listener);
+        final NetworkConfig networkConfig = listener.getParent(NetworkListeners.class).getParent(NetworkConfig.class);
         // attach all virtual servers to this port
-        for (VirtualServer vs : httpService.getVirtualServer()) {
+        for (VirtualServer vs : networkConfig.getParent(Config.class).getHttpService().getVirtualServer()) {
             List<String> vsListeners = 
-                    StringUtils.parseStringList(vs.getHttpListeners(), " ,");
-            if (vsListeners == null || vsListeners.size() == 0 || 
-                    vsListeners.contains(listener.getId())) {
+                    StringUtils.parseStringList(vs.getNetworkListeners(), " ,");
+            if (vsListeners == null || vsListeners.isEmpty() ||
+                    vsListeners.contains(listener.getName())) {
                 if (!hosts.contains(vs.getId())){
                     hosts.add(vs.getId());
                 }
@@ -524,6 +522,6 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
         int port        = aca.getListenPort();
         List<String> vs = aca.getVirtualServers();
         String cr       = aca.getContextRoot();
-        this.registerEndpoint(cr, port, vs, aca, null);        
+        this.registerEndpoint(cr, port, vs, aca, null);
     }
 }

@@ -33,19 +33,19 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.configapi.tests;
 
-import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.KeepAlive;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.TransactionFailure;
-import org.jvnet.hk2.config.ConfigSupport;
+import com.sun.grizzly.config.dom.Http;
+import com.sun.grizzly.config.dom.NetworkConfig;
+import com.sun.grizzly.config.dom.NetworkListener;
+import com.sun.grizzly.config.dom.Protocol;
+import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.beans.PropertyVetoException;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
 
 /**
  * HttpService related tests
@@ -53,77 +53,57 @@ import java.beans.PropertyVetoException;
  * @author Jerome Dochez
  */
 public class HttpServiceTest extends ConfigApiTest {
-
-
     public String getFileName() {
         return "DomainTest";
     }
 
-    HttpService httpService = null;
+    NetworkListener listener = null;
 
     @Before
     public void setup() {
-        httpService = getHabitat().getComponent(HttpService.class);
-        assertTrue(httpService!=null);
+        listener = getHabitat().getComponent(NetworkConfig.class).getNetworkListeners().getNetworkListener().get(0);
+        assertTrue(listener != null);
     }
 
     @Test
     public void connectionTest() {
-        logger.fine("Max connections = " + httpService.getKeepAlive().getMaxConnections());
-        assertTrue(httpService.getKeepAlive().getMaxConnections().equals("250"));
+        logger.fine("Max connections = " + listener.findProtocol().getHttp().getMaxConnections());
+        assertEquals("256", listener.findProtocol().getHttp().getMaxConnections());
     }
 
     @Test
     public void validTransaction() throws TransactionFailure {
-        logger.fine("before..." +httpService.getKeepAlive().getThreadCount() );
-
-        ConfigSupport.apply((new SingleConfigCode<HttpService>() {
-            public Object run(HttpService okToChange) throws PropertyVetoException, TransactionFailure {
-                    KeepAlive newKeepAlive = okToChange.createChild(KeepAlive.class);
-                newKeepAlive.setMaxConnections(httpService.getKeepAlive().getMaxConnections());
-                newKeepAlive.setThreadCount("3");
-                newKeepAlive.setTimeoutInSeconds("65");
-                okToChange.setKeepAlive(newKeepAlive);
-                return newKeepAlive;
+        ConfigSupport.apply(new SingleConfigCode<NetworkListener>() {
+            public Object run(NetworkListener okToChange) throws TransactionFailure {
+                final Http http = okToChange.createChild(Http.class);
+                http.setMaxConnections("100");
+                http.setTimeout("65");
+                ConfigSupport.apply(new SingleConfigCode<Protocol>() {
+                    @Override
+                    public Object run(Protocol param) {
+                        param.setHttp(http);
+                        return null;
+                    }
+                }, okToChange.findProtocol());
+                return http;
             }
-        }), httpService);
-
+        }, listener);
+        ConfigSupport.apply(new SingleConfigCode<Http>() {
+            @Override
+            public Object run(Http param) {
+                param.setMaxConnections(null);
+                return null;
+            }
+        }, listener.findProtocol().getHttp());
         try {
-            ConfigSupport.apply((new SingleConfigCode<KeepAlive>() {
-                public Object run(KeepAlive param) throws PropertyVetoException, TransactionFailure {
-                    param.setThreadCount("7");
+            ConfigSupport.apply(new SingleConfigCode<Http>() {
+                public Object run(Http param) throws TransactionFailure {
+                    param.setMaxConnections("7");
                     throw new TransactionFailure("Sorry, changed my mind", null);
                 }
-            }), httpService.getKeepAlive());
-        } catch(TransactionFailure e) {
+            }, listener.findProtocol().getHttp());
+        } catch (TransactionFailure e) {
             logger.fine("good, got my exception about changing my mind");
         }
-        logger.fine("after..." +httpService.getKeepAlive().getThreadCount() );
-        // let's try an invalid set
-        try {
-            httpService.getKeepAlive().setThreadCount("5");
-        } catch (PropertyVetoException e) {
-            logger.fine("excellent, we get the expected exception");
-        }
-        logger.fine("final..." +httpService.getKeepAlive().getThreadCount() );
-        assertTrue(httpService.getKeepAlive().getThreadCount().equals("3"));
-    }
-
-    @Test(expected=TransactionFailure.class)
-    public void invalidTransaction() throws TransactionFailure {
-
-            ConfigSupport.apply((new SingleConfigCode<HttpService>() {
-            public Object run(HttpService okToChange) throws PropertyVetoException, TransactionFailure {
-                KeepAlive newKeepAlive = okToChange.createChild(KeepAlive.class);
-                newKeepAlive.setMaxConnections("500");
-                newKeepAlive.setThreadCount("5");
-                newKeepAlive.setTimeoutInSeconds("65");
-                okToChange.setKeepAlive(newKeepAlive);
-                // this should fail
-                okToChange.getHttpProtocol().setDefaultType("text/css");
-                return newKeepAlive;
-            }
-        }), httpService);
-        assertTrue(httpService.getKeepAlive().getThreadCount().equals("3"));
     }
 }

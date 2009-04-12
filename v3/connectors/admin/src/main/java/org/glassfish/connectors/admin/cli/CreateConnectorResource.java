@@ -37,7 +37,6 @@ package org.glassfish.connectors.admin.cli;
 
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
@@ -56,9 +55,11 @@ import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.glassfish.api.admin.config.Property;
 
 import java.beans.PropertyVetoException;
 import java.util.Properties;
+import java.util.Map;
 
 /**
  * Create Connector Resource Command
@@ -144,7 +145,7 @@ public class CreateConnectorResource implements AdminCommand {
                     newResource.setPoolName(poolName);
                     newResource.setEnabled(enabled.toString());
                     if (properties != null) {
-                        for ( java.util.Map.Entry e : properties.entrySet()) {
+                        for ( Map.Entry e : properties.entrySet()) {
                             Property prop = newResource.createChild(Property.class);
                             prop.setName((String)e.getKey());       
                             prop.setValue((String)e.getValue());

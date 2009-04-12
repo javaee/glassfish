@@ -5,28 +5,33 @@
 
 package org.glassfish.web.admin.monitor.telemetry;
 
-import java.util.List;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.net.InetAddress;
-
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.Singleton;
-import com.sun.enterprise.config.serverbeans.*;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collection;
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.enterprise.config.serverbeans.VirtualServer;
+import com.sun.grizzly.config.dom.NetworkConfig;
+import com.sun.grizzly.config.dom.NetworkListener;
 import org.glassfish.api.monitoring.TelemetryProvider;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 import org.glassfish.flashlight.client.ProbeClientMediator;
 import org.glassfish.flashlight.client.ProbeClientMethodHandle;
-import org.glassfish.flashlight.provider.ProbeProviderListener;
-import org.glassfish.flashlight.provider.ProbeProviderEventManager;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.datatree.factory.TreeNodeFactory;
+import org.glassfish.flashlight.provider.ProbeProviderEventManager;
+import org.glassfish.flashlight.provider.ProbeProviderListener;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.component.Singleton;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -55,6 +60,7 @@ public class HttpServiceTelemetryBootstrap implements ProbeProviderListener,
     private boolean probeProviderListenerRegistered = false;;
     private TreeNode httpServiceNode =  null;
     private static HttpService httpService = null;
+    private static NetworkConfig networkConfig = null;
     private List<HttpServiceRequestTelemetry> vsRequestTMs = null;
     //private boolean threadPoolProviderRegistered = false;
     //private boolean isThreadPoolTreeBuilt = false;
@@ -84,6 +90,7 @@ public class HttpServiceTelemetryBootstrap implements ProbeProviderListener,
             }
         }
         httpService = config.getHttpService();
+        networkConfig = config.getNetworkConfig();
     }
     
     public void onLevelChange(String newLevel) {
@@ -291,17 +298,18 @@ public class HttpServiceTelemetryBootstrap implements ProbeProviderListener,
             if (hostName.equals("localhost")) {
                 hostName = InetAddress.getLocalHost().getHostName();
             }
-            HttpListener httpListener = null;
+            NetworkListener listener = null;
 
-            for (HttpListener hl : httpService.getHttpListener()) {
+            for (NetworkListener hl : networkConfig.getNetworkListeners().getNetworkListener()) {
                 if (hl.getPort().equals(listenerPort)) {
-                    httpListener = hl;
+                    listener = hl;
                     break;
                 }
             }
             VirtualServer virtualServer = null;
             for (VirtualServer vs : httpService.getVirtualServer()) {
-                if (vs.getHosts().contains(hostName) && vs.getHttpListeners().contains(httpListener.getId())) {
+                if (vs.getHosts().contains(hostName)
+                    && vs.getNetworkListeners().contains(listener.getName())) {
                     virtualServer = vs;
                 }
             }

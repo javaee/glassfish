@@ -38,6 +38,7 @@ package com.sun.enterprise.v3.admin;
 import org.glassfish.api.admin.config.Property;
 import com.sun.enterprise.config.serverbeans.RequestPolicy;
 import java.util.List;
+import java.util.Properties;
 
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -55,7 +56,6 @@ import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.MessageSecurityConfig;
 import com.sun.enterprise.config.serverbeans.ProviderConfig;
-import com.sun.enterprise.config.serverbeans.RequestPolicy;
 import com.sun.enterprise.config.serverbeans.ResponsePolicy;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -137,7 +137,7 @@ public class CreateMessageSecurityProvider implements AdminCommand {
     Boolean isDefaultProvider;
 
     @Param(optional=true, name="property")
-    java.util.Properties properties;   
+    Properties properties;
     
     @Param(name="classname")
     String providerClass;

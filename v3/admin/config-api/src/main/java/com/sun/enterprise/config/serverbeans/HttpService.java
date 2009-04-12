@@ -38,43 +38,21 @@
 
 package com.sun.enterprise.config.serverbeans;
 
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.DuckTyped;
-import org.jvnet.hk2.component.Injectable;
-
 import java.beans.PropertyVetoException;
 import java.util.List;
 
-
-import org.glassfish.config.support.datatypes.PositiveInteger;
-import org.glassfish.config.support.datatypes.NonNegativeInteger;
-
-import org.glassfish.api.admin.config.PropertyDesc;
-import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
-
-import org.glassfish.quality.ToDo;
-
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.amx.AMXConfigInfo;
+import org.glassfish.config.support.datatypes.NonNegativeInteger;
+import org.jvnet.hk2.component.Injectable;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.DuckTyped;
+import org.jvnet.hk2.config.Element;
 
-/**
- *
- */
-
-/* @XmlType(name = "", propOrder = {
-    "accessLog",
-    "httpListener",
-    "virtualServer",
-    "requestProcessing",
-    "keepAlive",
-    "connectionPool",
-    "httpProtocol",
-    "httpFileCache",
-    "property"
-}) */
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.HTTPServiceConfig", singleton=true)
 @Configured
 public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
@@ -86,7 +64,7 @@ public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link AccessLog }
      */
     @Element
-    public AccessLog getAccessLog();
+    AccessLog getAccessLog();
 
     /**
      * Sets the value of the accessLog property.
@@ -94,7 +72,7 @@ public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link AccessLog }
      */
-    public void setAccessLog(AccessLog value) throws PropertyVetoException;
+    void setAccessLog(AccessLog value) throws PropertyVetoException;
 
     /**
      * Gets the value of the httpListener property.
@@ -116,8 +94,9 @@ public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
      * Objects of the following type(s) are allowed in the list
      * {@link HttpListener }
      */
+    @Deprecated
     @Element(required=true)
-    public List<HttpListener> getHttpListener();
+    List<HttpListener> getHttpListener();
 
     /**
      * Gets the value of the virtualServer property.
@@ -140,7 +119,7 @@ public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
      * {@link VirtualServer }
      */
     @Element(required=true)
-    public List<VirtualServer> getVirtualServer();
+    List<VirtualServer> getVirtualServer();
 
     /**
      * Gets the value of the requestProcessing property.
@@ -149,7 +128,8 @@ public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link RequestProcessing }
      */
     @Element
-    public RequestProcessing getRequestProcessing();
+    @Deprecated
+    RequestProcessing getRequestProcessing();
 
     /**
      * Sets the value of the requestProcessing property.
@@ -157,7 +137,8 @@ public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link RequestProcessing }
      */
-    public void setRequestProcessing(RequestProcessing value) throws PropertyVetoException;
+    @Deprecated
+    void setRequestProcessing(RequestProcessing value) throws PropertyVetoException;
 
     /**
      * Gets the value of the keepAlive property.
@@ -166,7 +147,8 @@ public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link KeepAlive }
      */
     @Element
-    public KeepAlive getKeepAlive();
+    @Deprecated
+    KeepAlive getKeepAlive();
 
     /**
      * Sets the value of the keepAlive property.
@@ -174,7 +156,8 @@ public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link KeepAlive }
      */
-    public void setKeepAlive(KeepAlive value) throws PropertyVetoException;
+    @Deprecated
+    void setKeepAlive(KeepAlive value) throws PropertyVetoException;
 
     /**
      * Gets the value of the connectionPool property.
@@ -183,7 +166,8 @@ public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link ConnectionPool }
      */
     @Element
-    public ConnectionPool getConnectionPool();
+    @Deprecated
+    ConnectionPool getConnectionPool();
 
     /**
      * Sets the value of the connectionPool property.
@@ -191,7 +175,8 @@ public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link ConnectionPool }
      */
-    public void setConnectionPool(ConnectionPool value) throws PropertyVetoException;
+    @Deprecated
+    void setConnectionPool(ConnectionPool value) throws PropertyVetoException;
 
     /**
      * Gets the value of the httpProtocol property.
@@ -200,7 +185,8 @@ public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link HttpProtocol }
      */
     @Element
-    public HttpProtocol getHttpProtocol();
+    @Deprecated
+    HttpProtocol getHttpProtocol();
 
     /**
      * Sets the value of the httpProtocol property.
@@ -208,7 +194,8 @@ public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link HttpProtocol }
      */
-    public void setHttpProtocol(HttpProtocol value) throws PropertyVetoException;
+    @Deprecated
+    void setHttpProtocol(HttpProtocol value) throws PropertyVetoException;
 
     /**
      * Gets the value of the httpFileCache property.
@@ -217,7 +204,8 @@ public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link HttpFileCache }
      */
     @Element
-    public HttpFileCache getHttpFileCache();
+    @Deprecated
+    HttpFileCache getHttpFileCache();
 
     /**
      * Sets the value of the httpFileCache property.
@@ -225,16 +213,18 @@ public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link HttpFileCache }
      */
-    public void setHttpFileCache(HttpFileCache value) throws PropertyVetoException;
+    @Deprecated
+    void setHttpFileCache(HttpFileCache value) throws PropertyVetoException;
 
     @DuckTyped
     VirtualServer getVirtualServerByName(String name);
 
     
     @DuckTyped
+    @Deprecated
     HttpListener getHttpListenerById(String id);
     
-    public class Duck {
+    class Duck {
         public static VirtualServer getVirtualServerByName(HttpService target, String name) {
             for (VirtualServer v : target.getVirtualServer()) {
                 if (v.getId().equals(name)) {
@@ -243,6 +233,8 @@ public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
             }
             return null;
         }
+
+        @Deprecated
         public static HttpListener getHttpListenerById(HttpService target, String id) {
             for (HttpListener v : target.getHttpListener()) {
                 if (v.getId().equals(id)) {

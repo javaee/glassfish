@@ -36,27 +36,17 @@
 
 package com.sun.enterprise.web;
 
-
-import java.io.File;
-import java.io.IOException;
-import java.io.FileOutputStream;
-
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.BufferOverflowException;
-import java.nio.channels.FileChannel;
-    
-import java.text.SimpleDateFormat;
-
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.ResourceBundle;
-import java.util.TimeZone;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-
-import javax.servlet.ServletException;
-
+import com.sun.enterprise.config.serverbeans.AccessLog;
+import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.enterprise.config.serverbeans.VirtualServer;
+import com.sun.enterprise.web.accesslog.AccessLogFormatter;
+import com.sun.enterprise.web.accesslog.CombinedAccessLogFormatterImpl;
+import com.sun.enterprise.web.accesslog.CommonAccessLogFormatterImpl;
+import com.sun.enterprise.web.accesslog.DefaultAccessLogFormatterImpl;
+import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
+import com.sun.logging.LogDomains;
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
@@ -64,21 +54,23 @@ import org.apache.catalina.Request;
 import org.apache.catalina.Response;
 import org.apache.catalina.valves.ValveBase;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.jvnet.hk2.component.Habitat;
 
-import com.sun.enterprise.web.accesslog.AccessLogFormatter;
-import com.sun.enterprise.web.accesslog.DefaultAccessLogFormatterImpl;
-import com.sun.enterprise.web.accesslog.CommonAccessLogFormatterImpl;
-import com.sun.enterprise.web.accesslog.CombinedAccessLogFormatterImpl;
-
-import com.sun.enterprise.config.serverbeans.AccessLog;
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.HttpProtocol;
-import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
-import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
-
-import com.sun.logging.LogDomains;
-//import org.openide.util.Lookup;
+import javax.servlet.ServletException;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.BufferOverflowException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.channels.FileChannel;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.ResourceBundle;
+import java.util.TimeZone;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>Implementation of the <b>Valve</b> interface that generates a web server
@@ -139,7 +131,7 @@ public final class PEAccessLogValve
     /**
      * The descriptive information about this implementation.
      */
-    protected static final String info =
+    private static final String info =
         "com.sun.enterprise.web.PEAccessLogValve/1.0";
 
 
@@ -215,7 +207,7 @@ public final class PEAccessLogValve
     /**
      * The <code>FileChannel</code> used to write the access log.
      */
-    protected FileChannel fileChannel;
+    private FileChannel fileChannel;
     
     
     /**
@@ -257,14 +249,14 @@ public final class PEAccessLogValve
     /**
      * The <code>byteBuffer</code> used to store the log.
      */
-    protected int bufferSize = MIN_BUFFER_SIZE;
+    private int bufferSize = MIN_BUFFER_SIZE;
         
     
     /**
      * If the writer interval is equals to zero, then always flush the 
      * direct byte buffer after every request.
      */
-    protected boolean flushRealTime = true;
+    private boolean flushRealTime = true;
     
 
     /**
@@ -374,7 +366,7 @@ public final class PEAccessLogValve
      * or only starting with first rotation?
      */
     public void setAddDateStampToFirstAccessLogFile(boolean add) {
-        this.addDateStampToFirstAccessLogFile = add;
+        addDateStampToFirstAccessLogFile = add;
     }
 
 
@@ -383,7 +375,7 @@ public final class PEAccessLogValve
      */
     public String getDirectory() {
 
-        return (directory);
+        return directory;
 
     }
 
@@ -404,7 +396,7 @@ public final class PEAccessLogValve
      */
     public String getInfo() {
 
-        return (this.info);
+        return info;
 
     }
 
@@ -430,7 +422,7 @@ public final class PEAccessLogValve
      */
     public String getPrefix() {
 
-        return (prefix);
+        return prefix;
 
     }
 
@@ -481,7 +473,7 @@ public final class PEAccessLogValve
      */
     public String getSuffix() {
 
-        return (suffix);
+        return suffix;
 
     }
 
@@ -511,9 +503,7 @@ public final class PEAccessLogValve
      * @param resolveHosts The new resolve hosts value
      */
     public void setResolveHosts(boolean resolveHosts) {
-
         this.resolveHosts = resolveHosts;
-
     }
 
 
@@ -580,8 +570,7 @@ public final class PEAccessLogValve
      * @exception IOException if an input/output error has occurred
      * @exception ServletException if a servlet error has occurred
      */ 
-    public int invoke(Request request, Response response)
-            throws IOException, ServletException {
+    public int invoke(Request request, Response response) {
 
         if (formatter.needTimeTaken()) {
             request.setNote(Constants.REQUEST_START_TIME_NOTE, System.currentTimeMillis());
@@ -594,8 +583,8 @@ public final class PEAccessLogValve
     public void postInvoke(Request request, Response response)
             throws IOException {
 
-        if (!started || (condition!=null &&
-                null!=request.getRequest().getAttribute(condition))) {
+        if (!started || condition!=null &&
+                null!=request.getRequest().getAttribute(condition)) {
              return;
         }
         
@@ -645,11 +634,11 @@ public final class PEAccessLogValve
         if (rotatable){
 
             long systime = System.currentTimeMillis();
-            if ((systime-lastAccessLogCreationTime) > (rotationInterval*1000)) {
+            if (systime-lastAccessLogCreationTime > rotationInterval*1000) {
                 synchronized (this) {
                     systime = System.currentTimeMillis();
-                    if ((systime-lastAccessLogCreationTime) >
-                                                    (rotationInterval*1000)) {
+                    if (systime-lastAccessLogCreationTime >
+                        rotationInterval*1000) {
 
                         // Rotate only if the formatted datestamps are
                         // different
@@ -698,15 +687,10 @@ public final class PEAccessLogValve
      * @return true if this access log valve needs to be started, false
      * otherwise
      */
-    boolean configure(
-            String vsId,
-            com.sun.enterprise.config.serverbeans.VirtualServer vsBean,
-            HttpService httpService,
-            Domain domain,
-            org.jvnet.hk2.component.Habitat habitat,
-            WebContainerFeatureFactory fac,
-            String globalAccessLogBufferSize,
-            String globalAccessLogWriteInterval) {
+    boolean configure(String vsId, VirtualServer vsBean,
+        HttpService httpService, Domain domain, Habitat habitat,
+        WebContainerFeatureFactory fac, String globalAccessLogBufferSize,
+        String globalAccessLogWriteInterval) {
 
         setPrefix(vsId + fac.getDefaultAccessLogPrefix());
 
@@ -725,9 +709,9 @@ public final class PEAccessLogValve
      */ 
     boolean updateVirtualServerProperties(
             String vsId,
-            com.sun.enterprise.config.serverbeans.VirtualServer vsBean,
+            VirtualServer vsBean,
             Domain domain,
-            org.jvnet.hk2.component.Habitat habitat,
+            Habitat habitat,
             String accessLogBufferSize,
             String accessLogWriteInterval) {
 
@@ -813,15 +797,9 @@ public final class PEAccessLogValve
      * elements.
      */
     void updateAccessLogAttributes(HttpService httpService,
-                                   WebContainerFeatureFactory fac) {
-        HttpProtocol httpProtocol = httpService.getHttpProtocol();
-        
-        if (httpProtocol != null) {
-            setResolveHosts(Boolean.valueOf(httpProtocol.getDnsLookupEnabled()));
-        } else {
-            setResolveHosts(false);
-        }
-        
+        WebContainerFeatureFactory fac) {
+
+        setResolveHosts(false);
         AccessLog accessLogConfig = httpService.getAccessLog();
 
         // access-log format
@@ -837,19 +815,18 @@ public final class PEAccessLogValve
         if (accessLogConfig != null) {
             setRotatable(Boolean.valueOf(accessLogConfig.getRotationEnabled()));
         } else {
-	    setRotatable(Boolean.valueOf(
-                ConfigBeansUtilities.getDefaultRotationEnabled()).booleanValue());
+            setRotatable(Boolean.valueOf(
+                ConfigBeansUtilities.getDefaultRotationEnabled()));
         }
-
         // rotation-interval
-        int rotationInterval = 0;
+        int interval = 0;
         if (accessLogConfig != null) {
             String s = accessLogConfig.getRotationIntervalInMinutes();
-            rotationInterval = Integer.parseInt(s) * 60;
+            interval = Integer.parseInt(s) * 60;
         } else {
-            rotationInterval = Integer.parseInt(ConfigBeansUtilities.getDefaultRotationIntervalInMinutes()) * 60;
+            interval = Integer.parseInt(ConfigBeansUtilities.getDefaultRotationIntervalInMinutes()) * 60;
         }
-        setRotationInterval(rotationInterval);
+        setRotationInterval(interval);
 
         // rotation-datestamp
         String rotationDateStamp = null;
@@ -1050,7 +1027,7 @@ public final class PEAccessLogValve
             if (!"".equals(prop)) {
                 try {
                     maxHistoryFiles = Integer.parseInt(prop);
-                } catch (NumberFormatException e) {};
+                } catch (NumberFormatException e) {}
             }
 	    if (maxHistoryFiles == 0) {
                 deleteAllHistoryFiles = true;

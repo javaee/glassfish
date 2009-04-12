@@ -40,6 +40,7 @@ import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.Map;
 
 import static org.glassfish.resource.common.ResourceConstants.*;
 import org.glassfish.resource.common.ResourceStatus;
@@ -61,7 +62,7 @@ import org.glassfish.admin.cli.resources.ResourceManager;
 /**
  *
  * @author PRASHANTH ABBAGANI
- * 
+ *
  * The JDBC resource manager allows you to create and delete the config element
  * Will be used by the add-resources, deployment and CLI command
  */
@@ -69,8 +70,8 @@ import org.glassfish.admin.cli.resources.ResourceManager;
 @ConfiguredBy(Resources.class)
 public class JDBCResourceManager implements ResourceManager {
 
-    final private static LocalStringManagerImpl localStrings = 
-            new LocalStringManagerImpl(JDBCResourceManager.class);    
+    final private static LocalStringManagerImpl localStrings =
+            new LocalStringManagerImpl(JDBCResourceManager.class);
     private static final String DESCRIPTION = ServerTags.DESCRIPTION;
 
     String jndiName = null;
@@ -78,8 +79,8 @@ public class JDBCResourceManager implements ResourceManager {
     String poolName = null;
     String enabled = Boolean.TRUE.toString();
 
-    public ResourceStatus create(Resources resources, HashMap attrList, 
-                                    final Properties props, Server targetServer) 
+    public ResourceStatus create(Resources resources, HashMap attrList,
+                                    final Properties props, Server targetServer)
            throws Exception {
 
         jndiName = (String) attrList.get(JNDI_NAME);
@@ -104,7 +105,7 @@ public class JDBCResourceManager implements ResourceManager {
                 }
             }
         }
-        
+
         if (!isConnPoolExists(resources, poolName)) {
             String msg = localStrings.getLocalString("create.jdbc.resource.connPoolNotFound",
                 "Attribute value (pool-name = {0}) is not found in list of jdbc connection pools.", poolName);
@@ -125,7 +126,7 @@ public class JDBCResourceManager implements ResourceManager {
                     newResource.setPoolName(poolName);
                     newResource.setEnabled(enabled);
                     if (props != null) {
-                        for ( java.util.Map.Entry e : props.entrySet()) {
+                        for ( Map.Entry e : props.entrySet()) {
                             Property prop = newResource.createChild(Property.class);
                             prop.setName((String)e.getKey());
                             prop.setValue((String)e.getValue());

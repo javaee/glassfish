@@ -42,13 +42,11 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeSupport;
-import java.io.Serializable;
 import java.util.List;
 
 import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.*;
-
+import org.glassfish.api.admin.config.Property;
 import org.glassfish.quality.ToDo;
 
 /**
@@ -62,7 +60,7 @@ import org.glassfish.quality.ToDo;
 }) */
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.WebModuleConfig")
 @Configured
-public interface WebModule extends ConfigBeanProxy, Injectable, Named, PropertyBag {
+public interface WebModule extends ConfigBeanProxy, Injectable, Named, org.glassfish.api.admin.config.PropertyBag {
 
     /**
      * Gets the value of the contextRoot property.
@@ -224,7 +222,7 @@ public interface WebModule extends ConfigBeanProxy, Injectable, Named, PropertyB
     public List<WebServiceEndpoint> getWebServiceEndpoint();
     
     /**
-    	Properties as per {@link PropertyBag}
+    	Properties as per {@link org.glassfish.api.admin.config.PropertyBag}
      */
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
     @PropertiesDesc(props={})

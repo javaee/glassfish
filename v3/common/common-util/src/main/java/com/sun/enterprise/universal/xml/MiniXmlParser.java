@@ -1,85 +1,88 @@
 /*
- * The contents of this file are subject to the terms 
- * of the Common Development and Distribution License 
+ * The contents of this file are subject to the terms
+ * of the Common Development and Distribution License
  * (the License).  You may not use this file except in
  * compliance with the License.
- * 
- * You can obtain a copy of the license at 
+ *
+ * You can obtain a copy of the license at
  * https://glassfish.dev.java.net/public/CDDLv1.0.html or
  * glassfish/bootstrap/legal/CDDLv1.0.txt.
- * See the License for the specific language governing 
+ * See the License for the specific language governing
  * permissions and limitations under the License.
- * 
- * When distributing Covered Code, include this CDDL 
- * Header Notice in each file and include the License file 
- * at glassfish/bootstrap/legal/CDDLv1.0.txt.  
- * If applicable, add the following below the CDDL Header, 
+ *
+ * When distributing Covered Code, include this CDDL
+ * Header Notice in each file and include the License file
+ * at glassfish/bootstrap/legal/CDDLv1.0.txt.
+ * If applicable, add the following below the CDDL Header,
  * with the fields enclosed by brackets [] replaced by
- * you own identifying information: 
+ * you own identifying information:
  * "Portions Copyrighted [year] [name of copyright owner]"
- * 
+ *
  * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
  */
 package com.sun.enterprise.universal.xml;
 
-import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
-import com.sun.common.util.logging.LoggingConfigImpl;
-import com.sun.common.util.logging.LoggingPropertyNames;
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.stream.XMLInputFactory;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import static javax.xml.stream.XMLStreamConstants.*;
+
+import com.sun.common.util.logging.LoggingConfigImpl;
+import com.sun.common.util.logging.LoggingPropertyNames;
+import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 
 /**
- * A fairly simple but very specific stax XML Parser.  
- * Give it the location of domain.xml and the name of the server instance and it
- * will return JVM options.
- * Currently it is all package private.
  * @author bnevins
+ * @author jlee
  */
 public class MiniXmlParser {
-    
     private static final String DEFAULT_ADMIN_VS_ID = "__asadmin";
-    private static final String DEFAULT_VS_ID       = "server";
+    private static final String DEFAULT_VS_ID = "server";
     private LoggingConfigImpl loggingConfig = new LoggingConfigImpl();
-    
+    private List<Map<String, String>> listenerAttributes = new ArrayList<Map<String, String>>();
+    private List<Map<String, String>> vsAttributes = new ArrayList<Map<String, String>>();
+    private Document document;
+    private String configRef;
+    private List<String> jvmOptions = new ArrayList<String>();
+    private List<String> profilerJvmOptions = new ArrayList<String>();
+    private Map<String, String> javaConfig;
+    private Map<String, String> profilerConfig = Collections.emptyMap();
+    private Map<String, String> sysProps = new HashMap<String, String>();
+    private Map<String, String> profilerSysProps = new HashMap<String, String>();
+    private boolean valid = false;
+    private Set<Integer> adminPorts = new HashSet<Integer>();
+    private String domainName;
+    private String logFilename;
+    private static final LocalStringsImpl strings = new LocalStringsImpl(MiniXmlParser.class);
+    private String serverName;
+
     public MiniXmlParser(File domainXml) throws MiniXmlParserException {
-        this(domainXml, "server");  // default for a domain
+        this(domainXml, "server");
     }
+
     public MiniXmlParser(File domainXml, String serverName) throws MiniXmlParserException {
         this.serverName = serverName;
-        this.domainXml = domainXml;
         try {
+            document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(domainXml);
             read();
             valid = true;
-        }
-        catch (EndDocumentException e) {
-            throw new MiniXmlParserException(strings.get("enddocument", configRef, serverName));
-        }
-        catch (Exception e) {
-            String msg = strings.get("toplevel", e);
-            throw new MiniXmlParserException(e);
-        }
-        finally {
-            try {
-                if(parser != null)
-                    parser.close();
-            }
-            catch(Exception e) {
-                // ignore
-            }
-            try {
-                if(domainXmlstream != null)
-                    domainXmlstream.close();
-            }
-            catch(Exception e) {
-                // ignore
-            }
+        } catch (Exception e) {
+            throw new MiniXmlParserException(strings.get("toplevel", e), e);
         }
     }
 
@@ -132,7 +135,7 @@ public class MiniXmlParser {
     public Set<Integer> getAdminPorts() {
         return adminPorts;
     }
- 
+
     public void setupConfigDir(File configDir) {
         loggingConfig.setupConfigDir(configDir);
     }
@@ -148,548 +151,332 @@ public class MiniXmlParser {
 
         return logFilename;
     }
-    ///////////////////////////////////////////////////////////////////////////
-    ////////   Everything below here is private    ////////////////////////////
-    ///////////////////////////////////////////////////////////////////////////
-    private void read() throws XMLStreamException, EndDocumentException, FileNotFoundException {
-        createParser();
+
+    private void read() throws XMLStreamException {
         getConfigRefName();
-        try {
-            // this will fail if config is above servers in domain.xml!
-            getConfig(); // might throw
-            findDomainNameAndEnd();
-            return;
-        }
-        catch (EndDocumentException ex) {
-            createParser();
-            skipRoot("domain");
-            getConfig();
-            findDomainNameAndEnd();
-            Logger.getLogger(MiniXmlParser.class.getName()).log(
-                    Level.WARNING, strings.get("secondpass"));
-        }
+        getConfig(); // might throw
+        findDomainName();
+        return;
     }
 
-    private void createParser() throws FileNotFoundException, XMLStreamException {
-        domainXmlstream = new FileInputStream(domainXml);
-        // In JDK 1.6, StAX is part of JRE, so we use no argument variant of
-        // newInstance(), where as on JDK 1.5, we use two argument version of
-        // newInstance() so that we can pass the classloader that loads
-        // XMLInputFactory to load the factory, otherwise by default StAX uses
-        // Thread's context class loader to locate the factory. See:
-        // https://glassfish.dev.java.net/issues/show_bug.cgi?id=6428
-        XMLInputFactory xif =
-                XMLInputFactory.class.getClassLoader() == null ?
-                        XMLInputFactory.newInstance() :
-                        XMLInputFactory.newInstance(XMLInputFactory.class.getName(),
-                                XMLInputFactory.class.getClassLoader());
-        parser = xif.createXMLStreamReader(domainXml.toURI().toString(), domainXmlstream);
+    /**
+     * Fetches a value with a quasi xpath-like expression.  Not trying to reinvent the wheel.  Just keep dependencies
+     * down at run time.
+     *
+     * @param path
+     *
+     * @return
+     */
+    private Node get(String path) {
+        String[] elements = path.split("/");
+        Node root = document;
+        for (String element : elements) {
+            root = find(root, element);
+        }
+        return root;
     }
 
-    private void getConfigRefName() throws XMLStreamException, EndDocumentException {
-        if (configRef != null) {
-            return;
-        }   // second pass!
-
-        skipRoot("domain");
-    
-        // complications -- look for this element as a child of Domain...
-        // <property name="administrative.domain.name" value="domain1"/>        
-        while(true) {
-            skipTo("servers", "property");
-            String name = parser.getLocalName();
-
-            if(name.equals("servers")) {
-                break;
-            }
-            parseDomainName(); // maybe it is the domain name?
-        }
-
-        // the cursor is at the start-element of <servers>
-        while (true) {
-            // get to first <server> element
-            skipNonStartElements();
-
-            if (!parser.getLocalName().equals("server")) {
-                throw new XMLStreamException("no server found");
-            }
-
-            // get the attributes for this <server>
-            Map<String, String> map = parseAttributes();
-            String thisName = map.get("name");
-
-            if (serverName.equals(thisName)) {
-                configRef = map.get("config-ref");
-                parseSysPropsFromServer();
-                skipToEnd("servers");
-                return;
-            }
-        }
-    }
-
-    private void getConfig() throws XMLStreamException, EndDocumentException {
-        // complications -- look for this element as a child of Domain...
-        // <property name="administrative.domain.name" value="domain1"/>        
-        while(true) {
-            skipTo("configs", "property");
-            String name = parser.getLocalName();
-
-            if(name.equals("configs")) {
-                break;
-            }
-            parseDomainName(); // maybe it is the domain name?
-        }
-        
-        while (true) {
-            skipTo("config");
-
-            // get the attributes for this <config>
-            Map<String, String> map = parseAttributes();
-            String thisName = map.get("name");
-
-            if (configRef.equals(thisName)) {
-                parseConfig();
-                return;
-            }
-        }
-    }
-
-    private void parseConfig() throws XMLStreamException, EndDocumentException {
-        // cursor --> <config>
-        // as we cruise through the section pull off any found <system-property>
-        // I.e. <system-property> AND <java-config> are both children of <config>
-        // Note that if the system-property already exists -- we do NOT override it.
-        // the <server> system-property takes precedence
-        
-        // bnevins - 3/20/08 added support for log-service
-        
-        while (true) {
-            int event = next();
-            // return when we get to the </config>
-            if (event == END_ELEMENT) {
-                if (parser.getLocalName().equals("config")) {
-                    return;
-                }
-            }
-            else if (event == START_ELEMENT) {
-                String name = parser.getLocalName();
-
-                if (name.equals("system-property")) {
-                    parseSystemPropertyNoOverride();
-                }
-                else if (name.equals("java-config")) {
-                        parseJavaConfig();
-                }
-                else if (name.equals("http-service")) {
-                    parseHttpService();
-                }
-                else {
-                    skipTree(name);
+    private Node find(Node root, String element) {
+        Node node = null;
+        if (root != null) {
+            final NodeList childNodes = root.getChildNodes();
+            final int length = childNodes.getLength();
+            for (int i = 0; node == null && i < length; i++) {
+                Node child = childNodes.item(i);
+                if (element.equals(child.getNodeName())) {
+                    node = child;
                 }
             }
         }
+        return node;
     }
 
-    private void parseSysPropsFromServer() throws XMLStreamException, EndDocumentException {
-        // cursor --> <server>
-        // these are the system-properties that OVERRIDE the ones in the <config>
-        // This code executes BEFORE the <config> is read so we can just add them to the Map here
-        // w/o doing anything special.
-
-        while (true) {
-            int event = next();
-            // return when we get to the </config>
-            if (event == END_ELEMENT) {
-                if (parser.getLocalName().equals("server")) {
-                    return;
+    private void getConfigRefName() throws XMLStreamException {
+        Node servers = get("domain/servers");
+        new ChildNodeIterator(servers) {
+            public boolean process(Node node) {
+                final Map<String, String> map = parseAttributes(node);
+                if (serverName.equals(map.get("name"))) {
+                    configRef = map.get("config-ref");
+                    parseSysPropsFromServer(node);
+                    return true;
                 }
+                return false;
             }
-            else
-                if (event == START_ELEMENT) {
-                    String name = parser.getLocalName();
-                    if (name.equals("system-property")) {
-                        parseSystemPropertyWithOverride();
-                    }
-                    else {
-                        skipTree(name);
-                    }
-                }
+        };
+        if (configRef == null) {
+            throw new XMLStreamException("server " + serverName + " not found");
         }
     }
 
-    private void parseSystemPropertyNoOverride() {
-        parseSystemProperty(false);
+    private void getConfig() throws XMLStreamException {
+        Node configs = get("domain/configs");
+        final boolean[] found = new boolean[1];
+        found[0] = false;
+        new ChildNodeIterator(configs) {
+            public boolean process(Node node) {
+                String name = node.getAttributes().getNamedItem("name").getNodeValue();
+                if (configRef.equals(name)) {
+                    parseConfig(node);
+                    found[0] = true;
+                    return true;
+                }
+                return false;
+            }
+        };
+        if (!found[0]) {
+            throw new XMLStreamException("configuration " + configRef + " not found");
+        }
     }
 
-    private void parseSystemPropertyWithOverride() {
-        parseSystemProperty(true);
+    private void parseConfig(Node node) {
+        new ChildNodeIterator(node) {
+            public boolean process(Node node) {
+                String name = node.getNodeName();
+                if ("system-property".equals(name)) {
+                    parseSystemPropertyNoOverride(node);
+                } else if ("java-config".equals(name)) {
+                    parseJavaConfig(node);
+                } else if ("http-service".equals(name)) {
+                    parseHttpService(node);
+                } else if ("network-config".equals(name)) {
+                    parseNetworkConfig(node);
+                } else if ("log-service".equals(name)) {
+                    parseLogService(node);
+                }
+                return false;
+            }
+        };
+        String[] listenerNames = getListenerNamesForVS(DEFAULT_ADMIN_VS_ID, vsAttributes);
+        if (listenerNames == null || listenerNames.length == 0) {
+            listenerNames = getListenerNamesForVS(DEFAULT_VS_ID, vsAttributes); //plan B
+        }
+        if (listenerNames == null || listenerNames.length <= 0) {
+            return; // can not find ports
+        }
+        addPortsForListeners(listenerAttributes, listenerNames);
+
     }
 
-    private void parseSystemProperty(boolean override) {
-        // cursor --> <system-property>
-        Map<String, String> map = parseAttributes();
-        String name = map.get("name");
-        String value = map.get("value");
+    private void parseSysPropsFromServer(Node server) {
+        final Node node = find(server, "system-property");
+        if (node != null) {
+            parseSystemPropertyWithOverride(node);
+        }
+    }
 
+    private void parseSystemPropertyNoOverride(Node node) {
+        parseSystemProperty(node, false);
+    }
+
+    private void parseSystemPropertyWithOverride(Node node) {
+        parseSystemProperty(node, true);
+    }
+
+    private void parseSystemProperty(Node node, boolean override) {
+        final NamedNodeMap map = node.getAttributes();
+        String name = map.getNamedItem("name").getNodeValue();
         if (name != null) {
-            if (override || !sysProps.containsKey(name))
-                sysProps.put(name, value);
-        }
-    }
-
-    private void parseJavaConfig() throws XMLStreamException, EndDocumentException {
-        // cursor --> <java-config>
-
-        // get the attributes for <java-config>
-        javaConfig = parseAttributes();
-        parseJvmAndProfilerOptions();
-    }
-
-    private void parseJvmAndProfilerOptions() throws XMLStreamException, EndDocumentException {
-        while (skipToButNotPast("java-config", "jvm-options", "profiler")) {
-            if (parser.getLocalName().equals("jvm-options")) {
-                jvmOptions.add(parser.getElementText());
-            }
-            else {// profiler
-                parseProfiler();
+            if (override || !sysProps.containsKey(name)) {
+                sysProps.put(name, map.getNamedItem("value").getNodeValue());
             }
         }
     }
 
-    private void parseProfiler() throws XMLStreamException, EndDocumentException {
-        // cursor --> START_ELEMENT of profiler
-        // it has attributes and <jvm-options>'s and <property>'s
-        profilerConfig = parseAttributes();
-
-        while (skipToButNotPast("profiler", "jvm-options", "property")) {
-            if (parser.getLocalName().equals("jvm-options")) {
-                profilerJvmOptions.add(parser.getElementText());
-            }
-            else {
-                parseProperty(profilerSysProps);
-            }
-        }
+    private void parseJavaConfig(Node node) {
+        javaConfig = parseAttributes(node);
+        parseJvmAndProfilerOptions(node);
     }
 
-    private void parseProperty(Map<String,String> map) throws XMLStreamException, EndDocumentException {
-        // cursor --> START_ELEMENT of property
-        // it has 2 attributes:  name and value
-        Map<String,String> prop = parseAttributes();
+    private void parseJvmAndProfilerOptions(Node node) {
+        new ChildNodeIterator(node) {
+            public boolean process(Node node) {
+                if ("jvm-options".equals(node.getNodeName())) {
+                    jvmOptions.add(node.getTextContent());
+                } else {
+                    parseProfiler(node);
+                }
+                return false;
+            }
+        };
+    }
 
+    private void parseProfiler(Node node) {
+        profilerConfig = parseAttributes(node);
+        new ChildNodeIterator(node) {
+            public boolean process(Node child) {
+                if ("jvm-options".equals(child.getNodeName())) {
+                    profilerJvmOptions.add(child.getTextContent());
+                } else {
+                    parseProperty(child, profilerSysProps);
+                }
+                return false;
+            }
+        };
+    }
+
+    private void parseProperty(Node node, Map<String, String> map) {
+        Map<String, String> prop = parseAttributes(node);
         String name = prop.get("name");
-        String value = prop.get("value");
-        
-        if(name != null) {
-            map.put(name, value);
+        if (name != null) {
+            map.put(name, prop.get("value"));
         }
     }
 
-    private void skipNonStartElements() throws XMLStreamException, EndDocumentException {
-        while (true) {
-            int event = next();
-
-            if (event == START_ELEMENT) {
-                return;
-            }
-        }
-    }
-
-    private void skipRoot(String name) throws XMLStreamException, EndDocumentException {
-        // The cursor is pointing at the start of the document
-        // Move to the first 'top-level' element under name
-        // Return with cursor pointing to first sub-element
-        while (true) {
-            int event = next();
-
-            if (event == START_ELEMENT) {
-                if (!name.equals(parser.getLocalName())) {
-                    throw new XMLStreamException("Unknown Domain XML Layout");
-                }
-
-                return;
-            }
-        }
-    }
-
-    /**
-     * The cursor will be pointing at the START_ELEMENT of name when it returns
-     * note that skipTree must be called.  Otherwise we could be fooled by a 
-     * sub-element with the same name as an outer element
-     * @param name the Element to skip to
-     * @throws javax.xml.stream.XMLStreamException
-     */
-    private void skipTo(String name) throws XMLStreamException, EndDocumentException {
-        while (true) {
-            skipNonStartElements();
-            // cursor is at a START_ELEMENT
-            String localName = parser.getLocalName();
-
-            if (name.equals(localName)) {
-                return;
-            }
-            else {
-                skipTree(localName);
-            }
-        }
-    }
-    /**
-     * The cursor will be pointing at the START_ELEMENT of name1 or name2 when it returns
-     * note that skipTree must be called.  Otherwise we could be fooled by a 
-     * sub-element with the same name as an outer element
-     * @param the first eligible Element to skip to
-     * @param the second eligible Element to skip to
-     * @throws javax.xml.stream.XMLStreamException
-     */
-    private void skipTo(String name1, String name2) throws XMLStreamException, EndDocumentException {
-        while (true) {
-            skipNonStartElements();
-            // cursor is at a START_ELEMENT
-            String localName = parser.getLocalName();
-
-            if (name1.equals(localName) || name2.equals(localName)) {
-                return;
-            }
-            else {
-                skipTree(localName);
-            }
-        }
-    }
-
-    /**
-     * The cursor will be pointing at the START_ELEMENT of name when it returns
-     * note that skipTree must be called.  Otherwise we could be fooled by a 
-     * sub-element with the same name as an outer element
-     * Multiple startNames are accepted.
-     * @param name the Element to skip to
-     * @throws javax.xml.stream.XMLStreamException
-     */
-    private boolean skipToButNotPast(String endName, String... startNames) throws XMLStreamException, EndDocumentException {
-        while (true) {
-            int event = next();
-
-            if (event == START_ELEMENT) {
-                for (String s : startNames) {
-                    if (parser.getLocalName().equals(s)) {
-                        return true;
-                    }
-                }
-            }
-
-            if (event == END_ELEMENT) {
-                if (parser.getLocalName().equals(endName)) {
-                    return false;
-                }
-            }
-        }
-    }
-
-    private void skipTree(String name) throws XMLStreamException, EndDocumentException {
-        // The cursor is pointing at the start-element of name.
-        // throw everything in this element away and return with the cursor
-        // pointing at its end-element.
-        while (true) {
-            int event = next();
-
-            if (event == END_ELEMENT && name.equals(parser.getLocalName())) {
-                //System.out.println("END: " + parser.getLocalName());
-                return;
-            }
-        }
-    }
-
-    private void skipToEnd(String name) throws XMLStreamException, EndDocumentException {
-        // The cursor is pointing who-knows-where
-        // throw everything away and return with the cursor
-        // pointing at the end-element.
-        while (true) {
-            int event = next();
-
-            if (event == END_ELEMENT && name.equals(parser.getLocalName())) {
-                return;
-            }
-        }
-    }
-
-    private int next() throws XMLStreamException, EndDocumentException {
-        int event = parser.next();
-
-        if (event == END_DOCUMENT) {
-            parser.close();
-            throw new EndDocumentException();
-        }
-
-        return event;
-    }
-
-    private void dump() throws XMLStreamException {
-        StringBuilder sb = new StringBuilder();
-
-        System.out.println(sb.toString());
-    }
-
-    private void findDomainNameAndEnd() {
+    private void findDomainName() {
         try {
             // find the domain name, if it is there
             // If we bump into the domain end tag first -- no sweat
-            while (skipToButNotPast("domain", "property")) {
-                parseDomainName(); // property found -- maybe it is the domain name?
-            }
-            if(domainName == null) {
-                Logger.getLogger(MiniXmlParser.class.getName()).log(
-                    Level.INFO, strings.get("noDomainName"));
+            new ChildNodeIterator(get("domain")) {
+                public boolean process(Node node) {
+                    if ("property".equals(node.getNodeName())) {
+                        parseDomainName(node); // property found -- maybe it is the domain name?
+                    }
+                    return false;
+                }
+            };
+            if (domainName == null) {
+                Logger.getLogger(MiniXmlParser.class.getName()).log(Level.INFO, strings.get("noDomainName"));
 
             }
         }
-        catch(Exception e) {
+        catch (Exception e) {
             throw new RuntimeException(strings.get("noDomainEnd"));
         }
     }
 
-    private void parseDomainName() {
-        // cursor --> pointing at "property" element that is a child of "domain" element
-        // <property name="administrative.domain.name" value="domain1"/>        
-
-        if(domainName != null)
-            return; // found it already
-        
-        Map<String,String> map = parseAttributes();
-        
+    private void parseDomainName(Node node) {
+        Map<String, String> map = parseAttributes(node);
         String name = map.get("name");
         String value = map.get("value");
-        
-        if(name == null || value == null) {
+        if (name == null || value == null) {
             return;
         }
-        if(name.equals("administrative.domain.name")) {
+        if ("administrative.domain.name".equals(name)) {
             domainName = value;
         }
     }
 
-
-    private void parseHttpService() throws XMLStreamException, EndDocumentException {
-        // cursor --> <http-service> in <config>
-        // we are looking for the virtual server: "DEFAULT_ADMIN_VS_ID".
-        // inside it will be a ref. to a listener.  We get the port from the listener.
-        // So -- squirrel away a copy of all the listeners and all the virt. servers --
-        //then post-process.
-        List<Map<String,String>> listenerAttributes = new ArrayList<Map<String,String>>();
-        List<Map<String,String>> vsAttributes = new ArrayList<Map<String,String>>();
-        
-        // Load the collections with both kinds of elements' attributes
-        while(true) {
-            skipToButNotPast("http-service", "http-listener", "virtual-server");
-            String name = parser.getLocalName();
-
-            if(name.equals("http-listener")) {
-                listenerAttributes.add(parseAttributes());
-            }
-            else if(name.equals("virtual-server")) {
-                vsAttributes.add(parseAttributes());
-            } 
-            else if(name.equals("http-service")) {
-                break; 
-            }
-        }
-        
-        String[] listenerNames = getListenerNamesForVS(DEFAULT_ADMIN_VS_ID, vsAttributes);
-        if (listenerNames == null || listenerNames.length == 0) 
-            listenerNames = getListenerNamesForVS(DEFAULT_VS_ID, vsAttributes); //plan B
-        if(listenerNames == null || listenerNames.length <= 0) {
-            return; // can not find ports
-        }
-        
-        addPortsForListeners(listenerAttributes, listenerNames);
+    private void parseLogService(Node node) {
+        logFilename = parseAttributes(node).get("file");
     }
-    
+
+    private void parseHttpService(Node node) {
+        new ChildNodeIterator(node) {
+            public boolean process(Node node) {
+                String name = node.getNodeName();
+                if ("virtual-server".equals(name)) {
+                    vsAttributes.add(parseAttributes(node));
+                }
+                if ("http-listener".equals(name)) {
+                    listenerAttributes.add(parseAttributes(node));
+                }
+
+                return false;
+            }
+        };
+    }
+
+    private void parseNetworkConfig(Node node) {
+        new ChildNodeIterator(node) {
+            public boolean process(Node node) {
+                String name = node.getNodeName();
+                if ("network-listeners".equals(name)) {
+                    new ChildNodeIterator(node) {
+                        public boolean process(Node node) {
+                            String name = node.getNodeName();
+                            if ("network-listener".equals(name)) {
+                                listenerAttributes.add(parseAttributes(node));
+                            }
+                            return false;
+                        }
+                    };
+                    return true;
+                }
+                return false;
+            }
+        };
+    }
+
     private String[] getListenerNamesForVS(String vsid, List<Map<String, String>> vsAttributes) {
         String listeners = null;
         String[] listenerArray = null;
-        
         // find the virtual server
-        for(Map<String,String> atts : vsAttributes) {
+        for (Map<String, String> atts : vsAttributes) {
             String id = atts.get("id");
-            
-            if(id != null && id.equals(vsid)) {
-                listeners = atts.get("http-listeners");
+            if (id != null && id.equals(vsid)) {
+                listeners = atts.get("network-listeners");
+                if(listeners == null) {
+                    listeners = atts.get("http-listeners");
+                }
                 break;
             }
         }
-
         // make sure the "http-listeners" is kosher
-        if(GFLauncherUtils.ok(listeners)) {
+        if (GFLauncherUtils.ok(listeners)) {
             listenerArray = listeners.split(",");
-            if(listenerArray!= null && listenerArray.length <= 0) {
+            if (listenerArray != null && listenerArray.length <= 0) {
                 listenerArray = null;
             }
         }
-        
-        if(listenerArray == null) {
+        if (listenerArray == null) {
             listenerArray = new String[0];
         }
-        
         return listenerArray;
     }
-   
+
     private void addPortsForListeners(List<Map<String, String>> listenerAttributes, String[] listenerNames) {
-        // get the port numbers for all the listeners 
+        // get the port numbers for all the listeners
         // normally there is one listener
-        
-        for(Map<String,String> atts : listenerAttributes) {
-            String id = atts.get("id");
-            String port = atts.get("port");
-            String vs = atts.get("default-virtual-server");
+        for (Map<String, String> atts : listenerAttributes) {
+            String id = atts.get("name");
             if(id == null) {
-                continue;
+                id = atts.get("id");
             }
-            for(String listenerName : listenerNames) {
-                if(id.equals(listenerName)) {
-                    addPort(port);
-                    break;
+            if (id != null) {
+                for (String listenerName : listenerNames) {
+                    if (id.equals(listenerName)) {
+                        addPort(atts.get("port"));
+                        break;
+                    }
                 }
             }
         }
-   }
+    }
 
     private void addPort(String portString) {
         try {
-            int port = Integer.parseInt(portString);
-            adminPorts.add(port);
-        }
-        catch(Exception e) {
+            adminPorts.add(Integer.parseInt(portString));
+        } catch (Exception e) {
             // ignore, just return....
         }
     }
-    
-    private Map<String, String> parseAttributes() {
-        int num = parser.getAttributeCount();
+
+    private Map<String, String> parseAttributes(Node node) {
         Map<String, String> map = new HashMap<String, String>();
-        for (int i = 0; i < num; i++) {
-            map.put(parser.getAttributeName(i).getLocalPart(), parser.getAttributeValue(i));
+        if (node.hasAttributes()) {
+            final NamedNodeMap attrs = node.getAttributes();
+            int num = attrs.getLength();
+            for (int i = 0; i < num; i++) {
+                final Node item = attrs.item(i);
+                map.put(item.getNodeName(), item.getNodeValue());
+            }
         }
         return map;
     }
-    
-    private File domainXml;
-    private XMLStreamReader parser;
-    private FileInputStream domainXmlstream;
-    private String serverName;
-    private String configRef;
-    private List<String> jvmOptions = new ArrayList<String>();
-    private List<String> profilerJvmOptions = new ArrayList<String>();
-    private Map<String, String> javaConfig;
-    private Map<String, String> profilerConfig = Collections.emptyMap();
-    private Map<String, String> sysProps = new HashMap<String, String>();
-    private Map<String, String> profilerSysProps = new HashMap<String, String>();
-    private boolean valid = false;
-    private Set<Integer> adminPorts = new HashSet<Integer>();
-    private String domainName;
-    private String logFilename;
-    private static LocalStringsImpl strings = new LocalStringsImpl(MiniXmlParser.class);
-    // this is so we can return from arbitrarily nested calls
-    private static class EndDocumentException extends Exception {
 
-        EndDocumentException() {
+    private static abstract class ChildNodeIterator {
+        public ChildNodeIterator(Node node) {
+            final NodeList list = node.getChildNodes();
+            int length = list.getLength();
+            for (int i = 0; i < length; i++) {
+                final Node child = list.item(i);
+                if (!(child instanceof Text) && process(child)) {
+                    return;
+                }
+            }
         }
+
+        public abstract boolean process(Node node);
     }
 }
-

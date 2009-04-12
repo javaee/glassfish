@@ -35,12 +35,18 @@
  */
 package org.glassfish.config.support;
 
-import org.jvnet.hk2.config.*;
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.CageBuilder;
-
-import javax.xml.stream.XMLStreamReader;
 import java.lang.reflect.Proxy;
+import javax.xml.stream.XMLStreamReader;
+
+import org.jvnet.hk2.component.CageBuilder;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.config.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.ConfigModel;
+import org.jvnet.hk2.config.ConfigView;
+import org.jvnet.hk2.config.Dom;
+import org.jvnet.hk2.config.DomDocument;
+import org.jvnet.hk2.config.Transformer;
 
 /**
  * Translated view of a configured objects where values can be represented

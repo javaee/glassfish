@@ -45,18 +45,16 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.List;
 
 
 import org.glassfish.config.support.datatypes.NonNegativeInteger;
 
-import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
-
-import org.glassfish.quality.ToDo;
 
 /**
  *
@@ -65,7 +63,7 @@ import org.glassfish.quality.ToDo;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.MDBContainerConfig", singleton=true)
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.MDBContainerConfig", singleton=true)
 @Configured
 public interface MdbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
 
@@ -77,7 +75,7 @@ public interface MdbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="10")
-    public String getSteadyPoolSize();
+    String getSteadyPoolSize();
 
     /**
      * Sets the value of the steadyPoolSize property.
@@ -85,7 +83,7 @@ public interface MdbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSteadyPoolSize(String value) throws PropertyVetoException;
+    void setSteadyPoolSize(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the poolResizeQuantity property.
@@ -94,7 +92,7 @@ public interface MdbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="2")
-    public String getPoolResizeQuantity();
+    String getPoolResizeQuantity();
 
     /**
      * Sets the value of the poolResizeQuantity property.
@@ -102,7 +100,7 @@ public interface MdbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setPoolResizeQuantity(String value) throws PropertyVetoException;
+    void setPoolResizeQuantity(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxPoolSize property.
@@ -111,7 +109,7 @@ public interface MdbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="60")
-    public String getMaxPoolSize();
+    String getMaxPoolSize();
 
     /**
      * Sets the value of the maxPoolSize property.
@@ -119,7 +117,7 @@ public interface MdbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxPoolSize(String value) throws PropertyVetoException;
+    void setMaxPoolSize(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the idleTimeoutInSeconds property.
@@ -128,7 +126,7 @@ public interface MdbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="600")
-    public String getIdleTimeoutInSeconds();
+    String getIdleTimeoutInSeconds();
 
     /**
      * Sets the value of the idleTimeoutInSeconds property.
@@ -136,7 +134,7 @@ public interface MdbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setIdleTimeoutInSeconds(String value) throws PropertyVetoException;
+    void setIdleTimeoutInSeconds(String value) throws PropertyVetoException;
     
     
   /**

@@ -36,19 +36,15 @@
 
 package com.sun.enterprise.configapi.tests;
 
-import org.junit.Test;
+import com.sun.grizzly.config.GrizzlyConfig;
+import com.sun.grizzly.config.dom.NetworkListener;
+import com.sun.grizzly.config.dom.NetworkListeners;
+import com.sun.grizzly.config.dom.Transport;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
 
-import org.jvnet.hk2.config.*;
-import org.jvnet.hk2.component.Habitat;
-
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamWriter;
-import javax.xml.stream.XMLStreamException;
 import java.beans.PropertyVetoException;
-import static org.junit.Assert.*;
-
-import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.HttpListener;
 
 /**
  * Test the persistence to a file...
@@ -60,30 +56,19 @@ public class PersistenceTest extends ConfigPersistence {
     }
     
     public void doTest() throws TransactionFailure {
-        HttpService service = super.getHabitat().getComponent(HttpService.class);
+        NetworkListeners service = getHabitat().getComponent(NetworkListeners.class);
         // now do a transaction
 
-        ConfigSupport.apply(new SingleConfigCode<HttpListener>() {
-            /**
-             * Runs the following command passing the configration object. The code will be run
-             * within a transaction, returning true will commit the transaction, false will abort
-             * it.
-             *
-             * @param param is the configuration object protected by the transaction
-             * @return any object that should be returned from within the transaction code
-             * @throws java.beans.PropertyVetoException
-             *          if the changes cannot be applied
-             *          to the configuration
-             */
-            public Object run(HttpListener param) throws PropertyVetoException, TransactionFailure {
+        ConfigSupport.apply(new SingleConfigCode<Transport>() {
+            public Object run(Transport param) {
                 param.setAcceptorThreads("8989");
                 return null;
             }
-        }, service.getHttpListener().get(0));
+        }, service.getNetworkListener().get(0).findTransport());
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public boolean assertResult(String s) {
-        return s.indexOf("acceptor-threads=\"8989\"")!=-1;
+        return s.contains("acceptor-threads=\"8989\"");
     }
 }

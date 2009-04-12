@@ -45,6 +45,8 @@ import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.Map;
+
 import org.glassfish.api.I18n;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
@@ -118,7 +120,7 @@ public class JDBCConnectionPoolManager implements ResourceManager{
             return new ResourceStatus(ResourceStatus.FAILURE, msg);
         }
         // ensure we don't already have one of this name
-        for (com.sun.enterprise.config.serverbeans.Resource resource : resources.getResources()) {
+        for (Resource resource : resources.getResources()) {
             if (resource instanceof JdbcConnectionPool) {
                 if (((JdbcConnectionPool) resource).getName().equals(jdbcconnectionpoolid)) {
                     String msg = localStrings.getLocalString("create.jdbc.connection.pool.duplicate",
@@ -187,7 +189,7 @@ public class JDBCConnectionPoolManager implements ResourceManager{
                     }
                     newResource.setName(jdbcconnectionpoolid);
                     if (props != null) {
-                        for ( java.util.Map.Entry e : props.entrySet()) {
+                        for ( Map.Entry e : props.entrySet()) {
                             Property prop = newResource.createChild(Property.class);
                             prop.setName((String)e.getKey());
                             prop.setValue((String)e.getValue());
@@ -325,7 +327,7 @@ public class JDBCConnectionPoolManager implements ResourceManager{
     private boolean isResourceExists(Resources resources, String jdbcconnectionpoolid) {
         
         // ensure we don't already have one of this name
-        for (com.sun.enterprise.config.serverbeans.Resource resource : resources.getResources()) {
+        for (Resource resource : resources.getResources()) {
             if (resource instanceof JdbcConnectionPool) {
                 if (((JdbcConnectionPool) resource).getName().equals(jdbcconnectionpoolid)) {
                     return true;

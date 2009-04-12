@@ -45,15 +45,11 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.List;
 
 import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
-import org.glassfish.api.admin.config.PropertyBag;
-
-import org.glassfish.quality.ToDo;
 
 /**
  *
@@ -66,7 +62,7 @@ import org.glassfish.quality.ToDo;
 }) */
 @org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ProviderConfig")
 @Configured
-public interface ProviderConfig extends ConfigBeanProxy, Injectable, PropertyBag {
+public interface ProviderConfig extends ConfigBeanProxy, Injectable, org.glassfish.api.admin.config.PropertyBag {
 
     /**
      * Gets the value of the providerId property.

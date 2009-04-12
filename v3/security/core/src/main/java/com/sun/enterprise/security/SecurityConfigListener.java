@@ -37,8 +37,6 @@
 package com.sun.enterprise.security;
 
 import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
-import java.util.logging.Level;
-
 import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.Singleton;

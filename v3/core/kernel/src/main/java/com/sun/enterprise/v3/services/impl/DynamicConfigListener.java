@@ -22,12 +22,11 @@
  */
 package com.sun.enterprise.v3.services.impl;
 
-import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.HttpListener;
 import java.beans.PropertyChangeEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.jvnet.hk2.annotations.Inject;
+
+import com.sun.grizzly.config.dom.NetworkListener;
 import org.jvnet.hk2.config.Changed;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigListener;
@@ -41,9 +40,6 @@ import org.jvnet.hk2.config.UnprocessedChangeEvents;
  * @author Alexey Stashok
  */
 public class DynamicConfigListener implements ConfigListener {
-    @Inject
-    public HttpService httpService;
-
     private GrizzlyService grizzlyService;
 
     private Logger logger;
@@ -58,24 +54,24 @@ public class DynamicConfigListener implements ConfigListener {
             public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type,
                     Class<T> tClass, T t) {
                 if (logger.isLoggable(Level.FINE)) {
-                    logger.log(Level.FINE, "HttpService config changed " + type
+                    logger.log(Level.FINE, "NetworkConfig changed " + type
                             + " " + tClass + " " + t);
                 }
 
-                if (t instanceof HttpListener) {
-                    HttpListener listener = (HttpListener) t;
+                if (t instanceof NetworkListener) {
+                    NetworkListener listener = (NetworkListener) t;
                     int listenerPort = -1;
                         try {
                             listenerPort = Integer.parseInt(
                                     listener.getPort());
                         } catch (NumberFormatException e) {
                             logger.log(Level.WARNING,
-                                    "Can not parse http-listener port number: " +
+                                    "Can not parse network-listener port number: " +
                                     listener.getPort());
                         }
 
                     if (type == TYPE.ADD) {
-                        grizzlyService.createNetworkProxy(listener, httpService);
+                        grizzlyService.createNetworkProxy(listener);
                         grizzlyService.registerNetworkProxy(listenerPort);
                     } else if (type == TYPE.REMOVE) {
                         grizzlyService.removeNetworkProxy(listenerPort);
@@ -85,10 +81,9 @@ public class DynamicConfigListener implements ConfigListener {
                         // corresponding proxy both ways
                         boolean isRemovedOld =
                                 grizzlyService.removeNetworkProxy(listenerPort) ||
-                                grizzlyService.removeNetworkProxy(listener.getId());
+                                grizzlyService.removeNetworkProxy(listener.getName());
 
-                        grizzlyService.createNetworkProxy(listener,
-                                httpService);
+                        grizzlyService.createNetworkProxy(listener);
                         grizzlyService.registerNetworkProxy(listenerPort);
                     }
                     return null;

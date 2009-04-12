@@ -1,6 +1,20 @@
 package org.glassfish.enterprise.iiop.impl;
 
-import com.sun.enterprise.config.serverbeans.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
+import com.sun.enterprise.config.serverbeans.Configs;
+import com.sun.enterprise.config.serverbeans.IiopListener;
+import com.sun.enterprise.config.serverbeans.IiopService;
+import com.sun.enterprise.config.serverbeans.ServerRef;
+import com.sun.grizzly.config.dom.NetworkListener;
+import com.sun.grizzly.config.dom.NetworkListeners;
+import com.sun.grizzly.config.dom.ThreadPool;
+import org.glassfish.api.admin.ProcessEnvironment;
+import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
 import org.glassfish.enterprise.iiop.api.GlassFishORBLifeCycleListener;
 import org.glassfish.enterprise.iiop.api.IIOPInterceptorFactory;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
@@ -9,12 +23,6 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 import org.omg.CORBA.ORB;
-
-import org.glassfish.api.admin.ProcessEnvironment;
-import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
-
-import java.util.Collection;
-import java.util.List;
 
 /**
  * @author Mahesh Kannan
@@ -56,7 +64,18 @@ public class IIOPUtils implements PostConstruct {
         if( processEnv.getProcessType() == ProcessType.Server) {
 
             iiopService = habitat.getComponent(IiopService.class);
-            threadPools = habitat.getAllByContract(ThreadPool.class);
+            final List<ThreadPool> threadPool = habitat.getComponent(NetworkListeners.class).getThreadPool();
+            final Collection<NetworkListener> listeners = habitat.getAllByType(NetworkListener.class);
+            final Set<String> names = new TreeSet<String>();
+            threadPools = new ArrayList<ThreadPool>();
+            for (NetworkListener listener : listeners) {
+                names.add(listener.getThreadPool());
+            }
+            for (ThreadPool pool : threadPool) {
+                if(!names.contains(pool.getThreadPoolId())) {
+                    threadPools.add(pool);
+                }
+            }
             serverRefs  = habitat.getAllByContract(ServerRef.class);
             configs     = habitat.getComponent(Configs.class);
         }

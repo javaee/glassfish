@@ -33,58 +33,36 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-
-
 package com.sun.enterprise.config.serverbeans;
 
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.DuckTyped;
-import org.jvnet.hk2.component.Injectable;
-
-import java.io.Serializable;
 import java.util.List;
-
 
 import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.amx.AMXCreatorInfo;
-/**
- *
- */
+import org.jvnet.hk2.component.Injectable;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.DuckTyped;
+import org.jvnet.hk2.config.Element;
 
-/* @XmlType(name = "", propOrder = {
-    "config"
-}) */
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ConfigsConfig", omitAsAncestorInChildObjectName=true, singleton=true)
+@AMXConfigInfo(amxInterfaceName = "com.sun.appserv.management.config.ConfigsConfig",
+    omitAsAncestorInChildObjectName = true, singleton = true)
 // general solution needed; this is intermediate solution
-@AMXCreatorInfo( creatables={Config.class })
+@AMXCreatorInfo(creatables = {Config.class})
 @Configured
-public interface Configs extends ConfigBeanProxy, Injectable  {
-
+public interface Configs extends ConfigBeanProxy, Injectable {
     /**
-     * Gets the value of the config property.
-     * <p/>
-     * <p/>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the config property.
-     * <p/>
-     * <p/>
-     * For example, to add a new item, do as follows:
+     * Gets the value of the config property. <p/> <p/> This accessor method returns a reference to the live list, not a
+     * snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object. This
+     * is why there is not a <CODE>set</CODE> method for the config property. <p/> <p/> For example, to add a new item,
+     * do as follows:
      * <pre>
      *    getConfig().add(newItem);
      * </pre>
-     * <p/>
-     * <p/>
-     * <p/>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Config }
+     * <p/> <p/> <p/> Objects of the following type(s) are allowed in the list {@link Config }
      */
     @Element(required=true)
-    public List<Config> getConfig();
+    List<Config> getConfig();
 
     @DuckTyped
     Config getConfigByName(String name);

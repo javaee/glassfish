@@ -45,14 +45,12 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.List;
 
-import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
-
 import org.glassfish.quality.ToDo;
 
 
@@ -63,7 +61,7 @@ import org.glassfish.quality.ToDo;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.JACCProviderConfig")
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.JACCProviderConfig")
 @Configured
 public interface JaccProvider extends ConfigBeanProxy, Injectable, PropertyBag {
 
@@ -74,7 +72,7 @@ public interface JaccProvider extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute(required = true, key=true)
-    public String getName();
+    String getName();
 
     /**
      * Sets the value of the name property.
@@ -82,7 +80,7 @@ public interface JaccProvider extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setName(String value) throws PropertyVetoException;
+    void setName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the policyProvider property.
@@ -91,7 +89,7 @@ public interface JaccProvider extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute(required = true)
-    public String getPolicyProvider();
+    String getPolicyProvider();
 
     /**
      * Sets the value of the policyProvider property.
@@ -99,7 +97,7 @@ public interface JaccProvider extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setPolicyProvider(String value) throws PropertyVetoException;
+    void setPolicyProvider(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the policyConfigurationFactoryProvider property.
@@ -108,7 +106,7 @@ public interface JaccProvider extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute(required = true)
-    public String getPolicyConfigurationFactoryProvider();
+    String getPolicyConfigurationFactoryProvider();
 
     /**
      * Sets the value of the policyConfigurationFactoryProvider property.
@@ -116,7 +114,7 @@ public interface JaccProvider extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setPolicyConfigurationFactoryProvider(String value) throws PropertyVetoException;
+    void setPolicyConfigurationFactoryProvider(String value) throws PropertyVetoException;
     
     /**
     	Properties as per {@link PropertyBag}

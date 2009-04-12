@@ -38,13 +38,13 @@
 
 package com.sun.enterprise.config.serverbeans;
 
-import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.glassfish.api.amx.AMXConfigInfo;
 import org.jvnet.hk2.component.Injectable;
+import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.Configured;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 
 
 /**
@@ -52,7 +52,7 @@ import java.io.Serializable;
  */
 
 /* @XmlType(name = "") */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ResourceRefConfig")
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ResourceRefConfig")
 @Configured
 public interface ResourceRef extends ConfigBeanProxy, Injectable  {
 
@@ -63,7 +63,7 @@ public interface ResourceRef extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute (defaultValue="true")
-    public String getEnabled();
+    String getEnabled();
 
     /**
      * Sets the value of the enabled property.
@@ -71,7 +71,7 @@ public interface ResourceRef extends ConfigBeanProxy, Injectable  {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setEnabled(String value) throws PropertyVetoException;
+    void setEnabled(String value) throws PropertyVetoException;
 
     /**
      * References the name attribute of a resources, such as an {@link JdbcResource} or {@link JdbcConnectionPool}.
@@ -80,7 +80,7 @@ public interface ResourceRef extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute(required = true, key=true)
-    public String getRef();
+    String getRef();
 
     /**
      * Sets the value of the ref property.
@@ -88,7 +88,7 @@ public interface ResourceRef extends ConfigBeanProxy, Injectable  {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setRef(String value) throws PropertyVetoException;
+    void setRef(String value) throws PropertyVetoException;
 
 
 

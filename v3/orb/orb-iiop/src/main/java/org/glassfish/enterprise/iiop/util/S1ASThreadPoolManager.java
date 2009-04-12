@@ -35,16 +35,20 @@
  */
 package org.glassfish.enterprise.iiop.util;
 
-import com.sun.corba.ee.spi.orbutil.ORBConstants;
-import com.sun.corba.ee.spi.orbutil.threadpool.*;
-import com.sun.logging.LogDomains;
-import org.glassfish.enterprise.iiop.impl.IIOPUtils;
-
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.Collection;
+
+import com.sun.corba.ee.spi.orbutil.ORBConstants;
+import com.sun.corba.ee.spi.orbutil.threadpool.NoSuchThreadPoolException;
+import com.sun.corba.ee.spi.orbutil.threadpool.ThreadPool;
+import com.sun.corba.ee.spi.orbutil.threadpool.ThreadPoolChooser;
+import com.sun.corba.ee.spi.orbutil.threadpool.ThreadPoolFactory;
+import com.sun.corba.ee.spi.orbutil.threadpool.ThreadPoolManager;
+import com.sun.logging.LogDomains;
+import org.glassfish.enterprise.iiop.impl.IIOPUtils;
 
 public class S1ASThreadPoolManager implements ThreadPoolManager {
 
@@ -71,11 +75,8 @@ public class S1ASThreadPoolManager implements ThreadPoolManager {
 
         IIOPUtils iiopUtils = IIOPUtils.getInstance();
         try {
-            Collection<com.sun.enterprise.config.serverbeans.ThreadPool> tpCol =
-                    iiopUtils.getAllThreadPools();
-
-            com.sun.enterprise.config.serverbeans.ThreadPool[] allThreadPools =
-                    tpCol.toArray(new com.sun.enterprise.config.serverbeans.ThreadPool[tpCol.size()]);
+            Collection<com.sun.grizzly.config.dom.ThreadPool> tpCol = iiopUtils.getAllThreadPools();
+            com.sun.grizzly.config.dom.ThreadPool[] allThreadPools = tpCol.toArray(new com.sun.grizzly.config.dom.ThreadPool[tpCol.size()]);
             for (int i = 0; i < allThreadPools.length; i++) {
                 createThreadPools(allThreadPools[i], i);
             }
@@ -88,15 +89,15 @@ public class S1ASThreadPoolManager implements ThreadPoolManager {
     }
 
 
-    private void createThreadPools(com.sun.enterprise.config.serverbeans.ThreadPool
+    private void createThreadPools(com.sun.grizzly.config.dom.ThreadPool
             threadpoolBean, int index) {
         IIOPUtils iiopUtils = IIOPUtils.getInstance();
         String threadpoolId = null;
-        String minThreadsValue, maxThreadsValue, timeoutValue, numberOfQueuesValue;
+        String minThreadsValue, maxThreadsValue, timeoutValue;//, numberOfQueuesValue;
         int minThreads = DEFAULT_MIN_THREAD_COUNT;
         int maxThreads = DEFAULT_MAX_THREAD_COUNT;
         int idleTimeoutInSeconds = ORBConstants.DEFAULT_INACTIVITY_TIMEOUT;
-        int numberOfQueues = DEFAULT_NUMBER_OF_QUEUES;
+//        int numberOfQueues = DEFAULT_NUMBER_OF_QUEUES;
 
         try {
             threadpoolId = threadpoolBean.getThreadPoolId();
@@ -138,7 +139,7 @@ public class S1ASThreadPoolManager implements ThreadPoolManager {
             }
         }
         try {
-            timeoutValue = threadpoolBean.getIdleThreadTimeoutInSeconds();
+            timeoutValue = threadpoolBean.getIdleThreadTimeout();
             idleTimeoutInSeconds = Integer.parseInt(timeoutValue);
         } catch (NullPointerException npe) {
             if (_logger.isLoggable(Level.WARNING)) {
@@ -159,6 +160,7 @@ public class S1ASThreadPoolManager implements ThreadPoolManager {
         // Currently this value is not used but when multi-queue threadpools are
         // implemented this could be used to decide which one to instantiate and
         // number of queues in the multi-queue threadpool
+/*
         try {
             numberOfQueuesValue = threadpoolBean.getNumWorkQueues();
             numberOfQueues = Integer.parseInt(numberOfQueuesValue);
@@ -177,6 +179,7 @@ public class S1ASThreadPoolManager implements ThreadPoolManager {
                                 numberOfQueues);
             }
         }
+*/
 
         // Mutiplied the idleTimeoutInSeconds by 1000 to convert to milliseconds
         ThreadPoolFactory threadPoolFactory = new ThreadPoolFactory();

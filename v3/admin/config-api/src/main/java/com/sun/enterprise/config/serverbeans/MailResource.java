@@ -45,13 +45,10 @@ import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
 
 import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeSupport;
 import java.util.List;
 
 
 import org.glassfish.api.amx.AMXConfigInfo;
-
-import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
@@ -66,7 +63,7 @@ import org.glassfish.quality.ToDo;
 }) */
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.MailResourceConfig")
 @Configured
-public interface MailResource extends ConfigBeanProxy, Injectable, Resource, PropertyBag, BindableResource {
+public interface MailResource extends ConfigBeanProxy, Injectable, Resource, org.glassfish.api.admin.config.PropertyBag, BindableResource {
 
 
     /**

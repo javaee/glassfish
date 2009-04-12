@@ -52,7 +52,6 @@ package com.sun.enterprise.resource.deployer;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
-import org.glassfish.api.admin.config.Property;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -68,6 +67,7 @@ import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
+import org.glassfish.api.admin.config.Property;
 
 import java.util.*;
 import java.util.logging.Level;

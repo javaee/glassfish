@@ -47,8 +47,8 @@ import org.jvnet.hk2.config.Element;
 import java.beans.PropertyVetoException;
 import java.util.List;
 
-import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 
@@ -62,7 +62,7 @@ import org.glassfish.quality.ToDo;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.EJBTimerServiceConfig", singleton=true)
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.EJBTimerServiceConfig", singleton=true)
 @Configured
 public interface EjbTimerService extends ConfigBeanProxy, Injectable, PropertyBag {
 
@@ -73,7 +73,7 @@ public interface EjbTimerService extends ConfigBeanProxy, Injectable, PropertyBa
      *         {@link String }
      */
     @Attribute (defaultValue="7000")
-    public String getMinimumDeliveryIntervalInMillis();
+    String getMinimumDeliveryIntervalInMillis();
 
     /**
      * Sets the value of the minimumDeliveryIntervalInMillis property.
@@ -81,7 +81,7 @@ public interface EjbTimerService extends ConfigBeanProxy, Injectable, PropertyBa
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMinimumDeliveryIntervalInMillis(String value) throws PropertyVetoException;
+    void setMinimumDeliveryIntervalInMillis(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxRedeliveries property.
@@ -90,7 +90,7 @@ public interface EjbTimerService extends ConfigBeanProxy, Injectable, PropertyBa
      *         {@link String }
      */
     @Attribute (defaultValue="1")
-    public String getMaxRedeliveries();
+    String getMaxRedeliveries();
 
     /**
      * Sets the value of the maxRedeliveries property.
@@ -98,7 +98,7 @@ public interface EjbTimerService extends ConfigBeanProxy, Injectable, PropertyBa
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxRedeliveries(String value) throws PropertyVetoException;
+    void setMaxRedeliveries(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the timerDatasource property.
@@ -107,7 +107,7 @@ public interface EjbTimerService extends ConfigBeanProxy, Injectable, PropertyBa
      *         {@link String }
      */
     @Attribute
-    public String getTimerDatasource();
+    String getTimerDatasource();
 
     /**
      * Sets the value of the timerDatasource property.
@@ -115,7 +115,7 @@ public interface EjbTimerService extends ConfigBeanProxy, Injectable, PropertyBa
      * @param value allowed object is
      *              {@link String }
      */
-    public void setTimerDatasource(String value) throws PropertyVetoException;
+    void setTimerDatasource(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the redeliveryIntervalInternalInMillis property.
@@ -124,7 +124,7 @@ public interface EjbTimerService extends ConfigBeanProxy, Injectable, PropertyBa
      *         {@link String }
      */
     @Attribute (defaultValue="5000")
-    public String getRedeliveryIntervalInternalInMillis();
+    String getRedeliveryIntervalInternalInMillis();
 
     /**
      * Sets the value of the redeliveryIntervalInternalInMillis property.
@@ -132,7 +132,7 @@ public interface EjbTimerService extends ConfigBeanProxy, Injectable, PropertyBa
      * @param value allowed object is
      *              {@link String }
      */
-    public void setRedeliveryIntervalInternalInMillis(String value) throws PropertyVetoException;
+    void setRedeliveryIntervalInternalInMillis(String value) throws PropertyVetoException;
     
     /**
     	Properties as per {@link PropertyBag}

@@ -35,43 +35,43 @@
  */
 package com.sun.enterprise.v3.admin;
 
+import java.beans.PropertyVetoException;
 import java.util.List;
 
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Configs;
+import com.sun.enterprise.config.serverbeans.IiopListener;
+import com.sun.enterprise.config.serverbeans.IiopService;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.grizzly.config.dom.NetworkConfig;
+import com.sun.grizzly.config.dom.NetworkListener;
+import com.sun.grizzly.config.dom.Protocol;
+import com.sun.grizzly.config.dom.Ssl;
+import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.ActionReport;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
+import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.AdminCommandContext;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
-import com.sun.enterprise.config.serverbeans.Configs;
-import com.sun.enterprise.config.serverbeans.HttpListener;
-import com.sun.enterprise.config.serverbeans.IiopListener;
-import com.sun.enterprise.config.serverbeans.Ssl;
-import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.IiopService;
-import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.util.LocalStringManagerImpl;
-
-import java.beans.PropertyVetoException;
 
 
 /**
  * Create Ssl Command
  *
- * Usage: create-ssl --type [http-listener|iiop-listener|iiop-service] 
- * --certname cert_name [--ssl2enabled=false] [--ssl2ciphers ssl2ciphers] 
- * [--ssl3enabled=true] [--ssl3tlsciphers ssl3tlsciphers] [--tlsenabled=true] 
- * [--tlsrollbackenabled=true] [--clientauthenabled=false]  
+ * Usage: create-ssl --type [http-listener|iiop-listener|iiop-service]
+ * --certname cert_name [--ssl2enabled=false] [--ssl2ciphers ssl2ciphers]
+ * [--ssl3enabled=true] [--ssl3tlsciphers ssl3tlsciphers] [--tlsenabled=true]
+ * [--tlsrollbackenabled=true] [--clientauthenabled=false]
  * [--target target(Default server)] [listener_id]
  *
  * domain.xml element example
- * <ssl cert-nickname="s1as" client-auth-enabled="false" ssl2-enabled="false" 
+ * <ssl cert-nickname="s1as" client-auth-enabled="false" ssl2-enabled="false"
  * ssl3-enabled="true" tls-enabled="true" tls-rollback-enabled="true"/>
  *
  * @author Nandini Ektare
@@ -81,33 +81,33 @@ import java.beans.PropertyVetoException;
 @Scoped(PerLookup.class)
 @I18n("create.ssl")
 public class CreateSsl implements AdminCommand {
-    
-    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateSsl.class);    
+
+    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateSsl.class);
 
     @Param(name="certname")
     String certName;
 
-    @Param(name="type", acceptableValues="http-listener, iiop-listener")
+    @Param(name="type", acceptableValues="network-listener, http-listener, iiop-listener")
     String type;
 
     @Param(name="ssl2enabled", optional=true, defaultValue="true")
     Boolean ssl2Enabled;
-    
+
     @Param(name="ssl2ciphers", optional=true)
     String ssl2ciphers;
-    
+
     @Param(name="ssl3enabled", optional=true, defaultValue="true")
     Boolean ssl3Enabled;
-    
+
     @Param(name="ssl3tlsciphers", optional=true)
     String ssl3tlsciphers;
-    
+
     @Param(name="tlsenabled", optional=true, defaultValue="true")
     Boolean tlsenabled;
-    
+
     @Param(name="tlsrollbackenabled", optional=true, defaultValue="true")
     Boolean tlsrollbackenabled;
-        
+
     @Param(name="clientauthenabled", optional=true, defaultValue="true")
     Boolean clientauthenabled;
 
@@ -131,21 +131,21 @@ public class CreateSsl implements AdminCommand {
 
         List <Config> configList = configs.getConfig();
         Config config = configList.get(0);
-        
-        if (type.equals("http-listener"))
-            addSslToHTTPListener(config, report);
-        else if (type.equals("iiop-listener"))
+
+        if ("http-listener".equals(type) || "network-listener".equals(type))
+            addSslToNetworkListener(config, report);
+        else if ("iiop-listener".equals(type))
             addSslToIIOPListener(config, report);
     }
-    
-    private void addSslToIIOPListener(Config config, final ActionReport report) {
+
+    private void addSslToIIOPListener(Config config, ActionReport report) {
         IiopService iiopService = config.getIiopService();
-        
-        // ensure we have the specified listener 
-        IiopListener iiopListener = null;        
+
+        // ensure we have the specified listener
+        IiopListener iiopListener = null;
         for (IiopListener listener  : iiopService.getIiopListener()) {
-            if (listener.getId().equals(listenerId))                 
-                iiopListener = listener;            
+            if (listener.getId().equals(listenerId))
+                iiopListener = listener;
         }
 
         if (iiopListener == null) {
@@ -153,7 +153,7 @@ public class CreateSsl implements AdminCommand {
                     "IIOP Listener named {0} to which this ssl element is " +
                     "being added does not exist.", listenerId));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;                                
+            return;
         }
 
         if (iiopListener.getSsl() != null) {
@@ -164,14 +164,14 @@ public class CreateSsl implements AdminCommand {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
-        
+
         try {
             ConfigSupport.apply(new SingleConfigCode<IiopListener>() {
 
-                public Object run(IiopListener param) 
-                throws PropertyVetoException, TransactionFailure {                        
+                public Object run(IiopListener param)
+                throws PropertyVetoException, TransactionFailure {
                     Ssl newSsl = param.createChild(Ssl.class);
-                    populateSslElement(newSsl);                    
+                    populateSslElement(newSsl);
                     param.setSsl(newSsl);
                     return newSsl;                }
             }, iiopListener);
@@ -180,72 +180,66 @@ public class CreateSsl implements AdminCommand {
             reportError(report, e);
         }
         reportSuccess(report);
-    }    
-    
-    private void addSslToHTTPListener(Config config, final ActionReport report) {
-        HttpService httpService = config.getHttpService();
-        
-        // ensure we have the specified listener 
-        HttpListener httpListener = null;        
-        for (HttpListener listener : httpService.getHttpListener()) {
-            if (listener.getId().equals(listenerId))                 
-                httpListener = listener;            
-        }
+    }
 
-        if (httpListener == null) {
+    private void addSslToNetworkListener(Config config, ActionReport report) {
+        NetworkConfig netConfig = config.getNetworkConfig();
+
+        // ensure we have the specified listener
+        NetworkListener listener = netConfig.getNetworkListener(listenerId);
+
+        if (listener == null) {
             report.setMessage(localStrings.getLocalString("create.ssl.http.notfound",
-                    "Http Listener named {0} to which this ssl element is " +
+                    "Network Listener named {0} to which this ssl element is " +
                     "being added does not exist.", listenerId));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;                                
+            return;
         }
 
-        if (httpListener.getSsl() != null) {
-            report.setMessage(
-                localStrings.getLocalString("create.ssl.http.alreadyExists",
-                "Http Listener named {0} to which this ssl element is " +
+        Ssl ssl = listener.findProtocol().getSsl();
+        if (ssl != null) {
+            report.setMessage(localStrings.getLocalString("create.ssl.http.alreadyExists",
+                "Network Listener named {0} to which this ssl element is " +
                 "being added already has an ssl element.", listenerId));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
 
         try {
-            ConfigSupport.apply(new SingleConfigCode<HttpListener>() {
-
-                public Object run(HttpListener param) 
-                throws PropertyVetoException, TransactionFailure {
-                Ssl newSsl = param.createChild(Ssl.class);
-                    populateSslElement(newSsl);                    
+            ConfigSupport.apply(new SingleConfigCode<Protocol>() {
+                public Object run(Protocol param) throws TransactionFailure {
+                    Ssl newSsl = param.createChild(Ssl.class);
+                    populateSslElement(newSsl);
                     param.setSsl(newSsl);
                     return newSsl;
                 }
-            }, httpListener);
+            }, listener.findProtocol());
 
         } catch(TransactionFailure e) {
             reportError(report, e);
         }
         reportSuccess(report);
-    }        
-    
+    }
+
     private void reportError(ActionReport report, TransactionFailure e) {
-        report.setMessage(localStrings.getLocalString("create.ssl.fail", 
+        report.setMessage(localStrings.getLocalString("create.ssl.fail",
                 "Creation of Ssl in {0} failed", listenerId));
         report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-        report.setFailureCause(e);        
+        report.setFailureCause(e);
     }
-    
+
     private void reportSuccess(ActionReport report) {
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
-    
-    private void populateSslElement(Ssl newSsl) throws PropertyVetoException {
+
+    private void populateSslElement(Ssl newSsl) {
         newSsl.setCertNickname(certName);
-        newSsl.setClientAuthEnabled(clientauthenabled.toString());                                       
+        newSsl.setClientAuthEnabled(clientauthenabled.toString());
         newSsl.setSsl2Ciphers(ssl2ciphers);
         newSsl.setSsl2Enabled(ssl2Enabled.toString());
-        newSsl.setSsl3Enabled(ssl3Enabled.toString());                    
+        newSsl.setSsl3Enabled(ssl3Enabled.toString());
         newSsl.setSsl3TlsCiphers(ssl3tlsciphers);
         newSsl.setTlsEnabled(tlsenabled.toString());
         newSsl.setTlsRollbackEnabled(tlsrollbackenabled.toString());
-    }    
+    }
 }

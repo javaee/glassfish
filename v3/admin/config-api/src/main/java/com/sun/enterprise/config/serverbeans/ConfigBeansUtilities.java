@@ -23,16 +23,15 @@
 
 package com.sun.enterprise.config.serverbeans;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
 import org.glassfish.api.admin.config.Named;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
 
 /**
  * Bunch of utility methods for the new serverbeans config api based on jaxb
@@ -98,11 +97,11 @@ public final class ConfigBeansUtilities {
      *         wrong cases for valid true values.
      */
     public static boolean toBoolean(final String value) {
-        final String v = (null != value ? value.trim() : value);
-        return null != v && (v.equals("true")
-                || v.equals("yes")
-                || v.equals("on")
-                || v.equals("1"));
+        final String v = null != value ? value.trim() : value;
+        return null != v && ("true".equals(v)
+                || "yes".equals(v)
+                || "on".equals(v)
+                || "1".equals(v));
     }
 
     /** Returns the list of system-applications that are referenced from the given server.

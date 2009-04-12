@@ -47,6 +47,7 @@ import java.beans.PropertyVetoException;
 import java.util.List;
 
 import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 
@@ -63,7 +64,7 @@ import org.glassfish.quality.ToDo;
     "systemProperty",
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ClusterConfig")
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ClusterConfig")
 @Configured
 public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer {
 
@@ -76,7 +77,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     @Attribute(required=true)
     String getName();
 
-    public void setName(String value) throws PropertyVetoException;
+    void setName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the configRef property.
@@ -85,7 +86,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      *         {@link String }
      */
     @Attribute(required = true)
-    public String getConfigRef();
+    String getConfigRef();
 
     /**
      * Sets the value of the configRef property.
@@ -93,7 +94,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      * @param value allowed object is
      *              {@link String }
      */
-    public void setConfigRef(String value) throws PropertyVetoException;
+    void setConfigRef(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the heartbeatEnabled property.
@@ -102,7 +103,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      *         {@link String }
      */
     @Attribute (defaultValue="true")
-    public String getHeartbeatEnabled();
+    String getHeartbeatEnabled();
 
     /**
      * Sets the value of the heartbeatEnabled property.
@@ -110,7 +111,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHeartbeatEnabled(String value) throws PropertyVetoException;
+    void setHeartbeatEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the heartbeatPort property.
@@ -119,7 +120,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      *         {@link String }
      */
     @Attribute
-    public String getHeartbeatPort();
+    String getHeartbeatPort();
 
     /**
      * Sets the value of the heartbeatPort property.
@@ -127,7 +128,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHeartbeatPort(String value) throws PropertyVetoException;
+    void setHeartbeatPort(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the heartbeatAddress property.
@@ -136,7 +137,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      *         {@link String }
      */
     @Attribute
-    public String getHeartbeatAddress();
+    String getHeartbeatAddress();
 
     /**
      * Sets the value of the heartbeatAddress property.
@@ -144,7 +145,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHeartbeatAddress(String value) throws PropertyVetoException;
+    void setHeartbeatAddress(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the serverRef property.
@@ -167,7 +168,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      * {@link ServerRef }
      */
     @Element
-    public List<ServerRef> getServerRef();
+    List<ServerRef> getServerRef();
 
     /**
      * Gets the value of the resourceRef property.
@@ -190,7 +191,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      * {@link ResourceRef }
      */
     @Element
-    public List<ResourceRef> getResourceRef();
+    List<ResourceRef> getResourceRef();
 
     /**
      * Gets the value of the applicationRef property.
@@ -213,7 +214,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      * {@link ApplicationRef }
      */
     @Element
-    public List<ApplicationRef> getApplicationRef();
+    List<ApplicationRef> getApplicationRef();
 
     /**
      * Gets the value of the systemProperty property.
@@ -237,7 +238,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      */
     @Element
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal system props" )
-    public List<SystemProperty> getSystemProperty();
+    List<SystemProperty> getSystemProperty();
 
     /**
     	Properties as per {@link PropertyBag}
@@ -248,9 +249,9 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     List<Property> getProperty();
     
     @DuckTyped
-    public String getReference();
+    String getReference();
 
-    public class Duck {
+    class Duck {
         public static String getReference(Cluster cluster) {
             return cluster.getConfigRef();
         }

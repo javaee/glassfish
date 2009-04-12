@@ -44,13 +44,13 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import org.apache.catalina.Context;
 import org.apache.catalina.core.StandardContext;
-import org.glassfish.api.admin.config.Property;
 import com.sun.enterprise.deployment.runtime.web.ManagerProperties;
 import com.sun.enterprise.deployment.runtime.web.SessionManager;
 import com.sun.enterprise.deployment.runtime.web.StoreProperties;
 import com.sun.enterprise.deployment.runtime.web.WebProperty;
-import com.sun.enterprise.web.session.PersistenceType;
+import com.sun.enterprise.config.serverbeans.SessionProperties;
 import com.sun.logging.LogDomains;
+import org.glassfish.api.admin.config.Property;
 
 public abstract class BasePersistenceStrategyBuilder
         implements PersistenceStrategyBuilder {
@@ -236,7 +236,7 @@ public abstract class BasePersistenceStrategyBuilder
             }                     
         }
       
-        com.sun.enterprise.config.serverbeans.SessionProperties spBean =
+        SessionProperties spBean =
             serverConfigLookup.getInstanceSessionProperties();
         if (spBean != null) {
             // session timeout-in-seconds
