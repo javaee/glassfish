@@ -62,6 +62,8 @@ import org.glassfish.api.admin.config.Property;
 
 import java.beans.PropertyVetoException;
 import java.util.Properties;
+import java.util.Map;
+import java.util.List;
 
 /**
  * Create Connector Connection Pool Command
