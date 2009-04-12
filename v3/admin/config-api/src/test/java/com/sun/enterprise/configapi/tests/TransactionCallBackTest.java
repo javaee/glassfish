@@ -45,6 +45,7 @@ import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.WriteableView;
+import org.junit.Ignore;
 
 import java.beans.PropertyVetoException;
 import java.lang.reflect.InvocationTargetException;
@@ -58,6 +59,7 @@ import java.util.Map;
  * Date: Mar 28, 2008
  * Time: 4:23:31 PM
  */
+@Ignore
 public class TransactionCallBackTest extends ConfigPersistence {
 
     Habitat habitat = Utils.getNewHabitat(this);
@@ -77,6 +79,7 @@ public class TransactionCallBackTest extends ConfigPersistence {
         return habitat;
     }
 
+    @Ignore
     public void doTest() throws TransactionFailure {
 /*
         ConfigBean serviceBean = (ConfigBean) ConfigBean.unwrap(habitat.getComponent(NetworkListeners.class));
