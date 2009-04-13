@@ -76,6 +76,7 @@ implements java.io.Serializable
      private transient int hashCodeValue = 0;
 
      private transient static final String EMPTY_STRING = "";
+     private transient static final String ESCAPED_COLON = "%3A";
 
      private static final long serialVersionUID = 1L;
 
@@ -188,6 +189,8 @@ implements java.io.Serializable
      * of the deployed web application module, and the same URLPattern must not
      * occur more than once in a URLPatternSpec. A null URLPatternSpec is 
      * translated to the default URLPattern, "/", by the permission constructor.
+     * All colons occuring within the URLPattern elements of the URLPatternSpec
+     * must be represented in escaped encoding as defined in RFC 2396.
      * <P>
      * @param HTTPMethods an array of strings each element of which contains
      * the value of an HTTP method. If the value passed through this
@@ -213,7 +216,9 @@ implements java.io.Serializable
      * (HttpServletRequest.getContextPath()). When the substring operation
      * yields the string "/", the permission is constructed with the empty
      * string as its name. The permission's actions field is obtained from 
-     * HttpServletRequest.getMethod().
+     * HttpServletRequest.getMethod().The constructor must transform all colon
+     * characters occuring in the name to escaped encoding as defined in
+     * RFC 2396.
      */
 
      public WebResourcePermission(HttpServletRequest request)
@@ -374,7 +379,7 @@ implements java.io.Serializable
 		 uri = EMPTY_STRING;
 	     } else {
  		 // encode all colons
- 		 uri = uri.replaceAll(":","%3A");
+ 		 uri = uri.replaceAll(":",ESCAPED_COLON);
   	     }
 	 } else {
 	     uri = EMPTY_STRING;

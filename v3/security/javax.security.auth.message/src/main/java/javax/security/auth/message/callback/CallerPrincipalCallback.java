@@ -63,12 +63,16 @@ public class CallerPrincipalCallback implements Callback {
      * @param p The Principal that will be distinguished as the caller
      * principal. This value may be null.
      * <p> 
-     * The CallbackHandler must establish the argument Principal as the caller
-     * principal associated with the invocation being processed by the
-     * container. When the argument Principal is null, the handler will establish
-     * the container's representation of the unauthenticated caller
-     * principal.
+     *The CallbackHandler must use the argument Principal to establish the caller
+     *principal associated with the invocation being processed by the container.
+     *When the argument Principal is null, the handler must establish the 
+     *container’s representation of the unauthenticated caller principal. The 
+     *handler may perform principal mapping of non-null argument Principal 
+     *values, but it must be possible to configure the handler such that it 
+     *establishes the non-null argument Principal as the caller principal.
      */
+    
+    
     public CallerPrincipalCallback(Subject s, Principal p) { 
 	subject = s;
 	principal = p;
@@ -85,13 +89,15 @@ public class CallerPrincipalCallback implements Callback {
      * @param n The String value that will be returned when getName() is
      * called on the principal established as the caller principal or null.
      * <p> 
-     * When the n argument is null, the handler will establish
-     * the container's representation of the unauthenticated caller
-     * principal (which may or may not be equal to null, depending on
-     * the requirements of the container type). When the container 
-     * type requires that a non-null principal be established as the 
-     * caller principal, the value obatined by calling getName on the
-     * principal may not match the argument value.
+     *  The CallbackHandler must use the n argument to establish the caller 
+     * principal associated with the invocation being processed by the container.
+     * When the n argument is null, the handler must establish the container’s
+     * representation of the unauthenticated caller principal (which may or may 
+     * not be equal to null, depending on the requirements of the container type
+     * ). The handler may perform principal mapping of non-null values of n, but
+     * it must be possible to configure the handler such that it establishes the
+     * non-null argument value as the value returned when getName is called on 
+     * the established principal.
      */
     public CallerPrincipalCallback(Subject s, String n) { 
 	subject = s;
