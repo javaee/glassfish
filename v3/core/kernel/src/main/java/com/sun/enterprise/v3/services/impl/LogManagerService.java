@@ -29,6 +29,8 @@ import com.sun.enterprise.server.logging.UniformLogFormatter;
 import com.sun.enterprise.v3.logging.AgentFormatterDelegate;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.common.util.logging.LoggingOutputStream;
+import com.sun.common.util.logging.LoggingXMLNames;
+import com.sun.common.util.logging.LoggingConfigImpl;
 
 import com.sun.logging.LogDomains;
 import org.glassfish.internal.api.Init;
@@ -54,6 +56,7 @@ import java.util.Set;
 import java.util.logging.Handler;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
+import java.util.logging.Filter;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
@@ -86,6 +89,8 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
     @Inject ( name="server-config")
     Config config;
 
+    @Inject
+    LoggingConfigImpl loggingConfig;
     /**
      * Initialize the loggers
      */
@@ -143,6 +148,20 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
 
             }
         }
+        // add the filter if there is one
+        try {
+            Map<String,String> map = loggingConfig.getLoggingProperties();
+            String filterClassName = map.get(LoggingXMLNames.xmltoPropsMap.get("log-filter"));
+            if (filterClassName != null) {
+                Filter filterClass = habitat.getComponent(java.util.logging.Filter.class,filterClassName);
+                Logger rootLogger = Logger.global.getParent();
+                if (rootLogger!=null) {
+                       rootLogger.setFilter(filterClass);
+                }
+            }
+        } catch (java.io.IOException ex){
+
+        }
 
         // redirect stderr and stdout, a better way to do this
         //http://blogs.sun.com/nickstephen/entry/java_redirecting_system_out_and
@@ -161,7 +180,7 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
                 public void changed(File changedFile) {
                     try {
 
-                         Map<String,String> props = config.getLoggingProperties();
+                         Map<String,String> props = loggingConfig.getLoggingProperties();
                         Set<String> keys = props.keySet();
                         for (String a : keys)   {
                             if (a.endsWith(".level")) {
@@ -188,8 +207,7 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
                         }
 
                         logger.log(Level.INFO,"Updated log levels for loggers.");                                                     
-//                    } catch (IOException e) {
-                      } catch (Exception e) {
+                    } catch (IOException e) {
                         logger.log(Level.SEVERE, "Cannot read logging.properties file : ", e);
                     }
 
