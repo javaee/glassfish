@@ -46,14 +46,12 @@ import org.junit.Test;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
-import org.junit.Ignore;
 
 /**
  * HttpService related tests
  *
  * @author Jerome Dochez
  */
-@Ignore
 public class HttpServiceTest extends ConfigApiTest {
     public String getFileName() {
         return "DomainTest";
@@ -63,18 +61,21 @@ public class HttpServiceTest extends ConfigApiTest {
 
     @Before
     public void setup() {
-        listener = getHabitat().getComponent(NetworkConfig.class).getNetworkListeners().getNetworkListener().get(0);
+        listener = getHabitat().getComponent(NetworkConfig.class).getNetworkListener("admin-listener");
         assertTrue(listener != null);
     }
 
     @Test
     public void connectionTest() {
-        logger.fine("Max connections = " + listener.findProtocol().getHttp().getMaxConnections());
-        assertEquals("256", listener.findProtocol().getHttp().getMaxConnections());
+        final String max = listener.findProtocol().getHttp().getMaxConnections();
+        logger.fine("Max connections = " + max);
+        assertEquals("Should only allow 250 connections.  The default is 256, however.", "250", max);
     }
 
     @Test
     public void validTransaction() throws TransactionFailure {
+        final String max = listener.findProtocol().getHttp().getMaxConnections();
+
         ConfigSupport.apply(new SingleConfigCode<NetworkListener>() {
             public Object run(NetworkListener okToChange) throws TransactionFailure {
                 final Http http = okToChange.createChild(Http.class);
@@ -90,10 +91,11 @@ public class HttpServiceTest extends ConfigApiTest {
                 return http;
             }
         }, listener);
+
         ConfigSupport.apply(new SingleConfigCode<Http>() {
             @Override
             public Object run(Http param) {
-                param.setMaxConnections(null);
+                param.setMaxConnections(max);
                 return null;
             }
         }, listener.findProtocol().getHttp());
