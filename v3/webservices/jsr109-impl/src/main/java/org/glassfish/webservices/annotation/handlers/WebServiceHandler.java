@@ -64,6 +64,7 @@ import com.sun.logging.LogDomains;
 
 import javax.xml.namespace.QName;
 import javax.ejb.Stateless;
+import javax.ejb.Singleton;
 
 import org.jvnet.hk2.annotations.Service;
 
@@ -419,12 +420,23 @@ public class WebServiceHandler extends AbstractHandler {
                     //Just logging the error
                     logger.fine(rb.getString("exception.thrown") + e.getMessage() );
                 }
+                Singleton singleton = null;
+                try {
+                    singleton = annElem.getAnnotation(javax.ejb.Singleton.class);
+                } catch (Exception e) {
+                    //This can happen in the web.zip installation where there is no ejb
+                    //Just logging the error
+                    logger.fine(rb.getString("exception.thrown") + e.getMessage() );
+                }
                 String name;
 
-                //TODO BM FIX ME FOR EJB case
-                if ((stateless).name()==null || stateless.name().length()>0) {
+                
+                if ((stateless != null) &&((stateless).name()==null || stateless.name().length()>0)) {
                     name = stateless.name();
-                } else {
+                } else if ((singleton != null) &&((singleton).name()==null || singleton.name().length()>0)) {
+                    name = singleton.name();
+
+                }else {
                     name = ((Class) annElem).getSimpleName();
                 }
                 EjbDescriptor ejb = ((EjbBundleDescriptor) bundleDesc).getEjbByName(name);
