@@ -76,7 +76,7 @@ public class FilterRegistrationImpl implements FilterRegistration {
     }
 
 
-    public boolean addMappingForServletNames(
+    public void addMappingForServletNames(
             EnumSet<DispatcherType> dispatcherTypes, boolean isMatchAfter,
             String... servletNames) {
 
@@ -103,12 +103,10 @@ public class FilterRegistrationImpl implements FilterRegistration {
 
             ctx.addFilterMap(fmap, isMatchAfter);
         }
-
-        return true;
     }
 
 
-    public boolean addMappingForUrlPatterns(
+    public void addMappingForUrlPatterns(
             EnumSet<DispatcherType> dispatcherTypes, boolean isMatchAfter,
             String... urlPatterns) {
 
@@ -134,8 +132,6 @@ public class FilterRegistrationImpl implements FilterRegistration {
 
             ctx.addFilterMap(fmap, isMatchAfter);
         }
-
-        return true;
     }
 
 }
