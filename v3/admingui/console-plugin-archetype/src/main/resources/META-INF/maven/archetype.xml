@@ -7,7 +7,7 @@
   <resources>
     <resource>src/main/resources/META-INF/admingui/console-config.xml</resource>
     <resource>src/main/resources/META-INF/faces-config.xml</resource>
-    <resource>src/main/resources/jdbcLists.jsf</resource>
+    <resource>src/main/resources/testPage.jsf</resource>
     <resource>src/main/resources/newTab1.jsf</resource>
     <resource>src/main/resources/newTab2.jsf</resource>
     <resource>src/main/resources/newTestTab1Page.jsf</resource>

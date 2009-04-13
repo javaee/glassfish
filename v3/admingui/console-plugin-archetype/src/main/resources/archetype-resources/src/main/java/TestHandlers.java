@@ -56,9 +56,9 @@ public class TestHandlers {
      *	    value that is given as it's single "<code>out</code>" output
      *	    value.  For example:</p>
      *
-     *	<p> <code>${artifactId}:echo(in="Hello" out="#{requestScope.result}");</code></p>
+     *	<p> <code>${artifactId}.echo(in="Hello" out="#{requestScope.result}");</code></p>
      */
-    @Handler(id="${artifactId}:echo",
+    @Handler(id="${artifactId}.echo",
         input={
             @HandlerInput(name="in", type=String.class, required=true)},
         output={

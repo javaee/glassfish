@@ -11,8 +11,8 @@ setAttribute(key="helpKey" value="$resource{help.serverInstJvmPathSettings}" );
         </sun:head>
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-                <sun:title id="propertyContentPage" title="Test Tab 1"
-                    helpText="Some help for text for test tab 1">
+                <sun:title id="propertyContentPage" title="Test Tab 2"
+                    helpText="Some help for text for test tab 2">
 		</sun:title>
                 "Test tab 2!
             </sun:form>

@@ -7,12 +7,12 @@
                         parentId="resources" 
                         content="treeNode.jsf" />
     <integration-point  id="tab2" 
-                        type="org.glassfish.admingui:tab" 
+                        type="org.glassfish.admingui:serverInstTab" 
                         priority="22" 
                         parentId="jvmSettings" 
                         content="newTab2.jsf" />
     <integration-point  id="tab1" 
-                        type="org.glassfish.admingui:tab" 
+                        type="org.glassfish.admingui:serverInstTab" 
                         priority="28" 
                         parentId="serverInstTabs" 
                         content="newTab1.jsf" />

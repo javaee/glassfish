@@ -1,6 +1,6 @@
 <sun:tab id="tabTestTab1" immediate="true" text="New Tab!">
     <!command
 	setSessionAttribute(key="serverInstTabs" value="tabTestTab1");
-	redirect(page="#{request.contextPath}/tabtest/newTestTab1Page.jsf");
+	redirect(page="#{request.contextPath}/${artifactId}/newTestTab1Page.jsf");
     />
 </sun:tab>

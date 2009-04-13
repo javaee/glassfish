@@ -1,0 +1,5 @@
+<staticText value="This is a new page.  Here is the output of the test 'echo' handler: '#{requestScope.myVar}'">
+    <ui:event type="beforeCreate">
+	${artifactId}.echo("ECHO THIS!" out="#{requestScope.myVar}");
+    </ui:event>
+</staticText>
