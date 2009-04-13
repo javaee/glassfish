@@ -46,12 +46,14 @@ import org.junit.Test;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
+import org.junit.Ignore;
 
 /**
  * HttpService related tests
  *
  * @author Jerome Dochez
  */
+@Ignore
 public class HttpServiceTest extends ConfigApiTest {
     public String getFileName() {
         return "DomainTest";
