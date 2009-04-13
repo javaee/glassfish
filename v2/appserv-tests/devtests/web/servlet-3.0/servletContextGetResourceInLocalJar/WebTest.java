@@ -4,8 +4,14 @@ import com.sun.ejte.ccl.reporter.*;
 
 /*
  * Unit test for ServletContext#getResource, where the requested resource
- * is embedded in a JAR file inside WEB-INF/lib and interpreted as relative
- * to the META-INF/resources directory of the JAR file
+ * is embedded in a JAR file inside WEB-INF/lib, and the resource path is
+ * interpreted as relative to the META-INF/resources directory of that JAR
+ * file.
+ *
+ * In this unit test, the client accesses a Servlet, which in turn calls
+ *   getServletContext().getResource("/abc.txt"),
+ * where the requested resource is supposed to be found under
+ *   WEB-INF/lib/nested.jar!META-INF/resources/abc.txt
  */
 public class WebTest {
 
