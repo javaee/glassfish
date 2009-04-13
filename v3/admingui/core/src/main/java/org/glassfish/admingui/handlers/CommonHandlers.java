@@ -186,7 +186,7 @@ public class CommonHandlers {
             //int serverPort = Integer.parseInt(serverPortStr);
             int serverPort = 4848;
             sessionMap.put("serverName", serverName);
-            sessionMap.put("severPort", serverPort);
+            sessionMap.put("serverPort", serverPort);
             sessionMap.put("requestIsSecured", Boolean.valueOf(srequest.isSecure()));
         }else{
             //should never get here.

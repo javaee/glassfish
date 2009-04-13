@@ -124,8 +124,9 @@ public class InstanceHandler {
         handlerCtx.setOutputValue("hostName", hostName);
 
 
+        //V3 GRIZZLY TODO
         //http ports
-        HTTPServiceConfig service = amxRoot.getConfig(configName).getHTTPServiceConfig();
+        /* HTTPServiceConfig service = amxRoot.getConfig(configName).getHTTPServiceConfig();
         Map<String, HTTPListenerConfig> listeners = service.getHTTPListenerConfigMap();
         StringBuffer ports = new StringBuffer();
         for (String key : listeners.keySet()) {
@@ -137,6 +138,8 @@ public class InstanceHandler {
         }
         ports.deleteCharAt(0);  //remove the first ','
         handlerCtx.setOutputValue("httpPorts", ports.toString());
+         */
+        handlerCtx.setOutputValue("httpPorts", GuiUtil.getMessage("TBD"));
 
 
         //iiop ports
