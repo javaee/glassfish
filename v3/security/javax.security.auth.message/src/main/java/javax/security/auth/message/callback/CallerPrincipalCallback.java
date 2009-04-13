@@ -63,13 +63,13 @@ public class CallerPrincipalCallback implements Callback {
      * @param p The Principal that will be distinguished as the caller
      * principal. This value may be null.
      * <p> 
-     *The CallbackHandler must use the argument Principal to establish the caller
-     *principal associated with the invocation being processed by the container.
-     *When the argument Principal is null, the handler must establish the 
-     *container’s representation of the unauthenticated caller principal. The 
-     *handler may perform principal mapping of non-null argument Principal 
-     *values, but it must be possible to configure the handler such that it 
-     *establishes the non-null argument Principal as the caller principal.
+     * The CallbackHandler must use the argument Principal to establish the caller
+     * principal associated with the invocation being processed by the container.
+     * When the argument Principal is null, the handler must establish the 
+     * container’s representation of the unauthenticated caller principal. The 
+     * handler may perform principal mapping of non-null argument Principal 
+     * values, but it must be possible to configure the handler such that it 
+     * establishes the non-null argument Principal as the caller principal.
      */
     
     
