@@ -181,8 +181,10 @@ public class CommonHandlers {
         if (request instanceof javax.servlet.ServletRequest){
             ServletRequest srequest = (ServletRequest) request;
             String serverName = srequest.getServerName();
-            String serverPortStr = AMXRoot.getInstance().getConfig("server-config").getHTTPServiceConfig().getHTTPListenerConfigMap().get("admin-listener").getPort();
-            int serverPort = Integer.parseInt(serverPortStr);
+            HtmlAdaptor.registerHTMLAdaptor(AMXRoot.getInstance().getMBeanServerConnection());
+            //String serverPortStr = AMXRoot.getInstance().getConfig("server-config").getHTTPServiceConfig().getHTTPListenerConfigMap().get("admin-listener").getPort();
+            //int serverPort = Integer.parseInt(serverPortStr);
+            int serverPort = 4848;
             sessionMap.put("serverName", serverName);
             sessionMap.put("severPort", serverPort);
             sessionMap.put("requestIsSecured", Boolean.valueOf(srequest.isSecure()));
@@ -220,7 +222,7 @@ public class CommonHandlers {
             ((HttpServletRequest) request).getSession().setMaxInactiveInterval(-1);
             nfe.printStackTrace();
         }
-        HtmlAdaptor.registerHTMLAdaptor(AMXRoot.getInstance().getMBeanServerConnection());
+        
     }
     
     /** This function is called in login.jsf to set the various product specific attributes such as the 
