@@ -59,6 +59,8 @@ import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.Element;
 
+import javax.validation.constraints.NotNull;
+
 /**
  *
  */
@@ -78,7 +80,8 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     String getContextRoot();
 
     /**
@@ -95,7 +98,8 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     String getLocation();
 
     /**

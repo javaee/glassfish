@@ -57,6 +57,9 @@ import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+
 /**
  *
  */
@@ -104,7 +107,9 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="8", dataType=PositiveInteger.class)
+    @Attribute (defaultValue="8")
+    @Min(value=1)
+    @Max(value=Integer.MAX_VALUE)
     String getSteadyPoolSize();
 
     /**
@@ -121,7 +126,9 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="32", dataType=PositiveInteger.class)
+    @Attribute (defaultValue="32")
+    @Min(value=1)
+    @Max(value=Integer.MAX_VALUE)
     String getMaxPoolSize();
 
     /**
@@ -138,7 +145,9 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="60000", dataType=NonNegativeInteger.class)
+    @Attribute (defaultValue="60000")
+    @Min(value=0)
+    @Max(value=Integer.MAX_VALUE)    
     String getMaxWaitTimeInMillis();
 
     /**
@@ -155,7 +164,9 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="2", dataType=PositiveInteger.class)
+    @Attribute (defaultValue="2")
+    @Min(value=1)
+    @Max(value=Integer.MAX_VALUE)
     String getPoolResizeQuantity();
 
     /**
@@ -172,7 +183,9 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="300", dataType=NonNegativeInteger.class)
+    @Attribute (defaultValue="300")
+    @Min(value=0)
+    @Max(value=Integer.MAX_VALUE)
     String getIdleTimeoutInSeconds();
 
     /**
@@ -325,7 +338,9 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="0", dataType=NonNegativeInteger.class)
+    @Attribute (defaultValue="0")
+    @Min(value=0)
+    @Max(value=Integer.MAX_VALUE)    
     String getValidateAtmostOncePeriodInSeconds();
 
     /**
@@ -342,7 +357,9 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="0", dataType=NonNegativeInteger.class)
+    @Attribute (defaultValue="0")
+    @Min(value=0)
+    @Max(value=Integer.MAX_VALUE)    
     String getConnectionLeakTimeoutInSeconds();
 
     /**
@@ -376,7 +393,9 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="0", dataType=NonNegativeInteger.class)
+    @Attribute (defaultValue="0")
+    @Min(value=0)
+    @Max(value=Integer.MAX_VALUE)    
     String getConnectionCreationRetryAttempts();
 
     /**
@@ -393,7 +412,9 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="10", dataType=NonNegativeInteger.class)
+    @Attribute (defaultValue="10")
+    @Min(value=0)
+    @Max(value=Integer.MAX_VALUE)    
     String getConnectionCreationRetryIntervalInSeconds();
 
     /**
@@ -495,7 +516,9 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="0", dataType=NonNegativeInteger.class)
+    @Attribute (defaultValue="0")
+    @Min(value=0)
+    @Max(value=Integer.MAX_VALUE)    
     String getMaxConnectionUsageCount();
 
     /**

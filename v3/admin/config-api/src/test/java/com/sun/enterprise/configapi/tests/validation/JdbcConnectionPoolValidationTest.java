@@ -19,21 +19,21 @@ import org.jvnet.hk2.config.TransactionFailure;
 
 /**
  *
- * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net) 
+ * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  */
 public class JdbcConnectionPoolValidationTest extends ConfigApiTest {
 
     private JdbcConnectionPool pool = null;
     private static final String NAME = "test"; //same as the one in JdbcConnectionPoolValidation.xml
-    
+
     public JdbcConnectionPoolValidationTest() {
     }
-    
+
     @Override
     public String getFileName() {
         return ("JdbcConnectionPoolValidation");
     }
-    
+
     @Before
     public void setUp() {
         pool = super.getHabitat().getComponent(JdbcConnectionPool.class, NAME);
@@ -61,50 +61,8 @@ public class JdbcConnectionPoolValidationTest extends ConfigApiTest {
             throw e.getCause().getCause();
         }
     }
-    
-    @Test (expected=ValidationException.class)
-    public void testPositiveIntegerDoesNotTakeString1() throws Throwable {
-        try {
-            ConfigSupport.apply(new SingleConfigCode<JdbcConnectionPool>() {
-                public Object run(JdbcConnectionPool jdbcConnectionPool) throws PropertyVetoException, TransactionFailure {
-                    jdbcConnectionPool.setSteadyPoolSize("xyz"); //this only takes a positive integer
-                    return null;
-                }
-            }, pool);
 
-        } catch(TransactionFailure e) {
-            throw e.getCause().getCause();
-        }        
-    }
-    @Test (expected=ValidationException.class)
-    public void testPositiveIntegerDoesNotTakeNegativeInger() throws Throwable {
-        try {
-            ConfigSupport.apply(new SingleConfigCode<JdbcConnectionPool>() {
-                public Object run(JdbcConnectionPool jdbcConnectionPool) throws PropertyVetoException, TransactionFailure {
-                    jdbcConnectionPool.setSteadyPoolSize("-1"); //this only takes a positive integer
-                    return null;
-                }
-            }, pool);
 
-        } catch(TransactionFailure e) {
-            throw e.getCause().getCause();
-        }
-    }
-    
-    @Test (expected=ValidationException.class)
-    public void testPositiveIntegerDoesNotTakeZero() throws Throwable {
-        try {
-            ConfigSupport.apply(new SingleConfigCode<JdbcConnectionPool>() {
-                public Object run(JdbcConnectionPool jdbcConnectionPool) throws PropertyVetoException, TransactionFailure {
-                    jdbcConnectionPool.setSteadyPoolSize("0"); //this only takes a positive integer
-                    return null;
-                }
-            }, pool);
-
-        } catch(TransactionFailure e) {
-            throw e.getCause().getCause();
-        }        
-    }
     @Test
     public void testBooleanTakesTrueFalse() {
         try {

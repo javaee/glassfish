@@ -48,6 +48,9 @@ import org.glassfish.config.support.datatypes.PositiveInteger;
 import org.glassfish.config.support.datatypes.NonNegativeInteger;
 import org.glassfish.api.amx.AMXConfigInfo;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+
 /**
  *
  */
@@ -64,7 +67,9 @@ public interface KeepAlive extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="1", dataType=PositiveInteger.class)
+    @Attribute (defaultValue="1")
+    @Min(value=1)
+    @Max(value=Integer.MAX_VALUE)
     String getThreadCount();
 
     /**
@@ -81,7 +86,9 @@ public interface KeepAlive extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="256", dataType=PositiveInteger.class)
+    @Attribute (defaultValue="256")
+    @Min(value=1)
+    @Max(value=Integer.MAX_VALUE)
     String getMaxConnections();
 
     /**
@@ -98,7 +105,9 @@ public interface KeepAlive extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="30", dataType=NonNegativeInteger.class)
+    @Attribute (defaultValue="30")
+    @Min(value=0)
+    @Max(value=Integer.MAX_VALUE)    
     String getTimeoutInSeconds();
 
     /**

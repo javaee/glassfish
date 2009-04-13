@@ -49,6 +49,8 @@ import java.beans.PropertyVetoException;
 import java.util.List;
 import org.jvnet.hk2.config.Element;
 
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -133,7 +135,9 @@ public interface ApplicationRef extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true, key=true)    
+    @Attribute(key=true)
+    @NotNull
+    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
     public String getRef();
 
     /**

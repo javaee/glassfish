@@ -48,6 +48,9 @@ import org.glassfish.config.support.datatypes.NonNegativeInteger;
 import org.glassfish.config.support.datatypes.PositiveInteger;
 import org.glassfish.api.amx.AMXConfigInfo;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+
 /**
  *
  */
@@ -98,7 +101,9 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="30", dataType=NonNegativeInteger.class)
+    @Attribute (defaultValue="30")
+    @Min(value=0)
+    @Max(value=Integer.MAX_VALUE)
     String getMaxAgeInSeconds();
 
     /**
@@ -115,7 +120,9 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="537600", dataType=PositiveInteger.class)
+    @Attribute (defaultValue="537600")
+    @Min(value=1)
+    @Max(value=Integer.MAX_VALUE)
     String getMediumFileSizeLimitInBytes();
 
     /**
@@ -132,7 +139,9 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute  (defaultValue="10485760", dataType=PositiveInteger.class) //is positive integer enough?
+    @Attribute  (defaultValue="10485760") //is positive integer enough?
+    @Min(value=1)
+    @Max(value=Integer.MAX_VALUE)
     String getMediumFileSpaceInBytes();
 
     /**
@@ -149,7 +158,9 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="2048", dataType=PositiveInteger.class)
+    @Attribute (defaultValue="2048")
+    @Min(value=1)
+    @Max(value=Integer.MAX_VALUE)
     String getSmallFileSizeLimitInBytes();
 
     /**
@@ -166,7 +177,9 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="1048576", dataType=PositiveInteger.class)
+    @Attribute (defaultValue="1048576")
+    @Min(value=1)
+    @Max(value=Integer.MAX_VALUE)
     String getSmallFileSpaceInBytes();
 
     /**
@@ -200,7 +213,9 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="1024", dataType=PositiveInteger.class)
+    @Attribute (defaultValue="1024")
+    @Min(value=1)
+    @Max(value=Integer.MAX_VALUE)
     String getMaxFilesCount();
 
     /**
@@ -217,7 +232,9 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="0", dataType=NonNegativeInteger.class)
+    @Attribute (defaultValue="0")
+    @Min(value=0)
+    @Max(value=Integer.MAX_VALUE)    
     String getHashInitSize();
 
     /**

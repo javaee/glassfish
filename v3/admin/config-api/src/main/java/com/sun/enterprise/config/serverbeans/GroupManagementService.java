@@ -53,6 +53,9 @@ import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 import org.glassfish.quality.ToDo;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Digits;
 
 /**
  *
@@ -72,6 +75,7 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="3")
+    @Min(value=1)        
     String getFdProtocolMaxTries();
 
     /**
@@ -89,6 +93,8 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="2000")
+    @Min(value=1000)
+    @Max(value=120000)
     String getFdProtocolTimeoutInMillis();
 
     /**
@@ -106,6 +112,8 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="10000")
+    @Min(value=10000)
+    @Max(value=15000)    
     String getMergeProtocolMaxIntervalInMillis();
 
     /**
@@ -123,6 +131,8 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="5000")
+    @Min(value=1000)
+    @Max(value=10000)
     String getMergeProtocolMinIntervalInMillis();
 
     /**
@@ -140,6 +150,8 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="2000")
+    @Min(value=1000)
+    @Max(value=120000)    
     String getPingProtocolTimeoutInMillis();
 
     /**
@@ -157,6 +169,8 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="1500")
+    @Min(value=1500)
+    @Max(value=120000)
     String getVsProtocolTimeoutInMillis();
 
     /**

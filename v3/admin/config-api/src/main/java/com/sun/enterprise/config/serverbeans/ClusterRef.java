@@ -47,6 +47,9 @@ import org.jvnet.hk2.component.Injectable;
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
 
 /**
  *
@@ -65,7 +68,9 @@ public interface ClusterRef extends ConfigBeanProxy, Injectable, Ref  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true, key=true)
+    @Attribute(key=true)
+    @NotNull
+    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
     public String getRef();
 
     /**

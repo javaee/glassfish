@@ -54,6 +54,9 @@ import org.glassfish.api.admin.config.PropertyBag;
 
 import org.glassfish.quality.ToDo;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+
 /**
  *
  */
@@ -109,6 +112,8 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
      *         {@link String }
      */
     @Attribute
+    @Max(value=65535)
+    @Min(value=1)
     String getHaAgentPort();
 
     /**
@@ -211,6 +216,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
      *         {@link String }
      */
     @Attribute (defaultValue="5")
+    @Min(value=1)
     String getHaStoreHealthcheckIntervalInSeconds();
 
     /**

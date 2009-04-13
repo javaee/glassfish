@@ -46,6 +46,8 @@ import org.jvnet.hk2.component.Injectable;
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
 
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Min;
 
 /**
  *
@@ -80,6 +82,7 @@ public interface HealthChecker extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute (defaultValue="30")
+    @Min(value=0)
     public String getIntervalInSeconds();
 
     /**
@@ -97,6 +100,7 @@ public interface HealthChecker extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute (defaultValue="10")
+    @Min(value=1)
     public String getTimeoutInSeconds();
 
     /**

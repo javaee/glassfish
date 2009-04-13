@@ -53,6 +53,8 @@ import org.jvnet.hk2.config.Element;
 import java.beans.PropertyVetoException;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.AppClientModuleConfig")
 @Configured
 public interface AppclientModule extends ConfigBeanProxy, Injectable, Named, PropertyBag {
@@ -63,7 +65,8 @@ public interface AppclientModule extends ConfigBeanProxy, Injectable, Named, Pro
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     String getLocation();
 
     /**

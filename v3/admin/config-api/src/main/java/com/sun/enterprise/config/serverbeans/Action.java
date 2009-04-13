@@ -45,6 +45,8 @@ import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
 
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.NotNull;
 /**
  *
  */
@@ -60,7 +62,9 @@ public interface Action extends ConfigBeanProxy, Injectable {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true, key=true)    
+    @Attribute(key=true)
+    @NotNull
+    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
     public String getActionMbeanName();
 
     /**

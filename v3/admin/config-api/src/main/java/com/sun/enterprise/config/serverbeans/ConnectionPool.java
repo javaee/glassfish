@@ -48,6 +48,9 @@ import org.glassfish.config.support.datatypes.NonNegativeInteger;
 import org.glassfish.config.support.datatypes.PositiveInteger;
 import org.glassfish.api.amx.AMXConfigInfo;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ConnectionPoolConfig", singleton=true)
 @Configured
 @Deprecated
@@ -59,7 +62,9 @@ public interface ConnectionPool extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="4096", dataType=NonNegativeInteger.class)
+    @Attribute (defaultValue="4096")
+    @Min(value=0)
+    @Max(value=Integer.MAX_VALUE)
     String getQueueSizeInBytes();
 
     /**
@@ -76,7 +81,9 @@ public interface ConnectionPool extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="4096", dataType=PositiveInteger.class)
+    @Attribute (defaultValue="4096")
+    @Min(value=1)
+    @Max(value=Integer.MAX_VALUE)
     String getMaxPendingCount();
 
     /**
@@ -93,7 +100,9 @@ public interface ConnectionPool extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="4096", dataType=PositiveInteger.class)
+    @Attribute (defaultValue="4096")
+    @Min(value=1)
+    @Max(value=Integer.MAX_VALUE)
     String getReceiveBufferSizeInBytes();
 
     /**
@@ -110,7 +119,9 @@ public interface ConnectionPool extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="8192", dataType=PositiveInteger.class)
+    @Attribute (defaultValue="8192")
+    @Min(value=1)
+    @Max(value=Integer.MAX_VALUE)
     String getSendBufferSizeInBytes();
 
     /**

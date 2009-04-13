@@ -53,6 +53,12 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
 
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotNull;
+
+
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.HTTPListenerConfig")
 @Configured
 @Deprecated
@@ -64,7 +70,9 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true, key=true)
+    @Attribute(key=true)
+    @NotNull
+    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
     String getId();
 
     /**
@@ -98,7 +106,9 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true, dataType=Port.class)
+    @Attribute(required = true)
+    @Max(value=65535)
+    @Min(value=1)    
     String getPort();
 
     /**
@@ -115,7 +125,9 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(dataType=Port.class)
+    @Attribute
+    @Max(value=65535)
+    @Min(value=1)    
     String getExternalPort();
 
     /**
@@ -166,7 +178,9 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="1", dataType=PositiveInteger.class)
+    @Attribute (defaultValue="1")
+    @Min(value=1)
+    @Max(value=Integer.MAX_VALUE)
     String getAcceptorThreads();
 
     /**
@@ -234,7 +248,9 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(dataType=Port.class)
+    @Attribute
+    @Max(value=65535)
+    @Min(value=1)    
     String getRedirectPort();
 
     /**

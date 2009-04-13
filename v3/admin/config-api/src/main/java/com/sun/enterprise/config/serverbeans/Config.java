@@ -63,6 +63,9 @@ import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.Element;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
 /**
  *
  */
@@ -100,7 +103,9 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      * @return name of the configured object
      FIXME: should set 'key=true'.  See bugs 6039, 6040
      */
-    @Attribute(required=true)
+    @Attribute
+    @NotNull
+    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
     String getName();
 
     void setName(String value) throws PropertyVetoException;

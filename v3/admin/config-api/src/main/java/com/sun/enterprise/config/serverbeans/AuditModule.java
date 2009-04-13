@@ -53,6 +53,8 @@ import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 import org.glassfish.quality.ToDo;
 
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -71,7 +73,9 @@ public interface AuditModule extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true, key=true)
+    @Attribute(key=true)
+    @NotNull
+    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
     String getName();
 
     /**
@@ -88,7 +92,8 @@ public interface AuditModule extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     String getClassname();
 
     /**

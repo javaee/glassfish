@@ -44,10 +44,12 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 import java.beans.PropertyVetoException;
 
-
 import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.config.support.datatypes.PositiveInteger;
 import org.glassfish.api.admin.config.PropertyBag;
+
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Max;
 
 /* @XmlType(name = "") */
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.AccessLogConfig", singleton=true)
@@ -94,7 +96,9 @@ public interface AccessLog extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="1440", dataType=PositiveInteger.class)
+    @Attribute (defaultValue="1440")
+    @Min(value=1)
+    @Max(value=Integer.MAX_VALUE)
     String getRotationIntervalInMinutes();
 
     /**

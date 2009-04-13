@@ -54,6 +54,9 @@ import org.glassfish.api.admin.config.PropertyBag;
 
 import org.glassfish.quality.ToDo;
 
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Min;
+
 /**
  *
  */
@@ -89,6 +92,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="2")
+    @Min(value=1)
     String getDynamicReloadPollIntervalInSeconds();
 
     /**
@@ -123,6 +127,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="2")
+    @Min(value=1)
     String getAutodeployPollingIntervalInSeconds();
 
     /**

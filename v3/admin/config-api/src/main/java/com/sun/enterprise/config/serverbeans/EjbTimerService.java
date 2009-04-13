@@ -54,6 +54,9 @@ import org.glassfish.api.admin.config.PropertyBag;
 
 import org.glassfish.quality.ToDo;
 
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Min;
+
 
 /**
  *
@@ -73,6 +76,7 @@ public interface EjbTimerService extends ConfigBeanProxy, Injectable, PropertyBa
      *         {@link String }
      */
     @Attribute (defaultValue="7000")
+    @Min(value=1)
     String getMinimumDeliveryIntervalInMillis();
 
     /**
@@ -90,6 +94,7 @@ public interface EjbTimerService extends ConfigBeanProxy, Injectable, PropertyBa
      *         {@link String }
      */
     @Attribute (defaultValue="1")
+    @Min(value=1)
     String getMaxRedeliveries();
 
     /**
@@ -124,6 +129,7 @@ public interface EjbTimerService extends ConfigBeanProxy, Injectable, PropertyBa
      *         {@link String }
      */
     @Attribute (defaultValue="5000")
+    @Min(value=1)
     String getRedeliveryIntervalInternalInMillis();
 
     /**

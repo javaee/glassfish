@@ -55,6 +55,9 @@ import org.glassfish.api.admin.config.PropertyBag;
 
 import org.glassfish.quality.ToDo;
 
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Min;
+
 /**
  *
  */
@@ -192,6 +195,7 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable, Property
      *         {@link String }
      */
     @Attribute (defaultValue="500")
+    @Min(value=0)
     String getMaxLogEntries();
 
     /**

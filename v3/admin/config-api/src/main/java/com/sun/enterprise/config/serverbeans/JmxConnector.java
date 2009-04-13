@@ -41,9 +41,9 @@ package com.sun.enterprise.config.serverbeans;
 import java.beans.PropertyVetoException;
 import java.util.List;
 import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
@@ -144,7 +144,7 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
      */
     @Attribute
     @Max(value=65535)
-    @Size(min=1,max=5)
+    @Min(value=1)    
     String getPort();
 
     /**

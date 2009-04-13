@@ -60,6 +60,9 @@ import org.glassfish.api.admin.config.PropertyBag;
 
 import org.glassfish.quality.ToDo;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+
 /**
  *
  */
@@ -109,6 +112,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      *         {@link String }
      */
     @Attribute (defaultValue="8")
+    @Min(value=0)
     String getSteadyPoolSize();
 
     /**
@@ -126,6 +130,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      *         {@link String }
      */
     @Attribute (defaultValue="32")
+    @Min(value=1)
     String getMaxPoolSize();
 
     /**
@@ -143,6 +148,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      *         {@link String }
      */
     @Attribute (defaultValue="60000")
+    @Min(value=0)
     String getMaxWaitTimeInMillis();
 
     /**
@@ -160,6 +166,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      *         {@link String }
      */
     @Attribute (defaultValue="2")
+    @Min(value=1)
     String getPoolResizeQuantity();
 
     /**
@@ -177,6 +184,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      *         {@link String }
      */
     @Attribute (defaultValue="300")
+    @Min(value=1)
     String getIdleTimeoutInSeconds();
 
     /**
@@ -245,6 +253,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      *         {@link String }
      */
     @Attribute (defaultValue="0")
+    @Min(value=0)
     String getValidateAtmostOncePeriodInSeconds();
 
     /**
@@ -262,6 +271,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      *         {@link String }
      */
     @Attribute (defaultValue="0")
+    @Min(value=1)
     String getConnectionLeakTimeoutInSeconds();
 
     /**
@@ -398,6 +408,8 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      *         {@link String }
      */
     @Attribute (defaultValue="0")
+    @Min(value=0)
+    @Max(value=Integer.MAX_VALUE)
     String getMaxConnectionUsageCount();
 
     /**

@@ -53,6 +53,9 @@ import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 import org.glassfish.quality.ToDo;
 
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Min;
+
 
 /**
  *
@@ -73,6 +76,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="32")
+    @Min(value=0)        
     String getSteadyPoolSize();
 
     /**
@@ -90,6 +94,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="16")
+    @Min(value=0)        
     String getPoolResizeQuantity();
 
     /**
@@ -107,6 +112,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="64")
+    @Min(value=0)    
     String getMaxPoolSize();
 
     /**
@@ -124,6 +130,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="32")
+    @Min(value=1)
     String getCacheResizeQuantity();
 
     /**
@@ -141,6 +148,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="512")
+    @Min(value=0)
     String getMaxCacheSize();
 
     /**
@@ -158,6 +166,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="600")
+    @Min(value=0)    
     String getPoolIdleTimeoutInSeconds();
 
     /**
@@ -175,6 +184,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="600")
+    @Min(value=0)    
     String getCacheIdleTimeoutInSeconds();
 
     /**
@@ -192,6 +202,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="5400")
+    @Min(value=0)    
     String getRemovalTimeoutInSeconds();
 
     /**

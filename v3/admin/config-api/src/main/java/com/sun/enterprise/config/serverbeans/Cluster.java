@@ -53,6 +53,10 @@ import org.glassfish.api.admin.config.PropertyBag;
 
 import org.glassfish.quality.ToDo;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 /**
  *
  */
@@ -74,7 +78,9 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      * @return name of the configured object
      FIXME: should set 'key=true'.  See bugs 6039, 6040
      */
-    @Attribute(required=true)
+    @Attribute
+    @NotNull
+    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
     String getName();
 
     void setName(String value) throws PropertyVetoException;
@@ -85,7 +91,8 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     String getConfigRef();
 
     /**
@@ -120,6 +127,8 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      *         {@link String }
      */
     @Attribute
+    @Min(value=1024)
+    @Max(value=49151)
     String getHeartbeatPort();
 
     /**

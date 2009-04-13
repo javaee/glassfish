@@ -46,6 +46,9 @@ import org.jvnet.hk2.component.Injectable;
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
 
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Min;
+
 
 /**
  *
@@ -58,11 +61,12 @@ public interface ConnectorService extends ConfigBeanProxy, Injectable  {
 
     /**
      * Gets the value of the shutdownTimeoutInSeconds property.
-     *
+         *
      * @return possible object is
      *         {@link String }
      */
     @Attribute (defaultValue="30")
+    @Min(value=1)
     public String getShutdownTimeoutInSeconds();
 
     /**
