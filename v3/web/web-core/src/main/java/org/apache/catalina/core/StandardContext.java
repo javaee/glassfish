@@ -3053,26 +3053,68 @@ public class StandardContext
 
 
     /**
-     * Add a new servlet mapping, replacing any existing mapping for
-     * the multiple patterns.
+     * Adds the given servlet mappings to this Context.
      *
-     * @param servletMap ServletMap containing the servletname and patterns
+     * <p>If any of the specified URL patterns are already mapped to a 
+     * different Servlet, no updates will be performed.
+     *
+     * @param servletMap the Servlet mappings containing the Servlet name
+     * and URL patterns
+     *
+     * @return the (possibly empty) Set of URL patterns that are already
+     * mapped to a different Servlet
      *
      * @exception IllegalArgumentException if the specified servlet name
-     *  is not known to this Context
+     * is not known to this Context
      */
-     public void addServletMapping(ServletMap servletMap) {
-         String[] patterns = servletMap.getUrlPatterns();
-         String name = servletMap.getServletName();
-         for (String pattern : patterns) {
-             addServletMapping(pattern, name, false);
-         }
+     public Set<String> addServletMapping(ServletMap servletMap) {
+         return addServletMapping(servletMap.getServletName(),
+                                  servletMap.getUrlPatterns());
      }
 
 
     /**
-     * Add a new servlet mapping, replacing any existing mapping for
-     * the specified pattern.
+     * Adds the given servlet mappings to this Context.
+     *
+     * <p>If any of the specified URL patterns are already mapped to a 
+     * different Servlet, no updates will be performed.
+     *
+     * @param name the Servlet name
+     * @param urlPatterns the URL patterns
+     *
+     * @return the (possibly empty) Set of URL patterns that are already
+     * mapped to a different Servlet
+     *
+     * @exception IllegalArgumentException if the specified servlet name
+     * is not known to this Context
+     */
+    public Set<String> addServletMapping(String name,
+                                         String[] urlPatterns) {
+        Set<String> conflicts = null;
+
+        for (String urlPattern : urlPatterns) {
+            if (hasServletMapping(urlPattern)) {
+                if (conflicts == null) {
+                    conflicts = new HashSet<String>();
+                }
+                conflicts.add(urlPattern);
+            }
+        }
+
+        if (conflicts == null) {
+            for (String urlPattern : urlPatterns) {
+                addServletMapping(urlPattern, name, false);
+            }
+            return Collections.EMPTY_SET;
+        } else {
+            return conflicts;   
+        }
+    }
+
+
+    /**
+     * Adds the given servlet mapping to this Context, overriding any
+     * existing mapping for the specified pattern.
      *
      * @param pattern URL pattern to be mapped
      * @param name Name of the corresponding servlet to execute
@@ -3086,8 +3128,8 @@ public class StandardContext
 
 
     /**
-     * Add a new servlet mapping, replacing any existing mapping for
-     * the specified pattern.
+     * Adds the given servlet mapping to this Context, overriding any
+     * existing mapping for the specified pattern.
      *
      * @param pattern URL pattern to be mapped
      * @param name Name of the corresponding servlet to execute
@@ -3095,7 +3137,7 @@ public class StandardContext
      * and pattern contains a wildcard; false otherwise
      *
      * @exception IllegalArgumentException if the specified servlet name
-     *  is not known to this Context
+     * is not known to this Context
      */
     public void addServletMapping(String pattern, String name,
                                   boolean jspWildCard) {
@@ -3128,6 +3170,15 @@ public class StandardContext
         if (notifyContainerListeners) {
             fireContainerEvent("addServletMapping", pattern);
         }
+    }
+
+
+    /**
+     * @return true if a Servlet mapping for the given URL pattern already
+     * exists in this Context, false otherwise
+     */
+    public boolean hasServletMapping(String pattern) {
+        return servletMappings.get(pattern) != null;
     }
 
 

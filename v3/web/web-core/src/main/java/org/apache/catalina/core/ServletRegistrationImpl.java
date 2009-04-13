@@ -75,7 +75,7 @@ public class ServletRegistrationImpl implements ServletRegistration {
     }
 
 
-    public boolean addMapping(String... urlPatterns) {
+    public Set<String> addMapping(String... urlPatterns) {
         if (ctx.isContextInitializedCalled()) {
             throw new IllegalStateException(
                 sm.getString("servletRegistration.alreadyInitialized",
@@ -89,11 +89,8 @@ public class ServletRegistrationImpl implements ServletRegistration {
                     wrapper.getName(), ctx.getName()));
         }
 
-        for (String urlPattern : urlPatterns) {
-            ctx.addServletMapping(urlPattern, wrapper.getName());
-        }
 
-        return true;
+        return ctx.addServletMapping(wrapper.getName(), urlPatterns);
     }
 
 }

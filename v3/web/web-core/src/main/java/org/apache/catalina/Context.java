@@ -674,11 +674,11 @@ public interface Context extends Container {
 
 
     /**
-     * Add a new servlet mapping, replacing any existing mapping for
-     * the specified pattern.
+     * Adds the given servlet mapping to this Context, overriding any
+     * existing mapping for the specified pattern.
      *
-     * @param pattern URL pattern to be mapped
-     * @param name Name of the corresponding servlet to execute
+     * @param pattern the URL pattern to be mapped
+     * @param name the name of the Servlet to which to map
      */
     void addServletMapping(String pattern, String name);
 
