@@ -60,7 +60,7 @@ public class TestHandlers {
      */
     @Handler(id="${artifactId}:echo",
         input={
-            @HandlerInput(name="in", type=String.class, required="true")},
+            @HandlerInput(name="in", type=String.class, required=true)},
         output={
             @HandlerOutput(name="out", type=String.class)})
     public static void echoTest(HandlerContext handlerCtx) {

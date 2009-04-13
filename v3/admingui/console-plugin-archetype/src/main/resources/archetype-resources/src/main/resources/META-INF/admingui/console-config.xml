@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<console-config id="tabtest">
+<console-config id="${artifactId}">
     <integration-point  id="tabtestTreeNode" 
                         type="org.glassfish.admingui:treeNode" 
                         priority="40" 
-                        parentId="Resources" 
+                        parentId="resources" 
                         content="treeNode.jsf" />
     <integration-point  id="tab2" 
                         type="org.glassfish.admingui:tab" 
