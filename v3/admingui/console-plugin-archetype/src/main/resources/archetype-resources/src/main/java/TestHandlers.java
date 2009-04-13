@@ -36,19 +36,34 @@
 package ${package};
 
 import com.sun.jsftemplating.annotation.Handler;
+import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 /**
+ *  <p>	This class is an example or placeholder for creating handlers.  For
+ *	more information on JSFTemplating <code>handlers</code>, see the
+ *	JSFTemplating documentation at:
+ *	<a href="https://jsftemplating.dev.java.net/doc/">https://jsftemplating.dev.java.net/doc/</a></p>
+ *
  *  @author Jason Lee (jlee@sun.com)
+ *  @author Ken Paulsen (ken.paulsen@sun.com)
  */
-public class TabTestHandlers {
+public class TestHandlers {
 
-    @Handler(id="tabTestHandler",
+    /**
+     *	<p> This simple handler returns the single "<code>in</code>" input
+     *	    value that is given as it's single "<code>out</code>" output
+     *	    value.  For example:</p>
+     *
+     *	<p> <code>${artifactId}:echo(in="Hello" out="#{requestScope.result}");</code></p>
+     */
+    @Handler(id="${artifactId}:echo",
+        input={
+            @HandlerInput(name="in", type=String.class, required="true")},
         output={
-            @HandlerOutput(name="someValue", type=String.class)})
-    public static void getListElement(HandlerContext handlerCtx) {
-        handlerCtx.setOutputValue("someValue", "Here is some text from the Handler");
+            @HandlerOutput(name="out", type=String.class)})
+    public static void echoTest(HandlerContext handlerCtx) {
+        handlerCtx.setOutputValue("out", handlerCtx.getInputValue("in"));
     }
-
 }

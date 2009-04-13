@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?><archetype>
   <id>console-tabtest-plugin</id>
   <sources>
-    <source>src/main/java/TabTestHandlers.java</source>
-    <source>src/main/java/TabTestProvider.java</source>
+    <source>src/main/java/TestHandlers.java</source>
+    <source>src/main/java/PluginConsoleProvider.java</source>
   </sources>
   <resources>
     <resource>src/main/resources/META-INF/admingui/console-config.xml</resource>

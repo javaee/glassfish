@@ -42,13 +42,21 @@ import java.net.URL;
 
 
 /**
- *  <p>	This is a noop file just to help test out the {@link ConsoleProvider}
- *	and {@link ConsolePluginService} files.</p>
+ *  <p>	This class serves as a marker to indicate this OSGi bundle provides GUI
+ *	content which is to be displayed in the GlassFish admin console.  The
+ *	{@link #getConfiguration()} method should either return
+ *	<code>(null)</code>, or a <code>URL</code> to the
+ *	<code>console-config.xml</code> file.</p>
  *
  *  @author Ken Paulsen	(ken.paulsen@sun.com)
  */
 @Service
-public class TabTestProvider implements ConsoleProvider {
+public class PluginConsoleProvider implements ConsoleProvider {
 
+    /**
+     *	<p> Returns a <code>URL</code> to the <code>console-config.xml</code>
+     *	    file, or <code>null</code>.  If <code>null</code> is returned, the
+     *	    default ("META-INF/admingui/console-config.xml") will be used.</p>
+     */
     public URL getConfiguration() { return null; }
 }
