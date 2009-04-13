@@ -54,18 +54,21 @@
       <groupId>org.glassfish.jdbc.jdbc-ra.jdbc-core</groupId>
       <artifactId>jdbc-core</artifactId>
       <version>${project.parent.version}</version>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.glassfish.jdbc.jdbc-ra.jdbc40</groupId>
       <artifactId>jdbc40</artifactId>
       <version>${project.parent.version}</version>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.glassfish.jdbc.jdbc-ra.jdbc30</groupId>
       <artifactId>jdbc30</artifactId>
       <version>${project.parent.version}</version>
+      <scope>provided</scope>
     </dependency>
 
   </dependencies>
