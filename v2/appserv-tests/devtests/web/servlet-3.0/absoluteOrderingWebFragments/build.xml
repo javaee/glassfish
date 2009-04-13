@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:./../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../../config/common.xml">
+<!ENTITY run SYSTEM "file:./../../../../config/run.xml">
+<!ENTITY testproperties SYSTEM "file:./build.properties">
+]>
+
+<project name="webcontainer_unittest" default="all" basedir=".">
+
+    &commonSetup;
+    &commonBuild;
+    &testproperties;
+    &run;
+
+    <target name="all" depends="clean,build,deploy,run,undeploy"/>
+
+    <target name="clean" depends="init-common">
+        <antcall target="clean-common"/>
+        <delete>
+            <fileset dir="." includes="*.class"/>
+        </delete>
+        <delete dir="lib"/>
+    </target>
+       
+    <target name="compile" depends="clean">
+        <antcall target="compile-common">
+            <param name="src" value="servlet"/>
+        </antcall>
+    </target>
+
+    <target name="build" depends="compile">
+        <mkdir dir="lib"/>
+        <mkdir dir="${build.classes.dir}/META-INF"/>
+
+        <jar destfile="lib/fr.jar" basedir="${build.classes.dir}"
+            includes="**/wftest/*.class"/>
+        <delete dir="${build.classes.dir}/wftest"/>
+
+        <copy file="${web-fragment.xml}"
+            todir="${build.classes.dir}/META-INF"
+            failonerror="false"/>
+        <jar destfile="lib/fr2.jar" basedir="${build.classes.dir}"
+            includes="**/wftest2/*.class,META-INF/*"/>
+        <delete dir="${build.classes.dir}/wftest2"/>
+
+        <copy file="${web-fragment.xml}2"
+            tofile="${build.classes.dir}/META-INF/web-fragment.xml"
+            failonerror="false" overwrite="true"/>
+        <jar destfile="lib/fr3.jar" basedir="${build.classes.dir}"
+            includes="**/wftest3/*.class,META-INF/*"/>
+        <delete dir="${build.classes.dir}/wftest3"/>
+
+        <delete dir="${build.classes.dir}/META-INF"/>
+
+        <property name="hasWebclient" value="yes"/> 
+        <antcall target="webclient-war-common">
+            <param name="hasWebclient" value="yes"/>
+            <param name="webclient.war.classes" value="**/TestServlet.class"/> 
+        </antcall>
+
+        <javac srcdir="." classpath="${env.APS_HOME}/lib/reporter.jar"
+               includes="WebTest.java"/>
+
+    </target> 
+
+    <target name="build-publish-war" depends="build, publish-war-common" />
+    
+    <target name="deploy" depends="init-common">
+        <antcall target="deploy-war-common"/>
+    </target>
+    
+    <target name="run" depends="init-common">
+        <java classname="WebTest">
+          <arg value="${http.host}"/>
+          <arg value="${http.port}"/>
+          <arg value="${contextroot}"/>
+          <classpath>
+           <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
+           <pathelement location="."/>
+         </classpath>
+        </java>
+    </target>
+ 
+    <target name="undeploy" depends="init-common">
+        <antcall target="undeploy-war-common"/>
+    </target>   
+
+    <target name="usage">
+        <antcall target="usage-common"/>
+    </target>
+</project>
