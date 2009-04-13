@@ -53,6 +53,8 @@ import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 import org.glassfish.quality.ToDo;
 
+import javax.validation.constraints.NotNull;
+
 /**
  *
  */
@@ -72,7 +74,8 @@ public interface J2eeApplication extends ConfigBeanProxy, Injectable, Named, Pro
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     String getLocation();
 
     /**

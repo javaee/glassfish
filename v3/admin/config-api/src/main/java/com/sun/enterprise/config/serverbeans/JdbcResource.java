@@ -54,6 +54,8 @@ import org.glassfish.api.admin.config.PropertyBag;
 
 import org.glassfish.quality.ToDo;
 
+import javax.validation.constraints.NotNull;
+
 /**
  *
  */
@@ -72,7 +74,8 @@ public interface JdbcResource extends ConfigBeanProxy, Injectable, Resource, Pro
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     String getPoolName();
 
     /**

@@ -48,7 +48,7 @@ import java.beans.PropertyVetoException;
 import java.io.Serializable;
 import java.util.List;
 
-
+import javax.validation.constraints.NotNull;
 /**
  *
  */
@@ -66,7 +66,8 @@ public interface MessageSecurityConfig extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     public String getAuthLayer();
 
     /**

@@ -51,7 +51,7 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
 
-
+import javax.validation.constraints.NotNull;
 /**
  *
  */
@@ -69,7 +69,8 @@ public interface LoadBalancer extends ConfigBeanProxy, Injectable, org.glassfish
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true, key=true)
+    @Attribute(key=true)
+    @NotNull
     public String getName();
 
     /**
@@ -86,7 +87,8 @@ public interface LoadBalancer extends ConfigBeanProxy, Injectable, org.glassfish
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     public String getLbConfigName();
 
     /**
@@ -103,7 +105,8 @@ public interface LoadBalancer extends ConfigBeanProxy, Injectable, org.glassfish
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true, defaultValue="false")
+    @Attribute(defaultValue="false")
+    @NotNull
     public String getAutoApplyEnabled();
 
     /**

@@ -53,6 +53,9 @@ import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 import org.glassfish.quality.ToDo;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Min;
+
 /**
  *
  */
@@ -71,7 +74,8 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true, key=true)
+    @Attribute(key=true)
+    @NotNull
     String getName();
 
     /**
@@ -89,6 +93,7 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="60")
+    @Min(value=0)
     String getResponseTimeoutInSeconds();
 
     /**

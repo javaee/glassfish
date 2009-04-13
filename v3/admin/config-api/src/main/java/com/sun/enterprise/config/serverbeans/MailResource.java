@@ -55,7 +55,7 @@ import org.glassfish.api.admin.config.PropertyBag;
 
 import org.glassfish.quality.ToDo;
 
-
+import javax.validation.constraints.NotNull;
 
 /* @XmlType(name = "", propOrder = {
     "description",
@@ -140,7 +140,8 @@ public interface MailResource extends ConfigBeanProxy, Injectable, Resource, org
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     public String getHost();
 
     /**
@@ -157,7 +158,8 @@ public interface MailResource extends ConfigBeanProxy, Injectable, Resource, org
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     public String getUser();
 
     /**
@@ -174,7 +176,8 @@ public interface MailResource extends ConfigBeanProxy, Injectable, Resource, org
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     public String getFrom();
 
     /**

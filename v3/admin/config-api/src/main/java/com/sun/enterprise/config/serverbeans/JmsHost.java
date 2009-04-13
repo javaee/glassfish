@@ -54,6 +54,10 @@ import org.glassfish.api.admin.config.PropertyBag;
 
 import org.glassfish.quality.ToDo;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Max;
+
 /**
  *
  */
@@ -71,7 +75,8 @@ public interface JmsHost extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true, key=true)
+    @Attribute(key=true)
+    @NotNull
     String getName();
 
     /**
@@ -106,6 +111,8 @@ public interface JmsHost extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="7676")
+    @Min(value=1)
+    @Max(value=65535)
     String getPort();
 
     /**

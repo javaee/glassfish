@@ -53,6 +53,9 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
 
+import javax.validation.constraints.NotNull;
+
+
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.VirtualServerConfig")
 @Configured
 public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag {
@@ -63,7 +66,8 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true, key=true)
+    @Attribute(key=true)
+    @NotNull
     String getId();
 
     /**
@@ -133,7 +137,8 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true, defaultValue="${com.sun.aas.hostName}")
+    @Attribute(defaultValue="${com.sun.aas.hostName}")
+    @NotNull
     String getHosts();
 
     /**

@@ -74,7 +74,8 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true, key=true)
+    @Attribute(key=true)
+    @NotNull
     String getName();
 
     /**
@@ -125,7 +126,8 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     String getAddress();
 
     /**

@@ -62,6 +62,7 @@ import org.glassfish.quality.ToDo;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -77,7 +78,8 @@ import javax.validation.constraints.Min;
 public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Resource, ResourcePool,
         PropertyBag {
 
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     String getResourceAdapterName();
 
     /**
@@ -94,7 +96,8 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     String getConnectionDefinitionName();
 
     /**

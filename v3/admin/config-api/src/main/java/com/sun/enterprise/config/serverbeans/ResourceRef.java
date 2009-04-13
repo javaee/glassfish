@@ -46,7 +46,8 @@ import org.jvnet.hk2.config.Configured;
 
 import java.beans.PropertyVetoException;
 
-
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 /**
  *
  */
@@ -79,7 +80,9 @@ public interface ResourceRef extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true, key=true)
+    @Attribute(key=true)
+    @NotNull
+    @Pattern(regexp="[^':,][^':,]*")
     String getRef();
 
     /**

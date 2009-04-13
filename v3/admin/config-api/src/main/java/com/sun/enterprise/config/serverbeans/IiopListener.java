@@ -54,6 +54,10 @@ import org.glassfish.api.admin.config.PropertyBag;
 import com.sun.grizzly.config.dom.Ssl;
 import org.glassfish.quality.ToDo;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 /**
  *
  */
@@ -72,7 +76,9 @@ public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true, key=true)
+    @Attribute(key=true)
+    @NotNull
+    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
     String getId();
 
     /**
@@ -89,7 +95,8 @@ public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     String getAddress();
 
     /**
@@ -107,6 +114,8 @@ public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="1072")
+    @Min(value=1)
+    @Max(value=65535)
     String getPort();
 
     /**

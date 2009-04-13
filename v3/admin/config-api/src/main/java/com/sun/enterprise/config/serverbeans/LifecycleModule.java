@@ -53,6 +53,8 @@ import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 import org.glassfish.quality.ToDo;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Min;
 /**
  *
  */
@@ -71,7 +73,8 @@ public interface LifecycleModule extends ConfigBeanProxy, Injectable, Named, Pro
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     String getClassName();
 
     /**
@@ -106,6 +109,7 @@ public interface LifecycleModule extends ConfigBeanProxy, Injectable, Named, Pro
      *         {@link String }
      */
     @Attribute
+    @Min(value=1)
     String getLoadOrder();
 
     /**

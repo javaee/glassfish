@@ -53,6 +53,7 @@ import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 import org.glassfish.quality.ToDo;
 
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -74,7 +75,8 @@ public interface ExternalJndiResource extends ConfigBeanProxy, Injectable, Resou
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     String getJndiLookupName();
 
     /**
@@ -91,7 +93,8 @@ public interface ExternalJndiResource extends ConfigBeanProxy, Injectable, Resou
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     String getResType();
 
     /**
@@ -108,7 +111,8 @@ public interface ExternalJndiResource extends ConfigBeanProxy, Injectable, Resou
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     String getFactoryClass();
 
     /**

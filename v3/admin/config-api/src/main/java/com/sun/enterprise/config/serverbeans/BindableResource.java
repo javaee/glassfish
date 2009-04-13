@@ -41,6 +41,7 @@ import org.jvnet.hk2.config.Attribute;
 import java.beans.PropertyVetoException;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 public interface BindableResource extends Resource{
     /**
@@ -51,6 +52,7 @@ public interface BindableResource extends Resource{
      */
     @Attribute(key=true)
     @NotNull
+    @Pattern(regexp="[^':,][^':,]*")
     public String getJndiName();
 
     /**

@@ -47,7 +47,7 @@ import org.jvnet.hk2.component.Injectable;
 import java.beans.PropertyVetoException;
 import java.util.List;
 
-
+import javax.validation.constraints.NotNull;
 /**
  *
  */
@@ -66,7 +66,8 @@ public interface SecurityMap extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true, key=true)
+    @Attribute(key=true)
+    @NotNull
     public String getName();
 
     /**

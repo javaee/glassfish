@@ -40,6 +40,7 @@ import org.jvnet.hk2.config.Attribute;
 
 import java.beans.PropertyVetoException;
 
+import javax.validation.constraints.NotNull;
 
 public interface ResourcePool extends Resource {
     /**
@@ -48,7 +49,8 @@ public interface ResourcePool extends Resource {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true, key=true)
+    @Attribute(key=true)
+    @NotNull
     public String getName();
 
     /**

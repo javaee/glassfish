@@ -85,7 +85,8 @@ public interface AlertSubscription extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link ListenerConfig }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     public ListenerConfig getListenerConfig();
 
     /**

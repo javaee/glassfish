@@ -50,6 +50,9 @@ import java.util.List;
 
 import org.glassfish.api.amx.AMXConfigInfo;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Max;
+
 /* @XmlType(name = "", propOrder = {
     "moduleLogLevels",
     "property"
@@ -151,6 +154,7 @@ public interface LogService extends ConfigBeanProxy, Injectable  {
      */
 //    @Attribute (defaultValue="500000")
     @Attribute (defaultValue="0")
+    @Min(value=1)
     public String getLogRotationLimitInBytes();
 
     /**
@@ -168,6 +172,8 @@ public interface LogService extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute (defaultValue="0")
+    @Min(value=0)
+    @Max(value=14400)
     public String getLogRotationTimelimitInMinutes();
 
     /**
@@ -203,6 +209,8 @@ public interface LogService extends ConfigBeanProxy, Injectable  {
      */
 //    @Attribute (defaultValue="5")
     @Attribute (defaultValue="0")
+    @Min(value=5)
+    @Max(value=500)
     public String getRetainErrorStatisticsForHours();
 
     /**

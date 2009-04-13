@@ -58,6 +58,8 @@ import org.jvnet.hk2.config.TransactionFailure;
 import java.beans.PropertyVetoException;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Min;
 /**
  *
  */
@@ -78,7 +80,8 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      * @return name of the configured object
      FIXME: should set 'key=true'.  See bugs 6039, 6040
      */
-    @Attribute(required=true)
+    @Attribute
+    @NotNull
     String getName();
 
     void setName(String value) throws PropertyVetoException;
@@ -124,6 +127,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      *         {@link String }
      */
     @Attribute (defaultValue="100")
+    @Min(value=1)
     String getLbWeight();
 
     /**

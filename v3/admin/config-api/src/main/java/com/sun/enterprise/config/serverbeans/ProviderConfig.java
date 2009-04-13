@@ -51,6 +51,7 @@ import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 
+import javax.validation.constraints.NotNull;
 /**
  *
  */
@@ -70,7 +71,8 @@ public interface ProviderConfig extends ConfigBeanProxy, Injectable, org.glassfi
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true, key=true)
+    @Attribute(key=true)
+    @NotNull
     public String getProviderId();
 
     /**
@@ -87,7 +89,8 @@ public interface ProviderConfig extends ConfigBeanProxy, Injectable, org.glassfi
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     public String getProviderType();
 
     /**
@@ -104,7 +107,8 @@ public interface ProviderConfig extends ConfigBeanProxy, Injectable, org.glassfi
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     public String getClassName();
 
     /**

@@ -53,6 +53,9 @@ import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 import org.glassfish.api.amx.AMXConfigInfo;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
 /* @XmlType(name = "", propOrder = {
     "jmsHost",
     "property"
@@ -68,6 +71,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="60")
+    @Min(value=1)
     String getInitTimeoutInSeconds();
 
     /**
@@ -84,7 +88,8 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     String getType();
 
     /**
@@ -136,6 +141,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="5")
+    @Min(value=1)
     String getReconnectIntervalInSeconds();
 
     /**
@@ -204,6 +210,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="3")
+    @Min(value=1)
     String getAddresslistIterations();
 
     /**

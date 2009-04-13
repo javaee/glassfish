@@ -89,7 +89,8 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     String getAddress();
 
     /**
@@ -106,7 +107,8 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     @Max(value=65535)
     @Min(value=1)    
     String getPort();
@@ -214,7 +216,8 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     String getDefaultVirtualServer();
 
     /**
@@ -231,7 +234,8 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     String getServerName();
 
     /**

@@ -51,6 +51,7 @@ import org.glassfish.api.admin.config.*;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.quality.ToDo;
 
+import javax.validation.constraints.NotNull;
 /**
  *
  */
@@ -86,7 +87,8 @@ public interface Mbean extends ConfigBeanProxy, Injectable, Named, org.glassfish
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     public String getImplClassName();
 
     /**

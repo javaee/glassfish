@@ -53,6 +53,8 @@ import org.glassfish.api.admin.config.PropertyBag;
 
 import org.glassfish.quality.ToDo;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 /**
  *
  */
@@ -70,7 +72,8 @@ public interface ResourceAdapterConfig extends ConfigBeanProxy, Injectable, Reso
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required=true, key=true)
+    @Attribute(key=true)
+    @NotNull
     public String getName();
 
     /**
@@ -121,7 +124,9 @@ public interface ResourceAdapterConfig extends ConfigBeanProxy, Injectable, Reso
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
+    @Pattern(regexp="[^':,][^':,]*")
     public String getResourceAdapterName();
 
     /**

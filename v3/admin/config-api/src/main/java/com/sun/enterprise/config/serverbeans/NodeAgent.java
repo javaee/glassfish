@@ -51,6 +51,7 @@ import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.quality.ToDo;
 
+import javax.validation.constraints.NotNull;
 /**
  *
  */
@@ -71,7 +72,8 @@ public interface NodeAgent extends ConfigBeanProxy, Injectable, org.glassfish.ap
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true, key=true)
+    @Attribute(key=true)
+    @NotNull
     public String getName();
 
     /**

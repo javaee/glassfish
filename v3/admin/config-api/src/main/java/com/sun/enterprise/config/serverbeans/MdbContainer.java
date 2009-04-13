@@ -56,6 +56,7 @@ import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 
+import javax.validation.constraints.Min;
 /**
  *
  */
@@ -75,6 +76,7 @@ public interface MdbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="10")
+    @Min(value=0)
     String getSteadyPoolSize();
 
     /**
@@ -92,6 +94,7 @@ public interface MdbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="2")
+    @Min(value=0)
     String getPoolResizeQuantity();
 
     /**
@@ -109,6 +112,7 @@ public interface MdbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="60")
+    @Min(value=0)
     String getMaxPoolSize();
 
     /**
@@ -126,6 +130,7 @@ public interface MdbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="600")
+    @Min(value=0)
     String getIdleTimeoutInSeconds();
 
     /**

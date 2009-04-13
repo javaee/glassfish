@@ -48,6 +48,8 @@ import java.beans.PropertyVetoException;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -67,7 +69,8 @@ public interface WebServiceEndpoint extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true,key=true)
+    @Attribute(key=true)
+    @NotNull
     public String getName();
 
     /**
@@ -102,6 +105,7 @@ public interface WebServiceEndpoint extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute (defaultValue="25")
+    @Min(value=1)
     public String getMaxHistorySize();
 
     /**

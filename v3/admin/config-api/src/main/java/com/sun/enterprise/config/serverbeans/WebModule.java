@@ -49,6 +49,8 @@ import org.glassfish.api.admin.config.*;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.quality.ToDo;
 
+import javax.validation.constraints.NotNull;
+
 /**
  *
  */
@@ -68,7 +70,8 @@ public interface WebModule extends ConfigBeanProxy, Injectable, Named, org.glass
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     public String getContextRoot();
 
     /**
@@ -85,7 +88,8 @@ public interface WebModule extends ConfigBeanProxy, Injectable, Named, org.glass
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     public String getLocation();
 
     /**

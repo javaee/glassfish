@@ -59,6 +59,7 @@ import org.glassfish.api.admin.config.PropertyBag;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -73,7 +74,8 @@ import javax.validation.constraints.Min;
 public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resource, ResourcePool,
     PropertyBag {
 
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     String getDatasourceClassname();
 
     /**
@@ -147,7 +149,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      */
     @Attribute (defaultValue="60000")
     @Min(value=0)
-    @Max(value=Integer.MAX_VALUE)    
+    @Max(value=Integer.MAX_VALUE)
     String getMaxWaitTimeInMillis();
 
     /**
@@ -340,7 +342,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      */
     @Attribute (defaultValue="0")
     @Min(value=0)
-    @Max(value=Integer.MAX_VALUE)    
+    @Max(value=Integer.MAX_VALUE)
     String getValidateAtmostOncePeriodInSeconds();
 
     /**
@@ -359,7 +361,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      */
     @Attribute (defaultValue="0")
     @Min(value=0)
-    @Max(value=Integer.MAX_VALUE)    
+    @Max(value=Integer.MAX_VALUE)
     String getConnectionLeakTimeoutInSeconds();
 
     /**
@@ -395,7 +397,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      */
     @Attribute (defaultValue="0")
     @Min(value=0)
-    @Max(value=Integer.MAX_VALUE)    
+    @Max(value=Integer.MAX_VALUE)
     String getConnectionCreationRetryAttempts();
 
     /**
@@ -414,7 +416,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      */
     @Attribute (defaultValue="10")
     @Min(value=0)
-    @Max(value=Integer.MAX_VALUE)    
+    @Max(value=Integer.MAX_VALUE)
     String getConnectionCreationRetryIntervalInSeconds();
 
     /**
@@ -432,6 +434,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *         {@link String }
      */
     @Attribute (defaultValue="-1", dataType=Integer.class)
+    @Min(value=-1)
     String getStatementTimeoutInSeconds();
 
     /**
@@ -518,7 +521,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      */
     @Attribute (defaultValue="0")
     @Min(value=0)
-    @Max(value=Integer.MAX_VALUE)    
+    @Max(value=Integer.MAX_VALUE)
     String getMaxConnectionUsageCount();
 
     /**
@@ -559,11 +562,11 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * Sets the value of the description property.
      *
      * @param value allowed object is
-     * 
+     *
      *              {@link String }
      */
     void setDescription(String value) throws PropertyVetoException;
-    
+
     /**
         Properties.  This list is likely incomplete as of 21 October 2008.
      */
@@ -571,19 +574,19 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
     props={
         @PropertyDesc(name="PortNumber", defaultValue="1527", dataType=Port.class,
             description="Port on which the database server listens for requests"),
-            
+
         @PropertyDesc(name="Password", defaultValue="APP",
             description="Password for connecting to the database"),
-            
+
         @PropertyDesc(name="User", defaultValue="APP",
             description="User name for connecting to the database"),
-            
+
         @PropertyDesc(name="serverName", defaultValue="localhost",
             description="Database server for this connection pool"),
-            
+
         @PropertyDesc(name="DatabaseName", defaultValue="sun-appserv-samples",
             description="Database for this connection pool."),
-            
+
         @PropertyDesc(name="connectionAttributes", defaultValue=";create=true",
             description="connection attributes")
     }

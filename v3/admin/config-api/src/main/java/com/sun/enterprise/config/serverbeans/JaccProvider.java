@@ -53,6 +53,7 @@ import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.config.PropertyBag;
 import org.glassfish.quality.ToDo;
 
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -71,7 +72,8 @@ public interface JaccProvider extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true, key=true)
+    @Attribute(key=true)
+    @NotNull
     String getName();
 
     /**
@@ -88,7 +90,8 @@ public interface JaccProvider extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     String getPolicyProvider();
 
     /**
@@ -105,7 +108,7 @@ public interface JaccProvider extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
     String getPolicyConfigurationFactoryProvider();
 
     /**

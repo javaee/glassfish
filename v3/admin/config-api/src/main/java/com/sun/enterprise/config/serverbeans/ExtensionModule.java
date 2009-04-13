@@ -53,6 +53,8 @@ import org.jvnet.hk2.config.Element;
 import java.beans.PropertyVetoException;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
 /**
  *
  */
@@ -72,7 +74,8 @@ public interface ExtensionModule extends ConfigBeanProxy, Injectable, Named, Pro
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     String getLocation();
 
     /**
@@ -89,7 +92,8 @@ public interface ExtensionModule extends ConfigBeanProxy, Injectable, Named, Pro
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     String getModuleType();
 
     /**

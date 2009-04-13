@@ -53,6 +53,8 @@ import org.glassfish.api.admin.config.PropertyBag;
 
 import org.glassfish.quality.ToDo;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Min;
 /**
  *
  */
@@ -71,7 +73,8 @@ public interface Orb extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute
+    @NotNull
     public String getUseThreadPoolIds();
 
     /**
@@ -89,6 +92,7 @@ public interface Orb extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="1024")
+    @Min(value=128)
     public String getMessageFragmentSize();
 
     /**
