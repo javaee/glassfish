@@ -124,7 +124,7 @@ public class GuiUtil {
                 df = new LocalDeploymentFacility();
                 ServerConnectionIdentifier sci = new ServerConnectionIdentifier(
                         (String)getSessionValue("serverName"),
-                        ((Integer)getSessionValue("severPort")).intValue(),
+                        ((Integer)getSessionValue("serverPort")).intValue(),
                         (String)getSessionValue("userName"),         //user name
                         "",         //password    FIXME: how to get password ?
                         (Boolean)getSessionValue("requestIsSecured")       //security enabled
