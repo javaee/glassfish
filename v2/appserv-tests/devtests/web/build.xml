@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="371"/>
+    <property name="TOTAL_EXPECTED" value="372"/>
 
     &commonSetup;
     &commonBuild;
@@ -99,6 +99,9 @@
         <ant dir="jspCacheTaglibPrecompile" target="all"/>
         <ant dir="jspReloadGeneratedServletIfUpdated" target="all"/>
         <ant dir="jspTrimDirectiveWhitespaces" target="all"/>
+        <!-- XXX commented out until feature supported
+        <ant dir="servlet-3.0/jspServletGetJspResourceFromLocalJar" target="all"/>
+        -->
     </target>
 
     <target name="taglib">
