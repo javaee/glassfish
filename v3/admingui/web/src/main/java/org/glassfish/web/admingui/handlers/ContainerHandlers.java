@@ -40,7 +40,7 @@
  *
  */
 
-package org.glassfish.admingui.handlers;
+package org.glassfish.web.admingui.handlers;
 
 import com.sun.appserv.management.config.ConfigConfig;
 import com.sun.appserv.management.config.ManagerPropertiesConfig;

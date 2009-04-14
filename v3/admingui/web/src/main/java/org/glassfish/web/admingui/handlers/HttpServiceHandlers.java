@@ -40,7 +40,7 @@
  * Created on August 12, 2006, 7:04 PM
  *
  */
-package org.glassfish.admingui.handlers;
+package org.glassfish.web.admingui.handlers;
 
 
 import com.sun.appserv.management.base.XTypes;
@@ -60,24 +60,10 @@ import org.glassfish.admingui.common.util.AMXUtil;
 import org.glassfish.admingui.common.util.GuiUtil;
 
 import com.sun.appserv.management.config.ConfigConfig; 
-import com.sun.appserv.management.config.VirtualServerConfig;
 import com.sun.appserv.management.config.AccessLogConfig;
 import com.sun.appserv.management.config.AccessLogConfigKeys;
-import com.sun.appserv.management.config.ConfigElement;
-import com.sun.appserv.management.config.RequestProcessingConfig;
-import com.sun.appserv.management.config.RequestProcessingConfigKeys;
-import com.sun.appserv.management.config.KeepAliveConfig;
-import com.sun.appserv.management.config.KeepAliveConfigKeys;
-import com.sun.appserv.management.config.HTTPProtocolConfig;
-import com.sun.appserv.management.config.HTTPProtocolConfigKeys;
-import com.sun.appserv.management.config.HTTPFileCacheConfig;
-import com.sun.appserv.management.config.HTTPFileCacheConfigKeys;
 import com.sun.appserv.management.config.HTTPServiceConfig;
-import com.sun.appserv.management.config.HTTPListenerConfig;
-import com.sun.appserv.management.config.ConnectionPoolConfig;
-import com.sun.appserv.management.config.ConnectionPoolConfigKeys;
 import com.sun.appserv.management.config.PropertyConfig;
-import java.util.Iterator;
 
 /**
  *
@@ -215,197 +201,6 @@ public class HttpServiceHandlers {
         }
     }   
     
-/**
-     *	<p> This handler returns the values for all the attributes in the
-     *      Request Processing Page </p>
-     *	<p> Input value: "ConfigName"       -- Type: <code>java.lang.String</code></p>
-     *	<p> Output value: "Count"       -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "Initial"   -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "Increment"     -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "Timeout"        -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "Buffer"        -- Type: <code>java.lang.String</code></p>
-     *	@param	handlerCtx	The HandlerContext.
-     */
-    @Handler(id="getRequestProcessingSettings",
-   input={
-        @HandlerInput(name="ConfigName", type=String.class, required=true)},        
-    output={
-        @HandlerOutput(name="Count",  type=String.class),
-        @HandlerOutput(name="Initial",    type=String.class),
-        @HandlerOutput(name="Increment",       type=String.class),
-        @HandlerOutput(name="Timeout", type=String.class),
-        @HandlerOutput(name="Buffer", type=String.class)})
-        
-        public static void getRequestProcessingSettings(HandlerContext handlerCtx) {
-        
-        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
-	RequestProcessingConfig rp = config.getHTTPServiceConfig().getRequestProcessingConfig();
-        String count = rp.getThreadCount();
-        String initial = rp.getInitialThreadCount();
-        String increment = rp.getThreadIncrement();
-        String timeout = rp.getRequestTimeoutInSeconds();
-        String buffer = rp.getHeaderBufferLengthInBytes();
-        handlerCtx.setOutputValue("Count", count);
-        handlerCtx.setOutputValue("Initial", initial);
-        handlerCtx.setOutputValue("Increment", increment);
-        handlerCtx.setOutputValue("Timeout", timeout);
-        handlerCtx.setOutputValue("Buffer", buffer);        
-        
-    }   
-    
-
-    /**
-     *	<p> This handler returns the default values for all the attributes in the
-     *      Request Processing Page </p>
-     *	<p> Input value: "ConfigName"       -- Type: <code>java.lang.String</code></p>
-     *	<p> Output value: "Count"       -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "Initial"   -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "Increment"     -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "Timeout"        -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "Buffer"        -- Type: <code>java.lang.String</code></p>
-     *	@param	handlerCtx	The HandlerContext.
-     */
-    @Handler(id="getRequestProcessingDefaultSettings",
-   input={
-        @HandlerInput(name="ConfigName", type=String.class, required=true)},        
-    output={
-        @HandlerOutput(name="Count",  type=String.class),
-        @HandlerOutput(name="Initial",    type=String.class),
-        @HandlerOutput(name="Increment",       type=String.class),
-        @HandlerOutput(name="Timeout", type=String.class),
-        @HandlerOutput(name="Buffer", type=String.class)})
-        
-        public static void getRequestProcessingDefaultSettings(HandlerContext handlerCtx) {
-        
-        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
-        Map <String, String> defaultMap = config.getHTTPServiceConfig().getDefaultValues(XTypes.REQUEST_PROCESSING_CONFIG, true);
-        handlerCtx.setOutputValue("Count", defaultMap.get(RequestProcessingConfigKeys.THREAD_COUNT_KEY));
-        handlerCtx.setOutputValue("Initial", defaultMap.get(RequestProcessingConfigKeys.INITIAL_THREAD_COUNT_KEY));
-        handlerCtx.setOutputValue("Increment", defaultMap.get(RequestProcessingConfigKeys.THREAD_INCREMENT_KEY));
-        handlerCtx.setOutputValue("Timeout", defaultMap.get(RequestProcessingConfigKeys.REQUEST_TIMEOUT_IN_SECONDS_KEY));
-        handlerCtx.setOutputValue("Buffer", defaultMap.get(RequestProcessingConfigKeys.HEADER_BUFFER_LENGTH_IN_BYTES_KEY));        
-        
-    }   
-    
-/**
-     *	<p> This handler saves the values for all the attributes in the
-     *      Request Processing Page </p>
-     *	<p> Input value: "ConfigName"       -- Type: <code>java.lang.String</code></p>
-     *	<p> Input value: "Count"       -- Type: <code>java.lang.String</code></p>
-     *  <p> Input value: "Initial"   -- Type: <code>java.lang.String</code></p>
-     *  <p> Input value: "Increment"     -- Type: <code>java.lang.String</code></p>
-     *  <p> Input value: "Timeout"        -- Type: <code>java.lang.String</code></p>
-     *  <p> Input value: "Buffer"        -- Type: <code>java.lang.String</code></p>
-     *	@param	handlerCtx	The HandlerContext.
-     */
-    @Handler(id="saveRequestProcessingSettings",
-    input={
-        @HandlerInput(name="ConfigName", type=String.class, required=true),
-        @HandlerInput(name="Count",  type=String.class),
-        @HandlerInput(name="Initial",    type=String.class),
-        @HandlerInput(name="Increment",       type=String.class),
-        @HandlerInput(name="Timeout", type=String.class),
-        @HandlerInput(name="Buffer", type=String.class)})
-        
-        public static void saveRequestProcessingSettings(HandlerContext handlerCtx) {
-        
-        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
-        try{
-            RequestProcessingConfig rp = config.getHTTPServiceConfig().getRequestProcessingConfig();
-            rp.setThreadCount(((String)handlerCtx.getInputValue("Count")));
-            rp.setInitialThreadCount(((String)handlerCtx.getInputValue("Initial")));
-            rp.setThreadIncrement(((String)handlerCtx.getInputValue("Increment")));
-            rp.setRequestTimeoutInSeconds(((String)handlerCtx.getInputValue("Timeout")));
-            rp.setHeaderBufferLengthInBytes(((String)handlerCtx.getInputValue("Buffer"))); 
-        }catch(Exception ex){
-            GuiUtil.handleException(handlerCtx, ex);
-        }
-        
-    }   
-    
-/**
-     *	<p> This handler returns the values for all the attributes in the
-     *      Keep Alive Page </p>
-     *	<p> Input value: "ConfigName"       -- Type: <code>java.lang.String</code></p>
-     *	<p> Output value: "Count"       -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "Connections"   -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "Timeout"     -- Type: <code>java.lang.String</code></p>
-     *	@param	handlerCtx	The HandlerContext.
-     */
-    @Handler(id="getKeepAliveSettings",
-   input={
-        @HandlerInput(name="ConfigName", type=String.class, required=true)},        
-    output={
-        @HandlerOutput(name="Count",  type=String.class),
-        @HandlerOutput(name="Connections",    type=String.class),
-        @HandlerOutput(name="Timeout",       type=String.class)})
-        
-        public static void getKeepAliveSettings(HandlerContext handlerCtx) {
-        
-        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
-	KeepAliveConfig rp = config.getHTTPServiceConfig().getKeepAliveConfig();
-        String count = rp.getThreadCount();
-        String connections = rp.getMaxConnections();
-        String timeout = rp.getTimeoutInSeconds();
-        handlerCtx.setOutputValue("Count", count);
-        handlerCtx.setOutputValue("Connections", connections);
-        handlerCtx.setOutputValue("Timeout", timeout);   
-        
-    } 
-    
-/**
-     *	<p> This handler returns the default values for all the attributes in the
-     *      Keep Alive Page </p>
-     *	<p> Input value: "ConfigName"       -- Type: <code>java.lang.String</code></p>
-     *	<p> Output value: "Count"       -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "Connections"   -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "Timeout"     -- Type: <code>java.lang.String</code></p>
-     *	@param	handlerCtx	The HandlerContext.
-     */
-    @Handler(id="getKeepAliveDefaultSettings",
-   input={
-        @HandlerInput(name="ConfigName", type=String.class, required=true)},        
-    output={
-        @HandlerOutput(name="Count",  type=String.class),
-        @HandlerOutput(name="Connections",    type=String.class),
-        @HandlerOutput(name="Timeout",       type=String.class)})
-        
-        public static void getKeepAliveDefaultSettings(HandlerContext handlerCtx) {
-        
-        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
-        Map <String, String> defaultMap = config.getHTTPServiceConfig().getDefaultValues(XTypes.KEEP_ALIVE_CONFIG, true);
-        handlerCtx.setOutputValue("Count", defaultMap.get(KeepAliveConfigKeys.THREAD_COUNT_KEY ));
-        handlerCtx.setOutputValue("Connections", defaultMap.get(KeepAliveConfigKeys.MAX_CONNECTIONS_KEY ));
-        handlerCtx.setOutputValue("Timeout", defaultMap.get(KeepAliveConfigKeys.TIMEOUT_IN_SECONDS_KEY ));   
-        
-    } 
-    
-/**
-     *	<p> This handler saves the values for all the attributes in the
-     *      Keep Alive Page </p>
-     *	<p> Input value: "ConfigName"       -- Type: <code>java.lang.String</code></p>
-     *	<p> Input value: "Count"       -- Type: <code>java.lang.String</code></p>
-     *  <p> Input value: "Connections"   -- Type: <code>java.lang.String</code></p>
-     *  <p> Input value: "Timeout"     -- Type: <code>java.lang.String</code></p>
-     *	@param	handlerCtx	The HandlerContext.
-     */
-    @Handler(id="saveKeepAliveSettings",
-   input={
-        @HandlerInput(name="ConfigName", type=String.class, required=true),
-        @HandlerInput(name="Count",  type=String.class),
-        @HandlerInput(name="Connections",    type=String.class),
-        @HandlerInput(name="Timeout",       type=String.class)})
-        
-        public static void saveKeepAliveSettings(HandlerContext handlerCtx) {
-        
-        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
-	KeepAliveConfig rp = config.getHTTPServiceConfig().getKeepAliveConfig();
-        rp.setThreadCount(((String)handlerCtx.getInputValue("Count")));
-        rp.setMaxConnections(((String)handlerCtx.getInputValue("Connections")));
-        rp.setTimeoutInSeconds(((String)handlerCtx.getInputValue("Timeout")));
-        
-    } 
-    
     
     /**
      *	<p> This handler returns the values of properties in HttpService </p>
@@ -427,24 +222,23 @@ public class HttpServiceHandlers {
         HTTPServiceConfig hConfig = config.getHTTPServiceConfig();
         
         try{
-            
             handlerCtx.setOutputValue("Properties", AMXUtil.getNonSkipPropertiesMap(hConfig, httpServiceSkipPropsList));
             Map<String,PropertyConfig> origProps = hConfig.getPropertyConfigMap();
             handlerCtx.setOutputValue("accessLogBufferSize", AMXUtil.getPropertyValue(hConfig,"accessLogBufferSize"));
             handlerCtx.setOutputValue("accessLogWriteInterval", AMXUtil.getPropertyValue(hConfig,"accessLogWriteInterval"));
-            String alog = origProps.get("accessLoggingEnabled").getValue();
+            final PropertyConfig pValue = origProps.get("accessLoggingEnabled");
+            String alog = (pValue==null)? "" : pValue.getValue();
             Boolean accessLoggingEnabled = true;
             if ( GuiUtil.isEmpty(alog))
-                accessLoggingEnabled = true;
+                accessLoggingEnabled = false;
             else
-            accessLoggingEnabled = (alog.equals("true")) ? true: false;
+                accessLoggingEnabled = (alog.equals("true")) ? true: false;
             
             handlerCtx.setOutputValue("accessLoggingEnabled", accessLoggingEnabled);
                     
         }catch (Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
         }
-        
     } 
     
     
@@ -480,390 +274,7 @@ public class HttpServiceHandlers {
         
     }   
     
-    /**
-     *	<p> This handler returns the values for all the attributes in the
-     *      Connection Pool Config Page </p>
-     *	<p> Input value: "ConfigName"       -- Type: <code>java.lang.String</code></p>
-     *	<p> Output value: "Count"       -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "Queue"   -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "Receive"     -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "Send"     -- Type: <code>java.lang.String</code></p>
-     *	@param	handlerCtx	The HandlerContext.
-     */
-    @Handler(id="getConnectionPoolSettings",
-   input={
-        @HandlerInput(name="ConfigName", type=String.class, required=true)},        
-    output={
-        @HandlerOutput(name="Count",  type=String.class),
-        @HandlerOutput(name="Queue",    type=String.class),
-        @HandlerOutput(name="Receive",       type=String.class),
-        @HandlerOutput(name="Send",       type=String.class)})
-        
-        public static void getConnectionPoolSettings(HandlerContext handlerCtx) {
-        
-        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
-	ConnectionPoolConfig cp = config.getHTTPServiceConfig().getConnectionPoolConfig();
-        String count = cp.getMaxPendingCount();
-        String queue = cp.getQueueSizeInBytes();
-        String receive = cp.getReceiveBufferSizeInBytes();
-        String send = cp.getSendBufferSizeInBytes();
-        handlerCtx.setOutputValue("Count", count);
-        handlerCtx.setOutputValue("Queue", queue);
-        handlerCtx.setOutputValue("Receive", receive);   
-        handlerCtx.setOutputValue("Send", send);   
-        
-    }     
-    
-    
-/**
-     *	<p> This handler returns the default values for all the attributes in the
-     *      Connection Pool Config Page </p>
-     *	<p> Input value: "ConfigName"       -- Type: <code>java.lang.String</code></p>
-     *	<p> Output value: "Count"       -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "Queue"   -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "Receive"     -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "Send"     -- Type: <code>java.lang.String</code></p>
-     *	@param	handlerCtx	The HandlerContext.
-     */
-    @Handler(id="getConnectionPoolDefaultSettings",
-   input={
-        @HandlerInput(name="ConfigName", type=String.class, required=true)},        
-    output={
-        @HandlerOutput(name="Count",  type=String.class),
-        @HandlerOutput(name="Queue",    type=String.class),
-        @HandlerOutput(name="Receive",       type=String.class),
-        @HandlerOutput(name="Send",       type=String.class)})
-        
-        public static void getConnectionPoolDefaultSettings(HandlerContext handlerCtx) {
-        
-        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
-        Map <String, String> defaultMap = config.getHTTPServiceConfig().getDefaultValues(XTypes.CONNECTION_POOL_CONFIG, true);
-        
-        handlerCtx.setOutputValue("Count", defaultMap.get(ConnectionPoolConfigKeys.MAX_PENDING_COUNT_KEY));
-        handlerCtx.setOutputValue("Queue", defaultMap.get(ConnectionPoolConfigKeys.QUEUE_SIZE_IN_BYTES_KEY));
-        handlerCtx.setOutputValue("Receive", defaultMap.get(ConnectionPoolConfigKeys.RECEIVE_BUFFER_SIZE_IN_BYTES_KEY));   
-        handlerCtx.setOutputValue("Send", defaultMap.get(ConnectionPoolConfigKeys.SEND_BUFFER_SIZE_IN_BYTES_KEY));   
-        
-    }     
-    
-/**
-     *	<p> This handler saves the values for all the attributes in the
-     *      Connection Pool Config Page </p>
-     *	<p> Input value: "ConfigName"       -- Type: <code>java.lang.String</code></p>
-     *	<p> Input value: "Count"       -- Type: <code>java.lang.String</code></p>
-     *  <p> Input value: "Queue"   -- Type: <code>java.lang.String</code></p>
-     *  <p> Input value: "Receive"     -- Type: <code>java.lang.String</code></p>
-     *  <p> Input value: "Send"     -- Type: <code>java.lang.String</code></p>
-     *	@param	handlerCtx	The HandlerContext.
-     */
-    @Handler(id="saveConnectionPoolSettings",
-   input={
-        @HandlerInput(name="ConfigName", type=String.class, required=true),
-        @HandlerInput(name="Count",  type=String.class),
-        @HandlerInput(name="Queue",    type=String.class),
-        @HandlerInput(name="Receive",       type=String.class),
-        @HandlerInput(name="Send",       type=String.class)})
-        
-        public static void saveConnectionPoolSettings(HandlerContext handlerCtx) {
-        
-        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
-        try{
-            ConnectionPoolConfig cp = config.getHTTPServiceConfig().getConnectionPoolConfig();
-            cp.setMaxPendingCount((String)handlerCtx.getInputValue("Count"));
-            cp.setQueueSizeInBytes((String)handlerCtx.getInputValue("Queue"));
-            cp.setReceiveBufferSizeInBytes((String)handlerCtx.getInputValue("Receive"));
-            cp.setSendBufferSizeInBytes((String)handlerCtx.getInputValue("Send"));
-        }catch(Exception ex){
-            GuiUtil.handleException(handlerCtx, ex);
-        }
-        
-    }     
-
-
-
-    /**
-     *	<p> This handler returns the values for all the attributes in the
-     *      HTTP Protocol Config Page </p>
-     *	<p> Input value: "ConfigName" -- Type: <code>java.lang.String</code></p>
-     *	<p> Output value: "Version"   -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "DNS"       -- Type: <code>java.lang.Boolean</code></p>
-     *  <p> Output value: "SSL"       -- Type: <code>java.lang.Boolean</code></p>
-     *  <p> Output value: "Forced"    -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "Default"   -- Type: <code>java.lang.String</code></p>
-     *	@param	handlerCtx	The HandlerContext.
-     */
-    @Handler(id="getHttpProtocolSettings",
-   input={
-        @HandlerInput(name="ConfigName", type=String.class, required=true)},        
-    output={
-        @HandlerOutput(name="Version",  type=String.class),
-        @HandlerOutput(name="DNS",      type=Boolean.class),
-        @HandlerOutput(name="SSL",      type=Boolean.class),
-        @HandlerOutput(name="Forced",   type=String.class),
-        @HandlerOutput(name="Default",  type=String.class)})
-        
-        public static void getHttpProtocolSettings(HandlerContext handlerCtx) {
-        
-        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
-	HTTPProtocolConfig hp = config.getHTTPServiceConfig().getHTTPProtocolConfig();
-        handlerCtx.setOutputValue("Version", hp.getVersion());
-        handlerCtx.setOutputValue("DNS", hp.getDNSLookupEnabled());
-        handlerCtx.setOutputValue("SSL", hp.getSSLEnabled());   
-        handlerCtx.setOutputValue("Forced", hp.getForcedType());    
-        handlerCtx.setOutputValue("Default", hp.getDefaultType());
-        
-    }     
-    
-/**
-     *	<p> This handler returns the default values for all the attributes in the
-     *      HTTP Protocol Config Page </p>
-     *	<p> Input value: "ConfigName" -- Type: <code>java.lang.String</code></p>
-     *	<p> Output value: "Version"   -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "DNS"       -- Type: <code>java.lang.Boolean</code></p>
-     *  <p> Output value: "SSL"       -- Type: <code>java.lang.Boolean</code></p>
-     *  <p> Output value: "Forced"    -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "Default"   -- Type: <code>java.lang.String</code></p>
-     *	@param	handlerCtx	The HandlerContext.
-     */
-    @Handler(id="getHttpProtocolDefaultSettings",
-   input={
-        @HandlerInput(name="ConfigName", type=String.class, required=true)},        
-    output={
-        @HandlerOutput(name="Version",  type=String.class),
-        @HandlerOutput(name="DNS",      type=Boolean.class),
-        @HandlerOutput(name="SSL",      type=Boolean.class),
-        @HandlerOutput(name="Forced",   type=String.class),
-        @HandlerOutput(name="Default",  type=String.class)})
-        
-        public static void getHttpProtocolDefaultSettings(HandlerContext handlerCtx) {
-        
-        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
-        Map <String, String> defaultMap = config.getHTTPServiceConfig().getDefaultValues(XTypes.HTTP_PROTOCOL_CONFIG, true);
-        
-        String version = defaultMap.get(HTTPProtocolConfigKeys.VERSION_KEY);
-        String dns = defaultMap.get(HTTPProtocolConfigKeys.DNS_LOOKUP_ENABLED_KEY );
-        String ssl = defaultMap.get(HTTPProtocolConfigKeys.SSL_ENABLED_KEY);
-        String forced = defaultMap.get(HTTPProtocolConfigKeys.FORCED_TYPE_KEY);
-        String defaultResponse = defaultMap.get(HTTPProtocolConfigKeys.DEFAULT_TYPE_KEY);
-        handlerCtx.setOutputValue("Version", version);
-        if("true".equals(dns)) {
-            handlerCtx.setOutputValue("DNS", true);    
-        } else {
-            handlerCtx.setOutputValue("DNS", false);
-        }   
-       if("true".equals(ssl)) {
-            handlerCtx.setOutputValue("SSL", true);    
-        } else {
-            handlerCtx.setOutputValue("SSL", false);
-        }           
-        handlerCtx.setOutputValue("Forced", forced);    
-        handlerCtx.setOutputValue("Default", defaultResponse);   
-        
-    }         
-    
-/**
-     *	<p> This handler saves the values for all the attributes in the
-     *      HTTP Protocol Config Page </p>
-     *	<p> Input value: "ConfigName" -- Type: <code>java.lang.String</code></p>
-     *	<p> Input value: "Version"   -- Type: <code>java.lang.String</code></p>
-     *  <p> Input value: "DNS"       -- Type: <code>java.lang.Boolean</code></p>
-     *  <p> Input value: "SSL"       -- Type: <code>java.lang.Boolean</code></p>
-     *  <p> Input value: "Forced"    -- Type: <code>java.lang.String</code></p>
-     *  <p> Input value: "Default"   -- Type: <code>java.lang.String</code></p>
-     *	@param	handlerCtx	The HandlerContext.
-     */
-    @Handler(id="saveHttpProtocolSettings",
-   input={
-        @HandlerInput(name="ConfigName", type=String.class, required=true),
-        @HandlerInput(name="Version",  type=String.class),
-        @HandlerInput(name="DNS",      type=String.class),
-        @HandlerInput(name="SSL",      type=String.class),
-        @HandlerInput(name="Forced",   type=String.class),
-        @HandlerInput(name="Default",  type=String.class)})
-        
-        public static void saveHttpProtocolSettings(HandlerContext handlerCtx) {
-        
-        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
-        try{
-            HTTPProtocolConfig hp = config.getHTTPServiceConfig().getHTTPProtocolConfig();
-            hp.setVersion(((String)handlerCtx.getInputValue("Version")));
-            hp.setDNSLookupEnabled((String)handlerCtx.getInputValue("DNS"));
-            hp.setSSLEnabled((String)handlerCtx.getInputValue("SSL"));
-            hp.setForcedType(((String)handlerCtx.getInputValue("Forced")));
-            hp.setDefaultType(((String)handlerCtx.getInputValue("Default")));
-        }catch(Exception ex){
-            GuiUtil.handleException(handlerCtx, ex);
-        }
-    }    
-    
-/**
-     *	<p> This handler returns the values for all the attributes in the
-     *      HTTP File Caching Config Page </p>
-     *	<p> Input value: "ConfigName" -- Type: <code>java.lang.String</code></p>
-     *	<p> Output value: "Globally"   -- Type: <code>java.lang.Boolean</code></p>
-     *  <p> Output value: "Age"       -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "FileCount"    -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "HashSize"   -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "MedLimit"   -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "MedSize"   -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "SmLimit"   -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "SmSize"   -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "FileCaching"   -- Type: <code>java.lang.String</code></p>
-     *	@param	handlerCtx	The HandlerContext.
-     */
-    @Handler(id="getHttpFileCachingSettings",
-   input={
-        @HandlerInput(name="ConfigName", type=String.class, required=true)},        
-    output={
-        @HandlerOutput(name="Globally",  type=Boolean.class),
-        @HandlerOutput(name="Age",          type=String.class),
-        @HandlerOutput(name="FileCount",    type=String.class),        			
-        @HandlerOutput(name="HashSize",     type=String.class),
-        @HandlerOutput(name="MedLimit",     type=String.class),
-        @HandlerOutput(name="MedSize",      type=String.class),
-        @HandlerOutput(name="SmLimit",      type=String.class),
-        @HandlerOutput(name="SmSize",  	    type=String.class),
-        @HandlerOutput(name="FileCaching",  type=String.class)})
-        
-        public static void getHttpFileCachingSettings(HandlerContext handlerCtx) {
-        
-        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
-	HTTPFileCacheConfig hp = config.getHTTPServiceConfig().getHTTPFileCacheConfig();
-        String globally = hp.getGloballyEnabled();
-        String age = hp.getMaxAgeInSeconds();
-        String fileCount = hp.getMaxFilesCount();
-        String hashSize = hp.getHashInitSize();
-        String medLimit = hp.getMediumFileSizeLimitInBytes();
-        String medSize = hp.getMediumFileSpaceInBytes();
-        String smLimit = hp.getSmallFileSizeLimitInBytes();
-        String smSize = hp.getSmallFileSpaceInBytes();
-        boolean fileCaching = Boolean.valueOf(hp.getFileCachingEnabled());
-       if(fileCaching == true) {
-            handlerCtx.setOutputValue("FileCaching", "ON");    
-        } else {
-            handlerCtx.setOutputValue("FileCaching", "OFF");
-        }              
-        handlerCtx.setOutputValue("Globally", globally);
-        handlerCtx.setOutputValue("Age", age);   
-        handlerCtx.setOutputValue("FileCount", fileCount);    
-        handlerCtx.setOutputValue("HashSize", hashSize);   
-        handlerCtx.setOutputValue("MedLimit", medLimit);
-        handlerCtx.setOutputValue("MedSize", medSize);
-        handlerCtx.setOutputValue("SmLimit", smLimit);   
-        handlerCtx.setOutputValue("SmSize", smSize);    
-        
-    }         
-    
-/**
-     *	<p> This handler returns the default values for all the attributes in the
-     *      HTTP File Caching Config Page </p>
-     *	<p> Input value: "ConfigName" -- Type: <code>java.lang.String</code></p>
-    *	<p> Output value: "Globally"   -- Type: <code>java.lang.Boolean</code></p>
-     *  <p> Output value: "Age"       -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "FileCount"    -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "HashSize"   -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "MedLimit"   -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "MedSize"   -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "SmLimit"   -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "SmSize"   -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "FileCaching"   -- Type: <code>java.lang.String</code></p>
-     *	@param	handlerCtx	The HandlerContext.
-     */
-    @Handler(id="getHttpFileCachingDefaultSettings",
-  input={
-        @HandlerInput(name="ConfigName", type=String.class, required=true)},        
-    output={
-        @HandlerOutput(name="Globally",  type=Boolean.class),
-        @HandlerOutput(name="Age",          type=String.class),
-        @HandlerOutput(name="FileCount",    type=String.class),        			
-        @HandlerOutput(name="HashSize",     type=String.class),
-        @HandlerOutput(name="MedLimit",     type=String.class),
-        @HandlerOutput(name="MedSize",      type=String.class),
-        @HandlerOutput(name="SmLimit",      type=String.class),
-        @HandlerOutput(name="SmSize",  	    type=String.class),
-        @HandlerOutput(name="FileCaching",  type=String.class)})
-        
-        public static void getHttpFileCachingDefaultSettings(HandlerContext handlerCtx) {
-        
-        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
-        Map <String, String> defaultMap = config.getHTTPServiceConfig().getDefaultValues(XTypes.HTTP_FILE_CACHE_CONFIG, true);
-        
-        String globally = defaultMap.get(HTTPFileCacheConfigKeys.GLOBALLY_ENABLED_KEY);
-        String fileCaching = defaultMap.get(HTTPFileCacheConfigKeys.FILE_CACHING_ENABLED_KEY);
-        if(globally.equals("true")) {
-            handlerCtx.setOutputValue("Globally", true);    
-        } else {
-            handlerCtx.setOutputValue("Globally", false);
-        }   
-        if(fileCaching.equals("true")) {
-            handlerCtx.setOutputValue("FileCaching", "ON");    
-        } else {
-            handlerCtx.setOutputValue("FileCaching", "OFF");
-        }                
-        handlerCtx.setOutputValue("Age", defaultMap.get(HTTPFileCacheConfigKeys.MAX_AGE_IN_SECONDS_KEY));   
-        handlerCtx.setOutputValue("FileCount", defaultMap.get(HTTPFileCacheConfigKeys.MAX_FILES_COUNT_KEY));    
-        handlerCtx.setOutputValue("HashSize", defaultMap.get(HTTPFileCacheConfigKeys.HASH_INIT_SIZE_KEY));   
-        handlerCtx.setOutputValue("MedLimit", defaultMap.get(HTTPFileCacheConfigKeys.MEDIUM_FILE_SIZE_LIMIT_IN_BYTES_KEY));
-        handlerCtx.setOutputValue("MedSize", defaultMap.get(HTTPFileCacheConfigKeys.MEDIUM_FILE_SPACE_IN_BYTES_KEY));
-        handlerCtx.setOutputValue("SmLimit", defaultMap.get(HTTPFileCacheConfigKeys.SMALL_FILE_SIZE_LIMIT_IN_BYTES_KEY));   
-        handlerCtx.setOutputValue("SmSize", defaultMap.get(HTTPFileCacheConfigKeys.SMALL_FILE_SPACE_IN_BYTES_KEY));      
-        
-    }        
-    
-/**
-     *	<p> This handler saves the values for all the attributes in the
-     *      HTTP File Caching Config Page </p>
-     *	<p> Input value: "ConfigName" -- Type: <code>java.lang.String</code></p>
-     *	<p> Output value: "Globally"   -- Type: <code>java.lang.Boolean</code></p>
-     *  <p> Output value: "Age"       -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "FileCount"    -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "HashSize"   -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "MedLimit"   -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "MedSize"   -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "SmLimit"   -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "SmSize"   -- Type: <code>java.lang.String</code></p>
-     *  <p> Output value: "FileCaching"   -- Type: <code>java.lang.String</code></p>
-     *	@param	handlerCtx	The HandlerContext.
-     */
-    @Handler(id="saveHttpFileCachingSettings",
-   input={
-        @HandlerInput(name="ConfigName", type=String.class, required=true),        
-        @HandlerInput(name="Globally",  type=String.class),
-        @HandlerInput(name="Age",          type=String.class),
-        @HandlerInput(name="FileCount",    type=String.class),        			
-        @HandlerInput(name="HashSize",     type=String.class),
-        @HandlerInput(name="MedLimit",     type=String.class),
-        @HandlerInput(name="MedSize",      type=String.class),
-        @HandlerInput(name="SmLimit",      type=String.class),
-        @HandlerInput(name="SmSize",  	    type=String.class),
-        @HandlerInput(name="FileCaching",  type=String.class)})
-        
-        public static void saveHttpFileCachingSettings(HandlerContext handlerCtx) {
-        
-        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
-        try{
-            HTTPFileCacheConfig hp = config.getHTTPServiceConfig().getHTTPFileCacheConfig();
-            hp.setGloballyEnabled((String)handlerCtx.getInputValue("Globally"));
-            hp.setMaxAgeInSeconds(((String)handlerCtx.getInputValue("Age")));
-            hp.setMaxFilesCount(((String)handlerCtx.getInputValue("FileCount")));
-            hp.setHashInitSize(((String)handlerCtx.getInputValue("HashSize")));
-            hp.setMediumFileSizeLimitInBytes(((String)handlerCtx.getInputValue("MedLimit")));
-            hp.setMediumFileSpaceInBytes(((String)handlerCtx.getInputValue("MedSize")));
-            hp.setSmallFileSizeLimitInBytes(((String)handlerCtx.getInputValue("SmLimit")));
-            hp.setSmallFileSpaceInBytes(((String)handlerCtx.getInputValue("SmSize")));
-            String fileCaching = (String)handlerCtx.getInputValue("FileCaching");
-            if(fileCaching.equals("ON")) {
-                hp.setFileCachingEnabled("true");    
-            } else {
-                hp.setFileCachingEnabled("false");   
-            }             
-        }catch(Exception ex){
-            GuiUtil.handleException(handlerCtx, ex);
-        }
-        
-    }   
-    
-    
+  
     /*
      *  HTTP Listener Handler
      * /
@@ -877,6 +288,7 @@ public class HttpServiceHandlers {
      *  <p> Output  value: "Result"      -- Type: <code> java.util.List</code></p>
      *	@param	handlerCtx	The HandlerContext.
      */
+    /*
     @Handler(id="getHttpListenersList",
         input={
             @HandlerInput(name="ConfigName", type=String.class, required=true),
@@ -918,6 +330,7 @@ public class HttpServiceHandlers {
         }
         handlerCtx.setOutputValue("Result", result);
     }
+    */
     
     /**
      *	<p> This handler takes in selected rows, and removes selected Listeners
@@ -926,6 +339,7 @@ public class HttpServiceHandlers {
      *  <p> Input  value: "Type"          -- Type: <code> java.lang.String</code></p>
      *	@param	handlerCtx	The HandlerContext.
      */
+    /*
     @Handler(id="deleteHttpListeners",
     input={
         @HandlerInput(name="selectedRows", type=List.class, required=true),
@@ -961,6 +375,7 @@ public class HttpServiceHandlers {
            GuiUtil.handleException(handlerCtx, ex);
         }
     }
+    */
 
 
     
@@ -983,6 +398,7 @@ public class HttpServiceHandlers {
      *  <p> Output value: "Properties"         -- Type: <code>java.util.Map</code></p>
      *	@param	handlerCtx	The HandlerContext.
      */
+    /*
     @Handler(id="getHttpListenerValues",
     input={
         @HandlerInput(name="Edit",       type=Boolean.class, required=true),
@@ -1059,6 +475,7 @@ public class HttpServiceHandlers {
             GuiUtil.handleException(handlerCtx, ex);
         }
     }
+    */
     
     /**
      *	<p> This handler saves the values for all the attributes in 
@@ -1079,6 +496,7 @@ public class HttpServiceHandlers {
      *  <p> Input value: "newProps"          -- Type: <code>java.util.Map</code></p>
      *	@param	handlerCtx	The HandlerContext.
      */
+	/*
     @Handler(id="saveHttpListenerValues",
     input={
         @HandlerInput(name="ConfigName",        type=String.class, required=true),
@@ -1180,6 +598,7 @@ public class HttpServiceHandlers {
             GuiUtil.handleException(handlerCtx, ex);
         }
     }
+    */
     
     /**
      *	<p> This handler returns the values for list of thread pools in 
@@ -1189,6 +608,7 @@ public class HttpServiceHandlers {
      *      SelectItem[] (castable to Option[])</code></p>
      *	@param	handlerCtx	The HandlerContext.
      */
+    /*
     @Handler(id="getDefaultVirtualServers",
     input={
         @HandlerInput(name="ConfigName", type=String.class, required=true)},
@@ -1207,6 +627,7 @@ public class HttpServiceHandlers {
 
             handlerCtx.setOutputValue("DefaultVirtualServers", options);
         }
+     */
 
     
     //mbean Attribute Name
@@ -1217,10 +638,4 @@ public class HttpServiceHandlers {
         httpServiceSkipPropsList.add("accessLogWriteInterval");
         httpServiceSkipPropsList.add("accessLoggingEnabled");
     }
-    
-    
-    private static final String ADMIN_LISTENER = "admin-listener";
-    private static final String PROXIED_PROTOCOLS = "proxiedProtocols";
-    private static final String PROXIED_PROTOCOLS_VALUE = "http";
-    
 }
