@@ -56,18 +56,11 @@
 package org.apache.catalina.core;
 
 
-import java.io.File;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.jar.*;
 // START PWC 1.2
 import java.security.SecurityPermission;
 // START PWC 1.2
@@ -141,6 +134,8 @@ public class ApplicationContext
 
 
     // ----------------------------------------------------- Class Variables
+
+    private static final String META_INF_RESOURCES = "META-INF/resources";
 
     // START PWC 1.2
     private static final SecurityPermission GET_UNWRAPPED_CONTEXT_PERMISSION =
@@ -437,10 +432,11 @@ public class ApplicationContext
 
 
     /**
-     * Return the real path for a given virtual path, if possible; otherwise
-     * return <code>null</code>.
+     * @param path The virtual path to be translated
      *
-     * @param path The path to the desired resource
+     * @return the real path corresponding to the given virtual path, or
+     * <code>null</code> if the container was unable to perform the
+     * translation
      */
     public String getRealPath(String path) {
 
@@ -466,8 +462,15 @@ public class ApplicationContext
             }
         }
 
-        return (file.getAbsolutePath());
-
+        if (!file.exists()) {
+            try {
+                return getRealJarPath(path);
+            } catch (Exception e) {
+                return null;
+            }
+        } else {
+            return file.getAbsolutePath();
+        }
     }
 
 
@@ -599,7 +602,6 @@ public class ApplicationContext
         } else {
 
             DirContext resources = null;
-
             if (alternateDocBases == null
                     || alternateDocBases.size() == 0) {
                 resources = context.getResources();
@@ -628,13 +630,55 @@ public class ApplicationContext
                         // END SJSAS 6318494
 		         new DirContextURLStreamHandler(resources));
                 } catch (Exception e) {
-                    // Ignore
+                    try {
+                        String jarFilePath = getRealJarPath(path);
+                        if (jarFilePath != null) {
+                            return new URL("jar:file:" + jarFilePath);
+                        }
+                    } catch (Exception ee) {
+                        // do nothing
+                    }
                 }
             }
         }
 
         return (null);
+    }
 
+
+    /**
+     * Searches the /META-INF/resources folders of the JAR files inside
+     * /WEB-INF/lib for the resource with the given relative path, and
+     * returns the real path to the resource, which uses this format:
+     * <tt>&lt;absolute-file-path-on-disk&gt;/WEB-INF/lib/&lt;name-of-jar&gt;!/META-INF/resources/&lt;path&gt;</tt>,
+     * where <tt>&lt;path&gt;</tt> corresponds to the <tt>path</tt>
+     * argument passed to this method.
+     *
+     * @param path the path of the resource to be looked up
+     * (relative to the /META-INF/resources directory of a JAR file inside
+     * /WEB-INF/lib)
+     *
+     * @return the real path to the requested resource, or null if not found
+     */
+    private String getRealJarPath(String path) throws Exception {
+        // The given path is relative to /META-INF/resources
+        String searchPath = META_INF_RESOURCES + path;
+        for (URL u : ((URLClassLoader)
+                    context.getLoader().getClassLoader()).getURLs()) {
+            String libPath = u.getPath();
+            if (libPath.endsWith(".jar")) {
+                JarFile jf = new JarFile(libPath);
+                Enumeration<JarEntry> entries = jf.entries();
+                while (entries.hasMoreElements()) {
+                    JarEntry anEntry = entries.nextElement();
+                    if (anEntry.getName().equals(searchPath)) {
+                        return libPath + "!/" + searchPath;
+                    }
+                }
+            }
+        }
+
+        return null;                         
     }
 
 
