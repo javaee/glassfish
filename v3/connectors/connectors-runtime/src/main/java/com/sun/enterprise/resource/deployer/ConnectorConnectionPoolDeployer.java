@@ -231,7 +231,7 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
             //so go figure if it is valid.
             //The tx support is valid if it is less-than/equal-to
             //the value specified in the ra.xml
-            if (!isTxSupportConfigurationSane(txSupportIntVal,
+            if (!ConnectionPoolObjectsUtils.isTxSupportConfigurationSane(txSupportIntVal,
                     domainCcp.getResourceAdapterName())) {
 
                 String i18nMsg = localStrings.getString("ccp_deployer.incorrect_tx_support");
@@ -368,23 +368,6 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
         return mergedSet;
     }
 
-    private boolean isTxSupportConfigurationSane(int txSupport, String raName) {
-        int raXmlTxSupport = ConnectorConstants.UNDEFINED_TRANSACTION_INT;
-
-        try {
-            raXmlTxSupport = ConnectionPoolObjectsUtils.getTransactionSupportFromRaXml(raName);
-        } catch (Exception e) {
-            _logger.log(Level.WARNING,
-                    (e.getMessage() != null ? e.getMessage() : "  "));
-        }
-        if (_logger.isLoggable(Level.FINE)) {
-            _logger.log(Level.FINE, "isTxSupportConfigSane:: txSupport => "
-                    + txSupport + "  raXmlTxSupport => " + raXmlTxSupport);
-        }
-
-        return (txSupport <= raXmlTxSupport);
-
-    }
 
 
     private int parseTransactionSupportString(String txSupport) {
