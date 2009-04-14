@@ -1,0 +1,2 @@
+${pageContext.response.bufferSize}
+
