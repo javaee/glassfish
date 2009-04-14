@@ -4079,6 +4079,7 @@ public class Request
             throw new IllegalStateException("Request not in async mode");
         }
         isAsyncComplete = true;
+        asyncStarted = false;
         coyoteRequest.getResponse().resume();
     }
 
