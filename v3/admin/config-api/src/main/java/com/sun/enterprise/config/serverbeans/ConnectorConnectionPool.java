@@ -274,7 +274,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      *         {@link String }
      */
     @Attribute (defaultValue="0")
-    @Min(value=1)
+    @Min(value=0)
     String getConnectionLeakTimeoutInSeconds();
 
     /**
