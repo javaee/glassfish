@@ -119,31 +119,38 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
         String moduleName = sourceDir.getName();
 
         boolean isEmbedded = isEmbedded(context);
+        ClassLoader classLoader = null;
         //this check is not needed as system-rars are never deployed, just to be safe.
         if (!ConnectorsUtil.belongsToSystemRA(moduleName)) {
             try {
                 //for a connector deployer, classloader will always be ConnectorClassFinder
                 ccf = (ConnectorClassFinder) context.getClassLoader();
-
+                classLoader = ccf;
                 //for embedded .rar, compute the embedded .rar name
                 if(isEmbedded){
                     moduleName = getEmbeddedRarModuleName(getApplicationName(context), moduleName);
                 }
-                ConnectorDescriptor cd = context.getModuleMetaData(ConnectorDescriptor.class);
-                runtime.createActiveResourceAdapter(cd, moduleName, sourcePath, ccf);
-                //runtime.createActiveResourceAdapter(sourcePath, moduleName, ccf);
 
                 //don't add the class-finder to the chain if its embedded .rar
+
                 if(!(isEmbedded)){
-                    //add the class-finder (class-loader) to connector-class-loader chain
-                    clh.getConnectorClassLoader(null).addDelegate(ccf);
+                    classLoader =  clh.getConnectorClassLoader(null);
+					clh.getConnectorClassLoader(null).addDelegate(ccf);
                 }
+
+                ConnectorDescriptor cd = context.getModuleMetaData(ConnectorDescriptor.class);
+                runtime.createActiveResourceAdapter(cd, moduleName, sourcePath, classLoader);
+                //runtime.createActiveResourceAdapter(sourcePath, moduleName, ccf);
 
             } catch (ConnectorRuntimeException cre) {
                 _logger.log(Level.WARNING, " unable to load the resource-adapter [ " + moduleName + " ]", cre);
+                if(!(isEmbedded) && ccf != null) {
+                    clh.getConnectorClassLoader(null).removeDelegate(ccf);
+                }
+
             }
         }
-        return new ConnectorApplication(moduleName, getApplicationName(context), resourceManager, ccf, runtime);
+        return new ConnectorApplication(moduleName, getApplicationName(context), resourceManager, classLoader, runtime);
     }
 
     private String getEmbeddedRarModuleName(String applicationName, String moduleName) {
