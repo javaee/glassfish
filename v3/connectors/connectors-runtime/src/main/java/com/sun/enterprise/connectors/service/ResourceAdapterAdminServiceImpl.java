@@ -51,6 +51,10 @@ import com.sun.enterprise.config.serverbeans.ResourceAdapterConfig;
 
 import javax.naming.NamingException;
 import java.util.logging.Level;
+import java.util.Set;
+import java.util.List;
+
+import org.glassfish.api.admin.config.Property;
 
 
 /**
@@ -275,8 +279,19 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
                 _logger.fine("ResourceAdapterAdminServiceImpl :: createActiveRA "
                         + moduleName + " at " + moduleDir
                         + " publishing descriptor " + descriptorJNDIName);
+
+                //Update RAConfig in Connector Descriptor and bind in JNDI
+                //so that ACC clients could use RAConfig
+                updateRAConfigInDescriptor(connectorDescriptor, moduleName);
+                
                 _runtime.getNamingManager().publishObject(
                         descriptorJNDIName, connectorDescriptor, true);
+                String securityWarningMessage=
+                    ConnectorRuntime.getRuntime().getSecurityPermissionSpec(moduleName);
+                // To i18N.
+                if (securityWarningMessage != null) {
+                    _logger.log(Level.WARNING, securityWarningMessage);
+                }
             }
 
         } catch (NullPointerException npEx) {
@@ -312,16 +327,16 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
      * is in use is not transmitted to the client dynamically. All such changes 
      * would be visible on ACC client restart. 
      */
-    /* TODO V3 handle resource-adapter-config later
+
     private void updateRAConfigInDescriptor(ConnectorDescriptor connectorDescriptor,
                                             String moduleName) {
 
         ResourceAdapterConfig raConfig =
                 ConnectorRegistry.getInstance().getResourceAdapterConfig(moduleName);
 
-        ElementProperty[] raConfigProps = null;
+        List<Property> raConfigProps = null;
         if (raConfig != null) {
-            raConfigProps = raConfig.getElementProperty();
+            raConfigProps = raConfig.getProperty();
         }
 
         _logger.fine("current RAConfig In Descriptor " + connectorDescriptor.getConfigProperties());
@@ -335,7 +350,7 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
             _logger.fine("updated RAConfig In Descriptor " + connectorDescriptor.getConfigProperties());
         }
 
-    }*/
+    }
 
 
     /**

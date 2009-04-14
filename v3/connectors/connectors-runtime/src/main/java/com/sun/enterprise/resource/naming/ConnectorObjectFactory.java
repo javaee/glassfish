@@ -94,15 +94,14 @@ public class ConnectorObjectFactory implements NamingObjectProxy {
      */
     public Object create(Context ic) throws NamingException {
 
-        /* TODO V3 handle client later
         if (runtime.getEnviron() == ConnectorRuntime.CLIENT) {
             ConnectorDescriptor connectorDescriptor = null;
 
-                String descriptorJNDIName = ConnectorAdminServiceUtils.
-                        getReservePrefixedJNDINameForDescriptor(moduleName);
-                connectorDescriptor = (ConnectorDescriptor) ic.lookup(descriptorJNDIName);
+            String descriptorJNDIName = ConnectorAdminServiceUtils.
+                    getReservePrefixedJNDINameForDescriptor(moduleName);
+            connectorDescriptor = (ConnectorDescriptor) ic.lookup(descriptorJNDIName);
             try {
-                runtime.createActiveResourceAdapter(connectorDescriptor,  moduleName, null);
+                runtime.createActiveResourceAdapter(connectorDescriptor, moduleName, null);
             } catch (ConnectorRuntimeException e) {
                 _logger.log(Level.FINE, "Failed to look up ConnectorDescriptor from JNDI", moduleName);
                 NamingException ne = new NamingException("Failed to look up ConnectorDescriptor from JNDI");
@@ -110,7 +109,6 @@ public class ConnectorObjectFactory implements NamingObjectProxy {
                 throw ne;
             }
         }
-        */
 
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         if (runtime.checkAccessibility(moduleName, loader) == false) {

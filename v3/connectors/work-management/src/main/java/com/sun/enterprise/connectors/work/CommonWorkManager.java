@@ -39,8 +39,8 @@ package com.sun.enterprise.connectors.work;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.corba.se.spi.orbutil.threadpool.NoSuchThreadPoolException;
-import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
 import com.sun.corba.se.spi.orbutil.threadpool.ThreadPoolManager;
+import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
 import com.sun.enterprise.connectors.work.monitor.MonitorableWorkManager;
 import com.sun.enterprise.connectors.work.context.WorkContextHandler;
 import com.sun.enterprise.util.i18n.StringManager;
@@ -49,6 +49,7 @@ import com.sun.logging.LogDomains;
 import javax.resource.spi.work.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 
 /**
  * WorkManager implementation.
@@ -86,21 +87,23 @@ public final class CommonWorkManager implements MonitorableWorkManager {
     public CommonWorkManager(String threadPoolId, ConnectorRuntime runtime, String raName)
             throws ConnectorRuntimeException {
 
-        try {
-            //TODO V3 need to be in sync with v2 ? (default thread-pool trial)
-            this.runtime = runtime;
-			this.raName = raName;
-            tp = runtime.getThreadPool(threadPoolId);
-        } catch (NoSuchThreadPoolException e) {
-            String msg = localStrings.getString("workmanager.threadpool_not_found");
-            logger.log(Level.SEVERE, msg, threadPoolId);
-            throw new ConnectorRuntimeException(e.getMessage());
-        }
+        if (runtime.isServer()) {
+            try {
+                //TODO V3 need to be in sync with v2 ? (default thread-pool trial)
+                this.runtime = runtime;
+                this.raName = raName;
+                tp = runtime.getThreadPool(threadPoolId);
+            } catch (NoSuchThreadPoolException e) {
+                String msg = localStrings.getString("workmanager.threadpool_not_found");
+                logger.log(Level.SEVERE, msg, threadPoolId);
+                throw new ConnectorRuntimeException(e.getMessage());
+            }
 
-        if(tp == null){
-            String msg = localStrings.getString("workmanager.threadpool_not_found");
-            logger.log(Level.SEVERE, msg, threadPoolId);
-            throw new ConnectorRuntimeException(msg);
+            if (tp == null) {
+                String msg = localStrings.getString("workmanager.threadpool_not_found");
+                logger.log(Level.SEVERE, msg, threadPoolId);
+                throw new ConnectorRuntimeException(msg);
+            }
         }
     }
 

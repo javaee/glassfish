@@ -37,14 +37,15 @@ package com.sun.enterprise.resource.naming;
 
 import com.sun.enterprise.resource.beans.AdministeredObjectResource;
 import com.sun.enterprise.connectors.ConnectorRuntime;
+import com.sun.enterprise.connectors.service.ConnectorAdminServiceUtils;
+import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.logging.LogDomains;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 
 import java.util.Hashtable;
 import java.util.logging.Logger;
-import javax.naming.Context;
-import javax.naming.Name;
-import javax.naming.Reference;
-import javax.naming.NamingException;
+import java.util.logging.Level;
+import javax.naming.*;
 import javax.naming.spi.ObjectFactory;
 
 /**
@@ -80,24 +81,22 @@ public class AdministeredObjectFactory implements ObjectFactory {
         //If call fom application client, start resource adapter lazily.
         //todo: Similar code in ConnectorObjectFactory - to refactor.
 
-	ConnectorRuntime runtime = ConnectorRuntime.getRuntime();
-/* TODO V3 handle client later
-        if(runtime.getEnviron() == ConnectorRuntime.CLIENT) {
+        ConnectorRuntime runtime = ConnectorRuntime.getRuntime();
+        if (runtime.getEnviron() == ConnectorRuntime.CLIENT) {
             ConnectorDescriptor connectorDescriptor = null;
             try {
                 Context ic = new InitialContext();
                 String descriptorJNDIName = ConnectorAdminServiceUtils.
-                    getReservePrefixedJNDINameForDescriptor(moduleName);
-                connectorDescriptor = (ConnectorDescriptor)ic.lookup(descriptorJNDIName);
-            } catch(NamingException ne) {
+                        getReservePrefixedJNDINameForDescriptor(moduleName);
+                connectorDescriptor = (ConnectorDescriptor) ic.lookup(descriptorJNDIName);
+            } catch (NamingException ne) {
                 logger.log(Level.FINE, "Failed to look up ConnectorDescriptor " +
-                                            "from JNDI", moduleName);
+                        "from JNDI", moduleName);
                 throw new ConnectorRuntimeException("Failed to look up " +
-                                                "ConnectorDescriptor from JNDI");
+                        "ConnectorDescriptor from JNDI");
             }
             runtime.createActiveResourceAdapter(connectorDescriptor, moduleName, null);
         }
-*/
 
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         if (runtime.checkAccessibility(moduleName, loader) == false) {
