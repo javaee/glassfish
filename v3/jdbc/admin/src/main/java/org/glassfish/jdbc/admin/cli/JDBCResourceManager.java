@@ -46,6 +46,7 @@ import static org.glassfish.resource.common.ResourceConstants.*;
 import org.glassfish.resource.common.ResourceStatus;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import org.glassfish.api.I18n;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
@@ -66,6 +67,7 @@ import org.glassfish.admin.cli.resources.ResourceManager;
  * The JDBC resource manager allows you to create and delete the config element
  * Will be used by the add-resources, deployment and CLI command
  */
+@Service (name=ServerTags.JDBC_RESOURCE)
 @I18n("jdbc.resource.manager")
 @ConfiguredBy(Resources.class)
 public class JDBCResourceManager implements ResourceManager {
@@ -79,8 +81,12 @@ public class JDBCResourceManager implements ResourceManager {
     String poolName = null;
     String enabled = Boolean.TRUE.toString();
 
-    public ResourceStatus create(Resources resources, HashMap attrList,
-                                    final Properties props, Server targetServer)
+    public String getResourceType () {
+        return ServerTags.JDBC_RESOURCE;
+    }
+
+    public ResourceStatus create(Resources resources, HashMap attrList, 
+                                    final Properties props, Server targetServer) 
            throws Exception {
 
         jndiName = (String) attrList.get(JNDI_NAME);

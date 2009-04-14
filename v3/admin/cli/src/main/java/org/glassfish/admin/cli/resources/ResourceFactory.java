@@ -36,26 +36,39 @@
 
 package org.glassfish.admin.cli.resources;
 
-import com.sun.enterprise.config.serverbeans.Resources;
-import com.sun.enterprise.config.serverbeans.Server;
-import java.util.HashMap;
-import java.util.Properties;
-import org.glassfish.resource.common.ResourceStatus;
-import org.jvnet.hk2.annotations.Contract;
+import org.glassfish.resource.common.Resource;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
+
+import org.glassfish.api.I18n;
+import org.glassfish.admin.cli.resources.ResourceManager;
 
 /**
  *
  * @author PRASHANTH ABBAGANI
  * 
- * interface for all the ResourceManagers
+ * Factory class which returns the appropriate ResourceManager
  */
-@Contract
-public interface ResourceManager {
-    ResourceStatus create( Resources resources,
-                                       HashMap   attrList,
-                                       Properties      props,
-                                       Server          targetServer)
-        throws Exception;
+@Service(name="resource-factory")
+@I18n("add.resources")
+public class ResourceFactory implements ResourceFactoryContract {
 
-    String getResourceType();
+    @Inject
+    private Habitat habitat;
+
+    public ResourceManager getResourceManager(Resource resource) {
+        String resourceType = resource.getType();
+
+        ResourceManager resourceManager = null;
+        for (ResourceManager rm : habitat.getAllByContract(ResourceManager.class)) {
+            if ((rm.getResourceType()).equals(resourceType)) {
+                resourceManager = rm;
+                break;
+            }
+        }
+
+        return resourceManager;
+    }
+    
 }

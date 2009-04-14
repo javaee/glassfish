@@ -48,6 +48,7 @@ import java.util.Properties;
 import java.util.Map;
 
 import org.glassfish.api.I18n;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
@@ -68,6 +69,7 @@ import org.glassfish.admin.cli.resources.ResourceManager;
  *
  * @author PRASHANTH ABBAGANI
  */
+@Service (name=ServerTags.JDBC_CONNECTION_POOL)
 @I18n("add.resources")
 public class JDBCConnectionPoolManager implements ResourceManager{
 
@@ -108,6 +110,10 @@ public class JDBCConnectionPoolManager implements ResourceManager{
     private String jdbcconnectionpoolid = null; 
 
     public JDBCConnectionPoolManager() {
+    }
+
+    public String getResourceType() {
+        return ServerTags.JDBC_CONNECTION_POOL;
     }
 
     public ResourceStatus create(Resources resources, HashMap attrList, 
