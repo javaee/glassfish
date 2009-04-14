@@ -56,8 +56,8 @@
     			<sun:panelGroup id="topButtons">
         			<sun:button id="closeButton" text="$resource{i18n.button.Close}" primary="#{true}">  
            				<!command
-        					urlencode(value="#{appName}", value=>$pageSession{appName});
-							redirect(page="#{request.contextPath}/web/webApp/#{descriptorPage}?appName=#{appName}");
+					    urlencode(value="#{appName}", result="#{pageSession.appName}");
+					    redirect(page="#{request.contextPath}/web/webApp/#{descriptorPage}?appName=#{appName}");
           				/>
           			</sun:button>
     			</sun:panelGroup>
@@ -66,8 +66,8 @@
     			<sun:panelGroup id="bottomButtons">
         			<sun:button id="closeButton2" text="$resource{i18n.button.Close}" primary="#{true}">  
            				<!command
-        					urlencode(value="#{appName}", value=>$pageSession{appName});
-							redirect(page="#{request.contextPath}/web/webApp/#{descriptorPage}?appName=#{appName}");
+					    urlencode(value="#{appName}", result="#{pageSession.appName}");
+					    redirect(page="#{request.contextPath}/web/webApp/#{descriptorPage}?appName=#{appName}");
           				/>
           			</sun:button>
     			</sun:panelGroup>
