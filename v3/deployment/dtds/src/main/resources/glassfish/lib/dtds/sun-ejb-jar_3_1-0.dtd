@@ -4,7 +4,7 @@
 
   It must include a DOCTYPE of the following form:
 
-  <!DOCTYPE sun-ejb-jar PUBLIC "-//GlassFish.org//DTD GlassFish v3 EJB 3.1//EN" "http://glassfish.org/dtds/gf-ejb-jar_3_1-0.dtd">
+  <!DOCTYPE sun-ejb-jar PUBLIC "-//Sun Microsystems, Inc.//DTD GlassFish Application Server 3.0 EJB 3.1//EN" "http://www.sun.com/software/appserver/dtds/sun-ejb-jar_3_1-0.dtd">
 
   Copyright (c) 2009 by Sun Microsystems, Inc. All Rights Reserved.
 -->
