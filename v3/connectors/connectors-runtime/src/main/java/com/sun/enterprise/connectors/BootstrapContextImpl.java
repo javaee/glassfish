@@ -123,7 +123,7 @@ public final class BootstrapContextImpl implements BootstrapContext, Serializabl
             InitialContext ic = new InitialContext();
             return (TransactionSynchronizationRegistry)ic.lookup("java:comp/TransactionSynchronizationRegistry");
         }catch(Exception e){
-            e.printStackTrace();            
+            logger.log(Level.WARNING, "tx.sync.registry.lookup.failed", e);            
         }
         return null;
     }
@@ -148,7 +148,7 @@ public final class BootstrapContextImpl implements BootstrapContext, Serializabl
             try {
                 wm = ConnectorRuntime.getRuntime().getWorkManagerProxy(threadPoolId, moduleName);
             } catch(Exception e) {
-           	logger.log(Level.SEVERE, "workmanager.instantiation_error", e);
+           	    logger.log(Level.SEVERE, "workmanager.instantiation_error", e);
             }
         }
     }
