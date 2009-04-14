@@ -39,6 +39,7 @@ package org.glassfish.deployapi;
 //import com.sun.enterprise.util.i18n.StringManager;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.Print;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -63,7 +64,7 @@ import org.glassfish.deployment.client.DFProgressObject;
  * @author  dochez
  * @author  tjquinn
  */
-public class ProgressObjectImpl implements DFProgressObject {
+public class ProgressObjectImpl extends DFProgressObject {
 
     private final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ProgressObjectImpl.class);
     
@@ -151,7 +152,7 @@ public class ProgressObjectImpl implements DFProgressObject {
 	synchronized (listeners) {
             listeners.add(pol);
 	    if (deliveredEvents.size() > 0) {
-//		Print.dprintln("Delivering undelivered messages...");
+		Print.dprintln("Delivering undelivered messages...");
 	        for (Iterator i = deliveredEvents.iterator(); i.hasNext();) {
 		    pol.handleProgressEvent((ProgressEvent)i.next());
 	        }
@@ -601,69 +602,5 @@ public class ProgressObjectImpl implements DFProgressObject {
         finalDeploymentStatus.setStageException(th);
         fireProgressEvent(StateType.FAILED, finalDeploymentStatus.getStageStatusMessage(), aTarget);
         return;
-    }
-
-//    public boolean checkStatusAndAddStage(TargetImpl aTarget, /* RollBackAction rollback,*/ String action, /* ConnectionSource dasConnection, */ DFDeploymentStatus currentStatus) {
-//        return checkStatusAndAddStage(aTarget, /* rollback, */ action, /* dasConnection, */
-//            currentStatus, false);
-//    }
-
-//    /**
-//     * Given a Deployment status, this checks if the status is success
-//     * If the status is failed, it tries roll back operations (if rollback is specified) and then sets up
-//     * for an abnormal exit
-//     */
-//    public boolean checkStatusAndAddStage(TargetImpl aTarget, /* RollBackAction rollback, */ String action, /* ConnectionSource dasConnection, */ DFDeploymentStatus currentStatus, boolean isStartPhase) {
-//        String statusMsg = getDeploymentStatusMessage(currentStatus, 
-//            isStartPhase);
-//        finalDeploymentStatus.addSubStage(currentStatus);
-//        if(statusMsg == null) {
-//            fireProgressEvent(StateType.RUNNING,
-//                                localStrings.getLocalString(
-//                                    "enterprise.deployment.client.action_completed", 
-//                                    "{0} completed successfully",
-//                                    action),
-//                                aTarget);
-//            return true;
-//        }
-////        if(rollback != null) {
-////            DFDeploymentStatus tmp = new
-////                        DFDeploymentStatus();
-////            if(!rollback.rollback(dasConnection, tmp)) {
-////                fireProgressEvent(StateType.RUNNING, 
-////                                localStrings.getString("enterprise.deployment.client.action_failed", "Rollback failed"),
-////                                        aTarget);
-////                tmp.setStageStatus(DFDeploymentStatus.FAILURE);
-////                tmp.setStageStatusMessage(localStrings.getString("enterprise.deployment.client.action_failed", "Rollback failed"));
-////            } else {
-////                fireProgressEvent(StateType.RUNNING, 
-////                                localStrings.getString("enterprise.deployment.client.action_completed", "Rollback"),
-////                                        aTarget);
-////                tmp.setStageStatus(DFDeploymentStatus.SUCCESS);
-////                tmp.setStageStatusMessage(localStrings.getString("enterprise.deployment.client.action_completed", "Rollback"));
-////            }
-////            finalDeploymentStatus.addSubStage(tmp);
-////        }
-//        setupForAbnormalExit(localStrings.getLocalString(
-//                    "enterprise.deployment.client.action_failed_with_message",
-//                    "{0} failed; {1}",
-//                    action, 
-//                    statusMsg),
-//                aTarget);
-//        return false;
-//    }
-    
-    public DFDeploymentStatus waitFor() {
-        DFDeploymentStatus status = null;
-        do {
-            try {
-                Thread.currentThread().sleep(100);
-            } catch (InterruptedException ie) {
-                // Exception swallowed deliberately
-            }
-            status = getCompletedStatus();
-        } while(status == null);
-        return status;
-        
     }
 }

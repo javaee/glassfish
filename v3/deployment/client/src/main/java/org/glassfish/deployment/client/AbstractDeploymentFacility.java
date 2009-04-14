@@ -246,7 +246,7 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
             po.setupForAbnormalExit(localStrings.getLocalString("enterprise.deployment.client.archive_not_specified", "Archive to be deployed is not specified at all."), domain);
             return po;
         }
-        File tmpFile = new File(source);
+        File tmpFile = new File(source.getSchemeSpecificPart());
         if (!tmpFile.exists()) {
             po.setupForAbnormalExit(localStrings.getLocalString("enterprise.deployment.client.archive_not_in_location", "Unable to find the archive to be deployed in specified location."), domain);
             return po;
@@ -258,7 +258,7 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
         boolean isDirectoryDeploy = tmpFile.isDirectory();
         try {
             if (deploymentPlan != null) {
-                File dp = new File(deploymentPlan);
+                File dp = new File(deploymentPlan.getSchemeSpecificPart());
                 if (!dp.exists()) {
                     po.setupForAbnormalExit(localStrings.getLocalString(
                             "enterprise.deployment.client.plan_not_in_location",
@@ -278,12 +278,19 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
             DFDeploymentStatus ds = commandRunner.run();
             DFDeploymentStatus mainStatus = ds.getMainStatus();
             if (mainStatus.getStatus() != DFDeploymentStatus.Status.FAILURE) {
-                String moduleID = mainStatus.getProperty(DFDeploymentProperties.NAME);
+                String moduleID = null;
+                for (Iterator subIter = ds.getSubStages(); subIter.hasNext();) {
+                    DFDeploymentStatus subStage =
+                        (DFDeploymentStatus) subIter.next();
+                    moduleID = subStage.getProperty(DFDeploymentProperties.NAME);
+                }
+                // TODO: support multiple targets
                 TargetModuleIDImpl[] targetModuleIDs = new TargetModuleIDImpl[targets.length];
                 int i = 0;
                 for (TargetImpl ti : po.toTargetImpl(targets)) {
                     targetModuleIDs[i++] = new TargetModuleIDImpl(ti, moduleID);
                 }
+
                 po.setupForNormalExit(localStrings.getLocalString("enterprise.deployment.client.deploy_application", "Deployment of application {0}", moduleID), domain, mainStatus, targetModuleIDs);
             } else {
                 po.setupForAbnormalExit(localStrings.getLocalString("enterprise.deployment.client.deploy_application_failed", "Deployment of application failed - {0}", mainStatus.getStageStatusMessage()), domain, mainStatus);
@@ -323,10 +330,6 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
         if (!isConnected()) {
             throw new IllegalStateException(localStrings.getLocalString("enterprise.deployment.client.disconnected_state", "Not connected to the Domain Admin Server"));
         }
-    }
-
-    public ClientConfiguration getClientConfiguration(TargetModuleID targetModuleID) {
-        throw new UnsupportedOperationException("Not supported");
     }
 
     /**
@@ -808,6 +811,19 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
             po.setupForAbnormalExit(localStrings.getLocalString("enterprise.deployment.client.undeploy_application_failed", "Undeployment failed - {0} ", ioex.toString()), domain, ioex);
             return po;
         }
+    }
+
+    /**
+     *  Exports the Client stub jars to the given location.
+     *  @param appName The name of the application or module.
+     *  @param destDir The directory into which the stub jar file
+     *  should be exported.
+     *  @return the absolute location to the main jar file.
+     */
+    public String exportClientStubs(String appName, String destDir) 
+        throws IOException {
+        getClientStubs(destDir, appName); 
+        return (destDir + appName + "Client.jar");
     }
 
     /**

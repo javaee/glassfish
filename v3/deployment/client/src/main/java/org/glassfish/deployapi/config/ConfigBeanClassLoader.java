@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -34,43 +34,31 @@
  * holder.
  */
 
-package org.glassfish.deployment.client;
+/*
+ * ConfigBeanClassLoader.java
+ *
+ * Created on August 27, 2002, 3:31 PM
+ */
 
-import javax.enterprise.deploy.spi.status.ProgressObject;
+package org.glassfish.deployapi.config;
+
+import javax.enterprise.deploy.model.DeployableObject;
 
 /**
- * This interface extends the JSR88 interface for providing 
- * deployment operations feedback and progress information. 
- * In particular, it allows to retrieve the complete JES 
- * deployment status object with all the phases information.
  *
- * @author Jerome Dochez
+ * @author  dochez
  */
-public abstract class DFProgressObject implements ProgressObject {
+public class ConfigBeanClassLoader extends ClassLoader {
     
-    /** 
-     * Once the progress object has reached a completed or 
-     * failed state, this API will permit to retrieve the 
-     * final status information for the deployment
-     * @return the deployment status
-     */
-    public abstract DFDeploymentStatus getCompletedStatus();
+    DeployableObject deployableObject;
     
-    /**
-     * Waits for the operation which this progress object is monitoring to 
-     * complete.
-     * @return the completed status
-     */
-    public DFDeploymentStatus waitFor() {
-        DFDeploymentStatus status = null;
-        do {
-            try {
-                Thread.currentThread().sleep(100);
-            } catch (InterruptedException ie) {
-                // Exception swallowed deliberately
-            }
-            status = getCompletedStatus();
-        } while(status == null);
-        return status;
+    /** Creates a new instance of ConfigBeanClassLoader */
+    public ConfigBeanClassLoader(DeployableObject deployableObject) {
+        this.deployableObject = deployableObject;
     }
+    
+    public Class findClass(String name) {
+        return deployableObject.getClassFromScope(name);
+    }
+    
 }

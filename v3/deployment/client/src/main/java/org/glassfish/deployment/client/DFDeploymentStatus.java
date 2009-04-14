@@ -65,14 +65,6 @@ public class DFDeploymentStatus implements java.io.Serializable {
 
 	/**
 	 * Possible status for a stage or overall deployment status
-	 */
-//	public static final int FAILURE = 0;
-//	public static final int WARNING = 1; 
-//	public static final int SUCCESS=2;
-//	public static final int NOTINITIALIZED = 3;
-	
-	/**
-	 * Possible status for a stage or overall deployment status
          * <p>
          * Note that ordering from worst to best simplifies comparisons among
          * Status values.  

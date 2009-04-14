@@ -41,7 +41,8 @@ public class TargetModuleIDImpl implements TargetModuleID {
     private TargetImpl target;
     private String moduleID;
     private TargetModuleIDImpl parent;
-    private TargetModuleIDImpl[] children;
+    private TargetModuleIDImpl[] children = new TargetModuleIDImpl[0];
+    private ModuleType moduleType;
     
     /**
      * Creates a new implementation object of TargetModuleID.
@@ -133,4 +134,43 @@ public class TargetModuleIDImpl implements TargetModuleID {
     public TargetModuleID[] getChildTargetModuleID() {
         return children;
     }
+
+    /**
+     * Add a child TargetModuleID to this TargetModuleID
+     */
+    public void addChildTargetModuleID(TargetModuleIDImpl child) {
+        TargetModuleIDImpl[] newChildren = 
+            new TargetModuleIDImpl[children.length+1];
+
+        System.arraycopy(children, 0, newChildren, 0, children.length);
+
+        newChildren[children.length] = child;
+
+        children = newChildren;
+
+        child.setParentTargetModuleID(this);
+    }
+
+    /**
+     * Sets the parent TargetModuleID
+     */
+    public void setParentTargetModuleID(TargetModuleIDImpl parent) {
+        this.parent = parent;
+    }
+
+    /**
+     * Sets the module type for this deployed module
+     * @param the module type
+     */
+    public void setModuleType(ModuleType moduleType) {
+        this.moduleType = moduleType;
+    }
+
+    /**
+     * @return the module type of this deployed module
+     */
+    public ModuleType getModuleType() {
+        return moduleType;
+    }
+
 }

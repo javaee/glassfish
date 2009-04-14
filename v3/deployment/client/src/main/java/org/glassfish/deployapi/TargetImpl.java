@@ -25,6 +25,8 @@ package org.glassfish.deployapi;
 import javax.enterprise.deploy.spi.Target;
 import org.glassfish.deployment.client.TargetOwner;
 
+import java.io.IOException;
+
 /**
  * Implements the Target interface as specified by JSR-88.
  * <p>
@@ -75,5 +77,17 @@ public class TargetImpl implements Target {
     
     public TargetOwner getOwner() {
         return owner;
+    }
+
+    /**
+     *  Exports the Client stub jars to the given location.
+     *  @param appName The name of the application or module.
+     *  @param destDir The directory into which the stub jar file
+     *  should be exported.
+     *  @return the absolute location to the main jar file.
+     */
+    public String exportClientStubs(String appName, String destDir) 
+        throws IOException {
+        return owner.exportClientStubs(appName, destDir);
     }
 }

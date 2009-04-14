@@ -26,6 +26,8 @@ import javax.enterprise.deploy.spi.Target;
 import javax.enterprise.deploy.spi.TargetModuleID;
 import javax.enterprise.deploy.spi.status.ClientConfiguration;
 
+import java.io.IOException;
+
 /**
  * Represents any type of owner of a Target.
  * <p>
@@ -56,18 +58,6 @@ public interface TargetOwner {
     public Target[] createTargets(String[] names);
     
     /**
-     * Returns a {@link ClientConfiguration} for the specified {@link TargetModuleID}.
-     * <p>
-     * Typically the owner of the Target implied by the TargetModuleID will 
-     * create the configuration.
-     * @param targetModuleID the representation of the module deployed to the 
-     * specified {@link Target}
-     * @return a new ClientConfiguration suitable for launching the corresponding
-     * app client
-     */
-    public ClientConfiguration getClientConfiguration(TargetModuleID targetModuleID);
-    
-    /**
      * Returns the Web URL for the specified module on the {@link Target}
      * implied by the TargetModuleID.
      * @param tmid
@@ -84,4 +74,13 @@ public interface TargetOwner {
      */
     public void setWebURL(TargetModuleID tmid, String webURL);
 
+    /**
+     *  Exports the Client stub jars to the given location.
+     *  @param appName The name of the application or module.
+     *  @param destDir The directory into which the stub jar file
+     *  should be exported.
+     *  @return the absolute location to the main jar file.
+     */
+    public String exportClientStubs(String appName, String destDir) 
+        throws IOException;
 }

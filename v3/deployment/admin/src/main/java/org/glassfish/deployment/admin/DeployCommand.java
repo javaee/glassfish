@@ -183,6 +183,9 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 name = archiveHandler.getDefaultApplicationName(archive);
             }
 
+            ActionReport.MessagePart part = report.getTopMessagePart();
+            part.addProperty("name", name);
+
             Properties undeployProps = handleRedeploy(name, report);
 
             // clean up any left over repository files

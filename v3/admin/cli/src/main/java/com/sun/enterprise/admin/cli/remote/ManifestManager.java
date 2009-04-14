@@ -123,7 +123,8 @@ class ManifestManager implements ResponseManager {
         if(atts == null)
             return;
 
-        processProps(prefix, atts, sb);
+        // we probably should not show props to the user
+        // processProps(prefix, atts, sb);
         processChildren(prefix, key, atts, sb);
     }
 

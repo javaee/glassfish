@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -34,43 +34,35 @@
  * holder.
  */
 
-package org.glassfish.deployment.client;
 
-import javax.enterprise.deploy.spi.status.ProgressObject;
+package org.glassfish.deployapi.config;
+
+import javax.enterprise.deploy.spi.DConfigBeanRoot;
+import javax.enterprise.deploy.shared.ModuleType;
 
 /**
- * This interface extends the JSR88 interface for providing 
- * deployment operations feedback and progress information. 
- * In particular, it allows to retrieve the complete JES 
- * deployment status object with all the phases information.
+ * This factory class is responsible for creating DConfigBeanRoot instances
  *
  * @author Jerome Dochez
  */
-public abstract class DFProgressObject implements ProgressObject {
+public class DConfigBeanRootFactoryImpl {
     
-    /** 
-     * Once the progress object has reached a completed or 
-     * failed state, this API will permit to retrieve the 
-     * final status information for the deployment
-     * @return the deployment status
-     */
-    public abstract DFDeploymentStatus getCompletedStatus();
-    
+    /** Creates a new instance of DConfigBeanRootFactory */
+    private DConfigBeanRootFactoryImpl() {
+    }
+  
     /**
-     * Waits for the operation which this progress object is monitoring to 
-     * complete.
-     * @return the completed status
+     * @return the right DConfigBeanRoot implementation depending on the 
+     * passed module type
+     * 
+     * @param the module type 
+     * @return the correspondind DConfigBeanRoot instance
      */
-    public DFDeploymentStatus waitFor() {
-        DFDeploymentStatus status = null;
-        do {
-            try {
-                Thread.currentThread().sleep(100);
-            } catch (InterruptedException ie) {
-                // Exception swallowed deliberately
-            }
-            status = getCompletedStatus();
-        } while(status == null);
-        return status;
+    public static DConfigBeanRoot getDConfigBeanRootForType(ModuleType moduleType) {
+        if (moduleType==null) {
+            return null;
+        } 
+        return null;
     }
 }
+

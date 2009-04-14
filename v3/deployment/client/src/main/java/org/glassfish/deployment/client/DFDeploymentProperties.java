@@ -79,15 +79,6 @@ public class DFDeploymentProperties extends Properties {
         setProperty(REDEPLOY, Boolean.valueOf(redeploy).toString());
     }
 
-    public String getArchiveName() throws IllegalArgumentException{
-        return getProperty(ARCHIVE_NAME, null);
-    }
-    
-    public void setArchiveName(String archiveName) {
-        if(archiveName != null)
-            setProperty(ARCHIVE_NAME, archiveName);
-    }
-        
     public boolean getForce() {
         return Boolean.valueOf(getProperty(FORCE,DEFAULT_FORCE)).booleanValue();
     }
@@ -154,7 +145,7 @@ public class DFDeploymentProperties extends Properties {
             setProperty(CONTEXT_ROOT, contextRoot);
     }
     
-    public String getName(String filePath) {
+    public String getName() {
         return getProperty(NAME);
     }
     
