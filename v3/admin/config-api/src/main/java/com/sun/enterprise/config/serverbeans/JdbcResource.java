@@ -51,6 +51,7 @@ import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.PropertyBag;
+import org.glassfish.api.admin.generic.Create;
 
 import org.glassfish.quality.ToDo;
 
@@ -66,9 +67,10 @@ import javax.validation.constraints.NotNull;
 }) */
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.JDBCResourceConfig")
 @Configured
+@Create(value="create-jdbc-resource", parentType=Resources.class)
 public interface JdbcResource extends ConfigBeanProxy, Injectable, Resource, PropertyBag, BindableResource {
     
-    /**
+    /**              
      * Gets the value of the poolName property.
      *
      * @return possible object is

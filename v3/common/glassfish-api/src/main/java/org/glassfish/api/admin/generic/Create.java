@@ -53,6 +53,10 @@ public @interface Create {
     String value();
 
     @InhabitantMetadata
-    Class targetType() default Void.class;
+    Class parentType() default Void.class;
+
+    String parentAccessor() default "";
+
+    Class<? extends ConfigResolver> resolver() default TargetResolver.class;
 
 }
