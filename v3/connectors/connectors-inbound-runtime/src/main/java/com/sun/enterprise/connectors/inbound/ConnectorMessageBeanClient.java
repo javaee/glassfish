@@ -327,14 +327,36 @@ public final class ConnectorMessageBeanClient
      */
     public MessageEndpoint
     createEndpoint(XAResource xa) throws UnavailableException {
-
-        // This is a temperory workaround for blocking the the create enpoint
+        // This is a temporary workaround for blocking the the create enpoint
         // until the deployment completes.  One thread would wait for maximum a
         // a minute.
+        return createEndpoint(xa, WAIT_TIME);
+    }
+
+    /**
+     * Checks whether the message delivery is transacted for the method.
+     *
+     * @return true or false.
+     */
+    public boolean isDeliveryTransacted(Method method) {
+        return messageBeanPM_.isDeliveryTransacted(method);
+    }
+
+    /**
+     * @return beanID of the message bean client
+     */
+    public String toString() {
+        return beanID_;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public MessageEndpoint createEndpoint(XAResource xaResource, long timeout) throws UnavailableException {
         synchronized (this) {
             if (myState == BLOCKED) {
                 try {
-                    wait(WAIT_TIME);
+                    wait(timeout);
                 } catch (Exception e) {
                     // This exception should not affect the functionality.
                 } finally {
@@ -355,7 +377,7 @@ public final class ConnectorMessageBeanClient
 
         MessageEndpoint endpoint = null;
         try {
-            ResourceHandle resourceHandle = allocator_.createResource(xa);
+            ResourceHandle resourceHandle = allocator_.createResource(xaResource);
 
             MessageBeanListener listener =
                     messageBeanPM_.createMessageBeanListener(resourceHandle);
@@ -397,28 +419,6 @@ public final class ConnectorMessageBeanClient
             throw (UnavailableException)
                     (new UnavailableException()).initCause(ex);
         }
-
         return endpoint;
-    }
-
-    /**
-     * Checks whether the message delivery is transacted for the method.
-     *
-     * @return true or false.
-     */
-    public boolean isDeliveryTransacted(Method method) {
-        return messageBeanPM_.isDeliveryTransacted(method);
-    }
-
-    /**
-     * @return beanID of the message bean client
-     */
-    public String toString() {
-        return beanID_;
-    }
-
-    public MessageEndpoint createEndpoint(XAResource xaResource, long timeout) throws UnavailableException {
-        //TODO V3 implementation required
-        return null;
     }
 }
