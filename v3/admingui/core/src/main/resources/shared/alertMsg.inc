@@ -45,9 +45,9 @@
             setAttribute(key="alertSummary" value="$requestParameter{alertSummary}");
             setAttribute(key="alertDetail" value="$requestParameter{alertDetail}");
           }
-	  htmlEscape(value="#{alertType}" value=>$attribute{alertType});
-	  htmlEscape(value="#{alertSummary}" value=>$attribute{alertSummary});
-	  htmlEscape(value="#{alertDetail}" value=>$attribute{alertDetail});
+	  htmlEscape(value="#{alertType}" result="#{requestScope.alertType}");
+	  htmlEscape(value="#{alertSummary}" result="#{requestScope.alertSummary}");
+	  htmlEscape(value="#{alertDetail}" result="#{requestScope.alertDetail}");
         />
 </event>
 
