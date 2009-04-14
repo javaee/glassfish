@@ -39,28 +39,24 @@
 <sun:tabSet id="webContainerTabs" immediate="$boolean{true}" selected="#{sessionScope.webContainerTabs}">
 
 <!-- comment out till we convert the general and Manager page -->
-<!--
     <sun:tab id="general" immediate="$boolean{true}" text="$resource{i18n.common.General}" >
         <!command
         setSessionAttribute(key="webContainerTabs" value="general");
         redirect(page="#{request.contextPath}/web/configuration/webContainerGeneral.jsf?configName=#{configName}");
         />       
     </sun:tab>
--->
     <sun:tab id="sessionTab" immediate="$boolean{true}" text="$resource{i18n.webContainer.sessionProp}" >
         <!command
         setSessionAttribute(key="webContainerTabs" value="sessionTab");
         redirect(page="#{request.contextPath}/web/configuration/webContainerSession.jsf?configName=#{configName}");
         />
     </sun:tab>
-<!--
     <sun:tab id="managerTab" immediate="$boolean{true}" text="$resource{i18n.webContainer.managerProp}" >
         <!command
         setSessionAttribute(key="webContainerTabs" value="managerTab");
         redirect(page="#{request.contextPath}/web/configuration/webContainerManager.jsf?configName=#{configName}");
         />
     </sun:tab>
--->
     <sun:tab id="storeTab" immediate="$boolean{true}" text="$resource{i18n.webContainer.storeProp}" >
         <!command
         setSessionAttribute(key="webContainerTabs" value="storeTab");

@@ -43,7 +43,7 @@
 <!define name="content">
 <event>
         <!beforeCreate
-            setSessionAttribute(key="webContainerTabs" value="webContainer");
+            setSessionAttribute(key="webContainerTabs" value="managerTab");
             getRequestValue(key="configName" value=>$page{configName} default="server-config");
             getWebContainerGeneralProps(
                 ConfigName="#{configName}", 
