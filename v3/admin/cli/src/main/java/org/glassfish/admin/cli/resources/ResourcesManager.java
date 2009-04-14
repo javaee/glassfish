@@ -46,9 +46,6 @@ import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Server;
 import java.util.HashMap;
 import java.util.Properties;
-import org.glassfish.admin.cli.resources.ResourceManager;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
 
 /**
  * This class serves as the API to creating new resources when an xml file 
@@ -56,19 +53,15 @@ import org.jvnet.hk2.annotations.Service;
  * 
  * @author PRASHANTH ABBAGANI
  */
-@Service(name="resources-manager")
-public class ResourcesManager implements ResourcesManagerContract {
-
-    @Inject
-    private ResourceFactory resourceFactory;
+public class ResourcesManager {
 
      /**
      * Creating resources from sun-resources.xml file. This method is used by 
      * the admin framework when the add-resources command is used to create
      * resources
      */
-    public ArrayList createResources(Resources resources, String resourceXMLFile, Server targetServer)
-                                                            throws Exception {
+    static ArrayList createResources(Resources resources, String resourceXMLFile,
+            Server targetServer, ResourceFactory resourceFactory) throws Exception {
         ArrayList results = new ArrayList();
         ResourcesXMLParser resourcesParser =
             new ResourcesXMLParser(resourceXMLFile);

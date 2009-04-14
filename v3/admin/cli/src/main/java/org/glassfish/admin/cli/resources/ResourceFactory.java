@@ -36,13 +36,13 @@
 
 package org.glassfish.admin.cli.resources;
 
+import org.glassfish.api.I18n;
 import org.glassfish.resource.common.Resource;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-
-import org.glassfish.api.I18n;
-import org.glassfish.admin.cli.resources.ResourceManager;
+import org.jvnet.hk2.component.PerLookup;
 
 /**
  *
@@ -51,13 +51,14 @@ import org.glassfish.admin.cli.resources.ResourceManager;
  * Factory class which returns the appropriate ResourceManager
  */
 @Service(name="resource-factory")
+@Scoped(PerLookup.class)
 @I18n("add.resources")
-public class ResourceFactory implements ResourceFactoryContract {
+public class ResourceFactory {
 
     @Inject
     private Habitat habitat;
 
-    public ResourceManager getResourceManager(Resource resource) {
+    ResourceManager getResourceManager(Resource resource) {
         String resourceType = resource.getType();
 
         ResourceManager resourceManager = null;

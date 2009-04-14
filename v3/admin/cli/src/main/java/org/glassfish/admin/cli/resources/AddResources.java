@@ -35,7 +35,6 @@
  */
 package org.glassfish.admin.cli.resources;
 
-import org.glassfish.admin.cli.resources.ResourcesManager;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.admin.AdminCommand;
@@ -82,7 +81,7 @@ public class AddResources implements AdminCommand {
     Domain domain;
 
     @Inject
-    ResourcesManager resourcesManager;
+    ResourceFactory resourceFactory;
     
     /**
      * Executes the command with the command parameters passed as Properties
@@ -105,8 +104,8 @@ public class AddResources implements AdminCommand {
         }
         
         try {
-            final ArrayList results = resourcesManager.createResources(
-                    resources, xmlFileName, targetServer);
+            final ArrayList results = ResourcesManager.createResources(
+                    resources, xmlFileName, targetServer, resourceFactory);
             final Iterator resultsIter = results.iterator();
             report.getTopMessagePart().setChildrenType("Command");
             boolean isSuccess = false;
