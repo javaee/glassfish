@@ -41,10 +41,7 @@ import org.glassfish.api.admin.config.Property;
 import com.sun.enterprise.connectors.ConnectorDescriptorInfo;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.deploy.shared.FileArchive;
-import com.sun.enterprise.deployment.ConnectionDefDescriptor;
-import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.enterprise.deployment.EnvironmentProperty;
-import com.sun.enterprise.deployment.OutboundResourceAdapter;
+import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.archivist.ConnectorArchivist;
 import com.sun.enterprise.deployment.deploy.shared.MemoryMappedArchive;
 import com.sun.logging.LogDomains;
@@ -265,5 +262,34 @@ public class ConnectorDDTransformUtils {
         }
         return null;
     }
+
+    /**
+     *  Returns all the message listeners present in the connectorDescriptor
+     *  which abstracts the ra.xml
+     *  @param desc connectorDescriptor which abstracts the ra.xml
+     *  @return Array of MessageListener objects
+     */
+
+     public MessageListener[] getMessageListeners(ConnectorDescriptor desc) {
+
+         InboundResourceAdapter inboundRA = null;
+         Set messageListenerSet = null;
+         if(desc != null &&
+                 (inboundRA = desc.getInboundResourceAdapter()) != null) {
+             messageListenerSet = inboundRA.getMessageListeners();
+         }
+
+         if(messageListenerSet == null) {
+             return null;
+         }
+         int size = messageListenerSet.size();
+         MessageListener[] messageListeners =
+                  new MessageListener[size];
+         Iterator iter = messageListenerSet.iterator();
+         for(int i=0;i<size;++i){
+             messageListeners[i] = (MessageListener)iter.next();
+         }
+         return messageListeners;
+     }
 }
 
