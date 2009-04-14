@@ -21,6 +21,7 @@ import org.jvnet.hk2.config.TransactionFailure;
  *
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  */
+@Ignore
 public class JdbcConnectionPoolValidationTest extends ConfigApiTest {
 
     private JdbcConnectionPool pool = null;

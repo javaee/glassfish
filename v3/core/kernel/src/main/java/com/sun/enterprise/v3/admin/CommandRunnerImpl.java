@@ -60,6 +60,7 @@ import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.ComponentException;
+import com.sun.hk2.component.InjectionResolver;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.InjectionManager;
 import org.jvnet.hk2.component.UnsatisfiedDepedencyException;
@@ -80,6 +81,8 @@ public class CommandRunnerImpl implements CommandRunner {
     public Logger logger = Logger.getLogger(CommandRunnerImpl.class.getName());
 
     private static final String ASADMIN_CMD_PREFIX = "AS_ADMIN_";
+    public final InjectionManager injectionMgr = new InjectionManager();
+    
     @Inject
     Habitat habitat;
 
@@ -120,7 +123,8 @@ public class CommandRunnerImpl implements CommandRunner {
      * @param commandName the command to execute
      * @param parameters name/value pairs to be passed to the command
      * @param report will hold the result of the command's execution
-     * @param uploadedFiles files uploaded from the client
+     * @param inboundPayload files uploaded from the client
+     * @param outboundPayload files downloaded to the client
      */
     public void doCommand(final String commandName, final Properties parameters,
             final ActionReport report, Payload.Inbound inboundPayload, Payload.Outbound outboundPayload) {
@@ -160,14 +164,14 @@ public class CommandRunnerImpl implements CommandRunner {
             return report;
         }
         
-        InjectionManager<Param> injectionMgr =  new InjectionManager<Param>() {
+        InjectionResolver<Param> injectionTarget =  new InjectionResolver<Param>(Param.class) {
 
             @Override
-            protected boolean isOptional(Param annotation) {
+            public boolean isOptional(Param annotation) {
                 return annotation.optional();
             }
 
-            protected Object getValue(Object component, AnnotatedElement target, Class type) throws ComponentException {
+            public Object getValue(Object component, AnnotatedElement target, Class type) throws ComponentException {
 
                 // look for the name in the list of parameters passed.
                 Param param = target.getAnnotation(Param.class);
@@ -197,7 +201,7 @@ public class CommandRunnerImpl implements CommandRunner {
                 return null;
             }
         };
-        return doCommand(commandName, command, injectionMgr, report, inboundPayload, outboundPayload);
+        return doCommand(commandName, command, injectionTarget, report, inboundPayload, outboundPayload);
 
     }
 
@@ -208,13 +212,14 @@ public class CommandRunnerImpl implements CommandRunner {
      * @param command the command service to execute
      * @param injector injector capable of populating the command parameters
      * @param report will hold the result of the command's execution
-     * @param uploadedFiles files uploaded from the client
+     * @param inboundPayload files uploaded from the client
+     * @param outboundPayload files downloaded to the client
      */
 
     public ActionReport doCommand(
             final String commandName,
             final AdminCommand command,
-            final InjectionManager<Param> injector,
+            final InjectionResolver<Param> injector,
             final ActionReport report,
             final Payload.Inbound inboundPayload,
             final Payload.Outbound outboundPayload) {
@@ -236,7 +241,7 @@ public class CommandRunnerImpl implements CommandRunner {
 
         // inject
         try {
-            injector.inject(command, Param.class);
+            injectionMgr.inject(command, injector);
         } catch (UnsatisfiedDepedencyException e) {
             Param param = e.getUnsatisfiedElement().getAnnotation(Param.class);
             String paramName = getParamName(param, e.getUnsatisfiedElement());
@@ -344,7 +349,8 @@ public class CommandRunnerImpl implements CommandRunner {
      * @param command the command service to execute
      * @param parameters name/value pairs to be passed to the command
      * @param report will hold the result of the command's execution
-     * @param uploadedFiles files uploaded from the client
+     * @param inboundPayload files uploaded from the client
+     * @param outboundPayload files downloaded to the client
      */
     
     public ActionReport doCommand(
@@ -393,14 +399,13 @@ public class CommandRunnerImpl implements CommandRunner {
         }
 
         // initialize the injector.
-        InjectionManager<Param> injectionMgr =  new InjectionManager<Param>() {
+        InjectionResolver<Param> injectionMgr =  new InjectionResolver<Param>(Param.class) {
 
-            @Override
-            protected boolean isOptional(Param annotation) {
+            public boolean isOptional(Param annotation) {
                 return annotation.optional();
             }
 
-            protected Object getValue(Object component, AnnotatedElement target, Class type) throws ComponentException {
+            public Object getValue(Object component, AnnotatedElement target, Class type) throws ComponentException {
                 // look for the name in the list of parameters passed.
                 Param param = target.getAnnotation(Param.class);
                 String acceptable = param.acceptableValues();

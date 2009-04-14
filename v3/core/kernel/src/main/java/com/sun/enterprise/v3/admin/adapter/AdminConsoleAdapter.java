@@ -443,7 +443,9 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             isOK = true; // FIXME: I don't think this is good enough
             setStateMsg(AdapterState.APPLICATION_INSTALLED_BUT_NOT_LOADED);
         } else if (warFile.exists()) {
-            setStateMsg(AdapterState.DOWNLOADED);
+            if (logger.isLoggable(Level.FINE)) {
+                setStateMsg(AdapterState.DOWNLOADED);
+            }
             isOK = true;
         } else {
             setStateMsg(AdapterState.APPLICATION_NOT_INSTALLED);
