@@ -75,8 +75,12 @@
         <welcome-file>index.jsf</welcome-file>
     </welcome-file-list>
     <error-page>
-		<exception-type>javax.faces.application.ViewExpiredException</exception-type>
+	<exception-type>javax.faces.application.ViewExpiredException</exception-type>
         <location>/</location>
+    </error-page>
+    <error-page>
+	<error-code>403</error-code>
+	<location>/accessDenied.jsf</location>
     </error-page>
     <security-constraint>
         <web-resource-collection>
@@ -113,6 +117,7 @@
             <url-pattern>/theme/com/*</url-pattern>
             <url-pattern>/theme/org/*</url-pattern>        
             <url-pattern>/theme/woodstock4_3/*</url-pattern>
+	    <url-pattern>/accessDenied.jsf</url-pattern>
             <!-- We need to make this more secure -->
             <url-pattern>/resource/*</url-pattern>
             <!--<url-pattern>/resource/theme/*</url-pattern>-->           		
