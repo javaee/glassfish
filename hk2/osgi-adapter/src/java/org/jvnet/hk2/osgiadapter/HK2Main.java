@@ -186,14 +186,14 @@ public class HK2Main extends Main implements
                     // we may need to find a better way to get a potential name.
                     String name = (String) reference.getProperty("org.springframework.osgi.bean.name");
                     habitat.addIndex(new ExistingSingletonInhabitant(object), contractName, name);
-                    logger.logp(Level.INFO, "HK2Main$HK2ServiceTrackerCustomizer",
+                    logger.logp(Level.FINE, "HK2Main$HK2ServiceTrackerCustomizer",
                             "addingService", "registering service = {0}, contract = {1}, name = {2}", new Object[]{
                             object, contractName, name});
                 }
             } else {
                 // this service does not implement a specific contract, let's register it by its type.
                 habitat.add(new ExistingSingletonInhabitant(object));
-                logger.logp(Level.INFO, "HK2Main$HK2ServiceTrackerCustomizer",
+                logger.logp(Level.FINE, "HK2Main$HK2ServiceTrackerCustomizer",
                         "addingService", "registering service = {0}", object);
             }
             return object;
@@ -208,7 +208,7 @@ public class HK2Main extends Main implements
             if (contractNames != null && contractNames.length > 0) {
                 for (String contractName : contractNames) {
                     habitat.removeIndex(contractName, service);
-                    logger.logp(Level.INFO, "HK2Main$HK2ServiceTrackerCustomizer",
+                    logger.logp(Level.FINE, "HK2Main$HK2ServiceTrackerCustomizer",
                             "removingService", "removing service = {0}, contract = {1}",
                             new Object[]{service, contractName});
 

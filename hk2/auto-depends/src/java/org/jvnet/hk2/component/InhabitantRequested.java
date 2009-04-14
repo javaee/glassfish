@@ -34,15 +34,22 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.annotations;
+package org.jvnet.hk2.component;
 
 /**
- * Denotes the service provider implementation. Sometimes a generic implementation
- * of a contract can be used and the annotation specializes such service through
- * its settings.
+ * Services implementation may require access to the inhabitant object
+ * wrapping them. This is useful to access information and metadata associated
+ * with this service declaration.
  *
  * @author Jerome Dochez
  */
-public @interface ServiceProvider {
-    Class<?> value();
+public interface InhabitantRequested {
+
+    /**
+     * Sets the inhabitant instance wrapping this instance. Called after
+     * the object in constructed but before the postContruct call.
+     *
+     * @param inhabitant instance owning this service.
+     */
+    public void setInhabitant(Inhabitant inhabitant);
 }

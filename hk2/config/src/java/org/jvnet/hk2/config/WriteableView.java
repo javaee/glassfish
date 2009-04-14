@@ -63,7 +63,7 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
     private final Map<String, PropertyChangeEvent> changedAttributes;
     private final Map<String, ProtectedList> changedCollections;
     Transaction currentTx;
-    private static Validator beanValidator;
+    private static Validator beanValidator=null;
     
     public WriteableView(ConfigBeanProxy readView) {
         this.bean = (ConfigBean) ((ConfigView) Proxy.getInvocationHandler(readView)).getMasterView();
