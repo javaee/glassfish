@@ -37,7 +37,7 @@
 
 <!initPage
     setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
-	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+	setResourceBundle(key="help" bundle="org.glassfish.web.admingui.Helplinks");
 />
 //<sun:page id="page1">
 <!composition template="/layout.xhtml"  guiTitle="$resource{i18n.access.AccessLog}" >
@@ -45,14 +45,12 @@
     <event>
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config" );
-        setSessionAttribute(key="httpServiceTabs" value="accessLog");
         getAccessLogSettings(ConfigName="#{configName}", Rotation=>$attribute{rotation}, Policy=>$attribute{policy}, Interval=>$attribute{interval}, Suffix=>$attribute{suffix}, Format=>$attribute{format});
      />
      </event>
 #include "/shared/restart.inc"
             <sun:form id="propertyForm">
-    #include "/shared/treeBreadcrumbs.inc"
-#include "httpServiceTabs.inc"
+    //#include "/shared/treeBreadcrumbs.inc"
 #include "/shared/alertMsg.inc"
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18n.access.AccessLog}"

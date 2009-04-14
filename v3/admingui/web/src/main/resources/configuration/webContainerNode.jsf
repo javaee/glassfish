@@ -45,42 +45,25 @@
     url="/web/configuration/webContainerGeneral.jsf?configName=server-config"
     imageURL="/resource/web/images/container.gif"
 />
+
+<sun:treeNode
+    id="accessLog"
+    text="$resource{i18n.tree.accessLog}"
+    url="/web/configuration/accessLog.jsf?configName=server-config"
+    imageURL="/resource/web/images/httpservice.gif"
+/>
     
-    <sun:treeNode id="httpService"
-        text="$resource{i18n.tree.httpService}"
-        url="/web/configuration/httpService.jsf?configName=#{configName}"
-        imageURL="/resource/web/images/httpservice.gif"
-        >
-	<!facet image>
-	    <sun:imageHyperlink imageURL="/resource/web/images/httpservice.gif" url="/web/configuration/httpListeners.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
-	</facet>
-        <dynamicTreeNode id="httpListeners"
-            treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-            objectName="amx:j2eeType=X-HTTPServiceConfig,name=na,X-ConfigConfig=$pageSession{configName}"   
-            methodName="getHTTPListenerConfigMap"
-            childImageURL="/resource/web/images/http.gif"
-            childExpanded="$boolean{false}"
-            childURL="/web/configuration/httpListenerEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"                        
-            text="$resource{i18n.tree.httpListeners}"
-            url="/web/configuration/httpListeners.jsf?configName=#{configName}"
-            >
-            <!facet image>
-                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/configuration/httpListeners.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
-            </facet>
-        </dynamicTreeNode>
-    
-        <dynamicTreeNode id="virtualServers"
-            treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-            objectName="amx:j2eeType=X-HTTPServiceConfig,name=na,X-ConfigConfig=$pageSession{configName}"  
-            methodName="getVirtualServerConfigMap"
-            childImageURL="/resource/web/images/http.gif"
-            childExpanded="$boolean{false}"
-            childURL="/web/configuration/virtualServerEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"                        
-            text="$resource{i18n.tree.virtualServers}"
-            url="/web/configuration/virtualServers.jsf?configName=#{configName}"
-            >
-            <!facet image>
-                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/configuration/virtualServers.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
-            </facet>
-        </dynamicTreeNode>
-    </sun:treeNode>
+<dynamicTreeNode id="virtualServers"
+    treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
+    objectName="amx:j2eeType=X-HTTPServiceConfig,name=na,X-ConfigConfig=$pageSession{configName}"
+    methodName="getVirtualServerConfigMap"
+    childImageURL="/resource/web/images/http.gif"
+    childExpanded="$boolean{false}"
+    childURL="/web/configuration/virtualServerEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
+    text="$resource{i18n.tree.virtualServers}"
+    url="/web/configuration/virtualServers.jsf?configName=#{configName}"
+    >
+    <!facet image>
+        <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/configuration/virtualServers.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
+    </facet>
+</dynamicTreeNode>
