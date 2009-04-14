@@ -82,7 +82,7 @@ public class UniformLogFormatter extends Formatter {
 
     // it would be lovely to use injection here, but this lifecycle
     // of this formatter is handled by the jdk.
-    public static Branding branding;
+    public static Branding branding = null;
 
     static {
         String logSource = System.getProperty(

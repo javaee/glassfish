@@ -37,17 +37,20 @@ package org.glassfish.config.support;
 
 import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
 
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamException;
 import java.beans.PropertyChangeEvent;
 import java.util.List;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.util.concurrent.ExecutorService;
 import java.io.IOException;
 
 import com.sun.hk2.component.ExistingSingletonInhabitant;
+import com.sun.logging.LogDomains;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.appserv.server.util.Version;
 
 /**
  * plug our Dom implementation
@@ -56,6 +59,8 @@ import com.sun.hk2.component.ExistingSingletonInhabitant;
  * 
  */
 public class GlassFishDocument extends DomDocument {
+
+    Logger logger = LogDomains.getLogger(GlassFishDocument.class, LogDomains.CORE_LOGGER);
 
     public GlassFishDocument(final Habitat habitat, final ExecutorService executor) {
         super(habitat);
@@ -72,11 +77,19 @@ public class GlassFishDocument extends DomDocument {
             public void transactionCommited(List<PropertyChangeEvent> changes) {
                 for (ConfigurationPersistence pers : habitat.getAllByContract(ConfigurationPersistence.class)) {
                     try {
+                        if (doc.getRoot().getProxyType().equals(Domain.class)) {
+                            Dom domainRoot = doc.getRoot();
+                            domainRoot.attribute("version", Version.getBuildVersion());
+                        }
                         pers.save(doc);
                     } catch (IOException e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        logger.log(Level.SEVERE, "GlassFishDocument.IOException",
+                                new String[] { e.getMessage() });
+                        logger.log(Level.FINE, e.getMessage(), e);
                     } catch (XMLStreamException e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        logger.log(Level.SEVERE, "GlassFishDocument.XMLException",
+                                new String[] { e.getMessage() });
+                        logger.log(Level.SEVERE, e.getMessage(), e);
                     }
                 }
             }

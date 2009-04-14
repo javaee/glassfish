@@ -36,7 +36,6 @@
 
 package com.sun.enterprise.deployment.util;
 
-import javax.enterprise.deploy.shared.ModuleType;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -109,11 +108,7 @@ public class XModuleType {
      */
     @Override
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (null == o) return false;
-        if (getClass() != o.getClass()) return false;
-
-        return index == (((XModuleType) o).index);
+        return this==o || (o!=null && getClass()==o.getClass() && index.equals((((XModuleType) o).index)));
     }
 
     /**
