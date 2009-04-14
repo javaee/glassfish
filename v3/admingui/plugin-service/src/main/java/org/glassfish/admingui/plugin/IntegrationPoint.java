@@ -85,46 +85,11 @@ import java.io.Serializable;
  *  @author Ken Paulsen	(ken.paulsen@sun.com)
  */
 @Configured
-public class IntegrationPoint implements Serializable {
+public class IntegrationPoint implements Serializable, Cloneable {
     /**
      *	<p> Default constructor.</p>
      */
     public IntegrationPoint() {
-    }
-
-    /**
-     *	<p> This constructor is a hack work-a-round for ClassLoader issues that
-     *	    I'm waiting for to be worked out.  This implementation will copy
-     *	    values from the Object via reflection.  It is expected that the
-     *	    Object be an instanceof IntegrationPoint, however, it may be loaded
-     *	    from a different ClassLoader (which prevents casting b/c of a
-     *	    CastClassException).
-     */
-    public IntegrationPoint(Object obj) {
-	this.id = (String) invokeGetter(obj, "getId");
-	this.type = (String) invokeGetter(obj, "getType");
-	this.parentId = (String) invokeGetter(obj, "getParentId");
-	this.content = (String) invokeGetter(obj, "getContent");
-	try {
-	this.priority = Integer.parseInt("" + invokeGetter(obj, "getPriority"));
-	} catch (Exception ex) {
-	    // Ignore
-	}
-	this.configId = (String) invokeGetter(obj, "getConsoleConfigId");
-    }
-
-    /**
-     *	<p> Temporary Reflection Method.</p>
-     */
-    private Object invokeGetter(Object obj, String method) {
-	Object val = null;
-	try {
-	    val = obj.getClass().getMethod(method).invoke(obj);
-	} catch (Exception ex) {
-	    // ignore
-	    ex.printStackTrace();
-	}
-	return val;
     }
 
 // FIXME: Implement event / handler declarations
