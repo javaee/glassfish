@@ -41,6 +41,9 @@ import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import org.glassfish.security.common.PrincipalImpl;
 import org.glassfish.security.common.Group;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.logging.LogDomains;
 
@@ -59,14 +62,15 @@ import java.util.logging.Level;
  * @since GlassFish v3
  */
 @Service
+@Scoped(PerLookup.class)
 public class WorkContextHandler implements com.sun.appserv.connectors.internal.api.WorkContextHandler {
 
-    //TODO V3 logstrings for entire class
     private static final List<Class<? extends WorkContext>> containerSupportedContexts =
             new ArrayList<Class<? extends WorkContext>>();
     private static final Logger logger =
             LogDomains.getLogger(WorkCoordinator.class, LogDomains.RESOURCE_BUNDLE);
-
+    @Inject
+    private ConnectorRuntime runtime = null;
 
     static {
         containerSupportedContexts.add(TransactionContext.class);
@@ -78,15 +82,15 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
         containerSupportedContexts.add(CustomWorkContext_D.class);
     }
 
-    private ConnectorRuntime runtime = null;
-
     public WorkContextHandler(){
     }
-    
+
+    //TODO V3 avoid this constructor ?
     public WorkContextHandler(ConnectorRuntime runtime) {
         this.runtime = runtime;
     }
 
+    //TODO V3 setting scope as per-lookup and this variable seems to cache over multiple invocations ?
     private Set<WorkContext> validContexts = new HashSet<WorkContext>();
 
     /**
@@ -113,7 +117,7 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
      * @param workContextClassName work context class name
      * @return boolean indicating whether the workContextClass is supported or not
      */
-    private static boolean canContainerHandleSameContextType(String workContextClassName) {
+    private boolean canContainerHandleSameContextType(String workContextClassName) {
         boolean result = false;
         for (Class workContextClass : containerSupportedContexts) {
             //TODO JSR-322-WORK-CONTEXT : Still need to do class.equals () ??
@@ -144,7 +148,7 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
      * @param contextClassName work context class name
      * @return boolean indicating whether the contextClass is supported or not
      */
-    public static boolean canContainerHandleContext(String contextClassName) {
+    public boolean canContainerHandleContext(String contextClassName) {
         boolean result = false;
 
         //JSR-322-WORK-CONTEXT First check whether exact 'context-type' is supported.
@@ -170,9 +174,8 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
         return result;
     }
 
-    private static Class loadClass(String contextClassName) throws ClassNotFoundException {
-        //TODO V3 not a clean way ?
-        return Thread.currentThread().getContextClassLoader().loadClass(contextClassName);
+    private Class loadClass(String contextClassName) throws ClassNotFoundException {
+        return runtime.getConnectorClassLoader().loadClass(contextClassName);
     }
 
     /**
