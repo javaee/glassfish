@@ -333,10 +333,7 @@ public class UtilHandlers {
         @HandlerInput(name="desc", type=String.class),
         @HandlerInput(name="class", type=String.class, required=true),
         @HandlerInput(name="method", type=String.class, required=true)
-	},
-    output={
-        @HandlerOutput(name="output", type=String.class)
-    })
+	})
     public static void addHandler(HandlerContext handlerCtx) {
 	String id = (String) handlerCtx.getInputValue("id");
 	String desc = (String) handlerCtx.getInputValue("desc");
