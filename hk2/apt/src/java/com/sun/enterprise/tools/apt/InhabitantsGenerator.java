@@ -157,6 +157,73 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
             descriptor.put(d.getQualifiedName(),getInhabitantDeclaration(a,d));
         }
 
+        public void visitInterfaceDeclaration(InterfaceDeclaration d) {
+            if (debug) {
+                env.getMessager().printNotice("Visiting " + d.getQualifiedName());
+            }
+
+            // check if this class has annotation that has InhabitantAnnotation meta-annotation.
+            InhabitantAnnotation ia=null;
+            AnnotationMirror a=null;
+            for (AnnotationMirror am : d.getAnnotationMirrors()) {
+                ia = am.getAnnotationType().getDeclaration().getAnnotation(InhabitantAnnotation.class);
+                if(ia!=null) {
+                    a = am;
+                    if (debug) {
+                        env.getMessager().printWarning("Found component annotation " + a + " on "+d.getQualifiedName());
+                    }
+                    String service=null;
+                    // I cannot use a.getAnnotationType().getDeclaration().getAnnotation() because the value() is a class
+                    // which cannot be loaded by the classloader at compile time.
+                    for (AnnotationMirror aMirror : a.getAnnotationType().getDeclaration().getAnnotationMirrors()) {
+                        if (aMirror.getAnnotationType().getDeclaration().getSimpleName().equals(ServiceProvider.class.getSimpleName())) {
+                            for (Map.Entry<AnnotationTypeElementDeclaration, AnnotationValue> entry : aMirror.getElementValues().entrySet()) {
+                                service = entry.getValue().toString();
+                            }
+                        }
+                    }
+
+                    InhabitantsDescriptor descriptor = list.get(ia.value());
+
+                    if (service!=null) {
+                        processGenericImpl(service, descriptor, d, a);
+                    }
+                }
+            }
+        }
+
+        public void processGenericImpl(String service, InhabitantsDescriptor descriptor, TypeDeclaration d, AnnotationMirror a) {
+
+                String name = getIndexValue(a);
+                String contract="";
+                // we should support gettting the @ContractProvided from the ServiceProvider
+                for (AnnotationMirror am : a.getAnnotationType().getDeclaration().getAnnotationMirrors()) {
+                    if (am.getAnnotationType().getDeclaration().getSimpleName().equals(ContractProvided.class.getSimpleName())) {
+                        for (Map.Entry<AnnotationTypeElementDeclaration, AnnotationValue> entry : am.getElementValues().entrySet()) {
+                            contract = entry.getValue().toString();
+                        }
+                    }
+                }
+               StringBuilder buf = new StringBuilder();
+                buf.append(InhabitantsFile.CLASS_KEY).append('=').append(service);
+                buf.append(",").append(INDEX_KEY).append("=").append(contract).append(":").append(name);
+                buf.append(",").append("target-type").append("=").append(d.getQualifiedName());
+                for (AnnotationTypeElementDeclaration ated : a.getAnnotationType().getDeclaration().getMethods()) {
+                    for (AnnotationMirror am : ated.getAnnotationMirrors()) {
+                        if (am.getAnnotationType().getDeclaration().getSimpleName().equals(InhabitantMetadata.class.getSimpleName())) {
+                            for (Map.Entry<AnnotationTypeElementDeclaration, AnnotationValue> entry : a.getElementValues().entrySet()) {
+                                if (entry.getKey().getSimpleName().equals(ated.getSimpleName())) {
+                                    buf.append(",").append(ated.getSimpleName()).append("=").append(entry.getValue().toString());
+                                }
+                            }
+                        }
+                    }
+                }
+
+                descriptor.put(contract+":"+name, buf.toString());
+
+        }        
+
         /**
          * Visits a method declaration.
          * The implementation simply invokes
