@@ -34,6 +34,10 @@ public class Client {
 
 	    RemoteSingleton singleton = (RemoteSingleton) new InitialContext().lookup("java:global/" + appName + "/SingletonBean!com.acme.RemoteSingleton");
 
+	    // Also make sure we can look it up via the product-specific
+	    // global JNDI name specified via ejb-jar.xml
+	    RemoteSingleton singleton2 = (RemoteSingleton) new InitialContext().lookup("ejb_ejb31_full_schema_SingletonRemote");
+
 	    int sleepSeconds = 10;
 	    System.out.println("Sleeping for " + sleepSeconds + " seconds before checking " +
 			       "results...");

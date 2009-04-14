@@ -84,12 +84,12 @@ public class SingletonBean implements RemoteSingleton {
 
 	try {
 	    t.getHandle();
-	    throw new EJBException("getHandle() should have failed for non-persistent timer");
+	    System.out.println("Successfully got handle for persistent timer");
 	} catch(IllegalStateException e) {
-	    System.out.println("Successfully got exception when calling getHandle()");
+	    throw new EJBException(e);
 	}
 
-	if( t.getInfo().equals("info") && !t.isPersistent() && t.isCalendarTimer() ) {
+	if( t.getInfo().equals("info") && t.isPersistent() && t.isCalendarTimer() ) {
 	    gotTimeout = true;
 	} else {
 	    throw new EJBException("Timer metadata doesn't match descriptor " + t);

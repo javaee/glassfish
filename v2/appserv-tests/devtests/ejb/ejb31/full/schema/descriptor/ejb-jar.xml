@@ -42,7 +42,7 @@
 	      <method-param>javax.ejb.Timer</method-param>
 	    </method-params>
 	  </timeout-method>
-          <persistent>false</persistent>
+          <persistent>true</persistent>
           <info>info</info>
 	</timer>
 	<init-on-startup>true</init-on-startup>
