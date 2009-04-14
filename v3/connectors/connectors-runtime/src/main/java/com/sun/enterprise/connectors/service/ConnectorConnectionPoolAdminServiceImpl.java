@@ -47,6 +47,7 @@ import javax.naming.NamingException;
 import javax.resource.ResourceException;
 import javax.resource.spi.ManagedConnection;
 import javax.resource.spi.ManagedConnectionFactory;
+import javax.resource.spi.TransactionSupport;
 import javax.security.auth.Subject;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
@@ -877,6 +878,29 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
                     Subject s = ConnectionPoolObjectsUtils.createSubject(mcf, prin);
                     int txSupport = connectorConnectionPool.getTransactionSupport();
 
+                    //JSR-322 : check the runtime transaction level support of MCF and use appropriately.
+                    if (mcf instanceof javax.resource.spi.TransactionSupport) {
+                        TransactionSupport.TransactionSupportLevel mcfTS =
+                                ((javax.resource.spi.TransactionSupport) mcf).getTransactionSupport();
+
+                        int containerTxSupport = ConnectionPoolObjectsUtils.convertSpecTxSupportToContainerTxSupport(mcfTS);
+                        boolean isValidTxSupportLevel = ConnectionPoolObjectsUtils.isTxSupportConfigurationSane(
+                                containerTxSupport, activeResourceAdapter.getModuleName());
+
+                        if (isValidTxSupportLevel) {
+                            txSupport = containerTxSupport;
+                        } else {
+
+                            Object params[] = { mcfTS, activeResourceAdapter.getModuleName() };
+                            String i18nMsg = localStrings.getString("ccp_adm_service.incorrect_tx_support", params);
+                            ConnectorRuntimeException cre = new
+                                    ConnectorRuntimeException(i18nMsg);
+                            _logger.log(Level.SEVERE, "rardeployment.incorrect_tx_support",
+                                    connectorConnectionPool.getName());
+                            throw cre;
+                        }
+                    }
+
                     boolean isPM = false;
                     boolean isNonTx = connectorConnectionPool.isNonTransactional();
                     ConnectorSecurityMap[] securityMaps =
@@ -944,6 +968,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
             throw cre;
         }
     }
+
 
     private PoolType getPoolType(ConnectorConnectionPool connectorConnectionPool) {
         PoolType pt = PoolType.STANDARD_POOL;

@@ -182,6 +182,35 @@ public final class ConnectionPoolObjectsUtils {
     }
 
     /**
+     * Return the interger representation container transaction support value equivalent to
+     * the javax.resource.spi.TransactionSupport enum value.
+     *
+     * @param mcfTS javax.resource.spi.TransactionSupport
+     * @return container equivalent value
+     */
+    public static int convertSpecTxSupportToContainerTxSupport(
+            javax.resource.spi.TransactionSupport.TransactionSupportLevel mcfTS) {
+        int containerEquivalentValue = ConnectorConstants.UNDEFINED_TRANSACTION_INT;
+        switch (mcfTS) {
+            case LocalTransaction:
+                containerEquivalentValue =  ConnectorConstants.LOCAL_TRANSACTION_INT;
+                break;
+            case NoTransaction:
+                containerEquivalentValue = ConnectorConstants.NO_TRANSACTION_INT;
+                break;
+            case XATransaction:
+                containerEquivalentValue = ConnectorConstants.XA_TRANSACTION_INT;
+                break;
+        }
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine("convertSpecTxSupportToContainerTxSupport: passed in mcfTransactionSupport =>" + mcfTS + ", " +
+                    "converted container equivalent value: " + containerEquivalentValue);
+        }
+        return containerEquivalentValue;
+    }
+
+
+    /**
      * Return the integer representation of the transaction-support attribure
      *
      * @param txSupport one of <br>
@@ -223,6 +252,24 @@ public final class ConnectionPoolObjectsUtils {
 
         return txSupportIntVal;
     }
+
+    public static boolean isTxSupportConfigurationSane(int txSupport, String raName) {
+        int raXmlTxSupport = ConnectorConstants.UNDEFINED_TRANSACTION_INT;
+
+        try {
+            raXmlTxSupport = ConnectionPoolObjectsUtils.getTransactionSupportFromRaXml(raName);
+        } catch (Exception e) {
+            _logger.log(Level.WARNING,
+                    (e.getMessage() != null ? e.getMessage() : "  "));
+        }
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, "isTxSupportConfigSane:: txSupport => "
+                    + txSupport + "  raXmlTxSupport => " + raXmlTxSupport);
+        }
+
+        return (txSupport <= raXmlTxSupport);
+    }
+
 
     /**
      * A utility method to map TransactionSupport ints as represented
