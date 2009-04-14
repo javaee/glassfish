@@ -146,9 +146,10 @@ public class ConfigPropertyHandler extends AbstractHandler {
                     ep.setDescription(description);
                 }
 
-                //TODO V3 need to get the defaultValue from the field if its not specified via annotation
                 if (!defaultValue.equals("")) {
                     ep.setValue(defaultValue);
+                }else{
+                    //TODO V3 need to get the defaultValue from the field if its not specified via annotation
                 }
 
                 ep.setType(type.getName());
@@ -265,7 +266,10 @@ public class ConfigPropertyHandler extends AbstractHandler {
                     }
 
                     foundConnectionDefinition = true;
-                    break;
+                    /* TODO V3 it is possible that multiple MCFs with same class, but different
+                     connection-factory-interface
+                     hence process all connection definitions ? */
+                    // break;
                 }
             }
             if (!foundConnectionDefinition) {
@@ -315,19 +319,25 @@ public class ConfigPropertyHandler extends AbstractHandler {
 
 
     public Class<? extends Annotation>[] getTypeDependencies() {
-        return new Class[]{Connector.class, ConnectionDefinition.class, Activation.class, AdministeredObject.class};
+        return new Class[]{Connector.class, ConnectionDefinition.class, ConnectionDefinitions.class,
+                Activation.class, AdministeredObject.class};
     }
 
     private void debug(String s) {
-        logger.log(Level.INFO, "JSR-322 [ConfigPropertyHandler] " + s);
+        logger.log(Level.INFO, "[ConfigPropertyHandler] " + s);
     }
 
     private HandlerProcessingResultImpl getFailureResult(AnnotationInfo element, String message, boolean doLog) {
         HandlerProcessingResultImpl result = new HandlerProcessingResultImpl();
         result.addResult(getAnnotationType(), ResultType.FAILED);
         if (doLog) {
-            Class c = (Class) element.getAnnotatedElement();
-            String className = c.getName();
+            Object o = element.getAnnotatedElement();
+            String className = null;
+            if(o instanceof Field){
+                className = ((Field)o).getDeclaringClass().getName();
+            }else { //else it can be only METHOD
+                className = ((Method)o).getDeclaringClass().getName();
+            }
             //TODO V3 logStrings
             logger.log(Level.WARNING, "failed to handle annotation [ " + element.getAnnotation() + " ]" +
                     " on class [ " + className + " ], reason : " + message);
