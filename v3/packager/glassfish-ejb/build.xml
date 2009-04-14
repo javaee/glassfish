@@ -172,23 +172,6 @@ own identifying information: Portions Copyright [yyyy]
 	        <graphRef refid="glassfish-ejb-modules"/>
     	</resolveAll>
 
-	  	<graphDef id="generate-whole-picture" tolerateBrokenPOMs="true">
-		  <visualize file="all-modules.png">
-			 <scope level="compile,runtime">       
-				 <fullGraph/>
-                 </scope> 
-            </visualize>
-        </graphDef>
-
-        <graphDef id="generate-refined-picture" tolerateBrokenPOMs="true">
-		  <visualize file="modules.png">
-			 <scope level="compile,runtime">       
-				 <graphRef refid="glassfish-ejb-modules"/>
-                 </scope> 
-            </visualize>
-        </graphDef>
-
-	
 
 	<delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.zip" />   
 	<delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.pom" />  

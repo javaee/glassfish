@@ -50,4 +50,30 @@ own identifying information: Portions Copyright [yyyy]
         </delete>
     </target>
 
+    <target name="stage-module-jars" >
+
+	<graphDef id="module-dependency-graph" tolerateBrokenPOMs="true">
+		  <scope level="compile,runtime" type="hk2-jar">       
+				 <fullGraph/>
+                  </scope> 	 
+	</graphDef> 
+
+        <resolveAll todir="target/stage/${install.dir.name}/glassfish/modules" tolerateBrokenPOMs="true"
+                        stripVersion="true">
+	        <graphRef refid="module-dependency-graph"/>
+	</resolveAll>
+    </target>	
+
+    <target name="stage-distribution-fragments">
+         <resolveAll todir="target/fragments" tolerateBrokenPOMs="true" stripVersion="true">
+                <fullGraph/>
+                <packaging value="distribution-fragment"/>
+          </resolveAll>
+	  <unzip dest="target/stage/${install.dir.name}">
+                <patternset>
+                    <exclude name="META-INF/**"/>
+                </patternset>
+                <fileset dir="target/fragments" includes="*.zip"/>
+ 	  </unzip>
+    </target>
 </project>

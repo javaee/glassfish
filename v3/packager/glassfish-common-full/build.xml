@@ -25,6 +25,14 @@ own identifying information: Portions Copyright [yyyy]
 	<target name="create.package">
 		<echo message="Staging files"/>
 
+	<antcall target="stage-distribution-fragments" />
+
+	<delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.zip" />   
+	<delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.pom" />  
+	<delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.war" />  
+
+	<delete dir="target/stage/${install.dir.name}/META-INF" /> 
+
         <if test="${compression}">
 	       <antcall target="pack.compression" />
 	</if>

@@ -215,22 +215,7 @@ own identifying information: Portions Copyright [yyyy]
                         stripVersion="true">
 	        <graphRef refid="glassfish-cmp-modules"/>
     	</resolveAll>
-
-	  	<graphDef id="generate-whole-picture" tolerateBrokenPOMs="true">
-		  <visualize file="all-modules.png">
-			 <scope level="compile,runtime">       
-				 <fullGraph/>
-                 </scope> 
-            </visualize>
-        </graphDef>
-
-        <graphDef id="generate-refined-picture" tolerateBrokenPOMs="true">
-		  <visualize file="modules.png">
-			 <scope level="compile,runtime">       
-				 <graphRef refid="glassfish-cmp-modules"/>
-                 </scope> 
-            </visualize>
-        </graphDef>
+	
 
 	<resolveArtifact artifactId="cmp-scripts" property="cmp-scripts.zip"/>
        

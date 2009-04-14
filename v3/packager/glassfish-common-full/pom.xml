@@ -96,6 +96,12 @@
             <artifactId>deployment-javaee-full</artifactId>
             <version>${project.version}</version>
         </dependency> 
+        <dependency>
+            <groupId>org.glassfish.deployment</groupId>
+            <artifactId>sun-as-jsr88-dm-frag</artifactId>
+            <version>${project.version}</version>
+            <type>distribution-fragment</type>
+       </dependency> 
     </dependencies>
 
     <profiles>
