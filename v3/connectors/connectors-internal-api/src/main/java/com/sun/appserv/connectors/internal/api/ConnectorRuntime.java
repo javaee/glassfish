@@ -46,6 +46,7 @@ import javax.security.auth.callback.CallbackHandler;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.Properties;
 
 import com.sun.enterprise.config.serverbeans.ResourcePool;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
@@ -248,4 +249,209 @@ public interface ConnectorRuntime extends ConnectorConstants{
      * @return container callback handler
      */
     public CallbackHandler getCallbackHandler();
+
+    /**
+     * Checks whether the executing environment is application server
+     * @return true if execution environment is server
+     *         false if it is client
+     */
+    boolean isServer();
+
+    /**
+     * Initializes the execution environment. If the execution environment
+     * is appserv runtime it is set to ConnectorConstants.SERVER else
+     * it is set ConnectorConstants.CLIENT
+     *
+     * @param environment set to ConnectorConstants.SERVER if execution
+     *                    environment is appserv runtime else set to
+     *                    ConnectorConstants.CLIENT
+     */
+/*
+    void initialize(int environment);
+*/
+
+    /**
+     * provides connector class loader
+     * @return ClassLoader
+     */
+    ClassLoader getConnectorClassLoader();
+
+    /** Obtains all the Connection definition names of a rar
+     *  @param rarName rar moduleName
+     *  @return Array of connection definition names.
+     *  @throws ConnectorRuntimeException when unable to obtain connection definition from descriptor.
+     */
+    public String[] getConnectionDefinitionNames(String rarName)
+               throws ConnectorRuntimeException ;
+
+    /**
+     *  Obtains the Permission string that needs to be added to the
+     *  to the security policy files. These are the security permissions needed
+     *  by the resource adapter implementation classes.
+     *  These strings are obtained by parsing the ra.xml and by processing annotations if any
+     *  @param moduleName rar module Name
+     *  @throws ConnectorRuntimeException If rar.xml parsing or annotation processing fails.
+     *  @return security permission spec
+     */
+    public String getSecurityPermissionSpec(String moduleName)
+                         throws ConnectorRuntimeException ;
+
+    /**
+     * Obtains all the Admin object interface names of a rar
+     * @param rarName rar moduleName
+     * @return Array of admin object interface names.
+     * @throws ConnectorRuntimeException when unable to obtain admin object interface names
+     */
+    public String[] getAdminObjectInterfaceNames(String rarName)
+               throws ConnectorRuntimeException ;
+
+    /**
+     *  Retrieves the Resource adapter javabean properties with default values.
+     *  The default values will the values present in the ra.xml. If the
+     *  value is not present in ra.xxml, javabean is introspected to obtain
+     *  the default value present, if any. If intrspection fails or null is the
+     *  default value, empty string is returned.
+     *  If ra.xml has only the property and no value, empty string is the value
+     *  returned.
+     *  If the Resource Adapter Java bean is annotated, properties will be the result of merging
+     *  annotated config property and config-property of Resource Adapter bean in ra.xml 
+     *  @param rarName rar module name
+     *  @return Resource adapter javabean properties with default values.
+     *  @throws ConnectorRuntimeException if property retrieval fails.
+     */
+    public Properties getResourceAdapterConfigProps(String rarName)
+                throws ConnectorRuntimeException ;
+
+    /**
+     *  Retrieves the MCF javabean properties with default values.
+     *  The default values will the values present in the ra.xml. If the
+     *  value is not present in ra.xxml, javabean is introspected to obtain
+     *  the default value present, if any. If intrspection fails or null is the
+     *  default value, empty string is returned.
+     *  If ra.xml has only the property and no value, empty string is the value
+     *  returned.
+     *  If the ManagedConnectionFactory Java bean is annotated, properties will be the result of merging
+     *  annotated config property and config-property of MCF in ra.xml
+
+     *  @param rarName rar module name
+     *  @param connectionDefName connection-definition-name
+     *  @return managed connection factory javabean properties with
+     *          default values.
+     *  @throws ConnectorRuntimeException if property retrieval fails.
+     */
+    public Properties getMCFConfigProps(
+     String rarName,String connectionDefName) throws ConnectorRuntimeException ;
+
+    /**
+     *  Retrieves the admin object javabean properties with default values.
+     *  The default values will the values present in the ra.xml. If the
+     *  value is not present in ra.xxml, javabean is introspected to obtain
+     *  the default value present, if any. If intrspection fails or null is the
+     *  default value, empty string is returned.
+     *  If ra.xml has only the property and no value, empty string is the value
+     *  returned.
+     *  If the AdministeredObject Java bean is annotated, properties will be the result of merging
+     *  annotated config property and config-property of AdministeredObject in ra.xml
+
+     *  @param rarName rar module name
+     *  @param adminObjectIntf admin-object-interface name
+     * @return admin object javabean properties with
+     *          default values.
+     *  @throws ConnectorRuntimeException if property retrieval fails.
+     */
+    public Properties getAdminObjectConfigProps(
+      String rarName,String adminObjectIntf) throws ConnectorRuntimeException ;
+
+
+    /**
+     *  Retrieves the XXX javabean properties with default values.
+     *  The javabean to introspect/retrieve is specified by the type.
+     *  The default values will be the values present in the ra.xml. If the
+     *  value is not present in ra.xxml, javabean is introspected to obtain
+     *  the default value present, if any. If intrspection fails or null is the
+     *  default value, empty string is returned.
+     *  If ra.xml has only the property and no value, empty string is the value
+     *  returned.
+     *  @param rarName rar module name
+     *  @param connectionDefName connection definition name
+     *  @param type JavaBean type to introspect
+     * @return admin object javabean properties with
+     *          default values.
+     *  @throws ConnectorRuntimeException if property retrieval fails.
+     */
+    public Properties getConnectorConfigJavaBeans(String rarName,
+        String connectionDefName,String type) throws ConnectorRuntimeException ;
+
+    /**
+     * Return the ActivationSpecClass name for given rar and messageListenerType
+     * @param rarName name of the rar module
+     * @param messageListenerType MessageListener type
+     * @throws  ConnectorRuntimeException If moduleDir is null.
+     *          If corresponding rar is not deployed.
+     * @return activation-spec class
+     */
+    public String getActivationSpecClass( String rarName,
+             String messageListenerType) throws ConnectorRuntimeException ;
+
+
+    /**
+     *  Parses the ra.xml, processes the annotated rar artificats if any
+     *  and returns all the Message listener types.
+     *
+     * @param  rarName name of the rar module.
+     * @return Array of message listener types as strings.
+     * @throws  ConnectorRuntimeException If moduleDir is null.
+     *          If corresponding rar is not deployed.
+     *
+     */
+    public String[] getMessageListenerTypes(String rarName)
+               throws ConnectorRuntimeException  ;
+
+    /** Parses the ra.xml for the ActivationSpec javabean
+     *  properties and processes annotations if any. The ActivationSpec to be parsed is
+     *  identified by the moduleDir where ra.xml is present and the
+     *  message listener type.
+     *
+     *  message listener type will be unique in a given ra.xml.
+     *
+     *  It throws ConnectorRuntimeException if either or both the
+     *  parameters are null, if corresponding rar is not deployed,
+     *  if message listener type mentioned as parameter is not found in ra.xml.
+     *  If rar is deployed and message listener (type mentioned) is present
+     *  but no properties are present for the corresponding message listener,
+     *  null is returned.
+     *
+     *  @param  rarName name of the rar module.
+     *  @param  messageListenerType message listener type.It is uniqie
+     *          across all <messagelistener> sub-elements in <messageadapter>
+     *          element in a given rar.
+     *  @return Javabean properties with the property names and values
+     *          of properties. The property values will be the values
+     *          mentioned in ra.xml if present. Otherwise it will be the
+     *          default values obtained by introspecting the javabean.
+     *          In both the case if no value is present, empty String is
+     *          returned as the value.
+     *  @throws  ConnectorRuntimeException if either of the parameters are null.
+     *           If corresponding rar is not deployed i.e moduleDir is invalid.
+     *           If messagelistener type is not found in ra.xml or could not be
+     *           found in annotations if any
+     */
+    public Properties getMessageListenerConfigProps(String rarName,
+         String messageListenerType)throws ConnectorRuntimeException ;
+
+    /** Returns the Properties object consisting of propertyname as the
+     *  key and datatype as the value.
+     *  @param  rarName name of the rar module.
+     *  @param  messageListenerType message listener type.It is uniqie
+     *          across all <messagelistener> sub-elements in <messageadapter>
+     *          element in a given rar.
+     *  @return Properties object with the property names(key) and datatype
+     *          of property(as value).
+     *  @throws  ConnectorRuntimeException if either of the parameters are null.
+     *           If corresponding rar is not deployed i.e moduleDir is invalid.
+     *           If messagelistener type is not found in ra.xmlor could not be found
+     *           in annotations if any
+     */
+    public Properties getMessageListenerConfigPropTypes(String rarName,
+               String messageListenerType) throws ConnectorRuntimeException ;
 }

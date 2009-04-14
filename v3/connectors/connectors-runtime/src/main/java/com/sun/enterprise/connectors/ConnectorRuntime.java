@@ -75,13 +75,7 @@ import com.sun.enterprise.config.serverbeans.SecurityMap;
 import com.sun.enterprise.connectors.authentication.AuthenticationService;
 import com.sun.enterprise.connectors.module.ConnectorApplication;
 import com.sun.enterprise.connectors.naming.ConnectorNamingEventNotifier;
-import com.sun.enterprise.connectors.service.ConnectorAdminObjectAdminServiceImpl;
-import com.sun.enterprise.connectors.service.ConnectorAdminServicesFactory;
-import com.sun.enterprise.connectors.service.ConnectorConnectionPoolAdminServiceImpl;
-import com.sun.enterprise.connectors.service.ConnectorResourceAdminServiceImpl;
-import com.sun.enterprise.connectors.service.ConnectorSecurityAdminServiceImpl;
-import com.sun.enterprise.connectors.service.ConnectorService;
-import com.sun.enterprise.connectors.service.ResourceAdapterAdminServiceImpl;
+import com.sun.enterprise.connectors.service.*;
 import com.sun.enterprise.connectors.util.RAWriterAdapter;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.deploy.shared.FileArchive;
@@ -99,6 +93,7 @@ import com.sun.enterprise.resource.pool.monitor.JdbcConnPoolProbeProvider;
 import com.sun.enterprise.security.jmac.callback.ContainerCallbackHandler;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import org.glassfish.api.admin.config.Property;
+import org.glassfish.api.admin.*;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.naming.GlassfishNamingManager;
@@ -137,6 +132,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     private ConnectorConnectionPoolAdminServiceImpl ccPoolAdmService;
     private ConnectorResourceAdminServiceImpl connectorResourceAdmService;
     private ConnectorService connectorService;
+    private ConnectorConfigurationParserServiceImpl configParserAdmService;
     private ResourceAdapterAdminServiceImpl resourceAdapterAdmService;
     private ConnectorSecurityAdminServiceImpl connectorSecurityAdmService;
     private ConnectorAdminObjectAdminServiceImpl adminObjectAdminService;
@@ -190,6 +186,9 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
 
     @Inject
     private ConnectionPoolProbeProviderUtil providerUtil;
+
+    @Inject
+    private ProcessEnvironment processEnvironment;
     
     private final Object getTimerLock = new Object();
     private Timer timer;
@@ -226,20 +225,16 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     }
 
     /**
-     * Initializes the execution environment. If the execution environment
-     * is appserv runtime it is set to ConnectorConstants.SERVER else
-     * it is set ConnectorConstants.CLIENT
-     *
-     * @param environment set to ConnectorConstants.SERVER if execution
-     *                    environment is appserv runtime else set to
-     *                    ConnectorConstants.CLIENT
+     * {@inheritDoc}
      */
+/*
     public void initialize(int environment) {
         this.environment = environment;
         //TODO V3
         connectorService.initialize(getEnviron());
 
     }
+*/
 
     /**
      * Returns the execution environment.
@@ -493,6 +488,130 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public String[] getConnectionDefinitionNames(String rarName)
+               throws ConnectorRuntimeException {
+        return configParserAdmService.getConnectionDefinitionNames(rarName);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getSecurityPermissionSpec(String moduleName)
+                         throws ConnectorRuntimeException {
+        return configParserAdmService.getSecurityPermissionSpec(moduleName);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String[] getAdminObjectInterfaceNames(String rarName)
+               throws ConnectorRuntimeException {
+        return configParserAdmService.getAdminObjectInterfaceNames(rarName);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Properties getResourceAdapterConfigProps(String rarName)
+                throws ConnectorRuntimeException {
+        return
+	    rarName.indexOf( ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER ) == -1
+            ? configParserAdmService.getResourceAdapterConfigProps(rarName)
+	    : new Properties();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Properties getMCFConfigProps(
+     String rarName,String connectionDefName) throws ConnectorRuntimeException {
+        return
+	    rarName.indexOf( ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER ) == -1
+	        ? configParserAdmService.getMCFConfigProps(
+		    rarName,connectionDefName)
+	        : new Properties();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Properties getAdminObjectConfigProps(
+      String rarName,String adminObjectIntf) throws ConnectorRuntimeException {
+        return
+	    rarName.indexOf( ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER ) == -1
+	        ? configParserAdmService.getAdminObjectConfigProps(
+		    rarName,adminObjectIntf)
+		: new Properties();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Properties getConnectorConfigJavaBeans(String rarName,
+        String connectionDefName,String type) throws ConnectorRuntimeException {
+
+        return configParserAdmService.getConnectorConfigJavaBeans(
+                             rarName,connectionDefName,type);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getActivationSpecClass( String rarName,
+             String messageListenerType) throws ConnectorRuntimeException {
+        return configParserAdmService.getActivationSpecClass(
+                          rarName,messageListenerType);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String[] getMessageListenerTypes(String rarName)
+               throws ConnectorRuntimeException  {
+        return configParserAdmService.getMessageListenerTypes( rarName);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Properties getMessageListenerConfigProps(String rarName,
+         String messageListenerType)throws ConnectorRuntimeException {
+        return
+	    rarName.indexOf( ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER ) == -1
+            ? configParserAdmService.getMessageListenerConfigProps(
+
+                        rarName,messageListenerType)
+	    : new Properties();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Properties getMessageListenerConfigPropTypes(String rarName,
+               String messageListenerType) throws ConnectorRuntimeException {
+        return configParserAdmService.getMessageListenerConfigPropTypes(
+                        rarName,messageListenerType);
+    }
+
+    /**
+     * Returns the configurable ResourceAdapterBean Properties
+     * for a connector module bundled as a RAR.
+     *
+     * @param pathToDeployableUnit a physical,accessible location of the connector module.
+     * [either a RAR for RAR-based deployments or a directory for Directory based deployments]
+     * @return A Map that is of <String RAJavaBeanPropertyName, String defaultPropertyValue>
+     * An empty map is returned in the case of a 1.0 RAR
+     */
+/* TODO V3
+    public Map getResourceAdapterBeanProperties(String pathToDeployableUnit) throws ConnectorRuntimeException{
+        return configParserAdmService.getRABeanProperties(pathToDeployableUnit);
+    }
+*/
+
+
+    /**
      * Provides specified ThreadPool or default ThreadPool from server
      *
      * @param threadPoolId Thread-pool-id
@@ -546,7 +665,6 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * will be placed into commission by the subsystem.
      */
     public void postConstruct() {
-        providerUtil.createProbeProviders();
         ccPoolAdmService = (ConnectorConnectionPoolAdminServiceImpl)
                 ConnectorAdminServicesFactory.getService(ConnectorConstants.CCP);
         connectorResourceAdmService = (ConnectorResourceAdminServiceImpl)
@@ -558,8 +676,24 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
                 ConnectorAdminServicesFactory.getService(ConnectorConstants.SEC);
         adminObjectAdminService = (ConnectorAdminObjectAdminServiceImpl)
                 ConnectorAdminServicesFactory.getService(ConnectorConstants.AOR);
+        configParserAdmService = new ConnectorConfigurationParserServiceImpl();
+        providerUtil.createProbeProviders();
+        initializeEnvironment(processEnvironment);
+    }
 
-        //TODO V3 class-loader (temprorarily initializing with current thread's context cl)
+    /**
+     * initializes the connector runtime mode to be SERVER or CLIENT
+     * @param processEnvironment ProcessEnvironment
+     */
+    private void initializeEnvironment(ProcessEnvironment processEnvironment) {
+        //TODO V3, remove ConnectorConstants.CLIENT/SERVER usage in connector-runtime, and use only
+        //process environment
+        if (processEnvironment.getProcessType().equals(ProcessEnvironment.ProcessType.Server)){
+            environment = SERVER;
+        }else if (processEnvironment.getProcessType().equals(ProcessEnvironment.ProcessType.ACC) ||
+                processEnvironment.getProcessType().equals(ProcessEnvironment.ProcessType.Other)) {
+            environment = CLIENT;
+        }
     }
 
     /**
@@ -721,9 +855,8 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * @return true if execution environment is server
      *         false if it is client
      */
-    public static boolean isServer() {
-        //TODO V3 static method using instance ?
-        return getRuntime().connectorService.isServer();
+    public boolean isServer() {
+        return connectorService.isServer();
     }
 
     /**
@@ -965,5 +1098,12 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
 
     public ComponentEnvManager getComponentEnvManager(){
         return componentEnvManager;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public ClassLoader getConnectorClassLoader() {
+        return clh.getConnectorClassLoader(null);
     }
 }
