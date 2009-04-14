@@ -45,14 +45,25 @@ public class AdminConsoleTests extends BaseAdminConsoleTest {
     }
 
     /**
-     * Request /web/webApp/webApplications.jsf and verify that the common task page was rendered.
+     * Request /applications/applications.jsf and verify that the applications page was rendered.
      * @throws java.lang.Exception
      */
     @Test
-    public void testDeployedWebAppPage() throws Exception {
+    public void testDeployedAppPage() throws Exception {
         Assert.assertTrue(getUrlAndTestForStrings(this.adminUrl + "applications/applications.jsf",
                 "id=\"propertyForm:deployTable\""),
                 "The Deployed Applications table does not appear to have been rendered.");
+    }
+
+    /**
+     * Request /security/realms/realms.jsf to test that pages from plugin module can be rendered.
+     * @throws java.lang.Exception
+     */
+    @Test
+    public void testRealmsList() throws Exception {
+        Assert.assertTrue(getUrlAndTestForStrings(this.adminUrl + "security/realms/realms.jsf",
+                "id=\"propertyForm:realmsTable\""),
+                "The Security realms table does not appear to have been rendered.");
     }
 
     @Test
