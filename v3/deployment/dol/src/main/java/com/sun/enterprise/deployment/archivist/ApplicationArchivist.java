@@ -82,6 +82,9 @@ public class ApplicationArchivist extends Archivist<Application>
     @Inject
     Habitat habitat;
 
+    @Inject(optional = true)
+    ExtensionsArchivist[] extensionsArchivists; 
+
     /**
      * The DeploymentDescriptorFile handlers we are delegating for XML i/o
      */
@@ -224,6 +227,17 @@ public class ApplicationArchivist extends Archivist<Application>
 
         setDescriptor(application);
 
+        if (extensionsArchivists!=null) {
+            for (ExtensionsArchivist extension : extensionsArchivists) {
+                if (extension.supportsModuleType(getModuleType())) {
+                    Object o = extension.open(this, archive, descriptor);
+                    if (o instanceof RootDeploymentDescriptor) {
+                        extension.addExtension(descriptor, (RootDeploymentDescriptor) o);
+                    }
+                }
+            }
+        }
+ 
         // read the modules deployment descriptors
         if (!readModulesDescriptors(application, archive))
             return null;

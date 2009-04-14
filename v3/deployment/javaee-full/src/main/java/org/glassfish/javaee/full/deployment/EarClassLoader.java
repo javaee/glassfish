@@ -39,8 +39,11 @@ import java.net.URLClassLoader;
 import java.net.URL;
 import java.util.*;
 import java.lang.reflect.Method;
+import java.lang.instrument.ClassFileTransformer;
 import java.lang.reflect.InvocationTargetException;
 import java.io.IOException;
+import org.glassfish.api.deployment.InstrumentableClassLoader;
+import com.sun.enterprise.loader.EJBClassLoader;
 
 /**
  * Simplistic class loader which will delegate to each module class loader in the order
@@ -48,20 +51,25 @@ import java.io.IOException;
  *
  * @author Jerome Dochez
  */
-public class EarClassLoader extends URLClassLoader {
+public class EarClassLoader extends URLClassLoader implements InstrumentableClassLoader {
 
     private final List<ClassLoaderHolder> delegates = new LinkedList<ClassLoaderHolder>();
     private final Method findClass;
     private final Method findLoadedClass;
     private final Method findResource;
     private final Method findResources;
-
-    // optimization flag to not check the parent if we don't have library jars
-    private final boolean checkParent;
+    private final static String EAR_LIB_MODULE = " __ear_lib_module";
 
     public EarClassLoader(URL[] urls, ClassLoader classLoader) {
-        super(urls, classLoader);
-        checkParent = urls!=null && urls.length>0;
+        super(new URL[0], classLoader); 
+
+        // the classloader to load library jars at ear level
+        EJBClassLoader earLibClassLoader = new EJBClassLoader(this);
+        for (URL url : urls) {
+            earLibClassLoader.addURL(url);
+        }
+        addModuleClassLoader(EAR_LIB_MODULE, earLibClassLoader);
+
         try {
             findClass = ClassLoader.class.getDeclaredMethod("findClass", new Class[] {String.class});
             findClass.setAccessible(true);
@@ -95,6 +103,23 @@ public class EarClassLoader extends URLClassLoader {
         return null;
     }
 
+    public ClassLoader copy() {
+        ClassLoader cLoader = getModuleClassLoader(EAR_LIB_MODULE);
+        if (cLoader instanceof InstrumentableClassLoader) {
+            return ((InstrumentableClassLoader)getModuleClassLoader(
+                EAR_LIB_MODULE)).copy();
+        }
+        return null;
+    }
+
+    public synchronized void addTransformer(ClassFileTransformer transformer) {
+        ClassLoader cLoader = getModuleClassLoader(EAR_LIB_MODULE);
+        if (cLoader instanceof InstrumentableClassLoader) {
+            ((InstrumentableClassLoader)getModuleClassLoader(
+                EAR_LIB_MODULE)).addTransformer(transformer);
+        }
+    }
+
     @Override
     protected Class<?> findClass(String s) throws ClassNotFoundException {
         
@@ -109,12 +134,10 @@ public class EarClassLoader extends URLClassLoader {
             }
         }
         
-        if (checkParent) {
-            try {
-                return super.findClass(s);
-            } catch(ClassNotFoundException e) {
+        try {
+            return super.findClass(s);
+        } catch(ClassNotFoundException e) {
                 // ignore
-            }
         }
 
         for (ClassLoaderHolder clh : delegates) {
@@ -145,11 +168,9 @@ public class EarClassLoader extends URLClassLoader {
     @Override
     public URL findResource(String s) {
         URL url = null;
-        if (checkParent) {
-            url = super.findResource(s);
-            if (url!=null) {
-                return url;
-            }
+        url = super.findResource(s);
+        if (url!=null) {
+            return url;
         }
         for(ClassLoaderHolder clh : delegates) {
             try {
@@ -168,11 +189,9 @@ public class EarClassLoader extends URLClassLoader {
 
     @Override
     public Enumeration<URL> findResources(String s) throws IOException {
-        if (checkParent) {
-            Enumeration<URL> result = super.findResources(s);
-            if (result!=null) {
-                return result;
-            }
+        Enumeration<URL> result = super.findResources(s);
+        if (result!=null) {
+            return result;
         }
         Vector<URL> urls = new Vector<URL>();
         for(ClassLoaderHolder clh : delegates) {
