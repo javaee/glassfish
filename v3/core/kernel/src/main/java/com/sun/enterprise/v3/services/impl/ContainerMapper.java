@@ -220,7 +220,7 @@ public class ContainerMapper extends StaticResourcesAdapter {
     public synchronized void initializeFileURLPattern(String ext) {
         for (Sniffer sniffer : grizzlyService.habitat.getAllByContract(Sniffer.class)) {
             boolean match = false;
-            if (sniffer.getURLPatterns()!=null) {
+            if (sniffer.getURLPatterns() != null) {
 
                 for (String pattern : sniffer.getURLPatterns()) {
                     if (pattern.equalsIgnoreCase(ext)) {
@@ -229,7 +229,7 @@ public class ContainerMapper extends StaticResourcesAdapter {
                     }
                 }
                 Adapter adapter = this;
-                if (match){
+                if (match) {
                     adapter = grizzlyService.habitat.getComponent(SnifferAdapter.class);
                     ((SnifferAdapter)adapter).initialize(sniffer, this);
                     unregister(ROOT);
@@ -300,6 +300,7 @@ public class ContainerMapper extends StaticResourcesAdapter {
         ByteChunk chunk = new ByteChunk();
         chunk.setBytes(errorBody, 0, errorBody.length);
         res.setContentLength(errorBody.length);
+        res.setContentType("text/html");
         res.sendHeaders();
         res.doWrite(chunk);
     }
