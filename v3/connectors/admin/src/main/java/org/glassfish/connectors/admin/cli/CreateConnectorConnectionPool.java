@@ -35,6 +35,8 @@
  */
 package org.glassfish.connectors.admin.cli;
 
+import org.glassfish.resource.common.ResourceStatus;
+import org.glassfish.resource.common.ResourceConstants;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
@@ -44,26 +46,17 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.TransactionFailure;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.config.serverbeans.Application;
-import com.sun.enterprise.config.serverbeans.Applications;
-//import com.sun.appserv.connectors.internal.api.ConnectorConstants;
-import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
-import com.sun.enterprise.config.serverbeans.ConnectorModule;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Resource;
 import org.glassfish.api.admin.config.Property;
 
-import java.beans.PropertyVetoException;
 import java.util.Properties;
-import java.util.Map;
-import java.util.List;
+import java.util.HashMap;
 
 /**
  * Create Connector Connection Pool Command
@@ -154,14 +147,6 @@ public class CreateConnectorConnectionPool implements AdminCommand {
     @Inject
     Domain domain;
 
-    @Inject
-    Applications applications;
-
-    //TODO Use the constants from ConnectorConstants instead
-    public static final String DEFAULT_JMS_ADAPTER = "jmsra";
-    public static final String JAXR_RA_NAME = "jaxr-ra";
-    public static String EMBEDDEDRAR_NAME_DELIMITER="#";
-
     /**
      * Executes the command with the command parameters passed as Properties
      * where the keys are the paramter names and the values the parameter values
@@ -172,187 +157,56 @@ public class CreateConnectorConnectionPool implements AdminCommand {
         final ActionReport report = context.getActionReport();
 
         Server targetServer = domain.getServerNamed(target);
+        
+        HashMap attrList = new HashMap();
+        attrList.put(ResourceConstants.RES_ADAPTER_NAME, raname);
+        attrList.put(ResourceConstants.CONN_DEF_NAME, connectiondefinition);
+        attrList.put(ServerTags.DESCRIPTION, description);
+        attrList.put(ResourceConstants.STEADY_POOL_SIZE, steadypoolsize);
+        attrList.put(ResourceConstants.MAX_POOL_SIZE, maxpoolsize);
+        attrList.put(ResourceConstants.MAX_WAIT_TIME_IN_MILLIS, maxwait);
+        attrList.put(ResourceConstants.POOL_SIZE_QUANTITY, poolresize);
+        attrList.put(ResourceConstants.IDLE_TIME_OUT_IN_SECONDS, idletimeout);
+        attrList.put(ResourceConstants.IS_CONNECTION_VALIDATION_REQUIRED, isconnectvalidatereq.toString());
+        attrList.put(ResourceConstants.CONN_FAIL_ALL_CONNECTIONS, failconnection.toString());
+        attrList.put(ResourceConstants.VALIDATE_ATMOST_ONCE_PERIOD, validateatmostonceperiod);
+        attrList.put(ResourceConstants.CONNECTION_LEAK_TIMEOUT, leaktimeout);
+        attrList.put(ResourceConstants.CONNECTION_LEAK_RECLAIM, leakreclaim.toString());
+        attrList.put(ResourceConstants.CONNECTION_CREATION_RETRY_ATTEMPTS, creationretryattempts);
+        attrList.put(ResourceConstants.CONNECTION_CREATION_RETRY_INTERVAL_IN_SECONDS, creationretryinterval);
+        attrList.put(ResourceConstants.LAZY_CONNECTION_ASSOCIATION, lazyconnectionassociation.toString());
+        attrList.put(ResourceConstants.LAZY_CONNECTION_ENLISTMENT, lazyconnectionenlistment.toString());
+        attrList.put(ResourceConstants.ASSOCIATE_WITH_THREAD, associatewiththread.toString());
+        attrList.put(ResourceConstants.MATCH_CONNECTIONS, matchconnections.toString());
+        attrList.put(ResourceConstants.MAX_CONNECTION_USAGE_COUNT, maxconnectionusagecount);
+        attrList.put(ResourceConstants.CONNECTOR_CONNECTION_POOL_NAME, poolname);
 
-        if (poolname == null) {
-            report.setMessage(localStrings.getLocalString("create.connector.connection.pool.noJndiName",
-                            "No pool name defined for connector connection pool."));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-        }
-        // ensure we don't already have one of this name
-        for (Resource resource : resources.getResources()) {
-            if (resource instanceof ConnectorConnectionPool) {
-                if (((ConnectorConnectionPool) resource).getName().equals(poolname)) {
-                    report.setMessage(localStrings.getLocalString("create.connector.connection.pool.duplicate",
-                            "A connector connection pool named {0} already exists.", poolname));
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    return;
-                }
-            }
-        }
-
-        if (!validateCnctorConnPoolAttrList(raname, connectiondefinition, report)) {
-            return;
-        }
+        ResourceStatus rs;
 
         try {
-            ConfigSupport.apply(new SingleConfigCode<Resources>() {
-
-                public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-
-                    ConnectorConnectionPool newResource = param.createChild(ConnectorConnectionPool.class);
-
-                    newResource.setPoolResizeQuantity(poolresize);
-                    newResource.setMaxWaitTimeInMillis(maxwait);
-                    newResource.setMaxPoolSize(maxpoolsize);
-                    newResource.setSteadyPoolSize(steadypoolsize);
-
-                    newResource.setIsConnectionValidationRequired(
-                                    isconnectvalidatereq.toString());
-                    newResource.setIdleTimeoutInSeconds(idletimeout);
-                    newResource.setFailAllConnections(failconnection.toString());
-                    if (raname != null)
-                        newResource.setResourceAdapterName(raname);
-                    newResource.setConnectionDefinitionName(
-                                    connectiondefinition);
-                    newResource.setConnectionLeakTimeoutInSeconds(leaktimeout);
-                    newResource.setConnectionLeakReclaim(leakreclaim.toString());
-                    newResource.setConnectionCreationRetryIntervalInSeconds(
-                                    creationretryinterval);
-                    newResource.setConnectionCreationRetryAttempts(
-                                    creationretryattempts);
-                    newResource.setLazyConnectionAssociation(lazyconnectionassociation.toString());
-                    newResource.setLazyConnectionEnlistment(lazyconnectionenlistment.toString());
-                    newResource.setMatchConnections(matchconnections.toString());
-                    newResource.setMaxConnectionUsageCount(maxconnectionusagecount);
-                    newResource.setValidateAtmostOncePeriodInSeconds(validateatmostonceperiod);
-                    newResource.setAssociateWithThread(
-                                    associatewiththread.toString());
-                    newResource.setTransactionSupport(transactionsupport);
-
-                    if (description != null) {
-                        newResource.setDescription(description);
-                    }
-                    newResource.setName(poolname);
-                    if (properties != null) {
-                        for ( Map.Entry e : properties.entrySet()) {
-                            Property prop = newResource.createChild(Property.class);
-                            prop.setName((String)e.getKey());
-                            prop.setValue((String)e.getValue());
-                            newResource.getProperty().add(prop);
-                        }
-                    }
-                    param.getResources().add(newResource);
-                    return newResource;
-                }
-            }, resources);
-
-        } catch(TransactionFailure tfe) {
-            report.setMessage(localStrings.getLocalString(
-                  "create.connector.connection.pool.fail", "Connector connection pool {0} create failed: {1}",
-                poolname) + " " + tfe.getMessage());
+            ConnectorConnectionPoolManager connPoolMgr = new ConnectorConnectionPoolManager();
+            rs = connPoolMgr.create(resources, attrList, properties, targetServer);
+        } catch(Exception e) {
+            String actual = e.getMessage();
+            String def = "Connector connection pool: {0} could not be created, reason: {1}";
+            report.setMessage(localStrings.getLocalString("create.connector.connection.pool.fail",
+                    def, poolname, actual));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setFailureCause(tfe);
+            report.setFailureCause(e);
+            return;
         }
-
-        //report.setMessage(localStrings.getLocalString(
-        //        "create.connector.connection.pool.success", "Connector connection pool {0} created successfully",
-        //        poolname));
-        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-    }
-
-    private boolean validateCnctorConnPoolAttrList(String raName, String connDef, ActionReport report) {
-        boolean valid = false;
-        if(isValidRAName(raName, report)) {
-            if(!isValidConnectionDefinition(connDef,raName)) {
-
-                report.setMessage(localStrings.getLocalString("admin.mbeans.rmb.invalid_ra_connectdef_not_found",
-                            "Invalid connection definition. Connector Module with connection definition {0} not found.", connDef));
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+        ActionReport.ExitCode ec = ActionReport.ExitCode.SUCCESS;
+        if (rs.getStatus() == ResourceStatus.FAILURE) {
+            ec = ActionReport.ExitCode.FAILURE;
+            if (rs.getMessage() != null) {
+                report.setMessage(rs.getMessage());
             } else {
-                valid = true;
+                 report.setMessage(localStrings.getLocalString("create.connector.connection.pool.fail",
+                    "Connector connection pool {0} creation failed", poolname, ""));
             }
+            if (rs.getException() != null)
+                report.setFailureCause(rs.getException());
         }
-        return valid;
+        report.setActionExitCode(ec);
     }
-
-    private boolean isValidRAName(String raName, ActionReport report) {
-        //TODO turn on validation.  For now, turn validation off until connector modules ready
-        //boolean retVal = false;
-        boolean retVal = true;
-
-        if ((raName == null) || (raName.equals(""))) {
-            report.setMessage(localStrings.getLocalString("admin.mbeans.rmb.null_res_adapter",
-                    "Resource Adapter Name is null."));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return retVal;
-        }
-
-        // To check for embedded conenctor module
-        if (raName.equals(DEFAULT_JMS_ADAPTER) || raName.equals(JAXR_RA_NAME)) {
-            // System RA, so don't validate
-            retVal = true;
-        } else {
-            // Check if the raName contains double underscore or hash.
-            // If that is the case then this is the case of an embedded rar,
-            // hence look for the application which embeds this rar,
-            // otherwise look for the webconnector module with this raName.
-
-            //ObjectName applnObjName = m_registry.getMbeanObjectName(ServerTags.APPLICATIONS, new String[]{getDomainName()});
-            int indx = raName.indexOf(
-                    EMBEDDEDRAR_NAME_DELIMITER);
-            if (indx != -1) {
-                String appName = raName.substring(0, indx);
-                //ObjectName j2eeAppObjName = (ObjectName)getMBeanServer().invoke(applnObjName, "getJ2eeApplicationByName", new Object[]{appName}, new String[]{"java.lang.String"});
-                if (applications != null) {
-                    List<Application> list = applications.getApplications();
-                    for (Application app : list) {
-                        if (app.getName().equals(appName)) {
-                            retVal = true;
-                        }
-                    }
-                    if (!retVal) {
-                        report.setMessage(localStrings.getLocalString("admin.mbeans.rmb.invalid_ra_app_not_found",
-                                "Invalid raname. Application with name {0} not found.", appName));
-                        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                        return retVal;
-                    }
-                }
-            } else {
-                //ObjectName connectorModuleObjName = (ObjectName)getMBeanServer().invoke(applnObjName, "getConnectorModuleByName", new Object[]{raName}, new String[]{"java.lang.String"});
-                if (applications != null) {
-                    //TODO list of connector modules is always empty.  Turn off validation for now.
-                    List<ConnectorModule> list = applications.getModules(ConnectorModule.class);
-                    for (ConnectorModule cm : list) {
-                        if (cm.getName().equals(raName)) {
-                            retVal = true;
-                        }
-                    }
-                    if (!retVal) {
-                        report.setMessage(localStrings.getLocalString("admin.mbeans.rmb.invalid_ra_cm_not_found",
-                                "Invalid raname. Connector Module with name {0} not found.", raName));
-                        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                        return retVal;
-                    }
-                }
-            }
-        }
-
-        return retVal;
-    }
-
-    private boolean isValidConnectionDefinition(String connectionDef,String raName) {
-        //TODO Need API for validation of connection definition
-        /*String [] names =
-                ConnectorRuntime.getRuntime().getConnectionDefinitionNames(raName);
-        for(int i = 0; i < names.length; i++) {
-            if(names[i].equals(connectionDef)) {
-                return true;
-            }
-        }
-        return false;*/
-        return true;
-    }
-
-
 }
