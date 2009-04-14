@@ -121,17 +121,22 @@ public class GrizzlyProxy implements NetworkProxy {
         grizzlyListener = new GrizzlyServiceListener(new Controller());
         grizzlyListener.configure(networkListener, isWebProfile, null);
 
-        final GrizzlyEmbeddedHttp embeddedHttp = grizzlyListener.getEmbeddedHttp();
-        embeddedHttp.setAdapter(new ContainerMapper(grizzlyService, embeddedHttp));
-
         final V3Mapper mapper = new V3Mapper(logger);
         mapper.setPort(portNumber);
         mapper.setId(networkListener.getName());
 
-        final ContainerMapper adapter = (ContainerMapper) embeddedHttp.getAdapter();
+        final GrizzlyEmbeddedHttp embeddedHttp = grizzlyListener.getEmbeddedHttp();
+        // TODO: This is not the right way to do.
+        GrizzlyEmbeddedHttp.setWebAppRootPath(
+                System.getProperty("com.sun.aas.instanceRoot") + "/docroot");
+
+        final ContainerMapper adapter = new ContainerMapper(grizzlyService, embeddedHttp);
         adapter.setMapper(mapper);
         adapter.setDefaultHost(grizzlyListener.getDefaultVirtualServer());
         adapter.configureMapper();
+
+        embeddedHttp.setAdapter(adapter);
+
         onePortMapper = new ExistingSingletonInhabitant<Mapper>(mapper);
         grizzlyService.getHabitat().addIndex(onePortMapper,
             Mapper.class.getName(), networkListener.getPort());
