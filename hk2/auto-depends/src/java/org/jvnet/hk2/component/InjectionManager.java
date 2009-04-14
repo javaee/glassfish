@@ -37,10 +37,11 @@
 
 package org.jvnet.hk2.component;
 
+import com.sun.hk2.component.InjectionResolver;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.annotation.Annotation;
 import java.util.logging.Logger;
 
@@ -51,8 +52,121 @@ import java.util.logging.Logger;
  *
  * @author Jerome Dochez
  */
-public abstract class InjectionManager<T extends Annotation> {
+public class InjectionManager {
 
+   /**
+     * Initializes the component by performing injection.
+     *
+     * @param component component instance to inject
+     * @throws ComponentException
+     *      if injection failed for some reason.
+     */    
+    public void inject(Object component, InjectionResolver... targets) {
+        try {
+            assert component!=null;
+
+            // TODO: faster implementation needed.
+
+            Class currentClass = component.getClass();
+            while (!currentClass.equals(Object.class)) {
+                // get the list of the instances variable
+                for (Field field : currentClass.getDeclaredFields()) {
+
+                    for (InjectionResolver target : targets) {
+                        Annotation inject = field.getAnnotation(target.type);
+                        if (inject == null)     continue;
+
+                        Class fieldType = field.getType();
+                        try {
+                            Object value = target.getValue(component, field, fieldType);
+                            if (value != null) {
+                                field.setAccessible(true);
+                                field.set(component, value);
+                                Injectable injectable;
+                                try {
+                                    injectable = Injectable.class.cast(value);
+                                    if (injectable!=null) {
+                                        injectable.injectedInto(component);
+                                    }
+                                } catch (Exception e) {
+                                }
+
+                            } else {
+                                if(!target.isOptional(inject)) {
+                                    Logger.getAnonymousLogger().info("Cannot inject " + field + " in component" + component);
+                                    throw new UnsatisfiedDepedencyException(field);
+                                }
+                            }
+                        } catch (ComponentException e) {
+                            if (!target.isOptional(inject)) {
+                                throw new UnsatisfiedDepedencyException(field,e);
+                            }
+                        } catch (IllegalAccessException e) {
+                            throw new ComponentException("Injection failed on " + field.toGenericString(), e);
+                        } catch (RuntimeException e) {
+                            throw new ComponentException("Injection failed on " + field.toGenericString(), e);
+                        }
+                    }
+                }
+                for (Method method : currentClass.getDeclaredMethods()) {
+
+                    for (InjectionResolver target : targets) {
+
+                        Annotation inject = method.getAnnotation(target.type);
+                        if (inject == null)     continue;
+
+                        if (method.getReturnType() != void.class) {
+                            throw new ComponentException("Injection failed on %s : setter method is not declared with a void return type",method.toGenericString());
+                        }
+
+                        Class<?>[] paramTypes = method.getParameterTypes();
+
+                        if (paramTypes.length > 1) {
+                            throw new ComponentException("injection failed on %s : setter method takes more than 1 parameter",method.toGenericString());
+                        }
+                        if (paramTypes.length == 0) {
+                            throw new ComponentException("injection failed on %s : setter method does not take a parameter",method.toGenericString());
+                        }
+
+                        try {
+                            Object value = target.getValue(component, method, paramTypes[0]);
+                            if (value != null) {
+                                method.setAccessible(true);
+                                method.invoke(component, value);
+                                try {
+                                    Injectable injectable = Injectable.class.cast(value);
+                                    if (injectable!=null) {
+                                        injectable.injectedInto(component);
+                                    }
+                                } catch (Exception e) {
+                                }
+                            } else {
+                                if (!target.isOptional(inject))
+                                    throw new UnsatisfiedDepedencyException(method);
+                            }
+                        } catch (IllegalAccessException e) {
+                            throw new ComponentException("Injection failed on " + method.toGenericString(), e);
+                        } catch (InvocationTargetException e) {
+                            throw new ComponentException("Injection failed on " + method.toGenericString(), e);
+                        } catch (RuntimeException e) {
+                            throw new ComponentException("Injection failed on " + method.toGenericString(), e);
+                        }
+                    }
+                }
+                currentClass = currentClass.getSuperclass();
+            }
+        } catch (LinkageError e) {
+            // reflection could trigger additional classloading and resolution, so it can cause linkage error.
+            // report more information to assist diagnosis.
+            // can't trust component.toString() as the object could be in an inconsistent state.
+            Class<?> cls = component.getClass();
+            LinkageError x = new LinkageError("Failed to inject " + cls +" from "+cls.getClassLoader());
+            x.initCause(e);
+            throw x;
+        }
+
+
+    }
     /**
      * Initializes the component by performing injection.
      *
@@ -60,7 +174,7 @@ public abstract class InjectionManager<T extends Annotation> {
      * @throws ComponentException
      *      if injection failed for some reason.
      */
-    public void inject(Object component, Class<T> type) throws ComponentException {
+/*     public void inject(Object component, Class<T extends Annotation> type) throws ComponentException {
         try {
             assert component!=null;
 
@@ -158,10 +272,5 @@ public abstract class InjectionManager<T extends Annotation> {
             throw x;
         }
     }
-
-    protected boolean isOptional(T annotation) {
-        return false;
-    }
-
-    protected abstract Object getValue(Object component, AnnotatedElement annotated, Class type) throws ComponentException;
+    */
 }
