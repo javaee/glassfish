@@ -150,7 +150,8 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
                      * Process this library JAR to record the need to download it
                      * and any JARs it depends on.
                      */
-                    processJARDependencies(libJar.toURI(), downloads, jarURIsProcessed);
+                    URI jarURI = URI.create("jar:" + libJar.toURI().getRawSchemeSpecificPart());
+                    processJARDependencies(jarURI, downloads, jarURIsProcessed);
                 }
             }
         }
@@ -198,6 +199,8 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
                 } else {
                     dependencyFileURI = URI.create(dependencyURI.getRawSchemeSpecificPart());
                 }
+            } else {
+                dependencyFileURI = dependencyURI;
             }
             jarFileDependency = new FullAndPartURIs(dependencyURI, 
                     earDirUserURI(dc()).resolve(earURI.relativize(dependencyFileURI)));
