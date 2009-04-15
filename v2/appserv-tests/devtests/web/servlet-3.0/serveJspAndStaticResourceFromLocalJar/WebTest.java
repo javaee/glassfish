@@ -22,6 +22,7 @@ public class WebTest {
         new SimpleReporterAdapter("appserv-tests");
     private static final String TEST_NAME =
         "serve-jsp-and-static-resource-from-local-jar";
+    private static final String EXPECTED_RESPONSE = "Hello World!";
 
     private String host;
     private String port;
@@ -43,7 +44,7 @@ public class WebTest {
     public void doTest() {
         try { 
             invokeJspServlet();
-            //invokeDefaultServlet();
+            invokeDefaultServlet();
             stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             stat.addStatus(TEST_NAME, stat.FAIL);
@@ -61,6 +62,13 @@ public class WebTest {
         if (responseCode != 200) {
             throw new Exception("Unexpected response code: " + responseCode);
         }
+        InputStream is = conn.getInputStream();
+        BufferedReader input = new BufferedReader(new InputStreamReader(is));
+        String response = input.readLine();
+        if (!EXPECTED_RESPONSE.equals(response)) {
+            throw new Exception("Wrong response, expected: " +
+                EXPECTED_RESPONSE + ", received: " + response);
+        }
     }
 
     private void invokeDefaultServlet() throws Exception {
@@ -72,6 +80,13 @@ public class WebTest {
         int responseCode = conn.getResponseCode();
         if (responseCode != 200) {
             throw new Exception("Unexpected response code: " + responseCode);
+        }
+        InputStream is = conn.getInputStream();
+        BufferedReader input = new BufferedReader(new InputStreamReader(is));
+        String response = input.readLine();
+        if (!EXPECTED_RESPONSE.equals(response)) {
+            throw new Exception("Wrong response, expected: " +
+                EXPECTED_RESPONSE + ", received: " + response);
         }
     }
 }
