@@ -280,7 +280,7 @@ public class AppClientContainer {
         this.configurator = configurator;
     }
 
-    public void prepare() throws NamingException, IOException, InstantiationException, IllegalAccessException, InjectionException, ClassNotFoundException, SAXParseException {
+    public void prepare() throws NamingException, IOException, InstantiationException, IllegalAccessException, InjectionException, ClassNotFoundException, SAXParseException, NoSuchMethodException {
         completePreparation();
     }
 
@@ -307,7 +307,7 @@ public class AppClientContainer {
      *
      * @throws java.lang.Exception
      */
-    private void completePreparation() throws NamingException, IOException, InstantiationException, IllegalAccessException, InjectionException, ClassNotFoundException, SAXParseException {
+    private void completePreparation() throws NamingException, IOException, InstantiationException, IllegalAccessException, InjectionException, ClassNotFoundException, SAXParseException, NoSuchMethodException {
         if (state != State.INSTANTIATED) {
             throw new IllegalStateException();
         }
@@ -327,6 +327,11 @@ public class AppClientContainer {
         cleanup = Cleanup.arrangeForShutdownCleanup(logger);
 
         prepareURLStreamHandling();
+
+        /**
+         * We don't really need the main method here but we do need the side-effects.
+         */
+        getMainMethod();
 
         state = State.PREPARED;
     }
