@@ -1,13 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<!DOCTYPE faces-config PUBLIC
-    '-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.1//EN'
-    'http://java.sun.com/dtd/web-facesconfig_1_1.dtd'>
-
-<faces-config>
+<faces-config version="1.2" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_1_2.xsd">
     <application>
         <locale-config>
-          <default-locale>en</default-locale>
+            <default-locale>en</default-locale>
         </locale-config>
     </application>
 </faces-config>

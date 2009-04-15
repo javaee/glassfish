@@ -1,9 +1,14 @@
-<sun:treeNode	id="${artifactId}TreeNode1"
-		text="${artifactId} Test Node #1"
+<gf:navNode	id="${artifactId}TreeNode1"
+		label="${artifactId} Test Node #1"
 		url="#{request.contextPath}/${artifactId}/testPage.jsf"
-		imageURL="#{request.contextPath}/resource/images/instance.gif" />
-<sun:treeNode	id="${artifactId}TreeNode2"
-		text="${artifactId} Test Node #2"
+		icon="#{request.contextPath}/resource/images/instance.gif">
+    <gf:navNode id="${artifactId}ExternalPage"
+                label="External Page"
+                url="http://localhost:8080/">
+    </gf:navNode>
+</gf:navNode>
+<gf:navNode	id="${artifactId}TreeNode2"
+		label="${artifactId} Test Node #2"
 		url="#{request.contextPath}/${artifactId}/testPage.jsf"
-		imageURL="#{request.contextPath}/resource/images/instance.gif" >
-</sun:treeNode>
+		icon="#{request.contextPath}/resource/images/instance.gif" >
+</gf:navNode>
