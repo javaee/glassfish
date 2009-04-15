@@ -25,10 +25,12 @@
                 <resolveArtifact artifactId="jdbc-core" groupId="org.glassfish.jdbc.jdbc-ra.jdbc-core" property="core.jar"/>
                 <resolveArtifact artifactId="jdbc30" groupId="org.glassfish.jdbc.jdbc-ra.jdbc30" property="30.jar"/>
                 <resolveArtifact artifactId="jdbc40" groupId="org.glassfish.jdbc.jdbc-ra.jdbc40" property="40.jar"/>
+		<resolveArtifact artifactId="templates" groupId="org.glassfish.jdbc" property="templates.jar"/>
 
 	        <unjar src="${core.jar}" dest="target/classes"/>
 	        <unjar src="${30.jar}" dest="target/classes"/>
 	        <unjar src="${40.jar}" dest="target/classes"/>
+		<unjar src="${templates.jar}" dest="target/classes/templates"/>
 
 		<!-- Creating jars/rars done using ant build.xml -->
             	<property name="compile_classpath" refid="maven.compile.classpath"/>
@@ -69,6 +71,13 @@
       <artifactId>jdbc30</artifactId>
       <version>${project.parent.version}</version>
       <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.glassfish.jdbc</groupId>
+      <artifactId>templates</artifactId>
+      <version>${project.parent.version}</version>
+      <type>distribution-fragment</type>
     </dependency>
 
   </dependencies>

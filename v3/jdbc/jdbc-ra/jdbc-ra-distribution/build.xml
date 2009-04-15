@@ -178,13 +178,18 @@
             <include name="__xa_jdbc_ra.jar"/>
         </jar>
 
+	<echo message="Assembling templates jar"/>
 
+	<jar jarfile="${component.lib.home}/templates.jar" update="true" basedir="${component.classes.dir}/templates"
+		includes="glassfish/lib/install/templates/resources/jdbc/*"> 
+	</jar>
 
 	<delete dir="${component.classes.dir}"/>
 
 	<unjar src="${component.lib.home}/__xa_jdbc_ra.rar" dest="${component.classes.dir}/glassfish/lib/install/applications/__xa_jdbc_ra"/>
 	<unjar src="${component.lib.home}/__ds_jdbc_ra.rar" dest="${component.classes.dir}/glassfish/lib/install/applications/__ds_jdbc_ra"/>
 	<unjar src="${component.lib.home}/__cp_jdbc_ra.rar" dest="${component.classes.dir}/glassfish/lib/install/applications/__cp_jdbc_ra"/>
+	<unjar src="${component.lib.home}/templates.jar" dest="${component.classes.dir}"/>
 
         <zip basedir="${component.classes.dir}" file="${component.target.dir}/jdbc-ra.zip"/>
 
