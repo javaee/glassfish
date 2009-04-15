@@ -102,9 +102,7 @@
         <ant dir="jspConfigDefaultContentType" target="all/>
         <ant dir="jspConfigUndeclaredNS" target="all/>
         <ant dir="jspConfigBuffer" target="all/>
-        <!-- XXX commented out until feature supported
         <ant dir="servlet-3.0/jspServletGetJspResourceFromLocalJar" target="all"/>
-        -->
     </target>
 
     <target name="taglib">
