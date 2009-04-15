@@ -23,8 +23,7 @@
 <property name="customtasks.jar" value="${customtasks.dest}/customAntTasks.jar"/>
 <property name="junit.jar" value="${env.APS_HOME}/devtests/deployment/extlib/junit-4.3.1.jar" />
 <property name="junit-anttask.jar" value="${testsRoot}/extlib/junit-anttask.jar"/>
-<property name="annotation.report.dir" value="${testsRoot}/annotation/report"/>
-
+<property name="annotation.report.dir" value="${testsRoot}/annotation/report"/> 
 <property name="testDomain" value="depltest-domain"/>
 <property name="testAgent" value="depltest-agent"/>
 <property name="testServer" value="depltest-server"/>
@@ -582,12 +581,9 @@ AS_ADMIN_MASTERPASSWORD=changeit
             resultproperty="deployActionResult">
         <arg line="${command} ${jsr88.uri} ${admin.user} ${admin.password} ${arg.list}"/>
         <classpath>
-            <path location="${inst}/lib/javaee.jar"/>
-            <path location="${inst}/lib/appserv-deployment-client.jar"/>
-            <path location="${inst}/lib/appserv-ext.jar"/>
-            <path location="${inst}/lib/jmxremote_optional.jar"/>
+            <path refid="gfv3.classpath"/>
+            <path location="${junit.jar}"/>
             <path location="${env.APS_HOME}/devtests/deployment/util/build"/>
-            <path location="${java.home}/lib/tools.jar"/>
         </classpath>
         <sysproperty key="com.sun.aas.installRoot" value="${inst}"/>
         <sysproperty key="deploymentTarget" value="${targetPlatform}"/>
@@ -595,10 +591,10 @@ AS_ADMIN_MASTERPASSWORD=changeit
         <sysproperty key="java.library.path" value="${inst}/lib"/>
         <sysproperty key="com.sun.aas.configRoot" value="${inst}/config"/>
         <sysproperty key="java.endorsed.dirs" value="${inst}/lib/endorsed"/>
-        <!--
+<!--
         <jvmarg value="-Xdebug"/>
-        <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9999"/>
-        -->
+        <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=9999"/>
+-->
     </javaWithResult>
     <condition property="deployFailed">
         <or>

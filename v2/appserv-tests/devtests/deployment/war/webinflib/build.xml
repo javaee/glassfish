@@ -178,7 +178,6 @@
             <param name="desc" value="war/webinflib Test asadmin redeploy"/>
         </antcall>
         <antcall target="undeploy.asadmin"/>
-<!--
 
         <antcall target="deploy.jsr88"/>
         <antcall target="run.positive">
@@ -205,7 +204,6 @@
         </antcall>
 
         <antcall target="undeploy.jsr88"/>
--->
     </target>
 
     <target name="clobber" depends="clean">

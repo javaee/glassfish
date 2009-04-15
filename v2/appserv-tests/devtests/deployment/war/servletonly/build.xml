@@ -191,7 +191,6 @@
         </antcall>
         <antcall target="undeploy.asadmin"/>
 
-<!--
         <antcall target="deploy.jsr88"/>
         <antcall target="run.positive">
             <param name="log.id" value="6"/>
@@ -223,8 +222,8 @@
             <param name="log.id" value="10"/>
             <param name="desc" value="war/servletonly Test jsr88 redeploy start"/>
         </antcall>
+
         <antcall target="undeploy.jsr88"/>
--->
     </target>
 
     <target name="clobber" depends="clean">
