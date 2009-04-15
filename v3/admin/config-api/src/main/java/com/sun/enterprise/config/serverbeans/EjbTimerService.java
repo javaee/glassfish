@@ -75,7 +75,7 @@ public interface EjbTimerService extends ConfigBeanProxy, Injectable, PropertyBa
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="7000")
+    @Attribute (defaultValue="1000")
     @Min(value=1)
     String getMinimumDeliveryIntervalInMillis();
 
