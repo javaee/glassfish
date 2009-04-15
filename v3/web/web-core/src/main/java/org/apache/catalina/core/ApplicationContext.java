@@ -464,7 +464,9 @@ public class ApplicationContext
 
         if (!file.exists()) {
             try {
-                return getRealJarPath(path);
+                URL u = context.getLoader().getClassLoader().getResource(
+                    META_INF_RESOURCES + path);
+                return (u != null ? u.getPath() : null);
             } catch (Exception e) {
                 return null;
             }
@@ -631,10 +633,7 @@ public class ApplicationContext
 		         new DirContextURLStreamHandler(resources));
                 } catch (Exception e) {
                     try {
-                        String jarFilePath = getRealJarPath(path);
-                        if (jarFilePath != null) {
-                            return new URL("jar:file:" + jarFilePath);
-                        }
+                        return context.getLoader().getClassLoader().getResource(META_INF_RESOURCES + path);
                     } catch (Exception ee) {
                         // do nothing
                     }
@@ -643,42 +642,6 @@ public class ApplicationContext
         }
 
         return (null);
-    }
-
-
-    /**
-     * Searches the /META-INF/resources folders of the JAR files inside
-     * /WEB-INF/lib for the resource with the given relative path, and
-     * returns the real path to the resource, which uses this format:
-     * <tt>&lt;absolute-file-path-on-disk&gt;/WEB-INF/lib/&lt;name-of-jar&gt;!/META-INF/resources/&lt;path&gt;</tt>,
-     * where <tt>&lt;path&gt;</tt> corresponds to the <tt>path</tt>
-     * argument passed to this method.
-     *
-     * @param path the path of the resource to be looked up
-     * (relative to the /META-INF/resources directory of a JAR file inside
-     * /WEB-INF/lib)
-     *
-     * @return the real path to the requested resource, or null if not found
-     */
-    private String getRealJarPath(String path) throws Exception {
-        // The given path is relative to /META-INF/resources
-        String searchPath = META_INF_RESOURCES + path;
-        for (URL u : ((URLClassLoader)
-                    context.getLoader().getClassLoader()).getURLs()) {
-            String libPath = u.getPath();
-            if (libPath.endsWith(".jar")) {
-                JarFile jf = new JarFile(libPath);
-                Enumeration<JarEntry> entries = jf.entries();
-                while (entries.hasMoreElements()) {
-                    JarEntry anEntry = entries.nextElement();
-                    if (anEntry.getName().equals(searchPath)) {
-                        return libPath + "!/" + searchPath;
-                    }
-                }
-            }
-        }
-
-        return null;                         
     }
 
 
