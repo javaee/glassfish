@@ -121,6 +121,27 @@ public interface DeploymentContext extends ApplicationContext, ExecutionContext 
      */
     public <T> T getModuleMetaData(Class<T> metadataType);
 
+
+    /**
+     * Stores application level metadata in the context so other deployer's
+     * can have access to it. The transient meta-data is not persistent which
+     * mean that any modification to it will not be available at the next
+     * server restart and will need to be reset.
+     *
+     * @param metadataKey key of the meta date.
+     * @param metaData the meta data itself
+     */
+    public void addTransientAppMetaData(String metaDataKey, Object metaData);
+
+    /**
+     * Returns the meta data for the given key
+     *
+     * @param metadataKey key of the meta date.
+     * @param metadataType type of the meta date.
+     * @return
+     */
+    public  <T> T getTransientAppMetaData(String metaDataKey, Class<T> metadataType);
+
     /**
      * Add a new ClassFileTransformer to the context. Once all the deployers potentially
      * invalidating the application class loader (as indicated by the

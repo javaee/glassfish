@@ -455,6 +455,20 @@ public class EarDeployer implements Deployer {
                     }
 
                     @Override
+                    public void addTransientAppMetaData(String metaDataKey, 
+                        Object metaData) {
+                        context.addTransientAppMetaData(metaDataKey, 
+                            metaData);
+                    }
+
+                    @Override
+                    public  <T> T getTransientAppMetaData(String metaDataKey, 
+                        Class<T> metadataType) {
+                        return context.getTransientAppMetaData(metaDataKey, 
+                            metadataType);
+                    }
+
+                    @Override
                     public Properties getModuleProps() {
                         return moduleProps;
                     }

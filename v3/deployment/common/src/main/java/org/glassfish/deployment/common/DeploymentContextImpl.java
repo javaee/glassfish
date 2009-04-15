@@ -71,6 +71,7 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
     boolean tempClassLoaderInvalidated = false;
     ClassLoader sharableTemp = null;
     Map<String, Properties> modulePropsMap = new HashMap<String, Properties>();
+    Map<String, Object> transientAppMetaData = new HashMap<String, Object>();
 
     /** Creates a new instance of DeploymentContext */
     public DeploymentContextImpl(ActionReport actionReport, Logger logger, 
@@ -260,6 +261,21 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
         copy.addAll(modulesMetaData.values());
         return copy;
     }
+
+    public void addTransientAppMetaData(String metaDataKey, Object metaData) {
+        if (metaData!=null) {
+            transientAppMetaData.put(metaDataKey, metaData);
+        }
+    }
+
+    public <T> T getTransientAppMetaData(String key, Class<T> metadataType) {
+        Object metaData = transientAppMetaData.get(key);
+        if (metaData != null) {
+            return metadataType.cast(metaData);
+        }
+        return null;
+    }
+
 
     /**
      * Returns the properties that will be persisted as a key value pair at
