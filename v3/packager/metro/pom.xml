@@ -117,6 +117,10 @@
            <artifactId>webservices.security</artifactId>
            <version>${project.version}</version>
        </dependency> 
+       <dependency>
+            <groupId>com.sun.grizzly</groupId>
+	    <artifactId>grizzly-http-servlet</artifactId>
+        </dependency>
     </dependencies>
 
     <profiles>

@@ -125,10 +125,6 @@
         </dependency>
         <dependency>
             <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-http-servlet</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.grizzly</groupId>
             <artifactId>grizzly-messagesbus</artifactId>
         </dependency>
         <dependency>
