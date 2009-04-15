@@ -923,6 +923,7 @@ public class SunDeploymentManager implements DeploymentManager {
         DFDeploymentProperties deplProps = new DFDeploymentProperties();
         deplProps.setForce(true);
         deplProps.setName(moduleID);
+        deplProps.setRedeploy(true);
         return deplProps;
    }
    

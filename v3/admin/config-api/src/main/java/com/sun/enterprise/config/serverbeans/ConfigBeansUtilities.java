@@ -209,18 +209,21 @@ public final class ConfigBeansUtilities {
             }
         }
         if (theServer != null) {
-            List<Module> modulesToExclude = excludeSystemApps ?
+            List<Named> modulesToExclude = excludeSystemApps ?
                 domain.getSystemApplications().getModules() : Collections.EMPTY_LIST;
             List<ApplicationRef> result = new ArrayList<ApplicationRef>();
-          nextAppRef:
               for (ApplicationRef candidateRef : theServer.getApplicationRef()) {
                 String appRefModuleName = candidateRef.getRef();
-                for (Module sysModule : modulesToExclude) {
+                boolean isSystem = false;
+                for (Named sysModule : modulesToExclude) {
                     if (sysModule.getName().equals(appRefModuleName)) {
-                        break nextAppRef;
+                        isSystem = true;
+                        break;
                     }
                 }
-                result.add(candidateRef);
+                if (!isSystem) {
+                    result.add(candidateRef);
+                }
             }
             return result;
         } else {

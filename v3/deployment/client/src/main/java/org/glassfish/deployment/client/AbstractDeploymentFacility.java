@@ -273,6 +273,19 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
                 }
                 deploymentOptions.put(DFDeploymentProperties.DEPLOYMENT_PLAN, dp.getAbsolutePath());
             }
+
+            // it's redeploy, set the enable attribute accordingly
+            if (Boolean.valueOf((String)deploymentOptions.get(
+                DFDeploymentProperties.REDEPLOY))) {
+                String appName = (String)deploymentOptions.get(
+                    DFDeploymentProperties.NAME);
+                String enabledAttr = getAppRefEnabledAttr(
+                    targets[0].getName(), appName);
+                deploymentOptions.put(DFDeploymentProperties.ENABLED, 
+                    enabledAttr);
+                deploymentOptions.remove(DFDeploymentProperties.REDEPLOY);
+            }
+
             DFCommandRunner commandRunner = getDFCommandRunner(
                     "deploy", deploymentOptions, new String[]{tmpFile.getAbsolutePath()});
             DFDeploymentStatus ds = commandRunner.run();
@@ -380,6 +393,58 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
                 throw commandExecutionException;
             }
             return subModuleInfoList;
+        } catch (Throwable ex) {
+            if (commandExecutionException == null) {
+                throw new RuntimeException("error submitting remote command", ex);
+            } else {
+                throw (IOException) ex;
+            }
+        }
+    }
+
+    private String getAppRefEnabledAttr(String target, String moduleName) throws IOException {
+        ensureConnected();
+        String commandName = GET_COMMAND;
+        Map commandParams = new HashMap();
+        String patternParam = "servers.server." + target + ".application-ref." 
+            + moduleName + ".enabled";
+        commandParams.put("pattern", patternParam);
+        DFDeploymentStatus mainStatus = null;
+        Throwable commandExecutionException = null;
+        try {
+            DFCommandRunner commandRunner = getDFCommandRunner(commandName, commandParams, null);
+            DFDeploymentStatus ds = commandRunner.run();
+            mainStatus = ds.getMainStatus();
+            String enabledAttr = null;
+
+            if (mainStatus.getStatus() != DFDeploymentStatus.Status.FAILURE) {
+                for (Iterator subIter = ds.getSubStages(); subIter.hasNext();) {
+                    DFDeploymentStatus subStage =
+                        (DFDeploymentStatus) subIter.next();
+                    for (Iterator subIter2 = subStage.getSubStages() ; 
+                        subIter2.hasNext();) {
+                        DFDeploymentStatus subStage2 =
+                            (DFDeploymentStatus) subIter2.next();
+                        String result = subStage2.getStageStatusMessage();
+                        enabledAttr = 
+                            getValueFromDottedNameGetResult(result);
+                    }
+                }
+            } else {
+                /*
+                 * We received a response from the server but the status was
+                 * reported as unsuccessful.  Because getContextRoot does not
+                 * return a ProgressObject which the caller could use to find
+                 * out about the success or failure, we must throw an exception
+                 * so the caller knows about the failure.
+                 */
+                commandExecutionException = new IOException(
+                        "remote command execution failed on the server");
+                commandExecutionException.initCause(
+                        new RuntimeException(mainStatus.getAllStageMessages()));
+                throw commandExecutionException;
+            }
+            return enabledAttr;
         } catch (Throwable ex) {
             if (commandExecutionException == null) {
                 throw new RuntimeException("error submitting remote command", ex);
@@ -773,7 +838,7 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
      * @return DFProgressObject for monitoring progress and querying status
      */
     public DFProgressObject undeploy(Target[] targets, String moduleID) {
-        return undeploy(targets, moduleID, null);
+        return undeploy(targets, moduleID, new HashMap());
     }
 
     /**
@@ -850,11 +915,17 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
     }
 
     private String getValueFromDottedNameListResult(String result) {
+        if (result == null) {
+            return null;
+        }
         int index = result.lastIndexOf(".");
         return result.substring(index+1);
     }
 
     private String getValueFromDottedNameGetResult(String result) {
+        if (result == null) {
+            return null;
+        }
         int index = result.lastIndexOf("=");
         return result.substring(index+1);
     }
