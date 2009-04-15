@@ -99,9 +99,9 @@
         <ant dir="jspCacheTaglibPrecompile" target="all"/>
         <ant dir="jspReloadGeneratedServletIfUpdated" target="all"/>
         <ant dir="jspTrimDirectiveWhitespaces" target="all"/>
-        <ant dir="jspConfigDefaultContentType" target="all/>
-        <ant dir="jspConfigUndeclaredNS" target="all/>
-        <ant dir="jspConfigBuffer" target="all/>
+        <ant dir="jspConfigDefaultContentType" target="all"/>
+        <ant dir="jspConfigUndeclaredNS" target="all"/>
+        <ant dir="jspConfigBuffer" target="all"/>
         <ant dir="servlet-3.0/jspServletGetJspResourceFromLocalJar" target="all"/>
     </target>
 
