@@ -113,23 +113,35 @@ public class SnifferAnnotationScanner implements ClassVisitor {
                 if (entryName.endsWith(".class")) {
                     // scan class files
                     InputStream is = archive.getEntry(entryName);
-                    ClassReader cr = new ClassReader(is);
-                    cr.accept(this, crFlags);
+                    try {
+                        ClassReader cr = new ClassReader(is);
+                        cr.accept(this, crFlags);
+                    } finally {
+                        is.close();
+                    }
                 } else if (entryName.endsWith(".jar")) {
                     // scan class files inside jar
                     try {
                         File archiveRoot = new File(archive.getURI());
                         File file = new File(archiveRoot, entryName);
                         JarFile jarFile = new JarFile(file);
-                        Enumeration<JarEntry> jarEntries = jarFile.entries();
-                        while (jarEntries.hasMoreElements()) {
-                            JarEntry entry = jarEntries.nextElement();
-                            String jarEntryName = entry.getName();
-                            if (jarEntryName.endsWith(".class")) {
-                                InputStream is = jarFile.getInputStream(entry);
-                                ClassReader cr = new ClassReader(is);
-                                cr.accept(this, crFlags);
+                        try {
+                            Enumeration<JarEntry> jarEntries = jarFile.entries();
+                            while (jarEntries.hasMoreElements()) {
+                                JarEntry entry = jarEntries.nextElement();
+                                String jarEntryName = entry.getName();
+                                if (jarEntryName.endsWith(".class")) {
+                                    InputStream is = jarFile.getInputStream(entry);
+                                    try {
+                                        ClassReader cr = new ClassReader(is);
+                                        cr.accept(this, crFlags);
+                                    } finally {
+                                        is.close();
+                                    }
+                                }
                             }
+                        } finally {
+                            jarFile.close();
                         }
                     } catch (IOException ioe) {
                         logger.warning("Error scan jar entry" + entryName + 
