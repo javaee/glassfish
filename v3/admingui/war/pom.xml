@@ -75,7 +75,7 @@
     <dependency>
 	<groupId>com.sun.mojarra</groupId>
 	<artifactId>mojarra-scales</artifactId>
-	<version>1.2</version>
+	<version>${scales.version}</version>
 	<scope>compile</scope>
     <exclusions>
         <exclusion>
