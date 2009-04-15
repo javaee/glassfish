@@ -46,7 +46,9 @@ import java.util.HashMap;
 import java.util.Properties;
 import org.glassfish.api.I18n;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
@@ -68,6 +70,7 @@ import org.glassfish.admin.cli.resources.ResourceManager;
  * @author Jennifer Chou
  */
 @Service (name=ServerTags.CONNECTOR_CONNECTION_POOL)
+@Scoped(PerLookup.class)
 @I18n("create.connector.connection.pool")
 public class ConnectorConnectionPoolManager implements ResourceManager{
 

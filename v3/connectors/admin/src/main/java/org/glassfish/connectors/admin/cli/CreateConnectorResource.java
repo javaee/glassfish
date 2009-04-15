@@ -40,26 +40,22 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
+import static org.glassfish.resource.common.ResourceConstants.*;
+import org.glassfish.resource.common.ResourceStatus;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.TransactionFailure;
-import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
-import com.sun.enterprise.config.serverbeans.ConnectorResource;
-import com.sun.enterprise.config.serverbeans.Resource;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import org.glassfish.api.admin.config.Property;
 
-import java.beans.PropertyVetoException;
 import java.util.Properties;
-import java.util.Map;
+import java.util.HashMap;
+
 
 /**
  * Create Connector Resource Command
@@ -80,6 +76,9 @@ public class CreateConnectorResource implements AdminCommand {
 
     @Param(optional=true)
     String description;
+
+    @Param(name="objecttype", defaultValue="user", optional=true)
+    String objectType;
     
     @Param(name="property", optional=true)
     Properties properties;
@@ -107,80 +106,39 @@ public class CreateConnectorResource implements AdminCommand {
 
         Server targetServer = domain.getServerNamed(target);
         
-        if (jndiName == null) {
-            report.setMessage(localStrings.getLocalString("create.connector.resource.noJndiName",
-                            "No JNDI name defined for connector resource."));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-        }
-        // ensure we don't already have one of this name
-        for (Resource resource : resources.getResources()) {
-            if (resource instanceof ConnectorResource) {
-                if (((ConnectorResource) resource).getJndiName().equals(jndiName)) {
-                    report.setMessage(localStrings.getLocalString("create.connector.resource.duplicate",
-                            "A connector resource named {0} already exists.", jndiName));
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    return;
-                }
-            }
-        }
+        HashMap attrList = new HashMap();
+        attrList.put(POOL_NAME, poolName);
+        attrList.put(ENABLED, enabled);
+        attrList.put(JNDI_NAME, jndiName);
+        attrList.put(ServerTags.DESCRIPTION, description);
+        attrList.put(ServerTags.OBJECT_TYPE, objectType);
 
-        if (!isConnPoolExists(resources, poolName)) {
-            report.setMessage(localStrings.getLocalString("create.connector.resource.connPoolNotFound",
-                "Attribute value (pool-name = {0}) is not found in list of connector connection pools.", poolName));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-        }
+        ResourceStatus rs;
 
         try {
-            ConfigSupport.apply(new SingleConfigCode<Resources>() {
-
-                public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-
-                    ConnectorResource newResource = param.createChild(ConnectorResource.class);
-                    newResource.setJndiName(jndiName);
-                    if (description != null) {
-                        newResource.setDescription(description);
-                    }
-                    newResource.setPoolName(poolName);
-                    newResource.setEnabled(enabled.toString());
-                    if (properties != null) {
-                        for ( Map.Entry e : properties.entrySet()) {
-                            Property prop = newResource.createChild(Property.class);
-                            prop.setName((String)e.getKey());       
-                            prop.setValue((String)e.getValue());
-                            newResource.getProperty().add(prop);
-                        }
-                    }
-                    param.getResources().add(newResource);
-                    return newResource;
-                }
-            }, resources);
-
-            if (!targetServer.isResourceRefExists( jndiName)) {
-                targetServer.createResourceRef( enabled.toString(), jndiName);
-            }
-
-        } catch(TransactionFailure tfe) {
+            ConnectorResourceManager connResMgr = new ConnectorResourceManager();
+            rs = connResMgr.create(resources, attrList, properties, targetServer);
+        } catch(Exception e) {
+            String actual = e.getMessage();
+            String def = "Connector resource: {0} could not be created, reason: {1}";
             report.setMessage(localStrings.getLocalString("create.connector.resource.fail",
-                            "Connector resource {0} create failed ", jndiName) +
-                            " " + tfe.getLocalizedMessage());
+                    def, jndiName, actual));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setFailureCause(tfe);
+            report.setFailureCause(e);
+            return;
         }
-        report.setMessage(localStrings.getLocalString("create.connector.resource.success",
-                "Connector resource {0} created successfully", jndiName));
-        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-    }
-
-    private boolean isConnPoolExists(Resources resources, String poolName) {
-        for (Resource resource : resources.getResources()) {
-            if (resource instanceof ConnectorConnectionPool) {
-                if (((ConnectorConnectionPool)resource).getName().equals(poolName)) {
-                    return true;
-                }
+        ActionReport.ExitCode ec = ActionReport.ExitCode.SUCCESS;
+        if (rs.getStatus() == ResourceStatus.FAILURE) {
+            ec = ActionReport.ExitCode.FAILURE;
+            if (rs.getMessage() != null) {
+                report.setMessage(rs.getMessage());
+            } else {
+                 report.setMessage(localStrings.getLocalString("create.connector.resource.fail",
+                    "Connector resource {0} creation failed", jndiName, ""));
             }
+            if (rs.getException() != null)
+                report.setFailureCause(rs.getException());
         }
-        return false;
+        report.setActionExitCode(ec);
     }
 }
