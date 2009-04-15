@@ -40,7 +40,7 @@
 />
 
 
-<!composition template="/layout.xhtml"  guiTitle="$resource{web.headings.webGeneral}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{web.headings.webGeneral}" >
 <!define name="content">
 <event>
         <!beforeCreate

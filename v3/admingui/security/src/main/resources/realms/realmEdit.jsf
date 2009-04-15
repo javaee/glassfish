@@ -37,7 +37,7 @@
 
 #include "/security/realms/realmEditInitPage.inc"
 
-<!composition template="/layout.xhtml"  guiTitle="$resource{i18nSecurity.realm.EditPageTitle}"  guiOnLoad="initClassname('#{myOption}');" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nSecurity.realm.EditPageTitle}"  guiOnLoad="initClassname('#{myOption}');" >
 <!define name="content">
     <event>
     <!beforeCreate

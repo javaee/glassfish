@@ -41,7 +41,7 @@
     }
 />
 <sun:page id="page">
-<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.common.restartRequired}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.common.restartRequired}" >
 <!define name="content">
 <sun:script url="/resource/js/adminjsf.js" />
 <sun:script url="/resource/js/restart.js" />

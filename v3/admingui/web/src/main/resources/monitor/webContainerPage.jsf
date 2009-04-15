@@ -6,7 +6,7 @@ setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
 setAttribute(key="helpKey" value="$resource{help_web.monitorWebContainer}");
 getRequestValue(key="configName" value=>$page{configName});
 />
-<!composition template="/layout.xhtml"  guiTitle="$resource{i18n_web.monitoring.webContainer.pageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.monitoring.webContainer.pageTitle}" >
 <!define name="content">
 #include "/shared/restart.inc"
             <sun:form id="propertyForm">

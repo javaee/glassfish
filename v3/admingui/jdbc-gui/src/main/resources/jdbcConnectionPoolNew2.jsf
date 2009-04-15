@@ -49,7 +49,7 @@
     setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
 />
 
-<!composition template="/layout.xhtml"  guiTitle="$resource{i18njdbc.jdbcConnectionPool.Step2PageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njdbc.jdbcConnectionPool.Step2PageTitle}" >
 <!define name="content">
 
     <event>

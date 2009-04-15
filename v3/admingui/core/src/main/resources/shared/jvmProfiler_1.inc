@@ -37,7 +37,7 @@
 <!-- shared/jvmProfiler_1.inc -->
 <!-- when including this page, should followed by including jvmProfiler_2.inc to make a complete page -->
 
-<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.jvm.ProfilerPageName}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.jvm.ProfilerPageName}" >
 <!define name="content">
     <event>
     <!beforeCreate

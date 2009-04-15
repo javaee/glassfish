@@ -37,7 +37,7 @@
 <!initPage
     setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
 />
-<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.webContainer.storeProp}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.webContainer.storeProp}" >
 <!define name="content">
     <event>
  <!beforeCreate

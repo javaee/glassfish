@@ -38,7 +38,7 @@
         redirect("registration.jsf");
     }
 />
-<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.support.PageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.support.PageTitle}" >
 <!define name="content">
 
 <!beforeCreate

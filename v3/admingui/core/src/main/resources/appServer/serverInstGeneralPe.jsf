@@ -36,7 +36,7 @@
 -->
 
 <!-- appServer/serverInstGeneralPe.jsf -->
-<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.instance.GeneralTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.instance.GeneralTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate

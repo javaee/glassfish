@@ -39,7 +39,7 @@
     setResourceBundle(key="web" bundle="org.glassfish.web.admingui.Strings");
 />
 //<sun:page id="page1">
-<!composition template="/layout.xhtml" guiTitle="$resource{i18n.webAplications.title}">
+<!composition template="/templates/default.layout" guiTitle="$resource{i18n.webAplications.title}">
 <!define name="content">
     <event>
         <!beforeCreate

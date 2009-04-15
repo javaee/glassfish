@@ -39,7 +39,7 @@
     setResourceBundle(key="i18nSecurity" bundle="org.glassfish.security.admingui.Strings")
 	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
 />
-<!composition template="/layout.xhtml"  guiTitle="$resource{i18nSecurity.auditModule.PageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nSecurity.auditModule.PageTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate

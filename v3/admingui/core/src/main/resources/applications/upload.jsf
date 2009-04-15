@@ -37,7 +37,7 @@
 <!initPage
 	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
 />
-<!composition template="/layout.xhtml" guiTitle="$resource{i18n.enterpriseApplications.deployPageTitle}"  guiTemplateOnLoad="uploadInit();"  >
+<!composition template="/templates/default.layout" guiTitle="$resource{i18n.enterpriseApplications.deployPageTitle}"  guiTemplateOnLoad="uploadInit();"  >
 <!define name="content">
     <event>
     <!beforeCreate

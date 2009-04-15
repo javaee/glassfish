@@ -39,7 +39,7 @@
     setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings")
 	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
 />
-<!composition template="/layout.xhtml"  guiTitle="$resource{i18njdbc.jdbcConnectionPool.step1PageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njdbc.jdbcConnectionPool.step1PageTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate

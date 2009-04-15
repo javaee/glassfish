@@ -52,7 +52,7 @@
     setComponentRequired(id="form1:pSheet:pSection:country:country" required="$boolean{false}" );
 
 />  
-<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.reg.PageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.reg.PageTitle}" >
 <!define name="content">
 <sun:script url="/resource/js/adminjsf.js" />
     <event>

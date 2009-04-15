@@ -41,7 +41,7 @@
         setResourceBundle(key="help" bundle="org.glassfish.updatecenter.admingui.Helplinks")
 />
 
-<!composition template="/layout.xhtml"  guiTitle="$resource{i18nUC.updateCenter.ConfigPageTitle}" guiOnLoad="showSection('#{proxyGroup}');">
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nUC.updateCenter.ConfigPageTitle}" guiOnLoad="showSection('#{proxyGroup}');">
 <!define name="content">
  
 #include "/shared/restart.inc"    

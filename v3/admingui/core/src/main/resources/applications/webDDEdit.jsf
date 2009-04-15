@@ -35,7 +35,7 @@
 -->
 <!-- applications/webDDEdit.jsf -->
 <!namespace sc="http://java.sun.com/mojarra/scales" />
-<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.enterpriseApplications.descriptorPageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.enterpriseApplications.descriptorPageTitle}" >
 <!define name="content">
     <event>
         <!beforeCreate

@@ -37,7 +37,7 @@
 <!-- shared/jvmOptions_1.jsf -->
 <!-- when including this page, should followed by including jvmOptions_2.inc to make a complete page -->
 
-<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.jvmOptions.Title}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.jvmOptions.Title}" >
 <!define name="content">
     <event>
     <!beforeCreate

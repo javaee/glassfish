@@ -310,9 +310,12 @@ public class PluginHandlers {
 	while (content.startsWith("/")) {
 	    content = content.substring(1);
 	}
+        String key = content;
+        if (!key.contains("://")) {
+            key = "/" + point.getConsoleConfigId() + "/" + content;
+        }
 	LayoutDefinition def =
-	    LayoutDefinitionManager.getLayoutDefinition(ctx,
-		"/" + point.getConsoleConfigId() + "/" + content);
+	    LayoutDefinitionManager.getLayoutDefinition(ctx, key);
 	LayoutViewHandler.buildUIComponentTree(ctx, parent, def);
     }
 

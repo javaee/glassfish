@@ -40,7 +40,7 @@
 	setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
 />
 //<sun:page id="page1">
-<!composition template="/layout.xhtml"  guiTitle="$resource{i18n_web.httpService.accesslog.pageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.httpService.accesslog.pageTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate

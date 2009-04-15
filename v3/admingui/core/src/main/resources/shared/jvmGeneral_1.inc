@@ -37,7 +37,7 @@
 <!-- when including this page, should followed by including jvmGeneral_2.inc to make a complete page -->
 
 
-<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.jvm.GeneralTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.jvm.GeneralTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate

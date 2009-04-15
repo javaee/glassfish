@@ -40,7 +40,7 @@
 	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
     setAttribute(key="edit" value="#{true}" );
 />
-<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.edJmxConnector.sslSettingsLabel}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.edJmxConnector.sslSettingsLabel}" >
 <!define name="content">
     <event>
   <!beforeCreate

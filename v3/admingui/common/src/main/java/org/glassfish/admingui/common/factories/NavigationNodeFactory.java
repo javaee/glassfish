@@ -17,12 +17,23 @@ import javax.servlet.ServletContext;
  * another component or set, or a different component type altogether.  The supported
  * attributes are:
  * <ul>
- * <li>id</li>
- * <li>label - The text label for the top of the tree</li>
- * <li>url - An optional URL</li>
- * <li>icon - The URL to an image for the tree's root icon</li>
- * <li>target</li>
- * <li>expanded</li>
+ *  <li>__id__ - The ID of the component.  While IDs are optional, it is a good idea to provide a specific ID,
+ *      especially if one expects to want to add nodes under this node in the future.</li>
+ *  <li>__label__ - The text label for the navigation node</li>
+ *  <li>__url__ - An optional URL</li>
+ *  <li>__icon__ - The URL to an image for the tree's root icon</li>
+ *  <li>__target__ - An optional target to specify on the link created for this node (e.g., '_blank')</li>
+ *  <li>__expanded__ - A boolean indicating whether or not this node should be expanded by default.</li>
+ *  <li>__template__ - An optional parameter indicate what template should be used to decorate the page to
+ *      which this node links.  The value will be a relative path to a template file provided by the Admin
+ *      Console or one of its plugins (e.g., '/pluginId/templates/customLayout.xhmtl').  The default value
+ *      is <code>/layout.xhtml</code>.  If the <code>url</code> parameter points to an external resource,
+ *      the URL rendered will point a page in the admin console.  This page will then read the contents of the
+ *      users-specified URL and display those contents in the appropriate spot in the specified template.</li>
+ *  <li>__processPage__ - This option is intended to be used in conjunction with the <code>template</code>
+ *      parameter.  By default, the page read and displayed will be rendered as is.  If, however, the plugin
+ *      author wishes the page to processed by the Admin Console runtime, the parameter should be set to "true."
+ *      The URL referenced must then return valid markup.</li>
  * </ul>
  */
 @UIComponentFactory("gf:navNode")
@@ -69,8 +80,10 @@ public class NavigationNodeFactory extends ComponentFactoryBase {
             setOption(context, comp, descriptor, "imageURL", icon);
         }
         if (url != null) {
-            if (template != null) {
+            final boolean externalResource = ((String) url).contains("://");
+            if (externalResource) {
                 comp.getAttributes().put("realUrl", url);
+                comp.getAttributes().put("template", (template != null) ? template : "/templates/default.layout");
                 url = ((ServletContext)context.getExternalContext().getContext()).getContextPath() + "/" +
                         "pluginPage.jsf?id=" + comp.getClientId(context);
             }

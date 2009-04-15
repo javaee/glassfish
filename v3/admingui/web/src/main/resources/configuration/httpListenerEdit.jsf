@@ -40,7 +40,7 @@
     setAttribute(key="edit" value="#{true}" )
 />
 //<sun:page id="page1">
-<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.headings.EditHttpListener}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.headings.EditHttpListener}" >
 <!define name="content">
     <event>
         <!beforeCreate

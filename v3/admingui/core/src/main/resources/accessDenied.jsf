@@ -39,7 +39,7 @@
     setAttribute(key="alertDetail" value="You do not have access to the GlassFish Admin Console.  Please logout.");
     setAttribute(key="alertType" value="error");
 />
-<!composition template="/layout.xhtml" guiTitle="$resource{i18n.commonTasks.title}">
+<!composition template="/templates/default.layout" guiTitle="$resource{i18n.commonTasks.title}">
 <!define name="guiLeftNav">
 </define>
 <!define name="content">

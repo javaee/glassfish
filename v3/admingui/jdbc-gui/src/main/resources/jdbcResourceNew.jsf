@@ -42,7 +42,7 @@
     setAttribute(key="edit" value="#{false}");
 />
     
-<!composition template="/layout.xhtml"  guiTitle="$resource{i18njdbc.jdbcResource.newPageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njdbc.jdbcResource.newPageTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate

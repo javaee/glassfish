@@ -12,6 +12,6 @@
 	}
     </ui:event>
 
-    <ui:composition template="/#{sessionScope.guiNavScheme}Layout.xhtml" />
+    <ui:composition template="/templates/#{sessionScope.guiNavScheme}Layout.xhtml" />
 
 </html>

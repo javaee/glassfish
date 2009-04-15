@@ -40,7 +40,7 @@
 	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
 />
 //<sun:page id="page1">
-<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.httpFileCache.Title}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.httpFileCache.Title}" >
 <!define name="content">
     <event>
     <!beforeCreate

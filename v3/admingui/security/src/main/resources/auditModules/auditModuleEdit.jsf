@@ -39,7 +39,7 @@
     setAttribute(key="edit" value="#{true}" )
     setResourceBundle(key="i18nSecurity" bundle="org.glassfish.security.admingui.Strings")
 />
-<!composition template="/layout.xhtml"  guiTitle="$resource{i18nSecurity.auditModule.EditPageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nSecurity.auditModule.EditPageTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate

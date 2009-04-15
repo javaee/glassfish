@@ -40,7 +40,7 @@
 <!initPage
     setAttribute(key="helpKey" value="$resource{help.serverInstAppsConfig}" );
 />
-<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.server.AppsConfigPageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.server.AppsConfigPageTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate
