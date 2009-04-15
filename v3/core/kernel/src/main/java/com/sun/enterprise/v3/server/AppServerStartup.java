@@ -236,6 +236,13 @@ public class AppServerStartup implements ModuleStartup {
                 " startup services(" + (System.currentTimeMillis() - platformInitTime)  + "ms)" +
                 " total(" + (System.currentTimeMillis() - context.getCreationTime()) + "ms)");
 
+        try {
+			// it will only be set when called from AsadminMain and the env. variable AS_DEBUG is set to true
+            long realstart = Long.parseLong(System.getProperty("WALL_CLOCK_START"));
+            logger.info("TOTAL TIME INCLUDING CLI: "  + (System.currentTimeMillis() - realstart));
+        }
+        catch(Exception e) {
+		}
         // wait for async services
         try {
             result.get(1000, TimeUnit.MILLISECONDS);
