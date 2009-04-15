@@ -93,10 +93,10 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.extras</groupId>
+            <groupId>org.glassfish</groupId>
             <artifactId>bean-validator</artifactId>
-            <version>4.0.0.Alpha3</version>
         </dependency>
+
         <!-- test dependencies -->
         <dependency>
             <groupId>org.glassfish.tests</groupId>

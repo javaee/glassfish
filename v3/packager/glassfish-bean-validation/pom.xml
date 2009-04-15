@@ -91,11 +91,10 @@
         <!--
           modules to be included in this bundle
         -->       
-       <dependency>
-            <groupId>org.glassfish.extras</groupId>
+        <dependency>
+            <groupId>org.glassfish</groupId>
             <artifactId>bean-validator</artifactId>
-            <version>${bean-validator.version}</version>
-	</dependency> 
+        </dependency>
     </dependencies>
     <profiles>
         <profile>

@@ -151,7 +151,7 @@
         <schema2beans.osgi.version>5.5</schema2beans.osgi.version>
 	<antlr.version>2.7.6</antlr.version>
 	<mq.version>4.4-005</mq.version>
-	<bean-validator.version>4.0.0.Alpha3</bean-validator.version>
+	<bean-validator.version>3.0-JBoss-4.0.0.Alpha3-b01</bean-validator.version>
 	<jersey.version>1.0.1</jersey.version>
     </properties>
 
@@ -783,7 +783,11 @@
                 <version>${grizzly.version}</version>
           </dependency>
 
-
+          <dependency>
+                <groupId>org.glassfish</groupId>
+                <artifactId>bean-validator</artifactId>
+                <version>3.0-JBoss-4.0.0.Alpha3-b01</version>
+          </dependency>
             
         </dependencies>
     </dependencyManagement>

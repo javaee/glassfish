@@ -484,11 +484,10 @@
             <artifactId>grizzly-compat</artifactId>
             <scope>runtime</scope>
         </dependency>
-	<dependency>
-            <groupId>org.glassfish.extras</groupId>
+        <dependency>
+            <groupId>org.glassfish</groupId>
             <artifactId>bean-validator</artifactId>
-            <version>${bean-validator.version}</version>
-	</dependency>
+        </dependency>
         <dependency>
             <groupId>org.glassfish.extras</groupId>
             <artifactId>osgi-container</artifactId>
