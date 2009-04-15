@@ -464,6 +464,8 @@ public class ApplicationContext
 
         if (!file.exists()) {
             try {
+                // Try looking up resource in
+                // WEB-INF/lib/[*.jar]/META-INF/resources
                 URL u = context.getLoader().getClassLoader().getResource(
                     META_INF_RESOURCES + path);
                 return (u != null ? u.getPath() : null);
@@ -633,6 +635,8 @@ public class ApplicationContext
 		         new DirContextURLStreamHandler(resources));
                 } catch (Exception e) {
                     try {
+                        // Try looking up resource in
+                        // WEB-INF/lib/[*.jar]/META-INF/resources
                         return context.getLoader().getClassLoader().getResource(META_INF_RESOURCES + path);
                     } catch (Exception ee) {
                         // do nothing
@@ -682,6 +686,8 @@ public class ApplicationContext
                     return (((Resource) resource).streamContent());
             } catch (Exception e) {
                 try {
+                    // Try looking up resource in
+                    // WEB-INF/lib/[*.jar]/META-INF/resources
                     URL u = context.getLoader().getClassLoader().getResource(
                         META_INF_RESOURCES + path);
                     return (u != null ? u.openStream() : null);
