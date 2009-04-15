@@ -1,5 +1,11 @@
-<staticText value="This is a new page.  Here is the output of the test 'echo' handler: '#{requestScope.myVar}'">
-    <ui:event type="beforeCreate">
-	${artifactId}.echo("ECHO THIS!" out="#{requestScope.myVar}");
-    </ui:event>
-</staticText>
+<!composition template="/layout.xhtml"  guiTitle="$resource{i18n.enterpriseApplications.editPageTitle}">
+<!define name="content">
+    <sun:form id="${artifactId}Form">
+	<staticText value="This is a new page.  Here is the output of the test 'echo' handler: '#{requestScope.myVar}'">
+	    <ui:event type="beforeCreate">
+		${artifactId}.echo("ECHO THIS!" out="#{requestScope.myVar}");
+	    </ui:event>
+	</staticText>
+    </sun:form>
+</define>
+</composition>
