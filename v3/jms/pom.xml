@@ -11,7 +11,7 @@
     <groupId>org.glassfish.jms</groupId>
     <artifactId>jms</artifactId>
     <name>JMS Module</name>
-    <packaging>hk2-jar</packaging>
+    <packaging>pom</packaging>
     <version>3.0-SNAPSHOT</version>
  <developers>
         <developer>
