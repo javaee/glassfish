@@ -60,7 +60,6 @@ import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.DownloadableArtifacts;
 import org.glassfish.deployment.common.DownloadableArtifacts.FullAndPartURIs;
-import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 
 class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
 
@@ -195,9 +194,9 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
             URI dependencyFileURI = null;
             if (dependencyURI.getScheme().equals("jar")) {
                 if ( ! dependencyURI.getSchemeSpecificPart().startsWith("file:")) {
-                    dependencyFileURI = URI.create("file:" + dependencyURI.getSchemeSpecificPart());
+                    dependencyFileURI = URI.create("file:" + dependencyURI.getRawSchemeSpecificPart());
                 } else {
-                    dependencyFileURI = URI.create(dependencyURI.getSchemeSpecificPart());
+                    dependencyFileURI = URI.create(dependencyURI.getRawSchemeSpecificPart());
                 }
             }
             jarFileDependency = new FullAndPartURIs(dependencyURI, 

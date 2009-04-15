@@ -187,7 +187,7 @@ public abstract class PayloadFilesManager {
                 if ( ! parentPathFromPart.endsWith("/")) {
                     parentPathFromPart = parentPathFromPart + "/";
                 }
-                parentURI = parentURI.resolve(parentPathFromPart);
+                parentURI = parentURI.resolve(new File(parentPathFromPart).toURI());
             }
             return parentURI;
         }

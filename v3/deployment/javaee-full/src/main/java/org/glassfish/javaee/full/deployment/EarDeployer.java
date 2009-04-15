@@ -253,7 +253,7 @@ public class EarDeployer implements Deployer {
     private InputStream openByteCodeStream(final String classResourceName) throws URISyntaxException, MalformedURLException, IOException {
         URI currentModule = getClass().getProtectionDomain().getCodeSource().getLocation().toURI();
         URI classURI = currentModule.resolve("gf-client-module.jar!" + classResourceName);
-        return new URI("jar", classURI.toASCIIString(), null).toURL().openStream();
+        return URI.create("jar:" + classURI.toString()).toURL().openStream();
 //        return getClass().getResourceAsStream(classResourceName);
     }
 

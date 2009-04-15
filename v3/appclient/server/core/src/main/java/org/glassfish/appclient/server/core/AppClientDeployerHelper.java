@@ -292,7 +292,7 @@ abstract class AppClientDeployerHelper {
     protected InputStream openByteCodeStream(final String resourceName) throws URISyntaxException, MalformedURLException, IOException {
        URI currentModule = getClass().getProtectionDomain().getCodeSource().getLocation().toURI();
        URI classURI = currentModule.resolve("gf-client-module.jar!" + resourceName);
-       return new URI("jar", classURI.toASCIIString(), null).toURL().openStream();
+       return URI.create("jar:" + classURI.toString()).toURL().openStream();
     }
 
     
