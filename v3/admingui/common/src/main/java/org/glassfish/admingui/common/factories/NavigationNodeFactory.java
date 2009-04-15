@@ -27,7 +27,7 @@ import javax.servlet.ServletContext;
  *  <li>__template__ - An optional parameter indicate what template should be used to decorate the page to
  *      which this node links.  The value will be a relative path to a template file provided by the Admin
  *      Console or one of its plugins (e.g., '/pluginId/templates/customLayout.xhmtl').  The default value
- *      is <code>/layout.xhtml</code>.  If the <code>url</code> parameter points to an external resource,
+ *      is <code>/templates/default.layout</code>.  If the <code>url</code> parameter points to an external resource,
  *      the URL rendered will point a page in the admin console.  This page will then read the contents of the
  *      users-specified URL and display those contents in the appropriate spot in the specified template.</li>
  *  <li>__processPage__ - This option is intended to be used in conjunction with the <code>template</code>
