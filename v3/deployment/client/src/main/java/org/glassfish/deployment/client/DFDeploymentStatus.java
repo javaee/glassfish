@@ -288,6 +288,14 @@ public class DFDeploymentStatus implements java.io.Serializable {
             if (parent!=null) {
                 return parent.getMainStatus();
             }
+            // if this is the top level DF, strip the outmost level 
+            // which contains no information
+            Iterator subIter = getSubStages();
+            if (subIter.hasNext()) {
+                DFDeploymentStatus subStage =
+                    (DFDeploymentStatus) subIter.next();
+                return subStage;
+            } 
             return this;
         }
         

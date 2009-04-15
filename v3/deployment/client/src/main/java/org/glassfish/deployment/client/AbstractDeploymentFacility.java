@@ -291,12 +291,7 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
             DFDeploymentStatus ds = commandRunner.run();
             DFDeploymentStatus mainStatus = ds.getMainStatus();
             if (mainStatus.getStatus() != DFDeploymentStatus.Status.FAILURE) {
-                String moduleID = null;
-                for (Iterator subIter = ds.getSubStages(); subIter.hasNext();) {
-                    DFDeploymentStatus subStage =
-                        (DFDeploymentStatus) subIter.next();
-                    moduleID = subStage.getProperty(DFDeploymentProperties.NAME);
-                }
+                String moduleID = mainStatus.getProperty(DFDeploymentProperties.NAME);
                 // TODO: support multiple targets
                 TargetModuleIDImpl[] targetModuleIDs = new TargetModuleIDImpl[targets.length];
                 int i = 0;
@@ -367,16 +362,12 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
             List<String> subModuleInfoList = new ArrayList<String>();
 
             if (mainStatus.getStatus() != DFDeploymentStatus.Status.FAILURE) {
-                for (Iterator subIter = ds.getSubStages(); subIter.hasNext();) {
+                for (Iterator subIter = mainStatus.getSubStages(); 
+                    subIter.hasNext();) {
                     DFDeploymentStatus subStage =
                         (DFDeploymentStatus) subIter.next();
-                    for (Iterator subIter2 = subStage.getSubStages() ; 
-                        subIter2.hasNext();) {
-                        DFDeploymentStatus subStage2 =
-                            (DFDeploymentStatus) subIter2.next();
-                        subModuleInfoList.add(
-                            subStage2.getStageStatusMessage());
-                    }
+                    subModuleInfoList.add(
+                        subStage.getStageStatusMessage());
                 }
             } else {
                 /*
@@ -418,17 +409,13 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
             String enabledAttr = null;
 
             if (mainStatus.getStatus() != DFDeploymentStatus.Status.FAILURE) {
-                for (Iterator subIter = ds.getSubStages(); subIter.hasNext();) {
+                Iterator subIter = mainStatus.getSubStages(); 
+                if (subIter.hasNext()) {
                     DFDeploymentStatus subStage =
                         (DFDeploymentStatus) subIter.next();
-                    for (Iterator subIter2 = subStage.getSubStages() ; 
-                        subIter2.hasNext();) {
-                        DFDeploymentStatus subStage2 =
-                            (DFDeploymentStatus) subIter2.next();
-                        String result = subStage2.getStageStatusMessage();
-                        enabledAttr = 
-                            getValueFromDottedNameGetResult(result);
-                    }
+                    String result = subStage.getStageStatusMessage();
+                    enabledAttr = 
+                        getValueFromDottedNameGetResult(result);
                 }
             } else {
                 /*
@@ -470,17 +457,13 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
             String contextRoot = null;
 
             if (mainStatus.getStatus() != DFDeploymentStatus.Status.FAILURE) {
-                for (Iterator subIter = ds.getSubStages(); subIter.hasNext();) {
+                Iterator subIter = mainStatus.getSubStages(); 
+                if (subIter.hasNext()) {
                     DFDeploymentStatus subStage =
                         (DFDeploymentStatus) subIter.next();
-                    for (Iterator subIter2 = subStage.getSubStages() ; 
-                        subIter2.hasNext();) {
-                        DFDeploymentStatus subStage2 =
-                            (DFDeploymentStatus) subIter2.next();
-                        String result = subStage2.getStageStatusMessage();
-                        contextRoot = 
-                            getValueFromDottedNameGetResult(result);
-                    }
+                    String result = subStage.getStageStatusMessage();
+                    contextRoot = 
+                        getValueFromDottedNameGetResult(result);
                 }
             } else {
                 /*
@@ -521,15 +504,11 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
             List<String> resultList = new ArrayList<String>();
 
             if (mainStatus.getStatus() != DFDeploymentStatus.Status.FAILURE) {
-                for (Iterator subIter = ds.getSubStages(); subIter.hasNext();) {
+                for (Iterator subIter = mainStatus.getSubStages(); 
+                    subIter.hasNext();) {
                     DFDeploymentStatus subStage =
                         (DFDeploymentStatus) subIter.next();
-                    for (Iterator subIter2 = subStage.getSubStages() ; 
-                        subIter2.hasNext();) {
-                        DFDeploymentStatus subStage2 =
-                            (DFDeploymentStatus) subIter2.next();
-                        resultList.add(subStage2.getStageStatusMessage());
-                    }
+                    resultList.add(subStage.getStageStatusMessage());
                 }
                 return getJavaEEModuleTypeFromResult(resultList);
             } else {
@@ -569,18 +548,14 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
             List<Target> targets = new ArrayList<Target>();
 
             if (mainStatus.getStatus() != DFDeploymentStatus.Status.FAILURE) {
-                for (Iterator subIter = ds.getSubStages(); subIter.hasNext();) {
+                for (Iterator subIter = mainStatus.getSubStages(); 
+                    subIter.hasNext();) {
                     DFDeploymentStatus subStage =
                         (DFDeploymentStatus) subIter.next();
-                    for (Iterator subIter2 = subStage.getSubStages() ; 
-                        subIter2.hasNext();) {
-                        DFDeploymentStatus subStage2 =
-                            (DFDeploymentStatus) subIter2.next();
-                        String result = subStage2.getStageStatusMessage();
-                        String targetName = 
-                            getValueFromDottedNameListResult(result);
-                        targets.add(createTarget(targetName));
-                    }
+                    String result = subStage.getStageStatusMessage();
+                    String targetName = 
+                        getValueFromDottedNameListResult(result);
+                    targets.add(createTarget(targetName));
                 }
                 Target[] result =
                     new Target[targets.size()];
@@ -685,13 +660,13 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
 
             HostAndPort hap = null;
             if (mainStatus.getStatus() != DFDeploymentStatus.Status.FAILURE) {
-                for (Iterator iter = ds.getSubStages() ; iter.hasNext();) {
+                Iterator subIter = mainStatus.getSubStages(); 
+                if (subIter.hasNext()) {
                     DFDeploymentStatus subStage =
-                        (DFDeploymentStatus) iter.next();
+                        (DFDeploymentStatus) subIter.next();
                     String hostPortStr = subStage.getStageStatusMessage();
                     if (hostPortStr != null && !hostPortStr.trim().equals("")) {
                         hap = new HostAndPort(hostPortStr);
-                        break;
                     }
                 }
                 return hap;
@@ -756,30 +731,24 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
                  * of those will be a substage for each module assigned to
                  * that target
                  */
-                for (Iterator targetIter = ds.getSubStages() ; targetIter.hasNext();) {
-                    DFDeploymentStatus targetSubStage =
-                        (DFDeploymentStatus) targetIter.next();
-                    String targetName = targetSubStage.getStageStatusMessage();
-
-                    /*
-                     * Look for the caller-supplied target that matches this result.
-                     */
-                    for (Target target: targets) {
-                        if (target.getName().equals(targetName)) {
-                            /*
-                             * Each substage below the target substage is for
-                             * a module deployed to that target.
-                             */
-                            for (Iterator appRefIter = targetSubStage.getSubStages(); appRefIter.hasNext();) {
-                                DFDeploymentStatus appRefSubStage = (DFDeploymentStatus) appRefIter.next();
-                                String moduleID = appRefSubStage.getStageStatusMessage();
-                                if (target instanceof TargetImpl) {
-                                    TargetModuleIDImpl targetModuleID =
-                                        new TargetModuleIDImpl((TargetImpl)target, moduleID);
-                                    targetModuleIDList.add(targetModuleID);
-                               }
+                String targetName = mainStatus.getStageStatusMessage();
+                /*
+                 * Look for the caller-supplied target that matches this result.
+                 */
+                for (Target target: targets) {
+                    if (target.getName().equals(targetName)) {
+                        /*
+                         * Each substage below the target substage is for
+                         * a module deployed to that target.
+                         */
+                        for (Iterator appRefIter = mainStatus.getSubStages(); appRefIter.hasNext();) {
+                            DFDeploymentStatus appRefSubStage = (DFDeploymentStatus) appRefIter.next();
+                            String moduleID = appRefSubStage.getStageStatusMessage();
+                            if (target instanceof TargetImpl) {
+                                TargetModuleIDImpl targetModuleID =
+                                    new TargetModuleIDImpl((TargetImpl)target, moduleID);
+                                targetModuleIDList.add(targetModuleID);
                             }
-                            break;
                         }
                     }
                 }
