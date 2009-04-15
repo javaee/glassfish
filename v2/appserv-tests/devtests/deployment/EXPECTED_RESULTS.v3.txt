@@ -1,7 +1,7 @@
 Results of deployment dev tests with v3
 ===========================================================
 
-PASS: 39
+PASS: 68
 FAIL: 0
 UNKNOWN: 0
 
@@ -10,14 +10,32 @@ UNKNOWN: 0
 [PASSED] servletonly : war/servletonly Test v3 asadmin redeploy (server)
 [PASSED] servletonly : war/servletonly Test asadmin disable (server)
 [PASSED] servletonly : war/servletonly Test asadmin enable (server)
+[PASSED] servletonly : war/servletonly Test jsr88 deploy (server)
+[PASSED] servletonly : war/servletonly Test jsr88 stopped state (server)
+[PASSED] servletonly : war/servletonly Test jsr88 started state (server)
+[PASSED] servletonly : war/servletonly Test jsr88 redeploy stop (server)
+[PASSED] servletonly : war/servletonly Test jsr88 redeploy start (server)
 [PASSED] jsponly : war/jsponly Test asadmin deploy (server)
 [PASSED] jsponly : war/jsponly Test asadmin redeploy (server)
+[PASSED] jsponly : war/jsponly Test jsr88 deploy (server)
+[PASSED] jsponly : war/jsponly Test jsr88 stopped state (server)
+[PASSED] jsponly : war/jsponly Test jsr88 started state (server)
+[PASSED] jsponly : war/jsponly Test jsr88 redeploy stop (server)
+[PASSED] jsponly : war/jsponly Test jsr88 redeploy start (server)
 [PASSED] htmlonly : war/htmlonly Test asadmin deploy (server)
 [PASSED] htmlonly : war/htmlonly Test asadmin redeploy (server)
 [PASSED] htmlonly : war/htmlonly Test asadmin disable (server)
 [PASSED] htmlonly : war/htmlonly Test asadmin enable (server)
+[PASSED] htmlonly : war/htmlonly Test jsr88 deploy (server)
+[PASSED] htmlonly : war/htmlonly Test jsr88 stopped state (server)
+[PASSED] htmlonly : war/htmlonly Test jsr88 started state (server)
+[PASSED] htmlonly : war/htmlonly Test jsr88 redeploy (server)
 [PASSED] webinflib : war/webinflib Test asadmin deploy (server)
 [PASSED] webinflib : war/webinflib Test asadmin redeploy (server)
+[PASSED] webinflib : war/webinflib Test jsr88 deploy (server)
+[PASSED] webinflib : war/webinflib Test jsr88 stopped state (server)
+[PASSED] webinflib : war/webinflib Test jsr88 started state (server)
+[PASSED] webinflib : war/webinflib Test jsr88 redeploy (server)
 [PASSED] deploydir : war/deploydir Test asadmin deploydir
 [PASSED] deploydir : war/deploydir Test asadmin redeploydir
 [PASSED] deploydir : war/deploydir Test asadmin v3 redeploydir
@@ -30,16 +48,27 @@ UNKNOWN: 0
 [PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after deploy
 [PASSED] nojarexpansion : war/nojarexpansion Test asadmin redeploy (server)
 [PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after redeploy
+[PASSED] nojarexpansion : war/nojarexpansionTest jsr88 deploy (server)
+[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after jsr88 deploy
+[PASSED] nojarexpansion : war/nojarexpansion Test jsr88 redeploy (server)
+[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after jsr88 redeploy
 [PASSED] earwithwar : ear/earwithwar Test asadmin deploy (server)
 [PASSED] earwithwar : ear/earwithwar Test asadmin redeploy (server)
-[PASSED] earwithwar : ear/earwithwar Test asadmin disable (server)  
-[PASSED] earwithwar : ear/earwithwar Test asadmin enable (server) 
+[PASSED] earwithwar : ear/earwithwar Test asadmin disable (server)
+[PASSED] earwithwar : ear/earwithwar Test asadmin enable (server)
+[PASSED] earwithwar : ear/earwithwar Test jsr88 deploy (server)
+[PASSED] earwithwar : ear/earwithwar Test jsr88 stopped state (server)
+[PASSED] earwithwar : ear/earwithwar Test jsr88 started state (server)
+[PASSED] earwithwar : ear/earwithwar Test jsr88 redeploy stop (server)
+[PASSED] earwithwar : ear/earwithwar Test jsr88 redeploy start (server)
 [PASSED] earwithall2 : ear/earwithall2 Test asadmin deploy (server)
 [PASSED] earwithall2 : ear/earwithall2 Test asadmin disable (server)
 [PASSED] earwithall2 : ear/earwithall2 Test asadmin enable (server)
 [PASSED] earwithall2 : ear/earwithall2 Test asadmin redeploy (server)
 [PASSED] libClassPath : libClasspath Test asadmin deploy (server)
 [PASSED] manifestClassPath : libClasspath Test asadmin deploy (server)
+[PASSED] simple : jsr88/war/simple deploy test
+[PASSED] simple : jsr88/war/simple redeploy test
 [PASSED] jsp : ejb30/war/jsp Test asadmin deploy
 [PASSED] jsp : ejb30/war/jsp Test asadmin redeploy
 [PASSED] servlet : ejb30/war/servlet Test asadmin deploy
