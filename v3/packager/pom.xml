@@ -64,6 +64,7 @@
 	<module>glassfish-grizzly</module>
 	<module>glassfish-api</module>
 	<module>glassfish-nucleus</module>
+	<module>glassfish-corba-omgapi</module>
 	<module>glassfish-common</module>
 	<module>glassfish-common-full</module>
 	<module>glassfish-registration</module>
@@ -71,7 +72,6 @@
 	<module>glassfish-amx</module>
 	<module>glassfish-jca</module>
 	<module>glassfish-jpa</module>
-	<module>glassfish-corba-omgapi</module>
 	<module>glassfish-codegen</module>
 	<module>glassfish-corba</module>
 	<module>glassfish-jta</module>
@@ -95,7 +95,6 @@
 	<module>glassfish-scripting</module>
 	<module>javadb</module>
 	<module>jersey</module>	
-	<module>glassfish-bean-validation</module>
     </modules>
 
     <build>
