@@ -5,8 +5,11 @@
  */
 
 import javax.enterprise.deploy.spi.status.ProgressListener;
-import com.sun.enterprise.deployapi.ProgressObjectImpl;
-import com.sun.enterprise.deployapi.SunTarget;
+import org.glassfish.deployapi.ProgressObjectImpl;
+import org.glassfish.deployapi.TargetImpl;
+import org.glassfish.deployment.client.DeploymentFacilityFactory;
+import org.glassfish.deployment.client.DeploymentFacility;
+import org.glassfish.deployment.client.AbstractDeploymentFacility;
 import javax.enterprise.deploy.shared.StateType;
 
 import java.io.File;
@@ -36,7 +39,7 @@ public class TestProgressObjectImpl {
      */
     public class MyProgressObjectImpl extends ProgressObjectImpl {
        
-        public MyProgressObjectImpl(SunTarget target) {
+        public MyProgressObjectImpl(TargetImpl target) {
             super(target);
         }
         
@@ -120,9 +123,10 @@ public class TestProgressObjectImpl {
      */
     private void addNewListenerDuringEventHandling() {
         /*
-         *Create a SunTarget just to satisfy the signature of the constructor for the progress object implementation.
+         *Create a TargetImpl just to satisfy the signature of the constructor for the progress object implementation.
          */
-        SunTarget target = new SunTarget("localhost", "4848");
+        DeploymentFacility df = DeploymentFacilityFactory.getDeploymentFacility();
+        TargetImpl target = new TargetImpl((AbstractDeploymentFacility)df, "test", "test");
         theProgressObjectImpl = new MyProgressObjectImpl(target);
         TestProgressObjectImpl.MeddlingListenerAdder meddlingListener1 = new TestProgressObjectImpl.MeddlingListenerAdder();
         TestProgressObjectImpl.MeddlingListenerAdder meddlingListener2 = new TestProgressObjectImpl.MeddlingListenerAdder();

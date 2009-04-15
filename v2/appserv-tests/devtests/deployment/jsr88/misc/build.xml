@@ -15,13 +15,7 @@
     <property name="webServicesWorkaroundCheckWarFile" value="exampleFromJ2EETutorial/cb/provided-wars/jaxrpc-coffee-distributor.war"/>
 
     <path id="jsr88.exec.classpath">
-        <pathelement location="${inst}/lib/j2ee.jar"/>
-        <pathelement location="${inst}/lib/appserv-cmp.jar"/>
-        <pathelement location="${inst}/lib/webservices-rt.jar"/>
-        <pathelement location="${inst}/lib/webservices-tools.jar"/>
-        <pathelement location="${inst}/lib/appserv-admin.jar"/>
-        <pathelement location="${inst}/lib/appserv-rt.jar"/>
-        <pathelement location="${inst}/lib/appserv-ext.jar"/>
+        <path refid="gfv3.classpath"/>
         <pathelement location="${env.APS_HOME}/devtests/deployment/util/build"/>
         <pathelement location="${inst}/jdk/lib/tools.jar"/>
     </path>
@@ -37,12 +31,9 @@
                debug="on"
                failonerror="true">
             <classpath> 
+                <path refid="gfv3.classpath"/>
                 <path refid="test.compile.classpath"/>
-                  <fileset dir="${s1as.home}/lib">
-                    <include name="*.jar"/>
-                  </fileset>
-                  
-                  <pathelement location="../../util/build"/> <!-- need this to find the JSR88Deployer -->
+                <pathelement location="../../util/build"/> <!-- need this to find the JSR88Deployer -->
             </classpath>
         </javac>
     </target>

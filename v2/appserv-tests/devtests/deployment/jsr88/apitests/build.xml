@@ -8,7 +8,7 @@
 
     <property file="./../../../../config.properties"/>
 
-    &common;
+    &commonBuild;
     <property name="archivedir" value="${build}/archives"/>
 
     <path id="jsr88api.test.classpath">
