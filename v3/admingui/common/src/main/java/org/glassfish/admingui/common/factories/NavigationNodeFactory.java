@@ -9,6 +9,7 @@ import com.sun.jsftemplating.component.factory.ComponentFactoryBase;
 import com.sun.jsftemplating.layout.descriptors.LayoutComponent;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+import javax.servlet.ServletContext;
 
 /**
  * The NavigationNodeFactory provides an abstraction layer for the Woodstock treeNode
@@ -26,6 +27,7 @@ import javax.faces.context.FacesContext;
  */
 @UIComponentFactory("gf:navNode")
 public class NavigationNodeFactory extends ComponentFactoryBase {
+
     /**
      *	<p> This is the factory method responsible for creating the
      *	    <code>UIComponent</code>.</p>
@@ -45,26 +47,33 @@ public class NavigationNodeFactory extends ComponentFactoryBase {
             comp.setId(compId);
         }
 
-        final Object url = descriptor.getOption("url");
+        Object url = descriptor.getOption("url");
         final Object icon = descriptor.getOption("icon");
         final Object label = descriptor.getOption("label");
         final Object target = descriptor.getOption("target");
         final Object expanded = descriptor.getOption("expanded");
+        final Object template = descriptor.getOption("template");
+        final Object processPage = descriptor.getOption("processPage");
 
         // Set all the attributes / properties
         if (label != null) {
-            setOption(context, comp, descriptor, "text",label);
+            setOption(context, comp, descriptor, "text", label);
         }
         if (target != null) {
-            setOption(context, comp, descriptor, "target",target);
+            setOption(context, comp, descriptor, "target", target);
         }
         if (expanded != null) {
-            setOption(context, comp, descriptor, "expanded",expanded);
+            setOption(context, comp, descriptor, "expanded", expanded);
         }
         if (icon != null) {
             setOption(context, comp, descriptor, "imageURL", icon);
         }
         if (url != null) {
+            if (template != null) {
+                comp.getAttributes().put("realUrl", url);
+                url = ((ServletContext)context.getExternalContext().getContext()).getContextPath() + "/" +
+                        "pluginPage.jsf?id=" + comp.getClientId(context);
+            }
             setOption(context, comp, descriptor, "url", url);
             if (icon != null) {
                 UIComponent imageHyperlink = context.getApplication().createComponent("com.sun.webui.jsf.ImageHyperlink");
@@ -75,6 +84,8 @@ public class NavigationNodeFactory extends ComponentFactoryBase {
                 comp.getFacets().put("image", imageHyperlink);
             }
         }
+
+        comp.getAttributes().put("processPage", (processPage != null) ? processPage : false);
 
         // Return the component
         return comp;

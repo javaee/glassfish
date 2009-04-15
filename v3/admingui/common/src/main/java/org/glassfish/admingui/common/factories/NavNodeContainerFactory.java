@@ -40,6 +40,10 @@ public class NavNodeContainerFactory extends ComponentFactoryBase {
     public UIComponent create(FacesContext context, LayoutComponent descriptor, UIComponent parent) {
         // Create the UIComponent
         UIComponent comp = createComponent(context, COMPONENT_TYPE, descriptor, parent);
+        String compId = (String) descriptor.getId(context, comp.getParent());
+        if ((compId != null) && (!compId.equals(""))) {
+            comp.setId(compId);
+        }
 
         final Object url = descriptor.getOption("url");
         final Object icon = descriptor.getOption("icon");
