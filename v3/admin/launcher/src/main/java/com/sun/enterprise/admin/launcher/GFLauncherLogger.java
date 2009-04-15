@@ -77,7 +77,7 @@ public class GFLauncherLogger {
     {
         try
         {
-            if (logFile == null) {
+            if (logFile == null || logfileHandler != null) {
                 return;
             }
 

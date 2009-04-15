@@ -47,6 +47,10 @@ import java.util.Hashtable;
  */
 public class AsadminMain {
     public static void main(String[] args) {
+        if(CLIConstants.debugMode) {
+            System.setProperty(CLIConstants.WALL_CLOCK_START_PROP, "" + System.currentTimeMillis());
+        }
+
         AsadminMain main = new AsadminMain();
         int exitCode;
 

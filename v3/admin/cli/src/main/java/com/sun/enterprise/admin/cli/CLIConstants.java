@@ -40,9 +40,21 @@ package com.sun.enterprise.admin.cli;
  * @author bnevins
  */
 class CLIConstants {
-    static final long   WAIT_FOR_DAS_TIME_MS = 90000;
-    static final String NOWATCHDOG = "nowatchdog";
-    static final int    RESTART_EXIT_VALUE = 10;
-    static final String WATCHDOG_SYS_PROP = "GF_FINAL_WATCHDOG_PROCESS";
-    private CLIConstants() {} // no instances allowed!
+    static final long           WAIT_FOR_DAS_TIME_MS    = 90000;
+    static final String         WATCHDOG                = "watchdog";
+    static final int            RESTART_EXIT_VALUE      = 10;
+    static final String         WATCHDOG_SYS_PROP       = "GF_FINAL_WATCHDOG_PROCESS";
+    static final boolean        debugMode;
+    static final String         WALL_CLOCK_START_PROP   = "WALL_CLOCK_START";
+
+    private static final String CLI_DEBUG_MODE_PROP     = "AS_DEBUG";
+
+    static {
+        debugMode = Boolean.parseBoolean(System.getenv(CLI_DEBUG_MODE_PROP)) ||
+                    Boolean.getBoolean(CLI_DEBUG_MODE_PROP);
+    }
+
+    private CLIConstants() {
+       // no instances allowed!
+    }
 }

@@ -78,6 +78,14 @@ public abstract class GFLauncher {
             GFLauncherLogger.removeLogFileHandler();
         }
     }
+    /**
+     * Launches the server - but forces the setup() to go through again.
+     * @throws com.sun.enterprise.admin.launcher.GFLauncherException
+     */
+    public final synchronized void relaunch() throws GFLauncherException {
+        setupCalledByClients = false;
+        launch();
+    }
 
     public final synchronized void launchJVM(List<String> cmdsIn) throws GFLauncherException {
         try {
@@ -250,6 +258,12 @@ public abstract class GFLauncher {
         addIgnoreNull(cmdLine, "-cp");
         addIgnoreNull(cmdLine, getClasspath());
         addIgnoreNull(cmdLine, debugOptions);
+
+        String CLIStartTime = System.getProperty("WALL_CLOCK_START");
+
+        if(CLIStartTime != null && CLIStartTime.length() > 0) {
+            cmdLine.add("-DWALL_CLOCK_START=" + CLIStartTime);
+        }
 
         if(jvmOptions != null)
             addIgnoreNull(cmdLine, jvmOptions.toStringArray());

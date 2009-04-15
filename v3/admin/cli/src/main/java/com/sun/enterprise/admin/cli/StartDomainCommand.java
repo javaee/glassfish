@@ -65,7 +65,7 @@ public class StartDomainCommand extends AbstractCommand {
             }
 
             boolean verbose = getBooleanOption("verbose");
-            boolean watchdog = !getBooleanOption(NOWATCHDOG);
+            boolean watchdog = getBooleanOption(WATCHDOG);
             info.setVerbose(verbose);
             info.setWatchdog(watchdog);
             info.setDebug(getBooleanOption("debug"));
@@ -100,7 +100,11 @@ public class StartDomainCommand extends AbstractCommand {
                 Log.info("watchdog_running");
                 while (launcher.getExitValue() == RESTART_EXIT_VALUE) {
                     Log.info("restart");
-                    launcher.launch();
+
+                    if(CLIConstants.debugMode)
+                        System.setProperty(CLIConstants.WALL_CLOCK_START_PROP, "" + System.currentTimeMillis());
+
+                    launcher.relaunch();
                 }
             }
             else if(!verbose) {
@@ -182,6 +186,12 @@ public class StartDomainCommand extends AbstractCommand {
         cmdline.add("-cp");
         cmdline.add(System.getProperty("java.class.path"));
         cmdline.add("-D" + WATCHDOG_SYS_PROP + "=true");
+
+        if(Boolean.parseBoolean(System.getenv("AS_DEBUG"))) {
+            cmdline.add("-Xdebug");
+            cmdline.add("-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=4444");
+        }
+        
         cmdline.add(getClass().getPackage().getName() + ".ASWatchdog");
         String[] args = AsadminMain.getArgs();
 
