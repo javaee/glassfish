@@ -681,6 +681,13 @@ public class ApplicationContext
                 if (resource instanceof Resource)
                     return (((Resource) resource).streamContent());
             } catch (Exception e) {
+                try {
+                    URL u = context.getLoader().getClassLoader().getResource(
+                        META_INF_RESOURCES + path);
+                    return (u != null ? u.openStream() : null);
+                } catch (Exception ee) {
+                    // do nothing
+                }
             }
         }
         return (null);
