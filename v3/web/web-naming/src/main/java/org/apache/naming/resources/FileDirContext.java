@@ -64,6 +64,7 @@ import java.util.Vector;
 import java.util.Date;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.logging.Logger;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -91,6 +92,8 @@ import org.apache.naming.NamingEntry;
 import org.apache.naming.NamingContextBindingsEnumeration;
 import org.apache.naming.NamingContextEnumeration;
 
+import com.sun.logging.LogDomains;
+
 /**
  * Filesystem Directory Context implementation helper class.
  *
@@ -100,6 +103,8 @@ import org.apache.naming.NamingContextEnumeration;
 
 public class FileDirContext extends BaseDirContext {
 
+    private static final Logger logger = LogDomains.getLogger(
+            FileDirContext.class, LogDomains.WEB_LOGGER);
 
     // -------------------------------------------------------------- Constants
 
@@ -1004,6 +1009,15 @@ public class FileDirContext extends BaseDirContext {
         if (!file.isDirectory())
             return entries;
         String[] names = file.list();
+        if (names==null) {
+            /* Some IO error occurred such as bad file permissions,
+             * lack of file descriptors.
+             * Prevent a NPE with Arrays.sort(names) */
+            logger.warning(sm.getString("fileResources.listingNull",
+                                  file.getAbsolutePath()));
+            return entries;
+        }
+
         Arrays.sort(names);             // Sort alphabetically
         if (names == null)
             return entries;
