@@ -81,13 +81,7 @@ import java.security.PrivilegedAction;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Vector;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
@@ -463,9 +457,7 @@ public class WebappClassLoader
      * Get associated resources.
      */
     public DirContext getResources() {
-
         return this.resources;
-
     }
 
 
@@ -473,9 +465,12 @@ public class WebappClassLoader
      * Set associated resources.
      */
     public void setResources(DirContext resources) {
-
         this.resources = resources;
+    }
 
+
+    public ConcurrentHashMap<String, ResourceEntry> getResourceEntries() {
+        return resourceEntries;
     }
 
 
@@ -483,9 +478,7 @@ public class WebappClassLoader
      * Return the debugging detail level for this component.
      */
     public int getDebug() {
-
         return (this.debug);
-
     }
 
 
@@ -2176,7 +2169,6 @@ public class WebappClassLoader
             try {
 
                 String fullPath = repositories[i] + path;
-
                 Object lookupResult = resources.lookup(fullPath);
                 if (lookupResult instanceof Resource) {
                     resource = (Resource) lookupResult;
@@ -2184,13 +2176,13 @@ public class WebappClassLoader
 
                 // Note : Not getting an exception here means the resource was
                 // found
-                 if (securityManager != null) {
+                if (securityManager != null) {
                     PrivilegedAction<ResourceEntry> dp =
                         new PrivilegedFindResource(files[i], path);
                     entry = AccessController.doPrivileged(dp);
-                 } else {
+                } else {
                     entry = findResourceInternal(files[i], path);
-                 }
+                }
 
                 ResourceAttributes attributes =
                     (ResourceAttributes) resources.getAttributes(fullPath);

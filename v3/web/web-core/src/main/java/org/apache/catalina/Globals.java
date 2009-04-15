@@ -290,4 +290,6 @@ public final class Globals {
      */
     public static final String CONSTRAINT_URI =
         "org.apache.catalina.CONSTRAINT_URI";
+
+    public static final String META_INF_RESOURCES = "META-INF/resources";
 }

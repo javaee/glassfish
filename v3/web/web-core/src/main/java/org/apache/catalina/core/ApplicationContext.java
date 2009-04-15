@@ -135,8 +135,6 @@ public class ApplicationContext
 
     // ----------------------------------------------------- Class Variables
 
-    private static final String META_INF_RESOURCES = "META-INF/resources";
-
     // START PWC 1.2
     private static final SecurityPermission GET_UNWRAPPED_CONTEXT_PERMISSION =
         new SecurityPermission("getUnwrappedContext");
@@ -467,7 +465,7 @@ public class ApplicationContext
                 // Try looking up resource in
                 // WEB-INF/lib/[*.jar]/META-INF/resources
                 URL u = context.getLoader().getClassLoader().getResource(
-                    META_INF_RESOURCES + path);
+                    Globals.META_INF_RESOURCES + path);
                 return (u != null ? u.getPath() : null);
             } catch (Exception e) {
                 return null;
@@ -637,7 +635,7 @@ public class ApplicationContext
                     try {
                         // Try looking up resource in
                         // WEB-INF/lib/[*.jar]/META-INF/resources
-                        return context.getLoader().getClassLoader().getResource(META_INF_RESOURCES + path);
+                        return context.getLoader().getClassLoader().getResource(Globals.META_INF_RESOURCES + path);
                     } catch (Exception ee) {
                         // do nothing
                     }
@@ -689,7 +687,7 @@ public class ApplicationContext
                     // Try looking up resource in
                     // WEB-INF/lib/[*.jar]/META-INF/resources
                     URL u = context.getLoader().getClassLoader().getResource(
-                        META_INF_RESOURCES + path);
+                        Globals.META_INF_RESOURCES + path);
                     return (u != null ? u.openStream() : null);
                 } catch (Exception ee) {
                     // do nothing
