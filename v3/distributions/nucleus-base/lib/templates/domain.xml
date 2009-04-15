@@ -27,28 +27,16 @@
    <config name="%%%CONFIG_MODEL_NAME%%%">
      <http-service> 
         <access-log rotation-interval-in-minutes="15" rotation-suffix="yyyy-MM-dd" />
-        <http-listener default-virtual-server="server" server-name="" address="0.0.0.0" port="%%%HTTP_PORT%%%" id="http-listener-1">
-        </http-listener>
-        <http-listener default-virtual-server="server" enabled="false" security-enabled="true" server-name="" address="0.0.0.0" port="%%%HTTP_SSL_PORT%%%" id="http-listener-2">
-          <ssl ssl3-enabled="false" cert-nickname="s1as" />
-        </http-listener>
-        <http-listener default-virtual-server="__asadmin" server-name="" address="0.0.0.0" port="%%%ADMIN_PORT%%%" id="admin-listener">
-        </http-listener>
-        <virtual-server id="server" http-listeners="http-listener-1,http-listener-2">
+        <virtual-server id="server" network-listeners="http-listener-1,http-listener-2">
           <property value="${com.sun.aas.instanceRoot}/docroot" name="docroot" />
           <property value="${com.sun.aas.instanceRoot}/logs/access" name="accesslog" />
           <property value="false" name="sso-enabled" />
         </virtual-server>
-        <virtual-server id="__asadmin" http-listeners="admin-listener">
+        <virtual-server id="__asadmin" network-listeners="admin-listener">
           <property value="${com.sun.aas.instanceRoot}/docroot" name="docroot" />
           <property value="${com.sun.aas.instanceRoot}/logs/access" name="accesslog" />
           <property value="false" name="sso-enabled" />
         </virtual-server>
-        <request-processing initial-thread-count="2" header-buffer-length-in-bytes="8192" thread-count="20" thread-increment="1" />
-        <keep-alive max-connections="250" />
-        <connection-pool />
-        <http-protocol default-response-type="text/plain; charset=iso-8859-1" forced-response-type="text/plain; charset=iso-8859-1" />
-        <http-file-cache file-caching-enabled="false" globally-enabled="false" />
         <property value="false" name="accessLoggingEnabled" />
       </http-service>
       <iiop-service>
@@ -165,6 +153,35 @@
       <thread-pools>
         <thread-pool thread-pool-id="thread-pool-1" />
       </thread-pools>
+      <network-config>
+        <protocols>
+          <protocol name="http-listener-1">
+            <http header-buffer-length="8192" forced-response-type="text/plain; charset=iso-8859-1" default-virtual-server="server" max-connections="250" server-name="" default-response-type="text/plain; charset=iso-8859-1">
+              <file-cache enabled="false"></file-cache>
+            </http>
+          </protocol>
+          <protocol security-enabled="true" name="http-listener-2">
+            <http header-buffer-length="8192" forced-response-type="text/plain; charset=iso-8859-1" default-virtual-server="server" max-connections="250" server-name="" default-response-type="text/plain; charset=iso-8859-1">
+              <file-cache enabled="false"></file-cache>
+            </http>
+            <ssl ssl3-enabled="false" cert-nickname="s1as"></ssl>
+          </protocol>
+          <protocol name="admin-listener">
+            <http header-buffer-length="8192" forced-response-type="text/plain; charset=iso-8859-1" default-virtual-server="__asadmin" max-connections="250" server-name="" default-response-type="text/plain; charset=iso-8859-1">
+              <file-cache enabled="false"></file-cache>
+            </http>
+          </protocol>
+        </protocols>
+        <network-listeners>
+          <thread-pool max-thread-pool-size="20" min-thread-pool-size="2" thread-pool-id="http-thread-pool" max-queue-size="4096"></thread-pool>
+          <network-listener port="%%%HTTP_PORT%%%" protocol="http-listener-1" transport="tcp" name="http-listener-1" thread-pool="http-thread-pool"></network-listener>
+          <network-listener port="%%%HTTP_SSL_PORT%%%" enabled="false" protocol="http-listener-2" transport="tcp" name="http-listener-2" thread-pool="http-thread-pool"></network-listener>
+          <network-listener port="%%%ADMIN_PORT%%%" protocol="admin-listener" transport="tcp" name="admin-listener" thread-pool="http-thread-pool"></network-listener>
+        </network-listeners>
+        <transports>
+          <transport name="tcp"></transport>
+        </transports>
+      </network-config>
     </config> 
   </configs>
   <property name="administrative.domain.name" value="%%%DOMAIN_NAME%%%"/>
