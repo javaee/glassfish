@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -51,62 +51,43 @@ import org.jvnet.hk2.config.TransactionFailure;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+
 import java.beans.PropertyVetoException;
 import java.util.Properties;
 
 /**
- * Create Java Mail Resource
+ * Create Custom Resource
  *
  */
-@Service(name="create-javamail-resource")
+@Service(name="create-custom-resource")
 @Scoped(PerLookup.class)
-@I18n("create.javamail.resource")
-public class CreateJavaMailResource implements AdminCommand {
+@I18n("create.admin.object")
+public class CreateCustomResource implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings =
-            new LocalStringManagerImpl(CreateJavaMailResource.class);
+            new LocalStringManagerImpl(CreateCustomResource.class);
 
-    @Param(name="mailhost")
-    String mailHost;
+    @Param(name = "restype")
+    String resType;
 
-    @Param(name="mailuser")
-    String mailUser;
+    @Param(name = "factoryclass")
+    String factoryClass;
 
-    @Param(name="fromaddress")
-    String fromAddress;
-
-    @Param(name="jndi_name", primary=true)
-    String jndiName;
-
-    @Param(name="storeprotocol", optional=true, defaultValue="imap")
-    String storeProtocol;
-
-    @Param(name="storeprotocolclass", optional=true,
-    defaultValue="com.sun.mail.imap.IMAPStore" )
-    String storeProtocolClass;
-
-    @Param(name="transprotocol", optional=true, defaultValue="smtp")
-    String transportProtocol;
-
-    @Param(name="transprotocolclass", optional=true,
-    defaultValue="com.sun.mail.smtp.SMTPTransport")
-    String transportProtocolClass;
-
-    @Param(optional=true, defaultValue="true")
+    @Param(optional = true, defaultValue = "true")
     Boolean enabled;
 
-    @Param(optional=true, defaultValue="false")
-    Boolean debug;
+    @Param(optional = true)
+    String description;
 
-    @Param(name="property", optional=true)
+    @Param(name = "property", optional = true)
     Properties properties;
 
-    @Param(optional=true,
+    @Param(optional = true,
     defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
     String target;
 
-    @Param(optional=true)
-    String description;
+    @Param(name = "jndi_name", primary = true)
+    String jndiName;
 
     @Inject
     Resources resources;
@@ -125,35 +106,30 @@ public class CreateJavaMailResource implements AdminCommand {
 
         Server targetServer = domain.getServerNamed(target);
 
-         if (mailHost == null) {
-            report.setMessage(localStrings.getLocalString("create.mail.resource.noHostName",
-                            "No host name defined for Mail Resource."));
+        if (resType == null) {
+            report.setMessage(localStrings.getLocalString(
+                    "create.custom.resource.noResType",
+                    "No type defined for Custom Resource."));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
 
-        if (mailUser == null) {
-            report.setMessage(localStrings.getLocalString("create.mail.resource.noUserName",
-                            "No user name defined for Mail Resource."));
+        if (factoryClass == null) {
+            report.setMessage(localStrings.getLocalString(
+                    "create.custom.resource.noFactoryClassName",
+                    "No Factory class name defined for Custom Resource."));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
-
-        if (fromAddress == null) {
-            report.setMessage(localStrings.getLocalString("create.mail.resource.noFrom",
-                            "From not defined for Mail Resource."));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-        }
-
 
         // ensure we don't already have one of this name
         for (Resource resource : resources.getResources()) {
-            if (resource instanceof MailResource) {
-                if (((MailResource) resource).getJndiName().equals(jndiName)) {
+            if (resource instanceof CustomResource) {
+                if (((CustomResource) resource).getJndiName().equals(jndiName))
+                {
                     report.setMessage(localStrings.getLocalString(
-                            "create.mail.resource.duplicate",
-                            "A Mail Resource named {0} already exists.",
+                            "create.custom.resource.duplicate",
+                            "A Custom Resource named {0} already exists.",
                             jndiName));
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                     return;
@@ -167,28 +143,21 @@ public class CreateJavaMailResource implements AdminCommand {
                 public Object run(Resources param) throws PropertyVetoException,
                         TransactionFailure {
 
-                    MailResource newResource = param.createChild(
-                            MailResource.class);
+                    CustomResource newResource =
+                            param.createChild(CustomResource.class);
                     newResource.setJndiName(jndiName);
-                    newResource.setFrom(fromAddress);
-                    newResource.setUser(mailUser);
-                    newResource.setHost(mailHost);
+                    newResource.setFactoryClass(factoryClass);
+                    newResource.setResType(resType);
                     newResource.setEnabled(enabled.toString());
-                    newResource.setStoreProtocol(storeProtocol);
-                    newResource.setStoreProtocolClass(storeProtocolClass);
-                    newResource.setTransportProtocol(transportProtocol);
-                    newResource.setTransportProtocolClass(
-                            transportProtocolClass);
-                    newResource.setDebug(debug.toString());
                     if (description != null) {
                         newResource.setDescription(description);
-                    }
+                    } 
                     if (properties != null) {
-                        for ( java.util.Map.Entry e : properties.entrySet()) {
+                        for (java.util.Map.Entry e : properties.entrySet()) {
                             Property prop = newResource.createChild(
                                     Property.class);
-                            prop.setName((String)e.getKey());
-                            prop.setValue((String)e.getValue());
+                            prop.setName((String) e.getKey());
+                            prop.setValue((String) e.getValue());
                             newResource.getProperty().add(prop);
                         }
                     }
@@ -197,17 +166,17 @@ public class CreateJavaMailResource implements AdminCommand {
                 }
             }, resources);
 
-            if (!targetServer.isResourceRefExists( jndiName)) {
-                targetServer.createResourceRef( enabled.toString(), jndiName);
+            if (!targetServer.isResourceRefExists(jndiName)) {
+                targetServer.createResourceRef(enabled.toString(), jndiName);
             }
             report.setMessage(localStrings.getLocalString(
-                    "create.mail.resource.success",
-                    "Mail Resource {0} created.", jndiName));
+                    "create.admin.object.success",
+                    "Administered object {0} created.", jndiName));
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-        } catch(TransactionFailure tfe) {
-            report.setMessage(localStrings.getLocalString("" +
-                    "create.mail.resource.fail",
-                    "Unable to create Mail Resource {0}.", jndiName) +
+        } catch (TransactionFailure tfe) {
+            report.setMessage(localStrings.getLocalString(
+                    "create.admin.object.fail",
+                    "Unable to create administered object {0}.", jndiName) +
                     " " + tfe.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(tfe);
