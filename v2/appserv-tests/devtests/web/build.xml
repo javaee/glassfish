@@ -102,7 +102,6 @@
         <ant dir="jspConfigDefaultContentType" target="all"/>
         <ant dir="jspConfigUndeclaredNS" target="all"/>
         <ant dir="jspConfigBuffer" target="all"/>
-        <ant dir="servlet-3.0/jspServletGetJspResourceFromLocalJar" target="all"/>
     </target>
 
     <target name="taglib">
@@ -233,6 +232,7 @@
         <ant dir="servlet-3.0/servletRequestDispatcherType" target="all"/>
         <ant dir="servlet-3.0/pluggability/servletContainerInitializer/sharedLibWithWars" target="all"/>
         <ant dir="servlet-3.0/pluggability/servletContainerInitializer/sharedLibWithEAR" target="all"/>
+        <ant dir="servlet-3.0/serveJspAndStaticResourceFromLocalJar" target="all"/>
         <ant dir="servlet-3.0/asyncContextComplete" target="all"/>
         <ant dir="servlet-3.0/asyncContextDispatch" target="all"/>
         <ant dir="servlet-3.0/asyncListenerOnComplete" target="all"/>
