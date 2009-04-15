@@ -58,6 +58,8 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.glassfish.deployment.common.DeploymentUtils;
+
 /**
  * This class implements {@link PersistenceUnitInfo} interface.
  *
@@ -330,11 +332,9 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
                         ", nameComponent=" + nameComponent); // NOI18N
                 File parentPath = new File(parentFile, pathComponent);
 
-                // XXX JD : We will need a better way to handle this
-                /*jarFile = new File(parentPath, DeploymentUtils.
+                jarFile = new File(parentPath, DeploymentUtils.
                         getRelativeEmbeddedModulePath(parentPath.
                         getAbsolutePath(), nameComponent));
-                 */
             }
             if (jarFile.exists()) {
                 try {
@@ -353,6 +353,7 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
     }
 
     private File getAbsolutePuRootFile() {
+        // TODO caller of this method are _getJarFiles() and getPersitenceUnitRootUrl(). Both of them can be implemented using helper methods in PersistenceUnitDescriptor to better encapsulate
         if (absolutePuRootFile == null) {
             absolutePuRootFile = new File(providerContainerContractInfo.getApplicationLocation(),
                     getAbsolutePuRoot().replace('/', File.separatorChar));
@@ -373,6 +374,7 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
      * @return the absolute path of the root of this persistence unit
      */
     private String getAbsolutePuRoot() {
+        // TODO shift this into PersistenceUnitDescriptor to better encapsulate 
         RootDeploymentDescriptor rootDD = persistenceUnitDescriptor.getParent().
                 getParent();
         String puRoot = persistenceUnitDescriptor.getPuRoot();
@@ -384,13 +386,10 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
             if(module.isStandalone()) {
                 return puRoot;
             } else {
-                return null;
-                /* TODO Need to uncommment this once DeploymentUtils is ported back
                 final String moduleLocation =
                         DeploymentUtils.getRelativeEmbeddedModulePath(
-                        appInfo.getApplicationLocation(), module.getArchiveUri());
+                        providerContainerContractInfo.getApplicationLocation(), module.getArchiveUri());
                 return moduleLocation + '/' + puRoot; // see we always '/'
-                */
             }
         }
     }

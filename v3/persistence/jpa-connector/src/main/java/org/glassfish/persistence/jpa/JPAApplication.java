@@ -101,7 +101,7 @@ public class JPAApplication implements ApplicationContainer {
      */
     private static Map<String, String> integrationPropertiesWithoutJava2DB;
     
-   JPAApplication(Collection<PersistenceUnitDescriptor> allReferencedPus, ProviderContainerContractInfo providerContainerContractInfo) {
+    JPAApplication(Collection<PersistenceUnitDescriptor> allReferencedPus, ProviderContainerContractInfo providerContainerContractInfo) {
        this.referencedPus = allReferencedPus;
        this.providerContainerContractInfo = providerContainerContractInfo;
 
@@ -114,6 +114,10 @@ public class JPAApplication implements ApplicationContainer {
        loadAllPus();
 
    }
+
+    JPAApplication() {
+        //TODO Needs to be removed once the hacks in JPADeployer are fixed 
+    }
 
     private void setSystemPropertyToEnableDoPrivilegedInEclipseLink() {
         final String PROPERTY_NAME = "eclipselink.security.usedoprivileged";
@@ -136,7 +140,9 @@ public class JPAApplication implements ApplicationContainer {
     }
 
     public boolean stop(ApplicationContext stopContext) {
-        closeAllEMFs();
+        if (!loadedEMFs.isEmpty()) { //TODO added to support prepare hack
+            closeAllEMFs();
+        }
         return true;
     }
 
@@ -235,7 +241,7 @@ public class JPAApplication implements ApplicationContainer {
                 integrationPropertiesWithoutJava2DB;
 
         EntityManagerFactory emf = provider.createContainerEntityManagerFactory(
-                pInfo, overrides);
+                pInfo,/*overrides */ baseIntegrationProperties);
         logger.logp(Level.FINE, "JPAApplication", "loadPU", // NOI18N
                     "emf = {0}", emf); // NOI18N
 

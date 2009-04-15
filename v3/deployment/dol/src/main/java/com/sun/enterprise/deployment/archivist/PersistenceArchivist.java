@@ -4,8 +4,6 @@ import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.PersistenceDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.PersistenceUnitsDescriptor;
-import com.sun.enterprise.deployment.PersistenceUnitDescriptor;
-import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -14,19 +12,18 @@ import org.xml.sax.SAXParseException;
 import org.jvnet.hk2.annotations.Service;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Enumeration;
 
-/**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: Dec 8, 2008
- * Time: 12:34:02 PM
- * To change this template use File | Settings | File Templates.
- */
 @Service
 public class PersistenceArchivist extends ExtensionsArchivist {
+    protected static final String JAR_EXT = ".jar";
+    protected static final char SEPERATOR_CHAR = '/';
+    protected static final String LIB_DIR = "lib";
+
 
     protected final Logger logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
     
@@ -89,4 +86,87 @@ public class PersistenceArchivist extends ExtensionsArchivist {
     public RootDeploymentDescriptor getDefaultDescriptor() {
         return null;
     }
+
+    /**
+     * Gets probable persitence roots from given parentArchive using given subArchiveRootScanner
+     * @param parentArchive the parentArchive within which probable persitence roots need to be scanned
+     * @param subArchivePURootScanner the scanner instance used for the scan
+     * @see com.sun.enterprise.deployment.archivist.EarPersistenceArchivist.SubArchivePURootScanner
+     * @return Map of puroot path to probable puroot archive.
+     */
+    protected Map<String, ReadableArchive> getProbablePersistenceRoots(ReadableArchive parentArchive, SubArchivePURootScanner subArchivePURootScanner) {
+        Map<String, ReadableArchive> probablePersitenceArchives = new HashMap<String, ReadableArchive>();
+        // subArvivePath is empty => we are scanning parentArchive
+        ReadableArchive  archiveToScan = subArchivePURootScanner.getSubArchiveToScan(parentArchive);
+        if(archiveToScan != null) { // The subarchive exists
+            Enumeration<String> entries = archiveToScan.entries();
+            String puRootPrefix = subArchivePURootScanner.getPurRootPrefix();
+            while(entries.hasMoreElements()) {
+                String entry = entries.nextElement();
+                if(subArchivePURootScanner.isProbablePuRootJar(entry)) {
+                    ReadableArchive puRootArchive = getSubArchive(archiveToScan, entry, false /* expect entry to be present */);
+                    if(puRootArchive != null) {
+                        String puRoot = puRootPrefix + entry;
+                        probablePersitenceArchives.put(puRoot, puRootArchive);
+                    }
+                }
+            }
+
+        }
+        return probablePersitenceArchives;
+    }
+
+    private ReadableArchive getSubArchive(ReadableArchive parentArchive, String path, boolean expectAbscenceOfSubArchive) {
+        ReadableArchive returnedArchive = null;
+        try {
+            returnedArchive = parentArchive.getSubArchive(path);
+        } catch (IOException ioe) {
+            // if there is any problem in opening the subarchive, and the subarchive is expected to be present, log the exception
+            if(!expectAbscenceOfSubArchive) {
+                logger.log(Level.SEVERE, ioe.getMessage(), ioe);
+            }
+        }
+        return returnedArchive;
+    }
+
+
+    protected abstract class SubArchivePURootScanner {
+        abstract String getPathOfSubArchiveToScan();
+
+        ReadableArchive getSubArchiveToScan(ReadableArchive parentArchive) {
+            String pathOfSubArchiveToScan = getPathOfSubArchiveToScan();
+            return pathOfSubArchiveToScan.isEmpty() ? parentArchive :
+                    getSubArchive(parentArchive, pathOfSubArchiveToScan, true /*It is possible that lib does not exist for a given ear */);
+        }
+
+        String getPurRootPrefix() {
+            String pathOfSubArchiveToScan = getPathOfSubArchiveToScan();
+            return pathOfSubArchiveToScan.isEmpty() ? pathOfSubArchiveToScan : pathOfSubArchiveToScan + SEPERATOR_CHAR;
+        }
+
+        boolean isProbablePuRootJar(String jarName) {
+            // all jars in root of subarchive are probable pu roots
+            return isJarEntry(jarName) && checkIsInRootOfArchive(jarName, getPathOfSubArchiveToScan());
+        }
+
+        private boolean checkIsInRootOfArchive(String path, String parentArchivePath) {
+            boolean inRootOfArchive = true;
+            if (path.indexOf('/') != -1) {
+                inRootOfArchive = false;
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.logp(Level.FINE, "PersistenceArchivist",
+                            "readPersistenceDeploymentDescriptors",
+                            "skipping {0} as it exists inside a directory in {1}.",
+                            new Object[]{path, parentArchivePath});
+                }
+            }
+            return inRootOfArchive;
+        }
+
+        private boolean isJarEntry(String path) {
+            return path.endsWith(JAR_EXT);
+        }
+
+    }
+
 }
