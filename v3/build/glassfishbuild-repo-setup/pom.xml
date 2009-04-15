@@ -79,7 +79,7 @@
         <dependency>
       	    <groupId>org.glassfish</groupId>
             <artifactId>mq-distribution</artifactId>
-	    <version>4.4-003-1</version>
+	    <version>${mq.version}</version>
 	    <classifier>repo</classifier>
             <type>zip</type>    
        </dependency>
