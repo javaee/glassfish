@@ -530,32 +530,6 @@ public class WebappLoader
         return repositories.clone();
     }
 
-    /** Extra repositories for this loader
-     */
-    public String getRepositoriesString() {
-        StringBuffer sb=new StringBuffer();
-        for( int i=0; i<repositories.length ; i++ ) {
-            sb.append( repositories[i]).append(":");
-        }
-        return sb.toString();
-    }
-
-    public String[] getLoaderRepositories() {
-        if( loaderRepositories==null ) return  null;
-        String res[]=new String[ loaderRepositories.size()];
-        loaderRepositories.toArray(res);
-        return res;
-    }
-
-    public String getLoaderRepositoriesString() {
-        String repositories[]=getLoaderRepositories();
-        StringBuffer sb=new StringBuffer();
-        for( int i=0; i<repositories.length ; i++ ) {
-            sb.append( repositories[i]).append(":");
-        }
-        return sb.toString();
-    }
-
 
     /** 
      * Classpath, as set in org.apache.catalina.jsp_classpath context
