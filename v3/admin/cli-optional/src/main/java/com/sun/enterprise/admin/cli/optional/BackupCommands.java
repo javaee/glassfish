@@ -42,8 +42,7 @@ import java.util.*;
 import com.sun.enterprise.cli.framework.CommandValidationException;
 import com.sun.enterprise.cli.framework.CommandException;
 import com.sun.enterprise.cli.framework.CLILogger;
-import com.sun.enterprise.util.diagnostics.ObjectAnalyzer;
-//import com.sun.enterprise.util.diagnostics.SystemProps;
+import com.sun.enterprise.util.ObjectAnalyzer;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.backup.BackupException;
 import com.sun.enterprise.backup.BackupManager;
@@ -55,8 +54,6 @@ import com.sun.enterprise.backup.ListManager;
 import com.sun.enterprise.admin.servermgmt.DomainsManager;
 import com.sun.enterprise.admin.servermgmt.DomainConfig;
 import com.sun.enterprise.admin.servermgmt.InstancesManager;
-//import com.sun.enterprise.admin.common.Status;
-//import com.sun.enterprise.admin.pluggable.ClientPluggableFeatureFactory;
 /**
  *  This is a local command for backing-up domains.
  *  @version  $Revision: 1.4 $

@@ -46,7 +46,6 @@ import java.util.zip.*;
 
 //import com.sun.enterprise.util.io.FileUtils;
 //import com.sun.enterprise.util.Assertion;
-//import com.sun.enterprise.util.diagnostics.Reporter;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -137,12 +136,10 @@ public class ZipFile
 
 				if(newDir.mkdirs())
 				{	// note:  it returns false if dir already exists...
-					//Reporter.verbose("Created new directory:  " + newDir);//NOI18N
 				}
 
 				if(fullpath.delete())	// wipe-out pre-existing files
 				{
-					//Reporter.info("deleted pre-existing file: " + fullpath); //NOI18N
 				}
 
 				BufferedOutputStream os = new BufferedOutputStream(getOutputStream(filename), BUFFER_SIZE);
@@ -158,7 +155,6 @@ public class ZipFile
 					totalBytes += numBytes;
 				} 
 				os.close();				
-				//Reporter.verbose("Wrote " + totalBytes + " to " + filename);//NOI18N
 				files.add(filename);
 			}
 		}
@@ -168,7 +164,6 @@ public class ZipFile
 		}
 		finally
 		{
-			//Reporter.verbose("Closing zin...");//NOI18N
 			try 
 			{ 
 				zin.close(); 
@@ -178,7 +173,6 @@ public class ZipFile
 				throw new ZipFileException("Got an exception while trying to close Jar input stream: " + e);//NOI18N
 			}
 		}
-		//Reporter.info("Successfully Exploded ZipFile"  + " to " + explodeDir.getPath());//NOI18N
 		return files;
 	}
 
@@ -309,7 +303,6 @@ public class ZipFile
 
 		if(f.isDirectory())
 		{
-			//Reporter.warn("Weird!  A directory is listed as an entry in the jar file -- skipping...");//NOI18N
 			return null;
 		}
 
