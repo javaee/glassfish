@@ -100,7 +100,7 @@
                                     accessLogWriteInterval="#{accessLogWriteInterval}",
                                     accessLoggingEnabled="#{accessLoggingEnabled}"
                                 );
-                               redirect(page="#{request.contextPath}/web/configuration/accessLog.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&configName=#{configName}&name=#{tabName}");
+                               redirect(page="#{request.contextPath}/web/configuration/accessLog.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&configName=#{configName}");
 
                             />
                         </sun:button>                      
