@@ -267,7 +267,7 @@ public class EarDeployer implements Deployer {
 
         @Override
         public void load(ExtendedDeploymentContext context, ProgressTracker tracker) throws Exception {
-
+            context.setPhase(ExtendedDeploymentContext.Phase.LOAD);
             application = context.getModuleMetaData(Application.class);
             final Map<ModuleDescriptor, ExtendedDeploymentContext> contextPerModules =
                     initSubContext(application, context);
@@ -441,9 +441,13 @@ public class EarDeployer implements Deployer {
 
                     @Override
                     public ClassLoader getFinalClassLoader() {
-                        return context.getFinalClassLoader();
-                    }
-
+                        try {
+                            EarClassLoader finalEarCL = (EarClassLoader) context.getFinalClassLoader();
+                            return finalEarCL.getModuleClassLoader(moduleUri);
+                        } catch (ClassCastException e) {
+                            return context.getClassLoader();
+                        }
+                    } 
                     @Override
                     public ReadableArchive getSource() {
                         return subArchive;
