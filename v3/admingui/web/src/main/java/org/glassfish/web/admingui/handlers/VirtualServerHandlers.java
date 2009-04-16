@@ -203,7 +203,6 @@ public class VirtualServerHandlers {
         
       
         Map <String,String> defaultMap = config.getHTTPServiceConfig().getDefaultValues(XTypes.VIRTUAL_SERVER_CONFIG, true);
-        Map <String,String> defaultMapFF = config.getHTTPServiceConfig().getDefaultValues(XTypes.VIRTUAL_SERVER_CONFIG, false);
         handlerCtx.setOutputValue("Hosts", defaultMap.get("Hosts"));
         handlerCtx.setOutputValue("StateOption", defaultMap.get("State"));
         handlerCtx.setOutputValue("LogFile", defaultMap.get("LogFile"));
