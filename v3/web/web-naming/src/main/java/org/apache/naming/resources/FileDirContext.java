@@ -92,7 +92,7 @@ import org.apache.naming.NamingEntry;
 import org.apache.naming.NamingContextBindingsEnumeration;
 import org.apache.naming.NamingContextEnumeration;
 
-import com.sun.logging.LogDomains;
+//import com.sun.logging.LogDomains;
 
 /**
  * Filesystem Directory Context implementation helper class.
