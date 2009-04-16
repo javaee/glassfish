@@ -112,7 +112,7 @@
 
     <target name="undeploy-stream.jsr88">
         <antcall target="common.undeploy.jsr88">
-            <param name="arg.list" value="${testName}-DisplayName"/>
+            <param name="arg.list" value="all"/>
         </antcall>
     </target>
 

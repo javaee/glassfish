@@ -133,9 +133,11 @@
         </antcall>
     </target>
 
+   <!-- as it's not easy to implement the undeploy-stream using the 
+        current JSR88 Deployer, let's just undeploy all -->
     <target name="undeploy-stream.jsr88">
         <antcall target="common.undeploy.jsr88">
-            <param name="arg.list" value="${testName}-DisplayName"/>
+            <param name="arg.list" value="all"/>
         </antcall>
     </target>
 
@@ -231,7 +233,6 @@
         </antcall>
         <antcall target="undeploy.asadmin"/>
 
-<!--
         <antcall target="deploy.jsr88"/>
         <antcall target="run.positive">
             <param name="desc" value="ear/earwithall2 Test jsr88 deploy"/>
@@ -264,14 +265,17 @@
             <param name="log.id" value="9"/>
         </antcall>
         <antcall target="undeploy.jsr88"/>
-
         <antcall target="deploy-stream.jsr88"/>
         <antcall target="run.positive">
             <param name="desc" value="ear/earwithall2 Test jsr88 deploy using InputStream"/>
             <param name="log.id" value="10"/>
         </antcall>
+        <antcall target="redeploy-stream.jsr88"/>
+        <antcall target="run.positive">
+            <param name="desc" value="ear/earwithall2 Test jsr88 redeploy using InputStream"/>
+            <param name="log.id" value="11"/>
+        </antcall>
         <antcall target="undeploy-stream.jsr88"/>
--->
 
     </target>
 

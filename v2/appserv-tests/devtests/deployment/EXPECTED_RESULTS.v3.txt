@@ -1,7 +1,7 @@
 Results of deployment dev tests with v3
 ===========================================================
 
-PASS: 68
+PASS: 75
 FAIL: 0
 UNKNOWN: 0
 
@@ -45,26 +45,29 @@ UNKNOWN: 0
 [PASSED] deploydir : war/deploydir Test v3 asadmin redeploydir preserves context root
 [PASSED] deploydir : war/deploydir Test asadmin undeploydir
 [PASSED] nojarexpansion : war/nojarexpansion Test asadmin deploy (server)
-[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after deploy
+[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after deploy  
 [PASSED] nojarexpansion : war/nojarexpansion Test asadmin redeploy (server)
-[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after redeploy
+[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after redeploy  
 [PASSED] nojarexpansion : war/nojarexpansionTest jsr88 deploy (server)
-[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after jsr88 deploy
+[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after jsr88 deploy   
 [PASSED] nojarexpansion : war/nojarexpansion Test jsr88 redeploy (server)
-[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after jsr88 redeploy
+[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after jsr88 redeploy   
 [PASSED] earwithwar : ear/earwithwar Test asadmin deploy (server)
-[PASSED] earwithwar : ear/earwithwar Test asadmin redeploy (server)
-[PASSED] earwithwar : ear/earwithwar Test asadmin disable (server)
-[PASSED] earwithwar : ear/earwithwar Test asadmin enable (server)
-[PASSED] earwithwar : ear/earwithwar Test jsr88 deploy (server)
-[PASSED] earwithwar : ear/earwithwar Test jsr88 stopped state (server)
-[PASSED] earwithwar : ear/earwithwar Test jsr88 started state (server)
+[PASSED] earwithwar : ear/earwithwar Test asadmin redeploy (server)  [PASSED] earwithwar : ear/earwithwar Test asadmin disable (server)
+[PASSED] earwithwar : ear/earwithwar Test asadmin enable (server)  [PASSED] earwithwar : ear/earwithwar Test jsr88 deploy (server)
+[PASSED] earwithwar : ear/earwithwar Test jsr88 stopped state (server)   [PASSED] earwithwar : ear/earwithwar Test jsr88 started state (server)
 [PASSED] earwithwar : ear/earwithwar Test jsr88 redeploy stop (server)
-[PASSED] earwithwar : ear/earwithwar Test jsr88 redeploy start (server)
-[PASSED] earwithall2 : ear/earwithall2 Test asadmin deploy (server)
-[PASSED] earwithall2 : ear/earwithall2 Test asadmin disable (server)
+[PASSED] earwithwar : ear/earwithwar Test jsr88 redeploy start (server)  
+[PASSED] earwithall2 : ear/earwithall2 Test asadmin deploy (server)  [PASSED] earwithall2 : ear/earwithall2 Test asadmin disable (server)
 [PASSED] earwithall2 : ear/earwithall2 Test asadmin enable (server)
 [PASSED] earwithall2 : ear/earwithall2 Test asadmin redeploy (server)
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 deploy (server)
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 stopped state (server)
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 started state (server)
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 redeploy stop (server)
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 redeploy start (server)
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 deploy using InputStream (server)
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 redeploy using InputStream (server)
 [PASSED] libClassPath : libClasspath Test asadmin deploy (server)
 [PASSED] manifestClassPath : libClasspath Test asadmin deploy (server)
 [PASSED] simple : jsr88/war/simple deploy test
@@ -73,3 +76,4 @@ UNKNOWN: 0
 [PASSED] jsp : ejb30/war/jsp Test asadmin redeploy
 [PASSED] servlet : ejb30/war/servlet Test asadmin deploy
 [PASSED] servlet : ejb30/war/servlet Test asadmin redeploy
+
