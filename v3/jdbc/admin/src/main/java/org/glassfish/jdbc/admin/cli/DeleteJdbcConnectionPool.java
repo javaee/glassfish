@@ -68,6 +68,9 @@ public class DeleteJdbcConnectionPool implements AdminCommand {
     
     @Param(name="jdbc_connection_pool_id", primary=true)
     String jdbc_connection_pool_id;
+
+    @Param(optional=true)
+    String target; /*depracated - remove after QA,doc,CCC approval*/
     
     @Inject
     Resources resources;
@@ -86,7 +89,7 @@ public class DeleteJdbcConnectionPool implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
-        
+
         try {
             JDBCConnectionPoolManager jdbcConnMgr = new JDBCConnectionPoolManager();
             ResourceStatus rs = jdbcConnMgr.delete(servers, resources, connPools, 
