@@ -12,10 +12,10 @@
             <ant dir="ear" target="private-all">
                 <property name="build" value="${build}/ear"/>
             </ant>
-<!--
             <ant dir="earwithsuffix" target="private-all">
                 <property name="build" value="${build}/earwithsuffix"/>
             </ant>
+<!--
             <ant dir="ejb" target="private-all">
                 <property name="build" value="${build}/ejb"/>
             </ant>

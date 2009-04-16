@@ -27,13 +27,17 @@
     </target>
 
     <target name="compile" depends="prepare">
-        <javac srcdir="war" destdir="${web.build.dir}/WEB-INF/classes"
-                        classpath="${inst}/lib/j2ee.jar"/>
-        <javac destdir="${client.build.dir}/"
-                        classpath="${inst}/lib/j2ee.jar">
+         <javac srcdir="war" destdir="${web.build.dir}/WEB-INF/classes">
+                        <classpath refid="gfv3.classpath"/>
+         </javac>
+         <javac destdir="${client.build.dir}/">
                          <src path="../client"/>
                          <include name="TestClient.java"/>
-         </javac>
+            <classpath>
+                <path refid="gfv3.classpath"/>
+                <path location="${ejb.build.dir}"/>
+            </classpath>
+          </javac>
     </target>
                                                                                 
     <target name="assemble" depends="compile">
@@ -45,6 +49,13 @@
 
     <target name="deploydir.asadmin" depends="prepare">
         <antcall target="common.deploydir.asadmin">
+            <param name="arg.list"
+                   value="--name ${testName} ${build}/${testName}"/>
+        </antcall>
+    </target>
+
+   <target name="redeploydir.asadmin" depends="prepare">
+        <antcall target="common.redeploydir.asadmin">
             <param name="arg.list"
                    value="--name ${testName} ${build}/${testName}"/>
         </antcall>
@@ -89,7 +100,7 @@
             <jvmarg value="-Djava.endorsed.dirs=${inst}/lib/endorsed"/>
                                                                                 
             <classpath>
-               <path location="${inst}/lib/j2ee.jar"/>
+                <path refid="gfv3.classpath"/>
                 <path location="${client.build.dir}"/>
             </classpath>
                                                                                 
@@ -113,7 +124,7 @@
         <antcall target="declare-test">
             <param name="description" value="directorydeploy/war Test asadmin redeploydir"/>
         </antcall>
-        <antcall target="deploydir.asadmin"/>
+        <antcall target="redeploydir.asadmin"/>
         <antcall target="run.positive"><param name="log.id" value="2"/></antcall>
         <antcall target="declare-test">
             <param name="description" value="directorydeploy/war Test asadmin undeploydir"/>

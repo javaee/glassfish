@@ -32,15 +32,22 @@
     </target>
 
     <target name="compile" depends="prepare">
-        <javac srcdir="../ear/ejb" destdir="${ejb.build.dir}"
-                        classpath="${inst}/lib/j2ee.jar"/>
-        <javac srcdir="../ear/war" destdir="${web.build.dir}/WEB-INF/classes"
-                        classpath="${inst}/lib/j2ee.jar:${ejb.build.dir}"/>
-        <javac destdir="${client.build.dir}/"
-                        classpath="${inst}/lib/j2ee.jar">
+        <javac srcdir="../ear/ejb" destdir="${ejb.build.dir}">
+                        <classpath refid="gfv3.classpath"/>
+        </javac>
+        <javac srcdir="../ear/war" destdir="${web.build.dir}/WEB-INF/classes">
+            <classpath>
+                <path refid="gfv3.classpath"/>
+                <path location="${ejb.build.dir}"/>
+            </classpath>
+
+         </javac>
+        <javac destdir="${client.build.dir}/">
                          <src path="../client"/>
                          <include name="TestClient.java"/>
-         </javac>
+                        <classpath refid="gfv3.classpath"/>
+        </javac>
+
     </target>
                                                                                 
     <target name="assemble" depends="compile">
@@ -77,7 +84,14 @@
                    value="--name ${testName} ${build}/${testName}.ear"/>
         </antcall>
     </target>
-                                                                                
+
+    <target name="redeploydir.asadmin" depends="prepare">
+        <antcall target="common.redeploydir.asadmin">
+            <param name="arg.list"
+                   value="--name ${testName} ${build}/${testName}.ear"/>
+        </antcall>
+    </target>
+
     <target name="undeploy.asadmin">
         <antcall target="common.undeploy.asadmin">
             <param name="arg.list"
@@ -116,11 +130,11 @@
             <jvmarg value="-Dorg.omg.CORBA.ORBInitialPort=${orb.port}"/>
             <jvmarg value="-Djava.endorsed.dirs=${inst}/lib/endorsed"/>
                                                                                 
-            <classpath>
-               <path location="${inst}/lib/j2ee.jar"/>
+            <classpath>                
+                <path refid="gfv3.classpath"/>
                 <path location="${client.build.dir}"/>
             </classpath>
-                                                                                
+
             <arg line="${arg.list}"/>
         </javaWithResult>
                                                                                 
@@ -141,7 +155,7 @@
         <antcall target="declare-test">
             <param name="description" value="directorydeploy/earWithSuffix Test asadmin redeploydir"/>
         </antcall>
-        <antcall target="deploydir.asadmin"/>
+        <antcall target="redeploydir.asadmin"/>
         <antcall target="run.positive"><param name="log.id" value="2"/></antcall>
         <antcall target="declare-test">
             <param name="description" value="directorydeploy/earWithSuffix Test asadmin undeploydir"/>

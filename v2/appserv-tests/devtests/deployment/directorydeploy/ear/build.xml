@@ -83,7 +83,14 @@
                    value="--name ${testName} ${build}/${testName}"/>
         </antcall>
     </target>
-                                                                                
+
+    <target name="redeploydir.asadmin" depends="prepare">
+        <antcall target="common.redeploydir.asadmin">
+            <param name="arg.list"
+                   value="--name ${testName} ${build}/${testName}"/>
+        </antcall>
+    </target>
+
     <target name="undeploy.asadmin">
         <antcall target="common.undeploy.asadmin">
             <param name="arg.list"
@@ -147,7 +154,7 @@
         <antcall target="declare-test">
             <param name="description" value="directorydeploy/ear Test asadmin redeploydir"/>
         </antcall>
-        <antcall target="deploydir.asadmin"/>
+        <antcall target="redeploydir.asadmin"/>
         <antcall target="run.positive"><param name="log.id" value="2"/></antcall>
         <antcall target="declare-test">
             <param name="description" value="directorydeploy/ear Test asadmin undeploydir"/>
