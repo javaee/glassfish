@@ -32,45 +32,28 @@
  and therefore, elected the GPL Version 2 license, then the option applies
  only if the new code is made subject to such option by the copyright
  holder.
- 
- 
-    <!beforeCreate
-       setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
-     />
 -->
-                     
-<sun:treeNode 
-    id="webContainer" 
-    text="$resource{i18n.tree.webContainer}"
-    url="/web/configuration/webContainerGeneral.jsf?configName=server-config"
-    imageURL="/resource/web/images/container.gif"
-/>
+<!-- configuration/transactionServiceButtons.inc -->
+<sun:panelGroup id="topButtons">
+    <sun:button id="saveButton" text="$resource{i18n.button.Save}"
+            onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " > 
+         <!command
+        getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
+        getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+        convertRowsToProperties(NewList="#{newList}", AddProps=>$attribute{newProps});
+        prepareSuccessfulMsg();                             
+        saveTransactionServiceSettings(
+        ConfigName="#{configName}",
+        OnRestart="#{onRestart}",
+        Timeout="#{timeout}",
+        Retry="#{retry}",
+        LogLocation="#{logLocation}",
+        Heuristic="#{heuristic}",
+        KeyPoint="#{keyPoint}"                           
+        newProps="${newProps}"
+        );
+         redirect(page="#{request.contextPath}/web/configuration/transactionService.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&configName=#{configName}");
 
-<sun:treeNode
-    id="transactionService"
-    text="$resource{i18n.tree.transactionService}"
-    url="/web/configuration/transactionService.jsf?configName=server-config"
-    imageURL="/resource/web/images/transactionService.gif"
-/>
-
-<sun:treeNode
-    id="httpService"
-    text="$resource{i18n.tree.httpService}"
-    url="/web/configuration/accessLog.jsf?configName=server-config"
-    imageURL="/resource/web/images/httpservice.gif"
-/>
-    
-<dynamicTreeNode id="virtualServers"
-    treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-    objectName="amx:j2eeType=X-HTTPServiceConfig,name=na,X-ConfigConfig=$pageSession{configName}"
-    methodName="getVirtualServerConfigMap"
-    childImageURL="/resource/web/images/http.gif"
-    childExpanded="$boolean{false}"
-    childURL="/web/configuration/virtualServerEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
-    text="$resource{i18n.tree.virtualServers}"
-    url="/web/configuration/virtualServers.jsf?configName=#{configName}"
-    >
-    <!facet image>
-        <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/configuration/virtualServers.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
-    </facet>
-</dynamicTreeNode>
+       />
+    </sun:button>
+</sun:panelGroup>
