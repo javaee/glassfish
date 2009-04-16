@@ -165,6 +165,9 @@ public class DescriptorFactory {
         register(new XMLElement(WebTagNames.LOCALE_ENCODING_MAPPING_LIST), LocaleEncodingMappingListDescriptor.class);            
         register(new XMLElement(WebTagNames.LOCALE_ENCODING_MAPPING), LocaleEncodingMappingDescriptor.class);                         
         register(new XMLElement(WebTagNames.ABSOLUTE_ORDERING), AbsoluteOrderingDescriptor.class);                         
+        register(new XMLElement(WebTagNames.ORDERING), OrderingDescriptor.class);                         
+        register(new XMLElement(WebTagNames.AFTER), OrderingOrderingDescriptor.class);                         
+        register(new XMLElement(WebTagNames.BEFORE), OrderingOrderingDescriptor.class);                         
 
         // JSR 109 integration
         register(new XMLElement(WebServicesTagNames.SERVICE_REF), ServiceReferenceDescriptor.class);

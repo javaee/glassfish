@@ -36,6 +36,7 @@
 package com.sun.enterprise.deployment;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
  */
 public class AbsoluteOrderingDescriptor extends Descriptor {
     private static final Object OTHERS = new Object();
+
     private static final LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(AbsoluteOrderingDescriptor.class);
 
@@ -72,7 +74,7 @@ public class AbsoluteOrderingDescriptor extends Descriptor {
     }
 
     public List getOrdering() {
-        return absOrder;
+        return Collections.unmodifiableList(absOrder);
     }
 
     public List<WebFragmentDescriptor> order(List<WebFragmentDescriptor> wfs) {
@@ -94,6 +96,11 @@ public class AbsoluteOrderingDescriptor extends Descriptor {
                     WebFragmentDescriptor wf = map.get((String)obj);
                     if (wf != null) {
                         wfList.add(wf);
+                    } else {
+                        throw new IllegalStateException(localStrings.getLocalString(
+                                "enterprise.deployment.exceptionnamenotdefinedinordering",
+                                "The name [{0}] in ordering is not defined.",
+                                new Object[] { obj }));
                     }
                 } else { // others
                     for (WebFragmentDescriptor wf : othersList) {

@@ -37,6 +37,7 @@
 package com.sun.enterprise.deployment.archivist;
 
 import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.OrderingDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebFragmentDescriptor;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
@@ -352,6 +353,8 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
                         IOException ioex = new IOException();
                         ioex.initCause(ex);
                         throw ioex;
+                    } finally {
+                        embeddedArchive.close();
                     }
 
                 } else {   
@@ -364,6 +367,8 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
 
             if (descriptor.getAbsoluteOrderingDescriptor() != null) {
                 wfList = descriptor.getAbsoluteOrderingDescriptor().order(wfList);
+            } else {
+                OrderingDescriptor.sort(wfList);
             }
         }
 

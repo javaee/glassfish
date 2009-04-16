@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -35,56 +35,67 @@
  */
 package com.sun.enterprise.deployment;
 
-import com.sun.enterprise.deployment.runtime.web.SunWebApp;
+import java.util.Collections;
+import java.util.Set;
+import java.util.TreeSet;
+
+import com.sun.enterprise.util.LocalStringManagerImpl;
 
 /**
- * I am an object that represents all the deployment information about
- * a web fragment.
+ * This represents the ordering-ordering in web-fragment.xml.
  *
  * @author Shing Wai Chan
  */
+public class OrderingOrderingDescriptor extends Descriptor {
+    private static LocalStringManagerImpl localStrings =
+            new LocalStringManagerImpl(OrderingOrderingDescriptor.class);
 
-public class WebFragmentDescriptor extends WebBundleDescriptor
-{
-    private String jarName = null;
-    private OrderingDescriptor ordering = null;
+    private Set<String> names = new TreeSet<String>();
+    private boolean others = false;
 
-    /**
-     * Constrct an empty web app [{0}].
-     */
-    public WebFragmentDescriptor() {
-        super();
-    }
-
-    public String getJarName() {
-        return jarName;
-    }
-
-    public void setJarName(String jarName) {
-        this.jarName = jarName;
-    }
-
-    public OrderingDescriptor getOrderingDescriptor() {
-        return ordering;
-    }
-
-    public void setOrderingDescriptor(OrderingDescriptor ordering) {
-        this.ordering = ordering;
-    }
-
-    /**
-     * Return a formatted version as a String.
-     */
-    public void print(StringBuffer toStringBuffer) {
-        toStringBuffer.append("\nWeb Fragment descriptor");
-        toStringBuffer.append("\n");
-        printCommon(toStringBuffer);
-        if (jarName != null) {
-            toStringBuffer.append("\njar name " + jarName);
+    public void addName(String name) {
+        if (name == null || name.length() == 0) {
+            throw new IllegalStateException(localStrings.getLocalString(
+                    "enterprise.deployment.exceptioninvalidnameinrelativeordering",
+                    "The empty name is invalid for relative ordering element."));
         }
-        if (ordering != null) {
-            toStringBuffer.append("\nordering " + ordering);
+        names.add(name);
+    }
+
+    public void addOthers() {
+        others = true;
+    }
+
+    public Set<String> getNames() {
+        return names;
+    }
+
+    public boolean containsOthers() {
+        return others;
+    }
+
+    public boolean containsName(String name) {
+        return names.contains(name);
+    }
+
+    public String toString() {
+        StringBuilder builder = new StringBuilder("[");
+        boolean first = true;
+        for (String n : names) {
+            if (!first) {
+                builder.append(", ");
+            }
+            builder.append(n);
+            first = false;
         }
+
+        if (others) {
+            if (!first) {
+                builder.append(", ");
+            }
+            builder.append("<others/>");
+        }
+        builder.append("]");
+        return builder.toString();
     }
 }
-    

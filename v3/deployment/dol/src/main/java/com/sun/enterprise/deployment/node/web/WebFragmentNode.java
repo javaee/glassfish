@@ -79,6 +79,8 @@ public class WebFragmentNode extends WebCommonNode<WebFragmentDescriptor> {
     /** Creates new WebBundleNode */
     public WebFragmentNode()  {
         super();
+        registerElementHandler(new XMLElement(WebTagNames.ORDERING),
+                OrderingNode.class, "setOrderingDescriptor");
     }
     
    /**
@@ -118,5 +120,25 @@ public class WebFragmentNode extends WebCommonNode<WebFragmentDescriptor> {
             descriptor = (WebFragmentDescriptor) DescriptorFactory.getDescriptor(getXMLPath());
         }
         return (WebFragmentDescriptor)descriptor;
-    }  
+    }
+
+    /**
+     * write the descriptor class to a DOM tree and return it
+     *
+     * @param parent node for the DOM tree
+     * @param the descriptor to write
+     * @return the DOM tree top node
+     */    
+    public Node writeDescriptor(Node parent, 
+        WebFragmentDescriptor webFragmentDesc) {
+        Node jarNode = super.writeDescriptor(parent, webFragmentDesc);
+        if (webFragmentDesc.getOrderingDescriptor() != null) {
+            OrderingNode orderingNode = new OrderingNode();
+            orderingNode.writeDescriptor(jarNode, WebTagNames.ORDERING,
+                    webFragmentDesc.getOrderingDescriptor());
+        }
+        return jarNode;
+    }
+
+
 }
