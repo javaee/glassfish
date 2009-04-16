@@ -44,8 +44,8 @@ package com.sun.enterprise.util;
 
 import java.lang.reflect.*;
 import java.util.Vector;
-import com.sun.enterprise.util.diagnostics.Reporter;
 import com.sun.enterprise.util.StringUtils;
+import java.util.logging.*;
 
 public class ObjectAnalyzer
 {
@@ -335,7 +335,7 @@ public class ObjectAnalyzer
 		}
 		catch(Exception e) 
 		{
-			Reporter.warn("Got an exception invoking setAccessible: " + e);//NOI18N
+			Logger.getAnonymousLogger().warning("Got an exception invoking setAccessible: " + e);//NOI18N
 		}
 	}
 
@@ -359,7 +359,7 @@ public class ObjectAnalyzer
 		}
 		catch(ClassNotFoundException e)
 		{
-			Reporter.info("Can't find java.lang.reflect.AccessibleObject -- thus I can't show any private or protected variable values.  This must be pre JDK 1.2.x");//NOI18N
+			Logger.getAnonymousLogger().info("Can't find java.lang.reflect.AccessibleObject -- thus I can't show any private or protected variable values.  This must be pre JDK 1.2.x");//NOI18N
 			return;
 		}
 
@@ -371,7 +371,7 @@ public class ObjectAnalyzer
 
 			if(m.getName().equals("setAccessible") && m.getParameterTypes().length == 2)//NOI18N
 			{
-				Reporter.verbose("Found setAccessible: " + m);//NOI18N
+				Logger.getAnonymousLogger().fine("Found setAccessible: " + m);//NOI18N
 				setAccessibleMethod = m;
 				break;
 			}
