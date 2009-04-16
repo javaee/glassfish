@@ -221,7 +221,9 @@ public class GlobalTID extends Object {
         return realTID.formatID == -1;
     }
 
-    /**Compares the two global identifiers.
+    /**Compares the two global identifiers. Delegates to #isSameTIDInternal
+     * for the actual implementation to avoid comparison with otid_t
+     * that FindBugs doesn't like.
      *
      * @param other  The other global identifier to compare.
      *
@@ -230,6 +232,10 @@ public class GlobalTID extends Object {
      * @see
      */
     public final boolean equals( Object other ) {
+        return isSameTIDInternal(other);
+    }
+
+    private final boolean isSameTIDInternal(Object other) {
         otid_t otherTID = null;
 
         if( other == null )

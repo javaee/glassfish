@@ -173,7 +173,8 @@ public class ResourceRecoveryManagerImpl implements Startup, PostConstruct, Reso
      * @return recovery-handlers and their resources
      */
     private Map<RecoveryResourceHandler, Vector> getAllRecoverableResources(Vector xaresList) {
-        Map<RecoveryResourceHandler, Vector> resourcesToHandlers = new HashMap<RecoveryResourceHandler, Vector>();
+        Map<RecoveryResourceHandler, Vector> resourcesToHandlers = 
+                new HashMap<RecoveryResourceHandler, Vector>();
 
         for (RecoveryResourceHandler handler : recoveryResourceHandlers) {
             //TODO V3 FINE LOG
@@ -208,7 +209,8 @@ public class ResourceRecoveryManagerImpl implements Startup, PostConstruct, Reso
                 **/
                 
                 Vector xaresList = new Vector();
-                Map<RecoveryResourceHandler, Vector> resourcesToHandler = getAllRecoverableResources(xaresList);
+                Map<RecoveryResourceHandler, Vector> resourcesToHandler = 
+                        getAllRecoverableResources(xaresList);
 
                 int size = xaresList.size();
                 XAResource[] xaresArray = new XAResource[size];
