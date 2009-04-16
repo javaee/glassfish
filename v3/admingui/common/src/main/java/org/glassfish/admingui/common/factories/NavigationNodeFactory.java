@@ -38,6 +38,7 @@ import javax.servlet.ServletContext;
  */
 @UIComponentFactory("gf:navNode")
 public class NavigationNodeFactory extends ComponentFactoryBase {
+    public static final String REAL_URL = "realUrl";
 
     /**
      *	<p> This is the factory method responsible for creating the
@@ -82,7 +83,7 @@ public class NavigationNodeFactory extends ComponentFactoryBase {
         if (url != null) {
             final boolean externalResource = ((String) url).contains("://");
             if (externalResource) {
-                comp.getAttributes().put("realUrl", url);
+                comp.getAttributes().put( REAL_URL, url);
                 comp.getAttributes().put("template", (template != null) ? template : "/templates/default.layout");
                 url = ((ServletContext)context.getExternalContext().getContext()).getContextPath() + "/" +
                         "pluginPage.jsf?id=" + comp.getClientId(context);

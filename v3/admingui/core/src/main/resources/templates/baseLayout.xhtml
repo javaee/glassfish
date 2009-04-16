@@ -65,7 +65,7 @@
 
     <sun:body onLoad="#{guiOnLoad}#{guiTemplateOnLoad}">
 <sc:layout fullPage="true">
-    <sc:layoutUnit position="top" height="95" scroll="false" gutter="0px" resize="false" collapse="false">
+    <sc:layoutUnit position="top" height="110" scroll="false" gutter="5px" resize="false" collapse="false">
         <div class="header_main">
             <sun:form id="headerForm">
                 <!-- Customizing the masthead -->
@@ -78,11 +78,11 @@
         </div>
     </sc:layoutUnit>
 
-    <sc:layoutUnit position="left" width="250" gutter="0px" resize="true" header="Tree" collapse="true">
+    <sc:layoutUnit position="left" width="250" gutter="5px" resize="true" header="Tree" collapse="true">
         <ui:insert name="guiLeftNav" />
     </sc:layoutUnit>
 
-    <sc:layoutUnit position="center" scroll="true" gutter="0px">
+    <sc:layoutUnit position="center" scroll="true" gutter="5px">
 	<ui:insert name="guiTopNav" />
 	<!-- Content -->
 	<div id="content" style="padding-left: 5px; padding-right: 5px;">
@@ -100,7 +100,7 @@
 
       I am commenting out the tags panel for now... this functionality should go back into the UI at some point...
 
-    <sc:layoutUnit position="right" width="250" gutter="0px" resize="true" header="Tags" collapse="true">
+    <sc:layoutUnit position="right" width="250" gutter="5px" resize="true" header="Tags" collapse="true">
 	<ui:include src="/tagsPanel.jsf" />
     </sc:layoutUnit>
     -->

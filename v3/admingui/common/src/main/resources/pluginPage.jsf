@@ -37,7 +37,7 @@
 <!define name="content">
     <h:outputText escape="false" value="#{pageSession.pluginPage}">
         <ui:event type="beforeCreate">
-            retrievePluginPageContents(pluginId="#{param.id}", pluginPage="#{pageSession.pluginPage}");
+            retrievePluginPageContents(compId="#{param.id}", pluginPage="#{pageSession.pluginPage}");
         </ui:event>
     </h:outputText>
 </define>
