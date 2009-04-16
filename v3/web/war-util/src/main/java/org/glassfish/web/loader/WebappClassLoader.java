@@ -1408,7 +1408,8 @@ public class WebappClassLoader
         // Don't load classes if class loader is stopped
         if (!started) {
             logger.fine(sm.getString("webappClassLoader.stopped"));
-            throw new ThreadDeath();
+            throw new Error("WebappClassLoader " + this +
+                            " not yet started or already stopped");
         }
 
         // Check our previously loaded local class cache
