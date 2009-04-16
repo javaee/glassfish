@@ -124,6 +124,7 @@ public class NavigationNodeFactory extends ComponentFactoryBase {
         }
         if (url != null) {
             final boolean externalResource = ((String) url).contains("://");
+// FIXME: There does not seem to be any way to have an external URL which does *not* use a template!
             if (externalResource) {
 // FIXME: Why doesn't this use setOption instead?  This may prevent #{} from being used.
                 comp.getAttributes().put(REAL_URL, url);
