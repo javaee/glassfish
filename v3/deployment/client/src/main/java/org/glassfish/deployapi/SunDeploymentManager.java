@@ -53,7 +53,6 @@ import org.glassfish.deployment.client.DeploymentFacilityFactory;
 import org.glassfish.deployment.client.ServerConnectionEnvironment;
 import org.glassfish.deployment.client.ServerConnectionIdentifier;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.api.deployment.archive.Archive;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.deploy.shared.InputJarArchive;
@@ -542,8 +541,7 @@ public class SunDeploymentManager implements DeploymentManager {
             throws IllegalStateException
     {
         DFDeploymentProperties dProps = new DFDeploymentProperties();
-        // the server side does not need the type now
-        // dProps.setType(type);
+        dProps.setProperty("type", getTypeFromModuleType(type));
         return deploy(targetList, moduleArchive, deploymentPlan, (Properties)dProps);
     }
 
@@ -1037,9 +1035,8 @@ public class SunDeploymentManager implements DeploymentManager {
         ProgressObject progressObj = null;
 
         try {
-            String UriPath = moduleArchive.getURI().getPath();
             moduleID = computeModuleID(moduleArchive);
-            Properties options = getProperties(UriPath, moduleID);
+            Properties options = getProperties(moduleID);
 
             /*
              *If any preset options were specified by the caller, use them to 
@@ -1048,7 +1045,7 @@ public class SunDeploymentManager implements DeploymentManager {
             if (presetOptions != null) {
                 options.putAll(presetOptions);
             }
-            progressObj = deploymentFacility.deploy(targetList, moduleArchive.getURI(), planArchive.getURI(), options);
+            progressObj = deploymentFacility.deploy(targetList, moduleArchive, planArchive, options);
             
         } catch(Throwable e) {
             /*
@@ -1167,12 +1164,12 @@ public class SunDeploymentManager implements DeploymentManager {
          */
         String moduleID = null;
             
-        String UriPath = moduleArchive.getURI().getPath();
-        if ((UriPath != null) && (UriPath.length() > 0)) {
+        URI Uri = moduleArchive.getURI();
+        if ((Uri != null) && (Uri.getPath().length() > 0)) {
             /*
              *Use the archive path.
              */
-            moduleID = pathExcludingType(UriPath);
+            moduleID = pathExcludingType(Uri.getPath());
 
             //Additional processing of the moduleID
             moduleID = moduleID.replace(' ','_');
@@ -1282,7 +1279,7 @@ public class SunDeploymentManager implements DeploymentManager {
         return progressObj;
     }
 
-    protected Properties getProperties(String archiveName, String moduleID) {
+    protected Properties getProperties(String moduleID) {
         DFDeploymentProperties dProps = new DFDeploymentProperties();
         dProps.setName(moduleID);
         dProps.setEnabled(false);

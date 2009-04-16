@@ -204,6 +204,15 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
                 }
                 return cloader;
             } else {
+                if (cloader!=null) {                                       
+                    try {
+                        PreDestroy.class.cast(cloader).preDestroy();
+                    } catch (Exception e) {
+                        // ignore, the classloader does not need to be destroyed
+                    }
+                    cloader=null;
+                }
+
                 return sharableTemp;                
             }
 

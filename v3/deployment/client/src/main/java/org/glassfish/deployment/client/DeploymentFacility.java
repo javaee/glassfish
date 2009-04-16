@@ -46,6 +46,7 @@ import javax.enterprise.deploy.shared.ModuleType;
 import javax.enterprise.deploy.spi.Target;
 import javax.enterprise.deploy.spi.TargetModuleID;
 import javax.enterprise.deploy.spi.status.DeploymentStatus;
+import org.glassfish.api.deployment.archive.ReadableArchive;
 
 import com.sun.enterprise.util.HostAndPort;
 
@@ -107,6 +108,9 @@ public interface DeploymentFacility {
     public DFProgressObject deploy(Target[] targets, URI source, 
         URI deploymentPlan, Map deploymentOptions);
     
+    public DFProgressObject deploy(Target[] targets, ReadableArchive source,
+        ReadableArchive deploymentPlan, Map deploymentOptions) throws IOException;
+
     // FIXME : This will go once admin-cli changes its code
     public DFProgressObject undeploy(Target[] targets, String moduleID);
 

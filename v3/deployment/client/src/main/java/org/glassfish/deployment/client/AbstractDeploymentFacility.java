@@ -41,6 +41,11 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.logging.LogDomains;
 import java.io.File;
 import java.io.IOException;
+import java.io.EOFException;
+import java.io.FileOutputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.net.URI;
 import java.util.Map;
 import java.util.HashMap;
@@ -56,8 +61,9 @@ import javax.enterprise.deploy.spi.status.ClientConfiguration;
 import org.glassfish.deployapi.ProgressObjectImpl;
 import org.glassfish.deployapi.TargetImpl;
 import org.glassfish.deployapi.TargetModuleIDImpl;
-//import org.glassfish.deployment.common.DeploymentUtils;
+import org.glassfish.api.deployment.archive.ReadableArchive;
 import com.sun.enterprise.util.HostAndPort;
+import com.sun.enterprise.deployment.deploy.shared.MemoryMappedArchive;
 
 /**
  * Provides common behavior for the local and remote deployment facilities.
@@ -226,6 +232,60 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
         throw new UnsupportedOperationException("Not supported in v3");
     }
 
+    public DFProgressObject deploy(Target[] targets, ReadableArchive source, ReadableArchive deploymentPlan, Map deploymentOptions) throws IOException {
+        File tempSourceFile = null; 
+        File tempPlanFile = null;
+        if (source != null && source instanceof MemoryMappedArchive) {
+            try {
+                String type = (String)deploymentOptions.remove("type");
+                tempSourceFile = writeMemoryMappedArchiveToTempFile((MemoryMappedArchive)source, getSuffixFromType(type));
+                URI tempPlanURI = null;
+                if (deploymentPlan != null && deploymentPlan instanceof MemoryMappedArchive) {
+                    tempPlanFile = writeMemoryMappedArchiveToTempFile((MemoryMappedArchive)deploymentPlan, ".jar");
+                    tempPlanURI = tempPlanFile.toURI();
+                }
+
+                return deploy(targets, tempSourceFile.toURI(), tempPlanURI, deploymentOptions);
+            } finally {
+                if (tempSourceFile != null) {
+                    tempSourceFile.delete();
+                }
+                if (tempPlanFile != null) {
+                    tempPlanFile.delete();
+                }
+            }
+        } else {
+            if (deploymentPlan == null) {
+                return deploy(targets, source.getURI(), null, deploymentOptions);
+            } else {
+                return deploy(targets, source.getURI(), deploymentPlan.getURI(), deploymentOptions);
+            }
+        }
+    } 
+
+    private File writeMemoryMappedArchiveToTempFile(MemoryMappedArchive mma, String fileSuffix) throws IOException {
+        File tempFile = File.createTempFile("jsr88-", fileSuffix);
+        BufferedOutputStream bos = 
+            new BufferedOutputStream(new FileOutputStream(tempFile));
+        int chunkSize = 32 * 1024;
+        long remaining = mma.getArchiveSize();
+        BufferedInputStream bis = new BufferedInputStream(
+            new ByteArrayInputStream(mma.getByteArray()));
+        while(remaining != 0) {
+            int actual = (remaining < chunkSize) ? (int) remaining : chunkSize;
+            byte[] bytes = new byte[actual];
+            try {
+                bis.read(bytes);
+                bos.write(bytes);
+            } catch (EOFException eof) {
+                break;
+            }
+            remaining -= actual;
+        }
+        bos.flush();
+        return tempFile;
+    } 
+
     /**
      * Deploys the application (with optional deployment plan) to the specified
      * targets with the indicated options.
@@ -275,7 +335,7 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
             }
 
             // it's redeploy, set the enable attribute accordingly
-            if (Boolean.valueOf((String)deploymentOptions.get(
+            if (Boolean.valueOf((String)deploymentOptions.remove(
                 DFDeploymentProperties.REDEPLOY))) {
                 String appName = (String)deploymentOptions.get(
                     DFDeploymentProperties.NAME);
@@ -283,7 +343,6 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
                     targets[0].getName(), appName);
                 deploymentOptions.put(DFDeploymentProperties.ENABLED, 
                     enabledAttr);
-                deploymentOptions.remove(DFDeploymentProperties.REDEPLOY);
             }
 
             DFCommandRunner commandRunner = getDFCommandRunner(
@@ -900,38 +959,56 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
     }
 
 
-   private ModuleType getJavaEEModuleTypeFromResult(List<String> resultList) {
-       List<String> sniffersFound = new ArrayList<String>();
-       for (String result : resultList) {
-           if (result.endsWith("property.isComposite=true")) {
-               return ModuleType.EAR;
-           } else if (result.endsWith("engine.web.sniffer=web")) {
-               sniffersFound.add("web");
-           } else if (result.endsWith("engine.ejb.sniffer=ejb")) {
-               sniffersFound.add("ejb");
-           } else if (result.endsWith("engine.connector.sniffer=connector")) {
-               sniffersFound.add("rar");
-           } else if (result.endsWith("engine.appclient.sniffer=appclient")) {
-               sniffersFound.add("car");
-           } 
-       }         
+    private ModuleType getJavaEEModuleTypeFromResult(List<String> resultList) {
+        List<String> sniffersFound = new ArrayList<String>();
+        for (String result : resultList) {
+            if (result.endsWith("property.isComposite=true")) {
+                return ModuleType.EAR;
+            } else if (result.endsWith("engine.web.sniffer=web")) {
+                sniffersFound.add("web");
+            } else if (result.endsWith("engine.ejb.sniffer=ejb")) {
+                sniffersFound.add("ejb");
+            } else if (result.endsWith("engine.connector.sniffer=connector")) {
+                sniffersFound.add("rar");
+            } else if (result.endsWith("engine.appclient.sniffer=appclient")) {
+                sniffersFound.add("car");
+            } 
+        }         
        
-       // if we are here, it's not ear 
-       // note, we check for web sniffer before ejb, as in ejb in war case
-       // we will return war.
-       if (sniffersFound.contains("web")) {
-           return ModuleType.WAR;
-       }
-       if (sniffersFound.contains("ejb")) {
-           return ModuleType.EJB;
-       }
-       if (sniffersFound.contains("rar")) {
-           return ModuleType.RAR;
-       }
-       if (sniffersFound.contains("car")) {
-           return ModuleType.CAR;
-       }
-
-       return null;
-   }
+        // if we are here, it's not ear 
+        // note, we check for web sniffer before ejb, as in ejb in war case
+        // we will return war.
+        if (sniffersFound.contains("web")) {
+            return ModuleType.WAR;
+        }
+        if (sniffersFound.contains("ejb")) {
+            return ModuleType.EJB;
+        }
+        if (sniffersFound.contains("rar")) {
+            return ModuleType.RAR;
+        }
+        if (sniffersFound.contains("car")) {
+            return ModuleType.CAR;
+        }
+ 
+        return null;
+    }
+ 
+    private String getSuffixFromType(String type) {
+        if (type == null) { 
+            return null;
+        }
+        if (type.equals("war")) {
+            return ".war";
+        } else if (type.equals("ejb")) {
+            return ".jar";
+        } else if (type.equals("car")) {
+            return ".car";
+        } else if (type.equals("rar")) {
+            return ".rar";
+        } else if (type.equals("ear")) {
+            return ".ear";
+        }
+        return null;
+    }
 }
