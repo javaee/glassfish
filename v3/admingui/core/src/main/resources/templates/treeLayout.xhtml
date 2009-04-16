@@ -13,24 +13,24 @@
     <ui:param name="guiTemplateOnLoad" value="fixTree();" />
 
     <!--
-	Previously:
+    Previously:
 
-	// The following Style is required to avoid the tree nodes from
-	// moving around when selected.
-	<f:verbatim>
-	<style type="text/css">
-	    .TreeSelRow_sun4 {clear:both}
-	</style>
-	</f:verbatim>
+    // The following Style is required to avoid the tree nodes from
+    // moving around when selected.
+    <f:verbatim>
+    <style type="text/css">
+        .TreeSelRow_sun4 {clear:both}
+    </style>
+    </f:verbatim>
     -->
 
     // Extra Head Content
     <ui:define name="guiTemplateExtraHead">
-	<style type="text/css">
-	    <!-- Temporarily define this here, move to a gui.css file -->
-	    .guiPageContent {padding: 5px;}
-	    .guiNavTree {float: left; width: 250px;}
-	</style>
+    <style type="text/css">
+        <!-- Temporarily define this here, move to a gui.css file -->
+        .guiPageContent {padding: 5px;}
+        .guiNavTree {float: left; width: 250px;}
+    </style>
         <sun:script>
     function fixedExpandCollapse(treeNode, imageId, event) {
         var tree = this.getTree(treeNode);
@@ -42,26 +42,26 @@
             }
             
             var elt = document.getElementById(imageId);
-	    if (elt.id.indexOf("_image") &lt; 0) {
-		var baseId = elt.id.substring(0, elt.id.lastIndexOf(":") + 1);
-		elt = document.getElementById(baseId + "turner:turner_image");
-	    }
+        if (elt.id.indexOf("_image") &lt; 0) {
+        var baseId = elt.id.substring(0, elt.id.lastIndexOf(":") + 1);
+        elt = document.getElementById(baseId + "turner:turner_image");
+        }
             
             this.unhighlightParent(this.getSelectedTreeNode(tree.id));
 
             // Change the style to cause the expand / collapse &amp; switch the image
             var display = childNodes.style.display;
-	    if (display == "none") {
-		childNodes.style.display = "block";
-		if (elt &amp;&amp; elt.src) {
-		    elt.src = elt.src.replace("tree_handleright", "tree_handledown");
-		}
-	    } else {
-		childNodes.style.display = "none";
-		if (elt &amp;&amp; elt.src) {
-		    elt.src = elt.src.replace("tree_handledown", "tree_handleright");
-		}
-	    }
+        if (display == "none") {
+        childNodes.style.display = "block";
+        if (elt &amp;&amp; elt.src) {
+            elt.src = elt.src.replace("tree_handleright", "tree_handledown");
+        }
+        } else {
+        childNodes.style.display = "none";
+        if (elt &amp;&amp; elt.src) {
+            elt.src = elt.src.replace("tree_handledown", "tree_handleright");
+        }
+        }
 
             // Last, update the visible parent of the selected node if now hidden
             this.highlightParent(this.getSelectedTreeNode(tree.id));
@@ -70,46 +70,46 @@
     }
 
     /**
-     *	This method was butchered... it now does nothing like what the name
+     *    This method was butchered... it now does nothing like what the name
      *  implies, it returns tree/false, &lt;b&gt;NOT&lt;/b&gt; a node.  It doesn't find
      *  any nodes by property (although it does still serach by type.
      */
     function fixedFindNodeByTypeAndProp(node) {
-	if (node == null) {
-	    return true;
-	}
+    if (node == null) {
+        return true;
+    }
 
-	// First check to see if node is a handler image.
-	// Then check if it is of the right type. "RIGHT" icon
-	// type indicates the node is not expanded.
-	if (node.nodeName == "IMG") {
-	    var propName = 'src';
-	    var propVal = 'tree_handle';
-	    if (node[propName].indexOf(propVal) &gt; -1) {
-		//return node;
-		// Do check:
-		return (node[propName].indexOf("tree_handleright") == -1);
-	    }
-	}
+    // First check to see if node is a handler image.
+    // Then check if it is of the right type. "RIGHT" icon
+    // type indicates the node is not expanded.
+    if (node.nodeName == "IMG") {
+        var propName = 'src';
+        var propVal = 'tree_handle';
+        if (node[propName].indexOf(propVal) &gt; -1) {
+        //return node;
+        // Do check:
+        return (node[propName].indexOf("tree_handleright") == -1);
+        }
+    }
 
-	// Not what we want, walk its children if any
-	// Return true for when null conditions arise.
-	var nodeList = node.childNodes;
-	if (!nodeList || (nodeList.length == 0)) {
-	    return true;
-	}
-	var result;
-	for (var count = 0; count&lt;nodeList.length; count++) {
-	    // Recurse
-	    result = this.findNodeByTypeAndProp(nodeList[count]);
-	    if (result) {
-		// Propagate the result
-		return result;
-	    }
-	}
+    // Not what we want, walk its children if any
+    // Return true for when null conditions arise.
+    var nodeList = node.childNodes;
+    if (!nodeList || (nodeList.length == 0)) {
+        return true;
+    }
+    var result;
+    for (var count = 0; count&lt;nodeList.length; count++) {
+        // Recurse
+        result = this.findNodeByTypeAndProp(nodeList[count]);
+        if (result) {
+        // Propagate the result
+        return result;
+        }
+    }
 
-	// Not found
-	return true;
+    // Not found
+    return true;
     }
 
     function fixedIsTreeHandle(event) {
@@ -122,11 +122,11 @@
         var elt = (event.target) ? event.target : event.srcElement;
 
         if (elt.nodeName == "IMG") {
-	    var url = new String(elt.src);
-	    if ((url.indexOf("tree_handle") &gt; 0) &amp;&amp; (url.indexOf("theme") &gt; 0)) {
-		// This is a tree handle
-		return true;
-	    }
+        var url = new String(elt.src);
+        if ((url.indexOf("tree_handle") &gt; 0) &amp;&amp; (url.indexOf("theme") &gt; 0)) {
+        // This is a tree handle
+        return true;
+        }
         } else if (elt.nodeName == "A") {
             // User might have been pressing enter around an image.
             // Note: I have never managed to get control to come here.
@@ -145,24 +145,24 @@
         return false;
     }
     function fixTree() {
-	var tree = document.getElementById('#{treeId}');
-	tree.isTreeHandle = fixedIsTreeHandle;
-	tree.expandCollapse = fixedExpandCollapse;
-	tree.findNodeByTypeAndProp = fixedFindNodeByTypeAndProp;
+    var tree = document.getElementById('#{treeId}');
+    tree.isTreeHandle = fixedIsTreeHandle;
+    tree.expandCollapse = fixedExpandCollapse;
+    tree.findNodeByTypeAndProp = fixedFindNodeByTypeAndProp;
     }
         </sun:script>
     </ui:define>
 
     <ui:define name="guiLeftNav">
-	<div class="guiNavTree">
-	    <ui:include src="/peTree.inc" />
-	</div>
+    <div class="guiNavTree">
+        <ui:include src="/peTree.inc" />
+    </div>
     </ui:define>
     <ui:define name="guiTemplateContent">
-	<div class="guiPageContent">
-	    <ui:insert name="content">
-		Content Missing!
-	    </ui:insert>
-	</div>
+    <div class="guiPageContent">
+        <ui:insert name="content">
+        Content Missing!
+        </ui:insert>
+    </div>
     </ui:define>
 </ui:composition>
