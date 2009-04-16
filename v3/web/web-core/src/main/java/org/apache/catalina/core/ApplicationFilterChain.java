@@ -61,24 +61,14 @@ package org.apache.catalina.core;
 import java.io.IOException;
 import java.security.Principal;
 import java.security.PrivilegedActionException;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import javax.servlet.*;
+import javax.servlet.http.*;
 import org.apache.catalina.Globals;
 import org.apache.catalina.InstanceEvent;
-import static org.apache.catalina.InstanceEvent.EventType.BEFORE_FILTER_EVENT;
-import static org.apache.catalina.InstanceEvent.EventType.AFTER_FILTER_EVENT;
-import static org.apache.catalina.InstanceEvent.EventType.BEFORE_SERVICE_EVENT;
-import static org.apache.catalina.InstanceEvent.EventType.AFTER_SERVICE_EVENT;
 import org.apache.catalina.Request;
 import org.apache.catalina.Wrapper;
+import static org.apache.catalina.InstanceEvent.EventType.BEFORE_FILTER_EVENT;
+import static org.apache.catalina.InstanceEvent.EventType.AFTER_FILTER_EVENT;
 import org.apache.catalina.security.SecurityUtil;
 import org.apache.catalina.util.InstanceSupport;
 import org.apache.catalina.util.StringManager;
@@ -353,7 +343,7 @@ final class ApplicationFilterChain implements FilterChain {
 
         */
         // START IASRI 4665318
-        servletService(request, response, servlet, wrapper, origRequest);
+        wrapper.service(request, response, servlet, origRequest);
         // END IASRI 4665318
     }
 
@@ -368,7 +358,6 @@ final class ApplicationFilterChain implements FilterChain {
      * @param filterConfig The FilterConfig for the servlet to be executed
      */
     void addFilter(ApplicationFilterConfig filterConfig) {
-
         if (n == filters.length) {
             ApplicationFilterConfig[] newFilters =
                 new ApplicationFilterConfig[n + INCREMENT];
@@ -376,7 +365,6 @@ final class ApplicationFilterChain implements FilterChain {
             filters = newFilters;
         }
         filters[n++] = filterConfig;
-
     }
 
 
@@ -424,72 +412,4 @@ final class ApplicationFilterChain implements FilterChain {
         this.origRequest = origRequest;
     }
 
-
-    // START IASRI 4665318
-
-    static void servletService(ServletRequest request, 
-                               ServletResponse response,
-                               Servlet serv, StandardWrapper wrapper,
-                               Request origRequest)
-                        throws IOException, ServletException {
-
-        InstanceSupport supp = wrapper.getInstanceSupport();
-
-        try {
-            supp.fireInstanceEvent(BEFORE_SERVICE_EVENT,
-                                   serv, request, response);
-            if (origRequest != null) {
-                if (!wrapper.isAsyncSupported()) {
-                    origRequest.disableAsyncSupport();
-                }
-            } 
-            if ((request instanceof HttpServletRequest) &&
-                (response instanceof HttpServletResponse)) {
-                    
-                if ( SecurityUtil.executeUnderSubjectDoAs() ){
-                    final ServletRequest req = request;
-                    final ServletResponse res = response;
-                    Principal principal = 
-                        ((HttpServletRequest) req).getUserPrincipal();
-
-                    Object[] serviceType = new Object[2];
-                    serviceType[0] = req;
-                    serviceType[1] = res;
-                    
-                    SecurityUtil.doAsPrivilege("service",
-                                               serv,
-                                               classTypeUsedInService, 
-                                               serviceType,
-                                               principal);                                                   
-                    serviceType = null;
-                } else {  
-                    serv.service((HttpServletRequest) request,
-                                 (HttpServletResponse) response);
-                }
-            } else {
-                serv.service(request, response);
-            }
-            supp.fireInstanceEvent(AFTER_SERVICE_EVENT,
-                                   serv, request, response);
-        } catch (IOException e) {
-            supp.fireInstanceEvent(AFTER_SERVICE_EVENT,
-                                   serv, request, response, e);
-            throw e;
-        } catch (ServletException e) {
-            supp.fireInstanceEvent(AFTER_SERVICE_EVENT,
-                                   serv, request, response, e);
-            throw e;
-        } catch (RuntimeException e) {
-            supp.fireInstanceEvent(AFTER_SERVICE_EVENT,
-                                   serv, request, response, e);
-            throw e;
-        } catch (Throwable e) {
-            supp.fireInstanceEvent(AFTER_SERVICE_EVENT,
-                                   serv, request, response, e);
-            throw new ServletException
-              (sm.getString("filterChain.servlet"), e);
-        }
-
-    }
-    // END IASRI 4665318
 }

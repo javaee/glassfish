@@ -52,11 +52,7 @@
  * limitations under the License.
  */
 
-
-
-
 package org.apache.catalina.core;
-
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -66,16 +62,9 @@ import javax.management.ObjectName;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.beanutils.PropertyUtils;
-
 import com.sun.grizzly.util.buf.MessageBytes;
-
-import org.apache.catalina.Context;
-import org.apache.catalina.Globals;
-import org.apache.catalina.HttpRequest;
-import org.apache.catalina.Request;
-import org.apache.catalina.Response;
+import org.apache.catalina.*;
 import org.apache.catalina.connector.ClientAbortException;
 import org.apache.catalina.deploy.FilterDef;
 import org.apache.catalina.util.StringManager;
@@ -92,8 +81,9 @@ import org.apache.catalina.valves.ValveBase;
 final class StandardWrapperValve
     extends ValveBase {
 
-    private static Logger log = Logger.getLogger(
-        StandardWrapperValve.class.getName());
+    private static java.util.logging.Logger log =
+        java.util.logging.Logger.getLogger(
+            StandardWrapperValve.class.getName());
 
     // ----------------------------------------------------- Instance Variables
 
@@ -273,6 +263,7 @@ final class StandardWrapperValve
         }
         hreq.setAttribute(Globals.DISPATCHER_REQUEST_PATH_ATTR,
                           requestPathMB);
+
         // Create the filter chain for this request
         ApplicationFilterFactory factory =
             ApplicationFilterFactory.getInstance();
@@ -299,9 +290,7 @@ final class StandardWrapperValve
                     filterChain.setWrapper(wrapper);
                     filterChain.doFilter(hreq, hres);
                 } else {
-                    ApplicationFilterChain.servletService(
-                        hreq, hres, servlet, wrapper, request);
-
+                    wrapper.service(hreq, hres, servlet, request);
                 }
             }
             // END IASRI 4665318

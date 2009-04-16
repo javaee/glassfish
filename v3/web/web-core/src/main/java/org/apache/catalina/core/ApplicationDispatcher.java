@@ -822,9 +822,8 @@ public final class ApplicationDispatcher
                     filterChain.setWrapper((StandardWrapper)wrapper);
                     filterChain.doFilter(request, response);
                 } else {
-                    ApplicationFilterChain.servletService(
-                        request, response, servlet, (StandardWrapper)wrapper,
-                        origRequest);
+                    ((StandardWrapper)wrapper).service(
+                        request, response, servlet, origRequest);
                 }
                 // END IASRI 4665318
             }
