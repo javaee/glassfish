@@ -103,8 +103,8 @@ import com.sun.logging.LogDomains;
 
 public class FileDirContext extends BaseDirContext {
 
-    private static final Logger logger = LogDomains.getLogger(
-            FileDirContext.class, LogDomains.WEB_LOGGER);
+//    private static final Logger logger = LogDomains.getLogger(
+//            FileDirContext.class, LogDomains.WEB_LOGGER);
 
     // -------------------------------------------------------------- Constants
 
@@ -1013,8 +1013,8 @@ public class FileDirContext extends BaseDirContext {
             /* Some IO error occurred such as bad file permissions,
              * lack of file descriptors.
              * Prevent a NPE with Arrays.sort(names) */
-            logger.warning(sm.getString("fileResources.listingNull",
-                                  file.getAbsolutePath()));
+//            logger.warning(sm.getString("fileResources.listingNull",
+//                                  file.getAbsolutePath()));
             return entries;
         }
 
