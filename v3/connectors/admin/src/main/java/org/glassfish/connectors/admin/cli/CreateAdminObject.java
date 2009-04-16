@@ -40,24 +40,21 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
+import static org.glassfish.resource.common.ResourceConstants.*;
+import org.glassfish.resource.common.ResourceStatus;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.TransactionFailure;
-import com.sun.enterprise.config.serverbeans.AdminObjectResource;
-import com.sun.enterprise.config.serverbeans.Resource;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import org.glassfish.api.admin.config.Property;
 
-import java.beans.PropertyVetoException;
 import java.util.Properties;
+import java.util.HashMap;
 
 /**
  * Create Admin Object Command
@@ -108,146 +105,39 @@ public class CreateAdminObject implements AdminCommand {
 
         Server targetServer = domain.getServerNamed(target);
         
-        if (jndiName == null) {
-            report.setMessage(localStrings.getLocalString("create.admin.object.noJndiName",
-                            "No JNDI name defined for administered object."));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-        }
-        // ensure we don't already have one of this name
-        for (Resource resource : resources.getResources()) {
-            if (resource instanceof AdminObjectResource) {
-                if (((AdminObjectResource) resource).getJndiName().equals(jndiName)) {
-                    report.setMessage(localStrings.getLocalString("create.admin.object.duplicate",
-                            "An administered object named {0} already exists.", jndiName));
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    return;
-                }
-            }
-        }
+        HashMap attrList = new HashMap();
+        attrList.put(RES_TYPE, resType);
+        attrList.put(ENABLED, enabled);
+        attrList.put(JNDI_NAME, jndiName);
+        attrList.put(ServerTags.DESCRIPTION, description);
+        attrList.put(RES_ADAPTER, raName);
 
-        //TODO check if raname is valid
-        /*if (!isValidRAName(resources, raName)) {
-            report.setMessage(localStrings.getLocalString("create.admin.object.raNotFound",
-                "Applications: Config element connector-module {0} is not found", raName));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-        }*/
-
-        //TODO check if restype is valid
-        /*if (!isResTypeValid(aName)) {
-            report.setMessage(localStrings.getLocalString("create.admin.object.raNotFound",
-                "Applications: Config element connector-module {0} is not found", raName));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-        }*/
+        ResourceStatus rs;
 
         try {
-            ConfigSupport.apply(new SingleConfigCode<Resources>() {
-
-                public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-
-                    AdminObjectResource newResource = param.createChild(AdminObjectResource.class);
-                    newResource.setJndiName(jndiName);
-                    if (description != null) {
-                        newResource.setDescription(description);
-                    }
-                    newResource.setResAdapter(raName);
-                    newResource.setResType(resType);
-                    newResource.setEnabled(enabled.toString());
-                    if (properties != null) {
-                        for ( java.util.Map.Entry e : properties.entrySet()) {
-                            Property prop = newResource.createChild(Property.class);
-                            prop.setName((String)e.getKey());
-                            prop.setValue((String)e.getValue());
-                            newResource.getProperty().add(prop);
-                        }
-                    }
-                    param.getResources().add(newResource);
-                    return newResource;
-                }
-            }, resources);
-
-            if (!targetServer.isResourceRefExists( jndiName)) {
-                targetServer.createResourceRef( enabled.toString(), jndiName);
-            }
-
-        } catch(TransactionFailure tfe) {
+            AdminObjectManager adminObjMgr = new AdminObjectManager();
+            rs = adminObjMgr.create(resources, attrList, properties, targetServer);
+        } catch(Exception e) {
+            String actual = e.getMessage();
+            String def = "Admin object: {0} could not be created, reason: {1}";
             report.setMessage(localStrings.getLocalString("create.admin.object.fail",
-                            "Unable to create administered object {0}.", jndiName) +
-                            " " + tfe.getLocalizedMessage());
+                    def, jndiName, actual));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setFailureCause(tfe);
+            report.setFailureCause(e);
+            return;
         }
-        report.setMessage(localStrings.getLocalString("create.admin.object.success",
-                "Administered object {0} created.", jndiName));
-        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-    }
-
-    //TODO Error checking taken from v2, need to refactor for v3
-    /*
-    private boolean isResTypeValid(String raName) {
-        // Check if the restype is valid -
-        // To check this, we need to get the list of admin-object-interface
-        // names and then find out if this list contains the restype.
-        String[] resTypes = ConnectorRuntime.getRuntime().getAdminObjectInterfaceNames(raName);
-        if (resTypes == null || resTypes.length <= 0) {
-            throw new Exception(localStrings.getString("admin.mbeans.rmb.null_ao_intf", raName));
-        }
-
-        for (int i = 0; i < resTypes.length; i++) {
-            if (resTypes[i].equals(resType)) {
-                validResType = true;
-                break;
-            }
-        }
-
-        if (!validResType) {
-            throw new Exception(localStrings.getString("admin.mbeans.rmb.invalid_res_type", resType));
-        }
-    }*/
-
-    //TODO Error checking taken from v2, need to refactor for v3
-    /*
-    private boolean isValidRAName(String raName) throws Exception {
-        boolean retVal = false;
-
-        if ((raName == null) || (raName.equals(""))) {
-            throw new Exception(localStrings.getString("admin.mbeans.rmb.null_res_adapter"));
-        }
-
-        // To check for embedded conenctor module
-        if (raName.equals(ConnectorRuntime.DEFAULT_JMS_ADAPTER) || raName.equals(ConnectorRuntime.JAXR_RA_NAME)) {
-            // System RA, so don't validate
-            retVal = true;
-        } else {
-            // Check if the raName contains double underscore or hash.
-            // If that is the case then this is the case of an embedded rar,
-            // hence look for the application which embeds this rar,
-            // otherwise look for the webconnector module with this raName.
-
-            ObjectName applnObjName = m_registry.getMbeanObjectName(ServerTags.APPLICATIONS, new String[]{getDomainName()});
-            int indx = raName.indexOf(
-                    ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER);
-            if (indx != -1) {
-                String appName = raName.substring(0, indx);
-                ObjectName j2eeAppObjName = (ObjectName) getMBeanServer().invoke(applnObjName, "getJ2eeApplicationByName", new Object[]{appName}, new String[]{"java.lang.String"});
-
-                if (j2eeAppObjName == null) {
-                    throw new Exception(localStrings.getString("admin.mbeans.rmb.invalid_ra_app_not_found", appName));
-                } else {
-                    retVal = true;
-                }
+        ActionReport.ExitCode ec = ActionReport.ExitCode.SUCCESS;
+        if (rs.getStatus() == ResourceStatus.FAILURE) {
+            ec = ActionReport.ExitCode.FAILURE;
+            if (rs.getMessage() != null) {
+                report.setMessage(rs.getMessage());
             } else {
-                ObjectName connectorModuleObjName = (ObjectName) getMBeanServer().invoke(applnObjName, "getConnectorModuleByName", new Object[]{raName}, new String[]{"java.lang.String"});
-
-                if (connectorModuleObjName == null) {
-                    throw new Exception(localStrings.getString("admin.mbeans.rmb.invalid_ra_cm_not_found", raName));
-                } else {
-                    retVal = true;
-                }
+                 report.setMessage(localStrings.getLocalString("create.admin.object.fail",
+                    "Admin object {0} creation failed", jndiName, ""));
             }
+            if (rs.getException() != null)
+                report.setFailureCause(rs.getException());
         }
-        return retVal;
-    }*/
+        report.setActionExitCode(ec);
+    }
 }

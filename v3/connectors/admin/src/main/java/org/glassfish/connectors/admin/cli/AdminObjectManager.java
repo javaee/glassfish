@@ -1,0 +1,206 @@
+/*
+ * 
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ * 
+ * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
+ * 
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License. You can obtain
+ * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ * 
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * Sun designates this particular file as subject to the "Classpath" exception
+ * as provided by Sun in the GPL Version 2 section of the License file that
+ * accompanied this code.  If applicable, add the following below the License
+ * Header, with the fields enclosed by brackets [] replaced by your own
+ * identifying information: "Portions Copyrighted [year]
+ * [name of copyright owner]"
+ * 
+ * Contributor(s):
+ * 
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package org.glassfish.connectors.admin.cli;
+
+import java.beans.PropertyVetoException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import org.glassfish.api.I18n;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
+import static org.glassfish.resource.common.ResourceConstants.*;
+import org.glassfish.resource.common.ResourceStatus;
+import org.glassfish.api.admin.config.Property;
+import com.sun.enterprise.config.serverbeans.AdminObjectResource;
+import com.sun.enterprise.config.serverbeans.Resources;
+import com.sun.enterprise.config.serverbeans.Resource;
+import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.ServerTags;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.glassfish.admin.cli.resources.ResourceManager;
+
+
+/**
+ *
+ * @author Jennifer Chou
+ */
+@Service (name=ServerTags.ADMIN_OBJECT_RESOURCE)
+@Scoped(PerLookup.class)
+@I18n("create.admin.object")
+public class AdminObjectManager implements ResourceManager{
+
+    private static final String DESCRIPTION = ServerTags.DESCRIPTION;
+
+    final private static LocalStringManagerImpl localStrings = 
+        new LocalStringManagerImpl(AdminObjectManager.class);
+
+    private String resType = null;
+    private String raName = null;
+    private String enabled = Boolean.TRUE.toString();
+    private String jndiName = null;
+    private String description = null;
+
+    public AdminObjectManager() {
+    }
+
+    public String getResourceType() {
+        return ServerTags.ADMIN_OBJECT_RESOURCE;
+    }
+
+    public ResourceStatus create(Resources resources, HashMap attrList, 
+                                    final Properties props, Server targetServer) 
+                                    throws Exception {
+        setParams(attrList);
+        
+        if (jndiName == null) {
+            String msg = localStrings.getLocalString("create.admin.object.noJndiName",
+                            "No JNDI name defined for administered object.");
+            return new ResourceStatus(ResourceStatus.FAILURE, msg);
+        }
+        // ensure we don't already have one of this name
+        for (Resource resource : resources.getResources()) {
+            if (resource instanceof AdminObjectResource) {
+                if (((AdminObjectResource) resource).getJndiName().equals(jndiName)) {
+                    String msg = localStrings.getLocalString("create.admin.object.duplicate",
+                            "An administered object named {0} already exists.", jndiName);
+                    return new ResourceStatus(ResourceStatus.FAILURE, msg);
+                }
+            }
+        }
+
+        //TODO check if raname is valid
+        /*if (!isValidRAName(raName, report)) {
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
+
+        //TODO check if restype is valid
+        if (!isResTypeValid(raName, report)) {
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }*/
+            
+        try {
+            ConfigSupport.apply(new SingleConfigCode<Resources>() {
+
+                public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
+
+                    AdminObjectResource newResource = param.createChild(AdminObjectResource.class);
+                    newResource.setJndiName(jndiName);
+                    if (description != null) {
+                        newResource.setDescription(description);
+                    }
+                    newResource.setResAdapter(raName);
+                    newResource.setResType(resType);
+                    newResource.setEnabled(enabled.toString());
+                    if (props != null) {
+                        for ( Map.Entry e : props.entrySet()) {
+                            Property prop = newResource.createChild(Property.class);
+                            prop.setName((String)e.getKey());
+                            prop.setValue((String)e.getValue());
+                            newResource.getProperty().add(prop);
+                        }
+                    }
+                    param.getResources().add(newResource);
+                    return newResource;
+                }
+            }, resources);
+
+            if (!targetServer.isResourceRefExists( jndiName)) {
+                targetServer.createResourceRef( enabled.toString(), jndiName);
+            }
+
+        } catch(TransactionFailure tfe) {
+            String msg = localStrings.getLocalString("create.admin.object.fail",
+                            "Unable to create administered object {0}.", jndiName) +
+                            " " + tfe.getLocalizedMessage();
+            return new ResourceStatus(ResourceStatus.FAILURE, msg);
+        }
+
+        String msg = localStrings.getLocalString(
+                "create.admin.object.success",
+                "Administered object {0} created.", jndiName);
+        return new ResourceStatus(ResourceStatus.SUCCESS, msg);
+         
+    }
+
+    public void setParams(HashMap attrList) {
+        resType = (String) attrList.get(RES_TYPE);
+        enabled = (String) attrList.get(ENABLED);
+        jndiName = (String) attrList.get(JNDI_NAME);
+        description = (String) attrList.get(DESCRIPTION);
+        raName = (String) attrList.get(RES_ADAPTER);
+    }
+    
+     //TODO Error checking taken from v2, need to refactor for v3
+    private boolean isResTypeValid(String raName) {
+        // Check if the restype is valid -
+        // To check this, we need to get the list of admin-object-interface
+        // names and then find out if this list contains the restype.
+        boolean isResTypeValid = true;
+        /*boolean isResTypeValid = false;
+        String[] resTypes = ConnectorRuntime.getRuntime().getAdminObjectInterfaceNames(raName);
+        if (resTypes == null || resTypes.length <= 0) {
+            report.setMessage(localStrings.getLocalString("admin.mbeans.rmb.null_ao_intf",
+                "Resource Adapter {0} does not contain any resource type for admin-object. Please specify another res-adapter.", raName));
+            return isResTypeValid;
+        }
+
+        for (int i = 0; i < resTypes.length; i++) {
+            if (resTypes[i].equals(resType)) {
+                isResTypeValid = true;
+                break;
+            }
+        }
+
+        if (!isResTypeValid) {
+            report.setMessage(localStrings.getLocalString("admin.mbeans.rmb.invalid_res_type",
+                "Invalid Resource Type: {0}", resType));
+        }*/
+        return isResTypeValid;
+    }
+}
