@@ -38,7 +38,7 @@
 package org.glassfish.embed;
 
 import org.glassfish.embed.util.LoggerHelper;
-import  com.sun.enterprise.util.ObjectAnalyzer;
+//import  com.sun.enterprise.util.ObjectAnalyzer;
 import java.io.*;
 import java.net.*;
 import javax.net.ServerSocketFactory;
@@ -174,12 +174,13 @@ public class EmbeddedInfo {
     public void setLogging(boolean b) {
         logging = b;
     }
-    
+
+/* Commented out temporarily because the Reporter class in common-util is not available.
     @Override
     public String toString() {
         return ObjectAnalyzer.toString(this);
     }
-
+*/
     //////////////////////  pkg-private  //////////////////////
     // bnevins
     // This class is really just a buffer for storing a bunch of data
