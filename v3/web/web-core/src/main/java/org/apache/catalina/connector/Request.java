@@ -126,6 +126,10 @@ import org.apache.catalina.security.SecurityUtil;
 // START S1AS 6170450
 import com.sun.appserv.security.provider.ProxyHandler;
 // END S1AS 6170450
+import com.sun.enterprise.security.integration.RealmInitializer;
+import org.apache.catalina.authenticator.AuthenticatorBase;
+import org.apache.catalina.deploy.LoginConfig;
+
 
 /**
  * Wrapper object for the Coyote request.
@@ -545,6 +549,23 @@ public class Request
      */
     protected Context context = null;
     protected ServletContext servletContext = null;
+    
+        
+    /**
+     * ThreadLocal object to keep track of the reentrancy status of each thread.
+     * It contains a byte[] object whose single element is either 0 (initial
+     * value or no reentrancy), or 1 (current thread is reentrant). When a
+     * thread exits the implies method, byte[0] is alwasy reset to 0.
+     */
+    private static ThreadLocal reentrancyStatus;
+    
+    static {
+        reentrancyStatus = new ThreadLocal() {
+           protected synchronized Object initialValue() {
+                return new byte[]{0};
+            }
+        };
+    }
 
 
     // --------------------------------------------------------- Public Methods
@@ -1963,11 +1984,55 @@ public class Request
 
     // ---------------------------------------------------- HttpRequest Methods
 
-
     @Override
     public boolean login(HttpServletResponse response)
             throws IOException, ServletException {
-        // TBD
+        
+        if (getUserPrincipal() != null) {
+            throw new ServletException("Attempt to re-login while the " +
+                    "user identity already exists");
+        }
+        
+        if (context == null) {
+            return false;
+        }
+            
+        AuthenticatorBase authBase = (AuthenticatorBase)context.getAuthenticator();
+
+        byte[] alreadyCalled = (byte[]) reentrancyStatus.get();
+        if (alreadyCalled[0] == 1) {
+            //Re-entrancy from a JSR 196  module, so call the authenticate directly
+            if (authBase != null) {
+                try {
+                    return authBase.authenticate(this, (HttpResponse) getResponse(), 
+                            context.getLoginConfig());
+                } catch (Exception ex) {
+                   throw new ServletException("Exception thrown while attempting to authenticate "+ex);
+                }
+            }
+         } else {
+            //No re-entrancy, so call invokeAuthenticateDelegate to check if 
+            //JSR196 module is present
+            alreadyCalled[0] = 1;
+            try {
+                if (authBase != null) {
+                    Realm realm = context.getRealm();
+                    if (realm == null) {
+                        return false;
+                    }
+                    try {
+                        return realm.invokeAuthenticateDelegate(this, (HttpResponse) getResponse(), 
+                                context, (AuthenticatorBase) authBase);
+
+                    } catch (Exception ex) {
+                       throw new ServletException("Exception thrown while attempting to authenticate "+ex);
+                    }
+                }
+            } finally {
+                //Reset the threadlocal re-entrancy check variable
+                alreadyCalled[0] = 0;
+            }
+        }
         return false;
     }
 
@@ -1975,13 +2040,63 @@ public class Request
     @Override
     public void login(String username, String password)
             throws ServletException {
-        // TBD
+       
+        //Do we have to check for getRemoteUser() and getAuthType() as well?
+        //TODO :Would be confirmed by Ron
+        if (getUserPrincipal() != null) {
+            log.severe("Attempt to re-login while the " +
+                    "user identity already exists");
+            throw new ServletException("Attempt to re-login while the " +
+                    "user identity already exists");
+        }
+        if (context == null) {
+            return;
+        }
+
+        LoginConfig loginConfig = context.getLoginConfig();
+        String authMethod = (loginConfig != null)?loginConfig.getAuthMethod():"";
+        Realm realm = context.getRealm();
+        if (realm == null) {
+            return;
+        }
+        try {
+            //Support only BASIC and FORM  auth methods            
+            if (!("BASIC".equals(authMethod) || "FORM".equals(authMethod))) {
+                throw new ServletException("Invalid LoginConfig, Auth Method " +
+                        "Required is BASIC or FORM, but found  " + authMethod);
+
+            }
+            Principal webPrincipal = realm.authenticate(username, password);
+            if (webPrincipal != null) {
+                setUserPrincipal(webPrincipal);
+            }
+        } catch (Exception ex) {
+            throw new ServletException("Exception thrown while attempting to authenticate " +
+                    "for user: " + username + " " + ex);
+
+        }
+
+    //What should be the authtype to be set?
+        setAuthType("LOGIN");
     }
 
 
     @Override
     public void logout() throws ServletException {
-        // TBD
+        
+        if (context == null) {
+             //Should an exception be thrown here?
+            return;
+        }
+        //TODO : Change the name of the Interface to RealmExtenstion
+        RealmInitializer realm = (RealmInitializer)context.getRealm();
+        if (realm == null) {
+             //Should an exception be thrown here?
+            return;
+        }
+        realm.logout();
+        setUserPrincipal(null);
+        setAuthType(null);
     }
 
 
