@@ -43,18 +43,17 @@ import java.io.*;
 
 class ProcessStreamDrainerWorker implements Runnable
 {
-    ProcessStreamDrainerWorker(InputStream in)
-    {
-        this(in, null);
-    }
-
-    ProcessStreamDrainerWorker(InputStream in, PrintStream Redirect)
+    ProcessStreamDrainerWorker(InputStream in, PrintStream Redirect, boolean save)
     {
         if(in == null)
             throw new NullPointerException("InputStream argument was null.");
         
         reader = new BufferedInputStream(in);
         redirect = Redirect;
+
+        if(save) {
+            sb = new StringBuilder();
+        }
     }
     
     public void run()
@@ -71,13 +70,24 @@ class ProcessStreamDrainerWorker implements Runnable
             {
                 if(redirect != null)
                     redirect.write(buffer, 0, count);
+
+               if(sb != null)
+                   sb.append(new String(buffer, 0, count));
             }
         } 
         catch (IOException e)
         {
         }
     }
+
+    String getString() {
+        if(sb != null)
+            return sb.toString();
+        else
+            return "";
+    }
     
-    private final BufferedInputStream reader;
-    private final PrintStream redirect;
+    private final   BufferedInputStream reader;
+    private final   PrintStream         redirect;
+    private         StringBuilder       sb;
 }

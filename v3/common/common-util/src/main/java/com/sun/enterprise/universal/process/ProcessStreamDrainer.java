@@ -83,7 +83,20 @@ public class ProcessStreamDrainer
      */
     public static ProcessStreamDrainer drain(String processName, Process process)
     {
-        ProcessStreamDrainer psd = new ProcessStreamDrainer(processName, process, false);
+        ProcessStreamDrainer psd = new ProcessStreamDrainer(processName, process, false, false);
+        psd.drain();
+        return psd;
+    }
+
+    /**
+     * Create an instance and drain the process' stderr and stdout and save it to
+     * strings.
+     * @param process The Process to drain
+     * @param processName The name will be used to name the drainer threads
+     */
+    public static ProcessStreamDrainer save(String processName, Process process)
+    {
+        ProcessStreamDrainer psd = new ProcessStreamDrainer(processName, process, false, true);
         psd.drain();
         return psd;
     }
@@ -96,7 +109,7 @@ public class ProcessStreamDrainer
      */
     public static ProcessStreamDrainer redirect(String processName, Process process)
     {
-        ProcessStreamDrainer psd = new ProcessStreamDrainer(processName, process, true);
+        ProcessStreamDrainer psd = new ProcessStreamDrainer(processName, process, true, false);
         psd.drain();
         return psd;
     }
@@ -110,10 +123,31 @@ public class ProcessStreamDrainer
         errThread.join();
         outThread.join();
     }
-    
+
+    /* Gets the stdout that was collected into a String
+     * @return an empty string if nothing is available
+     */
+    public final String getOutString() {
+        return outWorker.getString();
+    }
+
+    /* Gets the stdout that was collected into a String
+     * @return an empty string if nothing is available
+     */
+    public final String getErrString() {
+        return errWorker.getString();
+    }
+
+    /* Concatenates the stdout and stderr output and returns it as a String
+     * @return an empty string if nothing is available
+     */
+    public final String getOutErrString() {
+        return outWorker.getString() + errWorker.getString();
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     
-    private ProcessStreamDrainer(String processName, Process process, boolean redirect)
+    private ProcessStreamDrainer(String processName, Process process, boolean redirect, boolean save)
     {
         if(process == null)
             throw new NullPointerException("Internal Error: null Process object");
@@ -130,19 +164,19 @@ public class ProcessStreamDrainer
         ProcessStreamDrainerWorker worker;
         
         if(redirectStandardStreams)
-            worker = new ProcessStreamDrainerWorker(process.getInputStream(), System.out);
+            outWorker = new ProcessStreamDrainerWorker(process.getInputStream(), System.out, save);
         else
-            worker = new ProcessStreamDrainerWorker(process.getInputStream());
+            outWorker = new ProcessStreamDrainerWorker(process.getInputStream(), null, save);
 
-        outThread = new Thread(worker, processName + "-" + OUT_DRAINER);
+        outThread = new Thread(outWorker, processName + "-" + OUT_DRAINER);
         outThread.setDaemon(true);
         
         if(redirectStandardStreams)
-            worker = new ProcessStreamDrainerWorker(process.getErrorStream(), System.err);
+            errWorker = new ProcessStreamDrainerWorker(process.getErrorStream(), System.err, save);
         else
-            worker = new ProcessStreamDrainerWorker(process.getErrorStream());
+            errWorker = new ProcessStreamDrainerWorker(process.getErrorStream(), null, save);
         
-        errThread = new Thread(worker, processName + "-" + ERROR_DRAINER);
+        errThread = new Thread(errWorker, processName + "-" + ERROR_DRAINER);
         errThread.setDaemon(true);
     }
     
@@ -160,6 +194,8 @@ public class ProcessStreamDrainer
     ///////////////////////////////////////////////////////////////////////////
     
     private final           Process                     process;
+    private final           ProcessStreamDrainerWorker  outWorker;
+    private final           ProcessStreamDrainerWorker  errWorker;
     private final           Thread                      errThread;
     private final           Thread                      outThread;
     private final           String                      processName;
