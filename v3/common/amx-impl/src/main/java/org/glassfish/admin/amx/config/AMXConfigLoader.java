@@ -323,7 +323,7 @@ public final class AMXConfigLoader extends MBeanImplBase
         final AMXConfigInfo amxConfigInfo = theClass.getAnnotation( AMXConfigInfo.class );
         if ( amxConfigInfo == null )
         {
-            throw new IllegalArgumentException( "ConfigBean has no @AMXConfigInfo: " + theClass.getName() );
+            throw new NoAMXConfigInfoException( "ConfigBean has no @AMXConfigInfo: " + theClass.getName() );
         }
         return amxConfigInfo;
     }
@@ -427,6 +427,11 @@ public final class AMXConfigLoader extends MBeanImplBase
         return mLoaderThread != null;
     }
     
+    private static void warning( final String msg )
+    {
+        System.out.println( "AMXConfigLoader (old): " + msg );
+    }
+    
     private final class AMXConfigLoaderThread extends Thread
     {
         private final PendingConfigBeans mPending;
@@ -458,7 +463,14 @@ public final class AMXConfigLoader extends MBeanImplBase
             }
             catch( Throwable t )
             {
-                t.printStackTrace();
+                if ( t instanceof NoAMXConfigInfoException )
+                {
+                    warning( t.getMessage() );
+                }
+                else
+                {
+                    t.printStackTrace();
+                }
             }
             finally
             {
@@ -508,6 +520,15 @@ public final class AMXConfigLoader extends MBeanImplBase
                 job = mPending.take();
                 registerOne(job);
             }
+        }
+    }
+    
+    
+    private static final class NoAMXConfigInfoException extends RuntimeException
+    {
+        public NoAMXConfigInfoException( final String msg )
+        {
+            super(msg);
         }
     }
     
