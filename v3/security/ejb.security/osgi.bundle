@@ -1,0 +1,2 @@
+-exportcontents: \
+                        com.sun.enterprise.iiop.security; version=${project.osgi.version}
