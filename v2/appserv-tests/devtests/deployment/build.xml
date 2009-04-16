@@ -13,11 +13,9 @@
         <ant dir="war" target="private-all">
             <property name="build" value="${build}/war"/>
         </ant>
-<!--
         <ant dir="ejb" target="private-all">
             <property name="build" value="${build}/ejb"/>
         </ant>
--->
         <ant dir="ear" target="private-all">
             <property name="build" value="${build}/ear"/>
         </ant>                
@@ -44,10 +42,10 @@
         <ant dir="descriptor_free_zone" target="private-all">
             <property name="build" value="${build}/descriptor_free_zone"/>
         </ant>
+-->
         <ant dir="directorydeploy" target="private-all">
             <property name="build" value="${build}/directorydeploy"/>
         </ant>
--->
     </target>
 
     <target name="clobber" depends="clean">

@@ -6,7 +6,12 @@ TESTS INFO :
 1. war/* are tests that deploy WAR module only. The name of directories indicate
    what kind of WAR each tests build for deployment. 
 
-2. ear/* are tests that deploy EAR module.
+2. ejb/* are tests that deploy EJB-JARs only
+
+3. ear/* are tests that deploy EAR with WAR only, EAR with EJBJAR only, EAR
+   with WAR and EJBJAR, EAR with webservice
+
+4. jsr88/* are tests that test other jsr88 APIs like get*Modules etc
 
 FOR RUNNING THE DEPLOYMENT TESTS ON v3:
 ----------------------------------------

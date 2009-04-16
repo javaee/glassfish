@@ -22,7 +22,7 @@
                destdir="${build}"
                debug="on"
                failonerror="true">
-            <classpath refid="test.compile.classpath"/>
+            <classpath refid="gfv3.classpath"/>
         </javac>
     </target>
 
@@ -50,7 +50,7 @@
     </target>
 
     <target name="redeploy.asadmin" depends="prepare">
-        <antcall target="common.deploydir.asadmin">
+        <antcall target="common.redeploydir.asadmin">
             <param name="arg.list" value="${portable.ear}"/>
             <param name="arg.list" value="${build}/${testName}"/>
         </antcall>

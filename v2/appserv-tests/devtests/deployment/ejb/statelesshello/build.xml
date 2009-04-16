@@ -161,9 +161,7 @@
             <jvmarg value="-Djava.endorsed.dirs=${inst}/lib/endorsed"/>
 
             <classpath>
-                <path location="${inst}/lib/j2ee.jar"/>
-                <path location="${inst}/lib/appserv-rt.jar"/>
-                <path location="${inst}/lib/appserv-admin.jar"/>
+                <path refid="gfv3.classpath"/>
                 <path location="${build}"/>
 		<path location="${archivedir}/StatelessHelloEjbClient.jar"/>
             </classpath>
@@ -192,7 +190,6 @@
         </antcall>
         <antcall target="undeploy.asadmin"/>
 
-<!--
         <antcall target="deploy.jsr88"/>
         <antcall target="run.positive">
             <param name="log.id" value="3"/>
@@ -219,6 +216,5 @@
         </antcall>
 
         <antcall target="undeploy.jsr88"/>
--->
     </target>
 </project>

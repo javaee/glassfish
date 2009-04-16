@@ -12,6 +12,7 @@
             <ant dir="ear" target="private-all">
                 <property name="build" value="${build}/ear"/>
             </ant>
+<!--
             <ant dir="earwithsuffix" target="private-all">
                 <property name="build" value="${build}/earwithsuffix"/>
             </ant>
@@ -27,6 +28,7 @@
             <ant dir="warwithsuffix" target="private-all">
                 <property name="build" value="${build}/warwithsuffix"/>
             </ant>
+-->
 	</target>
 
 </project>

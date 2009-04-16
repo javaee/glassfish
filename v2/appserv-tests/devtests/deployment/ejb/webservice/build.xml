@@ -122,8 +122,12 @@
     </target>
 
     <target name="runclient" depends="prepare">
-        <javac srcdir="staticstubclient" destdir="${build}"
-               classpath="${inst}/lib/j2ee.jar:${inst}/lib/webservices-rt.jar:${inst}/lib/webservices-tools.jar"/>
+        <javac srcdir="staticstubclient" destdir="${build}">
+            <classpath>
+                <path refid="gfv3.classpath"/>
+                <pathelement location="${junit.jar}"/>
+            </classpath>
+        </javac>
 
         <javaWithResult
             fork="true"
@@ -136,10 +140,7 @@
             <jvmarg value="-Djava.endorsed.dirs=${inst}/lib/endorsed"/>
 
             <classpath>
-                <path location="${inst}/lib/j2ee.jar"/>
-                <path location="${inst}/lib/webservices-rt.jar"/>
-                <path location="${inst}/lib/webservices-tools.jar"/>
-                <path location="${build}"/>
+               <path refid="gfv3.classpath"/>
             </classpath>
 
             <arg line="${arg.list}"/>
