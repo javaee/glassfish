@@ -44,7 +44,6 @@ import com.sun.enterprise.common.iiop.security.SecurityContext;
 
 
 import com.sun.corba.ee.org.omg.CSI.*;
-import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.security.auth.login.common.PasswordCredential;
 import com.sun.enterprise.security.auth.login.common.X509CertificateCredential;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -105,11 +104,10 @@ public class SecClientRequestInterceptor extends    org.omg.CORBA.LocalObject
      */
     protected static final int SECURITY_ATTRIBUTE_SERVICE_ID = 15;
    
-    public SecClientRequestInterceptor(String name, Codec codec) {
+    public SecClientRequestInterceptor(String name, Codec codec, Habitat habitat) {
 	this.name   = name;
         this.codec  = codec;
         this.prname = name + "::";
-        Habitat habitat = SecurityServicesUtil.getInstance().getHabitat();
         orbHelper = habitat.getComponent(GlassFishORBHelper.class);
         secContextUtil = habitat.getComponent(SecurityContextUtil.class);
     }

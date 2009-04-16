@@ -238,6 +238,11 @@
             <artifactId>appclient.security</artifactId>
             <version>${project.version}</version>
         </dependency>
+         <dependency>
+            <groupId>org.glassfish.security</groupId>
+            <artifactId>ejb.security</artifactId>
+            <version>${project.version}</version>
+        </dependency>
        <dependency>
             <groupId>org.glassfish.deployment</groupId>
             <artifactId>deployment-javaee-full</artifactId>

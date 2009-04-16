@@ -84,6 +84,7 @@ public class AppClientSecurityInfoImpl implements AppClientSecurityInfo {
     
     @Inject
     protected SSLUtils sslUtils;
+    
     @Inject
     private SecurityServicesUtil secServUtil; 
     @Inject
@@ -119,6 +120,7 @@ public class AppClientSecurityInfoImpl implements AppClientSecurityInfo {
 
         //set the parser to ConfigXMLParser
         System.setProperty("config.parser", DEFAULT_PARSER_CLASS);
+        util.setAppClientMsgSecConfigs(msgSecConfigs);
 	try {
 	    /* setup jsr 196 factory
 	     * define default factory if it is not already defined
@@ -147,6 +149,7 @@ public class AppClientSecurityInfoImpl implements AppClientSecurityInfo {
             UsernamePasswordStore.set(username, password);
         }
 
+        //why am i setting both?.
         secServUtil.setCallbackHandler(callbackHandler);
         util.setCallbackHandler(callbackHandler);
     }

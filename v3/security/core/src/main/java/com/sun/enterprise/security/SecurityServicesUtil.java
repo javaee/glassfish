@@ -42,7 +42,6 @@ package com.sun.enterprise.security;
 
 import com.sun.enterprise.security.audit.AuditManager;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import org.glassfish.internal.api.Globals;
 import org.glassfish.api.admin.ServerEnvironment;
 import com.sun.logging.LogDomains;
 import java.io.BufferedReader;
@@ -66,7 +65,9 @@ import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
 @Scoped(Singleton.class)
 public class SecurityServicesUtil {
 
-    private static Habitat habitat = Globals.getDefaultHabitat();
+    //private static Habitat habitat = Globals.getDefaultHabitat();
+    @Inject
+    private static Habitat habitat;
     
     private static final LocalStringManagerImpl _localStrings =
             new LocalStringManagerImpl(SecurityServicesUtil.class);

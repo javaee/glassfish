@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.security.appclient;
 
+import com.sun.enterprise.security.common.Util;
 import com.sun.enterprise.security.jmac.config.*;
 import com.sun.enterprise.security.jmac.config.GFServerConfigProvider;
 import java.util.HashMap;
@@ -56,7 +57,7 @@ import javax.security.auth.message.MessagePolicy;
 
 
 /**
- * Parser for message-security-config in domain.xml or sun-acc.xml
+ * Parser for message-security-config in  sun-acc.xml
  */
 public class ConfigXMLParser implements ConfigParser { 
     private static Logger _logger=null;
@@ -73,8 +74,10 @@ public class ConfigXMLParser implements ConfigParser {
     }
 
     public void initialize(List<MessageSecurityConfig> msgConfigs) throws IOException {
-            this.msgSecConfigs = msgConfigs;
+        this.msgSecConfigs = msgConfigs;
+        if (this.msgSecConfigs != null) {
             processClientConfigContext(configMap);
+        }
     }
 
 
@@ -225,7 +228,9 @@ public class ConfigXMLParser implements ConfigParser {
     }
 
     public void initialize(Object config) throws IOException {
-       //remove dependence on ClientContainer before uncommenting
+        Util util = Util.getInstance();
+        assert(util != null);
+        this.initialize((List<MessageSecurityConfig>)util.getAppClientMsgSecConfigs());
        //this.initialize(config);
     }
 }

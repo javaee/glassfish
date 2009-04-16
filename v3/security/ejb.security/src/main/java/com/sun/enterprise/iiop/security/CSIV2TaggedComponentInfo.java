@@ -90,6 +90,7 @@ import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 import org.omg.CORBA.INV_POLICY;
 import org.omg.PortableInterceptor.IORInfo;
 
+import org.glassfish.enterprise.iiop.impl.CSIv2Policy;
 /** 
  * This is the class that manages the CSIV2 tagged component information
  * in the IORs.

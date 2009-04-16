@@ -33,70 +33,35 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.security.common;
 
-import javax.security.auth.callback.CallbackHandler;
-import org.glassfish.api.admin.ProcessEnvironment;
-import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
-import org.glassfish.internal.api.Globals;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.Singleton;
+package org.glassfish.enterprise.iiop.impl;
 
-/**
- *
- * @author venu
- * TODO: need to change this class, it needs to be similar to SecurityServicesUtil
- */
-@Service
-@Scoped(Singleton.class)
-public class Util {
-    //private static Habitat habitat = Globals.getDefaultHabitat();
-    @Inject
-    private static Habitat habitat;
-    @Inject 
-    private ProcessEnvironment penv;
-   
-    //stuff required for AppClient
-    private CallbackHandler callbackHandler;
-    private Object appClientMsgSecConfigs;
+
+import com.sun.enterprise.deployment.EjbDescriptor;
+
+//TODO: This class is in an Impl dir, we probably need to create a 
+//Contract in the orb-connector module that can be used inside security/ejb.security
+public class CSIv2Policy extends org.omg.CORBA.LocalObject
+                    implements org.omg.CORBA.Policy {
     
-    //Note: Will return Non-Null only after Util has been 
-    //Injected in some Service.
-    public static Habitat getDefaultHabitat() {
-        return habitat;
-    }
+    private EjbDescriptor ejbDescriptor;
     
-    public static Util getInstance() {
-        // return my singleton service
-        return habitat.getComponent(Util.class);
-    }
-    
-    public boolean isACC() {
-        return penv.getProcessType().equals(ProcessType.ACC);
-    }
-    public boolean isServer() {
-        return penv.getProcessType().equals(ProcessType.Server);
-    }
-    public boolean isNotServerORACC() {
-        return penv.getProcessType().equals(ProcessType.Other);
+    public CSIv2Policy(EjbDescriptor ejbDescriptor) {
+	this.ejbDescriptor = ejbDescriptor;
     }
 
-    public CallbackHandler getCallbackHandler() {
-        return callbackHandler;
+    public int policy_type() {
+	return POARemoteReferenceFactory.CSIv2_POLICY_TYPE;
     }
 
-    public void setCallbackHandler(CallbackHandler callbackHandler) {
-        this.callbackHandler = callbackHandler;
+    public org.omg.CORBA.Policy copy() {
+	return new CSIv2Policy(ejbDescriptor);
     }
 
-    public Object getAppClientMsgSecConfigs() {
-        return appClientMsgSecConfigs;
+    public void destroy() {
     }
 
-    public void setAppClientMsgSecConfigs(Object appClientMsgSecConfigs) {
-        this.appClientMsgSecConfigs = appClientMsgSecConfigs;
+    public EjbDescriptor getEjbDescriptor() {
+	return ejbDescriptor;
     }
 }

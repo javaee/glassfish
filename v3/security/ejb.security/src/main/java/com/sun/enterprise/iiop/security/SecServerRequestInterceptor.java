@@ -56,7 +56,6 @@ import java.security.cert.X509Certificate;
 import com.sun.corba.ee.org.omg.CSI.*;
 import com.sun.enterprise.common.iiop.security.AnonCredential;
 import com.sun.enterprise.common.iiop.security.GSSUPName;
-import com.sun.enterprise.security.SecurityServicesUtil;
 import sun.security.util.DerInputStream;
 import sun.security.util.DerValue;
 
@@ -113,11 +112,10 @@ public class SecServerRequestInterceptor
     private GlassFishORBHelper orbHelper;
     //Not required
     //  SecurityService secsvc = null;       // Security Service
-    public SecServerRequestInterceptor(String name, Codec codec) {
+    public SecServerRequestInterceptor(String name, Codec codec, Habitat habitat) {
         this.name    = name;
         this.codec   = codec;
         this.prname  = name + "::";
-        Habitat habitat = SecurityServicesUtil.getInstance().getHabitat();
         secContextUtil = habitat.getComponent(SecurityContextUtil.class);
         orbHelper = habitat.getComponent(GlassFishORBHelper.class);
     }

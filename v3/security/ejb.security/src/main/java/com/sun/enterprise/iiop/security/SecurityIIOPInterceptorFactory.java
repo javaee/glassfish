@@ -39,12 +39,18 @@ package com.sun.enterprise.iiop.security;
 import com.sun.logging.LogDomains;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.api.admin.ProcessEnvironment;
+import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
 import org.glassfish.enterprise.iiop.api.IIOPInterceptorFactory;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Singleton;
+import org.omg.CORBA.ORB;
 import org.omg.IOP.Codec;
 import org.omg.PortableInterceptor.ClientRequestInterceptor;
+import org.omg.PortableInterceptor.IORInterceptor;
 import org.omg.PortableInterceptor.ORBInitInfo;
 import org.omg.PortableInterceptor.ORBInitInfoPackage.DuplicateName;
 import org.omg.PortableInterceptor.ServerRequestInterceptor;
@@ -55,7 +61,7 @@ import org.omg.PortableInterceptor.ServerRequestInterceptor;
  */
 @Service(name="ServerSecurityInterceptorFactory")
 @Scoped(Singleton.class)
-public class SecurityIIOPInterceptorFactory implements IIOPInterceptorFactory {
+public class SecurityIIOPInterceptorFactory implements IIOPInterceptorFactory{
 
     private static Logger _logger = null;
     static {
@@ -63,36 +69,45 @@ public class SecurityIIOPInterceptorFactory implements IIOPInterceptorFactory {
     }
     private ClientRequestInterceptor creq;
     private ServerRequestInterceptor sreq;
+    private SecIORInterceptor sior;
+    
+    @Inject
+    private ProcessEnvironment penv;
+    @Inject
+    private Habitat habitat;
     
     // are we supposed to add the interceptor and then return or just return an instance ?.
     public ClientRequestInterceptor createClientRequestInterceptor(ORBInitInfo info, Codec codec) {
+        if (!penv.getProcessType().equals(ProcessType.Server)) {
+            return null;
+        }
         ClientRequestInterceptor ret = getClientInterceptorInstance(codec);
-//      I was told the add call is done by the caller        
-//        try {
-//            info.add_client_request_interceptor(ret);
-//        } catch (DuplicateName ex) {
-//            _logger.log(Level.SEVERE, null, ex);
-//            throw new RuntimeException(ex);
-//        }
         return ret;
     }
 
     public ServerRequestInterceptor createServerRequestInterceptor(ORBInitInfo info, Codec codec) {
-        ServerRequestInterceptor ret = getServerInterceptorInstance(codec);
-//      I was told the add call is done by the caller 
-//        try {
-//            info.add_server_request_interceptor(ret);
-//        } catch (DuplicateName ex) {
-//            _logger.log(Level.SEVERE, null, ex);
-//            throw new RuntimeException(ex);
-//        }
+        ServerRequestInterceptor ret = null;
+        try {
+            if (!penv.getProcessType().equals(ProcessType.Server)) {
+                return null;
+            }
+            ret = getServerInterceptorInstance(codec);
+            //also register the IOR Interceptor here
+            com.sun.corba.ee.spi.legacy.interceptor.ORBInitInfoExt infoExt = (com.sun.corba.ee.spi.legacy.interceptor.ORBInitInfoExt)info;
+            IORInterceptor secIOR = getSecIORInterceptorInstance(codec, infoExt.getORB());
+            info.add_ior_interceptor(secIOR);
+            
+        } catch (DuplicateName ex) {
+            _logger.log(Level.SEVERE, null, ex);
+            throw new RuntimeException(ex);
+        }
         return ret;
     }
     
     private synchronized ClientRequestInterceptor getClientInterceptorInstance(Codec codec) {
         if (creq == null) {
             creq = new SecClientRequestInterceptor(
-                "SecClientRequestInterceptor", codec);
+                "SecClientRequestInterceptor", codec, habitat);
         }
         return creq;
     }
@@ -100,9 +115,15 @@ public class SecurityIIOPInterceptorFactory implements IIOPInterceptorFactory {
      private synchronized ServerRequestInterceptor getServerInterceptorInstance(Codec codec) {
         if (sreq == null) {
             sreq = new SecServerRequestInterceptor(
-                    "SecServerRequestInterceptor", codec);
+                    "SecServerRequestInterceptor", codec, habitat);
         }
         return sreq;
     }
 
+    private synchronized IORInterceptor getSecIORInterceptorInstance(Codec codec, ORB orb) {
+        if (sior == null) {
+            sior = new SecIORInterceptor(codec, habitat, orb);
+        }
+        return sior;
+    }
 }

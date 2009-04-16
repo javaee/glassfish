@@ -36,35 +36,52 @@
 
 package com.sun.enterprise.iiop.security;
 
+import java.util.Hashtable;
 
-import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.security.SecurityServicesUtil;
-import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
+/**
+ * This class that implements ConnectionExecutionContext that gets 
+ * stored in Thread Local Storage. If the current thread creates
+ * child threads, the context info that is  stored in the current 
+ * thread is automatically propogated to the child threads.
+ * 
+ * Two class methods serve as a convinient way to set/get the 
+ * Context information within the current thread.   
+ *
+ * Thread Local Storage is a concept introduced in JDK1.2. So, it
+ * will not work on earlier releases of JDK.
+ *
+ * @see java.lang.ThreadLocal
+ * @see java.lang.InheritableThreadLocal
+ * 
+ */
+public class ConnectionExecutionContext {
+    private static final InheritableThreadLocal connCurrent= new InheritableThreadLocal();
 
-
-public class CSIv2Policy extends org.omg.CORBA.LocalObject
-                    implements org.omg.CORBA.Policy {
-    
-    private EjbDescriptor ejbDescriptor;
-    private GlassFishORBHelper orbHelper;
-    
-    public CSIv2Policy(EjbDescriptor ejbDescriptor) {
-	this.ejbDescriptor = ejbDescriptor;
-        orbHelper = SecurityServicesUtil.getInstance().getHabitat().getComponent(GlassFishORBHelper.class);
+    /** 
+     * This method can be used to add a new hashtable for storing the 
+     * Thread specific context information. This method is useful to add a 
+     * deserialized Context information that arrived over the wire.
+     * @param A hashtable that stores the current thread's context
+     * information.
+     */
+    public static void setContext(Hashtable ctxTable) {
+        if (ctxTable != null) {
+            connCurrent.set(ctxTable);
+        } else {
+            connCurrent.set(new Hashtable());
+        }
     }
 
-    public int policy_type() {
-	return orbHelper.getCSIv2PolicyType();
-    }
-
-    public org.omg.CORBA.Policy copy() {
-	return new CSIv2Policy(ejbDescriptor);
-    }
-
-    public void destroy() {
-    }
-
-    EjbDescriptor getEjbDescriptor() {
-	return ejbDescriptor;
+    /**
+     * This method returns the hashtable that stores the thread specific
+     * Context information.
+     * @return The Context object stored in the current TLS. It always 
+     * returns a non null value;
+     */
+    public static Hashtable getContext() {
+         if (connCurrent.get() == null) {
+             setContext(null); // Create a new one...
+         } 
+         return (Hashtable) connCurrent.get();
     }
 }

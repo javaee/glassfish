@@ -33,70 +33,67 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.security.common;
 
-import javax.security.auth.callback.CallbackHandler;
+package com.sun.enterprise.security.appclient;
+
+import com.sun.enterprise.iiop.security.SecClientRequestInterceptor;
+import com.sun.logging.LogDomains;
+import java.util.logging.Logger;
+
 import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
-import org.glassfish.internal.api.Globals;
+
+import org.glassfish.enterprise.iiop.api.IIOPInterceptorFactory;
+
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Singleton;
 
+import org.omg.IOP.Codec;
+import org.omg.PortableInterceptor.ClientRequestInterceptor;
+import org.omg.PortableInterceptor.ORBInitInfo;
+import org.omg.PortableInterceptor.ServerRequestInterceptor;
+
+
 /**
  *
- * @author venu
- * TODO: need to change this class, it needs to be similar to SecurityServicesUtil
+ * @author Kumar
  */
-@Service
+@Service(name="ClientSecurityInterceptorFactory")
 @Scoped(Singleton.class)
-public class Util {
-    //private static Habitat habitat = Globals.getDefaultHabitat();
+public class AppclientIIOPInterceptorFactory implements IIOPInterceptorFactory {
+
+    private static Logger _logger = null;
+    static {
+        _logger = LogDomains.getLogger(AppclientIIOPInterceptorFactory.class, LogDomains.SECURITY_LOGGER);
+    }
+    private ClientRequestInterceptor creq;
     @Inject
-    private static Habitat habitat;
-    @Inject 
     private ProcessEnvironment penv;
-   
-    //stuff required for AppClient
-    private CallbackHandler callbackHandler;
-    private Object appClientMsgSecConfigs;
+    @Inject 
+    private Habitat habitat;
     
-    //Note: Will return Non-Null only after Util has been 
-    //Injected in some Service.
-    public static Habitat getDefaultHabitat() {
-        return habitat;
+    // are we supposed to add the interceptor and then return or just return an instance ?.
+    public ClientRequestInterceptor createClientRequestInterceptor(ORBInitInfo info, Codec codec) {
+        if (penv.getProcessType().equals(ProcessType.Server)) {
+            return null;
+        }
+        ClientRequestInterceptor ret = getClientInterceptorInstance(codec);
+        return ret;
+    }
+
+    public ServerRequestInterceptor createServerRequestInterceptor(ORBInitInfo info, Codec codec) {
+        return null;
     }
     
-    public static Util getInstance() {
-        // return my singleton service
-        return habitat.getComponent(Util.class);
+    private synchronized ClientRequestInterceptor getClientInterceptorInstance(Codec codec) {
+        if (creq == null) {
+            creq = new SecClientRequestInterceptor(
+                "SecClientRequestInterceptor", codec, habitat);
+        }
+        return creq;
     }
     
-    public boolean isACC() {
-        return penv.getProcessType().equals(ProcessType.ACC);
-    }
-    public boolean isServer() {
-        return penv.getProcessType().equals(ProcessType.Server);
-    }
-    public boolean isNotServerORACC() {
-        return penv.getProcessType().equals(ProcessType.Other);
-    }
-
-    public CallbackHandler getCallbackHandler() {
-        return callbackHandler;
-    }
-
-    public void setCallbackHandler(CallbackHandler callbackHandler) {
-        this.callbackHandler = callbackHandler;
-    }
-
-    public Object getAppClientMsgSecConfigs() {
-        return appClientMsgSecConfigs;
-    }
-
-    public void setAppClientMsgSecConfigs(Object appClientMsgSecConfigs) {
-        this.appClientMsgSecConfigs = appClientMsgSecConfigs;
-    }
 }

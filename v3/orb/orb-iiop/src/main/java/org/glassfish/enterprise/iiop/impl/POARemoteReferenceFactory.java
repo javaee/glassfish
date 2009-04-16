@@ -268,13 +268,8 @@ public final class POARemoteReferenceFactory extends org.omg.CORBA.LocalObject
 		        + ": " + ejbDescriptor);
 
 	    }
-
-
-        /** TODO
 	    // CSIv2 Policy
 	    policies.add(new CSIv2Policy(ejbDescriptor));
-	    */
-
 
 	    IASEjbExtraDescriptors extraDesc
 	        = ejbDescriptor.getIASEjbExtraDescriptors();

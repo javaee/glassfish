@@ -90,9 +90,19 @@
             <artifactId>security</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.security</groupId>
+            <artifactId>ejb.security</artifactId>
+            <version>${project.version}</version>
+        </dependency>
          <dependency>
             <groupId>org.glassfish.appclient</groupId>
             <artifactId>acc-config</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.orb</groupId>
+            <artifactId>orb-connector</artifactId>
             <version>${project.version}</version>
         </dependency>
          </dependencies>

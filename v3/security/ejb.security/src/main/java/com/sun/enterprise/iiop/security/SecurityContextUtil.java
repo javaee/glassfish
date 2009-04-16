@@ -37,7 +37,7 @@ package com.sun.enterprise.iiop.security;
 
 
 import com.sun.corba.ee.spi.ior.IOR;
-import com.sun.corba.se.spi.presentation.rmi.StubAdapter;
+import com.sun.corba.ee.spi.presentation.rmi.StubAdapter;
 import com.sun.enterprise.common.iiop.security.SecurityContext;
 import com.sun.enterprise.security.CORBAObjectPermission;
 import com.sun.enterprise.security.SecurityServicesUtil;
@@ -58,6 +58,7 @@ import org.glassfish.enterprise.iiop.api.ProtocolManager;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
 
 
@@ -69,7 +70,7 @@ import org.jvnet.hk2.component.Singleton;
 
 @Service
 @Scoped(Singleton.class)
-public class SecurityContextUtil {
+public class SecurityContextUtil implements PostConstruct {
     
     public static final int STATUS_PASSED = 0;
     public static final int STATUS_FAILED = 1;
@@ -86,12 +87,15 @@ public class SecurityContextUtil {
     private SecurityMechanismSelector sms;
     
     public SecurityContextUtil() {
+    
+    }
+
+    public void postConstruct() {
         policy = Policy.getPolicy();
         Habitat habitat = SecurityServicesUtil.getInstance().getHabitat();
         orbHelper = habitat.getComponent(GlassFishORBHelper.class);
         sms = habitat.getComponent(SecurityMechanismSelector.class);
     }
-
     /**
      * This is called by the CSIv2 interceptor on the client before
      * sending the IIOP message.
@@ -315,6 +319,8 @@ public class SecurityContextUtil {
                     e.getMessage());
         }
     }
+
+  
 }
 
 

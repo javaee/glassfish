@@ -88,6 +88,7 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.invocation.InvocationManager ;
+import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
 
 
@@ -105,7 +106,7 @@ import org.jvnet.hk2.component.Singleton;
 
 @Service
 @Scoped(Singleton.class)
-public final class SecurityMechanismSelector {
+public final class SecurityMechanismSelector implements PostConstruct {
 
     private static final java.util.logging.Logger _logger =
        LogDomains.getLogger(SecurityMechanismSelector.class, LogDomains.SECURITY_LOGGER);
@@ -139,13 +140,14 @@ public final class SecurityMechanismSelector {
      * Read the client and server preferences from the config files.
      */
     public SecurityMechanismSelector() {
+    }
+    
+    public void postConstruct() {
         try {
             
             Habitat habitat = SecurityServicesUtil.getInstance().getHabitat();
             orbHelper = habitat.getComponent(GlassFishORBHelper.class);
             sslUtils = habitat.getComponent(SSLUtils.class);
-            orb = orbHelper.getORB();
-            this.ctc = new CSIV2TaggedComponentInfo(orb);
             invMgr = habitat.getComponent(InvocationManager.class);
 	    // Initialize client security config
 	    String s = 
@@ -184,8 +186,7 @@ public final class SecurityMechanismSelector {
 
         } catch(Exception e) {
             _logger.log(Level.SEVERE,"iiop.Exception",e);
-        }
-        
+        }        
     }
 
    
@@ -233,7 +234,7 @@ public final class SecurityMechanismSelector {
 
         TLS_SEC_TRANS ssl = null;
         if ( mechanism != null ) {
-            ssl = ctc.getSSLInformation(mechanism);
+            ssl = getCtc().getSSLInformation(mechanism);
         }
 
         if (ssl == null) {
@@ -244,7 +245,7 @@ public final class SecurityMechanismSelector {
                 IIOPAddress addr = templ.getPrimaryAddress();
                 info = IORToSocketInfoImpl.createSocketInfo(
 		        "SecurityMechanismSelector1",
-                        "SSL", addr.getHost(), orbHelper.getORBPort(orb));
+                        "SSL", addr.getHost(), orbHelper.getORBPort(orbHelper.getORB()));
                 return info;
             } else {
                 return null;
@@ -328,13 +329,13 @@ public final class SecurityMechanismSelector {
         this.orb = val;
     }
     
-    public CSIV2TaggedComponentInfo getCtc() {
+    public synchronized CSIV2TaggedComponentInfo getCtc() {
+        if (ctc == null) {
+           this.ctc = new CSIV2TaggedComponentInfo(orbHelper.getORB()); 
+        }
         return ctc;
     }
     
-    public void setCtc(CSIV2TaggedComponentInfo val) {
-        this.ctc = val;
-    }
     
     public java.util.List<SocketInfo> getSSLPorts(IOR ior, ConnectionContext ctx) 
     {
@@ -349,7 +350,7 @@ public final class SecurityMechanismSelector {
 
         TLS_SEC_TRANS ssl = null;
         if ( mechanism != null ) {
-            ssl = ctc.getSSLInformation(mechanism);
+            ssl = getCtc().getSSLInformation(mechanism);
         }
 
         if (ssl == null) {
@@ -360,7 +361,7 @@ public final class SecurityMechanismSelector {
                 IIOPAddress addr = templ.getPrimaryAddress();
                 SocketInfo info = IORToSocketInfoImpl.createSocketInfo(
 		        "SecurityMechanismSelector1",
-                        "SSL", addr.getHost(), orbHelper.getORBPort(orb));
+                        "SSL", addr.getHost(), orbHelper.getORBPort(orbHelper.getORB()));
                 //SocketInfo[] sInfos = new SocketInfo[]{info};
                 List<SocketInfo> sInfos = new ArrayList<SocketInfo>();
                 sInfos.add(info);
@@ -472,13 +473,13 @@ public final class SecurityMechanismSelector {
             _logger.log(Level.FINE, "SSL used:" + sslUsed + " SSL Mutual auth:" + clientAuthOccurred);
         }
         ComponentInvocation ci = null;
-        // BEGIN IASRI# 4646060
+        /*// BEGIN IASRI# 4646060
         ci = invMgr.getCurrentInvocation();
         if (ci == null) {
             // END IASRI# 4646060
             return null;
         }
-        Object obj = ci.getContainerContext();
+        Object obj = ci.getContainerContext();*/
         if(SecurityServicesUtil.getInstance().isACC()) {
             context = getSecurityContextForAppClient(ci, sslUsed, clientAuthOccurred, mechanism);
         } else {
@@ -770,7 +771,8 @@ localStrings.getLocalString("securitymechansimselector.runas_cannot_propagate_us
             throws SecurityMechanismException {
         try {
             Subject s = null;
-            if(ci == null) {
+            //if(ci == null) {
+            if (SecurityServicesUtil.getInstance().isNotServerOrACC()) {
 		// Standalone client ... Changed the security context 
 		// from which to fetch the subject
                 ClientSecurityContext sc = 
@@ -783,7 +785,7 @@ localStrings.getLocalString("securitymechansimselector.runas_cannot_propagate_us
                     _logger.log(Level.FINE, "SUBJECT:" + s);
                 }
             } else {
-                Object obj = ci.getContainerContext();
+                //Object obj = ci.getContainerContext();
                 //if(obj instanceof AppContainer) {
                  if (SecurityServicesUtil.getInstance().isACC()) {
 		    // get the subject
@@ -959,7 +961,7 @@ localStrings.getLocalString("securitymechansimselector.runas_cannot_propagate_us
 
     public CompoundSecMech selectSecurityMechanism(IOR ior) 
             throws SecurityMechanismException {
-        CompoundSecMech[] mechList = ctc.getSecurityMechanisms(ior);
+        CompoundSecMech[] mechList = getCtc().getSecurityMechanisms(ior);
         CompoundSecMech mech = selectSecurityMechanism(mechList);
         return mech;
     }
@@ -990,7 +992,7 @@ localStrings.getLocalString("securitymechansimselector.runas_cannot_propagate_us
 
     private boolean useMechanism(CompoundSecMech mech) {
         boolean val = true;
-        TLS_SEC_TRANS tls = ctc.getSSLInformation(mech);
+        TLS_SEC_TRANS tls = getCtc().getSSLInformation(mech);
 
         if(tls == null) {
             return true;
@@ -1064,8 +1066,8 @@ localStrings.getLocalString("securitymechansimselector.runas_cannot_propagate_us
 
         // gather the configured SSL security policies.
  
-        ssl_target_requires = this.ctc.getTargetRequires(iordesc);
-        ssl_target_supports = this.ctc.getTargetSupports(iordesc);
+        ssl_target_requires = this.getCtc().getTargetRequires(iordesc);
+        ssl_target_supports = this.getCtc().getTargetSupports(iordesc);
 
         if (    isSet(ssl_target_requires, Integrity.value)
              || isSet(ssl_target_requires, Confidentiality.value)
@@ -1165,7 +1167,7 @@ localStrings.getLocalString("securitymechansimselector.runas_cannot_propagate_us
         // get requirements and supports at the client authentication layer
         AS_ContextSec ascontext = null;
         try {
-            ascontext = this.ctc.createASContextSec(iordesc);
+            ascontext = this.getCtc().createASContextSec(iordesc);
         } catch (Exception e) {
             _logger.log(Level.SEVERE, "iiop.createcontextsec_exception",e);
 
@@ -1239,7 +1241,7 @@ localStrings.getLocalString("securitymechansimselector.runas_cannot_propagate_us
         // get requirements and supports at the sas context layer
         SAS_ContextSec sascontext = null;
         try {
-            sascontext = this.ctc.createSASContextSec(iordesc);
+            sascontext = this.getCtc().createSASContextSec(iordesc);
         } catch (Exception e) {
             _logger.log(Level.SEVERE,"iiop.createcontextsec_exception",e);
             return false;
@@ -1518,52 +1520,7 @@ as_context_mech
     public boolean isSslRequired() {
         return sslRequired;
     }
-}
-/**
- * This class that implements ConnectionExecutionContext that gets 
- * stored in Thread Local Storage. If the current thread creates
- * child threads, the context info that is  stored in the current 
- * thread is automatically propogated to the child threads.
- * 
- * Two class methods serve as a convinient way to set/get the 
- * Context information within the current thread.   
- *
- * Thread Local Storage is a concept introduced in JDK1.2. So, it
- * will not work on earlier releases of JDK.
- *
- * @see java.lang.ThreadLocal
- * @see java.lang.InheritableThreadLocal
- * 
- */
-class ConnectionExecutionContext {
-    private static final InheritableThreadLocal connCurrent= new InheritableThreadLocal();
 
-    /** 
-     * This method can be used to add a new hashtable for storing the 
-     * Thread specific context information. This method is useful to add a 
-     * deserialized Context information that arrived over the wire.
-     * @param A hashtable that stores the current thread's context
-     * information.
-     */
-    public static void setContext(Hashtable ctxTable) {
-        if (ctxTable != null) {
-            connCurrent.set(ctxTable);
-        } else {
-            connCurrent.set(new Hashtable());
-        }
-    }
-
-    /**
-     * This method returns the hashtable that stores the thread specific
-     * Context information.
-     * @return The Context object stored in the current TLS. It always 
-     * returns a non null value;
-     */
-    public static Hashtable getContext() {
-         if (connCurrent.get() == null) {
-             setContext(null); // Create a new one...
-         } 
-         return (Hashtable) connCurrent.get();
-    }
+    
 }
 

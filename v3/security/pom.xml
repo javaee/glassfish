@@ -59,7 +59,7 @@
         <module>javax.security.jacc</module>
         <module>javax.security.auth.message</module>
         <module>webservices.security</module>
-	<!--<module>ejb.security</module>-->
+	<module>ejb.security</module>
         <module>appclient.security</module>
    </modules>
 </project>
