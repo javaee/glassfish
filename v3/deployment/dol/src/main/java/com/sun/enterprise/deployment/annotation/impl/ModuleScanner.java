@@ -143,9 +143,7 @@ public abstract class ModuleScanner<T> extends JavaEEScanner implements Scanner<
                 }
             }
         } catch (ZipException ze) {
-            ZipException zeWithFilePath = new ZipException(ze.getMessage() + ": file path: " + jarFile.getPath());
-            zeWithFilePath.initCause(ze);
-            throw zeWithFilePath;
+            logger.log(Level.WARNING, ze.getMessage() +  ": file path: " + jarFile.getPath());
         } 
         finally {
             if (jf != null) {
