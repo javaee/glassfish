@@ -35,30 +35,28 @@
  */
 package org.glassfish.connectors.admin.cli;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
+import static org.glassfish.resource.common.ResourceConstants.*;
+import org.glassfish.resource.common.ResourceStatus;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.TransactionFailure;
-import com.sun.enterprise.config.serverbeans.AdminObjectResource;
-import com.sun.enterprise.config.serverbeans.Resource;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.ResourceAdapterConfig;
+import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
-import java.beans.PropertyVetoException;
 import java.util.Properties;
+import java.util.HashMap;
 
 /**
  * Create RA Config Command
@@ -84,6 +82,9 @@ public class CreateResourceAdapterConfig implements AdminCommand {
     @Param(name="threadpoolid", optional=true)
     String threadPoolIds;
 
+    @Param(name="objecttype", defaultValue="user", optional=true)
+    String objectType;
+
     @Inject
     Resources resources;
 
@@ -101,62 +102,41 @@ public class CreateResourceAdapterConfig implements AdminCommand {
 
         Server targetServer = domain.getServerNamed(target);
 
+        HashMap attrList = new HashMap();
+        attrList.put(RESOURCE_ADAPTER_CONFIG_NAME, raName);
+        //attrList.put("name", name);
+        attrList.put(THREAD_POOL_IDS, threadPoolIds);
+        attrList.put(ServerTags.OBJECT_TYPE, objectType);
 
-        if (raName == null) {
-            report.setMessage(localStrings.getLocalString("create.resource.adapter.confignoRAName",
-                            "No RA Name defined for resource adapter config."));
+        ResourceStatus rs;
+
+        ResourceAdapterConfigManager resAdapterConfigMgr = new ResourceAdapterConfigManager();
+        try {
+            rs = resAdapterConfigMgr.create(resources, attrList, properties, targetServer);
+        } catch (Exception ex) {
+            Logger.getLogger(CreateResourceAdapterConfig.class.getName()).log(
+                    Level.SEVERE,
+                    "Something went wrong in create-resource-adapter-config", ex);
+            String actual = ex.getMessage();
+            String def = "Resource adapter config: {0} could not be created, reason: {1}";
+            report.setMessage(localStrings.getLocalString("create.resource.adapter.config.fail",
+                    def, raName, actual));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setFailureCause(ex);
             return;
         }
-
-        for (Resource resource : resources.getResources()) {
-            if (resource instanceof ResourceAdapterConfig) {
-                if (((ResourceAdapterConfig) resource).getResourceAdapterName().equals(raName)) {
-                    report.setMessage(localStrings.getLocalString("create.resource.adapter.config.duplicate",
-                            "Resource adapter config already exists for RAR", raName));
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    return;
-                }
+        ActionReport.ExitCode ec = ActionReport.ExitCode.SUCCESS;
+        if (rs.getStatus() == ResourceStatus.FAILURE) {
+            ec = ActionReport.ExitCode.FAILURE;
+            if (rs.getMessage() != null) {
+                report.setMessage(rs.getMessage());
+            } else {
+                 report.setMessage(localStrings.getLocalString("create.resource.adapter.config.fail",
+                    "Resource adapter config {0} creation failed", raName, ""));
             }
+            if (rs.getException() != null)
+                report.setFailureCause(rs.getException());
         }
-
-        try {
-            ConfigSupport.apply(new SingleConfigCode<Resources>() {
-
-                public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-
-                    ResourceAdapterConfig newResource = param.createChild(ResourceAdapterConfig.class);
-                    newResource.setResourceAdapterName(raName);
-                    if(threadPoolIds != null)
-                        newResource.setThreadPoolIds(threadPoolIds);
-                    
-                    //newResource.setEnabled(enabled.toString());
-                    if (properties != null) {
-                        for ( java.util.Map.Entry e : properties.entrySet()) {
-                            Property prop = newResource.createChild(Property.class);
-                            prop.setName((String)e.getKey());
-                            prop.setValue((String)e.getValue());
-                            newResource.getProperty().add(prop);
-                        }
-                    }
-                    param.getResources().add(newResource);
-                    return newResource;
-                }
-            }, resources);
-
-            if (!targetServer.isResourceRefExists( raName)) {
-                targetServer.createResourceRef( "true", raName);
-            }
-
-        } catch(TransactionFailure tfe) {
-            report.setMessage(localStrings.getLocalString("create.resource.adapter.config.fail",
-                            "Unable to create resource adapter config", raName) +
-                            " " + tfe.getLocalizedMessage());
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setFailureCause(tfe);
-        }
-        //report.setMessage(localStrings.getLocalString("create.resource.adapter.config.success",
-        //        "Resource Adapter Config {0} created.", raName));
-        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+        report.setActionExitCode(ec);
     }
 }
