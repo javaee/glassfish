@@ -71,7 +71,6 @@
                     <target>1.4</target>
                     <excludes>
                         <exclude>**/ha/spi/*.java</exclude>
-                        <exclude>com/sun/enterprise/util/diagnostics/*</exclude>
                     </excludes>
                 </configuration>
             </plugin>
