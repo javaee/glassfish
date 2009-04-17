@@ -42,10 +42,9 @@
 
 package com.sun.enterprise.web;
 
-import com.sun.enterprise.security.web.SingleSignOn;
+import com.sun.enterprise.security.web.GlassFishSingleSignOn;
 
 /**
- *
  * @author lwhite
  */
 public class PESSOFactory implements SSOFactory {
@@ -55,11 +54,12 @@ public class PESSOFactory implements SSOFactory {
     }
     
     /**
-     * Create a SingleSignOn valve
+     * Creates a SingleSignOn valve
      * @param virtualServerName
      */
-    public SingleSignOn createSingleSignOnValve(String virtualServerName) {
-        return new SingleSignOn();
+    public GlassFishSingleSignOn createSingleSignOnValve(
+            String virtualServerName) {
+        return new GlassFishSingleSignOn();
     }
     
 }

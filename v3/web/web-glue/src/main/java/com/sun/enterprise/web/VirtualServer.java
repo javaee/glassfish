@@ -56,7 +56,7 @@ import com.sun.enterprise.config.serverbeans.WebModule;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.archivist.WebArchivist;
-import com.sun.enterprise.security.web.SingleSignOn;
+import com.sun.enterprise.security.web.GlassFishSingleSignOn;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 import com.sun.enterprise.web.session.SessionCookieConfig;
@@ -71,6 +71,7 @@ import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Pipeline;
 import org.apache.catalina.Realm;
 import org.apache.catalina.Valve;
+import org.apache.catalina.authenticator.SingleSignOn;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.deploy.ErrorPage;
 import org.apache.catalina.logger.FileLogger;
@@ -1433,8 +1434,10 @@ public class VirtualServer extends StandardHost {
              * Enable SSO
              */
             try {
-                SSOFactory ssoFactory = webContainerFeatureFactory.getSSOFactory();
-                SingleSignOn sso = ssoFactory.createSingleSignOnValve(getName());
+                SSOFactory ssoFactory =
+                    webContainerFeatureFactory.getSSOFactory();
+                GlassFishSingleSignOn sso =
+                    ssoFactory.createSingleSignOnValve(getName());
 
                 // set max idle time if given
                 Property idle = vsBean.getProperty(SSO_MAX_IDLE);

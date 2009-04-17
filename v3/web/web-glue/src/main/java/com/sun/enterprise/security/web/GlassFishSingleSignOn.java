@@ -62,6 +62,7 @@ import org.apache.catalina.Session;
 import org.apache.catalina.SessionEvent;
 import org.apache.catalina.SessionListener;
 import org.apache.catalina.authenticator.Constants;
+import org.apache.catalina.authenticator.SingleSignOn;
 import org.apache.catalina.authenticator.SingleSignOnEntry;
 import org.apache.catalina.Realm;
 //6406580 START
@@ -79,8 +80,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author Jyri Virkki (first implementation) 
  * @author Jean-Francois Arcand
  */
-public class SingleSignOn
-    extends org.apache.catalina.authenticator.SingleSignOn
+public class GlassFishSingleSignOn
+    extends SingleSignOn
     /** CR 6411114 (Lifecycle implementation moved to ValveBase)
     implements Lifecycle, SessionListener, Runnable, SingleSignOnMBean {
     */
@@ -93,7 +94,8 @@ public class SingleSignOn
     /**
      * The log used by this class.
      */
-    Logger logger = LogDomains.getLogger(SingleSignOn.class, LogDomains.PWC_LOGGER);
+    Logger logger = LogDomains.getLogger(GlassFishSingleSignOn.class,
+        LogDomains.PWC_LOGGER);
 
     /**
      * The background thread.
