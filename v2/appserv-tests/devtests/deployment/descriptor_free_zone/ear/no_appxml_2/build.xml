@@ -146,10 +146,12 @@
         <antcall target="declare-test">
             <param name="description" value="descriptor_free/ear/no_appxml_2 Test asadmin re-deploy"/>
         </antcall>
+<!--
         <antcall target="redeploy.asadmin"/>
         <antcall target="runclient">
             <param name="log.id" value="2"/>
         </antcall>
+-->
         <antcall target="undeploy.asadmin"/>
         <delete file="${testName}Client.jar"/>
     </target>
