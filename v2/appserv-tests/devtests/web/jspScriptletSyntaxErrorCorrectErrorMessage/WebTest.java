@@ -12,8 +12,8 @@ public class WebTest {
         = new SimpleReporterAdapter("appserv-tests");
     private static final String TEST_NAME
         = "scriptlet-syntax-error-correct-error-message";
-    private static final String EXPECTED = "[javac] 3 errors";
-    private static final String EXPECTEDjdk6 = "PWC6033: Error in Javac compilation for JSP";
+    private static final String EXPECTED_ERROR = "[javac] 3 errors";
+    private static final String EXPECTED_ERROR_JDK6 = "PWC6033: Error in Javac compilation for JSP";
 
     private String host;
     private String port;
@@ -36,6 +36,7 @@ public class WebTest {
      
         try { 
             invokeJsp();
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             stat.addStatus(TEST_NAME, stat.FAIL);
             ex.printStackTrace();
@@ -59,17 +60,16 @@ public class WebTest {
         boolean found = false;
         String line = null;
         while ((line = bis.readLine()) != null) {
-            if (line.endsWith(EXPECTED) ||
-                line.endsWith(EXPECTEDjdk6)) {
+            if (line.endsWith(EXPECTED_ERROR) ||
+                    line.endsWith(EXPECTED_ERROR_JDK6)) {
                 found = true;
                 break;
             }
         }
 		
-        if (found) {
-            stat.addStatus(TEST_NAME, stat.PASS);
-        } else {
-            stat.addStatus("Wrong response, expected: " + EXPECTED, stat.FAIL);
+        if (!found) {
+            throw new Exception("Wrong response, expected: " +
+                                EXPECTED_ERROR);
         }
     }
 
