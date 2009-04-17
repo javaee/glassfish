@@ -70,7 +70,7 @@
       </ejb-container>
       <mdb-container pool-resize-quantity="8" max-pool-size="32" steady-pool-size="0"></mdb-container>
       <jms-service default-jms-host="default_JMS_host" type="EMBEDDED">
-        <jms-host host="localhost" name="default_JMS_host"></jms-host>
+        <jms-host name="default_JMS_host" host="localhost" port="7676" admin-user-name="admin" admin-password="admin"/>
       </jms-service>
       <log-service log-rotation-limit-in-bytes="2000000" file="${com.sun.aas.instanceRoot}/logs/server.log">
         <module-log-levels></module-log-levels>
