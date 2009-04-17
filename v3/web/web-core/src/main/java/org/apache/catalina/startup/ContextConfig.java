@@ -66,27 +66,10 @@ import java.util.logging.*;
 
 import javax.servlet.ServletContext;
 
-import org.apache.catalina.Authenticator;
-import org.apache.catalina.Container;
-import org.apache.catalina.Context;
-import org.apache.catalina.Engine;
-import org.apache.catalina.Globals;
-import org.apache.catalina.Host;
-import org.apache.catalina.Lifecycle;
-import org.apache.catalina.LifecycleEvent;
-import org.apache.catalina.LifecycleListener;
-import org.apache.catalina.Pipeline;
-import org.apache.catalina.Realm;
-import org.apache.catalina.Wrapper;
-import org.apache.catalina.core.ContainerBase;
-import org.apache.catalina.core.StandardContext;
-import org.apache.catalina.core.StandardEngine;
-import org.apache.catalina.core.StandardHost;
-import org.apache.catalina.deploy.ErrorPage;
-import org.apache.catalina.deploy.FilterDef;
-import org.apache.catalina.deploy.FilterMap;
-import org.apache.catalina.deploy.LoginConfig;
-import org.apache.catalina.deploy.SecurityConstraint;
+import org.apache.catalina.*;
+import org.apache.catalina.authenticator.*;
+import org.apache.catalina.core.*;
+import org.apache.catalina.deploy.*;
 import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.util.SchemaResolver;
@@ -114,8 +97,9 @@ public class ContextConfig
 // END OF SJAS 8.0 BUG 5046959
     implements LifecycleListener {
 
-    private static Logger log = Logger.getLogger(
-        ContextConfig.class.getName());
+    private static java.util.logging.Logger log =
+        java.util.logging.Logger.getLogger(
+            ContextConfig.class.getName());
 
     // --------------------------------------------------- Instance Variables
 
@@ -236,20 +220,15 @@ public class ContextConfig
     static {
         authenticators = new Properties();
         authenticators.setProperty(
-            "BASIC",
-            "org.apache.catalina.authenticator.BasicAuthenticator");
+            "BASIC", BasicAuthenticator.class.getName());
         authenticators.setProperty(
-            "CLIENT-CERT",
-            "org.apache.catalina.authenticator.SSLAuthenticator");
+            "CLIENT-CERT", SSLAuthenticator.class.getName());
         authenticators.setProperty(
-            "FORM",
-            "org.apache.catalina.authenticator.FormAuthenticator");
+            "FORM", FormAuthenticator.class.getName());
         authenticators.setProperty(
-            "NONE",
-            "org.apache.catalina.authenticator.NonLoginAuthenticator");
+            "NONE", NonLoginAuthenticator.class.getName());
         authenticators.setProperty(
-            "DIGEST",
-            "org.apache.catalina.authenticator.DigestAuthenticator");
+            "DIGEST", DigestAuthenticator.class.getName());
     }
 
 
