@@ -120,7 +120,7 @@ public class AppClientContainerSecurityHelper {
 
         /*
          * Choose a callback handler in this order:
-         * 1. callback handler class set by the program that created the AppClientContainerConfigurator.
+         * 1. callback handler class set by the program that created the AppClientContainerBuilder.
          * 2. callback handler class name set in the app client descriptor
          * 3. our default GUI callback handler
          *

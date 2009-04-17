@@ -96,7 +96,7 @@ function processArgs() {
     var jvmValuedOptions = ["-classpath", "-cp", "-jar"];
     var accValuedOptions = ["-client", "-mainclass", "-name", "-xml",
         "-configxml", "-user", "-password", "-passwordfile",
-        "-servers"];
+        "-targetserver"];
     var accNonvaluedOptions = ["-textauth", "noappinvoke"];
     //var re = new RegExp("\"([^\"]+)\"|[^\"\\s]+)","g");
     var re = /"([^"]+)"|([^"\s]+)/g;

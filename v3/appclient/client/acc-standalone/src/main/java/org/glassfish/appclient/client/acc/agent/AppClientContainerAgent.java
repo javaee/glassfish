@@ -77,7 +77,7 @@ import org.glassfish.appclient.client.acc.ACCClassLoader;
 import org.glassfish.appclient.client.acc.AgentArguments;
 import org.glassfish.appclient.client.acc.AppClientCommand;
 import org.glassfish.appclient.client.acc.AppClientContainer;
-import org.glassfish.appclient.client.acc.AppClientContainer.Configurator;
+import org.glassfish.appclient.client.acc.AppClientContainer.Builder;
 import org.glassfish.appclient.client.acc.AppclientCommandArguments;
 import org.glassfish.appclient.client.acc.CommandLaunchInfo;
 import org.glassfish.appclient.client.acc.CommandLaunchInfo.ClientLaunchType;
@@ -195,14 +195,14 @@ public class AppClientContainerAgent {
                  */
                 final TargetServer[] targetServers = TargetServerHelper.targetServers(
                         clientContainer,
-                        appClientCommandArgs.getServer());
+                        appClientCommandArgs.getTargetServer());
 
                 /*
                  * Get the configurator.  Doing so correctly involves merging
                  * the configuration file data with some of the command line and
                  * agent arguments.
                  */
-                final AppClientContainer.Configurator configurator =
+                final AppClientContainer.Builder configurator =
                         createConfigurator(targetServers,
                             appClientCommandArgs);
 
@@ -296,11 +296,11 @@ public class AppClientContainerAgent {
         return newLoader;
     }
 
-    private static Configurator createConfigurator(
+    private static Builder createConfigurator(
             final TargetServer[] targetServers,
             final AppclientCommandArguments appClientCommandArgs) {
 
-        Configurator config = AppClientContainer.newConfigurator(targetServers);
+        Builder config = AppClientContainer.newBuilder(targetServers);
 
         /*
          * Augment the config with settings from the app client options that
@@ -314,7 +314,7 @@ public class AppClientContainerAgent {
     }
 
     private static void updateClientCredentials(
-            final Configurator config,
+            final Builder config,
             final AppclientCommandArguments appClientCommandArgs) {
 
         ClientCredential cc = config.getClientCredential();
@@ -341,7 +341,7 @@ public class AppClientContainerAgent {
     }
 
     private static AppClientContainer createContainer(
-            final Configurator config,
+            final Builder config,
             final CommandLaunchInfo launchInfo) throws Exception, UserError {
 
         /*
@@ -382,7 +382,7 @@ public class AppClientContainerAgent {
     }
 
     private static AppClientContainer createContainerForAppClientArchiveOrDir(
-            final Configurator config,
+            final Builder config,
             final String appClientPath,
             final String mainClassName,
             final String clientName) throws Exception, UserError {
@@ -392,7 +392,7 @@ public class AppClientContainerAgent {
     }
 
     private static AppClientContainer createContainerForClassName(
-            final Configurator config,
+            final Builder config,
             final String className) throws Exception, UserError {
 
         /*
@@ -416,7 +416,7 @@ public class AppClientContainerAgent {
     }
 
     private static AppClientContainer createContainerForClassFile(
-            final Configurator config,
+            final Builder config,
             final String classFilePath) throws MalformedURLException, ClassNotFoundException, FileNotFoundException, IOException, Exception, UserError {
         
         Util.verifyFilePath(classFilePath);

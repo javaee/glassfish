@@ -271,7 +271,7 @@ for x do
             expectingArgType=JVM ;;
 
         # The next case must refer to all valid ACC options that expect a value
-        -client|-mainclass|-name|-xml|-configxml|-user|-password|-passwordfile|-servers)
+        -client|-mainclass|-name|-xml|-configxml|-user|-password|-passwordfile|-targetserver)
             expecting=$x
             expectingArgType=ACC ;;
 

@@ -75,14 +75,14 @@ import org.xml.sax.SAXParseException;
  * <p>
  * Allows Java programs to:
  * <ul>
- * <li>create a new configurator for an ACC (see {@link #newConfigurator} and {@link AppClientContainerConfigurator}),
- * <li>optionally modify the configuration by invoking various configurator methods,
- * <li>create an embedded instance of the ACC from the configuration using {@link AppClientContainerConfigurator#newContainer() },
+ * <li>create a new builder for an ACC (see {@link #newBuilder} and {@link AppClientContainerBuilder}),
+ * <li>optionally modify the configuration by invoking various builder methods,
+ * <li>create an embedded instance of the ACC from the builder using {@link AppClientContainerBuilder#newContainer() },
  * <li>startClient the client using {@link #startClient(String[])}, and
  * <li>stop the container using {@link #stop()}.
  * </ul>
  * <p>
- * Each instance of the {@link TargetServer} class passed to the <code>newConfigurator</code>
+ * Each instance of the {@link TargetServer} class passed to the <code>newBuilder</code>
  * method represents one
  * server, conveying its host and port number, which the ACC can use to
  * "bootstrap" into the server-side ORB(s).  The calling
@@ -91,7 +91,7 @@ import org.xml.sax.SAXParseException;
  * object.  Note that the caller prepares the <code>TargetServer</code>
  * array completely before passing it to one of the <code>newConfig</code>
  * factory methods.
- * The <code>Configurator</code> implementation
+ * The <code>Builder</code> implementation
  * does not override or augment the list of target servers using
  * system property values, property settings in the container configuration, etc.  If such work
  * is necessary to find additional target servers the calling program should do it
@@ -100,7 +100,7 @@ import org.xml.sax.SAXParseException;
  * The calling program also passes either a File or URI for the app client
  * archive to be run or a Class object for the main class to be run as an app client.
  * <p>
- * After the calling program has created a new <code>AppClientContainer.Configurator</code> instance
+ * After the calling program has created a new <code>AppClientContainer.Builder</code> instance
  * it can set optional
  * information to control the ACC's behavior, such as
  * <ul>
@@ -136,14 +136,14 @@ import org.xml.sax.SAXParseException;
  * import org.glassfish.appclient.client.acc.AppClientContainer;<br>
  * import org.glassfish.appclient.client.acc.config.TargetServer;<br>
  * <br>
- * AppClientContainerConfigurator configurator = AppClientContainer.newConfigurator(<br>
+ * AppClientContainerBuilder builder = AppClientContainer.newBuilder(<br>
  * &nbsp;&nbsp;    new TargetServer("localhost", 3700));<br>
  * <br>
- * AppClientContainer acc = configurator.newContainer(new File("myAC.jar").toURI());<br>
+ * AppClientContainer acc = builder.newContainer(new File("myAC.jar").toURI());<br>
  * <br>
  * </code>(or, alternatively)<code><br>
  * <br>
- * AppClientContainer acc = configurator.newContainer(MyClient.class);<br>
+ * AppClientContainer acc = builder.newContainer(MyClient.class);<br>
  * <br>
  * <br</code>Then, <code><br>
  * <br>
@@ -159,13 +159,13 @@ import org.xml.sax.SAXParseException;
  * <br>
  * </code>
  * <p>
- * Public methods on the Configurator interfaces which set configuration information return the
- * Configurator object itself.  This allows the calling program to chain together
+ * Public methods on the Builder interfaces which set configuration information return the
+ * Builder object itself.  This allows the calling program to chain together
  * several method invocations, such as
  * <p>
  * <code>
- * AppClientContainerConfigurator configurator = AppClientContainer.newConfigurator(...);<br>
- * configurator.clientCredentials(myUser, myPass).logger(myLogger);<br>
+ * AppClientContainerBuilder builder = AppClientContainer.newBuilder(...);<br>
+ * builder.clientCredentials(myUser, myPass).logger(myLogger);<br>
  * </code>
  * «
  *
@@ -184,19 +184,19 @@ public class AppClientContainer {
     private static Logger logger = Logger.getLogger(AppClientContainer.class.getName());
 
     /**
-     * Creates a new ACC configurator object, preset with the specified
+     * Creates a new ACC builder object, preset with the specified
      * target servers.
      *
      * @param targetServers server(s) to contact during ORB bootstrapping
-     * @return <code>AppClientContainer.Configurator</code> object
+     * @return <code>AppClientContainer.Builder</code> object
      */
-    public static AppClientContainer.Configurator newConfigurator(
+    public static AppClientContainer.Builder newBuilder(
             final TargetServer[] targetServers) {
-        return new AppClientContainerConfigurator(targetServers);
+        return new AppClientContainerBuilder(targetServers);
     }
 
 //    /**
-//     * Creates a new ACC configurator object.
+//     * Creates a new ACC builder object.
 //     * <p>
 //     * This variant could be invoked, for example, from the main method of
 //     * our main class in the facade JAR file generated during deployment.  If
@@ -204,10 +204,10 @@ public class AppClientContainer {
 //     * not the appclient script) then that class would have no way to find
 //     * any configuration information.
 //     *
-//     * @return <code>AppClientContainer.Configurator</code> object
+//     * @return <code>AppClientContainer.Builder</code> object
 //     */
-//    public static AppClientContainer.Configurator newConfigurator() {
-//        return new AppClientContainerConfigurator();
+//    public static AppClientContainer.Builder newBuilder() {
+//        return new AppClientContainerBuilder();
 //    }
 
     @Inject
@@ -222,7 +222,7 @@ public class AppClientContainer {
     @Inject
     private ComponentEnvManager componentEnvManager;
 
-    private Configurator configurator;
+    private Builder builder;
 
     private Cleanup cleanup = null;
 
@@ -245,7 +245,7 @@ public class AppClientContainer {
     /*
      * ********************* ABOUT INITIALIZATION ********************
      *
-     * Note that, internally, the AppClientContainerConfigurator's newContainer
+     * Note that, internally, the AppClientContainerBuilder's newContainer
      * methods use HK2 to instantiate the AppClientContainer object (so we can
      * inject references to various other services).
      *
@@ -276,8 +276,8 @@ public class AppClientContainer {
         this.callerSuppliedCallbackHandler = callerSuppliedCallbackHandler;
     }
 
-    void setConfigurator(final Configurator configurator) {
-        this.configurator = configurator;
+    void setBuilder(final Builder builder) {
+        this.builder = builder;
     }
 
     public void prepare() throws NamingException, IOException, InstantiationException, IllegalAccessException, InjectionException, ClassNotFoundException, SAXParseException, NoSuchMethodException {
@@ -548,7 +548,7 @@ public class AppClientContainer {
      * Prescribes the exposed behavior of ACC configuration that can be
      * set up further, and can be used to newContainer an ACC.
      */
-    public interface Configurator {
+    public interface Builder {
 
         public AppClientContainer newContainer(URI archiveURI) throws Exception, UserError;
 
@@ -565,9 +565,9 @@ public class AppClientContainer {
          * Adds an optional {@link MessageSecurityConfig} setting.
          *
          * @param msConfig the new MessageSecurityConfig
-         * @return the <code>Configurator</code> instance
+         * @return the <code>Builder</code> instance
          */
-        public Configurator addMessageSecurityConfig(final MessageSecurityConfig msConfig);
+        public Builder addMessageSecurityConfig(final MessageSecurityConfig msConfig);
 
         public List<MessageSecurityConfig> getMessageSecurityConfig();
 
@@ -578,9 +578,9 @@ public class AppClientContainer {
          * Properties argument.
          *
          * @param className name of the class which implements the realm
-         * @return the <code>Configurator</code> instance
+         * @return the <code>Builder</code> instance
          */
-        public Configurator authRealm(final String className);
+        public Builder authRealm(final String className);
 
         public AuthRealm getAuthRealm();
 
@@ -597,9 +597,9 @@ public class AppClientContainer {
 //         *
 //         * @param callbackHandlerClassName fully-qualified name of the developer's
 //         * callback handler class
-//          * @return the <code>Configurator</code> instance
+//          * @return the <code>Builder</code> instance
 //        */
-//        public Configurator callbackHandler(final Class<? extends CallbackHandler> callbackHandlerClass);
+//        public Builder callbackHandler(final Class<? extends CallbackHandler> callbackHandlerClass);
 //
 //        public Class<? extends CallbackHandler> getCallbackHandler();
 
@@ -613,9 +613,9 @@ public class AppClientContainer {
          *
          * @param username username valid in the default realm on the server
          * @param password password valid in the default realm on the server for the username
-         * @return the <code>Configurator</code> instance
+         * @return the <code>Builder</code> instance
         */
-        public Configurator clientCredentials(final String user, final char[] password);
+        public Builder clientCredentials(final String user, final char[] password);
 
         public ClientCredential getClientCredential();
 
@@ -630,9 +630,9 @@ public class AppClientContainer {
          * @param username username valid in the specified realm on the server
          * @param password password valid in the specified realm on the server for the username
          * @param realmName name of the realm on the server within which the credentials are valid
-         * @return the <code>Configurator</code> instance
+         * @return the <code>Builder</code> instance
          */
-        public Configurator clientCredentials(final String user, final char[] password, final String realm);
+        public Builder clientCredentials(final String user, final char[] password, final String realm);
 
         /**
          * Sets the container-level Properties.
@@ -640,7 +640,7 @@ public class AppClientContainer {
          * @param containerProperties
          * @return
          */
-        public Configurator containerProperties(final Properties containerProperties);
+        public Builder containerProperties(final Properties containerProperties);
 
         /**
          * Sets the container-level properties.
@@ -651,7 +651,7 @@ public class AppClientContainer {
          * @param containerProperties Property objects to use in setting the properties
          * @return
          */
-        public Configurator containerProperties(final List<Property> containerProperties);
+        public Builder containerProperties(final List<Property> containerProperties);
 
         /**
          * Returns the container-level Properties.
@@ -665,7 +665,7 @@ public class AppClientContainer {
          * @param logger
          * @return
          */
-        public Configurator logger(final Logger logger);
+        public Builder logger(final Logger logger);
 
         public Logger getLogger();
 
@@ -676,7 +676,7 @@ public class AppClientContainer {
          * @param sendPassword
          * @return
          */
-        public Configurator sendPassword(final boolean sendPassword);
+        public Builder sendPassword(final boolean sendPassword);
 
         public boolean getSendPassword();
 

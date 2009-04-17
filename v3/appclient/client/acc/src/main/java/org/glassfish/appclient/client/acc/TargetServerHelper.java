@@ -64,9 +64,9 @@ public class TargetServerHelper {
      * side ORB(s).
      * <p>
      * The user can specify the set of targets in multiple ways.  If the user
-     * uses the --server command-line option, then that setting overrides
+     * uses the -targetserver command-line option, then that setting overrides
      * all other derivations of the target server list.  In the absence of
-     * the --server option, the appclient command composes a list of
+     * the -targetserver option, the appclient command composes a list of
      * endpoints based on (first) the target-server element(s) from the ACC
      * configuration file and adds to that list, if present, any setting from
      * a client-container/property setting of GlassFishORBManager.IIOP_ENDPOINTS_PROPERTY.
@@ -80,7 +80,7 @@ public class TargetServerHelper {
         
         /*
          * Precedence:
-         * 1. command-line -server option
+         * 1. command-line -targetserver option
          * 2. config file target-server elements plus any config file top-level property setting
          */
         List<TargetServer> result =

@@ -82,11 +82,11 @@ public class AppclientCommandArguments {
     private final static String USER = "user";
     private final static String PASSWORD = "password";
     private final static String PASSWORDFILE = "passwordfile";
-    private final static String SERVERS = "servers";
+    private final static String TARGETSERVER = "targetserver";
 
     /* names of options that take a value */
     private final static String[] valuedArgNames =
-            new String[] {MAINCLASS, NAME, XML, CONFIGXML, USER, PASSWORD, PASSWORDFILE, SERVERS};
+            new String[] {MAINCLASS, NAME, XML, CONFIGXML, USER, PASSWORD, PASSWORDFILE, TARGETSERVER};
 
     /* names of options that take no value */
     private final static String[] unvaluedArgNames =
@@ -175,8 +175,8 @@ public class AppclientCommandArguments {
         return valuedArgs.get(NAME).get();
     }
 
-    public String getServer() {
-        return valuedArgs.get(SERVERS).get();
+    public String getTargetServer() {
+        return valuedArgs.get(TARGETSERVER).get();
     }
 
     private String getXML() {

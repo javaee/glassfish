@@ -102,7 +102,7 @@ public class AppClientCommand {
     private static final String PASSWORD = "-password";
     private static final String PASSWORD_FILE = "-passwordfile";
     private static final String DASH = "-";
-    private static final String SERVER = "-server";
+    private static final String TARGETSERVER = "-targetserver";
 
     private static final String lineSep = System.getProperty("line.separator");
 
@@ -182,11 +182,11 @@ public class AppClientCommand {
          /*
           * See if the user specified a .class file as the -client.
           */
-         AppClientContainer.Configurator configurator;
+         AppClientContainer.Builder builder;
          if (isClientValueClassFile()) {
-//             configurator = configureForClassFile(targetServers, clientJarOrDirOrClassFile);
+//             builder = configureForClassFile(targetServers, clientJarOrDirOrClassFile);
          } else {
-//             configurator = configureFor
+//             builder = configureFor
          }
 
 
@@ -196,7 +196,7 @@ public class AppClientCommand {
         return clientJarOrDirOrClassFile.endsWith(".class");
     }
 
-//    private AppClientContainer.Configurator configureForClassFile(
+//    private AppClientContainer.Builder configureForClassFile(
 //            final TargetServer[] targetServers,
 //            final String classFileName) throws UserError {
 //        /*
@@ -215,7 +215,7 @@ public class AppClientCommand {
 //                    "Because -client did not appear, tried to use {0} as a class name but could not find {1}",
 //                    new Object[] {className, classFile.getAbsolutePath()}));
 //        }
-//        AppClientContainer.Configurator config = AppClientContainer.newConfigurator(
+//        AppClientContainer.Builder config = AppClientContainer.newBuilder(
 //                targetServers);
 //
 //        return config;
@@ -307,10 +307,10 @@ public class AppClientCommand {
                                 "Error reading the password from the password file {0}",
                                  new Object[] {passwordFileValue}), ex);
                     }
-                } else if (arg.equals(SERVER)) {
-                    servers = getRequiredCommandOptionValue(args, SERVER, i,
+                } else if (arg.equals(TARGETSERVER)) {
+                    servers = getRequiredCommandOptionValue(args, TARGETSERVER, i,
                             "appclient.serverWithoutValue",
-                            "The -server option must be followed by host:port[,...]");
+                            "The -targetserver option must be followed by host:port[,...]");
                 } else {
                     clientArgs.add(arg);
                     logArgument(arg);

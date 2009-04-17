@@ -59,7 +59,7 @@ import org.jvnet.hk2.component.Inhabitant;
  * <p>
  * The HK2 habitat must be initialized before any AppClientContainer can be
  * created, because each ACC is an HK2 service so it can use injection.  The
- * AppClientContainerConfigurator uses the habitat directly (without injection)
+ * AppClientContainerBuilder uses the habitat directly (without injection)
  * to create new ACCs. Part of initializing the habitat involves (at least
  * currently) finding and starting a "main HK2 module."  This class serves
  * that purpose, even though this class is not the main program.  To support
@@ -129,7 +129,7 @@ public class ACCModulesManager /*implements ModuleStartup*/ {
     /**
      * Sets up the HK2 habitat.
      * <p>
-     * Must be invoked at least once before an AppClientContainerConfigurator
+     * Must be invoked at least once before an AppClientContainerBuilder
      * returns a new AppClientContainer to the caller.
      * @param classLoader
      * @param logger
