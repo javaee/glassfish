@@ -55,6 +55,7 @@ import org.apache.catalina.Context;
 import org.apache.catalina.Host;
 import org.apache.catalina.HttpRequest;
 import org.apache.catalina.Response;
+import org.apache.catalina.Session;
 import org.apache.catalina.Wrapper;
 
 
@@ -126,6 +127,10 @@ class HttpRequestWrapper extends HttpServletRequestWrapper
 
     public void setQueryString(String query) {
         httpRequest.setQueryString(query);
+    }
+
+    public Session getSessionInternal(boolean create) {
+	return httpRequest.getSessionInternal(create);
     }
 
     public MessageBytes getPathInfoMB() {
