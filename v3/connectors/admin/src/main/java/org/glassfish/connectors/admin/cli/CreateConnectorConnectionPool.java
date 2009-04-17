@@ -45,6 +45,7 @@ import org.glassfish.api.ActionReport;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -52,11 +53,11 @@ import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.Resource;
-import org.glassfish.api.admin.config.Property;
 
 import java.util.Properties;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Create Connector Connection Pool Command
@@ -147,6 +148,9 @@ public class CreateConnectorConnectionPool implements AdminCommand {
     @Inject
     Domain domain;
 
+    @Inject
+    private Habitat habitat;
+
     /**
      * Executes the command with the command parameters passed as Properties
      * where the keys are the paramter names and the values the parameter values
@@ -184,13 +188,14 @@ public class CreateConnectorConnectionPool implements AdminCommand {
         ResourceStatus rs;
 
         try {
-            ConnectorConnectionPoolManager connPoolMgr = new ConnectorConnectionPoolManager();
+            ConnectorConnectionPoolManager connPoolMgr = habitat.getComponent(ConnectorConnectionPoolManager.class);
             rs = connPoolMgr.create(resources, attrList, properties, targetServer);
         } catch(Exception e) {
-            String actual = e.getMessage();
+            Logger.getLogger(CreateConnectorConnectionPool.class.getName()).log(Level.SEVERE,
+                    "Unable to create connector connection pool " + poolname, e);
             String def = "Connector connection pool: {0} could not be created, reason: {1}";
             report.setMessage(localStrings.getLocalString("create.connector.connection.pool.fail",
-                    def, poolname, actual));
+                    def, poolname) + " " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

@@ -53,6 +53,8 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.Properties;
 import java.util.HashMap;
 
@@ -108,7 +110,7 @@ public class CreateConnectorResource implements AdminCommand {
         
         HashMap attrList = new HashMap();
         attrList.put(POOL_NAME, poolName);
-        attrList.put(ENABLED, enabled);
+        attrList.put(ENABLED, enabled.toString());
         attrList.put(JNDI_NAME, jndiName);
         attrList.put(ServerTags.DESCRIPTION, description);
         attrList.put(ServerTags.OBJECT_TYPE, objectType);
@@ -119,10 +121,11 @@ public class CreateConnectorResource implements AdminCommand {
             ConnectorResourceManager connResMgr = new ConnectorResourceManager();
             rs = connResMgr.create(resources, attrList, properties, targetServer);
         } catch(Exception e) {
-            String actual = e.getMessage();
+            Logger.getLogger(CreateConnectorResource.class.getName()).log(Level.SEVERE,
+                    "Unable to create connector resource " + jndiName, e);
             String def = "Connector resource: {0} could not be created, reason: {1}";
             report.setMessage(localStrings.getLocalString("create.connector.resource.fail",
-                    def, jndiName, actual));
+                    def, jndiName) + " " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

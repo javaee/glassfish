@@ -97,6 +97,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.glassfish.connectors</groupId>
+            <artifactId>connectors-internal-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
         </dependency>
@@ -105,7 +110,7 @@
             <artifactId>kernel</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
-        </dependency>        
+        </dependency>
         <dependency>
             <groupId>org.glassfish.tests</groupId>
             <artifactId>utils</artifactId>

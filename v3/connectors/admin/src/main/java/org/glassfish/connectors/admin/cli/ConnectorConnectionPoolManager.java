@@ -58,8 +58,9 @@ import static org.glassfish.resource.common.ResourceConstants.*;
 import org.glassfish.resource.common.ResourceStatus;
 import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
 import org.glassfish.api.admin.config.Property;
-//import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
-//import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
+import static com.sun.appserv.connectors.internal.api.ConnectorConstants.*;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Resources;
@@ -81,8 +82,8 @@ public class ConnectorConnectionPoolManager implements ResourceManager{
     @Inject
     Applications applications;
 
-    //@Inject
-    //ConnectorRuntime connectorRuntime;
+    @Inject
+    ConnectorRuntime connectorRuntime;
 
     private static final String DESCRIPTION = ServerTags.DESCRIPTION;
 
@@ -112,11 +113,6 @@ public class ConnectorConnectionPoolManager implements ResourceManager{
     private String description = null;
     private String poolname = null;
 
-    //TODO Use the constants from ConnectorConstants instead
-    public static final String DEFAULT_JMS_ADAPTER = "jmsra";
-    public static final String JAXR_RA_NAME = "jaxr-ra";
-    public static final String EMBEDDEDRAR_NAME_DELIMITER="#";
-
     public ConnectorConnectionPoolManager() {
     }
 
@@ -145,26 +141,26 @@ public class ConnectorConnectionPoolManager implements ResourceManager{
             }
         }
 
-        /*if (applications == null) {
+        if (applications == null) {
             String msg = localStrings.getLocalString("noApplications",
                     "No applications found.");
             return new ResourceStatus(ResourceStatus.FAILURE, msg);
-        }*/
+        }
 
-        /*try {
+        try {
             ResourceStatus status = validateCnctorConnPoolAttrList(raname, connectiondefinition);
             if (status.getStatus() == ResourceStatus.FAILURE) {
                 return status;
             }
         } catch(ConnectorRuntimeException cre) {
             Logger.getLogger(ConnectorConnectionPoolManager.class.getName()).log(Level.SEVERE,
-                    "Could not find connection definitions for resource adapter from ConnectorRuntime", cre);
+                    "Could not find connection definitions from ConnectorRuntime for resource adapter "+ raname, cre);
             String msg = localStrings.getLocalString(
                   "create.connector.connection.pool.noConnDefs",
                   "Could not find connection definitions for resource adapter {0}",
-                  raname, cre.getMessage());
+                  raname) + " " + cre.getLocalizedMessage();
             return new ResourceStatus(ResourceStatus.FAILURE, msg);
-        }*/
+        }
             
         try {
             ConfigSupport.apply(new SingleConfigCode<Resources>() {
@@ -220,9 +216,11 @@ public class ConnectorConnectionPoolManager implements ResourceManager{
             }, resources);
 
         } catch(TransactionFailure tfe) {
+            Logger.getLogger(ConnectorConnectionPoolManager.class.getName()).log(Level.SEVERE,
+                    "create-connector-connection-pool failed", tfe);
             String msg = localStrings.getLocalString(
                   "create.connector.connection.pool.fail", "Connector connection pool {0} create failed: {1}",
-                poolname, tfe.getMessage());
+                poolname) + " " + tfe.getLocalizedMessage();
             return new ResourceStatus(ResourceStatus.FAILURE, msg);
         } /*catch(PropertyVetoException pve) {
             return (localStrings.getLocalString("create.jdbc.resource.fail", "{0} create failed ", id));
@@ -260,15 +258,15 @@ public class ConnectorConnectionPoolManager implements ResourceManager{
     }
     
     private ResourceStatus validateCnctorConnPoolAttrList(String raName, String connDef)
-            /*throws ConnectorRuntimeException*/ {
+            throws ConnectorRuntimeException {
         ResourceStatus status = isValidRAName(raName);
         if(status.getStatus() == ResourceStatus.SUCCESS) {
-            /*if(!isValidConnectionDefinition(connDef,raName)) {
+            if(!isValidConnectionDefinition(connDef,raName)) {
 
                 String msg = localStrings.getLocalString("admin.mbeans.rmb.invalid_ra_connectdef_not_found",
                             "Invalid connection definition. Connector Module with connection definition {0} not found.", connDef);
                 status = new ResourceStatus(ResourceStatus.FAILURE, msg);
-            }*/
+            }
         }
         return status;
     }
@@ -314,7 +312,7 @@ public class ConnectorConnectionPoolManager implements ResourceManager{
         return status;
     }
 
-    /*private boolean isValidConnectionDefinition(String connectionDef,String raName)
+    private boolean isValidConnectionDefinition(String connectionDef,String raName)
             throws ConnectorRuntimeException {
         String[] names = connectorRuntime.getConnectionDefinitionNames(raName);
         for(int i = 0; i < names.length; i++) {
@@ -323,5 +321,5 @@ public class ConnectorConnectionPoolManager implements ResourceManager{
             }
         }
         return false;
-    }*/
+    }
 }

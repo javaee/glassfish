@@ -45,6 +45,7 @@ import org.glassfish.resource.common.ResourceStatus;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Server;
@@ -53,6 +54,8 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.Properties;
 import java.util.HashMap;
 
@@ -94,6 +97,9 @@ public class CreateAdminObject implements AdminCommand {
     @Inject
     Domain domain;
 
+    @Inject
+    private Habitat habitat;
+
     /**
      * Executes the command with the command parameters passed as Properties
      * where the keys are the paramter names and the values the parameter values
@@ -107,7 +113,7 @@ public class CreateAdminObject implements AdminCommand {
         
         HashMap attrList = new HashMap();
         attrList.put(RES_TYPE, resType);
-        attrList.put(ENABLED, enabled);
+        attrList.put(ENABLED, enabled.toString());
         attrList.put(JNDI_NAME, jndiName);
         attrList.put(ServerTags.DESCRIPTION, description);
         attrList.put(RES_ADAPTER, raName);
@@ -115,13 +121,14 @@ public class CreateAdminObject implements AdminCommand {
         ResourceStatus rs;
 
         try {
-            AdminObjectManager adminObjMgr = new AdminObjectManager();
+            AdminObjectManager adminObjMgr = habitat.getComponent(AdminObjectManager.class);
             rs = adminObjMgr.create(resources, attrList, properties, targetServer);
         } catch(Exception e) {
-            String actual = e.getMessage();
+            Logger.getLogger(CreateAdminObject.class.getName()).log(Level.SEVERE,
+                    "Something went wrong in create-admin-object", e);
             String def = "Admin object: {0} could not be created, reason: {1}";
             report.setMessage(localStrings.getLocalString("create.admin.object.fail",
-                    def, jndiName, actual));
+                    def, jndiName) + " " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

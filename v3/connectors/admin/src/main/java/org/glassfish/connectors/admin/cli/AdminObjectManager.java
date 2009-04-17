@@ -45,7 +45,10 @@ import java.beans.PropertyVetoException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.glassfish.api.I18n;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
@@ -55,7 +58,12 @@ import org.jvnet.hk2.config.TransactionFailure;
 import static org.glassfish.resource.common.ResourceConstants.*;
 import org.glassfish.resource.common.ResourceStatus;
 import org.glassfish.api.admin.config.Property;
+import static com.sun.appserv.connectors.internal.api.ConnectorConstants.*;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.enterprise.config.serverbeans.AdminObjectResource;
+import com.sun.enterprise.config.serverbeans.Application;
+import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Resource;
 import com.sun.enterprise.config.serverbeans.Server;
@@ -72,6 +80,12 @@ import org.glassfish.admin.cli.resources.ResourceManager;
 @Scoped(PerLookup.class)
 @I18n("create.admin.object")
 public class AdminObjectManager implements ResourceManager{
+
+    @Inject
+    Applications applications;
+
+    @Inject
+    ConnectorRuntime connectorRuntime;
 
     private static final String DESCRIPTION = ServerTags.DESCRIPTION;
 
@@ -112,17 +126,15 @@ public class AdminObjectManager implements ResourceManager{
             }
         }
 
-        //TODO check if raname is valid
-        /*if (!isValidRAName(raName, report)) {
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
+        ResourceStatus status = isValidRAName();
+        if (status.getStatus() == ResourceStatus.FAILURE) {
+            return status;
         }
 
-        //TODO check if restype is valid
-        if (!isResTypeValid(raName, report)) {
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-        }*/
+        status = isResTypeValid();
+        if (status.getStatus() == ResourceStatus.FAILURE) {
+            return status;
+        }
             
         try {
             ConfigSupport.apply(new SingleConfigCode<Resources>() {
@@ -155,6 +167,8 @@ public class AdminObjectManager implements ResourceManager{
             }
 
         } catch(TransactionFailure tfe) {
+            Logger.getLogger(AdminObjectManager.class.getName()).log(Level.SEVERE,
+                    "Unabled to create administered object", tfe);
             String msg = localStrings.getLocalString("create.admin.object.fail",
                             "Unable to create administered object {0}.", jndiName) +
                             " " + tfe.getLocalizedMessage();
@@ -177,17 +191,28 @@ public class AdminObjectManager implements ResourceManager{
     }
     
      //TODO Error checking taken from v2, need to refactor for v3
-    private boolean isResTypeValid(String raName) {
+    private ResourceStatus isResTypeValid() {
         // Check if the restype is valid -
         // To check this, we need to get the list of admin-object-interface
         // names and then find out if this list contains the restype.
-        boolean isResTypeValid = true;
-        /*boolean isResTypeValid = false;
-        String[] resTypes = ConnectorRuntime.getRuntime().getAdminObjectInterfaceNames(raName);
+        //boolean isResTypeValid = true;
+        boolean isResTypeValid = false;
+        String[] resTypes;
+        try {
+            resTypes = connectorRuntime.getAdminObjectInterfaceNames(raName);
+        } catch(ConnectorRuntimeException cre) {
+            Logger.getLogger(AdminObjectManager.class.getName()).log(Level.SEVERE,
+                    "Could not find admin-ojbect-interface names (resTypes) from ConnectorRuntime for resource adapter.", cre);
+            String msg = localStrings.getLocalString(
+                  "admin.mbeans.rmb.null_ao_intf",
+                  "Resource Adapter {0} does not contain any resource type for admin-object. Please specify another res-adapter.",
+                  raName) + " " + cre.getLocalizedMessage();
+            return new ResourceStatus(ResourceStatus.FAILURE, msg);
+        }
         if (resTypes == null || resTypes.length <= 0) {
-            report.setMessage(localStrings.getLocalString("admin.mbeans.rmb.null_ao_intf",
-                "Resource Adapter {0} does not contain any resource type for admin-object. Please specify another res-adapter.", raName));
-            return isResTypeValid;
+            String msg = localStrings.getLocalString("admin.mbeans.rmb.null_ao_intf",
+                "Resource Adapter {0} does not contain any resource type for admin-object. Please specify another res-adapter.", raName);
+            return new ResourceStatus(ResourceStatus.FAILURE, msg);
         }
 
         for (int i = 0; i < resTypes.length; i++) {
@@ -198,9 +223,51 @@ public class AdminObjectManager implements ResourceManager{
         }
 
         if (!isResTypeValid) {
-            report.setMessage(localStrings.getLocalString("admin.mbeans.rmb.invalid_res_type",
-                "Invalid Resource Type: {0}", resType));
-        }*/
-        return isResTypeValid;
+            String msg = localStrings.getLocalString("admin.mbeans.rmb.invalid_res_type",
+                "Invalid Resource Type: {0}", resType);
+            return new ResourceStatus(ResourceStatus.FAILURE, msg);
+        }
+        return new ResourceStatus(ResourceStatus.SUCCESS, "");
+    }
+
+    private ResourceStatus isValidRAName() {
+        //TODO turn on validation.  For now, turn validation off until connector modules ready
+        //boolean retVal = false;
+        ResourceStatus status = new ResourceStatus(ResourceStatus.SUCCESS, "");
+
+        if ((raName == null) || (raName.equals(""))) {
+            String msg = localStrings.getLocalString("admin.mbeans.rmb.null_res_adapter",
+                    "Resource Adapter Name is null.");
+            status = new ResourceStatus(ResourceStatus.FAILURE, msg);
+        } else {
+            // To check for embedded connector module
+            // System RA, so don't validate
+            if (!raName.equals(DEFAULT_JMS_ADAPTER) && !raName.equals(JAXR_RA_NAME)) {
+                // Check if the raName contains double underscore or hash.
+                // If that is the case then this is the case of an embedded rar,
+                // hence look for the application which embeds this rar,
+                // otherwise look for the webconnector module with this raName.
+
+                int indx = raName.indexOf(EMBEDDEDRAR_NAME_DELIMITER);
+                if (indx != -1) {
+                    String appName = raName.substring(0, indx);
+                    Application app = applications.getModule(Application.class, appName);
+                    if (app == null) {
+                        String msg = localStrings.getLocalString("admin.mbeans.rmb.invalid_ra_app_not_found",
+                                "Invalid raname. Application with name {0} not found.", appName);
+                        status = new ResourceStatus(ResourceStatus.FAILURE, msg);
+                    }
+                } else {
+                    Application app = applications.getModule(Application.class, raName);
+                    if (app == null) {
+                        String msg = localStrings.getLocalString("admin.mbeans.rmb.invalid_ra_cm_not_found",
+                                "Invalid raname. Connector Module with name {0} not found.", raName);
+                        status = new ResourceStatus(ResourceStatus.FAILURE, msg);
+                    }
+                }
+            }
+        }
+
+        return status;
     }
 }

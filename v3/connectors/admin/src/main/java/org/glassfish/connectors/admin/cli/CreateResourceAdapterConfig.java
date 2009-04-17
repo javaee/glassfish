@@ -116,11 +116,10 @@ public class CreateResourceAdapterConfig implements AdminCommand {
         } catch (Exception ex) {
             Logger.getLogger(CreateResourceAdapterConfig.class.getName()).log(
                     Level.SEVERE,
-                    "Something went wrong in create-resource-adapter-config", ex);
-            String actual = ex.getMessage();
+                    "Unable to create resource adapter config for " + raName, ex);
             String def = "Resource adapter config: {0} could not be created, reason: {1}";
             report.setMessage(localStrings.getLocalString("create.resource.adapter.config.fail",
-                    def, raName, actual));
+                    def, raName) + " " + ex.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(ex);
             return;
