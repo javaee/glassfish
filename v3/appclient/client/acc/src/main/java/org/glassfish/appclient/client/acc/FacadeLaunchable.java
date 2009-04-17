@@ -99,7 +99,7 @@ public class FacadeLaunchable implements Launchable {
         this.classPathURIs = toURIs(mainAttrs.getValue(Name.CLASS_PATH));
     }
 
-    URI getURI() {
+    public URI getURI() {
         return facadeClientRA.getURI();
     }
 
@@ -160,13 +160,8 @@ public class FacadeLaunchable implements Launchable {
              * the caller's selection criteria.
              */
             final String facadeGroupURIs = mainAttrs.getValue(GLASSFISH_APPCLIENT_GROUP);
-            facadeRA.close();
             if (facadeGroupURIs != null) {
                 result = selectFacadeFromGroup(facadeRA.getURI(), archiveFactory, facadeGroupURIs, callerSuppliedMainClassName, callerSuppliedAppName);
-                if (result != null) {
-                    URL clientFacadeURL = new URL("file:" + result.getURI().getSchemeSpecificPart());
-                    ACCClassLoader.instance().appendURL(clientFacadeURL);
-                }
             } else {
                 return null;
             }

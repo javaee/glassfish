@@ -130,8 +130,12 @@ recordClientArg() {
             accMainArgs=client=dir=$1
         else
             # -client with a non-directory, so
-            # the client had better be a JAR
-            jvmMainArgs=-jar\ $1
+            # the client had better be a JAR or an EAR
+            if [ `expr $1 : '.*\.ear'` -ne 0 ] ; then
+                jvmMainArgs=-jar\ "$accJar"
+            else
+                jvmMainArgs=-jar\ $1
+            fi
             accMainArgs=client=jar=$1
         fi
         mainClassIdent=tentative
@@ -160,11 +164,20 @@ recordACCArg() {
 recordMainClass() {
     case $1 in
         -jar)
-            jvmMainArgs=-jar\ $2
-            accMainArgs=client=jar=$2
+            if [ `expr $2 : '.*\.ear'` -ne 0 ] ; then
+                jvmMainArgs=-jar\ "$accJar"
+            else
+                jvmMainArgs=-jar\ $2
+            fi
+            accMainArgs=client=jar=\"$2\"
             mainClassIdent=final ;;
 
         -client)
+            if [ `expr $2 : '.*\.ear'` -ne 0 ] ; then
+                jvmMainArgs=-jar\ "$accJar"
+            else
+                jvmMainArgs=-jar\ $2
+            fi
             jvmMainArgs=-jar\ \"$2\"
             accMainArgs=client=jar=\"$2\"
             mainClassIdent=tentative ;;

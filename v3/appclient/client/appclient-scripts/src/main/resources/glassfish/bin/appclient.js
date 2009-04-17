@@ -175,6 +175,16 @@ function recordAPPArg(arg1, arg2) {
     }
 }
 
+function jvmMainArgsFor(value) {
+    var valueStr = new String(value);
+    var earEnding = /.ear$/
+    if (valueStr.match(earEnding)) {
+        return "-jar " + accJar;
+    } else {
+        return "-jar " + value;
+    }
+}
+
 function recordClientArg(value) {
     if (mainClassIdent == "final") {
         recordAPPArg("-client");
@@ -186,7 +196,7 @@ function recordClientArg(value) {
             jvmMainArgs = "-jar " + accJar;
             accMainArgs = "client=dir=" + value;
         } else {
-            jvmMainArgs = "-jar " + value;
+            jvmMainArgs = jvmMainArgsFor(value);
             accMainArgs = "client=jar="  + value;
         }
         mainClassIdent = "tentative";
@@ -212,11 +222,11 @@ function recordACCArg(arg1, arg2) {
 
 function recordMainClass(arg1, arg2) {
     if (arg1 == "-jar") {
-        jvmMainArgs = "-jar " + arg2;
+        jvmMainArgs = jvmMainArgsFor(arg2);
         accMainArgs = "client=jar=" + arg2;
         mainClassIdent = "final";
     } else if (arg1 == "-client") {
-        jvmMainArgs = "-jar " + arg2;
+        jvmMainArgs = jvmMainArgsFor(arg2);
         accMainArgs = "client=jar=" + arg2;
         mainClassIdent = "tentative";
     } else {

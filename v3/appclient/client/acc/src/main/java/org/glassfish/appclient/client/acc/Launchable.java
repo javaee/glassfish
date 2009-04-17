@@ -76,6 +76,8 @@ interface Launchable {
 
     void validateDescriptor();
 
+    URI getURI();
+
     static class LauchableUtil {
 
         private static final LocalStringManager localStrings = new LocalStringManagerImpl(Launchable.LauchableUtil.class);
@@ -100,20 +102,22 @@ interface Launchable {
 
             Launchable result = FacadeLaunchable.newFacade(ra, callerSuppliedMainClassName, callerSuppliedAppName);
             if (result != null) {
-                return result;
+                ra.close();
+            } else {
+                /*
+                 * If newFacade found a facade JAR but could not find a suitable
+                 * client it will have thrown a UserError.  If we're here, then
+                 * newFacade did not have a facade to work with.  So the caller-
+                 * provided URI should refer to an undeployed EAR or an undeployed
+                 * app client JAR.
+                 */
+                result = UndeployedLaunchable.newUndeployedLaunchable(ra,
+                        callerSuppliedMainClassName, callerSuppliedAppName,
+                        Thread.currentThread().getContextClassLoader());
             }
-            /*
-             * If newFacade found a facade JAR but could not find a suitable
-             * client it will have thrown a UserError.  If we're here, then
-             * newFacade did not have a facade to work with.  So the caller-
-             * provided URI should refer to an undeployed EAR or an undeployed
-             * app client JAR.
-             */
-            result = UndeployedLaunchable.newUndeployedLaunchable(ra,
-                    callerSuppliedMainClassName, callerSuppliedAppName,
-                    Thread.currentThread().getContextClassLoader());
-
             if (result != null) {
+                URL clientOrFacadeURL = new URL("file:" + result.getURI().getSchemeSpecificPart());
+                ACCClassLoader.instance().appendURL(clientOrFacadeURL);
                 return result;
             }
             final String msg = localStrings.getLocalString(Launchable.class,
@@ -208,6 +212,10 @@ interface Launchable {
 
         public void validateDescriptor() {
             archivist.validate(classLoader);
+        }
+
+        public URI getURI() {
+            return null;
         }
 
 

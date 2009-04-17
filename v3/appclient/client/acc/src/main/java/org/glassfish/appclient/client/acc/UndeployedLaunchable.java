@@ -50,6 +50,7 @@ import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import java.io.IOException;
+import java.net.URI;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.xml.sax.SAXParseException;
 
@@ -112,7 +113,7 @@ public class UndeployedLaunchable implements Launchable {
                 final boolean useThisClient =
                         (displayName != null && displayName.equals(callerSuppliedAppName))
                      || (appName != null && appName.equals(callerSuppliedAppName))
-                     || (clientRA.exists(classToResource(callerSuppliedMainClassName))
+                     || (callerSuppliedMainClassName != null && clientRA.exists(classToResource(callerSuppliedMainClassName))
                      || (callerSuppliedAppName == null && callerSuppliedMainClassName == null));
 
                 if (useThisClient) {
@@ -127,6 +128,10 @@ public class UndeployedLaunchable implements Launchable {
             throw new UserError(
                     localStrings.get("appclient.unexpectedArchive", ra.getURI()));
         }
+    }
+
+    public URI getURI() {
+        return clientRA.getURI();
     }
 
     private static String classToResource(final String className) {
@@ -182,6 +187,7 @@ public class UndeployedLaunchable implements Launchable {
         if (archivist == null) {
             ArchivistFactory af = Util.getArchivistFactory();
             archivist = (AppClientArchivist) af.getArchivist(clientRA, classLoader);
+            archivist.setDescriptor(acDesc);
         }
         return archivist;
     }
