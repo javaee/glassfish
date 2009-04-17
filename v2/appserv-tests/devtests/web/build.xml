@@ -303,7 +303,9 @@
         <ant dir="virtualServerDefaultWebModuleRequestPath" target="all"/>
         <ant dir="virtualServerDefaultWebModuleRequestDispatcher" target="all"/>
         <ant dir="virtualServerDefaultWebModuleFormLoginJSecurityCheckDirectAccess" target="all"/>
+<!-- XXX temporary commented out due to issue 7919
         <ant dir="virtualServerDefaultWebModuleRestart" target="all"/>
+-->
         <ant dir="virtualServerEarWrappedDefaultWebModuleRestart" target="all"/>
         <ant dir="virtualServerRedirectPropertyUrl" target="all"/>
         <ant dir="virtualServerDocrootDynamicReconfig" target="all"/>
@@ -315,7 +317,9 @@
         -->
         <ant dir="virtualServerRedirectPropertyUrlPrefix" target="all"/>
         <ant dir="virtualServerSendErrorProperty" target="all"/>
+<!-- XXX temporary commented out due to issue 7919
         <ant dir="virtualServerUpdateHttpListenersDynamicReconfig" target="all"/>
+-->
         <ant dir="virtualServerUpdateHostsDynamicReconfig" target="all"/>
 <!-- XXX temporary commented out due to issue 7895
         <ant dir="virtualServerChangeHttpListenerWebappNoLongerAccessible" target="all"/>
@@ -402,7 +406,9 @@
         <ant dir="dosBrokenPost" target="all"/>
         <ant dir="defaultKeepAlive" target="all"/>
         <ant dir="multiServletRequests" target="all"/>
+<!-- XXX temporary commented out due to issue 7919
         <ant dir="v3HttpListenerDynamicConfig" target="all"/>
+-->
         <ant dir="caseSensitiveHostMapping" target="all"/>
         <ant dir="setResponseContentLengthToZeroKeepResponseHeaders" target="all"/>
         <ant dir="getLocalPort" target="all"/>
