@@ -442,4 +442,14 @@ public interface Request {
      * Sets the requested session cookie path, see IT 7426
      */
     public void setRequestedSessionCookiePath(String cookiePath);
+
+
+    /**
+     * Gets the session associated with this Request, creating one
+     * if necessary and requested.
+     *
+     * @param create true if a new session is to be created if one does not
+     * already exist, false otherwise
+     */
+    public Session getSessionInternal(boolean create);
 }

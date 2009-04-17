@@ -37,22 +37,10 @@
 package com.sun.enterprise.web;
 
 import java.io.IOException;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import java.util.logging.Logger;
 import java.util.logging.Level;
+import javax.servlet.ServletException;
 import com.sun.logging.LogDomains;
-
-import org.apache.catalina.Container;
-import org.apache.catalina.Manager;
-import org.apache.catalina.Request;
-import org.apache.catalina.Response;
-import org.apache.catalina.Session;
-import org.apache.catalina.core.StandardContext;
-import org.apache.catalina.session.PersistentManagerBase;
+import org.apache.catalina.*;
 import org.apache.catalina.session.StandardSession;
 
 /**
@@ -64,7 +52,7 @@ public class PESessionLockingStandardPipeline extends WebPipeline {
     /**
      * The logger to use for logging ALL web container related messages.
      */
-    protected static final Logger _logger =
+    protected static final java.util.logging.Logger _logger =
         LogDomains.getLogger(PESessionLockingStandardPipeline.class, LogDomains.WEB_LOGGER);
     
     /** 
@@ -93,42 +81,13 @@ public class PESessionLockingStandardPipeline extends WebPipeline {
         throws IOException, ServletException {
         
         Session sess = this.lockSession(request);
-        ((StandardContext) container).beginPipelineInvoke(sess);
         try {
             super.invoke(request, response);
         } finally {
             this.unlockSession(request);
-            ((StandardContext) container).endPipelineInvoke();
         }
     }    
     
-    /** 
-     * get the session associated with this request
-     * @param request
-     */    
-    protected Session getSession(Request request) {
-        ServletRequest servletReq = request.getRequest();
-        HttpServletRequest httpReq = 
-            (HttpServletRequest) servletReq;
-        HttpSession httpSess = httpReq.getSession(false);
-        if(httpSess == null)
-            //need to null out session
-            //httpReq.setSession(null);
-            return null;
-        String id = httpSess.getId();
-        if(_logger.isLoggable(Level.FINEST)) {
-            _logger.finest("SESSION_ID=" + id);
-        }
-        Manager mgr = this.getContainer().getManager();
-        Session sess = null;
-        try {
-            sess = mgr.findSession(id);
-        } catch (java.io.IOException ex) {}
-        if(_logger.isLoggable(Level.FINEST)) {
-            _logger.finest("RETRIEVED_SESSION=" + sess);
-        }
-        return sess;
-    }          
     
     /** 
      * lock the session associated with this request
@@ -142,8 +101,8 @@ public class PESessionLockingStandardPipeline extends WebPipeline {
      *
      * @return the session that's been locked
      */     
-    protected Session lockSession(Request request) throws ServletException {
-        Session sess = this.getSession(request);
+    protected Session lockSession(Request request) {
+        Session sess = request.getSessionInternal(false);
         if(_logger.isLoggable(Level.FINEST)) {
             _logger.finest("IN LOCK_SESSION: sess =" + sess);
         }
@@ -201,7 +160,7 @@ public class PESessionLockingStandardPipeline extends WebPipeline {
      * @param request
      */     
     protected void unlockSession(Request request) {
-        Session sess = this.getSession(request);
+        Session sess = request.getSessionInternal(false);
         if(_logger.isLoggable(Level.FINEST)) {
             _logger.finest("IN UNLOCK_SESSION: sess = " + sess);
         }

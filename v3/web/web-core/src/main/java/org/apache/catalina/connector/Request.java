@@ -2957,10 +2957,11 @@ public class Request
 
 
     /**
-     * Return the session associated with this Request, creating one
+     * Gets the session associated with this Request, creating one
      * if necessary and requested.
      *
-     * @param create Create a new session if one does not exist
+     * @param create true if a new session is to be created if one does not
+     * already exist, false otherwise
      */
     public Session getSessionInternal(boolean create) {
         return doGetSession(create);

@@ -82,21 +82,9 @@ import com.sun.grizzly.util.buf.MessageBytes;
 import org.apache.naming.resources.Resource;
 import org.apache.naming.resources.DirContextURLStreamHandler;
 import org.apache.naming.resources.DirContextURLConnection;
-import org.apache.catalina.Connector;
-import org.apache.catalina.Container;
-import org.apache.catalina.Context;
-import org.apache.catalina.Globals;
-import org.apache.catalina.Host;
-import org.apache.catalina.HttpRequest;
-import org.apache.catalina.Logger;
-import org.apache.catalina.Response;
-import org.apache.catalina.Wrapper;
+import org.apache.catalina.*;
 import org.apache.catalina.deploy.ApplicationParameter;
-import org.apache.catalina.util.Enumerator;
-import org.apache.catalina.util.ResourceSet;
-import org.apache.catalina.util.ServerInfo;
-import org.apache.catalina.util.StringManager;
-
+import org.apache.catalina.util.*;
 
 /**
  * Dummy request object, used for request dispatcher mapping, as well as
@@ -108,10 +96,7 @@ import org.apache.catalina.util.StringManager;
 
 public class DummyRequest implements HttpRequest, HttpServletRequest {
 
-    protected String contextPath = null;
-    protected String decodedURI = null;
     protected String queryString = null;
-
     protected String pathInfo = null;
     protected String servletPath = null;
     protected Wrapper wrapper = null;
@@ -130,19 +115,6 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
     private String method;
     // END PWC 4707989
 
-
-    public DummyRequest() {
-    }
-
-
-    public DummyRequest(String contextPath, String decodedURI,
-                        String queryString) {
-        this.contextPath = contextPath;
-        this.decodedURI = decodedURI;
-        this.queryString = queryString;
-    }
-
-    
     private static Enumeration dummyEnum = new Enumeration(){
         public boolean hasMoreElements(){
             return false;
@@ -153,7 +125,7 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
     };
 
     public String getContextPath() {
-        return (contextPath);
+        return null;
     }
 
     public MessageBytes getContextPathMB() {
@@ -161,7 +133,7 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
     }
 
     public ServletRequest getRequest() {
-        return (this);
+        return this;
     }
 
     public ServletRequest getRequest(boolean maskDefaultContextMapping) {
@@ -169,7 +141,7 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
     }
 
     public String getDecodedRequestURI() {
-        return decodedURI;
+        return null;
     }
 
     public MessageBytes getDecodedRequestURIMB() {
@@ -177,7 +149,7 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
     }
 
     public FilterChain getFilterChain() {
-        return (this.filterChain);
+        return filterChain;
     }
 
     public void setFilterChain(FilterChain filterChain) {
@@ -337,6 +309,7 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
     public StringBuffer getRequestURL() { return null; }
     public HttpSession getSession() { return null; }
     public HttpSession getSession(boolean create) { return null; }
+    public Session getSessionInternal(boolean create) { return null; }
     public boolean isRequestedSessionIdFromCookie() { return false; }
     public boolean isRequestedSessionIdFromURL() { return false; }
     public boolean isRequestedSessionIdFromUrl() { return false; }
@@ -376,9 +349,7 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
      * needs to be checked.
      */
     public void setCheckRestrictedResources(boolean check) {
-
         this.checkRestrictedResources = check;
-
     }
 
     /**
@@ -386,9 +357,7 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
      * needs to be checked.
      */
     public boolean getCheckRestrictedResources() {
-
         return this.checkRestrictedResources;
-
     }
     // END CR 6415120
 
@@ -413,9 +382,7 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
      * a dummy implementation so that the default one will be used.
      */
     public String generateSessionId() {
-
         return null;
-
     }
 
 

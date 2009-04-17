@@ -4988,26 +4988,6 @@ public class StandardContext
 
 
     /**
-     * SailFin extension.
-     *
-     * Allows context to implement additional tasks at the beginning of its
-     * pipeline invocation.
-     */
-    public void beginPipelineInvoke(Session s) {
-        // Deliberate noop
-    }
-
-    /**
-     * SailFin extension.
-     *
-     * Allows context to implement additional tasks at the end of its
-     * pipeline invocation.
-     */
-    public void endPipelineInvoke() {
-        // Deliberate noop
-    }
-
-    /**
      * Configure and initialize the set of filters for this Context.
      * Return <code>true</code> if all filter initialization completed
      * successfully, or <code>false</code> otherwise.
