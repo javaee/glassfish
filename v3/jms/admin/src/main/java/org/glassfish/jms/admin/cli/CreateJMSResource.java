@@ -48,7 +48,6 @@ import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.connectors.ConnectorRuntime;
 
 import java.util.Properties;
 import java.util.Hashtable;
@@ -87,12 +86,12 @@ public class CreateJMSResource implements AdminCommand {
     @Inject
     ConnectorConnectionPool[] connPools;
 
-
     private static final String QUEUE = "javax.jms.Queue";
     private static final String TOPIC = "javax.jms.Topic";
     private static final String QUEUE_CF = "javax.jms.QueueConnectionFactory";
     private static final String TOPIC_CF = "javax.jms.TopicConnectionFactory";
     private static final String UNIFIED_CF = "javax.jms.ConnectionFactory";
+    private static final String DEFAULT_JMS_ADAPTER = "jmsra";
 
     //JMS destination resource properties
     private static final String NAME = "jndi_name";
@@ -194,7 +193,7 @@ public class CreateJMSResource implements AdminCommand {
                 // create admin object
                 aoAttrList.setProperty(NAME,  jndiName);
                 aoAttrList.setProperty("restype",  resourceType);
-                aoAttrList.setProperty("raname",  ConnectorRuntime.DEFAULT_JMS_ADAPTER);
+                aoAttrList.setProperty("raname",  DEFAULT_JMS_ADAPTER);
                 if(enabled!=null)
                     aoAttrList.put("enabled",  enabled);
 
@@ -272,7 +271,7 @@ public class CreateJMSResource implements AdminCommand {
             parameters.setProperty("description", description);
 
         // Get the default res adapter name from Connector-runtime
-        String raName = ConnectorRuntime.DEFAULT_JMS_ADAPTER;
+        String raName = DEFAULT_JMS_ADAPTER;
         parameters.setProperty("raname", raName);
 
         parameters.setProperty("connectiondefinition", resourceType);
