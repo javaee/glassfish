@@ -35,15 +35,9 @@
  */
 package org.glassfish.admin.mbeanserver;
 
-import org.jvnet.hk2.annotations.FactoryFor;
-import org.jvnet.hk2.annotations.Extract;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Factory;
-import org.jvnet.hk2.component.ComponentException;
 
 import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import javax.management.JMException;
 import javax.management.Notification;
 import javax.management.NotificationListener;
 import javax.management.ListenerNotFoundException;
@@ -63,18 +57,20 @@ import java.lang.management.ManagementFactory;
 import com.sun.enterprise.config.serverbeans.AdminService;
 import com.sun.enterprise.config.serverbeans.JmxConnector;
 
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXServiceURL;
 import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXConnectionNotification;
 
-import javax.management.MBeanServerConnection;
 import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+
 
 /**
     Responsible for starting AMXBooter initialization, and starting JMXConnectors as configured.
@@ -93,7 +89,8 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
     @Inject
     Habitat mHabitat;
     
-    private volatile Booter mBooter;
+    private volatile BooterOld mOldBooter;
+    private volatile BooterNew mNewBooter;
 
     public ConnectorStartupService()
     {
@@ -106,14 +103,15 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
             throw new IllegalStateException( "MBeanServer must be ManagementFactory.getPlatformMBeanServer()" );
         }
         
-        mBooter = Booter.create( mHabitat, mMBeanServer );
+        mOldBooter = BooterOld.create( mHabitat, mMBeanServer );
+        mNewBooter = BooterNew.create( mHabitat, mMBeanServer );
     
         final List<JmxConnector> configuredConnectors = mAdminService.getJmxConnector();
         
-        final ConnectorsStarterThread starter = new ConnectorsStarterThread( mMBeanServer, configuredConnectors, mBooter);
+        final ConnectorsStarterThread starter = new ConnectorsStarterThread( mMBeanServer, configuredConnectors, mOldBooter, mNewBooter);
         starter.start();
     }
-    
+
     /*
     KEEP: this was a problem at one point, could be again
     private static boolean verifyBugFix( final int port)
@@ -195,16 +193,19 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
     {
         private final List<JmxConnector> mConfiguredConnectors;
         private final MBeanServer mMBeanServer;
-        private final Booter      mAMXBooter;
+        private final BooterOld      mAMXBooterOld;
+        private final BooterNew      mAMXBooterNew;
         
         public ConnectorsStarterThread(
             final MBeanServer mbs,
             final List<JmxConnector> configuredConnectors,
-            final Booter amxBooter)
+            final BooterOld amxBooterOld,
+            final BooterNew amxBooterNew)
         {
             mMBeanServer = mbs;
             mConfiguredConnectors = configuredConnectors;
-            mAMXBooter = amxBooter;
+            mAMXBooterOld = amxBooterOld;
+            mAMXBooterNew = amxBooterNew;
         }
         
         private static String toString( final JmxConnector c )
@@ -280,8 +281,10 @@ public final class ConnectorStartupService implements Startup, PostConstruct {
                 final JMXServiceURL url = new JMXServiceURL( s );
                 
                 final JMXConnectorServer cs = JMXConnectorServerFactory.newJMXConnectorServer( url, env, mMBeanServer);
-                final BootAMXListener listener = new BootAMXListener(cs, mAMXBooter);
-                cs.addNotificationListener( listener, null, null);
+                final BootAMXListener listener1 = new BootAMXListener(cs, mAMXBooterOld);
+                final BootAMXListener listener2 = new BootAMXListener(cs, mAMXBooterNew);
+                cs.addNotificationListener( listener1, null, null);
+                cs.addNotificationListener( listener2, null, null);
                 cs.start();
                 
                 return cs;

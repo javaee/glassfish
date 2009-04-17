@@ -66,14 +66,16 @@ import java.beans.PropertyChangeEvent;
  * @author llc
  */
 @Service(name="PendingConfigBeans")
-public final class PendingConfigBeans implements CageBuilder, PostConstruct, TransactionListener
+public class PendingConfigBeans implements CageBuilder, PostConstruct, TransactionListener
 {
     @Inject
     Transactions transactions;
     
-    private static void debug( final String s ) { System.out.println(s); }
+    protected static void debug( final String s ) { System.out.println(s); }
     
     private final LinkedBlockingQueue<PendingConfigBeanJob> mJobs = new LinkedBlockingQueue<PendingConfigBeanJob>();
+    
+    public int size() { return mJobs.size(); }
     
     /**
     /**

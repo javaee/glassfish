@@ -43,7 +43,11 @@ import java.lang.annotation.Target;
 
 /**
     Holds meta information useful in generating and/or supplementing the default
-    MBeanInfo as well as other runtime fields or optimizations. 
+    MBeanInfo as well as other runtime fields or optimizations.
+    
+    Depending on how the implementor generates MBeans, not all of this information is
+    necessarily used; it could be ignored if there is a more authoritative source (eg
+    internal @Configured interfaces that also have AMXConfig proxy interfaces).
  
    @author Lloyd Chambers
  */
@@ -54,8 +58,22 @@ public @interface AMXMBeanMetadata {
        If true, states that the MBeanInfo is immutable; that once MBeanInfo is
        obtained it may be cached, avoiding needless/repeated invocations of getMBeanInfo().
        Very few MBeans have mutable MBeanInfo, so this defaults to 'true'.
+       The term is a misnomer; it should be invariantMBeanInfo(), but this name
+       is used go be consistent with the JMX standard.
      */
     boolean immutableMBeanInfo() default true;
+    
+    public static final String NULL = "\u0000";
+    
+    /** overrides default type to be used in ObjectName=, ignored if null or empty */
+    public String type() default NULL;
+    
+    /** If true, no children are allowed. */
+    public boolean leaf() default false;
+    
+    /** if true, the MBean is a singleon within its parent's scope */
+    public boolean singleton() default false;
+
 }
 
 

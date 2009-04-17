@@ -47,7 +47,7 @@
     <artifactId>amx-impl</artifactId>
     <packaging>hk2-jar</packaging>
     <name>AMX API Implementation</name>
-    <description>Appserver Management Extensions (AMX) interfaces and utilities</description>
+    <description>Implementation of core AMX system</description>
     
     <developers>
         <developer>
@@ -63,19 +63,6 @@
     </developers>
 
    <build>
-  	
-	   <plugins>
-	     <plugin>
-	       <groupId>org.apache.maven.plugins</groupId>
-	       <artifactId>maven-compiler-plugin</artifactId>
-	       <configuration>
-	         <source>1.5</source>
-	         <target>1.5</target>
-	         <compilerArgument>-Xlint:all</compilerArgument>
-	       </configuration>
-	     </plugin>
-	   </plugins>
-
         <resources>
             <resource>
                 <directory>src/main/java</directory>
@@ -93,14 +80,6 @@
             <groupId>com.sun.enterprise</groupId>
             <artifactId>hk2</artifactId>
         </dependency>
-        
-       <!--
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.management.j2ee</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        -->
         
         <dependency>
             <groupId>org.glassfish.common</groupId>

@@ -1,0 +1,8 @@
+
+
+export V3M=/v3/glassfish/modules
+export MAIN=org.glassfish.admin.mejb.test.MEJBTest
+
+java -cp $V3M/gf-client.jar:$V3M/javax.management.j2ee.jar:target/MEJB.jar $MAIN
+
+

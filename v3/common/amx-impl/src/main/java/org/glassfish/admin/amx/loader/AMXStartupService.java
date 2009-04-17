@@ -48,7 +48,7 @@ import org.glassfish.admin.amx.util.InjectedValues;
 
 import org.glassfish.admin.mbeanserver.PendingConfigBeans;
 
-import org.glassfish.admin.mbeanserver.BooterMBean;
+import org.glassfish.admin.mbeanserver.BooterOldMBean;
 import org.glassfish.admin.mbeanserver.AMXStartupServiceMBean;
 import org.glassfish.admin.amx.util.ImplUtil;
 
@@ -89,6 +89,7 @@ public final class AMXStartupService
     public AMXStartupService()
     {
         //debug( "AMXStartupService.AMXStartupService()" );
+        debug( this.getClass().getName() );
     }
     
     private static ObjectName getObjectName()
@@ -130,7 +131,7 @@ public final class AMXStartupService
         try
         { 
             // might not be ready yet
-            return Util.getObjectName( getDomainRoot() );
+            return Util.getObjectName( getDomainRootProxy() );
         }
         catch( Exception e )
         {
@@ -142,7 +143,7 @@ public final class AMXStartupService
     {
         try
         {
-            return (JMXServiceURL[])mMBeanServer.getAttribute( BooterMBean.OBJECT_NAME, "JMXServiceURLs" );
+            return (JMXServiceURL[])mMBeanServer.getAttribute( BooterOldMBean.OBJECT_NAME, "JMXServiceURLs" );
         }
         catch ( final JMException e )
         {
@@ -166,11 +167,28 @@ public final class AMXStartupService
         return ss;
     }
     
-        DomainRoot
-    getDomainRoot()
+        public DomainRoot
+    getDomainRootProxy()
     {
         return ProxyFactory.getInstance( mMBeanServer ).getDomainRoot();
     }
+    
+        public ObjectName
+    getDomainRoot()
+    {
+        return getDomainRootObjectName();
+    }
+    
+    public ObjectName loadAMXMBeans()
+    {
+        return startAMX();
+    }
+        
+    public void unloadAMXMBeans()
+    {
+        stopAMX();
+    }
+
     
         public synchronized ObjectName
     startAMX()
@@ -191,10 +209,10 @@ public final class AMXStartupService
             mConfigLoader.start();
             SingletonEnforcer.register( AMXConfigLoader.class, mConfigLoader );
             
-            getDomainRoot().waitAMXReady();
+            getDomainRootProxy().waitAMXReady();
             
             final long elapsedMillis = delta.elapsedMillis();
-            final Set<ObjectName> all = getDomainRoot().getQueryMgr().queryAllObjectNameSet();
+            final Set<ObjectName> all = getDomainRootProxy().getQueryMgr().queryAllObjectNameSet();
             
             ImplUtil.getLogger().info( "AMXStartupService: loaded " + all.size() + " AMX MBeans in " + elapsedMillis + " ms (wall-clock time)" );
         }
@@ -205,7 +223,7 @@ public final class AMXStartupService
     {
         if ( getDomainRoot() != null )
         {
-            ImplUtil.unregisterAMXMBeans( getDomainRoot() );
+            ImplUtil.unregisterAMXMBeans( getDomainRootProxy() );
         }
     }
 

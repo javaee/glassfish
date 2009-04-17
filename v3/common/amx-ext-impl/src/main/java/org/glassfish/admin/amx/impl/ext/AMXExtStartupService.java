@@ -1,0 +1,162 @@
+/*
+ * The contents of this file are subject to the terms
+ * of the Common Development and Distribution License
+ * (the License).  You may not use this file except in
+ * compliance with the License.
+ *
+ * You can obtain a copy of the license at
+ * https://glassfish.dev.java.net/public/CDDLv1.0.html or
+ * glassfish/bootstrap/legal/CDDLv1.0.txt.
+ * See the License for the specific language governing 
+ * permissions and limitations under the License.
+ *
+ * When distributing Covered Code, include this CDDL
+ * Header Notice in each file and include the License file
+ * at glassfish/bootstrap/legal/CDDLv1.0.txt.
+ * If applicable, add the following below the CDDL Header,
+ * with the fields enclosed by brackets [] replaced by
+ * you own identifying information:
+ * "Portions Copyrighted [year] [name of copyright owner]"
+ *
+ * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
+ */
+package org.glassfish.admin.amx.impl.ext;
+
+import org.glassfish.admin.amx.base.DomainRoot;
+import org.glassfish.admin.amx.core.proxy.ProxyFactory;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
+
+import javax.management.JMException;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import javax.management.StandardMBean;
+
+
+import org.glassfish.admin.amx.base.KitchenSink;
+import org.glassfish.admin.amx.base.LoggingPropertiesMgr;
+import org.glassfish.admin.amx.base.RealmsMgr;
+import org.glassfish.admin.amx.base.RuntimeMgr;
+import org.glassfish.admin.amx.base.SystemStatus;
+import org.glassfish.admin.amx.impl.config.AMXExtStartupServiceMBean;
+import org.glassfish.admin.amx.impl.ext.KitchenSinkImpl;
+import org.glassfish.admin.amx.impl.ext.LoggingPropertiesMgrImpl;
+import org.glassfish.admin.amx.impl.ext.RealmsMgrImpl;
+import org.glassfish.admin.amx.impl.ext.RuntimeMgrImpl;
+import org.glassfish.admin.amx.impl.ext.SystemStatusImpl;
+import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
+import org.glassfish.admin.amx.impl.util.InjectedValues;
+import org.glassfish.admin.amx.impl.util.ObjectNames;
+
+/**
+    Startup service that loads support for AMX config MBeans.  How this is to be
+    triggered is not yet clear.
+ */
+@Service
+public final class AMXExtStartupService
+    implements  org.jvnet.hk2.component.PostConstruct,
+                org.jvnet.hk2.component.PreDestroy,
+                AMXExtStartupServiceMBean
+{
+    private static void debug( final String s ) { System.out.println(s); }
+    
+    @Inject
+    InjectedValues  mInjectedValues;
+    
+    @Inject//(name=AppserverMBeanServerFactory.OFFICIAL_MBEANSERVER)
+    private MBeanServer mMBeanServer;
+    
+    
+    private volatile boolean mLoaded = false;
+    
+    public AMXExtStartupService()
+    {
+    }
+    
+    public void postConstruct()
+    {
+        try
+        {
+           final StandardMBean mbean = new StandardMBean(this, AMXExtStartupServiceMBean.class);
+           mMBeanServer.registerMBean( mbean, OBJECT_NAME );
+        }
+        catch( JMException e )
+        {
+            throw new Error(e);
+        }
+    }
+
+    public void preDestroy() {
+        unloadAMXMBeans();
+    }
+    
+    public DomainRoot getDomainRootProxy()
+    {
+        return ProxyFactory.getInstance( mMBeanServer ).getDomainRoot();
+    }
+    
+        public synchronized ObjectName
+    loadAMXMBeans()
+    {
+        if ( ! mLoaded )
+        {
+            ObjectName child;
+            AMXImplBase     mbean;
+            final MBeanServer s = mMBeanServer;
+            final ObjectName parent = getDomainRootProxy().getExt().extra().objectName();
+            final ObjectNames names = new ObjectNames(s, parent);
+               
+            child	= names.buildChildObjectName( LoggingPropertiesMgr.class );
+            mbean	= new LoggingPropertiesMgrImpl(parent);
+            registerChild( mbean, child );
+            
+            child	= names.buildChildObjectName( KitchenSink.class );
+            mbean	= new KitchenSinkImpl(parent);
+            registerChild( mbean, child );
+            
+            child	= names.buildChildObjectName( SystemStatus.class );
+            mbean	= new SystemStatusImpl(parent);
+            registerChild( mbean, child );
+                        
+            child	= names.buildChildObjectName( RealmsMgr.class );
+            mbean	= new RealmsMgrImpl(parent);
+            registerChild( mbean, child );
+            
+            child	= names.buildChildObjectName( RuntimeMgr.class );
+            mbean	= new RuntimeMgrImpl(parent);
+            registerChild( mbean, child );
+        }
+        return null;
+    }
+    
+        protected synchronized ObjectName
+    registerChild( final Object mbean, final ObjectName childObjectName )
+    {
+        try
+        {
+            final ObjectName objectName = mMBeanServer.registerMBean( mbean, childObjectName ).getObjectName();
+            return objectName;
+        }
+        catch ( Exception e )
+        {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    public synchronized void unloadAMXMBeans()
+    {
+       // final Set<ObjectName> children = MBeanTracker.getInstance();
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+

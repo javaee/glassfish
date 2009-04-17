@@ -1,0 +1,6 @@
+-exportcontents: \
+	org.glassfish.admin.amx.impl.config.*; \
+	version=${project.osgi.version}
+
+
+

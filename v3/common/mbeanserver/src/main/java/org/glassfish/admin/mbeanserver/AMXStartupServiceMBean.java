@@ -34,19 +34,14 @@ import org.jvnet.hk2.annotations.Contract;
     @see org.glassfish.admin.amx.loader.AMXStartupService
  */
 @Contract
-public interface AMXStartupServiceMBean
+public interface AMXStartupServiceMBean extends AMXLoader
 {
-    /**
-        Start AMX and return the ObjectName of DomainRoot once AMX is ready.
-     */
-    public ObjectName startAMX();
-    
-    public ObjectName getDomainRootObjectName();
+    public ObjectName getDomainRoot();
     
     public JMXServiceURL[] getJMXServiceURLs();
     
     /** ObjectName of the MBean which actually laods AMX MBeans; that MBean references this constant */
-    public static final ObjectName OBJECT_NAME = Util.newObjectName( "amx-support:name=startup" );
+    public static final ObjectName OBJECT_NAME = Util.newObjectName( LOADER_OLD_PREFIX + "startup" );
 }
 
 

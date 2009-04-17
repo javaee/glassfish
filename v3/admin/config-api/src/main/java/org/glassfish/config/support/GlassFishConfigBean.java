@@ -98,6 +98,12 @@ public final class GlassFishConfigBean extends ConfigBean {
         if (cageBuilder!=null) {
             cageBuilder.onEntered( this );
         }
+        
+        // NEW AMX, lines above left in place until previous AMX can be removed (amx-api, amx-impl modules)
+        final CageBuilder cageBuilder2 = habitat.getComponent(CageBuilder.class, "PendingConfigBeansNew");
+        if (cageBuilder2!=null) {
+            cageBuilder2.onEntered( this );
+        }
     }
     
     public String toString() {

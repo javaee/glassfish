@@ -1,0 +1,5 @@
+-exportcontents: \
+	org.glassfish.admin.amx.intf.*; \
+	version=${project.osgi.version}
+
+

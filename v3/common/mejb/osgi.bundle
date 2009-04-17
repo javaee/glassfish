@@ -1,0 +1,7 @@
+-exportcontents: \
+		org.glassfish.admin.mejb;\
+		version=${project.osgi.version}
+        
+        
+		
+
