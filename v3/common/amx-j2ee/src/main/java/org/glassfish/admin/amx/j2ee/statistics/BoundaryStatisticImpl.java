@@ -67,7 +67,7 @@ public class BoundaryStatisticImpl extends StatisticImpl
 	{
 		super( name, description, unit, startTime, lastSampleTime );
 		
-		if ( LowerBound > UpperBound )
+		if ( lower > upper )
 		{
 			throw new IllegalArgumentException();
 		}
