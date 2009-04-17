@@ -62,7 +62,7 @@ public class WebTest {
         // Access JSP
         bodyLine = getBodyLine("jsp/test.jsp");
         if (!ORIGINAL_CONTENT.equals(bodyLine)) {
-            stat.addStatus("Wrong body line: Expected: " + ORIGINAL_CONTENT
+            stat.addStatus("Wrong line: Expected: " + ORIGINAL_CONTENT
                            + ", received: " + bodyLine,
                            stat.FAIL);
             return;
@@ -81,7 +81,7 @@ public class WebTest {
          */
         bodyLine = getBodyLine("jsp/test.jsp");
         if (!ORIGINAL_CONTENT.equals(bodyLine)) {
-            stat.addStatus("Wrong body line: Expected: " + ORIGINAL_CONTENT
+            stat.addStatus("Wrong line: Expected: " + ORIGINAL_CONTENT
                            + ", received: " + bodyLine,
                            stat.FAIL);
             return;
@@ -100,7 +100,7 @@ public class WebTest {
          */
         bodyLine = getBodyLine("jsp/test.jsp");
         if (!UPDATED_CONTENT.equals(bodyLine)) {
-            stat.addStatus("Wrong body line: Expected: " + UPDATED_CONTENT
+            stat.addStatus("Wrong line: Expected: " + UPDATED_CONTENT
                            + ", received: " + bodyLine,
                            stat.FAIL);
             return;
