@@ -92,8 +92,6 @@ import org.apache.naming.NamingEntry;
 import org.apache.naming.NamingContextBindingsEnumeration;
 import org.apache.naming.NamingContextEnumeration;
 
-//import com.sun.logging.LogDomains;
-
 /**
  * Filesystem Directory Context implementation helper class.
  *
@@ -103,8 +101,8 @@ import org.apache.naming.NamingContextEnumeration;
 
 public class FileDirContext extends BaseDirContext {
 
-//    private static final Logger logger = LogDomains.getLogger(
-//            FileDirContext.class, LogDomains.WEB_LOGGER);
+    private static Logger logger = Logger.getLogger(FileDirContext.class
+            .getName());
 
     // -------------------------------------------------------------- Constants
 
@@ -1013,14 +1011,12 @@ public class FileDirContext extends BaseDirContext {
             /* Some IO error occurred such as bad file permissions,
              * lack of file descriptors.
              * Prevent a NPE with Arrays.sort(names) */
-//            logger.warning(sm.getString("fileResources.listingNull",
-//                                  file.getAbsolutePath()));
+            logger.warning(sm.getString("fileResources.listingNull",
+                                  file.getAbsolutePath()));
             return entries;
         }
 
         Arrays.sort(names);             // Sort alphabetically
-        if (names == null)
-            return entries;
         NamingEntry entry = null;
 
         for (int i = 0; i < names.length; i++) {
