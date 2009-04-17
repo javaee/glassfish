@@ -37,6 +37,7 @@ package org.glassfish.admin.amx.base;
 
 
 import javax.management.MBeanOperationInfo;
+import org.glassfish.admin.amx.annotation.ManagedAttribute;
 import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.base.Singleton;
@@ -46,14 +47,20 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 
 
 /**
+    Useful informational tools.
+    
     @since GlassFish V3
  */
 @AMXMBeanMetadata(type="tools",leaf=true, singleton=true)
 public interface Tools extends AMXProxy, Utility, Singleton
 {
     /** emit information about all MBeans */
+    @ManagedAttribute
+    public String getInfo();
+    
+    /** emit information about all MBeans of the specified type */
     @ManagedOperation(impact=MBeanOperationInfo.INFO)
-    String info();
+    String infoType(final String type);
     
     /** emit information about MBeans, loosey-goosey seach string eg type alone */
     @ManagedOperation(impact=MBeanOperationInfo.INFO)

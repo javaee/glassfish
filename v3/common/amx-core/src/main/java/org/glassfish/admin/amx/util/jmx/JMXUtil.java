@@ -1963,7 +1963,7 @@ public final class JMXUtil
         
         buf.append( idt(indent) + "Attributes" + NL );
         final MBeanAttributeInfo[] attrInfos = info.getAttributes();
-        if ( info.getOperations().length == 0 )
+        if ( attrInfos.length == 0 )
         {
             buf.append( idt(indent +2) + "<none>" );
         }
