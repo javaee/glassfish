@@ -40,7 +40,6 @@ import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.gjc.spi.ManagedConnection;
 import com.sun.gjc.spi.ManagedConnectionFactory;
 import com.sun.gjc.spi.base.ConnectionHolder;
-import com.sun.logging.LogDomains;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -64,12 +63,7 @@ public class ConnectionHolder40 extends ConnectionHolder {
     protected Properties defaultClientInfo;
     protected final static StringManager localStrings =
             StringManager.getManager(ManagedConnectionFactory.class);
-    protected final static Logger _logger;
     protected boolean jdbc30Connection;
-
-    static {
-        _logger = LogDomains.getLogger(ConnectionHolder40.class, LogDomains.RSR_LOGGER);
-    }
 
     /**
      * Connection wrapper given to application program

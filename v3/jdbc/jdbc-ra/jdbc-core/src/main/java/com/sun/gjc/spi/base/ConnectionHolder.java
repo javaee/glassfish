@@ -81,7 +81,7 @@ public abstract class ConnectionHolder implements Connection {
     protected final static Logger _logger;
 
     static {
-        _logger = LogDomains.getLogger(ConnectionHolder.class, LogDomains.RSR_LOGGER);
+        _logger = LogDomains.getLogger(ManagedConnection.class, LogDomains.RSR_LOGGER);
     }
 
     public static enum ConnectionType {

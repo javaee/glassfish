@@ -38,7 +38,6 @@ package com.sun.gjc.spi.jdbc40;
 
 import com.sun.gjc.spi.JdbcObjectsFactory;
 import com.sun.gjc.spi.base.ConnectionHolder;
-import com.sun.logging.LogDomains;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -56,12 +55,6 @@ public class Jdbc40ObjectsFactory extends JdbcObjectsFactory {
     private boolean jdbc30Connection;
     //indicates whether detection of JDBC 3.0 Datasource in JDK 1.6 is done or not
     private boolean initJDBC30Connection;
-
-    protected final static Logger _logger;
-
-    static {
-        _logger = LogDomains.getLogger(Jdbc40ObjectsFactory.class, LogDomains.RSR_LOGGER);
-    }
 
     /**
      * To get an instance of ConnectionHolder40.<br>

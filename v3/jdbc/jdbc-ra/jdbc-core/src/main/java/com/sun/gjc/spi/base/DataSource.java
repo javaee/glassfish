@@ -72,7 +72,7 @@ public abstract class DataSource implements javax.sql.DataSource, java.io.Serial
     protected final static Logger _logger;
 
     static {
-        _logger = LogDomains.getLogger(DataSource.class, LogDomains.RSR_LOGGER);
+        _logger = LogDomains.getLogger(ManagedConnectionFactory.class, LogDomains.RSR_LOGGER);
     }
 
     /**
