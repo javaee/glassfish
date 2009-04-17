@@ -96,7 +96,7 @@ this or the downstream JARs and so attempts to find things fail.
                             <index>true</index>
 -->
                             <manifest>
-                                <mainClass>org.glassfish.appclient.client.acc.ACCLauncher</mainClass>
+                                <mainClass>org.glassfish.appclient.client.AppClientFacade</mainClass>
                                 <packageName>org.glassfish.appclient.client.acc</packageName>
                                 <addClasspath>true</addClasspath>
                                 <classpathLayoutType>custom</classpathLayoutType>
