@@ -1156,6 +1156,16 @@ public class RequestFacade
         return request.getAsyncTimeout();
     }
 
+    public Iterable<Part> getParts() {
+       //Stub out implementation
+       return null;
+    }
+
+    public Part getPart(String name) {
+       //Stub out implementation
+       return null;
+    }
+
 
     public boolean login(HttpServletResponse response)
             throws IOException, ServletException {
