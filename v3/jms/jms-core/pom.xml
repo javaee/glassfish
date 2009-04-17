@@ -9,9 +9,10 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish.jms</groupId>
-    <artifactId>jms</artifactId>
+    <artifactId>jms-core</artifactId>
     <name>JMS Module</name>
     <packaging>hk2-jar</packaging>
+    <version>3.0-SNAPSHOT</version>
  <developers>
         <developer>
             <id>sats</id>
@@ -38,27 +39,28 @@
         </resources>
     </build>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.glassfish.connectors</groupId>
-            <artifactId>connectors-internal-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>		    
-        <dependency>
-            <groupId>org.glassfish.connectors</groupId>
-            <artifactId>connectors-inbound-runtime</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-	     <groupId>org.glassfish.connectors</groupId>
-	     <artifactId>connectors-runtime</artifactId>
-             <version>${project.version}</version>
-        </dependency>
-        <dependency>
- 	     <groupId>org.glassfish.admin</groupId>
-       	     <artifactId>admin-util</artifactId>
-             <version>${project.version}</version>
-        </dependency>
+  <dependencies>
+      <dependency>
+          <groupId>org.glassfish.connectors</groupId>
+          <artifactId>connectors-internal-api</artifactId>
+          <version>3.0-SNAPSHOT</version>
+      </dependency>		    
+         <dependency>
+             <groupId>org.glassfish.connectors</groupId>
+             <artifactId>connectors-inbound-runtime</artifactId>
+             <version>3.0-SNAPSHOT</version>
+         </dependency>
+         <dependency>
+	      <groupId>org.glassfish.connectors</groupId>
+	      <artifactId>connectors-runtime</artifactId>
+	      <version>3.0-SNAPSHOT</version>
+         </dependency>
+         <dependency>
+	 	<groupId>org.glassfish.admin</groupId>
+	 	<artifactId>admin-util</artifactId>
+	 	<version>3.0-SNAPSHOT</version>
+         </dependency>
+         
    </dependencies>
   
 </project>
