@@ -27,9 +27,6 @@ own identifying information: Portions Copyright [yyyy]
 
 	<!-- stage client zip and scripts -->
 
-	<copy todir="target/stage/${install.dir.name}/glassfish/lib/appclient"
-		file="target/stage/${install.dir.name}/glassfish/modules/gf-client-bundle.zip" failonerror="false" />
-       
 
 	<resolveArtifact artifactId="appclient-scripts" property="scripts.zip"/>
        
