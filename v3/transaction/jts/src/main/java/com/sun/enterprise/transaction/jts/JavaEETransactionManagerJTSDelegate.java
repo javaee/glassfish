@@ -71,8 +71,9 @@ import com.sun.enterprise.transaction.JavaEETransactionImpl;
 import com.sun.enterprise.util.i18n.StringManager;
 
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PostConstruct;
 
 /**
  ** Implementation of JavaEETransactionManagerDelegate that supports XA
@@ -84,13 +85,12 @@ import org.jvnet.hk2.annotations.Inject;
 public class JavaEETransactionManagerJTSDelegate 
             implements JavaEETransactionManagerDelegate, PostConstruct {
 
+    @Inject private Habitat habitat;
+
     // an implementation of the JavaEETransactionManager that calls
     // this object.
     // @Inject 
     private JavaEETransactionManager javaEETM;
-
-    @Inject 
-    private TransactionService txnService;
 
     // an implementation of the JTA TransactionManager provided by JTS.
     private TransactionManager tm;
@@ -444,29 +444,33 @@ public class JavaEETransactionManagerJTSDelegate
     }
 
     public void initTransactionProperties() {
-        if (txnService != null) {
-            String value = txnService.getPropertyValue("use-last-agent-optimization");
-            if (value != null && "false".equals(value)) {
-                setUseLAO(false);
-                if (_logger.isLoggable(Level.FINE))
-                    _logger.log(Level.FINE,"TM: LAO is disabled");
-            }
-    
-            value = txnService.getPropertyValue("oracle-xa-recovery-workaround");
-            if (value == null || "true".equals(value)) {
-                xaresourcewrappers.put(
-                    "oracle.jdbc.xa.client.OracleXADataSource",
-                    new OracleXAResource());
-            }
-    
-            value = txnService.getPropertyValue("sybase-xa-recovery-workaround");
-            if (value != null && "true".equals(value)) {
-                xaresourcewrappers.put(
-                    "com.sybase.jdbc2.jdbc.SybXADataSource",
-                    new SybaseXAResource());
-            }
+        if (habitat != null) {
+            TransactionService txnService = habitat.getComponent(TransactionService.class);
 
-            // XXX ??? Properties from EjbServiceGroup.initJTSProperties ??? XXX
+            if (txnService != null) {
+                String value = txnService.getPropertyValue("use-last-agent-optimization");
+                if (value != null && "false".equals(value)) {
+                    setUseLAO(false);
+                    if (_logger.isLoggable(Level.FINE))
+                        _logger.log(Level.FINE,"TM: LAO is disabled");
+                }
+        
+                value = txnService.getPropertyValue("oracle-xa-recovery-workaround");
+                if (value == null || "true".equals(value)) {
+                    xaresourcewrappers.put(
+                        "oracle.jdbc.xa.client.OracleXADataSource",
+                        new OracleXAResource());
+                }
+        
+                value = txnService.getPropertyValue("sybase-xa-recovery-workaround");
+                if (value != null && "true".equals(value)) {
+                    xaresourcewrappers.put(
+                        "com.sybase.jdbc2.jdbc.SybXADataSource",
+                        new SybaseXAResource());
+                }
+    
+                // XXX ??? Properties from EjbServiceGroup.initJTSProperties ??? XXX
+            }
         }
     }
 

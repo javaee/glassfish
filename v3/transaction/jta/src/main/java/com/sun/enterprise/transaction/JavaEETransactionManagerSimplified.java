@@ -96,8 +96,6 @@ public class JavaEETransactionManagerSimplified
 
     @Inject protected InvocationManager invMgr;
 
-    @Inject private TransactionService txnService;
-
     private JavaEETransactionManagerDelegate delegate;
 
     // Sting Manager for Localization
@@ -194,11 +192,13 @@ public class JavaEETransactionManagerSimplified
         ((BaseCache)resourceTable).init(maxEntries, loadFactor, cacheProps);
         // END IASRI 4705808 TTT001
 
-        // running on the server side XXX ??? XXX
-        if (txnService != null) {
-            transactionTimeout = Integer.parseInt(txnService.getTimeoutInSeconds());
-
-            // delegate would the rest if they support it
+        if (habitat != null) {
+            TransactionService txnService = habitat.getComponent(TransactionService.class);
+            // running on the server side ?
+            if (txnService != null) {
+                transactionTimeout = Integer.parseInt(txnService.getTimeoutInSeconds());
+                // the delegates will do the rest if they support it
+            }
         }
 
         // ENF OF BUG 4665539

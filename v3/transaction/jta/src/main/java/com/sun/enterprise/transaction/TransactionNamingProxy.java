@@ -39,6 +39,8 @@ import org.glassfish.api.naming.NamedNamingObjectProxy;
 import org.glassfish.api.naming.NamingObjectProxy;
 import org.glassfish.api.naming.NamingObjectsProvider;
 import org.glassfish.api.naming.GlassfishNamingManager;
+import org.glassfish.api.admin.ProcessEnvironment;
+import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
 import com.sun.logging.LogDomains;
 
 import org.jvnet.hk2.annotations.Inject;
@@ -68,6 +70,9 @@ public class TransactionNamingProxy
     @Inject
     private GlassfishNamingManager namingManager;
 
+    @Inject
+    private ProcessEnvironment processEnv;
+
     private static Logger logger = LogDomains.getLogger(TransactionNamingProxy.class, LogDomains.JTA_LOGGER);
 
     private static final String USER_TX = "java:comp/UserTransaction";
@@ -83,12 +88,14 @@ public class TransactionNamingProxy
             = "java:appserver/TransactionManager";
 
     public void postConstruct() {
-        try {
-           // TODO: true or false?
-           namingManager.publishObject(USER_TX_NO_JAVA_COMP, 
-                   new UserTransactionProxy(), true);
-        } catch (NamingException e) {
-           logger.warning("Can't bind \"UserTransaction\" in JNDI");
+        if( processEnv.getProcessType() == ProcessType.Server) {
+            try {
+               // TODO: true or false?
+               namingManager.publishObject(USER_TX_NO_JAVA_COMP, 
+                       new UserTransactionProxy(), true);
+            } catch (NamingException e) {
+               logger.warning("Can't bind \"UserTransaction\" in JNDI");
+            }
         }
     }
 
