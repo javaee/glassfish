@@ -1,0 +1,2 @@
+-exportcontents: com.sun.enterprise.jbi.serviceengine.component; version=${project.osgi.version}
+

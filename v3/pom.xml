@@ -154,6 +154,8 @@
 	<mq.version>4.4-005</mq.version>
 	<bean-validator.version>3.0-JBoss-4.0.0.Alpha3-b01</bean-validator.version>
 	<jersey.version>1.0.1</jersey.version>
+	<jbi.version>1.0</jbi.version>
+	<wsdl4j.version>1.6.2</wsdl4j.version>
     </properties>
 
 
@@ -199,6 +201,7 @@
                 <module>webservices</module>
                 <module>orb</module>
                 <module>appclient</module>
+                <module>jbi/serviceengine/sun-javaee-engine</module>
             </modules>
         </profile>
         <profile>
@@ -284,6 +287,7 @@
 		<module>sun-glassfish/distributions</module>
                 <module>sun-glassfish/installer</module>
                 <module>appclient</module>
+                <module>jbi/serviceengine/sun-javaee-engine</module>
             </modules>
        </profile>
 
@@ -326,6 +330,7 @@
 		<module>sun-glassfish/installer</module>
 		<module>sun-glassfish/distributions/glassfish-ri</module>
                 <module>appclient</module>
+                <module>jbi/serviceengine/sun-javaee-engine</module>
             </modules>
         </profile>
     </profiles>
@@ -788,6 +793,16 @@
                 <groupId>org.glassfish</groupId>
                 <artifactId>bean-validator</artifactId>
                 <version>3.0-JBoss-4.0.0.Alpha3-b01</version>
+          </dependency>
+          <dependency>
+                <groupId>javax.jbi</groupId>
+                <artifactId>jbi</artifactId>
+                <version>${jbi.version}</version>
+          </dependency>
+          <dependency>
+	        <groupId>wsdl4j</groupId>
+                <artifactId>wsdl4j</artifactId>
+                <version>${wsdl4j.version}</version>
           </dependency>
             
         </dependencies>
