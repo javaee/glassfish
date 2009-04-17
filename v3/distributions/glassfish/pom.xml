@@ -104,9 +104,15 @@
 	
 	<dependency>
 	    <groupId>org.glassfish.jms</groupId>
-	    <artifactId>jms</artifactId>
+	    <artifactId>jms-core</artifactId>
 	    <version>${project.version}</version>
 	</dependency>
+	<dependency>
+	    <groupId>org.glassfish.jms</groupId>
+	    <artifactId>jms-admin</artifactId>
+	    <version>${project.version}</version>
+	</dependency>
+
 	<dependency>
             <groupId>org.glassfish</groupId>
 	    <artifactId>javax.jms</artifactId>
