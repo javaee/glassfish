@@ -33,19 +33,17 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.api;
-
-import java.util.concurrent.Future;
-import java.util.List;
+package org.glassfish.api.embedded;
 
 /**
- * Some operations may be asynchronous and need to provide their results
- * as a list of future objects
+ * Port abstraction, used to bind several containers to the same port.
  *
  * @author Jerome Dochez
  */
-public interface FutureProvider<T> {
+public interface Port {
+    
+    public void bind(int portNumber);
 
-    public List<Future<T>> getFutures();
+    public void unbind();
 
 }

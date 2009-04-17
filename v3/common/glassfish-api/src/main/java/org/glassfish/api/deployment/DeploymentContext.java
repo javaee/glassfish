@@ -117,7 +117,7 @@ public interface DeploymentContext extends ApplicationContext, ExecutionContext 
      * Returns the meta data associated with a module type.
      *
      * @param metadataType type of the meta date.
-     * @return
+     * @return instance of T or null
      */
     public <T> T getModuleMetaData(Class<T> metadataType);
 
@@ -128,7 +128,7 @@ public interface DeploymentContext extends ApplicationContext, ExecutionContext 
      * mean that any modification to it will not be available at the next
      * server restart and will need to be reset.
      *
-     * @param metadataKey key of the meta date.
+     * @param metaDataKey key of the meta date.
      * @param metaData the meta data itself
      */
     public void addTransientAppMetaData(String metaDataKey, Object metaData);
@@ -136,9 +136,9 @@ public interface DeploymentContext extends ApplicationContext, ExecutionContext 
     /**
      * Returns the meta data for the given key
      *
-     * @param metadataKey key of the meta date.
+     * @param metaDataKey key of the meta date.
      * @param metadataType type of the meta date.
-     * @return
+     * @return instance of T or null
      */
     public  <T> T getTransientAppMetaData(String metaDataKey, Class<T> metadataType);
 

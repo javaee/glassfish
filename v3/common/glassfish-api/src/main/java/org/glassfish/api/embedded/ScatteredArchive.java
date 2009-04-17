@@ -33,19 +33,23 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.api;
+package org.glassfish.api.embedded;
 
-import java.util.concurrent.Future;
-import java.util.List;
+import org.glassfish.api.deployment.archive.ReadableArchive;
+
+import java.io.File;
+import java.net.URL;
+import java.util.Collection;
 
 /**
- * Some operations may be asynchronous and need to provide their results
- * as a list of future objects
+ * Abstraction for a scattered archive (parts disseminated in various directories)
  *
  * @author Jerome Dochez
  */
-public interface FutureProvider<T> {
+public abstract class ScatteredArchive implements ReadableArchive {
 
-    public List<Future<T>> getFutures();
+    public ScatteredArchive(String name, File resources, File metadata, Collection<URL> urls) {
+
+    }
 
 }

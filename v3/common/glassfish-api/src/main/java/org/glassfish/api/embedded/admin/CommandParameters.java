@@ -33,19 +33,31 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.api;
-
-import java.util.concurrent.Future;
-import java.util.List;
+package org.glassfish.api.embedded.admin;
 
 /**
- * Some operations may be asynchronous and need to provide their results
- * as a list of future objects
+ * Command Paramters, needs to be refined...
  *
  * @author Jerome Dochez
  */
-public interface FutureProvider<T> {
+public class CommandParameters {
 
-    public List<Future<T>> getFutures();
+    /**
+     * Sets the command primary (operand) parameter.
+     * @param operand the command operand
+     */
+    void setOperand(String operand) {
 
+    }
+
+    /**
+     * Sets a command option as the user would specify it using the
+     * CLI command for instance
+     *
+     * @param optionName option name (without leading -- chars)
+     * @param optionValue option value
+     */
+    void setOption(String optionName, String optionValue) {
+        
+    }
 }

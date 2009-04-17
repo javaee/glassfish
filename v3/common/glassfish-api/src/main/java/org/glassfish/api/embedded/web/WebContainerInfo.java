@@ -33,19 +33,53 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.api;
+package org.glassfish.api.embedded.web;
 
-import java.util.concurrent.Future;
-import java.util.List;
+import org.glassfish.api.embedded.EmbeddedContainerInfo;
+
+import java.net.URL;
+import java.io.File;
 
 /**
- * Some operations may be asynchronous and need to provide their results
- * as a list of future objects
+ * Configuration for the WebContainer instance
  *
  * @author Jerome Dochez
  */
-public interface FutureProvider<T> {
+public abstract class WebContainerInfo implements EmbeddedContainerInfo<EmbeddedWebContainer> {
 
-    public List<Future<T>> getFutures();
+    URL     defaultWebXml;
+    String  listenerName;
+    File    docRoot;
+    boolean listings;
+
+    public WebContainerInfo setDefaultWebXml(URL url) {
+        defaultWebXml = url;
+        return this;
+    }
+
+    public WebContainerInfo setHttpListenerName(String name) {
+        listenerName = name;
+        return this;
+    }
+
+    public WebContainerInfo setDocRootDir(File f) {
+        docRoot = f;
+        return this;
+    }
+
+    public WebContainerInfo setListings(boolean b) {
+        this.listings = b;
+        return this;        
+    }
+
+    /**
+     *
+     * @return
+     */
+    /**
+     * uncomment when this moves into web-glue.
+     * public void setConfig(HttpService config) {
+     * }
+     */
 
 }

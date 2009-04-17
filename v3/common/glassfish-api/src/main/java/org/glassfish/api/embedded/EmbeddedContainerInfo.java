@@ -33,19 +33,17 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.api;
-
-import java.util.concurrent.Future;
-import java.util.List;
+package org.glassfish.api.embedded;
 
 /**
- * Some operations may be asynchronous and need to provide their results
- * as a list of future objects
+ * Defines the configuration for an embdded interface. This is mostly a
+ * tag interface that will be implemented by the embedded container
+ * main configuration element (like http-service for web, network-listener
+ * for grizzly)
  *
  * @author Jerome Dochez
  */
-public interface FutureProvider<T> {
+public interface EmbeddedContainerInfo<T extends EmbeddedContainer> {
 
-    public List<Future<T>> getFutures();
-
+    T create(Server server);
 }

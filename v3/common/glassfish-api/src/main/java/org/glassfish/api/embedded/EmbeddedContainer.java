@@ -33,19 +33,19 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.api;
-
-import java.util.concurrent.Future;
-import java.util.List;
+package org.glassfish.api.embedded;
 
 /**
- * Some operations may be asynchronous and need to provide their results
- * as a list of future objects
+ * Embedded container definition, although most containers will be bound
+ * to a {@link Port} instance, it's not automatic, for instance JPA and
+ * other non network based containers might not.
  *
  * @author Jerome Dochez
  */
-public interface FutureProvider<T> {
+public interface EmbeddedContainer {
 
-    public List<Future<T>> getFutures();
+    public void start();
+
+    public void stop();
 
 }

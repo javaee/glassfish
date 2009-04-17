@@ -33,19 +33,18 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.api;
+package org.glassfish.api.embedded.admin;
 
-import java.util.concurrent.Future;
-import java.util.List;
+import org.glassfish.api.embedded.EmbeddedContainerInfo;
+import org.glassfish.api.embedded.Server;
 
 /**
- * Some operations may be asynchronous and need to provide their results
- * as a list of future objects
+ * So far, the admin container does not require much configuration but we
+ * could imagine that it will eventually support configuring wether or not
+ * to start the AminGUI.
  *
  * @author Jerome Dochez
  */
-public interface FutureProvider<T> {
-
-    public List<Future<T>> getFutures();
+public abstract class AdminInfo implements EmbeddedContainerInfo<EmbeddedAdminContainer> {
 
 }

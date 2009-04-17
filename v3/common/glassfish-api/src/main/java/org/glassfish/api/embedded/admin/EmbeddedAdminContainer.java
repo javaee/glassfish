@@ -33,19 +33,40 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.api;
+package org.glassfish.api.embedded.admin;
 
-import java.util.concurrent.Future;
-import java.util.List;
+import org.glassfish.api.embedded.EmbeddedContainer;
+import org.glassfish.api.embedded.Port;
+import org.glassfish.api.embedded.BindException;
+
 
 /**
- * Some operations may be asynchronous and need to provide their results
- * as a list of future objects
- *
- * @author Jerome Dochez
+ * Container for administrative tasks.
  */
-public interface FutureProvider<T> {
+public interface EmbeddedAdminContainer extends EmbeddedContainer {
 
-    public List<Future<T>> getFutures();
+    /**
+     * Executes synchronously a command
+     *
+     * @param commandName command name as typed by asadmin users
+     * @param params command parameters
+     * @return an command excecution to follow command's execution
+     */
+    public CommandExecution execute(String commandName, CommandParameters params);
 
+    /**
+     * Make the server listen to administrative requests (CLI, REST) on
+     * the passed port.
+     *
+     * @param port an initialized port
+     */
+    public void bind(Port port);
+
+    /**
+     * Makes the server bind the MBeanServer to an initialized port
+     *
+     * @param port the jmx port
+     * @throws BindException
+     */
+    public void bindJmxTo(Port port) throws BindException;
 }

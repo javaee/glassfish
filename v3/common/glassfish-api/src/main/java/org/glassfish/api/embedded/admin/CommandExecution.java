@@ -33,19 +33,18 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.api;
+package org.glassfish.api.embedded.admin;
 
-import java.util.concurrent.Future;
-import java.util.List;
+import org.glassfish.api.ActionReport;
 
 /**
- * Some operations may be asynchronous and need to provide their results
- * as a list of future objects
- *
- * @author Jerome Dochez
+ *  Instance to follow command excecution.
  */
-public interface FutureProvider<T> {
+public interface CommandExecution {
 
-    public List<Future<T>> getFutures();
+    ActionReport getActionReport();
 
+    ActionReport.ExitCode getExitCode();
+
+    String getMessage();
 }

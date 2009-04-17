@@ -33,19 +33,22 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.api;
+package org.glassfish.api.embedded;
 
-import java.util.concurrent.Future;
-import java.util.List;
+import java.io.File;
 
 /**
- * Some operations may be asynchronous and need to provide their results
- * as a list of future objects
+ * Abstraction for a virtual filesystem that be used by the server to store important files.
  *
  * @author Jerome Dochez
  */
-public interface FutureProvider<T> {
+public interface EmbeddedFileSystem {
 
-    public List<Future<T>> getFutures();
+    public EmbeddedFileSystem setAutoDelete(boolean b);
 
+    public EmbeddedFileSystem setConfigurationFile(File f);
+
+    public EmbeddedFileSystem setInstallRoot(File f);
+
+    public EmbeddedFileSystem setInstanceRoot(File f);
 }

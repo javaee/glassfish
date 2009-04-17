@@ -33,19 +33,20 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.api;
+package org.glassfish.api.embedded.grizzly;
 
-import java.util.concurrent.Future;
-import java.util.List;
+import org.glassfish.api.embedded.EmbeddedContainer;
+import org.glassfish.api.embedded.Port;
+import org.glassfish.api.container.Adapter;
 
 /**
- * Some operations may be asynchronous and need to provide their results
- * as a list of future objects
+ * Grizzly container, should probably be implemented using the GrizzlyWebServer object.
  *
  * @author Jerome Dochez
  */
-public interface FutureProvider<T> {
+public interface GrizzlyContainer extends EmbeddedContainer {
 
-    public List<Future<T>> getFutures();
+    public void bind(Port port);    
 
+    public void add(Adapter adapter);
 }

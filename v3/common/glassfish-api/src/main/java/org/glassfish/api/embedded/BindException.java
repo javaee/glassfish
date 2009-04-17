@@ -33,19 +33,14 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.api;
-
-import java.util.concurrent.Future;
-import java.util.List;
+package org.glassfish.api.embedded;
 
 /**
- * Some operations may be asynchronous and need to provide their results
- * as a list of future objects
- *
- * @author Jerome Dochez
+ * Created by IntelliJ IDEA.
+ * User: dochez
+ * Date: Apr 9, 2009
+ * Time: 10:11:10 PM
+ * To change this template use File | Settings | File Templates.
  */
-public interface FutureProvider<T> {
-
-    public List<Future<T>> getFutures();
-
+public class BindException extends Exception {
 }

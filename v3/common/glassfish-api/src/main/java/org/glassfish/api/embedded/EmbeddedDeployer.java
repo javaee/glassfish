@@ -33,19 +33,67 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.api;
+package org.glassfish.api.embedded;
 
-import java.util.concurrent.Future;
-import java.util.List;
+import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.deployment.DeployCommandParameters;
+
+import java.util.Properties;
+import java.util.Collection;
+import java.io.File;
 
 /**
- * Some operations may be asynchronous and need to provide their results
- * as a list of future objects
+ * Service to deploy applications to the embedded server.
  *
  * @author Jerome Dochez
  */
-public interface FutureProvider<T> {
+public interface EmbeddedDeployer {
 
-    public List<Future<T>> getFutures();
+    /**
+     * Returns the location of the applications directory, where deployed applications
+     * are saved.
+     *
+     * @return the deployed application directory.
+     */
+    public File getApplicationsDir();
 
+    /**
+     * Enables the auto-deployment
+     */
+    public void enableAutoDeploy();
+
+    /**
+     * Disables the auto-deployment
+     */
+    public void disableAutoDeploy();
+
+    /**
+     * Deploys a file or directory to the servers passing the deployment command parameters
+     *
+     * @param archive archive or directory of the application
+     * @param params deployment command parameters
+     * @return the deployed application name
+     */
+    public String deploy(File archive, DeployCommandParameters params);
+
+    /**
+     * Deploys an archive abstraction to the servers passing the deployment command parameters
+     *
+     * @param archive archive or directory of the application
+     * @param params deployment command parameters
+     * @return the deployed application name
+     */
+    public void deploy(ReadableArchive archive, DeployCommandParameters params);
+
+    /**
+     * Undeploys a previously deployed application
+     *
+     * @param name name returned by {@link EmbeddedDeployer#deploy(File, org.glassfish.api.deployment.DeployCommandParameters}
+     */
+    public void undeploy(String name);
+
+    /**
+     * Undeploys all deployed applications.
+     */
+    public void undeployAll();   
 }

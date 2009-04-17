@@ -33,19 +33,22 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.api;
+package org.glassfish.api.embedded.grizzly;
 
-import java.util.concurrent.Future;
-import java.util.List;
+import org.glassfish.api.embedded.EmbeddedContainerInfo;
+
+import java.util.Properties;
 
 /**
- * Some operations may be asynchronous and need to provide their results
- * as a list of future objects
- *
- * @author Jerome Dochez
+ * 
  */
-public interface FutureProvider<T> {
+public abstract class GrizzlyInfo implements EmbeddedContainerInfo<GrizzlyContainer> {
 
-    public List<Future<T>> getFutures();
+    Properties props = new Properties();
+
+    public void setProperty(String key, String value) {
+        props.setProperty(key, value);
+    }
+    
 
 }
