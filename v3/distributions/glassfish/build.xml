@@ -48,12 +48,6 @@
 
     <resolveArtifact todir="target/fragments" groupID="org.glassfish" artifactID="mq-distribution" type="zip" />
 
-    <!-- temporary workaround for MS1 integration - appclient 
-    bundle needs another layer of distribution-fragment packaging -->
-
-    <copy todir="target/stage/glassfish/lib/appclient"
-	    file="target/stage/glassfish/modules/gf-client-bundle.zip" />
-
 
 	<delete dir="target/stage/glassfish/modules" includes="*.zip" />
 	<delete dir="target/stage/glassfish/modules" includes="*.pom" />
