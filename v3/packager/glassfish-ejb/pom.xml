@@ -80,7 +80,11 @@
             <artifactId>ejb-container</artifactId>
             <version>${project.version}</version>
         </dependency>
-	
+        <dependency>
+            <groupId>org.glassfish.security</groupId>
+            <artifactId>ejb.security</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
 
     	<!-- now, listing package dependencies so that their content
