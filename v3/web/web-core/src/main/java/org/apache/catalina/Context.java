@@ -1008,19 +1008,20 @@ public interface Context extends Container {
 
 
     /**
-     * Return <code>true</code> if the specified security role is defined
-     * for this application; otherwise return <code>false</code>.
+     * Checks if the given security role is defined for this application.
      *
-     * @param role Security role to verify
+     * @param role Security role to check for
+     *
+     * @return true if the specified security role is defined
+     * for this application, false otherwise
      */
-    boolean findSecurityRole(String role);
+    boolean hasSecurityRole(String role);
 
 
     /**
-     * Return the security roles defined for this application.  If none
-     * have been defined, a zero-length array is returned.
+     * Clears the security roles defined for this application.
      */
-    String[] findSecurityRoles();
+    void clearSecurityRoles();
 
 
     /**
@@ -1252,14 +1253,6 @@ public interface Context extends Container {
      * @param role Security role (as used in the application) to remove
      */
     void removeRoleMapping(String role);
-
-
-    /**
-     * Remove any security role with the specified name.
-     *
-     * @param role Security role to remove
-     */
-    void removeSecurityRole(String role);
 
 
     /**

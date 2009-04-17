@@ -441,9 +441,10 @@ public class StandardContext
     private Map<String, String> roleMappings = new HashMap<String, String>();
 
     /**
-     * The security roles for this application, keyed by role name.
+     * The security roles for this application
      */
-    private String securityRoles[] = new String[0];
+    private List<String> securityRoles = Collections.synchronizedList(
+        new ArrayList<String>());
 
     /**
      * The servlet mappings for this web application, keyed by
@@ -3032,15 +3033,7 @@ public class StandardContext
      * @param role New security role
      */
     public void addSecurityRole(String role) {
-
-        synchronized (securityRoles) {
-            String results[] =new String[securityRoles.length + 1];
-            for (int i = 0; i < securityRoles.length; i++)
-                results[i] = securityRoles[i];
-            results[securityRoles.length] = role;
-            securityRoles = results;
-        }
-
+        securityRoles.add(role);
         if (notifyContainerListeners) {
             fireContainerEvent("addSecurityRole", role);
         }
@@ -4017,33 +4010,23 @@ public class StandardContext
 
 
     /**
-     * Return <code>true</code> if the specified security role is defined
-     * for this application; otherwise return <code>false</code>.
+     * Checks if the given security role is defined for this application.
      *
-     * @param role Security role to verify
+     * @param role Security role to check for
+     *
+     * @return true if the specified security role is defined
+     * for this application, false otherwise
      */
-    public boolean findSecurityRole(String role) {
-
-        synchronized (securityRoles) {
-            for(String securityRole : securityRoles) {
-                if(role.equals(securityRole)) {
-                    return (true);
-                }
-            }
-        }
-        return (false);
-
+    public boolean hasSecurityRole(String role) {
+        return securityRoles.contains(role);
     }
 
 
     /**
-     * Return the security roles defined for this application.  If none
-     * have been defined, a zero-length array is returned.
+     * Clears the security roles defined for this application.
      */
-    public String[] findSecurityRoles() {
-
-        return (securityRoles);
-
+    public void clearSecurityRoles() {
+        securityRoles.clear();
     }
 
 
@@ -4724,44 +4707,6 @@ public class StandardContext
 
         if (notifyContainerListeners) {
             fireContainerEvent("removeRoleMapping", role);
-        }
-    }
-
-
-    /**
-     * Remove any security role with the specified name.
-     *
-     * @param role Security role to remove
-     */
-    public void removeSecurityRole(String role) {
-
-        synchronized (securityRoles) {
-
-            // Make sure this security role is currently present
-            int n = -1;
-            for (int i = 0; i < securityRoles.length; i++) {
-                if (role.equals(securityRoles[i])) {
-                    n = i;
-                    break;
-                }
-            }
-            if (n < 0)
-                return;
-
-            // Remove the specified security role
-            int j = 0;
-            String results[] = new String[securityRoles.length - 1];
-            for (int i = 0; i < securityRoles.length; i++) {
-                if (i != n)
-                    results[j++] = securityRoles[i];
-            }
-            securityRoles = results;
-
-        }
-
-        // Inform interested listeners
-        if (notifyContainerListeners) {
-            fireContainerEvent("removeSecurityRole", role);
         }
     }
 

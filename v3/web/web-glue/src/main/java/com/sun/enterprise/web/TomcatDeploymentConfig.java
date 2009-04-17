@@ -645,7 +645,7 @@ public class TomcatDeploymentConfig {
             String roles[] = constraints[i].findAuthRoles();
             for (int j = 0; j < roles.length; j++) {
                 if (!"*".equals(roles[j]) &&
-                    !webModule.findSecurityRole(roles[j])) {
+                    !webModule.hasSecurityRole(roles[j])) {
                     logger.log(Level.WARNING,
                         "tomcatDeploymentConfig.role.auth", roles[j]);
                     webModule.addSecurityRole(roles[j]);
@@ -658,7 +658,7 @@ public class TomcatDeploymentConfig {
         for (int i = 0; i < wrappers.length; i++) {
             Wrapper wrapper = (Wrapper) wrappers[i];
             String runAs = wrapper.getRunAs();
-            if ((runAs != null) && !webModule.findSecurityRole(runAs)) {
+            if ((runAs != null) && !webModule.hasSecurityRole(runAs)) {
                 logger.log(Level.WARNING,
                     "tomcatDeploymentConfig.role.runas", runAs);
                 webModule.addSecurityRole(runAs);
@@ -666,7 +666,7 @@ public class TomcatDeploymentConfig {
             String names[] = wrapper.findSecurityReferences();
             for (int j = 0; j < names.length; j++) {
                 String link = wrapper.findSecurityReference(names[j]);
-                if ((link != null) && !webModule.findSecurityRole(link)) {
+                if ((link != null) && !webModule.hasSecurityRole(link)) {
                     logger.log(Level.WARNING,
                         "tomcatDeploymentConfig.role.link", link);
                     webModule.addSecurityRole(link);
