@@ -13,6 +13,7 @@ public class WebTest {
     private static final String TEST_NAME
         = "scriptlet-syntax-error-correct-error-message";
     private static final String EXPECTED = "[javac] 3 errors";
+    private static final String EXPECTEDjdk6 = "PWC6033: Error in Javac compilation for JSP";
 
     private String host;
     private String port;
@@ -58,7 +59,8 @@ public class WebTest {
         boolean found = false;
         String line = null;
         while ((line = bis.readLine()) != null) {
-            if (line.endsWith(EXPECTED)) {
+            if (line.endsWith(EXPECTED) ||
+                line.endsWith(EXPECTEDjdk6)) {
                 found = true;
                 break;
             }
