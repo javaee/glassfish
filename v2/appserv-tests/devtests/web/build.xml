@@ -46,9 +46,7 @@
         <ant dir="jspAttributeNameWithColonOrDot" target="all"/>
         <ant dir="jspcConfigure" target="all"/>
         <ant dir="jspScriptletDeclNestedInCustomAction" target="all"/>
-        <!-- XXX temporary commented out due to issue 7389
         <ant dir="jspScriptletSyntaxErrorCorrectErrorMessage" target="all"/>
-        -->
         <ant dir="jspCustomTagAttributeOfArrayType" target="all"/>
         <ant dir="jspCustomTaglibJarInsideEar" target="all"/>
         <ant dir="jspCommentedOutPageDirective" target="all"/>
