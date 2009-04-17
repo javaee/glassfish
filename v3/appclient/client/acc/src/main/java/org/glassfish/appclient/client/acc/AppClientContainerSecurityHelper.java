@@ -93,8 +93,6 @@ public class AppClientContainerSecurityHelper {
         this.classLoader = (classLoader == null) ? Thread.currentThread().getContextClassLoader() : classLoader;
         iiopProperties = prepareIIOP(targetServers);
 
-        setClientCredentials(clientCredential);
-
         CallbackHandler callbackHandler = 
                 initSecurity(callerSuppliedCallbackHandler, acDesc);
 
@@ -332,13 +330,6 @@ public class AppClientContainerSecurityHelper {
             }
         }
         return false;
-    }
-
-    private void setClientCredentials(final ClientCredential clientCredential) {
-
-        /// XXX From original v2 code - what to do about realm?
-        //UsernamePasswordStore.set(clientCredential.getUserName(), clientCredential.getPassword());
-        SomeSecurityThing.setCredential(clientCredential);
     }
 
     /**
