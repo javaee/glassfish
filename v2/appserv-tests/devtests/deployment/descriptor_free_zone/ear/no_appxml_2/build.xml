@@ -65,7 +65,7 @@
     </target>
 
     <target name="redeploy.asadmin" depends="prepare">
-        <antcall target="common.deploy.asadmin">
+        <antcall target="common.redeploy.asadmin">
             <param name="arg.list" value="--retrieve . ${portable.ear}"/>
             <param name="testName" value="${testName}"/>
         </antcall>
