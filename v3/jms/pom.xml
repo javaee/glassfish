@@ -11,8 +11,7 @@
     <groupId>org.glassfish.jms</groupId>
     <artifactId>jms</artifactId>
     <name>JMS Module</name>
-    <packaging>pom</packaging>
-    <version>3.0-SNAPSHOT</version>
+    <packaging>hk2-jar</packaging>
  <developers>
         <developer>
             <id>sats</id>
@@ -39,28 +38,27 @@
         </resources>
     </build>
 
-  <dependencies>
-      <dependency>
-          <groupId>org.glassfish.connectors</groupId>
-          <artifactId>connectors-internal-api</artifactId>
-          <version>3.0-SNAPSHOT</version>
-      </dependency>		    
-         <dependency>
-             <groupId>org.glassfish.connectors</groupId>
-             <artifactId>connectors-inbound-runtime</artifactId>
-             <version>3.0-SNAPSHOT</version>
-         </dependency>
-         <dependency>
-	      <groupId>org.glassfish.connectors</groupId>
-	      <artifactId>connectors-runtime</artifactId>
-	      <version>3.0-SNAPSHOT</version>
-         </dependency>
-         <dependency>
-	 	<groupId>org.glassfish.admin</groupId>
-	 	<artifactId>admin-util</artifactId>
-	 	<version>3.0-SNAPSHOT</version>
-         </dependency>
-         
+    <dependencies>
+        <dependency>
+            <groupId>org.glassfish.connectors</groupId>
+            <artifactId>connectors-internal-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>		    
+        <dependency>
+            <groupId>org.glassfish.connectors</groupId>
+            <artifactId>connectors-inbound-runtime</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+	     <groupId>org.glassfish.connectors</groupId>
+	     <artifactId>connectors-runtime</artifactId>
+             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+ 	     <groupId>org.glassfish.admin</groupId>
+       	     <artifactId>admin-util</artifactId>
+             <version>${project.version}</version>
+        </dependency>
    </dependencies>
   
 </project>
