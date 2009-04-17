@@ -45,7 +45,6 @@ import org.glassfish.api.admin.AdminCommandContext;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.config.serverbeans.ConnectorResource;
 import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
-import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
