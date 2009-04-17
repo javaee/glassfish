@@ -65,6 +65,17 @@ public class ToolsImpl extends AMXImplBase // implements Tools
     static private final String WILD_SUFFIX = ",*";
     static private final String WILD_ALL = "*";
     
+    public String getInfo()
+    {
+        return info( "*" );
+    }
+    
+    
+    public String infoType( final String type)
+    {
+        return info( "*:type=" + type + WILD_SUFFIX );
+    }
+    
     public String info(final String searchStringIn) {
         final String domain = getObjectName().getDomain();
         final MBeanServer server = getMBeanServer();

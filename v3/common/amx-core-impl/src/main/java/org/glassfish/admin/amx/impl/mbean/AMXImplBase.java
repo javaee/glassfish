@@ -1068,6 +1068,7 @@ protected static void cdebug( final String s ) { System.out.println(s); }
 		Object	result	= null;
 		boolean	unimplemented	= false;
         final int numArgs = args != null ? args.length : 0;
+        //cdebug("invoke: " + operationName + ", num args = " + numArgs );
 		
 		try
 		{
@@ -1089,6 +1090,7 @@ protected static void cdebug( final String s ) { System.out.println(s); }
 		}
 		catch( Exception e )
 		{
+            //e.printStackTrace();
 		    debug( ExceptionUtil.toString( e ) );
 			handleInvokeThrowable( e );
 		}
