@@ -59,11 +59,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.logging.*;
 
 import java.security.Principal;
@@ -267,12 +263,12 @@ public class JAASMemoryLoginModule extends MemoryRealm implements LoginModule, R
      * @param request Request we are processing
      * @param context Context the Request is mapped to
      */
-    public SecurityConstraint [] findSecurityConstraints(HttpRequest request,
-                                                     Context context) {
+    public SecurityConstraint [] findSecurityConstraints(
+            HttpRequest request, Context context) {
+
         ArrayList results = null;
         // Are there any defined security constraints?
-        SecurityConstraint constraints[] = context.findConstraints();
-        if ((constraints == null) || (constraints.length == 0)) {
+        if (!context.hasConstraints()) {
             if (debug)
                 log("  No applicable constraints defined");
             return (null);
@@ -286,43 +282,55 @@ public class JAASMemoryLoginModule extends MemoryRealm implements LoginModule, R
             uri = uri.substring(contextPath.length());
         uri = RequestUtil.URLDecode(uri); // Before checking constraints
         String method = hreq.getMethod();
-        for (int i = 0; i < constraints.length; i++) {
-            /* SJSWS 6324431
-            if (debug)
-                log("  Checking constraint '" + constraints[i] +
-                    "' against " + method + " " + uri + " --> " +
-                    constraints[i].included(uri, method));
-            */
-            // START SJSWS 6324431
-            boolean caseSensitiveMapping = 
-                ((StandardContext)context).isCaseSensitiveMapping();
-            if (debug)
-                log("  Checking constraint '" + constraints[i] +
-                    "' against " + method + " " + uri + " --> " +
-                    constraints[i].included(uri, method, 
+        List<SecurityConstraint> constraints = context.getConstraints();
+        synchronized(constraints) {
+            Iterator<SecurityConstraint> i = constraints.iterator(); 
+            while (i.hasNext()) {
+                SecurityConstraint constraint = i.next();
+                /* SJSWS 6324431
+                if (debug)
+                    log("  Checking constraint '" + constraints[i] +
+                        "' against " + method + " " + uri + " --> " +
+                        constraints[i].included(uri, method));
+                */
+                // START SJSWS 6324431
+                boolean caseSensitiveMapping = 
+                    ((StandardContext)context).isCaseSensitiveMapping();
+                if (debug) {
+                    log("  Checking constraint '" + constraint +
+                        "' against " + method + " " + uri + " --> " +
+                        constraint.included(uri, method, 
                                             caseSensitiveMapping));
-            // END SJSWS 6324431
-            /* SJSWS 6324431
-            if (constraints[i].included(uri, method)) {
-            */
-            // START SJSWS 6324431
-            if (constraints[i].included(uri, method, 
-                                        caseSensitiveMapping)) {
-            // END SJSWS 6324431
-                if(results == null) {
-                    results = new ArrayList();
                 }
-                results.add(constraints[i]);
+
+                // END SJSWS 6324431
+                /* SJSWS 6324431
+                if (constraints[i].included(uri, method)) {
+                */
+                // START SJSWS 6324431
+                if (constraint.included(uri, method, 
+                                        caseSensitiveMapping)) {
+                // END SJSWS 6324431
+                    if(results == null) {
+                        results = new ArrayList();
+                    }
+                    results.add(constraint);
+                }
             }
         }
 
         // No applicable security constraint was found
-        if (debug)
+        if (debug) {
             log("  No applicable constraint located");
-        if(results == null)
+        }
+
+        if(results == null) {
             return null;
+        }
+
         SecurityConstraint [] array = new SecurityConstraint[results.size()];
         System.arraycopy(results.toArray(), 0, array, 0, array.length);
+
         return array;
     }
     

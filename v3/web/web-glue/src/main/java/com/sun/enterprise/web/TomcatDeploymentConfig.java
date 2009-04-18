@@ -36,8 +36,7 @@
 
 package com.sun.enterprise.web;
 
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.SessionCookieConfig;
@@ -639,16 +638,20 @@ public class TomcatDeploymentConfig {
         }
 
         // Check role names used in <security-constraint> elements
-        org.apache.catalina.deploy.SecurityConstraint 
-                            constraints[] = webModule.findConstraints();
-        for (int i = 0; i < constraints.length; i++) {
-            String roles[] = constraints[i].findAuthRoles();
-            for (int j = 0; j < roles.length; j++) {
-                if (!"*".equals(roles[j]) &&
-                    !webModule.hasSecurityRole(roles[j])) {
-                    logger.log(Level.WARNING,
-                        "tomcatDeploymentConfig.role.auth", roles[j]);
-                    webModule.addSecurityRole(roles[j]);
+        List<org.apache.catalina.deploy.SecurityConstraint> constraints =
+            webModule.getConstraints();
+        synchronized(constraints) {
+            Iterator<org.apache.catalina.deploy.SecurityConstraint> i =
+                constraints.iterator(); 
+            while (i.hasNext()) {
+                String[] roles = i.next().findAuthRoles();
+                for (int j = 0; j < roles.length; j++) {
+                    if (!"*".equals(roles[j]) &&
+                            !webModule.hasSecurityRole(roles[j])) {
+                        logger.log(Level.WARNING,
+                            "tomcatDeploymentConfig.role.auth", roles[j]);
+                        webModule.addSecurityRole(roles[j]);
+                    }
                 }
             }
         }

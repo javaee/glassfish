@@ -64,10 +64,8 @@ public class CatalinaListener  implements ContainerListener{
             if ( container instanceof Context) {
                 context = (Context)container;
                 
-                if ( context != null 
-                        && context.findConstraints().length == 0 
-                        && context.findFilterDefs().length == 0 ){
-                                
+                if (context != null && !context.hasConstraints() &&
+                        context.findFilterDefs().length == 0 ){        
                     contextPath = context.getPath();
                     host = (Host)context.getParent();
                     int[] ports = host.getPorts();

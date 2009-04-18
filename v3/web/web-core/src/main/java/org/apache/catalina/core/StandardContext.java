@@ -228,7 +228,8 @@ public class StandardContext
     /**
      * The security constraints for this web application.
      */
-    private SecurityConstraint constraints[] = new SecurityConstraint[0];
+    private List<SecurityConstraint> constraints =
+        Collections.synchronizedList(new ArrayList<SecurityConstraint>());
 
     /**
      * The ServletContext implementation associated with this Context.
@@ -2299,17 +2300,8 @@ public class StandardContext
         }
 
         // Add this constraint to the set for our web application
-        synchronized (constraints) {
-            SecurityConstraint results[] =
-                new SecurityConstraint[constraints.length + 1];
-            for (int i = 0; i < constraints.length; i++)
-                results[i] = constraints[i];
-            results[constraints.length] = constraint;
-            constraints = results;
-        }
-
+        constraints.add(constraint);
     }
-
 
 
     /**
@@ -3586,13 +3578,27 @@ public class StandardContext
 
 
     /**
-     * Return the security constraints for this web application.
-     * If there are none, a zero-length array is returned.
+     * Gets the security constraints defined for this web application.
      */
-    public SecurityConstraint[] findConstraints() {
+    public List<SecurityConstraint> getConstraints() {
+        return constraints;
+    }
 
-        return (constraints);
 
+    /**
+     * Checks whether this web application has any security constraints
+     * defined.
+     */
+    public boolean hasConstraints() {
+        return !constraints.isEmpty();
+    }
+
+
+    /**
+     * Clears any security constraints defined for this web application.
+     */
+    public void clearConstraints() {
+        constraints.clear();
     }
 
 
@@ -4350,45 +4356,6 @@ public class StandardContext
                 (sm.getString("standardContext.notWrapper"));
 
         super.removeChild(child);
-    }
-
-
-    /**
-     * Remove the specified security constraint from this web application.
-     *
-     * @param constraint Constraint to be removed
-     */
-    public void removeConstraint(SecurityConstraint constraint) {
-
-        synchronized (constraints) {
-
-            // Make sure this constraint is currently present
-            int n = -1;
-            for (int i = 0; i < constraints.length; i++) {
-                if (constraints[i].equals(constraint)) {
-                    n = i;
-                    break;
-                }
-            }
-            if (n < 0)
-                return;
-
-            // Remove the specified constraint
-            int j = 0;
-            SecurityConstraint results[] =
-                new SecurityConstraint[constraints.length - 1];
-            for (int i = 0; i < constraints.length; i++) {
-                if (i != n)
-                    results[j++] = constraints[i];
-            }
-            constraints = results;
-
-        }
-
-        // Inform interested listeners
-        if (notifyContainerListeners) {
-            fireContainerEvent("removeConstraint", constraint);
-        }
     }
 
 

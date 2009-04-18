@@ -54,14 +54,9 @@
 
 package org.apache.catalina.startup;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
-import java.util.Properties;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.*;
 
 import javax.servlet.ServletContext;
@@ -526,10 +521,9 @@ public class ContextConfig
         // If a realm is available set its name in the Realm(Adapter)
         rlm.setRealmName(loginConfig.getRealmName(),
                          loginConfig.getAuthMethod());
-
-        SecurityConstraint constraints[] = context.findConstraints();
-        if ((constraints == null) || (constraints.length == 0))
+        if (!context.hasConstraints()) {
             return;
+        }
         // END IASRI 4856062
 
         /*
@@ -1157,10 +1151,7 @@ public class ContextConfig
         }
 */
         // Removing security constraints
-        SecurityConstraint[] securityConstraints = context.findConstraints();
-        for (i = 0; i < securityConstraints.length; i++) {
-            context.removeConstraint(securityConstraints[i]);
-        }
+        context.clearConstraints();
 
         // Removing Ejbs
         /*
@@ -1290,16 +1281,17 @@ public class ContextConfig
     protected void validateSecurityRoles() {
 
         // Check role names used in <security-constraint> elements
-        SecurityConstraint constraints[] = context.findConstraints();
-        for (int i = 0; i < constraints.length; i++) {
-            String roles[] = constraints[i].findAuthRoles();
-            for (int j = 0; j < roles.length; j++) {
-                if (!"*".equals(roles[j]) &&
-                    !context.hasSecurityRole(roles[j])) {
-                    log.info ( sm.getString ("contextConfig.role.auth", 
-                                             roles[j],
-                                             context.getName()) );
-                    context.addSecurityRole(roles[j]);
+        List<SecurityConstraint> constraints = context.getConstraints();
+        synchronized(constraints) {
+            Iterator<SecurityConstraint> i = constraints.iterator(); 
+            while (i.hasNext()) {
+                for (String role : i.next().findAuthRoles()) {
+                    if (!"*".equals(role) &&
+                            !context.hasSecurityRole(role)) {
+                        log.info(sm.getString("contextConfig.role.auth", 
+                                              role, context.getName()));
+                        context.addSecurityRole(role);
+                    }
                 }
             }
         }

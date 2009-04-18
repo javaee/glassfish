@@ -54,23 +54,10 @@
 
 package org.apache.catalina;
 
-import java.util.Map;
+import java.util.*;
 import javax.servlet.*;
-
 import com.sun.grizzly.util.http.mapper.Mapper;
-
-import org.apache.catalina.deploy.ApplicationParameter;
-import org.apache.catalina.deploy.ContextEjb;
-import org.apache.catalina.deploy.ContextEnvironment;
-import org.apache.catalina.deploy.ContextLocalEjb;
-import org.apache.catalina.deploy.ContextResource;
-import org.apache.catalina.deploy.ContextResourceLink;
-import org.apache.catalina.deploy.ErrorPage;
-import org.apache.catalina.deploy.FilterDef;
-import org.apache.catalina.deploy.FilterMap;
-import org.apache.catalina.deploy.LoginConfig;
-import org.apache.catalina.deploy.NamingResources;
-import org.apache.catalina.deploy.SecurityConstraint;
+import org.apache.catalina.deploy.*;
 import org.apache.catalina.util.CharsetMapper;
 
 
@@ -795,10 +782,22 @@ public interface Context extends Container {
 
 
     /**
-     * Return the set of security constraints for this web application.
-     * If there are none, a zero-length array is returned.
+     * Gets the security constraints defined for this web application.
      */
-    SecurityConstraint[] findConstraints();
+    List<SecurityConstraint> getConstraints();
+
+
+    /**
+     * Checks whether this web application has any security constraints
+     * defined.
+     */
+    public boolean hasConstraints();
+
+
+    /**
+     * Clears any security constraints defined for this web application.
+     */
+    void clearConstraints();
 
 
     /**
@@ -1136,14 +1135,6 @@ public interface Context extends Container {
      * @param name Name of the application parameter to remove
      */
     void removeApplicationParameter(String name);
-
-
-    /**
-     * Remove the specified security constraint from this web application.
-     *
-     * @param constraint Constraint to be removed
-     */
-    void removeConstraint(SecurityConstraint constraint);
 
 
     /**
