@@ -156,6 +156,7 @@
 	<jersey.version>1.0.1</jersey.version>
 	<jbi.version>1.0</jbi.version>
 	<wsdl4j.version>1.6.2</wsdl4j.version>
+	<gfprobe-provider-client.version>3.0.0-b001</gfprobe-provider-client.version>
     </properties>
 
 
@@ -803,6 +804,11 @@
 	        <groupId>wsdl4j</groupId>
                 <artifactId>wsdl4j</artifactId>
                 <version>${wsdl4j.version}</version>
+          </dependency>
+          <dependency>
+	        <groupId>org.glassfish.provider</groupId>
+                <artifactId>gfprobe-provider-client</artifactId>
+                <version>${gfprobe-provider-client.version}</version>
           </dependency>
             
         </dependencies>

@@ -58,11 +58,11 @@ public class ConnectionPoolProbeProviderUtil {
     private ProbeProviderFactory probeProviderFactory;
 
     private JdbcConnPoolProbeProvider jdbcConnPoolProvider = null;
-    private static final JdbcConnPoolProbeProvider NO_OP_JDBC_CONN_POOL_PROBE_PROVIDER =
-        (JdbcConnPoolProbeProvider) Proxy.newProxyInstance(
-            JdbcConnPoolProbeProvider.class.getClassLoader(),
-            new Class[] { JdbcConnPoolProbeProvider.class },
-            new NoopInvocationHandler());    
+    //private static final JdbcConnPoolProbeProvider NO_OP_JDBC_CONN_POOL_PROBE_PROVIDER =
+    //    (JdbcConnPoolProbeProvider) Proxy.newProxyInstance(
+    //        JdbcConnPoolProbeProvider.class.getClassLoader(),
+    //        new Class[] { JdbcConnPoolProbeProvider.class },
+    //        new NoopInvocationHandler());    
     private Logger _logger = LogDomains.getLogger(ConnectionPoolProbeProviderUtil.class, LogDomains.RSR_LOGGER);
     
     /**
@@ -75,8 +75,9 @@ public class ConnectionPoolProbeProviderUtil {
      */   
     public void createProbeProviders() {
         try {
-            jdbcConnPoolProvider = probeProviderFactory.getProbeProvider(
-                "jdbc-connection-pool", "jdbc-connection-pool", null, JdbcConnPoolProbeProvider.class);
+            //jdbcConnPoolProvider = probeProviderFactory.getProbeProvider(
+                //"jdbc-connection-pool", "jdbc-connection-pool", null, JdbcConnPoolProbeProvider.class);
+            jdbcConnPoolProvider = new JdbcConnPoolProbeProvider();
             if (jdbcConnPoolProvider == null) {
                 // Should never happen
                 _logger.log(Level.WARNING,
@@ -92,7 +93,7 @@ public class ConnectionPoolProbeProviderUtil {
                         e);
         }
         if (jdbcConnPoolProvider == null) {
-            jdbcConnPoolProvider = NO_OP_JDBC_CONN_POOL_PROBE_PROVIDER;
+            //jdbcConnPoolProvider = NO_OP_JDBC_CONN_POOL_PROBE_PROVIDER;
         }
     }
 
@@ -108,11 +109,11 @@ public class ConnectionPoolProbeProviderUtil {
      * Probe provider that implements each probe provider method as a 
      * no-op.
      */
-    public static class NoopInvocationHandler implements InvocationHandler {
+    /*public static class NoopInvocationHandler implements InvocationHandler {
 
         public Object invoke(Object proxy, Method method, Object[] args) {
             // Deliberate no-op
             return null;
         }
-    }    
+    } */   
 }

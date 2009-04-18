@@ -163,6 +163,10 @@
             <artifactId>deployment-autodeploy</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.provider</groupId>
+            <artifactId>gfprobe-provider-client</artifactId>
+        </dependency>
    </dependencies>
 </project>
 

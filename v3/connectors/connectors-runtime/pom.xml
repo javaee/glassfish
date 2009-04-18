@@ -34,6 +34,19 @@
                 <directory>src/main/resources</directory>
             </resource>
         </resources>
+        <plugins>
+            <plugin>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
+                <configuration>
+                    <archive>
+		        <manifestEntries>
+			    <probe-provider-class-names>com.sun.enterprise.resource.pool.monitor.JdbcConnPoolProbeProvider</probe-provider-class-names>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
     <dependencies>
 
@@ -141,6 +154,12 @@
             <groupId>org.glassfish.ejb</groupId>
             <artifactId>ejb-internal-api</artifactId>
             <version>${project.parent.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.provider</groupId>
+            <artifactId>gfprobe-provider-client</artifactId>
+            <version>${gfprobe-provider-client.version}</version>
         </dependency>
 
     </dependencies>

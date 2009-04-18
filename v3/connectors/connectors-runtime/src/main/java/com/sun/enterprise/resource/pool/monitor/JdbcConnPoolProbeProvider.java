@@ -36,6 +36,8 @@
 package com.sun.enterprise.resource.pool.monitor;
 
 import org.glassfish.flashlight.provider.annotations.ProbeParam;
+import org.glassfish.probe.provider.annotations.Probe;
+import org.glassfish.probe.provider.annotations.ProbeProvider;
 
 /**
  * Probe provider interface for JDBC connection pool related events to provide 
@@ -43,7 +45,8 @@ import org.glassfish.flashlight.provider.annotations.ProbeParam;
  * 
  * @author shalini
  */
-public interface JdbcConnPoolProbeProvider {
+@ProbeProvider(providerName="jdbc-connection-pool", moduleName="jdbc-connection-pool")
+public class JdbcConnPoolProbeProvider {
 
     /**
      * Emits probe event/notification that the given jdbc connection pool 
@@ -52,9 +55,10 @@ public interface JdbcConnPoolProbeProvider {
      * @param poolName for which connection validation has failed
      * @param increment number of times the validation failed
      */
+    @Probe(name="connectionvalidationFailedEvent")
     public void connectionValidationFailedEvent(
             @ProbeParam("poolName") String poolName, 
-            @ProbeParam("increment") int increment);
+            @ProbeParam("increment") int increment){ }
 
     /**
      * Emits probe event/notification that a jdbc connection pool with the given
@@ -62,7 +66,8 @@ public interface JdbcConnPoolProbeProvider {
      * 
      * @param poolName that has got a connection timed-out event
      */
-    public void connectionTimedOutEvent(@ProbeParam("poolName") String poolName);
+    @Probe(name="connectionTimedOutEvent")
+    public void connectionTimedOutEvent(@ProbeParam("poolName") String poolName) { }
     
     /**
      * Emits probe event/notification that the pool with the given name 
@@ -70,7 +75,8 @@ public interface JdbcConnPoolProbeProvider {
      * 
      * @param poolName
      */
-    public void potentialConnLeakEvent(@ProbeParam("poolName") String poolName);
+    @Probe(name="potentialConnLeakEvent")
+    public void potentialConnLeakEvent(@ProbeParam("poolName") String poolName) { }
     
     /**
      * Emits probe event/notification that the given jdbc connection pool 
@@ -79,9 +85,10 @@ public interface JdbcConnPoolProbeProvider {
      * @param poolName for which decrement numConnFree is got
      * @param steadyPoolSize 
      */
+    @Probe(name="decrementFreeConnectionsSizeEvent")
     public void decrementFreeConnectionsSizeEvent(
             @ProbeParam("poolName") String poolName, 
-            @ProbeParam("steadyPoolSize") int steadyPoolSize);
+            @ProbeParam("steadyPoolSize") int steadyPoolSize) { }
 
     /**
      * Emits probe event/notification that the given jdbc connection pool 
@@ -91,10 +98,11 @@ public interface JdbcConnPoolProbeProvider {
      * @param beingDestroyed if the connection is destroyed due to error
      * @param steadyPoolSize 
      */
+    @Probe(name="decrementConnectionUsedEvent")
     public void decrementConnectionUsedEvent(
             @ProbeParam("poolName") String poolName, 
             @ProbeParam("beingDestroyed") boolean beingDestroyed,
-            @ProbeParam("steadyPoolSize") int steadyPoolSize);
+            @ProbeParam("steadyPoolSize") int steadyPoolSize) { }
     
     /**
      * Emits probe event/notification that the given jdbc connection pool 
@@ -102,8 +110,9 @@ public interface JdbcConnPoolProbeProvider {
      * 
      * @param poolName for which increment numConnUsed is got
      */
+    @Probe(name="connectionUsedEvent")
     public void connectionUsedEvent(
-            @ProbeParam("poolName") String poolName);
+            @ProbeParam("poolName") String poolName) { }
 
     /**
      * Emits probe event/notification that the given jdbc connection pool 
@@ -112,9 +121,10 @@ public interface JdbcConnPoolProbeProvider {
      * @param poolName for which increment numConnFree is got
      * @param count number of connections freed to pool
      */
+    @Probe(name="connectionsFreedEvent")
     public void connectionsFreedEvent(
             @ProbeParam("poolName") String poolName,
-            @ProbeParam("count") int count);
+            @ProbeParam("count") int count) { }
 
     /**
      * Emits probe event/notification that a connection request is served in the
@@ -124,9 +134,10 @@ public interface JdbcConnPoolProbeProvider {
      * @param poolName 
      * @param timeTakenInMillis time taken to serve a connection
      */
+    @Probe(name="connectionRequestServedEvent")
     public void connectionRequestServedEvent(
             @ProbeParam("poolName") String poolName, 
-            @ProbeParam("timeTakenInMillis") long timeTakenInMillis);
+            @ProbeParam("timeTakenInMillis") long timeTakenInMillis) { }
 
     /**
      * Emits probe event/notification that a connection is destroyed for the 
@@ -134,8 +145,9 @@ public interface JdbcConnPoolProbeProvider {
      * 
      * @param poolName 
      */
+    @Probe(name="connectionDestroyedEvent")
     public void connectionDestroyedEvent(
-            @ProbeParam("poolName") String poolName);    
+            @ProbeParam("poolName") String poolName) { }
 
     /**
      * Emits probe event/notification that a connection is acquired by application
@@ -143,8 +155,9 @@ public interface JdbcConnPoolProbeProvider {
      * 
      * @param poolName
      */
+    @Probe(name="connectionAcquiredEvent")
     public void connectionAcquiredEvent(
-            @ProbeParam("poolName") String poolName);
+            @ProbeParam("poolName") String poolName) { }
 
     /**
      * Emits probe event/notification that a connection is released for the given
@@ -152,7 +165,8 @@ public interface JdbcConnPoolProbeProvider {
      * 
      * @param poolName
      */
-    public void connectionReleasedEvent(@ProbeParam("poolName") String poolName);
+    @Probe(name="connectionReleasedEvent")
+    public void connectionReleasedEvent(@ProbeParam("poolName") String poolName) { }
 
     /**
      * Emits probe event/notification that a new connection is created for the
@@ -160,8 +174,10 @@ public interface JdbcConnPoolProbeProvider {
      * 
      * @param poolName
      */
-    public void connectionCreatedEvent(@ProbeParam("poolName") String poolName);
+    @Probe(name="connectionCreationEvent")
+    public void connectionCreatedEvent(@ProbeParam("poolName") String poolName) { }
     
+    @Probe(name="toString")
     public void toString(@ProbeParam("poolName") String poolName,
-            @ProbeParam("stackTrace") StringBuffer stackTrace);
+            @ProbeParam("stackTrace") StringBuffer stackTrace) { }
 }
