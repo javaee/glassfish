@@ -1276,14 +1276,18 @@ public class ApplicationContext
         String names[] = context.findParameters();
         for (int i = 0; i < names.length; i++)
             results.put(names[i], context.findParameter(names[i]));
-        ApplicationParameter params[] =
+        List<ApplicationParameter> params =
             context.findApplicationParameters();
-        for (int i = 0; i < params.length; i++) {
-            if (params[i].getOverride()) {
-                if (results.get(params[i].getName()) == null)
-                    results.put(params[i].getName(), params[i].getValue());
-            } else {
-                results.put(params[i].getName(), params[i].getValue());
+        synchronized(params) {
+            Iterator<ApplicationParameter> i = params.iterator(); 
+            while (i.hasNext()) {
+                ApplicationParameter param = i.next();
+                if (param.getOverride()) {
+                    if (results.get(param.getName()) == null)
+                        results.put(param.getName(), param.getValue());
+                } else {
+                    results.put(param.getName(), param.getValue());
+                }
             }
         }
         parameters = results;

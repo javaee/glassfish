@@ -191,8 +191,8 @@ public class StandardContext
     /**
      * The set of application parameters defined for this application.
      */
-    private ApplicationParameter applicationParameters[] =
-        new ApplicationParameter[0];
+    private List<ApplicationParameter> applicationParameters =
+        Collections.synchronizedList(new ArrayList<ApplicationParameter>());
 
     /**
      * The application available flag for this Context.
@@ -2141,20 +2141,21 @@ public class StandardContext
      */
     public void addApplicationParameter(ApplicationParameter parameter) {
 
+        String newName = parameter.getName();
+
         synchronized (applicationParameters) {
-            String newName = parameter.getName();
-            for(ApplicationParameter applicationParameter : applicationParameters) {
-                if(newName.equals(applicationParameter.getName()) &&
-                    !applicationParameter.getOverride()) {
+            Iterator<ApplicationParameter> i =
+                applicationParameters.iterator(); 
+            while (i.hasNext()) {
+                ApplicationParameter applicationParameter = i.next();
+                if (newName.equals(applicationParameter.getName())) {
+                    if (applicationParameter.getOverride()) {
+                        applicationParameter.setValue(parameter.getValue());
+                    }
                     return;
                 }
             }
-            ApplicationParameter results[] =
-                new ApplicationParameter[applicationParameters.length + 1];
-            System.arraycopy(applicationParameters, 0, results, 0,
-                             applicationParameters.length);
-            results[applicationParameters.length] = parameter;
-            applicationParameters = results;
+            applicationParameters.add(parameter);
         }
 
         if (notifyContainerListeners) {
@@ -3561,19 +3562,15 @@ public class StandardContext
      * for this application.
      */
     public String[] findApplicationListeners() {
-
         return (applicationListeners);
-
     }
 
 
     /**
      * Return the set of application parameters for this application.
      */
-    public ApplicationParameter[] findApplicationParameters() {
-
-        return (applicationParameters);
-
+    public List<ApplicationParameter> findApplicationParameters() {
+        return applicationParameters;
     }
 
 
@@ -4308,28 +4305,20 @@ public class StandardContext
     public void removeApplicationParameter(String name) {
 
         synchronized (applicationParameters) {
-
-            // Make sure this parameter is currently present
-            int n = -1;
-            for (int i = 0; i < applicationParameters.length; i++) {
-                if (name.equals(applicationParameters[i].getName())) {
-                    n = i;
+            ApplicationParameter match = null;
+            Iterator<ApplicationParameter> i =
+                applicationParameters.iterator(); 
+            while (i.hasNext()) {
+                ApplicationParameter applicationParameter = i.next();
+                // Make sure this parameter is currently present
+                if (name.equals(applicationParameter.getName())) {
+                    match = applicationParameter;
                     break;
                 }
             }
-            if (n < 0)
-                return;
-
-            // Remove the specified parameter
-            int j = 0;
-            ApplicationParameter results[] =
-                new ApplicationParameter[applicationParameters.length - 1];
-            for (int i = 0; i < applicationParameters.length; i++) {
-                if (i != n)
-                    results[j++] = applicationParameters[i];
+            if (match != null) {
+                applicationParameters.remove(match);
             }
-            applicationParameters = results;
-
         }
 
         // Inform interested listeners

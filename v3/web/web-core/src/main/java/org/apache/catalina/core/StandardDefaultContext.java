@@ -60,20 +60,13 @@ package org.apache.catalina.core;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Vector;
-
-
+import java.util.*;
 import javax.management.MBeanRegistration;
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.naming.directory.DirContext;
- 
-import org.apache.catalina.Container;
+ import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.DefaultContext;
 import org.apache.catalina.Lifecycle;
@@ -141,8 +134,8 @@ public class StandardDefaultContext
     /**
      * The set of application parameters defined for this application.
      */
-    private ApplicationParameter applicationParameters[] =
-        new ApplicationParameter[0];
+    private List<ApplicationParameter> applicationParameters =
+        Collections.synchronizedList(new ArrayList<ApplicationParameter>());
 
 
     /**
@@ -687,16 +680,22 @@ public class StandardDefaultContext
      * @param parameter The new application parameter
      */
     public void addApplicationParameter(ApplicationParameter parameter) {
+        String newName = parameter.getName();
 
         synchronized (applicationParameters) {
-            ApplicationParameter results[] =
-                new ApplicationParameter[applicationParameters.length + 1];
-            System.arraycopy(applicationParameters, 0, results, 0,
-                             applicationParameters.length);
-            results[applicationParameters.length] = parameter;
-            applicationParameters = results;
+            Iterator<ApplicationParameter> i =
+                applicationParameters.iterator(); 
+            while (i.hasNext()) {
+                ApplicationParameter applicationParameter = i.next();
+                if (newName.equals(applicationParameter.getName())) {
+                    if (applicationParameter.getOverride()) {
+                        applicationParameter.setValue(parameter.getValue());
+                    }
+                    return;
+                }
+            }
+            applicationParameters.add(parameter);
         }
-
     }
 
 
@@ -706,9 +705,7 @@ public class StandardDefaultContext
      * @param ejb New EJB resource reference
      */
     public void addEjb(ContextEjb ejb) {
-
         namingResources.addEjb(ejb);
-
     }
 
 
@@ -718,9 +715,7 @@ public class StandardDefaultContext
      * @param environment New environment entry
      */
     public void addEnvironment(ContextEnvironment environment) {
-
         namingResources.addEnvironment(environment);
-
     }
 
 
@@ -882,10 +877,8 @@ public class StandardDefaultContext
     /**
      * Return the set of application parameters for this application.
      */
-    public ApplicationParameter[] findApplicationParameters() {
-
-        return (applicationParameters);
-
+    public List<ApplicationParameter> findApplicationParameters() {
+        return applicationParameters;
     }
 
 
@@ -1139,32 +1132,22 @@ public class StandardDefaultContext
      * @param name Name of the application parameter to remove
      */
     public void removeApplicationParameter(String name) {
-
         synchronized (applicationParameters) {
-
-            // Make sure this parameter is currently present
-            int n = -1;
-            for (int i = 0; i < applicationParameters.length; i++) {
-                if (name.equals(applicationParameters[i].getName())) {
-                    n = i;
+            ApplicationParameter match = null;
+            Iterator<ApplicationParameter> i =
+                applicationParameters.iterator(); 
+            while (i.hasNext()) {
+                ApplicationParameter applicationParameter = i.next();
+                // Make sure this parameter is currently present
+                if (name.equals(applicationParameter.getName())) {
+                    match = applicationParameter;
                     break;
                 }
             }
-            if (n < 0)
-                return;
-
-            // Remove the specified parameter
-            int j = 0;
-            ApplicationParameter results[] =
-                new ApplicationParameter[applicationParameters.length - 1];
-            for (int i = 0; i < applicationParameters.length; i++) {
-                if (i != n)
-                    results[j++] = applicationParameters[i];
+            if (match != null) {
+                applicationParameters.remove(match);
             }
-            applicationParameters = results;
-
         }
-
     }
 
 
@@ -1582,9 +1565,12 @@ public class StandardDefaultContext
         for( int i = 0; i < parameters.length; i++ ) {
             context.addParameter(parameters[i],findParameter(parameters[i]));
         }
-        ApplicationParameter [] appParam = findApplicationParameters();
-        for( int i = 0; i < appParam.length; i++ ) {
-            context.addApplicationParameter(appParam[i]);
+        List<ApplicationParameter> appParams = findApplicationParameters();
+        synchronized(appParams) {
+            Iterator<ApplicationParameter> i = appParams.iterator(); 
+            while (i.hasNext()) {
+                context.addApplicationParameter(i.next());
+            }
         }
 
         if (!(context instanceof StandardContext)) {

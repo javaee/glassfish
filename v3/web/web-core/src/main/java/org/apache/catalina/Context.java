@@ -778,7 +778,7 @@ public interface Context extends Container {
     /**
      * Return the set of application parameters for this application.
      */
-    ApplicationParameter[] findApplicationParameters();
+    List<ApplicationParameter> findApplicationParameters();
 
 
     /**

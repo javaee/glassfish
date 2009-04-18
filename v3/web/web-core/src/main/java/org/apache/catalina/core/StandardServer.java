@@ -62,21 +62,13 @@ import java.beans.IndexedPropertyDescriptor;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyDescriptor;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.AccessControlException;
 import java.sql.Timestamp;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Random;
+import java.util.*;
 import java.util.logging.*;
 
 import javax.management.MBeanRegistration;
@@ -1267,14 +1259,18 @@ public final class StandardServer
         }
 
         // Store nested <Parameter> elements
-        ApplicationParameter[] appParams = context.findApplicationParameters();
-        for (int i = 0; i < appParams.length; i++) {
-            for (int j = 0; j < indent + 2; j++) {
-                writer.print(' ');
+        List<ApplicationParameter> appParams =
+            context.findApplicationParameters();
+        synchronized (appParams) {
+            Iterator<ApplicationParameter> i = appParams.iterator(); 
+            while (i.hasNext()) {
+                for (int j = 0; j < indent + 2; j++) {
+                    writer.print(' ');
+                }
+                writer.print("<Parameter");
+                storeAttributes(writer, false, i.next());
+                writer.println("/>");
             }
-            writer.print("<Parameter");
-            storeAttributes(writer, false, appParams[i]);
-            writer.println("/>");
         }
 
         // Store nested <Realm> element
@@ -1427,15 +1423,18 @@ public final class StandardServer
         }
 
         // Store nested <Parameter> elements
-        ApplicationParameter[] appParams =
+        List<ApplicationParameter> appParams =
             dcontext.findApplicationParameters();
-        for (int i = 0; i < appParams.length; i++) {
-            for (int j = 0; j < indent + 2; j++) {
-                writer.print(' ');
+        synchronized (appParams) {
+            Iterator<ApplicationParameter> i = appParams.iterator(); 
+            while (i.hasNext()) {
+                for (int j = 0; j < indent + 2; j++) {
+                    writer.print(' ');
+                }
+                writer.print("<Parameter");
+                storeAttributes(writer, false, i.next());
+                writer.println("/>");
             }
-            writer.print("<Parameter");
-            storeAttributes(writer, false, appParams[i]);
-            writer.println("/>");
         }
 
         // Store nested <Realm> element

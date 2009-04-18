@@ -41,12 +41,8 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.Iterator;
-import java.util.Properties;
-import java.util.ResourceBundle;
-import java.util.logging.Logger;
-import java.util.logging.Level;  
-
+import java.util.*;
+import java.util.logging.*;
 import org.apache.catalina.Authenticator;
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
@@ -177,13 +173,18 @@ public class WebModuleContextConfig extends ContextConfig {
     protected synchronized void configureResource() {
         
         try {
-            ApplicationParameter[] appParams = 
-                    context.findApplicationParameters();
+            List<ApplicationParameter> appParams = 
+                context.findApplicationParameters();
             ContextParameter contextParam;
-            for (int i=0; i<appParams.length; i++) {
-                contextParam = new EnvironmentProperty(appParams[i].getName(),
-                    appParams[i].getValue(), appParams[i].getDescription());
-                webBundleDescriptor.addContextParameter(contextParam);
+            synchronized (appParams) {
+                Iterator<ApplicationParameter> i = appParams.iterator(); 
+                while (i.hasNext()) {
+                    ApplicationParameter appParam = i.next();
+                    contextParam = new EnvironmentProperty(
+                        appParam.getName(), appParam.getValue(),
+                        appParam.getDescription());
+                    webBundleDescriptor.addContextParameter(contextParam);
+                }
             }
 
             ContextEnvironment[] envs = context.findEnvironments();

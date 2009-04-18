@@ -158,4 +158,26 @@ public class ApplicationParameter implements Serializable {
     }
 
 
+    public boolean equals(Object obj) {
+        if (name == null) {
+            throw new IllegalStateException();
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof ApplicationParameter)) {
+            return false;
+        }
+	ApplicationParameter that = (ApplicationParameter) obj;
+	return this.name.equals(that.name);
+    }
+
+
+    public int hashCode() {
+        if (name == null) {
+            throw new IllegalStateException();
+        }
+       
+        return name.hashCode();
+    }
 }
