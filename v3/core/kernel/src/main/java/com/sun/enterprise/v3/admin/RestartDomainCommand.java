@@ -64,14 +64,13 @@ public class RestartDomainCommand implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         // This has to be an asynchronous command so there is no way to directly
-        // return an error.  We do our best by logging a SEVERE error...
+        // return an error.  We log a warning and then ASSUME they wanted to stop the server
 
         if(!isRestartAllowed()) {
-            context.getLogger().severe(localStrings.getLocalString(
+            context.getLogger().warning(localStrings.getLocalString(
                     "restart.domain.not_enabled",
                     "The server was not started with a watchdog. Restart is not " +
-                    "possible.  Try stopping and then locally starting the server."));
-            return;
+                    "possible.  The server was stopped."));
         }
 
         context.getLogger().info(localStrings.getLocalString("restart.domain.init","Server restart initiated"));
