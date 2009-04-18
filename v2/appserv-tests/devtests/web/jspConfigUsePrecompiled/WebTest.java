@@ -59,7 +59,7 @@ public class WebTest {
         // Access JSP
         bodyLine = getBodyLine("jsp/test.jsp");
         if (!EXPECTED.equals(bodyLine)) {
-            stat.addStatus("Wrong body line: Expected: " + EXPECTED
+            stat.addStatus("Wrong line: Expected: " + EXPECTED
                            + ", received: " + bodyLine,
                            stat.FAIL);
             return;
