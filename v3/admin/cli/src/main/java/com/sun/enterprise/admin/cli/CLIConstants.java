@@ -45,6 +45,7 @@ public class CLIConstants {
     ////////////////////////////////////////////////////////////////////////////
     public static final int     DEFAULT_ADMIN_PORT              = 4848;
     public static final String  DEFAULT_HOSTNAME                = "localhost";
+    public static final String  EOL                             = System.getProperty("line.separator");
 
     ////////////////////////////////////////////////////////////////////////////
     ///////       pkg-private                   /////////////////////////////////////

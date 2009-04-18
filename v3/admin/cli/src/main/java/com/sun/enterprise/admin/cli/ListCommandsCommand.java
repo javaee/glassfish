@@ -43,6 +43,7 @@ import java.util.logging.*;
 
 import com.sun.enterprise.cli.framework.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import static com.sun.enterprise.admin.cli.CLIConstants.EOL;
 
 /**
  * A local ListCommands Command
@@ -186,5 +187,4 @@ public class ListCommandsCommand extends AbstractCommand {
     private final static LocalStringsImpl strings = new LocalStringsImpl(ListCommandsCommand.class);
     private final static CLILogger logger = CLILogger.getInstance();
     private static final String SPACES = "                                                            ";
-    private static final String EOL = System.getProperty("line.separator");
 }
