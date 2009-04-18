@@ -150,12 +150,6 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
-            <artifactId>pkg-java</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-hk2</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
