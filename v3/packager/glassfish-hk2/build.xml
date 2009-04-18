@@ -22,22 +22,32 @@ own identifying information: Portions Copyright [yyyy]
 <project name="hk2 package creation" default="create.package" basedir=".">
     <import file="${basedir}/../common-targets.xml"/>
 
-   <target name="create.package">
-	   <mkdir dir="target/stage/${install.dir.name}"/>
+    <target name="create.package">
+	    <property name="package.name" value="glassfish-hk2"/>
 
-      	<resolveAll todir="target/stage/${install.dir.name}/glassfish/modules"
-                    stripVersion="true">
-             <scope level="compile,runtime" />
-        </resolveAll>
 
-	<delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.zip" />    
-        <if test="${compression}">
+
+	<graphDef id="all-modules" tolerateBrokenPOMs="true">
+	    <scope level="compile,runtime">
+			<subtract>
+			         <fullGraph/>
+				 <subGraph groupID="org.glassfish.packager" artifactID="felix">	
+	                             <scope level="compile,runtime"/>
+	                         </subGraph>
+			 </subtract>
+		</scope>					 
+       </graphDef>
+
+       
+       <stage-module-jars graphid="all-modules" />
+       <stage-distribution-fragments graphid="all-modules" />
+
+       <if test="${compression}">
 	       <antcall target="pack.compression" />
-	</if>
+       </if>
 
-       <zip file="target/glassfish-hk2.zip" basedir="target/stage"/>
-           
-       <attachArtifact file="target/glassfish-hk2.zip"/>
+       <antcall target="create-zip-artifact"/>
    </target>
+
 </project>
 

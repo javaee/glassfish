@@ -81,6 +81,13 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- previous packages - required for dependency graph calculation -->
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+	    <artifactId>felix</artifactId>
+	    <version>${project.version}</version>
+	    <type>zip</type>
+        </dependency>
    </dependencies>
 
     <profiles>

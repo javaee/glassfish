@@ -22,15 +22,23 @@ own identifying information: Portions Copyright [yyyy]
 <project name="felix package creation" default="create.package" basedir=".">
    <import file="${basedir}/../common-targets.xml"/>
    <target name="create.package">
-	   <mkdir dir="target/stage/${install.dir.name}"/>
+       <property name="package.name" value="felix"/>
 
-       <resolveArtifact artifactId="felix" groupId="org.glassfish.osgi-platforms" property="felix.zip"/>
+      <graphDef id="all-modules" tolerateBrokenPOMs="true">
+	    <scope level="compile,runtime">
+		    <fullGraph/>
+	    </scope>		    
+       </graphDef>
 
-       <unzip src="${felix.zip}" dest="target/stage/${install.dir.name}"/>
+       
+       <stage-module-jars graphid="all-modules" />
+       <stage-distribution-fragments graphid="all-modules" /> 
 
-       <zip file="target/felix.zip" basedir="target/stage"/>
-           
-       <attachArtifact file="target/felix.zip"/>
+       <if test="${compression}">
+	       <antcall target="pack.compression" />
+       </if>
+
+       <antcall target="create-zip-artifact"/>
    </target>
 </project>
 

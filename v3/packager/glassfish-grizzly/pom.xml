@@ -53,23 +53,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-dependencies</id>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-	                    <outputDirectory>${project.build.directory}/stage/${install.dir.name}/glassfish/modules</outputDirectory>
-    			    <overWriteReleases>false</overWriteReleases>
-			    <overWriteSnapshots>true</overWriteSnapshots>
-			    <excludeTransitive>true</excludeTransitive>
-			    <includeScope>compile</includeScope>
-			    <includeScope>runtime</includeScope>
-			    <stripVersion>true</stripVersion>
-		        </configuration>
-		    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
@@ -127,10 +110,18 @@
             <groupId>com.sun.grizzly</groupId>
             <artifactId>grizzly-messagesbus</artifactId>
         </dependency>
+        <!-- previous packages - required for dependency graph calculation -->
         <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.servlet</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.glassfish.packager</groupId>
+	    <artifactId>felix</artifactId>
+	    <version>${project.version}</version>
+	    <type>zip</type>
+        </dependency> 
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+	    <artifactId>glassfish-hk2</artifactId>
+	    <version>${project.version}</version>
+	    <type>zip</type>
         </dependency>
     </dependencies>
 

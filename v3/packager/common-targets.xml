@@ -48,32 +48,44 @@ own identifying information: Portions Copyright [yyyy]
             <fileset dir="target/stage/${install.dir.name}/glassfish/modules" 
                      includes="**/*.pack.gz"/>
         </delete>
-    </target>
+ </target>
 
-    <target name="stage-module-jars" >
 
-	<graphDef id="module-dependency-graph" tolerateBrokenPOMs="true">
-		  <scope level="compile,runtime" type="hk2-jar">       
-				 <fullGraph/>
-                  </scope> 	 
-	</graphDef> 
 
-        <resolveAll todir="target/stage/${install.dir.name}/glassfish/modules" tolerateBrokenPOMs="true"
-                        stripVersion="true">
-	        <graphRef refid="module-dependency-graph"/>
-	</resolveAll>
-    </target>	
-
-    <target name="stage-distribution-fragments">
-         <resolveAll todir="target/fragments" tolerateBrokenPOMs="true" stripVersion="true">
-                <fullGraph/>
+ <macrodef name="stage-distribution-fragments">
+        <attribute name="graphid" />
+        <sequential>
+		<resolveAll todir="target/fragments" tolerateBrokenPOMs="true" stripVersion="true">
+		<graphRef refid="@{graphid}"/>
                 <packaging value="distribution-fragment"/>
-          </resolveAll>
-	  <unzip dest="target/stage/${install.dir.name}">
+             </resolveAll>
+
+	     <unzip dest="target/stage/${install.dir.name}">
                 <patternset>
                     <exclude name="META-INF/**"/>
                 </patternset>
                 <fileset dir="target/fragments" includes="*.zip"/>
- 	  </unzip>
-    </target>
+ 	     </unzip> 
+
+        </sequential>
+   </macrodef> 
+
+    <macrodef name="stage-module-jars">
+	    <attribute name="graphid" />
+	    <sequential>
+                <resolveAll todir="target/stage/${install.dir.name}/glassfish/modules" stripVersion="true">
+		    <graphRef refid="@{graphid}"/>
+                </resolveAll>
+
+                <delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.zip" />   
+	        <delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.pom" />  
+	         <delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.war" />  
+        </sequential>
+      </macrodef>
+
+      <target name="create-zip-artifact">
+	      <zip file="target/${package.name}.zip" basedir="target/stage"/>
+           
+	      <attachArtifact file="target/${package.name}.zip"/>
+     </target>
 </project>
