@@ -22,10 +22,12 @@ own identifying information: Portions Copyright [yyyy]
 <project name="glassfish-common-full package creation" default="create.package" basedir=".">
        <import file="${basedir}/../common-targets.xml"/>
 
-	<target name="create.package">
-		<echo message="Staging files"/>
+ <target name="create.package">
 
-	<antcall target="stage-distribution-fragments" />
+	<resolveArtifact artifactId="sun-as-jsr88-dm-frag" property="jsr88.zip"/>
+
+        <unzip src="${jsr88.zip}" dest="target/stage/${install.dir.name}">
+                </unzip>
 
 	<delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.zip" />   
 	<delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.pom" />  
