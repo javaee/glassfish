@@ -36,18 +36,33 @@
 package com.sun.enterprise.admin.cli;
 
 /**
- * Constants for use in this package.
+ * Constants for use in this package and "sub" packages
  * @author bnevins
  */
-class CLIConstants {
-    static final long           WAIT_FOR_DAS_TIME_MS    = 90000;
-    static final String         WATCHDOG                = "watchdog";
-    static final int            RESTART_EXIT_VALUE      = 10;
-    static final String         WATCHDOG_SYS_PROP       = "GF_FINAL_WATCHDOG_PROCESS";
-    static final boolean        debugMode;
-    static final String         WALL_CLOCK_START_PROP   = "WALL_CLOCK_START";
+public class CLIConstants {
+    ////////////////////////////////////////////////////////////////////////////
+    ///////       public                   /////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+    public static final int     DEFAULT_ADMIN_PORT              = 4848;
+    public static final String  DEFAULT_HOSTNAME                = "localhost";
 
-    private static final String CLI_DEBUG_MODE_PROP     = "AS_DEBUG";
+    ////////////////////////////////////////////////////////////////////////////
+    ///////       pkg-private                   /////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+
+    static final long           WAIT_FOR_DAS_TIME_MS            = 90000;
+    static final long           WAIT_FOR_DAS_DEATH_TIME_MS      = 30000;
+    static final String         WATCHDOG                        = "watchdog";
+    static final int            RESTART_EXIT_VALUE              = 10;
+    static final String         WATCHDOG_SYS_PROP               = "GF_FINAL_WATCHDOG_PROCESS";
+    static final String         WALL_CLOCK_START_PROP           = "WALL_CLOCK_START";
+    static final boolean        debugMode;
+
+    ////////////////////////////////////////////////////////////////////////////
+    ///////       private                   /////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+
+    private static final String CLI_DEBUG_MODE_PROP             = "AS_DEBUG";
 
     static {
         debugMode = Boolean.parseBoolean(System.getenv(CLI_DEBUG_MODE_PROP)) ||

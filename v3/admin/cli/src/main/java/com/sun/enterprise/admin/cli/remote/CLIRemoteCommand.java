@@ -39,6 +39,7 @@ import com.sun.appserv.management.client.prefs.LoginInfo;
 import com.sun.appserv.management.client.prefs.LoginInfoStore;
 import com.sun.appserv.management.client.prefs.LoginInfoStoreFactory;
 import com.sun.appserv.management.client.prefs.StoreException;
+import com.sun.enterprise.admin.cli.CLIConstants;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.FileUtils;
 import com.sun.enterprise.universal.io.SmartFile;
@@ -510,7 +511,7 @@ public class CLIRemoteCommand {
         hostName = params.get("host");
         
         if (hostName == null || hostName.length() == 0)
-            hostName = "localhost";
+            hostName = CLIConstants.DEFAULT_HOSTNAME;
         logger.printDebugMessage("host = " + hostName);
         initializePort();
 
@@ -537,7 +538,7 @@ public class CLIRemoteCommand {
         }
 
         if(!ok(port))
-            hostPort = 4848; //the default port
+            hostPort = CLIConstants.DEFAULT_ADMIN_PORT; //the default port
     }
 
     private void initializeLogger() {
