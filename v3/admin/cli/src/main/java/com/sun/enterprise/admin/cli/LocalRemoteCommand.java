@@ -21,10 +21,10 @@ import java.util.logging.*;
  */
 
 public abstract class LocalRemoteCommand extends AbstractCommand{
-    CLIRemoteCommand runRemoteCommand(String name, String... args) throws CommandException {
+    CLIRemoteCommand runRemoteCommand(String commandName, String... args) throws CommandException {
         try {
             CLILogger.getInstance().pushAndLockLevel(Level.WARNING);
-            CLIRemoteCommand rc = new CLIRemoteCommand(prepareRemoteCommand(name, args));
+            CLIRemoteCommand rc = new CLIRemoteCommand(prepareRemoteCommand(commandName, args));
             rc.runCommand();
             return rc;
         }
@@ -36,9 +36,9 @@ public abstract class LocalRemoteCommand extends AbstractCommand{
         }
     }
 
-    private String[] prepareRemoteCommand(String command, String... args) {
+    private String[] prepareRemoteCommand(String commandName, String... args) {
         List<String> list = new ArrayList<String>();
-        list.add(name);
+        list.add(commandName);
         addMetaArgs(list);
 
         for(String arg : args) {

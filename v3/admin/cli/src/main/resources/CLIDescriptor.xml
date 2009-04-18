@@ -125,6 +125,19 @@
              <ValidOption name="passwordfile"/>
              <ValidOption name="force"/>
         </Command>
+
+        <Command name="restart-domain"
+              classname="com.sun.enterprise.admin.cli.RestartDomainCommand"
+              numberofoperands="?"
+              usage-text="restart-domain [--terse=false] [--echo=false] [--host host (default: localhost)] [--port admin-port (default: 4848)] [--user admin-user (default: anonymous)] [--passwordfile file_name]">
+             <ValidOption name="terse"/>
+             <ValidOption name="echo"/>
+             <ValidOption name="host"/>
+             <ValidOption name="port"/>
+             <ValidOption name="user"/>
+             <ValidOption name="passwordfile"/>
+        </Command>
+
         <!-- Removed backup/restore-domain for now. See 5776. -->
         <Command name="start-database" classname="com.sun.enterprise.admin.cli.optional.StartDatabaseCommand" numberofoperands="0" usage-text="start-database [--dbhost 0.0.0.0] [--dbport 1527] [--dbhome db_directory] [--echo=false] [--terse=false]">
 	    <ValidOption name="dbhost"/>

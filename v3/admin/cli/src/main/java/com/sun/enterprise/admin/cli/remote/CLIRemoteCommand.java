@@ -210,7 +210,7 @@ public class CLIRemoteCommand {
                     throw new CommandException(se);
                 }
             } catch(IOException io) {
-                io.printStackTrace();
+                logger.printExceptionStackTrace(io);
                 throw new CommandException(io);
             }
         }
