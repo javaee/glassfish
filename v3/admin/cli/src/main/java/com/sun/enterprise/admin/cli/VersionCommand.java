@@ -73,8 +73,8 @@ public final class VersionCommand extends AbstractCommand {
         CLILogger.getInstance().printMessage(msg);
     }
     private void printRemoteException(Exception e) {
-        String host  = getOption(HOST) == null ? "localhost" : getOption(HOST);
-        String ports = getOption(PORT) == null ? "4848" : getOption(PORT);
+        String host  = getOption(HOST) == null ? CLIConstants.DEFAULT_HOSTNAME : getOption(HOST);
+        String ports = getOption(PORT) == null ? "" + CLIConstants.DEFAULT_ADMIN_PORT : getOption(PORT);
         String msg = super.getLocalizedString("remote.version.failed", new String[]{host, ports});
         CLILogger.getInstance().printMessage(msg);
         CLILogger.getInstance().printDebugMessage(e.getMessage());        

@@ -39,10 +39,7 @@ package com.sun.enterprise.admin.cli;
 
 import com.sun.enterprise.admin.cli.remote.CLIRemoteCommand;
 import java.util.*;
-import java.util.logging.*;
-
 import com.sun.enterprise.cli.framework.*;
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import static com.sun.enterprise.admin.cli.CLIConstants.EOL;
 
 /**
@@ -50,7 +47,7 @@ import static com.sun.enterprise.admin.cli.CLIConstants.EOL;
  *  
  * @author bnevins
  */
-public class ListCommandsCommand extends AbstractCommand {
+public class ListCommandsCommand extends LocalRemoteCommand {
     @Override
     public void runCommand() throws CommandException, CommandValidationException {
         // WBN weird -- validateOptions is NOT called by the framework?!?
@@ -70,11 +67,6 @@ public class ListCommandsCommand extends AbstractCommand {
     @Override
     public boolean validateOptions() throws CommandValidationException {
         super.validateOptions();
-        
-        port         = getOption(PORT);
-        host         = getOption(HOST);
-        user         = getOption(USER);
-        passwordFile = getOption(PASSWORDFILE);
         localOnly = getBooleanOption("localonly");
         remoteOnly = getBooleanOption("remoteonly");
         
@@ -98,49 +90,12 @@ public class ListCommandsCommand extends AbstractCommand {
     }
 
     String[] getRemoteCommands() throws CommandException {
-        try {
-            CLILogger.getInstance().pushAndLockLevel(Level.WARNING);
-            CLIRemoteCommand rc = new CLIRemoteCommand(getRemoteArgs());
-            rc.runCommand();
-            // throw away everything but the main atts
-            Map<String,String> mainAtts = rc.getMainAtts();
-            String cmds = mainAtts.get("children");
-            remoteCommands = cmds.split(";");
-            return remoteCommands;
-        }
-        catch(Exception e) {
-            throw new CommandException(strings.get("listCommands.errorRemote", e.getMessage()));
-        }
-        finally {
-            CLILogger.getInstance().popAndUnlockLevel();
-        }
-    }
-
-    private String[] getRemoteArgs() {
-        List<String> list = new ArrayList<String>(5);
-        list.add("list-commands");
-        
-        if(ok(port)) {
-            list.add("--port");
-            list.add(port);
-        }
-        if(ok(host)) {
-            list.add("--host");
-            list.add(host);
-        }
-        if(ok(user)) {
-            list.add("--user");
-            list.add(user);
-        }
-        if(ok(passwordFile)) {
-            list.add("--passwordfile");
-            list.add(passwordFile);
-        }
-        return list.toArray(new String[list.size()]);
-    }
-    
-    private static boolean ok(String s) {
-        return s != null && s.length() > 0 && !s.equals("null");
+        CLIRemoteCommand rc = runRemoteCommand("list-commands");
+        // throw away everything but the main atts
+        Map<String,String> mainAtts = rc.getMainAtts();
+        String cmds = mainAtts.get("children");
+        remoteCommands = cmds.split(";");
+        return remoteCommands;
     }
 
     void printLocalCommands() {
@@ -184,7 +139,5 @@ public class ListCommandsCommand extends AbstractCommand {
     String passwordFile;
     boolean localOnly;
     boolean remoteOnly;
-    private final static LocalStringsImpl strings = new LocalStringsImpl(ListCommandsCommand.class);
-    private final static CLILogger logger = CLILogger.getInstance();
     private static final String SPACES = "                                                            ";
 }
