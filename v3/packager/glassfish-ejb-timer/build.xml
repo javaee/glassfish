@@ -35,6 +35,8 @@ own identifying information: Portions Copyright [yyyy]
         </unzip>
 
 
+        <resolveArtifact artifactId="ejb.security" tofile="target/stage/${install.dir.name}/glassfish/modules/ejb.security.jar" />
+
         <if test="${compression}">
 	       <antcall target="pack.compression" />
 	</if>
