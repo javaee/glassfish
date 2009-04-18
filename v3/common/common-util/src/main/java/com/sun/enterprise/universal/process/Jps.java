@@ -50,7 +50,7 @@ import java.util.*;
 public class Jps {
 
     /**
-     * return the platform-specific process-id of a JVM 
+     * return the platform-specific process-id of a JVM
      * @param mainClassName The main class - this is how we identify the right JVM
      * @return the process id if possible otherwise 0
      */
@@ -62,6 +62,14 @@ public class Jps {
             return 0;
 
         return integer;
+    }
+    /**
+     * Is this pid owned by a process?
+     * @param apid the pid of interest
+     * @return whether there is a process running with that id
+     */
+    final static public boolean isPid(int apid) {
+        return new Jps().pidMap.containsValue(apid);
     }
     
     private Jps(){
