@@ -60,7 +60,9 @@ public class WebTest {
         bodyLine = getBodyLine("jsp/test.jsp");
         if (!EXPECTED.equals(bodyLine)) {
             stat.addStatus("Wrong line: Expected: " + EXPECTED
-                           + ", received: " + bodyLine,
+                           //XXX Do not print out message body as Grizzly error page contains mismatched BODY tag
+                           //+ ", received: " + bodyLine,
+                           + ", received: ",
                            stat.FAIL);
             return;
         }

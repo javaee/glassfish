@@ -54,9 +54,7 @@
         <ant dir="jspScriptletAfterScriptlessTag" target="all"/>
         <ant dir="jspScriptlessTagBodyJspDocument" target="all"/>
         <ant dir="jspConfigJavacSource" target="build-publish-war"/>
-<!-- XXX temporary commented out to isolate body tag issue
         <ant dir="jspConfigModificationTestInterval" target="all"/>        
--->
         <ant dir="jspConfigUsePrecompiled" target="all"/>
         <ant dir="jspConfigUsePrecompiled2" target="all"/>
         <ant dir="jspTagReleaseCalledWhenPoolingEnabled" target="all"/>
