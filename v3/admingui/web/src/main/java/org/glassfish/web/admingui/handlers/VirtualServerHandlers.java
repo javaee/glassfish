@@ -275,7 +275,9 @@ public class VirtualServerHandlers {
                 convertedMap.put(VirtualServerConfigKeys.DEFAULT_WEB_MODULE_KEY,handlerCtx.getInputValue("Web"));
                 convertedMap.put(VirtualServerConfigKeys.LOG_FILE_KEY,handlerCtx.getInputValue("LogFile"));
                 convertedMap.put(VirtualServerConfigKeys.STATE_KEY,handlerCtx.getInputValue("StateOption"));
-                //System.out.println("::::::::::::::::::: in GUI:  createVirtualServerConfig: with Map = " + convertedMap);
+                Boolean sso = (Boolean) handlerCtx.getInputValue("sso");
+
+                convertedMap.put("sso-enabled", (sso == null) ? "false" : sso.toString());
                 VirtualServerConfig server = config.getHTTPServiceConfig().createVirtualServerConfig(
                         (String)handlerCtx.getInputValue("Name"), ((String)handlerCtx.getInputValue("Hosts")),  convertedMap);
                                 
@@ -289,6 +291,8 @@ public class VirtualServerHandlers {
             vs.setHTTPListeners(((String)handlerCtx.getInputValue("Http")));
             vs.setDefaultWebModule(((String)handlerCtx.getInputValue("Web")));
             vs.setLogFile(((String)handlerCtx.getInputValue("LogFile")));
+            Boolean sso = (Boolean) handlerCtx.getInputValue("sso");
+            vs.setSsoEnabled((sso==null)? "false" : sso.toString());
             
             AMXUtil.setPropertyValue(vs, "accesslog", (String)handlerCtx.getInputValue("accesslog"));
             AMXUtil.setPropertyValue(vs, "accessLogBufferSize", (String)handlerCtx.getInputValue("accessLogBufferSize"));
