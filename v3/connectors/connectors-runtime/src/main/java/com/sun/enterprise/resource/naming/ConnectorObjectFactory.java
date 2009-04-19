@@ -43,39 +43,43 @@ import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.logging.LogDomains;
-import org.glassfish.api.naming.NamingObjectProxy;
 
-import javax.naming.Context;
-import javax.naming.NamingException;
-import javax.naming.ConfigurationException;
-import javax.naming.InitialContext;
+import javax.naming.*;
+import javax.naming.spi.ObjectFactory;
 import javax.resource.spi.ManagedConnectionFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Hashtable;
 
 /**
  * An object factory to handle creation of Connection Factories
  *
  * @author Tony Ng
  */
-public class ConnectorObjectFactory implements NamingObjectProxy {
+public class ConnectorObjectFactory implements ObjectFactory {
 
-    private ConnectorRuntime runtime;
+    private ConnectorRuntime runtime ;
+/*
     private String jndiName;
     private String poolName;
     private String moduleName;
     private String connectionFactoryName;
+*/
 
     private static Logger _logger = LogDomains.getLogger(ConnectorObjectFactory.class, LogDomains.JNDI_LOGGER);
 
+/*
     public ConnectorObjectFactory(String jndiName, String connectionFactoryName, String moduleName, String poolName) {
         this.jndiName = jndiName;
         this.moduleName = moduleName;
         this.poolName = poolName;
         this.connectionFactoryName = connectionFactoryName;
-        runtime = ConnectorRuntime.getRuntime();
     }
+*/
 
+    public ConnectorObjectFactory() {
+    }
+    
     /**
      * Tells if the result of create() is cacheable. If so
      * the naming manager will replace this object factory with
@@ -87,21 +91,26 @@ public class ConnectorObjectFactory implements NamingObjectProxy {
         return false;
     }
 
-    /**
-     * Create ad return an object.
-     *
-     * @return an object
-     */
-    public Object create(Context ic) throws NamingException {
+    public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable env) throws Exception {
 
-        if (runtime.getEnviron() == ConnectorRuntime.CLIENT) {
+        Reference ref = (Reference) obj;
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE,"ConnectorObjectFactory: " + ref +
+                " Name:" + name);
+        }
+            String poolName = (String) ref.get(0).getContent();
+            String moduleName  = (String) ref.get(1).getContent();
+
+
+        if (getRuntime().getEnvironment() == ConnectorRuntime.CLIENT) {
             ConnectorDescriptor connectorDescriptor = null;
 
             String descriptorJNDIName = ConnectorAdminServiceUtils.
                     getReservePrefixedJNDINameForDescriptor(moduleName);
+            Context ic = new InitialContext(env);
             connectorDescriptor = (ConnectorDescriptor) ic.lookup(descriptorJNDIName);
             try {
-                runtime.createActiveResourceAdapter(connectorDescriptor, moduleName, null);
+                getRuntime().createActiveResourceAdapter(connectorDescriptor, moduleName, null);
             } catch (ConnectorRuntimeException e) {
                 _logger.log(Level.FINE, "Failed to look up ConnectorDescriptor from JNDI", moduleName);
                 NamingException ne = new NamingException("Failed to look up ConnectorDescriptor from JNDI");
@@ -111,7 +120,7 @@ public class ConnectorObjectFactory implements NamingObjectProxy {
         }
 
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        if (runtime.checkAccessibility(moduleName, loader) == false) {
+        if (getRuntime().checkAccessibility(moduleName, loader) == false) {
             throw new NamingException(
                     "Only the application that has the embedded resource" +
                             "adapter can access the resource adapter");
@@ -127,11 +136,12 @@ public class ConnectorObjectFactory implements NamingObjectProxy {
 
             boolean forceNoLazyAssoc = false;
 
+            String jndiName = name.toString();
             if (jndiName.endsWith(ConnectorConstants.PM_JNDI_SUFFIX)) {
                 forceNoLazyAssoc = true;
             }
 
-            String derivedJndiName = ConnectorsUtil.deriveJndiName(jndiName, ic.getEnvironment());
+            String derivedJndiName = ConnectorsUtil.deriveJndiName(jndiName, env);
             ConnectionManagerImpl mgr = (ConnectionManagerImpl)
                     getRuntime().obtainConnectionManager(poolName, forceNoLazyAssoc);
             mgr.setJndiName(derivedJndiName);
@@ -159,6 +169,9 @@ public class ConnectorObjectFactory implements NamingObjectProxy {
     }
 
     private ConnectorRuntime getRuntime() {
+        if(runtime == null){
+            runtime = ConnectorRuntime.getRuntime();
+        }
         return runtime;
     }
 }

@@ -46,10 +46,7 @@ import com.sun.enterprise.resource.naming.ConnectorObjectFactory;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 
-import javax.naming.Context;
-import javax.naming.NameNotFoundException;
-import javax.naming.NamingException;
-import javax.naming.InitialContext;
+import javax.naming.*;
 import java.util.Hashtable;
 import java.util.logging.Level;
 
@@ -103,10 +100,27 @@ public class ConnectorResourceAdminServiceImpl extends ConnectorService {
             ccp = (ConnectorConnectionPool) ic.lookup(jndiNameForPool);
             ConnectorDescriptorInfo cdi = ccp.getConnectorDescriptorInfo();
 
+            javax.naming.Reference ref=new  javax.naming.Reference(
+                   cdi.getConnectionFactoryClass(), 
+                   "com.sun.enterprise.resource.naming.ConnectorObjectFactory",
+                   null);
+            StringRefAddr addr = new StringRefAddr("poolName",poolName);
+            ref.add(addr);
+            addr = new StringRefAddr("rarName", cdi.getRarName() );
+            ref.add(addr);
+
+            errMsg = "Failed to bind connector resource in JNDI";
+            name = jndiName;
+            _runtime.getNamingManager().publishObject(
+                          jndiName,ref,true);
+
+/*
+
             ConnectorObjectFactory cof = new ConnectorObjectFactory(jndiName, ccp.getConnectorDescriptorInfo().
                     getConnectionFactoryClass(), cdi.getRarName(), poolName);
 
             _runtime.getNamingManager().publishObject(jndiName, cof, true);
+*/
 
             //To notify that a connector resource rebind has happened.
             ConnectorResourceNamingEventNotifier.getInstance().
