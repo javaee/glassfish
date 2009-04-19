@@ -234,7 +234,7 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
                 loader = null;
             }
         }
-
+        ConnectorRuntime connectorRuntime = ConnectorRuntime.getRuntime();
         ModuleDescriptor moduleDescriptor = null;
         Application application = null;
         _logger.fine("ResourceAdapterAdminServiceImpl :: createActiveRA "
@@ -244,8 +244,8 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
         //TODO V3 don't check for system-ra if the resource-adapters are not loaded before recovery
         // (standalone + embedded) 
         if (loader == null && ConnectorsUtil.belongsToSystemRA(moduleName)) {
-            if (environment == SERVER) {
-                loader = ConnectorRuntime.getRuntime().createConnectorClassLoader(moduleDir, null);
+            if (connectorRuntime.isServer()) {
+                loader = connectorRuntime.createConnectorClassLoader(moduleDir, null);
                 if (loader == null) {
                     ConnectorRuntimeException cre =
                             new ConnectorRuntimeException("Failed to obtain the class loader");
@@ -262,8 +262,9 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
             connectorDescriptor.setApplication(null);
         }
         try {
+
             activeResourceAdapter =
-                    ConnectorRuntime.getRuntime().getActiveRAFactory().
+                    connectorRuntime.getActiveRAFactory().
                             createActiveResourceAdapter(connectorDescriptor, moduleName, loader);
             _logger.fine("ResourceAdapterAdminServiceImpl :: createActiveRA " +
                     moduleName + " at " + moduleDir +
@@ -271,9 +272,9 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
             _registry.addActiveResourceAdapter(moduleName, activeResourceAdapter);
             _logger.fine("ResourceAdapterAdminServiceImpl:: createActiveRA " +
                     moduleName + " at " + moduleDir
-                    + " env =server ? " + (environment == SERVER));
+                    + " env =server ? " + (connectorRuntime.isServer()));
 
-            if (environment == SERVER) {
+            if (connectorRuntime.isServer()) {
                 activeResourceAdapter.setup();
                 String descriptorJNDIName = ConnectorAdminServiceUtils.getReservePrefixedJNDINameForDescriptor(moduleName);
                 _logger.fine("ResourceAdapterAdminServiceImpl :: createActiveRA "
@@ -287,7 +288,7 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
                 _runtime.getNamingManager().publishObject(
                         descriptorJNDIName, connectorDescriptor, true);
                 String securityWarningMessage=
-                    ConnectorRuntime.getRuntime().getSecurityPermissionSpec(moduleName);
+                    connectorRuntime.getSecurityPermissionSpec(moduleName);
                 // To i18N.
                 if (securityWarningMessage != null) {
                     _logger.log(Level.WARNING, securityWarningMessage);

@@ -81,8 +81,10 @@ public class ConnectorService implements ConnectorConstants {
     protected static final ConnectorRegistry _registry =
             ConnectorRegistry.getInstance();
 
+/*
     private boolean debug = true;
     protected static int environment = SERVER;
+*/
     protected ConnectorRuntime _runtime;
 
     /**
@@ -92,7 +94,9 @@ public class ConnectorService implements ConnectorConstants {
         _runtime = ConnectorRuntime.getRuntime();
     }
 
-    /**
+/*
+    */
+/**
      * Initializes the execution environment. If the execution environment
      * is appserv runtime it is set to ConnectorConstants.SERVER else
      * it is set ConnectorConstants.CLIENT
@@ -101,20 +105,26 @@ public class ConnectorService implements ConnectorConstants {
      *                environment is appserv runtime else set to
      *                ConnectorConstants.CLIENT
      */
+/*
     public void initialize(int environ) {
         environment = environ;
     }
+*/
 
-    /**
+/*
+    */
+/**
      * Returns the execution environment.
      *
      * @return ConnectorConstants.SERVER if execution environment is
      *         appserv runtime
      *         else it returns ConnectorConstants.CLIENT
      */
+/*
     public static int getEnviron() {
         return environment;
     }
+*/
 
     /**
      * Returns the generated default connection poolName for a
@@ -147,12 +157,15 @@ public class ConnectorService implements ConnectorConstants {
         return resourceJNDIName + RESOURCENAME_APPENDER + connectionDefName;
     }
 
-    /**
+/*
+    */
+/**
      * Checks whether the executing environment is application server
      *
      * @return true if execution environment is server
      *         false if it is client
      */
+/*
 
     public static boolean isServer() {
         if (getEnviron() == SERVER) {
@@ -161,6 +174,7 @@ public class ConnectorService implements ConnectorConstants {
             return false;
         }
     }
+*/
 
     public boolean checkAndLoadResource(Object resource, Object pool, String resourceType, String resourceName,
                                         String raName)

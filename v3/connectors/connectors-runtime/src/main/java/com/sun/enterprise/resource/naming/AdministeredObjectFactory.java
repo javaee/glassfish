@@ -82,7 +82,7 @@ public class AdministeredObjectFactory implements ObjectFactory {
         //todo: Similar code in ConnectorObjectFactory - to refactor.
 
         ConnectorRuntime runtime = ConnectorRuntime.getRuntime();
-        if (runtime.getEnviron() == ConnectorRuntime.CLIENT) {
+        if (runtime.getEnvironment() == ConnectorRuntime.CLIENT) {
             ConnectorDescriptor connectorDescriptor = null;
             try {
                 Context ic = new InitialContext();

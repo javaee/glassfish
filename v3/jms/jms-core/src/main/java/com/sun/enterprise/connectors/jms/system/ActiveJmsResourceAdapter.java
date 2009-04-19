@@ -289,7 +289,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl {
      * @throws ConnectorRuntimeException in case of an exception.
      */
     protected void loadRAConfiguration() throws ConnectorRuntimeException{
-        if (ConnectorRuntime.getRuntime().getEnviron()
+        if (ConnectorRuntime.getRuntime().getEnvironment()
                                        == ConnectorRuntime.SERVER) {
             // Check whether MQ has started up or not.
             try {

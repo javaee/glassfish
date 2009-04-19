@@ -79,7 +79,7 @@ public class ActiveRAFactory {
 
         ActiveResourceAdapter activeResourceAdapter = null;
 
-        int environment = ConnectorRuntime.getRuntime().getEnviron();
+        int environment = ConnectorRuntime.getRuntime().getEnvironment();
         ResourceAdapter ra = null;
         String raClass = cd.getResourceAdapterClass();
 

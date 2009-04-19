@@ -49,7 +49,6 @@ import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
 
 import javax.resource.spi.ManagedConnectionFactory;
-import java.security.PrivilegedActionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Set;
@@ -165,7 +164,7 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
      * @return boolean if the environment is appserver runtime
      */
     protected boolean isServer() {
-        if (connectorRuntime_.getEnviron() == ConnectorConstants.SERVER) {
+        if (connectorRuntime_.getEnvironment() == ConnectorConstants.SERVER) {
             return true;
         } else {
             return false;
