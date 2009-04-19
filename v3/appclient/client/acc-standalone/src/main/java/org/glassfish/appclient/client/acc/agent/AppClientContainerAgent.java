@@ -74,6 +74,7 @@ import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.sax.SAXSource;
 import org.glassfish.appclient.client.AppClientFacadeInfo;
 import org.glassfish.appclient.client.acc.ACCClassLoader;
+import org.glassfish.appclient.client.acc.ACCLogger;
 import org.glassfish.appclient.client.acc.AgentArguments;
 import org.glassfish.appclient.client.acc.AppClientCommand;
 import org.glassfish.appclient.client.acc.AppClientContainer;
@@ -86,6 +87,7 @@ import org.glassfish.appclient.client.acc.UserError;
 import org.glassfish.appclient.client.acc.Util;
 import org.glassfish.appclient.client.acc.config.ClientContainer;
 import org.glassfish.appclient.client.acc.config.ClientCredential;
+import org.glassfish.appclient.client.acc.config.LogService;
 import org.glassfish.appclient.client.acc.config.TargetServer;
 import org.glassfish.appclient.client.acc.config.util.XML;
 import org.xml.sax.InputSource;
@@ -198,19 +200,20 @@ public class AppClientContainerAgent {
                         appClientCommandArgs.getTargetServer());
 
                 /*
-                 * Get the configurator.  Doing so correctly involves merging
+                 * Get the builder.  Doing so correctly involves merging
                  * the configuration file data with some of the command line and
                  * agent arguments.
                  */
-                final AppClientContainer.Builder configurator =
-                        createConfigurator(targetServers,
+                final AppClientContainer.Builder builder =
+                        createBuilder(targetServers,
+                            clientContainer.getLogService(),
                             appClientCommandArgs);
 
                 /*
                  * Create the ACC.  Again, precisely how we create it depends on some
                  * of the command line arguments and agent arguments.
                  */
-                acc = createContainer(configurator,
+                acc = createContainer(builder,
                         launchInfo);
 
                 /*
@@ -296,28 +299,30 @@ public class AppClientContainerAgent {
         return newLoader;
     }
 
-    private static Builder createConfigurator(
+    private static Builder createBuilder(
             final TargetServer[] targetServers,
-            final AppclientCommandArguments appClientCommandArgs) {
+            final LogService logService,
+            final AppclientCommandArguments appClientCommandArgs) throws IOException {
 
-        Builder config = AppClientContainer.newBuilder(targetServers);
+        Builder builder = AppClientContainer.newBuilder(targetServers);
 
         /*
-         * Augment the config with settings from the app client options that
-         * can affect the configurator itself.  (This is distinct from options
+         * Augment the builder with settings from the app client options that
+         * can affect the builder itself.  (This is distinct from options
          * that affect what client to launch which are handled in creating
          * the ACC itself.
          */
-        updateClientCredentials(config, appClientCommandArgs);
+        updateClientCredentials(builder, appClientCommandArgs);
+        builder.logger(new ACCLogger(logService));
 
-        return config;
+        return builder;
     }
 
     private static void updateClientCredentials(
-            final Builder config,
+            final Builder builder,
             final AppclientCommandArguments appClientCommandArgs) {
 
-        ClientCredential cc = config.getClientCredential();
+        ClientCredential cc = builder.getClientCredential();
         if (cc == null) {
             cc = new ClientCredential();
         }
@@ -341,7 +346,7 @@ public class AppClientContainerAgent {
     }
 
     private static AppClientContainer createContainer(
-            final Builder config,
+            final Builder builder,
             final CommandLaunchInfo launchInfo) throws Exception, UserError {
 
         /*
@@ -359,18 +364,18 @@ public class AppClientContainerAgent {
                  * directory or JAR to launch.
                  */
                 container = createContainerForAppClientArchiveOrDir(
-                        config,
+                        builder,
                         launchInfo.getClientName(),
                         launchInfo.getAppclientCommandArguments().getMainclass(),
                         launchInfo.getAppclientCommandArguments().getName());
                 break;
 
             case CLASS:
-                container = createContainerForClassName(config, launchInfo.getClientName());
+                container = createContainerForClassName(builder, launchInfo.getClientName());
                 break;
 
             case CLASSFILE:
-                container = createContainerForClassFile(config, launchInfo.getClientName());
+                container = createContainerForClassFile(builder, launchInfo.getClientName());
                 break;
         }
 
@@ -382,17 +387,17 @@ public class AppClientContainerAgent {
     }
 
     private static AppClientContainer createContainerForAppClientArchiveOrDir(
-            final Builder config,
+            final Builder builder,
             final String appClientPath,
             final String mainClassName,
             final String clientName) throws Exception, UserError {
 
         URI uri = Util.getURI(new File(appClientPath));
-        return config.newContainer(uri, null /* callbackHandler */, mainClassName, clientName);
+        return builder.newContainer(uri, null /* callbackHandler */, mainClassName, clientName);
     }
 
     private static AppClientContainer createContainerForClassName(
-            final Builder config,
+            final Builder builder,
             final String className) throws Exception, UserError {
 
         /*
@@ -405,7 +410,7 @@ public class AppClientContainerAgent {
         Thread.currentThread().setContextClassLoader(loader);
         Class mainClass = Class.forName(className, true, loader);
 
-        AppClientContainer result = config.newContainer(mainClass);
+        AppClientContainer result = builder.newContainer(mainClass);
         return result;
     }
 
@@ -416,7 +421,7 @@ public class AppClientContainerAgent {
     }
 
     private static AppClientContainer createContainerForClassFile(
-            final Builder config,
+            final Builder builder,
             final String classFilePath) throws MalformedURLException, ClassNotFoundException, FileNotFoundException, IOException, Exception, UserError {
         
         Util.verifyFilePath(classFilePath);
@@ -429,7 +434,7 @@ public class AppClientContainerAgent {
                 .substring(0, classFilePath.lastIndexOf(".class"))
                 .replace(File.separatorChar, '.');
 
-        return createContainerForClassName(config, className);
+        return createContainerForClassName(builder, className);
     }
 
     private static ClientContainer readConfig(final String configPath,
