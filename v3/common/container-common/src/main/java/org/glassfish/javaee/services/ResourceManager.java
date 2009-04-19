@@ -53,6 +53,7 @@ import com.sun.enterprise.config.serverbeans.*;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
+import com.sun.logging.LogDomains;
 import org.jvnet.hk2.config.ObservableBean;
 
 
@@ -64,8 +65,7 @@ import org.jvnet.hk2.config.ObservableBean;
  */
 public class ResourceManager implements Startup, PostConstruct, PreDestroy, ConfigListener {
 
-    @Inject
-    private Logger logger;
+    private static final Logger logger = LogDomains.getLogger(ResourceManager.class,LogDomains.RESOURCE_BUNDLE);
 
     @Inject
     private ResourcesBinder resourcesBinder;
