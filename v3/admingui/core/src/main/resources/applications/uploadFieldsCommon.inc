@@ -80,7 +80,7 @@
 <sun:property id="enableProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.status}" visible="#{true}"  helpText="$resource{i18n.deploy.statusHelp}">
 	<sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{enabled}" />  
 </sun:property>
-<sun:property id="wsp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.JavaWebStart}" visible="#{false}"  helpText="$resource{i18n.deploy.javaWebStartHelp}">
+<sun:property id="wsp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" rendered="#{false}" label="$resource{i18n.common.JavaWebStart}" visible="#{false}"  helpText="$resource{i18n.deploy.javaWebStartHelp}">
 	<sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{jws}" />  
 </sun:property>
 <sun:property id="haProp" rendered="#{supportCluster}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Availability}" visible="#{false}">
@@ -97,7 +97,7 @@
 <sun:property id="librariesProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Libraries}" helpText="$resource{i18n.deploy.libraryHelp}" >
 	<sun:textField id="library" columns="$int{40}" text="#{library}" />
 </sun:property>
-<sun:property id="threadpoolProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.connectorModule.ThreadPoolID}" helpText="$resource{i18n.connectorModule.ThreadPoolIDHelp}" visible="#{false}">
+<sun:property id="threadpoolProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.connectorModule.ThreadPoolID}" helpText="$resource{i18n.connectorModule.ThreadPoolIDHelp}" >
 	<sun:textField id="threadPool" columns="$int{40}" text="#{threadpool}" />
 </sun:property>
 <sun:property id="registryProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.connectorModule.RegistryType}" visible="#{false}">

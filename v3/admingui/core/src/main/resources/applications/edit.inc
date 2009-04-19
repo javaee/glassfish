@@ -79,7 +79,7 @@
             getApplicationInfo(name="#{appName}" 
                 location=>$page{location} description=>$attribute{description} 
                 enabled=>$attribute{enabled} enabledString=>$attribute{enabledString}
-                libraries=>$page{libraries} directoryDeployed=>$attribute{directoryDeployed}
+                libraries=>$page{libraries} 
                 contextRoot=>$attribute{contextRoot} javaWebStart=>$attribute{javaWebStart})
             setPageSessionAttribute(key="showHa" value="$boolean{false}");
             # if ( $session{supportCluster} & $pageSession{hasHa} ){
@@ -131,10 +131,6 @@
        <sun:property id="jwsProp"  rendered="#{hasJavaWebStart}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.JavaWebStart}">
             <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{javaWebStart}" />  
        </sun:property> 
-
-       <sun:property id="dirDeploy" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.enterpriseApplications.directoryDeploy}">
-            <sun:checkbox disabled="#{true}" selected="#{directoryDeployed}" />
-       </sun:property>
 
         <sun:property id="locationProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.location}">
             <sun:staticText id="location" text="#{location}"/>

@@ -45,12 +45,12 @@
         setSessionAttribute(key="appGeneralTabs" value="general");
         setPageSessionAttribute(key="pageTitle" value="$resource{i18n.enterpriseApplications.editPageTitle}");
         setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.enterpriseApplications.editPageTitleHelp}");
-        setPageSessionAttribute(key="hasJavaWebStart" value="#{true}");
+        setPageSessionAttribute(key="hasJavaWebStart" value="#{false}");
         setPageSessionAttribute(key="hasHa" value="#{false}");
         setPageSessionAttribute(key="hasContextRoot" value="#{true}");
         #TODO-V3 omit Libraries
         setPageSessionAttribute(key="hasLibraries" value="#{false}");
-        setPageSessionAttribute(key="hasThreadPool" value="#{false}");
+        setPageSessionAttribute(key="hasThreadPool" value="#{true}");
         setPageSessionAttribute(key="hasVS" value="#{true}");
         setPageSessionAttribute(key="hasComponentTable" value="#{true}");
         setPageSessionAttribute(key="hasActionColumn" value="#{false}");
