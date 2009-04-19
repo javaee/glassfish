@@ -52,9 +52,7 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 //V3:Commented import com.sun.enterprise.Switch;
 import com.sun.enterprise.security.jmac.config.CallbackHandlerConfig;
 import com.sun.enterprise.security.jmac.config.HandlerContext;
-import org.glassfish.api.invocation.InvocationManager;
 import org.jvnet.hk2.annotations.ContractProvided;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
 /**
@@ -66,8 +64,6 @@ public final class ContainerCallbackHandler
         implements CallbackHandler, CallbackHandlerConfig {
     private CallbackHandler handler = null;
     
-    @Inject
-    private InvocationManager invManager;
     
     public ContainerCallbackHandler() {
         if (SecurityServicesUtil.getInstance().isACC()) {
@@ -99,7 +95,6 @@ public final class ContainerCallbackHandler
     
     //TODO:V3 code this method correctly later
     private  boolean isAppclientContainer() {
-        //return (ComponentInvocationType.APP_CLIENT_INVOCATION == invManager.getCurrentInvocation().getInvocationType());
         return SecurityServicesUtil.getInstance().isACC();
     }
 }
