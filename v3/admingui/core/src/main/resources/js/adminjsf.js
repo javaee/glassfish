@@ -520,7 +520,9 @@ function loadInTopWindow() {
 
 //===========================================================================
 
-var admingui = {};
+if (typeof(admingui) === "undefined") {
+    admingui = {};
+}
 
 /*
  *  The following functions are utility functions.
@@ -580,6 +582,24 @@ admingui.util = {
 
         // Return what we found (if anything)
         return results;
+    },
+
+    /**
+     *	This function sets the <code>key</code> / <code>value</code> pair as
+     *	a persistent preference in the <code>root</code> path.  The root path
+     *	will automatically prefix "glassfish/" to the given String.
+     *
+     *	Optionally, a sessionKey can be provided which represents the session
+     *	key which will cache this preference value.
+     */
+    setPreference: function(root, key, value, sessionKey) {
+	sessionKey = (sessionKey == null) ? "" : ("&sessionKey=" + sessionKey);
+	DynaFaces.fireAjaxTransaction(null, {
+		execute: admingui.setPrefButton.id,
+		inputs:  admingui.setPrefButton.id,
+		parameters: "root=" + root + "&key=" + key + "&value=" + value + sessionKey,
+		render: "none"
+	    } );
     }
 }
 
@@ -970,6 +990,7 @@ admingui.nav = {
         return text + urls;
     }
 };
+
 
 //============================================================
 /**
