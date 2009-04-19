@@ -150,7 +150,7 @@ public class ConnectorConfigParserUtils {
                                   getActiveResourceAdapter(resourceAdapterName);
                 if (activeRA == null) {
                     //Check and Load RAR
-                    (new ConnectorService()).loadDeferredResourceAdapter(
+                    ConnectorRuntime.getRuntime().loadDeferredResourceAdapter(
                                                       resourceAdapterName);
                     activeRA = ConnectorRegistry.getInstance().
                                   getActiveResourceAdapter(resourceAdapterName);
