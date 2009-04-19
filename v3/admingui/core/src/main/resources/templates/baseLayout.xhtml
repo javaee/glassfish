@@ -13,7 +13,7 @@
 <ui:event type="initPage">
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
     setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
-    getAmxRoot(amxRoot=>$attribute{amxRoot});
+    getAmxRoot(amxRoot="#{requestScope.amxRoot}");
     setAttribute(key="anonLogin", value="#{amxRoot.realmsMgr.anonymousLogin}");
 </ui:event>
 
@@ -43,6 +43,14 @@
         if($session{supportCluster}){
             setSessionAttribute(key="restartRequired" value="$boolean{false}");
         }
+
+	// Set expand / collapse preferences...
+	if ("#{sessionScope.hideLeft}=#{null}") {
+	    getPreference(default="#{false}", root="glassfish/layout", key="hideLeft", value="#{sessionScope.hideLeft}");
+	}
+	if ("#{sessionScope.hideRight}=#{null}") {
+	    getPreference(default="#{false}", root="glassfish/layout", key="hideRight", value="#{sessionScope.hideRight}");
+	}
     </ui:event>
     <sun:head title="#{guiTitle}" debug="true" parseOnLoad="false">
         <link rel="stylesheet" type="text/css" href="#{facesContext.externalContext.request.contextPath}/style.css" />
@@ -64,10 +72,22 @@
     </sun:head>
 
     <sun:body onLoad="#{guiOnLoad}#{guiTemplateOnLoad}">
-<sc:layout fullPage="true">
-    <sc:layoutUnit position="top" height="110" scroll="false" gutter="5px" resize="false" collapse="false">
+<sc:layout id="gfLayout" fullPage="true">
+    <sc:layoutUnit id="gfLayoutTop" position="top" height="110" scroll="false" gutter="5px" resize="false" collapse="false">
         <div class="header_main">
             <sun:form id="headerForm">
+		<h:commandButton id="setPref" style="display: none;">
+		    <ui:event type="afterCreate">
+			setPageSessionAttribute(key="setPrefId" value="$this{clientId}");
+		    </ui:event>
+		    <ui:event type="command">
+			// FIXME: may want to escape param values here
+			setPreference(root="glassfish/#{param.root}", key="#{param.key}", value="#{param.value}");
+			if ("#{param.sessionKey}") {
+			    setSessionAttribute(key="#{param.sessionKey}", value="#{param.value}");
+			}
+		    </ui:event>
+		</h:commandButton>
                 <!-- Customizing the masthead -->
                 <ui:event type="afterCreate">
                     getClientId(component="$this{component}" clientId=>$attribute{formId})
@@ -78,11 +98,11 @@
         </div>
     </sc:layoutUnit>
 
-    <sc:layoutUnit position="left" width="250" gutter="5px" resize="true" header="Tree" collapse="true">
+    <sc:layoutUnit id="gfLayoutLeft" position="left" width="250" gutter="5px" resize="true" header="Tree" collapse="true">
         <ui:insert name="guiLeftNav" />
     </sc:layoutUnit>
 
-    <sc:layoutUnit position="center" scroll="true" gutter="5px">
+    <sc:layoutUnit id="gfLayoutCenter" position="center" scroll="true" gutter="5px">
 	<ui:insert name="guiTopNav" />
 	<!-- Content -->
 	<div id="content" style="padding-left: 5px; padding-right: 5px;">
@@ -99,9 +119,14 @@
     <!--
 
       I am commenting out the tags panel for now... this functionality should go back into the UI at some point...
+	//<ui:include src="/tagsPanel.jsf" />
 
-    <sc:layoutUnit position="right" width="250" gutter="5px" resize="true" header="Tags" collapse="true">
-	<ui:include src="/tagsPanel.jsf" />
+    <sc:layoutUnit id="gfLayoutRight" position="right" width="250" gutter="5px" resize="true" header="Tags" collapse="true">
+	<event>
+	    <ui:event type="afterCreate">
+		includeFirstIntegrationPoint(type="org.glassfish.admingui:rightPanel" root="${this.component}");
+	    </ui:event>
+	</event>
     </sc:layoutUnit>
     -->
 </sc:layout>
@@ -109,7 +134,7 @@
 	Add Tag Panel
         <sc:panel id="addTagPanel" visible="false" modal="true" closable="true" fixedCenter="true">
             <h3>Tag the Current Page</h3>
-            <h:form id="tagForm">
+            <sun:form id="tagForm">
                 <div style="padding: 10px;">Tag: <h:inputText id="tag" value="#{requestScope.tag}"/></div>
                 <h:inputHidden id="url" value="#{requestScope.url}"/>
                 <h:commandButton id="addTagButton" value="Add Tag" onclick="submitTagForm(this); return false;">
@@ -120,16 +145,16 @@
                         setAttribute(key="tagName" value="");
                     </ui:event>
                 </h:commandButton>
-            </h:form>
+            </sun:form>
         </sc:panel>
 -->
 
-<!--
+	<!--
 	Search Tags Panel
         <sc:panel id="searchTagsPanel" visible="false" modal="true" closable="true" fixedCenter="true" width="300px">
             <h3>Search Tags</h3>
                 <div style="width:40px; float: left">Tag:</div>
-                <h:form id="tagSearch">
+                <sun:form id="tagSearch">
                     <h:inputText id="tag" value="#{requestScope.tag}"/>
                     <h:commandButton id="searchTagButton" value="Search" onclick="submitTagSearchForm(this); return false;">
                         <ui:event type="command">
@@ -137,14 +162,14 @@
                             setAttribute(key="tag" value="");
                         </ui:event>
                     </h:commandButton>
-                </h:form>
+                </sun:form>
                 <div style="height: 200px; overflow: auto;">
                     <h:dataTable id="hits" value="#{requestScope.tagSearchHits}" var="hit">
                         <h:column><a href="#{hit.url}">#{hit.name}</a></h:column>
                     </h:dataTable>
                 </div>
         </sc:panel>
--->
+	-->
     </sun:body>
 </sun:html>
 
@@ -179,7 +204,6 @@
 <!--
     FIXME: I think this would be better implemented using Y!'s KeyListener:
     http://developer.yahoo.com/yui/examples/container/keylistener.html
--->
     function showSearchPanel(e) {
 	var result = true;
 	if ((e.charCode == 102) &amp;&amp; (e.ctrlKey == true)) {
@@ -192,6 +216,33 @@
 	return result;
     }
     YAHOO.util.Event.addListener(document, "keypress", showSearchPanel);
+-->
+
+    // Save the prefs button so it is accessible via our JS
+    if (typeof(admingui) === "undefined") {
+	admingui = {};
+    }
+    admingui.setPrefButton = document.getElementById("#{pageSession.setPrefId}");
+
+    // Collapse panels if necessary
+    if (#{sessionScope.hideLeft}) {
+	YAHOO.util.Event.onDOMReady(function (ev) {
+	    var lu = gfLayout_layoutManager.getUnitByPosition('left');
+	    lu.on("collapse", function (ev) { alert('collapse-- old:' + ev.oldValue + ' new:' + ev.newValue); });
+	    lu.collapse();
+	});
+    }
+    if (#{sessionScope.hideRight}) {
+	YAHOO.util.Event.onDOMReady(function (ev) {
+	    var lu = gfLayout_layoutManager.getUnitByPosition('right');
+	    lu.collapse();
+	});
+    }
+
+// FIXME: Toggle when they click the collapse link!
+admingui.util.setPreference("layout", "hideLeft", "false", "hideLeft");
+admingui.util.setPreference("layout", "hideRight", "true", "hideRight");
+
 </script>
 
 </sun:page>
