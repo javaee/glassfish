@@ -45,6 +45,9 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
+import com.sun.enterprise.config.serverbeans.PrincipalMap;
+import com.sun.enterprise.config.serverbeans.GroupMap;
+import com.sun.enterprise.config.serverbeans.WorkSecurityMap;
 import com.sun.logging.LogDomains;
 
 import javax.resource.spi.work.*;
@@ -399,7 +402,8 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
         try {
             Subject executionSubject = new Subject();
             Subject serviceSubject = new Subject(); //TODO need to populate with server's credentials ?
-            Map securityMap = getSecurityWorkContextMap(raName);
+            //Map securityMap = getSecurityWorkContextMap(raName);
+            Map securityMap = getWorkContextMap(raName);
             CallbackHandler handler = new ConnectorCallbackHandler(executionSubject, runtime.getCallbackHandler(), securityMap);
 
             securityWorkContext.setupSecurityContext(handler, executionSubject, serviceSubject);
@@ -453,6 +457,61 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
         return null;
     }
 
+    /**
+     * Given a resource-adapter name, get all its work-context-map
+     * @param raName resource-adapter-name
+     * @return work-context-map
+     */
+    private Map getWorkContextMap(String raName){
+        List<WorkSecurityMap> maps = runtime.getWorkSecurityMap(raName);
+
+        List<PrincipalMap> principalsMap = getPrincipalsMap(maps);
+        List<GroupMap> groupsMap = getGroupsMap(maps);
+
+        HashMap eisASMap = new HashMap();
+
+        for(PrincipalMap map : principalsMap){
+            eisASMap.put(new PrincipalImpl(map.getEisPrincipal()), new PrincipalImpl(map.getMappedPrincipal()));
+        }
+
+        for(GroupMap map : groupsMap){
+            eisASMap.put(new Group(map.getEisGroup()), new Group(map.getMappedGroup()));
+        }
+        return eisASMap;
+    }
+
+    /**
+     * get the complete list of principal map from all the work-context-maps
+     * @param maps work security maps
+     * @return all principal-map
+     */
+    private List<PrincipalMap> getPrincipalsMap(List<WorkSecurityMap> maps) {
+        List<PrincipalMap> principalsMap = new ArrayList<PrincipalMap>();
+        for(WorkSecurityMap map : maps){
+            List<PrincipalMap> principalMap = map.getPrincipalMap();
+            if(principalMap != null && principalMap.size() > 0){
+                principalsMap.addAll(principalMap);
+            }
+        }
+        return principalsMap;
+    }
+
+    /**
+     * get the complete list of group map from all the work-context-maps
+     * @param maps work security maps
+     * @return all group-map
+     */
+    private List<GroupMap> getGroupsMap(List<WorkSecurityMap> maps) {
+        List<GroupMap> groupsMap = new ArrayList<GroupMap>();
+        for(WorkSecurityMap map : maps){
+            List<GroupMap> groupMap = map.getGroupMap();
+            if(groupMap != null && groupMap.size() > 0){
+                groupsMap.addAll(groupMap);
+            }
+        }
+        return groupsMap;
+    }
+    
     /**
      * notify the work-context-listener that the context setup has failed
      * Error code provides specific information

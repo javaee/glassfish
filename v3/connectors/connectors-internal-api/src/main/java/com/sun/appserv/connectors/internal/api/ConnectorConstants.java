@@ -341,6 +341,11 @@ public interface ConnectorConstants {
      */
     public static final String RES_TYPE_RAC = "rac";
 
+    /**
+     * Constant to denote connector-work-security-map type.
+     */
+    public static final String RES_TYPE_CWSM = "cwsm";
+
 /*  TODO V3 unused ?
 
     //TODO V3 should be taken from IASJ2EEResourceFactoryImpl

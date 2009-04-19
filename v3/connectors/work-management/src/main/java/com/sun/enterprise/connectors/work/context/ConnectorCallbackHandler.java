@@ -82,7 +82,7 @@ public class ConnectorCallbackHandler implements CallbackHandler {
 
     public ConnectorCallbackHandler(Subject executionSubject, CallbackHandler handler, Map securityMap) {
         this.handler = handler;
-        if (securityMap != null) {
+        if (securityMap != null && securityMap.size() > 0) {
             needMapping = true;
             debug("translation required");
         } else {
