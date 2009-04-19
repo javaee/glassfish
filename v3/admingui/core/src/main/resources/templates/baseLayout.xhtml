@@ -120,15 +120,17 @@
 
       I am commenting out the tags panel for now... this functionality should go back into the UI at some point...
 	//<ui:include src="/tagsPanel.jsf" />
+    -->
 
-    <sc:layoutUnit id="gfLayoutRight" position="right" width="250" gutter="5px" resize="true" header="Tags" collapse="true">
+    <sc:layoutUnit rendered="#{pageSession.rightContent[0] != null}" id="gfLayoutRight" position="right" width="250" gutter="5px" resize="true" header="Tags" collapse="true">
 	<event>
 	    <ui:event type="afterCreate">
+		// FIXME: Consider using a widget which allows multiple content types to share the right panel (i.e. accordian)
 		includeFirstIntegrationPoint(type="org.glassfish.admingui:rightPanel" root="${this.component}");
+		getIntegrationPoints(type="org.glassfish.admingui:rightPanel" points="#{pageSession.rightContent}");
 	    </ui:event>
 	</event>
     </sc:layoutUnit>
-    -->
 </sc:layout>
 <!--
 	Add Tag Panel
