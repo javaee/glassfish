@@ -38,16 +38,17 @@ package com.sun.appserv.connectors.internal.api;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
 import com.sun.enterprise.deployment.EnvironmentProperty;
-import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import com.sun.logging.LogDomains;
+import com.sun.corba.se.spi.orbutil.threadpool.ThreadPoolManager;
+import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
+import com.sun.corba.se.spi.orbutil.threadpool.NoSuchThreadPoolException;
+import com.sun.corba.se.impl.orbutil.threadpool.ThreadPoolManagerImpl;
 
 import java.io.File;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.jvnet.hk2.component.Habitat;
+import java.lang.reflect.Constructor;
 
 /**
  * Util class for connector related classes
@@ -173,6 +174,7 @@ public class ConnectorsUtil {
                 instance instanceof ExternalJndiResource ||
                 instance instanceof CustomResource ||
                 instance instanceof AdminObjectResource ||
+                instance instanceof WorkSecurityMap ||
                 instance instanceof ResourceAdapterConfig ) ;
     }
 
@@ -315,6 +317,20 @@ public class ConnectorsUtil {
         }
         return raName;
     }
+
+    public static List<WorkSecurityMap> getWorkSecurityMaps(String raName, Resources allResources){
+        List<Resource> resourcesList = allResources.getResources();
+        List<WorkSecurityMap> workSecurityMaps = new ArrayList<WorkSecurityMap>();
+        for(Resource resource : resourcesList){
+            if(resource instanceof WorkSecurityMap){
+                WorkSecurityMap wsm = (WorkSecurityMap)resource;
+                if(wsm.getResourceAdapterName().equals(raName)){
+                    workSecurityMaps.add(wsm);
+                }
+            }
+        }
+        return workSecurityMaps;
+    }
     public static AdminObjectResource[] getEnabledAdminObjectResources(String raName, Resources allResources,
                                                                        Server server)  {
         List resourcesList = allResources.getResources();
@@ -417,6 +433,8 @@ public class ConnectorsUtil {
             return ConnectorConstants.RES_TYPE_AOR;
         } else if (resource instanceof ResourceAdapterConfig){
             return ConnectorConstants.RES_TYPE_RAC;
+        } else if (resource instanceof WorkSecurityMap){
+            return ConnectorConstants.RES_TYPE_CWSM;
         } else {
             return null;
             //TODO V3 log and throw exception
@@ -512,7 +530,65 @@ public class ConnectorsUtil {
             return ((ResourcePool)resource).getName();
         }else if (resource instanceof ResourceAdapterConfig){
             return ((ResourceAdapterConfig)resource).getName();
+        }else if (resource instanceof WorkSecurityMap){
+            //TODO V3 toString duckType for WorkSecurityMap config bean ?
+            WorkSecurityMap wsm = (WorkSecurityMap)resource;
+            return ("resource-adapter name : " + wsm.getResourceAdapterName()
+                    + " : security map name : " +  wsm.getName());
         }
         return null;
+    }
+
+    /**
+     * get the thread pool, given the thread pool id, if availalbe.
+     * @param threadPoolId thread pool id
+     * @return thread pool
+     * @throws NoSuchThreadPoolException when no such thread pool is present
+     * @throws ConnectorRuntimeException when unable to get the thread pool
+     */
+    public static ThreadPool getThreadPool(String threadPoolId)
+            throws NoSuchThreadPoolException, ConnectorRuntimeException {
+
+        ThreadPoolManager tpm = getThreadPoolManager();
+
+        if (threadPoolId != null) {
+            return tpm.getThreadPool(threadPoolId);
+        } else {
+            return tpm.getDefaultThreadPool();
+        }
+    }
+
+    /**
+     * JDK 1.6.0_14 & JDK 1.6.0_16 has changes in SE thread pool api.
+     * Later we will be using appserver's thread pool.
+     * Using the workaround to check the constructor availability and act accordingly.
+     * @return thread pool manager
+     * @throws ConnectorRuntimeException when unable to provide thread pool manager
+     */
+    private static ThreadPoolManager getThreadPoolManager() throws ConnectorRuntimeException {
+        Constructor defaultConstructor;
+        Constructor threadGroupParamConstructor;
+        try {
+            defaultConstructor = ThreadPoolManagerImpl.class.getConstructor();
+            defaultConstructor.setAccessible(true);
+
+            return (ThreadPoolManager)defaultConstructor.newInstance();
+
+        } catch(NoSuchMethodException e) {
+            //do nothing. Second trial with a ThreadGroup parameter constructor will be done.
+        } catch(Exception e){
+            //do nothing.  Second trial with a ThreadGroup parameter constructor will be done.
+        }
+
+        try {
+            threadGroupParamConstructor = ThreadPoolManagerImpl.class.getConstructor(ThreadGroup.class);
+            threadGroupParamConstructor.setAccessible(true);
+
+            ThreadGroup tg = null;
+            return (ThreadPoolManager)threadGroupParamConstructor.newInstance(tg);
+
+        } catch(Exception e){
+            throw new ConnectorRuntimeException("unable to provide thread pool manager");
+        }
     }
 }

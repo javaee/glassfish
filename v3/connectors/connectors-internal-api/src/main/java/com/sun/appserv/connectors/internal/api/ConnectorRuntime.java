@@ -43,12 +43,10 @@ import javax.naming.NamingException;
 import javax.resource.ResourceException;
 import javax.resource.spi.ManagedConnectionFactory;
 import javax.security.auth.callback.CallbackHandler;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-import java.util.Properties;
+import java.util.*;
 
 import com.sun.enterprise.config.serverbeans.ResourcePool;
+import com.sun.enterprise.config.serverbeans.WorkSecurityMap;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
 import com.sun.corba.se.spi.orbutil.threadpool.NoSuchThreadPoolException;
@@ -205,7 +203,7 @@ public interface ConnectorRuntime extends ConnectorConstants{
      * @return ThreadPool
      * @throws NoSuchThreadPoolException when unable to get a ThreadPool
      */
-    public ThreadPool getThreadPool(String threadPoolId) throws NoSuchThreadPoolException;
+    public ThreadPool getThreadPool(String threadPoolId) throws NoSuchThreadPoolException, ConnectorRuntimeException;
 
 
     /**
@@ -454,4 +452,12 @@ public interface ConnectorRuntime extends ConnectorConstants{
      */
     public Properties getMessageListenerConfigPropTypes(String rarName,
                String messageListenerType) throws ConnectorRuntimeException ;
+
+    /**
+     * get work security maps for a resource-adapter-name
+     * @param raName resource-adapter name
+     * @return all work security maps of a resource-adapter
+     */
+    public List<WorkSecurityMap> getWorkSecurityMap(String raName);
+
 }

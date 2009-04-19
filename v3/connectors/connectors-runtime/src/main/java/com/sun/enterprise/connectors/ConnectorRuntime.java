@@ -38,12 +38,7 @@ package com.sun.enterprise.connectors;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.Timer;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.NamingException;
@@ -63,19 +58,14 @@ import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.appserv.connectors.internal.api.WorkContextHandler;
 import com.sun.appserv.connectors.internal.api.WorkManagerFactory;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
-import com.sun.corba.se.impl.orbutil.threadpool.ThreadPoolManagerImpl;
 import com.sun.corba.se.spi.orbutil.threadpool.NoSuchThreadPoolException;
 import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
-import com.sun.corba.se.spi.orbutil.threadpool.ThreadPoolManager;
-import com.sun.enterprise.config.serverbeans.Applications;
-import com.sun.enterprise.config.serverbeans.ResourceAdapterConfig;
-import com.sun.enterprise.config.serverbeans.ResourcePool;
-import com.sun.enterprise.config.serverbeans.Resources;
-import com.sun.enterprise.config.serverbeans.SecurityMap;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.connectors.authentication.AuthenticationService;
 import com.sun.enterprise.connectors.module.ConnectorApplication;
 import com.sun.enterprise.connectors.naming.ConnectorNamingEventNotifier;
 import com.sun.enterprise.connectors.service.*;
+import com.sun.enterprise.connectors.service.ConnectorService;
 import com.sun.enterprise.connectors.util.RAWriterAdapter;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.deploy.shared.FileArchive;
@@ -189,7 +179,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
 
     @Inject
     private ProcessEnvironment processEnvironment;
-    
+
     private final Object getTimerLock = new Object();
     private Timer timer;
 
@@ -231,7 +221,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     public void initialize(int environment) {
         this.environment = environment;
         //TODO V3
-        connectorService.initialize(getEnviron());
+        connectorService.initialize(getEnvironment());
 
     }
 */
@@ -243,7 +233,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      *         appserv runtime
      *         else it returns ConnectorConstants.CLIENT
      */
-    public int getEnviron() {
+    public int getEnvironment() {
         return environment;
     }
 
@@ -618,15 +608,10 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * @return ThreadPool
      * @throws NoSuchThreadPoolException when unable to get a ThreadPool
      */
-    public ThreadPool getThreadPool(String threadPoolId) throws NoSuchThreadPoolException {
-        int env = getEnviron();
+    public ThreadPool getThreadPool(String threadPoolId) throws NoSuchThreadPoolException, ConnectorRuntimeException {
+        int env = getEnvironment();
         if (env == ConnectorRuntime.SERVER) {
-            ThreadPoolManager tpm = new ThreadPoolManagerImpl(null);
-            if (threadPoolId != null) {
-                return tpm.getThreadPool(threadPoolId);
-            } else {
-                return tpm.getDefaultThreadPool();
-            }
+            return ConnectorsUtil.getThreadPool(threadPoolId);
         } else {
             return null;
         }
@@ -856,7 +841,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      *         false if it is client
      */
     public boolean isServer() {
-        return connectorService.isServer();
+        return getEnvironment() == SERVER;
     }
 
     /**
@@ -1045,9 +1030,11 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
         connectorService.createActiveResourceAdapterForEmbeddedRar(rarModuleName);
     }
 
+/*
     public int getEnvironment(){
         return environment;
     }
+*/
 
     /**
      * Check whether ClassLoader is permitted to access this resource adapter.
@@ -1075,7 +1062,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * {@inheritDoc}
      */
     public CallbackHandler getCallbackHandler(){
-        return new ContainerCallbackHandler();
+        return habitat.getComponent(ContainerCallbackHandler.class);
     }
 
     //TODO V3 can this impl be moved somewhere ?
@@ -1105,5 +1092,12 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      */
     public ClassLoader getConnectorClassLoader() {
         return clh.getConnectorClassLoader(null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<WorkSecurityMap> getWorkSecurityMap(String raName){
+        return ConnectorsUtil.getWorkSecurityMaps(raName, allResources);
     }
 }
