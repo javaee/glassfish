@@ -85,6 +85,7 @@ import javax.management.MBeanServerConnection;
 
 import org.jvnet.hk2.component.Habitat;
 import com.sun.appserv.management.client.AMXBooter;
+import com.sun.appserv.management.config.SystemApplicationsConfig;
 import com.sun.appserv.management.ext.runtime.RuntimeMgr;
 
 
@@ -99,6 +100,7 @@ public class AMXRoot {
     private  final DomainRoot domainRoot;
     private  final DomainConfig domainConfig;
     private  final ApplicationsConfig applicationsConfig;
+    private  final SystemApplicationsConfig systemApplicationsConfig;
     private  final ConfigsConfig configsConfig;
     private  final J2EEDomain j2eeDomain;
     private  final MonitoringRoot monitoringRoot;
@@ -126,6 +128,7 @@ public class AMXRoot {
         mbaenServerConnection = msc;
         resourcesConfig = domainConfig.getResourcesConfig();
         applicationsConfig = domainConfig.getApplicationsConfig();
+        systemApplicationsConfig = domainConfig.getSystemApplicationsConfig();
         serversConfig = domainConfig.getServersConfig();
         clustersConfig = domainConfig.getClustersConfig();
         realmsMgr = domainRoot.getRealmsMgr();
@@ -194,6 +197,10 @@ public class AMXRoot {
 
     public  ApplicationsConfig getApplicationsConfig() {
         return applicationsConfig;
+    }
+
+    public  SystemApplicationsConfig getSystamApplicationsConfig() {
+        return systemApplicationsConfig;
     }
     
     public  ServersConfig getServersConfig() {

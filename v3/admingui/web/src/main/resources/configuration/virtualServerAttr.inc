@@ -69,7 +69,7 @@
                 sso=>$attribute{sso}
                 accessLoggingFlag=>$page{accessLoggingFlag}
             ); 
-            getAllWebModules( modules=>$attribute{modules});  
+            getModulesByType( type="web" modules="#{requestScope.modules}");
             getTableList(Properties="#{props}", TableList=>$attribute{tableList});
         />
 

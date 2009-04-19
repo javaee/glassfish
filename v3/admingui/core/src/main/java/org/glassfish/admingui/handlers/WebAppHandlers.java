@@ -80,6 +80,7 @@ import org.glassfish.admingui.common.util.AMXRoot;
 import org.glassfish.admingui.common.util.AMXUtil;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.TargetUtil;
+import org.glassfish.admingui.common.util.AppUtil;
 import org.glassfish.deployment.client.DeploymentFacility;
 
 public class WebAppHandlers {
@@ -206,7 +207,7 @@ public class WebAppHandlers {
             List snifferList = new ArrayList();
             for(EngineConfig ec : eConfigs.values()){
                 String sniffer = ec.getSniffer();
-                if (sniffersHide.contains(sniffer) )
+                if (AppUtil.sniffersHide.contains(sniffer) )
                     continue;
                 snifferList.add(sniffer);
             }
@@ -246,7 +247,7 @@ public class WebAppHandlers {
                 oneRow.put("name", appConfig.getName());
                 oneRow.put("enableURL", enableURL);
                 oneRow.put("selected", false);
-                List sniffersList = getAllSniffers(appConfig);
+                List sniffersList = AppUtil.getAllSniffers(appConfig);
                 oneRow.put("sniffersList", sniffersList);
                 oneRow.put("sniffers", sniffersList.toString());
                 for(int ix=0; ix< sniffersList.size(); ix++)
@@ -265,28 +266,14 @@ public class WebAppHandlers {
 
     }
 
-    private static List getAllSniffers(ApplicationConfig appConfig){
-        List sniffersList = new ArrayList();
-        Map <String, ModuleConfig> mConfigs = appConfig.getModuleConfigMap();
-        for (ModuleConfig mf : mConfigs.values()){
-            Map<String, EngineConfig> eConfigs = mf.getEngineConfigMap();
-            for(EngineConfig ec : eConfigs.values()){
-                String sniffer = ec.getSniffer();
-                if (sniffersHide.contains(sniffer) || sniffersList.contains(sniffer))
-                    continue;
-                sniffersList.add(sniffer);
-            }
-        }
-        Collections.sort(sniffersList);
-        return sniffersList;
-    }
+    
 
     
     private static void getLaunchInfo(String serverName, ApplicationConfig appConfig,  Map oneRow) {
 
         boolean enabled = TargetUtil.isApplicationEnabled(appConfig, "server");
         String contextRoot = appConfig.getContextRoot();
-        String composite = AMXUtil.getPropertyValue(appConfig, PROP_IS_COMPOSITE);
+        String composite = AMXUtil.getPropertyValue(appConfig, AppUtil.PROP_IS_COMPOSITE);
         oneRow.put("contextRoot", GuiUtil.isEmpty(contextRoot)? "" : contextRoot);
         if (GuiUtil.isEmpty(contextRoot))
             contextRoot = "";
@@ -522,14 +509,5 @@ public class WebAppHandlers {
         return ctxRoot;
     }
     static private Map<String, String> displayMap = new HashMap();
-
-
-    static private List sniffersHide = new ArrayList();
-    static {
-        sniffersHide.add("security");
-    }
-
-
-
-    static private final String PROP_IS_COMPOSITE = "isComposite";
+  
 }

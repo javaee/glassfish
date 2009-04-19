@@ -34,7 +34,7 @@
  * holder.
  */
 
-package org.glassfish.admingui.handlers;
+package org.glassfish.web.admingui.handlers;
 
 
 import com.sun.appserv.management.base.XTypes;
@@ -56,6 +56,8 @@ import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import org.glassfish.admingui.common.util.AMXRoot; 
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.AMXUtil;
+import org.glassfish.admingui.common.util.AppUtil;
+
 
 import com.sun.appserv.management.config.ConfigConfig; 
 import com.sun.appserv.management.config.VirtualServerConfig;
@@ -411,26 +413,25 @@ public class VirtualServerHandlers {
      *  ones in ear and web app.
      *	@param	handlerCtx	The HandlerContext.
      */
-    @Handler(id="getAllWebModules",
+    @Handler(id="getModulesByType",
+       input={
+        @HandlerInput(name="type", type=String.class, required=true)},
        output={
         @HandlerOutput(name="modules", type=List.class)})
 
-        public static void getAllWebModules(HandlerContext handlerCtx) {
-        
-        Map<String,ApplicationConfig> webs = AMXRoot.getInstance().getApplicationsConfig().getApplicationConfigMap();
+    public static void getModulesByType(HandlerContext handlerCtx) {
+
+        Map<String, ApplicationConfig> appsConfig = AMXRoot.getInstance().getApplicationsConfig().getApplicationConfigMap();
+        String type = (String)handlerCtx.getInputValue("type");
         List result = new ArrayList();
         result.add("");
-        for(String nm : webs.keySet()){
-            result.add(nm);
-        }
-        handlerCtx.setOutputValue("modules", result);
+        List webModules = AppUtil.getAllModules(type, result);
+        handlerCtx.setOutputValue("modules", webModules);
     }
       
-      
-    
-    
-    
-     private static List vsSkipPropsList = new ArrayList();
+          
+    private static final String PROP_IS_COMPOSITE = "isComposite";
+    private static List vsSkipPropsList = new ArrayList();
 
      static {
         vsSkipPropsList.add("accessLogBufferSize");
