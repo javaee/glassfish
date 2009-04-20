@@ -168,7 +168,8 @@ public final class JMXCmdCmdMgr extends CmdMgrImpl
 			ValidateMBeansCmd.class,
 			GenerateMBeansCmd.class,
 			ProxyCmd.class,
-			SecurityCmd.class
+			SecurityCmd.class,
+			NavCmd.class
 		};
 	}
 	
