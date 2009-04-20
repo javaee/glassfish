@@ -45,6 +45,7 @@ import org.glassfish.api.admin.AdminCommandContext;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.config.serverbeans.ConnectorResource;
 import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
+import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -110,7 +111,7 @@ public class DeleteJMSResource implements AdminCommand {
               commandRunner.doCommand("delete-admin-object", params, subReport);
 
               if (ActionReport.ExitCode.FAILURE.equals(subReport.getActionExitCode())){
-                    report.setMessage(localStrings.getLocalString("delete.jms.resource.cannotDeleteJMSResource",
+                    report.setMessage(localStrings.getLocalString("delete.jms.resource.cannotDeleteJMSAdminObject",
                             "Unable to Delete Admin Object."));
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                     return;
@@ -140,7 +141,7 @@ public class DeleteJMSResource implements AdminCommand {
                      commandRunner.doCommand("delete-connector-connection-pool", params, subReport);
 
                     if (ActionReport.ExitCode.FAILURE.equals(subReport.getActionExitCode())){
-                        report.setMessage(localStrings.getLocalString("delete.jms.resource.cannotDeleteJMSResource",
+                        report.setMessage(localStrings.getLocalString("delete.jms.resource.cannotDeleteJMSPool",
                             "Unable to Delete Connector Connection Pool."));
                         report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                         return;
