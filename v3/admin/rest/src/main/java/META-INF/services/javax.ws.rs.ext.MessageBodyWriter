@@ -1,0 +1,7 @@
+org.glassfish.admin.rest.provider.DomHtmlProvider
+org.glassfish.admin.rest.provider.DomJsonProvider
+org.glassfish.admin.rest.provider.DomXmlProvider
+org.glassfish.admin.rest.provider.FormWriter
+org.glassfish.admin.rest.provider.SingletonDomJsonProvider
+org.glassfish.admin.rest.provider.SingletonDomXmlProvider
+org.glassfish.admin.rest.provider.SingletonDomHtmlProvider
