@@ -126,7 +126,7 @@
 	<event>
 	    <ui:event type="afterCreate">
 		// FIXME: Consider using a widget which allows multiple content types to share the right panel (i.e. accordian)
-		includeFirstIntegrationPoint(type="org.glassfish.admingui:rightPanel" root="${this.component}");
+		includeFirstIntegrationPoint(type="org.glassfish.admingui:rightPanel" root="$this{component}");
 		getIntegrationPoints(type="org.glassfish.admingui:rightPanel" points="#{pageSession.rightContent}");
 	    </ui:event>
 	</event>
