@@ -123,6 +123,8 @@ public final class RuntimeMgrImpl extends AMXImplBase
         final Map<String,HttpListenerConfig> listeners = httpService.getHttpListener();
         final HttpListenerConfig listener = listeners.get("admin-listener");
         
+        cdebug( "Got HttpListenerConfig: " + listener );
+        
         return listener;
     }
 

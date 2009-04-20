@@ -617,7 +617,7 @@ public final class ProxyFactory implements NotificationListener
         {
             final AMXProxyHandler handler	= new AMXProxyHandler( getMBeanServerConnection(), objectName, mbeanInfo);
             proxy	= (AMXProxy)Proxy.newProxyInstance( intf.getClassLoader(), new Class[] { intf }, handler);
-            debug( "CREATED proxy of type " + intf.getName() + ", metadata specifies " + AMXProxyHandler.getInterfaceName(mbeanInfo) );
+            //debug( "CREATED proxy of type " + intf.getName() + ", metadata specifies " + AMXProxyHandler.getInterfaceName(mbeanInfo) );
         }
         catch( IllegalArgumentException e )
         {
