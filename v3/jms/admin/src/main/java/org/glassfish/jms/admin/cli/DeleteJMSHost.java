@@ -132,8 +132,8 @@ public class DeleteJMSHost implements AdminCommand {
                 }
             }, jmsService);
         } catch(TransactionFailure tfe) {
-            report.setMessage(localStrings.getLocalString("create.jms.host.fail",
-                            "Unable to create jms host {0}.", jmsHostName) +
+            report.setMessage(localStrings.getLocalString("delete.jms.host.fail",
+                            "Unable to delete jms host {0}.", jmsHostName) +
                             " " + tfe.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(tfe);
