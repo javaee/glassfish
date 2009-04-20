@@ -46,6 +46,8 @@ import org.glassfish.api.Param;
 import java.lang.reflect.AnnotatedElement;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandModel;
+import org.glassfish.config.support.CommandModelImpl;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.ComponentException;
 
@@ -208,7 +210,8 @@ public class CommandRunnerTest {
     public void getUsageTextTest() {
         String expectedUsageText = "Usage: dummy-admin --foo=foo [--bar=false] --hello=there world ";
         DummyAdminCommand dac = new DummyAdminCommand();
-        String actualUsageText = cr.getUsageText(dac);
+        CommandModel model = new CommandModelImpl(DummyAdminCommand.class);
+        String actualUsageText = cr.getUsageText(dac, model);
         assertEquals(expectedUsageText, actualUsageText);
     }
 
@@ -218,9 +221,8 @@ public class CommandRunnerTest {
         props.put("foo", "bar");
         props.put("hello", "world");
         props.put("one", "two");
-        DummyAdminCommand dac = new DummyAdminCommand();
         try {
-            cr.validateParameters(dac, props);
+            cr.validateParameters(new CommandModelImpl(DummyAdminCommand.class), props);
         }
         catch (ComponentException ce) {
             String expectedMessage = " Invalid option: one";
@@ -264,8 +266,8 @@ public class CommandRunnerTest {
         @Param(name="bar", defaultValue="false", optional=true)
         String foobar;
 
-        @Param(optional=false)
-        String hello="there";
+        @Param(optional=false, defaultValue="there")
+        String hello;
 
         @Param(optional=false, primary=true)
         String world;

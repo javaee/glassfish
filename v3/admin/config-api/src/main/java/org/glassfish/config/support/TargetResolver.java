@@ -1,8 +1,10 @@
-package org.glassfish.api.admin.generic;
+package org.glassfish.config.support;
 
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.Param;
+import com.sun.enterprise.config.serverbeans.Domain;
 
 /**
  * Created by IntelliJ IDEA.
@@ -14,10 +16,16 @@ import org.glassfish.api.Param;
 @Service
 public class TargetResolver implements ConfigResolver {
 
-    @Param
+    @Inject
+    Domain domain;
+
+    @Param(optional=true)
     String target;
     
     public Object resolve(AdminCommandContext context) {
+        if (target==null) {
+            return domain;
+        }
         return null;
     }
 }

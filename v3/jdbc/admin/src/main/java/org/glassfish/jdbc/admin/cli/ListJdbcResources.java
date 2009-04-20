@@ -39,6 +39,7 @@ import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.Param;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -59,7 +60,10 @@ import java.util.ArrayList;
 public class ListJdbcResources implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListJdbcResources.class);    
- 
+
+    @Param(primary = true, optional = true)
+    String target;
+    
     @Inject
     JdbcResource[] resources;
 

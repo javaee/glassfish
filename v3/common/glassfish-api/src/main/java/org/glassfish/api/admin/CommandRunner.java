@@ -116,5 +116,4 @@ public interface CommandRunner {
      * @return command registered under commandName or null if not found.
      */
     public AdminCommand getCommand(String commandName, ActionReport report, Logger logger);
-
 }

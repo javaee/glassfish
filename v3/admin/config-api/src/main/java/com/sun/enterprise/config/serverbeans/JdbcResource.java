@@ -51,7 +51,8 @@ import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.admin.config.PropertyBag;
-import org.glassfish.api.admin.generic.Create;
+import org.glassfish.api.Param;
+import org.glassfish.config.support.Create;
 
 import org.glassfish.quality.ToDo;
 
@@ -67,7 +68,7 @@ import javax.validation.constraints.NotNull;
 }) */
 @AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.JDBCResourceConfig")
 @Configured
-@Create(value="create-jdbc-resource", parentType=Resources.class)
+@Create(value="new-create-jdbc-resource", parentType=Resources.class)
 public interface JdbcResource extends ConfigBeanProxy, Injectable, Resource, PropertyBag, BindableResource {
     
     /**              
@@ -78,6 +79,7 @@ public interface JdbcResource extends ConfigBeanProxy, Injectable, Resource, Pro
      */
     @Attribute
     @NotNull
+    @Param(name="connectionpoolid")
     String getPoolName();
 
     /**
@@ -112,6 +114,7 @@ public interface JdbcResource extends ConfigBeanProxy, Injectable, Resource, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="true")
+    @Param
     String getEnabled();
 
     /**
@@ -129,6 +132,7 @@ public interface JdbcResource extends ConfigBeanProxy, Injectable, Resource, Pro
      *         {@link String }
      */
     @Attribute
+    @Param
     String getDescription();
 
     /**

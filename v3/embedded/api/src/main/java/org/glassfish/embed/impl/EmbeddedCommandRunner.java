@@ -19,6 +19,7 @@ import org.glassfish.embed.util.StringHelper;
 import org.glassfish.embed.util.LoggerHelper;
 import org.glassfish.embed.util.EmbeddedUtils;
 import org.glassfish.api.admin.Payload;
+import org.glassfish.api.admin.CommandModel;
 
 /**
  *
@@ -27,23 +28,20 @@ import org.glassfish.api.admin.Payload;
 public class EmbeddedCommandRunner extends CommandRunnerImpl{
 
     public ActionReport doCommand(
-            final String commandName,
+            final CommandModel model,
             final AdminCommand command,
             final Properties parameters,
             final ActionReport report,
             final Payload.Inbound inboundPayload,
             final Payload.Outbound outboundPayload) {
 
-        if(commandName == null) // Impossible???
-            return super.doCommand(commandName, command, parameters, report, inboundPayload, outboundPayload);
-
-        if(commandName.equals("stop-domain")) {
+        if(model.getCommandName().equals("stop-domain")) {
             System.out.println("Stopping Embedded Server");
             //LoggerHelper.info("cli stop-domain command does  System.exit().  Goodbye!");
             //System.exit(0);
         }
 
-        return super.doCommand(commandName, command, parameters, report, inboundPayload, outboundPayload);
+        return super.doCommand(model, command, parameters, report, inboundPayload, outboundPayload);
     }
 
     private ActionReport doDeploy(Properties parameters, ActionReport report,

@@ -33,19 +33,19 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.api.admin.generic;
+package org.glassfish.config.support;
 
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
-import org.jvnet.hk2.annotations.Service;
+import org.glassfish.config.support.Create;
+import org.glassfish.config.support.Delete;
 
 /**
- * Not much so far, just to get the APIs figured out.
+ * Useful annotation for {@see Create} and {@Delete} compositions
+ *
+ * @author Jerome Dochez
  */
-@Service
-public class GenericCRUDCommand implements AdminCommand {
-    
-    public void execute(AdminCommandContext context) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
+public @interface CRUD {
+
+    Create[] creates();
+
+    Delete[] deletes();
 }

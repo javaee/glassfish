@@ -33,10 +33,13 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.api.admin.generic;
+package org.glassfish.config.support;
 
 import org.jvnet.hk2.annotations.*;
 import org.glassfish.api.admin.AdminCommand;
+
+import java.lang.annotation.Retention;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Create command annotation.
@@ -44,6 +47,7 @@ import org.glassfish.api.admin.AdminCommand;
  * @author Jerome Dochez
  */
 @Contract
+@Retention(RUNTIME)
 @InhabitantAnnotation("default")
 @ContractProvided(AdminCommand.class)
 @ServiceProvider(GenericCRUDCommand.class)

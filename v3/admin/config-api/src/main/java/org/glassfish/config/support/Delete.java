@@ -33,16 +33,22 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.api.admin.generic;
+package org.glassfish.config.support;
+
+import org.jvnet.hk2.annotations.Index;
+import org.jvnet.hk2.annotations.InhabitantAnnotation;
+import org.jvnet.hk2.annotations.ContractProvided;
+import org.jvnet.hk2.annotations.ServiceProvider;
+import org.glassfish.api.admin.AdminCommand;
 
 /**
- * Useful annotation for {@see Create} and {@Delete} compositions
- *
- * @author Jerome Dochez
+ * Delete command annotation
  */
-public @interface CRUD {
+@InhabitantAnnotation("default")
+@ContractProvided(AdminCommand.class)
+@ServiceProvider(GenericCRUDCommand.class)
+public @interface Delete {
 
-    Create[] creates();
-
-    Delete[] deletes();
+    @Index
+    String value();
 }

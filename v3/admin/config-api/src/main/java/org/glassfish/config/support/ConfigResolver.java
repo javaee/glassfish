@@ -1,4 +1,4 @@
-package org.glassfish.api.admin.generic;
+package org.glassfish.config.support;
 
 import org.jvnet.hk2.annotations.Contract;
 import org.glassfish.api.admin.AdminCommandContext;

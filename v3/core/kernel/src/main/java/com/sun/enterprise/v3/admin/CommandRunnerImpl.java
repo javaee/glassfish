@@ -46,15 +46,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Properties;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Async;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Inject;
@@ -65,7 +63,9 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.InjectionManager;
 import org.jvnet.hk2.component.UnsatisfiedDepedencyException;
 import com.sun.enterprise.universal.GFBase64Decoder;
-import org.glassfish.api.admin.Payload;
+import org.glassfish.api.admin.*;
+import org.glassfish.config.support.CommandModelImpl;
+
 /**
  * Encapsulates the logic needed to execute a server-side command (for example,  
  * a descendant of AdminCommand) including injection of argument values into the 
@@ -90,7 +90,7 @@ public class CommandRunnerImpl implements CommandRunner {
     ClassLoaderHierarchy clh;
 
     public void postConstruct() {
-         logger = LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER);
+         logger = LogDomains.getLogger(CommandRunnerImpl.class, LogDomains.ADMIN_LOGGER);
     }
     /**
      * Returns a uninitialized action report
@@ -133,7 +133,8 @@ public class CommandRunnerImpl implements CommandRunner {
         if (handler==null) {
             return;
         }
-        doCommand(commandName, handler, parameters, report, inboundPayload, outboundPayload);
+        CommandModel model = new CommandModelImpl(handler.getClass());
+        doCommand(model, handler, parameters, report, inboundPayload, outboundPayload);
     }
 
     /**
@@ -149,7 +150,8 @@ public class CommandRunnerImpl implements CommandRunner {
             final AdminCommand command, 
             final Properties parameters, 
             final ActionReport report) {
-        doCommand(commandName, command, parameters, report, null, null);
+        CommandModel model = new CommandModelImpl(command.getClass());
+        doCommand(model, command, parameters, report, null, null);
     }
 
     public ActionReport doCommand(
@@ -163,6 +165,7 @@ public class CommandRunnerImpl implements CommandRunner {
         if (command==null) {
             return report;
         }
+        CommandModel model = new CommandModelImpl(command.getClass());
         
         InjectionResolver<Param> injectionTarget =  new InjectionResolver<Param>(Param.class) {
 
@@ -201,14 +204,13 @@ public class CommandRunnerImpl implements CommandRunner {
                 return null;
             }
         };
-        return doCommand(commandName, command, injectionTarget, report, inboundPayload, outboundPayload);
+        return doCommand(model, command, injectionTarget, report, inboundPayload, outboundPayload);
 
     }
 
-
     /**
      * Executes the provided command object.
-     * @param commandName name of the command (used for logging and reporting)
+     * @param model model of the command (used for logging and reporting)
      * @param command the command service to execute
      * @param injector injector capable of populating the command parameters
      * @param report will hold the result of the command's execution
@@ -217,14 +219,14 @@ public class CommandRunnerImpl implements CommandRunner {
      */
 
     public ActionReport doCommand(
-            final String commandName,
+            final CommandModel model,
             final AdminCommand command,
             final InjectionResolver<Param> injector,
             final ActionReport report,
             final Payload.Inbound inboundPayload,
             final Payload.Outbound outboundPayload) {
 
-        report.setActionDescription(commandName + " AdminCommand");
+        report.setActionDescription(model.getCommandName() + " AdminCommand");
 
         final AdminCommandContext context = new AdminCommandContext(
                 LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER),
@@ -233,7 +235,7 @@ public class CommandRunnerImpl implements CommandRunner {
         LocalStringManagerImpl localStrings = new LocalStringManagerImpl(command.getClass());
 
         // Let's get the command i18n key
-        I18n i18n = command.getClass().getAnnotation(I18n.class);
+        I18n i18n = model.getI18n();
         String i18n_key = "";
         if (i18n!=null) {
             i18n_key = i18n.value();
@@ -243,26 +245,41 @@ public class CommandRunnerImpl implements CommandRunner {
         try {
             injectionMgr.inject(command, injector);
         } catch (UnsatisfiedDepedencyException e) {
-            Param param = e.getUnsatisfiedElement().getAnnotation(Param.class);
-            String paramName = getParamName(param, e.getUnsatisfiedElement());
-            String paramDesc = getParamDescription(localStrings, i18n_key, paramName, e.getUnsatisfiedElement());
-            final String usage = getUsageText(command);
-            String errorMsg;
-            if (param.primary()) {
-                errorMsg = adminStrings.getLocalString("commandrunner.operand.required",
-                                                       "Operand required.");
+            Param param = e.getAnnotation(Param.class);
+            CommandModel.ParamModel paramModel=null;
+            for (CommandModel.ParamModel pModel : model.getParameters()) {
+                if (pModel.getParam().equals(param)) {
+                    paramModel = pModel;
+                    break;
+                }
             }
-            else if (param.password() == true) {
-                errorMsg = adminStrings.getLocalString("adapter.param.missing.passwordfile", "{0} command requires the passwordfile parameter containing {1} entry.", commandName, paramName);
-            }
-            else if (paramDesc!=null) {
-                errorMsg = adminStrings.getLocalString("admin.param.missing",
-                                                       "{0} command requires the {1} parameter : {2}", commandName, paramName, paramDesc);
+            String errorMsg;            
+            final String usage = getUsageText(command, model);
+            if (paramModel!=null) {
+                String paramName = paramModel.getName();
+                String paramDesc = getParamDescription(localStrings, i18n_key, paramModel);
 
-            }
-            else {
-                errorMsg = adminStrings.getLocalString("admin.param.missing.nodesc",
-                        "{0} command requires the {1} parameter", commandName, paramName);
+                if (param.primary()) {
+                    errorMsg = adminStrings.getLocalString("commandrunner.operand.required",
+                                                           "Operand required.");
+                }
+                else if (param.password()) {
+                    errorMsg = adminStrings.getLocalString("adapter.param.missing.passwordfile", "{0} command requires the passwordfile parameter containing {1} entry.",
+                            model.getCommandName(), paramName);
+                }
+                else if (paramDesc!=null) {
+                    errorMsg = adminStrings.getLocalString("admin.param.missing",
+                                                           "{0} command requires the {1} parameter : {2}",
+                                                            model.getCommandName(), paramName, paramDesc);
+
+                }
+                else {
+                    errorMsg = adminStrings.getLocalString("admin.param.missing.nodesc",
+                            "{0} command requires the {1} parameter", model.getCommandName(), paramName);
+                }
+            } else {
+                errorMsg = adminStrings.getLocalString("admin.param.missing.nofound",
+                       "I cannot find {1} is {0} model, file a bug", model.getCommandName(), e.getUnsatisfiedName());
             }
             logger.severe(errorMsg);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -281,12 +298,12 @@ public class CommandRunnerImpl implements CommandRunner {
                 // throw away the wrapper.
                 exception = (Exception)cause;
             }
-            logger.severe(exception.getMessage());
+            logger.log(Level.SEVERE, "invocation.exception",exception);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(exception.getMessage());
             report.setFailureCause(exception);
             ActionReport.MessagePart childPart = report.getTopMessagePart().addChild();
-            childPart.setMessage(getUsageText(command));
+            childPart.setMessage(getUsageText(command, model));
             return report;
         }
 
@@ -338,14 +355,15 @@ public class CommandRunnerImpl implements CommandRunner {
             t.start();
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
             report.setMessage(
-                    adminStrings.getLocalString("adapter.command.launch", "Command {0} was successfully initiated asynchronously.", commandName));
+                    adminStrings.getLocalString("adapter.command.launch", "Command {0} was successfully initiated asynchronously.",
+                            model.getCommandName()));
         }
         return context.getActionReport();   
     }
         
     /**
      * Executes the provided command object.
-     * @param commandName name of the command (used for logging and reporting)
+     * @param model model of the command 
      * @param command the command service to execute
      * @param parameters name/value pairs to be passed to the command
      * @param report will hold the result of the command's execution
@@ -354,30 +372,31 @@ public class CommandRunnerImpl implements CommandRunner {
      */
     
     public ActionReport doCommand(
-            final String commandName, 
+            final CommandModel model,
             final AdminCommand command,
             final Properties parameters,
             final ActionReport report,
             final Payload.Inbound inboundPayload,
             final Payload.Outbound outboundPayload) {
 
-        if (parameters.get("help")!=null) {
-            InputStream in = getManPage(commandName, command);
+
+        if (parameters.get("help")!=null || parameters.get("Xhelp")!=null) {
+            InputStream in = getManPage(model.getCommandName(), command);
             String manPage = encodeManPage(in);
 
-            if(manPage != null) {
+            if(manPage != null && parameters.get("help")!=null) {
                 report.getTopMessagePart().addProperty("MANPAGE", manPage);
             }
             else {
                 report.getTopMessagePart().addProperty(AdminCommandResponse.GENERATED_HELP, "true");
-                getHelp(commandName, command, report);
+                getHelp(command, report);
             }
             return report;
         }
 
         try {
             if (!skipValidation(command)) {
-                validateParameters(command, parameters);
+                validateParameters(model, parameters);
             }
         } catch (ComponentException e) {
             // if the cause is UnacceptableValueException -- we want the message
@@ -394,7 +413,7 @@ public class CommandRunnerImpl implements CommandRunner {
             report.setMessage(exception.getMessage());
             report.setFailureCause(exception);
             ActionReport.MessagePart childPart = report.getTopMessagePart().addChild();
-            childPart.setMessage(getUsageText(command));
+            childPart.setMessage(getUsageText(command, model));
             return report;
         }
 
@@ -448,7 +467,7 @@ public class CommandRunnerImpl implements CommandRunner {
             }
         };
 
-        return doCommand(commandName, command, injectionMgr, report, inboundPayload, outboundPayload);
+        return doCommand(model, command, injectionMgr, report, inboundPayload, outboundPayload);
 
     }
 
@@ -478,12 +497,12 @@ public class CommandRunnerImpl implements CommandRunner {
         }
     }
 
-    protected String getParamDescription(LocalStringManagerImpl localStrings, String i18nKey, String paramName, AnnotatedElement annotated) {
+    protected String getParamDescription(LocalStringManagerImpl localStrings, String i18nKey, CommandModel.ParamModel model) {
 
-        I18n i18n = annotated.getAnnotation(I18n.class);
+        I18n i18n = model.getI18n();
         String paramDesc;
         if (i18n==null) {
-            paramDesc = localStrings.getLocalString(i18nKey+"."+paramName, "");
+            paramDesc = localStrings.getLocalString(i18nKey+"."+model.getName(), "");
         } else {
             paramDesc = localStrings.getLocalString(i18n.value(), "");
         }
@@ -690,12 +709,13 @@ public class CommandRunnerImpl implements CommandRunner {
           * generate the usagetext from Param annotations in the command class.
           *
           * @param command class
+          * @param model command model
           *
           * @return usagetext
           */
-    String getUsageText(AdminCommand command) {
+    String getUsageText(AdminCommand command, CommandModel model) {
         StringBuffer usageText = new StringBuffer();
-        I18n i18n = command.getClass().getAnnotation(I18n.class);
+        I18n i18n = model.getI18n();
         String i18nKey = null;
         
         final LocalStringManagerImpl lsm  = new LocalStringManagerImpl(command.getClass());
@@ -704,10 +724,10 @@ public class CommandRunnerImpl implements CommandRunner {
         }
         if (i18nKey != null) {
             usageText.append(lsm.getLocalString(i18nKey+".usagetext",
-                                                generateUsageText(command)));
+                                                generateUsageText(model)));
         }
         else {
-            return generateUsageText(command);
+            return generateUsageText(model);
         }
         return usageText.toString();
     }
@@ -715,32 +735,28 @@ public class CommandRunnerImpl implements CommandRunner {
          /**
           * generate the usage-text from the annotated Param in the command class
           *
-          * @param command class
+          * @param model command model
           *
           * @return generated usagetext
           */
-    private String generateUsageText(AdminCommand command) {
+    private String generateUsageText(CommandModel model) {
         StringBuffer usageText = new StringBuffer();
         usageText.append("Usage: ");
-        usageText.append(command.getClass().getAnnotation(Service.class).name());
+        usageText.append(model.getCommandName());
         usageText.append(" ");
         StringBuffer operand = new StringBuffer();
-        for (Field f : command.getClass().getDeclaredFields()) {
-            final Param param = f.getAnnotation(Param.class);
-            if (param==null) {
-                continue;
-            }
-            final String paramName = getParamName(param, f);
+        for (CommandModel.ParamModel pModel : model.getParameters()) {
+            final Param param = pModel.getParam();
+            final String paramName = pModel.getName();
                 //do not want to display password as an option
-            if (paramName.startsWith(ASADMIN_CMD_PREFIX))
+            if (param.password())
                 continue;
             final boolean optional = param.optional();
-            final Class<?> ftype = f.getType();
+            final Class<?> ftype = pModel.getType();
             Object fvalue = null;
             String fvalueString = null;
             try {
-                f.setAccessible(true);
-                fvalue = f.get(command);
+                fvalue = param.defaultValue();
                 if(fvalue != null)
                     fvalueString = fvalue.toString();
             }
@@ -795,9 +811,20 @@ public class CommandRunnerImpl implements CommandRunner {
         return usageText.toString();
     }
 
+    public CommandModel getModel(AdminCommand command) {
+        // need to enhance this to support pluggability.
+        if (command instanceof CommandModelProvider) {
+            return ((CommandModelProvider) command).getModel();
+        } else {
+            return new CommandModelImpl(command.getClass());
+        }
+    }
 
-    public void getHelp(String commandName, AdminCommand command, ActionReport report) {
-        report.setActionDescription(commandName + " help");
+
+    public void getHelp(AdminCommand command, ActionReport report) {
+
+        CommandModel model = getModel(command);        
+        report.setActionDescription(model.getCommandName() + " help");
         LocalStringManagerImpl localStrings = new LocalStringManagerImpl(command.getClass());
         // Let's get the command i18n key
         I18n i18n = command.getClass().getAnnotation(I18n.class);
@@ -806,13 +833,11 @@ public class CommandRunnerImpl implements CommandRunner {
         if (i18n!=null) {
             i18nKey = i18n.value();
         }
-        report.setMessage(commandName + " - " + localStrings.getLocalString(i18nKey, ""));
-        report.getTopMessagePart().addProperty("SYNOPSIS", getUsageText(command));
-        for (Field f : command.getClass().getDeclaredFields()) {
-            addParamUsage(report, localStrings, i18nKey, f);
-        }
-        for (Method m : command.getClass().getDeclaredMethods()) {
-            addParamUsage(report, localStrings, i18nKey, m);
+        report.setMessage(model.getCommandName() + " - " + localStrings.getLocalString(i18nKey, ""));
+        report.getTopMessagePart().addProperty("SYNOPSIS", getUsageText(command, model));
+        for (CommandModel.ParamModel param : model.getParameters()) {
+            addParamUsage(report, localStrings, i18nKey, param);
+
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
@@ -829,19 +854,19 @@ public class CommandRunnerImpl implements CommandRunner {
         return in;
     }
 
-    private void addParamUsage(ActionReport report, LocalStringManagerImpl localStrings, String i18nKey, AnnotatedElement annotated) {
-        Param param = annotated.getAnnotation(Param.class);
+    private void addParamUsage(ActionReport report, LocalStringManagerImpl localStrings, String i18nKey, CommandModel.ParamModel model) {
+        Param param = model.getParam();
         if (param!=null) {
              // this is a param.
-            String paramName = getParamName(param, annotated);
+            String paramName = model.getName();
             //do not want to display password in the usage
-            if (paramName.startsWith(ASADMIN_CMD_PREFIX))
+            if (param.primary())
                 return;
             if (param.primary()) {
                 //if primary then it's an operand
-                report.getTopMessagePart().addProperty(paramName+"_operand", getParamDescription(localStrings, i18nKey, paramName, annotated));
+                report.getTopMessagePart().addProperty(paramName+"_operand", getParamDescription(localStrings, i18nKey, model));
             } else {
-                report.getTopMessagePart().addProperty(paramName, getParamDescription(localStrings, i18nKey, paramName, annotated));
+                report.getTopMessagePart().addProperty(paramName, getParamDescription(localStrings, i18nKey, model));
             }
         }
     }
@@ -857,49 +882,27 @@ public class CommandRunnerImpl implements CommandRunner {
      * as a Param annotation then it's an invalid option.  If parameter's key is "DEFAULT"
      * then it's a operand.
      *
-     * @param command - command class
+     * @param model - command model
      * @param parameters - parameters from URL
      *
      * @throws ComponentException if option is invalid
      */
-    void validateParameters(final AdminCommand command, final Properties parameters)
+    void validateParameters(final CommandModel model, final Properties parameters)
         throws ComponentException {
         
         final java.util.Enumeration e = parameters.propertyNames();
         //loop through parameters and make sure they are part of the Param declared field
-        while (e.hasMoreElements()) {
-            String key = (String)e.nextElement();
-            if (key == null)
-                continue; // this should really be an assertion
-            //DEFAULT is the operand and it's a valid Parameter
-            if ("DEFAULT".equals(key) || key.startsWith(ASADMIN_CMD_PREFIX)) {
-                continue;
-            }
+        for (Object key : parameters.keySet()) {
+
             //check if key is a valid Param Field
             boolean validOption = false;
-                //loop through the Param field in the command class
-                //if either field name or the param name is equal to
-                //key then it's a valid option
-            Class commandClass = command.getClass();
-            while (!validOption && commandClass!=null) {
-                for (Field field : commandClass.getDeclaredFields()) {
-                    final Param param = field.getAnnotation(Param.class);
-                    if (param == null)     continue;
-
-                    if (key.startsWith(ASADMIN_CMD_PREFIX)) {
-                        validOption = true;
-                        continue;
-                    }
-                    if (field.getName().equals(key) ||
-                        param.name().equals(key) ||
-                        param.shortName().equals(key) ) {
-                        validOption=true;
-                        break;
-                    }
-                }
-                if (!validOption) {
-                    commandClass = commandClass.getSuperclass();
-                }
+            //loop through the Param field in the command class
+            //if either field name or the param name is equal to
+            //key then it's a valid option
+            for (CommandModel.ParamModel pModel : model.getParameters()) {
+                validOption = pModel.isParamId(key.toString());
+                if (validOption)
+                    break;
             }
             if (!validOption) {
                 throw new ComponentException(" Invalid option: " + key);
