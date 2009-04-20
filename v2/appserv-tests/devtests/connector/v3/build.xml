@@ -225,6 +225,9 @@
         <echo message="@@## redeployRar ##@@"/>
         <ant dir="redeployRar" target="${connector-target}"/>
 
+        <echo message="@@## connector1.6 - with mappings ##@@"/>
+        <ant dir="connector1.6" target="all-with-mappings"/>
+
         <antcall target="report"/>
         <record name="connector.output" action="stop"/>
     </target>
