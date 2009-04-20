@@ -37,16 +37,19 @@
 package org.glassfish.web.admin.monitor;
 
 import javax.servlet.Servlet;
-import org.glassfish.flashlight.provider.annotations.ProbeParam;
+import org.glassfish.probe.provider.annotations.Probe;
+import org.glassfish.probe.provider.annotations.ProbeParam;
+import org.glassfish.probe.provider.annotations.ProbeProvider;
 
 /**
  * Provider interface for JSP related probes.
  */
-public interface JspProbeProvider {
+@ProbeProvider(providerName="jsp", moduleName="web")
+public class JspProbeProvider {
 
+    @Probe(name="jspLoadedEvent")
     public void jspLoadedEvent(
         @ProbeParam("jsp") Servlet jsp,
         @ProbeParam("appName") String appName,
-        @ProbeParam("hostName") String hostName
-    );
+        @ProbeParam("hostName") String hostName) {}
 }

@@ -37,70 +37,73 @@
 package org.glassfish.web.admin.monitor;
 
 import javax.servlet.http.HttpSession;
-import org.glassfish.flashlight.provider.annotations.ProbeParam;
+import org.glassfish.probe.provider.annotations.Probe;
+import org.glassfish.probe.provider.annotations.ProbeParam;
+import org.glassfish.probe.provider.annotations.ProbeProvider;
 
 /**
  * Provider interface for HTTP session related probes.
  */
-public interface SessionProbeProvider {
+@ProbeProvider(providerName="session", moduleName="web")
+public class SessionProbeProvider {
 
+    @Probe(name="sessionCreatedEvent")
     public void sessionCreatedEvent(
         @ProbeParam("session") HttpSession session,
         @ProbeParam("appName") String appName,
-        @ProbeParam("hostName") String hostName
-    );
+        @ProbeParam("hostName") String hostName) {}
 
+    @Probe(name="sessionDestroyedEvent")
     public void sessionDestroyedEvent(
         @ProbeParam("session") HttpSession session,
         @ProbeParam("appName") String appName,
-        @ProbeParam("hostName") String hostName
-    );
+        @ProbeParam("hostName") String hostName) {}
 
+    @Probe(name="sessionRejectedEvent")
     public void sessionRejectedEvent(
         @ProbeParam("maxThresholdSize") int maxSessions,
         @ProbeParam("appName") String appName,
-        @ProbeParam("hostName") String hostName
-    );
+        @ProbeParam("hostName") String hostName) {}
 
+    @Probe(name="sessionExpiredEvent")
     public void sessionExpiredEvent(
         @ProbeParam("session") HttpSession session,
         @ProbeParam("appName") String appName,
-        @ProbeParam("hostName") String hostName
-    );
+        @ProbeParam("hostName") String hostName) {}
 
+    @Probe(name="sessionPersistedStartEvent")
     public void sessionPersistedStartEvent(
         @ProbeParam("session") HttpSession session,
         @ProbeParam("appName") String appName,
-        @ProbeParam("hostName") String hostName
-    );
+        @ProbeParam("hostName") String hostName) {}
 
+    @Probe(name="sessionPersistedEndEvent")
     public void sessionPersistedEndEvent(
         @ProbeParam("session") HttpSession session,
         @ProbeParam("appName") String appName,
-        @ProbeParam("hostName") String hostName
-    );
+        @ProbeParam("hostName") String hostName) {}
 
+    @Probe(name="sessionActivatedStartEvent")
     public void sessionActivatedStartEvent(
         @ProbeParam("session") HttpSession session,
         @ProbeParam("appName") String appName,
-        @ProbeParam("hostName") String hostName
-    );
+        @ProbeParam("hostName") String hostName) {}
 
+    @Probe(name="sessionActivatedEndEvent")
     public void sessionActivatedEndEvent(
         @ProbeParam("session") HttpSession session,
         @ProbeParam("appName") String appName,
-        @ProbeParam("hostName") String hostName
-    );
+        @ProbeParam("hostName") String hostName) {}
 
+    @Probe(name="sessionPassivatedStartEvent")
     public void sessionPassivatedStartEvent(
         @ProbeParam("session") HttpSession session,
         @ProbeParam("appName") String appName,
-        @ProbeParam("hostName") String hostName
-    );
+        @ProbeParam("hostName") String hostName) {}
 
+    @Probe(name="sessionPassivatedEndEvent")
     public void sessionPassivatedEndEvent(
         @ProbeParam("session") HttpSession session,
         @ProbeParam("appName") String appName,
-        @ProbeParam("hostName") String hostName
-    );
+        @ProbeParam("hostName") String hostName) {}
 }

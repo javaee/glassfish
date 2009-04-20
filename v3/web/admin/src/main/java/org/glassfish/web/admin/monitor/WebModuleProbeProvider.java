@@ -36,12 +36,15 @@
 
 package org.glassfish.web.admin.monitor;
 
-import org.glassfish.flashlight.provider.annotations.ProbeParam;
+import org.glassfish.probe.provider.annotations.Probe;
+import org.glassfish.probe.provider.annotations.ProbeParam;
+import org.glassfish.probe.provider.annotations.ProbeProvider;
 
 /**
  * Provider interface for web module lifecycle related probe events.
  */
-public interface WebModuleProbeProvider {
+@ProbeProvider(providerName="webmodule", moduleName="web")
+public class WebModuleProbeProvider {
 
     /**
      * Emits probe event that the web module with the given
@@ -50,10 +53,10 @@ public interface WebModuleProbeProvider {
      *
      * @param appName
      */
+    @Probe(name="webModuleStartedEvent")
     public void webModuleStartedEvent(
         @ProbeParam("appName") String appName,
-        @ProbeParam("hostName") String hostName
-    );
+        @ProbeParam("hostName") String hostName) {}
 
 
     /**
@@ -61,8 +64,8 @@ public interface WebModuleProbeProvider {
      * <code>appName</code> has been unloaded from the virtual server with
      * the given <code>hostName</code>.
      */
+    @Probe(name="webModuleStoppedEvent")
     public void webModuleStoppedEvent(
         @ProbeParam("appName") String appName,
-        @ProbeParam("hostName") String hostName
-    );
+        @ProbeParam("hostName") String hostName) {}
 }

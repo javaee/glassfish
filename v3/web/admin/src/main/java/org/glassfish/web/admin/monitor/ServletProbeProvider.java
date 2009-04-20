@@ -38,12 +38,15 @@ package org.glassfish.web.admin.monitor;
 
 import java.security.Principal;
 import javax.servlet.Servlet;
-import org.glassfish.flashlight.provider.annotations.ProbeParam;
+import org.glassfish.probe.provider.annotations.Probe;
+import org.glassfish.probe.provider.annotations.ProbeParam;
+import org.glassfish.probe.provider.annotations.ProbeProvider;
 
 /**
  * Provider interface for servlet related probes.
  */
-public interface ServletProbeProvider {
+@ProbeProvider(providerName="servlet", moduleName="web")
+public class ServletProbeProvider {
 
     /**
      * Emits notification that a servlet has been initialized.
@@ -58,11 +61,11 @@ public interface ServletProbeProvider {
      * @param hostName the name of the virtual server on which the app has 
      * been deployed
      */
+    @Probe(name="servletInitializedEvent")
     public void servletInitializedEvent(
         @ProbeParam("servlet") Servlet servlet,
         @ProbeParam("appName") String appName,
-        @ProbeParam("hostName") String hostName
-    );
+        @ProbeParam("hostName") String hostName) {}
 
 
     /**
@@ -78,10 +81,10 @@ public interface ServletProbeProvider {
      * @param hostName the name of the virtual server on which the app has 
      * been deployed
      */
+    @Probe(name="servletDestroyedEvent")
     public void servletDestroyedEvent(
         @ProbeParam("servlet") Servlet servlet,
         @ProbeParam("appName") String appName,
-        @ProbeParam("hostName") String hostName
-    );    
+        @ProbeParam("hostName") String hostName) {}
 
 }

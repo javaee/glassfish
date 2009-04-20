@@ -130,6 +130,11 @@
             <artifactId>amx-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.provider</groupId>
+            <artifactId>gfprobe-provider-client</artifactId>
+            <version>${gfprobe-provider-client.version}</version>
+        </dependency>
     </dependencies>
 </project>
 
