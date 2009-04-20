@@ -70,32 +70,35 @@ public class PluginHandlers {
      * @param handlerCtx    The <code>HandlerContext</code>.
      */
     @Handler(id = "retrievePluginPageContents",
-             input = {@HandlerInput(name = "compId", type = String.class, required = true)},
-             output = {@HandlerOutput(name = "pluginPage", type = String.class)})
+	     input = {@HandlerInput(name = "compId", type = String.class, required = true)},
+	     output = {@HandlerOutput(name = "pluginPage", type = String.class)})
     public static void retrievePluginPageContents(HandlerContext handlerCtx) {
-        String id = (String) handlerCtx.getInputValue("compId");
-        UIComponent comp = handlerCtx.getFacesContext().getViewRoot().findComponent(id);
-        String urlContents = "";
-        if (comp != null) {
+	String id = (String) handlerCtx.getInputValue("compId");
+	UIComponent comp = handlerCtx.getFacesContext().getViewRoot().findComponent(id);
+	String urlContents = "";
+	if (comp != null) {
 	    String url = url = (String) comp.getAttributes().get(NavigationNodeFactory.REAL_URL);
-            try {
+	    try {
 		// Read from the URL...
-                URL contentUrl = FileUtil.searchForFile(url, "");
-                urlContents = new String(FileUtil.readFromURL(contentUrl));
+		URL contentUrl = FileUtil.searchForFile(url, null);
+		if (contentUrl == null) {
+		    throw new IOException("Unable to locate file: " + url);
+		}
+		urlContents = new String(FileUtil.readFromURL(contentUrl));
 
-                // FIXME: Implement processPage support
+		// FIXME: Implement processPage support
 		/*
 		if (processPage) {
 		    // probably do something like what includeIntegrations does
 		    ...
 		}
 		*/
-            } catch (IOException ex) {
-                Logger.getLogger(PluginHandlers.class.getName()).log(Level.SEVERE, "Unable to read url: " + url, ex);
-            }
-        }
+	    } catch (IOException ex) {
+		Logger.getLogger(PluginHandlers.class.getName()).log(Level.SEVERE, "Unable to read url: " + url, ex);
+	    }
+	}
 
 	// Set the content to output...
-        handlerCtx.setOutputValue("pluginPage", urlContents);
+	handlerCtx.setOutputValue("pluginPage", urlContents);
     }
 }
