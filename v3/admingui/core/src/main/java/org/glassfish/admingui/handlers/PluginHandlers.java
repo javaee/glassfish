@@ -38,36 +38,38 @@ package org.glassfish.admingui.handlers;
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
+import com.sun.jsftemplating.component.ComponentUtil;
+import com.sun.jsftemplating.component.factory.basic.StaticTextFactory;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import com.sun.jsftemplating.layout.LayoutDefinitionManager;
 import com.sun.jsftemplating.layout.LayoutViewHandler;
+import com.sun.jsftemplating.layout.descriptors.ComponentType;
+import com.sun.jsftemplating.layout.descriptors.LayoutComponent;
 import com.sun.jsftemplating.layout.descriptors.LayoutDefinition;
+import com.sun.jsftemplating.util.FileUtil;
 
+import com.sun.webui.theme.ThemeContext;
+
+import org.glassfish.admingui.common.plugin.ConsoleClassLoader;
 import org.glassfish.admingui.plugin.ConsolePluginService;
 import org.glassfish.admingui.plugin.IntegrationPoint;
 import org.glassfish.admingui.plugin.IntegrationPointComparator;
+import org.glassfish.admingui.theme.AdminguiThemeContext;
 
 import org.jvnet.hk2.component.Habitat;
 
+import java.io.IOException;
 import java.net.URL;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Properties;
 
-
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 
-import com.sun.webui.theme.ThemeContext;
-
-
-import org.glassfish.admingui.common.plugin.ConsoleClassLoader;
-
-import org.glassfish.admingui.theme.AdminguiThemeContext;
 
 /**
  *  <p>	This class will provide JSFTemplating <code>Handler</code>s that
@@ -161,11 +163,17 @@ public class PluginHandlers {
 	includeIntegrationPoints(ctx, root, getSortedIntegrationPoints(points));
     }
 
+    /**
+     *	Includes the first IP based on priority for the given type.  It adds
+     *	the content to the given UIComponent root.  If the IP content looks
+     *	like a URL (contains ://), a StaticText component will be added with
+     *	the value of the content from the URL.
+     */
     @Handler(id="includeFirstIntegrationPoint",
     	input={
             @HandlerInput(name="type", type=String.class, required=true),
 	    @HandlerInput(name="root", type=UIComponent.class, required=false)})
-    public static void includeFirstIP(HandlerContext handlerCtx) {
+    public static void includeFirstIP(HandlerContext handlerCtx) throws java.io.IOException {
 	// Get the input
 	String type = (String) handlerCtx.getInputValue("type");
 	UIComponent root = (UIComponent) handlerCtx.getInputValue("root");
@@ -179,10 +187,32 @@ public class PluginHandlers {
 	    if (it.hasNext()) {
 		// Get the first one...
 		IntegrationPoint point = it.next();
+		root = getIntegrationPointParent(root, point);
 
-		// Include the first one...
-		includeIntegrationPoint(
-		    ctx, getIntegrationPointParent(root, point), point);
+		// Check to see if IP points to an external URL...
+		if (point.getContent().lastIndexOf("://", 15) != -1) {
+		    // Treat content as a url...
+		    URL contentURL = FileUtil.searchForFile(
+			    point.getContent(), null);
+		    if (contentURL == null) {
+			throw new IOException("Unable to locate file: "
+				+ point.getContent());
+		    }
+
+		    // Read the content...
+		    String content = new String(FileUtil.readFromURL(contentURL));
+
+		    // Create a StaticText component and add it under the
+		    // "root" component.
+		    LayoutComponent stDesc = new LayoutComponent(null,
+			"externalContent", new ComponentType("tmpTextCT",
+			"com.sun.jsftemplating.component.factory.basic.StaticTextFactory"));
+		    stDesc.addOption("value", content);
+		    ComponentUtil.createChildComponent(ctx, stDesc, root);
+		} else {
+		    // Include the first one...
+		    includeIntegrationPoint(ctx, root, point);
+		}
 	    }
 	}
     }
