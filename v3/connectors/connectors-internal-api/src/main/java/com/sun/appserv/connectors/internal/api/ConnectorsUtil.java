@@ -559,7 +559,7 @@ public class ConnectorsUtil {
     }
 
     /**
-     * JDK 1.6.0_14 & JDK 1.6.0_16 has changes in SE thread pool api.
+     * JDK 1.6.0_12 & JDK 1.6.0_14 has changes in SE thread pool api.
      * Later we will be using appserver's thread pool.
      * Using the workaround to check the constructor availability and act accordingly.
      * @return thread pool manager
