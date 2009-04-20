@@ -535,345 +535,343 @@ public abstract class RealmBase
         boolean found = false;
 
         List<SecurityConstraint> constraints = context.getConstraints();
-        synchronized(constraints) {
-            Iterator<SecurityConstraint> i = constraints.iterator(); 
-            while (i.hasNext()) {
-                SecurityConstraint constraint = i.next();
-                SecurityCollection[] collection = constraint.findCollections();
+        Iterator<SecurityConstraint> i = constraints.iterator(); 
+        while (i.hasNext()) {
+            SecurityConstraint constraint = i.next();
+            SecurityCollection[] collection = constraint.findCollections();
                      
-                // If collection is null, continue to avoid an NPE
-                // See Bugzilla 30624
-                if (collection == null) {
-                    continue;
-                }
-
-                if (log.isLoggable(Level.FINEST)) {
-                    /* SJSWS 6324431
-                    log.trace("  Checking constraint '" + constraints[i] +
-                        "' against " + method + " " + uri + " --> " +
-                        constraints[i].included(uri, method));
-                    */
-                    // START SJSWS 6324431
-                    log.finest("Checking constraint '" + constraint +
-                               "' against " + method + " " + origUri +
-                               " --> " +
-                               constraint.included(uri, method, 
-                                                   caseSensitiveMapping));
-                    // END SJSWS 6324431
-                }
-                /* SJSWS 6324431
-                if (log.isDebugEnabled() && constraints[i].included(
-                        uri, method)) {
-                    log.debug("  Matched constraint '" + constraints[i] +
-                        "' against " + method + " " + uri);
-                }
-                */
-                // START SJSWS 6324431
-                if (log.isLoggable(Level.FINE)
-                        && constraint.included(uri, method,
-                                               caseSensitiveMapping)) {
-                    log.fine("  Matched constraint '" + constraint +
-                             "' against " + method + " " + origUri);
-                }
-                // END SJSWS 6324431
-
-                for (int j=0; j < collection.length; j++){
-                    String[] patterns = collection[j].findPatterns();
-                    // If patterns is null, continue to avoid an NPE
-                    // See Bugzilla 30624
-                    if ( patterns == null) {
-                        continue;
-                    }
-
-                    for(int k=0; k < patterns.length; k++) {
-                        /* SJSWS 6324431
-                        if(uri.equals(patterns[k])) {
-                        */
-                        // START SJSWS 6324431
-                        String pattern = caseSensitiveMapping ? patterns[k] :
-                            patterns[k].toLowerCase();
-                        if (uri != null && uri.equals(pattern)) {
-                        // END SJSWS 6324431
-                            found = true;
-                            if(collection[j].findMethod(method)) {
-                                if(results == null) {
-                                    results = new ArrayList();
-                                }
-                                results.add(constraint);
-                            }
-                        }
-                    }
-                }
-            } // while
-
-            if (found) {
-                return resultsToArray(results);
+            // If collection is null, continue to avoid an NPE
+            // See Bugzilla 30624
+            if (collection == null) {
+                continue;
             }
 
-            int longest = -1;
+            if (log.isLoggable(Level.FINEST)) {
+                /* SJSWS 6324431
+                log.trace("  Checking constraint '" + constraints[i] +
+                    "' against " + method + " " + uri + " --> " +
+                    constraints[i].included(uri, method));
+                */
+                // START SJSWS 6324431
+                log.finest("Checking constraint '" + constraint +
+                           "' against " + method + " " + origUri +
+                           " --> " +
+                           constraint.included(uri, method, 
+                                               caseSensitiveMapping));
+                // END SJSWS 6324431
+            }
+            /* SJSWS 6324431
+            if (log.isDebugEnabled() && constraints[i].included(
+                    uri, method)) {
+                log.debug("  Matched constraint '" + constraints[i] +
+                    "' against " + method + " " + uri);
+            }
+            */
+            // START SJSWS 6324431
+            if (log.isLoggable(Level.FINE)
+                    && constraint.included(uri, method,
+                                           caseSensitiveMapping)) {
+                log.fine("  Matched constraint '" + constraint +
+                         "' against " + method + " " + origUri);
+            }
+            // END SJSWS 6324431
 
-            i = constraints.iterator(); 
-            while (i.hasNext()) {
-                SecurityConstraint constraint = i.next();
-                SecurityCollection [] collection =
-                    constraint.findCollections();
-            
-                // If collection is null, continue to avoid an NPE
+            for (int j=0; j < collection.length; j++){
+                String[] patterns = collection[j].findPatterns();
+                // If patterns is null, continue to avoid an NPE
                 // See Bugzilla 30624
-                if ( collection == null) {
+                if ( patterns == null) {
                     continue;
                 }
 
-                if (log.isLoggable(Level.FINEST)) {
+                for(int k=0; k < patterns.length; k++) {
                     /* SJSWS 6324431
-                    log.trace("  Checking constraint '" + constraints[i] +
-                        "' against " + method + " " + uri + " --> " +
-                        constraints[i].included(uri, method));
+                    if(uri.equals(patterns[k])) {
                     */
                     // START SJSWS 6324431
-                    log.finest("  Checking constraint '" + constraint +
-                               "' against " + method + " " + origUri +
-                               " --> " +
-                               constraint.included(uri, method,
-                                                   caseSensitiveMapping));
+                    String pattern = caseSensitiveMapping ? patterns[k] :
+                        patterns[k].toLowerCase();
+                    if (uri != null && uri.equals(pattern)) {
                     // END SJSWS 6324431
-                }
-                /* SJSWS 6324431
-                if (log.isDebugEnabled() && constraints[i].included(
-                        uri, method)) {
-                    log.debug("  Matched constraint '" + constraints[i] +
-                        "' against " + method + " " + uri);
-                }
-                */
-                // START SJSWS 6324431
-                if (log.isLoggable(Level.FINE) &&
-                        constraint.included(uri, method,
-                                            caseSensitiveMapping)) {
-                    log.fine("  Matched constraint '" + constraint +
-                             "' against " + method + " " + origUri);
-                }
-                // END SJSWS 6324431
-
-                for (int j=0; j < collection.length; j++){
-                    String[] patterns = collection[j].findPatterns();
-                    // If patterns is null, continue to avoid an NPE
-                    // See Bugzilla 30624
-                    if (patterns == null) {
-                        continue;
-                    }
-
-                    boolean matched = false;
-                    int length = -1;
-                    for (int k=0; k < patterns.length; k++) {
-                        /* SJSWS 6324431
-                        String pattern = patterns[k];
-                        */
-                        // START SJSWS 6324431
-                        String pattern = caseSensitiveMapping ?
-                            patterns[k]:patterns[k].toLowerCase();
-                        // END SJSWS 6324431
-                        if (pattern.startsWith("/") &&
-                                pattern.endsWith("/*") && 
-                                pattern.length() >= longest) {
-                            
-                            if (pattern.length() == 2) {
-                                matched = true;
-                                length = pattern.length();
-                            } else if (uri != null
-                                    && (pattern.regionMatches(
-                                            0,uri,0,pattern.length()-1)
-                                        || (pattern.length()-2 == uri.length()
-                                            && pattern.regionMatches(
-                                                0,uri,0,pattern.length()-2)))) {
-                                matched = true;
-                                length = pattern.length();
-                            }
-                        }
-                    }
-                    if (matched) {
                         found = true;
-                        if (length > longest) {
-                            if (results != null) {
-                                results.clear();
-                            }
-                            longest = length;
-                        }
-                        if (collection[j].findMethod(method)) {
-                            if (results == null) {
+                        if(collection[j].findMethod(method)) {
+                            if(results == null) {
                                 results = new ArrayList();
                             }
                             results.add(constraint);
                         }
                     }
                 }
-            } // while
+            }
+        } // while
 
-            if (found) {
-                return resultsToArray(results);
+        if (found) {
+            return resultsToArray(results);
+        }
+
+        int longest = -1;
+
+        i = constraints.iterator(); 
+        while (i.hasNext()) {
+            SecurityConstraint constraint = i.next();
+            SecurityCollection [] collection =
+                constraint.findCollections();
+            
+            // If collection is null, continue to avoid an NPE
+            // See Bugzilla 30624
+            if ( collection == null) {
+                continue;
             }
 
-            i = constraints.iterator(); 
-            while (i.hasNext()) {
-                SecurityConstraint constraint = i.next();
-                SecurityCollection[] collection = constraint.findCollections();
-
-                // If collection is null, continue to avoid an NPE
-                // See Bugzilla 30624
-                if ( collection == null) {
-                    continue;
-                }
-            
-                if (log.isLoggable(Level.FINEST)) {
-                    /* SJSWS 6324431
-                    log.trace("  Checking constraint '" + constraints[i] +
-                        "' against " + method + " " + uri + " --> " +
-                        constraints[i].included(uri, method));
-                    */
-                    // START SJSWS 6324431
-                    log.finest("  Checking constraint '" + constraint +
-                               "' against " + method + " " + origUri +
-                               " --> " +
-                               constraint.included(uri, method, 
-                                                   caseSensitiveMapping));
-                    // END SJSWS 6324431
-                }
+            if (log.isLoggable(Level.FINEST)) {
                 /* SJSWS 6324431
-                if (log.isDebugEnabled() && constraints[i].included(
-                        uri, method)) {
-                    log.debug("  Matched constraint '" + constraints[i] +
-                        "' against " + method + " " + uri);
-                }
+                log.trace("  Checking constraint '" + constraints[i] +
+                    "' against " + method + " " + uri + " --> " +
+                    constraints[i].included(uri, method));
                 */
                 // START SJSWS 6324431
-                if (log.isLoggable(Level.FINE) &&
-                        constraint.included(uri, method,
-                                            caseSensitiveMapping)) {
-                    log.fine("  Matched constraint '" + constraint +
-                             "' against " + method + " " + origUri);
-                }
+                log.finest("  Checking constraint '" + constraint +
+                           "' against " + method + " " + origUri +
+                           " --> " +
+                           constraint.included(uri, method,
+                                               caseSensitiveMapping));
                 // END SJSWS 6324431
+            }
+            /* SJSWS 6324431
+            if (log.isDebugEnabled() && constraints[i].included(
+                    uri, method)) {
+                log.debug("  Matched constraint '" + constraints[i] +
+                    "' against " + method + " " + uri);
+            }
+            */
+            // START SJSWS 6324431
+            if (log.isLoggable(Level.FINE) &&
+                    constraint.included(uri, method,
+                                        caseSensitiveMapping)) {
+                log.fine("  Matched constraint '" + constraint +
+                         "' against " + method + " " + origUri);
+            }
+            // END SJSWS 6324431
+
+            for (int j=0; j < collection.length; j++){
+                String[] patterns = collection[j].findPatterns();
+                // If patterns is null, continue to avoid an NPE
+                // See Bugzilla 30624
+                if (patterns == null) {
+                    continue;
+                }
 
                 boolean matched = false;
-                int pos = -1;
-                for (int j=0; j < collection.length; j++){
-                    String [] patterns = collection[j].findPatterns();
-                    // If patterns is null, continue to avoid an NPE
-                    // See Bugzilla 30624
-                    if (patterns == null) {
-                        continue;
+                int length = -1;
+                for (int k=0; k < patterns.length; k++) {
+                    /* SJSWS 6324431
+                    String pattern = patterns[k];
+                    */
+                    // START SJSWS 6324431
+                    String pattern = caseSensitiveMapping ?
+                        patterns[k]:patterns[k].toLowerCase();
+                    // END SJSWS 6324431
+                    if (pattern.startsWith("/") &&
+                            pattern.endsWith("/*") && 
+                            pattern.length() >= longest) {
+                            
+                        if (pattern.length() == 2) {
+                            matched = true;
+                            length = pattern.length();
+                        } else if (uri != null
+                                && (pattern.regionMatches(
+                                        0,uri,0,pattern.length()-1)
+                                    || (pattern.length()-2 == uri.length()
+                                        && pattern.regionMatches(
+                                            0,uri,0,pattern.length()-2)))) {
+                            matched = true;
+                            length = pattern.length();
+                        }
                     }
+                }
+                if (matched) {
+                    found = true;
+                    if (length > longest) {
+                        if (results != null) {
+                            results.clear();
+                        }
+                        longest = length;
+                    }
+                    if (collection[j].findMethod(method)) {
+                        if (results == null) {
+                            results = new ArrayList();
+                        }
+                        results.add(constraint);
+                    }
+                }
+            }
+        } // while
 
-                    for(int k=0; k < patterns.length && !matched; k++) {
-                        /* SJSWS 6324431
-                        String pattern = patterns[k];
-                        */
-                        // START SJSWS 6324431
-                        String pattern = caseSensitiveMapping ? 
-                            patterns[k]:patterns[k].toLowerCase();
-                        // END SJSWS 6324431
-                        if (uri != null && pattern.startsWith("*.")){
-                            int slash = uri.lastIndexOf("/");
-                            int dot = uri.lastIndexOf(".");
-                            if (slash >= 0 && dot > slash &&
-                                    dot != uri.length()-1 &&
-                                    uri.length()-dot == pattern.length()-1) {
-                                if (pattern.regionMatches(
-                                        1,uri,dot,uri.length()-dot)) {
-                                    matched = true;
-                                    pos = j;
-                                }
+        if (found) {
+            return resultsToArray(results);
+        }
+
+        i = constraints.iterator(); 
+        while (i.hasNext()) {
+            SecurityConstraint constraint = i.next();
+            SecurityCollection[] collection = constraint.findCollections();
+
+            // If collection is null, continue to avoid an NPE
+            // See Bugzilla 30624
+            if ( collection == null) {
+                continue;
+            }
+            
+            if (log.isLoggable(Level.FINEST)) {
+                /* SJSWS 6324431
+                log.trace("  Checking constraint '" + constraints[i] +
+                    "' against " + method + " " + uri + " --> " +
+                    constraints[i].included(uri, method));
+                */
+                // START SJSWS 6324431
+                log.finest("  Checking constraint '" + constraint +
+                           "' against " + method + " " + origUri +
+                           " --> " +
+                           constraint.included(uri, method, 
+                                               caseSensitiveMapping));
+                // END SJSWS 6324431
+            }
+            /* SJSWS 6324431
+            if (log.isDebugEnabled() && constraints[i].included(
+                    uri, method)) {
+                log.debug("  Matched constraint '" + constraints[i] +
+                    "' against " + method + " " + uri);
+            }
+            */
+            // START SJSWS 6324431
+            if (log.isLoggable(Level.FINE) &&
+                    constraint.included(uri, method,
+                                        caseSensitiveMapping)) {
+                log.fine("  Matched constraint '" + constraint +
+                         "' against " + method + " " + origUri);
+            }
+            // END SJSWS 6324431
+
+            boolean matched = false;
+            int pos = -1;
+            for (int j=0; j < collection.length; j++){
+                String [] patterns = collection[j].findPatterns();
+                // If patterns is null, continue to avoid an NPE
+                // See Bugzilla 30624
+                if (patterns == null) {
+                    continue;
+                }
+
+                for(int k=0; k < patterns.length && !matched; k++) {
+                    /* SJSWS 6324431
+                    String pattern = patterns[k];
+                    */
+                    // START SJSWS 6324431
+                    String pattern = caseSensitiveMapping ? 
+                        patterns[k]:patterns[k].toLowerCase();
+                    // END SJSWS 6324431
+                    if (uri != null && pattern.startsWith("*.")){
+                        int slash = uri.lastIndexOf("/");
+                        int dot = uri.lastIndexOf(".");
+                        if (slash >= 0 && dot > slash &&
+                                dot != uri.length()-1 &&
+                                uri.length()-dot == pattern.length()-1) {
+                            if (pattern.regionMatches(
+                                    1,uri,dot,uri.length()-dot)) {
+                                matched = true;
+                                pos = j;
                             }
                         }
                     }
                 }
+            }
     
-                if (matched) {
-                    found = true;
-                    if (collection[pos].findMethod(method)) {
-                        if(results == null) {
-                            results = new ArrayList();
-                        }
-                        results.add(constraint);
+            if (matched) {
+                found = true;
+                if (collection[pos].findMethod(method)) {
+                    if(results == null) {
+                        results = new ArrayList();
                     }
+                    results.add(constraint);
                 }
-            } // while
+            }
+        } // while
 
-            if (found) {
-                return resultsToArray(results);
+        if (found) {
+            return resultsToArray(results);
+        }
+
+        i = constraints.iterator(); 
+        while (i.hasNext()) {
+            SecurityConstraint constraint = i.next();
+            SecurityCollection[] collection = constraint.findCollections();
+            
+            // If collection is null, continue to avoid an NPE
+            // See Bugzilla 30624
+            if (collection == null) {
+                continue;
             }
 
-            i = constraints.iterator(); 
-            while (i.hasNext()) {
-                SecurityConstraint constraint = i.next();
-                SecurityCollection[] collection = constraint.findCollections();
-            
-                // If collection is null, continue to avoid an NPE
+            if (log.isLoggable(Level.FINEST)) {
+                /* SJSWS 6324431
+                log.trace("  Checking constraint '" + constraints[i] +
+                    "' against " + method + " " + uri + " --> " +
+                    constraints[i].included(uri, method));
+                */
+                // START SJSWS 6324431
+                log.finest("  Checking constraint '" + constraint +
+                           "' against " + method + " " + origUri +
+                           " --> " +
+                           constraint.included(uri, method,
+                                               caseSensitiveMapping));
+                // END SJSWS 6324431
+            }
+            /* SJSWS 6324431
+            if (log.isDebugEnabled() && constraints[i].included(
+                    uri, method)) {
+                log.debug("  Matched constraint '" + constraints[i] +
+                    "' against " + method + " " + uri);
+            }
+            */
+            // START SJSWS 6324431
+            if (log.isLoggable(Level.FINE) &&
+                    constraint.included(uri, method,
+                                        caseSensitiveMapping)) {
+                log.fine("  Matched constraint '" + constraint +
+                         "' against " + method + " " + origUri);
+            }
+            // END SJSWS 6324431
+
+            for (int j=0; j < collection.length; j++){
+                String[] patterns = collection[j].findPatterns();
+
+                // If patterns is null, continue to avoid an NPE
                 // See Bugzilla 30624
-                if (collection == null) {
+                if (patterns == null) {
                     continue;
                 }
 
-                if (log.isLoggable(Level.FINEST)) {
+                boolean matched = false;
+                for (int k=0; k < patterns.length && !matched; k++) {
                     /* SJSWS 6324431
-                    log.trace("  Checking constraint '" + constraints[i] +
-                        "' against " + method + " " + uri + " --> " +
-                        constraints[i].included(uri, method));
+                    String pattern = patterns[k];
                     */
                     // START SJSWS 6324431
-                    log.finest("  Checking constraint '" + constraint +
-                               "' against " + method + " " + origUri +
-                               " --> " +
-                               constraint.included(uri, method,
-                                                   caseSensitiveMapping));
+                    String pattern = caseSensitiveMapping ? 
+                        patterns[k]:patterns[k].toLowerCase();
                     // END SJSWS 6324431
-                }
-                /* SJSWS 6324431
-                if (log.isDebugEnabled() && constraints[i].included(
-                        uri, method)) {
-                    log.debug("  Matched constraint '" + constraints[i] +
-                        "' against " + method + " " + uri);
-                }
-                */
-                // START SJSWS 6324431
-                if (log.isLoggable(Level.FINE) &&
-                        constraint.included(uri, method,
-                                            caseSensitiveMapping)) {
-                    log.fine("  Matched constraint '" + constraint +
-                             "' against " + method + " " + origUri);
-                }
-                // END SJSWS 6324431
-
-                for (int j=0; j < collection.length; j++){
-                    String[] patterns = collection[j].findPatterns();
-
-                    // If patterns is null, continue to avoid an NPE
-                    // See Bugzilla 30624
-                    if (patterns == null) {
-                        continue;
-                    }
-
-                    boolean matched = false;
-                    for (int k=0; k < patterns.length && !matched; k++) {
-                        /* SJSWS 6324431
-                        String pattern = patterns[k];
-                        */
-                        // START SJSWS 6324431
-                        String pattern = caseSensitiveMapping ? 
-                            patterns[k]:patterns[k].toLowerCase();
-                        // END SJSWS 6324431
-                        if (pattern.equals("/")){
-                            matched = true;
-                        }
-                    }
-                    if (matched) {
-                        if (results == null) {
-                            results = new ArrayList();
-                        }                    
-                        results.add(constraint);
+                    if (pattern.equals("/")){
+                        matched = true;
                     }
                 }
-            } // while
-        } // synchronized
+                if (matched) {
+                    if (results == null) {
+                        results = new ArrayList();
+                    }                    
+                    results.add(constraint);
+                }
+            }
+        } // while
 
         if (results == null) {
             // No applicable security constraint was found
