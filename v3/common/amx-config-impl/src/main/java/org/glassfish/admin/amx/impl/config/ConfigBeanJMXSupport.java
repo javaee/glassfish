@@ -422,8 +422,9 @@ public class ConfigBeanJMXSupport {
             amxInterfaceName = classname;
         }
         
-        d.setField( AMXConstants.DESC_INTERFACE_NAME, amxInterfaceName );
-        d.setField( AMXConstants.DESC_IMMUTABLE_INFO, true );
+        d.setField( AMXConstants.DESC_STD_INTERFACE_NAME, amxInterfaceName );
+        d.setField( AMXConstants.DESC_GENERIC_INTERFACE_NAME, AMXConfigProxy.class.getName() );
+        d.setField( AMXConstants.DESC_STD_IMMUTABLE_INFO, true );
         d.setField( AMXConstants.DESC_PATH_PART, getTypeString() );
         d.setField( AMXConstants.DESC_GROUP, "config" );
         

@@ -37,7 +37,6 @@ package org.glassfish.admin.amx.core.proxy;
 
 import org.glassfish.admin.amx.base.DomainRoot;
 import org.glassfish.admin.amx.core.AMXProxy;
-import org.glassfish.admin.amx.core.GenericAMX;
 
 import org.glassfish.admin.amx.util.AMXDebugHelper;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
@@ -71,6 +70,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.management.Descriptor;
 import org.glassfish.admin.amx.client.AppserverConnectionSource;
+import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.AMXConstants;
 
 /**
@@ -82,7 +82,6 @@ import org.glassfish.admin.amx.core.AMXConstants;
  */
 public final class ProxyFactory implements NotificationListener
 {
-	private final ConcurrentMap<ObjectName,AMXProxy>		mProxyCache;
 	private final ConnectionSource	mConnectionSource;
 	private final ObjectName		mDomainRootObjectName;
 	private final DomainRoot		mDomainRoot;
@@ -126,7 +125,6 @@ public final class ProxyFactory implements NotificationListener
 		assert( connSource != null );
 		
 		mConnectionSource	= connSource;
-		mProxyCache			= new ConcurrentHashMap<ObjectName,AMXProxy>();
 		
 		try
 		{
@@ -191,8 +189,6 @@ public final class ProxyFactory implements NotificationListener
 	connectionBad()
 	{
         final Set<AMXProxy>   proxies  = new HashSet<AMXProxy>();
-        proxies.addAll( mProxyCache.values() );
-        mProxyCache.clear();
         
         for( final AMXProxy amx : proxies )
         {
@@ -247,12 +243,6 @@ public final class ProxyFactory implements NotificationListener
 		{
 			final MBeanServerNotification	notif	= (MBeanServerNotification)notifIn;
 			final ObjectName	objectName	= notif.getMBeanName();
-			final AMXProxy proxy	= mProxyCache.remove( objectName );
-			if ( proxy != null)
-            {
-                ((AMXProxyHandler)proxy).targetUnregistered();
-                mMBeanInfoCache.remove(objectName);
-            }
 			//debug( "ProxyFactory.handleNotification: UNREGISTERED: ", objectName );
 		}
 		else if ( notifIn instanceof JMXConnectionNotification )
@@ -524,9 +514,20 @@ public final class ProxyFactory implements NotificationListener
         final Descriptor d = info.getDescriptor();
         if ( d == null ) return false;
         
-        final String value =  "" + d.getFieldValue( AMXConstants.DESC_IMMUTABLE_INFO);
+        final String value =  "" + d.getFieldValue( AMXConstants.DESC_STD_IMMUTABLE_INFO);
         return Boolean.valueOf( value );
     }
+    
+   	
+	/**
+		@return MBeanServerConnection used by this factory
+	 */
+		protected MBeanServerConnection
+	getMBeanServerConnection()
+		throws IOException
+	{
+		return( getConnectionSource().getMBeanServerConnection( false ) );
+	}
     
 	/**
 		Get any existing proxy, returning null if none exists and 'create' is false.
@@ -540,76 +541,61 @@ public final class ProxyFactory implements NotificationListener
 	    final ObjectName	objectName,
 	    Class<T>            intf)
 	{
-		final T proxy = createNewProxy( objectName, getMBeanInfo(objectName), intf);
+		final T proxy = getProxy( objectName, getMBeanInfo(objectName), intf);
 		return proxy;
 	}
     
-    	public synchronized AMXProxy
+    /** Call getProxy(objectName, getGenericAMXInterface() */
+    	public AMXProxy
 	getProxy( final ObjectName	objectName)
 	{
-		return getProxy(objectName, AMXProxy.class );
-	}
-    
-   	
-	/**
-		@return MBeanServerConnection used by this factory
-	 */
-		protected MBeanServerConnection
-	getMBeanServerConnection()
-		throws IOException
-	{
-		return( getConnectionSource().getMBeanServerConnection( false ) );
+        final MBeanInfo info = getMBeanInfo(objectName);
+        final Class<? extends AMXProxy>  intf = getGenericAMXInterface(info);
+		final AMXProxy proxy = getProxy( objectName, info, intf);
+        return proxy;
 	}
 
-        private static Class<?>
-    getInterfaceClass(final MBeanInfo info)
-    {
-        return getInterfaceClass( info, AMXProxy.class.getClassLoader() );
-    }
-    
     /**
-     * Get the interface class as indicated by metadata, or a generic class
-     * if not specified or not loadable.
-     * @param info
-     * @return
+        Get the generic AMX interface.  This is restricted to amx-core module.
      */
-        private static Class<?>
-    getInterfaceClass(final MBeanInfo info, final ClassLoader classloader)
+        public static Class<? extends AMXProxy>
+    getGenericAMXInterface(final MBeanInfo info)
     {
-        Class<?> proxyClass = GenericAMX.class;
+		final String intfName	= AMXProxyHandler.getGenericInterfaceName(info);
+        Class<? extends AMXProxy> intf = AMXProxy.class;
         
-		final String specifiedName	= AMXProxyHandler.getInterfaceName(info);
-        if ( specifiedName != null )
+        if ( intfName == null || AMXProxy.class.getName().equals( intfName ) )
         {
-            Class<?>	specifiedClass		= null;
+            intf = AMXProxy.class;
+        }
+        else if ( AMXConfigProxy.class.getName().equals(intfName) )
+        {
+            intf = AMXConfigProxy.class;
+        }
+        else if ( intfName.startsWith(AMXProxy.class.getPackage().getName() ) )
+        {
             try
             {
-                proxyClass	= Class.forName( specifiedName, false, classloader  );
+                intf	= Class.forName( intfName, false, ProxyFactory.class.getClassLoader()  ).asSubclass(AMXProxy.class);
             }
             catch( final Exception e )
             {
                 // ok, use generic
-                debug( "ProxyFactory.getInterfaceClass(): Unable to laod interface " + specifiedName + ", using Generic" );
-                proxyClass = GenericAMX.class;
+                debug( "ProxyFactory.getInterfaceClass(): Unable to load interface " + intfName );
             }
         }
-        
-        return proxyClass;
+        else
+        {
+            intf = AMXProxy.class;
+        }
+        return intf;
     }
-
-    /**
-     *  Empty the proxy cache.
-     */
-    public void clearCache()
-    {
-        mProxyCache.clear();
-    }
-    
-        public <T extends AMXProxy> T
-	createNewProxy(
+      
+        <T extends AMXProxy> T
+	getProxy(
         final ObjectName objectName,
         final MBeanInfo  mbeanInfoIn, 
-        final Class<T>   expected)
+        final Class<T>   intfIn)
 	{
         //debug( "ProxyFactory.createProxy: " + objectName + " of class " + expected.getName() + " with interface " + JMXUtil.interfaceName(mbeanInfo) + ", descriptor = " + mbeanInfo.getDescriptor() );
 		AMXProxy proxy = null;
@@ -620,10 +606,18 @@ public final class ProxyFactory implements NotificationListener
             mbeanInfo = getMBeanInfo(objectName);
         }
         
+        // if it's a plain AMXProxy, it might have a more generic sub-interface we should use.
+        Class<? extends AMXProxy>  intf = intfIn; 
+        if ( AMXProxy.class == intf )
+        {
+            intf = getGenericAMXInterface(mbeanInfoIn);
+        }
+        
         try
         {
             final AMXProxyHandler handler	= new AMXProxyHandler( getMBeanServerConnection(), objectName, mbeanInfo);
-            proxy	= (AMXProxy)Proxy.newProxyInstance( expected.getClassLoader(), new Class[] { expected }, handler);
+            proxy	= (AMXProxy)Proxy.newProxyInstance( intf.getClassLoader(), new Class[] { intf }, handler);
+            debug( "CREATED proxy of type " + intf.getName() + ", metadata specifies " + AMXProxyHandler.getInterfaceName(mbeanInfo) );
         }
         catch( IllegalArgumentException e )
         {
@@ -636,7 +630,7 @@ public final class ProxyFactory implements NotificationListener
             throw new RuntimeException( e );
         }
 				
-		return expected.cast( proxy );
+		return intfIn.cast( proxy );
 	}
 
 	

@@ -418,8 +418,8 @@ public final class MBeanInfoSupport {
             throw new IllegalArgumentException("interface class must be an interface");
         }
 
-        desc.setField( DESC_IMMUTABLE_INFO, immutable );
-        desc.setField( DESC_INTERFACE_NAME, intf.getName() );
+        desc.setField( DESC_STD_IMMUTABLE_INFO, immutable );
+        desc.setField( DESC_STD_INTERFACE_NAME, intf.getName() );
         desc.setField( DESC_IS_SINGLETON, singleton );
         desc.setField( DESC_PATH_PART, pathPart );
         desc.setField( DESC_GROUP, group );

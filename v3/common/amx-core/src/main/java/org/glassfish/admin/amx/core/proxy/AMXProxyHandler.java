@@ -93,7 +93,7 @@ public final class AMXProxyHandler extends MBeanProxyHandler
             return intf.cast( this );
         }
 
-        return getProxyFactory().createNewProxy( getObjectName(), getMBeanInfo(), intf);
+        return getProxyFactory().getProxy( getObjectName(), getMBeanInfo(), intf);
         
         //throw new IllegalArgumentException( "Cannot convert " + getObjectName() + 
         // " to interface " + intf.getName() + ", interfaceName from Descriptor = " + interfaceName());
@@ -183,6 +183,13 @@ public final class AMXProxyHandler extends MBeanProxyHandler
 	{
    		return( getProxyFactory().getProxy( objectName, intf ) );
 	}
+    
+        protected AMXProxy
+	getProxy(final ObjectName	objectName )
+	{
+   		return getProxy( objectName, AMXProxy.class );
+	}
+    
 	
 // 	/**
 // 		Return true if the method is one that is requesting a Map of AMX object.
@@ -380,7 +387,7 @@ public final class AMXProxyHandler extends MBeanProxyHandler
 		assert( objectName != null ) :
 			"received null ObjectName from: " + methodName + " on target " + getObjectName();
 		
-		final AMXProxy	proxy	= getProxy( objectName, AMXProxy.class);
+		final AMXProxy	proxy	= getProxy( objectName );
 		
 		return( proxy );
 	}
@@ -848,7 +855,13 @@ public final class AMXProxyHandler extends MBeanProxyHandler
 //-----------------------------------    
     public static String getInterfaceName(final MBeanInfo info)
     {
-        final Object value = info.getDescriptor().getFieldValue( "interfaceName" );
+        final Object value = info.getDescriptor().getFieldValue( DESC_STD_INTERFACE_NAME );
+        return (String)value;
+    }
+    
+    public static String getGenericInterfaceName(final MBeanInfo info)
+    {
+        final Object value = info.getDescriptor().getFieldValue( DESC_GENERIC_INTERFACE_NAME );
         return (String)value;
     }
     
@@ -900,7 +913,7 @@ public final class AMXProxyHandler extends MBeanProxyHandler
     
     public AMXProxy parent()
     {
-        return mParentObjectName == null ? null : getProxyFactory().getProxy(mParentObjectName, AMXProxy.class);
+        return mParentObjectName == null ? null : getProxyFactory().getProxy(mParentObjectName);
     }
     
     public String path()
