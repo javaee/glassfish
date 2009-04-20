@@ -608,26 +608,27 @@ admingui.util = {
  *  The following functions provide breadcrumbs and tree functionality.
  */
 admingui.nav = {
+    TREE_ID: "treeForm:tree",
     
     refreshCluster: function(hasCluster){
-        var node1 = admingui.nav.getTreeFrameElementById('form:tree:clusters');
-        var node2 = admingui.nav.getTreeFrameElementById('form:tree:clusters2');
-        var node3 = admingui.nav.getTreeFrameElementById('form:tree:clusters2_children');
-        var tree = admingui.nav.getTreeFrameElementById("form:tree");
+        var node1 = admingui.nav.getTreeFrameElementById(admingui.nav.TREE_ID + ':clusters');
+        var node2 = admingui.nav.getTreeFrameElementById(admingui.nav.TREE_ID + ':clusters2');
+        var node3 = admingui.nav.getTreeFrameElementById(admingui.nav.TREE_ID + ':clusters2_children');
+        var tree = admingui.nav.getTreeFrameElementById(admingui.nav.TREE_ID);
 	// FIXME: This needs the viewId where clusters2 is defined
-        admingui.nav.refreshTree('form:tree:clusters2');
+        admingui.nav.refreshTree(admingui.nav.TREE_ID + ':clusters2');
         if (hasCluster=='true' || hasCluster=='TRUE') {
             node1.style.display='none';
             node2.style.display='block';
             node3.style.display='block';
-            tree.selectTreeNode('form:tree:clusters2');
+            tree.selectTreeNode(admingui.nav.TREE_ID + ':clusters2');
         } else {
 	    //there is a problem in hiding clusters2,  it doesn' hide it, maybe because of the 
 	    //dynamic treenode under it ? still need to figure this out.
             node3.style.display='none';
             node2.style.display='none';
             node1.style.display='block';
-            tree.selectTreeNode('form:tree:clusters');
+            tree.selectTreeNode(admingui.nav.TREE_ID + ':clusters');
         }
     },
     
@@ -773,23 +774,17 @@ admingui.nav = {
      *	This function selects a treeNode matching the given URL.
      */
     selectTreeNodeWithURL: function(url) {
-        if (window.parent.frames.index) {
-            var tree = admingui.nav.getTreeFrameElementById("form:tree");
-            var matches =
-            admingui.util.findNodes(tree, admingui.nav.matchURL, url);
-            if (matches) {
-                // FIXME: Find "best" match... this will be needed if the URL
-                // is ambiguous, which may happen if post requests occur which
-                // leave off QUERY_STRING data that is needed to identify the
-                // URL.  It's probably best to leave the highlighting alone in
-                // many of these cases... perhaps search for the nearest match
-                // to the currently selected node.  Anyway, for now I will
-                // ignore this until we need to fix it...
-//		for (var test = 0; test < matches.length; test++) {
-                admingui.nav.selectTreeNode(
-                                           admingui.nav.getContainingTreeNode(matches[0]));
-//		}
-            }
+        var tree = document.getElementById(admingui.nav.TREE_ID);
+        var matches = admingui.util.findNodes(tree, admingui.nav.matchURL, url);
+        if (matches) {
+            // FIXME: Find "best" match... this will be needed if the URL
+            // is ambiguous, which may happen if post requests occur which
+            // leave off QUERY_STRING data that is needed to identify the
+            // URL.  It's probably best to leave the highlighting alone in
+            // many of these cases... perhaps search for the nearest match
+            // to the currently selected node.  Anyway, for now I will
+            // ignore this until we need to fix it...
+            admingui.nav.selectTreeNode(admingui.nav.getContainingTreeNode(matches[0]));
         }
     },
 
@@ -797,18 +792,33 @@ admingui.nav = {
      *	This function selects the given treeNode.
      */
     selectTreeNode: function(treeNode) {
-        var tree = admingui.nav.getTree(treeNode);
+        var tree = document.getElementById(admingui.nav.TREE_ID);// admingui.nav.getTree(treeNode);
         if (tree) {
-            tree.selectTreeNode(treeNode.id);
+            try {
+                tree.clearAllHighlight(tree.id);
+                tree.highlight(treeNode);
+                this.expandNode(treeNode)
+            } catch (err) {
+                console.log(err);
+            }
         }
     },
 
-    /**
+    expandNode: function(treeNode) {
+        var id = treeNode.id;
+        var index = id.lastIndexOf(":");
+        while (index > -1) {
+            id = id.substring(0, index);
+            YAHOO.util.Dom.setStyle(id+"_children", "display", "block");
+            index = id.lastIndexOf(":");
+        }
+    },
+
+    /**=
      *	This function selects the given treeNode.
      */
     selectTreeNodeById: function(treeNodeId) {
-        var tree = admingui.nav.getTree(
-                                       admingui.nav.getTreeFrameElementById(treeNodeId));
+        var tree = admingui.nav.getTree(admingui.nav.getTreeFrameElementById(treeNodeId));
         if (tree) {
             tree.selectTreeNode(treeNodeId);
         }
@@ -820,7 +830,8 @@ admingui.nav = {
      */
     matchURL: function(node, url) {
         var result = null;
-        if ((node.nodeType == 1) && (node.nodeName == "A") && (node.href.indexOf(url) > -1)) {
+        if ((node.nodeType == 1) && (node.nodeName == "A") && 
+            (node.href == url) & (node.id.indexOf("link") > -1)) { //indexOf(url) > -1)) {
             result = node;
         }
         return result;
@@ -833,7 +844,7 @@ admingui.nav = {
      *	already loaded.
      */
     getSelectedTreeNode: function() {
-        var tree = admingui.nav.getTreeFrameElementById("form:tree");
+        var tree = document.getElementById(admingui.nav.TREE_ID);
         if (tree && tree.getSelectedTreeNode) {
             return tree.getSelectedTreeNode(tree.id);
         }
@@ -859,7 +870,7 @@ admingui.nav = {
 		setTimeout("admingui.nav.calculateBreadCrumbs('" + commandId + "', '" + targetId + "', " + (count + 1) + ")", 1000);
 		return;
 	    }
-            var tree = admingui.nav.getTreeFrameElementById("form:tree");
+            var tree = admingui.nav.getTreeFrameElementById(admingui.nav.TREE_ID);
             if ((tree == null) || (tree.getSelectedTreeNode == null)) {
                 // Tree isn't loaded yet, wait for it and try again
                 setTimeout('admingui.nav.calculateBreadCrumbs(\'' + commandId + '\', \'' + targetId + '\', ' + (count + 1) + ')', 2000);
@@ -913,30 +924,24 @@ admingui.nav = {
      *	This function provides access to DOM objects in the tree window.
      */
     getTreeFrameElementById: function(id) {
-        //alert('in getTreeFrameElementById: id='+id);
-	var indexFrame = findFrame("index");
-	var result = null;
-	if (indexFrame) {
-	    result = indexFrame.document.getElementById(id);
-	}
-        return result;
+	return document.getElementById(id);
     },
 
     /**
      *	This function returns the parent TreeNode for the given TreeNode.
      */
     getParentTreeNode: function(treeNode) {
-        return window.parent.frames.index.document.getElementById('form:tree').getParentTreeNode(treeNode);
+        return document.getElementById(admingui.nav.TREE_ID).getParentTreeNode(treeNode);
     },
 
     getContainingTreeNode: function(href) {
-        return window.parent.frames.index.document.getElementById('form:tree').findContainingTreeNode(href);
+        var node =  document.getElementById(admingui.nav.TREE_ID).findContainingTreeNode(href);
+        return node;
     },
 
     getTree: function(treeNode) {
         if (treeNode) {
-			var indexFrame = findFrame("index");
-            return indexFrame.document.getElementById('form:tree').getTree(treeNode);
+            return getElementById(admingui.nav.TREE_ID).getTree(treeNode);
         }
         return null;
     },

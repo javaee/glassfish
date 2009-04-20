@@ -230,14 +230,14 @@
     // Collapse panels if necessary
     if (#{sessionScope.hideLeft}) {
 	YAHOO.util.Event.onDOMReady(function (ev) {
-	    var lu = gfLayout_layoutManager.getUnitByPosition('left');
+	    var lu = YAHOO.widget.Layout.getLayoutById('gfLayout').getUnitByPosition('left');
 	    lu.on("collapse", function (ev) { alert('collapse-- old:' + ev.oldValue + ' new:' + ev.newValue); });
 	    lu.collapse();
 	});
     }
     if (#{sessionScope.hideRight}) {
 	YAHOO.util.Event.onDOMReady(function (ev) {
-	    var lu = gfLayout_layoutManager.getUnitByPosition('right');
+	    var lu = YAHOO.widget.Layout.getLayoutById('gfLayout').getUnitByPosition('right');
 	    lu.collapse();
 	});
     }
