@@ -52,6 +52,7 @@ import java.security.Permissions;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.web.*;
 import com.sun.enterprise.security.acl.*;
+import java.util.ArrayList;
 /**
  * This class is used for generating Web permissions based on the 
  * deployment descriptor.
@@ -272,7 +273,7 @@ public class WebPermissionUtil {
 		  }
 
 		  BitSet methods = 
-		      MapValue.methodArrayToSet(wrc.getHttpMethodsAsArray());
+		      MapValue.methodArrayToSet(wrc.getHttpMethodsAsArray(), wrc.getHttpMethodOmissionsAsArray());
 
 		  if(logger.isLoggable(Level.FINE)){
 		      logger.log(Level.FINE,"JACC: constraint translation: methods of collection: "+ MapValue.getActions(methods));
@@ -620,6 +621,10 @@ class MethodValue {
 	methodNames.add("PUT");
 	methodNames.add("TRACE");
     };
+    
+    static ArrayList<String> getMethodNames() {
+        return methodNames;
+    }
 
     static Object connectKeys[] = 
     { "NONE",
@@ -662,6 +667,8 @@ class MethodValue {
 	    return index;
 	}
     }
+    
+
 }
 
 class MapValue {
@@ -726,19 +733,34 @@ class MapValue {
 	return (String[]) methods.toArray(new String[size]);
     }
 
-    static BitSet methodArrayToSet(String[] methods)
-    {
-	BitSet methodSet = new BitSet();
+    static BitSet methodArrayToSet(String[] methods, String[] methodOmissions) {
+        BitSet methodSet = new BitSet();
 
-	if (methods == null || methods.length == 0) {
-	    methodSet.set(MethodValue.AllMethodsIdx);
-	} else  for (int i=0; i<methods.length; i++) {
-	    int bit = MethodValue.getMethodIndex(methods[i]);
-	    methodSet.set(bit);
-	}
-
-	return methodSet;
-    };
+        if (methodOmissions == null || methodOmissions.length == 0) {
+            if (methods == null || methods.length == 0) {                
+                methodSet.set(MethodValue.AllMethodsIdx);
+            } else {
+                for (int i = 0; i < methods.length; i++) {
+                    int bit = MethodValue.getMethodIndex(methods[i]);
+                    methodSet.set(bit);
+                }
+            }
+        } else {
+            ArrayList<String> methodOmissionsList = new ArrayList(Arrays.asList(methodOmissions));
+            for(String methodOmission: methodOmissionsList) {
+                methodSet.clear(MethodValue.getMethodIndex(methodOmission));
+            }
+            for (String methodName : MethodValue.getMethodNames()) {
+                    if (methodName != null && !methodOmissionsList.contains(methodName)) {
+                        methodSet.set(MethodValue.getMethodIndex(methodName));
+                    }
+                }
+                
+            
+        }
+        return methodSet;
+    }
+    ;
 
     MapValue (String urlPattern)
     {
@@ -770,6 +792,7 @@ class MapValue {
 	    return methodValue;
 	}
     }
+    
 
     void setRoleOnMethods(String role,BitSet methodSet,WebBundleDescriptor wbd)
     {
