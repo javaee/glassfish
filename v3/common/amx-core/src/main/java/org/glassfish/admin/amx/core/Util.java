@@ -46,14 +46,15 @@ import static org.glassfish.admin.amx.core.AMXConstants.*;
 import javax.management.Notification;
 import javax.management.ObjectName;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.management.MBeanServer;
-import org.glassfish.admin.amx.util.StringUtil;
 
 /**
 	Utility routines pertinent to the MBean API.
@@ -319,15 +320,15 @@ public final class Util
 	/**
 		@return a Set of ObjectNames from a Set of AMX.
 	 */
-		public static Set<ObjectName>
+		public static List<ObjectName>
 	toObjectNames( final Collection<? extends AMXProxy> amxs )
 	{
-		final Set<ObjectName>	objectNames	= new HashSet<ObjectName>();
+		final List<ObjectName>	objectNames	= new ArrayList<ObjectName>();
 		for( final AMXProxy next : amxs )
 		{
 			objectNames.add( getObjectName( next ) );
 		}
-		return( Collections.checkedSet(objectNames, ObjectName.class) );
+		return( Collections.checkedList(objectNames, ObjectName.class) );
 	}
 	
 	/**
@@ -368,12 +369,12 @@ public final class Util
 		the original.
 		
 		@return Set
-	 */
 		public static Set<String>
 	getNames( final Set<? extends AMXProxy>	amxs )
 	{
 		return getNamesSet( Util.toObjectNames( amxs ) );
 	}
+	 */
 	
 	/**
 		Extract the names from all ObjectNames.  The name is the value of the
@@ -382,24 +383,24 @@ public final class Util
 		the original.
 		
 		@return Set
-	 */
 		public static Set<String>
 	getNamesSet( final Set<ObjectName>	objectNames )
 	{
 		return TypeCast.checkedStringSet(
 		        JMXUtil.getKeyPropertySet( NAME_KEY, objectNames ) );
 	}
+	 */
 	
 	/**
 		Extract the names from all ObjectNames.
 		
 		@return String[] of names from the ObjectNames
-	 */
 		public static String[]
 	getNamesArray( final Set<ObjectName>	objectNames )
 	{
 		return( JMXUtil.getKeyProperty( NAME_KEY, objectNames ) );
 	}
+	 */
 	
 	/**
 		Create a Map keyed by the value of the NAME_KEY with

@@ -74,6 +74,37 @@ public interface DomainRoot extends AMXProxy
      */
     @ManagedAttribute
     public Ext getExt();
+
+    /**
+        @return the singleton {@link QueryMgr}.
+     */
+    @ManagedAttribute
+    public QueryMgr		getQueryMgr();
+
+    /**
+        @return the singleton {@link BulkAccess}.
+     */
+    @ManagedAttribute
+    public BulkAccess		getBulkAccess();
+
+    /**
+       @return the singleton {@link UploadDownloadMgr}.
+     */
+    @ManagedAttribute
+    public UploadDownloadMgr		getUploadDownloadMgr();
+
+    /**
+        @return the singleton {@link Pathnames}.
+     */
+    @ManagedAttribute
+    public Pathnames		getPathnames();
+
+    /**
+        @return the singleton {@link Sample}.
+     */
+    @ManagedAttribute
+    public Sample		getSample();
+
     
     /**
       Return the name of this appserver domain.  Not to be confused with the

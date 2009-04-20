@@ -51,6 +51,7 @@ import org.glassfish.admin.amx.intf.config.*;
 import javax.management.ObjectName;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 
@@ -295,7 +296,7 @@ public class RefHelper
         private static QueryMgr
     getQueryMgr( final AMXProxy amx )
     {
-        return amx.extra().proxyFactory().getDomainRoot().getExt().getQueryMgr();
+        return amx.extra().proxyFactory().getDomainRoot().getQueryMgr();
     }
 
     /**
@@ -324,7 +325,7 @@ public class RefHelper
         {
             if ( failures.size() > 1 || ! allowSingleFailure )
             {
-                final Set<ObjectName>  objectNames = Util.toObjectNames( failures );
+                final List<ObjectName>  objectNames = Util.toObjectNames( failures );
 
                 throw new IllegalArgumentException( "failure removing refererences:\n{" +
                     CollectionUtil.toString( objectNames, "\n" ) + "\n}" );

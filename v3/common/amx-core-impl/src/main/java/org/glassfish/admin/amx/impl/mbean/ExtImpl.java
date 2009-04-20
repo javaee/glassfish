@@ -35,23 +35,12 @@
  */
 package org.glassfish.admin.amx.impl.mbean;
 
-
-import org.glassfish.admin.amx.base.QueryMgr;
-
-import javax.management.MBeanServer;
 import javax.management.ObjectName;
-import org.glassfish.admin.amx.base.BulkAccess;
-import org.glassfish.admin.amx.base.KitchenSink;
-import org.glassfish.admin.amx.base.Pathnames;
-import org.glassfish.admin.amx.base.Sample;
-import org.glassfish.admin.amx.base.SystemStatus;
-import org.glassfish.admin.amx.base.UploadDownloadMgr;
 import org.glassfish.admin.amx.base.Ext;
-import org.glassfish.admin.amx.impl.path.PathnamesImpl;
-import org.glassfish.admin.amx.impl.util.ObjectNames;
 
 
 /**
+    Extensions.
  */
 public class ExtImpl extends AMXImplBase
 	// implements Ext
@@ -61,84 +50,8 @@ public class ExtImpl extends AMXImplBase
 	{
         super( parentObjectName, Ext.class );
 	}
-    
-    public ObjectName getQueryMgr()
-    {
-        return child(QueryMgr.class);
-    }
-    
-    public ObjectName getKitchenSink()
-    {
-        return child(KitchenSink.class);
-    }
-    
-    public ObjectName getUploadDownloadMgr()
-    {
-        return child(UploadDownloadMgr.class);
-    }
-    
-    public ObjectName getPathnames()
-    {
-        return child(Pathnames.class);
-    }
-    
-    public ObjectName getSystemStatus()
-    {
-        return child(SystemStatus.class);
-    }
-    
-    public ObjectName getBulkAccess()
-    {
-        return child(BulkAccess.class);
-    }
-    
-    
-    @Override
-        protected final void
-    registerChildren()
-    {
-        super.registerChildren();
 
-        final MBeanServer server = getMBeanServer();
-        final ObjectName    self = getObjectName();
-        final ObjectNames	objectNames	= new ObjectNames( server, self );
-        ObjectName childObjectName = null;
-        Object mbean = null;
-        
-        /**
-        childObjectName	= objectNames.buildChildObjectName( server, self,
-                Util.getType(NotificationEmitterService.class), null );
-        mbean	= new NotificationEmitterServiceImpl(self);
-        registerChild( mbean, childObjectName );
-        
-        
-        childObjectName	= objectNames.buildChildObjectName( server, self,
-                Util.getType(NotificationServiceMgr.class), null );
-        mbean	= new NotificationServiceMgrImpl(self);
-        registerChild( mbean, childObjectName );
-        */
-        
-        childObjectName	= objectNames.buildChildObjectName( QueryMgr.class);
-        mbean	= new QueryMgrImpl(self);
-        registerChild( mbean, childObjectName );
-        
-        childObjectName	= objectNames.buildChildObjectName( BulkAccess.class);
-        mbean	= new BulkAccessImpl(self);
-        registerChild( mbean, childObjectName );
-        
-        childObjectName	= objectNames.buildChildObjectName( UploadDownloadMgr.class);
-        mbean	= new UploadDownloadMgrImpl(self);
-        registerChild( mbean, childObjectName );
-        
-        childObjectName	= objectNames.buildChildObjectName( Sample.class);
-        mbean	= new SampleImpl(self);
-        registerChild( mbean, childObjectName );
-             
-        childObjectName	= objectNames.buildChildObjectName( Pathnames.class);
-        mbean	= new PathnamesImpl(self);
-        registerChild( mbean, childObjectName );
-    }
-
+    //  children are added elsewhere, by other modules
 }
 
 

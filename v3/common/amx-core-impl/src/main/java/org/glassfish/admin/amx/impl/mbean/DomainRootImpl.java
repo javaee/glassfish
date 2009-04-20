@@ -59,6 +59,7 @@ import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.admin.amx.impl.util.InjectedValues;
 
 import java.io.InputStream;
+import org.glassfish.admin.amx.impl.path.PathnamesImpl;
 
 
 /**
@@ -76,6 +77,33 @@ public class DomainRootImpl extends AMXImplBase
     }
 
          
+    
+    public ObjectName getQueryMgr()
+    {
+        return child(QueryMgr.class);
+    }
+    
+    public ObjectName getUploadDownloadMgr()
+    {
+        return child(UploadDownloadMgr.class);
+    }
+    
+    public ObjectName getPathnames()
+    {
+        return child(Pathnames.class);
+    }
+    
+    public ObjectName getSystemStatus()
+    {
+        return child(SystemStatus.class);
+    }
+    
+    public ObjectName getBulkAccess()
+    {
+        return child(BulkAccess.class);
+    }
+    
+    
         public ObjectName
     preRegisterHook( final ObjectName selfObjectName )
         throws Exception
@@ -127,6 +155,26 @@ public class DomainRootImpl extends AMXImplBase
                         
         childObjectName	= objectNames.buildChildObjectName( Tools.class );
         mbean	= new ToolsImpl(self);
+        registerChild( mbean, childObjectName );
+        
+        childObjectName	= objectNames.buildChildObjectName( QueryMgr.class);
+        mbean	= new QueryMgrImpl(self);
+        registerChild( mbean, childObjectName );
+        
+        childObjectName	= objectNames.buildChildObjectName( BulkAccess.class);
+        mbean	= new BulkAccessImpl(self);
+        registerChild( mbean, childObjectName );
+        
+        childObjectName	= objectNames.buildChildObjectName( UploadDownloadMgr.class);
+        mbean	= new UploadDownloadMgrImpl(self);
+        registerChild( mbean, childObjectName );
+        
+        childObjectName	= objectNames.buildChildObjectName( Sample.class);
+        mbean	= new SampleImpl(self);
+        registerChild( mbean, childObjectName );
+             
+        childObjectName	= objectNames.buildChildObjectName( Pathnames.class);
+        mbean	= new PathnamesImpl(self);
         registerChild( mbean, childObjectName );
     }
     

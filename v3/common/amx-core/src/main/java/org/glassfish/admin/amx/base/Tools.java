@@ -36,7 +36,9 @@
 package org.glassfish.admin.amx.base;
 
 
+import java.util.Map;
 import javax.management.MBeanOperationInfo;
+import javax.management.ObjectName;
 import org.glassfish.admin.amx.annotation.ManagedAttribute;
 import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.core.AMXProxy;
@@ -58,13 +60,32 @@ public interface Tools extends AMXProxy, Utility, Singleton
     @ManagedAttribute
     public String getInfo();
     
-    /** emit information about all MBeans of the specified type */
+    /** emit information about all MBeans of the specified type, or path */
     @ManagedOperation(impact=MBeanOperationInfo.INFO)
     String infoType(final String type);
+    
+    /** emit information about all MBeans of the specified type, or path */
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    String infoPath(final String path);
+    
+    /** emit information about all MBeans having the specified parent path (PP), recursively */
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    String infoPP(final String type, final boolean recursive);
     
     /** emit information about MBeans, loosey-goosey seach string eg type alone */
     @ManagedOperation(impact=MBeanOperationInfo.INFO)
     String info(final String searchString);
+    
+    /**
+        Validate all AMX MBeans.  Return a Map key by ObjectName for all failures.
+        The type of the value might be String or something else which can be displayed for
+        further information.
+     */
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    public String  validate();
+    
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    public Object validate(final ObjectName mbean);
 }
 
 

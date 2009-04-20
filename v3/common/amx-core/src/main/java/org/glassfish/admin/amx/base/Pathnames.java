@@ -85,7 +85,13 @@ public interface Pathnames extends AMXProxy, Utility, Singleton
     public ObjectName[] ancestors( final String path );
     
     /**
-        List paths starting with the specified path.
+        List descendant ObjectNames.
+     */
+    @ManagedOperation
+    public ObjectName[]  listObjectNames( final String path, final boolean recursive);
+    
+    /**
+        List descendant paths.
      */
     @ManagedOperation
     public String[] listPaths( final String path, boolean recursive );
@@ -96,6 +102,10 @@ public interface Pathnames extends AMXProxy, Utility, Singleton
     @ManagedOperation
     public String[] dump( final String path );
 }
+
+
+
+
 
 
 

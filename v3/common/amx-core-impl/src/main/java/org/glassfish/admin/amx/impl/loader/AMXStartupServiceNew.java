@@ -241,8 +241,6 @@ public final class AMXStartupServiceNew
         public synchronized ObjectName
     _loadAMXMBeans()
     {
-        final TimingDelta delta = new TimingDelta();
-
         // loads the high-level AMX MBeans, like DomainRoot, QueryMgr, etc
         mAMXLoaderObjectName = loadAMX( mMBeanServer );
         //ImplUtil.getLogger().info( "AMXStartupServiceNew._loadAMXMBeans(): loaded name = " + mAMXLoaderObjectName);
@@ -266,12 +264,6 @@ public final class AMXStartupServiceNew
                    // ImplUtil.getLogger().info( "AMXStartupServiceNew._loadAMXMBeans: AMXLoader failed to load: " + e );
                 }
             }
-            
-            final long elapsedMillis = delta.elapsedMillis();
-            final QueryMgr queryMgr = getDomainRootProxy().getExt().getQueryMgr();
-            final Set<ObjectName> all = queryMgr.queryAllObjectNameSet();
-            
-            //ImplUtil.getLogger().info( "AMXStartupServiceNew: loaded " + all.size() + " AMX MBeans in " + elapsedMillis + " ms (wall-clock time)" );
         }
         catch( Throwable t )
         {

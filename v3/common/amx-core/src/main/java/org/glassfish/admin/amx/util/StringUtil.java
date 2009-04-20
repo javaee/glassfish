@@ -428,7 +428,7 @@ public final class StringUtil
         return getTimingString( nanos, TimeUnit.MILLISECONDS );
     }
         
-    private static final String   NANOS_FORMAT = "%l ns";
+    private static final String   NANOS_FORMAT = "%d ns";
     private static final String   MICROS_FORMAT = "%.1f micros";
     private static final String   MILLIS_FORMAT = "%.1f ms";
     private static final String   SECONDS_FORMAT = "%.3f sec";

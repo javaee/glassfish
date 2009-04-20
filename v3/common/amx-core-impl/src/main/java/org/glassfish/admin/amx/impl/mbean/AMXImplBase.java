@@ -274,7 +274,9 @@ public class AMXImplBase extends MBeanImplBase
     
     protected ObjectName child(final Class<?> intf )
     {
-        return child( Util.deduceType(intf) );
+        final String type = Util.deduceType(intf);
+        //System.out.println( "child: deduceType = " + type );
+        return child( type );
     }
 
 	
@@ -441,7 +443,7 @@ protected static void cdebug( final String s ) { System.out.println(s); }
 		@param name	name of the Attribute
 		@return value of the Attribute
 	*/
-		public Object
+		public final Object
 	getAttribute( final String name )
 		throws AttributeNotFoundException
 	{
@@ -1068,7 +1070,7 @@ protected static void cdebug( final String s ) { System.out.println(s); }
 		Object	result	= null;
 		boolean	unimplemented	= false;
         final int numArgs = args != null ? args.length : 0;
-        //cdebug("invoke: " + operationName + ", num args = " + numArgs );
+        cdebug("invoke: " + operationName + ", num args = " + numArgs );
 		
 		try
 		{

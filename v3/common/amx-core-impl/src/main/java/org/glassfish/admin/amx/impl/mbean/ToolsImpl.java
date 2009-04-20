@@ -35,19 +35,28 @@
  */
 package org.glassfish.admin.amx.impl.mbean;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import javax.management.MBeanInfo;
-import javax.management.MBeanServer;
 import javax.management.ObjectName;
+import org.glassfish.admin.amx.base.DomainRoot;
+import org.glassfish.admin.amx.base.Pathnames;
 import org.glassfish.admin.amx.base.Tools;
-import org.glassfish.admin.amx.core.AMXConstants;
+import org.glassfish.admin.amx.core.AMXProxy;
+import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
+import org.glassfish.admin.amx.util.SetUtil;
 import org.glassfish.admin.amx.util.StringUtil;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 
 public class ToolsImpl extends AMXImplBase // implements Tools
 {
-
+    private static final String NL = StringUtil.NEWLINE();
+        
     public ToolsImpl(final ObjectName parent) {
         super(parent, Tools.class);
     }
@@ -70,15 +79,53 @@ public class ToolsImpl extends AMXImplBase // implements Tools
         return info( "*" );
     }
     
+    public String infoPP(final String parentPath, final boolean recursive)
+    {
+        final Pathnames paths = getDomainRootProxy().getPathnames();
+        
+        final ObjectName[] objectNames = paths.listObjectNames(parentPath, recursive);
+        final Set<ObjectName> s = SetUtil.newSet(objectNames);
+        return info(s);
+    }
     
     public String infoType( final String type)
     {
         return info( "*:type=" + type + WILD_SUFFIX );
     }
     
+    public String infoPath( final String path)
+    {
+        final ObjectName objectName = getDomainRootProxy().getPathnames().resolvePath(path);
+        //cdebug( "infoPath: " + path + " => " + objectName);
+        
+        Collection<ObjectName> c = objectName == null ?  new ArrayList<ObjectName>() : Collections.singleton(objectName);
+        return info( c );
+    }
+    
+    String info( final Collection<ObjectName> objectNames )
+    {
+        final StringBuffer buf = new StringBuffer();
+            
+        if ( objectNames.size() != 0 )
+        {
+            final String NL = StringUtil.NEWLINE();
+            for( final ObjectName objectName : objectNames )
+            {
+                final MBeanInfo mbeanInfo = ProxyFactory.getInstance(getMBeanServer()).getMBeanInfo(objectName);
+                
+                buf.append( "MBeanInfo for " + objectName + NL);
+                buf.append( JMXUtil.toString(mbeanInfo) );
+                buf.append( NL + NL + NL + NL );
+            }
+        }
+        
+        buf.append( "Matched " + objectNames.size() + " mbean(s)." );
+        
+        return buf.toString();
+    }
+    
     public String info(final String searchStringIn) {
         final String domain = getObjectName().getDomain();
-        final MBeanServer server = getMBeanServer();
         
         ObjectName pattern = newObjectName(searchStringIn);
         if ( pattern == null && ( searchStringIn.length() == 0 || searchStringIn.equals(WILD_ALL)) )
@@ -117,24 +164,95 @@ public class ToolsImpl extends AMXImplBase // implements Tools
             }
         }
         
-        final Set<ObjectName> objectNames = server.queryNames( pattern, null);
+        final Set<ObjectName> objectNames = getMBeanServer().queryNames( pattern, null);
         
-        final String NL = StringUtil.NEWLINE();
-        final StringBuffer buf = new StringBuffer();
-        for( final ObjectName objectName : objectNames )
-        {
-            final MBeanInfo mbeanInfo = ProxyFactory.getInstance(server).getMBeanInfo(objectName);
-            
-            buf.append( "MBeanInfo for " + objectName + NL);
-            buf.append( JMXUtil.toString(mbeanInfo) );
-            buf.append( NL + NL + NL + NL );
+        return info(objectNames);
+    }
+    
+    
+    private static final class Stuff 
+    {
+        private final Map<ObjectName, Object> mFailures = new HashMap<ObjectName,Object>();
+        private final StringBuilder mBuf;
+        
+        public Stuff() {
+            mBuf = new StringBuilder();
         }
         
-        buf.append( "Matched " + objectNames.size() + " mbean(s)." );
+        void result( final ObjectName objectName, final Object result )
+        {
+            if ( result != null )
+            {
+                mFailures.put( objectName, result );
+                
+                mBuf.append( objectName + ": " + result + NL );
+            }
+        }
         
-        return buf.toString();
+        public String toString() {
+            return mFailures.size() + " failures." + NL + mBuf.toString();
+        }
+    }
+    
+    public Object validate( final AMXProxy proxy )
+    {
+        final DomainRoot dr = getDomainRootProxy();
+        final Pathnames paths = dr.getPathnames();
+        
+        try
+        {
+            final String path = proxy.path();
+            final ObjectName actualObjectName = Util.getObjectName(proxy);
+            
+            final ObjectName o = paths.resolvePath(path);
+            if ( o == null )
+            {
+                return "Path " + path + " does not resolve to any ObjectName, should resolve to: " + actualObjectName;
+            }
+            else  if ( ! actualObjectName.equals(o) )
+            {
+                return "Path " + path + " does not resolve to ObjectName: " + actualObjectName;
+            }
+        }
+        catch( Throwable t )
+        {
+            return t;
+        }
+        
+        return null;
+    }
+    
+    public String validate()
+    {
+        final Stuff stuff = new Stuff();
+        
+        final DomainRoot dr = getDomainRootProxy();
+        final Pathnames paths = dr.getPathnames();
+        
+        final Map<ObjectName,Object> m = new HashMap<ObjectName,Object>();
+        
+        Object result = validate( dr );
+        stuff.result( Util.getObjectName(dr), result );
+        
+        final ObjectName[] all = paths.listObjectNames( dr.path(), true);
+        for( final ObjectName objectName : all )
+        {
+            final AMXProxy amx = getProxyFactory().getProxy(objectName);
+                
+            result = validate( amx );
+            stuff.result( objectName, result );
+        }
+        return all.length + " MBeans tested." + NL + stuff.toString();
     }
 }
+
+
+
+
+
+
+
+
 
 
 

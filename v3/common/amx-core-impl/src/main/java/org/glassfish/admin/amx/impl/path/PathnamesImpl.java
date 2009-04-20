@@ -49,6 +49,7 @@ import java.util.Map;
 
 import javax.management.MBeanServer;
 import org.glassfish.admin.amx.core.AMXConstants;
+import org.glassfish.admin.amx.core.PathnameParser;
 import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
 import org.glassfish.admin.amx.util.CollectionUtil;
 import org.glassfish.admin.amx.util.ListUtil;
@@ -69,22 +70,63 @@ public final class PathnamesImpl  extends AMXImplBase
         public ObjectName
     resolvePath( final String path )
     {
+        if ( path.equals( DomainRoot.PATH ) )
+        {
+            return getDomainRoot();
+        }
+        
+        final PathnameParser parser = new PathnameParser(path);
+        
+        final String parentPath = parser.parentPath();
+        
+        cdebug( "resolvePath: " + parser.toString() );
+        
         // fixed query based on the path, which will find all MBeans with that parent path
-        final String props = Util.makeProp( AMXConstants.PARENT_PATH_KEY, path );
+        final String props = Util.makeProp( AMXConstants.PARENT_PATH_KEY, parentPath );
         final ObjectName pattern = JMXUtil.newObjectNamePattern( getObjectName().getDomain(), props );
         final Set<ObjectName> s = getMBeanServer().queryNames( pattern, null);
         
-        if ( s.size() == 0 )
+        cdebug( "resolvePath: " + path + " = query for parent " + pattern );
+        
+        ObjectName objectName = null;
+        final String type = parser.type();
+        final String name = parser.name();
+        // find the matching child
+        for( final ObjectName child : s )
         {
-            return null;
+            if ( type.equals(  Util.getTypeProp(child) ) )
+            {
+                final String nameProp = Util.getNameProp(child);
+                if ( name != null && name.equals( nameProp ) )
+                {
+                    objectName = child;
+                    break;
+                }
+                else if ( name == null && nameProp == null )
+                {
+                    objectName = child;
+                    break;
+                }
+                else
+                {
+                cdebug( "No match on name: " + name + " != " + Util.getNameProp(child) );
+                }
+            }
+            else
+            {
+                cdebug( "No match on type: " + type + " != " + Util.getTypeProp(child) );
+            }
         }
         
-        // get the ObjectName of the parent of any of the children
-        final ObjectName first = s.iterator().next();
-        final ObjectName parent = (ObjectName)JMXUtil.getAttribute( getMBeanServer(), first, AMXConstants.ATTR_PARENT );
-        //throw new IllegalStateException("Path " + path + " is used by more than one MBean: " + CollectionUtil.toString(s,"\n") );
+        return objectName;
+    }
+    
+    private AMXProxy resolveToProxy( final String path )
+    {
+        final ObjectName objectName = resolvePath(path);
+        if ( objectName == null ) return null;
         
-        return parent;
+        return getProxyFactory().getProxy(objectName, AMXProxy.class);
     }
     
         public ObjectName[]
@@ -139,10 +181,10 @@ public final class PathnamesImpl  extends AMXImplBase
         return ancestors;
     }
     
-    private void listChildren( final AMXProxy top, final List<AMXProxy> list, boolean recursive)
+    private List<AMXProxy> listChildren( final AMXProxy top, final List<AMXProxy> list, boolean recursive)
     {
         final Set<AMXProxy> children = top.childrenSet();
-        if  ( children == null ) return;
+        if  ( children == null ) return null;
         
         for( final AMXProxy child : children )
         {
@@ -152,8 +194,16 @@ public final class PathnamesImpl  extends AMXImplBase
                 listChildren( child, list, true );
             }
         }
+        return list;
     }
-
+    
+    private List<AMXProxy> listChildren( final String path, boolean recursive)
+    {
+        final AMXProxy topProxy = resolveToProxy(path);
+        if ( topProxy == null ) return null;
+        
+        return listChildren(topProxy,  new ArrayList<AMXProxy>(), recursive);
+    }
     
     public String[] getAllPathnames()
     {
@@ -166,25 +216,24 @@ public final class PathnamesImpl  extends AMXImplBase
         return all;
     }
     
+    public ObjectName[]  listObjectNames( final String path, final boolean recursive)
+    {
+        final List<AMXProxy> list  = listChildren(path,  recursive);
+        final List<ObjectName> objectNames = Util.toObjectNames(list);
+        return CollectionUtil.toArray( objectNames, ObjectName.class);
+    }
+    
     public String[] listPaths( final String path, final boolean recursive )
     {
-        final ObjectName top = resolvePath(path);
-        if ( top == null ) return null;
-        
-        final AMXProxy topProxy = getProxyFactory().getProxy(top, AMXProxy.class);
-        
-        final List<AMXProxy> all  = new ArrayList<AMXProxy>();
-        listChildren(topProxy, all, recursive);
+        final List<AMXProxy> list  = listChildren(path,  recursive);
         
         final List<String> paths = new ArrayList<String>();
-        for ( final AMXProxy amx: all )
+        for ( final AMXProxy amx: list )
         {
             paths.add( amx.path() );
         }
         
-        final String[] a = new String[paths.size()];
-        paths.toArray(a);
-        return a;
+        return CollectionUtil.toArray(paths, String.class);
     }
    
     public String dump( final String path )

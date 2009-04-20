@@ -42,11 +42,8 @@ import org.glassfish.api.amx.AMXMBeanMetadata;
 
 
 /**
-    "Ex" = extensions: groups most domain-level utility and singleton MBeans,
-    some of which might have other dependencies beyond amx-core.
- * <p>
- * Well-known children have explicit getters, but there could be many
- * more children made available at runtime by other modules.
+    "Ex" = extensions: any additional MBeans, especially those that are derivative
+    and/or have other dependencies than amx-core.
  */
 @AMXMBeanMetadata(type="ext", singleton=true)
 public interface Ext extends AMXProxy, Singleton, Utility
@@ -60,29 +57,12 @@ public interface Ext extends AMXProxy, Singleton, Utility
     @ManagedAttribute
     public LoggingPropertiesMgr getLoggingPropertiesMgr();
     
-
-    /**
-        Get all the {@link LoadBalancer} instances
-        @return Map of items, keyed by name.
-        @see LoadBalancer
-        @see com.sun.appserv.management.config.LoadBalancerConfig
-        @since AppServer 9.0
-    public Map<String,LoadBalancer> getLoadBalancerMap();
-     */
-
     /**
        Contacts Update Center Server and get the updates status.
      */
     @ManagedAttribute
     public UpdateStatus  getUpdateStatus();
-        
-    /**
-            Get the NotificationServiceMgr
     
-    @ManagedAttribute
-    public NotificationServiceMgr	getNotificationServiceMgr();
-    */
-
     /**
         @return the singleton SystemInfo
      */
@@ -94,51 +74,9 @@ public interface Ext extends AMXProxy, Singleton, Utility
      */
     @ManagedAttribute
     public KitchenSink		getKitchenSink();
-
-    /**
-        @return the singleton {@link QueryMgr}.
-     */
-    @ManagedAttribute
-    public QueryMgr		getQueryMgr();
-
-    /**
-        @return the singleton {@link BulkAccess}.
-     */
-    @ManagedAttribute
-    public BulkAccess		getBulkAccess();
-
-    /**
-       @return the singleton {@link UploadDownloadMgr}.
-     */
-    @ManagedAttribute
-    public UploadDownloadMgr		getUploadDownloadMgr();
-
-    /**
-        @return the singleton {@link Pathnames}.
-     */
-    @ManagedAttribute
-    public Pathnames		getPathnames();
-
-
-    /**
-            Get all {@link NotificationEmitterService} instances.
-            Possible kinds include those defined in {@link NotificationEmitterServiceKeys}.
-            @since AppServer 9.0
-
-    @ManagedAttribute
-    public Map<String,NotificationEmitterService>
-            getNotificationEmitterServiceMap();
-*/
-    /**
-        Get the NotificationEmitterService whose name is
-        {@link NotificationEmitterServiceKeys#DOMAIN_KEY}.  Same
-        as calling <code>getNotificationEmitterServiceMap().get( DOMAIN_KEY )</code>.
-       @return the singleton {@link NotificationEmitterService}.
-
-    @ManagedAttribute
-    public NotificationEmitterService 	getDomainNotificationEmitterService();
-*/
 }
+
+
 
 
 

@@ -23,7 +23,7 @@ import static org.glassfish.admin.amx.base.Pathnames.*;
 public final class PathnameParser {
     private static void debug(final Object o)
     {
-        //System.out.println( "" + o);
+       // System.out.println( "" + o);
     }
     
     private final char mDelim;
@@ -44,6 +44,25 @@ public final class PathnameParser {
         public String type() { return mType; }
         public String name() { return mName; }
         public String toString() { return pathPart(mType,mName);}
+    }
+    
+    public String toString() {
+        final StringBuilder buf = new StringBuilder();
+        
+        buf.append( mPath + " as " + mParts.size() + " parts: " );
+        buf.append( "{" );
+        final String delim = ", ";
+        for( final PathPart part : mParts )
+        {
+            buf.append( part.toString() );
+            buf.append( delim );
+        }
+        if ( mParts.size() != 0 )
+        {
+            buf.setLength( buf.length() - delim.length() );
+        }
+        buf.append( "}" );
+        return buf.toString();
     }
     
     public PathnameParser(final String path)
@@ -69,6 +88,34 @@ public final class PathnameParser {
     public List<PathPart>  parts()
     {
         return mParts;
+    }
+    
+    public String type()
+    {
+        return mParts.get(mParts.size() -1).type();
+    }
+    public String name()
+    {
+        return mParts.get(mParts.size() -1).name();
+    }
+    
+    public String parentPath()
+    {
+        if ( mParts.size() == 0 ) return null;
+        
+        final StringBuffer buf = new StringBuffer();
+        for( int i = 0; i < mParts.size() - 1; ++ i )
+        {
+            final PathPart part = mParts.get(i);
+            buf.append( part.toString()  );
+            // don't want a trailing slash
+            if ( i < mParts.size() - 2 )
+            {
+                buf.append( Pathnames.SEPARATOR );
+            }
+        }
+        
+        return buf.toString();
     }
 
 
@@ -129,6 +176,8 @@ public final class PathnameParser {
             }
             else
             {
+                final PathPart part = new PathPart(type,null);
+                parts.add(part);
                 break;
             }
             debug( "PathnameParser, match char: \"" + matchChar + "\"" );
