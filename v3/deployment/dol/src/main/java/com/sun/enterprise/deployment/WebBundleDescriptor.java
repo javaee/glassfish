@@ -191,6 +191,10 @@ public class WebBundleDescriptor extends BundleDescriptor
         if (getSessionConfigDescriptor() == null) {
             setSessionConfigDescriptor(webBundleDescriptor.getSessionConfigDescriptor());
         }
+
+        if (getLoginConfiguration() == null) {
+            setLoginConfiguration(webBundleDescriptor.getLoginConfiguration());
+        }
     }
 
     public boolean isEmpty() {

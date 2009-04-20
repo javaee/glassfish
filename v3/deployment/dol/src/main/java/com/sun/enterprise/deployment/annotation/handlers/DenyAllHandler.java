@@ -39,6 +39,7 @@ import com.sun.enterprise.deployment.AuthorizationConstraintImpl;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.enterprise.deployment.MethodPermission;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
 import com.sun.enterprise.deployment.web.SecurityConstraint;
 import com.sun.enterprise.deployment.web.WebResourceCollection;
@@ -52,12 +53,12 @@ import org.glassfish.apf.HandlerProcessingResult;
 import org.jvnet.hk2.annotations.Service;
 
 import javax.annotation.security.DenyAll;
-import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
+import java.util.Set;
 
 /**
  * This handler is responsible for handling the javax.annotation.security.DenyAll.
@@ -121,39 +122,7 @@ public class DenyAllHandler extends AbstractCommonAttributeHandler {
             AnnotationInfo ainfo, WebComponentContext[] webCompContexts)
             throws AnnotationProcessorException {
 
-            
-        if (hasMoreThanOneAccessControlAnnotation(ainfo)) {
-            return getDefaultFailedResult();
-        }
-
-        boolean ok = true;
-        if (ElementType.TYPE.equals(ainfo.getElementType())) {
-            for (WebComponentContext webCompContext : webCompContexts) {
-                WebComponentDescriptor webCompDesc = webCompContext.getDescriptor();
-                SecurityConstraint secConstr = addHttpMethodConstraint(webCompDesc, null);
-                webCompContext.setTypeSecurityConstraint(secConstr);
-            }
-        } else {
-            Method annMethod = (Method) ainfo.getAnnotatedElement();
-            if (isValidHttpServletAnnotatedMethod(annMethod)) {
-                String httpMethod = annMethod.getName().substring(2).toUpperCase();
-                for (WebComponentContext webCompContext : webCompContexts) {
-                    WebComponentDescriptor webCompDesc = webCompContext.getDescriptor();
-                    addHttpMethodConstraint(webCompDesc, httpMethod);
-                    SecurityConstraint typeSecConstr = webCompContext.getTypeSecurityConstraint();
-                    if (typeSecConstr != null) {
-                        for (WebResourceCollection wrc : typeSecConstr.getWebResourceCollections()) {
-                            wrc.addHttpMethodOmission(httpMethod);
-                        }
-                    }
-
-                }
-            } else {
-                ok = false;
-            }
-        }
-
-        return ((ok)? getDefaultProcessedResult() : getDefaultFailedResult());
+        return processAuthAnnotationOnWebComponentContexts(ainfo, webCompContexts);
     }
 
     /**
@@ -185,13 +154,19 @@ public class DenyAllHandler extends AbstractCommonAttributeHandler {
         return true;
     }
 
-    private SecurityConstraint addHttpMethodConstraint(
-           WebComponentDescriptor webCompDesc, String httpMethod) {
+    @Override
+    protected SecurityConstraint addHttpMethodConstraint(
+            Annotation authAnnotation, WebComponentDescriptor webCompDesc,
+            String httpMethod, Set<String> urlPatterns) {
 
+        WebBundleDescriptor webBundleDesc = webCompDesc.getWebBundleDescriptor();
         SecurityConstraint securityConstraint =
-            getSecurityConstraint(webCompDesc, httpMethod);
-        AuthorizationConstraintImpl ac = new AuthorizationConstraintImpl();
-        securityConstraint.setAuthorizationConstraint(ac);
+                createSecurityConstraint(webBundleDesc, urlPatterns, httpMethod);
+
+        if (securityConstraint != null) {
+            AuthorizationConstraintImpl ac = new AuthorizationConstraintImpl();
+            securityConstraint.setAuthorizationConstraint(ac);
+        }
         return securityConstraint;
     }
 }

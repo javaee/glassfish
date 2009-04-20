@@ -40,6 +40,7 @@ import com.sun.enterprise.deployment.web.SecurityConstraint;
 
 import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
+import java.util.Set;
 
 /**
  * This provides a context for a of web component.
@@ -53,6 +54,13 @@ public class WebComponentContext extends ResourceContainerContextImpl {
      * Then we can have a Map later.
      */
     private SecurityConstraint typeSecConstraint = null;
+
+    /*
+     * This is for keeping the non-overrided url patterns shared
+     * with other annotations as the info will be lost after the
+     * procesisng of the first security annotations.
+     */
+    private Set<String> nonOverridedUrlPatterns = null;
 
     private WebComponentDescriptor webComp = null;
 
@@ -86,5 +94,13 @@ public class WebComponentContext extends ResourceContainerContextImpl {
 
     public void setTypeSecurityConstraint(SecurityConstraint typeSecConstraint) {
         this.typeSecConstraint = typeSecConstraint;
+    }
+
+    public Set<String> getNonOverridedUrlPatterns() {
+        return nonOverridedUrlPatterns;
+    }
+
+    public void setNonOverridedUrlPatterns(Set<String> noup) {
+        nonOverridedUrlPatterns = noup;
     }
 }

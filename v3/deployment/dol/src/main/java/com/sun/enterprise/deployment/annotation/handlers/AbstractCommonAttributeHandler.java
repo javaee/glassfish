@@ -49,14 +49,17 @@ import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.HandlerProcessingResult;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
-import java.util.logging.Level;
-import java.util.List;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 import javax.annotation.security.DenyAll;
 import javax.annotation.security.PermitAll;
@@ -297,6 +300,84 @@ abstract class AbstractCommonAttributeHandler extends AbstractHandler {
         return false;
     }
 
+    protected HandlerProcessingResult processAuthAnnotationOnWebComponentContexts(
+            AnnotationInfo ainfo, WebComponentContext[] webCompContexts)
+            throws AnnotationProcessorException {
+
+        if (hasMoreThanOneAccessControlAnnotation(ainfo)) {
+            return getDefaultFailedResult();
+        }
+
+        Annotation authAnnotation = ainfo.getAnnotation();
+        boolean ok = true;
+        if (ElementType.TYPE.equals(ainfo.getElementType())) {
+            for (WebComponentContext webCompContext : webCompContexts) {
+                WebComponentDescriptor webCompDesc = webCompContext.getDescriptor();
+                addHttpMethodConstraint(authAnnotation, webCompDesc,
+                        null, webCompContext, true);
+            }
+        } else {
+            Method annMethod = (Method) ainfo.getAnnotatedElement();
+            if (isValidHttpServletAnnotatedMethod(annMethod)) {
+                String httpMethod = annMethod.getName().substring(2).toUpperCase();
+                for (WebComponentContext webCompContext : webCompContexts) {
+                    WebComponentDescriptor webCompDesc = webCompContext.getDescriptor();
+
+                    SecurityConstraint typeSecConstr = webCompContext.getTypeSecurityConstraint();
+                    if (typeSecConstr != null) {
+                        //there should be only one
+                        for (WebResourceCollection wrc : typeSecConstr.getWebResourceCollections()) {
+                            wrc.addHttpMethodOmission(httpMethod);
+                            addHttpMethodConstraint(authAnnotation,
+                                    webCompDesc, httpMethod, wrc.getUrlPatterns());
+                        }
+                    } else {
+                        addHttpMethodConstraint(authAnnotation, webCompDesc,
+                                httpMethod, webCompContext, false);
+                    }
+                }     
+            } else {
+                ok = false;
+            }
+        }
+
+        return ((ok)? getDefaultProcessedResult() : getDefaultFailedResult());
+    }
+
+    private SecurityConstraint addHttpMethodConstraint(Annotation authAnnotation,
+            WebComponentDescriptor webCompDesc, String httpMethod,
+            WebComponentContext webCompContext, boolean isType) {
+
+        Set<String> nonOverridedUrlPatterns =
+                webCompContext.getNonOverridedUrlPatterns();
+
+        if (nonOverridedUrlPatterns == null) {
+            nonOverridedUrlPatterns = getNonOverridedUrlPatterns(webCompDesc);
+            webCompContext.setNonOverridedUrlPatterns(nonOverridedUrlPatterns);
+        }
+
+        SecurityConstraint securityConstraint = addHttpMethodConstraint(
+                authAnnotation, webCompDesc, httpMethod, nonOverridedUrlPatterns);
+        if (isType) {
+            webCompContext.setTypeSecurityConstraint(securityConstraint);
+        }
+        return securityConstraint;
+    }
+
+    /**
+     * This method add a default empty security constraint which correspond to
+     * permit all. Dervied class may like to override this method if necessary.
+     */
+    protected SecurityConstraint addHttpMethodConstraint(
+            Annotation authAnnotation, WebComponentDescriptor webCompDesc,
+            String httpMethod, Set<String> urlPatterns) {
+
+        WebBundleDescriptor webBundleDesc = webCompDesc.getWebBundleDescriptor();
+        SecurityConstraint securityConstraint =
+                createSecurityConstraint(webBundleDesc, urlPatterns, httpMethod);
+        return securityConstraint;
+    }
+
     /**
      * In Servlet 3.0, one can put annotations to only standard doXXX methods:
      *     doDelete, doGet, doHead, doOptions, doPost, doPut, doTrace
@@ -306,7 +387,7 @@ abstract class AbstractCommonAttributeHandler extends AbstractHandler {
      * @param method
      * @return validty of method for security annotations
      */
-    protected boolean isValidHttpServletAnnotatedMethod(Method method) {
+    private boolean isValidHttpServletAnnotatedMethod(Method method) {
         boolean valid = false;
         String methodName = method.getName();
         Class<?> returnType = method.getReturnType();
@@ -330,47 +411,109 @@ abstract class AbstractCommonAttributeHandler extends AbstractHandler {
     }
 
     /**
-     * Get or construct the associated SecurityConstraint.
+     * Given a WebComponentDescriptor, find the set of urlPattern which does not have
+     * any existing url pattern in SecurityConstraint
      * @param webCompDesc
-     * @param httpMethod
-     * @return an associated SecurityConstraint
+     * @return a list of url String
      */
-    protected SecurityConstraint getSecurityConstraint(
-            WebComponentDescriptor webCompDesc, String httpMethod) {
+    private Set<String> getNonOverridedUrlPatterns(WebComponentDescriptor webCompDesc) {
 
-        SecurityConstraint securityConstraint = null;
+        Set<String> nonOverridedUrlPatterns = new HashSet<String>();
+        Map<String, Boolean> url2MatchMap = new HashMap<String, Boolean>();
+
         WebBundleDescriptor webBundleDesc = webCompDesc.getWebBundleDescriptor();
-
-        //XXX overriding TBD
-        /*
         Set<String> urlPatterns = webCompDesc.getUrlPatternsSet();
-        for (SecurityConstraint sc : webBundleDesc.getSecurityConstraintsSet()) {
+
+        Enumeration<SecurityConstraint> eSecConstr = webBundleDesc.getSecurityConstraints();
+        while (eSecConstr.hasMoreElements()) {
+            SecurityConstraint sc = eSecConstr.nextElement();
             for (WebResourceCollection wrc : sc.getWebResourceCollections()) {
-                Set<String> ups = wrc.getUrlPatterns();
-                if (ups.equals(urlPatterns) && ) {
-                    securityConstraint = sc;
-                    break;
+                for (String up : wrc.getUrlPatterns()) {
+                    for (String urlPattern : urlPatterns) {
+                        if (implies(up, urlPattern)) {
+                            url2MatchMap.put(urlPattern, Boolean.TRUE);
+                            break;
+                        }
+                    }
                 }
             }
-            if (securityConstraint != null) {
-                break;
-            }
         }
-        */
 
-        if (securityConstraint == null) {
-            securityConstraint = new SecurityConstraintImpl();
-            WebResourceCollectionImpl webResourceColl = new WebResourceCollectionImpl();
-            for (String urlPattern : webCompDesc.getUrlPatternsSet()) {
-                webResourceColl.addUrlPattern(urlPattern);
+        for (String urlPattern: urlPatterns) {
+            if (!Boolean.TRUE.equals(url2MatchMap.get(urlPattern))) {
+                nonOverridedUrlPatterns.add(urlPattern);
             }
-            if (httpMethod != null) {
-                webResourceColl.addHttpMethod(httpMethod);
-            }
-            securityConstraint.addWebResourceCollection(webResourceColl);
-            webBundleDesc.addSecurityConstraint(securityConstraint);
         }
+
+        return nonOverridedUrlPatterns;
+    }
+
+    /**
+     * Create a SecurityConstriant for given urlPattern and httpMethod.
+     * @param urlPattern
+     * @param httpMethod
+     * @return SecurityConstraint
+     */
+    protected SecurityConstraint createSecurityConstraint(
+            WebBundleDescriptor webBundleDesc, Set<String> urlPatterns,
+            String httpMethod) {
+
+        if (urlPatterns.size() == 0) {
+            return null;
+        }
+        
+        SecurityConstraint securityConstraint = new SecurityConstraintImpl();
+        WebResourceCollectionImpl webResourceColl = new WebResourceCollectionImpl();
+        for (String urlPattern: urlPatterns) {
+            webResourceColl.addUrlPattern(urlPattern);
+        }
+
+        if (httpMethod != null) {
+            webResourceColl.addHttpMethod(httpMethod);
+        }
+
+        securityConstraint.addWebResourceCollection(webResourceColl);
+        webBundleDesc.addSecurityConstraint(securityConstraint);
 
         return securityConstraint;
     }
+
+    // from WebPermissionUtil
+    private boolean implies(String pattern, String path) {
+
+        // Check for exact match
+        if (pattern.equals(path))
+            return (true);
+
+        // Check for path prefix matching
+        if (pattern.startsWith("/") && pattern.endsWith("/*")) {
+            pattern = pattern.substring(0, pattern.length() - 2);
+
+            int length = pattern.length();
+
+            if (length == 0) return (true);  // "/*" is the same as "/"
+
+            return (path.startsWith(pattern) && 
+                    (path.length() == length || 
+                    path.substring(length).startsWith("/")));
+        }
+
+        // Check for suffix matching
+        if (pattern.startsWith("*.")) {
+            int slash = path.lastIndexOf('/');
+            int period = path.lastIndexOf('.');
+            if ((slash >= 0) && (period > slash) &&
+                path.endsWith(pattern.substring(1))) {
+                return (true);
+            }
+            return (false);
+        }
+
+        // Check for universal mapping
+        if (pattern.equals("/"))
+            return (true);
+
+        return (false);
+    }
+
 }

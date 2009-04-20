@@ -37,11 +37,13 @@ package com.sun.enterprise.deployment.annotation.handlers;
 
 import com.sun.enterprise.deployment.AuthorizationConstraintImpl;
 import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.deployment.LoginConfigurationImpl;
 import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.enterprise.deployment.MethodPermission;
 import com.sun.enterprise.deployment.Role;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
+import com.sun.enterprise.deployment.web.LoginConfiguration;
 import com.sun.enterprise.deployment.web.SecurityConstraint;
 import com.sun.enterprise.deployment.web.WebResourceCollection;
 import com.sun.enterprise.deployment.annotation.context.EjbContext;
@@ -59,6 +61,7 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
+import java.util.Set;
 
 /**
  * This handler is responsible for handling the
@@ -128,38 +131,23 @@ public class RolesAllowedHandler extends AbstractCommonAttributeHandler implemen
             AnnotationInfo ainfo, WebComponentContext[] webCompContexts)
             throws AnnotationProcessorException {
 
-        if (hasMoreThanOneAccessControlAnnotation(ainfo)) {
-            return getDefaultFailedResult();
-        }
+        HandlerProcessingResult result =
+            processAuthAnnotationOnWebComponentContexts(ainfo, webCompContexts);
 
-        RolesAllowed rolesAllowedAn = (RolesAllowed)ainfo.getAnnotation();
-        boolean ok = true;
-        if (ElementType.TYPE.equals(ainfo.getElementType())) {
-            for (WebComponentContext webCompContext : webCompContexts) {
-                WebComponentDescriptor webCompDesc = webCompContext.getDescriptor();
-                SecurityConstraint secConstr = addHttpMethodConstraint(rolesAllowedAn, webCompDesc, null);
-                webCompContext.setTypeSecurityConstraint(secConstr);
-            }
-        } else {
-            Method annMethod = (Method) ainfo.getAnnotatedElement();
-            if (isValidHttpServletAnnotatedMethod(annMethod)) {
-                String httpMethod = annMethod.getName().substring(2).toUpperCase();
-                for (WebComponentContext webCompContext : webCompContexts) {
-                    WebComponentDescriptor webCompDesc = webCompContext.getDescriptor();
-                    addHttpMethodConstraint(rolesAllowedAn, webCompDesc, httpMethod);
-                    SecurityConstraint typeSecConstr = webCompContext.getTypeSecurityConstraint();
-                    if (typeSecConstr != null) {
-                        for (WebResourceCollection wrc : typeSecConstr.getWebResourceCollections()) {
-                            wrc.addHttpMethodOmission(httpMethod);
-                        }
-                    }
-                }     
-            } else {
-                ok = false;
+        // default login config 
+        if (webCompContexts.length > 0) {
+            WebBundleDescriptor webBundleDesc =
+                webCompContexts[0].getDescriptor().getWebBundleDescriptor();
+            if (webBundleDesc != null &&
+                    webBundleDesc.getLoginConfiguration() == null) {
+                LoginConfiguration loginConfig = new LoginConfigurationImpl();
+                loginConfig.setAuthenticationMethod(
+                        LoginConfiguration.BASIC_AUTHENTICATION);
+                webBundleDesc.setLoginConfiguration(loginConfig);
             }
         }
 
-        return ((ok)? getDefaultProcessedResult() : getDefaultFailedResult());
+        return result;
     }
 
     /**
@@ -233,21 +221,26 @@ public class RolesAllowedHandler extends AbstractCommonAttributeHandler implemen
         }
     }
 
-    private SecurityConstraint addHttpMethodConstraint(RolesAllowed rolesAllowedAn,
-            WebComponentDescriptor webCompDesc, String httpMethod) {
+    @Override
+    protected SecurityConstraint addHttpMethodConstraint(
+            Annotation authAnnotation, WebComponentDescriptor webCompDesc,
+            String httpMethod, Set<String> urlPatterns) {
 
-        SecurityConstraint securityConstraint =
-            getSecurityConstraint(webCompDesc, httpMethod);
-
+        RolesAllowed rolesAllowedAn = (RolesAllowed)authAnnotation;
         WebBundleDescriptor webBundleDesc = webCompDesc.getWebBundleDescriptor();
-        AuthorizationConstraintImpl ac = new AuthorizationConstraintImpl();
-        for (String roleName : rolesAllowedAn.value()) {
-            // add role if not exists
-            Role role = new Role(roleName);
-            webBundleDesc.addRole(role);
-            ac.addSecurityRole(roleName);
+        SecurityConstraint securityConstraint =
+                createSecurityConstraint(webBundleDesc, urlPatterns, httpMethod);
+
+        if (securityConstraint != null) {
+            AuthorizationConstraintImpl ac = new AuthorizationConstraintImpl();
+            for (String roleName : rolesAllowedAn.value()) {
+                // add role if not exists
+                Role role = new Role(roleName);
+                webBundleDesc.addRole(role);
+                ac.addSecurityRole(roleName);
+            }
+            securityConstraint.setAuthorizationConstraint(ac);
         }
-        securityConstraint.setAuthorizationConstraint(ac);
         return securityConstraint;
     }
 }

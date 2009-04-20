@@ -38,6 +38,7 @@ package com.sun.enterprise.deployment.annotation.handlers;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.enterprise.deployment.MethodPermission;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
 import com.sun.enterprise.deployment.web.SecurityConstraint;
 import com.sun.enterprise.deployment.web.WebResourceCollection;
@@ -56,6 +57,7 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
+import java.util.Set;
 
 /**
  * This handler is responsible for handling the
@@ -125,38 +127,8 @@ public class PermitAllHandler extends AbstractCommonAttributeHandler implements 
             AnnotationInfo ainfo, WebComponentContext[] webCompContexts)
             throws AnnotationProcessorException {
 
-        if (hasMoreThanOneAccessControlAnnotation(ainfo)) {
-            return getDefaultFailedResult();
-        }
+        return processAuthAnnotationOnWebComponentContexts(ainfo, webCompContexts);
 
-        boolean ok = true;
-        if (ElementType.TYPE.equals(ainfo.getElementType())) {
-            for (WebComponentContext webCompContext : webCompContexts) {
-                WebComponentDescriptor webCompDesc = webCompContext.getDescriptor();
-                SecurityConstraint secConstr = addHttpMethodConstraint(webCompDesc, null);
-                webCompContext.setTypeSecurityConstraint(secConstr);
-            }
-        } else {
-            Method annMethod = (Method) ainfo.getAnnotatedElement();
-            if (isValidHttpServletAnnotatedMethod(annMethod)) {
-                String httpMethod = annMethod.getName().substring(2).toUpperCase();
-                for (WebComponentContext webCompContext : webCompContexts) {
-                    WebComponentDescriptor webCompDesc = webCompContext.getDescriptor();
-                    addHttpMethodConstraint(webCompDesc, httpMethod);
-                    SecurityConstraint typeSecConstr = webCompContext.getTypeSecurityConstraint();
-                    if (typeSecConstr != null) {
-                        for (WebResourceCollection wrc : typeSecConstr.getWebResourceCollections()) {
-                            wrc.addHttpMethodOmission(httpMethod);
-                        }
-                    }
-
-                }
-            } else {
-                ok = false;
-            }
-        }
-
-        return ((ok)? getDefaultProcessedResult() : getDefaultFailedResult());
     }
 
     /**
@@ -212,11 +184,5 @@ public class PermitAllHandler extends AbstractCommonAttributeHandler implements 
                 }
             }
         }
-    }
-
-    private SecurityConstraint addHttpMethodConstraint(
-           WebComponentDescriptor webCompDesc, String httpMethod) {
-
-        return getSecurityConstraint(webCompDesc, httpMethod);
     }
 }
