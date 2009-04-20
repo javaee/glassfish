@@ -135,7 +135,12 @@
            <artifactId>basedocs</artifactId>
            <version>3.0-Prelude</version>
 	   <type>distribution-fragment</type>
-        </dependency> 
+       </dependency> 
+       <dependency>
+            <groupId>org.glassfish.provider</groupId>
+            <artifactId>gfprobe-provider-client</artifactId>
+       </dependency>
+   
 	<!-- now, listing package dependencies so that their content
              can be excluded during staging -->	
 	<!-- package level dependency -->
@@ -145,21 +150,18 @@
            <version>${project.version}</version>
            <type>zip</type>
    	</dependency>
-  	 <!-- package level dependency -->
 	<dependency>        
            <groupId>org.glassfish.packager</groupId>
            <artifactId>glassfish-hk2</artifactId>
            <version>${project.version}</version>
            <type>zip</type>
   	</dependency>
-   	<!-- package level dependency -->
         <dependency>        
            <groupId>org.glassfish.packager</groupId>
            <artifactId>glassfish-grizzly</artifactId>
            <version>${project.version}</version>
            <type>zip</type>
         </dependency>
-        <!-- package level dependency -->
        	<dependency>        
            <groupId>org.glassfish.packager</groupId>
            <artifactId>glassfish-api</artifactId>
