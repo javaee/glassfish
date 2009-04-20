@@ -36,10 +36,9 @@
 <!-- configuration/webContainerManager.jsf -->
 <!initPage
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
-    setResourceBundle(key="web" bundle="org.glassfish.admingui.core.Strings")
 />
  
-<!composition template="/templates/default.layout"  guiTitle="$resource{web.headings.webGeneral}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.webContainer.managerProp}" >
 <!define name="content">
 <event>
         <!beforeCreate
@@ -60,7 +59,7 @@
     #include "/shared/treeBreadcrumbs.inc"
 #include "webContainerTabs.inc"
 #include "/shared/alertMsg.inc"
-<sun:title id="propertyContentPage" title="$resource{web.headings.webGeneral}">
+<sun:title id="propertyContentPage" title="$resource{i18n.webContainer.managerProp}">
     <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
             <sun:button id="saveButton"  text="$resource{i18n.button.Save}" 
