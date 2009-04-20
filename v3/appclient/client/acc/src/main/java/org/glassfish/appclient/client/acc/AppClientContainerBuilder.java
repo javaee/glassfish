@@ -176,9 +176,21 @@ public class AppClientContainerBuilder implements AppClientContainer.Builder {
         AppClientContainer container = ACCModulesManager.getComponent(AppClientContainer.class);
         container.setClient(client);
         container.setBuilder(this);
+        CallbackHandler callbackHandler = 
+                (callerSuppliedCallbackHandler != null ? 
+                    callerSuppliedCallbackHandler : getCallbackHandlerFromDescriptor(client.getDescriptor(classLoader).getCallbackHandler()));
         container.prepareSecurity(targetServers, messageSecurityConfigs, containerProperties,
-                clientCredential, callerSuppliedCallbackHandler, classLoader);
+                clientCredential, callbackHandler, classLoader);
         return container;
+    }
+
+    private CallbackHandler getCallbackHandlerFromDescriptor(final String callbackHandlerName) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+        if (callbackHandlerName != null && ! callbackHandlerName.equals("")) {
+            Class<CallbackHandler> callbackHandlerClass =
+                    (Class<CallbackHandler>) Class.forName(callbackHandlerName, true, classLoader);
+            return callbackHandlerClass.newInstance();
+        }
+        return null;
     }
 
     private void prepareHabitatAndNaming() throws URISyntaxException {

@@ -49,11 +49,13 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.net.URL;
+import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.NamingException;
+import javax.persistence.EntityManagerFactory;
 import javax.security.auth.callback.CallbackHandler;
 import org.apache.naming.resources.DirContextURLStreamHandlerFactory;
 import org.glassfish.api.invocation.ComponentInvocation;
@@ -231,6 +233,8 @@ public class AppClientContainer {
     private ClientMainClassSetting clientMainClassSetting = null;
 
     private ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+    private Collection<EntityManagerFactory> emfs = null;
 
 //    private boolean isJWS = false;
 
@@ -698,6 +702,7 @@ public class AppClientContainer {
         private Class cls = null;
         private final Logger logger;
         private Thread cleanupThread = null;
+        private Collection<EntityManagerFactory> emfs = null;
 
         static Cleanup arrangeForShutdownCleanup(final Logger logger) {
             final Cleanup cu = new Cleanup(logger);
@@ -717,6 +722,10 @@ public class AppClientContainer {
             injectionMgr = injMgr;
             this.cls = cls;
             appClient = appDesc;
+        }
+
+        void setEMFs(Collection<EntityManagerFactory> emfs) {
+            this.emfs = emfs;
         }
 
         void enable() {
@@ -756,6 +765,13 @@ public class AppClientContainer {
         void cleanUp() {
             if( !cleanedUp ) {
                 try {
+                    if (emfs != null) {
+                        for (EntityManagerFactory emf : emfs) {
+                            emf.close();
+                        }
+                        emfs.clear();
+                        emfs = null;
+                    }
 
                     if ( appClientInfo != null ) {
                         appClientInfo.close();

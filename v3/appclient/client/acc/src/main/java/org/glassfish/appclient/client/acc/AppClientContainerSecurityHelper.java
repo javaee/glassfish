@@ -39,10 +39,12 @@ import com.sun.enterprise.container.common.spi.util.InjectionException;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.security.appclient.integration.AppClientSecurityInfo;
+import java.io.File;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.Authenticator;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -93,6 +95,7 @@ public class AppClientContainerSecurityHelper {
         this.classLoader = (classLoader == null) ? Thread.currentThread().getContextClassLoader() : classLoader;
         iiopProperties = prepareIIOP(targetServers);
 
+        initLoginConfig();
         CallbackHandler callbackHandler = 
                 initSecurity(callerSuppliedCallbackHandler, acDesc);
 
@@ -101,12 +104,17 @@ public class AppClientContainerSecurityHelper {
                 callbackHandler,
                 AppClientSecurityInfo.CredentialType.USERNAME_PASSWORD,
                 (clientCredential == null ? null : clientCredential.getUserName()),
-                (clientCredential == null ? null : clientCredential.getPassword().toString()),
+                (clientCredential == null ? null : new String(clientCredential.getPassword().get())),
                 false /* isJWS */);
 
         initHttpAuthenticator(AppClientSecurityInfo.CredentialType.USERNAME_PASSWORD);
     }
 
+    private void initLoginConfig() {
+        File f = new File(System.getProperty("com.sun.aas.installRoot"));
+        URI configURI = f.toURI().resolve("lib/appclient/appclientlogin.conf");
+        System.setProperty("java.security.auth.login.config", configURI.toString());
+    }
     /**
      * Sets the callback handler for future use.
      *

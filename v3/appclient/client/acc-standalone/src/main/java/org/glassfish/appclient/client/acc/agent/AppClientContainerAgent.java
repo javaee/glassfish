@@ -343,6 +343,7 @@ public class AppClientContainerAgent {
         if ((pw = appClientCommandArgs.getPassword()) != null) {
             cc.setPassword(new XML.Password(appClientCommandArgs.getPassword()));
         }
+        builder.clientCredentials(cc.getUserName(), cc.getPassword().get());
     }
 
     private static AppClientContainer createContainer(
