@@ -81,6 +81,7 @@ import com.sun.enterprise.resource.pool.PoolManager;
 import com.sun.enterprise.resource.pool.monitor.ConnectionPoolProbeProviderUtil;
 import com.sun.enterprise.resource.pool.monitor.JdbcConnPoolProbeProvider;
 import com.sun.enterprise.security.jmac.callback.ContainerCallbackHandler;
+import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import org.glassfish.api.admin.config.Property;
 import org.glassfish.api.admin.*;
@@ -1062,6 +1063,8 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * {@inheritDoc}
      */
     public CallbackHandler getCallbackHandler(){
+        //TODO V3 hack to make sure that SecurityServicesUtil is initialized before ContainerCallbackHander
+        habitat.getComponent(SecurityServicesUtil.class);
         return habitat.getComponent(ContainerCallbackHandler.class);
     }
 
