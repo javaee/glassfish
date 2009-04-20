@@ -61,6 +61,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Vector;
 import java.util.ResourceBundle;
+import java.util.Collection;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -96,6 +97,9 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
     private String logFileName = "server.log"; 
 
     private File absoluteFile = null;
+
+    private int flushFrequency =1;
+
 
 
     private static final String LOGGING_MAX_HISTORY_FILES = "com.sun.enterprise.server.logging.max_history_files";
@@ -209,6 +213,10 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
         }
 
         setLevel( Level.ALL );
+        String ff = manager.getProperty(cname+".flushFrequency");
+        if (ff != null)
+            flushFrequency = Integer.parseInt(manager.getProperty(cname+".flushFrequency"));
+
         String formatterName = manager.getProperty(cname + ".formatter");
         if (formatterName==null || UniformLogFormatter.class.getName().equals(formatterName)) {
 
@@ -475,12 +483,18 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
 
 
         LogRecord record;
-        try {
-            record = pendingRecords.take();
-        } catch (InterruptedException e) {
-            return;
+        int logMsgs=0;
+        Vector<LogRecord> v = new Vector<LogRecord>();
+        logMsgs = pendingRecords.drainTo(v,flushFrequency);
+
+        for(int i=0; i< logMsgs;i++) {
+            record = v.elementAt(i);
+            super.publish(record);
+            if (record.getLevel().intValue()>=Level.WARNING.intValue()) {
+                recentErrors.offer(record);
+            }
         }
-        super.publish(record);
+
         flush();       
         if ( ( rotationRequested.get() )
             || ( ( limitForFileRotation > 0 )
@@ -494,9 +508,7 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
                 rotationRequested.set(false);
             }
         }
-        if (record.getLevel().intValue()>=Level.WARNING.intValue()) {
-            recentErrors.offer(record);
-        }
+
 
 
     }
