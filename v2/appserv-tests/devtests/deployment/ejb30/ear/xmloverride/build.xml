@@ -20,10 +20,12 @@
     </target>
 
     <target name="compile" depends="prepare">
-        <javac srcdir="ejb" destdir="${build}" debug="on" failonerror="true"
-            classpath="${inst}/lib/j2ee.jar"/>
-        <javac srcdir="client" destdir="${build}" debug="on" failonerror="true"
-            classpath="${inst}/lib/j2ee.jar"/>
+        <javac srcdir="ejb" destdir="${build}" debug="on" failonerror="true">
+          <classpath refid="gfv3.classpath"/>
+         </javac>
+        <javac srcdir="client" destdir="${build}" debug="on" failonerror="true">
+          <classpath refid="gfv3.classpath"/>
+         </javac>
     </target>
  
     <target name="create.user" depends="setAsadminArgsWithoutPassword">
