@@ -14,7 +14,7 @@
     &testproperties;
     &run;
 
-    <target name="all" depends="setup,restart-server-instance-common,build,deploy,run,undeploy"/>
+    <target name="all" depends="setup,build,deploy,run,undeploy,restore"/>
 
     <target name="clean" depends="init-common">
       <antcall target="clean-common"/>
@@ -31,6 +31,14 @@
             <param name="admin.command" value="set" />
             <param name="operand.props"
                    value="${appserver.instance.name}.http-service.property.traceEnabled=false"/>
+        </antcall>
+    </target>
+
+    <target name="restore" depends="init-common">
+        <antcall target="asadmin-common-ignore-fail">
+            <param name="admin.command" value="set" />
+            <param name="operand.props"
+                   value="${appserver.instance.name}.http-service.property.traceEnabled="/>
         </antcall>
     </target>
 

@@ -226,7 +226,6 @@
         <ant dir="servlet-3.0/webFilterAnnotation" target="all"/>
         <ant dir="servlet-3.0/webListenerAnnotation" target="all"/>
         <ant dir="servlet-3.0/xmlOverrideAnnotation" target="all"/>
-        <!-- XXX temporary commented out part of the test due to issue 7549 -->
         <ant dir="servlet-3.0/authAnnotations" target="all"/>
         <ant dir="servlet-3.0/webFragment" target="all"/>
         <ant dir="servlet-3.0/multiWebFragments" target="all"/>
