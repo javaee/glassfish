@@ -110,7 +110,7 @@ public class CreateJMSResource implements AdminCommand {
         final ActionReport report = context.getActionReport();
 
          if (resourceType == null) {
-            report.setMessage(localStrings.getLocalString("create.jms.resource.noJndiName",
+            report.setMessage(localStrings.getLocalString("create.jms.resource.noResourceType",
                             "No Resoruce Type defined for JMS Resource."));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
