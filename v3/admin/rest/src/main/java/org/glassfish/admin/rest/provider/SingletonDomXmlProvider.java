@@ -131,7 +131,7 @@ public class SingletonDomXmlProvider extends DomProviderUtil implements MessageB
         }
         
         int endIndex = result.length() - 1;
-        if (endIndex > 0) result = result.substring(0, endIndex - 1);
+        if (endIndex > 0) result = result.substring(0, endIndex );
         return result;
     }
 
