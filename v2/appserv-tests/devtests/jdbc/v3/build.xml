@@ -37,8 +37,9 @@
 	<antcall target="contauth"/>
 	<antcall target="autocommit"/>
 	<antcall target="maxconnectionusage"/>
+	<antcall target="statementtimeout"/>
 	<antcall target="connleaktracing"/>
-
+	<antcall target="conncreationretry"/>
 	<antcall target="resEnableDisable"/>
         <record name="jdbc.output" action="stop"/>
     </target>
