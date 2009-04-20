@@ -33,7 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.jbi.serviceengine.core;
 
 import com.sun.enterprise.config.serverbeans.Applications;
@@ -53,43 +52,35 @@ import org.jvnet.hk2.component.Habitat;
  * Provides services exposed by GlassFish to ServiceEngine
  * @author Mohit Gupta
  */
-
-@Service(name="ServiceEngineRuntimeHelper")
+@Service(name = "ServiceEngineRuntimeHelper")
 @Scoped(Singleton.class)
-public class ServiceEngineRuntimeHelper implements ContractProvider{
+public class ServiceEngineRuntimeHelper implements ContractProvider {
 
-    private static ServiceEngineRuntimeHelper runtimeHelper;
-
+    private static ServiceEngineRuntimeHelper _runtime;
     @Inject
     private Habitat habitat;
-
     @Inject
     private ArchivistFactory archivistFactory;
-
     @Inject
     private ArchiveFactory archiveFactory;
-
     @Inject
     private Applications applications;
-
     @Inject
     private JavaEETransactionManager tm;
-
     @Inject
     private InvocationManager inv;
-
     @Inject
     private EndpointInfoCollector endpointInfoCollector;
 
     public static ServiceEngineRuntimeHelper getRuntime() {
-        if (runtimeHelper == null) {
+        if (_runtime == null) {
             throw new RuntimeException("ServiceEngineRuntimeHelper not initialized");
         }
-        return runtimeHelper;
+        return _runtime;
     }
 
     public ServiceEngineRuntimeHelper() {
-        runtimeHelper = this;
+        _runtime = this;
     }
 
     public Habitat getHabitat() {
@@ -103,7 +94,7 @@ public class ServiceEngineRuntimeHelper implements ContractProvider{
     public ArchivistFactory getArchivistFactory() {
         return archivistFactory;
     }
-    
+
     public JavaEETransactionManager getTransactionManager() {
         return tm;
     }
@@ -119,5 +110,4 @@ public class ServiceEngineRuntimeHelper implements ContractProvider{
     public EndpointInfoCollector getEndpointInfoCollector() {
         return endpointInfoCollector;
     }
-
 }

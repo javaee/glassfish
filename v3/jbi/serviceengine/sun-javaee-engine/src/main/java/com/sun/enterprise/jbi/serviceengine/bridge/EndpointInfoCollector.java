@@ -73,10 +73,8 @@ public class EndpointInfoCollector {
 
     @Inject
     private Logger logger;
-
     @Inject
     private Applications allApplications;
-
     @Inject
     private Habitat habitat;
 
@@ -145,8 +143,9 @@ public class EndpointInfoCollector {
      *
      */
     public void removeEndpoints(String appName) {
-        if(endpoints.containsValue(appName))
+        if (endpoints.containsKey(appName)) {
             endpoints.remove(appName);
+        }
     }
 
     /**
@@ -160,7 +159,6 @@ public class EndpointInfoCollector {
         ws_endpoints.putAll(endpoints);
         endpoints = ws_endpoints;
     }
-
     private static Map<String, List<WebServiceEndpoint>> endpoints =
             new HashMap<String, List<WebServiceEndpoint>>();
 }
