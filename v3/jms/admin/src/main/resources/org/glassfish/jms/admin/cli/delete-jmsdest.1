@@ -1,0 +1,203 @@
+
+Administration Commands                         delete-jmsdest(1)
+
+NAME
+     delete-jmsdest - removes a JMS destination
+
+SYNOPSIS
+     delete-jmsdest
+     [--terse={true|false}][ --echo={true|false} ]
+     [ --interactive={true|false} ] [ --host  host]
+     [--port port] [--secure| -s ] [ --user  admin_user]
+     [--passwordfile filename] [--help]
+     [ --target  target]
+     --desttype type dest_name
+
+DESCRIPTION
+     The delete-jmsdest command removes the specified JMS  desti-
+     nation. This command is supported in remote mode only.
+
+OPTIONS
+     -t --terse                  Indicates that any  output  data
+                                 must  be very concise, typically
+                                 avoiding   human-friendly   sen-
+                                 tences    and   favoring   well-
+                                 formatted data  for  consumption
+                                 by a script. Default is false.
+
+     -e --echo                   Setting to true  will  echo  the
+                                 command  line  statement  on the
+                                 standard  output.   Default   is
+                                 false.
+
+     -I --interactive            If set to true  (default),  only
+                                 the  required  password  options
+                                 are prompted.
+
+     -H --host                   The  machine  name   where   the
+                                 domain  administration server is
+                                 running. The  default  value  is
+                                 localhost.
+
+     -p --port                   The HTTP/S port for  administra-
+                                 tion.  This is the port to which
+                                 you should point your browser in
+                                 order  to manage the domain. For
+                                 example, http://localhost:4848.
+
+                                 The default port number is 4848.
+
+Java EE 5           Last change: 30 Jan 2007                    1
+
+Administration Commands                         delete-jmsdest(1)
+
+     -s --secure                 If set to true, uses SSL/TLS  to
+                                 communicate   with   the  domain
+                                 administration server.
+
+     -u --user                   The authorized  domain  adminis-
+                                 tration   server  administrative
+                                 username.
+
+                                 If you have authenticated  to  a
+                                 domain  using  the asadmin login
+                                 command,  then  you   need   not
+                                 specify  the  --user  option  on
+                                 subsequent  operations  to  this
+                                 particular domain.
+
+     --passwordfile              The --passwordfile option speci-
+                                 fies  the  name,  including  the
+                                 full path, of a file  containing
+                                 the   password   entries   in  a
+                                 specific format. The  entry  for
+                                 the   password   must  have  the
+                                 AS_ADMIN_ prefix followed by the
+                                 password   name   in   uppercase
+                                 letters.
+
+                                 For  example,  to  specify   the
+                                 domain   administration   server
+                                 password, use an entry with  the
+                                 following                format:
+                                 AS_ADMIN_PASSWORD=password,
+                                 where  password  is  the  actual
+                                 administrator  password.   Other
+                                 passwords  that can be specified
+                                 include AS_ADMIN_MAPPEDPASSWORD,
+                                 AS_ADMIN_USERPASSWORD,       and
+                                 AS_ADMIN_ALIASPASSWORD.
+
+                                 All remote commands must specify
+                                 the  admin password to authenti-
+                                 cate to the  domain  administra-
+                                 tion  server,  either through --
+                                 passwordfile or  asadmin  login,
+                                 or  interactively on the command
+                                 prompt. The asadmin  login  com-
+                                 mand can be used only to specify
+                                 the admin  password.  For  other
+                                 passwords,  that  must be speci-
+                                 fied for  remote  commands,  use
+                                 the --passwordfile or enter them
+                                 at the command prompt.
+
+Java EE 5           Last change: 30 Jan 2007                    2
+
+Administration Commands                         delete-jmsdest(1)
+
+                                 If you have authenticated  to  a
+                                 domain  using  the asadmin login
+                                 command,  then  you   need   not
+                                 specify   the   admin   password
+                                 through    the    --passwordfile
+                                 option  on subsequent operations
+                                 to this particular domain.  How-
+                                 ever, this is applicable only to
+                                 AS_ADMIN_PASSWORD  option.   You
+                                 will  still  need to provide the
+                                 other  passwords,  for  example,
+                                 AS_ADMIN_USERPASSWORD,   as  and
+                                 when required by individual com-
+                                 mands, such as update-file-user.
+
+                                 For security reasons,  passwords
+                                 specified   as   an  environment
+                                 variable will  not  be  read  by
+                                 asadmin.
+
+                                 The    default     value     for
+                                 AS_ADMIN_MASTERPASSWORD       is
+                                 changeit.
+
+     --help                      Displays the help text  for  the
+                                 command.
+
+     --target                    This option  helps  specify  the
+                                 target from which you are delet-
+                                 ing  the  physical  destination.
+                                 Although the delete-jmsdest com-
+                                 mand is related to resources,  a
+                                 physical  destination is created
+                                 and deleted using the  JMS  Ser-
+                                 vice,  which is part of the con-
+                                 figuration. Valid values are:
+
+                                     o    server-  Specifies  the
+                                          default server instance
+                                          as the target.   server
+                                          is   the  name  of  the
+                                          default server instance
+                                          and   is   the  default
+                                          value.
+
+                                     o    configuration_name-
+                                          Specifies   a   certain
+                                          configuration  as   the
+                                          target.
+
+Java EE 5           Last change: 30 Jan 2007                    3
+
+Administration Commands                         delete-jmsdest(1)
+
+                                     o    cluster_name- Specifies
+                                          a  certain  cluster  as
+                                          the target.
+
+                                     o    instance_name-   Speci-
+                                          fies  a  certain server
+                                          instance as the target.
+                                 This option  is  valid  only  in
+                                 domains  that  are configured to
+                                 support   clusters,   such    as
+                                 domains  that  are  created with
+                                 the  cluster  profile   or   the
+                                 enterprise profile.
+
+     -T --desttype               The type of the JMS destination.
+                                 Valid   values   are  topic  and
+                                 queue.
+
+OPERANDS
+     dest_name                   The unique identifier of the JMS
+                                 destination to be deleted.
+
+EXAMPLES
+     Example 1 Using the delete-jmsdest command
+
+     The following command deletes the queue named PhysicalQueue:
+
+       asadmin> delete-jmsdest --user admin --passwordfile passwords.txt
+       --host localhost --port 4848 --desttype queue PhysicalQueue
+       Command delete-jmsdest executed successfully.
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     create-jmsdest(1), list-jmsdest(1)
+
+Java EE 5           Last change: 30 Jan 2007                    4
+
