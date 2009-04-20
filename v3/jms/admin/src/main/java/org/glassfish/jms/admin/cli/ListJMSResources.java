@@ -110,7 +110,7 @@ public class ListJMSResources implements AdminCommand {
                 }
             }
         } catch (Exception e) {
-            report.setMessage(localStrings.getLocalString("list.jns.resources.fail",
+            report.setMessage(localStrings.getLocalString("list.jms.resources.fail",
                     "Unable to list JMS Resources") + " " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
