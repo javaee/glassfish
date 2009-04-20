@@ -891,8 +891,14 @@ public class CommandRunnerImpl implements CommandRunner {
         throws ComponentException {
         
         final java.util.Enumeration e = parameters.propertyNames();
+
         //loop through parameters and make sure they are part of the Param declared field
         for (Object key : parameters.keySet()) {
+
+            //to do, we should validate meta-options differently. 
+            if ("DEFAULT".equals(key) || ((String) key).startsWith(ASADMIN_CMD_PREFIX)) {
+                continue;
+            }
 
             //check if key is a valid Param Field
             boolean validOption = false;
