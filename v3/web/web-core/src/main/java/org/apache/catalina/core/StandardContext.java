@@ -334,10 +334,10 @@ public class StandardContext
         "org.apache.catalina.core.StandardContext/1.0";
 
     /**
-     * The set of classnames of InstanceListeners that will be added
+     * The list of classnames of InstanceListeners that will be added
      * to each newly created Wrapper by <code>createWrapper()</code>.
      */
-    private String instanceListeners[] = new String[0];
+    private ArrayList<String> instanceListeners = new ArrayList<String>();
 
     /**
      * The set of already instantiated InstanceListeners that will be added
@@ -491,10 +491,10 @@ public class StandardContext
     private String welcomeFiles[] = new String[0];
 
     /**
-     * The set of classnames of LifecycleListeners that will be added
+     * The list of classnames of LifecycleListeners that will be added
      * to each newly created Wrapper by <code>createWrapper()</code>.
      */
-    private String wrapperLifecycles[] = new String[0];
+    private ArrayList<String> wrapperLifecycles = new ArrayList<String>();
 
     /**
      * The list of classnames of ContainerListeners that will be added
@@ -2772,24 +2772,14 @@ public class StandardContext
      * @param listener Java class name of an InstanceListener class
      */
     public void addInstanceListener(String listener) {
-        synchronized (instanceListeners) {
-            String results[] = new String[instanceListeners.length + 1];
-            for (int i = 0; i < instanceListeners.length; i++)
-                results[i] = instanceListeners[i];
-            results[instanceListeners.length] = listener;
-            instanceListeners = results;
-        }
-
+        instanceListeners.add(listener);
         if (notifyContainerListeners) {
             fireContainerEvent("addInstanceListener", listener);
         }
     }
 
     public void addInstanceListener(InstanceListener listener) {
-        synchronized (instanceListenerInstances) {
-            instanceListenerInstances.add(listener);
-        }
-
+        instanceListenerInstances.add(listener);
         if (notifyContainerListeners) {
             fireContainerEvent("addInstanceListener", listener);
         }
@@ -3412,15 +3402,7 @@ public class StandardContext
      * @param listener Java class name of a LifecycleListener class
      */
     public void addWrapperLifecycle(String listener) {
-
-        synchronized (wrapperLifecycles) {
-            String results[] =new String[wrapperLifecycles.length + 1];
-            for (int i = 0; i < wrapperLifecycles.length; i++)
-                results[i] = wrapperLifecycles[i];
-            results[wrapperLifecycles.length] = listener;
-            wrapperLifecycles = results;
-        }
-
+        wrapperLifecycles.add(listener);
         if (notifyContainerListeners) {
             fireContainerEvent("addWrapperLifecycle", listener);
         }
@@ -3485,24 +3467,25 @@ public class StandardContext
             }
         }
 
-        synchronized (wrapperLifecycles) {
-            for(String wrapperLifecycle : wrapperLifecycles) {
-                try {
-                    Class clazz = Class.forName(wrapperLifecycle);
-                    if(wrapper instanceof Lifecycle) {
-                        ((Lifecycle)wrapper).addLifecycleListener((LifecycleListener)clazz.newInstance());
-                    }
-                } catch(Throwable t) {
-                    log.log(Level.SEVERE,
-                        sm.getString("standardContext.lifecycleListener",
-                            wrapperLifecycle),
-                        t);
-                    return (null);
+        Iterator<String> i = wrapperLifecycles.iterator();
+        while (i.hasNext()) {
+            String wrapperLifecycle = i.next();
+            try {
+                Class clazz = Class.forName(wrapperLifecycle);
+                if(wrapper instanceof Lifecycle) {
+                    ((Lifecycle)wrapper).addLifecycleListener(
+                        (LifecycleListener)clazz.newInstance());
                 }
+            } catch(Throwable t) {
+                log.log(Level.SEVERE,
+                    sm.getString("standardContext.lifecycleListener",
+                                 wrapperLifecycle),
+                    t);
+                return (null);
             }
         }
 
-        Iterator<String> i = wrapperListeners.iterator(); 
+        i = wrapperListeners.iterator(); 
         while (i.hasNext()) {
             String wrapperListener = i.next();
             try {
@@ -3707,13 +3690,11 @@ public class StandardContext
 
 
     /**
-     * Return the set of InstanceListener classes that will be added to
+     * Return the list of InstanceListener classes that will be added to
      * newly created Wrappers automatically.
      */
-    public String[] findInstanceListeners() {
-
-        return (instanceListeners);
-
+    public List<String> findInstanceListeners() {
+        return instanceListeners;
     }
 
 
@@ -4127,13 +4108,11 @@ public class StandardContext
 
 
     /**
-     * Return the set of LifecycleListener classes that will be added to
+     * Return the list of LifecycleListener classes that will be added to
      * newly created Wrappers automatically.
      */
-    public String[] findWrapperLifecycles() {
-
-        return (wrapperLifecycles);
-
+    public List<String> findWrapperLifecycles() {
+        return wrapperLifecycles;
     }
 
 
@@ -4389,37 +4368,13 @@ public class StandardContext
 
 
     /**
-     * Remove a class name from the set of InstanceListener classes that
+     * Remove a class name from the list of InstanceListener classes that
      * will be added to newly created Wrappers.
      *
      * @param listener Class name of an InstanceListener class to be removed
      */
     public void removeInstanceListener(String listener) {
-
-        synchronized (instanceListeners) {
-
-            // Make sure this welcome file is currently present
-            int n = -1;
-            for (int i = 0; i < instanceListeners.length; i++) {
-                if (instanceListeners[i].equals(listener)) {
-                    n = i;
-                    break;
-                }
-            }
-            if (n < 0)
-                return;
-
-            // Remove the specified constraint
-            int j = 0;
-            String results[] = new String[instanceListeners.length - 1];
-            for (int i = 0; i < instanceListeners.length; i++) {
-                if (i != n)
-                    results[j++] = instanceListeners[i];
-            }
-            instanceListeners = results;
-
-        }
-
+        instanceListeners.remove(listener);
         // Inform interested listeners
         if (notifyContainerListeners) {
             fireContainerEvent("removeInstanceListener", listener);
@@ -4709,43 +4664,16 @@ public class StandardContext
     }
 
 
-    /**
-     * Remove a class name from the set of LifecycleListener classes that
-     * will be added to newly created Wrappers.
-     *
-     * @param listener Class name of a LifecycleListener class to be removed
-     */
-    public void removeWrapperLifecycle(String listener) {
-
-
-        synchronized (wrapperLifecycles) {
-
-            // Make sure this welcome file is currently present
-            int n = -1;
-            for (int i = 0; i < wrapperLifecycles.length; i++) {
-                if (wrapperLifecycles[i].equals(listener)) {
-                    n = i;
-                    break;
-                }
-            }
-            if (n < 0)
-                return;
-
-            // Remove the specified constraint
-            int j = 0;
-            String results[] = new String[wrapperLifecycles.length - 1];
-            for (int i = 0; i < wrapperLifecycles.length; i++) {
-                if (i != n)
-                    results[j++] = wrapperLifecycles[i];
-            }
-            wrapperLifecycles = results;
-
-        }
-
+    @Override
+    public void removeWrapperLifecycles() {
         // Inform interested listeners
         if (notifyContainerListeners) {
-            fireContainerEvent("removeWrapperLifecycle", listener);
+            Iterator<String> i = wrapperLifecycles.iterator(); 
+            while (i.hasNext()) {
+                fireContainerEvent("removeWrapperLifecycle", i.next());
+            }
         }
+        wrapperLifecycles.clear();
     }
 
 
@@ -5968,7 +5896,7 @@ public class StandardContext
         }
         // END SJSAS 6359401
 
-        instanceListeners = new String[0];
+        instanceListeners.clear();
         instanceListenerInstances.clear();
     }
 

@@ -1211,13 +1211,13 @@ public final class StandardServer
         writer.println(">");
 
         // Store nested <InstanceListener> elements
-        String iListeners[] = context.findInstanceListeners();
-        for (int i = 0; i < iListeners.length; i++) {
+        Iterator<String> iter = context.findInstanceListeners().iterator();
+        while (iter.hasNext()) {
             for (int j = 0; j < indent; j++) {
                 writer.print(' ');
             }
             writer.print("<InstanceListener>");
-            writer.print(iListeners[i]);
+            writer.print(iter.next());
             writer.println("</InstanceListener>");
         }
 
@@ -1297,19 +1297,18 @@ public final class StandardServer
         }
 
         // Store nested <WrapperLifecycle> elements
-        String wLifecycles[] = context.findWrapperLifecycles();
-        for (int i = 0; i < wLifecycles.length; i++) {
+        iter = context.findWrapperLifecycles().iterator();
+        while (iter.hasNext()) {
             for (int j = 0; j < indent; j++) {
                 writer.print(' ');
             }
             writer.print("<WrapperLifecycle>");
-            writer.print(wLifecycles[i]);
+            writer.print(iter.next());
             writer.println("</WrapperLifecycle>");
         }
 
         // Store nested <WrapperListener> elements
-        Iterator<String> iter =
-            context.findWrapperListeners().iterator(); 
+        iter = context.findWrapperListeners().iterator(); 
         while (iter.hasNext()) {
             for (int j = 0; j < indent; j++) {
                 writer.print(' ');
@@ -1371,13 +1370,13 @@ public final class StandardServer
         writer.println(">");
 
         // Store nested <InstanceListener> elements
-        String iListeners[] = dcontext.findInstanceListeners();
-        for (int i = 0; i < iListeners.length; i++) {
+        Iterator<String> iter = dcontext.findInstanceListeners().iterator();
+        while (iter.hasNext()) {
             for (int j = 0; j < indent; j++) {
                 writer.print(' ');
             }
             writer.print("<InstanceListener>");
-            writer.print(iListeners[i]);
+            writer.print(iter.next());
             writer.println("</InstanceListener>");
         }
 
@@ -1461,18 +1460,18 @@ public final class StandardServer
         }
 
         // Store nested <WrapperLifecycle> elements
-        String wLifecycles[] = dcontext.findWrapperLifecycles();
-        for (int i = 0; i < wLifecycles.length; i++) {
+        iter = dcontext.findWrapperLifecycles().iterator();
+        while (iter.hasNext()) {
             for (int j = 0; j < indent; j++) {
                 writer.print(' ');
             }
             writer.print("<WrapperLifecycle>");
-            writer.print(wLifecycles[i]);
+            writer.print(iter.next());
             writer.println("</WrapperLifecycle>");
         }
 
         // Store nested <WrapperListener> elements
-        Iterator<String> iter = dcontext.findWrapperListeners().iterator();
+        iter = dcontext.findWrapperListeners().iterator();
         while (iter.hasNext()) {
             for (int j = 0; j < indent; j++) {
                 writer.print(' ');

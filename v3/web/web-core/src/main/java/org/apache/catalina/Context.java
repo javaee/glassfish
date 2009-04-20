@@ -769,20 +769,22 @@ public interface Context extends Container {
 
 
     /**
-     * Return the list of application listener class names configured
-     * for this application.
+     * Gets the (possibly empty) list of application listener class names
+     * configured for this application.
      */
     List<String> findApplicationListeners();
 
 
     /**
-     * Return the set of application parameters for this application.
+     * Gets the (possibly empty) list of application parameters for this
+     * application.
      */
     List<ApplicationParameter> findApplicationParameters();
 
 
     /**
-     * Gets the security constraints defined for this web application.
+     * Gets the (possibly empty) list of security constraints defined for
+     * this web application.
      */
     List<SecurityConstraint> getConstraints();
 
@@ -886,16 +888,16 @@ public interface Context extends Container {
 
 
     /**
-     * Return the list of filter mappings for this Context.
+     * Gets the (possibly empty) list of filter mappings for this Context.
      */
     List<FilterMap> findFilterMaps();
 
 
     /**
-     * Return the set of InstanceListener classes that will be added to
-     * newly created Wrappers automatically.
+     * Gets the (possibly empty) list of InstanceListener classes that
+     * will be added to newly created Wrappers automatically.
      */
-    String[] findInstanceListeners();
+    List<String> findInstanceListeners();
 
 
     /**
@@ -1097,15 +1099,15 @@ public interface Context extends Container {
 
 
     /**
-     * Return the set of LifecycleListener classes that will be added to
-     * newly created Wrappers automatically.
+     * Gets the (possibly empty) list of LifecycleListener classes that
+     * will be added to newly created Wrappers automatically.
      */
-    String[] findWrapperLifecycles();
+    List<String> findWrapperLifecycles();
 
 
     /**
-     * Return the list of ContainerListener classes that will be added to
-     * newly created Wrappers automatically.
+     * Gets the (possibly empty) list of ContainerListener classes that
+     * will be added to newly created Wrappers automatically.
      */
     List<String> findWrapperListeners();
 
@@ -1277,12 +1279,9 @@ public interface Context extends Container {
 
 
     /**
-     * Remove a class name from the set of LifecycleListener classes that
-     * will be added to newly created Wrappers.
-     *
-     * @param listener Class name of a LifecycleListener class to be removed
+     * Removes any Wrapper lifecycle listeners from this Context
      */
-    void removeWrapperLifecycle(String listener);
+    void removeWrapperLifecycles();
 
 
     /**

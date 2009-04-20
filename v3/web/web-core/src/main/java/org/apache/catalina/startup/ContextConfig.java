@@ -1253,10 +1253,7 @@ public class ContextConfig
         }
 
         // Removing wrapper lifecycles
-        String[] wrapperLifecycles = context.findWrapperLifecycles();
-        for (i = 0; i < wrapperLifecycles.length; i++) {
-            context.removeWrapperLifecycle(wrapperLifecycles[i]);
-        }
+        context.removeWrapperLifecycles();
 
         // Removing wrapper listeners
         context.removeWrapperListeners();
