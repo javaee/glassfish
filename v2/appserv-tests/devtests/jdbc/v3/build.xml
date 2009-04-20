@@ -38,6 +38,7 @@
 	<antcall target="autocommit"/>
 	<antcall target="maxconnectionusage"/>
 	<antcall target="connleaktracing"/>
+
 	<antcall target="resEnableDisable"/>
         <record name="jdbc.output" action="stop"/>
     </target>
@@ -53,7 +54,9 @@
 	<antcall target="contauth"/>
 	<antcall target="autocommit"/>
 	<antcall target="maxconnectionusage"/>
+	<antcall target="statementtimeout"/>
 	<antcall target="connleaktracing"/>
+	<antcall target="conncreationretry"/>
 	<antcall target="resEnableDisable"/>
         <record name="jdbc.output" action="stop"/>
     </target>
@@ -66,7 +69,7 @@
 
     <target name="autocommit">
 	<record name="autocommit/autocommit.output" action="start"/>
-	<ant dir="contauth" target="all"/>
+	<ant dir="autocommit" target="all"/>
 	<record name="autocommit/autocommit.output" action="stop"/>
     </target>
 
@@ -76,10 +79,22 @@
 	<record name="maxconnectionusage/maxconnectionusage.output" action="stop"/>
     </target>
                                    
+    <target name="statementtimeout">
+	<record name="statementtimeout/statementtimeout.output" action="start"/>
+	<ant dir="statementtimeout" target="all"/>
+	<record name="statementtimeout/statementtimeout.output" action="stop"/>
+    </target>
+
     <target name="connleaktracing">
         <record name="connleaktracing/connleaktracing.output" action="start"/>
         <ant dir="connleaktracing" target="all"/>
 	<record name="connleaktracing/connleaktracing.output" action="stop"/>
+    </target>
+
+    <target name="conncreationretry">
+	<record name="conncreationretry/conncreationretry.output" action="start"/>
+	<ant dir="conncreationretry" target="all"/>
+	<record name="conncreationretry/conncreationretry.output" action="stop"/>
     </target>
 
     <target name="resEnableDisable">
