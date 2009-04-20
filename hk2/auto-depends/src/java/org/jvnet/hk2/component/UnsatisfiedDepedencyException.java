@@ -41,6 +41,8 @@ package org.jvnet.hk2.component;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Member;
+import java.lang.annotation.Annotation;
 
 /**
  * Exception thrown by the injection manager when a dependency is not satisfied when
@@ -50,8 +52,7 @@ import java.lang.reflect.Method;
  */
 public class UnsatisfiedDepedencyException extends ComponentException {
 
-    Field field = null;
-    Method method = null;
+    Member member = null;
 
 
     public UnsatisfiedDepedencyException(Field target) {
@@ -59,37 +60,46 @@ public class UnsatisfiedDepedencyException extends ComponentException {
     }
     public UnsatisfiedDepedencyException(Field target,Throwable cause) {
         super("Unsatisfied dependency exception : " + target,cause);
-        this.field = target;
+        this.member = target;
     }
     public UnsatisfiedDepedencyException(Method target) {
         this(target,null);
     }
     public UnsatisfiedDepedencyException(Method target,Throwable cause) {
         super("Unsatisfied dependency exception : " + target,cause);
-        this.method = target;
+        this.member = target;
     }
 
     public boolean isField() {
-        return field!=null;
+        return member instanceof Field;
     }
 
     public boolean isMethod() {
-        return method!=null;
+        return member instanceof Method;
     }
 
     public String getUnsatisfiedName() {
-        if (field!=null) {
-            return field.getName();
+        String name = member.getName();
+        if (isMethod()) {
+            return name.substring(3).toLowerCase();
         }
-        if (method!=null) {
-            return method.getName().substring(3).toLowerCase();
-        }
-        return "unknown";
+        return name;
     }
 
     public AnnotatedElement getUnsatisfiedElement() {
-        if (field!=null) return field;
-        if (method!=null) return method;
-        return null;
+        try {
+            return AnnotatedElement.class.cast(member);
+        } catch(ClassCastException e) {
+            return null;
+        }
+    }
+
+    public <T extends Annotation> T getAnnotation(Class<T> annotationType) {
+        AnnotatedElement annotated = getUnsatisfiedElement();
+        if (annotated!=null) {
+            return annotated.getAnnotation(annotationType);
+        } else {
+            return null;
+        }
     }
 }

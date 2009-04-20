@@ -113,4 +113,10 @@ public class InhabitantsFile {
      * metadata of the actual companioin class.
      */
     public static final String COMPANION_CLASS_METADATA_KEY = "companionClassMetadata";
+
+    /**
+     * Used as metadata for indentifying the type on which a {@link InhabitantAnnotation}
+     * was annotated.
+     */
+    public static final String TARGET_TYPE = "targetType";
 }

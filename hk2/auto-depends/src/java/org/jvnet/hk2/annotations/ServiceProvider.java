@@ -36,6 +36,9 @@
  */
 package org.jvnet.hk2.annotations;
 
+import java.lang.annotation.Target;
+import static java.lang.annotation.ElementType.TYPE;
+
 /**
  * Denotes the service provider implementation. Sometimes a generic implementation
  * of a contract can be used and the annotation specializes such service through
@@ -43,6 +46,7 @@ package org.jvnet.hk2.annotations;
  *
  * @author Jerome Dochez
  */
+@Target(TYPE)
 public @interface ServiceProvider {
     Class<?> value();
 }

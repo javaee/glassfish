@@ -219,6 +219,49 @@ public final class ConfigModel {
         }
     }
 
+    /**
+     * Obtain XML names (like "abc-def") from strings like "getAbcDef" and "hasAbcDef".
+     * <p>
+     * The conversion rule uses the model to find a good match.
+     */
+    public ConfigModel.Property toProperty(Method method) {
+        String name = method.getName();
+
+        // check annotations first
+        Element e = method.getAnnotation(Element.class);
+        if(e!=null) {
+            String en = e.value();
+            if(en.length()>0)
+                return elements.get(en);
+        }
+        Attribute a = method.getAnnotation(Attribute.class);
+        if(a!=null) {
+            String an = a.value();
+            if(an.length()>0)
+                return attributes.get(an);
+        }
+        // TODO: check annotations on the getter/setter
+
+        // first, trim off the prefix
+        for (String p : Dom.PROPERTY_PREFIX) {
+            if(name.startsWith(p)) {
+                name = name.substring(p.length());
+                break;
+            }
+        }
+
+        // tokenize by finding 'x|X' and 'X|Xx' then insert '-'.
+        StringBuilder buf = new StringBuilder(name.length()+5);
+        for(String t : Dom.TOKENIZER.split(name)) {
+            if(buf.length()>0)  buf.append('-');
+            buf.append(t.toLowerCase());
+        }
+        name = buf.toString();
+
+        // at this point name should match XML names in the model, modulo case.
+        return findIgnoreCase(name);
+    }    
+
     public abstract static class Property {
         /**
          * @see #xmlName()

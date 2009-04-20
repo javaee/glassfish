@@ -125,6 +125,13 @@ public abstract class AbstractWombImpl<T> extends AbstractInhabitantImpl<T> impl
                         if (habitat.isContract(finalType)) {
                             return habitat.getInhabitants(finalType, target.getAnnotation(Inject.class).name());
                         }
+                        try {
+                            if (finalType.cast(component)!=null) {
+                                return onBehalfOf;
+                            }
+                        } catch(ClassCastException e) {
+                            // ignore
+                        }
                         return habitat.getInhabitantByType(finalType);
 
                     } else {
