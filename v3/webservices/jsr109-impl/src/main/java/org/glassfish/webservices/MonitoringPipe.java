@@ -96,10 +96,12 @@ public class MonitoringPipe extends AbstractFilterPipeImpl {
         // as HTTPServletRequest/Response is not available when the invocation 
         // is from JavaEE service engine.
 
-        /*TODO BM fix this so that the Monitoring Logic is not called for JBI
-        if(ServiceEngineUtil.isJBIRequest(request.webServiceContextDelegate.getClass().getName())) {
+        String delegateClassName = request.webServiceContextDelegate.getClass().getName();
+        if (delegateClassName.equals("com.sun.enterprise.jbi.serviceengine." +
+                "bridge.transport.NMRServerConnection")) {
             return next.process(request);
-        } */
+        }
+  
         // No monitoring available for restful services
         if("http://www.w3.org/2004/08/wsdl/http".equals(endpoint.getProtocolBinding())) {
             return next.process(request);
