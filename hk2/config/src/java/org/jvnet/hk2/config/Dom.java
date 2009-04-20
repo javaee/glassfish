@@ -775,7 +775,7 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
             return invokeDuckMethod(method,proxy,args);
         }
 
-        ConfigModel.Property p = toProperty(method);
+        ConfigModel.Property p = model.toProperty(method);
         if(p==null)
             throw new IllegalArgumentException("No corresponding property found for method: "+method);
 
@@ -832,50 +832,7 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
     protected void setter(ConfigModel.Property target, Object value) throws Exception {
         target.set(this, value);
     }
-
-    /**
-     * Obtain XML names (like "abc-def") from strings like "getAbcDef" and "hasAbcDef".
-     * <p>
-     * The conversion rule uses the {@link #model} to find a good match.
-     */
-    protected ConfigModel.Property toProperty(Method method) {
-        String name = method.getName();
-
-        // check annotations first
-        Element e = method.getAnnotation(Element.class);
-        if(e!=null) {
-            String en = e.value();
-            if(en.length()>0)
-                return model.elements.get(en);
-        }
-        Attribute a = method.getAnnotation(Attribute.class);
-        if(a!=null) {
-            String an = a.value();
-            if(an.length()>0)
-                return model.attributes.get(an);
-        }
-        // TODO: check annotations on the getter/setter
-
-        // first, trim off the prefix
-        for (String p : PROPERTY_PREFIX) {
-            if(name.startsWith(p)) {
-                name = name.substring(p.length());
-                break;
-            }
-        }
-
-        // tokenize by finding 'x|X' and 'X|Xx' then insert '-'.
-        StringBuilder buf = new StringBuilder(name.length()+5);
-        for(String t : TOKENIZER.split(name)) {
-            if(buf.length()>0)  buf.append('-');
-            buf.append(t.toLowerCase());
-        }
-        name = buf.toString();
-
-        // at this point name should match XML names in the model, modulo case.
-        return model.findIgnoreCase(name);
-    }
-
+    
     public static String convertName(String name) {
         // first, trim off the prefix
         for (String p : PROPERTY_PREFIX) {
@@ -897,7 +854,7 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
     /**
      * Used to tokenize the property name into XML name.
      */
-    private static final Pattern TOKENIZER;
+    static final Pattern TOKENIZER;
     private static String split(String lookback,String lookahead) {
         return "((?<="+lookback+")(?="+lookahead+"))";
     }
@@ -920,7 +877,7 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
         TOKENIZER = Pattern.compile(pattern);
     }
 
-    private static final String[] PROPERTY_PREFIX = new String[]{"get","set","is","has"};
+    static final String[] PROPERTY_PREFIX = new String[]{"get","set","is","has"};
 
     /**
      * This is how we inject the configuration into the created object.

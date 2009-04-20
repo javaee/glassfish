@@ -40,15 +40,13 @@ import com.sun.hk2.component.InhabitantsFile;
 import com.sun.hk2.component.CompanionSeed;
 import static com.sun.hk2.component.InhabitantsFile.COMPANION_CLASS_METADATA_KEY;
 import static com.sun.hk2.component.InhabitantsFile.INDEX_KEY;
+import static com.sun.hk2.component.InhabitantsFile.TARGET_TYPE;
 import com.sun.mirror.apt.AnnotationProcessor;
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.apt.RoundCompleteEvent;
 import com.sun.mirror.apt.RoundCompleteListener;
 import com.sun.mirror.declaration.*;
-import com.sun.mirror.type.InterfaceType;
-import com.sun.mirror.type.MirroredTypeException;
-import com.sun.mirror.type.TypeMirror;
-import com.sun.mirror.type.ClassType;
+import com.sun.mirror.type.*;
 import com.sun.mirror.util.DeclarationVisitor;
 import com.sun.mirror.util.DeclarationVisitors;
 import com.sun.mirror.util.SimpleDeclarationVisitor;
@@ -173,13 +171,12 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
                         env.getMessager().printWarning("Found component annotation " + a + " on "+d.getQualifiedName());
                     }
                     String service=null;
-                    // I cannot use a.getAnnotationType().getDeclaration().getAnnotation() because the value() is a class
-                    // which cannot be loaded by the classloader at compile time.
-                    for (AnnotationMirror aMirror : a.getAnnotationType().getDeclaration().getAnnotationMirrors()) {
-                        if (aMirror.getAnnotationType().getDeclaration().getSimpleName().equals(ServiceProvider.class.getSimpleName())) {
-                            for (Map.Entry<AnnotationTypeElementDeclaration, AnnotationValue> entry : aMirror.getElementValues().entrySet()) {
-                                service = entry.getValue().toString();
-                            }
+                    ServiceProvider sp = a.getAnnotationType().getDeclaration().getAnnotation(ServiceProvider.class);
+                    if (sp!=null) {
+                        try {
+                            sp.value();
+                        } catch (MirroredTypeException e) {
+                            service = ((DeclaredType)e.getTypeMirror()).getDeclaration().getQualifiedName();
                         }
                     }
 
@@ -195,8 +192,36 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
         public void processGenericImpl(String service, InhabitantsDescriptor descriptor, TypeDeclaration d, AnnotationMirror a) {
 
                 String name = getIndexValue(a);
-                String contract="";
-                // we should support gettting the @ContractProvided from the ServiceProvider
+                String contract=null;
+                ContractProvided cp = a.getAnnotationType().getDeclaration().getAnnotation(ContractProvided.class);
+                if (cp!=null) {
+                    try {
+                        cp.value();
+                    } catch (MirroredTypeException e) {
+                        contract = ((DeclaredType)e.getTypeMirror()).getDeclaration().getQualifiedName();
+                    }
+                }
+
+
+                StringBuilder buf = new StringBuilder();
+                 buf.append(InhabitantsFile.CLASS_KEY).append('=').append(service);
+                 buf.append(",").append(INDEX_KEY).append("=").append(contract).append(":").append(name);
+                 buf.append(",").append(TARGET_TYPE).append("=").append(d.getQualifiedName());
+                 for (AnnotationTypeElementDeclaration ated : a.getAnnotationType().getDeclaration().getMethods()) {
+                     for (AnnotationMirror am : ated.getAnnotationMirrors()) {
+                         if (am.getAnnotationType().getDeclaration().getSimpleName().equals(InhabitantMetadata.class.getSimpleName())) {
+                             for (Map.Entry<AnnotationTypeElementDeclaration, AnnotationValue> entry : a.getElementValues().entrySet()) {
+                                 if (entry.getKey().getSimpleName().equals(ated.getSimpleName())) {
+                                     buf.append(",").append(ated.getSimpleName()).append("=").append(entry.getValue().toString());
+                                 }
+                             }
+                         }
+                     }
+                 }
+
+                 descriptor.put(contract+":"+name, buf.toString());
+
+/*                // we should support gettting the @ContractProvided from the ServiceProvider
                 for (AnnotationMirror am : a.getAnnotationType().getDeclaration().getAnnotationMirrors()) {
                     if (am.getAnnotationType().getDeclaration().getSimpleName().equals(ContractProvided.class.getSimpleName())) {
                         for (Map.Entry<AnnotationTypeElementDeclaration, AnnotationValue> entry : am.getElementValues().entrySet()) {
@@ -204,23 +229,7 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
                         }
                     }
                 }
-               StringBuilder buf = new StringBuilder();
-                buf.append(InhabitantsFile.CLASS_KEY).append('=').append(service);
-                buf.append(",").append(INDEX_KEY).append("=").append(contract).append(":").append(name);
-                buf.append(",").append("target-type").append("=").append(d.getQualifiedName());
-                for (AnnotationTypeElementDeclaration ated : a.getAnnotationType().getDeclaration().getMethods()) {
-                    for (AnnotationMirror am : ated.getAnnotationMirrors()) {
-                        if (am.getAnnotationType().getDeclaration().getSimpleName().equals(InhabitantMetadata.class.getSimpleName())) {
-                            for (Map.Entry<AnnotationTypeElementDeclaration, AnnotationValue> entry : a.getElementValues().entrySet()) {
-                                if (entry.getKey().getSimpleName().equals(ated.getSimpleName())) {
-                                    buf.append(",").append(ated.getSimpleName()).append("=").append(entry.getValue().toString());
-                                }
-                            }
-                        }
-                    }
-                }
-
-                descriptor.put(contract+":"+name, buf.toString());
+                */
 
         }        
 
@@ -271,7 +280,7 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
                 StringBuilder buf = new StringBuilder();
                 buf.append(InhabitantsFile.CLASS_KEY).append('=').append(service);
                 buf.append(",").append(INDEX_KEY).append("=").append(contract).append(":").append(name);
-                buf.append(",").append("declaring-type").append("=").append(d.getDeclaringType().getQualifiedName());
+                buf.append(",").append(TARGET_TYPE).append("=").append(d.getDeclaringType().getQualifiedName());
                 buf.append(",").append("method-name").append('=').append(d.getSimpleName());
                 for (AnnotationTypeElementDeclaration ated : a.getAnnotationType().getDeclaration().getMethods()) {
                     for (AnnotationMirror am : ated.getAnnotationMirrors()) {

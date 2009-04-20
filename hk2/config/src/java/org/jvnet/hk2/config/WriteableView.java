@@ -89,7 +89,7 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
         if(method.getAnnotation(DuckTyped.class)!=null) {
             return bean.invokeDuckMethod(method,proxy,args);
         }        
-        ConfigModel.Property property = bean.toProperty(method);
+        ConfigModel.Property property = bean.model.toProperty(method);
         if(property==null)
             throw new IllegalArgumentException("No corresponding property found for method: "+method);
 
