@@ -52,12 +52,9 @@
  * limitations under the License.
  */
 
-
-
-
 package org.apache.catalina.core;
 
-
+import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.catalina.deploy.FilterDef;
@@ -144,11 +141,12 @@ public final class ApplicationFilterFactory {
 
         // Acquire the filter mappings for this Context
         StandardContext context = (StandardContext) wrapper.getParent();
-        FilterMap filterMaps[] = context.findFilterMaps();
+        List<FilterMap> filterMaps = context.findFilterMaps();
 
         // If there are no filter mappings, we are done
-        if ((filterMaps == null) || (filterMaps.length == 0))
+        if (filterMaps.isEmpty()) {
             return (filterChain);
+        }
 
         // get the dispatcher type
         DispatcherType dispatcher = request.getDispatcherType();
@@ -165,8 +163,10 @@ public final class ApplicationFilterFactory {
         int n = 0;
 
         // Add the relevant path-mapped filters to this filter chain
-        for (int i = 0; i < filterMaps.length; i++) {
-            if (!filterMaps[i].getDispatcherTypes().contains(dispatcher)) {
+        Iterator<FilterMap> i = filterMaps.iterator(); 
+        while (i.hasNext()) {
+            FilterMap filterMap = i.next();
+            if (!filterMap.getDispatcherTypes().contains(dispatcher)) {
                 continue;
             }
             /* SJSWS 6324431
@@ -174,12 +174,12 @@ public final class ApplicationFilterFactory {
                 continue;
             */
             // START SJSWS 6324431
-            if (!matchFiltersURL(filterMaps[i], requestPath, 
-                                context.isCaseSensitiveMapping()))
+            if (!matchFiltersURL(filterMap, requestPath, 
+                                 context.isCaseSensitiveMapping()))
                 continue;
             // END SJSWS 6324431
             ApplicationFilterConfig filterConfig = (ApplicationFilterConfig)
-                context.findFilterConfig(filterMaps[i].getFilterName());
+                context.findFilterConfig(filterMap.getFilterName());
             if (filterConfig == null) {
                 ;       // FIXME - log configuration problem
                 continue;
@@ -187,21 +187,24 @@ public final class ApplicationFilterFactory {
             // START IASRI 4665318
             // Create a filter chain only when there are filters to add
             if (filterChain == null)
-                filterChain = internalCreateFilterChain(request, wrapper, servlet);
+                filterChain = internalCreateFilterChain(request, wrapper,
+                                                        servlet);
             // END IASRI 4665318
             filterChain.addFilter(filterConfig);
             n++;
         }
 
         // Add filters that match on servlet name second
-        for (int i = 0; i < filterMaps.length; i++) {
-            if (!filterMaps[i].getDispatcherTypes().contains(dispatcher)) {
+        i = filterMaps.iterator(); 
+        while (i.hasNext()) {
+            FilterMap filterMap = i.next();
+            if (!filterMap.getDispatcherTypes().contains(dispatcher)) {
                 continue;
             }
-            if (!matchFiltersServlet(filterMaps[i], servletName))
+            if (!matchFiltersServlet(filterMap, servletName))
                 continue;
             ApplicationFilterConfig filterConfig = (ApplicationFilterConfig)
-                context.findFilterConfig(filterMaps[i].getFilterName());
+                context.findFilterConfig(filterMap.getFilterName());
             if (filterConfig == null) {
                 ;       // FIXME - log configuration problem
                 continue;
@@ -209,7 +212,8 @@ public final class ApplicationFilterFactory {
             // START IASRI 4665318
             // Create a filter chain only when there are filters to add
             if (filterChain == null)
-                filterChain = internalCreateFilterChain(request, wrapper, servlet);
+                filterChain = internalCreateFilterChain(request, wrapper,
+                                                        servlet);
             // END IASRI 4665318
             filterChain.addFilter(filterConfig);
             n++;

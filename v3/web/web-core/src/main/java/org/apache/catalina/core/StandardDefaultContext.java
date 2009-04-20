@@ -125,17 +125,17 @@ public class StandardDefaultContext
 
 
     /**
-     * The set of application listener class names configured for this
+     * The list of application listener class names configured for this
      * application, in the order they were encountered in the web.xml file.
      */
-    private String applicationListeners[] = new String[0];
+    private List<String> applicationListeners = new ArrayList<String>();
 
 
     /**
      * The set of application parameters defined for this application.
      */
     private List<ApplicationParameter> applicationParameters =
-        Collections.synchronizedList(new ArrayList<ApplicationParameter>());
+        new ArrayList<ApplicationParameter>();
 
 
     /**
@@ -199,10 +199,10 @@ public class StandardDefaultContext
 
 
     /**
-     * The set of classnames of ContainerListeners that will be added
+     * The list of classnames of ContainerListeners that will be added
      * to each newly created Wrapper by <code>createWrapper()</code>.
      */
-    private String wrapperListeners[] = new String[0];
+    private List<String> wrapperListeners = new ArrayList<String>();
 
 
     /**
@@ -656,21 +656,13 @@ public class StandardDefaultContext
 
 
     /**
-     * Add a new Listener class name to the set of Listeners
+     * Add a new Listener class name to the list of Listeners
      * configured for this application.
      *
      * @param listener Java class name of a listener class
      */
     public void addApplicationListener(String listener) {
-
-        synchronized (applicationListeners) {
-            String results[] =new String[applicationListeners.length + 1];
-            for (int i = 0; i < applicationListeners.length; i++)
-                results[i] = applicationListeners[i];
-            results[applicationListeners.length] = listener;
-            applicationListeners = results;
-        }
-
+        applicationListeners.add(listener);
     }
 
 
@@ -681,7 +673,6 @@ public class StandardDefaultContext
      */
     public void addApplicationParameter(ApplicationParameter parameter) {
         String newName = parameter.getName();
-
         synchronized (applicationParameters) {
             Iterator<ApplicationParameter> i =
                 applicationParameters.iterator(); 
@@ -851,26 +842,16 @@ public class StandardDefaultContext
      * @param listener Java class name of a ContainerListener class
      */
     public void addWrapperListener(String listener) {
-
-        synchronized (wrapperListeners) {
-            String results[] =new String[wrapperListeners.length + 1];
-            for (int i = 0; i < wrapperListeners.length; i++)
-                results[i] = wrapperListeners[i];
-            results[wrapperListeners.length] = listener;
-            wrapperListeners = results;
-        }
-
+        wrapperListeners.add(listener);
     }
 
 
     /**
-     * Return the set of application listener class names configured
+     * Return the list of application listener class names configured
      * for this application.
      */
-    public String[] findApplicationListeners() {
-
-        return (applicationListeners);
-
+    public List<String> findApplicationListeners() {
+        return applicationListeners;
     }
 
 
@@ -1069,13 +1050,11 @@ public class StandardDefaultContext
 
 
     /**
-     * Return the set of ContainerListener classes that will be added to
+     * Return the list of ContainerListener classes that will be added to
      * newly created Wrappers automatically.
      */
-    public String[] findWrapperListeners() {
-
-        return (wrapperListeners);
-
+    public List<String> findWrapperListeners() {
+        return wrapperListeners;
     }
 
 
@@ -1090,38 +1069,10 @@ public class StandardDefaultContext
 
 
     /**
-     * Remove the specified application listener class from the set of
-     * listeners for this application.
-     *
-     * @param listener Java class name of the listener to be removed
+     * Removes any application listeners from this default Context
      */
-    public void removeApplicationListener(String listener) {
-
-        synchronized (applicationListeners) {
-
-            // Make sure this application listener is currently present
-            int n = -1;
-            for (int i = 0; i < applicationListeners.length; i++) {
-                if (applicationListeners[i].equals(listener)) {
-                    n = i;
-                    break;
-                }
-            }
-            if (n < 0)
-                return;
-
-            // Remove the specified application listener
-            int j = 0;
-            String results[] = new String[applicationListeners.length - 1];
-            for (int i = 0; i < applicationListeners.length; i++) {
-                if (i != n)
-                    results[j++] = applicationListeners[i];
-            }
-            applicationListeners = results;
-
-        }
-
-
+    public void removeApplicationListeners() {
+        applicationListeners.clear();
     }
 
 
@@ -1334,39 +1285,8 @@ public class StandardDefaultContext
     }
 
 
-    /**
-     * Remove a class name from the set of ContainerListener classes that
-     * will be added to newly created Wrappers.
-     *
-     * @param listener Class name of a ContainerListener class to be removed
-     */
-    public void removeWrapperListener(String listener) {
-
-
-        synchronized (wrapperListeners) {
-
-            // Make sure this ContainerListener is currently present
-            int n = -1;
-            for (int i = 0; i < wrapperListeners.length; i++) {
-                if (wrapperListeners[i].equals(listener)) {
-                    n = i;
-                    break;
-                }
-            }
-            if (n < 0)
-                return;
-
-            // Remove the specified ContainerListener
-            int j = 0;
-            String results[] = new String[wrapperListeners.length - 1];
-            for (int i = 0; i < wrapperListeners.length; i++) {
-                if (i != n)
-                    results[j++] = wrapperListeners[i];
-            }
-            wrapperListeners = results;
-
-        }
-
+    public void removeWrapperListeners() {
+        wrapperListeners.clear();
     }
 
 
@@ -1545,32 +1465,30 @@ public class StandardDefaultContext
         context.setCrossContext(getCrossContext());
         context.setReloadable(getReloadable());
 
-        String [] listeners = findApplicationListeners();
-        for( int i = 0; i < listeners.length; i++ ) {
-            context.addApplicationListener(listeners[i]);
+        Iterator<String> iter = findApplicationListeners().iterator(); 
+        while (iter.hasNext()) {
+            context.addApplicationListener(iter.next());
         }
-        listeners = findInstanceListeners();
+        String[] listeners = findInstanceListeners();
         for( int i = 0; i < listeners.length; i++ ) {
             context.addInstanceListener(listeners[i]);
         }
-        String [] wrapper = findWrapperListeners();
-        for( int i = 0; i < wrapper.length; i++ ) {
-            context.addWrapperListener(wrapper[i]);
+        iter = findWrapperListeners().iterator(); 
+        while (iter.hasNext()) {
+            context.addWrapperListener(iter.next());
         }
-        wrapper = findWrapperLifecycles();
+        String[] wrapper = findWrapperLifecycles();
         for( int i = 0; i < wrapper.length; i++ ) {
             context.addWrapperLifecycle(wrapper[i]);
         }
-        String [] parameters = findParameters();
+        String[] parameters = findParameters();
         for( int i = 0; i < parameters.length; i++ ) {
             context.addParameter(parameters[i],findParameter(parameters[i]));
         }
-        List<ApplicationParameter> appParams = findApplicationParameters();
-        synchronized(appParams) {
-            Iterator<ApplicationParameter> i = appParams.iterator(); 
-            while (i.hasNext()) {
-                context.addApplicationParameter(i.next());
-            }
+        Iterator<ApplicationParameter> appParamIter =
+            findApplicationParameters().iterator(); 
+        while (appParamIter.hasNext()) {
+            context.addApplicationParameter(appParamIter.next());
         }
 
         if (!(context instanceof StandardContext)) {

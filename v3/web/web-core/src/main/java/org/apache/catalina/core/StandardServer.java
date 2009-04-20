@@ -1259,18 +1259,15 @@ public final class StandardServer
         }
 
         // Store nested <Parameter> elements
-        List<ApplicationParameter> appParams =
-            context.findApplicationParameters();
-        synchronized (appParams) {
-            Iterator<ApplicationParameter> i = appParams.iterator(); 
-            while (i.hasNext()) {
-                for (int j = 0; j < indent + 2; j++) {
-                    writer.print(' ');
-                }
-                writer.print("<Parameter");
-                storeAttributes(writer, false, i.next());
-                writer.println("/>");
+        Iterator<ApplicationParameter> appParamIter =
+            context.findApplicationParameters().iterator(); 
+        while (appParamIter.hasNext()) {
+            for (int j = 0; j < indent + 2; j++) {
+                writer.print(' ');
             }
+            writer.print("<Parameter");
+            storeAttributes(writer, false, appParamIter.next());
+            writer.println("/>");
         }
 
         // Store nested <Realm> element
@@ -1311,13 +1308,14 @@ public final class StandardServer
         }
 
         // Store nested <WrapperListener> elements
-        String wListeners[] = context.findWrapperListeners();
-        for (int i = 0; i < wListeners.length; i++) {
+        Iterator<String> iter =
+            context.findWrapperListeners().iterator(); 
+        while (iter.hasNext()) {
             for (int j = 0; j < indent; j++) {
                 writer.print(' ');
             }
             writer.print("<WrapperListener>");
-            writer.print(wListeners[i]);
+            writer.print(iter.next());
             writer.println("</WrapperListener>");
         }
 
@@ -1423,18 +1421,15 @@ public final class StandardServer
         }
 
         // Store nested <Parameter> elements
-        List<ApplicationParameter> appParams =
-            dcontext.findApplicationParameters();
-        synchronized (appParams) {
-            Iterator<ApplicationParameter> i = appParams.iterator(); 
-            while (i.hasNext()) {
-                for (int j = 0; j < indent + 2; j++) {
-                    writer.print(' ');
-                }
-                writer.print("<Parameter");
-                storeAttributes(writer, false, i.next());
-                writer.println("/>");
+        Iterator<ApplicationParameter> appParamIter =
+            dcontext.findApplicationParameters().iterator(); 
+        while (appParamIter.hasNext()) {
+            for (int j = 0; j < indent + 2; j++) {
+                writer.print(' ');
             }
+            writer.print("<Parameter");
+            storeAttributes(writer, false, appParamIter.next());
+            writer.println("/>");
         }
 
         // Store nested <Realm> element
@@ -1477,13 +1472,13 @@ public final class StandardServer
         }
 
         // Store nested <WrapperListener> elements
-        String wListeners[] = dcontext.findWrapperListeners();
-        for (int i = 0; i < wListeners.length; i++) {
+        Iterator<String> iter = dcontext.findWrapperListeners().iterator();
+        while (iter.hasNext()) {
             for (int j = 0; j < indent; j++) {
                 writer.print(' ');
             }
             writer.print("<WrapperListener>");
-            writer.print(wListeners[i]);
+            writer.print(iter.next());
             writer.println("</WrapperListener>");
         }
 

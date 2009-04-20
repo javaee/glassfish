@@ -171,10 +171,10 @@ public class StandardContext
     private String hostName;
 
     /**
-     * The set of application listener class names configured for this
+     * The list of application listener class names configured for this
      * application, in the order they were encountered in the web.xml file.
      */
-    private String applicationListeners[] = new String[0];
+    private List<String> applicationListeners = new ArrayList<String>();
 
     /**
      * The set of instantiated application event listener objects</code>.
@@ -192,7 +192,7 @@ public class StandardContext
      * The set of application parameters defined for this application.
      */
     private List<ApplicationParameter> applicationParameters =
-        Collections.synchronizedList(new ArrayList<ApplicationParameter>());
+        new ArrayList<ApplicationParameter>();
 
     /**
      * The application available flag for this Context.
@@ -229,7 +229,7 @@ public class StandardContext
      * The security constraints for this web application.
      */
     private List<SecurityConstraint> constraints =
-        Collections.synchronizedList(new ArrayList<SecurityConstraint>());
+        new ArrayList<SecurityConstraint>();
 
     /**
      * The ServletContext implementation associated with this Context.
@@ -322,10 +322,10 @@ public class StandardContext
     private Map<String, FilterDef> filterDefs = new HashMap<String, FilterDef>();
 
     /**
-     * The set of filter mappings for this application, in the order
+     * The list of filter mappings for this application, in the order
      * they were defined in the deployment descriptor.
      */
-    private FilterMap filterMaps[] = new FilterMap[0];
+    private List<FilterMap> filterMaps = new ArrayList<FilterMap>();
 
     /**
      * The descriptive information string for this implementation.
@@ -444,8 +444,7 @@ public class StandardContext
     /**
      * The security roles for this application
      */
-    private List<String> securityRoles = Collections.synchronizedList(
-        new ArrayList<String>());
+    private List<String> securityRoles = new ArrayList<String>();
 
     /**
      * The servlet mappings for this web application, keyed by
@@ -498,10 +497,10 @@ public class StandardContext
     private String wrapperLifecycles[] = new String[0];
 
     /**
-     * The set of classnames of ContainerListeners that will be added
+     * The list of classnames of ContainerListeners that will be added
      * to each newly created Wrapper by <code>createWrapper()</code>.
      */
-    private String wrapperListeners[] = new String[0];
+    private List<String> wrapperListeners = new ArrayList<String>();
 
     /**
      * The pathname to the work directory for this context (relative to
@@ -2092,37 +2091,20 @@ public class StandardContext
      * @param listener Java class name of a listener class
      */
     public void addApplicationListener(String listener) {
-
-        synchronized (applicationListeners) {
-            String results[] = new String[applicationListeners.length + 1];
-            if ("com.sun.faces.config.ConfigureListener".equals(listener)) {
-                // Always add the JSF listener as the first element,
-                // see GlassFish Issue 2563 for details
-                for (int i = 0; i < applicationListeners.length; i++) {
-                    if (listener.equals(applicationListeners[i])) {
-                        if (log.isLoggable(Level.INFO)) {
-                            log.info(sm.getString(
-                                    "standardContext.duplicateListener", listener));
-                        }
-                        return;
-                    }
-                    results[i+1] = applicationListeners[i];
-                }
-                results[0] = listener;
-            } else {
-                for (int i = 0; i < applicationListeners.length; i++) {
-                    if (listener.equals(applicationListeners[i])) {
-                        if (log.isLoggable(Level.INFO)) {
-                            log.info(sm.getString(
-                                    "standardContext.duplicateListener", listener));
-                        }
-                        return;
-                    }
-                    results[i] = applicationListeners[i];
-                }
-                results[applicationListeners.length] = listener;
+        if (applicationListeners.contains(listener)) {
+            if (log.isLoggable(Level.INFO)) {
+                log.info(sm.getString("standardContext.duplicateListener",
+                                      listener));
             }
-            applicationListeners = results;
+            return;
+        }
+
+        if ("com.sun.faces.config.ConfigureListener".equals(listener)) {
+            // Always add the JSF listener as the first element,
+            // see GlassFish Issue 2563 for details
+            applicationListeners.add(0, listener);
+        } else {
+            applicationListeners.add(listener);
         }
 
         if (notifyContainerListeners) {
@@ -2140,23 +2122,20 @@ public class StandardContext
      * @param parameter The new application parameter
      */
     public void addApplicationParameter(ApplicationParameter parameter) {
-
         String newName = parameter.getName();
-
-        synchronized (applicationParameters) {
-            Iterator<ApplicationParameter> i =
-                applicationParameters.iterator(); 
-            while (i.hasNext()) {
-                ApplicationParameter applicationParameter = i.next();
-                if (newName.equals(applicationParameter.getName())) {
-                    if (applicationParameter.getOverride()) {
-                        applicationParameter.setValue(parameter.getValue());
-                    }
-                    return;
+        Iterator<ApplicationParameter> i =
+            applicationParameters.iterator(); 
+        while (i.hasNext()) {
+            ApplicationParameter applicationParameter = i.next();
+            if (newName.equals(applicationParameter.getName())) {
+                if (applicationParameter.getOverride()) {
+                    applicationParameter.setValue(parameter.getValue());
                 }
+                return;
             }
-            applicationParameters.add(parameter);
         }
+
+        applicationParameters.add(parameter);
 
         if (notifyContainerListeners) {
             fireContainerEvent("addApplicationParameter", parameter);
@@ -2516,16 +2495,10 @@ public class StandardContext
                               urlPattern));
 
         // Add this filter mapping to our registered set
-        synchronized (filterMaps) {
-            FilterMap results[] = new FilterMap[filterMaps.length + 1];
-            if (isMatchAfter) {
-                System.arraycopy(filterMaps, 0, results, 0, filterMaps.length);
-                results[filterMaps.length] = filterMap;
-            } else {
-                results[0] = filterMap;
-                System.arraycopy(filterMaps, 0, results, 1, filterMaps.length);
-            }
-            filterMaps = results;
+        if (isMatchAfter) {
+            filterMaps.add(filterMap);
+        } else {
+            filterMaps.add(0, filterMap);
         }
 
         if (notifyContainerListeners) {
@@ -3461,15 +3434,7 @@ public class StandardContext
      * @param listener Java class name of a ContainerListener class
      */
     public void addWrapperListener(String listener) {
-
-        synchronized (wrapperListeners) {
-            String results[] =new String[wrapperListeners.length + 1];
-            for (int i = 0; i < wrapperListeners.length; i++)
-                results[i] = wrapperListeners[i];
-            results[wrapperListeners.length] = listener;
-            wrapperListeners = results;
-        }
-
+        wrapperListeners.add(listener);
         if (notifyContainerListeners) {
             fireContainerEvent("addWrapperListener", listener);
         }
@@ -3537,18 +3502,19 @@ public class StandardContext
             }
         }
 
-        synchronized (wrapperListeners) {
-            for(String wrapperListener : wrapperListeners) {
-                try {
-                    Class clazz = Class.forName(wrapperListener);
-                    wrapper.addContainerListener((ContainerListener)clazz.newInstance());
-                } catch(Throwable t) {
-                    log.log(Level.SEVERE,
-                        sm.getString("standardContext.containerListener",
-                            wrapperListener),
-                        t);
-                    return (null);
-                }
+        Iterator<String> i = wrapperListeners.iterator(); 
+        while (i.hasNext()) {
+            String wrapperListener = i.next();
+            try {
+                Class clazz = Class.forName(wrapperListener);
+                wrapper.addContainerListener((ContainerListener)
+                    clazz.newInstance());
+            } catch(Throwable t) {
+                log.log(Level.SEVERE,
+                    sm.getString("standardContext.containerListener",
+                                 wrapperListener),
+                    t);
+                return (null);
             }
         }
 
@@ -3558,11 +3524,11 @@ public class StandardContext
 
 
     /**
-     * Return the set of application listener class names configured
+     * Return the list of application listener class names configured
      * for this application.
      */
-    public String[] findApplicationListeners() {
-        return (applicationListeners);
+    public List<String> findApplicationListeners() {
+        return applicationListeners;
     }
 
 
@@ -3588,14 +3554,6 @@ public class StandardContext
      */
     public boolean hasConstraints() {
         return !constraints.isEmpty();
-    }
-
-
-    /**
-     * Clears any security constraints defined for this web application.
-     */
-    public void clearConstraints() {
-        constraints.clear();
     }
 
 
@@ -3741,10 +3699,10 @@ public class StandardContext
 
 
     /**
-     * Return the set of filter mappings for this Context.
+     * Return the list of filter mappings for this Context.
      */
-    public FilterMap[] findFilterMaps() {
-        return (filterMaps);
+    public List<FilterMap> findFilterMaps() {
+        return filterMaps;
     }
 
 
@@ -4026,9 +3984,16 @@ public class StandardContext
 
 
     /**
-     * Clears the security roles defined for this application.
+     * Removes any security roles defined for this application.
      */
-    public void clearSecurityRoles() {
+    public void removeSecurityRoles() {
+        // Inform interested listeners
+        if (notifyContainerListeners) {
+            Iterator<String> i = securityRoles.iterator(); 
+            while (i.hasNext()) {
+                fireContainerEvent("removeSecurityRole", i.next());
+            }
+        }
         securityRoles.clear();
     }
 
@@ -4040,11 +4005,9 @@ public class StandardContext
      * @param pattern Pattern for which a mapping is requested
      */
     public String findServletMapping(String pattern) {
-
         synchronized (servletMappings) {
             return servletMappings.get(pattern);
         }
-
     }
 
 
@@ -4053,13 +4016,11 @@ public class StandardContext
      * Context.  If no mappings are defined, a zero-length array is returned.
      */
     public String[] findServletMappings() {
-
         synchronized (servletMappings) {
             String results[] = new String[servletMappings.size()];
             return
                 servletMappings.keySet().toArray(results);
         }
-
     }
 
 
@@ -4177,13 +4138,11 @@ public class StandardContext
 
 
     /**
-     * Return the set of ContainerListener classes that will be added to
+     * Return the list of ContainerListener classes that will be added to
      * newly created Wrappers automatically.
      */
-    public String[] findWrapperListeners() {
-
-        return (wrapperListeners);
-
+    public List<String> findWrapperListeners() {
+        return wrapperListeners;
     }
 
 
@@ -4255,44 +4214,18 @@ public class StandardContext
 
 
     /**
-     * Remove the specified application listener class from the set of
-     * listeners for this application.
-     *
-     * @param listener Java class name of the listener to be removed
+     * Removes any application listeners from this Context
      */
-    public void removeApplicationListener(String listener) {
-
-        synchronized (applicationListeners) {
-
-            // Make sure this welcome file is currently present
-            int n = -1;
-            for (int i = 0; i < applicationListeners.length; i++) {
-                if (applicationListeners[i].equals(listener)) {
-                    n = i;
-                    break;
-                }
-            }
-            if (n < 0)
-                return;
-
-            // Remove the specified constraint
-            int j = 0;
-            String results[] = new String[applicationListeners.length - 1];
-            for (int i = 0; i < applicationListeners.length; i++) {
-                if (i != n)
-                    results[j++] = applicationListeners[i];
-            }
-            applicationListeners = results;
-
-        }
-
+    public void removeApplicationListeners() {
         // Inform interested listeners
         if (notifyContainerListeners) {
-            fireContainerEvent("removeApplicationListener", listener);
+            Iterator<String> i = applicationListeners.iterator(); 
+            while (i.hasNext()) {
+                fireContainerEvent("removeApplicationListener", i.next());
+            }
         }
-
+        applicationListeners.clear();
         // FIXME - behavior if already started?
-
     }
 
 
@@ -4303,27 +4236,23 @@ public class StandardContext
      * @param name Name of the application parameter to remove
      */
     public void removeApplicationParameter(String name) {
-
-        synchronized (applicationParameters) {
-            ApplicationParameter match = null;
-            Iterator<ApplicationParameter> i =
-                applicationParameters.iterator(); 
-            while (i.hasNext()) {
-                ApplicationParameter applicationParameter = i.next();
-                // Make sure this parameter is currently present
-                if (name.equals(applicationParameter.getName())) {
-                    match = applicationParameter;
-                    break;
-                }
-            }
-            if (match != null) {
-                applicationParameters.remove(match);
+        ApplicationParameter match = null;
+        Iterator<ApplicationParameter> i =
+            applicationParameters.iterator(); 
+        while (i.hasNext()) {
+            ApplicationParameter applicationParameter = i.next();
+            // Make sure this parameter is currently present
+            if (name.equals(applicationParameter.getName())) {
+                match = applicationParameter;
+                break;
             }
         }
-
-        // Inform interested listeners
-        if (notifyContainerListeners) {
-            fireContainerEvent("removeApplicationParameter", name);
+        if (match != null) {
+            applicationParameters.remove(match);
+            // Inform interested listeners
+            if (notifyContainerListeners) {
+                fireContainerEvent("removeApplicationParameter", name);
+            }
         }
     }
 
@@ -4345,6 +4274,21 @@ public class StandardContext
                 (sm.getString("standardContext.notWrapper"));
 
         super.removeChild(child);
+    }
+
+
+    /**
+     * Removes any security constraints from this web application.
+     */
+    public void removeConstraints() {
+        // Inform interested listeners
+        if (notifyContainerListeners) {
+            Iterator<SecurityConstraint> i = constraints.iterator(); 
+            while (i.hasNext()) {
+                fireContainerEvent("removeConstraint", i.next());
+            }
+        }
+        constraints.clear();
     }
 
 
@@ -4430,38 +4374,17 @@ public class StandardContext
 
 
     /**
-     * Remove a filter mapping from this Context.
-     *
-     * @param filterMap The filter mapping to be removed
+     * Removes any filter mappings from this Context.
      */
-    public void removeFilterMap(FilterMap filterMap) {
-
-        synchronized (filterMaps) {
-
-            // Make sure this filter mapping is currently present
-            int n = -1;
-            for (int i = 0; i < filterMaps.length; i++) {
-                if (filterMaps[i] == filterMap) {
-                    n = i;
-                    break;
-                }
-            }
-            if (n < 0)
-                return;
-
-            // Remove the specified filter mapping
-            FilterMap results[] = new FilterMap[filterMaps.length - 1];
-            System.arraycopy(filterMaps, 0, results, 0, n);
-            System.arraycopy(filterMaps, n + 1, results, n,
-                             (filterMaps.length - 1) - n);
-            filterMaps = results;
-
-        }
-
+    public void removeFilterMaps() {
         // Inform interested listeners
         if (notifyContainerListeners) {
-            fireContainerEvent("removeFilterMap", filterMap);
+            Iterator<FilterMap> i = filterMaps.iterator(); 
+            while (i.hasNext()) {
+                fireContainerEvent("removeFilterMap", i.next());
+            }
         }
+        filterMaps.clear();
     }
 
 
@@ -4826,43 +4749,16 @@ public class StandardContext
     }
 
 
-    /**
-     * Remove a class name from the set of ContainerListener classes that
-     * will be added to newly created Wrappers.
-     *
-     * @param listener Class name of a ContainerListener class to be removed
-     */
-    public void removeWrapperListener(String listener) {
-
-
-        synchronized (wrapperListeners) {
-
-            // Make sure this welcome file is currently present
-            int n = -1;
-            for (int i = 0; i < wrapperListeners.length; i++) {
-                if (wrapperListeners[i].equals(listener)) {
-                    n = i;
-                    break;
-                }
-            }
-            if (n < 0)
-                return;
-
-            // Remove the specified constraint
-            int j = 0;
-            String results[] = new String[wrapperListeners.length - 1];
-            for (int i = 0; i < wrapperListeners.length; i++) {
-                if (i != n)
-                    results[j++] = wrapperListeners[i];
-            }
-            wrapperListeners = results;
-
-        }
-
+    @Override
+    public void removeWrapperListeners() {
         // Inform interested listeners
         if (notifyContainerListeners) {
-            fireContainerEvent("removeWrapperListener", listener);
+            Iterator<String> i = wrapperListeners.iterator(); 
+            while (i.hasNext()) {
+                fireContainerEvent("removeWrapperListener", i.next());
+            }
         }
+        wrapperListeners.clear();
     }
 
 
@@ -4973,16 +4869,19 @@ public class StandardContext
 
         // Instantiate the required listeners
         ClassLoader loader = getLoader().getClassLoader();
-        String listeners[] = findApplicationListeners();
-        Object results[] = new Object[listeners.length];
+        List<String> listeners = findApplicationListeners();
+        Object results[] = new Object[listeners.size()];
         boolean ok = true;
-        for (int i = 0; i < results.length; i++) {
+        Iterator<String> iter = listeners.iterator(); 
+        int i = 0;
+        while (iter.hasNext()) {
+            String listener = iter.next();
             try {
-                results[i] = loadListener(loader, listeners[i]);
+                results[i++] = loadListener(loader, listener);
             } catch (Throwable t) {
                 getServletContext().log
                     (sm.getString("standardContext.applicationListener",
-                                  listeners[i]), t);
+                                  listener), t);
                 ok = false;
             }
         }
@@ -6084,7 +5983,7 @@ public class StandardContext
         // Bugzilla 32867
         distributable = false;
 
-        applicationListeners = new String[0];
+        applicationListeners.clear();
         applicationEventListenersObjects = new Object[0];
         applicationLifecycleListenersObjects = new Object[0];
 

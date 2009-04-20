@@ -769,10 +769,10 @@ public interface Context extends Container {
 
 
     /**
-     * Return the set of application listener class names configured
+     * Return the list of application listener class names configured
      * for this application.
      */
-    String[] findApplicationListeners();
+    List<String> findApplicationListeners();
 
 
     /**
@@ -795,9 +795,9 @@ public interface Context extends Container {
 
 
     /**
-     * Clears any security constraints defined for this web application.
+     * Removes any security constraints from this web application.
      */
-    void clearConstraints();
+    void removeConstraints();
 
 
     /**
@@ -886,9 +886,9 @@ public interface Context extends Container {
 
 
     /**
-     * Return the set of filter mappings for this Context.
+     * Return the list of filter mappings for this Context.
      */
-    FilterMap[] findFilterMaps();
+    List<FilterMap> findFilterMaps();
 
 
     /**
@@ -1018,9 +1018,9 @@ public interface Context extends Container {
 
 
     /**
-     * Clears the security roles defined for this application.
+     * Removes any security roles defined for this application.
      */
-    void clearSecurityRoles();
+    void removeSecurityRoles();
 
 
     /**
@@ -1104,10 +1104,10 @@ public interface Context extends Container {
 
 
     /**
-     * Return the set of ContainerListener classes that will be added to
+     * Return the list of ContainerListener classes that will be added to
      * newly created Wrappers automatically.
      */
-    String[] findWrapperListeners();
+    List<String> findWrapperListeners();
 
 
     /**
@@ -1120,12 +1120,9 @@ public interface Context extends Container {
 
 
     /**
-     * Remove the specified application listener class from the set of
-     * listeners for this application.
-     *
-     * @param listener Java class name of the listener to be removed
+     * Removes any application listeners from this Context
      */
-    void removeApplicationListener(String listener);
+    void removeApplicationListeners();
 
 
     /**
@@ -1172,11 +1169,9 @@ public interface Context extends Container {
 
 
     /**
-     * Remove a filter mapping from this Context.
-     *
-     * @param filterMap The filter mapping to be removed
+     * Removes any filter mappings from this Context.
      */
-    void removeFilterMap(FilterMap filterMap);
+    void removeFilterMaps();
 
 
     /**
@@ -1291,12 +1286,9 @@ public interface Context extends Container {
 
 
     /**
-     * Remove a class name from the set of ContainerListener classes that
-     * will be added to newly created Wrappers.
-     *
-     * @param listener Class name of a ContainerListener class to be removed
+     * Removes any Wrapper listeners from this Context
      */
-    void removeWrapperListener(String listener);
+    void removeWrapperListeners();
 
 
     // START S1AS8PE 4817642

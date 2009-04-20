@@ -354,10 +354,10 @@ public interface DefaultContext {
 
 
     /**
-     * Return the set of application listener class names configured
+     * Return the list of application listener class names configured
      * for this application.
      */
-    public String[] findApplicationListeners();
+    public List<String> findApplicationListeners();
 
 
     /**
@@ -488,19 +488,16 @@ public interface DefaultContext {
 
 
     /**
-     * Return the set of ContainerListener classes that will be added to
+     * Return the list of ContainerListener classes that will be added to
      * newly created Wrappers automatically.
      */
-    public String[] findWrapperListeners();
+    public List<String> findWrapperListeners();
 
 
     /**
-     * Remove the specified application listener class from the set of
-     * listeners for this application.
-     *
-     * @param listener Java class name of the listener to be removed
+     * Removes any application listeners from this Context
      */
-    public void removeApplicationListener(String listener);
+    public void removeApplicationListeners();
 
 
     /**
@@ -588,12 +585,9 @@ public interface DefaultContext {
 
 
     /**
-     * Remove a class name from the set of ContainerListener classes that
-     * will be added to newly created Wrappers.
-     *
-     * @param listener Class name of a ContainerListener class to be removed
+     * Removes any Wrapper listeners from this default Context.
      */
-    public void removeWrapperListener(String listener);
+    public void removeWrapperListeners();
 
 
     // --------------------------------------------------------- Public Methods

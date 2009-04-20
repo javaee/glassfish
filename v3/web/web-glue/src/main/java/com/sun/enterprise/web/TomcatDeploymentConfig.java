@@ -638,20 +638,16 @@ public class TomcatDeploymentConfig {
         }
 
         // Check role names used in <security-constraint> elements
-        List<org.apache.catalina.deploy.SecurityConstraint> constraints =
-            webModule.getConstraints();
-        synchronized(constraints) {
-            Iterator<org.apache.catalina.deploy.SecurityConstraint> i =
-                constraints.iterator(); 
-            while (i.hasNext()) {
-                String[] roles = i.next().findAuthRoles();
-                for (int j = 0; j < roles.length; j++) {
-                    if (!"*".equals(roles[j]) &&
-                            !webModule.hasSecurityRole(roles[j])) {
-                        logger.log(Level.WARNING,
-                            "tomcatDeploymentConfig.role.auth", roles[j]);
-                        webModule.addSecurityRole(roles[j]);
-                    }
+        Iterator<org.apache.catalina.deploy.SecurityConstraint> iter =
+            webModule.getConstraints().iterator(); 
+        while (iter.hasNext()) {
+            String[] roles = iter.next().findAuthRoles();
+            for (int j = 0; j < roles.length; j++) {
+                if (!"*".equals(roles[j]) &&
+                        !webModule.hasSecurityRole(roles[j])) {
+                    logger.log(Level.WARNING,
+                        "tomcatDeploymentConfig.role.auth", roles[j]);
+                    webModule.addSecurityRole(roles[j]);
                 }
             }
         }
