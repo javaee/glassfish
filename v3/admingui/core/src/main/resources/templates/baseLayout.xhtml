@@ -53,7 +53,7 @@
 	}
     </ui:event>
     <sun:head title="#{guiTitle}" debug="true" parseOnLoad="false">
-        <link rel="stylesheet" type="text/css" href="#{facesContext.externalContext.request.contextPath}/style.css" />
+        <link rel="stylesheet" type="text/css" href="#{request.contextPath}/style.css" />
         <sc:links/>
         <sun:script url="/resource/js/adminjsf.js" />
         <jsfExt:scripts/>
@@ -64,10 +64,11 @@
 	    .yui-layout-hd h2 {background: #7595AB url(#{request.contextPath}/theme/woodstock4_3/suntheme/images/masthead/masthead_button.gif) repeat-x scroll center bottom;}
 	    .tagDiv {padding: 10px;}
 	    .tagDiv .tagList {padding: 10px;}
+	    .tagDiv .tagList li {padding: 3px;}
 	    .tagDiv .tagList a.tagLink:visited, .tagDiv .tagList a.tagLink:link, .tagDiv .tagList a.removeTag:visited, .tagDiv .tagList a.removeTag:link {color: #000099}
 	    .tagDiv .tagList a.tagLink:hover {color: #0000CC}
-	    .tagDiv .tagList a.removeTag {padding-left: 10px;}
-	    .tagDiv .tagList a.removeTag:hover {color: red; font-weight:bold; text-decoration:none;}
+	    .tagDiv .tagList a.removeTag {margin-left: 6px;padding: 1px 2px 1px 2px; text-decoration:none; background:#EEEEEE;border:1px solid #AAA;}
+	    .tagDiv .tagList a.removeTag:hover {color:red; font-weight:bold; text-decoration:none;}
 	</style>
     </sun:head>
 
