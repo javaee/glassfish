@@ -74,6 +74,8 @@ import com.sun.logging.LogDomains;
 
 /**
  *  Utility class - contains util methods used for implementation of pluggable Shared Library features
+ *
+ *  @author Vijay Ramachandran
  */
 public class ServletContainerInitializerUtil {
 
@@ -83,8 +85,16 @@ public class ServletContainerInitializerUtil {
 
     public ServletContainerInitializerUtil() {}
 
-    // Given a class loader, check for ServletContainerInitializer implementations in any JAR file in this classpath,
-    // and build an interest list of which initializer is interested in what class implementations / annotations
+    /**
+     * Given a class loader, check for ServletContainerInitializer implementations in any JAR file in the classpath,
+     * and build an interest list of which initializer is interested in what class implementations / annotations
+     *
+     * @param cl The ClassLoader to be used to find JAR files
+     * @return  Map<Class<?>,ArrayList<Class<? extends ServletContainerInitializer>>>
+     *                     A Map of classes with list of ServletContainerInitializers interested in them.
+      */
+
+
     public static Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> getInterestList(ClassLoader cl) {
         ServiceLoader<ServletContainerInitializer> frameworks =
                 ServiceLoader.load(ServletContainerInitializer.class, cl);
@@ -130,8 +140,16 @@ public class ServletContainerInitializerUtil {
         return interestList;
     }
 
-    // Given an interestlist that was built above, and a class loader, scan the entire web app's classes and libraries
-    // looking for classes that extend/implement/use the annotations of a class present in the interest list
+    /**
+     * Given an interestlist that was built above, and a class loader, scan the entire web app's classes and libraries
+     * looking for classes that extend/implement/use the annotations of a class present in the interest list
+     *
+     * @param interestList The interestList build by the previous util method
+     * @param cl The classloader to be used to load classes in WAR
+     * @return Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>>
+     *                          A Map of ServletContainerInitializer classes to be called and arguments to be passed
+     *                          to them
+     */
     public  static Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>> getInitializerList(
             Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> interestList,
             ClassLoader cl) {
@@ -155,7 +173,8 @@ public class ServletContainerInitializerUtil {
         //uses the annotation or extends/implements a class in our interest list
         //Do this scanning only if we have ServletContainerinitializers that have expressed specific interest
         if( (interestList.keySet().size() > 1) ||
-            ((interestList.keySet().size() == 1) && (!interestList.containsKey(ServletContainerInitializerUtil.class)))) {
+            ((interestList.keySet().size() == 1) &&
+                    (!interestList.containsKey(ServletContainerInitializerUtil.class)))) {
             for(URL u : ((URLClassLoader)cl).getURLs()) {
                 String path = u.getPath();
                 try {
@@ -174,7 +193,8 @@ public class ServletContainerInitializerUtil {
                                 Class aClass = cl.loadClass(className);
                                 initializerList = checkAgainstInterestList(aClass, interestList, initializerList);
                             } catch (ClassNotFoundException e) {
-                                log.warning(sm.getString("ServletContainerInitializerUtil.CNFWarning", anEntry.getName()));
+                                log.warning(sm.getString("ServletContainerInitializerUtil.CNFWarning",
+                                        anEntry.getName()));
                                 continue;
                             }
                         }
@@ -195,17 +215,40 @@ public class ServletContainerInitializerUtil {
         return initializerList;
     }
 
-    private static String getClassNameFromPath(String fullPath, String path) {
-        String className = fullPath.substring(path.length());
+    /**
+     * Given a path (say /Users/user/glassfish/domains/.../WEB-INF/classes/com/sun/x.class) and the topmost directory
+     * (/Users/user/glassfish/domains/.../WEB-INF/classes/) returns the class name (com.sun.x)
+     *
+     * @param fullPath String representing complete path of the class
+     * @param top String representing the complete path of topmost directory
+     *
+     * @return the class name as mentioned in the example above
+     */
+    private static String getClassNameFromPath(String fullPath, String top) {
+        //We got the  path from Class Loader
+        //which has path in the form /x/y/z. On Solaris/Linux/Mac, the path
+        //obtained File is also /x/y/z but on windows it D:\\x\\y\\z
+        //To ensure this code works on all platforms in the same way,
+        //We get a File representation of path and then do the calculation
+        String className = fullPath.substring((new File(top)).getPath().length()+File.separator.length());
         className = className.replace(File.separatorChar, '.');
         className = className.substring(0, className.length()-6);
         return className;
     }
 
+    /**
+     * Given a directory, scan all sub directories looking for classes and build the interest list
+     * @param dir the directory to be scanned
+     * @param path topmost directory from which scanning started
+     * @param cl the classloader to be used
+     * @param interestList The interestList built earlier
+     * @param initializerList The initializerList built so far
+     * @return the updated initialiserList
+     */
     private static Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>> scanDirectory(
-                                  File dir, String path, ClassLoader cl,
-                                  Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> interestList,
-                                  Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>> initializerList) {
+                                 File dir, String path, ClassLoader cl,
+                                 Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> interestList,
+                                 Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>> initializerList) {
         File[] files = dir.listFiles();
         for (File file : files) {
             if (file.isFile()) {
@@ -226,10 +269,18 @@ public class ServletContainerInitializerUtil {
         return initializerList;
     }
 
+    /**
+     * Given the interestList, checks if a given class uses any of the annotations; If so, builds the initializer
+     * list
+     * @param aClass the class to be examined
+     * @param interestList the interestList built earlier
+     * @param initializerList the initializerList built so far
+     * @return the updated initializer list
+     */
     private static Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>> checkAgainstInterestList(
-                                    Class aClass,
-                                    Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> interestList,
-                                    Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>> initializerList) {
+                                Class aClass,
+                                Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> interestList,
+                                Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>> initializerList) {
         for(Class c : interestList.keySet()) {
             if((aClass.getAnnotation(c) != null) || (c.isAssignableFrom(aClass)) ) {
                 if(initializerList == null) {
