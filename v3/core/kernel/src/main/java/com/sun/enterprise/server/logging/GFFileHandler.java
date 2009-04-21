@@ -426,7 +426,7 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
      * A Simple rotate method to close the old file and start the new one
      * when the limit is reached.
      */
-    private void rotate( ) {
+    public void rotate( ) {
         final GFFileHandler thisInstance = this;
         java.security.AccessController.doPrivileged(
             new java.security.PrivilegedAction() {
