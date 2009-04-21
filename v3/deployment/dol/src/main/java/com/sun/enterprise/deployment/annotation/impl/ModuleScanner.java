@@ -124,6 +124,13 @@ public abstract class ModuleScanner<T> extends JavaEEScanner implements Scanner<
         
 
         try {
+            /*
+             * An app might refer to a non-existent JAR in its Class-Path.  Java
+             * SE accepts that silently, and so will GlassFish.
+             */
+            if ( ! jarFile.exists()) {
+                return;
+            }
             jf = new JarFile(jarFile);
             Enumeration<JarEntry> entriesEnum = jf.entries();
             while(entriesEnum.hasMoreElements()) {

@@ -202,6 +202,12 @@ class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
             } else {
                 dependencyFileURI = dependencyURI;
             }
+            /*
+             * The app might specify non-existent JARs in its Class-Path.
+             */
+            if ( ! new File(dependencyFileURI).exists()) {
+                return;
+            }
             jarFileDependency = new FullAndPartURIs(dependencyURI, 
                     earDirUserURI(dc()).resolve(earURI.relativize(dependencyFileURI)));
         }
