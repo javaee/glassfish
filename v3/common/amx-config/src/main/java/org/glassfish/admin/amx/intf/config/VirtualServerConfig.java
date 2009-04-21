@@ -42,6 +42,7 @@ import java.util.Map;
 
 /**
 	 Configuration for the &lt;virtual-server&gt; element.
+     @deprecated  Grizzly variants now exist?
 */
 @AMXCreateInfo(paramNames={"id", "hosts", "optional"})
 public interface VirtualServerConfig

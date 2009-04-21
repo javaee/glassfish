@@ -45,6 +45,7 @@ import org.glassfish.admin.amx.config.DefaultValues;
 
 /**
 	 Configuration for an <http-listener&gt; element.
+     @deprecated  Grizzly variants now exist
 */
 @AMXCreateInfo(paramNames={"id", "address", "port", "default-virtual-server", "server-name", "optional"})
 public interface HttpListenerConfig

@@ -45,6 +45,7 @@ import java.util.Map;
 
 /**
 	 Configuration for the &lt;http-service&gt; element.
+     @deprecated  Grizzly variants now exist
  */
 public interface HttpServiceConfig
 	extends ConfigElement, PropertiesAccess, DefaultValues, Singleton

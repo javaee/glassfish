@@ -39,6 +39,7 @@ package org.glassfish.admin.amx.intf.config;
 
 /**
 	 Configuration for the &lt;http-access-log&gt; element.
+     @deprecated  Grizzly variants now exist
 */
 
 public interface HTTPAccessLogConfig extends ConfigElement 

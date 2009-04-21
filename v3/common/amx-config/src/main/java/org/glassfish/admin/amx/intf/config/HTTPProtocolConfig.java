@@ -40,6 +40,7 @@ import org.glassfish.admin.amx.base.Singleton;
 
 /**
 Configuration for the &lt;http-protocol&gt; element.
+     @deprecated  Grizzly variants now exist
 */
 
 public interface HTTPProtocolConfig extends ConfigElement, Singleton

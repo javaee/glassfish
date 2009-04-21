@@ -41,6 +41,7 @@ import org.glassfish.admin.amx.base.Singleton;
 /**
 	 This element might or might not remain in V3 pending analysis on how
      the Grizzly code is to be integrated.
+     @deprecated  Grizzly variants now exist
 */
 public interface HTTPFileCacheConfig extends ConfigElement, Singleton
 {
