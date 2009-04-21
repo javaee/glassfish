@@ -12,9 +12,9 @@ SYNOPSIS
      [--passwordfile filename] [--help]
      [ --target  server]
      --hosts hosts [--httplisteners http_listeners]
-     [--networklisteners network_listeners]
-     [--defaultwebmodule default_web_module] [--state on]
-     [--logfile log_file] [--property (name=value)[:name=value]*]
+     [--defaultwebmodule default_web_module]
+     [--state on] [--logfile log_file]
+     [--property (name=value)[:name=value]*]
      virtual_server_id
 
 DESCRIPTION
@@ -48,7 +48,7 @@ OPTIONS
          The machine name where the domain administration  server
          is running. The default value is localhost.
 
-Java EE 5            Last change: 2 Sep 2008                    1
+Java EE 6            Last change: 2 Sep 2008                    1
 
 Administration Commands;                 create-virtual-server(1)
 
@@ -102,7 +102,7 @@ Administration Commands;                 create-virtual-server(1)
          server. The password can be specified by one of the fol-
          lowing means:
 
-Java EE 5            Last change: 2 Sep 2008                    2
+Java EE 6            Last change: 2 Sep 2008                    2
 
 Administration Commands;                 create-virtual-server(1)
 
@@ -152,15 +152,9 @@ Administration Commands;                 create-virtual-server(1)
      --httplisteners
          A  comma-separated  (,)  list  of  HTTP  listener   IDs.
          Required  only  for  a  virtual  server  that is not the
-         default virtual server.  Deprecated.  Use
-         --networklisteners instead.
-
-     --networklisteners
-         A  comma-separated  (,)  list  of network listener  IDs.
-         Required  only  for  a  virtual  server  that is not the
          default virtual server.
 
-Java EE 5            Last change: 2 Sep 2008                    3
+Java EE 6            Last change: 2 Sep 2008                    3
 
 Administration Commands;                 create-virtual-server(1)
 
@@ -207,11 +201,11 @@ Administration Commands;                 create-virtual-server(1)
          sso-max-inactive-seconds
              Specifies the number of seconds after which a user's
              single  sign-on  record becomes eligible for purging
-             if no client activity  is  received.   Since  single
+             if no client  activity  is  received.  Since  single
              sign-on  applies  across several applications on the
              same  virtual  server,  access   to   any   of   the
 
-Java EE 5            Last change: 2 Sep 2008                    4
+Java EE 6            Last change: 2 Sep 2008                    4
 
 Administration Commands;                 create-virtual-server(1)
 
@@ -261,7 +255,7 @@ Administration Commands;                 create-virtual-server(1)
              Specifies the size, in bytes, of  the  buffer  where
              access log calls are stored.
 
-Java EE 5            Last change: 2 Sep 2008                    5
+Java EE 6            Last change: 2 Sep 2008                    5
 
 Administration Commands;                 create-virtual-server(1)
 
@@ -311,7 +305,7 @@ Administration Commands;                 create-virtual-server(1)
              property. The default value  for  this  property  is
              null.
 
-Java EE 5            Last change: 2 Sep 2008                    6
+Java EE 6            Last change: 2 Sep 2008                    6
 
 Administration Commands;                 create-virtual-server(1)
 
@@ -319,7 +313,7 @@ OPERANDS
      virtual_server_id
 
          Identifies the unique ID for the virtual  server  to  be
-         created.  This ID cannot begin with a number.
+         created. This ID cannot begin with a number.
 
 EXAMPLES
      Example 1 Using the create-virtual-server command
@@ -340,5 +334,5 @@ SEE ALSO
      delete-virtual-server(1),  list-virtual-servers(1),  create-
      http-listener(1)
 
-Java EE 5            Last change: 2 Sep 2008                    7
+Java EE 6            Last change: 2 Sep 2008                    7
 

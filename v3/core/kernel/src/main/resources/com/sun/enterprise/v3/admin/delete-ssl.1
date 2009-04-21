@@ -48,7 +48,7 @@ OPTIONS
          The machine name where the domain administration  server
          is running. The default value is localhost.
 
-Java EE 5            Last change: 2 Sep 2008                    1
+Java EE 6            Last change: 2 Sep 2008                    1
 
 Administration Commands                             delete-ssl(1)
 
@@ -102,7 +102,7 @@ Administration Commands                             delete-ssl(1)
          server. The password can be specified by one of the fol-
          lowing means:
 
-Java EE 5            Last change: 2 Sep 2008                    2
+Java EE 6            Last change: 2 Sep 2008                    2
 
 Administration Commands                             delete-ssl(1)
 
@@ -145,17 +145,15 @@ Administration Commands                             delete-ssl(1)
       --type
 
          The type of service or listener for  which  the  SSL  is
-         deleted.  The type must be one of the following types:
+         deleted. The type must be one of the following types:
 
-             o    network-listener
-
-             o    http-listener (deprecated use network-listener)
+             o    http-listener
 
              o    iiop-listener
 
              o    iiop-service
 
-Java EE 5            Last change: 2 Sep 2008                    3
+Java EE 6            Last change: 2 Sep 2008                    3
 
 Administration Commands                             delete-ssl(1)
 
@@ -172,10 +170,10 @@ EXAMPLES
      Example 1 Using delete-ssl
 
      The following example shows how to  delete  an  SSL  element
-     from a network listener named http-listener-1.
+     from an HTTP listener named http-listener-1.
 
        asadmin> delete-ssl --user admin
-       --host fuyako --port 7070 --passwordfile adminpassword.txt --type network-listener
+       --host fuyako --port 7070 --passwordfile adminpassword.txt --type http-listener
        http-listener-1
        Command delete-ssl executed successfully.
 
@@ -187,5 +185,5 @@ EXIT STATUS
 SEE ALSO
      create-ssl(1)
 
-Java EE 5            Last change: 2 Sep 2008                    4
+Java EE 6            Last change: 2 Sep 2008                    4
 

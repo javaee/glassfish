@@ -1,0 +1,76 @@
+
+Administration Commands                              multimode(1)
+
+NAME
+     multimode - allows you to execute  multiple  commands  while
+     preserving environment settings and remaining in the asadmin
+     utility
+
+SYNOPSIS
+     multimode   [--file filename] [--printprompt={true|false}] [ --encoding  encode]
+     [--terse={false|true}] [ --echo={false|true} ]
+
+DESCRIPTION
+     Use multimode to process the asadmin commands. The  command-
+     line  interface  will prompt you for a command, execute that
+     command, display the results of the command, and then prompt
+     you  for  the  next  command.  Additionally, all the asadmin
+     option names set in this mode are used for  all  the  subse-
+     quent  commands.  You  can set your environment and run com-
+     mands until you exit multimode by typing exit or  quit.  You
+     can  also  provide commands by passing a previously prepared
+     list of commands from a file or standard input  (pipe).  You
+     can  invoke  multimode from within a multimode session; once
+     you exit the second multimode  environment,  you  return  to
+     your original multimode environment.
+
+     This command is supported in local mode only.
+
+OPTIONS
+     --file
+
+         Reads the commands as defined in the file.
+
+     --printprompt
+         Allows the printing of the  asadmin  prompt  after  each
+         command  is  executed. Set this option to false when the
+         commands are piped or redirected from the standard input
+         or file. By default the option is set to true.
+
+     --encoding
+
+         Specifies the locale for the file to be decoded.
+
+     --terse
+         Indicates that any output data  must  be  very  concise,
+         typically avoiding human-friendly sentences and favoring
+         well-formatted data for consumption by a script. Default
+         is false.
+
+Java EE 6           Last change: 16 Apr 2009                    1
+
+Administration Commands                              multimode(1)
+
+     --echo
+
+         Setting to true will echo the command line statement  on
+         to the standard output. Default is false.
+
+EXAMPLES
+     Example 1 Using multimode to execute multiple commands
+
+       % asadmin multimode --file commands_file.txt
+
+     Where: % is the system prompt. The  administrative  commands
+     are executed from the commands_file.txt file.
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     unset(1)
+
+Java EE 6           Last change: 16 Apr 2009                    2
+

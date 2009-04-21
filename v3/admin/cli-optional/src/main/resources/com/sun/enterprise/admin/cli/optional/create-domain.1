@@ -6,15 +6,15 @@ NAME
 
 SYNOPSIS
      create-domain  [--user user] [--passwordfile passwordfile]
-     {--adminport port_number | --portbase portbase}
-     [(--profile developer | cluster | enterprise ] --template domain_template)]
-     [--domaindir domain_directory]
-     [--instanceport port_number] [--savemasterpassword={false|true}]
-     [ --domainproperties  (name=value)[:name=value]*]
-     [--keytooloptions (name=value)[:name=value]*]
-     [--savelogin={false|true}] [ --terse ={false|true}]
-     [ --echo ={false|true}] [ --interactive ={true|false}]
-     domain_name
+      {--adminport port_number | --portbase portbase}
+      [(--profile developer | cluster | enterprise ] --template domain_template)]
+      [--domaindir domain_directory]
+      [--instanceport port_number] [--savemasterpassword={false|true}]
+      [ --domainproperties  (name=value)[:name=value]*]
+      [--keytooloptions (name=value)[:name=value]*]
+      [--savelogin={false|true}] [ --terse ={false|true}]
+      [ --echo ={false|true}] [ --interactive ={true|false}]
+      domain_name
 
 DESCRIPTION
      Use the create-domain command to  create  an  administrative
@@ -49,7 +49,7 @@ OPTIONS
 
          The username of the administrator of the domain.
 
-Java EE 5           Last change: 24 Sep 2008                    1
+Java EE 6           Last change: 24 Sep 2008                    1
 
 Administration Commands                          create-domain(1)
 
@@ -99,7 +99,7 @@ Administration Commands                          create-domain(1)
          Either the --adminport option or the  --portbase  option
          must be specified.
 
-Java EE 5           Last change: 24 Sep 2008                    2
+Java EE 6           Last change: 24 Sep 2008                    2
 
 Administration Commands                          create-domain(1)
 
@@ -107,7 +107,7 @@ Administration Commands                          create-domain(1)
 
          Determines the number with  which  the  port  assignment
          should  start.  A  domain uses a certain number of ports
-         that are statically assigned.  The portbase value deter-
+         that are statically assigned. The portbase value  deter-
          mines  where  the  assignment  should start. Choose this
          value judiciously. The values for the ports  are  calcu-
          lated  as  follows:  Admin  port:  portbase  +  48, HTTP
@@ -136,9 +136,9 @@ Administration Commands                          create-domain(1)
          and AS_ADMIN_MASTERPASSWORD from this file. The password
          is     defined     in      the      following      form:
          AS_ADMIN_PASSWORD=password, where password is the actual
-         administrator password for the domain.   This  file  can
+         administrator password for the  domain.  This  file  can
          contain  many  other  passwords  required by the asadmin
-         commands.  In adherence to application  server  security
+         commands. In adherence to  application  server  security
          policy,  asadmin does not accept clear text passwords on
          the command line.
 
@@ -153,7 +153,7 @@ Administration Commands                          create-domain(1)
          well-formatted data for consumption by a script. Default
          is false.
 
-Java EE 5           Last change: 24 Sep 2008                    3
+Java EE 6           Last change: 24 Sep 2008                    3
 
 Administration Commands                          create-domain(1)
 
@@ -207,7 +207,7 @@ Administration Commands                          create-domain(1)
          created. The list must be separated by the :  character.
          The following properties are available:
 
-Java EE 5           Last change: 24 Sep 2008                    4
+Java EE 6           Last change: 24 Sep 2008                    4
 
 Administration Commands                          create-domain(1)
 
@@ -218,7 +218,7 @@ Administration Commands                          create-domain(1)
 
          domain.jmxPort
              Specifies the port on which  the  JMX  connector  is
-             initialized.  The valid values are 1-65535.
+             initialized. The valid values are 1-65535.
 
          orb.listener.port
 
@@ -226,10 +226,10 @@ Administration Commands                          create-domain(1)
              tions on which orb-listener-1 listens.
 
          http.ssl.port
-             Specifies  the  port  number  for   http-listener-2.
-             Valid  values  are  1  to  65535. On UNIX, to create
-             sockets  that  listen  on  ports  1-1024,  you  need
-             superuser privileges.
+             Specifies the port number for http-listener-2. Valid
+             values  are  1  to 65535. On UNIX, to create sockets
+             that listen on  ports  1-1024,  you  need  superuser
+             privileges.
 
          orb.ssl.port
 
@@ -256,7 +256,7 @@ Administration Commands                          create-domain(1)
              used  for  the  self-signed certificate. This option
              name is case insensitive.
 
-Java EE 5           Last change: 24 Sep 2008                    5
+Java EE 6           Last change: 24 Sep 2008                    5
 
 Administration Commands                          create-domain(1)
 
@@ -308,7 +308,7 @@ EXAMPLES
        Using default port 8181 for HTTP_SSL.
        Using default port 3820 for IIOP_SSL.
 
-Java EE 5           Last change: 24 Sep 2008                    6
+Java EE 6           Last change: 24 Sep 2008                    6
 
 Administration Commands                          create-domain(1)
 
@@ -357,7 +357,7 @@ Administration Commands                          create-domain(1)
        Using default port 8181 for HTTP_SSL.
        Using default port 3820 for IIOP_SSL.
 
-Java EE 5           Last change: 24 Sep 2008                    7
+Java EE 6           Last change: 24 Sep 2008                    7
 
 Administration Commands                          create-domain(1)
 
@@ -377,7 +377,7 @@ Administration Commands                          create-domain(1)
 
      Example 4 Using the create-domain command (keytool options)
 
-     The following command creates the domain customdomain.   The
+     The following command creates the domain  customdomain.  The
      common  name  of  the  host that is to be used for the self-
      signed certificate is trio.
 
@@ -406,5 +406,5 @@ SEE ALSO
      login(1), delete-domain(1), start-domain(1), stop-domain(1),
      list-domains(1)
 
-Java EE 5           Last change: 24 Sep 2008                    8
+Java EE 6           Last change: 24 Sep 2008                    8
 

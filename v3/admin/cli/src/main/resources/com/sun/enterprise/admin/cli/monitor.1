@@ -47,7 +47,7 @@ OPTIONS
          The machine name where the domain administration  server
          is running. The default value is localhost.
 
-Java EE 5           Last change: 29 Sep 2008                    1
+Java EE 6           Last change: 29 Sep 2008                    1
 
 Administration Commands                                monitor(1)
 
@@ -101,7 +101,7 @@ Administration Commands                                monitor(1)
          server. The password can be specified by one of the fol-
          lowing means:
 
-Java EE 5           Last change: 29 Sep 2008                    2
+Java EE 6           Last change: 29 Sep 2008                    2
 
 Administration Commands                                monitor(1)
 
@@ -136,7 +136,7 @@ Administration Commands                                monitor(1)
 
      --type
          The component or service  to  monitor.  This  option  is
-         required.  No default value is defined.
+         required. No default value is defined.
 
          The valid values are as follows:
 
@@ -153,7 +153,7 @@ Administration Commands                                monitor(1)
                  The total number errors  in  the  processing  of
                  HTTP requests.
 
-Java EE 5           Last change: 29 Sep 2008                    3
+Java EE 6           Last change: 29 Sep 2008                    3
 
 Administration Commands                                monitor(1)
 
@@ -201,7 +201,7 @@ Administration Commands                                monitor(1)
              high
                  Retained for compatibility with other releases.
 
-Java EE 5           Last change: 29 Sep 2008                    4
+Java EE 6           Last change: 29 Sep 2008                    4
 
 Administration Commands                                monitor(1)
 
@@ -250,7 +250,7 @@ Administration Commands                                monitor(1)
                  Total number of JSP technology pages  that  have
                  been loaded.
 
-Java EE 5           Last change: 29 Sep 2008                    5
+Java EE 6           Last change: 29 Sep 2008                    5
 
 Administration Commands                                monitor(1)
 
@@ -278,9 +278,9 @@ Administration Commands                                monitor(1)
      --interval
 
          The interval  in  seconds  before  capturing  monitoring
-         attributes.   The  interval  must be greater than 0. The
+         attributes.  The  interval  must  be greater than 0. The
          monitoring attributes are displayed on stdout until  you
-         type Control-C or q.  The default value is 30.
+         type Control-C or q. The default value is 30.
 
      --filter
          Do not specify this option. This option is retained  for
@@ -296,7 +296,7 @@ OPERANDS
 EXAMPLES
      Example 1 Displaying Statistics for the JVM Machine
 
-Java EE 5           Last change: 29 Sep 2008                    6
+Java EE 6           Last change: 29 Sep 2008                    6
 
 Administration Commands                                monitor(1)
 
@@ -317,7 +317,7 @@ Administration Commands                                monitor(1)
               machine every 2000 seconds.
 
                 asadmin> monitor --type=jvm --interval 2000 server
-                                              JVM Monitoring
+                                               JVM Monitoring
                 UpTime(ms)                          Heap and NonHeap Memory(bytes)
                 current                   min        max        low        high       count
                 957843                    29523968   188284928  0          0          60370944
@@ -333,5 +333,5 @@ EXIT STATUS
 SEE ALSO
      get(1), list(1), set(1)
 
-Java EE 5           Last change: 29 Sep 2008                    7
+Java EE 6           Last change: 29 Sep 2008                    7
 

@@ -49,7 +49,7 @@ OPTIONS
      -H --host
          The machine name where the domain administration  server
 
-Java EE 5            Last change: 2 Sep 2008                    1
+Java EE 6            Last change: 2 Sep 2008                    1
 
 Administration Commands                             create-ssl(1)
 
@@ -102,7 +102,7 @@ Administration Commands                             create-ssl(1)
              o    AS_ADMIN_ALIASPASSWORD
          All remote  commands  must  specify  the  administration
 
-Java EE 5            Last change: 2 Sep 2008                    2
+Java EE 6            Last change: 2 Sep 2008                    2
 
 Administration Commands                             create-ssl(1)
 
@@ -149,17 +149,15 @@ Administration Commands                             create-ssl(1)
      --type
 
          The type of service or listener for  which  the  SSL  is
-         created.  The type can be:
+         created. The type can be:
 
-             o    network-listener
-
-             o    http-listener (deprecated use network-listener)
+             o    http-listener
 
              o    iiop-listener
 
              o    iiop-service
 
-Java EE 5            Last change: 2 Sep 2008                    3
+Java EE 6            Last change: 2 Sep 2008                    3
 
 Administration Commands                             create-ssl(1)
 
@@ -175,7 +173,7 @@ Administration Commands                             create-ssl(1)
          property, the tokenname: is optional.
 
      --ssl2enabled
-         Set this property to true to enable SSL2.   The  default
+         Set this property to true to enable  SSL2.  The  default
          value  is false. If both SSL2 and SSL3 are enabled for a
          virtual server, the server tries SSL3 encryption  first.
          In  the  event  SSL3  encryption  fails, the server then
@@ -204,13 +202,13 @@ Administration Commands                             create-ssl(1)
          assumed to be enabled.
 
      --ssl3enabled
-         Set this property to false to disable SSL3.  The default
+         Set this property to false to disable SSL3. The  default
          value  is  true. If both SSL2 and SSL3 are enabled for a
          virtual server, the server tries SSL3 encryption  first.
          In  the  event  SSL3  encryption  fails, the server then
          tries SSL2 encryption.
 
-Java EE 5            Last change: 2 Sep 2008                    4
+Java EE 6            Last change: 2 Sep 2008                    4
 
 Administration Commands                             create-ssl(1)
 
@@ -243,9 +241,9 @@ Administration Commands                             create-ssl(1)
 
      --tlsrollbackenabled
 
-         Set to true (default) to enable TLS rollback.  TLS roll-
+         Set to true (default) to enable TLS rollback. TLS  roll-
          back  should  be enabled for Microsoft Internet Explorer
-         5.0  and  5.5.   This  option   is   only   valid   when
+         5.0  and  5.5.  This   option   is   only   valid   when
          -tlsenabled=true.
 
      --clientauthenabled
@@ -256,11 +254,11 @@ Administration Commands                             create-ssl(1)
 OPERANDS
      listener_id
 
-         The ID of the network or IIOP listener for which the SSL
+          The ID of the HTTP or IIOP listener for which  the  SSL
          element  is  to  be  created.  The  listener_id  is  not
          required if the --type is iiop-service.
 
-Java EE 5            Last change: 2 Sep 2008                    5
+Java EE 6            Last change: 2 Sep 2008                    5
 
 Administration Commands                             create-ssl(1)
 
@@ -271,7 +269,7 @@ EXAMPLES
      an HTTP listener named http-listener-1.
 
        asadmin> create-ssl --user admin --host fuyako --port 7070
-       --passwordfile adminpassword.txt --type network-listener
+       --passwordfile adminpassword.txt --type http-listener
        --certname sampleCert http-listener-1
        Command create-ssl executed successfully.
 
@@ -283,5 +281,5 @@ EXIT STATUS
 SEE ALSO
      delete-ssl(1)
 
-Java EE 5            Last change: 2 Sep 2008                    6
+Java EE 6            Last change: 2 Sep 2008                    6
 

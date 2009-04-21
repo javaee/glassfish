@@ -7,7 +7,7 @@ NAME
 
 SYNOPSIS
      asadmin  subcommand [-short-option[ short-option-argument]]*
-     [--long-option[ long-option-argument]]* [operand]*
+      [--long-option[ long-option-argument]]* [operand]*
 
 DESCRIPTION
      Use the asadmin utility to perform administrative tasks  for
@@ -48,7 +48,7 @@ DESCRIPTION
 
          o    Long form: --terse
 
-Java EE 5           Last change: 19 Sep 2008                    1
+Java EE 6           Last change: 19 Sep 2008                    1
 
 Utility Commands                                      asadmin(1M)
 
@@ -99,7 +99,7 @@ Utility Commands                                      asadmin(1M)
 
          The default is false.
 
-Java EE 5           Last change: 19 Sep 2008                    2
+Java EE 6           Last change: 19 Sep 2008                    2
 
 Utility Commands                                      asadmin(1M)
 
@@ -155,7 +155,7 @@ Utility Commands                                      asadmin(1M)
          AS_ADMIN_PASSWORD option is not required. You still must
          provide    the    other    passwords,    for    example,
 
-Java EE 5           Last change: 19 Sep 2008                    3
+Java EE 6           Last change: 19 Sep 2008                    3
 
 Utility Commands                                      asadmin(1M)
 
@@ -208,7 +208,7 @@ Utility Commands                                      asadmin(1M)
               characters.  The  escape  character  backslash  (\)
               identifies Java technology special characters  such
 
-Java EE 5           Last change: 19 Sep 2008                    4
+Java EE 6           Last change: 19 Sep 2008                    4
 
 Utility Commands                                      asadmin(1M)
 
@@ -225,9 +225,9 @@ Utility Commands                                      asadmin(1M)
          literal \ character.
 
          o    Option delimiters. The  asadmin  utility  uses  the
-              colon  character  (:)   as a delimiter for options.
-              The escape character backslash (\) is  required  if
-              the colon is part of any of the following items:
+              colon character (:) as a delimiter for options. The
+              escape character backslash (\) is required  if  the
+              colon is part of any of the following items:
 
              o    A property
 
@@ -246,13 +246,13 @@ Utility Commands                                      asadmin(1M)
 
          Multiple JVM machine  options  in  the  operand  of  the
          create-jvm-options  command  are  separated by the colon
-         (:) delimiter.  If jvm-option-name  or  jvm-option-value
+         (:) delimiter. If  jvm-option-name  or  jvm-option-value
          contains  a colon, the escape character backslash (\) is
          required before the colon.
 
      The escape character disables the delimiter in the  command-
      line  interface,  and  is  a  special  character in the UNIX
-     operating system and in Java technology.  Therefore, in  the
+     operating system and in Java technology. Therefore,  in  the
      UNIX operating system, you must apply an escape character to
      every escape character in the command line. This requirement
      does not apply to the Windows operating system.Tip -
@@ -261,7 +261,7 @@ Utility Commands                                      asadmin(1M)
      use  the  double  quote  character ("). However, because the
      double quote is a special character in Java technology,  you
 
-Java EE 5           Last change: 19 Sep 2008                    5
+Java EE 6           Last change: 19 Sep 2008                    5
 
 Utility Commands                                      asadmin(1M)
 
@@ -298,11 +298,10 @@ Utility Commands                                      asadmin(1M)
      effect. To restart the DAS, use the start-domain(1) command.
 
   Usage Information for asadmin Utility Subcommands
-
      To obtain usage information for an asadmin  utility  subcom-
      mand,  specify  the  --help option. If you specify a subcom-
      mand,  the  usage  information  for   that   subcommand   is
-     displayed.   If you specify the --help option without a sub-
+     displayed.  If  you specify the --help option without a sub-
      command, this usage information for the asadmin  utility  is
      displayed.
 
@@ -310,13 +309,12 @@ Utility Commands                                      asadmin(1M)
      the list-commands(1) command.
 
 EXAMPLES
-
-Java EE 5           Last change: 19 Sep 2008                    6
-
-Utility Commands                                      asadmin(1M)
-
      Example 1 Specifying a UNIX Operating System Meta  Character
      in an Option
+
+Java EE 6           Last change: 19 Sep 2008                    6
+
+Utility Commands                                      asadmin(1M)
 
      The commands in this example show how to  specify  the  UNIX
      operating  system meta character backslash (\) in the option
@@ -351,16 +349,16 @@ Utility Commands                                      asadmin(1M)
        DatabaseName=jdbc:derby
        server=http://localhost:9092
 
-Java EE 5           Last change: 19 Sep 2008                    7
+     For the UNIX operating system, a backslash (\)  is  required
+     to escape the colon (:) and the backslash (\):
+
+Java EE 6           Last change: 19 Sep 2008                    7
 
 Utility Commands                                      asadmin(1M)
 
-     For the UNIX operating system, a backslash (\)  is  required
-     to escape the colon (:)  and the backslash (\):
-
        asadmin create-jdbc-connection-pool --user --passwordfile mypasswordfile
        --port 4848 --host localhost --datasourceclassname com.derby.jdbc.jdbcDataSource
-       --property user=dbuser:passwordfile=dbpasswordfile:
+        --property user=dbuser:passwordfile=dbpasswordfile:
        DatabaseName=jdbc\\:derby:server=http\\://localhost\\:9092 sqe-jdbc-pool
 
      For  the  Windows  operating  system,  a  backslash  (\)  is
@@ -369,7 +367,7 @@ Utility Commands                                      asadmin(1M)
 
        asadmin create-jdbc-connection-pool --user admin --passwordfile mypasswordfile
        --port 4848 --host localhost --datasourceclassname com.derby.jdbc.jdbcDataSource
-       --property user-dbuser:passwordfile-dbpasswordfile:
+        --property user-dbuser:passwordfile-dbpasswordfile:
        DatabaseName=jdbc\:derby:server=http\://localhost\:9092 sqe-jdbc-pool
 
      For all operating systems, the need to escape the colon  (:)
@@ -392,14 +390,14 @@ Utility Commands                                      asadmin(1M)
 
          o    The Java technology escape character backslash (\)
 
-Java EE 5           Last change: 19 Sep 2008                    8
-
-Utility Commands                                      asadmin(1M)
-
      For the UNIX operating  system,  two  backslashes  (\\)  are
      required to escape the colon (:) and three backslashes (\\\)
      are required to escape the backslash (\).  As  a  result,  a
      total of four backslashes are required:
+
+Java EE 6           Last change: 19 Sep 2008                    8
+
+Utility Commands                                      asadmin(1M)
 
          1.    The first backslash  escapes  the  UNIX  operating
               system meta character.
@@ -417,7 +415,7 @@ Utility Commands                                      asadmin(1M)
        asadmin create-jvm-options --target test-server -e -Dlocation=c\\:\\\\sun\\\\appserver
 
      For  the  Windows  operating  system,  a  backslash  (\)  is
-     required to escape the colon (:)  and the backslash (\):
+     required to escape the colon (:) and the backslash (\):
 
        asadmin create-jvm-options --target test-server -e -Dlocation=c\:\\sun\\appserver
 
@@ -433,13 +431,13 @@ Utility Commands                                      asadmin(1M)
        asadmin list-jdbc-resources --user \"admin\\admin\" --passwordfile mypasswordfile
        --host localhost --port 4848
 
-Java EE 5           Last change: 19 Sep 2008                    9
-
-Utility Commands                                      asadmin(1M)
-
      For  the  Windows  operating  system,  a  backslash  (\)  is
      required  to  escape  only the double quote ("), but not the
      backslash (\):
+
+Java EE 6           Last change: 19 Sep 2008                    9
+
+Utility Commands                                      asadmin(1M)
 
        asadmin list-jdbc-resources --user \"admin\admin\" --passwordfile mypasswordfile
        --host localhost --port 4848
@@ -462,5 +460,5 @@ SEE ALSO
      http-listener in Sun GlassFish Enterprise Server v3  Prelude
      Administration Reference
 
-Java EE 5           Last change: 19 Sep 2008                   10
+Java EE 6           Last change: 19 Sep 2008                   10
 

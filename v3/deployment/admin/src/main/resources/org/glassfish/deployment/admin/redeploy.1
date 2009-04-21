@@ -46,7 +46,7 @@ OPTIONS
          The machine name where the domain administration  server
          is running. The default value is localhost.
 
-Java EE 5           Last change: 30 Sep 2008                    1
+Java EE 6           Last change: 30 Sep 2008                    1
 
 Administration Commands                               redeploy(1)
 
@@ -100,7 +100,7 @@ Administration Commands                               redeploy(1)
          server. The password can be specified by one of the fol-
          lowing means:
 
-Java EE 5           Last change: 30 Sep 2008                    2
+Java EE 6           Last change: 30 Sep 2008                    2
 
 Administration Commands                               redeploy(1)
 
@@ -152,7 +152,7 @@ Administration Commands                               redeploy(1)
          precomplied  during deployment. Possible values  are  as
          follows:
 
-Java EE 5           Last change: 30 Sep 2008                    3
+Java EE 6           Last change: 30 Sep 2008                    3
 
 Administration Commands                               redeploy(1)
 
@@ -203,7 +203,7 @@ Administration Commands                               redeploy(1)
                  deserializes any sessions that  were  previously
                  saved.
 
-Java EE 5           Last change: 30 Sep 2008                    4
+Java EE 6           Last change: 30 Sep 2008                    4
 
 Administration Commands                               redeploy(1)
 
@@ -233,7 +233,7 @@ OPERANDS
                   optional.
 
                   If  this  operand  is  omitted,  the  path   is
-                  retrieved from the domain.xml file.  Otherwise,
+                  retrieved  from the domain.xml file. Otherwise,
                   the operand  can  specify  a  directory  or  an
                   archive file.
 
@@ -241,7 +241,7 @@ EXAMPLES
      Example 1 Redeploying a Web Application From a File
 
      This example redeploys the web application  hello  from  the
-     hello.war file in the current working directory.  The appli-
+     hello.war  file in the current working directory. The appli-
      cation was originally deployed from a file. Active  sessions
      of  the  application  are  to be preserved and then restored
      when the redeployment is complete.
@@ -252,11 +252,11 @@ EXAMPLES
 
      Example 2 Redeploying a Web Application From a Directory
 
-Java EE 5           Last change: 30 Sep 2008                    5
+Java EE 6           Last change: 30 Sep 2008                    5
 
 Administration Commands                               redeploy(1)
 
-     This example redeploys the web  application  hellodir.   The
+     This example redeploys the  web  application  hellodir.  The
      application  was  originally  deployed from a directory. The
      path is retrieved from the domain.xml file.
 
@@ -271,5 +271,5 @@ EXIT STATUS
 SEE ALSO
      deploy(1), undeploy(1), list-components(1)
 
-Java EE 5           Last change: 30 Sep 2008                    6
+Java EE 6           Last change: 30 Sep 2008                    6
 

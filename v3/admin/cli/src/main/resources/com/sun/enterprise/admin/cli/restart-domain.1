@@ -1,0 +1,94 @@
+
+Administration Commands                         restart-domain(1)
+
+NAME
+     restart-domain -  restarts the DAS of the specified domain
+
+SYNOPSIS
+     restart-domain  [--terse={false|true}] [ --echo ={false|true}]
+     [ --host  host ] [--port admin-port ]
+     [--user admin-user] [--passwordfile file-name]
+
+DESCRIPTION
+     Use  the  restart-domain  command  to  restart  the   Domain
+     Administration Server (DAS) of the specified domain.
+
+     The prerequisites for using this command are as follows:
+
+         o    The domain must already be started.
+
+         o    When the domain was started, the --watchdog  option
+              of  the start-domain(1) must have been set to true.
+              If this option was set to false and you attempt  to
+              restart  the  domain,  the  domain is stopped and a
+              warning message is logged.
+
+     This command can be run in the remote mode only.
+
+OPTIONS
+     -t--terse
+
+         Indicates that any output data  must  be  very  concise,
+         typically avoiding human-friendly sentences and favoring
+         well-formatted data for consumption by a script. Default
+         is false.
+
+     -e --echo
+         Setting to true will echo the command line statement  on
+         to the standard output. Default is false.
+
+     -H --host
+
+         The machine name where the domain administration  server
+         is running. The default value is localhost.
+
+     -p --port
+         The HTTP port or HTTPS  port  for  administration.  This
+         port is the port in the URL that you specify in your web
+         browser   to   manage   the   domain,    for    example,
+         http://localhost:4848.
+
+Java EE 6           Last change: 20 Apr 2009                    1
+
+Administration Commands                         restart-domain(1)
+
+         The default port number for administration is 4848.
+
+     -u --user
+
+         The user name of the authorized administrative  user  of
+         the domain administration server.
+
+         If you have authenticated to a domain by using the asad-
+         min  login  command,  you  need  not  specify the --user
+         option for subsequent operations on the domain.
+
+     --passwordfile
+         Specifies the name, including the full path, of  a  file
+         that contains the password entries in a specific format.
+
+         The password is defined in the following form:
+
+           AS_ADMIN_PASSWORD=password
+
+         password is the actual administrator  password  for  the
+         domain.
+
+OPERANDS
+     None.
+
+EXAMPLES
+     Example 1 Using restart-domain command
+
+       asadmin> restart-domain
+
+EXIT STATUS
+     0                   command executed successfully
+
+     1                   error in executing the command
+
+SEE ALSO
+     start-domain(1), delete-domain(1), list-domains(1)
+
+Java EE 6           Last change: 20 Apr 2009                    2
+

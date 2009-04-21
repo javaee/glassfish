@@ -11,8 +11,8 @@ SYNOPSIS
      [ --interactive={true|false} ] [ --host  host]
      [--port port] [--secure| -s ] [ --user  admin_user]
      [--passwordfile filename] [--help]
-     [ --monitor =[true|false]]
-     (dotted_attribute_name)+
+      [ --monitor =[true|false]]
+      (dotted_attribute_name)+
 
 DESCRIPTION
      Gets the names and values of attributes.  If  the  --monitor
@@ -50,7 +50,7 @@ DESCRIPTION
      names  accepted by the get, set and list commands. Note that
      a specific command has some additional semantics applied.
 
-Java EE 5           Last change: 22 Dec 2004                    1
+Java EE 6           Last change: 22 Dec 2004                    1
 
 Administration Commands                                    get(1)
 
@@ -107,7 +107,7 @@ Administration Commands                                    get(1)
                   names of attributes of a particular node in the
                   hierarchy,  you must use the wildcard character
 
-Java EE 5           Last change: 22 Dec 2004                    2
+Java EE 6           Last change: 22 Dec 2004                    2
 
 Administration Commands                                    get(1)
 
@@ -143,7 +143,7 @@ Administration Commands                                    get(1)
          Command                                    Output
      ___________________________________________________________________________________
 
-Java EE 5           Last change: 22 Dec 2004                    3
+Java EE 6           Last change: 22 Dec 2004                    3
 
 Administration Commands                                    get(1)
 
@@ -199,7 +199,7 @@ Administration Commands                                    get(1)
 
                                 o    domain.resources.jdbc-connection-pool._CallFlowPool
 
-Java EE 5           Last change: 22 Dec 2004                    4
+Java EE 6           Last change: 22 Dec 2004                    4
 
 Administration Commands                                    get(1)
 
@@ -256,7 +256,7 @@ Administration Commands                                    get(1)
 
                                 o    server.web-container
 
-Java EE 5           Last change: 22 Dec 2004                    5
+Java EE 6           Last change: 22 Dec 2004                    5
 
 Administration Commands                                    get(1)
 
@@ -309,14 +309,14 @@ Administration Commands                                    get(1)
      subsystems. Every component or subsystem is capable of  hav-
      ing zero or more attributes that can be read and modified.
 
-Java EE 5           Last change: 22 Dec 2004                    6
+Java EE 6           Last change: 22 Dec 2004                    6
 
 Administration Commands                                    get(1)
 
      With thelist command you can drill down through the  hierar-
      chy  in a particular branch of interest. For example, if you
      want to find the configuration of the http-listener  of  the
-     domain  (the default server, whose ID is "server").  Here is
+     domain  (the  default server, whose ID is "server"). Here is
      how you could proceed on a UNIX terminal:
 
       ID                                 Command                                                         Output/Comment
@@ -344,7 +344,7 @@ Administration Commands                                    get(1)
 
                                                                                          8.   server.http-service.http-listener.http-listener-2
 
-Java EE 5           Last change: 22 Dec 2004                    7
+Java EE 6           Last change: 22 Dec 2004                    7
 
 Administration Commands                                    get(1)
 
@@ -397,7 +397,7 @@ Administration Commands                                    get(1)
          2.   Obtain the various information about the  JVM  that
               the application server domain is running.
 
-Java EE 5           Last change: 22 Dec 2004                    8
+Java EE 6           Last change: 22 Dec 2004                    8
 
 Administration Commands                                    get(1)
 
@@ -441,7 +441,7 @@ Administration Commands                                    get(1)
                                               attributes  of  a   particular
                                               component.
 
-Java EE 5           Last change: 22 Dec 2004                    9
+Java EE 6           Last change: 22 Dec 2004                    9
 
 Administration Commands                                    get(1)
 
@@ -496,7 +496,7 @@ Administration Commands                                    get(1)
                                               toring  hierarchy,  start with
                                               the list command again.
 
-Java EE 5           Last change: 22 Dec 2004                   10
+Java EE 6           Last change: 22 Dec 2004                   10
 
 Administration Commands                                    get(1)
 
@@ -539,7 +539,7 @@ Administration Commands                                    get(1)
                                               Thus the command  is  get  not
                                               list.
 
-Java EE 5           Last change: 22 Dec 2004                   11
+Java EE 6           Last change: 22 Dec 2004                   11
 
 Administration Commands                                    get(1)
 
@@ -596,7 +596,7 @@ Administration Commands                                    get(1)
                                               system.unloadedclasscount-
                                               lastsampletime = 1133819508973
 
-Java EE 5           Last change: 22 Dec 2004                   12
+Java EE 6           Last change: 22 Dec 2004                   12
 
 Administration Commands                                    get(1)
 
@@ -647,7 +647,7 @@ OPTIONS
 
          The default port number for administration is 4848.
 
-Java EE 5           Last change: 22 Dec 2004                   13
+Java EE 6           Last change: 22 Dec 2004                   13
 
 Administration Commands                                    get(1)
 
@@ -703,7 +703,7 @@ Administration Commands                                    get(1)
          remote commands require, use the  --passwordfile  option
          or specify them at the command prompt.
 
-Java EE 5           Last change: 22 Dec 2004                   14
+Java EE 6           Last change: 22 Dec 2004                   14
 
 Administration Commands                                    get(1)
 
@@ -756,7 +756,7 @@ OPERANDS
                                  name>.<primary   key>.<attribute
                                  name>
 
-Java EE 5           Last change: 22 Dec 2004                   15
+Java EE 6           Last change: 22 Dec 2004                   15
 
 Administration Commands                                    get(1)
 
@@ -809,7 +809,7 @@ EXAMPLES
      set command for further details on  setting  the  monitoring
      level.
 
-Java EE 5           Last change: 22 Dec 2004                   16
+Java EE 6           Last change: 22 Dec 2004                   16
 
 Administration Commands                                    get(1)
 
@@ -834,7 +834,7 @@ Administration Commands                                    get(1)
      Applications  -  Enterprise  Applications   and   Standalone
      Modules
 
-Java EE 5           Last change: 22 Dec 2004                   17
+Java EE 6           Last change: 22 Dec 2004                   17
 
 Administration Commands                                    get(1)
 
@@ -891,7 +891,7 @@ Administration Commands                                    get(1)
                                                          xxxx
      _____________________________________________________________________________________
 
-Java EE 5           Last change: 22 Dec 2004                   18
+Java EE 6           Last change: 22 Dec 2004                   18
 
 Administration Commands                                    get(1)
 
@@ -940,7 +940,7 @@ Administration Commands                                    get(1)
 
      Thread-Pools Level
 
-Java EE 5           Last change: 22 Dec 2004                   19
+Java EE 6           Last change: 22 Dec 2004                   19
 
 Administration Commands                                    get(1)
 
@@ -980,7 +980,7 @@ Administration Commands                                    get(1)
 
      ORB Level
 
-Java EE 5           Last change: 22 Dec 2004                   20
+Java EE 6           Last change: 22 Dec 2004                   20
 
 Administration Commands                                    get(1)
 
@@ -1005,7 +1005,7 @@ Administration Commands                                    get(1)
       Command        Dotted Name                           Output
      _________________________________________________________________________________
 
-Java EE 5           Last change: 22 Dec 2004                   21
+Java EE 6           Last change: 22 Dec 2004                   21
 
 Administration Commands                                    get(1)
 
@@ -1053,5 +1053,5 @@ EXIT STATUS
 SEE ALSO
      set(1), list(1)
 
-Java EE 5           Last change: 22 Dec 2004                   22
+Java EE 6           Last change: 22 Dec 2004                   22
 

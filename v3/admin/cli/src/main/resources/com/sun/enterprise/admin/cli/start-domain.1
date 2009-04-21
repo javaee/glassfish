@@ -9,7 +9,7 @@ SYNOPSIS
      --user admin_user --passwordfile file_name
      [--terse={true|false}] [ --echo ={true|false}]
      [ --interactive ={true|false}] [ --verbose ={true|false}]
-     [ --debug ={true|false}] [domain_name]
+     [ --debug ={true|false}] [ --watchdog ={true|false}][domain_name]
 
 DESCRIPTION
      Use the start-domain command  to  start  a  domain.  If  the
@@ -51,7 +51,7 @@ OPTIONS
          tem.  If  not  specified,  the  domain  in  the  default
          install_dir/domains directory is started.
 
-Java EE 5           Last change: 11 Jul 2007                    1
+Java EE 6           Last change: 20 Apr 2009                    1
 
 Administration Commands                           start-domain(1)
 
@@ -86,7 +86,7 @@ Administration Commands                           start-domain(1)
      --verbose
          By default this flag is set to false. If  set  to  true,
          detailed server startup output is displayed. On Windows,
-         press CTRL-Break in the  domain's   window  to  print  a
+         press CTRL-Break in  the  domain's  window  to  print  a
          thread  dump.  On  UNIX, press CTRL-C to kill the server
          and press CTRL-\ to print a thread dump.
 
@@ -96,13 +96,32 @@ Administration Commands                           start-domain(1)
          the  server is started in debug mode and prints the JPDA
          port on the console.
 
+     --watchdog
+         Specifies whether the domain can be restarted  by  using
+         the  restart-domain(1)  command.  Possible values are as
+         follows:
+
+Java EE 6           Last change: 20 Apr 2009                    2
+
+Administration Commands                           start-domain(1)
+
+         true
+
+             The domain can be restarted by  using  the  restart-
+             domain (default).
+
+             When this option is set to true, a watchdog  process
+             is also started when the domain is started.
+
+         false
+             The  domain  cannot  be  restarted  by   using   the
+             restart-domain.  If  this option is set to false and
+             you attempt to restart the  domain,  the  domain  is
+             stopped and a warning message is logged.
+
 OPERANDS
      domain_name         The unique name of the domain  you  wish
                          to start.
-
-Java EE 5           Last change: 11 Jul 2007                    2
-
-Administration Commands                           start-domain(1)
 
 EXAMPLES
      Example 1 Using the start-domain command
@@ -130,14 +149,18 @@ EXAMPLES
      Where: domain1 is the domain in  the  /usr/appserver/domains
      directory.
 
+Java EE 6           Last change: 20 Apr 2009                    3
+
+Administration Commands                           start-domain(1)
+
 EXIT STATUS
      0                           command executed successfully
 
      1                           error in executing the command
 
 SEE ALSO
-     create-domain(1),  delete-domain(1),  stop-domain(1),  list-
-     domains(1)
+     create-domain(1),     delete-domain(1),     list-domains(1),
+     restart-domain(1), stop-domain(1)
 
-Java EE 5           Last change: 11 Jul 2007                    3
+Java EE 6           Last change: 20 Apr 2009                    4
 

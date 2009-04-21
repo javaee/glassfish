@@ -11,14 +11,14 @@ SYNOPSIS
      [ --interactive={true|false} ] [ --host  host]
      [--port port] [--secure| -s ] [ --user  admin_user]
      [--passwordfile filename] [--help]
-     [ --virtualservers  virtual_servers]
-     [--contextroot context_root] [--force=true]
-     [ --verify =false] [ --precompilejsp =false]
-     [ --name  component_name] [--uniquetablenames=true|false]
-     [--dbvendorname dbvendorname] [--createtables=false |  --dropandcreatetables =false]
-     [ --generatermistubs =false] [ --availabilityenabled =false]
-     [ --libraries  jar_file[(path_separator)jar_file*]]
-     [--target target] dirpath
+      [ --virtualservers  virtual_servers]
+      [--contextroot context_root] [--force=true]
+      [ --verify =false] [ --precompilejsp =false]
+      [ --name  component_name] [--uniquetablenames=true|false]
+      [--dbvendorname dbvendorname] [--createtables=false |  --dropandcreatetables =false]
+      [ --generatermistubs =false] [ --availabilityenabled =false]
+      [ --libraries  jar_file[(path_separator)jar_file*]]
+      [--target target] dirpath
 
 DESCRIPTION
      Note -
@@ -33,7 +33,7 @@ DESCRIPTION
 
      Directory deployment is for advanced developers only. Do not
      use  it  in  production environments. In production environ-
-     ments, use the deploy command.  Directory deployment is only
+     ments, use the deploy command. Directory deployment is  only
      supported  on localhost, that is, the client and server must
      reside on the same machine. For this reason, the only values
      for the --host option are:
@@ -50,7 +50,7 @@ DESCRIPTION
      first  deployment. If the application with that name is run-
      ning and force is set to false, the command fails.
 
-Java EE 5           Last change: 16 Sep 2008                    1
+Java EE 6           Last change: 16 Sep 2008                    1
 
 Administration Commands                              deploydir(1)
 
@@ -101,7 +101,7 @@ OPTIONS
          min  login  command,  you  need  not  specify the --user
          option for subsequent operations on the domain.
 
-Java EE 5           Last change: 16 Sep 2008                    2
+Java EE 6           Last change: 16 Sep 2008                    2
 
 Administration Commands                              deploydir(1)
 
@@ -157,7 +157,7 @@ Administration Commands                              deploydir(1)
          The  default  value   for   AS_ADMIN_MASTERPASSWORD   is
          changeit.
 
-Java EE 5           Last change: 16 Sep 2008                    3
+Java EE 6           Last change: 16 Sep 2008                    3
 
 Administration Commands                              deploydir(1)
 
@@ -207,7 +207,7 @@ Administration Commands                              deploydir(1)
          option, a syntax error does not occur. Instead, the com-
          mand  runs  successfully  and  the  option  is  silently
 
-Java EE 5           Last change: 16 Sep 2008                    4
+Java EE 6           Last change: 16 Sep 2008                    4
 
 Administration Commands                              deploydir(1)
 
@@ -257,7 +257,7 @@ Administration Commands                              deploydir(1)
          the application in the order specified. Place the depen-
          dent JAR files in the domain-dir/lib directory.
 
-Java EE 5           Last change: 16 Sep 2008                    5
+Java EE 6           Last change: 16 Sep 2008                    5
 
 Administration Commands                              deploydir(1)
 
@@ -295,5 +295,5 @@ SEE ALSO
      deploy(1), disable(1), enable(1), list-components(1),  rede-
      ploy(1), undeploy(1)
 
-Java EE 5           Last change: 16 Sep 2008                    6
+Java EE 6           Last change: 16 Sep 2008                    6
 
