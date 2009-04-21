@@ -20,64 +20,46 @@ own identifying information: Portions Copyright [yyyy]
 [name of copyright owner]
 -->
 <project name="glassfish API package creation" default="create.package" basedir=".">
+
     <import file="${basedir}/../common-targets.xml"/>
 
-   <target name="create.package">
-	   <mkdir dir="target/stage/${install.dir.name}"/>
-                             
-	   <!-- TODO - would be nice if we can find a way to iterate through all
-	   "dependency" packages without having to define each intermediate 
-	   graph -->
+    <target name="create.package">
+        <property name="package.name" value="glassfish-api"/>
 
-	   <graphDef id="remove-felix-modules" tolerateBrokenPOMs="true">
-		 <scope level="compile,runtime">       
-			  <subtract>
-			         <fullGraph/>
-				 <subGraph groupID="org.glassfish.packager" artifactID="felix"/>			                         
+
+
+	<graphDef id="all-modules" tolerateBrokenPOMs="true">
+		<scope level="compile,runtime">
+			<subtract>
+			    <subtract>
+			        <subtract>
+				    <fullGraph/>
+			             <subGraph groupID="org.glassfish.packager" artifactID="felix">	
+	                                 <scope level="compile,runtime"/>
+	                             </subGraph>
+	
+			         </subtract>
+                                     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-hk2">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			         </subtract>
+                                     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-grizzly">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
 			 </subtract>
-                 </scope>		 
-	   </graphDef>
-	  	   
-	   <graphDef id="remove-hk2-modules" tolerateBrokenPOMs="true">
-		 <scope level="compile,runtime">       
-			  <subtract>
-			         <graphRef refid="remove-felix-modules"/>
-				 <subGraph artifactID="glassfish-hk2"/>			                         
-			 </subtract>
-                 </scope>		 
-	 </graphDef>
+		</scope>					 
+       </graphDef>
 
-         <graphDef id="glassfish-api-modules" tolerateBrokenPOMs="true">
-		 <scope level="compile,runtime">       
-			  <subtract>
-				 <graphRef refid="remove-hk2-modules"/>
-				 <subGraph artifactID="glassfish-grizzly">
-                                     <removeSpecificArtifacts>
-                                         <scope level="compile,runtime"/>
-                                         <artifact artifactId="javax.servlet"/>
-				     </removeSpecificArtifacts>	
-                                 </subGraph>				 
-			 </subtract>
-                 </scope>		 
-	 </graphDef>
-            
+       
+       <stage-module-jars graphid="all-modules" />
+       <stage-distribution-fragments graphid="all-modules" />
 
-	    <resolveAll todir="target/stage/${install.dir.name}/glassfish/modules" tolerateBrokenPOMs="true"
-                        stripVersion="true">
-                <graphRef refid="glassfish-api-modules"/>
-	   </resolveAll>
-
-
-	<delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.zip" />   
-	<delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.pom" />  
-
-        <if test="${compression}">
+       <if test="${compression}">
 	       <antcall target="pack.compression" />
-	</if>
+       </if>
 
-       <zip file="target/glassfish-api.zip" basedir="target/stage"/>
-           
-       <attachArtifact file="target/glassfish-api.zip"/>
+       <antcall target="create-zip-artifact"/>	
+       
    </target>
 </project>
 

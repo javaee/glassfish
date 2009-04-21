@@ -162,7 +162,6 @@
            <version>${project.version}</version>
            <type>zip</type>
    	</dependency>
-  	 <!-- package level dependency -->
 	<dependency>        
            <groupId>org.glassfish.packager</groupId>
            <artifactId>glassfish-hk2</artifactId>
@@ -175,7 +174,6 @@
            <version>${project.version}</version>
            <type>zip</type>
         </dependency>
-        <!-- package level dependency -->
        	<dependency>        
            <groupId>org.glassfish.packager</groupId>
            <artifactId>glassfish-api</artifactId>
@@ -187,7 +185,13 @@
            <artifactId>glassfish-nucleus</artifactId>
            <version>${project.version}</version>
            <type>zip</type>
-       </dependency>     
+        </dependency>   
+ 	<dependency>        
+           <groupId>org.glassfish.packager</groupId>
+           <artifactId>glassfish-corba-omgapi</artifactId>
+           <version>${project.version}</version>
+           <type>zip</type>
+       </dependency>   
     </dependencies>
     <profiles>
         <profile>

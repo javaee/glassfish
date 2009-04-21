@@ -23,9 +23,43 @@ own identifying information: Portions Copyright [yyyy]
     <import file="${basedir}/../common-targets.xml"/>
 
    <target name="create.package">
-	   <mkdir dir="target/stage/${install.dir.name}"/>
+	  <property name="package.name" value="glassfish-nucleus"/> 
 
-        <resolveArtifact artifactId="nucleus-base" property="nucleus-base.zip"/>
+        
+	<graphDef id="all-modules" tolerateBrokenPOMs="true">
+		<scope level="compile,runtime">
+			<subtract>
+			    <subtract>
+				    <subtract>
+			            <subtract>
+				    <fullGraph/>
+			             <subGraph groupID="org.glassfish.packager" artifactID="felix">	
+	                                 <scope level="compile,runtime"/>
+	                             </subGraph>
+	
+			         </subtract>
+                                     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-hk2">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			         </subtract>
+                                     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-grizzly">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-api">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			 </subtract>
+		</scope>					 
+       </graphDef>
+
+       
+       <stage-module-jars graphid="all-modules" />
+       <stage-distribution-fragments graphid="all-modules" />
+
+       <!-- leaving custom handling of top level scripts/config -->
+
+       <resolveArtifact artifactId="nucleus-base" property="nucleus-base.zip"/>
        
 	<unzip src="${nucleus-base.zip}" dest="target/stage/${install.dir.name}">
            <patternset>
@@ -33,17 +67,7 @@ own identifying information: Portions Copyright [yyyy]
            </patternset>
    	</unzip>
 
-    	<resolveArtifact artifactId="basedocs" property="docs.zip"/>
-       
-	<unzip src="${docs.zip}" dest="target/stage/${install.dir.name}">
-	</unzip>
-
-	<resolveArtifact artifactId="equinox" property="equinox.zip"/>
-       
-	<unzip src="${equinox.zip}" dest="target/stage/${install.dir.name}">
-	</unzip>
-
-	<copy todir="target/stage/${install.dir.name}/bin">
+       <copy todir="target/stage/${install.dir.name}/bin">
 		<fileset dir="src/main/resources/bin"/>
 	</copy>
 
@@ -54,64 +78,12 @@ own identifying information: Portions Copyright [yyyy]
 	<chmod file="target/stage/${install.dir.name}/bin/*" perm="ugo+rx"/>
 	<chmod file="target/stage/${install.dir.name}/glassfish/bin/*" perm="ugo+rx"/>
 
-	 <!-- TODO - would be nice if we can find a way to iterate through all
-	   "dependency" packages without having to define each intermediate 
-	   graph -->
-	  	   
-	 <graphDef id="remove-felix-modules" tolerateBrokenPOMs="true">
-		 <scope level="compile,runtime">       
-			  <subtract>
-			         <fullGraph/>
-				 <subGraph groupID="org.glassfish.packager" artifactID="felix"/>			                         
-			 </subtract>
-                 </scope>		 
-	   </graphDef>
-	  	   
-	   <graphDef id="remove-hk2-modules" tolerateBrokenPOMs="true">
-		 <scope level="compile,runtime">       
-			  <subtract>
-			         <graphRef refid="remove-felix-modules"/>
-				 <subGraph artifactID="glassfish-hk2"/>			                         
-			 </subtract>
-                 </scope>		 
-	 </graphDef>
- 
-
-         <graphDef id="remove-grizzly-modules" tolerateBrokenPOMs="true">
-		 <scope level="compile,runtime">       
-			  <subtract>
-				 <graphRef refid="remove-hk2-modules"/>
-				 <subGraph artifactID="glassfish-grizzly"/>			                         
-			 </subtract>
-                 </scope>		 
-	 </graphDef>
-
-	  <graphDef id="glassfish-nucleus-modules" tolerateBrokenPOMs="true">
-		 <scope level="compile,runtime">       
-			  <subtract>
-				 <graphRef refid="remove-grizzly-modules"/>
-				 <subGraph groupID="org.glassfish.packager" artifactID="glassfish-api"/>			                         
-			 </subtract>
-                 </scope>		 
-	 </graphDef>
-            
-        
-	    <resolveAll todir="target/stage/${install.dir.name}/glassfish/modules" tolerateBrokenPOMs="true"
-                        stripVersion="true">
-                <graphRef refid="glassfish-nucleus-modules"/>
-	   </resolveAll>
-
-
-	<delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.zip" /> 
-      	<delete dir="target/stage/${install.dir.name}/META-INF" />  	
-
-        <if test="${compression}">
+       <if test="${compression}">
 	       <antcall target="pack.compression" />
-	</if>
+       </if>
 
-       <zip file="target/glassfish-nucleus.zip" basedir="target/stage"/>
-           
-       <attachArtifact file="target/glassfish-nucleus.zip"/>
+       <antcall target="create-zip-artifact"/>		
+
    </target>
 </project>
 

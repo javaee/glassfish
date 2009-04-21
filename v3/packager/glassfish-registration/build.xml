@@ -22,18 +22,63 @@ own identifying information: Portions Copyright [yyyy]
 <project name="glassfish-registration package creation" default="create.package" basedir=".">
     <import file="${basedir}/../common-targets.xml"/>
 
-	<target name="create.package">
-		<echo message="Staging files"/>
+<target name="create.package">
+    <property name="package.name" value="glassfish-registration"/> 
 
-        <if test="${compression}">
-	       <antcall target="pack.compression" />
-	</if>
-           		   
-       <zip file="target/glassfish-registration.zip" basedir="target/stage">
-       </zip>
+        
+	<graphDef id="all-modules" tolerateBrokenPOMs="true">
+		<scope level="compile,runtime">
+			<subtract>
+			    <subtract>
+				    <subtract>
+				    <subtract>
+				    <subtract>
+				    <subtract>
+				    <subtract>
+				    <fullGraph/>
+			             <subGraph groupID="org.glassfish.packager" artifactID="felix">	
+	                                 <scope level="compile,runtime"/>
+	                             </subGraph>
+	
+			         </subtract>
+                                     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-hk2">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			         </subtract>
+                                     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-grizzly">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-api">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-nucleus">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-corba-omgapi">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-common">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			 </subtract>
+		</scope>					 
+       </graphDef>
 
-        <attachArtifact file="target/glassfish-registration.zip"/>
        
+       <stage-module-jars graphid="all-modules" />
+       <stage-distribution-fragments graphid="all-modules" />
+
+
+       <if test="${compression}">
+	       <antcall target="pack.compression" />
+       </if>
+
+       <antcall target="create-zip-artifact"/>		
+	
    </target>
 </project>
 

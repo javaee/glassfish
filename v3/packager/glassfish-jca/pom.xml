@@ -106,14 +106,12 @@
 
 	<!-- now, listing package dependencies so that their content
              can be excluded during staging -->	
-	<!-- package level dependency -->
-	<dependency>        
+        <dependency>        
            <groupId>org.glassfish.packager</groupId>
            <artifactId>felix</artifactId>
            <version>${project.version}</version>
            <type>zip</type>
    	</dependency>
-  	 <!-- package level dependency -->
 	<dependency>        
            <groupId>org.glassfish.packager</groupId>
            <artifactId>glassfish-hk2</artifactId>
@@ -126,21 +124,24 @@
            <version>${project.version}</version>
            <type>zip</type>
         </dependency>
-        <!-- package level dependency -->
        	<dependency>        
            <groupId>org.glassfish.packager</groupId>
            <artifactId>glassfish-api</artifactId>
            <version>${project.version}</version>
            <type>zip</type>
    	</dependency>  
-	<!-- package level dependency -->   
  	<dependency>        
            <groupId>org.glassfish.packager</groupId>
            <artifactId>glassfish-nucleus</artifactId>
            <version>${project.version}</version>
            <type>zip</type>
         </dependency>
-        <!-- package level dependency -->
+   	<dependency>        
+           <groupId>org.glassfish.packager</groupId>
+           <artifactId>glassfish-corba-omgapi</artifactId>
+           <version>${project.version}</version>
+           <type>zip</type>
+       </dependency> 
 	<dependency>        
            <groupId>org.glassfish.packager</groupId>
            <artifactId>glassfish-common</artifactId>
@@ -152,19 +153,19 @@
            <artifactId>glassfish-registration</artifactId>
            <version>${project.version}</version>
            <type>zip</type>
-   	</dependency>
- 	<dependency>        
+   	</dependency>  	
+        <dependency>        
            <groupId>org.glassfish.packager</groupId>
            <artifactId>glassfish-management</artifactId>
            <version>${project.version}</version>
            <type>zip</type>
-   	</dependency>  
-   	   <dependency>        
+        </dependency>
+        <dependency>        
            <groupId>org.glassfish.packager</groupId>
            <artifactId>glassfish-amx</artifactId>
            <version>${project.version}</version>
            <type>zip</type>
-   	</dependency> 
+	</dependency>
     </dependencies>
 
     <profiles>

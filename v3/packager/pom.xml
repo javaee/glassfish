@@ -65,7 +65,6 @@
 	<module>glassfish-nucleus</module>
 	<module>glassfish-corba-omgapi</module>
 	<module>glassfish-common</module>
-	<module>glassfish-common-full</module>
 	<module>glassfish-registration</module>
 	<module>glassfish-management</module>
 	<module>glassfish-amx</module>
@@ -74,7 +73,6 @@
 	<module>glassfish-codegen</module>
 	<module>glassfish-corba</module>
 	<module>glassfish-jta</module>
-	<module>glassfish-jts</module>
 	<module>glassfish-jsf</module>
 	<module>glassfish-web-management</module>
 	<module>glassfish-web</module>
@@ -85,12 +83,14 @@
 	<module>glassfish-jdbc-gui</module>
 	<module>glassfish-orb</module>
 	<module>glassfish-ejb</module>
+	<module>glassfish-common-full</module>
+	<module>glassfish-jts</module>
+	<module>glassfish-jms</module>
 	<module>glassfish-ejb-timer</module>
 	<module>glassfish-cmp</module>
 	<module>glassfish-orb-iiop</module>
 	<module>metro</module>	
 	<module>glassfish-appclient</module>
-	<module>glassfish-jms</module>
 	<module>glassfish-scripting</module>
 	<module>javadb</module>
 	<module>jersey</module>	

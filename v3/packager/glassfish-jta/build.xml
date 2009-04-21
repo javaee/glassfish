@@ -23,129 +23,96 @@ own identifying information: Portions Copyright [yyyy]
     <import file="${basedir}/../common-targets.xml"/>
 
    <target name="create.package">
-	   <mkdir dir="target/stage/${install.dir.name}"/>
-       
- <!-- TODO - would be nice if we can find a way to iterate through all
-	   "dependency" packages without having to define each intermediate 
-	   graph -->
-	  	   
-	 <graphDef id="remove-felix-modules" tolerateBrokenPOMs="true">
-		 <scope level="compile,runtime">       
-			  <subtract>
-			         <fullGraph/>
-				 <subGraph groupID="org.glassfish.packager" artifactID="felix"/>			                         
-			 </subtract>
-                 </scope>		 
-	   </graphDef>
-	  	   
-	   <graphDef id="remove-hk2-modules" tolerateBrokenPOMs="true">
-		 <scope level="compile,runtime">       
-			  <subtract>
-			         <graphRef refid="remove-felix-modules"/>
-				 <subGraph artifactID="glassfish-hk2"/>			                         
-			 </subtract>
-                 </scope>		 
-	 </graphDef>
- 
+	 <property name="package.name" value="glassfish-jta"/> 
 
-         <graphDef id="remove-grizzly-modules" tolerateBrokenPOMs="true">
-		 <scope level="compile,runtime">       
-			  <subtract>
-				 <graphRef refid="remove-hk2-modules"/>
-				 <subGraph artifactID="glassfish-grizzly"/>			                         
-			 </subtract>
-                 </scope>		 
-	 </graphDef>
-
-	  <graphDef id="remove-api-modules" tolerateBrokenPOMs="true">
-		 <scope level="compile,runtime">       
-			  <subtract>
-				 <graphRef refid="remove-grizzly-modules"/>
-				 <subGraph groupID="org.glassfish.packager" artifactID="glassfish-api"/>			                         
-			 </subtract>
-                 </scope>		 
-	 </graphDef>
-            
-        <graphDef id="remove-nucleus-modules" tolerateBrokenPOMs="true">
-		 <scope level="compile,runtime">       
-			  <subtract>
-				 <graphRef refid="remove-api-modules"/>
-				 <subGraph groupID="org.glassfish.packager" artifactID="glassfish-nucleus"/>			                         
-			 </subtract>
-                 </scope>		 
-	 </graphDef>    
-
-	 <graphDef id="remove-common-modules" tolerateBrokenPOMs="true">
-		 <scope level="compile,runtime">       
-			  <subtract>
-				 <graphRef refid="remove-nucleus-modules"/>
-				 <subGraph groupID="org.glassfish.packager" artifactID="glassfish-common"/>			                         
-			 </subtract>
-                 </scope>		 
-	 </graphDef>   
-
-
-	 <graphDef id="remove-registration-modules" tolerateBrokenPOMs="true">
-		 <scope level="compile,runtime">       
-			  <subtract>
-				 <graphRef refid="remove-common-modules"/>
-				 <subGraph groupID="org.glassfish.packager" artifactID="glassfish-registration"/>			                         
-			 </subtract>
-                 </scope>		 
-	 </graphDef> 
-
-	  <graphDef id="remove-management-modules" tolerateBrokenPOMs="true">
-		 <scope level="compile,runtime">       
-			  <subtract>
-				 <graphRef refid="remove-registration-modules"/>
-				 <subGraph groupID="org.glassfish.packager" artifactID="glassfish-management"/>			                         
-			 </subtract>
-                 </scope>		 
-	 </graphDef> 
-
-	  <graphDef id="remove-amx-modules" tolerateBrokenPOMs="true">
-		 <scope level="compile,runtime">       
-			  <subtract>
-				 <graphRef refid="remove-management-modules"/>
-				 <subGraph groupID="org.glassfish.packager" artifactID="glassfish-amx"/>			                         
-			 </subtract>
-                 </scope>		 
-	 </graphDef> 
-
-	 <graphDef id="remove-jca-modules" tolerateBrokenPOMs="true">
-		 <scope level="compile,runtime">       
-			  <subtract>
-				 <graphRef refid="remove-amx-modules"/>
-				 <subGraph groupID="org.glassfish.packager" artifactID="glassfish-jca"/>			                         
-			 </subtract>
-                 </scope>		 
-	 </graphDef> 
-
-	  <graphDef id="glassfish-jta-modules" tolerateBrokenPOMs="true">
-		 <scope level="compile,runtime">       
-			  <subtract>
-				 <graphRef refid="remove-jca-modules"/>
-				 <subGraph groupID="org.glassfish.packager" artifactID="glassfish-jpa"/>			                         
-			 </subtract>
-                 </scope>		 
-	 </graphDef> 
+        
+	<graphDef id="all-modules" tolerateBrokenPOMs="true">
+		<scope level="compile,runtime">
+			<subtract>
+			    <subtract>
+				    <subtract>
+				    <subtract>
+				    <subtract>
+				    <subtract>
+				    <subtract>
+				    <subtract>
+				    <subtract>
+				    <subtract>
+				    <subtract>
+					    <subtract>
+						    <subtract>
+							    <subtract>
+				    <fullGraph/>
+			             <subGraph groupID="org.glassfish.packager" artifactID="felix">	
+	                                 <scope level="compile,runtime"/>
+	                             </subGraph>
 	
+			         </subtract>
+                                     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-hk2">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			         </subtract>
+                                     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-grizzly">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-api">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-nucleus">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-corba-omgapi">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-common">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-registration">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-management">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-amx">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-jca">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-jpa">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-codegen">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			     </subtract>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-corba">	
+	                                 <scope level="compile,runtime"/>
+				     </subGraph>
+			 </subtract>
+		</scope>					 
+       </graphDef>
 
-	    <resolveAll todir="target/stage/${install.dir.name}/glassfish/modules" tolerateBrokenPOMs="true"
-                        stripVersion="true">
-                <graphRef refid="glassfish-jta-modules"/>
-	   </resolveAll>
+       
+       <stage-module-jars graphid="all-modules" />
+       <stage-distribution-fragments graphid="all-modules" />
 
 
-	<delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.zip" />   
-
-        <if test="${compression}">
+       <if test="${compression}">
 	       <antcall target="pack.compression" />
-	</if>
-	 
-       <zip file="target/glassfish-jta.zip" basedir="target/stage"/>
-           
-       <attachArtifact file="target/glassfish-jta.zip"/>
+       </if>
+
+       <antcall target="create-zip-artifact"/>	 
    </target>
 </project>
 

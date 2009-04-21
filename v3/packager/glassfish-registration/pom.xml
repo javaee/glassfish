@@ -62,27 +62,6 @@
                     </tasks>
                 </configuration>               
              </plugin>
-           <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-dependencies</id>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/stage/${install.dir.name}/glassfish/modules</outputDirectory>
-                            <overWriteReleases>false</overWriteReleases>
-                            <overWriteSnapshots>true</overWriteSnapshots>
-                            <excludeTransitive>true</excludeTransitive>
-                            <includeScope>compile</includeScope>
-                            <includeScope>runtime</includeScope>
-                            <stripVersion>true</stripVersion>
-                        </configuration>
-                   </execution>
-               </executions>
-           </plugin>
         </plugins>
     </build>
 
@@ -115,7 +94,52 @@
            <groupId>org.glassfish.external</groupId>
            <artifactId>commons-codec-repackaged</artifactId>
            <version>${project.version}</version>
-       </dependency>     
+       </dependency> 
+       	<!-- now, listing package dependencies so that their content
+             can be excluded during staging -->	
+	<!-- package level dependency -->
+	<dependency>        
+           <groupId>org.glassfish.packager</groupId>
+           <artifactId>felix</artifactId>
+           <version>${project.version}</version>
+           <type>zip</type>
+   	</dependency>
+	<dependency>        
+           <groupId>org.glassfish.packager</groupId>
+           <artifactId>glassfish-hk2</artifactId>
+           <version>${project.version}</version>
+           <type>zip</type>
+  	</dependency>
+        <dependency>        
+           <groupId>org.glassfish.packager</groupId>
+           <artifactId>glassfish-grizzly</artifactId>
+           <version>${project.version}</version>
+           <type>zip</type>
+        </dependency>
+       	<dependency>        
+           <groupId>org.glassfish.packager</groupId>
+           <artifactId>glassfish-api</artifactId>
+           <version>${project.version}</version>
+           <type>zip</type>
+   	</dependency>     
+ 	<dependency>        
+           <groupId>org.glassfish.packager</groupId>
+           <artifactId>glassfish-nucleus</artifactId>
+           <version>${project.version}</version>
+           <type>zip</type>
+        </dependency>   
+ 	<dependency>        
+           <groupId>org.glassfish.packager</groupId>
+           <artifactId>glassfish-corba-omgapi</artifactId>
+           <version>${project.version}</version>
+           <type>zip</type>
+       </dependency> 
+       <dependency>        
+           <groupId>org.glassfish.packager</groupId>
+           <artifactId>glassfish-common</artifactId>
+           <version>${project.version}</version>
+           <type>zip</type>
+       </dependency>       
     </dependencies>
 
     <profiles>
