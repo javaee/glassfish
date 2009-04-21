@@ -123,7 +123,7 @@
 	//<ui:include src="/tagsPanel.jsf" />
     -->
 
-    <sc:layoutUnit rendered1="#{pageSession.rightContent[0] != null}" id="gfLayoutRight" position="right" width="250" gutter="5px" resize="true" header="#{pageSession.rightContent[0].content}" collapse="true">
+    <sc:layoutUnit rendered="#{pageSession.rightContent[0] != null}" id="gfLayoutRight" position="right" width="250" gutter="5px" resize="true" header="#{pageSession.rightContent[0].content}" collapse="true">
 	<event>
 	    <ui:event type="afterCreate">
 		// FIXME: Consider using a widget which allows multiple content types to share the right panel (i.e. accordian)
@@ -228,27 +228,31 @@
     admingui.setPrefButton = document.getElementById("#{pageSession.setPrefId}");
 
     // Collapse panels if necessary
-    //if (#{sessionScope.hideLeft}) {
-	YAHOO.util.Event.onDOMReady(function (ev) {
-	    var layout = getLayout('gfLayout');
-            var lu = layout.getUnitByPosition('left');
-            lu.on('collapse', function(ev) {
-                alert('hi!');
-            });
-	    lu.collapse();
+    YAHOO.util.Event.onDOMReady(function (ev) {
+	var layout = getLayout('gfLayout');
+	var lu = layout.getUnitByPosition('left');
+	lu.on('collapse', function(ev) {
+	    admingui.util.setPreference("layout", "hideLeft", "true", "hideLeft");
 	});
-    //}
-    if (#{sessionScope.hideRight}) {
-	YAHOO.util.Event.onDOMReady(function (ev) {
-            var layout = getLayout('gfLayout');
-	    var lu = layout.getUnitByPosition('right');
-	    lu.collapse();
+	lu.on('expand', function(ev) {
+	    admingui.util.setPreference("layout", "hideLeft", "false", "hideLeft");
 	});
-    }
+	if (#{sessionScope.hideLeft}) {
+	    lu.collapse();
+	}
 
-// FIXME: Toggle when they click the collapse link!
-admingui.util.setPreference("layout", "hideLeft", "false", "hideLeft");
-admingui.util.setPreference("layout", "hideRight", "true", "hideRight");
+	// Deal w/ the right frame
+	lu = layout.getUnitByPosition('right');
+	lu.on('collapse', function(ev) {
+	    admingui.util.setPreference("layout", "hideRight", "true", "hideRight");
+	});
+	lu.on('expand', function(ev) {
+	    admingui.util.setPreference("layout", "hideRight", "false", "hideRight");
+	});
+	if (#{sessionScope.hideRight}) {
+	    lu.collapse();
+	}
+    });
 
 </script>
 
