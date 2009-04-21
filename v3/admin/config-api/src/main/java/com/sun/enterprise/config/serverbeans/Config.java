@@ -103,7 +103,6 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      * @return name of the configured object
      FIXME: should set 'key=true'.  See bugs 6039, 6040
      */
-    @Attribute
     @NotNull
     @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
     String getName();
