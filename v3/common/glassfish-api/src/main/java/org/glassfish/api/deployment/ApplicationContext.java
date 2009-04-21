@@ -60,11 +60,6 @@ public interface ApplicationContext {
     public ClassLoader getClassLoader();
 
     /**
-     * @return the operation extra properties
-     */
-    public Properties getProps();
-
-    /**
      * Returns the application level properties that will be persisted as a
      * key value pair at then end of deployment. That allows individual
      * Deployers implementation to store some information at the

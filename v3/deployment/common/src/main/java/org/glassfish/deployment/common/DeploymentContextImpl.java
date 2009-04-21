@@ -285,21 +285,6 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext {
         return null;
     }
 
-
-    /**
-     * Returns the properties that will be persisted as a key value pair at
-     * then end of deployment. That allows individual Deployers implementation
-     * to store some information that should be available upon server restart.
-     *
-     * @return the application's properties.
-     */
-    public Properties getProps() {
-        if (props==null) {
-            props = new Properties();
-        }
-        return props;
-    }
-
     /**
      * Returns the application level properties that will be persisted as a
      * key value pair at then end of deployment. That allows individual
